@@ -139,8 +139,9 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   PyObject* pyPointerToIstatout;
   char* asciiOutputFile;                     // Output file names
   char* plotOutputFile;
+  char* ucdOutputRoot;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOss:elastc",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsss:elastc",
 			    &pyPointerToAlnz,              // Sparse matrix arrays
 			    &pyPointerToPcg,
 			    &pyPointerToZcg,
@@ -231,7 +232,8 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 			    &pyPointerToListArrayNprint,
 			    &pyPointerToIstatout,
 			    &asciiOutputFile,                     // Output file names
-			    &plotOutputFile);
+			    &plotOutputFile,
+			    &ucdOutputRoot);
 
 
   if (!ok) {
@@ -422,10 +424,12 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 	   pointerToIstatout,
 	   asciiOutputFile,                     // Output file names
 	   plotOutputFile,
+	   ucdOutputRoot,
 	   &errorcode,                          // Error codes
 	   errorstring,
 	   strlen(asciiOutputFile),             // String lengths
 	   strlen(plotOutputFile),
+	   strlen(ucdOutputRoot),
 	   strlen(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -444,6 +448,6 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 
 
 // version
-// $Id: elastc.cc,v 1.4 2004/07/21 20:02:03 willic3 Exp $
+// $Id: elastc.cc,v 1.5 2004/08/25 01:34:22 willic3 Exp $
 
 // End of file
