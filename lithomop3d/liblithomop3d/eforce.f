@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine eforce(xl,sh,shj,det,gauss,evp,p,iel,nen,ngauss,ierr,
-     & getshape,bmatrix)
+      subroutine eforce(xl,sh,shj,det,gauss,evp,p,iel,nen,ngauss,
+     & getshape,bmatrix,ierr,errstrng)
 c
 c...this subroutine computes the effective forces at each node
 c   within an element: p=(b)t*evp, where p is the local force vector,
@@ -48,6 +48,7 @@ c
 c...  subroutine arguments
 c
       integer iel,nen,ierr
+      character errstrng*(*)
       double precision xl(nsd,nen),sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax),det(ngaussmax)
       double precision gauss(nsd+1,ngaussmax),evp(nstr,ngauss)
@@ -64,7 +65,7 @@ cdebug      write(6,*) "Hello from eforce_f!"
 c
       nee=ndof*nen
       call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,ngauss,
-     & ierr)
+     & ierr,errstrng)
       if(ierr.ne.izero) return
 c
       do l=1,ngauss
@@ -75,7 +76,7 @@ c
       end
 c
 c version
-c $Id: eforce.f,v 1.2 2004/06/18 15:29:21 willic3 Exp $
+c $Id: eforce.f,v 1.3 2004/06/21 20:11:19 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
