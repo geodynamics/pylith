@@ -288,6 +288,7 @@ c...  integrate the stresses and compute the equivalent nodal loads,
 c     updating the material and stiffness matrices if requested.
 c
         if(reform) then
+          write(kto,650)
           call stress_mat_drv(
      &     alnz,ja,nnz,                                                 ! sparse
      &     b,neq,                                                       ! force
@@ -334,11 +335,12 @@ c
         end if
         reform=.false.
       end do
+ 650  format(//,"Reforming the stiffness matrix:",/)
       return
       end
 c
 c version
-c $Id: iterate.f,v 1.5 2004/07/21 19:44:53 willic3 Exp $
+c $Id: iterate.f,v 1.6 2004/08/12 20:39:55 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
