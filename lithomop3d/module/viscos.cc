@@ -330,7 +330,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   double*  pointerToListArrayRmult = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRmult);
   int*  pointerToListArrayNsiter = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNsiter);
   double*  pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
-  int*  pointerToListArrayIprint = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayIprint);
+  int*  pointerToIprint = (int*) PyCObject_AsVoidPtr(pyPointerToIprint);
   int*  pointerToListArrayNcodat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNcodat);
   int*  pointerToListArrayNunits = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNunits);
   int*  pointerToListArrayNprint = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
@@ -423,7 +423,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 	   pointerToListArrayRmult,
 	   pointerToListArrayNsiter,
 	   pointerToSkew,             // Skew rotation information
-	   pointerToListArrayIprint,  // Input/output information
+	   pointerToIprint,           // Input/output information
 	   pointerToListArrayNcodat,
 	   pointerToListArrayNunits,
 	   pointerToListArrayNprint,
@@ -454,6 +454,6 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 
 
 // version
-// $Id: viscos.cc,v 1.2 2004/07/20 16:28:45 willic3 Exp $
+// $Id: viscos.cc,v 1.3 2004/07/20 21:31:41 willic3 Exp $
 
 // End of file
