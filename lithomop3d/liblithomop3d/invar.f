@@ -35,6 +35,10 @@ c...routine to compute deviatoric stress, stress invariant
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
       double precision sdev(6),stn(6),sinv1,steff
@@ -43,7 +47,7 @@ c...  intrinsic functions
 c
       intrinsic sqrt
 c
-c...  user-defined functions
+c...  external routines
 c
       double precision sprod
       external sprod
@@ -55,7 +59,7 @@ c
 c*      write(6,*) "Hello from invar_f!"
 c
       sinv1=stn(1)+stn(2)+stn(3)
-      smean=sinv1/3.0d0
+      smean=sinv1/three
       sdev(1)=stn(1)-smean
       sdev(2)=stn(2)-smean
       sdev(3)=stn(3)-smean
@@ -67,7 +71,7 @@ c
       end
 c
 c version
-c $Id: invar.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: invar.f,v 1.2 2004/07/07 15:31:08 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
