@@ -4,9 +4,9 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
+c  Copyright 2005 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_props(prop,grav,infmat,infmatmod,numat,npropsz,
-     & idout,idsk,kw,kp,ofile,pfile,ierr,errstrng)
+      subroutine write_props(prop,grav,ivfamily,infmatmod,nvfamilies,
+     & npropsz,idout,idsk,kw,kp,ofile,pfile,ierr,errstrng)
 c
 c...  program to print properties for each material type.
 c
@@ -44,8 +44,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer numat,npropsz,idout,idsk,kw,kp,ierr
-      integer infmat(3,numat),infmatmod(5,nmatmodmax)
+      integer nvfamilies,npropsz,idout,idsk,kw,kp,ierr
+      integer ivfamily(5,nvfamilies),infmatmod(6,nmatmodmax)
       double precision prop(npropsz),grav(ndof)
       character ofile*(*),pfile*(*),errstrng*(*)
 c
@@ -59,7 +59,7 @@ c
 c
 c...  local variables
 c
-      integer imat,matmodel,indprop,nprop,i
+      integer numat,ifam,matmodel,indprop,nprop,i
 c
 c...  included variable definitions
 c
@@ -68,6 +68,7 @@ c
 cdebug      write(6,*) "Hello from write_props_f!"
 c
       ierr=izero
+      numat=nvfamilies
 c
 c...  open output files and output number of materials
 c
@@ -85,71 +86,72 @@ c
         write(kp,err=20) numat
       end if
 c
-c...  loop over number of material types
+c...  loop over number of element families, which presently correspond
+c     to material types
 c
-      do imat=1,numat
-        matmodel=infmat(1,imat)
-        indprop=infmat(3,imat)
+      do ifam=1,nvfamilies
+        matmodel=ivfamily(2,ifam)
+        indprop=ivfamily(5,ifam)
         nprop=infmatmod(3,matmodel)
         if(matmodel.eq.1) then
-          call mat_prt_1(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_1(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.2) then
-          call mat_prt_2(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_2(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.3) then
-          call mat_prt_3(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_3(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.4) then
-          call mat_prt_4(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_4(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.5) then
-          call mat_prt_5(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_5(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.6) then
-          call mat_prt_6(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_6(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.7) then
-          call mat_prt_7(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_7(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.8) then
-          call mat_prt_8(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_8(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.9) then
-          call mat_prt_9(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_9(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.10) then
-          call mat_prt_10(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_10(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.11) then
-          call mat_prt_11(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_11(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.12) then
-          call mat_prt_12(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_12(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.13) then
-          call mat_prt_13(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_13(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.14) then
-          call mat_prt_14(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_14(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.15) then
-          call mat_prt_15(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_15(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.16) then
-          call mat_prt_16(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_16(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.17) then
-          call mat_prt_17(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_17(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.18) then
-          call mat_prt_18(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_18(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.19) then
-          call mat_prt_19(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_19(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         else if(matmodel.eq.20) then
-          call mat_prt_20(prop(indprop),nprop,imat,idout,idsk,kw,kp,
+          call mat_prt_20(prop(indprop),nprop,ifam,idout,idsk,kw,kp,
      &     ierr,errstrng)
         end if
         if(ierr.ne.izero) return
@@ -199,7 +201,7 @@ c
       end
 c
 c version
-c $Id: write_props.f,v 1.4 2004/08/25 01:12:48 willic3 Exp $
+c $Id: write_props.f,v 1.5 2005/03/22 19:59:57 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
