@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine bmatrixb(b,sh,shbar,nsd,ndof,nen,nstr)
+      subroutine bmatrixb(b,sh,shbar,nen)
 c
 c...computes the linear strain-displacement matrix b(nstr,ndof*nen)
 c
@@ -37,17 +37,18 @@ c      This routine uses Hughes' B-bar formuation for dilatational
 c      strains.
 c
       include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer nsd,ndof,nen,nstr
+      integer nen
       double precision b(nstr,ndof*nenmax),sh(nsd+1,nenmax)
       double precision shbar(nsd+1,nenmax)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  local variables
 c
@@ -85,7 +86,7 @@ c
       end
 c
 c version
-c $Id: bmatrixb.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: bmatrixb.f,v 1.2 2004/06/18 15:03:20 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
