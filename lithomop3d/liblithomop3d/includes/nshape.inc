@@ -24,11 +24,12 @@ c     This header should be included before any subroutine arguments,
 c     as the parameters will generally be used to dimension the
 c     arguments.
 c
-      integer nenmax,ngaussmax,neemax,netypes
-      parameter(nenmax=20,ngaussmax=27,neemax=3*nenmax,netypes=62)
+      integer nenmax,ngaussmax,neemax,netypes,netypesi
+      parameter(nenmax=20,ngaussmax=27,neemax=3*nenmax,netypes=62,
+     & netypesi=10)
 c
 c version
-c $Id: nshape.inc,v 1.3 2004/06/18 13:46:06 willic3 Exp $
+c $Id: nshape.inc,v 1.4 2004/07/09 16:25:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
