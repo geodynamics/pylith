@@ -18,14 +18,14 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      integer nprint(3)
+      integer nprint(4)
 c
 c...  scalar parameters associated with arrays
 c
-      integer icontr,idout,idsk
+      integer icontr,idout,idsk,iucd
 c
 c version
-c $Id: nprint_dim.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: nprint_dim.inc,v 1.2 2004/08/24 18:36:28 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
