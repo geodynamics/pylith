@@ -61,97 +61,105 @@ class Lithomop3d_run(Component):
         self.pointerToPcg = lm3dsetup.pointerToPcg
         self.pointerToZcg = lm3dsetup.pointerToZcg
         self.pointerToJa = lm3dsetup.pointerToJa
+
         self.pointerToB = lm3dsetup.pointerToB
         self.pointerToBtot = lm3dsetup.pointerToBtot
         self.pointerToBres = lm3dsetup.pointerToBres
         self.pointerToPvec = lm3dsetup.pointerToPvec
         self.pointerToGvec1 = lm3dsetup.pointerToGvec1
         self.pointerToGvec2 = lm3dsetup.pointerToGvec2
+        self.pointerToListArrayGrav = lm3dsetup.pointerToListArrayGrav
+
         self.pointerToX = lm3dsetup.pointerToX
         self.pointerToD = lm3dsetup.pointerToD
-        self.pointerToDx = lm3dsetup.pointerToDx
         self.pointerToDeld = lm3dsetup.pointerToDeld
-        self.pointerToDeldx = lm3dsetup.pointerToDeldx
         self.pointerToDprev = lm3dsetup.pointerToDprev
         self.pointerToDcur = lm3dsetup.pointerToDcur
-        self.pointerToDxcur = lm3dsetup.pointerToDxcur
         self.pointerToId = lm3dsetup.pointerToId
+        self.pointerToIwink = lm3dsetup.pointerToIwink
+        self.pointerToWink = lm3dsetup.pointerToWink
+        self.pointerToListArrayNsysdat = lm3dsetup.pointerToListArrayNsysdat
+
+        self.pointerToIbond = lm3dsetup.pointerToIbond
+        self.pointerToBond = lm3dsetup.pointerToBond
+
+        self.pointerToDx = lm3dsetup.pointerToDx
+        self.pointerToDeldx = lm3dsetup.pointerToDeldx
+        self.pointerToDxcur = lm3dsetup.pointerToDxcur
+        self.pointerToDiforc = lm3dsetup.pointerToDiforc
         self.pointerToIdx = lm3dsetup.pointerToIdx
-        self.pointerToSkew = lm3dsetup.pointerToSkew
-        self.pointerToHistry = lm3dsetup.pointerToHistry
+        self.pointerToIwinkx = lm3dsetup.pointerToIwinkx
+        self.pointerToWinkx = lm3dsetup.pointerToWinkx
+        self.pointerToIdslp = lm3dsetup.pointerToIdslp
+        self.pointerToIpslp = lm3dsetup.pointerToIpslp
+        self.pointerToIdhist = lm3dsetup.pointerToIdhist
+
+        self.pointerToFault = lm3dsetup.pointerToFault
+        self.pointerToNfault = lm3dsetup.pointerToNfault
+        self.pointerToDfault = lm3dsetup.pointerToDfault
+        self.pointerToTfault = lm3dsetup.pointerToTfault
+
+        self.pointerToS = lm3dsetup.pointerToS
+        self.pointerToStemp = lm3dsetup.pointerToStemp
+
+        self.pointerToState = lm3dsetup.pointerToState
+        self.pointerToDstate = lm3dsetup.pointerToDstate
+        self.pointerToDmat = lm3dsetup.pointerToDmat
         self.pointerToIen = lm3dsetup.pointerToIen
-        self.pointerToInfin = lm3dsetup.pointerToInfin
-        self.pointerToMat = lm3dsetup.pointerToMat
         self.pointerToLm = lm3dsetup.pointerToLm
         self.pointerToLmx = lm3dsetup.pointerToLmx
         self.pointerToLmf = lm3dsetup.pointerToLmf
-        self.pointerToProp = lm3dsetup.pointerToProp
-        self.pointerToListArrayGauss = lm3dsetup.pointerToListArrayGauss
-        self.pointerToIbond = lm3dsetup.pointerToIbond
-        self.pointerToBond = lm3dsetup.pointerToBond
-        self.pointerToDmat = lm3dsetup.pointerToDmat
-        self.pointerToStn = lm3dsetup.pointerToStn
-        self.pointerToScur = lm3dsetup.pointerToScur
-        self.pointerToSt0 = lm3dsetup.pointerToSt0
-        self.pointerToEps = lm3dsetup.pointerToEps
-        self.pointerToDeps = lm3dsetup.pointerToDeps
-        self.pointerToBeta = lm3dsetup.pointerToBeta
-        self.pointerToDbeta = lm3dsetup.pointerToDbeta
-        self.pointerToBetb = lm3dsetup.pointerToBetb
-        self.pointerToDbetb = lm3dsetup.pointerToDbetb
+        self.pointerToInfiel = lm3dsetup.pointerToInfiel
         self.pointerToListArrayIddmat = lm3dsetup.pointerToListArrayIddmat
+        self.pointerToListArrayNpar = lm3dsetup.pointerToListArrayNpar
+
         self.pointerToIelno = lm3dsetup.pointerToIelno
         self.pointerToIside = lm3dsetup.pointerToIside
         self.pointerToIhistry = lm3dsetup.pointerToIhistry
         self.pointerToPres = lm3dsetup.pointerToPres
         self.pointerToPdir = lm3dsetup.pointerToPdir
+
+        self.pointerToListArrayPropertyList = lm3dsetup.pointerToListArrayPropertyList
+        self.pointerToMhist = lm3dsetup.pointerToMhist
+        self.pointerToMaterialInfo = lm3dsetup.pointerToMaterialInfo
+        self.pointerToMaterialModelInfo = lm3dsetup.pointerToMaterialModelInfo
+        self.pointerToMaterialModelStates = lm3dsetup.pointerToMaterialModelStates
+
+        self.pointerToGauss = lm3dsetup.pointerToGauss
+        self.pointerToSh = lm3dsetup.pointerToSh
+        self.pointerToShj = lm3dsetup.pointerToShj
+        self.pointerToElementTypeInfo = lm3dsetup.pointerToElementTypeInfo
+
+        self.pointerToHistry = lm3dsetup.pointerToHistry
+        self.pointerToListArrayRtimdat = lm3dsetup.pointerToListArrayRtimdat
+        self.pointerToListArrayNvisdat = lm3dsetup.pointerToListArrayNvisdat
         self.pointerToMaxstp = lm3dsetup.pointerToMaxstp
         self.pointerToDelt = lm3dsetup.pointerToDelt
         self.pointerToAlfa = lm3dsetup.pointerToAlfa
         self.pointerToMaxit = lm3dsetup.pointerToMaxit
-        self.pointerToMaxitc = lm3dsetup.pointerToMaxitc
+        self.pointerToNtdinit = lm3dsetup.pointerToNtdinit
         self.pointerToLgdef = lm3dsetup.pointerToLgdef
         self.pointerToIbbar = lm3dsetup.pointerToIbbar
         self.pointerToUtol = lm3dsetup.pointerToUtol
         self.pointerToFtol = lm3dsetup.pointerToFtol
         self.pointerToEtol = lm3dsetup.pointerToEtol
         self.pointerToItmax = lm3dsetup.pointerToItmax
-        self.pointerToIprint = lm3dsetup.pointerToIprint
-        self.pointerToFault = lm3dsetup.pointerToFault
-        self.pointerToNfault = lm3dsetup.pointerToNfault
-        self.pointerToDfault = lm3dsetup.pointerToDfault
-        self.pointerToTfault = lm3dsetup.pointerToTfault
-        self.pointerToIdftn = lm3dsetup.pointerToIdftn
-        self.pointerToIdslp = lm3dsetup.pointerToIdslp
-        self.pointerToIpslp = lm3dsetup.pointerToIpslp
-        self.pointerToDiforc = lm3dsetup.pointerToDiforc
-        self.pointerToIdhist = lm3dsetup.pointerToIdhist
-        self.pointerToIwink = lm3dsetup.pointerToIwink
-        self.pointerToWink = lm3dsetup.pointerToWink
-        self.pointerToIwinkx = lm3dsetup.pointerToIwinkx
-        self.pointerToWinkx = lm3dsetup.pointerToWinkx
-        self.pointerToS = lm3dsetup.pointerToS
-        self.pointerToStemp = lm3dsetup.pointerToStemp
-        self.pointerToListArrayGrav = lm3dsetup.pointerToListArrayGrav
-        self.pointerToListArrayNcodat = lm3dsetup.pointerToListArrayNcodat
-        self.pointerToListArrayNconsts = lm3dsetup.pointerToListArrayNconsts
-        self.pointerToListArrayNdimens = lm3dsetup.pointerToListArrayNdimens
-        self.pointerToListArrayNpar = lm3dsetup.pointerToListArrayNpar
-        self.pointerToListArrayNprint = lm3dsetup.pointerToListArrayNprint
-        self.pointerToListArrayNsiter = lm3dsetup.pointerToListArrayNsiter
-        self.pointerToListArrayNsysdat = lm3dsetup.pointerToListArrayNsysdat
-        self.pointerToListArrayNunits = lm3dsetup.pointerToListArrayNunits
-        self.pointerToListArrayNvisdat = lm3dsetup.pointerToListArrayNvisdat
-        self.pointerToListArrayRconsts = lm3dsetup.pointerToListArrayRconsts
+
         self.pointerToListArrayRgiter = lm3dsetup.pointerToListArrayRgiter
         self.pointerToListArrayRmin = lm3dsetup.pointerToListArrayRmin
         self.pointerToListArrayRmult = lm3dsetup.pointerToListArrayRmult
-        self.pointerToListArrayRtimdat = lm3dsetup.pointerToListArrayRtimdat
+        self.pointerToListArrayNsiter = lm3dsetup.pointerToListArrayNsiter
+
+        self.pointerToSkew = lm3dsetup.pointerToSkew
+
+        self.pointerToIprint = lm3dsetup.pointerToIprint
+        self.pointerToListArrayNcodat = lm3dsetup.pointerToListArrayNcodat
+        self.pointerToListArrayNunits = lm3dsetup.pointerToListArrayNunits
+        self.pointerToListArrayNprint = lm3dsetup.pointerToListArrayNprint
+        self.pointerToIstatout = lm3dsetup.pointerToIstatout
+
         self.asciiOutputFile = lm3dsetup.asciiOutputFile
         self.plotOutputFile = lm3dsetup.plotOutputFile
-        self.viscousFlagInt = lm3dsetup.viscousFlagInt
-        self.plasticFlagInt = lm3dsetup.plasticFlagInt
-        self.materialHistoryFlagInt = lm3dsetup.materialHistoryFlagInt
 
         print "Hello from lm3drun.initialize (end)!"
 
@@ -166,6 +174,31 @@ class Lithomop3d_run(Component):
         # They should not have been defined previously.
 
         print "Hello from lm3drun.run (begin)!"
+
+        # ntimdat array
+        self.currentTimeStep = 0
+        self.currentIterationsBetweenReform = 0
+        self.currentStepsBetweenReform = 0
+        self.currentLargeDeformationFlag = 0
+        self.currentBbarFlag = 0
+        self.currentMaximumIterations = 0
+        self.currentNumberTotalIterations = 0
+        self.currentNumberReforms = 0
+        self.currentNumberTotalPcgIterations = 0
+        self.reformFlagInt = 0
+        self.listNtimdat = [
+            self.currentTimeStep,
+            self.currentIterationsBetweenReform,
+            self.currentStepsBetweenReform,
+            self.currentLargeDeformationFlag,
+            self.currentBbarFlag,
+            self.currentMaximumIterations,
+            self.currentNumberTotalIterations,
+            self.currentNumberReforms,
+            self.currentNumberTotalPcgIterations,
+            self.reformFlagInt]
+        self.pointerToListArrayNtimdat = lithomop3d.intListToArray(
+            self.listNtimdat)
 
         # gcurr array
         self.currentDisplacementNorm = 0.0
@@ -211,33 +244,6 @@ class Lithomop3d_run(Component):
         self.pointerToListArrayGtol = lithomop3d.doubleListToArray(
             self.listGtol)
 
-        # ntimdat array
-        self.currentTimeStep = 0
-        self.currentStepsBetweenReform = 0
-        self.currentIterationsBetweenReform = 0
-        self.currentLargeDeformationFlag = 0
-        self.currentBbarFlag = 0
-        self.currentMaximumIterations = 0
-        self.currentNumberTotalIterations = 0
-        self.currentNumberReforms = 0
-        self.currentNumberTotalPcgIterations = 0
-        self.reformFlagInt = 0
-        self.listNtimdat = [
-            self.currentTimeStep,
-            self.currentStepsBetweenReform,
-            self.currentIterationsBetweenReform,
-            self.currentLargeDeformationFlag,
-            self.currentBbarFlag,
-            self.currentMaximumIterations,
-            self.currentNumberTotalIterations,
-            self.currentNumberReforms,
-            self.currentNumberTotalPcgIterations,
-            self.reformFlagInt,
-            self.viscousFlagInt,
-            self.plasticFlagInt,
-            self.materialHistoryFlagInt]
-        self.pointerToListArrayNtimdat = lithomop3d.intListToArray(
-            self.listNtimdat)
 
 
         # Perform elastic solution, if requested.
@@ -254,90 +260,86 @@ class Lithomop3d_run(Component):
                 self.pointerToPvec,
                 self.pointerToGvec1,
                 self.pointerToGvec2,
+                self.pointerToListArrayGrav,
                 self.pointerToX,
                 self.pointerToD,
-                self.pointerToDx,
                 self.pointerToDeld,
-                self.pointerToDeldx,
                 self.pointerToDprev,
                 self.pointerToDcur,
-                self.pointerToDxcur,
                 self.pointerToId,
+                self.pointerToIwink,
+                self.pointerToWink,
+                self.pointerToListArrayNsysdat,
+                self.pointerToIbond,
+                self.pointerToBond,
+                self.pointerToDx,
+                self.pointerToDeldx,
+                self.pointerToDxcur,
+                self.pointerToDiforc,
                 self.pointerToIdx,
-                self.pointerToSkew,
-                self.pointerToHistry,
+                self.pointerToIwinkx,
+                self.pointerToWinkx,
+                self.pointerToIdslp,
+                self.pointerToIpslp,
+                self.pointerToIdhist,
+                self.pointerToFault,
+                self.pointerToNfault,
+                self.pointerToDfault,
+                self.pointerToTfault,
+                self.pointerToS,
+                self.pointerToStemp,
+                self.pointerToState,
+                self.pointerToDstate,
+                self.pointerToDmat,
                 self.pointerToIen,
-                self.pointerToInfin,
-                self.pointerToMat,
                 self.pointerToLm,
                 self.pointerToLmx,
                 self.pointerToLmf,
-                self.pointerToProp,
-                self.pointerToListArrayGauss,
-                self.pointerToIbond,
-                self.pointerToBond,
-                self.pointerToDmat,
-                self.pointerToStn,
-                self.pointerToScur,
-                self.pointerToSt0,
-                self.pointerToEps,
-                self.pointerToDeps,
-                self.pointerToBeta,
-                self.pointerToDbeta,
-                self.pointerToBetb,
-                self.pointerToDbetb,
+                self.pointerToInfiel,
                 self.pointerToListArrayIddmat,
+                self.pointerToListArrayNpar,
                 self.pointerToIelno,
                 self.pointerToIside,
                 self.pointerToIhistry,
                 self.pointerToPres,
                 self.pointerToPdir,
+                self.pointerToListArrayPropertyList,
+                self.pointerToMhist,
+                self.pointerToMaterialInfo,
+                self.pointerToMaterialModelInfo,
+                self.pointerToMaterialModelStates,
+                self.pointerToGauss,
+                self.pointerToSh,
+                self.pointerToShj,
+                self.pointerToElementTypeInfo,
+                self.pointerToHistry,
+                self.pointerToListArrayRtimdat,
+                self.pointerToListArrayNtimdat,
+                self.pointerToListArrayNvisdat,
                 self.pointerToMaxstp,
                 self.pointerToDelt,
                 self.pointerToAlfa,
                 self.pointerToMaxit,
-                self.pointerToMaxitc,
+                self.pointerToNtdinit,
                 self.pointerToLgdef,
                 self.pointerToIbbar,
                 self.pointerToUtol,
                 self.pointerToFtol,
                 self.pointerToEtol,
                 self.pointerToItmax,
-                self.pointerToFault,
-                self.pointerToNfault,
-                self.pointerToDfault,
-                self.pointerToTfault,
-                self.pointerToIdftn,
-                self.pointerToIdslp,
-                self.pointerToIpslp,
-                self.pointerToDiforc,
-                self.pointerToIdhist,
-                self.pointerToIwink,
-                self.pointerToWink,
-                self.pointerToIwinkx,
-                self.pointerToWinkx,
-                self.pointerToS,
-                self.pointerToStemp,
+                self.pointerToListArrayRgiter,
                 self.pointerToListArrayGcurr,
                 self.pointerToListArrayGi,
                 self.pointerToListArrayGprev,
-                self.pointerToListArrayGrav,
                 self.pointerToListArrayGtol,
-                self.pointerToListArrayNcodat,
-                self.pointerToListArrayNconsts,
-                self.pointerToListArrayNdimens,
-                self.pointerToListArrayNpar,
-                self.pointerToListArrayNprint,
-                self.pointerToListArrayNsiter,
-                self.pointerToListArrayNsysdat,
-                self.pointerToListArrayNtimdat,
-                self.pointerToListArrayNunits,
-                self.pointerToListArrayNvisdat,
-                self.pointerToListArrayRconsts,
-                self.pointerToListArrayRgiter,
                 self.pointerToListArrayRmin,
                 self.pointerToListArrayRmult,
-                self.pointerToListArrayRtimdat,
+                self.pointerToListArrayNsiter,
+                self.pointerToSkew,
+                self.pointerToListArrayNcodat,
+                self.pointerToListArrayNunits,
+                self.pointerToListArrayNprint,
+                self.pointerToIstatout,
                 self.asciiOutputFile,
                 self.plotOutputFile)
 
@@ -355,91 +357,87 @@ class Lithomop3d_run(Component):
                 self.pointerToPvec,
                 self.pointerToGvec1,
                 self.pointerToGvec2,
+                self.pointerToListArrayGrav,
                 self.pointerToX,
                 self.pointerToD,
-                self.pointerToDx,
                 self.pointerToDeld,
-                self.pointerToDeldx,
                 self.pointerToDprev,
                 self.pointerToDcur,
-                self.pointerToDxcur,
                 self.pointerToId,
+                self.pointerToIwink,
+                self.pointerToWink,
+                self.pointerToListArrayNsysdat,
+                self.pointerToIbond,
+                self.pointerToBond,
+                self.pointerToDx,
+                self.pointerToDeldx,
+                self.pointerToDxcur,
+                self.pointerToDiforc,
                 self.pointerToIdx,
-                self.pointerToSkew,
-                self.pointerToHistry,
+                self.pointerToIwinkx,
+                self.pointerToWinkx,
+                self.pointerToIdslp,
+                self.pointerToIpslp,
+                self.pointerToIdhist,
+                self.pointerToFault,
+                self.pointerToNfault,
+                self.pointerToDfault,
+                self.pointerToTfault,
+                self.pointerToS,
+                self.pointerToStemp,
+                self.pointerToState,
+                self.pointerToDstate,
+                self.pointerToDmat,
                 self.pointerToIen,
-                self.pointerToInfin,
-                self.pointerToMat,
                 self.pointerToLm,
                 self.pointerToLmx,
                 self.pointerToLmf,
-                self.pointerToProp,
-                self.pointerToListArrayGauss,
-                self.pointerToIbond,
-                self.pointerToBond,
-                self.pointerToDmat,
-                self.pointerToStn,
-                self.pointerToScur,
-                self.pointerToSt0,
-                self.pointerToEps,
-                self.pointerToDeps,
-                self.pointerToBeta,
-                self.pointerToDbeta,
-                self.pointerToBetb,
-                self.pointerToDbetb,
+                self.pointerToInfiel,
                 self.pointerToListArrayIddmat,
+                self.pointerToListArrayNpar,
                 self.pointerToIelno,
                 self.pointerToIside,
                 self.pointerToIhistry,
                 self.pointerToPres,
                 self.pointerToPdir,
+                self.pointerToListArrayPropertyList,
+                self.pointerToMhist,
+                self.pointerToMaterialInfo,
+                self.pointerToMaterialModelInfo,
+                self.pointerToMaterialModelStates,
+                self.pointerToGauss,
+                self.pointerToSh,
+                self.pointerToShj,
+                self.pointerToElementTypeInfo,
+                self.pointerToHistry,
+                self.pointerToListArrayRtimdat,
+                self.pointerToListArrayNtimdat,
+                self.pointerToListArrayNvisdat,
                 self.pointerToMaxstp,
                 self.pointerToDelt,
                 self.pointerToAlfa,
                 self.pointerToMaxit,
-                self.pointerToMaxitc,
+                self.pointerToNtdinit,
                 self.pointerToLgdef,
                 self.pointerToIbbar,
                 self.pointerToUtol,
                 self.pointerToFtol,
                 self.pointerToEtol,
                 self.pointerToItmax,
-                self.pointerToIprint,
-                self.pointerToFault,
-                self.pointerToNfault,
-                self.pointerToDfault,
-                self.pointerToTfault,
-                self.pointerToIdftn,
-                self.pointerToIdslp,
-                self.pointerToIpslp,
-                self.pointerToDiforc,
-                self.pointerToIdhist,
-                self.pointerToIwink,
-                self.pointerToWink,
-                self.pointerToIwinkx,
-                self.pointerToWinkx,
-                self.pointerToS,
-                self.pointerToStemp,
+                self.pointerToListArrayRgiter,
                 self.pointerToListArrayGcurr,
                 self.pointerToListArrayGi,
                 self.pointerToListArrayGprev,
-                self.pointerToListArrayGrav,
                 self.pointerToListArrayGtol,
-                self.pointerToListArrayNcodat,
-                self.pointerToListArrayNconsts,
-                self.pointerToListArrayNdimens,
-                self.pointerToListArrayNpar,
-                self.pointerToListArrayNprint,
-                self.pointerToListArrayNsiter,
-                self.pointerToListArrayNsysdat,
-                self.pointerToListArrayNtimdat,
-                self.pointerToListArrayNunits,
-                self.pointerToListArrayNvisdat,
-                self.pointerToListArrayRconsts,
-                self.pointerToListArrayRgiter,
                 self.pointerToListArrayRmin,
                 self.pointerToListArrayRmult,
-                self.pointerToListArrayRtimdat,
+                self.pointerToListArrayNsiter,
+                self.pointerToSkew,
+                self.pointerToIprint,
+                self.pointerToListArrayNcodat,
+                self.pointerToListArrayNunits,
+                self.pointerToListArrayNprint,
+                self.pointerToIstatout,
                 self.asciiOutputFile,
                 self.plotOutputFile)
                           
@@ -456,6 +454,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.1 2004/04/14 21:22:47 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.2 2004/07/16 20:43:10 willic3 Exp $
 
 # End of file 
