@@ -49,7 +49,7 @@ c...  local variables
 c
       double precision stnm(3,3),tmp(3,3)
 c
-c*      write(6,*) "Hello from rstress_f!"
+cdebug      write(6,*) "Hello from rstress_f!"
 c
       stnm(1,1)=stn(1)
       stnm(2,2)=stn(2)
@@ -72,7 +72,7 @@ c
       end
 c
 c version
-c $Id: rstress.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: rstress.f,v 1.2 2004/08/12 02:25:15 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
