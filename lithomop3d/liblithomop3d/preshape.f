@@ -109,6 +109,8 @@ c
       double precision rr,ss,tt,drr,dss,dtt
       integer io(3)
 c
+cdebug      write(6,*) "Hello from preshape_f!"
+c
 c...  definitions
 c
       nshsize=(nsd+1)*nenmax*ngaussmax
@@ -261,7 +263,7 @@ c
       end
 c
 c version
-c $Id: preshape.f,v 1.2 2004/07/07 20:21:54 willic3 Exp $
+c $Id: preshape.f,v 1.3 2004/08/02 21:22:32 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
