@@ -29,15 +29,19 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine prntforc(n,p,ien,nen,ndof,idout,kw)
+      subroutine prntforc(n,p,ien,nen,idout,kw)
 c
 c...prints local force vector for debugging
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+c
 c...  subroutine arguments
 c
-      integer n,nen,ndof,idout,kw
+      integer n,nen,idout,kw
       integer ien(nen)
       double precision p(ndof*nen)
 c
@@ -45,7 +49,7 @@ c...  included dimension and type statements
 c
       include "labeld_dim.inc"
 c
-c...  defined constants
+c...  local constants
 c
       character*4 head(8)
       data head/8*'node'/
@@ -74,7 +78,7 @@ c
       end
 c
 c version
-c $Id: prntforc.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: prntforc.f,v 1.2 2004/07/07 20:34:38 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
