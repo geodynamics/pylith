@@ -18,13 +18,13 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      character labels(24)*6
+      character labels(72)*11
 c
 c...  scalar parameters associated with arrays
 c
 c
 c version
-c $Id: labels_dim.inc,v 1.2 2005/03/22 23:25:46 willic3 Exp $
+c $Id: labels_dim.inc,v 1.3 2005/03/23 17:16:09 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
