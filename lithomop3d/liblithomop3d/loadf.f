@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine loadf(fault,dfault,histry,deltp,nfault,nstep,ndof,
-     & numfn,nhist,lastep,idout,kto,kw)
+      subroutine loadf(fault,dfault,histry,deltp,nfault,nstep,
+     & numfn,nhist,lastep,ierr,errstrng)
 c
 c...program to compute current split node displacements
 c
@@ -40,39 +40,40 @@ c                =  # load history number
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nstep,ndof,numfn,nhist,lastep,idout,kto,kw
+      integer nstep,numfn,nhist,lastep,ierr
       integer nfault(3,numfn)
+      character errstrng*(*)
       double precision fault(ndof,numfn),dfault(ndof,numfn)
       double precision histry(nhist,lastep+1),deltp
 c
-c...  defined constants
-c
-      include "rconsts.inc"
-c
 c...  local variables
 c
-cdebug      integer idb
       integer l,j,ihist
 c
 cdebug      write(6,*) "Hello from loadf_f!"
-c*      write(6,"(8i7)") nstep,ndof,numfn,nhist,lastep,idout,kto,kw
 c
       call fill(dfault,zero,ndof*numfn)
       do l=1,numfn
         ihist=nfault(3,l)
         if(ihist.gt.nhist) then
-          if(idout.gt.1) write(kw,1000) ihist,nfault(2,l)
-          write(kto,1000) ihist,nfault(2,l)
-          stop
+          ierr=100
+          errstrng="loadf"
+          return
         end if
         do j=1,ndof
           if(ihist.eq.-1) then
             dfault(j,l)=deltp*fault(j,l)
-          else if((ihist.eq.0).and.(nstep.eq.0)) then
+          else if((ihist.eq.izero).and.(nstep.eq.izero)) then
             dfault(j,l)=fault(j,l)
-          else if(ihist.gt.0) then
+          else if(ihist.gt.izero) then
             dfault(j,l)=fault(j,l)*histry(ihist,nstep+1)
           end if
         end do
@@ -80,13 +81,10 @@ c*        write(6,"(3i7,3(2x,1pe15.8))") (nfault(idb,l),idb=1,3),
 c*     &   (dfault(idb,l),idb=1,ndof)
       end do
       return
-1000  format(//' fatal split node error!'//
-     & ' attempt to use undefined load history # ',i5,
-     & ' at split node # ',i7)
       end
 c
 c version
-c $Id: loadf.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: loadf.f,v 1.2 2004/07/07 17:52:46 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
