@@ -55,30 +55,46 @@ c
       character errstrng
       double precision x(nsd,nen),xs(nsd,nsd),det,shj(nsd+1,nenmax)
 c
+c...  local variables
+c
+cdebug      integer idb,jdb
+c
 cdebug      write(6,*) "Hello from getjac_f!"
 c
       ierr=izero
 c
 c...calculate jacobian matrix for (x,y,z) to (r,s,t) transformation
 c
-      call dgemm("n","t",nsd,nsd,nen,one,shj,nsd+1,x,nsd,zero,xs,nsd)
+cdebug      call dgemm("n","t",nsd,nsd,nen,one,shj,nsd+1,x,nsd,zero,xs,nsd)
+      call dgemm("n","t",nsd,nsd,nen,one,x,nsd,shj,nsd+ione,zero,xs,nsd)
 c
 c...form determinant of jacobian matrix and check for error condition
 c
       det=xs(1,1)*xs(2,2)*xs(3,3)+xs(1,2)*xs(2,3)*xs(3,1)+xs(1,3)
      & *xs(2,1)*xs(3,2)-xs(1,3)*xs(2,2)*xs(3,1)-xs(1,2)*xs(2,1)
      & *xs(3,3)-xs(1,1)*xs(2,3)*xs(3,2)
+cdebug      write(6,*) "iel,det:",iel,det
+cdebug      do idb=1,nen
+cdebug        write(6,*) "idb,x:",idb,(x(jdb,idb),jdb=1,nsd)
+cdebug      end do
+cdebug      do idb=1,nsd
+cdebug        write(6,*) "idb,xs:",idb,(xs(jdb,idb),jdb=1,nsd)
+cdebug      end do
+cdebug      do idb=1,nen
+cdebug        write(6,*) "idb,shj:",idb,(shj(jdb,idb),jdb=1,nsd+1)
+cdebug      end do
+cdebug      call flush(6)
       if(det.le.zero) then
         ierr=113
-        write(errstrng,700) iel
+        write(errstrng,700) iel,det
       end if
 c
- 700  format("getjac:  element # ",i7)
+ 700  format("getjac:  element # ",i7,2x,1pe15.8)
       return
       end
 c
 c version
-c $Id: getjac.f,v 1.5 2004/07/16 21:22:08 willic3 Exp $
+c $Id: getjac.f,v 1.6 2004/08/12 01:28:23 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
