@@ -29,14 +29,14 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine winklf(btot,deld,iwink,wink,histry,nwink,nhist,nstep,
-     & neq,lastep)
+      subroutine winklf(bintern,deld,iwink,wink,histry,nwink,nhist,
+     & nstep,neq,lastep)
 c
 c       program to compute winkler restoring forces from the
-c       displacements and add them to the global force matrix btot
-c       note: minus sign in expression insures that these are
-c       *restoring* forces that oppose displacment increments,
-c       deld.
+c       displacements and add them to the internal force vector bintern.
+c       Note:  This method differs from the previous method since the
+c       Winkler forces are now included as part of the internal force
+c       vector.  Thus, the forces are now positive.
 c
       include "implicit.inc"
 c
@@ -48,7 +48,7 @@ c...  subroutine arguments
 c
       integer nwink,nhist,nstep,neq,lastep
       integer iwink(2,nwink)
-      double precision btot(neq),deld(neq),wink(nwink)
+      double precision bintern(neq),deld(neq),wink(nwink)
       double precision histry(nhist,lastep+1)
 c
 c...  local variables
@@ -61,17 +61,17 @@ c
         mode=iwink(1,i)
         k=iwink(2,i)
         if(mode.eq.ione) then
-          btot(k)=btot(k)-wink(i)*deld(k)
+          bintern(k)=bintern(k)+wink(i)*deld(k)
         else
           ihist=-mode
-          btot(k)=btot(k)-wink(i)*deld(k)*histry(ihist,nstep+1)
+          bintern(k)=bintern(k)+wink(i)*deld(k)*histry(ihist,nstep+1)
         end if
       end do
       return
       end
 c
 c version
-c $Id: winklf.f,v 1.2 2004/07/12 21:09:09 willic3 Exp $
+c $Id: winklf.f,v 1.3 2005/01/05 22:35:38 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
