@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_winkx(winkx,wxscal,iwinkx,idx,numnp,ndof,nwinkx,
-     & nwinkxe,kr,kw,idout,ierr,wxfile,ofile)
+      subroutine read_winkx(winkx,wxscal,iwinkx,idx,numnp,nwinkx,
+     & nwinkxe,kr,kw,idout,wxfile,ofile,ierr,errstrng)
 c
 c...  program for reading and printing data on differential winkler
 c     restoring forces
@@ -44,14 +44,26 @@ c                             iwinkx = 1, applied throughout computation
 c                             iwinkx = -n, uses load history factor n
 c
 c
+c     Error codes:
+c         0:  No error
+c         1:  Error opening input file (only if nwinkx.ne.zero)
+c         2:  Error opening output file
+c         3:  Read error
+c         4:  Write error
+c
       include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer numnp,ndof,nwinkx,nwinkxe,kr,kw,idout,ierr
+      integer numnp,nwinkx,nwinkxe,kr,kw,idout,ierr
       integer iwinkx(2,nwinkx),idx(ndof,numnp)
       double precision winkx(nwinkx),wxscal(3)
-      character wxfile*(*),ofile*(*)
+      character wxfile*(*),ofile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -73,27 +85,28 @@ c
 c
 c...  open output file
 c
-      if(idout.gt.0) open(kw,file=ofile,status="old",access="append")
+      ierr=izero
+      if(idout.gt.izero) open(kw,file=ofile,err=40,status="old",
+     & access="append")
 c
 c...  open input file
 c
-      ierr=0
-      if(nwinkx.eq.0) return
+      if(nwinkx.eq.izero) return
       open(kr,file=wxfile,status="old",err=20)
 c
 c.......read winkler force data and output results, if desired
 c
       call pskip(kr)
-      nwxtot=0
-      nlines=0
+      nwxtot=izero
+      nlines=izero
       npage=50
       do i=1,nwinkxe
         read(kr,*,err=30,end=30) n,(iwxtmp(j),j=1,ndof),
      &   (wxtmp(j),j=1,ndof)
-        nnz=0
+        nnz=izero
         do j=1,ndof
           wxtmp(j)=wxscal(j)*wxtmp(j)
-          if(iwxtmp(j).ne.0) then
+          if(iwxtmp(j).ne.izero) then
             nnz=nnz+1
             nwxtot=nwxtot+1
             iwinkx(1,nwxtot)=iwxtmp(j)
@@ -101,18 +114,18 @@ c
             winkx(nwxtot)=wxtmp(j)
           end if
         end do
-        if(idout.gt.0.and.nnz.ne.0) then
-          if(mod(nlines,npage).eq.0) then
-            write(kw,2000)
-            write(kw,3000) (labeld(il),il=1,ndof)
-            write(kw,2005)
+        if(idout.gt.izero.and.nnz.ne.izero) then
+          if(mod(nlines,npage).eq.izero) then
+            write(kw,2000,err=50)
+            write(kw,3000,err=50) (labeld(il),il=1,ndof)
+            write(kw,2005,err=50)
           end if
-          nlines=nlines+1
-          write(kw,2020) n,(wxtmp(il),iwxtmp(il),il=1,ndof)
+          nlines=nlines+ione
+          write(kw,2020,err=50) n,(wxtmp(il),iwxtmp(il),il=1,ndof)
         end if 
       end do
       close(kr)
-      if(idout.gt.0) close(kw)
+      if(idout.gt.izero) close(kw)
 c
 c...  normal return
 c
@@ -122,6 +135,7 @@ c...  error opening input file
 c
  20   continue
         ierr=1
+        errstrng="read_winkx"
         close(kr)
         return
 c
@@ -129,7 +143,24 @@ c...  error reading input file
 c
  30   continue
         ierr=3
+        errstrng="read_winkx"
         close(kr)
+        return
+c
+c...  error opening output file
+c
+ 40   continue
+        ierr=2
+        errstrng="read_winkx"
+        close(kw)
+        return
+c
+c...  error writing to output file
+c
+ 50   continue
+        ierr=4
+        errstrng="read_winkx"
+        close(kw)
         return
 c
  2005 format(/)
@@ -146,7 +177,7 @@ c
       end
 c
 c version
-c $Id: read_winkx.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: read_winkx.f,v 1.2 2004/07/12 19:29:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
