@@ -28,7 +28,6 @@ PROJ_SRCS = \
         addsn.f \
         addstf.F \
         adfldp.f \
-        adjid.f \
         autoprestr.F \
         bdeld_ss.f \
         bmatrixb.f \
@@ -42,6 +41,7 @@ PROJ_SRCS = \
         cmp_stiffsz.f \
         const.f \
         convert_case.f \
+        create_id.f \
         cross.f \
         disp.f \
         eforce.f \
@@ -220,7 +220,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.16 2005/03/11 04:07:40 knepley Exp $
+# $Id: Make.mm,v 1.17 2005/03/12 01:57:41 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
