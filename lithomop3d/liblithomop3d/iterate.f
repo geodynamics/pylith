@@ -160,11 +160,11 @@ c
         skc=iter.gt.1.and.lgdefp.ge.1.and.(numslp.ne.0.and.
      &   (iskopt.eq.2.or.(iskopt.le.0.and.abs(iskopt).eq.nstep)))
         nittot=nittot+1
-        ntimdat(7)=nittot
+        ntimdat(6)=nittot
         reform=reform.or.(mod(iter,maxitp).eq.0)
         ireform=0
         if(reform) ireform=1
-        ntimdat(10)=ireform
+        ntimdat(9)=ireform
         used=nstep.gt.0.and.(nsol.eq.2.or.nsol.eq.4).and.iter.eq.1
         if(iter.gt.1) fulout=.false.
 c
@@ -229,7 +229,7 @@ c   return the vector gvec2 contains the displacements.
 c
         call pcginv(alnz,bres,gvec2,b,pcg,zcg,dprev,rmin,rmult,
      &   gcurr,gprev,ja,nsiter,neq,nnz,ndtot,idout,kto,kw,used)
-        ntimdat(9)=ndtot
+        ntimdat(8)=ndtot
         if(nsol.eq.2.or.nsol.eq.4) then
           if(iter.eq.1) call fill(dprev,zero,neq)
           call daxpy(neq,one,gvec2,ione,dprev,ione)
@@ -338,7 +338,7 @@ c
       end
 c
 c version
-c $Id: iterate.f,v 1.3 2004/07/08 21:43:03 willic3 Exp $
+c $Id: iterate.f,v 1.4 2004/07/21 15:43:51 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
