@@ -29,22 +29,23 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine addsn(dl,dx,ien,lmx,ndof,nen,numnp)
+      subroutine addsn(dl,dx,ien,lmx,nen,numnp)
 c
 c...adds displacements due to slip across internal interfaces to
 c   the local displacement vectors
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,nen,numnp
+      integer nen,numnp
       integer ien(nen),lmx(ndof,nen)
       double precision dl(ndof,nen),dx(ndof,numnp)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -75,7 +76,7 @@ c
       end
 c
 c version
-c $Id: addsn.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: addsn.f,v 1.2 2004/06/18 14:49:30 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
