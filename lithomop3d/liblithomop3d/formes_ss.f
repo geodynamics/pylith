@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine formes_ss(
-     & x,,numnp,                                                        ! global
+     & x,numnp,                                                         ! global
      & s,stemp,                                                         ! stiff
      & dmat,ien,lm,iddmat,iel,                                          ! elemnt
      & gauss,sh,shj,ngauss,ngaussdim,nen,nee,                           ! eltype
@@ -94,7 +94,7 @@ c
       end
 c
 c version
-c $Id: formes_ss.f,v 1.3 2004/06/21 20:55:18 willic3 Exp $
+c $Id: formes_ss.f,v 1.4 2004/07/05 19:55:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
