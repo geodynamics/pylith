@@ -1,0 +1,3 @@
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
