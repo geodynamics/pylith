@@ -31,13 +31,13 @@ c
 c
       subroutine iterate(
      & alnz,pcg,zcg,dprev,ja,                                           ! sparse
-     & bextern,btraction,bgravity,bconcforce,bprestress,bintern,bresid, ! force
-     & bwork,dispvec,nforce,grav,                                       ! force
+     & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
+     & dispvec,nforce,grav,                                             ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,                             ! global
      & dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                     ! slip
      & nfault,dfault,tfault,                                            ! fault
      & s,stemp,                                                         ! stiff
-     & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,             ! elemnt
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,      ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
      & prop,mhist,infmat,infmatmod,tminmax,                             ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
@@ -86,13 +86,13 @@ c
       character errstrng*(*)
       double precision alnz(*),pcg(*),zcg(*),dprev(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
-      double precision bprestress(*),bintern(*),bresid(*),bwork(*)
+      double precision bintern(*),bresid(*),bwork(*)
       double precision dispvec(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision dx(*),deldx(*),dxcur(*),winkx(*)
       double precision dfault(*),tfault(*)
       double precision s(*),stemp(*)
-      double precision state(*),dstate(*),dmat(*)
+      double precision state(*),dstate(*),state0(*),dmat(*)
       double precision pres(*),pdir(*)
       double precision prop(*),tminmax
       double precision gauss(*),sh(*),shj(*)
@@ -163,6 +163,7 @@ c
         gcurr(i)=10.0d0*gtol(i)
         gprev(i)=10.0d0*gtol(i)
       end do
+cdebug      write(6,*) "reform,ireform:",reform,ireform
 c
 c...loop over iterations
 c
@@ -176,6 +177,8 @@ c
         ireform=0
         if(reform) ireform=1
         ntimdat(9)=ireform
+cdebug        write(6,*) "updats,reform,ireform,iter,maxitp:",
+cdebug     &   updats,reform,ireform,iter,maxitp
         used=nstep.gt.0.and.(nsol.eq.3.or.nsol.eq.4).and.iter.eq.1
         if(iter.gt.1) fulout=.false.
 c
@@ -207,9 +210,8 @@ c
 c
 c...  compute total external load and residual force vector
 c
-        call bsum(bextern,btraction,bgravity,bconcforce,bprestress,
-     &   bintern,bresid,nextflag,ntractflag,ngravflag,nconcflag,
-     &   nprestrflag,neq)
+        call bsum(bextern,btraction,bgravity,bconcforce,bintern,bresid,
+     &   nextflag,ntractflag,ngravflag,nconcflag,neq)
 c
 c...compute the global displacement increment vector using a
 c   preconditioned conjugate gradients iterative solver.  Upon
@@ -289,8 +291,9 @@ c
      &     dx,iwinkx,winkx,numslp,numsn,nwinkx,                         ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_mat_cmp,   ! timdat
@@ -303,8 +306,9 @@ c
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,       ! timdat
@@ -334,7 +338,7 @@ c
       end
 c
 c version
-c $Id: iterate.f,v 1.8 2005/01/18 17:55:16 willic3 Exp $
+c $Id: iterate.f,v 1.9 2005/02/24 00:02:40 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
