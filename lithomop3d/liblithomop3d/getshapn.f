@@ -39,6 +39,9 @@ c     This is a generic routine for any element type, and it uses
 c     Bbar selective integration.
 c
       include "implicit.inc"
+c
+c...  dimension parameters
+c
       include "nshape.inc"
 c
 c...  subroutine arguments
@@ -77,7 +80,7 @@ c
       end
 c
 c version
-c $Id: getshapn.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: getshapn.f,v 1.2 2004/06/15 19:47:25 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
