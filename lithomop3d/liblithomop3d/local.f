@@ -44,7 +44,7 @@ c...  subroutine arguments
 c
       integer numnp,nconsz,numelt
       integer id(ndof,numnp),ien(nconsz),lm(ndof,nconsz)
-      integer infiel(6,numelt),infetype(4,netypes)
+      integer infiel(7,numelt),infetype(4,netypes)
 c
 c...  local variables
 c
@@ -65,7 +65,7 @@ c
       end
 c
 c version
-c $Id: local.f,v 1.2 2004/07/07 18:14:44 willic3 Exp $
+c $Id: local.f,v 1.3 2005/02/24 00:03:56 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

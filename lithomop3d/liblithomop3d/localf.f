@@ -45,7 +45,7 @@ c
 c...  subroutine arguments
 c
       integer nconsz,numelt,numfn
-      integer ien(nconsz),lmf(nconsz),infiel(6,numelt)
+      integer ien(nconsz),lmf(nconsz),infiel(7,numelt)
       integer infetype(4,netypes),nfault(3,numfn)
 c
 c...  local variables
@@ -69,7 +69,7 @@ c
       end
 c
 c version
-c $Id: localf.f,v 1.2 2004/07/07 18:27:14 willic3 Exp $
+c $Id: localf.f,v 1.3 2005/02/24 00:03:56 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

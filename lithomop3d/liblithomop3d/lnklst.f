@@ -45,7 +45,7 @@ c
 c...  subroutine arguments
 c
       integer neq,nconsz,numelt,iwork,nsizea,nnz,numsn,ierr
-      integer lm(ndof*nconsz),lmx(ndof*nconsz),infiel(6,numelt)
+      integer lm(ndof*nconsz),lmx(ndof*nconsz),infiel(7,numelt)
       integer infetype(4,netypes),indx(neq),link(iwork),nbrs(iwork)
       character errstrng*(*)
 c
@@ -162,7 +162,7 @@ cdebug      close(15)
       end
 c
 c version
-c $Id: lnklst.f,v 1.4 2004/08/12 01:50:49 willic3 Exp $
+c $Id: lnklst.f,v 1.5 2005/02/24 00:03:08 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
