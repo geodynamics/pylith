@@ -28,7 +28,7 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-
+#
 # The main function of this code is to emulate the original functionality of
 # input.f in the original version of TECTON.  This code segment controls the
 # allocation of memory and the reading of the input file.  Additional functions
@@ -660,7 +660,7 @@ class Lithomop3d_setup(Component):
             self.totalNumberTimeSteps+1)
 	self.memorySize += (self.totalNumberTimeSteps+1)*self.doubleSize
         self.pointerToIstatout = lithomop3d.allocateInt(
-            4*self.maxStateVariables)
+            2*self.maxStateVariables)
 	self.memorySize += 4*self.maxStateVariables*self.intSize
 
         # try:
@@ -1158,7 +1158,8 @@ class Lithomop3d_setup(Component):
 
         # Allocate and populate sparse matrix arrays.  Some of these are
         # temporary and are then deleted after use.
-        self.workingArraySize = 5000*self.numberGlobalEquations       # This may need to be adjusted.
+        # self.workingArraySize = 5000*self.numberGlobalEquations       # This may need to be adjusted.
+        self.workingArraySize = 100*self.numberGlobalEquations       # This may need to be adjusted.
         self.pointerToIndx = lithomop3d.allocateInt(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.intSize
@@ -1481,6 +1482,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.8 2004/08/14 15:37:01 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.9 2004/08/24 16:48:15 willic3 Exp $
 
 # End of file 
