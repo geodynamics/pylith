@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine nfind(x,xtmp,idslp,ipslp,itmp,itmp1,itmp2,nslip,
-     & nsd,ndof,nsdim,npdim,numslp,numsn,numnp)
+     & numslp,numsn,numnp)
 c
 c       subroutine to find the nsd+1 closest points for each point in
 c       idslp.  Also breaks the sets of slippery nodes into separate
@@ -38,17 +38,18 @@ c       faults.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nsd,ndof,nsdim,npdim,numslp,numsn,numnp
+      integer numslp,numsn,numnp
       integer idslp(numsn),ipslp(npdim,numsn),itmp(numsn),itmp1(numsn)
       integer itmp2(numsn),nslip(nsdim,numslp)
       double precision x(nsd,numnp),xtmp(numsn)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -63,16 +64,16 @@ c
 c...  loop over number of slippery node entries to find slippery nodes
 c     on each fault
 c
-      iflip=0
-      isp=0
-      ii=0
+      iflip=izero
+      isp=izero
+      ii=izero
       call ifill(itmp1,izero,numsn)
       call ifill(itmp2,izero,numsn)
       do n=1,numslp
         nelem=nslip(1,n)
         node=nslip(2,n)
         do i=1,ndof
-          if(nslip(2+i,n).ne.0) isn=nslip(2+i,n)
+          if(nslip(2+i,n).ne.izero) isn=nslip(2+i,n)
         end do
         if(isn.eq.-isp) iflip=iflip+1
         nssurf=1+iflip/2
@@ -94,7 +95,7 @@ c
 10      continue
       end do
       call ifill(ipslp,izero,npdim*numsn)
-      iadd=0
+      iadd=izero
       do nn=1,nssurf
         do n=1,itmp2(nn)
           node=itmp1(n+iadd)
@@ -124,7 +125,7 @@ c
       end
 c
 c version
-c $Id: nfind.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: nfind.f,v 1.2 2004/07/07 19:03:08 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
