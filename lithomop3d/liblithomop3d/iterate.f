@@ -41,7 +41,7 @@ c
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
      & prop,mhist,infmat,infmatmod,tminmax,                             ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
-     & histry,rtimdat,ntimdat,nvisdat,                                  ! timdat
+     & histry,rtimdat,ntimdat,nvisdat,iprestress,                       ! timdat
      & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
      & skew,                                                            ! skew
      & ncodat,nunits,nprint,                                            ! ioinfo
@@ -74,7 +74,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer ierr
+      integer iprestress,ierr
       integer ja(*)
       integer id(*),iwink(*)
       integer idx(*),iwinkx(*),idslp(*),ipslp(*)
@@ -167,8 +167,7 @@ c
 c...loop over iterations
 c
       do iter=1,itmaxp
-        updats=((ipstrs.ne.1).or.(ipstrs.eq.1.and.nstep.eq.0.and.
-     &   iter.eq.1).or.(nstep.gt.0)).and.lgdefp.ge.1
+        updats=iter.eq.1.or.lgdefp.ge.1
         skc=iter.gt.1.and.lgdefp.ge.1.and.(numslp.ne.0.and.
      &   (iskopt.eq.2.or.(iskopt.le.0.and.abs(iskopt).eq.nstep)))
         nittot=nittot+1
@@ -182,7 +181,7 @@ c
 c
 c...add pressure forces,if present, to global load vector
 c
-clater        if(numpr.ne.0.and.(iter.eq.1.or.updats)) call addpr(
+clater        if(numpr.ne.0.and.updats.and.iprestress.eq.0) call addpr(
 clater     &   btot,bres,x,d,dx,tfault,histry,skew,
 clater     &   ien,infin,lm,lmx,lmf,
 clater     &   ielno,iside,ihistry,pres,pdir,pvec,gvec2,fulout,
@@ -192,7 +191,7 @@ clater     &   kw)
 c
 c...add gravity body forces to global load vector
 c
-        if(iter.eq.1.or.updats) then
+        if(updats) then
           call gload_drv(
      &     bgravity,ngravflag,grav,neq,                                 ! force
      &     x,d,numnp,                                                   ! global
@@ -206,35 +205,6 @@ c
      &     ierr,errstrng)                                               ! errcod
         end if
 c
-c...reform the stiffness matrix, if required
-c
-c**        if(reform) then
-c**          if(skc) call skcomp(x,d,skew,idslp,ipslp,nsd,ndof,nskdim,
-c**     &     npdim,ipstrs,numsn,numnp,nstep,lgdefp,kto)
-c**          call formk(alnz,ja,
-c**     &     id,idx,x,d,dx,tfault,skew,iwink,wink,iwinkx,winkx,histry,
-c**     &     ien,lm,lmx,lmf,mat,infin,prop,gauss,
-c**     &     dmat,stn,deps,beta,betb,iter,
-c**     &     s,stemp,iddmat,
-c**     &     rtimdat,ntimdat,rgiter,
-c**     &     ngauss,nddmat,ndmat,nprop,numat,nsd,ndof,nstr,nen,nee,nnz,
-c**     &     neq,numel,numnp,numfn,numslp,numsn,numrot,nskdim,ipstrs,
-c**     &     nwink,nwinkx,nhist,lastep,idout,kto,kw)
-c**        end if
-c
-c...if icode .eq. 1 print the stiffness matrix diagonals and stop here
-c
-c**        if(icode.eq.1.and.nstep.eq.0.and.iter.eq.1) then
-c**          call printv(alnz,dummy,id,idx,neq,ndof,numnp,izero,idout,kw)
-c**          stop
-c**        else if(icode.eq.1) then
-c**          stop
-c**        end if
-c
-c...for first iteration compute residual force vector
-c
-c*        if(iter.eq.1) call bdiff(b,btot,bres,neq)
-c
 c...  compute total external load and residual force vector
 c
         call bsum(bextern,btraction,bgravity,bconcforce,bprestress,
@@ -243,7 +213,7 @@ c
 c
 c...compute the global displacement increment vector using a
 c   preconditioned conjugate gradients iterative solver.  Upon
-c   return the vector gvec2 contains the displacements.
+c   return the vector dispvec contains the displacements.
 c
         call pcginv(alnz,bresid,dispvec,bwork,pcg,zcg,dprev,rmin,rmult,
      &   gcurr,gprev,ja,nsiter,neq,nprevdflag,nnz,ndtot,idout,kto,kw,
@@ -257,7 +227,7 @@ c
 c...for first iteration, update displacements to reflect boundary
 c   conditions
 c
-        if(iter.eq.1) then
+        if(iter.eq.1.and.iprestress.eq.0) then
           if(numfn.ne.0.and.numrot.ne.0) call rsplit(nfault,dfault,
      &     skew,numfn,numnp)
           if(numfn.ne.0) call daxpy(ndof*numfn,one,dfault,ione,tfault,
@@ -287,7 +257,7 @@ c
           if(numslp.ne.0) call rdisp(dxcur,skew,numnp)
         end if
 c
-c...  zero internal force vector prior to reconputing it.
+c...  zero internal force vector prior to recomputing it.
 c
         call fill(bintern,zero,neq)
 c
@@ -364,7 +334,7 @@ c
       end
 c
 c version
-c $Id: iterate.f,v 1.7 2005/01/05 22:22:04 willic3 Exp $
+c $Id: iterate.f,v 1.8 2005/01/18 17:55:16 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
