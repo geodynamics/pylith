@@ -13,10 +13,10 @@ c
 c...  parameters
 c
       integer nsd,maxnodes,maxelmts,nen,maxnbrs,maxflts,maxfnodes
-      integer maxbnds,maxmatf,ietyp,inf
+      integer maxbnds,maxmatf,maxwsets,ietyp,inf
       parameter(nsd=3,maxnodes=500000,maxelmts=500000,nen=4,
-     & maxnbrs=100,maxflts=6,maxfnodes=100000,
-     & maxbnds=30,maxmatf=5,ietyp=5,inf=0)
+     & maxnbrs=100,maxflts=6,maxfnodes=100000,maxbnds=30,maxmatf=5,
+     & maxwsets=2,ietyp=5,inf=0)
       integer kti,kto,kr,kw
       parameter(kti=5,kto=6,kr=10,kw=11)
       double precision eps
@@ -26,26 +26,30 @@ c...  local constants
 c
       integer icflip(4)
       data icflip/1,3,2,4/
-      integer kwb,kwc,kwfb(maxflts),kwfc(maxflts)
+      integer kwb,kwc,kww,kwfb(maxflts),kwfc(maxflts)
       data kwb/12/
       data kwc/13/
+      data kww/12/
       data kwfb/12,13,14,15,16,17/
       data kwfc/18,19,20,21,22,23/
       integer izero
       data izero/0/
+      double precision zero
+      data zero/0.0d0/
 c
 c...  parameters read from parameter file
 c
-      integer nbc,iconopt
-      integer ibcode(maxbnds),ibc(nsd,maxbnds),isn(nsd)
+      integer nbc,iconopt,nwsets
+      integer ibcode(maxbnds),ibc(nsd,maxbnds),isn(nsd),iwcode(maxwsets)
+      integer iwdir(maxwsets),modew(maxwsets)
       integer iftype(maxflts),nmatf(2,maxflts),ifmat(2,maxflts,maxmatf)
       double precision bc(nsd,maxbnds),fsplit(nsd,2,maxflts)
-      double precision cscale
+      double precision rhow(maxwsets),gw(maxwsets),cscale
 c
 c...  filenames
 c
       character fileroot*200,pfile*200,ifile*200,nfile*200,cfile*200
-      character bcfile*200,bccfile*200
+      character bcfile*200,bccfile*200,wbcfile*200
       character fbcfile*200,fbccfile*200
 c
 c...  parameters and variables read from netgen file
@@ -56,25 +60,27 @@ c
 c
 c...  external routines
 c
-      double precision tetcmp
+      double precision tetcmp,acomp
       integer nnblnk,nchar
-      external nnblnk,nchar,tetcmp
+      external nnblnk,nchar,tetcmp,acomp
 c
 c...  local variables
 c
-      double precision det,sgn,xl(nsd,nen),xtmp(nsd)
+      double precision det,sgn,xl(nsd,nen),xtmp(nsd),wout(3)
+      double precision wink(maxnodes,maxwsets),area
       integer iadjf(maxflts*maxfnodes,maxnbrs),inodef(maxflts*maxfnodes)
       integer ientmp(nen),nelsf(maxflts*maxfnodes),ifltnode(maxnodes)
       integer ifhist(maxflts),idir(nsd),ibcnode(maxnodes,maxbnds)
-      integer nbcnodes(maxbnds)
+      integer iwbcnode(maxnodes,maxwsets),iwout(3)
       integer i,j,k,l,jj,i1,i2,j1,j2,nenl,nsdl,nfltnodes,kk
       integer iel,nflip
-      character cstring*15,cbound(maxbnds)*3,cfnum*2
+      character cstring*15,cbound(maxbnds)*3,cwink(maxwsets)*3,cfnum*2
       data cstring/"coord_units = m"/
       data cbound/
      & "b01","b02","b03","b04","b05","b06","b07","b08","b09","b10",
      & "b11","b12","b13","b14","b15","b16","b17","b18","b19","b20",
      & "b21","b22","b23","b24","b25","b26","b27","b28","b29","b30"/
+      data cwink/"w01","w02"/
 c
       nenl=nen
       nsdl=nsd
@@ -84,7 +90,8 @@ c
       i1=nnblnk(fileroot)
       i2=nchar(fileroot)
       call ifill(ibcnode,izero,maxnodes*maxbnds)
-      call ifill(nbcnodes,izero,maxbnds)
+      call ifill(iwbcnode,izero,maxnodes*maxwsets)
+      call fill(wink,zero,maxnodes*maxwsets)
 c
 c...  read parameter file
 c
@@ -121,6 +128,15 @@ c
         read(kr,*) (fsplit(j,1,i),j=1,nsd),(ifmat(1,i,j),j=1,nmatf(1,i))
         call pskip(kr)
         read(kr,*) (fsplit(j,2,i),j=1,nsd),(ifmat(2,i,j),j=1,nmatf(2,i))
+      end do
+c
+c...  Winkler BC definitions
+c
+      call pskip(kr)
+      read(kr,*) nwsets
+      do i=1,nwsets
+        call pskip(kr)
+        read(kr,*) iwcode(i),iwdir(i),modew(i),rhow(i),gw(i)
       end do
       close(kr)
 c
@@ -183,7 +199,7 @@ cdebug          write(kto,*) "i,det:",i,det
       close(kw)
 c
 c...  read face BC codes to determine which nodes are associated
-c     with each boundary and fault.
+c     with each boundary, fault, and Winkler BC.
 c
       read(kr,*) nbcfac
       do i=1,nbcfac
@@ -201,7 +217,18 @@ c
             end if
           end do
         end if
+        do j=1,nwsets
+          if(ibcfac.eq.iwcode(j)) then
+            area=acomp(x,ibcvert,nsd,numnp,iwdir(j))
+            do k=1,3
+              iwbcnode(ibcvert(k),j)=ibcfac
+              wink(ibcvert(k),j)=wink(ibcvert(k),j)+
+     &         area*rhow(j)*gw(j)/3.0d0
+            end do
+          end if
+        end do
       end do
+      close(kr)
       nfltnodes=0
       do i=1,numnp
         if(ifltnode(i).eq.1) then
@@ -228,6 +255,26 @@ c
         close(kwb)
         close(kwc)
       end do
+c
+c...  output Winkler BC
+c
+      if(nwsets.ne.izero) then
+        do i=1,nwsets
+          call ifill(iwout,izero,3)
+          call fill(wout,zero,3)
+          wbcfile=fileroot(i1:i2)//"."//cwink(i)//".wink"
+          open(file=wbcfile,unit=kww,status="new")
+          iwout(iwdir(i))=modew(i)
+          do j=1,numnp
+            if(iwbcnode(j,i).ne.izero) then
+              wout(iwdir(i))=wink(j,i)
+              write(kww,"(i7,3(1x,i4),3(2x,1pe15.8))") j,
+     &         (iwout(k),k=1,3),(wout(k),k=1,3)
+            end if
+          end do
+          close(kww)
+        end do
+      end if
 c
 c...  determine which elements contain each node on the faults
 c
@@ -289,6 +336,57 @@ c
       write(kto,700) nflip
 700   format("Number of connectivities flipped:  ",i7)
       stop
+      end
+c
+c
+      function acomp(x,iv,nsd,numnp,idir)
+c
+c...  function to compute triangle area normal to idir, given 3 vertices.
+c
+      implicit none
+      double precision half
+      parameter(half=0.5d0)
+      integer nsd,numnp,idir
+      integer iv(3)
+      double precision acomp,x(nsd,numnp)
+c
+      intrinsic abs
+      integer i1,i2
+c
+      if(idir.eq.1) then
+        i1=2
+        i2=3
+      else if(idir.eq.2) then
+        i1=1
+        i2=3
+      else
+        i1=1
+        i2=2
+      end if
+      write(6,*) "idir,i1,i2:",idir,i1,i2
+      write(6,*) "xl:",x(i1,iv(1)),x(i2,iv(1))
+      write(6,*) "xl:",x(i1,iv(2)),x(i2,iv(2))
+      write(6,*) "xl:",x(i1,iv(3)),x(i2,iv(3))
+      acomp=half*abs(x(i1,iv(1))*(x(i2,iv(2))-x(i2,iv(3)))+
+     &               x(i1,iv(2))*(x(i2,iv(3))-x(i2,iv(1)))+
+     &               x(i1,iv(3))*(x(i2,iv(1))-x(i2,iv(2))))
+      write(6,*) "area:",acomp
+      return
+      end
+c
+c
+      subroutine fill(arr,val,nlen)
+c
+c...  subroutine to fill a double precision array with a given value
+c
+      implicit none
+      integer nlen
+      double precision val,arr(nlen)
+      integer i
+      do i=1,nlen
+        arr(i)=val
+      end do
+      return
       end
 c
 c
