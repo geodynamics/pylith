@@ -128,7 +128,7 @@ c
 c...  local variables
 c
 cdebug      integer idb
-      integer indexx,ntot,jcyc,nfirst,naxstp,i,j
+      integer indexx,ntot,jcyc,nfirst,naxstp,i,j,iprestress
       double precision time,tminmax
       logical ltim,fulout,unlck,unlckf,skc,reform
 c
@@ -163,8 +163,9 @@ c...  loop over complete cycles
 c
       reform=.false.
       if(ireform.eq.ione) reform=.true.
-      indexx=1
-      ntot=0
+      indexx=ione
+      ntot=izero
+      iprestress=izero
       do jcyc=1,ncycle
         if(ncycle.gt.ione) write(kto,2001) jcyc
         nfirst=izero
@@ -361,7 +362,7 @@ c
      &         ielno,iside,ihistry,pres,pdir,                           ! tractn
      &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
      &         gauss,sh,shj,infetype,                                   ! eltype
-     &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
+     &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
      &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
      &         skew,                                                    ! skew
      &         ncodat,nunits,nprint,                                    ! ioinfo
@@ -438,7 +439,7 @@ c
      &         ielno,iside,ihistry,pres,pdir,                           ! tractn
      &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
      &         gauss,sh,shj,infetype,                                   ! eltype
-     &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
+     &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
      &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
      &         skew,                                                    ! skew
      &         ncodat,nunits,nprint,                                    ! ioinfo
@@ -509,7 +510,7 @@ clater     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,     ! 
 clater     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
 clater     &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
 clater     &         gauss,sh,shj,infetype,                                   ! eltype
-clater     &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
+clater     &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
 clater     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
 clater     &         skew,                                                    ! skew
 clater     &         ncodat,nunits,nprint,                                    ! ioinfo
@@ -576,7 +577,7 @@ clater     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,     ! 
 clater     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
 clater     &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
 clater     &         gauss,sh,shj,infetype,                                   ! eltype
-clater     &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
+clater     &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
 clater     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
 clater     &         skew,                                                    ! skew
 clater     &         ncodat,nunits,nprint,                                    ! ioinfo
@@ -648,7 +649,7 @@ c
       end
 c
 c version
-c $Id: viscos.f,v 1.7 2005/01/05 22:32:07 willic3 Exp $
+c $Id: viscos.f,v 1.8 2005/01/18 20:32:31 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
