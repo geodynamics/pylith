@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -31,8 +30,8 @@ c
 c
       subroutine iterate(
      & A,                                                               ! sparse
-     & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
-     & dispvec,nforce,grav,                                             ! force
+     & bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,    ! force
+     & nforce,grav,                                                     ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
      & dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                     ! slip
      & nfault,dfault,tfault,                                            ! fault
@@ -102,7 +101,7 @@ c
       integer mhist(*),infmatmod(*)
       character errstrng*(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
-      double precision bintern(*),bresid(*),bwork(*)
+      double precision bintern(*),bresid(*)
       double precision dispvec(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision dx(*),deldx(*),dxcur(*),winkx(*)
@@ -357,7 +356,7 @@ c
       end
 c
 c version
-c $Id: iterate.F,v 1.6 2005/03/25 23:34:15 willic3 Exp $
+c $Id: iterate.F,v 1.7 2005/03/29 01:29:12 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
