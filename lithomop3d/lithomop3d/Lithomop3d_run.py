@@ -46,6 +46,7 @@ class Lithomop3d_run(Component):
         lm3dsetup = setup
 
         print "Hello from lm3drun.initialize (begin)!"
+        print "Importing information from other modules:"
 
         # The only parameters required from Lithomop3d_scan are those in the
         # inventory.  All others have been imported into Lithomop3d_setup, and
@@ -54,6 +55,9 @@ class Lithomop3d_run(Component):
         self.analysisType = lm3dscan.inventory.analysisType
 
         # Import all necessary pointers, etc. from Lithomop3d_setup.
+	self.memorySize = lm3dsetup.memorySize
+	self.intSize = lm3dsetup.intSize
+	self.doubleSize = lm3dsetup.doubleSize
         
         self.numberTimeStepGroups = lm3dsetup.numberTimeStepGroups
 
@@ -173,6 +177,7 @@ class Lithomop3d_run(Component):
         # They should not have been defined previously.
 
         print "Hello from lm3drun.run (begin)!"
+        print "Beginning problem solution:"
 
         # ntimdat array
         self.currentTimeStep = 0
@@ -197,6 +202,7 @@ class Lithomop3d_run(Component):
             self.reformFlagInt]
         self.pointerToListArrayNtimdat = lithomop3d.intListToArray(
             self.listNtimdat)
+	self.memorySize += 9*self.intSize
 
         # gcurr array
         self.currentDisplacementNorm = 0.0
@@ -208,6 +214,7 @@ class Lithomop3d_run(Component):
             self.currentEnergyNorm]
         self.pointerToListArrayGcurr = lithomop3d.doubleListToArray(
             self.listGcurr)
+	self.memorySize += 3*self.doubleSize
 
         # gi array
         self.initialDisplacementNorm = 0.0
@@ -219,6 +226,7 @@ class Lithomop3d_run(Component):
             self.initialEnergyNorm]
         self.pointerToListArrayGi = lithomop3d.doubleListToArray(
             self.listGi)
+	self.memorySize += 3*self.doubleSize
         
         # gprev array
         self.previousDisplacementNorm = 0.0
@@ -230,6 +238,7 @@ class Lithomop3d_run(Component):
             self.previousEnergyNorm]
         self.pointerToListArrayGprev = lithomop3d.doubleListToArray(
             self.listGprev)
+	self.memorySize += 3*self.doubleSize
         
         # gtol array
         self.currentDisplacementTolerance = 0.0
@@ -241,8 +250,14 @@ class Lithomop3d_run(Component):
             self.currentEnergyTolerance]
         self.pointerToListArrayGtol = lithomop3d.doubleListToArray(
             self.listGtol)
+	self.memorySize += 3*self.doubleSize
 
+        # Output approximate memory usage
+        self.memorySizeMB =0.0
+        self.memorySizeMB=self.memorySize/(1024.0*1024.0)
 
+	print "Approximate memory allocation for f77 arrays (MB): %g" % self.memorySizeMB
+	# print "Just before lithomop3d.elastc:"
 
         # Perform elastic solution, if requested.
 
@@ -450,6 +465,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.3 2004/07/21 20:19:53 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.4 2004/08/12 16:40:59 willic3 Exp $
 
 # End of file 
