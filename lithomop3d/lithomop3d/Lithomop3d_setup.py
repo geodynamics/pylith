@@ -97,6 +97,7 @@ class Lithomop3d_setup(Component):
         self.f77FileInput = lm3dscan.f77FileInput
         self.f77AsciiOutput = lm3dscan.f77AsciiOutput
         self.f77PlotOutput = lm3dscan.f77PlotOutput
+        self.f77UcdOutput = lm3dscan.f77UcdOutput
 
                                                                    
         # Initialize and define some integer parameters based on string or logical parameters in python
@@ -110,10 +111,16 @@ class Lithomop3d_setup(Component):
             self.asciiOutputInt = 2
             
         self.plotOutputInt = 0
-        if lm3dscan.inventory.plotOutput == "ascii":
+        if lm3dscan.inventory.plotOutput == "none":
             self.plotOutputInt = 0
-        else:
+        elif lm3dscan.inventory.plotOutput == "ascii":
             self.plotOutputInt = 1
+        else:
+            self.plotOutputInt = 2
+            
+        self.ucdOutputInt = 0
+        if lm3dscan.inventory.ucdOutput == True:
+            self.ucdOutputInt = 1
             
         self.debuggingOutputInt = 0
         if lm3dscan.inventory.debuggingOutput:
@@ -155,6 +162,7 @@ class Lithomop3d_setup(Component):
 
         self.asciiOutputFile = lm3dscan._asciiOutputFile
         self.plotOutputFile = lm3dscan._plotOutputFile
+        self.ucdOutputRoot = lm3dscan._ucdOutputRoot
         self.coordinateInputFile = lm3dscan._coordinateInputFile
         self.bcInputFile = lm3dscan._bcInputFile
         self.winklerInputFile = lm3dscan._winklerInputFile
@@ -416,6 +424,7 @@ class Lithomop3d_setup(Component):
         # Sparse matrix info
         self.workingArraySize = 0
         self.stiffnessMatrixSize = 0
+        self.stiffnessTrueSize = 0
         self.stiffnessOffDiagonalSize = 0
         self.stiffnessMatrixInfo = [0, 0]
         self.minimumNonzeroTermsPerRow = 0
@@ -838,6 +847,21 @@ class Lithomop3d_setup(Component):
         self.pointerToImgrp = None
         self.memorySize -= self.numberMaterials*self.intSize
 
+        # write mesh info to UCD file, if requested
+        if self.ucdOutputInt == 1:
+            lithomop3d.write_ucd_mesh(
+                self.pointerToX,
+                self.numberNodes,
+                self.pointerToIen,
+                self.pointerToInfiel,
+                self.numberElements,
+                self.connectivitySize,
+                self.pointerToSh,
+                self.pointerToElementTypeInfo,
+                self.pointerToIstatout,
+                self.f77UcdOutput,
+                self.ucdOutputRoot)
+                
         # print "Just after read_connect"
         # print "memorySize: %d" % self.memorySize
         # lithomop3d.read_prestr(
@@ -1158,8 +1182,20 @@ class Lithomop3d_setup(Component):
 
         # Allocate and populate sparse matrix arrays.  Some of these are
         # temporary and are then deleted after use.
+        self.workingArraySize = lithomop3d.cmp_stiffsz(
+            self.numberGlobalEquations,
+            self.pointerToLm,
+            self.pointerToLmx,
+            self.pointerToInfiel,
+            self.connectivitySize,
+            self.numberElements,
+            self.pointerToElementTypeInfo,
+            self.totalNumberSlipperyNodes)
+
+        # print "workingArraySize: %i" % self.workingArraySize
+
         # self.workingArraySize = 5000*self.numberGlobalEquations       # This may need to be adjusted.
-        self.workingArraySize = 100*self.numberGlobalEquations       # This may need to be adjusted.
+        # self.workingArraySize = 100*self.numberGlobalEquations       # This may need to be adjusted.
         self.pointerToIndx = lithomop3d.allocateInt(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.intSize
@@ -1189,6 +1225,8 @@ class Lithomop3d_setup(Component):
         # print "Just after lnklst"
         self.stiffnessMatrixSize = self.stiffnessMatrixInfo[0]
         self.stiffnessOffDiagonalSize = self.stiffnessMatrixInfo[1]
+	self.stiffnessTrueSize = self.stiffnessMatrixSize-1
+        # print "workingArraySize: %i" % self.workingArraySize
         # print "stiffnessMatrixSize: %i" % self.stiffnessMatrixSize
         # print "stiffnessOffDiagonalSize: %i" % self.stiffnessOffDiagonalSize
         # except IOError, error:
@@ -1386,10 +1424,11 @@ class Lithomop3d_setup(Component):
         self.listNprint = [
             self.numberFullOutputs,
             self.asciiOutputInt,
-            self.plotOutputInt]
+            self.plotOutputInt,
+            self.ucdOutputInt]
         self.pointerToListArrayNprint = lithomop3d.intListToArray(
             self.listNprint)
-	self.memorySize += 3*self.intSize
+	self.memorySize += 4*self.intSize
 
         # nsiter array
         self.listNsiter = [
@@ -1422,10 +1461,11 @@ class Lithomop3d_setup(Component):
             self.f77StandardOutput,
             self.f77FileInput,
             self.f77AsciiOutput,
-            self.f77PlotOutput]
+            self.f77PlotOutput,
+            self.f77UcdOutput]
         self.pointerToListArrayNunits = lithomop3d.intListToArray(
             self.listNunits)
-	self.memorySize += 5*self.intSize
+	self.memorySize += 6*self.intSize
 
         # nvisdat array
         self.listNvisdat = [
@@ -1460,6 +1500,10 @@ class Lithomop3d_setup(Component):
 	print ""
 	print ""
         print "Sparse matrix information:"
+	print ""
+        print "workingArraySize:          %i" % self.workingArraySize
+        print "stiffnessMatrixSize:       %i" % self.stiffnessTrueSize
+        print "stiffnessOffDiagonalSize:  %i" % self.stiffnessOffDiagonalSize
         print "minimumNonzeroTermsPerRow: %i" % self.minimumNonzeroTermsPerRow
         print "maximumNonzeroTermsPerRow: %i" % self.maximumNonzeroTermsPerRow
         print "averageNonzeroTermsPerRow: %g" % self.averageNonzeroTermsPerRow
@@ -1482,6 +1526,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.9 2004/08/24 16:48:15 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.10 2004/08/25 01:55:26 willic3 Exp $
 
 # End of file 
