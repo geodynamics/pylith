@@ -198,7 +198,14 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
     return 0;
   }
 
-#ifndef MatSetSizes
+#ifdef PETSC_VERSION_MAJOR
+#if PETSC_VERSION_MAJOR == 2
+#ifdef PETSC_VERSION_MINOR
+#if PETSC_VERSION_MINOR == 2
+#ifdef PETSC_VERSION_SUBMINOR
+#if PETSC_VERSION_SUBMINOR == 1
+#ifdef PETSC_VERSION_PATCH
+#if PETSC_VERSION_PATCH < 42
   if (MatCreate(PETSC_COMM_WORLD, size, size, PETSC_DETERMINE, PETSC_DETERMINE, &A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
     return 0;
@@ -208,11 +215,31 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
     return 0;
   }
-
   if (MatSetSizes(A, PETSC_DETERMINE, PETSC_DETERMINE, size, size)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Mat");
     return 0;
   }
+#endif
+#else
+#error "Unsupported PETSc version"
+#endif
+#else
+#error "Unsupported PETSc version"
+#endif
+#else
+#error "Unsupported PETSc version"
+#endif
+#else
+#error "Unsupported PETSc version"
+#endif
+#else
+#error "Unsupported PETSc version"
+#endif
+#else
+#error "Unsupported PETSc version"
+#endif
+#else
+#error "Unknown PETSc version"
 #endif
 
   journal::debug_t debug("lithomop3d");
@@ -322,6 +349,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.10 2005/04/03 04:56:00 willic3 Exp $
+// $Id: sparse.cc,v 1.11 2005/04/05 15:47:55 willic3 Exp $
 
 // End of file
