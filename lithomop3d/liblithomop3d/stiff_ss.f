@@ -31,8 +31,8 @@ c
 c
       subroutine stiff_ss(
      & xl,nsd,ndof,                                                     ! global
-     & dmat,ien,nstr,nddmat,iel,                                        ! elemnt
-     & gauss,sh,shj,ngauss,nen,ngaussdim,                               ! eltype
+     & dmat,ien,iddmat,nstr,nddmat,iel,                                 ! elemnt
+     & gauss,sh,shj,ngauss,ngaussdim,nen,                               ! eltype
      & s,nee,                                                           ! stiff
      & getshape,bmatrix,                                                ! bbar
      & idout,kto,kw,                                                    ! ioinf
@@ -49,8 +49,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer nsd,ndof,nstr,nddmat,iel,ngauss,nen,nee,idout,kto,kw,ierr
-      integer ien(nen)
+      integer nsd,ndof,nstr,nddmat,iel,ngauss,ngaussdim,nen,nee,idout
+      integer kto,kw,ierr
+      integer ien(nen),iddmat(nstr,nstr)
       double precision xl(nsd,nen),dmat(nddmat,ngaussdim)
       double precision gauss(nsd+1,ngaussmax),sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax),s(nee,nee)
@@ -75,7 +76,7 @@ c...form shape functions for each integration point
 c
 cdebug      write(6,*) "Hello from stiff_ss_f!"
 c
-      call getshape(xl,sh,shj,shd,shbar,det,gauss,val,iel,nen,nsd,
+      call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,nsd,
      & ngauss,ierr)
       if(ierr.ne.0) return
 c
@@ -94,7 +95,7 @@ c
       end
 c
 c version
-c $Id: stiff_ss.f,v 1.1 2004/06/15 17:22:42 willic3 Exp $
+c $Id: stiff_ss.f,v 1.2 2004/06/15 18:37:06 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
