@@ -510,6 +510,8 @@ class Lithomop3d_scan(Component):
                 self._connectivityInputFile)
             self.numberElements = elementInfo[0]
             self.connectivitySize = elementInfo[1]
+            self._pointerToListArrayMaterialModel = None
+            self._pointerToListArrayPropertyListIndex = None
 
             # self._numberPrestressEntries = lithomop3d.scan_prestr(
             #     self._stateVariableDimension,
@@ -708,6 +710,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.2 2004/07/14 21:11:17 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.3 2004/07/15 16:53:41 willic3 Exp $
 
 # End of file 
