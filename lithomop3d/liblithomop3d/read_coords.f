@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_coords(x,cscale,nsd,numnp,kr,kw,kp,idout,idsk,
-     & ierr,cfile,ofile,pfile)
+      subroutine read_coords(x,cscale,numnp,kr,kw,kp,idout,idsk,
+     & cfile,ofile,pfile,ierr,errstrng)
 c
 c...  subroutine to read in nodal coordinates and store them in the x
 c     array.  Note that the current implementation would allow a 3D
@@ -39,27 +39,31 @@ c
 c     Error codes:
 c         0:  No error
 c         1:  Error opening input file
-c         2:  Units not specified
+c         2:  Error opening output file
 c         3:  Read error
-c         4:  Wrong number of nodes
+c         4:  Write error
+c         5:  Units not specified
+c       105:  Wrong number of nodes
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      integer npage
+      parameter(npage=50)
+c
 c...  subroutine arguments
 c
-      integer nsd,numnp,kr,kw,kp,idout,idsk,ierr
+      integer numnp,kr,kw,kp,idout,idsk,ierr
       double precision cscale
       double precision x(nsd,numnp)
-      character cfile*(*),ofile*(*),pfile*(*)
+      character cfile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
       include "labelc_dim.inc"
-c
-c...  defined constants
-c
-      integer npage
-      parameter(npage=50)
 c
 c...  intrinsic functions
 c
@@ -79,13 +83,14 @@ c     Note the the current method of checking for units specification
 c     is pretty sloppy, assuming that they were already specified during
 c     the scan phase.
 c
-      ierr=0
+      ierr=izero
       open(kr,file=cfile,status="old",err=20)
       call pskip(kr)
       read(kr,"(a80)") dummy
       i=index(dummy,"=")
-      if(i.eq.0) then
-        ierr=2
+      if(i.eq.izero) then
+        ierr=ifive
+        errstrng="read_coords"
         return
       end if
       call pskip(kr)
@@ -104,25 +109,25 @@ c
 c...  output coordinates to plot file
 c
       if(idsk.eq.0) then
-        open(kp,file=pfile,status="old",access="append")
+        open(kp,file=pfile,err=50,status="old",access="append")
 	do i=1,numnp
-	  write(kp,"(i7,3(1pe16.8))") i,(x(j,i),j=1,nsd)
+	  write(kp,"(i7,3(1pe16.8))",err=60) i,(x(j,i),j=1,nsd)
         end do
       else
-        open(kp,file=pfile,status="old",access="append",
+        open(kp,file=pfile,err=50,status="old",access="append",
      &   form="unformatted")
-	write(kp) x
+	write(kp,err=60) x
       end if
       close(kp)
 c
 c...  output coordinates to human-readable file
 c
-      if(idout.gt.0) then
-        open(kw,file=ofile,status="old",access="append")
+      if(idout.gt.izero) then
+        open(kw,file=ofile,err=50,status="old",access="append")
 	do i=1,numnp
 	  if(i.eq.1.or.mod(i,npage).eq.0) write(kw,1000)
      &     (labelc(j),j=1,nsd)
-	  write(kw,"(6x,i7,10x,3(1pe20.8))") i,(x(j,i),j=1,nsd)
+	  write(kw,"(6x,i7,10x,3(1pe20.8))",err=60) i,(x(j,i),j=1,nsd)
 	end do
         close(kw)
       end if
@@ -135,6 +140,7 @@ c...  error opening input file
 c
  20   continue
         ierr=1
+        errstrng="read_coords"
         close(kr)
         return
 c
@@ -142,13 +148,31 @@ c...  read error
 c
  30   continue
         ierr=3
+        errstrng="read_coords"
         close(kr)
         return
 c
 c...  too few nodes
 c
  40   continue
+        ierr=105
+        errstrng="read_coords"
+        close(kr)
+        return
+c
+c...  error opening output file
+c
+ 50   continue
+        ierr=2
+        errstrng="read_coords"
+        close(kr)
+        return
+c
+c...  write error
+c
+ 60   continue
         ierr=4
+        errstrng="read_coords"
         close(kr)
         return
 c
@@ -158,7 +182,7 @@ c
       end
 c
 c version
-c $Id: read_coords.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: read_coords.f,v 1.2 2004/07/08 02:07:14 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
