@@ -537,7 +537,7 @@ c
      & state,dstate,infiel,nstatesz,numelt,                             ! elemnt
      & infmat,infmatmod,ismatmod,numat,                                 ! materl
      & infetype,                                                        ! eltype
-     & delt,                                                            ! timdat
+     & delt,nstep,                                                      ! timdat
      & istatout,                                                        ! ioopts
      & idout,idsk,kw,kp)                                                ! ioinfo
 c
@@ -557,7 +557,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.2 2004/07/08 21:02:28 willic3 Exp $
+c $Id: elastc.f,v 1.3 2004/07/13 16:11:16 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
