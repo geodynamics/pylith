@@ -138,10 +138,13 @@ c
       if(idsk.eq.ione) open(kp,file=pfile,status="old",
      & form="unformatted",access="append")
       skc=iskopt.ge.izero.and.iskopt.ne.ione.and.numslp.ne.izero
+      call fill(b,zero,neq)
       call fill(bres,zero,neq)
       call fill(btot,zero,neq)
       call fill(gvec1,zero,neq)
       call fill(pvec,zero,neq)
+      call fill(pcg,zero,neq)
+      call fill(zcg,zero,neq)
       call fill(deld,zero,ndof*numnp)
       call fill(deldx,zero,ndof*numnp)
       call fill(dcur,zero,ndof*numnp)
@@ -156,7 +159,7 @@ c
       write(kto,600)
 c*      call flush(kto)
       fulout=.true.
-      ireform=ione
+      ireform=izero
       igroup=ione
       nstep=izero
       ntimdat(1)=nstep
@@ -561,7 +564,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.7 2004/07/21 19:46:07 willic3 Exp $
+c $Id: elastc.f,v 1.8 2004/08/02 21:13:35 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
