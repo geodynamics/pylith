@@ -1,0 +1,35 @@
+# -*- Makefile -*-
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+#                             Charles A. Williams
+#                       Rensselaer Polytechnic Institute
+#                        (C) 2003  All Rights Reserved
+#
+# <LicenseText>
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+
+#
+# Local (project) definitions
+#
+
+# BLAS/LAPACK
+
+include math/default.def
+
+# F77
+
+    EXT_F77 = f
+    PROJ_F77_INCLUDES = ./includes
+
+# C++
+
+    PROJ_CXX_FLAGS += $(CXX_SOFLAGS)
+    PROJ_LCXX_FLAGS += $(LCXX_SARFLAGS)
+
+# version
+# $Id: local.def,v 1.1 2004/04/14 21:21:10 willic3 Exp $
+
+# End of file
