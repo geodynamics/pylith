@@ -11,14 +11,14 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-from testpy.MaterialModel.MaterialModel import MaterialModel
+from lithomop3d.MaterialModel.MaterialModel import MaterialModel
 
 class IsotropicLinearMaxwellViscoelastic(MaterialModel):
 
     def __init__(self):
-        print "Hello from IsotropicLinearMaxwellViscoelastic.__init__!"
-        print ""
-        self.materialModel = 4
+        # print "Hello from IsotropicLinearMaxwellViscoelastic.__init__!"
+        # print ""
+        self.materialModel = 5
         self.numberProperties = 4
         self.propertyDict = {'density': None,
                              'youngsModulus': None,
@@ -35,6 +35,6 @@ class IsotropicLinearMaxwellViscoelastic(MaterialModel):
         return
 
 # version
-# $Id: IsotropicLinearMaxwellViscoelastic.py,v 1.1 2004/07/14 21:17:37 willic3 Exp $
+# $Id: IsotropicLinearMaxwellViscoelastic.py,v 1.2 2004/08/12 16:49:07 willic3 Exp $
 
 # End of file 
