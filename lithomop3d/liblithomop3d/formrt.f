@@ -53,7 +53,7 @@ c...  local variables
 c
       double precision sina,cosa,sinb,cosb
 c
-c*      write(6,*) "Hello from formrt_f!"
+cdebug      write(6,*) "Hello from formrt_f!"
 c
       sina=sin(skew(1))
       cosa=cos(skew(1))
@@ -72,7 +72,7 @@ c
       end
 c
 c version
-c $Id: formrt.f,v 1.2 2004/07/01 19:59:04 willic3 Exp $
+c $Id: formrt.f,v 1.3 2004/08/12 01:22:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
