@@ -89,7 +89,7 @@ c
 c...  local variables
 c
       integer ind,iel,indien,ietype,indstate,inddmat
-      integer ngauss,nen,nee,l,indstateg,inddmatg,incstate
+      integer ngauss,nen,nee,l,indstateg,inddmatg
       double precision tmax
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 c
@@ -101,7 +101,6 @@ c
 c
 cdebug      write(6,*) "Hello from td_strs_cmp_ss_f!"
 c
-      incstate=nstr*nstate
 c
 c...  loop over elements in a material group
 c
@@ -136,14 +135,14 @@ c     scur
 c
         do l=1,ngauss
           call td_strs(state(1,indstateg),dstate(1,indstateg),
-     &     ee(nstr*(l-1)),dmat(1,inddmatg),prop,rtimdat,rgiter,ntimdat,
-     &     iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+     &     ee(nstr*(l-1)+1),dmat(1,inddmatg),prop,rtimdat,rgiter,
+     &     ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
           if(ierr.ne.izero) return
           tminmax=min(tmax,tminmax)
-          call dcopy(nstr,dstate(1,indstateg),ione,scur(nstr*(l-1)),
+          call dcopy(nstr,dstate(1,indstateg),ione,scur(nstr*(l-1)+1),
      &     ione)
-          indstateg=indstateg+incstate
-          inddmatg=inddmatg+nddmat
+          indstateg=indstateg+nstate
+          inddmatg=inddmatg+ione
         end do
 c
 c...  compute equivalent nodal loads
@@ -160,7 +159,7 @@ c
       end
 c
 c version
-c $Id: td_strs_cmp_ss.f,v 1.4 2004/07/21 19:08:32 willic3 Exp $
+c $Id: td_strs_cmp_ss.f,v 1.5 2004/08/02 21:30:43 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
