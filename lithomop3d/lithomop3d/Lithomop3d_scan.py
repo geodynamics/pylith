@@ -84,6 +84,7 @@ class Lithomop3d_scan(Component):
         self.f77FileInput = 10
         self.f77AsciiOutput = 11
         self.f77PlotOutput = 12
+        self.f77UcdOutput = 13
 
 	print ""
         print "Hello from lm3dscan.__init__ (end)!"
@@ -256,6 +257,11 @@ class Lithomop3d_scan(Component):
             self._plotOutputFile = self.inventory.fileRoot + ".plot"
         else:
             self._plotOutputFile = self.inventory.plotOutputFile
+
+        if self.inventory.ucdOutputRoot == "None":
+            self._ucdOutputRoot = self.inventory.fileRoot
+        else:
+            self._ucdOutputRoot = self.inventory.ucdOutputRoot
 
         if self.inventory.coordinateInputFile == "None":
             self._coordinateInputFile = self.inventory.fileRoot + ".coord"
@@ -654,6 +660,10 @@ class Lithomop3d_scan(Component):
                 default="None"),
 
             pyre.properties.str(
+                "ucdOutputRoot",
+                default="None"),
+
+            pyre.properties.str(
                 "coordinateInputFile",
                 default="None"),
 
@@ -723,7 +733,7 @@ class Lithomop3d_scan(Component):
 
             pyre.properties.str(
                 "asciiOutput",
-                default="full",
+                default="echo",
                 validator=pyre.properties.choice(
                 [
                  "none",
@@ -732,11 +742,16 @@ class Lithomop3d_scan(Component):
 
             pyre.properties.str(
                 "plotOutput",
-                default="binary",
+                default="none",
                 validator=pyre.properties.choice(
                 [
+                 "none",
                  "ascii",
                  "binary"])),
+
+            pyre.properties.bool(
+                "ucdOutput",
+                default=True),
 
 # Eliminating this option for now, as the geometry type is automatically
 # specified by using Lithomop3d.
@@ -774,6 +789,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.10 2004/08/12 17:11:17 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.11 2004/08/25 01:50:27 willic3 Exp $
 
 # End of file 
