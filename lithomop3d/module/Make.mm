@@ -41,6 +41,7 @@ PROJ_LIBRARIES += $(LCXX_FORTRAN)
 
 PROJ_SRCS = \
 	array.cc \
+	autoprestr.cc \
 	bindings.cc \
 	elastc.cc \
 	exceptionhandler.cc \
@@ -55,7 +56,7 @@ PROJ_SRCS = \
 
 
 # version
-# $Id: Make.mm,v 1.4 2004/08/18 21:07:30 willic3 Exp $
+# $Id: Make.mm,v 1.5 2005/01/18 22:26:20 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
