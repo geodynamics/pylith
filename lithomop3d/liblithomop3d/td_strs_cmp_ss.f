@@ -36,7 +36,7 @@ c
      & tfault,numfn,                                                    ! fault
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,        ! elemnt
      & numelt,nconsz,                                                   ! elemnt
-     & prop,infmat,nprop,matgpt,elas_strs,td_strs,                      ! materl
+     & prop,nmatel,nstate,nprop,matgpt,elas_strs,td_strs,               ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
      & skew,numrot,                                                     ! skew
@@ -58,9 +58,9 @@ c
 c...  subroutine arguments
 c
       integer neq,numnp,numslp,numfn,nstatesz,ndmatsz,numelt,nconsz
-      integer nprop,matgpt,numrot,ierr
+      integer nmatel,nstate,nprop,matgpt,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(6,numelt),infmat(6),infetype(4,netypes)
+      integer infiel(6,numelt),infetype(4,netypes)
       character errstrng*(*)
       double precision b(neq),x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
       double precision tfault(ndof,numfn)
@@ -87,7 +87,7 @@ c
 c
 c...  local variables
 c
-      integer nmatel,nstate,ind,iel,indien,ietype,indstate,inddmat
+      integer ind,iel,indien,ietype,indstate,inddmat
       integer ngauss,nen,nee,l,indstateg,inddmatg,incstate
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 c
@@ -99,8 +99,6 @@ c
 c
 cdebug      write(6,*) "Hello from td_strs_cmp_ss_f!"
 c
-      nmatel=infmat(2)
-      nstate=infmat(3)
       incstate=nstr*nstate
 c
 c...  loop over elements in a material group
@@ -158,7 +156,7 @@ c
       end
 c
 c version
-c $Id: td_strs_cmp_ss.f,v 1.2 2004/07/02 18:36:36 willic3 Exp $
+c $Id: td_strs_cmp_ss.f,v 1.3 2004/07/09 01:33:38 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
