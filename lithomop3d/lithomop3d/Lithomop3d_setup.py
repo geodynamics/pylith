@@ -1300,6 +1300,7 @@ class Lithomop3d_setup(Component):
         # except Exception, error:
             # print "Exception in block lnklst!", error
 
+        self.A = lithomop3d.createPETScMat(self.numberGlobalEquations)
         self.pointerToJa = lithomop3d.allocateInt(
             self.stiffnessMatrixSize)
 	self.memorySize += self.stiffnessMatrixSize*self.intSize
@@ -1318,6 +1319,7 @@ class Lithomop3d_setup(Component):
             # self.workingArraySize)
 
         self.stiffnessMatrixStats = lithomop3d.makemsr(
+            self.A,
             self.pointerToJa,
             self.pointerToIndx,
             self.pointerToLink,
@@ -1634,6 +1636,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.15 2005/03/08 02:14:26 knepley Exp $
+# $Id: Lithomop3d_setup.py,v 1.16 2005/03/10 01:10:37 knepley Exp $
 
 # End of file 

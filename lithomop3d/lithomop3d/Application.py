@@ -70,6 +70,7 @@ class Application(BaseApplication):
             pyre.properties.str("ksp_monitor",default="1"),
             pyre.properties.str("ksp_view",default="1"),
             pyre.properties.str("log_summary",default="1"),
+            pyre.properties.str("log_info",default="0"),
             pyre.properties.str("pc_type",default="jacobi"),
             pyre.properties.str("start_in_debugger",default="0"),
             pyre.properties.str("petsc_solver",default="0"),
@@ -77,6 +78,6 @@ class Application(BaseApplication):
 
 
 # version
-# $Id: Application.py,v 1.2 2005/03/08 02:14:26 knepley Exp $
+# $Id: Application.py,v 1.3 2005/03/10 01:10:37 knepley Exp $
 
 # End of file 

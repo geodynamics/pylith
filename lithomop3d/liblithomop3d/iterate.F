@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine iterate(
-     & alnz,pcg,zcg,dprev,ja,                                           ! sparse
+     & A, alnz,pcg,zcg,dprev,ja,                                        ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
      & dispvec,nforce,grav,                                             ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,                             ! global
@@ -46,6 +46,7 @@ c
      & skew,                                                            ! skew
      & ncodat,nunits,nprint,                                            ! ioinfo
      & getshape,bmatrix,gload_cmp,stress_cmp,stress_mat_cmp,            ! external
+     & iterateEvent,                                                    ! PETSc logging
      & ierr,errstrng)                                                   ! errcode
 c
 c...subroutine to loop over iterations within each time step
@@ -66,18 +67,15 @@ c
 #include "finclude/petsc.h"
 #include "finclude/petsclog.h"
 #include "finclude/petscvec.h"
-#include "finclude/petscis.h"
 #include "finclude/petscmat.h"
 #include "finclude/petscksp.h"
+      PetscEvent iterateEvent
       PetscTruth flag
       PetscInt useSolver
       Vec rhs, sol
       Mat A
       KSP ksp
       PetscInt row, nz
-      IS rowSizes
-      integer row_array(1)
-      PetscOffset row_offset
 c
 c...  parameter definitions
 c
@@ -170,6 +168,7 @@ cdebug      write(6,*) "nprestrflag, nprevdflag:"
 cdebug      write(6,*) nextflag,ntractflag,ngravflag,nconcflag,
 cdebug     & nprestrflag, nprevdflag
 c
+      call PetscLogEventBegin(iterateEvent, ierr)
       fulout=.true.
       converge=.false.
       reform=.false.
@@ -238,21 +237,6 @@ c
         if (useSolver .ne. 0) then
 ccc PETSc BLOCK
 c       Create A from alnz, ja, nnz, neq
-          write(6,*) 'Creating Mat'
-          call MatCreate(MPI_COMM_WORLD, neq, neq, PETSC_DETERMINE,
-     &                   PETSC_DETERMINE, A, ierr)
-          write(6,*) 'Setting Mat from options'
-          call MatSetFromOptions(A, ierr)
-          call IsCreateStride(MPI_COMM_SELF, neq, 1, 1, rowSizes, ierr)
-          call ISGetIndices(rowSizes, row_array, row_offset, ierr)
-          do row = 1,neq
-            row_array(row+row_offset) = ja(row+1) - ja(row) + 1
-          end do
-          call MatSeqAIJSetPreallocation(A, 0,
-     &                                   row_array(row_offset+1))
-          call ISRestoreIndices(rowSizes, row_array, row_offset, ierr)
-          call ISDestroy(rowSizes, ierr)
-          write(6,*) 'Filling Mat'
           do nz = neq+2,nnz
              ja(nz) = ja(nz) - 1
           end do
@@ -266,7 +250,6 @@ c       Create A from alnz, ja, nnz, neq
           do nz = neq+2,nnz
              ja(nz) = ja(nz) + 1
           end do
-          write(6,*) 'Assembling Mat'
           call MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY, ierr)
           call MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY, ierr)
           call VecCreateSeqWithArray(MPI_COMM_WORLD, neq, bresid, rhs,
@@ -284,7 +267,6 @@ c       Create A from alnz, ja, nnz, neq
           call KSPDestroy(ksp, ierr)
           call VecDestroy(rhs, ierr)
           call VecDestroy(sol, ierr)
-          call MatDestroy(A, ierr)
 ccc
         else
 ccc ORIGINAL BLOCK
@@ -402,16 +384,18 @@ c
         if(converge) then
           call update_state(state,dstate,infiel,infmat,infmatmod,
      &     infetype,nstatesz,numelt,numat,ierr,errstrng)
+          call PetscLogEventEnd(iterateEvent, ierr)
           return
         end if
         reform=.false.
       end do
  650  format(//,"Reforming the stiffness matrix:",/)
+      call PetscLogEventEnd(iterateEvent, ierr)
       return
       end
 c
 c version
-c $Id: iterate.F,v 1.2 2005/03/08 03:04:48 knepley Exp $
+c $Id: iterate.F,v 1.3 2005/03/10 01:10:36 knepley Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine elastc(
-     & alnz,pcg,zcg,dprev,ja,                                           ! sparse
+     & A, alnz,pcg,zcg,dprev,ja,                                        ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
      & dispvec,nforce,grav,                                             ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,                             ! global
@@ -59,11 +59,14 @@ c     PETSC includes
 c
 #include "include/finclude/petsc.h"
 #include "include/finclude/petsclog.h"
+#include "include/finclude/petscvec.h"
+#include "include/finclude/petscmat.h"
 c
-c     PETSc logging
+c     PETSc objects
 c
       PetscInt elasticStage, viscousStage
       PetscEvent iterateEvent
+      Mat A
 c
 c...  parameter definitions
 c
@@ -302,9 +305,8 @@ cdebug        write(6,*) "After formf_ss (1):"
 c
         if(ierr.ne.izero) return
 c
-        call PetscLogEventBegin(iterateEvent, ierr)
         call iterate(
-     &   alnz,pcg,zcg,dprev,ja,                                         ! sparse
+     &   A, alnz,pcg,zcg,dprev,ja,                                      ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
      &   dispvec,nforce,grav,                                           ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
@@ -321,10 +323,10 @@ c
      &   ncodat,nunits,nprint,                                          ! ioinfo
      &   getshapn,bmatrixn,gload_cmp_ss,elas_strs_cmp_ss,               ! external
      &   elas_strs_mat_cmp_ss,                                          ! external
+     &   iterateEvent,                                                  ! PETSc logging
      &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After iterate (1):"
 c
-        call PetscLogEventEnd(iterateEvent, ierr)
         if(ierr.ne.izero) return
 c
       else if(lgdefp.eq.izero.and.intord.eq.ithree) then
@@ -379,7 +381,7 @@ c
         if(ierr.ne.izero) return
 c
         call iterate(
-     &   alnz,pcg,zcg,dprev,ja,                                         ! sparse
+     &   A, alnz,pcg,zcg,dprev,ja,                                      ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
      &   dispvec,nforce,grav,                                           ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
@@ -396,6 +398,7 @@ c
      &   ncodat,nunits,nprint,                                          ! ioinfo
      &   getshapb,bmatrixb,gload_cmp_ss,elas_strs_cmp_ss,               ! external
      &   elas_strs_mat_cmp_ss,                                          ! external
+     &   iterateEvent,                                                  ! PETSc logging
      &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After iterate (2):"
 c
@@ -449,7 +452,7 @@ c
 clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
-clater     &   alnz,pcg,zcg,dprev,ja,                                         ! sparse
+clater     &   A, alnz,pcg,zcg,dprev,ja,                                      ! sparse
 clater     &   bextern,btraction,bgravity,bconcforce,bintern,                 ! force
 clater     &   bresid,bwork,dispvec,nforce,grav,                              ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
@@ -466,6 +469,7 @@ clater     &   skew,                                                          ! 
 clater     &   ncodat,nunits,nprint,                                          ! ioinfo
 clater     &   getshapn,bmatrixn,gload_cmp_ld,elas_strs_cmp_ld,               ! external
 clater     &   elas_strs_mat_cmp_ld,                                          ! external
+clater     &   iterateEvent,                                                  ! PETSc logging
 clater     &   ierr,errstrng)                                                 ! errcode
 c
 clater        if(ierr.ne.izero) return
@@ -518,7 +522,7 @@ c
 clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
-clater     &   alnz,pcg,zcg,dprev,ja,                                         ! sparse
+clater     &   A, alnz,pcg,zcg,dprev,ja,                                      ! sparse
 clater     &   bextern,btraction,bgravity,bconcforce,bintern,                 ! force
 clater     &   bresid,bwork,dispvec,nforce,grav,                              ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
@@ -535,6 +539,7 @@ clater     &   skew,                                                          ! 
 clater     &   ncodat,nunits,nprint,                                          ! ioinfo
 clater     &   getshapb,bmatrixb,gload_cmp_ld,elas_strs_cmp_ld,               ! external
 clater     &   elas_strs_mat_cmp_ld,                                          ! external
+clater     &   iterateEvent,                                                  ! PETSc logging
 clater     &   ierr,errstrng)                                                 ! errcode
 c
 clater        if(ierr.ne.izero) return
@@ -620,7 +625,7 @@ c
       end
 c
 c version
-c $Id: elastc.F,v 1.1 2005/03/08 02:14:26 knepley Exp $
+c $Id: elastc.F,v 1.2 2005/03/10 01:10:36 knepley Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

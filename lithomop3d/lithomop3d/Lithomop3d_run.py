@@ -57,6 +57,7 @@ class Lithomop3d_run(Component):
         self.elasticStage = lm3dsetup.elasticStage
         self.viscousStage = lm3dsetup.viscousStage
         self.iterateEvent = lm3dsetup.iterateEvent
+        self.A = lm3dsetup.A
         
         self.analysisType = lm3dscan.inventory.analysisType
 
@@ -304,6 +305,7 @@ class Lithomop3d_run(Component):
         if self.analysisType == "elasticSolution" or self.analysisType == "fullSolution":
             if self.prestressAutoComputeInt == 1:
                 lithomop3d.autoprestr(
+                    self.A,
                     self.pointerToAlnz,
                     self.pointerToPcg,
                     self.pointerToZcg,
@@ -400,13 +402,15 @@ class Lithomop3d_run(Component):
                     self.pointerToIstatout,
                     self.asciiOutputFile,
                     self.plotOutputFile,
-                    self.ucdOutputRoot)
+                    self.ucdOutputRoot,
+                    self.iterateEvent)
 
             # print "Just before lithomop3d.elastc:"
 
             # Perform elastic solution, if requested.
             
             lithomop3d.elastc(
+                self.A,
                 self.pointerToAlnz,
                 self.pointerToPcg,
                 self.pointerToZcg,
@@ -511,6 +515,7 @@ class Lithomop3d_run(Component):
 
         if self.analysisType == "fullSolution" and self.numberTimeStepGroups > 1:
             lithomop3d.viscos(
+                self.A,
                 self.pointerToAlnz,
                 self.pointerToPcg,
                 self.pointerToZcg,
@@ -611,6 +616,7 @@ class Lithomop3d_run(Component):
                 self.ucdOutputRoot,
                 self.viscousStage,
                 self.iterateEvent)
+        lithomop3d.destroyPETScMat(self.A)
         lithomop3d.PetscFinalize()
 	print ""
         print "Hello from lm3drun.run (end)!"
@@ -627,6 +633,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.11 2005/03/08 02:14:26 knepley Exp $
+# $Id: Lithomop3d_run.py,v 1.12 2005/03/10 01:10:37 knepley Exp $
 
 # End of file 
