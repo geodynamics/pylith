@@ -29,15 +29,20 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine adfldp(dl,lmf,dfault,ndof,nen,numfn)
+      subroutine adfldp(dl,lmf,dfault,nen,numfn)
 c
 c...adds displacements at split nodes to the local displacement vectors
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,nen,numfn
+      integer nen,numfn
       integer lmf(nen)
       double precision dl(ndof,nen),dfault(ndof,numfn)
 c
@@ -46,7 +51,7 @@ c
       integer i,j,l
 c
       do i=1,nen
-        if(lmf(i).ne.0) then
+        if(lmf(i).ne.izero) then
           l=lmf(i)
           do j=1,ndof
             dl(j,i)=dl(j,i)+dfault(j,l)
@@ -57,7 +62,7 @@ c
       end
 c
 c version
-c $Id: adfldp.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: adfldp.f,v 1.2 2004/06/18 14:52:38 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
