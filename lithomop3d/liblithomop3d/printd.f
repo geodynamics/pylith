@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine printd(d,deld,deltp,kout,ndof,numnp,nout,iflag,idout,
+      subroutine printd(d,deld,deltp,kout,numnp,nout,iflag,idout,
      & idsk,kto,kw,kp)
 c
 c...program to print displacements
@@ -44,19 +44,20 @@ c*  Note:  for full output, call this routine with nout = numnp.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,numnp,nout,iflag,idout,idsk,kto,kw,kp
+      integer numnp,nout,iflag,idout,idsk,kto,kw,kp
       integer kout(*)
       double precision d(ndof,numnp),deld(ndof,numnp),deltp
 c
 c...  included dimension and type statements
 c
       include "labeld_dim.inc"
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
       character head(2)*53
       data head/' d i s p l a c e m e n t s                           ',
@@ -112,7 +113,7 @@ c
       end
 c
 c version
-c $Id: printd.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: printd.f,v 1.2 2004/07/07 20:25:31 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
