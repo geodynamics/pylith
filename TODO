@@ -1,3 +1,44 @@
+Immediate priorities, 3/11/2005:
+
+1.  Break up all routines that affect equation numbering, and combine
+all numbering into a single routine.  This will affect:
+
+  Lithomop3d_setup.py
+  read_bc.f
+  read_wink.f
+  adjid.f
+  read_winkx.f
+
+2.  Change things so that only a single element type is used at a time.
+This will simplify indexing.  I need to think how this will affect
+infinite elements.  This should allow us to move more quickly, but I
+may need to switch back at some point, once element families are set
+up better.
+
+3.  I can probably eliminate dmat as a global matrix.  See what this
+does to performance vs. memory savings.
+
+4.  Start putting in more PETSc instrumentation (finer-grained) and
+evaluating performance bottlenecks.
+
+5.  Put in power-law viscoelastic model, and come up with equations to
+implement Drucker-Prager elasto-plastic model.  Look into viscoplastic
+models.
+
+Longer-term priorities, 3/11/2005:
+
+1.  Create shape function info and integration routines for cohesive
+and surface elements.
+
+2.  Create routines necessary to implement cohesive (kinematic) elements
+and kinematic BC elements.  This will involve routines for rotations,
+use of quaternions, etc., as well as the looping over elements in a
+group.
+
+3.  Move control down a level so that routines elastc, viscos, and
+iterate are done in python.
+
+
 After talking to Matt and seeing if Lagrange multipliers are OK:
 
 1.  Come up with routines for integration of surfaces/cohesive elements, analogous to solid element routines.
