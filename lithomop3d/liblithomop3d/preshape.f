@@ -228,12 +228,23 @@ c
       infetype(3,59)=nsd*infetype(2,59)
       infetype(4,59)=ndof*infetype(2,59)
       call dcopy(ngssize,gauss(1,1,32),ione,gauss(1,1,59),ione)
-      call dcopy(nshsize,sh(1,1,1,32),ione,sh(1,1,1,59),ione)
-      do l=1,infetype(1,59)
-        do i=1,4
-          sh(i,7,l,59)=sh(i,7,l,59)+sh(i,8,l,59)+sh(i,15,l,59)
-          sh(i,8,l,59)=zero
-          sh(i,15,l,59)=zero
+c*      call dcopy(nshsize,sh(1,1,1,32),ione,sh(1,1,1,59),ione)
+c*      do l=1,infetype(1,59)
+c*        do i=1,4
+c*          sh(i,7,l,59)=sh(i,7,l,59)+sh(i,8,l,59)+sh(i,15,l,59)
+c*          sh(i,8,l,59)=zero
+c*          sh(i,15,l,59)=zero
+c*        end do
+c*      end do
+      do n=1,infetype(2,59)
+        do l=1,infetype(1,59)
+          do i=1,4
+            sh(i,n,l,59)=sh(i,n,l,32)
+            if(n.eq.7) sh(i,n,l,59)=sh(i,7,l,32)+sh(i,8,l,32)+
+     &       sh(i,15,l,32)
+            if(n.gt.7) sh(i,n,l,59)=sh(i,n+1,l,32)
+            if(n.gt.13) sh(i,n,l,59)=sh(i,n+2,l,32)
+          end do
         end do
       end do
       call dcopy(nshsize,sh(1,1,1,59),ione,shj(1,1,1,59),ione)
@@ -263,7 +274,7 @@ c
       end
 c
 c version
-c $Id: preshape.f,v 1.3 2004/08/02 21:22:32 willic3 Exp $
+c $Id: preshape.f,v 1.4 2004/08/13 16:42:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
