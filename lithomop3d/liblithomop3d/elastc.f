@@ -244,6 +244,7 @@ c******  info that isn't currently needed for the small strain case.
 c
       if(lgdefp.eq.izero.and.intord.ne.ithree) then
 cdebug        write(6,*) "Before matinit_drv (1):"
+        write(kto,650)
         call matinit_drv(
      &   alnz,ja,nnz,neq,                                               ! sparse
      &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -315,6 +316,7 @@ c
         if(ierr.ne.izero) return
 c
       else if(lgdefp.eq.izero.and.intord.eq.ithree) then
+        write(kto,650)
         call matinit_drv(
      &   alnz,ja,nnz,neq,                                               ! sparse
      &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -386,6 +388,7 @@ c
         if(ierr.ne.izero) return
 c
 clater      else if(lgdefp.eq.ione.and.intord.ne.ithree) then
+clater        write(kto,650)
 clater        call matinit_drv(
 clater     &   alnz,ja,nnz,neq,                                               ! sparse
 clater     &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -452,6 +455,7 @@ c
 clater        if(ierr.ne.izero) return
 c
 clater      else if(lgdefp.eq.1.and.intord.eq.ithree) then
+clater        write(kto,650)
 clater        call matinit_drv(
 clater     &   alnz,ja,nnz,neq,                                               ! sparse
 clater     &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -578,6 +582,7 @@ c
       close(kp)
 c
 600   format(//,'Beginning elastic solution:',/)
+650   format(//,"Reforming the stiffness matrix:",/)
 700   format('STEP ',i5)
 800   format(/," Total number of equilibrium iterations        = ",i7,/,
      &         " Total number of stiffness matrix reformations = ",i7,/,
@@ -586,7 +591,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.9 2004/08/12 01:21:59 willic3 Exp $
+c $Id: elastc.f,v 1.10 2004/08/12 20:39:10 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
