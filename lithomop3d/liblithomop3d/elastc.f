@@ -152,6 +152,7 @@ c
       call fill(dx,zero,ndof*numnp)
       call fill(dxcur,zero,ndof*numnp)
       call fill(state,zero,nstr*nstatesz)
+      call fill(dmat,zero,nddmat*ndmatsz)
 c***  Note:  This should be modified for prestresses.
       call fill(dstate,zero,nstr*nstatesz)
       if(numfn.ne.izero) call fill(tfault,zero,numfn*ndof)
@@ -171,9 +172,11 @@ c*      call flush(kto)
       ndtot=izero
       ntimdat(8)=ndtot
       ntimdat(9)=ireform
+cdebug      write(6,*) "Before const:"
       call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,utol,ftol,
      & etol,itmax,nintg,igroup,naxstp,nfirst,rtimdat,deltp,alfap,
      & ntimdat,nstep,maxitp,ntdinitp,lgdefp,itmaxp,gtol)
+cdebug      write(6,*) "After const:"
       if(skc) then
         call skclear(idslp,skew,numsn,numnp)
         call skcomp(x,d,skew,idslp,ipslp,ipstrs,numsn,numnp,nstep,
@@ -186,6 +189,7 @@ c   and displacement increment vector deld(ndof,numnp)
 c
       call load(id,ibond,bond,dcur,deld,btot,histry,deltp,numnp,neq,
      & nhist,nstep,lastep,ierr,errstrng)
+cdebug      write(6,*) "After load:"
       if(ierr.ne.izero) return
 c
 c...compute current split node displacements
@@ -195,6 +199,7 @@ c
      &   lastep,ierr,errstrng)
         if(ierr.ne.izero) return
       end if
+cdebug      write(6,*) "After loadf:"
 c
 c...add differential forces across internal free interfaces
 c
@@ -203,6 +208,7 @@ c
      &   lastep,ierr,errstrng)
         if(ierr.ne.izero) return
       end if
+cdebug      write(6,*) "After loadx:"
 c
 c...  initialize elastic material matrices and stiffness matrix, 
 c     compute forces due to applied displacements and split nodes,
@@ -237,6 +243,7 @@ c******  Another thing to consider is that I will need to pass in some extra
 c******  info that isn't currently needed for the small strain case.
 c
       if(lgdefp.eq.izero.and.intord.ne.ithree) then
+cdebug        write(6,*) "Before matinit_drv (1):"
         call matinit_drv(
      &   alnz,ja,nnz,neq,                                               ! sparse
      &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -247,10 +254,12 @@ c
      &   ndmatsz,numelt,nconsz,                                         ! elemnt
      &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
-     &   histry,rtimdat,ntimdat,nhist,lastep,elas_matinit_cmp_ss,       ! timdat
+     &   histry,rtimdat,ntimdat,rgiter,nhist,lastep,                    ! timdat
+     &   elas_matinit_cmp_ss,                                           ! timdat
      &   skew,numrot,                                                   ! skew
      &   getshapn,bmatrixn,                                             ! bbar
      &   ierr,errstrng)                                                 ! errcode
+cdebug        write(6,*) "After matinit_drv (1):"
 c
         if(ierr.ne.izero) return
 c
@@ -264,6 +273,7 @@ c
      &   skew,numrot,                                                   ! skew
      &   getshapn,bmatrixn,                                             ! bbar
      &   ierr,errstrng)                                                 ! errcode
+cdebug        write(6,*) "After formdf_ss (1):"
 c
         if(ierr.ne.izero) return
 c
@@ -278,6 +288,7 @@ c
      &   nfault,dfault,tfault,numfn,                                    ! split
      &   getshapn,bmatrixn,                                             ! bbar
      &   ierr,errstrng)                                                 ! errcode
+cdebug        write(6,*) "After formf_ss (1):"
 c
         if(ierr.ne.izero) return
 c
@@ -299,6 +310,7 @@ c
      &   getshapn,bmatrixn,gload_cmp_ss,elas_strs_cmp_ss,               ! external
      &   elas_strs_mat_cmp_ss,                                          ! external
      &   ierr,errstrng)                                                 ! errcode
+cdebug        write(6,*) "After iterate (1):"
 c
         if(ierr.ne.izero) return
 c
@@ -313,10 +325,12 @@ c
      &   ndmatsz,numelt,nconsz,                                         ! elemnt
      &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
-     &   histry,rtimdat,ntimdat,nhist,lastep,elas_matinit_cmp_ss,       ! timdat
+     &   histry,rtimdat,ntimdat,rgiter,nhist,lastep,                    ! timdat
+     &   elas_matinit_cmp_ss,                                           ! timdat
      &   skew,numrot,                                                   ! skew
      &   getshapb,bmatrixb,                                             ! bbar
      &   ierr,errstrng)                                                 ! errcode
+cdebug        write(6,*) "After matinit_drv (2):"
 c
         if(ierr.ne.izero) return
 c
@@ -330,6 +344,7 @@ c
      &   skew,numrot,                                                   ! skew
      &   getshapb,bmatrixb,                                             ! bbar
      &   ierr,errstrng)                                                 ! errcode
+cdebug        write(6,*) "After formdf_ss (2):"
 c
         if(ierr.ne.izero) return
 c
@@ -344,6 +359,7 @@ c
      &   nfault,dfault,tfault,numfn,                                    ! split
      &   getshapb,bmatrixb,                                             ! bbar
      &   ierr,errstrng)                                                 ! errcode
+cdebug        write(6,*) "After formf_ss (2):"
 c
         if(ierr.ne.izero) return
 c
@@ -365,6 +381,7 @@ c
      &   getshapb,bmatrixb,gload_cmp_ss,elas_strs_cmp_ss,               ! external
      &   elas_strs_mat_cmp_ss,                                          ! external
      &   ierr,errstrng)                                                 ! errcode
+cdebug        write(6,*) "After iterate (2):"
 c
         if(ierr.ne.izero) return
 c
@@ -528,15 +545,19 @@ c
       if(idsk.eq.1) write(kp) time
       call printd(d,deld,deltp,idslp,numnp,numnp,ione,idout,idsk,kto,kw,
      & kp)
+cdebug      write(6,*) "After printd (1):"
       call printf(tfault,dfault,deltp,nfault,numfn,idout,idsk,kw,kp)
+cdebug      write(6,*) "After printf:"
       call printd(dx,deldx,deltp,idslp,numnp,numsn,itwo,idout,idsk,kto,
      & kw,kp)
+cdebug      write(6,*) "After printd (2):"
 c
 c...print array telling whether each slippery node is locked
 c   or free for the current time step
 c
       call printl(idx,iwinkx,idslp,histry,numsn,numnp,nstep,nhist,
      & nwinkx,lastep,idsk,kp)
+cdebug      write(6,*) "After printl:"
 c
 c...print the stresses and strains
 c
@@ -547,6 +568,7 @@ c
      & delt,nstep,                                                      ! timdat
      & istatout,                                                        ! ioopts
      & idout,idsk,kw,kp)                                                ! ioinfo
+cdebug      write(6,*) "After write_state:"
 c
       if(nintg.eq.1) then
         write(kto,800) ntimdat(6),ntimdat(7),ntimdat(8)
@@ -564,7 +586,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.8 2004/08/02 21:13:35 willic3 Exp $
+c $Id: elastc.f,v 1.9 2004/08/12 01:21:59 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
