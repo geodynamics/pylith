@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_props(prop,infmat,infmatmod,numat,npropsz,idout,
-     & idsk,kw,kp,ofile,pfile,ierr,errstrng)
+      subroutine write_props(prop,grav,infmat,infmatmod,numat,npropsz,
+     & idout,idsk,kw,kp,ofile,pfile,ierr,errstrng)
 c
 c...  program to print properties for each material type.
 c
@@ -38,6 +38,7 @@ c
 c
 c...  parameter definitions
 c
+      include "ndimens.inc"
       include "materials.inc"
       include "nconsts.inc"
 c
@@ -45,8 +46,12 @@ c...  subroutine arguments
 c
       integer numat,npropsz,idout,idsk,kw,kp,ierr
       integer infmat(3,numat),infmatmod(5,nmatmodmax)
-      double precision prop(npropsz)
+      double precision prop(npropsz),grav(ndof)
       character ofile*(*),pfile*(*),errstrng*(*)
+c
+c...  included dimension and type statements
+c
+      include "labeld_dim.inc"
 c
 c...  external routines
 c
@@ -54,7 +59,11 @@ c
 c
 c...  local variables
 c
-      integer imat,matmodel,indprop,nprop
+      integer imat,matmodel,indprop,nprop,i
+c
+c...  included variable definitions
+c
+      include "labeld_def.inc"
 c
 cdebug      write(6,*) "Hello from write_props_f!"
 c
@@ -146,6 +155,15 @@ c
         if(ierr.ne.izero) return
       end do
 c
+c...  output gravitational acceleration
+c
+      if(idout.gt.izero) then
+        write(kw,1100,err=20)
+        do i=1,ndof
+          write(kw,1200,err=20) labeld(i),grav(i)
+        end do
+      end if
+c
 c...  normal return
 c
       if(idout.gt.izero) close(kw)
@@ -173,11 +191,15 @@ c
  1000 format(1x,///,
      & " m a t e r i a l   s e t   d a t a                    ",//,5x,
      & " number of material sets . . . . . . . . . . (numat) =",i5)
+ 1100 format(//,
+     & ' a c c e l e r a t i o n   o f   g r a v i t y         ',//)
+ 1200 format(5x,
+     & a4,'-direction  . . . . . . . . . . . . . . . . =',1pe17.5/)
 c
       end
 c
 c version
-c $Id: write_props.f,v 1.2 2004/07/13 16:26:48 willic3 Exp $
+c $Id: write_props.f,v 1.3 2004/07/15 20:22:36 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
