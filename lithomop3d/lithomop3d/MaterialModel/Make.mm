@@ -39,11 +39,11 @@ EXPORT_PYTHON_MODULES = \
 	__init__.py
 
 
-export:: export-python-modules
+export:: export-package-python-modules
 
 
 # version
-# $Id: Make.mm,v 1.1 2004/07/20 20:49:53 willic3 Exp $
+# $Id: Make.mm,v 1.2 2004/08/12 16:50:17 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
