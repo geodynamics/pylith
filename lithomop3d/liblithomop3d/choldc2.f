@@ -38,14 +38,14 @@ c     SPOFA (and then corresponding call to SPOSL).
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
       integer n,np
       double precision a(np,np),p(n)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -76,7 +76,7 @@ c
       end
 c
 c version
-c $Id: choldc2.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: choldc2.f,v 1.2 2004/06/18 15:18:04 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
