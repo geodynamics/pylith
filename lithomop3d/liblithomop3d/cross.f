@@ -39,7 +39,7 @@ c...  subroutine arguments
 c
       double precision vc(3),v1(3),v2(3)
 c
-c*      write(6,*) "Hello from cross_f!"
+cdebug      write(6,*) "Hello from cross_f!"
 c
       vc(1)= (v1(2)*v2(3))-(v1(3)*v2(2))
       vc(2)=-(v1(1)*v2(3))+(v1(3)*v2(1))
@@ -48,7 +48,7 @@ c
       end
 c
 c version
-c $Id: cross.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: cross.f,v 1.2 2004/08/12 01:13:25 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -58,7 +58,7 @@ c
       integer i,j,k
       double precision sum
 c
-c*      write(6,*) "Hello from choldc2_f!"
+cdebug      write(6,*) "Hello from choldc2_f!"
 c
       ierr=izero
 c
@@ -84,7 +84,7 @@ c
       end
 c
 c version
-c $Id: choldc2.f,v 1.4 2004/06/21 20:08:27 willic3 Exp $
+c $Id: choldc2.f,v 1.5 2004/08/12 01:12:09 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
