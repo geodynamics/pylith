@@ -36,6 +36,10 @@ c   b-bar modification to strain-displacement matrix
 c
       include "implicit.inc"
 c
+c...  dimension parameters
+c
+      include "nshape.inc"
+c
 c...  subroutine arguments
 c
       integer nsd,nen,ngauss
@@ -58,13 +62,13 @@ c
       volinv=one/vol
       do l=1,ngauss
         wt=det(l)*volinv
-        call daxpy((nsd+1)*nen,wt,sh(1,1,l),ione,shbar,ione)
+        call daxpy((nsd+1)*nen,wt,shd(1,1,l),ione,shbar,ione)
       end do
       return
       end
 c
 c version
-c $Id: meansh.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: meansh.f,v 1.2 2004/06/15 19:43:32 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
