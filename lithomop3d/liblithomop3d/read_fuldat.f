@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine read_fuldat(iprint,icontr,icode,ncycle,lastep,kr,kw,kp,
-     & idout,idsk,ierr,fdfile,ofile,pfile)
+     & idout,idsk,fdfile,ofile,pfile,ierr,errstrng)
 c
 c........reads data on time steps where full outputs are desired
 c
@@ -38,26 +38,31 @@ c     Error codes:
 c         0:  No error
 c         1:  Error opening input file (only if there is a
 c             time-dependent solution)
-c         2:  Units not specified (not applicable for this routine)
+c         2:  Error opening output file
 c         3:  Read error
+c         4:  Write error
 c
       include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
 c
 c...  subroutine arguments
 c
       integer icontr,icode,ncycle,lastep,kr,kw,kp,idout,idsk,ierr
       integer iprint(icontr)
-      character fdfile*(*),ofile*(*),pfile*(*)
+      character fdfile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  local variables
 c
       integer i1,nline,nrem,i,j
 c
-      ierr=0
+      ierr=izero
 c
 c...  read time steps at which a full output is desired
 c
-      if(lastep.ne.0.and.icode.eq.3) then
+      if(lastep.ne.izero.and.icode.eq.ithree) then
         open(kr,file=fdfile,status="old",err=20)
         call pskip(kr)
         do i=1,icontr
@@ -68,34 +73,40 @@ c
 c
 c...  output results, if desired
 c
-      if(idout.gt.0) open(kw,file=ofile,status="old",access="append")
-      if(idsk.eq.0) open(kp,file=pfile,status="old",access="append")
-      if(idsk.eq.1) open(kp,file=pfile,status="old",access="append",
-     & form="unformatted")
-      if(icode.ne.2.and.idout.gt.0) write(kw,1000)  ncycle
+      if(idout.gt.izero) open(kw,file=ofile,err=40,status="old",
+     & access="append")
+      if(idsk.eq.izero) open(kp,file=pfile,err=40,status="old",
+     & access="append")
+      if(idsk.eq.1) open(kp,file=pfile,err=40,status="old",
+     & access="append",form="unformatted")
+      if(icode.ne.itwo.and.idout.gt.izero) write(kw,1000,err=50)  ncycle
       i1=0
-      if((icode.eq.2).or.(icontr.eq.0)) then
-        if(idsk.eq.0) write(kp,4000) i1,i1,i1
-        if(idsk.eq.1) write(kp) i1,i1,i1
+      if((icode.eq.itwo).or.(icontr.eq.izero)) then
+        if(idsk.eq.izero) write(kp,4000,err=50) i1,i1,i1
+        if(idsk.eq.ione) write(kp,err=50) i1,i1,i1
         close(kp)
         return
       else
-        if(idsk.eq.0) write(kp,4000) icontr,ncycle,lastep
-        if(idsk.eq.1) write(kp) icontr,ncycle,lastep
-        if(idout.gt.0) write(kw,2000) icontr
-        if(idsk.eq.1) write(kp) (iprint(i),i=1,icontr)
+        if(idsk.eq.izero) write(kp,4000,err=50) icontr,ncycle,lastep
+        if(idsk.eq.ione) write(kp,err=50) icontr,ncycle,lastep
+        if(idout.gt.izero) write(kw,2000,err=50) icontr
+        if(idsk.eq.ione) write(kp,err=50) (iprint(i),i=1,icontr)
         nline=icontr/7
         nrem=icontr-nline*7
         do i=1,nline
-          if(idout.gt.0) write(kw,3000) (iprint(7*(i-1)+j),j=1,7)
-          if(idsk.eq.0) write(kp,4000) (iprint(7*(i-1)+j),j=1,7)
+          if(idout.gt.izero) write(kw,3000,err=50) (iprint(7*(i-1)+j),
+     &     j=1,7)
+          if(idsk.eq.izero) write(kp,4000,err=50) (iprint(7*(i-1)+j),
+     &     j=1,7)
         end do
-        if(nrem.ne.0) then
-          if(idout.gt.0) write(kw,3000) (iprint(7*nline+j),j=1,nrem)
-          if(idsk.eq.0) write(kp,4000) (iprint(7*nline+j),j=1,nrem)
+        if(nrem.ne.izero) then
+          if(idout.gt.izero) write(kw,3000,err=50) (iprint(7*nline+j),
+     &     j=1,nrem)
+          if(idsk.eq.izero) write(kp,4000,err=50) (iprint(7*nline+j),
+     &     j=1,nrem)
         end if
       end if
-      if(idout.gt.0) close(kw)
+      if(idout.gt.izero) close(kw)
       close(kp)
 c
 c...  normal return
@@ -106,6 +117,7 @@ c...  error opening input file
 c
  20   continue
         ierr=1
+        errstrng="read_fuldat"
         close(kr)
         return
 c
@@ -113,7 +125,26 @@ c...  error reading input file
 c
  30   continue
         ierr=3
+        errstrng="read_fuldat"
         close(kr)
+        return
+c
+c...  error opening output file
+c
+ 40   continue
+        ierr=2
+        errstrng="read_fuldat"
+        close(kw)
+        close(kp)
+        return
+c
+c...  error writing to output file
+c
+ 50   continue
+        ierr=4
+        errstrng="read_fuldat"
+        close(kw)
+        close(kp)
         return
 c
 1000  format(//5x,
@@ -127,7 +158,7 @@ c
       end
 c
 c version
-c $Id: read_fuldat.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: read_fuldat.f,v 1.2 2004/07/12 14:35:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
