@@ -31,7 +31,7 @@ c
       subroutine elastc(
      & A,                                                               ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,    ! force
-     & nforce,grav,                                                     ! force
+     & dprev,nforce,grav,                                               ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
      & ibond,bond,                                                      ! bc
      & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
@@ -89,7 +89,7 @@ c
       integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
       integer istatout(*),nstatout(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
-      double precision bintern(*),bresid(*),dispvec(*),grav(*)
+      double precision bintern(*),bresid(*),dispvec(*),dprev(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision bond(*)
       double precision dx(*),deldx(*),dxcur(*),diforc(*),winkx(*)
@@ -268,7 +268,7 @@ c
 c
         call formdf_ss(
      &   bintern,neq,                                                   ! force
-     &   x,d,dcur,numnp,                                                ! global
+     &   x,d,dcur,numnp,iddmat,                                         ! global
      &   s,stemp,                                                       ! stiff
      &   dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,                    ! elemnt
      &   infmatmod,                                                     ! materl
@@ -282,7 +282,7 @@ c
 c
         if(numfn.ne.izero) call formf_ss(
      &   bintern,neq,                                                   ! force
-     &   x,numnp,                                                       ! global
+     &   x,numnp,iddmat,                                                ! global
      &   s,stemp,                                                       ! stiff
      &   dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,                    ! elemnt
      &   infmatmod,                                                     ! materl
@@ -298,7 +298,7 @@ c
         call iterate(
      &   A,                                                             ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
-     &   nforce,grav,                                                   ! force
+     &   dprev,nforce,grav,                                             ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
      &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
      &   nfault,dfault,tfault,                                          ! fault
@@ -342,7 +342,7 @@ c
 c
         call formdf_ss(
      &   bintern,neq,                                                   ! force
-     &   x,d,dcur,numnp,                                                ! global
+     &   x,d,dcur,numnp,iddmat,                                         ! global
      &   s,stemp,                                                       ! stiff
      &   dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,                    ! elemnt
      &   infmatmod,                                                     ! materl
@@ -356,7 +356,7 @@ c
 c
         if(numfn.ne.izero) call formf_ss(
      &   bintern,neq,                                                   ! force
-     &   x,numnp,                                                       ! global
+     &   x,numnp,iddmat,                                                ! global
      &   s,stemp,                                                       ! stiff
      &   dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,                    ! elemnt
      &   infmatmod,                                                     ! materl
@@ -372,7 +372,7 @@ c
         call iterate(
      &   A,                                                             ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
-     &   nforce,grav,                                                   ! force
+     &   dprev,nforce,grav,                                             ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
      &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
      &   nfault,dfault,tfault,                                          ! fault
@@ -415,7 +415,7 @@ clater        if(ierr.ne.izero) return
 c
 clater        call formdf_ld(
 clater     &   bintern,neq,                                                   ! force
-clater     &   x,d,dcur,numnp,                                                ! global
+clater     &   x,d,dcur,numnp,iddmat,                                         ! global
 clater     &   s,stemp,                                                       ! stiff
 clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 clater     &   infmat,infmatmod,numat,                                        ! materl
@@ -428,7 +428,7 @@ clater        if(ierr.ne.izero) return
 c
 clater        if(numfn.ne.izero) call formf_ld(
 clater     &   bintern,neq,                                                   ! force
-clater     &   x,numnp,                                                       ! global
+clater     &   x,numnp,iddmat,                                                ! global
 clater     &   s,stemp,                                                       ! stiff
 clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 clater     &   infmat,infmatmod,numat,                                        ! materl
@@ -485,7 +485,7 @@ clater        if(ierr.ne.izero) return
 c
 clater        call formdf_ld(
 clater     &   bintern,neq,                                                   ! force
-clater     &   x,d,dcur,numnp,                                                ! global
+clater     &   x,d,dcur,numnp,iddmat,                                         ! global
 clater     &   s,stemp,                                                       ! stiff
 clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 clater     &   infmat,infmatmod,numat,                                        ! materl
@@ -498,7 +498,7 @@ clater        if(ierr.ne.izero) return
 c
 clater        if(numfn.ne.izero) call formf_ld(
 clater     &   bintern,neq,                                                   ! force
-clater     &   x,numnp,                                                       ! global
+clater     &   x,numnp,iddmat,                                                ! global
 clater     &   s,stemp,                                                       ! stiff
 clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 clater     &   infmat,infmatmod,numat,                                        ! materl
@@ -538,7 +538,7 @@ c
 c...  transfer current displacement increments into displacement vector
 c     if a nonzero starting guess is desired.
 c
-      if(nprevdflag.eq.1) call idisp(deld,dispvec,id,numnp,neq)
+      if(nprevdflag.eq.1) call idisp(deld,dprev,id,numnp,neq)
 c
 c*********Note:  in the near future, all of the calls below should be
 c*********replaced by a single modular output section.
@@ -576,7 +576,8 @@ c
      & ngauss,                                                          ! eltype
      & delt,nstep,                                                      ! timdat
      & istatout,nstatout,                                               ! ioopts
-     & idout,idsk,iucd,kw,kp,kucd,ucdroot,iprestress)                   ! ioinfo
+     & idout,idsk,iucd,kw,kp,kucd,ucdroot,iprestress,                   ! ioinfo
+     & ierr,errstrng)                                                   ! errcode
 cdebug      write(6,*) "After write_state:"
 c
       if(nintg.eq.1) then
@@ -597,7 +598,7 @@ c
       end
 c
 c version
-c $Id: elastc.F,v 1.8 2005/03/30 01:51:17 willic3 Exp $
+c $Id: elastc.F,v 1.9 2005/04/01 23:01:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
