@@ -86,6 +86,7 @@ c...  local variables
 c
       integer nnattr,neattr,nngattr,negattr,nmattr,i,j,indien,imat
       integer ietype,ngauss,nen,numelg,l,ngpts,indtype,i1,i2,igpt
+      integer itmp(20)
       double precision xl(nsd,nenmax),xg(nsd)
       character filenm*200
 c
@@ -136,8 +137,11 @@ c
         if(ietype.eq.60) indtype=ieight
         if(ietype.eq.61) indtype=inine
         if(ietype.eq.62) indtype=10
+        do j=1,nen
+          itmp(j)=ien(indien+j-1)
+        end do
         write(kucd,"(2i7,2x,a4,20i7)") i,imat,eltype(indtype),
-     &   (ien(inducd(j,indtype)),j=indien,indien+nen-1)
+     &   (itmp(inducd(j,indtype)),j=1,nen)
       end do
       close(kucd)
 c
@@ -174,7 +178,7 @@ c
       end
 c
 c version
-c $Id: write_ucd_mesh.f,v 1.3 2004/08/26 18:48:59 willic3 Exp $
+c $Id: write_ucd_mesh.f,v 1.4 2004/08/31 19:14:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
