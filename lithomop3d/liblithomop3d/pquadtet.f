@@ -29,26 +29,29 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine pquadtet(sh,shj,gauss,ngauss,nen,nsd,nenmax,ngaussmax,
-     & intord)
+      subroutine pquadtet(sh,shj,gauss,infetype,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a quadratic tetrahedron.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nsd,nenmax,ngaussmax,intord
-      integer ngauss,nen
+      integer intord
+      integer infetype(4)
       double precision sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax)
       double precision gauss(nsd+1,ngaussmax)
 c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
+c...  local constants
 c
       double precision r(10),s(10),t(10),u(10)
       data r/ 1d0, 0d0, 0d0, 0d0,0.5d0,0.0d0,0.5d0,0.5d0,0.0d0,0.0d0/
@@ -65,7 +68,7 @@ c
 c
 c...  local variables
 c
-      integer i,l,nshsize,ngssize
+      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
       double precision g1,g2,rr,ss,tt,uu,drr,dss,dtt,duu
       double precision tetvol
 c
@@ -78,6 +81,8 @@ c
 c...  Quadratic tet definition
 c
       nen=10
+      nec=nsd*nen
+      nee=ndof*nen
       if(intord.eq.2) then
         ngauss=ione
         gauss(1,1)=fourth
@@ -96,6 +101,12 @@ c
           gauss(4,l)=fourth*tetvol
         end do
       end if
+c
+      infetype(1)=ngauss
+      infetype(2)=nen
+      infetype(3)=nec
+      infetype(4)=nee
+c
       do l=1,ngauss
         do i=1,nen
           rr=r(i)*gauss(1,l)
@@ -113,7 +124,7 @@ c
             drr=eight*r(i)*max(ss,one)*max(tt,one)*max(uu,one)
             dss=eight*s(i)*max(rr,one)*max(tt,one)*max(uu,one)
             dtt=eight*t(i)*max(rr,one)*max(ss,one)*max(uu,one)
-            duu=-eight*u(i)*max(rr,one)*max(ss,one)*max(tt,one)
+            duu=(-eight)*u(i)*max(rr,one)*max(ss,one)*max(tt,one)
             sh(1,i,l)=drr-duu
             sh(2,i,l)=dss-duu
             sh(3,i,l)=dtt-duu
@@ -126,7 +137,7 @@ c
       end
 c
 c version
-c $Id: pquadtet.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: pquadtet.f,v 1.2 2004/07/07 19:53:01 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
