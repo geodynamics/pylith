@@ -29,13 +29,14 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine load(id,ibond,bond,d,deld,b,histry,deltp,numnp,
-     & neq,nhist,nstep,lastep,ierr,errstrng)
+      subroutine load(id,ibond,bond,d,deld,bconcforce,histry,deltp,
+     & numnp,neq,nconcflag,nhist,nstep,lastep,ierr,errstrng)
 c
 c...program to transfer nodal boundary conditions into appropriate
 c   vectors:
 c
-c        b(neq) = global right-hand side vector (applied forces)
+c        bconcforce(neq) = concentrated nodal forces applied to global
+c                          right hand vector.
 c        d(ndof,numnp) = global displacements (fixed or zero
 c                        displacements)
 c        deld(ndof,numnp)= changes in displacement (constant velocity)
@@ -51,11 +52,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,neq,nhist,nstep,lastep,ierr
+      integer numnp,neq,nconcflag,nhist,nstep,lastep,ierr
       integer id(ndof,numnp),ibond(ndof,numnp)
       character errstrng*(*)
-      double precision bond(ndof,numnp),b(neq),d(ndof,numnp)
-      double precision deld(ndof,numnp),histry(nhist,lastep+1),deltp
+      double precision bond(ndof,numnp),bconcforce(neq*nconcflag)
+      double precision d(ndof,numnp),deld(ndof,numnp)
+      double precision histry(nhist,lastep+1),deltp
 c
 c...  local variables
 c
@@ -101,13 +103,16 @@ c...applied force, condition 3
 c
           else if(itype.eq.ithree) then
             k=id(i,j)
-            if(nstep.eq.izero) then
-              b(k)=bond(i,j)
-              if(ihist.ne.izero) b(k)=bond(i,j)*histry(ihist,1)
-            else if(nstep.ge.ione) then
-              if(ihist.ne.izero) b(k)=bond(i,j)*(histry(ihist,nstep+1)
-     &                                 -histry(ihist,nstep))
-            end if
+            bconcforce(k)=bond(i,j)
+            if(ihist.ne.izero) bconcforce(k)=bond(i,j)*
+     &       histry(ihist,nstep+1)
+c*            if(nstep.eq.izero) then
+c*              b(k)=bond(i,j)
+c*              if(ihist.ne.izero) b(k)=bond(i,j)*histry(ihist,1)
+c*            else if(nstep.ge.ione) then
+c*              if(ihist.ne.izero) b(k)=bond(i,j)*(histry(ihist,nstep+1)
+c*     &                                 -histry(ihist,nstep))
+c*            end if
           end if
         end do
       end do
@@ -118,7 +123,7 @@ c
       end
 c
 c version
-c $Id: load.f,v 1.3 2004/08/12 01:51:31 willic3 Exp $
+c $Id: load.f,v 1.4 2005/01/06 01:19:34 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
