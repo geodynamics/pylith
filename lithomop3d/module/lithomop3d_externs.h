@@ -37,6 +37,7 @@
 #if defined(F77EXTERNS_LOWERCASE_TRAILINGBAR)
 
 #define adjid_f adjid_
+#define cmp_stiffsz_f cmp_stiffsz_
 #define elastc_f elastc_
 #define id_split_f id_split_
 #define lnklst_f lnklst_
@@ -84,10 +85,12 @@
 #define write_sparse_info_f write_sparse_info_
 #define write_strscomp_f write_strscomp_
 #define write_subiter_f write_subiter_
+#define write_ucd_mesh_f write_ucd_mesh_
 
 #elif defined(F77EXTERNS_NOTRAILINGBAR)
 
 #define adjid_f adjid
+#define cmp_stiffsz_f cmp_stiffsz
 #define elastc_f elastc
 #define id_split_f id_split
 #define lnklst_f lnklst
@@ -135,10 +138,12 @@
 #define write_sparse_info_f write_sparse_info
 #define write_strscomp_f write_strscomp
 #define write_subiter_f write_subiter
+#define write_ucd_mesh_f write_ucd_mesh
 
 #elif defined(F77EXTERNS_EXTRATRAILINGBAR)
 
 #define adjid_f adjid__
+#define cmp_stiffsz_f cmp_stiffsz__
 #define elastc_f elastc__
 #define id_split_f id_split__
 #define lnklst_f lnklst__
@@ -186,10 +191,12 @@
 #define write_sparse_info_f write_sparse_info__
 #define write_strscomp_f write_strscomp__
 #define write_subiter_f write_subiter__
+#define write_ucd_mesh_f write_ucd_mesh__
 
 #elif defined(F77EXTERNS_UPPERCASE_NOTRAILINGBAR)
 
 #define adjid_f ADJID
+#define cmp_stiffsz_f CMP_STIFFSZ
 #define elastc_f ELASTC
 #define id_split_f ID_SPLIT
 #define lnklst_f LNKLST
@@ -237,6 +244,7 @@
 #define write_sparse_info_f WRITE_SPARSE_INFO
 #define write_strscomp_f WRITE_STRSCOMP
 #define write_subiter_f WRITE_SUBITER
+#define write_ucd_mesh_f WRITE_UCD_MESH
 
 #elif defined(F77EXTERNS_COMPAQ_F90)
 
@@ -245,6 +253,7 @@
 // this applies to the FORTRAN external, not the local macro alias!!!
 
 #define adjid_f adjid_
+#define cmp_stiffsz_f cmp_stiffsz__
 #define elastc_f elastc_
 #define id_split_f id_split__
 #define lnklst_f lnklst_
@@ -292,6 +301,7 @@
 #define write_sparse_info_f write_sparse_info__
 #define write_strscomp_f write_strscomp__
 #define write_subiter_f write_subiter__
+#define write_ucd_mesh_f write_ucd_mesh__
 
 #else
 #error Unknown translation for FORTRAN external symbols
@@ -310,6 +320,18 @@ extern "C" {
 	       int *,
 	       int *,
 	       int *);
+
+  void cmp_stiffsz_f(int *,
+	             int *,
+	             int *,
+	             int *,
+	             int *,
+	             int *,
+	             int *,
+	             int *,
+	             int *,
+	             int *,
+	             char *,int);
 
   void elastc_f(double *,          // sparse
 		double *,
@@ -401,10 +423,12 @@ extern "C" {
 		int *,
 		int *,
 		char *,            // files
+		char *,            // files
 		char *,
 		int *,             // error codes
 		char *,
 		int,               // string lengths
+		int,
 		int,
 		int);
 
@@ -1037,9 +1061,11 @@ extern "C" {
 		int *,
 		char *,            // files
 		char *,
+		char *,
 		int *,             // error codes
 		char *,
 		int,               // string lengths
+		int,
 		int,
 		int);
 
@@ -1106,12 +1132,24 @@ extern "C" {
 		       int *,
 		       int *,
 		       char *,int);
+
+  void write_ucd_mesh_f(double *,
+		       	int *,
+		       	int *,
+		       	int *,
+		       	int *,
+		       	int *,
+		       	double *,
+		       	int *,
+		       	int *,
+		       	int *,
+		       	char *,int);
 }
 
 #endif // lithomop3d_externs_h
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.5 2004/08/02 21:42:18 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.6 2004/08/25 01:41:59 willic3 Exp $
 
 // End of file
