@@ -38,7 +38,8 @@ c
      & infmat,matgpt,elas_strs,                                         ! materl
      & gauss,sh,shj,infetype,netypes,                                   ! eltype
      & skew,nskdim,numrot,                                              ! skew
-     & getshape,bmatrix,idebug,idout,kto,kw,ierr)                       ! info
+     & getshape,bmatrix,                                                ! bbar
+     & ierr)                                                            ! errcode
 c
 c...program to compute the total stress and strain for the current
 c   iteration for a given material model
@@ -52,8 +53,7 @@ c
 c...  subroutine arguments
 c
       integer neq,nsd,ndof,numnp,numfn,numslp,nstr,nddmat,nstatesz
-      integer ndmatsz,numelt,nconsz,matgpt,netypes,nskdim,numrot,idebug
-      integer idout,kto,kw,ierr
+      integer ndmatsz,numelt,nconsz,matgpt,netypes,nskdim,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
       integer infiel(6,numelt),infmat(6),infetype(4,netypes)
       double precision b(neq),x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
@@ -82,11 +82,9 @@ c
       integer npage,nmatel,nstate,ind,iel,indien,ietype,indstate,inddmat
       integer ngauss,nen,nee,l,indstateg,inddmatg
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
-      logical debug
 c
 cdebug      write(6,*) "Hello from elas_strs_cmp_ss_f!"
 c
-      debug=(idebug.eq.1).and.(idout.gt.1)
       npage=50
       nmatel=infmat(2)
       nstate=infmat(3)
@@ -138,10 +136,10 @@ c
         if(ierr.ne.0) return
         if(numrot.ne.0) call rpforc(p,skew,ien(indien),ndof,numnp,nen,
      &   nskdim)
-        if(debug) then
-          if(ind.eq.1.or.mod(ind,npage).eq.0) write(kw,1000)
-          call prntforc(iel,p,ien(indien),nen,ndof,idout,kw)
-        end if
+c**        if(debug) then
+c**          if(ind.eq.1.or.mod(ind,npage).eq.0) write(kw,1000)
+c**          call prntforc(iel,p,ien(indien),nen,ndof,idout,kw)
+c**        end if
         call addfor(b,p,lm(1,indien),lmx(1,indien),neq,nee)
       end do
  1000 format(//," local forces computed from stress field",//)
@@ -149,7 +147,7 @@ c
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.1 2004/06/16 16:53:36 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.2 2004/06/17 18:52:33 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
