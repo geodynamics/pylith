@@ -29,9 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine bsum(bextern,btraction,bgravity,bconcforce,bprestress,
-     & bintern,bresid,nextflag,ntractflag,ngravflag,nconcflag,
-     & nprestrflag,neq)
+      subroutine bsum(bextern,btraction,bgravity,bconcforce,bintern,
+     & bresid,nextflag,ntractflag,ngravflag,nconcflag,neq)
 c
 c...subroutine to sum all contributions to the external force vector,
 c   then subtract the internal force vector from the external vector
@@ -48,11 +47,10 @@ c
 c
 c...  subroutine arguments
 c
-      integer nextflag,ntractflag,ngravflag,nconcflag,nprestrflag,neq
+      integer nextflag,ntractflag,ngravflag,nconcflag,neq
       double precision bextern(nextflag*neq),btraction(ntractflag*neq)
       double precision bgravity(ngravflag*neq),bconcforce(nconcflag*neq)
-      double precision bprestress(nprestrflag*neq),bintern(neq)
-      double precision bresid(neq)
+      double precision bintern(neq),bresid(neq)
 c
 cdebug      integer idb
 c
@@ -65,8 +63,6 @@ c
         if(ngravflag.ne.izero) call daxpy(neq,one,bgravity,ione,
      &   bextern,ione)
         if(nconcflag.ne.izero) call daxpy(neq,one,bconcforce,ione,
-     &   bextern,ione)
-        if(nprestrflag.ne.izero) call daxpy(neq,alpha,bprestress,ione,
      &   bextern,ione)
         call dcopy(neq,bextern,ione,bresid,ione)
 cdebug        write(6,*) "bextern:"
@@ -83,10 +79,6 @@ cdebug        if(nconcflag.ne.izero) then
 cdebug          write(6,*) "bconcforce:"
 cdebug          write(6,*) (bconcforce(idb),idb=1,200)
 cdebug        end if
-cdebug        if(nprestrflag.ne.izero) then
-cdebug          write(6,*) "bprestress:"
-cdebug          write(6,*) (bprestress(idb),idb=1,200)
-cdebug        end if
       else
         call fill(bresid,zero,neq)
       end if
@@ -99,7 +91,7 @@ cdebug      write(6,*) (bresid(idb),idb=1,200)
       end
 c
 c version
-c $Id: bsum.f,v 1.1 2005/01/05 22:23:42 willic3 Exp $
+c $Id: bsum.f,v 1.2 2005/02/23 23:50:57 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
