@@ -1,0 +1,99 @@
+External force vector:
+
+bextern = btraction + bgravity + bconcforce - bprestress
+
+Internal force vector:
+
+bintern = sum(k*u)
+
+or:  bintern = sum(integral(b*strs))
+
+Residual force vector:
+
+bresid = bextern - bintern
+
+Vectors needed (note that these are the f77 names, not the python names):
+
+Original sparse matrix solution vectors:
+
+pcg(neq)
+zcg(neq)
+dprev(neq) (needed for nonzero guesses of PCG solution)
+
+Original force vectors:
+
+b(neq)
+btot(neq)
+bres(neq)
+gvec1(neq)
+gvec2(neq)
+pvec(neq)
+
+Temporary sparse matrix solution vectors:
+These will be replaced by vectors needed for PETSc routines.
+
+pcg(neq)
+zcg(neq)
+dprev(neq)
+
+New force vectors:
+
+bextern(nextflag*neq)
+btraction(ntractflag*neq)
+bgravity(ngravflag*neq)
+bconcforce(nconcflag*neq)
+bprestress(nprestrflag*neq)
+bintern(neq)
+bresid(neq)
+bwork(neq)  This vector is only needed for the PCG solution, so may be
+	    unnecessary for the PETSc solution routines.
+
+Flags will have a value of 0 or 1, depending on whether that vector is
+needed for the problem.
+
+New displacement vectors:
+
+dispvec(neq) This is returned by the linear inversion routine.
+	     The returned values are used in routine iterate and also
+	     in routine residu.
+
+Flag sources:
+All are determined in Lithomop3d_setup.py.
+Need to make sure that numberPrestressEntries takes into account
+whether automatically computed prestresses are being considered.  If
+not, I need a different method of determining the prestress flag.
+
+
+Force computations in outer (elastc/viscos = loading) loop:
+
+load -> update bconcforce
+loadx -> update bconcforce
+
+formdf -> update bintern
+formf -> update bintern
+
+For small strain problems, it would be OK to update btraction and
+bgravity in the outer loop, but not for large deformation problems.
+
+Force computations in inner (iterate = solution) loop:
+
+addpr -> update btraction if iter = 1 or lgdef (this could be moved to
+outer loop for small strain problems)
+gload_drv -> update bgravity if iter = 1 or lgdef (this could be moved
+to outer loop for small strain problems)
+bsum -> accumulate all forces and then compute residual for current
+iteration.
+
+    bextern = btraction + bgravity + bconcforce - bprestress
+    bresid = bextern - bintern
+
+Routine pcginv (to be replaced by PETSc routines) takes the current
+residual force vector (bresid), which remains unchanged on return.
+It then returns the current displacement increments in dispvec.  It
+also makes use of the temporary vectors bwork, pcg, zcg, and dprev (if
+the previous solution is used as a starting guess).  The current
+stiffness matrix is contained in alnz, where ja is the index array.
+
+The PETSc solution routine will use the residual force vector (bresid)
+and will return the corresponding displacement vector (dispvec), using
+K * dispvec = bresid, where K is the stiffness matrix (alnz).
