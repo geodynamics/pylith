@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine getshapb(xl,sh,shj,shd,shbar,det,gauss,vol,n,
-     & nen,nsd,ngauss,ierr)
+      subroutine getshapb(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,nsd,
+     & ngauss,ierr)
 c
 c...  Subroutine to compute shape functions and derivatives at
 c     Gauss points.
@@ -46,7 +46,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer n,nen,nsd,ngauss,ierr
+      integer iel,nen,nsd,ngauss,ierr
       double precision xl(nsd,nen),sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax)
       double precision shd(nsd+1,nenmax,ngaussmax),shbar(nsd+1,nenmax)
@@ -70,7 +70,7 @@ cdebug      write(6,*) "Hello from getshapb_f!"
 c
       vol=zero
       do l=1,ngauss
-        call getjac(xl,xs,det(l),shj(1,1,l),nen,nsd,n,ierr)
+        call getjac(xl,xs,det(l),shj(1,1,l),nen,nsd,iel,ierr)
         if(ierr.ne.0) return
         call getder(det(l),sh(1,1,l),shd(1,1,l),xs,nen,nsd)
         det(l)=gauss(4,l)*det(l)
@@ -81,7 +81,7 @@ c
       end
 c
 c version
-c $Id: getshapb.f,v 1.2 2004/06/15 19:46:30 willic3 Exp $
+c $Id: getshapb.f,v 1.3 2004/06/17 18:09:43 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
