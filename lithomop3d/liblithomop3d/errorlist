@@ -6,7 +6,7 @@
 #  100-199:	Invalid values
 #  200-299:	Arithmetic errors
 #  negative:	Invalid jacobian
-#  300-399:	????
+#  300-399:	Memory errors
 #
 #  ierr		Error
      1		Error opening file for reading.
@@ -27,4 +27,5 @@
    110          Matrix not positive-definite.
    111		Load history times are out of order.
    112		Not enough points to define a plane for slippery nodes.
-    -x		Zero or negative jacobian for element x.
+   113		Zero or negative jacobian for element.
+   300		Insufficient memory assigned.
