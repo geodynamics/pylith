@@ -184,11 +184,12 @@ PyObject * pylithomop3d_doubleListToArray(PyObject *, PyObject * args)
 void clearp(void *p)
 {
   free(p);
+  p = NULL;
   return;
 }
 
 
 // version
-// $Id: array.cc,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: array.cc,v 1.2 2005/03/17 18:39:59 willic3 Exp $
 
 // End of file
