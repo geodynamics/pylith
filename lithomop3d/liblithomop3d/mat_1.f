@@ -101,7 +101,8 @@ c
         errstrng="mat_prt_1"
         return
 c
- 700  format("Material number:   ",i7,/,10x,a80,/,
+ 700  format("Material number:       ",i7,/,
+     &       "Material type:         ",a24,/,
      &       "Number of properties:  ",i7,/)
  710  format(15x,a15,3x,1pe15.8)
 c
@@ -184,8 +185,8 @@ c
       end
 c
 c
-      subroutine td_matinit_1(state,dstate,dmat,prop,iddmat,tmax,nstate,
-     & nprop,matchg,ierr,errstrng)
+      subroutine td_matinit_1(state,dstate,dmat,prop,rtimdat,rgiter,
+     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
 c
 c...  subroutine to form the material matrix for an integration point
 c     for the time-dependent solution.  This routine is meant to be
@@ -320,7 +321,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.8 2004/07/21 19:18:23 willic3 Exp $
+c $Id: mat_1.f,v 1.9 2004/08/02 20:34:49 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
