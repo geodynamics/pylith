@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine rstiff(s,stemp,skew,ien,ndof,numnp,nen,nee,nskdim)
+      subroutine rstiff(s,stemp,skew,ien,numnp,nen,nee)
 c
 c...rotates the local stiffness matrix's coordinate system
 c   with respect to the global coordinates at specified nodes
@@ -37,16 +37,17 @@ c   for imposition of skew boundary conditions.  k'= (r-1) k r
 c
       include "implicit.inc"
 c
-c...  subroutine arguments
+c...  parameter definitions
 c
-      integer ndof,numnp,nen,nee,nskdim
-      integer ien(nen)
-      double precision s(nee,nee),stemp(nee,nee),skew(nskdim,numnp)
-c
-c...  defined constants
-c
+      include "ndimens.inc"
       include "nconsts.inc"
       include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer numnp,nen,nee
+      integer ien(nen)
+      double precision s(nee,nee),stemp(nee,nee),skew(nskdim,numnp)
 c
 c...  local variables
 c
@@ -67,7 +68,7 @@ c
       do i=1,nen
         k=ien(i)
         if((skew(1,k).ne.zero).and.(skew(nskdim,k).ne.zero)) then
-          call formrt(skew(1,k),rot,nskdim)
+          call formrt(skew(1,k),rot)
 	  call dcopy(nee*nee,s,ione,stemp,ione)
           ll=ndof*(i-1)
 c***********  this part still needs to be fixed for BLAS.
@@ -98,7 +99,7 @@ c**********
       end
 c
 c version
-c $Id: rstiff.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: rstiff.f,v 1.2 2004/07/05 20:12:11 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
