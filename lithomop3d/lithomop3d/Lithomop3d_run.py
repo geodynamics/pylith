@@ -139,7 +139,6 @@ class Lithomop3d_run(Component):
         self.pointerToMaxit = lm3dsetup.pointerToMaxit
         self.pointerToNtdinit = lm3dsetup.pointerToNtdinit
         self.pointerToLgdef = lm3dsetup.pointerToLgdef
-        self.pointerToIbbar = lm3dsetup.pointerToIbbar
         self.pointerToUtol = lm3dsetup.pointerToUtol
         self.pointerToFtol = lm3dsetup.pointerToFtol
         self.pointerToEtol = lm3dsetup.pointerToEtol
@@ -191,7 +190,6 @@ class Lithomop3d_run(Component):
             self.currentIterationsBetweenReform,
             self.currentStepsBetweenReform,
             self.currentLargeDeformationFlag,
-            self.currentBbarFlag,
             self.currentMaximumIterations,
             self.currentNumberTotalIterations,
             self.currentNumberReforms,
@@ -322,7 +320,6 @@ class Lithomop3d_run(Component):
                 self.pointerToMaxit,
                 self.pointerToNtdinit,
                 self.pointerToLgdef,
-                self.pointerToIbbar,
                 self.pointerToUtol,
                 self.pointerToFtol,
                 self.pointerToEtol,
@@ -419,7 +416,6 @@ class Lithomop3d_run(Component):
                 self.pointerToMaxit,
                 self.pointerToNtdinit,
                 self.pointerToLgdef,
-                self.pointerToIbbar,
                 self.pointerToUtol,
                 self.pointerToFtol,
                 self.pointerToEtol,
@@ -454,6 +450,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.2 2004/07/16 20:43:10 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.3 2004/07/21 20:19:53 willic3 Exp $
 
 # End of file 
