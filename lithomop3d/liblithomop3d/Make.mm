@@ -26,7 +26,7 @@ PROJ_SRCS = \
 	addfor.f \
         addpr.f \
         addsn.f \
-        addstf.f \
+        addstf.F \
         adfldp.f \
         adjid.f \
         autoprestr.F \
@@ -37,7 +37,7 @@ PROJ_SRCS = \
         bsum.f \
         choldc2.f \
         cholsl.f \
-        ckdiag.f \
+        ckdiag.F \
         cklock.f \
         cmp_stiffsz.f \
         const.f \
@@ -45,9 +45,9 @@ PROJ_SRCS = \
         cross.f \
         disp.f \
         eforce.f \
-        elas_matinit_cmp_ss.f \
+        elas_matinit_cmp_ss.F \
         elas_strs_cmp_ss.f \
-        elas_strs_mat_cmp_ss.f \
+        elas_strs_mat_cmp_ss.F \
         elastc.F \
         fill.f \
         formdf_ss.f \
@@ -112,7 +112,7 @@ PROJ_SRCS = \
         mat_19.f \
         mat_20.f \
         mathist.f \
-        matinit_drv.f \
+        matinit_drv.F \
         matmod_def.f \
         meansh.f \
         nchar.f \
@@ -129,7 +129,7 @@ PROJ_SRCS = \
         pquadtet.f \
         pquadwedge.f \
         preshape.f \
-        prestr_matinit_cmp_ss.f \
+        prestr_matinit_cmp_ss.F \
         presurql.f \
         printd.f \
         printf.f \
@@ -175,11 +175,11 @@ PROJ_SRCS = \
         stiff_ss.f \
         stiffld.f \
         stress_drv.f \
-        stress_mat_drv.f \
+        stress_mat_drv.F \
         symmet.f \
-        td_matinit_cmp_ss.f \
+        td_matinit_cmp_ss.F \
         td_strs_cmp_ss.f \
-        td_strs_mat_cmp_ss.f \
+        td_strs_mat_cmp_ss.F \
         transp.f \
         update_state.f \
         viscos.F \
@@ -220,7 +220,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.14 2005/03/10 01:10:36 knepley Exp $
+# $Id: Make.mm,v 1.15 2005/03/11 03:20:09 knepley Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 

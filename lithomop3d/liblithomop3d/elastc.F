@@ -257,7 +257,7 @@ c
 cdebug        write(6,*) "Before matinit_drv (1):"
         write(kto,650)
         call matinit_drv(
-     &   alnz,ja,nnz,neq,                                               ! sparse
+     &   A,alnz,ja,nnz,neq,                                             ! sparse
      &   x,d,iwink,wink,numnp,nwink,                                    ! global
      &   dx,iwinkx,winkx,numslp,numsn,nwinkx,                           ! slip
      &   tfault,numfn,                                                  ! fault
@@ -332,7 +332,7 @@ c
       else if(lgdefp.eq.izero.and.intord.eq.ithree) then
         write(kto,650)
         call matinit_drv(
-     &   alnz,ja,nnz,neq,                                               ! sparse
+     &   A,alnz,ja,nnz,neq,                                             ! sparse
      &   x,d,iwink,wink,numnp,nwink,                                    ! global
      &   dx,iwinkx,winkx,numslp,numsn,nwinkx,                           ! slip
      &   tfault,numfn,                                                  ! fault
@@ -407,7 +407,7 @@ c
 clater      else if(lgdefp.eq.ione.and.intord.ne.ithree) then
 clater        write(kto,650)
 clater        call matinit_drv(
-clater     &   alnz,ja,nnz,neq,                                               ! sparse
+clater     &   A,alnz,ja,nnz,neq,                                               ! sparse
 clater     &   x,d,iwink,wink,numnp,nwink,                                    ! global
 clater     &   dx,iwinkx,winkx,numslp,numsn,nwinkx,                           ! slip
 clater     &   tfault,numfn,                                                  ! fault
@@ -477,7 +477,7 @@ c
 clater      else if(lgdefp.eq.1.and.intord.eq.ithree) then
 clater        write(kto,650)
 clater        call matinit_drv(
-clater     &   alnz,ja,nnz,neq,                                               ! sparse
+clater     &   A,alnz,ja,nnz,neq,                                               ! sparse
 clater     &   x,d,iwink,wink,numnp,nwink,                                    ! global
 clater     &   dx,iwinkx,winkx,numslp,numsn,nwinkx,                           ! slip
 clater     &   tfault,numfn,                                                  ! fault
@@ -625,7 +625,7 @@ c
       end
 c
 c version
-c $Id: elastc.F,v 1.2 2005/03/10 01:10:36 knepley Exp $
+c $Id: elastc.F,v 1.3 2005/03/11 03:20:09 knepley Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
