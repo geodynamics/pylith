@@ -38,9 +38,8 @@ c
      & idout,idsk,kw,kp)                                                ! ioinfo
 c
 c...  program to print stress and strain
-c     Note:  at present, it is assumed that a different istatout array
-c     can be passed in for the elastic and time-dependent solutions.  No
-c     checking is done to determine which is being used.
+c     Note:  at present, it is assumed that the same istatout array
+c     is used for the elastic and time-dependent solutions.
 c
       include "implicit.inc"
 c
@@ -57,7 +56,7 @@ c
       integer nstatesz,numelt,numat,nstep,idout,idsk,kw,kp
       integer infiel(6,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
       integer ismatmod(nstatesmax,nmatmodmax),infetype(4,netypes)
-      integer istatout(2,nstatesmax,2)
+      integer istatout(2,nstatesmax)
       double precision delt
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
 c
@@ -73,7 +72,7 @@ c...  local variables
 c
       integer matmodpt(nstatesmax,nmatmodmax)
       integer m50,i,iel,imat,ietype,ngauss,matmodel,nstate,indstate,l
-      integer indstateg,nout,j,iout
+      integer indstateg,nout,j
       double precision stmp(6),tmult
       character statedescr*21
 cdebug      integer idb,jdb
@@ -85,8 +84,6 @@ c
 cdebug      write(6,*) "Hello from write_state_f!"
 c
       m50=50
-      iout=ione
-      if(nstep.gt.izero) iout=itwo
 c
 c...  define pointer array for location of state variables for each
 c     material model.
@@ -113,7 +110,7 @@ c
 c...  loop over number of state variables
 c
       do i=1,nstatesmax
-        if(istatout(1,i,iout).ne.izero) then
+        if(istatout(1,i).ne.izero) then
           nout=izero
           do iel=1,numelt
             imat=infiel(2,iel)
@@ -145,10 +142,10 @@ c
 c
 c...  output increments/rates, if desired.
 c
-        if(istatout(2,i,iout).ne.izero) then
+        if(istatout(2,i).ne.izero) then
           tmult=one
           statedescr="   i n c r e m e n t "
-          if(istatout(2,i,iout).eq.ione) then
+          if(istatout(2,i).eq.ione) then
             if(delt.gt.zero) tmult=one/delt
             statedescr="   r a t e "
           end if
@@ -190,7 +187,7 @@ cdebug          write(6,*) "delt,nstep,tmult:",delt,nstep,tmult
       end
 c
 c version
-c $Id: write_state.f,v 1.7 2004/08/25 01:12:48 willic3 Exp $
+c $Id: write_state.f,v 1.8 2004/08/31 18:58:45 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
