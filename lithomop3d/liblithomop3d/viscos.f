@@ -219,8 +219,8 @@ c
               reform=(mod(j,ntdinitp).eq.izero)
             end if
             reform=reform.or.ltim
-            if(reform) ireform=ione
-            ntimdat(9)=ireform
+c*            if(reform) ireform=ione
+c*            ntimdat(9)=ireform
             fulout=.false.
             if(ntot.eq.iprint(indexx)) fulout=.true.
 c
@@ -280,21 +280,24 @@ c
             if(lgdefp.eq.izero.and.intord.ne.ithree) then
 cdebug              write(6,*) "Before matinit_drv (1):"
 cdebug              write(6,*) "reform:",reform
-              if(reform) call matinit_drv(
-     &         alnz,ja,nnz,neq,                                         ! sparse
-     &         x,d,iwink,wink,numnp,nwink,                              ! global
-     &         dx,iwinkx,winkx,numslp,numsn,nwinkx,                     ! slip
-     &         tfault,numfn,                                            ! fault
-     &         s,stemp,                                                 ! stiff
-     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz, ! elemnt
-     &         ndmatsz,numelt,nconsz,                                   ! elemnt
-     &         prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,       ! materl
-     &         gauss,sh,shj,infetype,                                   ! eltype
-     &         histry,rtimdat,ntimdat,rgiter,nhist,lastep,              ! timdat
-     &         td_matinit_cmp_ss,                                       ! timdat
-     &         skew,numrot,                                             ! skew
-     &         getshapn,bmatrixn,                                       ! bbar
-     &         ierr,errstrng)                                           ! errcode
+              if(reform) then
+                write(kto,650)
+                call matinit_drv(
+     &           alnz,ja,nnz,neq,                                       ! sparse
+     &           x,d,iwink,wink,numnp,nwink,                            ! global
+     &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
+     &           tfault,numfn,                                          ! fault
+     &           s,stemp,                                               ! stiff
+     &           state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,        ! elemnt
+     &           nstatesz,ndmatsz,numelt,nconsz,                        ! elemnt
+     &           prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,     ! materl
+     &           gauss,sh,shj,infetype,                                 ! eltype
+     &           histry,rtimdat,ntimdat,rgiter,nhist,lastep,            ! timdat
+     &           td_matinit_cmp_ss,                                     ! timdat
+     &           skew,numrot,                                           ! skew
+     &           getshapn,bmatrixn,                                     ! bbar
+     &           ierr,errstrng)                                         ! errcode
+              end if
 cdebug              write(6,*) "After matinit_drv (1):"
 c
               if(ierr.ne.izero) return
@@ -353,21 +356,24 @@ c
             else if(lgdefp.eq.izero.and.intord.eq.ithree) then
 cdebug              write(6,*) "Before matinit_drv (2):"
 cdebug              write(6,*) "reform:",reform
-              if(reform) call matinit_drv(
-     &         alnz,ja,nnz,neq,                                         ! sparse
-     &         x,d,iwink,wink,numnp,nwink,                              ! global
-     &         dx,iwinkx,winkx,numslp,numsn,nwinkx,                     ! slip
-     &         tfault,numfn,                                            ! fault
-     &         s,stemp,                                                 ! stiff
-     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz, ! elemnt
-     &         ndmatsz,numelt,nconsz,                                   ! elemnt
-     &         prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,       ! materl
-     &         gauss,sh,shj,infetype,                                   ! eltype
-     &         histry,rtimdat,ntimdat,rgiter,nhist,lastep,              ! timdat
-     &         td_matinit_cmp_ss,                                       ! timdat
-     &         skew,numrot,                                             ! skew
-     &         getshapb,bmatrixb,                                       ! bbar
-     &         ierr,errstrng)                                           ! errcode
+              if(reform) then
+                write(kto,650)
+                call matinit_drv(
+     &           alnz,ja,nnz,neq,                                       ! sparse
+     &           x,d,iwink,wink,numnp,nwink,                            ! global
+     &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
+     &           tfault,numfn,                                          ! fault
+     &           s,stemp,                                               ! stiff
+     &           state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,        ! elemnt
+     &           nstatesz,ndmatsz,numelt,nconsz,                        ! elemnt
+     &           prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,     ! materl
+     &           gauss,sh,shj,infetype,                                 ! eltype
+     &           histry,rtimdat,ntimdat,rgiter,nhist,lastep,            ! timdat
+     &           td_matinit_cmp_ss,                                     ! timdat
+     &           skew,numrot,                                           ! skew
+     &           getshapb,bmatrixb,                                     ! bbar
+     &           ierr,errstrng)                                         ! errcode
+              end if
 cdebug              write(6,*) "After matinit_drv (2):"
 c
               if(ierr.ne.izero) return
@@ -424,20 +430,23 @@ c
               if(ierr.ne.izero) return
 c
 clater            else if(lgdefp.eq.ione.and.intord.ne.ithree) then
-clater              if(reform) call matinit_drv(
-clater     &         alnz,ja,nnz,neq,                                         ! sparse
-clater     &         x,d,iwink,wink,numnp,nwink,                              ! global
-clater     &         dx,iwinkx,winkx,numslp,numsn,nwinkx,                     ! slip
-clater     &         tfault,numfn,                                            ! fault
-clater     &         s,stemp,                                                 ! stiff
-clater     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz, ! elemnt
-clater     &         ndmatsz,numelt,nconsz,                                   ! elemnt
-clater     &         prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,       ! materl
-clater     &         gauss,sh,shj,infetype,                                   ! eltype
-clater     &         histry,rtimdat,ntimdat,nhist,lastep,td_matinit_cmp_ld,   ! timdat
-clater     &         skew,numrot,                                             ! skew
-clater     &         getshapn,bmatrixn,                                       ! bbar
-clater     &         ierr,errstrng)                                           ! errcode
+clater              if(reform) then
+clater                write(kto,650)
+clater                call matinit_drv(
+clater     &           alnz,ja,nnz,neq,                                       ! sparse
+clater     &           x,d,iwink,wink,numnp,nwink,                            ! global
+clater     &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
+clater     &           tfault,numfn,                                          ! fault
+clater     &           s,stemp,                                               ! stiff
+clater     &           state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,        ! elemnt
+clater     &           nstatesz,ndmatsz,numelt,nconsz,                        ! elemnt
+clater     &           prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,     ! materl
+clater     &           gauss,sh,shj,infetype,                                 ! eltype
+clater     &           histry,rtimdat,ntimdat,nhist,lastep,td_matinit_cmp_ld, ! timdat
+clater     &           skew,numrot,                                           ! skew
+clater     &           getshapn,bmatrixn,                                     ! bbar
+clater     &           ierr,errstrng)                                         ! errcode
+clater              end if
 c
 clater              if(ierr.ne.izero) return
 c
@@ -590,6 +599,7 @@ c
       if(idout.gt.ione) close(kw)
       close(kp)
 c
+ 650  format(//,"Reforming the stiffness matrix:",/)
  700  format('STEP ',i7)
  800  format(/," Total number of equilibrium iterations        = ",i7,/,
      &         " Total number of stiffness matrix reformations = ",i7,/,
@@ -605,7 +615,7 @@ c
       end
 c
 c version
-c $Id: viscos.f,v 1.4 2004/08/12 02:34:54 willic3 Exp $
+c $Id: viscos.f,v 1.5 2004/08/12 20:51:09 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
