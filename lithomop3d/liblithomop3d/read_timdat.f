@@ -30,26 +30,35 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine read_timdat(delt,alfa,utol,ftol,etol,times,tunits,
-     & maxstp,maxit,maxitc,lgdef,ibbar,itmax,nintg,lastep,kr,kw,idout,
-     & ierr,tfile,ofile)
+     & maxstp,maxit,ntdinit,lgdef,ibbar,itmax,nintg,lastep,kr,kw,idout,
+     & tfile,ofile,ierr,errstrng)
 c
 c...program to read in time step data
 c
+c     Error codes:
+c         0:  No error
+c         1:  Error opening input file
+c         2:  Error opening output file
+c         3:  Read error
+c         4:  Write error
+c         5:  Time units not specified
+c
       include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
       integer nintg,lastep,kr,kw,idout,ierr
-      integer maxstp(nintg),maxit(nintg),maxitc(nintg),lgdef(nintg)
+      integer maxstp(nintg),maxit(nintg),ntdinit(nintg),lgdef(nintg)
       integer ibbar(nintg),itmax(nintg)
       double precision delt(nintg),alfa(nintg),utol(nintg),ftol(nintg)
       double precision etol(nintg),times(lastep+1)
       double precision tunits
-      character tfile*(*),ofile*(*)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
+      character tfile*(*),ofile*(*),errstrng*(*)
 c
 c...  intrinsic functions
 c
@@ -65,13 +74,14 @@ c
 cdebug      write(6,*) "Hello from read_timdat_f!"
 cdebug      write(6,*) nintg,lastep,kr,kw,idout,ierr,tunits
 c
-      ierr=0
+      ierr=izero
       open(kr,file=tfile,status="old",err=20)
       call pskip(kr)
       read(kr,"(a80)") dummy
       i=index(dummy,"=")
-      if(i.eq.0) then
-        ierr=2
+      if(i.eq.izero) then
+        ierr=5
+        errstrng="read_timdat"
         return
       end if
       call pskip(kr)
@@ -80,47 +90,47 @@ c...  read information on time step groups
 c
       do i=1,nintg
         read(kr,*,err=30,end=30) n,maxstp(i),delt(i),alfa(i),
-     &   maxit(i),maxitc(i),lgdef(i),ibbar(i),utol(i),ftol(i),etol(i),
+     &   maxit(i),ntdinit(i),lgdef(i),ibbar(i),utol(i),ftol(i),etol(i),
      &   itmax(i)
         if(utol(i).le.zero) utol(i)=1.d-7
         if(ftol(i).le.zero) ftol(i)=1.d-4
         if(etol(i).le.zero) etol(i)=1.d-7
         delt(i)=tunits*delt(i)
-cdebug        write(6,*) n,maxstp(i),delt(i),alfa(i),maxit(i),maxitc(i),
+cdebug        write(6,*) n,maxstp(i),delt(i),alfa(i),maxit(i),ntdinit(i),
 cdebug     &   lgdef(i),ibbar(i),utol(i),ftol(i),etol(i),itmax(i)
       end do
       close(kr)
 c
       delt(1)=zero
-      maxstp(1)=0
+      maxstp(1)=izero
 c
 c...echo input to file
 c
-      if(idout.gt.0) then
-        open(kw,file=ofile,status="old",access="append")
-        write(kw,1000)
+      if(idout.gt.izero) then
+        open(kw,file=ofile,err=40,status="old",access="append")
+        write(kw,1000,err=50)
         do i=1,nintg
-          write(kw,2000) i,maxstp(i),delt(i),alfa(i),maxit(i),maxitc(i),
-     &     lgdef(i),ibbar(i),utol(i),ftol(i),etol(i),itmax(i)
+          write(kw,2000,err=50) i,maxstp(i),delt(i),alfa(i),maxit(i),
+     &     ntdinit(i),lgdef(i),ibbar(i),utol(i),ftol(i),etol(i),itmax(i)
         end do
       end if
 c
 c...write out time-step/time relationship for one cycle
 c
       times(1)=zero
-      nstep=0
-      if(idout.gt.0) write(kw,3000) nstep,1,times(1)
+      nstep=izero
+      if(idout.gt.izero) write(kw,3000,err=50) nstep,1,times(1)
       do i=2,nintg
         ii=i
-        if(idout.gt.0) write(kw,5000)
+        if(idout.gt.izero) write(kw,5000,err=50)
         do j=1,maxstp(i)
-          nstep=nstep+1
+          nstep=nstep+ione
           nc=nstep+1
           times(nc)=times(nstep)+delt(i)
-          if(idout.gt.0) write(kw,4000) nstep,ii,times(nc)
+          if(idout.gt.izero) write(kw,4000,err=50) nstep,ii,times(nc)
         end do
       end do
-      if(idout.gt.0) close(kw)
+      if(idout.gt.izero) close(kw)
 c
 c...  normal return
 c
@@ -130,6 +140,7 @@ c...  error opening input file
 c
  20   continue
         ierr=1
+        errstrng="read_timdat"
         close(kr)
         return
 c
@@ -137,12 +148,29 @@ c...  error reading input file
 c
  30   continue
         ierr=3
+        errstrng="read_timdat"
         close(kr)
+        return
+c
+c...  error opening output file
+c
+ 40   continue
+        ierr=2
+        errstrng="read_timdat"
+        close(kw)
+        return
+c
+c...  error writing to output file
+c
+ 50   continue
+        ierr=4
+        errstrng="read_timdat"
+        close(kw)
         return
 c
 1000  format(///,' t i m e   s t e p   i n f o r m a t i o n',//,
      & '   Note:  Time step group #1 is the elastic solution',//,
-     & 'group   #      step    alfa  maxit maxitc lgdef ibbar  utol',
+     & 'group   #      step    alfa  maxit ntdinit lgdef ibbar  utol',
      & '  ftol  etol  itmax',/,
      & '  #   steps    size',/)
 2000  format(i3,1x,i5,2x,1pe10.4,2x,0pf4.2,2x,i5,1x,i5,1x,i5,1x,i5,1x,
@@ -155,7 +183,7 @@ c
       end
 c
 c version
-c $Id: read_timdat.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: read_timdat.f,v 1.2 2004/07/12 19:11:38 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
