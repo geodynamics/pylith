@@ -83,11 +83,12 @@ c
           end if
         end do
       end do
+      iwork=iwork+neemax*neemax
       return
       end
 c
 c version
-c $Id: cmp_stiffsz.f,v 1.1 2004/08/25 00:05:24 willic3 Exp $
+c $Id: cmp_stiffsz.f,v 1.2 2004/08/26 18:10:22 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
