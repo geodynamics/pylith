@@ -325,6 +325,7 @@ extern "C" {
 		    double *,
 		    double *,
 		    double *,
+		    double *,
 		    int *,
 		    double *,
 		    double *,          // global
@@ -431,6 +432,7 @@ extern "C" {
 
   void elastc_f(Mat *,             // sparse
 		double *,          // force
+		double *,
 		double *,
 		double *,
 		double *,
@@ -936,6 +938,8 @@ extern "C" {
 		      int *,
 		      int *,
 		      int *,
+		      int *,
+		      int *,
 		      char *,
 		      int *,
 		      char *,
@@ -1056,6 +1060,7 @@ extern "C" {
 
   void viscos_f(Mat *,             // sparse
 		double *,          // force
+		double *,
 		double *,
 		double *,
 		double *,
@@ -1230,6 +1235,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.15 2005/03/31 23:27:58 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.16 2005/04/01 23:54:26 willic3 Exp $
 
 // End of file

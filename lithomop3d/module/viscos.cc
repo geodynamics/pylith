@@ -55,6 +55,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   PyObject* pyPointerToBintern;
   PyObject* pyPointerToBresid;
   PyObject* pyPointerToDispVec;
+  PyObject* pyPointerToDprev;
   PyObject* pyPointerToListArrayNforce;
   PyObject* pyPointerToListArrayGrav;
   PyObject* pyPointerToX;                     // Global arrays
@@ -134,7 +135,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   int viscousStage;
   int iterateEvent;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:viscos",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:viscos",
 			    &pyA,                              // Sparse matrix arrays
 			    &pyPointerToBextern,               // Force vectors
 			    &pyPointerToBtraction,
@@ -143,6 +144,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 			    &pyPointerToBintern,
 			    &pyPointerToBresid,
 			    &pyPointerToDispVec,
+			    &pyPointerToDprev,
 			    &pyPointerToListArrayNforce,
 			    &pyPointerToListArrayGrav,
 			    &pyPointerToX,                     // Global arrays
@@ -237,6 +239,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   double*  pointerToBintern = (double*) PyCObject_AsVoidPtr(pyPointerToBintern);
   double*  pointerToBresid = (double*) PyCObject_AsVoidPtr(pyPointerToBresid);
   double*  pointerToDispVec = (double*) PyCObject_AsVoidPtr(pyPointerToDispVec);
+  double*  pointerToDprev = (double*) PyCObject_AsVoidPtr(pyPointerToDprev);
   int*  pointerToListArrayNforce = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNforce);
   double*  pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
   double*  pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
@@ -320,6 +323,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 	   pointerToBintern,
 	   pointerToBresid,
 	   pointerToDispVec,
+	   pointerToDprev,
 	   pointerToListArrayNforce,
 	   pointerToListArrayGrav,
 	   pointerToX,                        // Global arrays
@@ -423,6 +427,6 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 
 
 // version
-// $Id: viscos.cc,v 1.11 2005/03/31 23:27:58 willic3 Exp $
+// $Id: viscos.cc,v 1.12 2005/04/01 23:54:26 willic3 Exp $
 
 // End of file
