@@ -118,7 +118,7 @@ c...  external routines
 c
       external bmatrixn,bmatrixb,getshapn,getshapb
       external prestr_matinit_cmp_ss,gload_cmp_ss,elas_strs_cmp_ss
-      external prestr_strs_mat_cmp_ss
+      external elas_strs_mat_cmp_ss
 c
 c...  local variables
 c
@@ -298,7 +298,7 @@ c
      &   skew,                                                          ! skew
      &   ncodat,nunits,nprint,                                          ! ioinfo
      &   getshapn,bmatrixn,gload_cmp_ss,elas_strs_cmp_ss,               ! external
-     &   prestr_strs_mat_cmp_ss,                                        ! external
+     &   elas_strs_mat_cmp_ss,                                          ! external
      &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After iterate (1):"
 c
@@ -371,7 +371,7 @@ c
      &   skew,                                                          ! skew
      &   ncodat,nunits,nprint,                                          ! ioinfo
      &   getshapb,bmatrixb,gload_cmp_ss,elas_strs_cmp_ss,               ! external
-     &   prestr_strs_mat_cmp_ss,                                        ! external
+     &   elas_strs_mat_cmp_ss,                                          ! external
      &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After iterate (2):"
 c
@@ -440,7 +440,7 @@ clater     &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! 
 clater     &   skew,                                                          ! skew
 clater     &   ncodat,nunits,nprint,                                          ! ioinfo
 clater     &   getshapn,bmatrixn,gload_cmp_ld,elas_strs_cmp_ld,               ! external
-clater     &   prestr_strs_mat_cmp_ld,                                        ! external
+clater     &   elas_strs_mat_cmp_ld,                                          ! external
 clater     &   ierr,errstrng)                                                 ! errcode
 c
 clater        if(ierr.ne.izero) return
@@ -508,7 +508,7 @@ clater     &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! 
 clater     &   skew,                                                          ! skew
 clater     &   ncodat,nunits,nprint,                                          ! ioinfo
 clater     &   getshapb,bmatrixb,gload_cmp_ld,elas_strs_cmp_ld,               ! external
-clater     &   prestr_strs_mat_cmp_ld,                                        ! external
+clater     &   elas_strs_mat_cmp_ld,                                          ! external
 clater     &   ierr,errstrng)                                                 ! errcode
 c
 clater        if(ierr.ne.izero) return
@@ -567,7 +567,7 @@ c
       if(idout.ne.0) close(kw)
       close(kp)
 c
-600   format(//,'Beginning prerstress computation:',/)
+600   format(//,'Beginning prestress computation:',/)
 650   format(//,"Reforming the stiffness matrix:",/)
 700   format('STEP ',i5)
 800   format(/," Total number of equilibrium iterations        = ",i7,/,
@@ -577,7 +577,7 @@ c
       end
 c
 c version
-c $Id: autoprestr.f,v 1.1 2005/01/17 21:23:07 willic3 Exp $
+c $Id: autoprestr.f,v 1.2 2005/01/18 17:51:45 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
