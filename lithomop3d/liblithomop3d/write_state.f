@@ -137,8 +137,8 @@ c
                 end if
                 write(kw,3000) iel,l,(stmp(j),j=1,nstr)
               end if
-              if(idsk.eq.0) write(kp,1500) iel,l,(stmp(j),j=1,nstr)
-              if(idsk.eq.1) write(kp) stmp
+              if(idsk.eq.ione) write(kp,1500) iel,l,(stmp(j),j=1,nstr)
+              if(idsk.eq.itwo) write(kp) stmp
             end do
           end do
         end if
@@ -174,8 +174,8 @@ cdebug          write(6,*) "delt,nstep,tmult:",delt,nstep,tmult
                 end if
                 write(kw,3000) iel,l,(stmp(j),j=1,nstr)
               end if
-              if(idsk.eq.izero) write(kp,1500) iel,l,(stmp(j),j=1,nstr)
-              if(idsk.eq.ione) write(kp) stmp
+              if(idsk.eq.ione) write(kp,1500) iel,l,(stmp(j),j=1,nstr)
+              if(idsk.eq.itwo) write(kp) stmp
             end do
           end do
         end if
@@ -190,7 +190,7 @@ cdebug          write(6,*) "delt,nstep,tmult:",delt,nstep,tmult
       end
 c
 c version
-c $Id: write_state.f,v 1.6 2004/08/12 02:36:01 willic3 Exp $
+c $Id: write_state.f,v 1.7 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -75,11 +75,11 @@ c
         open(kw,file=ofile,err=10,status="old",access="append")
         write(kw,1000,err=20) numat
       end if
-      if(idsk.eq.izero) then
+      if(idsk.eq.ione) then
         open(kp,file=pfile,err=10,status="old",access="append")
         write(kp,"(i5)",err=20) numat
       end if
-      if(idsk.eq.ione) then
+      if(idsk.eq.itwo) then
         open(kp,file=pfile,err=10,status="old",access="append",
      &   form="unformatted")
         write(kp,err=20) numat
@@ -199,7 +199,7 @@ c
       end
 c
 c version
-c $Id: write_props.f,v 1.3 2004/07/15 20:22:36 willic3 Exp $
+c $Id: write_props.f,v 1.4 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

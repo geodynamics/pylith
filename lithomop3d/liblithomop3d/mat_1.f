@@ -75,10 +75,10 @@ c
 c
 c...  output plot results
 c
-      if(idsk.eq.izero) then
+      if(idsk.eq.ione) then
 	write(kp,"(3i7)",err=10) matnum,mattype,nprop
 	write(kp,"(1pe15.8,20(2x,1pe15.8))",err=10) (prop(i),i=1,nprop)
-      else if(idsk.eq.ione) then
+      else if(idsk.eq.itwo) then
 	write(kp,err=10) matnum,mattype,nprop
 	write(kp,err=10) prop
       end if
@@ -334,7 +334,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.11 2004/08/12 20:43:09 willic3 Exp $
+c $Id: mat_1.f,v 1.12 2004/08/25 01:12:48 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 

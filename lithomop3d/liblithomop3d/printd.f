@@ -79,7 +79,7 @@ cdebug      write(6,*) "Hello from printd_f!"
 c
       if(nout.eq.0) return
       npage=50
-      if(idout.gt.1.or.idsk.eq.0.or.iflag.eq.2) then
+      if(idout.gt.1.or.idsk.eq.1.or.iflag.eq.2) then
         do n=1,nout
           if((n.eq.1.or.mod(n,npage).eq.0).and.idout.gt.1) then
             write(kw,1000) head(iflag),(labeld(i),i=1,ndof)
@@ -89,17 +89,17 @@ c
           if(iflag.eq.2) m=kout(n)
           if(idout.gt.1) write(kw,2000)  m,(d(i,m),i=1,ndof)
           if(deltp.eq.zero) then
-            if(idsk.eq.0) write(kp,3000) m,(d(i,m),i=1,ndof)
-            if(idsk.eq.1.and.iflag.eq.2) write(kp) m,(d(i,m),i=1,ndof)
+            if(idsk.eq.1) write(kp,3000) m,(d(i,m),i=1,ndof)
+            if(idsk.eq.2.and.iflag.eq.2) write(kp) m,(d(i,m),i=1,ndof)
           else
-            if(idsk.eq.0) write(kp,3000) m,(d(i,m),i=1,ndof),
+            if(idsk.eq.1) write(kp,3000) m,(d(i,m),i=1,ndof),
      &       (deld(j,m)/deltp,j=1,ndof)
-            if(idsk.eq.1.and.iflag.eq.2) write(kp) m,
+            if(idsk.eq.2.and.iflag.eq.2) write(kp) m,
      &       (d(i,m),i=1,ndof),(deld(j,m)/deltp,j=1,ndof)
           end if
         end do
       end if
-      if(idsk.eq.1.and.iflag.eq.1) then
+      if(idsk.eq.2.and.iflag.eq.1) then
         write(kp) d
         if(deltp.ne.zero) then
           write(kp) deltp
@@ -113,7 +113,7 @@ c
       end
 c
 c version
-c $Id: printd.f,v 1.2 2004/07/07 20:25:31 willic3 Exp $
+c $Id: printd.f,v 1.3 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -75,34 +75,34 @@ c...  output results, if desired
 c
       if(idout.gt.izero) open(kw,file=ofile,err=40,status="old",
      & access="append")
-      if(idsk.eq.izero) open(kp,file=pfile,err=40,status="old",
+      if(idsk.eq.ione) open(kp,file=pfile,err=40,status="old",
      & access="append")
-      if(idsk.eq.1) open(kp,file=pfile,err=40,status="old",
+      if(idsk.eq.itwo) open(kp,file=pfile,err=40,status="old",
      & access="append",form="unformatted")
       if(icode.ne.itwo.and.idout.gt.izero) write(kw,1000,err=50)  ncycle
       i1=0
       if((icode.eq.itwo).or.(icontr.eq.izero)) then
-        if(idsk.eq.izero) write(kp,4000,err=50) i1,i1,i1
-        if(idsk.eq.ione) write(kp,err=50) i1,i1,i1
+        if(idsk.eq.ione) write(kp,4000,err=50) i1,i1,i1
+        if(idsk.eq.itwo) write(kp,err=50) i1,i1,i1
         close(kp)
         return
       else
-        if(idsk.eq.izero) write(kp,4000,err=50) icontr,ncycle,lastep
-        if(idsk.eq.ione) write(kp,err=50) icontr,ncycle,lastep
+        if(idsk.eq.ione) write(kp,4000,err=50) icontr,ncycle,lastep
+        if(idsk.eq.itwo) write(kp,err=50) icontr,ncycle,lastep
         if(idout.gt.izero) write(kw,2000,err=50) icontr
-        if(idsk.eq.ione) write(kp,err=50) (iprint(i),i=1,icontr)
+        if(idsk.eq.itwo) write(kp,err=50) (iprint(i),i=1,icontr)
         nline=icontr/7
         nrem=icontr-nline*7
         do i=1,nline
           if(idout.gt.izero) write(kw,3000,err=50) (iprint(7*(i-1)+j),
      &     j=1,7)
-          if(idsk.eq.izero) write(kp,4000,err=50) (iprint(7*(i-1)+j),
+          if(idsk.eq.ione) write(kp,4000,err=50) (iprint(7*(i-1)+j),
      &     j=1,7)
         end do
         if(nrem.ne.izero) then
           if(idout.gt.izero) write(kw,3000,err=50) (iprint(7*nline+j),
      &     j=1,nrem)
-          if(idsk.eq.izero) write(kp,4000,err=50) (iprint(7*nline+j),
+          if(idsk.eq.ione) write(kp,4000,err=50) (iprint(7*nline+j),
      &     j=1,nrem)
         end if
       end if
@@ -158,7 +158,7 @@ c
       end
 c
 c version
-c $Id: read_fuldat.f,v 1.2 2004/07/12 14:35:37 willic3 Exp $
+c $Id: read_fuldat.f,v 1.3 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

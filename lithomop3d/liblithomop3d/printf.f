@@ -75,13 +75,13 @@ c
         if(idout.gt.1) write(kw,2000) nfault(1,n),nfault(2,n),
      &   (tfault(i,n),i=1,ndof)
         if(deltp.eq.zero) then
-          if(idsk.eq.0) write(kp,3000) (tfault(i,n),i=1,ndof)
+          if(idsk.eq.1) write(kp,3000) (tfault(i,n),i=1,ndof)
         else
-          if(idsk.eq.0) write(kp,3000) (tfault(i,n),i=1,ndof),
+          if(idsk.eq.1) write(kp,3000) (tfault(i,n),i=1,ndof),
      &     (dfault(j,n)/deltp,j=1,ndof)
         end if
       end do
-      if(idsk.eq.1) then
+      if(idsk.eq.2) then
         write(kp) tfault
         if(deltp.ne.zero) then
           write(kp) deltp
@@ -96,7 +96,7 @@ c
       end
 c
 c version
-c $Id: printf.f,v 1.2 2004/07/07 20:27:07 willic3 Exp $
+c $Id: printf.f,v 1.3 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

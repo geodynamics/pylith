@@ -63,10 +63,10 @@ c
 c
 c...  write results to plot file, if requested
 c
-      if(idsk.eq.0) then
+      if(idsk.eq.1) then
         open(kp,file=pfile,status="old",access="append")
         write(kp,"(i7)") numflt
-      else if(idsk.eq.1) then
+      else if(idsk.eq.2) then
         open(kp,file=pfile,status="old",access="append",
      &   form="unformatted")
         write(kp) numflt
@@ -78,7 +78,7 @@ c
       end
 c
 c version
-c $Id: id_split.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: id_split.f,v 1.2 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

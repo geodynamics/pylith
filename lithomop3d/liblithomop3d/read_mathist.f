@@ -65,9 +65,9 @@ c
       open(kr,file=mhfile,status="old",err=10)
       if(idout.gt.izero) open(kw,file=ofile,err=40,status="old",
      & access="append")
-      if(idsk.eq.izero) open(kp,file=pfile,err=40,status="old",
-     & access="append")
       if(idsk.eq.ione) open(kp,file=pfile,err=40,status="old",
+     & access="append")
+      if(idsk.eq.itwo) open(kp,file=pfile,err=40,status="old",
      & access="append",form="unformatted")
       if(idout.gt.izero) write(kw,800)
 c
@@ -89,8 +89,8 @@ c
  60   continue
       close(kr)
       if(idout.gt.izero) close(kw)
-      if(idsk.eq.izero) write(kp,820,err=50) (mhist(i),i=1,npropsz)
-      if(idsk.eq.ione) write(kp,err=50) mhist
+      if(idsk.eq.ione) write(kp,820,err=50) (mhist(i),i=1,npropsz)
+      if(idsk.eq.itwo) write(kp,err=50) mhist
       close(kp)
 c
 c...  normal return
@@ -135,7 +135,7 @@ c
       end
 c
 c version
-c $Id: read_mathist.f,v 1.2 2004/07/16 18:06:28 willic3 Exp $
+c $Id: read_mathist.f,v 1.3 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -183,7 +183,7 @@ cdebug      end do
 c
 c...  output plot info, if desired
 c
-      if(idsk.eq.izero) then
+      if(idsk.eq.ione) then
         open(kp,file=pfile,err=40,status="old",access="append")
         write(kp,1000,err=50) numelt
         do i=1,numelt
@@ -196,7 +196,7 @@ c
           write(kp,1000) i,imat,ietype,ngauss,(ien(j),j=i1,i2)
         end do
         close(kp)
-      else if(idsk.eq.ione) then
+      else if(idsk.eq.itwo) then
         open(kp,file=pfile,err=40,status="old",access="append",
      &   form="unformatted")
         write(kp,err=50) numelt,nconsz
@@ -288,7 +288,7 @@ c
       end
 c
 c version
-c $Id: read_connect.f,v 1.4 2004/08/12 02:24:21 willic3 Exp $
+c $Id: read_connect.f,v 1.5 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
