@@ -64,7 +64,7 @@ c
 c...  local variables
 c
       integer nget
-      integer n,maxstp,maxit,maxitc,lgdef,ibbar,itmax
+      integer n,maxstp,maxit,maxitc,lgdef,itmax
       double precision delt,alfa,utol,ftol,etol
       character units(1)*80
       logical units_defined(1)
@@ -94,10 +94,10 @@ c
       call pskip(kr)
  40   continue
         read(kr,*,end=10,err=30) n,maxstp,delt,alfa,maxit,maxitc,lgdef,
-     &   ibbar,utol,ftol,etol,itmax
+     &   utol,ftol,etol,itmax
         nintg=nintg+ione
         if(nintg.gt.ione) lastep=lastep+maxstp
-cdebug        write(6,*) n,maxstp,delt,alfa,maxit,maxitc,lgdef,ibbar,utol,
+cdebug        write(6,*) n,maxstp,delt,alfa,maxit,maxitc,lgdef,utol,
 cdebug     &   ftol,etol,itmax,nintg,lastep
         go to 40
 c
@@ -133,7 +133,7 @@ c
       end
 c
 c version
-c $Id: scan_timdat.f,v 1.2 2004/07/12 20:16:53 willic3 Exp $
+c $Id: scan_timdat.f,v 1.3 2004/07/21 19:50:08 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

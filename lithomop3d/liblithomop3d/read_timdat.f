@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine read_timdat(delt,alfa,utol,ftol,etol,times,tunits,
-     & maxstp,maxit,ntdinit,lgdef,ibbar,itmax,nintg,lastep,kr,kw,idout,
+     & maxstp,maxit,ntdinit,lgdef,itmax,nintg,lastep,kr,kw,idout,
      & tfile,ofile,ierr,errstrng)
 c
 c...program to read in time step data
@@ -54,7 +54,7 @@ c...  subroutine arguments
 c
       integer nintg,lastep,kr,kw,idout,ierr
       integer maxstp(nintg),maxit(nintg),ntdinit(nintg),lgdef(nintg)
-      integer ibbar(nintg),itmax(nintg)
+      integer itmax(nintg)
       double precision delt(nintg),alfa(nintg),utol(nintg),ftol(nintg)
       double precision etol(nintg),times(lastep+1)
       double precision tunits
@@ -90,14 +90,14 @@ c...  read information on time step groups
 c
       do i=1,nintg
         read(kr,*,err=30,end=30) n,maxstp(i),delt(i),alfa(i),
-     &   maxit(i),ntdinit(i),lgdef(i),ibbar(i),utol(i),ftol(i),etol(i),
+     &   maxit(i),ntdinit(i),lgdef(i),utol(i),ftol(i),etol(i),
      &   itmax(i)
         if(utol(i).le.zero) utol(i)=1.d-7
         if(ftol(i).le.zero) ftol(i)=1.d-4
         if(etol(i).le.zero) etol(i)=1.d-7
         delt(i)=tunits*delt(i)
 cdebug        write(6,*) n,maxstp(i),delt(i),alfa(i),maxit(i),ntdinit(i),
-cdebug     &   lgdef(i),ibbar(i),utol(i),ftol(i),etol(i),itmax(i)
+cdebug     &   lgdef(i),utol(i),ftol(i),etol(i),itmax(i)
       end do
       close(kr)
 c
@@ -111,7 +111,7 @@ c
         write(kw,1000,err=50)
         do i=1,nintg
           write(kw,2000,err=50) i,maxstp(i),delt(i),alfa(i),maxit(i),
-     &     ntdinit(i),lgdef(i),ibbar(i),utol(i),ftol(i),etol(i),itmax(i)
+     &     ntdinit(i),lgdef(i),utol(i),ftol(i),etol(i),itmax(i)
         end do
       end if
 c
@@ -170,10 +170,10 @@ c
 c
 1000  format(///,' t i m e   s t e p   i n f o r m a t i o n',//,
      & '   Note:  Time step group #1 is the elastic solution',//,
-     & 'group   #      step    alfa  maxit ntdinit lgdef ibbar  utol',
+     & 'group   #      step    alfa  maxit ntdinit lgdef utol',
      & '  ftol  etol  itmax',/,
      & '  #   steps    size',/)
-2000  format(i3,1x,i5,2x,1pe10.4,2x,0pf4.2,2x,i5,1x,i5,1x,i5,1x,i5,1x,
+2000  format(i3,1x,i5,2x,1pe10.4,2x,0pf4.2,2x,i5,1x,i5,1x,i5,1x,
      & 1pe7.1,1x,1pe7.1,1x,1pe7.1,1x,i5)
 3000  format(//,' time-step/time correspondence:',//,
      1 ' time step #   in   group #            time',//,
@@ -183,7 +183,7 @@ c
       end
 c
 c version
-c $Id: read_timdat.f,v 1.2 2004/07/12 19:11:38 willic3 Exp $
+c $Id: read_timdat.f,v 1.3 2004/07/21 19:49:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
