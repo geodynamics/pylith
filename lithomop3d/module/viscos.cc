@@ -48,6 +48,7 @@ char pylithomop3d_viscos__name__[] = "viscos";
 
 PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 {
+  PyObject* pyA;
   PyObject* pyPointerToAlnz;                  // Sparse matrix arrays
   PyObject* pyPointerToPcg;
   PyObject* pyPointerToZcg;
@@ -149,7 +150,8 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   int viscousStage;
   int iterateEvent;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:viscos",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:viscos",
+                            &pyA,
 			    &pyPointerToAlnz,                  // Sparse matrix arrays
 			    &pyPointerToPcg,
 			    &pyPointerToZcg,
@@ -258,6 +260,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 1024;
   char errorstring[maxsize];
+  Mat      A = (Mat) PyCObject_AsVoidPtr(pyA);
   double*  pointerToAlnz = (double*) PyCObject_AsVoidPtr(pyPointerToAlnz);
   double*  pointerToPcg = (double*) PyCObject_AsVoidPtr(pyPointerToPcg);
   double*  pointerToZcg = (double*) PyCObject_AsVoidPtr(pyPointerToZcg);
@@ -355,7 +358,8 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   int*  pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
 
 
-  viscos_f(pointerToAlnz,                     // Sparse matrix arrays
+  viscos_f(&A,
+           pointerToAlnz,                     // Sparse matrix arrays
 	   pointerToPcg,
 	   pointerToZcg,
 	   pointerToDprev,
@@ -480,6 +484,6 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 
 
 // version
-// $Id: viscos.cc,v 1.8 2005/03/08 02:14:27 knepley Exp $
+// $Id: viscos.cc,v 1.9 2005/03/10 01:10:40 knepley Exp $
 
 // End of file

@@ -314,6 +314,7 @@
 
 #endif
 
+#include <petscmat.h>
 
 extern "C" {
 
@@ -326,7 +327,8 @@ extern "C" {
 	       int *,
 	       int *);
 
-  void autoprestr_f(double *,          // sparse
+  void autoprestr_f(Mat *,
+                    double *,          // sparse
 		    double *,
 		    double *,
 		    double *,
@@ -422,6 +424,7 @@ extern "C" {
 		    char *,            // files
 		    char *,
 		    char *,
+                    int *,
 		    int *,             // error codes
 		    char *,
 		    int,               // string lengths
@@ -441,7 +444,8 @@ extern "C" {
 	             int *,
 	             char *,int);
 
-  void elastc_f(double *,          // sparse
+  void elastc_f(Mat *,
+                double *,          // sparse
 		double *,
 		double *,
 		double *,
@@ -602,7 +606,8 @@ extern "C" {
 		int *,
 		int *);
 
-  void makemsr_f(int *,
+  void makemsr_f(Mat *,
+                 int *,
 		 int *,
 		 int *,
 		 int *,
@@ -1087,7 +1092,8 @@ extern "C" {
 		    int,
 		    int);
 
-  void viscos_f(double *,          // sparse
+  void viscos_f(Mat *,
+                double *,          // sparse
 		double *,
 		double *,
 		double *,
@@ -1276,6 +1282,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.10 2005/03/08 02:14:27 knepley Exp $
+// $Id: lithomop3d_externs.h,v 1.11 2005/03/10 01:10:38 knepley Exp $
 
 // End of file

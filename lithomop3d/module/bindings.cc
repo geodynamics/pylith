@@ -113,6 +113,14 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_localx__name__, pylithomop3d_localx,
      METH_VARARGS, pylithomop3d_localx__doc__},
 
+    // create PETSc matrix
+    {pylithomop3d_createPETScMat__name__, pylithomop3d_createPETScMat,
+     METH_VARARGS, pylithomop3d_createPETScMat__doc__},
+
+    // destroy PETSc matrix
+    {pylithomop3d_destroyPETScMat__name__, pylithomop3d_destroyPETScMat,
+     METH_VARARGS, pylithomop3d_destroyPETScMat__doc__},
+
     // create sparse matrix in modified sparse row format
     {pylithomop3d_makemsr__name__, pylithomop3d_makemsr,
      METH_VARARGS, pylithomop3d_makemsr__doc__},
@@ -292,6 +300,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
 };
 
 // version
-// $Id: bindings.cc,v 1.5 2005/03/08 02:14:27 knepley Exp $
+// $Id: bindings.cc,v 1.6 2005/03/10 01:10:38 knepley Exp $
 
 // End of file

@@ -29,7 +29,7 @@ PROJ_SRCS = \
         addstf.f \
         adfldp.f \
         adjid.f \
-        autoprestr.f \
+        autoprestr.F \
         bdeld_ss.f \
         bmatrixb.f \
         bmatrixn.f \
@@ -220,7 +220,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.13 2005/03/09 17:46:34 knepley Exp $
+# $Id: Make.mm,v 1.14 2005/03/10 01:10:36 knepley Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 

@@ -40,6 +40,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <petscmat.h>
+
 
 // Perform the elastic solution.
 
@@ -48,6 +50,7 @@ char pylithomop3d_elastc__name__[] = "elastc";
 
 PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 {
+  PyObject* pyA;
   PyObject* pyPointerToAlnz;                  // Sparse matrix arrays
   PyObject* pyPointerToPcg;
   PyObject* pyPointerToZcg;
@@ -147,7 +150,8 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   char* plotOutputFile;
   char* ucdOutputRoot;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:elastc",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:elastc",
+                            &pyA,
 			    &pyPointerToAlnz,                  // Sparse matrix arrays
 			    &pyPointerToPcg,
 			    &pyPointerToZcg,
@@ -256,6 +260,7 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 1024;
   char errorstring[maxsize];
+  Mat      A = (Mat) PyCObject_AsVoidPtr(pyA);
   double*  pointerToAlnz = (double*) PyCObject_AsVoidPtr(pyPointerToAlnz);
   double*  pointerToPcg = (double*) PyCObject_AsVoidPtr(pyPointerToPcg);
   double*  pointerToZcg = (double*) PyCObject_AsVoidPtr(pyPointerToZcg);
@@ -351,7 +356,8 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   int*  pointerToListArrayNprint = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
   int*  pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
 
-  elastc_f(pointerToAlnz,                     // Sparse matrix arrays
+  elastc_f(&A,
+           pointerToAlnz,                     // Sparse matrix arrays
 	   pointerToPcg,
 	   pointerToZcg,
 	   pointerToDprev,
@@ -473,6 +479,6 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 
 
 // version
-// $Id: elastc.cc,v 1.8 2005/03/08 02:14:27 knepley Exp $
+// $Id: elastc.cc,v 1.9 2005/03/10 01:10:38 knepley Exp $
 
 // End of file

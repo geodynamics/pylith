@@ -231,11 +231,74 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
     << journal::endl;
 
   // return
-  Py_INCREF(Py_None);
   return Py_BuildValue("ii", stiffnessMatrixSize,
-		  stiffnessOffDiagonalSize);
+   		  stiffnessOffDiagonalSize);
 }
 
+// Create a PETSc Mat
+#include <petscmat.h>
+char pylithomop3d_createPETScMat__doc__[] = "";
+char pylithomop3d_createPETScMat__name__[] = "createPETScMat";
+
+PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
+{
+  PyObject *pyA;
+  Mat A;
+  int size;
+
+  int ok = PyArg_ParseTuple(args, "i:createPETScMat", &size);
+  if (!ok) {
+    return 0;
+  }
+
+  if (MatCreate(PETSC_COMM_WORLD, size, size, PETSC_DETERMINE, PETSC_DETERMINE, &A)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
+    return 0;
+  }
+
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "Created PETSc Mat:" << size
+    << journal::endl;
+
+  // return Py_None;
+  pyA = PyCObject_FromVoidPtr(A, NULL);
+  return Py_BuildValue("N", pyA);
+}
+
+// Destroy a PETSc Mat
+
+char pylithomop3d_destroyPETScMat__doc__[] = "";
+char pylithomop3d_destroyPETScMat__name__[] = "destroyPETScMat";
+
+PyObject * pylithomop3d_destroyPETScMat(PyObject *, PyObject *args)
+{
+  PyObject *pyA;
+  Mat A;
+  int size;
+
+  int ok = PyArg_ParseTuple(args, "O:destroyPETScMat", &pyA);
+  if (!ok) {
+    return 0;
+  }
+
+  A = (Mat) PyCObject_AsVoidPtr(pyA);
+  if (MatDestroy(A)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not destroy PETSc Mat");
+    return 0;
+  }
+
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "Destroyed PETSc Mat"
+    << journal::endl;
+
+  // return Py_None;
+  Py_INCREF(Py_None);
+  return Py_None;
+}
 
 // Transform linked list into index array for modified sparse row format
 
@@ -244,6 +307,7 @@ char pylithomop3d_makemsr__name__[] = "makemsr";
 
 PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 {
+  PyObject* pyA;
   PyObject* pyPointerToJa;
   PyObject* pyPointerToIndx;
   PyObject* pyPointerToLink;
@@ -252,7 +316,8 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
   int stiffnessMatrixSize;
   int workingArraySize;
 
-  int ok = PyArg_ParseTuple(args, "OOOOiii:makemsr",
+  int ok = PyArg_ParseTuple(args, "OOOOOiii:makemsr",
+                            &pyA,
 			    &pyPointerToJa,
 			    &pyPointerToIndx,
 			    &pyPointerToLink,
@@ -269,6 +334,7 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
   if (!ok) {
     return 0;
   }
+  Mat A = (Mat) PyCObject_AsVoidPtr(pyA);
   int* pointerToJa = (int*) PyCObject_AsVoidPtr(pyPointerToJa);
   int* pointerToIndx = (int*) PyCObject_AsVoidPtr(pyPointerToIndx);
   int* pointerToLink = (int*) PyCObject_AsVoidPtr(pyPointerToLink);
@@ -277,7 +343,8 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
   int maximumNonzeroTermsPerRow = 0;
   double averageNonzeroTermsPerRow = 0.0;
 
-  makemsr_f(pointerToJa,
+  makemsr_f(&A,
+            pointerToJa,
 	    pointerToIndx,
 	    pointerToLink,
 	    pointerToNbrs,
@@ -310,6 +377,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.5 2004/08/25 01:37:16 willic3 Exp $
+// $Id: sparse.cc,v 1.6 2005/03/10 01:10:39 knepley Exp $
 
 // End of file

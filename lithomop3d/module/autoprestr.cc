@@ -48,6 +48,7 @@ char pylithomop3d_autoprestr__name__[] = "autoprestr";
 
 PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 {
+  PyObject* pyA;
   PyObject* pyPointerToAlnz;                  // Sparse matrix arrays
   PyObject* pyPointerToPcg;
   PyObject* pyPointerToZcg;
@@ -145,8 +146,10 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   char* asciiOutputFile;                      // Output file names
   char* plotOutputFile;
   char* ucdOutputRoot;
+  int iterateEvent;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsss:autoprestr",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsss:autoprestr",
+                            &pyA,
 			    &pyPointerToAlnz,                  // Sparse matrix arrays
 			    &pyPointerToPcg,
 			    &pyPointerToZcg,
@@ -243,7 +246,8 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 			    &pyPointerToIstatout,
 			    &asciiOutputFile,                  // Output file names
 			    &plotOutputFile,
-			    &ucdOutputRoot);
+			    &ucdOutputRoot,
+                            &iterateEvent);
 
 
   if (!ok) {
@@ -253,6 +257,7 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 1024;
   char errorstring[maxsize];
+  Mat      A = (Mat) PyCObject_AsVoidPtr(pyA);
   double*  pointerToAlnz = (double*) PyCObject_AsVoidPtr(pyPointerToAlnz);
   double*  pointerToPcg = (double*) PyCObject_AsVoidPtr(pyPointerToPcg);
   double*  pointerToZcg = (double*) PyCObject_AsVoidPtr(pyPointerToZcg);
@@ -348,7 +353,8 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   int*  pointerToListArrayNprint = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
   int*  pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
 
-  autoprestr_f(pointerToAlnz,                     // Sparse matrix arrays
+  autoprestr_f(&A,
+               pointerToAlnz,                     // Sparse matrix arrays
 	       pointerToPcg,
 	       pointerToZcg,
 	       pointerToDprev,
@@ -445,6 +451,7 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 	       asciiOutputFile,                   // Output file names
 	       plotOutputFile,
 	       ucdOutputRoot,
+               &iterateEvent,
 	       &errorcode,                        // Error codes
 	       errorstring,
 	       strlen(asciiOutputFile),           // String lengths
@@ -468,6 +475,6 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: autoprestr.cc,v 1.2 2005/02/24 00:41:01 willic3 Exp $
+// $Id: autoprestr.cc,v 1.3 2005/03/10 01:10:38 knepley Exp $
 
 // End of file
