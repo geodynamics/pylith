@@ -60,7 +60,7 @@ c
 c
 c... local variables
 c
-      integer nloop,i,irow,ii,j,icol,jj,itmp,l
+      integer i,j
       double precision signi,signj
 c
 cdebug      write(6,*) "Hello from addstf_f!"
@@ -119,7 +119,7 @@ c
       end
 c
 c version
-c $Id: addstf.F,v 1.2 2005/03/25 01:19:43 willic3 Exp $
+c $Id: addstf.F,v 1.3 2005/03/30 19:46:45 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
