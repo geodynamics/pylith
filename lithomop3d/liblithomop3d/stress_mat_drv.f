@@ -36,8 +36,9 @@ c
      & dx,iwinkx,winkx,numslp,numsn,nwinkx,                             ! slip
      & tfault,numfn,                                                    ! fault
      & s,stemp,                                                         ! stiff
-     & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,ndmatsz, ! elemnt
-     & numelt,nconsz,                                                   ! elemnt
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,  ! elemnt
+     & nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,       ! elemnt
+     & nstate0,                                                         ! elemnt
      & prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,               ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_mat_cmp,       ! timdat
@@ -61,11 +62,12 @@ c
 c...  subroutine arguments
 c
       integer nnz,neq,numnp,nwink,numslp,numsn,nwinkx,numfn,nstatesz
-      integer ndmatsz,numelt,nconsz,numat,npropsz,nhist,lastep,numrot
+      integer nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto
+      integer nstate0,numat,npropsz,nhist,lastep,numrot
       integer ierr
       integer ja(nnz),iwink(2,nwink),iwinkx(2,nwinkx),ien(nconsz)
       integer lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(6,numelt),iddmat(nstr,nstr),mhist(npropsz)
+      integer infiel(7,numelt),iddmat(nstr,nstr),mhist(npropsz)
       integer infmat(3,numat),infmatmod(5,nmatmodmax)
       integer infetype(4,netypes)
       character errstrng*(*)
@@ -74,6 +76,7 @@ c
       double precision tfault(ndof,numfn),s(neemax*neemax)
       double precision stemp(neemax*neemax),state(nstr,nstatesz)
       double precision dstate(nstr,nstatesz),dmat(nddmat,ndmatsz)
+      double precision state0(nstate0,nstatesz0)
       double precision prop(npropsz),tminmax
       double precision gauss(nsd+1,ngaussmax,netypes)
       double precision sh(nsd+1,nenmax,ngaussmax,netypes)
@@ -138,8 +141,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_1,         ! materl
      &     td_strs_mat_1,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -155,8 +159,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_2,         ! materl
      &     td_strs_mat_2,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -172,8 +177,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_3,         ! materl
      &     td_strs_mat_3,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -189,8 +195,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_4,         ! materl
      &     td_strs_mat_4,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -206,8 +213,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_5,         ! materl
      &     td_strs_mat_5,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -223,8 +231,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_6,         ! materl
      &     td_strs_mat_6,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -240,8 +249,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_7,         ! materl
      &     td_strs_mat_7,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -257,8 +267,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_8,         ! materl
      &     td_strs_mat_8,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -274,8 +285,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_9,         ! materl
      &     td_strs_mat_9,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -291,8 +303,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_10,        ! materl
      &     td_strs_mat_10,matchg,tminmax,                               ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -308,8 +321,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_11,        ! materl
      &     td_strs_mat_11,matchg,tminmax,                               ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -325,8 +339,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_12,        ! materl
      &     td_strs_mat_12,matchg,tminmax,                               ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -342,8 +357,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_13,        ! materl
      &     td_strs_mat_13,matchg,tminmax,                               ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -359,8 +375,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_14,        ! materl
      &     td_strs_mat_14,matchg,tminmax,                               ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -376,8 +393,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_15,        ! materl
      &     td_strs_mat_15,matchg,tminmax,                               ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -393,8 +411,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_16,        ! materl
      &     td_strs_mat_16,matchg,tminmax,                               ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -410,8 +429,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_17,        ! materl
      &     td_strs_mat_17,matchg,tminmax,                               ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -427,8 +447,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_18,        ! materl
      &     td_strs_mat_18,matchg,tminmax,                               ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -444,8 +465,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_19,        ! materl
      &     td_strs_mat_19,matchg,tminmax,                               ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -461,8 +483,9 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
-     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
+     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
+     &     ipauto,nstate0,                                              ! elemnt
      &     ptmp,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_20,        ! materl
      &     td_strs_mat_20,matchg,tminmax,                               ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
@@ -481,7 +504,7 @@ c
       end
 c
 c version
-c $Id: stress_mat_drv.f,v 1.6 2005/01/05 22:41:48 willic3 Exp $
+c $Id: stress_mat_drv.f,v 1.7 2005/02/24 00:20:16 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
