@@ -52,7 +52,7 @@ c...  local variables
 c
       integer i
 c
-c*      write(6,*) "Hello from mathist_f!"
+cdebug      write(6,*) "Hello from mathist_f!"
 c
       ierr=0
       matchg=.false.
@@ -73,7 +73,7 @@ c
       end
 c
 c version
-c $Id: mathist.f,v 1.5 2004/07/07 18:57:07 willic3 Exp $
+c $Id: mathist.f,v 1.6 2004/08/12 02:03:59 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
