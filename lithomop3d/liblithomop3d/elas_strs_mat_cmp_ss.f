@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine elas_mat_strs_cmp_ss(
+      subroutine elas_strs_mat_cmp_ss(
      & alnz,ja,nnz,                                                     ! sparse
      & b,neq,                                                           ! force
      & x,d,numnp,                                                       ! global
@@ -177,7 +177,7 @@ c
       end
 c
 c version
-c $Id: elas_strs_mat_cmp_ss.f,v 1.1 2004/06/25 15:34:28 willic3 Exp $
+c $Id: elas_strs_mat_cmp_ss.f,v 1.2 2004/06/25 15:37:09 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
