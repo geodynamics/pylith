@@ -57,6 +57,7 @@ c
 c...  local variables
 c
       integer l,j,ihist
+cdebug      integer idb
 c
 cdebug      write(6,*) "Hello from loadf_f!"
 c
@@ -77,14 +78,14 @@ c
             dfault(j,l)=fault(j,l)*histry(ihist,nstep+1)
           end if
         end do
-c*        write(6,"(3i7,3(2x,1pe15.8))") (nfault(idb,l),idb=1,3),
-c*     &   (dfault(idb,l),idb=1,ndof)
+cdebug        write(6,"(3i7,3(2x,1pe15.8))") (nfault(idb,l),idb=1,3),
+cdebug     &   (dfault(idb,l),idb=1,ndof)
       end do
       return
       end
 c
 c version
-c $Id: loadf.f,v 1.2 2004/07/07 17:52:46 willic3 Exp $
+c $Id: loadf.f,v 1.3 2004/08/12 01:52:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
