@@ -75,9 +75,9 @@ c
       a33 = (xs(1,1)*xs(2,2))-(xs(1,2)*xs(2,1))
       detinv=one/det
       do i=1,nen
-        shd(1,i)=detinv*(a11*sh(1,i)+a12*sh(2,i)+a1*sht(3,i))
-        shd(2,i)=detinv*(a21*sh(1,i)+a22*sh(2,i)+a2*sht(3,i))
-        shd(3,i)=detinv*(a31*sh(1,i)+a32*sh(2,i)+a3*sht(3,i))
+        shd(1,i)=detinv*(a11*sh(1,i)+a12*sh(2,i)+a13*sh(3,i))
+        shd(2,i)=detinv*(a21*sh(1,i)+a22*sh(2,i)+a23*sh(3,i))
+        shd(3,i)=detinv*(a31*sh(1,i)+a32*sh(2,i)+a33*sh(3,i))
         shd(4,i)=sh(4,i)
       end do
 c
@@ -85,7 +85,7 @@ c
       end
 c
 c version
-c $Id: getder.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: getder.f,v 1.2 2004/06/15 19:44:47 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
