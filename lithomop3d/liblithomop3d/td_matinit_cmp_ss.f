@@ -88,7 +88,7 @@ c
 c...  local variables
 c
       integer iel,indstate0,inddmat0,ietype,nstate,ng
-      integer inddmatg,l,nstateinc,ind,indstate,inddmat,ngauss,indstateg
+      integer inddmatg,l,ind,indstate,inddmat,ngauss,indstateg
       integer indien,nen,nee,ngtest,ngaussdim
       double precision tmax
 c
@@ -116,7 +116,7 @@ c
         ng=ngaussmax
         inddmatg=inddmat0
         do l=2,ng
-          inddmatg=inddmatg+nddmat
+          inddmatg=inddmatg+ione
           call dcopy(nddmat,dmat(1,inddmat0),ione,dmat(1,inddmatg),ione)
         end do
       else
@@ -124,7 +124,6 @@ c
 c...  loop over elements in group if there is material property
 c     variation for the material type.
 c
-        nstateinc=nstr*nstate
         do ind=matgpt,matgpt+nmatel-1
           iel=infiel(4,ind)
           ietype=infiel(3,iel)
@@ -139,8 +138,8 @@ c
      &       ierr,errstrng)
             if(ierr.ne.izero) return
             tminmax=min(tminmax,tmax)
-            inddmatg=inddmatg+nddmat
-            indstateg=indstateg+nstateinc
+            inddmatg=inddmatg+ione
+            indstateg=indstateg+nstate
           end do
         end do
       end if
@@ -178,7 +177,7 @@ c
       end
 c
 c version
-c $Id: td_matinit_cmp_ss.f,v 1.2 2004/07/09 01:29:45 willic3 Exp $
+c $Id: td_matinit_cmp_ss.f,v 1.3 2004/08/02 21:29:45 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
