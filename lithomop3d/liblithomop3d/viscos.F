@@ -43,7 +43,7 @@ c
      & gauss,sh,shj,infetype,                                           ! eltype
      & histry,rtimdat,ntimdat,nvisdat,maxstp,delt,alfa,maxit,ntdinit,   ! timdat
      & lgdef,utol,ftol,etol,itmax,                                      ! timdat
-     & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
+     & rgiter,                                                          ! stresscmp
      & skew,                                                            ! skew
      & iprint,ncodat,nunits,nprint,istatout,nstatout,                   ! ioinfo
      & ofile,pfile,ucdroot,                                             ! files
@@ -112,18 +112,12 @@ c
       include "npar_dim.inc"
       include "ntimdat_dim.inc"
       include "nvisdat_dim.inc"
-      include "nsiter_dim.inc"
       include "ncodat_dim.inc"
       include "nunits_dim.inc"
       include "nprint_dim.inc"
       include "rtimdat_dim.inc"
       include "rgiter_dim.inc"
-      include "gcurr_dim.inc"
-      include "gi_dim.inc"
-      include "gprev_dim.inc"
       include "gtol_dim.inc"
-      include "rmin_dim.inc"
-      include "rmult_dim.inc"
 c
 c...  intrinsic functions
 c
@@ -150,7 +144,6 @@ c
       include "npar_def.inc"
       include "ntimdat_def.inc"
       include "nvisdat_def.inc"
-      include "nsiter_def.inc"
       include "ncodat_def.inc"
       include "nunits_def.inc"
       include "nprint_def.inc"
@@ -384,7 +377,7 @@ c
      &         prop,mhist,infmatmod,tminmax,                            ! materl
      &         gauss,sh,shj,nen,ngauss,nee,nec,                         ! eltype
      &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
-     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
+     &         rgiter,gtol,                                             ! iterate
      &         skew,                                                    ! skew
      &         ncodat,nunits,nprint,                                    ! ioinfo
      &         getshapn,bmatrixn,gload_cmp_ss,td_strs_cmp_ss,           ! external
@@ -463,7 +456,7 @@ c
      &         prop,mhist,infmatmod,tminmax,                            ! materl
      &         gauss,sh,shj,nen,ngauss,nee,nec,                         ! eltype
      &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
-     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
+     &         rgiter,gtol,                                             ! iterate
      &         skew,                                                    ! skew
      &         ncodat,nunits,nprint,                                    ! ioinfo
      &         getshapb,bmatrixb,gload_cmp_ss,td_strs_cmp_ss,           ! external
@@ -537,7 +530,7 @@ clater     &         ielno,iside,ihistry,pres,pdir,                           ! 
 clater     &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
 clater     &         gauss,sh,shj,infetype,                                   ! eltype
 clater     &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
-clater     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
+clater     &         rgiter,gtol,                                             ! iterate
 clater     &         skew,                                                    ! skew
 clater     &         ncodat,nunits,nprint,                                    ! ioinfo
 clater     &         getshapn,bmatrixn,gload_cmp_ld,td_strs_cmp_ld,           ! external
@@ -606,7 +599,7 @@ clater     &         ielno,iside,ihistry,pres,pdir,                           ! 
 clater     &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
 clater     &         gauss,sh,shj,infetype,                                   ! eltype
 clater     &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
-clater     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
+clater     &         rgiter,gtol,                                             ! iterate
 clater     &         skew,                                                    ! skew
 clater     &         ncodat,nunits,nprint,                                    ! ioinfo
 clater     &         getshapb,bmatrixb,gload_cmp_ld,td_strs_cmp_ld,           ! external
@@ -677,7 +670,7 @@ c
       end
 c
 c version
-c $Id: viscos.F,v 1.6 2005/03/29 01:28:12 willic3 Exp $
+c $Id: viscos.F,v 1.7 2005/03/30 01:51:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
