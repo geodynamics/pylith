@@ -30,15 +30,23 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine residu(b,bres,btot,deld,gtol,gi,gprev,gcurr,id,idx,neq,
-     & ndof,numnp,iter,itmaxp,idebug,idout,kto,kw,converge)
+     & numnp,iter,itmaxp,idebug,idout,kto,kw,converge)
 c
 c...computes the deviation from overall force and energy balance
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+      integer iout
+      parameter(iout=1)
+c
 c...  subroutine arguments
 c
-      integer neq,ndof,numnp,iter,itmaxp,idebug,idout,kto,kw
+      integer neq,numnp,iter,itmaxp,idebug,idout,kto,kw
       integer id(ndof,numnp),idx(ndof,numnp)
       double precision b(neq),bres(neq),btot(neq),deld(neq)
       logical converge
@@ -49,14 +57,6 @@ c
       include "gi_dim.inc"
       include "gprev_dim.inc"
       include "gcurr_dim.inc"
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
-c
-      integer iout
-      parameter(iout=1)
 c
 c...  intrinsic functions
 c
@@ -83,7 +83,7 @@ cdebug      write(6,*) "deld:",(deld(idb),idb=1,neq)
 c
       tmp(3)=zero
       debug=(idebug.eq.1).and.(idout.gt.1)
-      if(debug) call printv(b,btot,id,idx,neq,ndof,numnp,iout,idout,kw)
+      if(debug) call printv(b,btot,id,idx,neq,numnp,iout,idout,kw)
       ftmp=dnrm2(neq,bres,ione)
       do i=1,neq
         en=deld(i)*bres(i)
@@ -160,7 +160,7 @@ cdebug      write(6,*) "deld:",(deld(idb),idb=1,neq)
       end
 c
 c version
-c $Id: residu.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: residu.f,v 1.2 2004/07/02 20:44:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
