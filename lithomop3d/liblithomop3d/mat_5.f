@@ -31,13 +31,14 @@ c
 c...  Program segment to define material model 5:
 c
 c       Model number:                      5
-c       Model name:                        ??
-c       Number material properties:        ??
-c       Number state variables:            ??
-c       Tangent matrix varies with state:  ??
-c       Material properties:               ??
-c                                          ??
-c                                          ??
+c       Model name:                        IsotropicLinearMaxwellViscoelastic
+c       Number material properties:        4
+c       Number state variables:            3
+c       Tangent matrix varies with state:  True
+c       Material properties:               Density
+c                                          Young's modulus
+c                                          Poisson's ratio
+c                                          Viscosity
 c
       subroutine mat_prt_5(prop,nprop,matnum,idout,idsk,kw,kp,
      & ierr,errstrng)
@@ -46,7 +47,6 @@ c...  subroutine to output material properties for material model 5.
 c
 c     Error codes:
 c         4:  Write error
-c       101:  Attempt to use undefined material model
 c
       include "implicit.inc"
 c
@@ -62,20 +62,52 @@ c
 c
 c...  local constants
 c
-      character labelp(3)*15,modelname*24
+      character labelp(4)*15,modelname*37
       data labelp/"Density",
      &            "Young's modulus",
-     &            "Poisson's ratio"/
-      parameter(modelname="???????")
+     &            "Poisson's ratio",
+     &            "Viscosity"/
+      parameter(modelname="Isotropic Linear Maxwell Viscoelastic")
       integer mattype
       parameter(mattype=5)
 c
-c...  return error code, as this material is not yet defined
+c...  local variables
 c
-      ierr=101
-      errstrng="mat_prt_5"
+      integer i
+c
+c...  output plot results
+c
+      if(idsk.eq.izero) then
+	write(kp,"(3i7)",err=10) matnum,mattype,nprop
+	write(kp,"(1pe15.8,20(2x,1pe15.8))",err=10) (prop(i),i=1,nprop)
+      else if(idsk.eq.ione) then
+	write(kp,err=10) matnum,mattype,nprop
+	write(kp,err=10) prop
+      end if
+c
+c...  output ascii results, if desired
+c
+      if(idout.gt.izero) then
+	write(kw,700,err=10) matnum,modelname,nprop
+	do i=1,nprop
+	  write(kw,710,err=10) labelp(i),prop(i)
+        end do
+      end if
 c
       return
+c
+c...  error writing to output file
+c
+ 10   continue
+        ierr=4
+        errstrng="mat_prt_5"
+        return
+c
+ 700  format("Material number:       ",i7,/,
+     &       "Material type:         ",a37,/,
+     &       "Number of properties:  ",i7,/)
+ 710  format(15x,a15,3x,1pe15.8)
+c
       end
 c
 c
@@ -101,18 +133,41 @@ c
       character errstrng*(*)
       double precision dmat(nddmat),prop(nprop)
 c
-c...  return error code, as this material is not yet defined
+c...  local variables
 c
-      ierr=101
-      errstrng="mat_prt_5"
+      integer i,j
+      double precision e,pr,pr1,pr2,pr3,fac,dd,od,ss
+c
+      e=prop(2)
+      pr=prop(3)
+      pr1=one-pr
+      pr2=one+pr
+      pr3=one-two*pr
+      fac=e/(pr2*pr3)
+      dd=pr1*fac
+      od=pr*fac
+      ss=half*pr3*fac
+      do i=1,3
+        dmat(iddmat(i,i))=dd
+        dmat(iddmat(i+3,i+3))=ss
+        do j=i+1,3
+          dmat(iddmat(i,j))=od
+        end do
+      end do
       return
       end
 c
 c
       subroutine elas_strs_5(state,ee,dmat,nstate,ierr,errstrng)
 c
-c...  subroutine to compute stresses for the elastic solution.
-c     The current total strain is contained in ee.
+c...  subroutine to compute stresses for the elastic solution.  For this
+c     material, there are 3 state variables:  total stress, total
+c     strain, and viscous strain.  The current total strain is contained
+c     in ee.
+c
+c     state(nstr,1) = Cauchy stress
+c     state(nstr,2) = linear strain
+c     state(nstr,3) = viscous strain
 c
       include "implicit.inc"
 c
@@ -128,16 +183,14 @@ c
       double precision state(nstr,nstate),ee(nstr),dmat(nddmat)
       character errstrng*(*)
 c
-c...  return error code, as this material is not yet defined
-c
-      ierr=101
-      errstrng="mat_prt_5"
+      call dcopy(nstr,ee,ione,state(1,2),ione)
+      call dspmv("u",nstr,one,dmat,state(1,2),ione,zero,state(1,1),ione)
       return
       end
 c
 c
-      subroutine td_matinit_5(state,dstate,dmat,prop,iddmat,tmax,nstate,
-     & nprop,matchg,ierr,errstrng)
+      subroutine td_matinit_5(state,dstate,dmat,prop,rtimdat,rgiter,
+     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
 c
 c...  subroutine to form the material matrix for an integration point
 c     for the time-dependent solution.  This routine is meant to be
@@ -145,6 +198,9 @@ c     called at the beginning of a time step, before strains have been
 c     computed.  Thus, for some time-dependent materials, the material
 c     matrix will only be an approximation of the material matrix for
 c     the current iteration.
+c     As this is a linear viscoelastic material, the tangent matrix is
+c     actually independent of the current stresses and strains, so they
+c     are not used.
 c     Note that only the upper triangle is used (or available), as
 c     dmat is assumed to always be symmetric.
 c
@@ -164,10 +220,37 @@ c
       double precision dmat(nddmat),prop(nprop),tmax
       logical matchg
 c
-c...  return error code, as this material is not yet defined
+c...  included dimension and type statements
 c
-      ierr=101
-      errstrng="mat_prt_5"
+      include "rtimdat_dim.inc"
+      include "rgiter_dim.inc"
+      include "ntimdat_dim.inc"
+c
+c...  local variables
+c
+      double precision e,pr,vis,f1,f2
+c
+c...  included variable definitions
+c
+      include "rtimdat_def.inc"
+      include "rgiter_def.inc"
+      include "ntimdat_def.inc"
+c
+      tmax=big
+      e=prop(2)
+      pr=prop(3)
+      vis=prop(4)
+      f1=third*e/(one-two*pr)
+      f2=one/((one+pr)/e+half*alfap*deltp/vis)
+      dmat(iddmat(1,1))=f1+two*third*f2
+      dmat(iddmat(2,2))=dmat(iddmat(1,1))
+      dmat(iddmat(3,3))=dmat(iddmat(1,1))
+      dmat(iddmat(1,2))=f1-third*f2
+      dmat(iddmat(1,3))=dmat(iddmat(1,2))
+      dmat(iddmat(2,3))=dmat(iddmat(1,2))
+      dmat(iddmat(4,4))=half*f2
+      dmat(iddmat(5,5))=dmat(iddmat(4,4))
+      dmat(iddmat(6,6))=dmat(iddmat(4,4))
       return
       end
 c
@@ -175,10 +258,8 @@ c
       subroutine td_strs_5(state,dstate,ee,dmat,prop,rtimdat,rgiter,
      & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
 c
-c...  subroutine to compute the current stress for the time-dependent
-c     solution.
-c     Note that only the upper triangle is used (or available), as
-c     dmat is assumed to always be symmetric.
+c...  subroutine to compute the current values for stress, total strain,
+c     and viscous strain increment.
 c
       include "implicit.inc"
 c
@@ -203,16 +284,37 @@ c
       include "rgiter_dim.inc"
       include "ntimdat_dim.inc"
 c
+c...  local constants
+c
+      double precision diag(6)
+      data diag/one,one,one,zero,zero,zero/
+c
+c...  local variables
+c
+      integer i
+      double precision e,pr,vis,rmu,f1,f2,emean,eet,stau
+c
 c...  included variable definitions
 c
       include "rtimdat_def.inc"
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-c...  return error code, as this material is not yet defined
-c
-      ierr=101
-      errstrng="mat_prt_5"
+      e=prop(2)
+      pr=prop(3)
+      vis=prop(4)
+      rmu=half*e/(one+pr)
+      tmax=two*vis/rmu
+      f1=half*deltp*(one-alfap)/vis
+      f2=one/((one+pr)/e+half*alfap*deltp/vis)
+      emean=third*(ee(1)+ee(2)+ee(3))
+      do i=1,nstr
+        eet=ee(i)-diag(i)*emean-state(i,3)
+        dstate(i,1)=f2*(eet-f1*state(i,1))
+        stau=(one-alfap)*state(i,1)+alfap*dstate(i,1)
+        dstate(i,3)=half*deltp*stau/vis
+        dstate(i,2)=ee(i)
+      end do
 c
       return
       end
@@ -257,17 +359,17 @@ c
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-c...  return error code, as this material is not yet defined
-c
-      ierr=101
-      errstrng="mat_prt_5"
+      if(matchg) call td_matinit_5(state,dstate,dmat,prop,rtimdat,
+     & rgiter,ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      call td_strs_5(state,dstate,ee,dmat,prop,rtimdat,rgiter,ntimdat,
+     & iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
 c
       return
       end
 c       
 
 c version
-c $Id: mat_5.f,v 1.1 2004/07/22 00:26:54 willic3 Exp $
+c $Id: mat_5.f,v 1.2 2004/08/02 20:36:42 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
