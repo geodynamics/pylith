@@ -40,6 +40,10 @@ c       deld.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
       integer nwink,nhist,nstep,neq,lastep
@@ -56,7 +60,7 @@ c
       do i=1,nwink
         mode=iwink(1,i)
         k=iwink(2,i)
-        if(mode.eq.1) then
+        if(mode.eq.ione) then
           btot(k)=btot(k)-wink(i)*deld(k)
         else
           ihist=-mode
@@ -67,7 +71,7 @@ c
       end
 c
 c version
-c $Id: winklf.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: winklf.f,v 1.2 2004/07/12 21:09:09 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
