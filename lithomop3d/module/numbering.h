@@ -6,7 +6,6 @@
 //                        Rensselaer Polytechnic Institute
 //                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2005 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -71,6 +70,6 @@ PyObject * pylithomop3d_nfind(PyObject *, PyObject *);
 #endif
 
 // version
-// $Id: numbering.h,v 1.1 2005/03/12 02:03:18 willic3 Exp $
+// $Id: numbering.h,v 1.2 2005/03/31 23:27:58 willic3 Exp $
 
 // End of file

@@ -4,9 +4,8 @@
 // 
 //                               Charles A. Williams
 //                        Rensselaer Polytechnic Institute
-//                        (C) 2004 All Rights Reserved
+//                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2004 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -80,7 +79,7 @@ PyObject * pylithomop3d_read_bc(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   double* pointerToBond = (double*) PyCObject_AsVoidPtr(pyPointerToBond);
   int* pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
@@ -128,19 +127,18 @@ char pylithomop3d_read_connect__name__[] = "read_connect";
 
 PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToListArrayNumberElementNodesBase;
-  PyObject* pyPointerToElementTypeInfo;
-  PyObject* pyPointerToMaterialInfo;
   PyObject* pyPointerToMaterialModelInfo;
+  PyObject* pyPointerToVolumeElementFamilyList;
+  int numberVolumeElementNodes;
+  int numberVolumeElementGaussPoints;
   PyObject* pyPointerToIen;
-  PyObject* pyPointerToInfiel;
-  PyObject* pyPointerToIndmat;
-  PyObject* pyPointerToImgrp;
-  int connectivitySize;
+  PyObject* pyPointerToIvfamily;
+  PyObject* pyPointerToIvftmp;
+  int maxNumberVolumeElementFamilies;
+  int numberVolumeElementFamilies;
   int prestressFlag;
-  int numberElements;
+  int numberVolumeElements;
   int numberNodes;
-  int numberMaterials;
   int f77FileInput;
   int f77AsciiOutput;
   int f77PlotOutput;
@@ -150,66 +148,59 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOiiiiiiiiiisss:read_connect",
-			    &pyPointerToListArrayNumberElementNodesBase,
-			    &pyPointerToElementTypeInfo,
-			    &pyPointerToMaterialInfo,
-			    &pyPointerToMaterialModelInfo,
-			    &pyPointerToIen,
-			    &pyPointerToInfiel,
-			    &pyPointerToIndmat,
-			    &pyPointerToImgrp,
-			    &connectivitySize,
-			    &prestressFlag,
-			    &numberElements,
-			    &numberNodes,
-			    &numberMaterials,
-			    &f77FileInput,
-			    &f77AsciiOutput,
-			    &f77PlotOutput,
-			    &asciiOutputInt,
-			    &plotOutputInt,
-			    &connectivityInputFile,
-			    &asciiOutputFile,
-			    &plotOutputFile);
+  int ok = PyArg_ParseTuple(args, "OOiiOOOiiiiiiiiiisss:read_connect",
+                            &pyPointerToMaterialModelInfo,
+                            &pyPointerToVolumeElementFamilyList,
+                            &numberVolumeElementNodes,
+                            &numberVolumeElementGaussPoints,
+                            &pyPointerToIen,
+                            &pyPointerToIvfamily,
+                            &pyPointerToIvftmp,
+                            &maxNumberVolumeElementFamilies,
+                            &numberVolumeElementFamilies,
+                            &prestressFlag,
+                            &numberVolumeElements,
+                            &numberNodes,
+                            &f77FileInput,
+                            &f77AsciiOutput,
+                            &f77PlotOutput,
+                            &asciiOutputInt,
+                            &plotOutputInt,
+                            &connectivityInputFile,
+                            &asciiOutputFile,
+                            &plotOutputFile);
 
   if (!ok) {
     return 0;
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToListArrayNumberElementNodesBase = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNumberElementNodesBase);
-  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
-  int* pointerToMaterialInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialInfo);
   int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
+  int* pointerToVolumeElementFamilyList = (int*) PyCObject_AsVoidPtr(pyPointerToVolumeElementFamilyList);
   int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
-  int* pointerToIndmat = (int*) PyCObject_AsVoidPtr(pyPointerToIndmat);
-  int* pointerToImgrp = (int*) PyCObject_AsVoidPtr(pyPointerToImgrp);
+  int* pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
+  int* pointerToIvftmp = (int*) PyCObject_AsVoidPtr(pyPointerToIvftmp);
   int stateSize = 0;
-  int dmatSize = 0;
-  int totalVolumeGaussPoints = 0;
   int state0Size = 0;
+  int propertySize = 0;
 
-  read_connect_f(pointerToListArrayNumberElementNodesBase,
-		 pointerToElementTypeInfo,
-		 pointerToMaterialInfo,
-		 pointerToMaterialModelInfo,
+  read_connect_f(pointerToMaterialModelInfo,
+		 pointerToVolumeElementFamilyList,
+		 &numberVolumeElementNodes,
+		 &numberVolumeElementGaussPoints,
 		 pointerToIen,
-		 pointerToInfiel,
-		 pointerToIndmat,
-		 pointerToImgrp,
-		 &connectivitySize,
-		 &prestressFlag,
-		 &numberElements,
-		 &totalVolumeGaussPoints,
-		 &numberNodes,
-		 &numberMaterials,
+		 pointerToIvfamily,
+		 pointerToIvftmp,
+                 &maxNumberVolumeElementFamilies,
+                 &numberVolumeElementFamilies,
+                 &prestressFlag,
+                 &numberVolumeElements,
+                 &numberNodes,
 		 &stateSize,
 		 &state0Size,
-		 &dmatSize,
+		 &propertySize,
 		 &f77FileInput,
 		 &f77AsciiOutput,
 		 &f77PlotOutput,
@@ -232,16 +223,15 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberMaterials:" << numberMaterials
+    << "stateSize:" << stateSize
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("iiii",
+  return Py_BuildValue("iii",
 		  	stateSize,
-		       	dmatSize,
-		       	totalVolumeGaussPoints,
-		       	state0Size);
+		       	state0Size,
+		       	propertySize);
 }
 
 
@@ -282,7 +272,7 @@ PyObject * pylithomop3d_read_coords(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   double* pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
 
@@ -357,7 +347,7 @@ PyObject * pylithomop3d_read_diff(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   double* pointerToDiforc = (double*) PyCObject_AsVoidPtr(pyPointerToDiforc);
   int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
@@ -437,7 +427,7 @@ PyObject * pylithomop3d_read_fuldat(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int* pointerToIprint = (int*) PyCObject_AsVoidPtr(pyPointerToIprint);
 
@@ -510,7 +500,7 @@ PyObject * pylithomop3d_read_hist(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   double* pointerToHistry = (double*) PyCObject_AsVoidPtr(pyPointerToHistry);
   double* pointerToTimes = (double*) PyCObject_AsVoidPtr(pyPointerToTimes);
@@ -554,9 +544,9 @@ char pylithomop3d_read_mathist__name__[] = "read_mathist";
 PyObject * pylithomop3d_read_mathist(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToMhist;
-  PyObject* pyPointerToMaterialInfo;
-  int numberMaterials;
-  int propertyListSize;
+  PyObject* pyPointerToIvfamily;
+  int numberVolumeElementFamilies;
+  int propertySize;
   int numberLoadHistories;
   int f77FileInput;
   int f77AsciiOutput;
@@ -569,9 +559,9 @@ PyObject * pylithomop3d_read_mathist(PyObject *, PyObject *args)
 
   int ok = PyArg_ParseTuple(args, "OOiiiiiiiisss:read_mathist",
 			    &pyPointerToMhist,
-  			    &pyPointerToMaterialInfo,
-  			    &numberMaterials,
-  			    &propertyListSize,
+  			    &pyPointerToIvfamily,
+  			    &numberVolumeElementFamilies,
+  			    &propertySize,
   			    &numberLoadHistories,
   			    &f77FileInput,
   			    &f77AsciiOutput,
@@ -587,15 +577,15 @@ PyObject * pylithomop3d_read_mathist(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int* pointerToMhist = (int*) PyCObject_AsVoidPtr(pyPointerToMhist);
-  int* pointerToMaterialInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialInfo);
+  int* pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
 
   read_mathist_f(pointerToMhist,
-		 pointerToMaterialInfo,
-		 &numberMaterials,
-		 &propertyListSize,
+		 pointerToIvfamily,
+		 &numberVolumeElementFamilies,
+		 &propertySize,
 		 &numberLoadHistories,
 		 &f77FileInput,
 		 &f77AsciiOutput,
@@ -619,7 +609,7 @@ PyObject * pylithomop3d_read_mathist(PyObject *, PyObject *args)
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberMaterials:" << numberMaterials
+    << "numberVolumeElementFamilies:" << numberVolumeElementFamilies
     << journal::endl;
 
   // return
@@ -670,7 +660,7 @@ PyObject * pylithomop3d_read_mathist(PyObject *, PyObject *args)
   // }
 
   // int errorcode = 0;
-  // const int maxsize = 1024;
+  // const int maxsize = 4096;
   // char errorstring[maxsize];
   // double* pointerToStn = (double*) PyCObject_AsVoidPtr(pyPointerToStn);
   // double* pointerToSt0 = (double*) PyCObject_AsVoidPtr(pyPointerToSt0);
@@ -745,7 +735,7 @@ PyObject * pylithomop3d_read_skew(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   double* pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
 
@@ -820,7 +810,7 @@ PyObject * pylithomop3d_read_slip(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
   int totalNumberSlipperyNodes = 0;
@@ -900,7 +890,7 @@ PyObject * pylithomop3d_read_split(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   double* pointerToFault = (double*) PyCObject_AsVoidPtr(pyPointerToFault);
   int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
@@ -950,6 +940,7 @@ char pylithomop3d_read_stateout__name__[] = "read_stateout";
 PyObject * pylithomop3d_read_stateout(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIstatout;
+  PyObject* pyPointerToNstatout;
   int f77FileInput;
   int f77AsciiOutput;
   int f77PlotOutput;
@@ -959,8 +950,9 @@ PyObject * pylithomop3d_read_stateout(PyObject *, PyObject *args)
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "Oiiiiisss:read_stateout",
+  int ok = PyArg_ParseTuple(args, "OOiiiiisss:read_stateout",
 			    &pyPointerToIstatout,
+			    &pyPointerToNstatout,
 			    &f77FileInput,
 			    &f77AsciiOutput,
 			    &f77PlotOutput,
@@ -975,25 +967,27 @@ PyObject * pylithomop3d_read_stateout(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int* pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
+  int* pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
 
   read_stateout_f(pointerToIstatout,
-	       &f77FileInput,
-	       &f77AsciiOutput,
-	       &f77PlotOutput,
-	       &asciiOutputInt,
-	       &plotOutputInt,
-	       stateVariableInputFile,
-	       asciiOutputFile,
-	       plotOutputFile,
-	       &errorcode,
-	       errorstring,
-	       strlen(stateVariableInputFile),
-	       strlen(asciiOutputFile),
-	       strlen(plotOutputFile),
-	       strlen(errorstring));
+	          pointerToNstatout,
+	          &f77FileInput,
+	          &f77AsciiOutput,
+	          &f77PlotOutput,
+	          &asciiOutputInt,
+	          &plotOutputInt,
+	          stateVariableInputFile,
+	          asciiOutputFile,
+	          plotOutputFile,
+	          &errorcode,
+	          errorstring,
+	          strlen(stateVariableInputFile),
+	          strlen(asciiOutputFile),
+	          strlen(plotOutputFile),
+	          strlen(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -1064,7 +1058,7 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   double* pointerToDelt = (double*) PyCObject_AsVoidPtr(pyPointerToDelt);
   double* pointerToAlfa = (double*) PyCObject_AsVoidPtr(pyPointerToAlfa);
@@ -1162,7 +1156,7 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
   // }
 
   // int errorcode = 0;
-  // const int maxsize = 1024;
+  // const int maxsize = 4096;
   // char errorstring[maxsize];
   // double* pointerToPres = (double*) PyCObject_AsVoidPtr(pyPointerToPres);
   // double* pointerToPdir = (double*) PyCObject_AsVoidPtr(pyPointerToPdir);
@@ -1243,7 +1237,7 @@ PyObject * pylithomop3d_read_wink(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   double* pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
   double* pointerToListArrayWscal = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayWscal);
@@ -1323,7 +1317,7 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   double* pointerToWinkx = (double*) PyCObject_AsVoidPtr(pyPointerToWinkx);
   double* pointerToListArrayWxscal = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayWxscal);
@@ -1364,6 +1358,6 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: parser.cc,v 1.7 2005/03/12 02:03:18 willic3 Exp $
+// $Id: parser.cc,v 1.8 2005/03/31 23:27:57 willic3 Exp $
 
 // End of file

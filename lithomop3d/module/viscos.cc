@@ -4,9 +4,8 @@
 // 
 //                               Charles A. Williams
 //                        Rensselaer Polytechnic Institute
-//                        (C) 2004 All Rights Reserved
+//                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2004 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -49,17 +48,12 @@ char pylithomop3d_viscos__name__[] = "viscos";
 PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 {
   PyObject* pyA;                              // Sparse matrix arrays
-  PyObject* pyPointerToPcg;
-  PyObject* pyPointerToZcg;
-  PyObject* pyPointerToDprev;
   PyObject* pyPointerToBextern;               // Force vectors
   PyObject* pyPointerToBtraction;
   PyObject* pyPointerToBgravity;
   PyObject* pyPointerToBconcForce;
-  // PyObject* pyPointerToBprestress;
   PyObject* pyPointerToBintern;
   PyObject* pyPointerToBresid;
-  PyObject* pyPointerToBwork;
   PyObject* pyPointerToDispVec;
   PyObject* pyPointerToListArrayNforce;
   PyObject* pyPointerToListArrayGrav;
@@ -71,6 +65,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   PyObject* pyPointerToIwink;
   PyObject* pyPointerToWink;
   PyObject* pyPointerToListArrayNsysdat;
+  PyObject* pyPointerToListArrayIddmat;
   PyObject* pyPointerToIbond;                 // Boundary condition arrays
   PyObject* pyPointerToBond;
   PyObject* pyPointerToDx;                    // Slippery node arrays
@@ -97,8 +92,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   PyObject* pyPointerToLm;
   PyObject* pyPointerToLmx;
   PyObject* pyPointerToLmf;
-  PyObject* pyPointerToInfiel;
-  PyObject* pyPointerToListArrayIddmat;
+  PyObject* pyPointerToIvfamily;
   PyObject* pyPointerToListArrayNpar;
   PyObject* pyPointerToIelno;                 // Traction BC arrays
   PyObject* pyPointerToIside;
@@ -107,13 +101,11 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   PyObject* pyPointerToPdir;
   PyObject* pyPointerToListArrayPropertyList; // Material property arrays
   PyObject* pyPointerToMhist;
-  PyObject* pyPointerToMaterialInfo;
   PyObject* pyPointerToMaterialModelInfo;
-  PyObject* pyPointerToMaterialModelStates;
-  PyObject* pyPointerGauss;                   // Element type arrays
+  PyObject* pyPointerToGauss;                 // Element type arrays
   PyObject* pyPointerToSh;
   PyObject* pyPointerToShj;
-  PyObject* pyPointerToElementTypeInfo;
+  PyObject* pyPointerToListArrayElementTypeInfo;
   PyObject* pyPointerToHistry;                // Time information
   PyObject* pyPointerToListArrayRtimdat;
   PyObject* pyPointerToListArrayNtimdat;
@@ -129,38 +121,27 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   PyObject* pyPointerToEtol;
   PyObject* pyPointerToItmax;
   PyObject* pyPointerToListArrayRgiter;       // Iterative solution information
-  PyObject* pyPointerToListArrayGcurr;
-  PyObject* pyPointerToListArrayGi;
-  PyObject* pyPointerToListArrayGprev;
-  PyObject* pyPointerToListArrayGtol;
-  PyObject* pyPointerToListArrayRmin;
-  PyObject* pyPointerToListArrayRmult;
-  PyObject* pyPointerToListArrayNsiter;
   PyObject* pyPointerToSkew;                  // Skew rotation information
   PyObject* pyPointerToIprint;                // Input/output information
   PyObject* pyPointerToListArrayNcodat;
   PyObject* pyPointerToListArrayNunits;
   PyObject* pyPointerToListArrayNprint;
   PyObject* pyPointerToIstatout;
+  PyObject* pyPointerToNstatout;
   char* asciiOutputFile;                      // Output file names
   char* plotOutputFile;
   char* ucdOutputRoot;
   int viscousStage;
   int iterateEvent;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:viscos",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:viscos",
 			    &pyA,                              // Sparse matrix arrays
-			    &pyPointerToPcg,
-			    &pyPointerToZcg,
-			    &pyPointerToDprev,
 			    &pyPointerToBextern,               // Force vectors
 			    &pyPointerToBtraction,
 			    &pyPointerToBgravity,
 			    &pyPointerToBconcForce,
-			    // &pyPointerToBprestress,
 			    &pyPointerToBintern,
 			    &pyPointerToBresid,
-			    &pyPointerToBwork,
 			    &pyPointerToDispVec,
 			    &pyPointerToListArrayNforce,
 			    &pyPointerToListArrayGrav,
@@ -172,6 +153,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 			    &pyPointerToIwink,
 			    &pyPointerToWink,
 			    &pyPointerToListArrayNsysdat,
+			    &pyPointerToListArrayIddmat,
 			    &pyPointerToIbond,                 // Boundary condition arrays
 			    &pyPointerToBond,
 			    &pyPointerToDx,                    // Slippery node arrays
@@ -198,8 +180,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 			    &pyPointerToLm,
 			    &pyPointerToLmx,
 			    &pyPointerToLmf,
-			    &pyPointerToInfiel,
-			    &pyPointerToListArrayIddmat,
+			    &pyPointerToIvfamily,
 			    &pyPointerToListArrayNpar,
 			    &pyPointerToIelno,                 // Traction BC arrays
 			    &pyPointerToIside,
@@ -208,13 +189,11 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 			    &pyPointerToPdir,
 			    &pyPointerToListArrayPropertyList, // Material property arrays
 			    &pyPointerToMhist,
-			    &pyPointerToMaterialInfo,
 			    &pyPointerToMaterialModelInfo,
-			    &pyPointerToMaterialModelStates,
-			    &pyPointerGauss,                   // Element type arrays
+			    &pyPointerToGauss,                 // Element type arrays
 			    &pyPointerToSh,
 			    &pyPointerToShj,
-			    &pyPointerToElementTypeInfo,
+			    &pyPointerToListArrayElementTypeInfo,
 			    &pyPointerToHistry,                // Time information
 			    &pyPointerToListArrayRtimdat,
 			    &pyPointerToListArrayNtimdat,
@@ -230,19 +209,13 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 			    &pyPointerToEtol,
 			    &pyPointerToItmax,
 			    &pyPointerToListArrayRgiter,       // Iterative solution information
-			    &pyPointerToListArrayGcurr,
-			    &pyPointerToListArrayGi,
-			    &pyPointerToListArrayGprev,
-			    &pyPointerToListArrayGtol,
-			    &pyPointerToListArrayRmin,
-			    &pyPointerToListArrayRmult,
-			    &pyPointerToListArrayNsiter,
 			    &pyPointerToSkew,                  // Skew rotation information
 			    &pyPointerToIprint,                // Input/output information
 			    &pyPointerToListArrayNcodat,
 			    &pyPointerToListArrayNunits,
 			    &pyPointerToListArrayNprint,
 			    &pyPointerToIstatout,
+			    &pyPointerToNstatout,
 			    &asciiOutputFile,                  // Output file names
 			    &plotOutputFile,
 			    &ucdOutputRoot,
@@ -254,20 +227,15 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   Mat      A = (Mat) PyCObject_AsVoidPtr(pyA);
-  double*  pointerToPcg = (double*) PyCObject_AsVoidPtr(pyPointerToPcg);
-  double*  pointerToZcg = (double*) PyCObject_AsVoidPtr(pyPointerToZcg);
-  double*  pointerToDprev = (double*) PyCObject_AsVoidPtr(pyPointerToDprev);
   double*  pointerToBextern = (double*) PyCObject_AsVoidPtr(pyPointerToBextern);
   double*  pointerToBtraction = (double*) PyCObject_AsVoidPtr(pyPointerToBtraction);
   double*  pointerToBgravity = (double*) PyCObject_AsVoidPtr(pyPointerToBgravity);
   double*  pointerToBconcForce = (double*) PyCObject_AsVoidPtr(pyPointerToBconcForce);
-  // double*  pointerToBprestress = (double*) PyCObject_AsVoidPtr(pyPointerToBprestress);
   double*  pointerToBintern = (double*) PyCObject_AsVoidPtr(pyPointerToBintern);
   double*  pointerToBresid = (double*) PyCObject_AsVoidPtr(pyPointerToBresid);
-  double*  pointerToBwork = (double*) PyCObject_AsVoidPtr(pyPointerToBwork);
   double*  pointerToDispVec = (double*) PyCObject_AsVoidPtr(pyPointerToDispVec);
   int*  pointerToListArrayNforce = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNforce);
   double*  pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
@@ -279,6 +247,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   int*  pointerToIwink = (int*) PyCObject_AsVoidPtr(pyPointerToIwink);
   double*  pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
   int*  pointerToListArrayNsysdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNsysdat);
+  int*  pointerToListArrayIddmat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayIddmat);
   int*  pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
   double*  pointerToBond = (double*) PyCObject_AsVoidPtr(pyPointerToBond);
   double*  pointerToDx = (double*) PyCObject_AsVoidPtr(pyPointerToDx);
@@ -305,8 +274,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   int*  pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
   int*  pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
   int*  pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
-  int*  pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
-  int*  pointerToListArrayIddmat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayIddmat);
+  int*  pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
   int*  pointerToListArrayNpar = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNpar);
   int*  pointerToIelno = (int*) PyCObject_AsVoidPtr(pyPointerToIelno);
   int*  pointerToIside = (int*) PyCObject_AsVoidPtr(pyPointerToIside);
@@ -315,13 +283,11 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   double*  pointerToPdir = (double*) PyCObject_AsVoidPtr(pyPointerToPdir);
   double*  pointerToListArrayPropertyList = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyList);
   int*  pointerToMhist = (int*) PyCObject_AsVoidPtr(pyPointerToMhist);
-  int*  pointerToMaterialInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialInfo);
   int*  pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
-  int*  pointerToMaterialModelStates = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelStates);
-  double*  pointerGauss = (double*) PyCObject_AsVoidPtr(pyPointerGauss);
+  double*  pointerToGauss = (double*) PyCObject_AsVoidPtr(pyPointerToGauss);
   double*  pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
   double*  pointerToShj = (double*) PyCObject_AsVoidPtr(pyPointerToShj);
-  int*  pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
+  int*  pointerToListArrayElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayElementTypeInfo);
   double*  pointerToHistry = (double*) PyCObject_AsVoidPtr(pyPointerToHistry);
   double*  pointerToListArrayRtimdat = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRtimdat);
   int*  pointerToListArrayNtimdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNtimdat);
@@ -337,33 +303,22 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   double*  pointerToEtol = (double*) PyCObject_AsVoidPtr(pyPointerToEtol);
   int*  pointerToItmax = (int*) PyCObject_AsVoidPtr(pyPointerToItmax);
   double*  pointerToListArrayRgiter = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRgiter);
-  double*  pointerToListArrayGcurr = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGcurr);
-  double*  pointerToListArrayGi = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGi);
-  double*  pointerToListArrayGprev = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGprev);
-  double*  pointerToListArrayGtol = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGtol);
-  double*  pointerToListArrayRmin = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRmin);
-  double*  pointerToListArrayRmult = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRmult);
-  int*  pointerToListArrayNsiter = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNsiter);
   double*  pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
   int*  pointerToIprint = (int*) PyCObject_AsVoidPtr(pyPointerToIprint);
   int*  pointerToListArrayNcodat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNcodat);
   int*  pointerToListArrayNunits = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNunits);
   int*  pointerToListArrayNprint = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
   int*  pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
+  int*  pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
 
 
   viscos_f(&A,                                // Sparse matrix arrays
-	   pointerToPcg,
-	   pointerToZcg,
-	   pointerToDprev,
 	   pointerToBextern,                  // Force vectors
 	   pointerToBtraction,
 	   pointerToBgravity,
 	   pointerToBconcForce,
-	   // pointerToBprestress,
 	   pointerToBintern,
 	   pointerToBresid,
-	   pointerToBwork,
 	   pointerToDispVec,
 	   pointerToListArrayNforce,
 	   pointerToListArrayGrav,
@@ -375,6 +330,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 	   pointerToIwink,
 	   pointerToWink,
 	   pointerToListArrayNsysdat,
+	   pointerToListArrayIddmat,
 	   pointerToIbond,                    // Boundary condition arrays
 	   pointerToBond,
 	   pointerToDx,                       // Slippery node arrays
@@ -401,8 +357,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 	   pointerToLm,
 	   pointerToLmx,
 	   pointerToLmf,
-	   pointerToInfiel,
-	   pointerToListArrayIddmat,
+	   pointerToIvfamily,
 	   pointerToListArrayNpar,
 	   pointerToIelno,                    // Traction BC arrays
 	   pointerToIside,
@@ -411,13 +366,11 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 	   pointerToPdir,
 	   pointerToListArrayPropertyList,    // Material property arrays
 	   pointerToMhist,
-	   pointerToMaterialInfo,
 	   pointerToMaterialModelInfo,
-	   pointerToMaterialModelStates,
-	   pointerGauss,                      // Element type arrays
+	   pointerToGauss,                    // Element type arrays
 	   pointerToSh,
 	   pointerToShj,
-	   pointerToElementTypeInfo,
+	   pointerToListArrayElementTypeInfo,
 	   pointerToHistry,                   // Time information
 	   pointerToListArrayRtimdat,
 	   pointerToListArrayNtimdat,
@@ -433,19 +386,13 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 	   pointerToEtol,
 	   pointerToItmax,
 	   pointerToListArrayRgiter,          // Iterative solution information
-	   pointerToListArrayGcurr,
-	   pointerToListArrayGi,
-	   pointerToListArrayGprev,
-	   pointerToListArrayGtol,
-	   pointerToListArrayRmin,
-	   pointerToListArrayRmult,
-	   pointerToListArrayNsiter,
 	   pointerToSkew,                     // Skew rotation information
 	   pointerToIprint,                   // Input/output information
 	   pointerToListArrayNcodat,
 	   pointerToListArrayNunits,
 	   pointerToListArrayNprint,
 	   pointerToIstatout,
+	   pointerToNstatout,
 	   asciiOutputFile,                   // Output file names
 	   plotOutputFile,
 	   ucdOutputRoot,
@@ -476,6 +423,6 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 
 
 // version
-// $Id: viscos.cc,v 1.10 2005/03/11 04:07:42 knepley Exp $
+// $Id: viscos.cc,v 1.11 2005/03/31 23:27:58 willic3 Exp $
 
 // End of file

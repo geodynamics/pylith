@@ -4,9 +4,8 @@
 // 
 //                               Charles A. Williams
 //                        Rensselaer Polytechnic Institute
-//                        (C) 2004 All Rights Reserved
+//                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2004 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -62,9 +61,9 @@ exceptionhandler(const int errorcode,
 {
   // Generate python exceptions from error codes
 
-  const int maxsize = 2048;
+  const int maxsize = 4096;
   char errormsg[maxsize];
-  // copy at most 1023 chars (account for terminating '\0')
+  // copy at most 4095 chars (account for terminating '\0')
   strncpy(errormsg, errorstring, maxsize-1);
 
   switch(errorcode)
@@ -202,6 +201,6 @@ exceptionhandler(const int errorcode,
 }
     
 // version
-// $Id: exceptionhandler.cc,v 1.2 2004/08/12 23:38:42 willic3 Exp $
+// $Id: exceptionhandler.cc,v 1.3 2005/03/31 23:27:57 willic3 Exp $
 
 // End of file

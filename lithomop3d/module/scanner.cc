@@ -4,9 +4,8 @@
 // 
 //                               Charles A. Williams
 //                        Rensselaer Polytechnic Institute
-//                        (C) 2004 All Rights Reserved
+//                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2004 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -66,7 +65,7 @@ PyObject * pylithomop3d_scan_bc(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int numberBcEntries = 0;
 
@@ -108,21 +107,17 @@ char pylithomop3d_scan_connect__name__[] = "scan_connect";
 PyObject * pylithomop3d_scan_connect(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToListArrayNumberElementNodesBase;
-  PyObject* pyPointerToMaterialInfo;
   PyObject* pyPointerToMaterialModelInfo;
-  PyObject* pyPointerToListArrayMaterialModel;
-  PyObject* pyPointerToListArrayPropertyListIndex;
-  int numberMaterials;
+  PyObject* pyPointerToVolumeElementFamilyList;
+  int maxNumberVolumeElementFamilies;
   int f77FileInput;
   char* connectivityInputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOiis:scan_connect",
+  int ok = PyArg_ParseTuple(args, "OOOiis:scan_connect",
 			    &pyPointerToListArrayNumberElementNodesBase,
-			    &pyPointerToMaterialInfo,
 			    &pyPointerToMaterialModelInfo,
-			    &pyPointerToListArrayMaterialModel,
-			    &pyPointerToListArrayPropertyListIndex,
-			    &numberMaterials,
+			    &pyPointerToVolumeElementFamilyList,
+			    &maxNumberVolumeElementFamilies,
 			    &f77FileInput,
 			    &connectivityInputFile);
 
@@ -131,24 +126,22 @@ PyObject * pylithomop3d_scan_connect(PyObject *, PyObject *args)
   }
 
   int* pointerToListArrayNumberElementNodesBase = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNumberElementNodesBase);
-  int* pointerToMaterialInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialInfo);
   int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
-  int* pointerToListArrayMaterialModel = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayMaterialModel);
-  int* pointerToListArrayPropertyListIndex = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyListIndex);
-  int numberElements = 0;
-  int connectivitySize = 0;
+  int* pointerToVolumeElementFamilyList = (int*) PyCObject_AsVoidPtr(pyPointerToVolumeElementFamilyList);
+  int numberVolumeElements = 0;
+  int numberVolumeElementFamilies = 0;
+  int volumeElementType = 0;
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
 
   scan_connect_f(pointerToListArrayNumberElementNodesBase,
-		 pointerToMaterialInfo,
 		 pointerToMaterialModelInfo,
-		 pointerToListArrayMaterialModel,
-		 pointerToListArrayPropertyListIndex,
-		 &numberMaterials,
-		 &numberElements,
-		 &connectivitySize,
+		 pointerToVolumeElementFamilyList,
+		 &maxNumberVolumeElementFamilies,
+		 &numberVolumeElements,
+		 &numberVolumeElementFamilies,
+		 &volumeElementType,
 		 &f77FileInput,
 		 connectivityInputFile,
 		 &errorcode,
@@ -163,13 +156,14 @@ PyObject * pylithomop3d_scan_connect(PyObject *, PyObject *args)
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberElements:" << numberElements
+    << "numberVolumeElementFamilies:" << numberVolumeElementFamilies
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("ii", numberElements,
-		       connectivitySize);
+  return Py_BuildValue("iii", numberVolumeElements,
+		       numberVolumeElementFamilies,
+		       volumeElementType);
 }
 
 
@@ -194,7 +188,7 @@ PyObject * pylithomop3d_scan_coords(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int numberNodes = 0;
 
@@ -245,7 +239,7 @@ PyObject * pylithomop3d_scan_diff(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int numberDifferentialForceEntries = 0;
 
@@ -297,7 +291,7 @@ PyObject * pylithomop3d_scan_fuldat(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int numberFullOutputs = 0;
 
@@ -346,7 +340,7 @@ PyObject * pylithomop3d_scan_hist(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int numberLoadHistories = 0;
 
@@ -401,7 +395,7 @@ PyObject * pylithomop3d_scan_hist(PyObject *, PyObject *args)
   //   }
 
   //   int errorcode = 0;
-  //   const int maxsize = 1024;
+  //   const int maxsize = 4096;
   //   char errorstring[maxsize];
   //   int numberPrestressEntries = 0;
 
@@ -451,7 +445,7 @@ PyObject * pylithomop3d_scan_skew(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int numberRotationEntries = 0;
 
@@ -500,7 +494,7 @@ PyObject * pylithomop3d_scan_slip(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int numberSlipperyNodeEntries = 0;
 
@@ -547,7 +541,7 @@ PyObject * pylithomop3d_scan_split(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int numberSplitNodeEntries = 0;
 
@@ -596,7 +590,7 @@ PyObject * pylithomop3d_scan_timdat(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int numberTimeStepGroups = 0;
   int totalNumberTimeSteps = 0;
@@ -650,7 +644,7 @@ PyObject * pylithomop3d_scan_timdat(PyObject *, PyObject *args)
   // }
 
   // int errorcode = 0;
-  // const int maxsize = 1024;
+  // const int maxsize = 4096;
   // char errorstring[maxsize];
   // int numberTractionBc = 0;
 
@@ -699,7 +693,7 @@ PyObject * pylithomop3d_scan_wink(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int numberWinklerEntries = 0;
   int numberWinklerForces = 0;
@@ -751,7 +745,7 @@ PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int numberSlipperyWinklerEntries = 0;
   int numberSlipperyWinklerForces = 0;
@@ -783,6 +777,6 @@ PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: scanner.cc,v 1.4 2004/08/12 15:08:40 willic3 Exp $
+// $Id: scanner.cc,v 1.5 2005/03/31 23:27:57 willic3 Exp $
 
 // End of file

@@ -4,9 +4,8 @@
 // 
 //                               Charles A. Williams
 //                        Rensselaer Polytechnic Institute
-//                        (C) 2004 All Rights Reserved
+//                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2004 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -48,7 +47,7 @@ char pylithomop3d_write_element_info__name__[] = "write_element_info";
 
 PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
 {
-  int numberElements;
+  int numberVolumeElements;
   int quadratureOrderInt;
   int prestressAutoComputeInt;
   int prestressAutoChangeElasticPropsInt;
@@ -59,7 +58,7 @@ PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
   char* asciiOutputFile;
 
   int ok = PyArg_ParseTuple(args, "iiiiddiis:write_element_info",
-			    &numberElements,
+			    &numberVolumeElements,
 			    &quadratureOrderInt,
 			    &prestressAutoComputeInt,
 			    &prestressAutoChangeElasticPropsInt,
@@ -73,7 +72,7 @@ PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
     return 0;
   }
 
-  write_element_info_f(&numberElements,
+  write_element_info_f(&numberVolumeElements,
 		       &quadratureOrderInt,
 		       &prestressAutoComputeInt,
 		       &prestressAutoChangeElasticPropsInt,
@@ -86,7 +85,7 @@ PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberElements:" << numberElements
+    << "numberVolumeElements:" << numberVolumeElements
     << journal::endl;
 
   // return
@@ -107,7 +106,7 @@ PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *args)
   int plotOutputInt;
   int numberNodes;
   int analysisTypeInt;
-  int debuggingOutput;
+  int debuggingOutputInt;
   int f77AsciiOutput;
   int f77PlotOutput;
   char* asciiOutputFile;
@@ -119,7 +118,7 @@ PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *args)
 			    &plotOutputInt,
 			    &numberNodes,
 			    &analysisTypeInt,
-			    &debuggingOutput,
+			    &debuggingOutputInt,
 			    &f77AsciiOutput,
 			    &f77PlotOutput,
 			    &asciiOutputFile,
@@ -134,7 +133,7 @@ PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *args)
 		      &plotOutputInt,
 		      &numberNodes,
 		      &analysisTypeInt,
-		      &debuggingOutput,
+		      &debuggingOutputInt,
 		      &f77AsciiOutput,
 		      &f77PlotOutput,
 		      asciiOutputFile,
@@ -146,7 +145,7 @@ PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *args)
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "debuggingOutput:" << debuggingOutput
+    << "debuggingOutputInt:" << debuggingOutputInt
     << journal::endl;
 
   // return
@@ -164,10 +163,10 @@ PyObject * pylithomop3d_write_props(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToListArrayPropertyList;
   PyObject* pyPointerToListArrayGrav;
-  PyObject* pyPointerToMaterialInfo;
+  PyObject* pyPointerToIvfamily;
   PyObject* pyPointerToMaterialModelInfo;
-  int numberMaterials;
-  int propertyListSize;
+  int numberVolumeElementFamilies;
+  int propertySize;
   int asciiOutputInt;
   int plotOutputInt;
   int f77AsciiOutput;
@@ -178,10 +177,10 @@ PyObject * pylithomop3d_write_props(PyObject *, PyObject *args)
   int ok = PyArg_ParseTuple(args, "OOOOiiiiiiss:write_props",
 			    &pyPointerToListArrayPropertyList,
 			    &pyPointerToListArrayGrav,
-			    &pyPointerToMaterialInfo,
+			    &pyPointerToIvfamily,
 			    &pyPointerToMaterialModelInfo,
-			    &numberMaterials,
-			    &propertyListSize,
+			    &numberVolumeElementFamilies,
+			    &propertySize,
 			    &asciiOutputInt,
 			    &plotOutputInt,
 			    &f77AsciiOutput,
@@ -194,19 +193,19 @@ PyObject * pylithomop3d_write_props(PyObject *, PyObject *args)
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   double* pointerToListArrayPropertyList = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyList);
   double* pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
-  int* pointerToMaterialInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialInfo);
+  int* pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
   int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
 
   write_props_f(pointerToListArrayPropertyList,
 		pointerToListArrayGrav,
-		pointerToMaterialInfo,
+		pointerToIvfamily,
 		pointerToMaterialModelInfo,
-		&numberMaterials,
-		&propertyListSize,
+		&numberVolumeElementFamilies,
+		&propertySize,
 		&asciiOutputInt,
 		&plotOutputInt,
 		&f77AsciiOutput,
@@ -226,7 +225,7 @@ PyObject * pylithomop3d_write_props(PyObject *, PyObject *args)
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberMaterials:" << numberMaterials
+    << "numberVolumeElementFamilies:" << numberVolumeElementFamilies
     << journal::endl;
 
   // return
@@ -260,15 +259,6 @@ PyObject * pylithomop3d_write_sparse_info(PyObject *, PyObject *args)
 			    &f77AsciiOutput,
 			    &asciiOutputFile);
 
-  //debug printf("Hello from pylithomop3d_write_sparse_info!\n");
-  //debug printf("numberGlobalEquations = %d\n", numberGlobalEquations);
-  //debug printf("stiffnessMatrixSize = %d\n", stiffnessMatrixSize);
-  //debug printf("minimumNonzeroTermsPerRow = %d\n", minimumNonzeroTermsPerRow);
-  //debug printf("maximumNonzeroTermsPerRow = %d\n", maximumNonzeroTermsPerRow);
-  //debug printf("averageNonzeroTermsPerRow = %g\n", averageNonzeroTermsPerRow);
-  //debug printf("asciiOutputInt = %d\n", asciiOutputInt);
-  //debug printf("f77AsciiOutput = %d\n", f77AsciiOutput);
-  //debug printf("asciiOutputFile = %s\n", asciiOutputFile);
   if (!ok) {
     return 0;
   }
@@ -346,19 +336,13 @@ char pylithomop3d_write_subiter__name__[] = "write_subiter";
 
 PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToListArrayRmult;
-  PyObject* pyPointerToListArrayRmin;
-  int preconditionerTypeInt;
-  int maxPcgIterations;
+  int usePreviousDisplacementFlag;
   int f77AsciiOutput;
   int asciiOutputInt;
   char* asciiOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOiiiis:write_subiter",
-			    &pyPointerToListArrayRmult,
-			    &pyPointerToListArrayRmin,
-			    &preconditionerTypeInt,
-			    &maxPcgIterations,
+  int ok = PyArg_ParseTuple(args, "iiis:write_subiter",
+			    &usePreviousDisplacementFlag,
 			    &f77AsciiOutput,
 			    &asciiOutputInt,
 			    &asciiOutputFile);
@@ -367,13 +351,8 @@ PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *args)
     return 0;
   }
 
-  double* pointerToListArrayRmult = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRmult);
-  double* pointerToListArrayRmin = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRmin);
 
-  write_subiter_f(pointerToListArrayRmult,
-		  pointerToListArrayRmin,
-		  &preconditionerTypeInt,
-		  &maxPcgIterations,
+  write_subiter_f(&usePreviousDisplacementFlag,
 		  &f77AsciiOutput,
 		  &asciiOutputInt,
 		  asciiOutputFile,strlen(asciiOutputFile));
@@ -381,7 +360,7 @@ PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *args)
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "maxPcgIterations:" << maxPcgIterations
+    << "usePreviousDisplacementFlag:" << usePreviousDisplacementFlag
     << journal::endl;
 
   // return
@@ -400,25 +379,31 @@ PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *args)
   PyObject* pyPointerToX;
   int numberNodes;
   PyObject* pyPointerToIen;
-  PyObject* pyPointerToInfiel;
-  int numberElements;
-  int connectivitySize;
+  PyObject* pyPointerToIvfamily;
+  int numberVolumeElements;
+  int numberVolumeElementFamilies;
   PyObject* pyPointerToSh;
-  PyObject* pyPointerToElementTypeInfo;
+  int numberVolumeElementNodes;
+  int numberVolumeElementGaussPoints;
+  int volumeElementType;
   PyObject* pyPointerToIstatout;
+  PyObject* pyPointerToNstatout;
   int f77UcdOutput;
   char* ucdOutputRoot;
 
-  int ok = PyArg_ParseTuple(args, "OiOOiiOOOis:write_ucd_mesh",
+  int ok = PyArg_ParseTuple(args, "OiOOiiOiiiOOis:write_ucd_mesh",
 			    &pyPointerToX,
 			    &numberNodes,
 			    &pyPointerToIen,
-			    &pyPointerToInfiel,
-			    &numberElements,
-			    &connectivitySize,
+			    &pyPointerToIvfamily,
+			    &numberVolumeElements,
+			    &numberVolumeElementFamilies,
 			    &pyPointerToSh,
-			    &pyPointerToElementTypeInfo,
+			    &numberVolumeElementNodes,
+			    &numberVolumeElementGaussPoints,
+			    &volumeElementType,
 			    &pyPointerToIstatout,
+			    &pyPointerToNstatout,
 			    &f77UcdOutput,
 			    &ucdOutputRoot);
 
@@ -428,27 +413,30 @@ PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *args)
 
   double* pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
   int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
+  int* pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
   double* pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
-  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
   int* pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
+  int* pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
 
   write_ucd_mesh_f(pointerToX,
 		   &numberNodes,
 		   pointerToIen,
-		   pointerToInfiel,
-		   &numberElements,
-		   &connectivitySize,
+		   pointerToIvfamily,
+		   &numberVolumeElements,
+		   &numberVolumeElementFamilies,
 		   pointerToSh,
-		   pointerToElementTypeInfo,
+		   &numberVolumeElementNodes,
+		   &numberVolumeElementGaussPoints,
+		   &volumeElementType,
 		   pointerToIstatout,
+		   pointerToNstatout,
 		   &f77UcdOutput,
 		   ucdOutputRoot,strlen(ucdOutputRoot));
 		  
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberElements:" << numberElements
+    << "numberVolumeElements:" << numberVolumeElements
     << journal::endl;
 
   // return
@@ -459,6 +447,6 @@ PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *args)
 
 
 // version
-// $Id: input_misc.cc,v 1.7 2005/03/12 02:03:18 willic3 Exp $
+// $Id: input_misc.cc,v 1.8 2005/03/31 23:27:57 willic3 Exp $
 
 // End of file

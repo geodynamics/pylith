@@ -4,9 +4,8 @@
 #
 #                             Charles A. Williams
 #                       Rensselaer Polytechnic Institute
-#                        (C) 2004  All Rights Reserved
+#                        (C) 2005  All Rights Reserved
 #
-#  Copyright 2004 Rensselaer Polytechnic Institute.
 #  All worldwide rights reserved.  A license to use, copy, modify and
 #  distribute this software for non-commercial research purposes only
 #  is hereby granted, provided that this copyright notice and
@@ -58,7 +57,7 @@ PROJ_SRCS = \
 
 
 # version
-# $Id: Make.mm,v 1.7 2005/03/12 02:03:18 willic3 Exp $
+# $Id: Make.mm,v 1.8 2005/03/31 23:27:57 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 

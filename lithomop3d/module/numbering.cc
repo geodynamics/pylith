@@ -4,9 +4,8 @@
 // 
 //                               Charles A. Williams
 //                        Rensselaer Polytechnic Institute
-//                        (C) 2004 All Rights Reserved
+//                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2004 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -166,20 +165,16 @@ PyObject * pylithomop3d_local(PyObject *, PyObject *args)
   int numberNodes;
   PyObject* pyPointerToIen;
   PyObject* pyPointerToLm;
-  PyObject* pyPointerToInfiel;
-  int connectivitySize;
-  int numberElements;
-  PyObject* pyPointerToElementTypeInfo;
+  int numberVolumeElements;
+  int numberVolumeElementNodes;
 
-  int ok = PyArg_ParseTuple(args, "OiOOOiiO:local",
+  int ok = PyArg_ParseTuple(args, "OiOOii:local",
 			    &pyPointerToId,
 			    &numberNodes,
 			    &pyPointerToIen,
 			    &pyPointerToLm,
-			    &pyPointerToInfiel,
-			    &connectivitySize,
-			    &numberElements,
-			    &pyPointerToElementTypeInfo);
+			    &numberVolumeElements,
+			    &numberVolumeElementNodes);
 
   if (!ok) {
     return 0;
@@ -188,22 +183,18 @@ PyObject * pylithomop3d_local(PyObject *, PyObject *args)
   int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
   int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
   int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
-  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
-  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
 
   local_f(pointerToId,
 	  &numberNodes,
 	  pointerToIen,
 	  pointerToLm,
-	  pointerToInfiel,
-	  &connectivitySize,
-	  &numberElements,
-	  pointerToElementTypeInfo);
+	  &numberVolumeElements,
+	  &numberVolumeElementNodes);
 
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "connectivitySize:" << connectivitySize
+    << "numberVolumeElements:" << numberVolumeElements
     << journal::endl;
 
   // return
@@ -221,22 +212,18 @@ PyObject * pylithomop3d_localf(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIen;
   PyObject* pyPointerToLmf;
-  PyObject* pyPointerToInfiel;
-  int connectivitySize;
-  int numberElements;
-  PyObject* pyPointerToElementTypeInfo;
+  int numberVolumeElements;
   PyObject* pyPointerToNfault;
   int numberSplitNodeEntries;
+  int numberVolumeElementNodes;
 
-  int ok = PyArg_ParseTuple(args, "OOOiiOOi:localf",
+  int ok = PyArg_ParseTuple(args, "OOiOii:localf",
 			    &pyPointerToIen,
 			    &pyPointerToLmf,
-			    &pyPointerToInfiel,
-			    &connectivitySize,
-			    &numberElements,
-			    &pyPointerToElementTypeInfo,
+			    &numberVolumeElements,
 			    &pyPointerToNfault,
-			    &numberSplitNodeEntries);
+			    &numberSplitNodeEntries,
+			    &numberVolumeElementNodes);
 
   if (!ok) {
     return 0;
@@ -244,18 +231,14 @@ PyObject * pylithomop3d_localf(PyObject *, PyObject *args)
 
   int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
   int* pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
-  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
-  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
   int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
 
   localf_f(pointerToIen,
 	   pointerToLmf,
-	   pointerToInfiel,
-	   &connectivitySize,
-	   &numberElements,
-	   pointerToElementTypeInfo,
+	   &numberVolumeElements,
 	   pointerToNfault,
-	   &numberSplitNodeEntries);
+	   &numberSplitNodeEntries,
+	   &numberVolumeElementNodes);
 		  
   journal::debug_t debug("lithomop3d");
   debug
@@ -280,24 +263,20 @@ PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
   int numberNodes;
   PyObject* pyPointerToIen;
   PyObject* pyPointerToLmx;
-  PyObject* pyPointerToInfiel;
-  int connectivitySize;
-  int numberElements;
-  PyObject* pyPointerToElementTypeInfo;
+  int numberVolumeElements;
   PyObject* pyPointerToNslip;
   int numberSlipperyNodeEntries;
+  int numberVolumeElementNodes;
 
-  int ok = PyArg_ParseTuple(args, "OiOOOiiOOi:localx",
+  int ok = PyArg_ParseTuple(args, "OiOOiOii:localx",
 			    &pyPointerToIdx,
   			    &numberNodes,
   			    &pyPointerToIen,
   			    &pyPointerToLmx,
-  			    &pyPointerToInfiel,
-  			    &connectivitySize,
-  			    &numberElements,
-  			    &pyPointerToElementTypeInfo,
+  			    &numberVolumeElements,
   			    &pyPointerToNslip,
-			    &numberSlipperyNodeEntries);
+			    &numberSlipperyNodeEntries,
+  			    &numberVolumeElementNodes);
 
   if (!ok) {
     return 0;
@@ -306,25 +285,21 @@ PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
   int* pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
   int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
   int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
-  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
   int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
 
   localx_f(pointerToIdx,
 	   &numberNodes,
 	   pointerToIen,
 	   pointerToLmx,
-	   pointerToInfiel,
-	   &connectivitySize,
-	   &numberElements,
-	   pointerToElementTypeInfo,
+	   &numberVolumeElements,
 	   pointerToNslip,
-	   &numberSlipperyNodeEntries);
+	   &numberSlipperyNodeEntries,
+	   &numberVolumeElementNodes);
 
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberElements:" << numberElements
+    << "numberVolumeElements:" << numberVolumeElements
     << journal::endl;
 
   // return
@@ -402,6 +377,6 @@ PyObject * pylithomop3d_nfind(PyObject *, PyObject *args)
 }
 
 // version
-// $Id: numbering.cc,v 1.1 2005/03/12 02:03:18 willic3 Exp $
+// $Id: numbering.cc,v 1.2 2005/03/31 23:27:57 willic3 Exp $
 
 // End of file
