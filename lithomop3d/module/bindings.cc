@@ -6,7 +6,6 @@
 //                        Rensselaer Polytechnic Institute
 //                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2005 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -302,6 +301,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
 };
 
 // version
-// $Id: bindings.cc,v 1.7 2005/03/12 02:03:18 willic3 Exp $
+// $Id: bindings.cc,v 1.8 2005/03/31 23:27:57 willic3 Exp $
 
 // End of file

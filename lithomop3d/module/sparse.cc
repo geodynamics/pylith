@@ -4,9 +4,8 @@
 // 
 //                               Charles A. Williams
 //                        Rensselaer Polytechnic Institute
-//                        (C) 2004 All Rights Reserved
+//                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2004 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -51,65 +50,39 @@ PyObject * pylithomop3d_cmp_stiffsz(PyObject *, PyObject *args)
   int numberGlobalEquations;
   PyObject* pyPointerToLm;
   PyObject* pyPointerToLmx;
-  PyObject* pyPointerToInfiel;
-  int connectivitySize;
-  int numberElements;
-  PyObject* pyPointerToElementTypeInfo;
+  int numberVolumeElements;
   int totalNumberSlipperyNodes;
+  int numberVolumeElementNodes;
 
-  int ok = PyArg_ParseTuple(args, "iOOOiiOi:cmp_stiffsz",
+  int ok = PyArg_ParseTuple(args, "iOOiii:cmp_stiffsz",
 			    &numberGlobalEquations,
 			    &pyPointerToLm,
 			    &pyPointerToLmx,
-			    &pyPointerToInfiel,
-			    &connectivitySize,
-			    &numberElements,
-			    &pyPointerToElementTypeInfo,
-			    &totalNumberSlipperyNodes);
-
-  // printf("Hello from pylithomop3d_cmp_stiffsz!\n");
-  // printf("numberGlobalEquations = %d\n", numberGlobalEquations);
-  // printf("connectivitySize = %d\n", connectivitySize);
-  // printf("numberElements = %d\n", numberElements);
-  // printf("workingArraySize = %d\n", workingArraySize);
-
+			    &numberVolumeElements,
+			    &totalNumberSlipperyNodes,
+			    &numberVolumeElementNodes);
 
   if (!ok) {
     return 0;
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
   int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
-  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
   int workingArraySize = 0;
-
-  // printf("pointerToLm = %d\n", pointerToLm);
-  // printf("pointerToLmx = %d\n", pointerToLmx);
-  // printf("pointerToInfiel = %d\n", pointerToInfiel);
-  // printf("pointerToElementTypeInfo = %d\n", pointerToElementTypeInfo);
-  // printf("connectivitySize = %d\n", connectivitySize);
-  // printf("numberElements = %d\n", numberElements);
-  // printf("workingArraySize = %d\n", workingArraySize);
-  // printf("totalNumberSlipperyNodes = %d\n", totalNumberSlipperyNodes);
 
   cmp_stiffsz_f(&numberGlobalEquations,
 	   	pointerToLm,
 	   	pointerToLmx,
-	   	pointerToInfiel,
-	   	&connectivitySize,
-	   	&numberElements,
-	   	pointerToElementTypeInfo,
+	   	&numberVolumeElements,
 	   	&workingArraySize,
 	   	&totalNumberSlipperyNodes,
+	   	&numberVolumeElementNodes,
 	   	&errorcode,
 	   	errorstring,
 	   	strlen(errorstring));
-
-  // printf("workingArraySize = %d\n", workingArraySize);
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -138,74 +111,49 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
   int numberGlobalEquations;
   PyObject* pyPointerToLm;
   PyObject* pyPointerToLmx;
-  PyObject* pyPointerToInfiel;
-  int connectivitySize;
-  int numberElements;
-  PyObject* pyPointerToElementTypeInfo;
+  int numberVolumeElements;
+  int numberVolumeElementNodes;
+  int numberVolumeElementEquations;
   PyObject* pyPointerToIndx;
   PyObject* pyPointerToLink;
   PyObject* pyPointerToNbrs;
   int workingArraySize;
   int totalNumberSlipperyNodes;
 
-  int ok = PyArg_ParseTuple(args, "iOOOiiOOOOii:lnklst",
+  int ok = PyArg_ParseTuple(args, "iOOiiiOOOii:lnklst",
 			    &numberGlobalEquations,
 			    &pyPointerToLm,
 			    &pyPointerToLmx,
-			    &pyPointerToInfiel,
-			    &connectivitySize,
-			    &numberElements,
-			    &pyPointerToElementTypeInfo,
+			    &numberVolumeElements,
+			    &numberVolumeElementNodes,
+			    &numberVolumeElementEquations,
 			    &pyPointerToIndx,
 			    &pyPointerToLink,
 			    &pyPointerToNbrs,
 			    &workingArraySize,
 			    &totalNumberSlipperyNodes);
 
-  // printf("Hello from pylithomop3d_lnklst!\n");
-  // printf("numberGlobalEquations = %d\n", numberGlobalEquations);
-  // printf("connectivitySize = %d\n", connectivitySize);
-  // printf("numberElements = %d\n", numberElements);
-  // printf("workingArraySize = %d\n", workingArraySize);
-
-
   if (!ok) {
     return 0;
   }
 
   int errorcode = 0;
-  const int maxsize = 1024;
+  const int maxsize = 4096;
   char errorstring[maxsize];
   int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
   int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
-  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
   int* pointerToIndx = (int*) PyCObject_AsVoidPtr(pyPointerToIndx);
   int* pointerToLink = (int*) PyCObject_AsVoidPtr(pyPointerToLink);
   int* pointerToNbrs = (int*) PyCObject_AsVoidPtr(pyPointerToNbrs);
   int stiffnessMatrixSize =0;
   int stiffnessOffDiagonalSize =0;
 
-  // printf("pointerToLm = %d\n", pointerToLm);
-  // printf("pointerToLmx = %d\n", pointerToLmx);
-  // printf("pointerToInfiel = %d\n", pointerToInfiel);
-  // printf("pointerToElementTypeInfo = %d\n", pointerToElementTypeInfo);
-  // printf("pointerToIndx = %d\n", pointerToIndx);
-  // printf("pointerToLink = %d\n", pointerToLink);
-  // printf("pointerToNbrs = %d\n", pointerToNbrs);
-  // printf("connectivitySize = %d\n", connectivitySize);
-  // printf("numberElements = %d\n", numberElements);
-  // printf("stiffnessMatrixSize = %d\n", stiffnessMatrixSize);
-  // printf("stiffnessOffDiagonalSize = %d\n", stiffnessOffDiagonalSize);
-  // printf("totalNumberSlipperyNodes = %d\n", totalNumberSlipperyNodes);
-
   lnklst_f(&numberGlobalEquations,
 	   pointerToLm,
 	   pointerToLmx,
-	   pointerToInfiel,
-	   &connectivitySize,
-	   &numberElements,
-	   pointerToElementTypeInfo,
+	   &numberVolumeElements,
+	   &numberVolumeElementNodes,
+	   &numberVolumeElementEquations,
 	   pointerToIndx,
 	   pointerToLink,
 	   pointerToNbrs,
@@ -216,9 +164,6 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
 	   &errorcode,
 	   errorstring,
 	   strlen(errorstring));
-
-  // printf("stiffnessOffDiagonalSize = %d\n", stiffnessOffDiagonalSize);
-  // printf("stiffnessMatrixSize = %d\n", stiffnessMatrixSize);
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -245,13 +190,18 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
   PyObject *pyA;
   Mat A;
   int size;
+  int ierr;
+  // PetscInt size;
 
   int ok = PyArg_ParseTuple(args, "i:createPETScMat", &size);
   if (!ok) {
     return 0;
   }
 
-  if (MatCreate(PETSC_COMM_WORLD, size, size, PETSC_DETERMINE, PETSC_DETERMINE, &A)) {
+  ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, size, size);
+
+  // if (MatCreate(PETSC_COMM_WORLD, size, size, PETSC_DETERMINE, PETSC_DETERMINE, &A)) {
+  if (MatCreate(PETSC_COMM_WORLD, &A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
     return 0;
   }
@@ -324,11 +274,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 			    &stiffnessMatrixSize,
 			    &workingArraySize);
 
-  // printf("Hello from pylithomop3d_makemsr!\n");
-  // printf("numberGlobalEquations = %d\n", numberGlobalEquations);
-  // printf("stiffnessMatrixSize = %d\n", stiffnessMatrixSize);
-  // printf("workingArraySize = %d\n", workingArraySize);
-
   if (!ok) {
     return 0;
   }
@@ -351,11 +296,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 	    &maximumNonzeroTermsPerRow,
 	    &averageNonzeroTermsPerRow);
 
-  // printf("workingArraySize = %d\n", workingArraySize);
-  // printf("minimumNonzeroTermsPerRow = %d\n", minimumNonzeroTermsPerRow);
-  // printf("maximumNonzeroTermsPerRow = %d\n", maximumNonzeroTermsPerRow);
-  // printf("averageNonzeroTermsPerRow = %g\n", averageNonzeroTermsPerRow);
-		  
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
@@ -373,6 +313,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.7 2005/03/11 04:07:42 knepley Exp $
+// $Id: sparse.cc,v 1.8 2005/03/31 23:27:57 willic3 Exp $
 
 // End of file

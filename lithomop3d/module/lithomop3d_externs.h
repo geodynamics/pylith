@@ -4,9 +4,8 @@
 // 
 //                               Charles A. Williams
 //                        Rensselaer Polytechnic Institute
-//                        (C) 2004 All Rights Reserved
+//                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2004 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -250,7 +249,7 @@
 #define write_subiter_f WRITE_SUBITER
 #define write_ucd_mesh_f WRITE_UCD_MESH
 
-#elif defined(F77EXTERNS_COMPAQ_F90) || defined (F77EXTERNS_SOMETIMES_EXTRATRAILINGBAR)
+#elif defined(F77EXTERNS_COMPAQ_F90) || defined (F77EXTERNS_SOMETIMES_TRAILINGBAR)
 
 // symbols that contain underbars get two underbars at the end
 // symbols that do not contain underbars get one underbar at the end
@@ -319,11 +318,7 @@
 extern "C" {
 
   void autoprestr_f(Mat *,             // sparse
-		    double *,
-		    double *,
-		    double *,
 		    double *,          // force
-		    double *,
 		    double *,
 		    double *,
 		    double *,
@@ -339,6 +334,7 @@ extern "C" {
 		    int *,
 		    int *,
 		    double *,
+		    int *,
 		    int *,
 		    int *,             // bc
 		    double *,
@@ -368,15 +364,12 @@ extern "C" {
 		    int *,
 		    int *,
 		    int *,
-		    int *,
 		    int *,             // traction
 		    int *,
 		    int *,
 		    double *,
 		    double *,
 		    double *,          // material
-		    int *,
-		    int *,
 		    int *,
 		    int *,
 		    double *,          // element type
@@ -398,22 +391,17 @@ extern "C" {
 		    double *,
 		    int *,
 		    double *,          // iterations
-		    double *,
-		    double *,
-		    double *,
-		    double *,
-		    double *,
-		    double *,
-		    int *,
 		    double *,          // skew
 		    int *,             // i/o info
+		    int *,
 		    int *,
 		    int *,
 		    int *,
 		    char *,            // files
 		    char *,
 		    char *,
-                    int *,
+                    int *,             // PETSc logging
+		    int *,
 		    int *,             // error codes
 		    char *,
 		    int,               // string lengths
@@ -422,8 +410,6 @@ extern "C" {
 		    int);
 
   void cmp_stiffsz_f(int *,
-	             int *,
-	             int *,
 	             int *,
 	             int *,
 	             int *,
@@ -444,11 +430,7 @@ extern "C" {
 		   int *);
 
   void elastc_f(Mat *,             // sparse
-		double *,
-		double *,
-		double *,
 		double *,          // force
-		double *,
 		double *,
 		double *,
 		double *,
@@ -464,6 +446,7 @@ extern "C" {
 		int *,
 		int *,
 		double *,
+		int *,
 		int *,
 		int *,             // bc
 		double *,
@@ -493,15 +476,12 @@ extern "C" {
 		int *,
 		int *,
 		int *,
-		int *,
 		int *,             // traction
 		int *,
 		int *,
 		double *,
 		double *,
 		double *,          // material
-		int *,
-		int *,
 		int *,
 		int *,
 		double *,          // element type
@@ -523,22 +503,16 @@ extern "C" {
 		double *,
 		int *,
 		double *,          // iterations
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		int *,
 		double *,          // skew
 		int *,             // i/o info
+		int *,
 		int *,
 		int *,
 		int *,
 		char *,            // files
 		char *,
 		char *,
-                int *,
+                int *,            // PETSc logging
                 int *,
 		int *,             // error codes
 		char *,
@@ -570,13 +544,10 @@ extern "C" {
 		int *,
 		int *,
 		int *,
-		int *,
 		char *,
 		int);
 
   void local_f(int *,
-	       int *,
-	       int *,
 	       int *,
 	       int *,
 	       int *,
@@ -588,13 +559,9 @@ extern "C" {
 		int *,
 		int *,
 		int *,
-		int *,
-		int *,
 		int *);
 
   void localx_f(int *,
-		int *,
-		int *,
 		int *,
 		int *,
 		int *,
@@ -614,8 +581,7 @@ extern "C" {
 		 int *,
 		 double *);
 
-  void matmod_def_f(int *,
-		    int *);
+  void matmod_def_f(int *);
 
   void nfind_f(double *,
 	       double *,
@@ -633,7 +599,11 @@ extern "C" {
 		  double *,
 		  double *,
 		  int *,
-		  int *);
+		  int *,
+		  int *,
+		  int *,
+		  int *,
+		  char *,int);
 
   void read_bc_f(double*,
 		 double*,
@@ -655,8 +625,6 @@ extern "C" {
 		 int);
 
   void read_connect_f(int *,
-		      int *,
-		      int *,
 		      int *,
 		      int *,
 		      int *,
@@ -856,6 +824,7 @@ extern "C" {
 		       int *,
 		       int *,
 		       int *,
+		       int *,
 		       char *,
 		       char *,
 		       char *,
@@ -960,7 +929,6 @@ extern "C" {
 		 int);
 
   void scan_connect_f(int *,
-		      int *,
 		      int *,
 		      int *,
 		      int *,
@@ -1087,11 +1055,7 @@ extern "C" {
 		    int);
 
   void viscos_f(Mat *,             // sparse
-		double *,
-		double *,
-		double *,
 		double *,          // force
-		double *,
 		double *,
 		double *,
 		double *,
@@ -1107,6 +1071,7 @@ extern "C" {
 		int *,
 		int *,
 		double *,
+		int *,
 		int *,
 		int *,             // bc
 		double *,
@@ -1136,15 +1101,12 @@ extern "C" {
 		int *,
 		int *,
 		int *,
-		int *,
 		int *,             // traction
 		int *,
 		int *,
 		double *,
 		double *,
 		double *,          // material
-		int *,
-		int *,
 		int *,
 		int *,
 		double *,          // element type
@@ -1166,15 +1128,9 @@ extern "C" {
 		double *,
 		int *,
 		double *,          // iterations
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		int *,
 		double *,          // skew
 		int *,             // i/o info
+		int *,
 		int *,
 		int *,
 		int *,
@@ -1182,7 +1138,7 @@ extern "C" {
 		char *,            // files
 		char *,
 		char *,
-                int *,
+                int *,             // PETSC logging
                 int *,
 		int *,             // error codes
 		char *,
@@ -1249,10 +1205,7 @@ extern "C" {
 			int *,
 			char *,int);
 
-  void write_subiter_f(double *,
-		       double *,
-		       int *,
-		       int *,
+  void write_subiter_f(int *,
 		       int *,
 		       int *,
 		       char *,int);
@@ -1267,6 +1220,9 @@ extern "C" {
 		       	int *,
 		       	int *,
 		       	int *,
+		       	int *,
+		       	int *,
+		       	int *,
 		       	char *,int);
 }
 
@@ -1274,6 +1230,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.14 2005/03/12 02:03:18 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.15 2005/03/31 23:27:58 willic3 Exp $
 
 // End of file

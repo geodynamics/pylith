@@ -4,9 +4,8 @@
 // 
 //                               Charles A. Williams
 //                        Rensselaer Polytechnic Institute
-//                        (C) 2004 All Rights Reserved
+//                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2004 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -114,20 +113,24 @@ char pylithomop3d_setup_petsc_logging__name__[] = "setupPETScLogging";
 
 PyObject * pylithomop3d_setup_petsc_logging(PyObject *, PyObject *)
 {
-  PetscInt elasticStage, viscousStage;
+  PetscInt autoprestrStage, elasticStage, viscousStage;
   PetscEvent iterateEvent;
   PyObject *_pyReturn;
 
+  if (PetscLogStageRegister(&autoprestrStage, "AutoPrestress Solve")) {
+    PyErr_SetString(PyExc_RuntimeError, "PETSc failed to create stage");
+    return 0;
+  }
   if (PetscLogStageRegister(&elasticStage, "Elastic Solve")) {
-    PyErr_SetString(PyExc_RuntimeError, "PETSc failed create stage");
+    PyErr_SetString(PyExc_RuntimeError, "PETSc failed to create stage");
     return 0;
   }
   if (PetscLogStageRegister(&viscousStage, "Viscous Solve")) {
-    PyErr_SetString(PyExc_RuntimeError, "PETSc failed create stage");
+    PyErr_SetString(PyExc_RuntimeError, "PETSc failed to create stage");
     return 0;
   }
   if (PetscLogEventRegister(&iterateEvent, "Iterate", KSP_COOKIE)) {
-    PyErr_SetString(PyExc_RuntimeError, "PETSc failed create event");
+    PyErr_SetString(PyExc_RuntimeError, "PETSc failed to create event");
     return 0;
   }
     
@@ -138,7 +141,7 @@ PyObject * pylithomop3d_setup_petsc_logging(PyObject *, PyObject *)
     << journal::endl;
 
   // return logging handles
-  _pyReturn = Py_BuildValue("iii", elasticStage, viscousStage, iterateEvent);
+  _pyReturn = Py_BuildValue("iiii", autoprestrStage, elasticStage, viscousStage, iterateEvent);
   return _pyReturn;
 }
 
@@ -150,21 +153,17 @@ char pylithomop3d_matmod_def__name__[] = "matmod_def";
 PyObject * pylithomop3d_matmod_def(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToMaterialModelInfo;
-  PyObject* pyPointerToMaterialModelStates;
 
-  int ok = PyArg_ParseTuple(args, "OO:matmod_def",
-			    &pyPointerToMaterialModelInfo,
-			    &pyPointerToMaterialModelStates);
+  int ok = PyArg_ParseTuple(args, "O:matmod_def",
+			    &pyPointerToMaterialModelInfo);
 
   if (!ok) {
     return 0;
   }
 
   int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
-  int* pointerToMaterialModelStates = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelStates);
 
-  matmod_def_f(pointerToMaterialModelInfo,
-	       pointerToMaterialModelStates);
+  matmod_def_f(pointerToMaterialModelInfo);
     
   journal::debug_t debug("lithomop3d");
   debug
@@ -187,15 +186,19 @@ PyObject * pylithomop3d_preshape(PyObject *, PyObject *args)
   PyObject* pyPointerToSh;
   PyObject* pyPointerToShj;
   PyObject* pyPointerToGauss;
-  PyObject* pyPointerToElementTypeInfo;
   int quadratureOrderInt;
+  int elementType;
+  int numberVolumeElementNodes;
+  int numberVolumeElementGaussPoints;
 
-  int ok = PyArg_ParseTuple(args, "OOOOi:preshape",
+  int ok = PyArg_ParseTuple(args, "OOOiiii:preshape",
 			    &pyPointerToSh,
 			    &pyPointerToShj,
 			    &pyPointerToGauss,
-			    &pyPointerToElementTypeInfo,
-			    &quadratureOrderInt);
+			    &quadratureOrderInt,
+			    &elementType,
+			    &numberVolumeElementNodes,
+			    &numberVolumeElementGaussPoints);
 
   if (!ok) {
     return 0;
@@ -204,13 +207,24 @@ PyObject * pylithomop3d_preshape(PyObject *, PyObject *args)
   double* pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
   double* pointerToShj = (double*) PyCObject_AsVoidPtr(pyPointerToShj);
   double* pointerToGauss = (double*) PyCObject_AsVoidPtr(pyPointerToGauss);
-  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
+  int errorcode = 0;
+  const int maxsize = 4096;
+  char errorstring[maxsize];
 
   preshape_f(pointerToSh,
 	     pointerToShj,
 	     pointerToGauss,
-	     pointerToElementTypeInfo,
-	     &quadratureOrderInt);
+	     &quadratureOrderInt,
+	     &elementType,
+	     &numberVolumeElementNodes,
+	     &numberVolumeElementGaussPoints,
+	     &errorcode,
+	     errorstring,
+	     strlen(errorstring));
+
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
     
   journal::debug_t debug("lithomop3d");
   debug
@@ -224,6 +238,6 @@ PyObject * pylithomop3d_preshape(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: setup.cc,v 1.2 2005/03/08 02:14:27 knepley Exp $
+// $Id: setup.cc,v 1.3 2005/03/31 23:27:57 willic3 Exp $
 
 // End of file

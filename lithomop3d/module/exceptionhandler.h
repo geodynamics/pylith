@@ -4,9 +4,8 @@
 // 
 //                               Charles A. Williams
 //                        Rensselaer Polytechnic Institute
-//                        (C) 2004 All Rights Reserved
+//                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2004 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -40,6 +39,6 @@ extern int exceptionhandler(const int errorcode, const char* errorstring);
 #endif
 
 // version
-// $Id: exceptionhandler.h,v 1.2 2004/07/20 21:29:27 willic3 Exp $
+// $Id: exceptionhandler.h,v 1.3 2005/03/31 23:27:58 willic3 Exp $
 
 // End of file
