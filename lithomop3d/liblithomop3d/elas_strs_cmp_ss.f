@@ -36,7 +36,7 @@ c
      & tfault,numfn,                                                    ! fault
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,        ! elemnt
      & numelt,nconsz,                                                   ! elemnt
-     & prop,nmatel,nstate,nprop,matgpt,elas_strs,td_strs,               ! materl
+     & prop,nmatel,nstate,nprop,matgpt,elas_strs,td_strs,matchg,tminmax,! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
      & skew,numrot,                                                     ! skew
@@ -62,10 +62,11 @@ c
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
       integer infiel(6,numelt),infetype(4,netypes)
       character errstrng*(*)
+      logical matchg
       double precision b(neq),x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
       double precision tfault(ndof,numfn)
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
-      double precision dmat(nddmat,ndmatsz),prop(nprop)
+      double precision dmat(nddmat,ndmatsz),prop(nprop),tminmax
       double precision gauss(nsd+1,ngaussmax,netypes)
       double precision sh(nsd+1,nenmax,ngaussmax,netypes)
       double precision shj(nsd+1,nenmax,ngaussmax,netypes)
@@ -156,7 +157,7 @@ c
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.9 2004/07/09 01:20:16 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.10 2004/07/21 18:45:57 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
