@@ -553,7 +553,7 @@ cdebug      write(6,*) "After printf:"
       call printd(dx,deldx,deltp,idslp,numnp,numsn,itwo,idout,idsk,kto,
      & kw,kp)
       if(iucd.eq.ione) call write_ucd_node_vals(d,deld,deltp,nstep,
-     & numnp,kucd,ucdroot)
+     & numnp,kucd,ucdroot,iprestress)
 cdebug      write(6,*) "After printd (2):"
 c
 c...print array telling whether each slippery node is locked
@@ -580,7 +580,7 @@ c
      & infetype,                                                        ! eltype
      & delt,nstep,                                                      ! timdat
      & istatout,                                                        ! ioopts
-     & kucd,ucdroot)                                                    ! ioinfo
+     & kucd,ucdroot,iprestress)                                         ! ioinfo
 c
       if(nintg.eq.1) then
         write(kto,800) ntimdat(6),ntimdat(7),ntimdat(8)
@@ -599,7 +599,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.13 2005/01/18 20:29:08 willic3 Exp $
+c $Id: elastc.f,v 1.14 2005/01/19 20:35:20 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
