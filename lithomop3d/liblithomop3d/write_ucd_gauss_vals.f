@@ -35,7 +35,7 @@ c
      & infetype,                                                        ! eltype
      & delt,nstep,                                                      ! timdat
      & istatout,                                                        ! ioopts
-     & kw,fileroot)                                                     ! ioinfo
+     & kucd,ucdroot)                                                    ! ioinfo
 c
 c...  Specialized routine to output element info for SCEC benchmarks.
 c     This routine creates the nodal value portion of the UCD file for
@@ -56,11 +56,11 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstatesz,numelt,numat,nstep,kw
+      integer nstatesz,numelt,numat,nstep,kucd
       integer infiel(6,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
       integer ismatmod(nstatesmax,nmatmodmax),infetype(4,netypes)
       integer istatout(2,nstatesmax)
-      character fileroot*(*)
+      character ucdroot*(*)
       double precision delt
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
 c
@@ -117,8 +117,8 @@ c
 c
 cdebug      write(6,*) "Hello from write_ucd_gauss_vals!"
 c
-      i1=nnblnk(fileroot)
-      i2=nchar(fileroot)
+      i1=nnblnk(ucdroot)
+      i2=nchar(ucdroot)
       write(cstep,"(i5.5)") nstep
 c
 c...  determine how many values will be written
@@ -141,9 +141,9 @@ c
 c
 c...  write mesh info
 c
-      filenm=fileroot(i1:i2)//"gmesh.time."//cstep//".inp"
-      open(kw,file=filenm,status="new")
-      write(kw,"(50i5)") nnvals,(ival(i),i=1,nnvals)
+      filenm=ucdroot(i1:i2)//".gmesh.time."//cstep//".inp"
+      open(kucd,file=filenm,status="new")
+      write(kucd,"(50i5)") nnvals,(ival(i),i=1,nnvals)
       do j=1,2
         do i=1,nstatesmax
           ist=izero
@@ -152,7 +152,7 @@ c
           if(j.eq.itwo.and.istatout(j,i).eq.itwo) ist=i+ieight
           if(ist.ne.izero) then
             do k=1,nstr
-              write(kw,"(a19)") sout(k,ist)
+              write(kucd,"(a19)") sout(k,ist)
             end do
           end if
         end do
@@ -199,16 +199,16 @@ c
         end do
         do l=1,ngauss
           ngpts=ngpts+ione
-          write(kw,"(i7,48(2x,1pe15.8))") ngpts,(stmp(j,l),
-     &     j=1,inds-nstr+ione)
+          write(kucd,"(i7,48(2x,1pe15.8))") ngpts,(stmp(j,l),
+     &     j=1,inds-ione)
         end do
       end do
-      close(kw)
+      close(kucd)
       return
       end
 c
 c version
-c $Id: write_ucd_gauss_vals.f,v 1.1 2004/08/24 16:37:55 willic3 Exp $
+c $Id: write_ucd_gauss_vals.f,v 1.2 2004/08/25 01:22:01 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
