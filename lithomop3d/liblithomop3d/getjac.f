@@ -52,7 +52,7 @@ c
 c...  subroutine arguments
 c
       integer nen,iel,ierr
-      character errstrng
+      character errstrng*(*)
       double precision x(nsd,nen),xs(nsd,nsd),det,shj(nsd+1,nenmax)
 c
 c...  local variables
@@ -66,6 +66,9 @@ c
 c...calculate jacobian matrix for (x,y,z) to (r,s,t) transformation
 c
 cdebug      call dgemm("n","t",nsd,nsd,nen,one,shj,nsd+1,x,nsd,zero,xs,nsd)
+cdebug      do idb=1,nen
+cdebug        write(6,*) idb,(x(jdb,idb),jdb=1,nsd)
+cdebug      end do
       call dgemm("n","t",nsd,nsd,nen,one,x,nsd,shj,nsd+ione,zero,xs,nsd)
 c
 c...form determinant of jacobian matrix and check for error condition
@@ -86,6 +89,7 @@ cdebug      end do
 cdebug      call flush(6)
       if(det.le.zero) then
         ierr=113
+cdebug        write(6,700) iel,det
         write(errstrng,700) iel,det
       end if
 c
@@ -94,7 +98,7 @@ c
       end
 c
 c version
-c $Id: getjac.f,v 1.6 2004/08/12 01:28:23 willic3 Exp $
+c $Id: getjac.f,v 1.7 2005/02/24 00:00:13 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
