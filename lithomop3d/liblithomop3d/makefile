@@ -1,0 +1,41 @@
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#
+#  Makefile to test subroutines.  This makefile can be used to test
+#  for undefined variables and to see what intrinsics are used.
+#
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+PROJ_F77_INCLUDES= -I$(MAC_ROOT)/packages/lithomop/lithomop3d/liblithomop3d/includes
+
+FFLAGC= -fno-silent -fno-ugly -fno-f77 -ff90 -fpedantic -Wall -fbackslash -Wsurprising -W $(PROJ_F77_INCLUDES)
+
+CFLAGC= 
+
+# opt   = -O3 -funroll-loops
+
+opt   = -g
+
+load  = 
+
+FCOMPL= g77
+
+CCOMPL= gcc
+
+.SUFFIXES: .F .f .c .s .o .fil
+
+.F.f:
+	$(FCOMPL) -F $<
+
+.f.o:
+	$(FCOMPL) -c $(FFLAGC) $(opt) $<
+
+.f.fil:
+	$(FCOMPL) -il $(FFLAGC) $<
+
+.s.o:
+	as $<
+
+.c.o:
+	$(CCOMPL) -c $(CFLAGC) $(opt) $<
+
+clean:
+	/bin/rm -f *.o
