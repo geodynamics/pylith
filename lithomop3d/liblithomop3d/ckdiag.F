@@ -78,6 +78,7 @@ c
       do i=1,rows
         if(array(i+offset).eq.zero) iz=iz+1
         if(array(i+offset).lt.zero) in=in+1
+cdebug        write(6,*) "i,array(i):",i,array(i+offset)
       end do
       call VecRestoreArray(diag, array, offset, ierr)
       if((iz.ne.0).or.(in.ne.0)) then
@@ -89,7 +90,7 @@ c
       end
 c
 c version
-c $Id: ckdiag.F,v 1.1 2005/03/11 04:07:40 knepley Exp $
+c $Id: ckdiag.F,v 1.2 2005/04/01 23:25:40 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
