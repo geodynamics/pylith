@@ -35,8 +35,10 @@
 #include <Python.h>
 
 #include "input_misc.h"
+#include "exceptionhandler.h"
 #include "lithomop3d_externs.h"
-//debug #include <stdio.h>
+#include <stdio.h>
+#include <string.h>
 
 
 // Adjust id array for slippery nodes
@@ -51,22 +53,18 @@ PyObject * pylithomop3d_adjid(PyObject *, PyObject *args)
   PyObject* pyPointerToNslip;
   PyObject* pyPointerToIdslp;
   int numberSlipperyNodeEntries;
-  int numberDegreesFreedom;
   int numberNodes;
   int totalNumberSlipperyNodes;
-  int numberSlipDimensions;
   int currentNumberEquations;
 
-  int ok = PyArg_ParseTuple(args, "OOOOiiiiii:adjid",
+  int ok = PyArg_ParseTuple(args, "OOOOiiii:adjid",
 			    &pyPointerToId,
 			    &pyPointerToIdx,
 			    &pyPointerToNslip,
 			    &pyPointerToIdslp,
 			    &numberSlipperyNodeEntries,
-			    &numberDegreesFreedom,
 			    &numberNodes,
 			    &totalNumberSlipperyNodes,
-			    &numberSlipDimensions,
 			    &currentNumberEquations);
 
   if (!ok) {
@@ -84,18 +82,16 @@ PyObject * pylithomop3d_adjid(PyObject *, PyObject *args)
 	  pointerToNslip,
 	  pointerToIdslp,
 	  &numberSlipperyNodeEntries,
-	  &numberDegreesFreedom,
 	  &numberNodes,
 	  &totalNumberSlipperyNodes,
-	  &currentNumberEquations,
-	  &numberSlipDimensions);
+	  &currentNumberEquations);
 
   numberGlobalEquations = currentNumberEquations;
 
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberDegreesFreedom:" << numberDegreesFreedom
+    << "numberGlobalEquations:" << numberGlobalEquations
     << journal::endl;
 
   // return
@@ -144,7 +140,8 @@ PyObject * pylithomop3d_id_split(PyObject *, PyObject *args)
 	     &totalNumberSplitNodes,
 	     &f77PlotOutput,
 	     &plotOutputInt,
-	     plotOutputFile,strlen(plotOutputFile));
+	     plotOutputFile,
+	     strlen(plotOutputFile));
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -166,21 +163,23 @@ char pylithomop3d_local__name__[] = "local";
 PyObject * pylithomop3d_local(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToId;
+  int numberNodes;
   PyObject* pyPointerToIen;
   PyObject* pyPointerToLm;
-  int numberElementNodes;
-  int numberDegreesFreedom;
+  PyObject* pyPointerToInfiel;
+  int connectivitySize;
   int numberElements;
-  int numberNodes;
+  PyObject* pyPointerToElementTypeInfo;
 
-  int ok = PyArg_ParseTuple(args, "OOOiiii:local",
+  int ok = PyArg_ParseTuple(args, "OiOOOiiO:local",
 			    &pyPointerToId,
+			    &numberNodes,
 			    &pyPointerToIen,
 			    &pyPointerToLm,
-			    &numberElementNodes,
-			    &numberDegreesFreedom,
+			    &pyPointerToInfiel,
+			    &connectivitySize,
 			    &numberElements,
-			    &numberNodes);
+			    &pyPointerToElementTypeInfo);
 
   if (!ok) {
     return 0;
@@ -189,19 +188,22 @@ PyObject * pylithomop3d_local(PyObject *, PyObject *args)
   int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
   int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
   int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
+  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
+  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
 
   local_f(pointerToId,
+	  &numberNodes,
 	  pointerToIen,
 	  pointerToLm,
-	  &numberElementNodes,
-	  &numberDegreesFreedom,
+	  pointerToInfiel,
+	  &connectivitySize,
 	  &numberElements,
-	  &numberNodes);
+	  pointerToElementTypeInfo);
 
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberElementNodes:" << numberElementNodes
+    << "connectivitySize:" << connectivitySize
     << journal::endl;
 
   // return
@@ -217,35 +219,43 @@ char pylithomop3d_localf__name__[] = "localf";
 
 PyObject * pylithomop3d_localf(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToNfault;
   PyObject* pyPointerToIen;
   PyObject* pyPointerToLmf;
-  int numberSplitNodeEntries;
-  int numberElementNodes;
+  PyObject* pyPointerToInfiel;
+  int connectivitySize;
   int numberElements;
+  PyObject* pyPointerToElementTypeInfo;
+  PyObject* pyPointerToNfault;
+  int numberSplitNodeEntries;
 
-  int ok = PyArg_ParseTuple(args, "OOOiii:localf",
-			    &pyPointerToNfault,
+  int ok = PyArg_ParseTuple(args, "OOOiiOOi:localf",
 			    &pyPointerToIen,
 			    &pyPointerToLmf,
-			    &numberSplitNodeEntries,
-			    &numberElementNodes,
-			    &numberElements);
+			    &pyPointerToInfiel,
+			    &connectivitySize,
+			    &numberElements,
+			    &pyPointerToElementTypeInfo,
+			    &pyPointerToNfault,
+			    &numberSplitNodeEntries);
 
   if (!ok) {
     return 0;
   }
 
-  int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
   int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
   int* pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
+  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
+  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
+  int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
 
-  localf_f(pointerToNfault,
-	   pointerToIen,
+  localf_f(pointerToIen,
 	   pointerToLmf,
-	   &numberSplitNodeEntries,
-	   &numberElementNodes,
-	   &numberElements);
+	   pointerToInfiel,
+	   &connectivitySize,
+	   &numberElements,
+	   pointerToElementTypeInfo,
+	   pointerToNfault,
+	   &numberSplitNodeEntries);
 		  
   journal::debug_t debug("lithomop3d");
   debug
@@ -267,27 +277,27 @@ char pylithomop3d_localx__name__[] = "localx";
 PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIdx;
+  int numberNodes;
   PyObject* pyPointerToIen;
   PyObject* pyPointerToLmx;
-  PyObject* pyPointerToNslip;
-  int numberElementNodes;
-  int numberDegreesFreedom;
-  int numberSlipperyNodeEntries;
+  PyObject* pyPointerToInfiel;
+  int connectivitySize;
   int numberElements;
-  int numberNodes;
-  int numberSlipDimensions;
+  PyObject* pyPointerToElementTypeInfo;
+  PyObject* pyPointerToNslip;
+  int numberSlipperyNodeEntries;
 
-  int ok = PyArg_ParseTuple(args, "OOOOiiiiii:localx",
+  int ok = PyArg_ParseTuple(args, "OiOOOiiOOi:localx",
 			    &pyPointerToIdx,
-			    &pyPointerToIen,
-			    &pyPointerToLmx,
-			    &pyPointerToNslip,
-			    &numberElementNodes,
-			    &numberDegreesFreedom,
-			    &numberSlipperyNodeEntries,
-			    &numberElements,
-			    &numberNodes,
-			    &numberSlipDimensions);
+  			    &numberNodes,
+  			    &pyPointerToIen,
+  			    &pyPointerToLmx,
+  			    &pyPointerToInfiel,
+  			    &connectivitySize,
+  			    &numberElements,
+  			    &pyPointerToElementTypeInfo,
+  			    &pyPointerToNslip,
+			    &numberSlipperyNodeEntries);
 
   if (!ok) {
     return 0;
@@ -296,23 +306,25 @@ PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
   int* pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
   int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
   int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
+  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
+  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
   int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
 
   localx_f(pointerToIdx,
+	   &numberNodes,
 	   pointerToIen,
 	   pointerToLmx,
-	   pointerToNslip,
-	   &numberElementNodes,
-	   &numberDegreesFreedom,
-	   &numberSlipperyNodeEntries,
+	   pointerToInfiel,
+	   &connectivitySize,
 	   &numberElements,
-	   &numberNodes,
-	   &numberSlipDimensions);
+	   pointerToElementTypeInfo,
+	   pointerToNslip,
+	   &numberSlipperyNodeEntries);
 
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberSlipDimensions:" << numberSlipDimensions
+    << "numberElements:" << numberElements
     << journal::endl;
 
   // return
@@ -336,15 +348,11 @@ PyObject * pylithomop3d_nfind(PyObject *, PyObject *args)
   PyObject* pyPointerToItmp1;
   PyObject* pyPointerToItmp2;
   PyObject* pyPointerToNslip;
-  int numberSpaceDimensions;
-  int numberDegreesFreedom;
-  int numberSlipDimensions;
-  int numberSlipNeighbors;
   int numberSlipperyNodeEntries;
   int totalNumberSlipperyNodes;
   int numberNodes;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOiiiiiii:nfind",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOiii:nfind",
 			    &pyPointerToX,
 			    &pyPointerToXtmp,
 			    &pyPointerToIdslp,
@@ -353,10 +361,6 @@ PyObject * pylithomop3d_nfind(PyObject *, PyObject *args)
 			    &pyPointerToItmp1,
 			    &pyPointerToItmp2,
 			    &pyPointerToNslip,
-			    &numberSpaceDimensions,
-			    &numberDegreesFreedom,
-			    &numberSlipDimensions,
-			    &numberSlipNeighbors,
 			    &numberSlipperyNodeEntries,
 			    &totalNumberSlipperyNodes,
 			    &numberNodes);
@@ -382,10 +386,6 @@ PyObject * pylithomop3d_nfind(PyObject *, PyObject *args)
 	  pointerToItmp1,
 	  pointerToItmp2,
 	  pointerToNslip,
-	  &numberSpaceDimensions,
-	  &numberDegreesFreedom,
-	  &numberSlipDimensions,
-	  &numberSlipNeighbors,
 	  &numberSlipperyNodeEntries,
 	  &totalNumberSlipperyNodes,
 	  &numberNodes);
@@ -393,7 +393,7 @@ PyObject * pylithomop3d_nfind(PyObject *, PyObject *args)
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberSlipNeighbors:" << numberSlipNeighbors
+    << "pointerToX:" << pointerToX
     << journal::endl;
 
   // return
@@ -410,20 +410,16 @@ char pylithomop3d_write_element_info__name__[] = "write_element_info";
 PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
 {
   int numberElements;
-  int numberGaussPoints;
   int prestressAutoComputeInt;
   double prestressAutoComputePoisson;
-  int numberPrestressGaussPoints;
   int f77AsciiOutput;
   int asciiOutputInt;
   char* asciiOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "iiidiiis:write_element_info",
+  int ok = PyArg_ParseTuple(args, "iidiis:write_element_info",
 			    &numberElements,
-			    &numberGaussPoints,
 			    &prestressAutoComputeInt,
 			    &prestressAutoComputePoisson,
-			    &numberPrestressGaussPoints,
 			    &f77AsciiOutput,
 			    &asciiOutputInt,
 			    &asciiOutputFile);
@@ -433,10 +429,8 @@ PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
   }
 
   write_element_info_f(&numberElements,
-		       &numberGaussPoints,
 		       &prestressAutoComputeInt,
 		       &prestressAutoComputePoisson,
-		       &numberPrestressGaussPoints,
 		       &f77AsciiOutput,
 		       &asciiOutputInt,
 		       asciiOutputFile,strlen(asciiOutputFile));
@@ -463,31 +457,21 @@ PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *args)
   char* title;
   int asciiOutputInt;
   int plotOutputInt;
-  int geometryTypeInt;
   int numberNodes;
-  int numberSpaceDimensions;
-  int numberDegreesFreedom;
   int analysisTypeInt;
   int debuggingOutput;
-  int numberStressComponents;
-  int numberElementNodes;
   int f77AsciiOutput;
   int f77PlotOutput;
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "siiiiiiiiiiiiss:write_global_info",
+  int ok = PyArg_ParseTuple(args, "siiiiiiiss:write_global_info",
 			    &title,
 			    &asciiOutputInt,
 			    &plotOutputInt,
-			    &geometryTypeInt,
 			    &numberNodes,
-			    &numberSpaceDimensions,
-			    &numberDegreesFreedom,
 			    &analysisTypeInt,
 			    &debuggingOutput,
-			    &numberStressComponents,
-			    &numberElementNodes,
 			    &f77AsciiOutput,
 			    &f77PlotOutput,
 			    &asciiOutputFile,
@@ -500,14 +484,9 @@ PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *args)
   write_global_info_f(title,
 		      &asciiOutputInt,
 		      &plotOutputInt,
-		      &geometryTypeInt,
 		      &numberNodes,
-		      &numberSpaceDimensions,
-		      &numberDegreesFreedom,
 		      &analysisTypeInt,
 		      &debuggingOutput,
-		      &numberStressComponents,
-		      &numberElementNodes,
 		      &f77AsciiOutput,
 		      &f77PlotOutput,
 		      asciiOutputFile,
@@ -527,6 +506,85 @@ PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *args)
   return Py_None;
 }
 
+
+// Write out material property info
+
+char pylithomop3d_write_props__doc__[] = "";
+char pylithomop3d_write_props__name__[] = "write_props";
+
+PyObject * pylithomop3d_write_props(PyObject *, PyObject *args)
+{
+  PyObject* pyPointerToListArrayPropertyList;
+  PyObject* pyPointerToListArrayGrav;
+  PyObject* pyPointerToMaterialInfo;
+  PyObject* pyPointerToMaterialModelInfo;
+  int numberMaterials;
+  int propertyListSize;
+  int asciiOutputInt;
+  int plotOutputInt;
+  int f77AsciiOutput;
+  int f77PlotOutput;
+  char* asciiOutputFile;
+  char* plotOutputFile;
+
+  int ok = PyArg_ParseTuple(args, "OOOOiiiiiiss:write_props",
+			    &pyPointerToListArrayPropertyList,
+			    &pyPointerToListArrayGrav,
+			    &pyPointerToMaterialInfo,
+			    &pyPointerToMaterialModelInfo,
+			    numberMaterials,
+			    propertyListSize,
+			    asciiOutputInt,
+			    plotOutputInt,
+			    f77AsciiOutput,
+			    f77PlotOutput,
+			    asciiOutputFile,
+			    plotOutputFile);
+
+  if (!ok) {
+    return 0;
+  }
+
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
+  double* pointerToListArrayPropertyList = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyList);
+  double* pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
+  int* pointerToMaterialInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialInfo);
+  int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
+
+  write_props_f(pointerToListArrayPropertyList,
+		pointerToListArrayGrav,
+		pointerToMaterialInfo,
+		pointerToMaterialModelInfo,
+		numberMaterials,
+		propertyListSize,
+		asciiOutputInt,
+		plotOutputInt,
+		f77AsciiOutput,
+		f77PlotOutput,
+		asciiOutputFile,
+		plotOutputFile,
+		&errorcode,
+		errorstring,
+		strlen(asciiOutputFile),
+		strlen(plotOutputFile),
+		strlen(errorstring));
+
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
+
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "numberMaterials:" << numberMaterials
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
+}
 
 // Write out sparse matrix info
 
@@ -685,6 +743,6 @@ PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *args)
 
 
 // version
-// $Id: input_misc.cc,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: input_misc.cc,v 1.2 2004/07/19 21:26:04 willic3 Exp $
 
 // End of file
