@@ -60,7 +60,7 @@ c...construct bn matrix, then form intermediate sb=stn*bn, and finally
 c   the stiffness (bn)t*stn*bn multiplied by appropriate weight for
 c   integral over element
 c
-c*      write(6,*) "Hello from stiffld_f!"
+cdebug      write(6,*) "Hello from stiffld_f!"
 c
       idim=ndof*ndof
       call fill(stnm,zero,idim*idim)
@@ -85,7 +85,7 @@ c
       end
 c
 c version
-c $Id: stiffld.f,v 1.2 2004/08/02 21:27:58 willic3 Exp $
+c $Id: stiffld.f,v 1.3 2004/08/12 02:27:46 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
