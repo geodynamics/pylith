@@ -28,9 +28,10 @@ c
       ndmatsz=npar(8)
       nconsz=npar(9)
       numdif=npar(10)
+      intord=npar(11)
 c
 c version
-c $Id: npar_def.inc,v 1.2 2004/07/05 18:26:08 willic3 Exp $
+c $Id: npar_def.inc,v 1.3 2004/07/21 15:22:14 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
