@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine formdf_ss(
-     & bdisp,neq,                                                       ! force
+     & bintern,neq,                                                     ! force
      & x,d,deld,numnp,                                                  ! global
      & s,stemp,                                                         ! stiff
      & dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,             ! elemnt
@@ -62,7 +62,7 @@ c
       integer infiel(6,numelt),iddmat(nstr,nstr),infmat(3,numat)
       integer infmatmod(5,nmatmodmax),infetype(4,netypes)
       character errstrng*(*)
-      double precision bdisp(neq),x(nsd,numnp),d(ndof,numnp)
+      double precision bintern(neq),x(nsd,numnp),d(ndof,numnp)
       double precision deld(ndof,numnp),s(neemax*neemax)
       double precision stemp(neemax*neemax),dmat(nddmat,ndmatsz)
       double precision gauss(nsd+1,ngaussmax,netypes)
@@ -79,7 +79,7 @@ c
       integer matgpt,imat,matmodel,nmatel,imatvar,ngtest,ielg,iel,indien
       integer ietype,nen,inddmat,ngauss,nee,ngaussdim,i
       double precision p(60),dld(60)
-cdebug      integer idebug
+cdebug      integer idb
 c
 cdebug      write(6,*) "Hello from formdf_ss_f!"
 c
@@ -131,20 +131,18 @@ c...  compute forces due to displacement BC and add to global vector
 c
           call fill(p,zero,nee)
           call dsymv("u",nee,one,s,nee,dld,ione,zero,p,ione)
-          call addfor(bdisp,p,lm(1,indien),lmx(1,indien),neq,nee)
-cdebug          write(6,*) "P vector:"
-cdebug          write(6,*) (p(idebug),idebug=1,nee)
-cdebug          write(6,*) "B vector:"
-cdebug          write(6,*) (bdisp(idebug),idebug=1,neq)
+          call addfor(bintern,p,lm(1,indien),lmx(1,indien),neq,nee)
  150      continue
         end do
         matgpt=matgpt+nmatel
       end do
+cdebug      write(6,*) "bintern:"
+cdebug      write(6,*) (bintern(idb),idb=1,200)
       return
       end
 c
 c version
-c $Id: formdf_ss.f,v 1.5 2004/08/02 21:14:29 willic3 Exp $
+c $Id: formdf_ss.f,v 1.6 2005/01/05 22:10:29 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
