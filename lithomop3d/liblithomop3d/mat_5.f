@@ -4,9 +4,8 @@ c ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -75,6 +74,8 @@ c...  local variables
 c
       integer i
 c
+cdebug      write(6,*) "Hello from mat_prt_5_f!"
+c
 c...  output plot results
 c
       if(idsk.eq.ione) then
@@ -137,7 +138,6 @@ c...  local variables
 c
       integer i,j
       double precision e,pr,pr1,pr2,pr3,fac,dd,od,ss
-cdebug      integer idb
 c
 cdebug      write(6,*) "Hello from elas_mat_5_f!"
 c
@@ -150,7 +150,7 @@ c
       fac=e/(pr2*pr3)
       dd=pr1*fac
       od=pr*fac
-      ss=pr3*fac
+      ss=half*pr3*fac
       do i=1,3
         dmat(iddmat(i,i))=dd
         dmat(iddmat(i+3,i+3))=ss
@@ -158,22 +158,23 @@ c
           dmat(iddmat(i,j))=od
         end do
       end do
-cdebug      write(6,*) "dmat:",(dmat(idb),idb=1,nddmat)
       return
       end
 c
 c
-      subroutine elas_strs_5(state,state0,ee,dmat,nstate,nstate0,ierr,
-     & errstrng)
+      subroutine elas_strs_5(state,state0,ee,scur,dmat,nstate,nstate0,
+     & ierr,errstrng)
 c
 c...  subroutine to compute stresses for the elastic solution.  For this
 c     material, there are 3 state variables:  total stress, total
 c     strain, and viscous strain.  The current total strain is contained
 c     in ee.
 c
-c     state(nstr,1) = Cauchy stress
-c     state(nstr,2) = linear strain
-c     state(nstr,3) = viscous strain
+c     state(1:6)   = Cauchy stress
+c     state(7:12)  = linear strain
+c     state(13:18) = viscous strain
+c
+c     The state0 array contains initial stresses.
 c
       include "implicit.inc"
 c
@@ -186,13 +187,16 @@ c
 c...  subroutine arguments
 c
       integer nstate,nstate0,ierr
-      double precision state(nstr,nstate),state0(nstate0),ee(nstr)
+      double precision state(nstate),state0(nstate0),ee(nstr),scur(nstr)
       double precision dmat(nddmat)
       character errstrng*(*)
 c
-      call dcopy(nstr,ee,ione,state(1,2),ione)
-      call dcopy(nstr,state0,ione,state(1,1),ione)
-      call dspmv("u",nstr,one,dmat,state(1,2),ione,one,state(1,1),ione)
+cdebug      write(6,*) "Hello from elas_strs_5_f!"
+c
+      call dcopy(nstr,ee,ione,state(7),ione)
+      call dcopy(nstr,state0,ione,state,ione)
+      call dspmv("u",nstr,one,dmat,state(7),ione,one,state,ione)
+      call dcopy(nstr,state,ione,scur,ione)
       return
       end
 c
@@ -225,7 +229,7 @@ c
       integer nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
-      double precision state(nstr,nstate),dstate(nstr,nstate)
+      double precision state(nstate),dstate(nstate)
       double precision state0(nstate0),dmat(nddmat),prop(nprop),tmax
       logical matchg
 c
@@ -238,7 +242,6 @@ c
 c...  local variables
 c
       double precision e,pr,vis,f1,f2
-cdebug      integer idb
 c
 c...  included variable definitions
 c
@@ -261,17 +264,16 @@ c
       dmat(iddmat(1,2))=f1-f2
       dmat(iddmat(1,3))=dmat(iddmat(1,2))
       dmat(iddmat(2,3))=dmat(iddmat(1,2))
-      dmat(iddmat(4,4))=three*f2
+      dmat(iddmat(4,4))=half*three*f2
       dmat(iddmat(5,5))=dmat(iddmat(4,4))
       dmat(iddmat(6,6))=dmat(iddmat(4,4))
-cdebug      write(6,*) "dmat:",(dmat(idb),idb=1,nddmat)
       return
       end
 c
 c
-      subroutine td_strs_5(state,dstate,state0,ee,dmat,prop,rtimdat,
-     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
-     & errstrng)
+      subroutine td_strs_5(state,dstate,state0,ee,scur,dmat,prop,
+     & rtimdat,rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
+     & ierr,errstrng)
 c
 c...  subroutine to compute the current values for stress, total strain,
 c     and viscous strain increment.
@@ -290,9 +292,8 @@ c
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg
-      double precision state(nstr,nstate),dstate(nstr,nstate)
-      double precision state0(nstate0),ee(nstr)
-      double precision dmat(nddmat),prop(nprop),tmax
+      double precision state(nstate),dstate(nstate),state0(nstate0)
+      double precision ee(nstr),scur(nstr),dmat(nddmat),prop(nprop),tmax
 c
 c...  included dimension and type statements
 c
@@ -310,6 +311,9 @@ c
       integer i
       double precision e,pr,vis,rmu,f1,f2,emean,smean,eet,stau,smeantp
       double precision sdev,sdevtp,smean0,sdev0,fac1,fac2,rvis
+      double precision eett(6)
+c
+cdebug      integer idb
 c
 c...  included variable definitions
 c
@@ -319,6 +323,10 @@ c
 c
 cdebug      write(6,*) "Hello from td_strs_5!"
 c
+      call dcopy(nstr,ee,ione,eett,ione)
+      eett(4)=half*eett(4)
+      eett(5)=half*eett(5)
+      eett(6)=half*eett(6)
       e=prop(2)
       pr=prop(3)
       vis=prop(4)
@@ -332,33 +340,40 @@ c
       emean=third*(ee(1)+ee(2)+ee(3))
       smean=e*emean/(one-two*pr)
       smean0=third*(state0(1)+state0(2)+state0(3))
-      smeantp=third*(state(1,1)+state(2,1)+state(3,1))
-cdebug      write(6,*) "e,pr,vis,rmu,tmax,deltp,alfap,f1,f2,emean,smean"
-cdebug      write(6,*) "smean0,smeantp,emean:"
-cdebug      write(6,*) e,pr,vis,rmu,tmax,deltp,alfap,f1,f2,emean,smean,smean0,
-cdebug     & smeantp,emean
+      smeantp=third*(state(1)+state(2)+state(3))
+cdebug      write(6,*) "state-begin:",(state(idb),idb=1,nstate)
+cdebug      write(6,*) "dstate-begin:",(dstate(idb),idb=1,nstate)
+cdebug      write(6,*) "ee:",(ee(idb),idb=1,nstr)
+cdebug      write(6,*) "eett:",(eett(idb),idb=1,nstr)
+cdebug      write(6,*)
+cdebug     & "e,pr,rmu,rvis,tmax,fac1,fac2,f1,f2,emean,smean,smean0,smeantp:"
+cdebug      write(6,*)
+cdebug     & e,pr,rmu,rvis,tmax,fac1,fac2,f1,f2,emean,smean,smean0,smeantp
       do i=1,nstr
-        eet=ee(i)-diag(i)*emean-state(i,3)
-        sdevtp=state(i,1)-diag(i)*smeantp
+        eet=eett(i)-diag(i)*emean-state(i+12)
+        sdevtp=state(i)-diag(i)*smeantp
         sdev0=state0(i)-diag(i)*smean0
         sdev=f2*(eet-f1*sdevtp+fac2*sdev0)
-        dstate(i,1)=sdev+diag(i)*(smean+smean0)
+        dstate(i)=sdev+diag(i)*(smean+smean0)
         stau=(one-alfap)*sdevtp+alfap*sdev
-        dstate(i,3)=half*deltp*stau*rvis
-        dstate(i,2)=ee(i)
-cdebug        write(6,*) "i,ee,eet,sdevtp,sdev0,sdev,ds1,ds2,ds3,s1,s2,s3,",
-cdebug     &   "stau:",
-cdebug     &   i,ee(i),eet,sdevtp,sdev0,sdev,dstate(i,1),dstate(i,2),
-cdebug     &   dstate(i,3),state(i,1),state(i,2),state(i,3),stau
+        dstate(i+12)=fac1*stau
+        dstate(i+6)=ee(i)
+        scur(i)=dstate(i)
+cdebug        write(6,*) "i,eet,eett(i),state(i+12),sdevtp,sdev0,sdev:"
+cdebug        write(6,*) i,eet,eett(i),state(i+12),sdevtp,sdev0,sdev
+cdebug        write(6,*) "dstate(i),stau,dstate(i+6),dstate(i+12),scur(i):"
+cdebug        write(6,*) dstate(i),stau,dstate(i+6),dstate(i+12),scur(i)
       end do
+cdebug      write(6,*) "state-end:",(state(idb),idb=1,nstate)
+cdebug      write(6,*) "dstate-end:",(dstate(idb),idb=1,nstate)
 c
       return
       end
 c
 c
-      subroutine td_strs_mat_5(state,dstate,state0,ee,dmat,prop,rtimdat,
-     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
-     & errstrng)
+      subroutine td_strs_mat_5(state,dstate,state0,ee,scur,dmat,prop,
+     & rtimdat,rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
+     & ierr,errstrng)
 c
 c...  subroutine to compute the current stress and updated material
 c     matrix for the time-dependent solution.
@@ -379,9 +394,8 @@ c
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg
-      double precision state(nstr,nstate),dstate(nstr,nstate)
-      double precision state0(nstate0),ee(nstr)
-      double precision dmat(nddmat),prop(nprop),tmax
+      double precision state(nstate),dstate(nstate),state0(nstate0)
+      double precision ee(nstr),scur(nstr),dmat(nddmat),prop(nprop),tmax
 c
 c...  included dimension and type statements
 c
@@ -395,10 +409,13 @@ c
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
+cdebug      write(6,*) "Hello from td_strs_mat_5_f!"
+c
       call td_matinit_5(state,dstate,state0,dmat,prop,rtimdat,rgiter,
      & ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,errstrng)
-      call td_strs_5(state,dstate,state0,ee,dmat,prop,rtimdat,rgiter,
-     & ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,errstrng)
+      call td_strs_5(state,dstate,state0,ee,scur,dmat,prop,rtimdat,
+     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & errstrng)
 c
       return
       end
@@ -432,6 +449,8 @@ c...  local variables
 c
       double precision ptmp(10)
 c
+cdebug      write(6,*) "Hello from prestr_mat_5_f!"
+c
       call dcopy(nprop,prop,ione,ptmp,ione)
       if(ipauto.eq.ione) then
         ptmp(2)=tyoungs
@@ -441,9 +460,74 @@ c
       return
       end
 c       
-
+c       
+      subroutine get_state_5(state,dstate,sout,nstate)
+c
+c...  routine to transfer state variables into sout
+c
+      include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "materials.inc"
+      include "nconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nstate
+      double precision state(nstate),dstate(nstate),sout(3*nstatesmax)
+c
+cdebug      write(6,*) "Hello from get_state_5_f!"
+c
+      call dcopy(nstate,state,ione,sout,ione)
+      call dcopy(nstate,dstate,ione,sout(nstatesmax+ione),ione)
+      return
+      end
+c
+c
+      subroutine update_state_5(state,dstate,nstate)
+c
+c...  routine to update state variables at the end of a time step.
+c     After updating, state should contain the current total values
+c     and dstate should contain the incremental changes since the
+c     previous time step.
+c     On input, dstate contains the current stress and strain values and
+c     state contains the values from the previous time step.
+c
+      include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nstate
+      double precision state(nstate),dstate(nstate)
+c
+c...  local data
+c
+      double precision sub
+      data sub/-1.0d0/
+c
+cdebug      integer idb
+c
+cdebug      write(6,*) "Hello from update_state_5_f!"
+c
+cdebug      write(6,*) "state-begin:",(state(idb),idb=1,nstate)
+cdebug      write(6,*) "dstate-begin:",(dstate(idb),idb=1,nstate)
+      call daxpy(nstate-6,sub,state,ione,dstate,ione)
+      call daxpy(nstate,one,dstate,ione,state,ione)
+cdebug      write(6,*) "state-end:",(state(idb),idb=1,nstate)
+cdebug      write(6,*) "dstate-end:",(dstate(idb),idb=1,nstate)
+c
+      return
+      end
+c
+c
 c version
-c $Id: mat_5.f,v 1.7 2005/02/24 00:14:45 willic3 Exp $
+c $Id: mat_5.f,v 1.8 2005/04/01 23:07:43 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
