@@ -34,9 +34,9 @@ c
      & x,d,numnp,                                                       ! global
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
-     & ien,lm,lmx,lmf,infiel,numelt,nconsz,                             ! elemnt
-     & prop,mhist,infmat,infmatmod,numat,npropsz,                       ! materl
-     & gauss,shj,infetype,                                              ! eltype
+     & ien,lm,lmx,lmf,ivfamily,nvfamilies,numelv,                       ! elemnt
+     & prop,mhist,infmatmod,npropsz,                                    ! materl
+     & gauss,shj,nen,ngauss,nee,                                        ! eltype
      & histry,rtimdat,ntimdat,nhist,lastep,gload_cmp,                   ! timdat
      & skew,numrot,                                                     ! skew
      & ierr,errstrng)                                                   ! errcode
@@ -55,17 +55,17 @@ c
 c
 c...  subroutine arguments
 c
-      integer ngravflag,neq,numnp,numslp,numfn,numelt,nconsz,numat
-      integer npropsz,nhist,lastep,numrot,ierr
-      integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(7,numelt),mhist(npropsz),infmat(3,numat)
-      integer infmatmod(5,nmatmodmax),infetype(4,netypes)
+      integer ngravflag,neq,numnp,numslp,numfn,nvfamilies,numelv,npropsz
+      integer nen,ngauss,nee,nhist,lastep,numrot,ierr
+      integer ien(nen,numelv),lm(ndof*nen,numelv),lmx(ndof*nen,numelv)
+      integer lmf(nen,numelv),ivfamily(5,nvfamilies)
+      integer mhist(npropsz),infmatmod(6,nmatmodmax)
       character errstrng*(*)
       double precision bgravity(ngravflag*neq),grav(ndof)
       double precision x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
       double precision tfault(ndof,numfn),prop(npropsz)
-      double precision gauss(nsd+1,ngaussmax,netypes)
-      double precision shj(nsd+1,nenmax,ngaussmax,netypes)
+      double precision gauss(nsd+1,ngauss)
+      double precision shj(nsd+1,nen,ngauss)
       double precision histry(nhist,lastep+1),skew(nskdim,numnp)
 c
 c...  included dimension and type statements
@@ -79,7 +79,7 @@ c
 c
 c...  local variables
 c
-      integer i,imat,matgpt,matmodel,nmatel,nprop,indprop
+      integer i,ielg,ifam,nelfamily,matmodel,indprop,nprop,imat
       logical matchg
       double precision gsum,dens
       double precision ptmp(100)
@@ -97,15 +97,16 @@ c
       end do
       if(gsum.eq.zero) return
       call fill(bgravity,zero,neq)
-      matgpt=1
+      ielg=ione
 c
-c...  loop over material groups
+c...  loop over element families
 c
-      do imat=1,numat
-        matmodel=infmat(1,imat)
-        nmatel=infmat(2,imat)
+      do ifam=1,nvfamilies
+        nelfamily=ivfamily(1,ifam)
+        matmodel=ivfamily(2,ifam)
+        indprop=ivfamily(5,ifam)
         nprop=infmatmod(3,matmodel)
-        indprop=infmat(3,imat)
+        imat=ifam
         matchg=.false.
         call mathist(ptmp,prop(indprop),mhist(indprop),histry,nprop,
      &   imat,nstep,nhist,lastep,matchg,ierr,errstrng)
@@ -119,33 +120,20 @@ c
      &   x,d,numnp,                                                     ! global
      &   dx,numslp,                                                     ! slip
      &   tfault,numfn,                                                  ! fault
-     &   ien,lm,lmx,lmf,infiel,numelt,nconsz,                           ! elemnt
-     &   dens,matgpt,nmatel,matchg,                                     ! materl
-     &   gauss,shj,infetype,                                            ! eltype
+     &   ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg),nelfamily,ielg, ! elemfamily
+     &   dens,matchg,                                                   ! materl
+     &   gauss,shj,nen,ngauss,nee,                                      ! eltype
      &   rtimdat,ntimdat,                                               ! timdat
      &   skew,numrot,                                                   ! skew
      &   ierr,errstrng)                                                 ! errcode
 c
-        matgpt=matgpt+nmatel
-c
       end do
-c
-c...find difference between computed total body force for new nodal
-c   positions (gvec2) and current body force (gvec1) and update
-c   body force vector and global load vector by this amount.
-c
-c*      do i=1,neq
-c*        dif=gvec2(i)-gvec1(i)
-c*        gvec1(i)=gvec2(i)
-c*        b(i)=b(i)+dif
-c*        bres(i)=bres(i)+dif
-c*      end do
 c
       return
       end
 c
 c version
-c $Id: gload_drv.f,v 1.4 2005/02/24 00:01:04 willic3 Exp $
+c $Id: gload_drv.f,v 1.5 2005/03/21 22:13:15 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -48,8 +48,8 @@ c
       integer iel,nen,ngauss,ierr
       character errstrng*(*)
       double precision p(ndof*nen),grav(ndof),xl(nsd,nen),dens
-      double precision gauss(nsd+1,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax)
+      double precision gauss(nsd+1,ngauss)
+      double precision shj(nsd+1,nen,ngauss)
 c
 c...  local variables
 c
@@ -78,7 +78,7 @@ c
       end
 c
 c version
-c $Id: gravld.f,v 1.4 2004/08/12 01:30:01 willic3 Exp $
+c $Id: gravld.f,v 1.5 2005/03/21 22:13:15 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
