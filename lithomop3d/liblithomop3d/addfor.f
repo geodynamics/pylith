@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -62,17 +61,14 @@ c
         k=lm(j)
         l=abs(lmx(j))
         sgn=sign(one,dble(lmx(j)))
-cdebug        write(6,*) j,k,l,sgn
-cdebug        write(6,*) j,p(j)
         if(k.ne.izero) b(k)=b(k)+p(j)
         if(l.ne.izero) b(l)=b(l)+p(j)*sgn
-cdebug        if(k.ne.izero) write(6,*) k,b(k)
       end do
       return
       end
 c
 c version
-c $Id: addfor.f,v 1.4 2004/08/02 21:02:59 willic3 Exp $
+c $Id: addfor.f,v 1.5 2005/03/24 23:38:18 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
