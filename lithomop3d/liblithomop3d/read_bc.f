@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_bc(bond,dscale,vscale,fscale,ibond,id,ndof,numnp,
-     & numbc,neq,kr,kw,idout,ierr,bcfile,ofile)
+      subroutine read_bc(bond,dscale,vscale,fscale,ibond,id,numnp,
+     & numbc,neq,kr,kw,idout,bcfile,ofile,ierr,errstrng)
 c
 c...  subroutine to read in boundary conditions.  The bc types are
 c     stored in the ibond array and the bc value is stored in the bond
@@ -42,28 +42,31 @@ c
 c     Error codes:
 c         0:  No error
 c         1:  Error opening input file
-c         2:  Units not specified
 c         3:  Read error
-c         4:  BC assigned for nonexistent node
+c         5:  Units not specified
+c       104:  BC assigned for nonexistent node
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,numnp,numbc,neq,kr,kw,idout,ierr
+      integer numnp,numbc,neq,kr,kw,idout,ierr
       integer ibond(ndof,numnp),id(ndof,numnp)
       double precision bond(ndof,numnp)
       double precision dscale,vscale,fscale
-      character bcfile*(*),ofile*(*)
+      character bcfile*(*),ofile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
       include "labeld_dim.inc"
 c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
+c...  local constants
 c
       character ltype(4)*4
       data ltype/'free','disp','velo','forc'/
@@ -75,7 +78,7 @@ c
 c...  local variables
 c
       integer ihist(3),itype(3)
-      integer i,j,n,nlines,npage,imode,iihist,iitype,izero
+      integer i,j,n,nlines,npage,imode,iihist,iitype
       double precision scale(4)
       character dummy*80
       logical nonzed
@@ -102,7 +105,8 @@ c
         read(kr,"(a80)") dummy
         j=index(dummy,"=")
         if(j.eq.0) then
-          ierr=2
+          ierr=5
+          errstrng="read_bc"
           return
         end if
       end do
@@ -117,7 +121,8 @@ c
         read(kr,*,end=30,err=30) n,(ibond(j,n),j=1,ndof),
      &   (bond(j,n),j=1,ndof)
         if(n.lt.1.or.n.gt.numnp) then
-          ierr=4
+          ierr=104
+          errstrng="read_bc"
           return
         end if
         do j=1,ndof
@@ -184,6 +189,7 @@ c...  error opening input file
 c
 20    continue
         ierr=1
+        errstrng="read_bc"
         close(kr)
         return
 c
@@ -191,6 +197,7 @@ c...  read error
 c
 30    continue
         ierr=3
+        errstrng="read_bc"
         close(kr)
         return
 c
@@ -209,7 +216,7 @@ c
       end
 c
 c version
-c $Id: read_bc.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: read_bc.f,v 1.2 2004/07/07 20:52:31 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
