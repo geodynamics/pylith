@@ -47,7 +47,7 @@ c
 c...  subroutine arguments
 c
       integer neq,nconsz,numelt,iwork,numsn,ierr
-      integer lm(ndof*nconsz),lmx(ndof*nconsz),infiel(6,numelt)
+      integer lm(ndof*nconsz),lmx(ndof*nconsz),infiel(7,numelt)
       integer infetype(4,netypes)
       character errstrng*(*)
 c
@@ -88,7 +88,7 @@ c
       end
 c
 c version
-c $Id: cmp_stiffsz.f,v 1.2 2004/08/26 18:10:22 willic3 Exp $
+c $Id: cmp_stiffsz.f,v 1.3 2005/02/23 23:52:06 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
