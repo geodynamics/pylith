@@ -29,26 +29,27 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine printf(tfault,dfault,deltp,nfault,ndof,numfn,idout,
+      subroutine printf(tfault,dfault,deltp,nfault,numfn,idout,
      & idsk,kw,kp)
 c
 c...prints out split node displacements
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "rconsts.inc"
+c
 c... subroutine arguments
 c
-      integer ndof,numfn,idout,idsk,kw,kp
+      integer numfn,idout,idsk,kw,kp
       integer nfault(3,numfn)
       double precision tfault(ndof,numfn),dfault(ndof,numfn),deltp
 c
 c...  included dimension and type statements
 c
       include "labeld_dim.inc"
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -95,7 +96,7 @@ c
       end
 c
 c version
-c $Id: printf.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: printf.f,v 1.2 2004/07/07 20:27:07 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
