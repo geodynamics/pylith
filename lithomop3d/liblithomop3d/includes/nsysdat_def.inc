@@ -21,19 +21,17 @@ c
       numnp=nsysdat(1)
       neq=nsysdat(2)
       nnz=nsysdat(3)
-      nee=nsysdat(4)
-      nec=nsysdat(5)
-      numrot=nsysdat(6)
-      nprestr=nsysdat(7)
-      numsn=nsysdat(8)
-      numflt=nsysdat(9)
-      nprop=nsysdat(10)
-      nwink=nsysdat(11)
-      nwinkx=nsysdat(12)
-      iskopt=nsysdat(13)
+      numrot=nsysdat(4)
+      nprestr=nsysdat(5)
+      numsn=nsysdat(6)
+      numflt=nsysdat(7)
+      npropsz=nsysdat(8)
+      nwink=nsysdat(9)
+      nwinkx=nsysdat(10)
+      iskopt=nsysdat(11)
 c
 c version
-c $Id: nsysdat_def.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: nsysdat_def.inc,v 1.2 2004/07/05 18:31:14 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
