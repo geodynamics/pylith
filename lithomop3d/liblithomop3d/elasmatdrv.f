@@ -81,125 +81,105 @@ c
         call mathist(ptmp,prop(indprop),mhist(indprop),histry,nprop,
      &   imat,nstep,nhist,lastep,matchg,idout,kto,kw)
         if(matmodel.eq.1) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat1,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat1,                   ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.2) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat2,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat2,                   ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.3) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat3,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat3,                   ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.4) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat4,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat4,                   ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.5) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat5,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat5,                   ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.6) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat6,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat6,                   ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.7) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat7,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat7,                   ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.8) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat8,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat8,                   ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.9) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat9,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat9,                   ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.10) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat10,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat10,                  ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.11) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat11,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat11,                  ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.12) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat12,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat12,                  ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.13) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat13,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat13,                  ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.14) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat14,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat14,                  ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.15) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat15,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat15,                  ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.16) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat16,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat16,                  ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.17) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat17,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat17,                  ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.18) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat18,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat18,                  ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.19) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat19,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat19,                  ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         else if(matmodel.eq.20) then
-          call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
-     &     infmat(1,imat),matgpt,elasmat20,
-     &     infiel,numelt,
-     &     infetype,netypes,ngaussmax,
-     &     iddmat)
+          call elasmatcmp(
+     &     dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elasmat20,                  ! materl
+     &     infetype,netypes,ngaussmax)                                  ! eltype
         end if
         matgpt=matgpt+nmatel
       end do
@@ -207,7 +187,7 @@ c
       end
 c
 c version
-c $Id: elasmatdrv.f,v 1.2 2004/05/25 15:34:27 willic3 Exp $
+c $Id: elasmatdrv.f,v 1.3 2004/05/25 17:38:55 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
