@@ -37,6 +37,7 @@ include std-pythonmodule.def
 include local.def
 
 PROJ_CXX_SRCLIB = -ljournal -llithomop3d
+PROJ_LIBRARIES += $(LCXX_FORTRAN)
 
 PROJ_SRCS = \
 	array.cc \
@@ -54,7 +55,7 @@ PROJ_SRCS = \
 
 
 # version
-# $Id: Make.mm,v 1.2 2004/07/20 20:29:22 willic3 Exp $
+# $Id: Make.mm,v 1.3 2004/08/17 03:26:24 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
