@@ -122,6 +122,7 @@ class Lithomop3d_scan(Component):
         # Invariant parameters related to element type
         self._maxElementNodes = 0
         self._maxGaussPoints = 0
+        self._maxElementEquations = 0
         self._numberElementTypes = 0
         self._numberElementTypesBase = 0
         self._numberElementNodesBase = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -354,6 +355,7 @@ class Lithomop3d_scan(Component):
         # Invariant parameters related to element type
         self._maxElementNodes = 20
         self._maxGaussPoints = 27
+        self._maxElementEquations = self._numberDegreesFreedom*self._maxElementNodes
         self._numberElementTypes = 62
         self._numberElementTypesBase = 10
         self._numberElementNodesBase = [8, 7, 6, 5, 4, 20, 18, 15, 13, 10]
@@ -710,6 +712,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.3 2004/07/15 16:53:41 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.4 2004/07/15 21:30:01 willic3 Exp $
 
 # End of file 
