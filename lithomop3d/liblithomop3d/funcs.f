@@ -48,7 +48,7 @@ c...  local variables
 c
       integer ii
 c
-c*      write(6,*) "Hello from funcs_f!"
+cdebug      write(6,*) "Hello from funcs_f!"
 c
       ii=nint(x)
       afunc(1)=xn(1,ii)
@@ -58,7 +58,7 @@ c
       end
 c
 c version
-c $Id: funcs.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: funcs.f,v 1.2 2004/08/12 01:23:27 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
