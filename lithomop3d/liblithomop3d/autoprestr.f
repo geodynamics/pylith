@@ -122,7 +122,7 @@ c
 c
 c...  local variables
 c
-      integer igroup,naxstp,nfirst
+      integer igroup,naxstp,nfirst,iprestress
       double precision time,tminmax
       logical*4 fulout,skc
 c
@@ -186,6 +186,7 @@ c*      call flush(kto)
       ndtot=izero
       ntimdat(8)=ndtot
       ntimdat(9)=ireform
+      iprestress=ione
 cdebug      write(6,*) "Before const:"
       call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,utol,ftol,
      & etol,itmax,nintg,igroup,naxstp,nfirst,rtimdat,deltp,alfap,
@@ -293,7 +294,7 @@ c
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
      &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
-     &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
+     &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
      &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
      &   skew,                                                          ! skew
      &   ncodat,nunits,nprint,                                          ! ioinfo
@@ -366,7 +367,7 @@ c
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
      &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
-     &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
+     &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
      &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
      &   skew,                                                          ! skew
      &   ncodat,nunits,nprint,                                          ! ioinfo
@@ -435,7 +436,7 @@ clater     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! 
 clater     &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
 clater     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
-clater     &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
+clater     &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
 clater     &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
 clater     &   skew,                                                          ! skew
 clater     &   ncodat,nunits,nprint,                                          ! ioinfo
@@ -503,7 +504,7 @@ clater     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! 
 clater     &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
 clater     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
-clater     &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
+clater     &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
 clater     &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
 clater     &   skew,                                                          ! skew
 clater     &   ncodat,nunits,nprint,                                          ! ioinfo
@@ -577,7 +578,7 @@ c
       end
 c
 c version
-c $Id: autoprestr.f,v 1.2 2005/01/18 17:51:45 willic3 Exp $
+c $Id: autoprestr.f,v 1.3 2005/01/18 20:35:32 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
