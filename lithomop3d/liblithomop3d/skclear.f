@@ -29,21 +29,23 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine skclear(idslp,skew,numsn,nskdim,numnp)
+      subroutine skclear(idslp,skew,numsn,numnp)
 c
 c...  subroutine to clear the skew array for slippery nodes
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer numsn,nskdim,numnp
+      integer numsn,numnp
       integer idslp(numsn)
       double precision skew(nskdim,numnp)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  local variables
 c
@@ -58,7 +60,7 @@ c
       end
 c
 c version
-c $Id: skclear.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: skclear.f,v 1.2 2004/07/12 20:25:36 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
