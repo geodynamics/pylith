@@ -145,7 +145,7 @@ c
       fac=e/(pr2*pr3)
       dd=pr1*fac
       od=pr*fac
-      ss=half*pr3*fac
+      ss=pr3*fac
       do i=1,3
         dmat(iddmat(i,i))=dd
         dmat(iddmat(i+3,i+3))=ss
@@ -157,7 +157,8 @@ c
       end
 c
 c
-      subroutine elas_strs_1(state,ee,dmat,nstate,ierr,errstrng)
+      subroutine elas_strs_1(state,state0,ee,dmat,nstate,nstate0,ierr,
+     & errstrng)
 c
 c...  subroutine to compute stresses for the elastic solution.  For this
 c     material, there are just 2 state variables:  total stress and
@@ -176,18 +177,21 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,ierr
-      double precision state(nstr,nstate),ee(nstr),dmat(nddmat)
+      integer nstate,nstate0,ierr
+      double precision state(nstr,nstate),state0(nstate0),ee(nstr)
+      double precision dmat(nddmat)
       character errstrng*(*)
 c
       call dcopy(nstr,ee,ione,state(1,2),ione)
-      call dspmv("u",nstr,one,dmat,state(1,2),ione,zero,state(1,1),ione)
+      call dcopy(nstr,state0,ione,state(1,1),ione)
+      call dspmv("u",nstr,one,dmat,state(1,2),ione,one,state(1,1),ione)
       return
       end
 c
 c
-      subroutine td_matinit_1(state,dstate,dmat,prop,rtimdat,rgiter,
-     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_matinit_1(state,dstate,state0,dmat,prop,rtimdat,
+     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & errstrng)
 c
 c...  subroutine to form the material matrix for an integration point
 c     for the time-dependent solution.  This routine is meant to be
@@ -210,11 +214,11 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nprop,ierr
+      integer nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       double precision state(nstr,nstate),dstate(nstr,nstate)
-      double precision dmat(nddmat),prop(nprop),tmax
+      double precision state0(nstate0),dmat(nddmat),prop(nprop),tmax
       logical matchg
 c
 c...  included dimension and type statements
@@ -240,8 +244,9 @@ c
       end
 c
 c
-      subroutine td_strs_1(state,dstate,ee,dmat,prop,rtimdat,rgiter,
-     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_strs_1(state,dstate,state0,ee,dmat,prop,rtimdat,
+     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & errstrng)
 c
 c...  subroutine to compute the current stress for the time-dependent
 c     solution.
@@ -258,11 +263,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nprop,ierr
+      integer nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg
-      double precision state(nstr,nstate),dstate(nstr,nstate),ee(nstr)
+      double precision state(nstr,nstate),dstate(nstr,nstate)
+      double precision state0(nstate0),ee(nstr)
       double precision dmat(nddmat),prop(nprop),tmax
 c
 c...  included dimension and type statements
@@ -279,15 +285,17 @@ c
 c
       tmax=big
       call dcopy(nstr,ee,ione,dstate(1,2),ione)
-      call dspmv("u",nstr,one,dmat,dstate(1,2),ione,zero,dstate(1,1),
+      call dcopy(nstr,state0,ione,dstate(1,1),ione)
+      call dspmv("u",nstr,one,dmat,dstate(1,2),ione,one,dstate(1,1),
      & ione)
 c
       return
       end
 c
 c
-      subroutine td_strs_mat_1(state,dstate,ee,dmat,prop,rtimdat,rgiter,
-     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_strs_mat_1(state,dstate,state0,ee,dmat,prop,rtimdat,
+     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & errstrng)
 c
 c...  subroutine to compute the current stress and updated material
 c     matrix for the time-dependent solution.  Since this is a purely
@@ -306,11 +314,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nprop,ierr
+      integer nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg
-      double precision state(nstr,nstate),dstate(nstr,nstate),ee(nstr)
+      double precision state(nstr,nstate),dstate(nstr,nstate)
+      double precision state0(nstate0),ee(nstr)
       double precision dmat(nddmat),prop(nprop),tmax
 c
 c...  included dimension and type statements
@@ -326,15 +335,15 @@ c
       include "ntimdat_def.inc"
 c
       if(matchg) call elas_mat_1(dmat,prop,iddmat,nprop,ierr,errstrng)
-      call td_strs_1(state,dstate,ee,dmat,prop,rtimdat,rgiter,ntimdat,
-     & iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      call td_strs_1(state,dstate,state0,ee,dmat,prop,rtimdat,rgiter,
+     & ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,errstrng)
 c
       return
       end
 c
 c
-      subroutine prestr_mat_1(dmat,prop,autofac,iddmat,nprop,ierr,
-     & errstrng)
+      subroutine prestr_mat_1(dmat,prop,tpois,tyoungs,iddmat,ipauto,
+     & nprop,ierr,errstrng)
 c
 c...  subroutine to form the material matrix for an integration point
 c     for prestress computation.  The material matrix is assumed to be
@@ -352,17 +361,20 @@ c
 c
 c...  subroutine arguments
 c
-      integer nprop,ierr
+      integer ipauto,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
-      double precision autofac,dmat(nddmat),prop(nprop)
+      double precision tpois,tyoungs,dmat(nddmat),prop(nprop)
 c
 c...  local variables
 c
       double precision ptmp(10)
 c
       call dcopy(nprop,prop,ione,ptmp,ione)
-      ptmp(2)=autofac*ptmp(2)
+      if(ipauto.eq.ione) then
+        ptmp(2)=tyoungs
+        ptmp(3)=tpois
+      end if
       call elas_mat_1(dmat,ptmp,iddmat,nprop,ierr,errstrng)
       return
       end
@@ -371,7 +383,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.14 2005/01/18 19:32:56 willic3 Exp $
+c $Id: mat_1.f,v 1.15 2005/02/24 00:07:03 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
