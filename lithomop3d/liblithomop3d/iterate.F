@@ -66,6 +66,7 @@ c
 #include "finclude/petsc.h"
 #include "finclude/petsclog.h"
 #include "finclude/petscvec.h"
+#include "finclude/petscis.h"
 #include "finclude/petscmat.h"
 #include "finclude/petscksp.h"
       PetscTruth flag
@@ -74,6 +75,9 @@ c
       Mat A
       KSP ksp
       PetscInt row, nz
+      IS rowSizes
+      integer row_array(1)
+      PetscOffset row_offset
 c
 c...  parameter definitions
 c
@@ -239,6 +243,15 @@ c       Create A from alnz, ja, nnz, neq
      &                   PETSC_DETERMINE, A, ierr)
           write(6,*) 'Setting Mat from options'
           call MatSetFromOptions(A, ierr)
+          call IsCreateStride(MPI_COMM_SELF, neq, 1, 1, rowSizes, ierr)
+          call ISGetIndices(rowSizes, row_array, row_offset, ierr)
+          do row = 1,neq
+            row_array(row+row_offset) = ja(row+1) - ja(row) + 1
+          end do
+          call MatSeqAIJSetPreallocation(A, 0,
+     &                                   row_array(row_offset+1))
+          call ISRestoreIndices(rowSizes, row_array, row_offset, ierr)
+          call ISDestroy(rowSizes, ierr)
           write(6,*) 'Filling Mat'
           do nz = neq+2,nnz
              ja(nz) = ja(nz) - 1
@@ -398,7 +411,7 @@ c
       end
 c
 c version
-c $Id: iterate.F,v 1.1 2005/03/08 02:14:26 knepley Exp $
+c $Id: iterate.F,v 1.2 2005/03/08 03:04:48 knepley Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
