@@ -347,6 +347,7 @@ c
 c...  parameter definitions
 c
       include "ndimens.inc"
+      include "nconsts.inc"
       include "rconsts.inc"
 c
 c...  subroutine arguments
@@ -358,9 +359,7 @@ c
 c
 c...  local variables
 c
-      integer i,j
       double precision ptmp(10)
-      double precision e,pr,pr1,pr2,pr3,fac,dd,od,ss
 c
       call dcopy(nprop,prop,ione,ptmp,ione)
       ptmp(2)=autofac*ptmp(2)
@@ -372,7 +371,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.13 2005/01/18 19:30:39 willic3 Exp $
+c $Id: mat_1.f,v 1.14 2005/01/18 19:32:56 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
