@@ -29,23 +29,25 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine localx(idx,ien,lmx,nslip,nen,ndof,numslp,numel,numnp,
-     & nsdim)
+      subroutine localx(idx,numnp,ien,lmx,infiel,nconsz,numelt,infetype,
+     & nslip,numslp)
 c
 c......subroutine to localize idx array and transfer sign information
 c       to lmx array
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nen,ndof,numslp,numel,numnp,nsdim
-      integer idx(ndof,numnp),ien(nen,numel),lmx(ndof,nen,numel)
-      integer nslip(nsdim,numslp)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
+      integer numnp,nconsz,numelt,numslp
+      integer idx(ndof,numnp),ien(nconsz),lmx(ndof,nconsz)
+      integer infiel(6,numelt),infetype(4,netypes),nslip(nsdim,numslp)
 c
 c...  intrinsic functions
 c
@@ -53,18 +55,21 @@ c
 c
 c...  local variables
 c
-      integer i,j,k,node,nelem
+      integer i,j,k,iel,indien,ietype,nen,node
 c
-      call ifill(lmx,izero,ndof*nen*numel)
-      if(numslp.eq.0) return
+      call ifill(lmx,izero,ndof*nconsz)
+      if(numslp.eq.izero) return
 c
       do i=1,numslp
+        iel=nslip(1,i)
+        indien=infiel(1,iel)
+        ietype=infiel(3,iel)
+        nen=infetype(2,ietype)
         node=nslip(2,i)
-        nelem=nslip(1,i)
-        do j=1,nen
-          if(node.eq.ien(j,nelem)) then
+        do j=indien,indien+nen-1
+          if(node.eq.ien(j)) then
             do k=1,ndof
-              lmx(k,j,nelem)=sign(idx(k,node),nslip(2+k,i))
+              lmx(k,j)=sign(idx(k,node),nslip(2+k,i))
             end do
           end if
         end do
@@ -73,7 +78,7 @@ c
       end
 c
 c version
-c $Id: localx.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: localx.f,v 1.2 2004/07/07 18:36:19 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
