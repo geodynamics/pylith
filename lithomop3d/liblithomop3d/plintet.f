@@ -29,26 +29,29 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine plintet(sh,shj,gauss,ngauss,nen,nsd,nenmax,ngaussmax,
-     & intord)
+      subroutine plintet(sh,shj,gauss,infetype,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a linear tetrahedron.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nsd,nenmax,ngaussmax,intord
-      integer ngauss,nen
+      integer intord
+      integer infetype(4)
       double precision sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax)
       double precision gauss(nsd+1,ngaussmax)
 c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
+c...  local constants
 c
       double precision r(4),s(4),t(4),u(4)
       data r/ 1d0, 0d0, 0d0, 0d0/
@@ -64,7 +67,7 @@ c
 c
 c...  local variables
 c
-      integer i,nshsize,ngssize
+      integer nen,ngauss,nec,nee,i,nshsize,ngssize
       double precision rr,ss,tt,uu
       double precision tetvol
 c
@@ -79,10 +82,18 @@ c     One-point integration is used in all cases.
 c
       nen=ifour
       ngauss=ione
+      nec=nsd*nen
+      nee=ndof*nen
       gauss(1,1)=fourth
       gauss(2,1)=fourth
       gauss(3,1)=fourth
       gauss(4,1)=tetvol
+c
+      infetype(1)=ngauss
+      infetype(2)=nen
+      infetype(3)=nec
+      infetype(4)=nee
+c
       do i=1,nen
         rr=r(i)*gauss(1,1)
         ss=s(i)*gauss(2,1)
@@ -99,7 +110,7 @@ c
       end
 c
 c version
-c $Id: plintet.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: plintet.f,v 1.2 2004/07/07 19:28:30 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
