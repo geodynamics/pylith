@@ -80,18 +80,22 @@ c...  local variables
 c
       integer imat,npage,matmod,i,n,j,inf,ietypei,ngauss,nstate,imatvar
       integer ietype,nen,i1,i2
+cdebug      integer idb,jdb
 c
 cdebug      write(6,*) "Hello from read_connect_f!"
 cdebug      write(6,*) nconsz,numelt,numnp,numat,nstatesz,ndmatsz,kr,kw,kp
-cdebug      write(6,*) (neni(i),i=1,netypesi)
-cdebug      do i=1,netypes
-cdebug        write(6,*) (infetype(j,i),j=1,4)
+cdebug      write(6,*) (neni(idb),idb=1,netypesi)
+cdebug      write(6,*) "infetype:"
+cdebug      do idb=1,netypes
+cdebug        write(6,*) (infetype(jdb,idb),jdb=1,4)
 cdebug      end do
-cdebug      do i=1,numat
-cdebug        write(6,*) (infmat(j,i),j=1,3)
+cdebug      write(6,*) "infmat:"
+cdebug      do idb=1,numat
+cdebug        write(6,*) (infmat(jdb,idb),jdb=1,3)
 cdebug      end do
-cdebug      do i=1,nmatmodmax
-cdebug        write(6,*) (infmatmod(j,i),j=1,5)
+cdebug      write(6,*) "infmatmod:"
+cdebug      do idb=1,nmatmodmax
+cdebug        write(6,*) (infmatmod(jdb,idb),jdb=1,5)
 cdebug      end do
       call ifill(ien,izero,nconsz)
       call ifill(indmat,izero,numat)
@@ -105,8 +109,9 @@ c...  set initial pointers for different material types
 c
       indmat(1)=ione
       do imat=2,numat
-        indmat(imat)=indmat(imat-1)+infmat(2,imat)
+        indmat(imat)=indmat(imat-1)+infmat(2,imat-1)
       end do
+cdebug      write(6,*) "indmat:",(indmat(idb),idb=1,numat)
 c
 c...  read connectivity, material number, and infinite element info
 c
@@ -143,6 +148,7 @@ c
           errstrng="read_connect"
           return
         end if
+cdebug        write(6,*) "i,imat,indmat(imat):",i,imat,indmat(imat)
         infiel(4,indmat(imat))=i
         indmat(imat)=indmat(imat)+ione
 c
@@ -158,17 +164,22 @@ c
           if(imgrp(imat).eq.izero) then
             infiel(6,i)=ndmatsz+ione
             ndmatsz=ndmatsz+ngaussmax
+            imgrp(imat)=infiel(6,i)
           else
-            infiel(6,i)=infiel(6,infiel(4,i-1))
+            infiel(6,i)=imgrp(imat)
+cdebug            infiel(6,i)=infiel(6,infiel(4,i-1))
           end if
         else
           infiel(6,i)=ndmatsz+ione
           ndmatsz=ndmatsz+ngauss
         end if
-        imgrp(imat)=imgrp(imat)+ione
-cdebug        write(6,*) i,(infiel(j,i),j=1,6)
+cdebug        write(6,*) i,(infiel(jdb,i),jdb=1,6)
       end do
       close(kr)
+cdebug      write(6,*) "infiel:"
+cdebug      do idb=1,numelt
+cdebug        write(6,*) idb,(infiel(jdb,idb),jdb=1,6)
+cdebug      end do
 c
 c...  output plot info, if desired
 c
@@ -277,7 +288,7 @@ c
       end
 c
 c version
-c $Id: read_connect.f,v 1.3 2004/08/02 21:25:14 willic3 Exp $
+c $Id: read_connect.f,v 1.4 2004/08/12 02:24:21 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
