@@ -71,15 +71,21 @@ c
 c
 c...  local variables
 c
-      integer ielga,ielgp,ielf,j,l
+      integer ielga,ielgp,ielgu,ielf,j,l
       double precision sout(3*nstatesmax)
+c
+cdebug      integer idb
 c
 c...  included variable definitions
 c
       include "labels_def.inc"
 c
+cdebug      write(6,*) "Hello from write_state_cmp_f!"
+c
       ielga=ielg
       ielgp=ielg
+      ielgu=ielg
+      call fill(sout,zero,3*nstatesmax)
 c
 c...  output to human-readable ascii file
 c
@@ -87,14 +93,15 @@ c
         do ielf=1,nelfamily
           do l=1,ngauss
             nout=nout+ione
-            call get_state(state,dstate,sout,nstate)
+            call get_state(state(1,l,ielf),dstate(1,l,ielf),sout,nstate)
             call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
      &       sout(2*nstatesmax+ione),ione)
+cdebug            write(6,*) "sout:",(sout(idb),idb=1,3*nstatesmax)
             if(nout.eq.1.or.mod(nout,npage).eq.izero) then
               write(kw,700) (labels(istatoutc(j)),j=1,nstatestot)
               write(kw,"(/)")
             end if
-            write(kw,710) ielg,l,(sout(istatoutc(j)),j=1,nstatestot)
+            write(kw,710) ielga,l,(sout(istatoutc(j)),j=1,nstatestot)
           end do
           ielga=ielga+ione
         end do
@@ -105,10 +112,10 @@ c
       if(idsk.eq.1) then
         do ielf=1,nelfamily
           do l=1,ngauss
-            call get_state(state,dstate,sout,nstate)
+            call get_state(state(1,l,ielf),dstate(1,l,ielf),sout,nstate)
             call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
      &       sout(2*nstatesmax+ione),ione)
-            write(kw,720) ielg,l,(sout(istatoutc(j)),j=1,nstatestot)
+            write(kw,720) ielgp,l,(sout(istatoutc(j)),j=1,nstatestot)
           end do
           ielgp=ielgp+ione
         end do
@@ -119,7 +126,7 @@ c
       if(idsk.eq.2) then
         do ielf=1,nelfamily
           do l=1,ngauss
-            call get_state(state,dstate,sout,nstate)
+            call get_state(state(1,l,ielf),dstate(1,l,ielf),sout,nstate)
             call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
      &       sout(2*nstatesmax+ione),ione)
             write(kp) (sout(istatoutc(j)),j=1,nstatestot)
@@ -133,11 +140,13 @@ c
         do ielf=1,nelfamily
           do l=1,ngauss
             npts=npts+ione
-            call get_state(state,dstate,sout,nstate)
+            call get_state(state(1,l,ielf),dstate(1,l,ielf),sout,nstate)
             call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
      &       sout(2*nstatesmax+ione),ione)
-            write(kucd,720) nout,(sout(istatoutc(j)),j=1,nstatestot)
+cdebug            write(6,*) "sout:",(sout(idb),idb=1,3*nstatesmax)
+            write(kucd,720) ielgu,(sout(istatoutc(j)),j=1,nstatestot)
           end do
+          ielgu=ielgu+ione
         end do
       end if
 c
@@ -148,6 +157,6 @@ c
       end
 c
 c version
-c $Id: write_state_cmp.f,v 1.2 2005/03/23 18:23:33 willic3 Exp $
+c $Id: write_state_cmp.f,v 1.3 2005/04/01 23:12:41 willic3 Exp $
 c
 c End of file 

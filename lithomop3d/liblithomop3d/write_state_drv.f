@@ -6,7 +6,6 @@ c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
 c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2005 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -36,7 +35,7 @@ c
      & delt,nstep,                                                      ! timdat
      & istatout,nstatout,                                               ! ioopts
      & idout,idsk,iucd,kw,kp,kucd,ucdroot,iprestress,                   ! ioinfo
-     & ierr,errstrng)
+     & ierr,errstrng)                                                   ! errcode
 c
 c...  program to print state variables
 c     Note:  at present, it is assumed that the same istatout array
@@ -81,7 +80,7 @@ c
 c...  included variable definitions
 c
 c
-cdebug      write(6,*) "Hello from write_state_f!"
+cdebug      write(6,*) "Hello from write_state_drv_f!"
 c
       if(delt.gt.zero) then
         delti=one/delt
@@ -100,6 +99,8 @@ c
         do j=1,nstatout(i)
           ind=ind+ione
           istatoutc(ind)=istatout(j,i)+(i-1)*nstatesmax
+cdebug          write(6,*) "i,j,ind,nstatout(i),istatoutc(ind),istatout(j,i):"
+cdebug          write(6,*) i,j,ind,nstatout(i),istatoutc(ind),istatout(j,i)
         end do
       end do
 c
@@ -113,6 +114,7 @@ c
 c
 c...  loop over element families
 c
+      ielg=ione
       do ifam=1,nvfamilies
         nelfamily=ivfamily(1,ifam)
         matmodel=ivfamily(2,ifam)
@@ -290,7 +292,7 @@ c
       end
 c
 c version
-c $Id: write_state_drv.f,v 1.2 2005/03/23 23:30:31 willic3 Exp $
+c $Id: write_state_drv.f,v 1.3 2005/04/01 23:12:41 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
