@@ -34,7 +34,7 @@ c
      & prop,mhist,infmat,numat,npropsz,                                 ! materl
      & infetype,netypes,                                                ! eltype
      & histry,nhist,nstep,lastep,                                       ! timdat
-     & idout,kto,kw,ierr)                                               ! ioinf
+     & ierr)                                                            ! errcode
 c
 c...  driver subroutine to form the d-matrix for the elastic solution
 c
@@ -43,7 +43,7 @@ c
 c...  subroutine arguments
 c
       integer nstr,nddmat,ndmatsz,numelt,numat,npropsz,netypes
-      integer nhist,nstep,lastep,idout,kto,kw,ierr
+      integer nhist,nstep,lastep,ierr
       integer infiel(6,numelt),iddmat(nstr,nstr),mhist(npropsz)
       integer infmat(6,numat),infetype(4,netypes)
       double precision dmat(nddmat,ndmatsz),prop(npropsz)
@@ -188,7 +188,7 @@ c
       end
 c
 c version
-c $Id: elas_mat_drv.f,v 1.1 2004/06/16 16:11:23 willic3 Exp $
+c $Id: elas_mat_drv.f,v 1.2 2004/06/17 18:44:04 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
