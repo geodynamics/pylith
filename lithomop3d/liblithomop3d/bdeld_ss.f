@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine bdeld_ss(xl,dl,sh,shj,ee,det,gauss,iel,
-     & nen,nee,nsd,ndof,nstr,ngauss,ierr,getshape,bmatrix)
+      subroutine bdeld_ss(xl,dl,sh,shj,ee,det,gauss,iel,nen,nee,ngauss,
+     & ierr,getshape,bmatrix)
 c
 c...  Subroutine to compute strain increments in each element.
 c     Strain is evaluated at the number of gauss points specified by
@@ -45,22 +45,20 @@ c     being used.
 c
       include "implicit.inc"
 c
-c...  dimension parameters
+c...  parameter definitions
 c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer iel,nen,nee,nsd,ndof,nstr,ngauss,ierr
+      integer iel,nen,nee,ngauss,ierr
       double precision xl(nsd,nen),dl(ndof*nen)
       double precision sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax),ee(nstr,ngauss)
       double precision det(ngauss),gauss(nsd+1,ngaussmax)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  external routines
 c
@@ -72,26 +70,27 @@ c
       double precision shd(4,nenmax,ngaussmax),b(6,3*nenmax)
       double precision shbar(4,nenmax),vol
 c
+cdebug      write(6,*) "Hello from bdeld_ss_f!"
+c
+c
 c...compute shape function derivatives over number of strain integration
 c   points, and then compute average dilatational component.
 c
-cdebug      write(6,*) "Hello from bdeld_ss_f!"
-c
-      call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,nsd,
-     & ngauss,ierr)
+      call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,ngauss,
+     & ierr)
       if(ierr.ne.0) return
 c
 c...construct b matrix and compute strains at gauss point(s)
 c
       do l=1,ngauss
-        call bmatrix(b,shd(1,1,l),shbar,nsd,ndof,nen,nstr)
+        call bmatrix(b,shd(1,1,l),shbar,nen)
         call dgemv("n",nstr,nee,one,b,nstr,dl,ione,zero,ee(1,l),ione)
       end do
       return
       end
 c
 c version
-c $Id: bdeld_ss.f,v 1.2 2004/06/16 16:57:13 willic3 Exp $
+c $Id: bdeld_ss.f,v 1.3 2004/06/18 14:58:45 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
