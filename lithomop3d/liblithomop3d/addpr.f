@@ -33,16 +33,20 @@ c
      & b,bres,x,d,dx,tfault,histry,skew,                                ! global
      & ien,infin,lm,lmx,lmf,                                            ! elemnt
      & ielno,iside,ihstry,pres,pdir,pvec,gvec2,fulout,                  ! press
-     & nsd,ndof,nen,nskdim,npdir,numnp,neq,nee,numrot,lastep,nhist,     ! dimens
+     & nen,numnp,neq,nee,numrot,lastep,nhist,                           ! dimens
      & nstep,lgdefp,numel,numpr,numfn,numslp,ipstrs,idout,idebug,kto,kw)! dimens
 c
 c...subroutine to add pressures to load vector
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+c
 c...  subroutine arguments
 c
-      integer nsd,ndof,nen,nskdim,npdir,numnp,neq,nee,numrot,lastep
+      integer nen,numnp,neq,nee,numrot,lastep
       integer nhist,nstep,lgdefp,numel,numpr,numfn,numslp,ipstrs,idout
       integer idebug,kto,kw
       integer ien(nen,numel),infin(numel),lm(ndof,nen,numel)
@@ -105,30 +109,31 @@ c
             end if
           end if
           n=ielno(k)
-          call lcoord(x,xl,ien(1,n),nen,nsd,numnp)
+          call lcoord(x,xl,ien(1,n),nen,numnp)
 c
 c...update nodal positions for large deformation formalism
 c
           if(ldtmp.ge.1) call ldupdat(d,dx,tfault,dl,xl,ien(1,n),
-     &     lmx(1,1,n),lmf(1,n),ndof,nsd,nen,numnp,numfn,numslp,io2,
-     &     ldtmp)
+     &     lmx(1,1,n),lmf(1,n),nen,numnp,numfn,numslp)
 c
 c...compute local load vector and add it to global vector or
 c   temporary vector if constant pressure bc are desired for large
 c   deformations
 c
           call presurql(pload,pdir(1,k),xl,p,ien(1,n),iside(k),infin(n),
-     &     n,nen,nsd,ndof,npdir,idout,kto,kw)
-          if(numrot.ne.0) call rpforc(p,skew,ien(1,n),ndof,nen,nskdim)
-          if(lgdefp.eq.0) call addfor(b,p,lm(1,1,n),lmx(1,1,n),nee)
-          if(lgdefp.eq.0) call addfor(bres,p,lm(1,1,n),lmx(1,1,n),nee)
-          if(lgdefp.gt.0) call addfor(gvec2,p,lm(1,1,n),lmx(1,1,n),nee)
+     &     n,nen,idout,kto,kw)
+          if(numrot.ne.0) call rpforc(p,skew,ien(1,n),numnp,nen)
+          if(lgdefp.eq.0) call addfor(b,p,lm(1,1,n),lmx(1,1,n),neq,nee)
+          if(lgdefp.eq.0) call addfor(bres,p,lm(1,1,n),lmx(1,1,n),neq,
+     &     nee)
+          if(lgdefp.gt.0) call addfor(gvec2,p,lm(1,1,n),lmx(1,1,n),neq,
+     &     nee)
 c
 c...print out local load vectors if requested for debugging
 c
           if(idebug.eq.1.and.idout.gt.1.and.fulout) then
             if(n.eq.1.or.mod(n,npage).eq.0) write(kw,1000)
-            call prntforc(n,p,ien(1,n),nen,ndof,idout,kw)
+            call prntforc(n,p,ien(1,n),nen,idout,kw)
           end if
         end if
       end do
@@ -149,7 +154,7 @@ c
       end
 c
 c version
-c $Id: addpr.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: addpr.f,v 1.2 2004/08/12 01:03:16 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
