@@ -19,13 +19,16 @@ c     after all type statements, etc.
 c
 c...  arrays containing parameters
 c
-      data labels/" sxx"," syy"," szz"," sxy"," syz"," sxz"/
+      data labels/"Strsxx","Strsyy","Strszz","Strsxy","Strsyz","Strsxz",
+     &            "Tstnxx","Tstnyy","Tstnzz","Tstnxy","Tstnyz","Tstnxz",
+     &            "Vstnxx","Vstnyy","Vstnzz","Vstnxy","Vstnyz","Vstnxz",
+     &            "Pstnxx","Pstnyy","Pstnzz","Pstnxy","Pstnyz","Pstnxz"/
 c
 c...  scalar parameters associated with arrays
 c
 c
 c version
-c $Id: labels_def.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: labels_def.inc,v 1.2 2005/03/22 23:24:23 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
