@@ -29,19 +29,23 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine iterate(alnz,pcg,zcg,ja,                               ! sparse
-     & b,btot,bres,pvec,gvec1,gvec2,                                    ! force
-     & x,d,dx,deld,deldx,dprev,dcur,dxcur,id,idx,skew,histry,           ! global
-     & ien,infin,mat,lm,lmx,lmf,prop,gauss,                             ! elemnt
-     & dmat,stn,scur,st0,eps,deps,beta,dbeta,betb,dbetb,iddmat,         ! stress
+      subroutine iterate(
+     & alnz,pcg,zcg,ja,                                                 ! sparse
+     & b,btot,bres,pvec,gvec1,gvec2,grav,                               ! force
+     & x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,                       ! global
+     & dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                     ! slip
+     & nfault,dfault,tfault,                                            ! fault
+     & s,stemp,                                                         ! stiff
+     & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,             ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
-     & nfault,dfault,tfault,                                            ! split
-     & idslp,ipslp,                                                     ! slip
-     & iwink,wink,iwinkx,winkx,                                         ! wink
-     & s,stemp,                                                         ! local
-     & gcurr,gi,gprev,grav,gtol,ncodat,ndimens,                         ! info
-     & npar,nprint,nsiter,nsysdat,ntimdat,nunits,nvisdat,rgiter,        ! info
-     & rmin,rmult,rtimdat)                                              ! info
+     & prop,mhist,infmat,                                               ! materl
+     & gauss,sh,shj,infetype,                                           ! eltype
+     & histry,rtimdat,ntimdat,nvisdat,                                  ! timdat
+     & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
+     & skew,                                                            ! skew
+     & ncodat,nunits,nprint,                                            ! ioinfo
+     & getshape,bmatrix,gload_cmp,stress_cmp,stress_mat_cmp,            ! external
+     & ierr,errstrng)                                                   ! errcode
 c
 c...subroutine to loop over iterations within each time step
 c
@@ -51,53 +55,66 @@ c       are achieved, or until the maximum number of iterations has
 c       been exceeded.  In the case of large deformations, pressure BC
 c       and body forces are re-evaluated over the new geometry.
 c       This routine is called by both the elastic and viscoelastic
-c       portions of the code.  When called from the elastic portion,
-c       the elastic material matrix is used to form the stiffness matrix
-c       and to evaluate the stresses.  When called from the viscoelastic
-c       portion of the code, the effective stress function algorithm
-c       is used.
+c       portions of the code.  The appropriate routines to use for
+c       b-bar/no b-bar, small/large strain, and elastic/time-dependent
+c       calculations are determined by the external routine names that
+c       are passed in.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "materials.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+
+c
 c...  subroutine arguments
 c
-      integer ja(*),id(*),idx(*),ien(*),infin(*),mat(*),lm(*),lmx(*)
-      integer lmf(*),ielno(*),iside(*),ihistry(*),nfault(*),idslp(*)
-      integer ipslp(*),iwink(*),iwinkx(*)
-      double precision alnz(*),pcg(*),zcg(*),b(*),btot(*),bres(*)
-      double precision pvec(*),gvec1(*),gvec2(*),x(*),d(*),dx(*),deld(*)
-      double precision deldx(*),dprev(*),dcur(*),dxcur(*),skew(*)
-      double precision histry(*),prop(*),gauss(*),dmat(*),stn(*),scur(*)
-      double precision st0(*),eps(*),deps(*),beta(*),dbeta(*),betb(*)
-      double precision dbetb(*),pres(*),pdir(*),dfault(*),tfault(*)
-      double precision wink(*),winkx(*),s(*),stemp(*)
+      integer ierr
+      integer ja(*),id(*),iwink(*),idx(*),iwinkx(*),idslp(*),ipslp(*)
+      integer nfault(*),ien(*),lm(*),lmx(*),lmf(*),infiel(*),iddmat(*)
+      integer ielno(*),iside(*),ihistry(*),mhist(*),infmat(*)
+      integer infetype(*)
+      character errstrng*(*)
+      double precision alnz(*),pcg(*),zcg(*)
+      double precision b(*),btot(*),bres(*),pvec(*),gvec1(*),gvec2(*)
+      double precision grav(*)
+      double precision x(*),d(*),deld(*),dprev(*),dcur(*),wink(*)
+      double precision dx(*),deldx(*),dxcur(*),winkx(*)
+      double precision dfault(*),tfault(*)
+      double precision s(*),stemp(*)
+      double precision state(*),dstate(*),dmat(*)
+      double precision pres(*),pdir(*)
+      double precision prop(*)
+      double precision gauss(*),sh(*),shj(*)
+      double precision histry(*)
+      double precision skew(*)
 c
 c...  included dimension and type statements
 c
-      include "iddmat_dim.inc"
+      include "nsysdat_dim.inc"
+      include "npar_dim.inc"
+      include "rtimdat_dim.inc"
+      include "ntimdat_dim.inc"
+      include "nvisdat_dim.inc"
+      include "rgiter_dim.inc"
       include "gcurr_dim.inc"
       include "gi_dim.inc"
       include "gprev_dim.inc"
-      include "grav_dim.inc"
       include "gtol_dim.inc"
-      include "ncodat_dim.inc"
-      include "ndimens_dim.inc"
-      include "npar_dim.inc"
-      include "nprint_dim.inc"
-      include "nsiter_dim.inc"
-      include "nsysdat_dim.inc"
-      include "ntimdat_dim.inc"
-      include "nunits_dim.inc"
-      include "nvisdat_dim.inc"
-      include "rgiter_dim.inc"
       include "rmin_dim.inc"
       include "rmult_dim.inc"
-      include "rtimdat_dim.inc"
+      include "nsiter_dim.inc"
+      include "ncodat_dim.inc"
+      include "nunits_dim.inc"
+      include "nprint_dim.inc"
 c
-c...  defined constants
+c...  external functions
 c
-      include "nconsts.inc"
-      include "rconsts.inc"
+      external getshape,bmatrix,gload_cmp,stress_cmp,stress_mat_cmp
 c
 c...  intrinsic functions
 c
@@ -105,29 +122,25 @@ c
 c
 c...  local variables
 c
-cdebug      integer idb
-      integer i
-      double precision dummy(1)
+      integer i,iter
       logical fulout,converge,updats,skc,used,reform
 c
 c...  included variable definitions
 c
-      include "ncodat_def.inc"
-      include "ndimens_def.inc"
-      include "npar_def.inc"
-      include "nprint_def.inc"
-      include "nsiter_def.inc"
       include "nsysdat_def.inc"
+      include "npar_def.inc"
+      include "rtimdat_def.inc"
       include "ntimdat_def.inc"
-      include "nunits_def.inc"
       include "nvisdat_def.inc"
       include "rgiter_def.inc"
+      include "nsiter_def.inc"
+      include "ncodat_def.inc"
+      include "nunits_def.inc"
+      include "nprint_def.inc"
 c
 c...initialize convergence criteria
 c
 cdebug      write(6,*) "Hello from iterate_f!"
-cdebug      write(6,*) "From iterate, ngauss,nsd,gauss: ",ngauss,nsd,
-cdebug     & (gauss(idb),idb=1,(nsd+1)*ngauss)
 c
       fulout=.true.
       converge=.false.
@@ -141,67 +154,74 @@ c
 c
 c...loop over iterations
 c
-      do i=1,itmaxp
+      do iter=1,itmaxp
         updats=((ipstrs.ne.1).or.(ipstrs.eq.1.and.nstep.eq.0.and.
-     &   i.eq.1).or.(nstep.gt.0)).and.lgdefp.ge.1
-        skc=i.gt.1.and.lgdefp.ge.1.and.(numslp.ne.0.and.(iskopt.eq.2.or.
-     &   (iskopt.le.0.and.abs(iskopt).eq.nstep)))
+     &   iter.eq.1).or.(nstep.gt.0)).and.lgdefp.ge.1
+        skc=iter.gt.1.and.lgdefp.ge.1.and.(numslp.ne.0.and.
+     &   (iskopt.eq.2.or.(iskopt.le.0.and.abs(iskopt).eq.nstep)))
         nittot=nittot+1
         ntimdat(7)=nittot
-        reform=reform.or.(mod(i,maxitcp).eq.0)
+        reform=reform.or.(mod(iter,maxitp).eq.0)
         ireform=0
         if(reform) ireform=1
         ntimdat(10)=ireform
-        used=nstep.gt.0.and.(nsol.eq.2.or.nsol.eq.4).and.i.eq.1
-        if(i.gt.1) fulout=.false.
+        used=nstep.gt.0.and.(nsol.eq.2.or.nsol.eq.4).and.iter.eq.1
+        if(iter.gt.1) fulout=.false.
 c
 c...add pressure forces,if present, to global load vector
 c
-        if(numpr.ne.0.and.(i.eq.1.or.updats)) call addpr(
-     &   btot,bres,x,d,dx,tfault,histry,skew,
-     &   ien,infin,lm,lmx,lmf,
-     &   ielno,iside,ihistry,pres,pdir,pvec,gvec2,fulout,
-     &   nsd,ndof,nen,nskdim,npdir,numnp,neq,nee,numrot,lastep,nhist,
-     &   nstep,lgdefp,numel,numpr,numfn,numslp,ipstrs,idout,idebug,kto,
-     &   kw)
+clater        if(numpr.ne.0.and.(iter.eq.1.or.updats)) call addpr(
+clater     &   btot,bres,x,d,dx,tfault,histry,skew,
+clater     &   ien,infin,lm,lmx,lmf,
+clater     &   ielno,iside,ihistry,pres,pdir,pvec,gvec2,fulout,
+clater     &   nsd,ndof,nen,nskdim,npdir,numnp,neq,nee,numrot,lastep,nhist,
+clater     &   nstep,lgdefp,numel,numpr,numfn,numslp,ipstrs,idout,idebug,kto,
+clater     &   kw)
 c
 c...add gravity body forces to global load vector
 c
-        if(i.eq.1.or.updats) call gload(
-     &   btot,bres,x,d,dx,tfault,skew,grav,gvec1,gvec2,
-     &   gauss,ien,lm,lmx,lmf,mat,infin,prop,histry,fulout,
-     &   neq,nee,nsd,numnp,ndof,nen,ngauss,numel,numfn,numslp,nskdim,
-     &   numrot,nprop,numat,nhist,lastep,lgdefp,nstep,ipstrs,idebug,
-     &   idout,kto,kw,imhist)
+        if(iter.eq.1.or.updats) then
+          call gload_drv(
+     &     b,bres,gvec1,gvec2,grav,neq,                                 ! force
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     ien,lm,lmx,lmf,infiel,numelt,nconsz,                         ! elemnt
+     &     prop,mhist,infmat,numat,npropsz,                             ! materl
+     &     gauss,shj,infetype,                                          ! eltype
+     &     histry,rtimdat,ntimdat,nhist,lastep,gload_cmp,               ! timdat
+     &     skew,numrot,                                                 ! skew
+     &     ierr,errstrng)                                               ! errcod
+        end if
 c
 c...reform the stiffness matrix, if required
 c
-        if(reform) then
-          if(skc) call skcomp(x,d,skew,idslp,ipslp,nsd,ndof,nskdim,
-     &     npdim,ipstrs,numsn,numnp,nstep,lgdefp,kto)
-          call formk(alnz,ja,
-     &     id,idx,x,d,dx,tfault,skew,iwink,wink,iwinkx,winkx,histry,
-     &     ien,lm,lmx,lmf,mat,infin,prop,gauss,
-     &     dmat,stn,deps,beta,betb,i,
-     &     s,stemp,iddmat,
-     &     rtimdat,ntimdat,rgiter,
-     &     ngauss,nddmat,ndmat,nprop,numat,nsd,ndof,nstr,nen,nee,nnz,
-     &     neq,numel,numnp,numfn,numslp,numsn,numrot,nskdim,ipstrs,
-     &     nwink,nwinkx,nhist,lastep,idout,kto,kw)
-        end if
+c**        if(reform) then
+c**          if(skc) call skcomp(x,d,skew,idslp,ipslp,nsd,ndof,nskdim,
+c**     &     npdim,ipstrs,numsn,numnp,nstep,lgdefp,kto)
+c**          call formk(alnz,ja,
+c**     &     id,idx,x,d,dx,tfault,skew,iwink,wink,iwinkx,winkx,histry,
+c**     &     ien,lm,lmx,lmf,mat,infin,prop,gauss,
+c**     &     dmat,stn,deps,beta,betb,iter,
+c**     &     s,stemp,iddmat,
+c**     &     rtimdat,ntimdat,rgiter,
+c**     &     ngauss,nddmat,ndmat,nprop,numat,nsd,ndof,nstr,nen,nee,nnz,
+c**     &     neq,numel,numnp,numfn,numslp,numsn,numrot,nskdim,ipstrs,
+c**     &     nwink,nwinkx,nhist,lastep,idout,kto,kw)
+c**        end if
 c
 c...if icode .eq. 1 print the stiffness matrix diagonals and stop here
 c
-        if(icode.eq.1.and.nstep.eq.0.and.i.eq.1) then
-          call printv(alnz,dummy,id,idx,neq,ndof,numnp,izero,idout,kw)
-          stop
-        else if(icode.eq.1) then
-          stop
-        end if
+c**        if(icode.eq.1.and.nstep.eq.0.and.iter.eq.1) then
+c**          call printv(alnz,dummy,id,idx,neq,ndof,numnp,izero,idout,kw)
+c**          stop
+c**        else if(icode.eq.1) then
+c**          stop
+c**        end if
 c
 c...for first iteration compute residual force vector
 c
-        if(i.eq.1) call bdiff(b,btot,bres,neq)
+        if(iter.eq.1) call bdiff(b,btot,bres,neq)
 c
 c...compute the global displacement increment vector using a
 c   preconditioned conjugate gradients iterative solver.  Upon
@@ -211,24 +231,24 @@ c
      &   gcurr,gprev,ja,nsiter,neq,nnz,ndtot,idout,kto,kw,used)
         ntimdat(9)=ndtot
         if(nsol.eq.2.or.nsol.eq.4) then
-          if(i.eq.1) call fill(dprev,zero,neq)
+          if(iter.eq.1) call fill(dprev,zero,neq)
           call daxpy(neq,one,gvec2,ione,dprev,ione)
         end if
 c
 c...for first iteration, update displacements to reflect boundary
 c   conditions
 c
-        if(i.eq.1) then
+        if(iter.eq.1) then
           if(numfn.ne.0.and.numrot.ne.0) call rsplit(nfault,dfault,
-     &     skew,ndof,numfn,numnp,nskdim)
+     &     skew,numfn,numnp)
           if(numfn.ne.0) call daxpy(ndof*numfn,one,dfault,ione,tfault,
      &     ione)
           if(nstep.eq.0) then
-            if(numrot.ne.0) call rdisp(dcur,skew,ndof,numnp,nskdim)
+            if(numrot.ne.0) call rdisp(dcur,skew,numnp)
             call dcopy(ndof*numnp,dcur,ione,d,ione)
             call dcopy(ndof*numnp,dcur,ione,deld,ione)
           else
-            if(numrot.ne.0) call rdisp(deld,skew,ndof,numnp,nskdim)
+            if(numrot.ne.0) call rdisp(deld,skew,numnp)
             call daxpy(ndof*numnp,one,deld,ione,d,ione)
           end if
         end if
@@ -238,14 +258,14 @@ c   dxcur(ndof,numnp)
 c
         call fill(dcur,zero,ndof*numnp)
         call fill(dxcur,zero,ndof*numnp)
-        call disp(gvec2,dcur,id,ndof,numnp,neq)
-        if(numslp.ne.0) call disp(gvec2,dxcur,idx,ndof,numnp,neq)
+        call disp(gvec2,dcur,id,numnp,neq)
+        if(numslp.ne.0) call disp(gvec2,dxcur,idx,numnp,neq)
 c
 c...rotate skewed coordinates to global system
 c
         if(numrot.ne.0) then
-          call rdisp(dcur,skew,ndof,numnp,nskdim)
-          if(numslp.ne.0) call rdisp(dxcur,skew,ndof,numnp,nskdim)
+          call rdisp(dcur,skew,numnp)
+          if(numslp.ne.0) call rdisp(dxcur,skew,numnp)
         end if
 c
 c...compute contribution to global load vector from winkler boundary
@@ -264,45 +284,61 @@ c
         if(numslp.ne.0) call daxpy(ndof*numnp,one,dxcur,ione,dx,ione)
         if(numslp.ne.0) call daxpy(ndof*numnp,one,dxcur,ione,deldx,ione)
 c
-c...integrate the stresses and compute the equivalent nodal loads
+c...  integrate the stresses and compute the equivalent nodal loads,
+c     updating the material and stiffness matrices if requested.
 c
-cdebug        write(6,*) "From iterate right before stresn call:"
-cdebug        write(6,*) "gauss:",(gauss(idb),idb=1,(nsd+1)*ngauss)
-        call stresn(x,b,d,dx,tfault,stn,deps,beta,betb,scur,st0,dbeta,
-     &   dbetb,skew,ien,lm,lmx,lmf,dmat,mat,prop,histry,infin,gauss,
-     &   rtimdat,stol,iddmat,nen,numel,ndof,nsd,numnp,neq,nee,
-     &   nstr,ngauss,nppts,ngem,nskdim,nhist,nprop,numat,numfn,numslp,
-     &   numrot,lastep,nstep,lgdefp,ibbarp,ivisc,iplas,imhist,ipstrs,
-     &   nprestr,nddmat,ndmat,idebug,idout,kto,kw,fulout)
+        if(reform) then
+          call stress_mat_drv(
+     &     alnz,ja,nnz,                                                 ! sparse
+     &     b,neq,                                                       ! force
+     &     x,d,iwink,wink,numnp,nwink,                                  ! global
+     &     dx,iwinkx,winkx,numslp,numsn,nwinkx,                         ! slip
+     &     tfault,numfn,                                                ! fault
+     &     s,stemp,                                                     ! stiff
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
+     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     prop,mhist,infmat,numat,npropsz,                             ! materl
+     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_mat_cmp,   ! timdat
+     &     skew,numrot,                                                 ! skew
+     &     getshape,bmatrix,                                            ! bbar
+     &     ierr,errstrng)                                               ! errcode
+        else
+          call stress_drv(
+     &     b,neq,                                                       ! force
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     prop,mhist,infmat,numat,npropsz,                             ! materl
+     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,       ! timdat
+     &     skew,numrot,                                                 ! skew
+     &     getshape,bmatrix,                                            ! bbar
+     &     ierr,errstrng)                                               ! errcode
+        end if
 c
 c...compute the out-of-balance forces and convergence criteria
 c
         call residu(b,bres,btot,gvec2,gtol,gi,gprev,gcurr,id,idx,neq,
-     &   ndof,numnp,i,itmaxp,idebug,idout,kto,kw,converge)
+     &   numnp,iter,itmaxp,idebug,idout,kto,kw,converge)
 c
 c...if solution has converged, set equilibrium stresses and creep
 c   strains to their current values
 c
         if(converge) then
-          call dcopy(nstr*numel*ngauss,scur,ione,stn,ione)
-          if(ivisc.eq.1) call daxpy(nstr*numel*ngauss,one,dbeta,ione,
-     &     beta,ione)
-          if(iplas.eq.1) call daxpy(nstr*numel*ngauss,one,dbetb,ione,
-     &     betb,ione)
-          call daxpy(nstr*numel*ngauss,-one,eps,ione,deps,ione)
-          call daxpy(nstr*numel*ngauss,one,deps,ione,eps,ione)
+          call update_state(state,dstate,infiel,infmat,infetype,
+     &     nstatesz,numelt,numat,ierr,errstrng)
           return
         end if
         reform=.false.
-c*        call flush(kto)
-c*        call flush(kw)
-c*        call flush(kp)
       end do
       return
       end
 c
 c version
-c $Id: iterate.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: iterate.f,v 1.2 2004/07/05 20:37:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
