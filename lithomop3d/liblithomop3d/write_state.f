@@ -152,6 +152,7 @@ c
             if(delt.gt.zero) tmult=one/delt
             statedescr="   r a t e "
           end if
+cdebug          write(6,*) "delt,nstep,tmult:",delt,nstep,tmult
           nout=izero
           do iel=1,numelt
             imat=infiel(2,iel)
@@ -164,7 +165,7 @@ c
               indstateg=indstate+(l-1)*nstate
               call fill(stmp,zero,nstr)
               if(ismatmod(i,matmodel).ne.izero) call daxpy(nstr,tmult,
-     &         state(1,indstateg),ione,stmp,ione)
+     &         dstate(1,indstateg),ione,stmp,ione)
               if(idout.gt.1) then
                 nout=nout+1
                 if(nout.eq.1.or.mod(nout,m50).eq.izero) then
@@ -189,7 +190,7 @@ c
       end
 c
 c version
-c $Id: write_state.f,v 1.5 2004/08/02 21:35:07 willic3 Exp $
+c $Id: write_state.f,v 1.6 2004/08/12 02:36:01 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
