@@ -32,9 +32,9 @@ c
       subroutine write_ucd_mesh(
      & x,numnp,                                                         ! global
      & ien,infiel,numelt,nconsz,                                        ! elemnt
-     & gauss,sh,infetype,                                               ! eltype
+     & sh,infetype,                                                     ! eltype
      & istatout,                                                        ! ioopts
-     & kw,fileroot)                                                     ! ioinfo
+     & kucd,ucdroot)                                                    ! ioinfo
 c
 c...  Specialized routine to output mesh info for SCEC benchmarks.
 c     This routine writes out the headers, coordinates, and
@@ -53,12 +53,11 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,numelt,nconsz,kw
+      integer numnp,numelt,nconsz,kucd
       integer ien(nconsz),infiel(6,numelt),infetype(4,netypes)
       integer istatout(2,nstatesmax)
-      character fileroot*(*)
-      double precision x(nsd,numnp),gauss(nsd+1,ngaussmax,netypes)
-      double precision sh(nsd+1,nenmax,ngaussmax,netypes)
+      character ucdroot*(*)
+      double precision x(nsd,numnp),sh(nsd+1,nenmax,ngaussmax,netypes)
 c
 c...  local constants
 c
@@ -91,19 +90,19 @@ c
         nngattr=nngattr+nstr*istatout(1,i)
         nngattr=nngattr+nstr*istatout(2,i)
       end do
-      i1=nnblnk(fileroot)
-      i2=nchar(fileroot)
+      i1=nnblnk(ucdroot)
+      i2=nchar(ucdroot)
 c
 c...  write mesh info
 c
-      filenm=fileroot(i1:i2)//"mesh.inp"
-      open(kw,file=filenm,status="new")
-      write(kw,"(5i7)") numnp,numelt,nnattr,neattr,nmattr
+      filenm=ucdroot(i1:i2)//".mesh.inp"
+      open(kucd,file=filenm,status="new")
+      write(kucd,"(5i7)") numnp,numelt,nnattr,neattr,nmattr
 c
 c...  write nodal coordinates
 c
       do i=1,numnp
-        write(kw,"(i7,3(2x,1pe15.8))") i,(x(j,i),j=1,nsd)
+        write(kucd,"(i7,3(2x,1pe15.8))") i,(x(j,i),j=1,nsd)
       end do
 c
 c...  write element connectivities
@@ -125,16 +124,16 @@ c
         if(ietype.eq.60) indtype=ieight
         if(ietype.eq.61) indtype=inine
         if(ietype.eq.62) indtype=10
-        write(kw,"(2i7,2x,a4,20i7)") i,imat,eltype(indtype),
+        write(kucd,"(2i7,2x,a4,20i7)") i,imat,eltype(indtype),
      &   (ien(j),j=indien,indien+nen-1)
       end do
-      close(kw)
+      close(kucd)
 c
 c...  write Gauss point info
 c
-      filenm=fileroot(i1:i2)//"gmesh.inp"
-      open(kw,file=filenm,status="new")
-      write(kw,"(5i7)") ngpts,numelg,nngattr,negattr,nmattr
+      filenm=ucdroot(i1:i2)//".gmesh.inp"
+      open(kucd,file=filenm,status="new")
+      write(kucd,"(5i7)") ngpts,numelg,nngattr,negattr,nmattr
 c
 c...  write Gauss coordinates
 c
@@ -155,15 +154,15 @@ c
             xg(2)=xg(2)+xl(2,j)*sh(4,j,l,ietype)
             xg(3)=xg(3)+xl(3,j)*sh(4,j,l,ietype)
           end do
-          write(kw,"(i7,3(2x,1pe15.8))") igpt,(xg(j),j=1,nsd)
+          write(kucd,"(i7,3(2x,1pe15.8))") igpt,(xg(j),j=1,nsd)
         end do
       end do
-      close(kw)
+      close(kucd)
       return
       end
 c
 c version
-c $Id: write_ucd_mesh.f,v 1.1 2004/08/24 18:30:13 willic3 Exp $
+c $Id: write_ucd_mesh.f,v 1.2 2004/08/25 01:29:42 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
