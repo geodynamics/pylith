@@ -363,3 +363,86 @@ Next thing to do?  Create material routines for linear viscoelastic.
 This should be a fairly simple extension of material model 1.  Once
 these two material models are defined, focus on getting everything
 else working.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	July 1, 2004 5:39:43 PM EDT
+To: 	  willic3@rpi.edu
+
+Need to fix usage of scur.  I should be using dstate instead.  I think
+that in the elastic solution, I should work exclusively with dstate to
+represent the current stress state.  Once convergence has occurred in
+iterate, this value is copied into state, which represents the state
+at the end of the previous step.  In the time-dependent solution,
+dstate should be used during iterations, while state serves as a
+reference.  It is updated at the end of iterations, as well as
+possibly the other state variables.  I will need a new routine to
+update all these variables, looping over material groups.
+
+After fixing this, continue fixing iterate routine.  For now, don't
+mess too much with how BC are handled.  Once I have iterate and its
+arguments settled, fix things in elastc and fix the arguments in
+elastc.  Once this is done, go through all routines to check for
+consistency and to make sure I'm using current methods for parameter
+statements and error codes.  Possibly update error codes, but don't
+spend too much time on this.
+
+Then start working on new bindings, and fix the python drivers.  I
+think there may be some missing i/o routines -- double-check this.
+
+First problems to try: patchtest?  Try this for all element types.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	July 2, 2004 4:43:17 PM EDT
+To: 	  willic3@rpi.edu
+
+Keep working on iterate -- mainly, I need to fix and organize the
+arguments sent to it.  Related to this, try reorganizing the info
+arrays to correspond to the different argument groups.  This may not
+be efficient in some cases, but see if it's worthwhile.  Otherwise,
+edit the include files to eliminate unused variables and put in the
+new ones.
+
+Once iterate compiles OK, fix the arguments for elastc.  Then start
+doing the bindings and python code to drive the elastic solution so I
+can set up a simple test problem.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	July 7, 2004 5:44:25 PM EDT
+To: 	  willic3@rpi.edu
+
+Pick up at connectivity input routines.  Both of these (read and scan)
+should be updated to use new info arrangement.  Some of the variables
+can also be put in the include file.
+
+In the meantime, I can finish updating the other routines.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	July 8, 2004 5:46:44 PM EDT
+To: 	  willic3@rpi.edu
+
+Continue fixing routines for separation of material type and material
+model information.  The top-level routines (elastc and iterate) should
+be OK.  Make sure all of the driver and computation routines are OK
+and consistent, and make sure dimensions of infmat are correct
+everywhere (use grep).  Then continue on with fixing of
+connectivity/material property routines.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	July 12, 2004 3:53:27 PM EDT
+To: 	  willic3@rpi.edu
+
+Need to put in python or f77 routine to compute
+ismatmod(nstatesmax,nmatmodmax) matrix.  The quickest way to do this
+would be to do it in matmod_def.
+
