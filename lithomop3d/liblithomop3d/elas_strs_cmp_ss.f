@@ -120,7 +120,7 @@ c...  loop over gauss points, compute stresses, and transfer them into
 c     scur
 c
         do l=1,ngauss
-          indstateg=indstate+(l-1)*nstate
+          indstateg=indstate+(l-1)*nstate*nstr
           inddmatg=inddmat+(l-1)*nddmat
           call elas_strs(state(1,indstateg),ee(nstr*(l-1)),
      &     dmat(1,inddmatg),nstr,nstate,nddmat)
@@ -147,7 +147,7 @@ c**        end if
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.2 2004/06/17 18:52:33 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.3 2004/06/17 20:42:41 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
