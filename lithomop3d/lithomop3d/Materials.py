@@ -64,8 +64,8 @@ class Materials:
 
 
     def __init__(self):
+	print ""
         print "Hello from Materials.__init__!"
-        print ""
         self.numberMaterials = 0
         self.materialNumber = []
         self.materialModel = []
@@ -75,6 +75,6 @@ class Materials:
         return
 
 # version
-# $Id: Materials.py,v 1.2 2004/08/12 16:44:10 willic3 Exp $
+# $Id: Materials.py,v 1.3 2004/08/12 17:11:17 willic3 Exp $
 
 # End of file 

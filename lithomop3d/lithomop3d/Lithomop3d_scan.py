@@ -43,6 +43,7 @@ class Lithomop3d_scan(Component):
         from pyre.units.length import m
         from pyre.units.time import s
 
+	print ""
         print "Hello from lm3dscan.__init__ (begin)!"
         print "Setting default keyword values:"
 
@@ -84,6 +85,7 @@ class Lithomop3d_scan(Component):
         self.f77AsciiOutput = 11
         self.f77PlotOutput = 12
 
+	print ""
         print "Hello from lm3dscan.__init__ (end)!"
         
         return
@@ -103,6 +105,7 @@ class Lithomop3d_scan(Component):
         matinfo = Materials()
         keyparse = KeywordValueParse()
 
+	print ""
         print "Hello from lm3dscan._init (begin)!"
         print "Scanning ascii files to determine dimensions:"
 
@@ -615,6 +618,7 @@ class Lithomop3d_scan(Component):
         # except:
             # print "Exception from Lithomop3d_scan!"
                 
+	print ""
         print "Hello from lm3dscan._init (end)!"
 
         return
@@ -770,6 +774,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.9 2004/08/12 16:04:56 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.10 2004/08/12 17:11:17 willic3 Exp $
 
 # End of file 

@@ -50,12 +50,12 @@ class KeywordValueParse:
 
 
     def __init__(self):
-        # print "Hello from KeywordValueParse.__init__!"
-        # print ""
+        print ""
+        print "Hello from KeywordValueParse.__init__!"
         self.keyvals = [None, None, None]
         return
 
 # version
-# $Id: KeywordValueParse.py,v 1.2 2004/08/12 15:18:55 willic3 Exp $
+# $Id: KeywordValueParse.py,v 1.3 2004/08/12 17:11:17 willic3 Exp $
 
 # End of file 

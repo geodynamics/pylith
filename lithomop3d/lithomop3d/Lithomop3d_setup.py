@@ -49,6 +49,7 @@ class Lithomop3d_setup(Component):
     def initialize(self, scanner):
         lm3dscan = scanner
 
+	print ""
         print "Hello from lm3dsetup.initialize (begin)!"
         print "Importing values from scanning phase:"
 
@@ -253,6 +254,7 @@ class Lithomop3d_setup(Component):
         self.numberSlipperyWinklerEntries = lm3dscan._numberSlipperyWinklerEntries
         self.numberSlipperyWinklerForces = lm3dscan._numberSlipperyWinklerForces
 
+	print ""
         print "Hello from lm3dsetup.initialize (end)!"
 
         return
@@ -266,6 +268,7 @@ class Lithomop3d_setup(Component):
         # they are passed as arrays.  The contents of the lists should be maintained as
         # global variables, however.
 
+	print ""
         print "Hello from lm3dsetup.run (begin)!"
         print "Reading problem definition and allocating storage:"
 
@@ -1446,12 +1449,16 @@ class Lithomop3d_setup(Component):
             self.listRtimdat)
 	self.memorySize += 3*self.doubleSize
 
+	print ""
+	print ""
         print "Sparse matrix information:"
         print "minimumNonzeroTermsPerRow: %i" % self.minimumNonzeroTermsPerRow
         print "maximumNonzeroTermsPerRow: %i" % self.maximumNonzeroTermsPerRow
         print "averageNonzeroTermsPerRow: %g" % self.averageNonzeroTermsPerRow
 
 	# print "memorySize: %d" % self.memorySize
+	print ""
+	print ""
         print "Hello from lm3dsetup.run (end)!"
         return
 
@@ -1459,6 +1466,7 @@ class Lithomop3d_setup(Component):
     def __init__(self):
         Component.__init__(self, "lm3dsetup", "setup")
 
+	print ""
         print "Hello from lm3dsetup.__init__!"
 
         return
@@ -1466,6 +1474,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.6 2004/08/12 16:32:57 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.7 2004/08/12 17:11:17 willic3 Exp $
 
 # End of file 
