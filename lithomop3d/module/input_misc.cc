@@ -532,14 +532,14 @@ PyObject * pylithomop3d_write_props(PyObject *, PyObject *args)
 			    &pyPointerToListArrayGrav,
 			    &pyPointerToMaterialInfo,
 			    &pyPointerToMaterialModelInfo,
-			    numberMaterials,
-			    propertyListSize,
-			    asciiOutputInt,
-			    plotOutputInt,
-			    f77AsciiOutput,
-			    f77PlotOutput,
-			    asciiOutputFile,
-			    plotOutputFile);
+			    &numberMaterials,
+			    &propertyListSize,
+			    &asciiOutputInt,
+			    &plotOutputInt,
+			    &f77AsciiOutput,
+			    &f77PlotOutput,
+			    &asciiOutputFile,
+			    &plotOutputFile);
 
   if (!ok) {
     return 0;
@@ -557,12 +557,12 @@ PyObject * pylithomop3d_write_props(PyObject *, PyObject *args)
 		pointerToListArrayGrav,
 		pointerToMaterialInfo,
 		pointerToMaterialModelInfo,
-		numberMaterials,
-		propertyListSize,
-		asciiOutputInt,
-		plotOutputInt,
-		f77AsciiOutput,
-		f77PlotOutput,
+		&numberMaterials,
+		&propertyListSize,
+		&asciiOutputInt,
+		&plotOutputInt,
+		&f77AsciiOutput,
+		&f77PlotOutput,
 		asciiOutputFile,
 		plotOutputFile,
 		&errorcode,
@@ -743,6 +743,6 @@ PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *args)
 
 
 // version
-// $Id: input_misc.cc,v 1.2 2004/07/19 21:26:04 willic3 Exp $
+// $Id: input_misc.cc,v 1.3 2004/07/20 20:22:03 willic3 Exp $
 
 // End of file
