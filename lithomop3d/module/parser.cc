@@ -144,6 +144,7 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
   PyObject* pyPointerToIndmat;
   PyObject* pyPointerToImgrp;
   int connectivitySize;
+  int prestressFlag;
   int numberElements;
   int numberNodes;
   int numberMaterials;
@@ -156,7 +157,7 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOiiiiiiiiisss:read_connect",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOiiiiiiiiiisss:read_connect",
 			    &pyPointerToListArrayNumberElementNodesBase,
 			    &pyPointerToElementTypeInfo,
 			    &pyPointerToMaterialInfo,
@@ -166,6 +167,7 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
 			    &pyPointerToIndmat,
 			    &pyPointerToImgrp,
 			    &connectivitySize,
+			    &prestressFlag,
 			    &numberElements,
 			    &numberNodes,
 			    &numberMaterials,
@@ -195,6 +197,8 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
   int* pointerToImgrp = (int*) PyCObject_AsVoidPtr(pyPointerToImgrp);
   int stateSize = 0;
   int dmatSize = 0;
+  int totalVolumeGaussPoints = 0;
+  int state0Size = 0;
 
   read_connect_f(pointerToListArrayNumberElementNodesBase,
 		 pointerToElementTypeInfo,
@@ -205,10 +209,13 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
 		 pointerToIndmat,
 		 pointerToImgrp,
 		 &connectivitySize,
+		 &prestressFlag,
 		 &numberElements,
+		 &totalVolumeGaussPoints,
 		 &numberNodes,
 		 &numberMaterials,
 		 &stateSize,
+		 &state0Size,
 		 &dmatSize,
 		 &f77FileInput,
 		 &f77AsciiOutput,
@@ -237,8 +244,11 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("ii", stateSize,
-		       dmatSize);
+  return Py_BuildValue("iiii",
+		  	stateSize,
+		       	dmatSize,
+		       	totalVolumeGaussPoints,
+		       	state0Size);
 }
 
 
@@ -1361,6 +1371,6 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: parser.cc,v 1.5 2005/01/06 16:26:40 willic3 Exp $
+// $Id: parser.cc,v 1.6 2005/02/24 00:41:01 willic3 Exp $
 
 // End of file
