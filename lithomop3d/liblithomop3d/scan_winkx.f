@@ -29,7 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine scan_winkx(ndof,numslp,nwinkxe,nwinkx,kr,ierr,wxfile)
+      subroutine scan_winkx(numslp,nwinkxe,nwinkx,kr,wxfile,ierr,
+     & errstrng)
 c
 c...  subroutine to perform an initial scan of the differential winkler
 c     BC file to determine the number of differential winkler BC.
@@ -38,15 +39,19 @@ c     Error codes:
 c         0:  No error
 c         1:  Error opening input file (no exception should be raised
 c             in this case since a winkler BC file is optional)
-c         2:  Units not specified (not applicable for this routine)
 c         3:  Read error
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,numslp,nwinkxe,nwinkx,kr,ierr
-      character wxfile*(*)
+      integer numslp,nwinkxe,nwinkx,kr,ierr
+      character wxfile*(*),errstrng*(*)
 c
 c...  local variables
 c
@@ -56,10 +61,10 @@ c
 c
 c...  open input file
 c
-      ierr=0
-      nwinkxe=0
-      nwinkx=0
-      if(numslp.eq.0) return
+      ierr=izero
+      nwinkxe=izero
+      nwinkx=izero
+      if(numslp.eq.izero) return
       open(kr,file=wxfile,status="old",err=10)
 c
 c... scan the file, counting the number of entries.
@@ -72,10 +77,10 @@ c
  40   continue
         read(kr,*,end=10,err=30) n,(iwinkx(j),j=1,ndof),
      &   (winkx(j),j=1,ndof)
-        nwinkxe=nwinkxe+1
-        nnz=0
+        nwinkxe=nwinkxe+ione
+        nnz=izero
         do j=1,ndof
-          if(iwinkx(j).ne.0) nnz=nnz+1
+          if(iwinkx(j).ne.0) nnz=nnz+ione
         end do
         nwinkx=nwinkx+nnz
         go to 40
@@ -97,13 +102,14 @@ c...  read error
 c
  30   continue
         ierr=3
+        errstrng="scan_winkx"
         close(kr)
         return
 c
       end
 c
 c version
-c $Id: scan_winkx.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: scan_winkx.f,v 1.2 2004/07/12 20:23:52 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
