@@ -59,6 +59,7 @@ PROJ_SRCS = \
         get_units.f \
         getder.f \
         getjac.f \
+        getmat.f \
         getshapb.f \
         getshapn.f \
         gload_cmp_ss.f \
@@ -221,7 +222,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.18 2005/03/30 04:49:10 willic3 Exp $
+# $Id: Make.mm,v 1.19 2005/04/01 23:35:07 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
