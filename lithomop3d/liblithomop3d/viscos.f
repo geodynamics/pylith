@@ -42,7 +42,7 @@ c
      & prop,mhist,infmat,infmatmod,ismatmod,                            ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & histry,rtimdat,ntimdat,nvisdat,maxstp,delt,alfa,maxit,ntdinit,   ! timdat
-     & lgdef,ibbar,utol,ftol,etol,itmax,                                ! timdat
+     & lgdef,utol,ftol,etol,itmax,                                      ! timdat
      & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
      & skew,                                                            ! skew
      & iprint,ncodat,nunits,nprint,istatout,                            ! ioinfo
@@ -68,7 +68,7 @@ c
       integer ipslp(*),idhist(*),nfault(*),ien(*),lm(*),lmx(*),lmf(*)
       integer infiel(*),iddmat(*),ielno(*),iside(*),ihistry(*),mhist(*)
       integer infmat(*),infmatmod(*),ismatmod(*),infetype(*),maxstp(*)
-      integer maxit(*),ntdinit(*),lgdef(*),ibbar(*),itmax(*),iprint(*)
+      integer maxit(*),ntdinit(*),lgdef(*),itmax(*),iprint(*)
       integer istatout(*)
       double precision alnz(*),pcg(*),zcg(*)
       double precision b(*),btot(*),bres(*),pvec(*),gvec1(*),gvec2(*)
@@ -169,11 +169,11 @@ c
 c
 c...  define constants to control stepping in current group
 c
-          call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,ibbar,utol,
+          call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,utol,
      &     ftol,etol,itmax,nintg,i,naxstp,nfirst,rtimdat,deltp,alfap,
-     &     ntimdat,nstep,maxitp,ntdinitp,lgdefp,ibbarp,itmaxp,gtol)
+     &     ntimdat,nstep,maxitp,ntdinitp,lgdefp,itmaxp,gtol)
 cdebug          write(6,*) nintg,i,naxstp,nfirst,deltp,alfap,maxitp,maxitcp,
-cdebug     &     lgdefp,ibbarp,itmaxp,(gtol(idb),idb=1,3)
+cdebug     &     lgdefp,itmaxp,(gtol(idb),idb=1,3)
           ltim=.true.
 c
 c...  loop over time steps in current group
@@ -215,7 +215,7 @@ c
             end if
             reform=reform.or.ltim
             if(reform) ireform=ione
-            ntimdat(10)=ireform
+            ntimdat(9)=ireform
             fulout=.false.
             if(ntot.eq.iprint(indexx)) fulout=.true.
 c
@@ -269,7 +269,7 @@ c...  reform time-dependent material and stiffness matrices if
 c     requested, compute forces due to applied displacements and split
 c     nodes, and perform iterative solution.
 c
-            if(lgdefp.eq.izero.and.ibbarp.eq.izero) then
+            if(lgdefp.eq.izero.and.intord.ne.ithree) then
               if(reform) call matinit_drv(
      &         alnz,ja,nnz,neq,                                         ! sparse
      &         x,d,iwink,wink,numnp,nwink,                              ! global
@@ -323,7 +323,7 @@ c
      &         s,stemp,                                                 ! stiff
      &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,     ! elemnt
      &         ielno,iside,ihistry,pres,pdir,                           ! tractn
-     &         prop,mhist,infmat,infmatmod,                             ! materl
+     &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
      &         gauss,sh,shj,infetype,                                   ! eltype
      &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
      &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
@@ -335,7 +335,7 @@ c
 c
               if(ierr.ne.izero) return
 c
-            else if(lgdefp.eq.izero.and.ibbarp.eq.ione) then
+            else if(lgdefp.eq.izero.and.intord.eq.ithree) then
               if(reform) call matinit_drv(
      &         alnz,ja,nnz,neq,                                         ! sparse
      &         x,d,iwink,wink,numnp,nwink,                              ! global
@@ -389,7 +389,7 @@ c
      &         s,stemp,                                                 ! stiff
      &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,     ! elemnt
      &         ielno,iside,ihistry,pres,pdir,                           ! tractn
-     &         prop,mhist,infmat,infmatmod,                             ! materl
+     &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
      &         gauss,sh,shj,infetype,                                   ! eltype
      &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
      &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
@@ -401,7 +401,7 @@ c
 c
               if(ierr.ne.izero) return
 c
-clater            else if(lgdefp.eq.ione.and.ibbarp.eq.izero) then
+clater            else if(lgdefp.eq.ione.and.intord.ne.ithree) then
 clater              if(reform) call matinit_drv(
 clater     &         alnz,ja,nnz,neq,                                         ! sparse
 clater     &         x,d,iwink,wink,numnp,nwink,                              ! global
@@ -455,7 +455,7 @@ clater     &         nfault,dfault,tfault,                                    ! 
 clater     &         s,stemp,                                                 ! stiff
 clater     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,     ! elemnt
 clater     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
-clater     &         prop,mhist,infmat,infmatmod,                             ! materl
+clater     &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
 clater     &         gauss,sh,shj,infetype,                                   ! eltype
 clater     &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
 clater     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
@@ -467,7 +467,7 @@ clater     &         ierr,errstrng)                                           ! 
 c
 clater              if(ierr.ne.izero) return
 c
-clater            else if(lgdefp.eq.ione.and.ibbarp.eq.ione) then
+clater            else if(lgdefp.eq.ione.and.intord.eq.ithree) then
 clater              if(reform) call matinit_drv(
 clater     &         alnz,ja,nnz,neq,                                         ! sparse
 clater     &         x,d,iwink,wink,numnp,nwink,                              ! global
@@ -521,7 +521,7 @@ clater     &         nfault,dfault,tfault,                                    ! 
 clater     &         s,stemp,                                                 ! stiff
 clater     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,     ! elemnt
 clater     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
-clater     &         prop,mhist,infmat,infmatmod,                             ! materl
+clater     &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
 clater     &         gauss,sh,shj,infetype,                                   ! eltype
 clater     &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
 clater     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
@@ -563,8 +563,8 @@ c
           end do
         end do
       end do
-      write(kto,800) ntimdat(7),ntimdat(8),ntimdat(9)
-      if(idout.gt.ione) write(kw,800) ntimdat(7),ntimdat(8),ntimdat(9)
+      write(kto,800) ntimdat(6),ntimdat(7),ntimdat(8)
+      if(idout.gt.ione) write(kw,800) ntimdat(6),ntimdat(7),ntimdat(8)
       if(idout.gt.ione) close(kw)
       close(kp)
 c
@@ -583,7 +583,7 @@ c
       end
 c
 c version
-c $Id: viscos.f,v 1.2 2004/07/13 17:39:36 willic3 Exp $
+c $Id: viscos.f,v 1.3 2004/07/21 19:38:05 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
