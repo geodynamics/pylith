@@ -55,13 +55,16 @@ c
 c...  local variables
 c
       integer matgpt,imat,matmodel,nmatel,nstate,ielg,iel
-      integer ietype,indstate,indstateg,ngauss,l
+      integer ietype,indstate,indstateg,ngauss,l,nstr2,nstr3,nstr4
       double precision sub
 c
 cdebug      write(6,*) "Hello from update_state_f!"
 c
       matgpt=ione
       sub=-one
+      nstr2=itwo*nstr
+      nstr3=ithree*nstr
+      nstr4=ifour*nstr
 c
 c...  loop over material groups
 c
@@ -80,12 +83,10 @@ c
             indstateg=indstate
             ngauss=infetype(1,ietype)
             do l=1,ngauss
-              call dcopy(nstr,dstate(1,indstateg),ione,
+              call daxpy(nstr2,sub,state(1,indstateg),ione,
+     &         dstate(1,indstateg),ione)
+              call daxpy(nstr2,one,dstate(1,indstateg),ione,
      &         state(1,indstateg),ione)
-              call daxpy(nstr,sub,state(1,indstateg+ione),ione,
-     &         dstate(1,indstateg+ione),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+ione),ione,
-     &         state(1,indstateg+ione),ione)
               indstateg=indstateg+nstate
             end do
           end do
@@ -97,14 +98,10 @@ c
             indstateg=indstate
             ngauss=infetype(1,ietype)
             do l=1,ngauss
-              call dcopy(nstr,dstate(1,indstateg),ione,
+              call daxpy(nstr2,sub,state(1,indstateg),ione,
+     &         dstate(1,indstateg),ione)
+              call daxpy(nstr3,one,dstate(1,indstateg),ione,
      &         state(1,indstateg),ione)
-              call daxpy(nstr,sub,state(1,indstateg+ione),ione,
-     &         dstate(1,indstateg+ione),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+ione),ione,
-     &         state(1,indstateg+ione),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+itwo),ione,
-     &         state(1,indstateg+itwo),ione)
               indstateg=indstateg+nstate
             end do
           end do
@@ -116,16 +113,10 @@ c
             indstateg=indstate
             ngauss=infetype(1,ietype)
             do l=1,ngauss
-              call dcopy(nstr,dstate(1,indstateg),ione,
+              call daxpy(nstr2,sub,state(1,indstateg),ione,
+     &         dstate(1,indstateg),ione)
+              call daxpy(nstr4,one,dstate(1,indstateg),ione,
      &         state(1,indstateg),ione)
-              call daxpy(nstr,sub,state(1,indstateg+ione),ione,
-     &         dstate(1,indstateg+ione),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+ione),ione,
-     &         state(1,indstateg+ione),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+itwo),ione,
-     &         state(1,indstateg+itwo),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+ithree),ione,
-     &         state(1,indstateg+ithree),ione)
               indstateg=indstateg+nstate
             end do
           end do
@@ -140,7 +131,7 @@ c
       end
 c
 c version
-c $Id: update_state.f,v 1.5 2004/08/02 21:32:09 willic3 Exp $
+c $Id: update_state.f,v 1.6 2004/08/12 02:33:46 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
