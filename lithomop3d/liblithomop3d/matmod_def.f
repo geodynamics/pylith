@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine matmod_def(infmatmod)
+      subroutine matmod_def(infmatmod,ismatmod)
 c
 c...  quick and dirty method of defining global parameters for all
 c     material models.
@@ -66,6 +66,10 @@ c                               0 = time response of material is linear.
 c                               1 = time response of material is
 c                                   nonlinear.
 c
+c     In addition, this routine generates a simple integer (binary)
+c     matrix (ismatmod) indicating whether a state variable is used for
+c     a particular material model.
+c
       include "implicit.inc"
 c
 c...  parameter definitions
@@ -75,7 +79,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer infmatmod(5,nmatmodmax)
+      integer infmatmod(5,nmatmodmax),ismatmod(nstatesmax,nmatmodmax)
 c
 c...  local variables
 c
@@ -84,18 +88,27 @@ c
 cdebug      write(6,*) "Hello from matmod_def_f!"
 c
       call ifill(infmatmod,izero,5*nmatmodmax)
+      call ifill(ismatmod,izero,nstatesmax*nmatmodmax)
 c
 c...  Definitions for isotropic elastic material
 c
       infmatmod(1,1) =ione
       infmatmod(2,1) =itwo
       infmatmod(3,1) =ithree
+      ismatmod(1,1) =ione
+      ismatmod(2,1) =ione
 c
 c...  Dummy definitions for additional elastic material models
 c
       infmatmod(2,2)=itwo
       infmatmod(2,3)=itwo
       infmatmod(2,4)=itwo
+      ismatmod(1,2) =ione
+      ismatmod(2,2) =ione
+      ismatmod(1,3) =ione
+      ismatmod(2,3) =ione
+      ismatmod(1,4) =ione
+      ismatmod(2,4) =ione
 c
 c...  Dummy definition for Maxwell viscoelastic material
 c
@@ -103,6 +116,9 @@ c
       infmatmod(3,5) = ifour
       infmatmod(4,5) = ione
       infmatmod(5,5) = izero
+      ismatmod(1,5) =ione
+      ismatmod(2,5) =ione
+      ismatmod(3,5) =ione
 c
 c...  Dummy definitions for remaining materials
 c
@@ -110,13 +126,16 @@ c
         do j=1,5
           infmatmod(j,i)=infmatmod(j,5)
         end do
+        do j=1,nstatesmax
+          ismatmod(j,i)=ismatmod(j,5)
+        end do
       end do
 c
       return
       end
 c
 c version
-c $Id: matmod_def.f,v 1.1 2004/07/08 20:00:02 willic3 Exp $
+c $Id: matmod_def.f,v 1.2 2004/07/12 21:33:30 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
