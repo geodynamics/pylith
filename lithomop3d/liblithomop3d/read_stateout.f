@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_stateout(istatout,kr,kw,kp,idout,idsk,stfile,
-     & ofile,pfile,ierr,errstrng)
+      subroutine read_stateout(istatout,nstatout,kr,kw,kp,idout,idsk,
+     & stfile,ofile,pfile,ierr,errstrng)
 c
 c...     reads integer array indicating which state variables
 c        to output.  It is assumed that the same set of variables are
@@ -39,13 +39,12 @@ c
 c     The istatout array specifies output options for each individual
 c     state variable.  At present there are a maximum of 24 possible
 c     state variables, and this number may increase with the addition
-c     of new material models.  For each state variable, the istatout
-c     array can have either a zero (no output) or a one (output) in
-c     each slot.  The options are as follows:
+c     of new material models.  There are three types of state variable
+c     output:
 c
-c       istatout(1,i):  Output cumulative total for current time step.
-c       istatout(2,i):  Output increment over current time step.
-c       istatout(3,i):  Output rate computed over current time step.
+c           1  Total accumulated values for the current time step
+c           2  Incremental values from the previous step to the current
+c           3  Rates computed from the previous step to the current
 c
 c      Present state variables occur in groups of 6, corresponding to
 c      the number of stress/strain components, although this may change
@@ -55,6 +54,14 @@ c      1-6:    Cauchy stress
 c      7-12:   Total strain
 c      13-18:  Viscous strain
 c      18-24:  Plastic strain
+c
+c      Three lines of input are required, corresponding to the three
+c      types of state variable output.  For each line the user must
+c      enter:
+c      The number of state variables to output for this type (nstatout).
+c        Note that the value of nstatout may be zero, in which case no
+c        further output is needed for that line.
+c      The state variables to output for this type (nstatout values).
 c
 c     Error codes:
 c         0:  No error
@@ -73,7 +80,7 @@ c
 c...  subroutine arguments
 c
       integer kr,kw,kp,idout,idsk,ierr
-      integer istatout(3,nstatesmax)
+      integer istatout(nstatesmax,3),nstatout(3)
       character stfile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
@@ -82,68 +89,52 @@ c
 c
 c...  local variables
 c
-      integer i,j,nstatestot,nstatesinc,nstatesrate
-      integer itmp(3,nstatesmax)
+      integer i,j
 c
 c...  included variable definitions
 c
       include "labels_def.inc"
 c
       ierr=izero
-      call ifill(itmp,izero,3*nstatesmax)
-      nstatestot=izero
-      nstatesinc=izero
-      nstatesrate=izero
+      call ifill(istatout,izero,3*nstatesmax)
+      call ifill(nstatout,izero,3)
 c
 c...  open input file and read information on state variable output.
 c     The same variables will be output for both the elastic and
 c     time-dependent solutions.
 c
       open(kr,file=stfile,status="old",err=20)
-      do i=1,nstatesmax
+      do i=1,3
         call pskip(kr)
-        read(kr,*,err=30,end=30) (istatout(j,i),j=1,3)
+        read(kr,*,err=30,end=30) nstatout(i),
+     &   (istatout(j,i),j=1,nstatout(i))
       end do
       close(kr)
-c
-c...  dump istatout array into index array
-c
-      do i=1,nstatesmax
-        if(istatout(1,i).ne.izero) then
-          nstatestot=nstatestot+ione
-          itmp(1,nstatestot)=i
-        end if
-        if(istatout(2,i).ne.izero) then
-          nstatesinc=nstatesinc+ione
-          itmp(2,nstatesinc)=i
-        end if
-        if(istatout(3,i).ne.izero) then
-          nstatesrate=nstatesrate+ione
-          itmp(3,nstatesrate)=i
-        end if
-      end do
 c
 c...  output results, if desired
 c
       if(idout.gt.izero) then
         open(kw,file=ofile,err=40,status="old",access="append")
-        if(nstatestot.ne.izero) then
+        if(nstatout(1).ne.izero) then
           write(kw,700,err=50)
-          write(kw,730,err=50) (labels(itmp(1,i)),i=1,nstatestot)
+          write(kw,730,err=50) (labels(istatout(i,1)),i=1,nstatout(1))
         end if
-        if(nstatesinc.ne.izero) then
+        if(nstatout(2).ne.izero) then
           write(kw,710,err=50)
-          write(kw,730,err=50) (labels(itmp(2,i)),i=1,nstatesinc)
+          write(kw,730,err=50) (labels(istatout(i,2)),i=1,nstatout(2))
         end if
-        if(nstatesrate.ne.izero) then
+        if(nstatout(3).ne.izero) then
           write(kw,720,err=50)
-          write(kw,730,err=50) (labels(itmp(3,i)),i=1,nstatesrate)
+          write(kw,730,err=50) (labels(istatout(i,3)),i=1,nstatout(3))
         end if
         close(kw)
       end if
       if(idsk.eq.ione) then
         open(kp,file=pfile,err=40,status="old",access="append")
-        write(kp,810,err=50) ((istatout(j,i),j=1,3),i=1,nstatesmax)
+        do i=1,3
+          write(kp,810,err=50) nstatout(i),
+     &     (istatout(j,i),j=1,nstatout(i))
+        end do
       end if
       if(idsk.eq.itwo) then
         open(kp,file=pfile,err=40,status="old",access="append",
@@ -203,7 +194,7 @@ c
       end
 c
 c version
-c $Id: read_stateout.f,v 1.4 2005/03/22 23:52:43 willic3 Exp $
+c $Id: read_stateout.f,v 1.5 2005/03/23 16:55:47 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
