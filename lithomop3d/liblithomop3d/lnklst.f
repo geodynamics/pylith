@@ -36,15 +36,15 @@ c      program to create a linked list of nonzero row and column entries
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
       integer nee,neq,numel,iwork,nsizea
       integer lm(nee,numel),lmx(nee,numel),indx(neq),link(iwork)
       integer nbrs(iwork)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -55,14 +55,12 @@ c
       integer inext,n,i,irow,loc,j,icol,loctmp,ival,locsav,nnz
 c
 cdebug      write(6,*) "Hello from lnklst_f!"
-cdebug      write(6,*) "nee,neq,numel,iwork,nsizea,nnz: ",nee,neq,numel,iwork,
-cdebug     & nsizea,nnz
 c
       call ifill(indx,izero,neq)
       call ifill(link,izero,iwork)
       call ifill(nbrs,izero,iwork)
 c
-      inext=1
+      inext=ione
       do n=1,numel
 c
 c      check that available storage is not exceeded
@@ -77,15 +75,15 @@ c
         do i=1,2*nee
           irow=lm(i,n)
           if(i.gt.nee) irow=abs(lmx(i-nee,n))
-          if(irow.eq.0) goto 20
+          if(irow.eq.izero) goto 20
           loc=indx(irow)
           do j=1,2*nee
             icol=lm(j,n)
             if(j.gt.nee) icol=abs(lmx(j-nee,n))
 cdebug            write(6,*) "i,j,irow,icol,loc:",i,j,irow,icol,loc
-            if(icol.eq.0) goto 30
+            if(icol.eq.izero) goto 30
             if(icol.eq.irow) goto 30
-            if(loc.eq.0) then
+            if(loc.eq.izero) then
               loc=inext
               indx(irow)=inext
               nbrs(inext)=icol
@@ -98,7 +96,7 @@ cdebug            write(6,*) "i,j,irow,icol,loc:",i,j,irow,icol,loc
               if(icol.eq.ival) goto 30
               locsav=loctmp
               loctmp=link(loctmp)
-              if(loctmp.gt.0) goto 40
+              if(loctmp.gt.izero) goto 40
               link(locsav)=inext
               nbrs(inext)=icol
               link(inext)=-irow
@@ -109,14 +107,14 @@ cdebug            write(6,*) "i,j,irow,icol,loc:",i,j,irow,icol,loc
   20      continue
         end do
       end do
-      nsizea=inext-1
-      nnz=nsizea+neq+1
+      nsizea=inext-ione
+      nnz=nsizea+neq+ione
  700  format("Working storage exceeded by ",i7)
       return
       end
 c
 c version
-c $Id: lnklst.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: lnklst.f,v 1.2 2004/07/07 17:38:21 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
