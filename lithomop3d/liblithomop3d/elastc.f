@@ -546,8 +546,8 @@ c
      & idout,idsk,kw,kp)                                                ! ioinfo
 c
       if(nintg.eq.1) then
-        write(kto,800) ntimdat(7),ntimdat(8),ntimdat(9)
-        if(idout.gt.0) write(kw,800) ntimdat(7),ntimdat(8),ntimdat(9)
+        write(kto,800) ntimdat(6),ntimdat(7),ntimdat(8)
+        if(idout.gt.0) write(kw,800) ntimdat(6),ntimdat(7),ntimdat(8)
       end if
       if(idout.ne.0) close(kw)
       close(kp)
@@ -561,7 +561,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.5 2004/07/21 15:38:01 willic3 Exp $
+c $Id: elastc.f,v 1.6 2004/07/21 15:39:41 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
