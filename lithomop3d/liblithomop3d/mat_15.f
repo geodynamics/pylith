@@ -164,6 +164,18 @@ c
       double precision dmat(nddmat),prop(nprop),tmax
       logical matchg
 c
+c...  included dimension and type statements
+c
+      include "rtimdat_dim.inc"
+      include "rgiter_dim.inc"
+      include "ntimdat_dim.inc"
+c
+c...  included variable definitions
+c
+      include "rtimdat_def.inc"
+      include "rgiter_def.inc"
+      include "ntimdat_def.inc"
+c
 c...  return error code, as this material is not yet defined
 c
       ierr=101
@@ -267,7 +279,7 @@ c
 c       
 
 c version
-c $Id: mat_15.f,v 1.2 2004/08/02 21:17:43 willic3 Exp $
+c $Id: mat_15.f,v 1.3 2004/08/12 02:03:06 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
