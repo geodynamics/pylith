@@ -36,6 +36,7 @@ PROJ_SRCS = \
         cholsl.f \
         ckdiag.f \
         cklock.f \
+        cmp_stiffsz.f \
         const.f \
         convert_case.f \
         cross.f \
@@ -187,6 +188,9 @@ PROJ_SRCS = \
         write_state.f \
         write_strscomp.f \
         write_subiter.f \
+        write_ucd_gauss_vals.f \
+        write_ucd_mesh.f \
+        write_ucd_node_vals.f \
 
 
 #--------------------------------------------------------------------------
@@ -208,7 +212,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.7 2004/08/18 21:05:36 willic3 Exp $
+# $Id: Make.mm,v 1.8 2004/08/25 00:06:42 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
