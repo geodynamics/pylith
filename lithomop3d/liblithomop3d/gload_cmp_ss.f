@@ -35,7 +35,7 @@ c
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
      & ien,lm,lmx,lmf,infiel,numelt,nconsz,                             ! elemnt
-     & dens,infmat,matgpt,nmatel,matchg,                                ! materl
+     & dens,matgpt,nmatel,matchg,                                       ! materl
      & gauss,shj,infetype,                                              ! eltype
      & rtimdat,ntimdat,                                                 ! timdat
      & skew,numrot,                                                     ! skew
@@ -58,7 +58,7 @@ c
       integer neq,numnp,numslp,numfn,numelt,nconsz,matgpt,nmatel,numrot
       integer ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(6,numelt),infmat(6),infetype(4,netypes)
+      integer infiel(6,numelt),infetype(4,netypes)
       character errstrng*(*)
       logical matchg
       double precision gvec2(neq),grav(ndof),x(nsd,numnp),d(ndof,numnp)
@@ -117,7 +117,7 @@ c
       end
 c
 c version
-c $Id: gload_cmp_ss.f,v 1.1 2004/07/01 20:18:46 willic3 Exp $
+c $Id: gload_cmp_ss.f,v 1.2 2004/07/08 21:24:10 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
