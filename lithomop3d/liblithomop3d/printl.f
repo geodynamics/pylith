@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine printl(idx,iwinkx,idslp,histry,ndof,numsn,numnp,nstep,
+      subroutine printl(idx,iwinkx,idslp,histry,numsn,numnp,nstep,
      & nhist,nwinkx,lastep,idsk,kp)
 c
 c...subroutine to print array that specifies whether each slippery
@@ -38,15 +38,16 @@ c   This information is used for postprocessing.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,numsn,numnp,nstep,nhist,nwinkx,lastep,idsk,kp
+      integer numsn,numnp,nstep,nhist,nwinkx,lastep,idsk,kp
       integer idx(ndof,numnp),iwinkx(2,nwinkx),idslp(numsn)
       double precision histry(nhist,lastep+1)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  local variables
 c
@@ -86,7 +87,7 @@ c
       end
 c
 c version
-c $Id: printl.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: printl.f,v 1.2 2004/07/07 20:29:06 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
