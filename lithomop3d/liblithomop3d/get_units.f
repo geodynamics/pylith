@@ -29,7 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine get_units(ifile,ierr,nget,units_defined,units,def)
+      subroutine get_units(ifile,nget,units_defined,units,def,ierr,
+     & errstrng)
 c
 c...  routine to get the variable units for variable(s) 'def'.
 c
@@ -37,8 +38,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer ifile,ierr,nget
-      character units(nget)*(*),def(nget)*(*)
+      integer ifile,nget,ierr
+      character units(nget)*(*),def(nget)*(*),errstrng*(*)
       logical units_defined(nget)
 c
 c...  intrinsic functions
@@ -66,7 +67,8 @@ c
         read(ifile,"(a80)") string
         ii=index(string,"=")
         if(ii.eq.0) then
-          ierr=2
+          ierr=5
+          errstrng="get_units"
           return
         end if
         substr1=string(1:ii-1)
@@ -80,7 +82,8 @@ c
             ib=nnblnk(substr2)
             ie=nchar(substr2)
             if(ie.eq.0) then
-              ierr=2
+              ierr=5
+              errstrng="get_units"
               return
             end if
             units(j)=substr2(ib:ie)
@@ -89,14 +92,18 @@ c
       end do
 c
       do i=1,nget
-        if(.not.units_defined(i)) ierr=2
+        if(.not.units_defined(i)) then
+          ierr=5
+          errstrng="get_units"
+          return
+        end if
       end do
 c
       return
       end
 c
 c version
-c $Id: get_units.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: get_units.f,v 1.2 2004/07/06 20:33:36 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
