@@ -46,7 +46,7 @@ c
      & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
      & skew,                                                            ! skew
      & iprint,ncodat,nunits,nprint,istatout,                            ! ioinfo
-     & ofile,pfile,                                                     ! files
+     & ofile,pfile,ucdroot,                                             ! files
      & ierr,errstrng)                                                   ! errcode
 c
 c...subroutine to solve the time dependent problem and perform the
@@ -84,7 +84,7 @@ c
       double precision gauss(*),sh(*),shj(*)
       double precision histry(*),delt(*),alfa(*),utol(*),ftol(*),etol(*)
       double precision skew(*)
-      character ofile*(*),pfile*(*),errstrng*(*)
+      character ofile*(*),pfile*(*),ucdroot*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -140,8 +140,8 @@ c
 cdebug      write(6,*) "Hello from viscos_f!"
 c
       if(idout.gt.ione) open(kw,file=ofile,status="old",access="append")
-      if(idsk.eq.izero) open(kp,file=pfile,status="old",access="append")
-      if(idsk.eq.ione) open(kp,file=pfile,status="old",
+      if(idsk.eq.ione) open(kp,file=pfile,status="old",access="append")
+      if(idsk.eq.itwo) open(kp,file=pfile,status="old",
      & form="unformatted",access="append")
 c
 c...  signal user that viscous computation is begun
@@ -226,11 +226,11 @@ c*            ntimdat(9)=ireform
 c
             if(idout.gt.ione) write(kw,1000) time,ntot,jcyc
 C***********************************
-            if(fulout.and.idsk.eq.izero) write(kp,700) ntot
+            if(fulout.and.idsk.eq.ione) write(kp,700) ntot
 C***********************************
-            if(fulout.and.idsk.eq.izero) write(kp,4000) time
-            if(fulout.and.idsk.eq.ione) write(kp) ntot
-            if(fulout.and.idsk.eq.ione) write(kp) time
+            if(fulout.and.idsk.eq.ione) write(kp,4000) time
+            if(fulout.and.idsk.eq.itwo) write(kp) ntot
+            if(fulout.and.idsk.eq.itwo) write(kp) time
             write(kto,5000) time,ntot,lastep*ncycle
             call flush(kto)
 c*            call flush(kw)
@@ -571,6 +571,8 @@ c
             if(fulout) then
               call printd(d,deld,deltp,idslp,numnp,numnp,ione,
      &         idout,idsk,kto,kw,kp)
+              call write_ucd_node_vals(d,deld,deltp,nstep,numnp,kucd,
+     &         ucdroot)
               call printf(tfault,dfault,deltp,nfault,numfn,idout,
      &         idsk,kw,kp)
               call printd(dx,deldx,deltp,idslp,numnp,numsn,itwo,
@@ -581,13 +583,22 @@ c
 c
 c...  print stresses and strains in all elements when requested
 c
-            if(fulout) call write_state(
-     &       state,dstate,infiel,nstatesz,numelt,                       ! elemnt
-     &       infmat,infmatmod,ismatmod,numat,                           ! materl
-     &       infetype,                                                  ! eltype
-     &       deltp,nstep,                                               ! timdat
-     &       istatout,                                                  ! ioopts
-     &       idout,idsk,kw,kp)                                          ! ioinfo
+            if(fulout) then
+              call write_state(
+     &         state,dstate,infiel,nstatesz,numelt,                     ! elemnt
+     &         infmat,infmatmod,ismatmod,numat,                         ! materl
+     &         infetype,                                                ! eltype
+     &         deltp,nstep,                                             ! timdat
+     &         istatout,                                                ! ioopts
+     &         idout,idsk,kw,kp)                                        ! ioinfo
+              call write_ucd_gauss_vals(
+     &         state,dstate,infiel,nstatesz,numelt,                     ! elemnt
+     &         infmat,infmatmod,ismatmod,numat,                         ! materl
+     &         infetype,                                                ! eltype
+     &         deltp,nstep,                                             ! timdat
+     &         istatout,                                                ! ioopts
+     &         kucd,ucdroot)                                            ! ioinfo
+            end if
             ltim=.false.
             if(fulout) indexx=indexx+1
             if(indexx.gt.icontr) indexx=icontr
@@ -615,7 +626,7 @@ c
       end
 c
 c version
-c $Id: viscos.f,v 1.5 2004/08/12 20:51:09 willic3 Exp $
+c $Id: viscos.f,v 1.6 2004/08/25 00:59:45 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -46,7 +46,7 @@ c
      & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
      & skew,                                                            ! skew
      & ncodat,nunits,nprint,istatout,                                   ! ioinfo
-     & ofile,pfile,                                                     ! files
+     & ofile,pfile,ucdroot,                                             ! files
      & ierr,errstrng)                                                   ! errcode
 c
 c...subroutine to construct and solve the elastic problem
@@ -84,7 +84,7 @@ c
       double precision gauss(*),sh(*),shj(*)
       double precision histry(*),delt(*),alfa(*),utol(*),ftol(*),etol(*)
       double precision skew(*)
-      character ofile*(*),pfile*(*),errstrng*(*)
+      character ofile*(*),pfile*(*),ucdroot*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -134,8 +134,8 @@ cdebug      write(6,*) "Hello from elastc_f!"
 c
       if(idout.ne.izero) open(kw,file=ofile,status="old",
      & access="append")
-      if(idsk.eq.izero) open(kp,file=pfile,status="old",access="append")
-      if(idsk.eq.ione) open(kp,file=pfile,status="old",
+      if(idsk.eq.ione) open(kp,file=pfile,status="old",access="append")
+      if(idsk.eq.itwo) open(kp,file=pfile,status="old",
      & form="unformatted",access="append")
       skc=iskopt.ge.izero.and.iskopt.ne.ione.and.numslp.ne.izero
       call fill(b,zero,neq)
@@ -543,10 +543,10 @@ c
 c...print all displacements, including faulted and slippery nodes
 c
       time=zero
-      if(idsk.eq.0) write(kp,700) nstep
-      if(idsk.eq.0) write(kp,'(e15.4)') time
-      if(idsk.eq.1) write(kp) nstep
-      if(idsk.eq.1) write(kp) time
+      if(idsk.eq.ione) write(kp,700) nstep
+      if(idsk.eq.ione) write(kp,'(e15.4)') time
+      if(idsk.eq.itwo) write(kp) nstep
+      if(idsk.eq.itwo) write(kp) time
       call printd(d,deld,deltp,idslp,numnp,numnp,ione,idout,idsk,kto,kw,
      & kp)
 cdebug      write(6,*) "After printd (1):"
@@ -554,6 +554,8 @@ cdebug      write(6,*) "After printd (1):"
 cdebug      write(6,*) "After printf:"
       call printd(dx,deldx,deltp,idslp,numnp,numsn,itwo,idout,idsk,kto,
      & kw,kp)
+      if(iucd.eq.ione) call write_ucd_node_vals(d,deld,deltp,nstep,
+     & numnp,kucd,ucdroot)
 cdebug      write(6,*) "After printd (2):"
 c
 c...print array telling whether each slippery node is locked
@@ -574,6 +576,14 @@ c
      & idout,idsk,kw,kp)                                                ! ioinfo
 cdebug      write(6,*) "After write_state:"
 c
+      if(iucd.eq.ione) call write_ucd_gauss_vals(
+     & state,dstate,infiel,nstatesz,numelt,                             ! elemnt
+     & infmat,infmatmod,ismatmod,numat,                                 ! materl
+     & infetype,                                                        ! eltype
+     & delt,nstep,                                                      ! timdat
+     & istatout,                                                        ! ioopts
+     & kucd,ucdroot)                                                    ! ioinfo
+c
       if(nintg.eq.1) then
         write(kto,800) ntimdat(6),ntimdat(7),ntimdat(8)
         if(idout.gt.0) write(kw,800) ntimdat(6),ntimdat(7),ntimdat(8)
@@ -591,7 +601,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.10 2004/08/12 20:39:10 willic3 Exp $
+c $Id: elastc.f,v 1.11 2004/08/25 00:59:45 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
