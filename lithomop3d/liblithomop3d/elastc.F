@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine elastc(
-     & A,dprev,                                                         ! sparse
+     & A,                                                               ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
      & dispvec,nforce,grav,                                             ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
@@ -88,7 +88,6 @@ c
       integer infetype(4)
       integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
       integer istatout(*),nstatout(*)
-      double precision dprev(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
       double precision bintern(*),bresid(*),bwork(*),dispvec(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
@@ -168,7 +167,6 @@ c
 c
       skc=iskopt.ge.izero.and.iskopt.ne.ione.and.numslp.ne.izero
 c
-      call fill(dprev,zero,neq*nprevdflag)
       call fill(bextern,zero,neq*nextflag)
       call fill(btraction,zero,neq*ntractflag)
       call fill(bgravity,zero,neq*ngravflag)
@@ -305,7 +303,7 @@ c
         if(ierr.ne.izero) return
 c
         call iterate(
-     &   A,dprev,                                                       ! sparse
+     &   A,                                                             ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
      &   dispvec,nforce,grav,                                           ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
@@ -379,7 +377,7 @@ c
         if(ierr.ne.izero) return
 c
         call iterate(
-     &   A,dprev,                                                       ! sparse
+     &   A,                                                             ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
      &   dispvec,nforce,grav,                                           ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
@@ -450,7 +448,7 @@ c
 clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
-clater     &   A,dprev,                                               ! sparse
+clater     &   A,                                                     ! sparse
 clater     &   bextern,btraction,bgravity,bconcforce,bintern,                 ! force
 clater     &   bresid,bwork,dispvec,nforce,grav,                              ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
@@ -520,7 +518,7 @@ c
 clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
-clater     &   A,dprev,                                               ! sparse
+clater     &   A,                                                     ! sparse
 clater     &   bextern,btraction,bgravity,bconcforce,bintern,                 ! force
 clater     &   bresid,bwork,dispvec,nforce,grav,                              ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
@@ -544,20 +542,11 @@ clater        if(ierr.ne.izero) return
 c
       end if
 c
-c...if ipstrs=1, equate prestresses with current stresses, and set
-c   displacements to zero
+c...  transfer current displacement increments into displacement vector
+c     if a nonzero starting guess is desired.
 c
-c*      if(nprestr.ne.0.and.ipstrs.eq.1) then
-c*        call fill(d,zero,ndof*numnp)
-c*        call fill(dx,zero,ndof*numnp)
-c*        call fill(deld,zero,ndof*numnp)
-c*        call fill(deldx,zero,ndof*numnp)
-c*        call fill(dcur,zero,ndof*numnp)
-c*        call fill(dxcur,zero,ndof*numnp)
-c*        call fill(deps,zero,nstr*ngauss*numel)
-c*        call eqstrsql(st0,stn,x,gauss,ien,infin,nstr,ngauss,nppts,numel,
-c*     &   nen,nsd,numnp,idout,kto,kw)
-c*      end if
+      if(nprevdflag.eq.1) call idisp(deld,dispvec,id,numnp,neq)
+c
 c*********Note:  in the near future, all of the calls below should be
 c*********replaced by a single modular output section.
 c
@@ -615,7 +604,7 @@ c
       end
 c
 c version
-c $Id: elastc.F,v 1.5 2005/03/25 21:57:19 willic3 Exp $
+c $Id: elastc.F,v 1.6 2005/03/25 23:31:33 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
