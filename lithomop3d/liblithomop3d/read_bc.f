@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine read_bc(bond,dscale,vscale,fscale,ibond,id,numnp,
-     & numbc,neq,kr,kw,idout,bcfile,ofile,ierr,errstrng)
+     & numbc,neq,nconcforce,kr,kw,idout,bcfile,ofile,ierr,errstrng)
 c
 c...  subroutine to read in boundary conditions.  The bc types are
 c     stored in the ibond array and the bc value is stored in the bond
@@ -56,7 +56,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,numbc,neq,kr,kw,idout,ierr
+      integer numnp,numbc,neq,nconcforce,kr,kw,idout,ierr
       integer ibond(ndof,numnp),id(ndof,numnp)
       double precision bond(ndof,numnp)
       double precision dscale,vscale,fscale
@@ -89,7 +89,8 @@ c
 c
 c...  open input file and define scaling factors
 c
-      ierr=0
+      ierr=izero
+      nconcforce=izero
       open(kr,file=bcfile,status="old",err=20)
       scale(1)=zero
       scale(2)=dscale
@@ -130,6 +131,7 @@ c
           ihist(j)=imode/10
           itype(j)=imode-10*ihist(j)
           bond(j,n)=scale(itype(j)+1)*bond(j,n)
+          if(itype(j).eq.ithree) nconcforce=nconcforce+ione
         end do
       end do
       close(kr)
@@ -216,7 +218,7 @@ c
       end
 c
 c version
-c $Id: read_bc.f,v 1.2 2004/07/07 20:52:31 willic3 Exp $
+c $Id: read_bc.f,v 1.3 2005/01/06 01:15:31 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
