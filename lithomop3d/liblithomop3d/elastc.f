@@ -121,7 +121,7 @@ c
 c
 c...  local variables
 c
-      integer igroup,naxstp,nfirst
+      integer igroup,naxstp,nfirst,iprestress
       double precision time,tminmax
       logical*4 fulout,skc
 c
@@ -167,7 +167,6 @@ cdebug     & nprestrflag, nprevdflag
       call fill(dxcur,zero,ndof*numnp)
       call fill(state,zero,nstr*nstatesz)
       call fill(dmat,zero,nddmat*ndmatsz)
-c***  Note:  This should be modified for prestresses.
       call fill(dstate,zero,nstr*nstatesz)
       if(numfn.ne.izero) call fill(tfault,zero,numfn*ndof)
 c
@@ -186,6 +185,7 @@ c*      call flush(kto)
       ndtot=izero
       ntimdat(8)=ndtot
       ntimdat(9)=ireform
+      iprestress=izero
 cdebug      write(6,*) "Before const:"
       call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,utol,ftol,
      & etol,itmax,nintg,igroup,naxstp,nfirst,rtimdat,deltp,alfap,
@@ -227,26 +227,6 @@ c
 c...  initialize elastic material matrices and stiffness matrix, 
 c     compute forces due to applied displacements and split nodes,
 c     and perform iterative solution.
-c
-c
-c************  still need to figure out how to do prestresses -- maybe
-c************  with a separate program section.  Right now, it appears
-c************  the best way is to compute the equivalent nodal forces and
-c************  store these in a vector that gets subtracted each time.
-c************  For now, ignore them and assume that they will be taken
-c************  care of properly.
-c*      if(nprestr.ne.0.and.ipstrs.eq.0) then
-c*        call stresn(x,b,d,dx,tfault,stn,deps,beta,betb,scur,st0,dbeta,
-c*     &   dbetb,skew,ien,lm,lmx,lmf,dmat,mat,prop,histry,infin,gauss,
-c*     &   rtimdat,stol,iddmat,nen,numel,ndof,nsd,numnp,neq,nee,
-c*     &   nstr,ngauss,nppts,ngem,nskdim,nhist,nprop,numat,numfn,numslp,
-c*     &   numrot,lastep,nstep,lgdefp,ibbarp,ivisc,iplas,imhist,ipstrs,
-c*     &   nprestr,nddmat,ndmat,idebug,idout,kto,kw,fulout)
-c*      end if
-c*************  Note that all routines need to be modified.  This shouldn't
-c*************  be too hard in most cases.
-c
-c...  compute forces due to applied displacements and split nodes
 c
 c******  see about whether lgdef and ibbar should be scalars rather than vectors
 c******  that vary for each time step.  If this is true, the routine names
@@ -319,7 +299,7 @@ c
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
      &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
-     &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
+     &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
      &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
      &   skew,                                                          ! skew
      &   ncodat,nunits,nprint,                                          ! ioinfo
@@ -392,7 +372,7 @@ c
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
      &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
-     &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
+     &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
      &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
      &   skew,                                                          ! skew
      &   ncodat,nunits,nprint,                                          ! ioinfo
@@ -461,7 +441,7 @@ clater     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! 
 clater     &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
 clater     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
-clater     &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
+clater     &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
 clater     &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
 clater     &   skew,                                                          ! skew
 clater     &   ncodat,nunits,nprint,                                          ! ioinfo
@@ -529,7 +509,7 @@ clater     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! 
 clater     &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
 clater     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
-clater     &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
+clater     &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
 clater     &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
 clater     &   skew,                                                          ! skew
 clater     &   ncodat,nunits,nprint,                                          ! ioinfo
@@ -619,7 +599,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.12 2005/01/05 22:13:53 willic3 Exp $
+c $Id: elastc.f,v 1.13 2005/01/18 20:29:08 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
