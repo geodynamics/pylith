@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_split(fault,nfault,numfn,numflt,ndof,numnp,kr,kw,
-     & kp,idout,idsk,ierr,spfile,ofile,pfile)
+      subroutine read_split(fault,nfault,numfn,numflt,numnp,kr,kw,
+     & kp,idout,idsk,spfile,ofile,pfile,ierr,errstrng)
 c
 c...  reads and prints data on split nodes
 c
@@ -44,25 +44,26 @@ c     id_split should be called to store the entries in idftn.
 c
 c     Error codes:
 c         0:  No error
-c         1:  Error opening input file (no exception should be raised
-c             in this case since a split node file is optional)
-c         2:  Units not specified (not yet used for this routine)
+c         1:  Error opening input file (only if numfn.ne.zero)
+c         2:  Error opening output file
 c         3:  Read error
+c         4:  Write error
 c
 
       include "implicit.inc"
 c
-c...  subroutine arguments
+c...  parameter definitions
 c
-      integer numfn,numflt,ndof,numnp,kr,kw,kp,idout,idsk,ierr
-      integer nfault(3,numfn)
-      double precision fault(ndof,numfn)
-      character spfile*(*),ofile*(*),pfile*(*)
-c
-c...  defined constants
-c
+      include "ndimens.inc"
       include "nconsts.inc"
       include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer numfn,numflt,numnp,kr,kw,kp,idout,idsk,ierr
+      integer nfault(3,numfn)
+      double precision fault(ndof,numfn)
+      character spfile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  intrinsic functions
 c
@@ -74,9 +75,9 @@ c
 c
 c...  open input file and read entries
 c
-      ierr=0
-      numflt=0
-      if(numfn.ne.0) then
+      ierr=izero
+      numflt=izero
+      if(numfn.ne.izero) then
         call fill(fault,zero,ndof*numfn)
         call ifill(nfault,izero,3*numfn)
         open(kr,file=spfile,status="old",err=20)
@@ -89,35 +90,37 @@ c
 c
 c...  open output files
 c
-      if(idout.gt.0) open(kw,file=ofile,status="old",access="append")
-      if(idsk.eq.0) open(kp,file=pfile,status="old",access="append")
-      if(idsk.eq.1) open(kp,file=pfile,status="old",access="append",
-     & form="unformatted")
+      if(idout.gt.izero) open(kw,file=ofile,err=50,status="old",
+     & access="append")
+      if(idsk.eq.izero) open(kp,file=pfile,err=50,status="old",
+     & access="append")
+      if(idsk.eq.ione) open(kp,file=pfile,err=50,status="old",
+     & access="append",form="unformatted")
 c
 c...  output results if requested
 c
-      if(idsk.eq.0) write(kp,"(i7)") numfn
-      if(idsk.eq.1) write(kp) numfn
-      if(idout.gt.0.or.idsk.eq.0) then
+      if(idsk.eq.izero) write(kp,"(i7)") numfn
+      if(idsk.eq.ione) write(kp) numfn
+      if(idout.gt.izero.or.idsk.eq.izero) then
         npage=50
         do i=1,numfn
-          if((i.eq.1.or.mod(i,npage).eq.0).and.idout.gt.0)
-     &     write(kw,3000)
-          if(idout.gt.0) write(kw,4000) (nfault(j,i),j=1,3),
+          if((i.eq.ione.or.mod(i,npage).eq.izero).and.idout.gt.izero)
+     &     write(kw,3000,err=60)
+          if(idout.gt.izero) write(kw,4000,err=60) (nfault(j,i),j=1,3),
      &     (fault(j,i),j=1,ndof)
-          if(idsk.eq.0) write(kp,5000) (nfault(j,i),j=1,2)
+          if(idsk.eq.izero) write(kp,5000,err=60) (nfault(j,i),j=1,2)
         end do
       end if
-      if(idsk.eq.1.and.numfn.ne.0) write(kp) nfault
-      if(idsk.eq.1.and.numfn.ne.0) write(kp) fault
+      if(idsk.eq.ione.and.numfn.ne.izero) write(kp,err=60) nfault
+      if(idsk.eq.ione.and.numfn.ne.izero) write(kp,err=60) fault
 c
 c     compute total number of split nodes
 c
-      if(numfn.ne.0) then
+      if(numfn.ne.izero) then
         do n=1,numnp
           do i=1,numfn
             if(n.eq.nfault(2,i)) then
-              numflt=numflt+1
+              numflt=numflt+ione
               goto 40
             end if
           end do
@@ -125,7 +128,7 @@ c
         end do
       end if
       close(kr)
-      if(idout.gt.0) close(kw)
+      if(idout.gt.izero) close(kw)
       close(kp)
 c
 c...  normal return
@@ -136,6 +139,7 @@ c...  error opening input file
 c
  20   continue
         ierr=1
+        errstrng="read_split"
         close(kr)
         return
 c
@@ -143,7 +147,26 @@ c...  error reading input file
 c
  30   continue
         ierr=3
+        errstrng="read_split"
         close(kr)
+        return
+c
+c...  error opening output file
+c
+ 50   continue
+        ierr=2
+        errstrng="read_split"
+        close(kp)
+        if(idout.gt.izero) close(kw)
+        return
+c
+c...  error reading input file
+c
+ 60   continue
+        ierr=4
+        errstrng="read_split"
+        close(kp)
+        if(idout.gt.izero) close(kw)
         return
 c
  3000 format(1x///1x,'s p l i t  n o d e   d a t a'//
@@ -157,7 +180,7 @@ c
       end
 c
 c version
-c $Id: read_split.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: read_split.f,v 1.2 2004/07/12 19:01:28 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
