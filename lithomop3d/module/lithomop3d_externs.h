@@ -383,7 +383,6 @@ extern "C" {
 		int *,
 		int *,
 		int *,
-		int *,
 		double *,
 		double *,
 		double *,
@@ -743,7 +742,6 @@ extern "C" {
 		     int *,
 		     int *,
 		     int *,
-		     int *,
 		     char *,
 		     char *,
 		     int *,
@@ -1019,7 +1017,6 @@ extern "C" {
 		int *,
 		int *,
 		int *,
-		int *,
 		double *,
 		double *,
 		double *,
@@ -1114,6 +1111,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.3 2004/07/20 21:30:41 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.4 2004/07/21 20:09:21 willic3 Exp $
 
 // End of file
