@@ -232,6 +232,7 @@ c...  subroutine to compute the current stress for the time-dependent
 c     solution.
 c     Note that only the upper triangle is used (or available), as
 c     dmat is assumed to always be symmetric.
+c     Note also that
 c
       include "implicit.inc"
 c
@@ -250,8 +251,10 @@ c
       double precision state(nstr,nstate),dstate(nstr,nstate),ee(nstr)
       double precision dmat(nddmat),prop(nprop),tmax
 c
-      call dcopy(nstr,ee,ione,state(1,2),ione)
-      call dspmv("u",nstr,one,dmat,state(1,2),ione,zero,state(1,1),ione)
+      call dcopy(nstr,ee,ione,dstate(1,2),ione)
+      call dcopy(nstr,state(1,1),ione,dstate(1,1),ione)
+      call dspmv("u",nstr,one,dmat,dstate(1,2),ione,one,dstate(1,1),
+     & ione)
 c
       return
       end
@@ -293,7 +296,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.3 2004/06/25 21:40:09 willic3 Exp $
+c $Id: mat_1.f,v 1.4 2004/07/02 18:29:11 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
