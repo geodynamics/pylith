@@ -206,6 +206,7 @@ class Lithomop3d_run(Component):
             self.reformFlagInt]
         self.pointerToListArrayNtimdat = lithomop3d.intListToArray(
             self.listNtimdat)
+	# print "After listNtimdat"
 	self.memorySize += 9*self.intSize
 
         # gcurr array
@@ -474,6 +475,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.6 2004/08/25 01:47:36 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.7 2004/08/31 19:13:07 willic3 Exp $
 
 # End of file 
