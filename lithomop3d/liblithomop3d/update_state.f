@@ -47,7 +47,7 @@ c
 c...  subroutine arguments
 c
       integer nstatesz,numelt,numat,ierr
-      integer infiel(6,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
+      integer infiel(7,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
       integer infetype(4,netypes)
       character errstrng*(*)
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
@@ -131,7 +131,7 @@ c
       end
 c
 c version
-c $Id: update_state.f,v 1.6 2004/08/12 02:33:46 willic3 Exp $
+c $Id: update_state.f,v 1.7 2005/02/24 00:22:11 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
