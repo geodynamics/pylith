@@ -29,16 +29,18 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
+from MaterialModel import *
+
 class Materials:
 
     def readprop(self, propertyFile):
 
-        from MaterialModel import *
-        print "Hello from Materials.readprop!"
+        # print "Hello from Materials.readprop!"
 
         file = open(propertyFile, 'r')
         while 1:
             line = file.readline()
+	    # print line
             if not line: break
             materialType = None
             exec line
@@ -52,6 +54,12 @@ class Materials:
                 self.numberProperties += [matmodel.numberProperties]
                 self.propertyIndex += [len(self.propertyList) + 1]
                 self.propertyList += matmodel.propertyList
+		# print self.numberMaterials
+		# print self.materialNumber
+		# print self.materialModel
+		# print self.numberProperties
+		# print self.propertyIndex
+		# print self.propertyList
         return self.numberMaterials
 
 
@@ -67,6 +75,6 @@ class Materials:
         return
 
 # version
-# $Id: Materials.py,v 1.1 2004/05/13 21:37:56 willic3 Exp $
+# $Id: Materials.py,v 1.2 2004/08/12 16:44:10 willic3 Exp $
 
 # End of file 
