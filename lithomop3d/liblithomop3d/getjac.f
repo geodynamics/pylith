@@ -70,14 +70,14 @@ c
      & *xs(3,3)-xs(1,1)*xs(2,3)*xs(3,2)
       if(det.le.zero) then
         ierr=-iel
-        errstrng="Zero or negative determinant from getjac"
+        errstrng="getjac"
       end if
 c
       return
       end
 c
 c version
-c $Id: getjac.f,v 1.3 2004/07/01 19:48:21 willic3 Exp $
+c $Id: getjac.f,v 1.4 2004/07/05 19:56:39 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
