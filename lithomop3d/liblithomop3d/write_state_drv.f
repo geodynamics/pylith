@@ -34,8 +34,9 @@ c
      & infmatmod,                                                       ! materl
      & ngauss,                                                          ! eltype
      & delt,nstep,                                                      ! timdat
-     & istatout,                                                        ! ioopts
-     & idout,idsk,iucd,kw,kp,kucd,ucdroot,iprestress)                   ! ioinfo
+     & istatout,nstatout,                                               ! ioopts
+     & idout,idsk,iucd,kw,kp,kucd,ucdroot,iprestress,                   ! ioinfo
+     & ierr,errstrng)
 c
 c...  program to print state variables
 c     Note:  at present, it is assumed that the same istatout array
@@ -45,192 +46,251 @@ c
 c
 c...  parameter definitions
 c
-      include "ndimens.inc"
-      include "nshape.inc"
       include "materials.inc"
       include "nconsts.inc"
       include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer nvfamilies,numelv,nstatesz,nstep,idout,idsk,iucd,kw,kp
+      integer nvfamilies,numelv,nstatesz,ngauss,nstep
+      integer idout,idsk,iucd,kw,kp,kucd,iprestress,ierr
       integer ivfamily(5,nvfamilies),infmatmod(6,nmatmodmax)
-      integer istatout(3,nstatesmax)
+      integer istatout(nstatesmax,3),nstatout(3)
       double precision delt
       double precision state(nstatesz),dstate(nstatesz)
+      character ucdroot*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
-      include "labels_dim.inc"
 c
 c...  intrinsic functions
 c
       intrinsic mod
 c
+c...  external routines
+c
+      include "getstate_ext.inc"
+c
 c...  local variables
 c
-      integer itmp1(nstatesmax,3),itmp2(3*nstatesmax)
-      integer nstatestot,nstatesinc,nstatesrate,nstatesout
-      integer ifam,nelfamily,matmodel,indstate,nstate
-      integer matmodpt(nstatesmax,nmatmodmax)
-      integer m50,i,iel,imat,ietype,ngauss,matmodel,nstate,indstate,l
-      integer indstateg,nout,j
-      double precision stmp(6),tmult
-      character statedescr*21
-cdebug      integer idb,jdb
+      integer istatoutc(nstatesmax*3)
+      integer nstatestot,nout,npts,ind,i,j,iopt
+      integer ifam,nelfamily,matmodel,indstate,nstate,ielg
+      double precision delti
 c
 c...  included variable definitions
 c
-      include "labels_def.inc"
 c
 cdebug      write(6,*) "Hello from write_state_f!"
 c
       if(delt.gt.zero) then
         delti=one/delt
       else
-        delti=one
+        delti=zero
       end if
+      nstatestot=nstatout(1)+nstatout(2)+nstatout(3)
+      if(nstatestot.eq.izero) return
+      nout=izero
+      npts=izero
 c
-c...  create index array of state variables to output
+c...  create compacted version of istatout array
 c
-      call ifill(itmp1,izero,3*nstatesmax)
-      call ifill(itmp2,izero,3*nstatesmax)
-      nstatestot=izero
-      nstatesinc=izero
-      nstatesrate=izero
-      nstatesout=izero
-      do i=1,nstatesmax
-        if(istatout(1,i).ne.izero) then
-          nstatestot=nstatestot+ione
-          itmp(nstatestot,1)=i
-        end if
-        if(istatout(2,i).ne.izero) then
-          nstatesinc=nstatesinc+ione
-          itmp(nstatesinc,2)=i
-        end if
-        if(istatout(3,i).ne.izero) then
-          nstatesrate=nstatesrate+ione
-          itmp(nstatesrate,3)=i
-        end if
-      end do
-      nstatesout=nstatestot+nstatesinc+nstatesrate
-      do i=1,nstatestot
-        itmp2(i)=itmp1(i,1)
-      end do
-      do i=1,nstatesinc
-        itmp2(i+nstatestot)=itmp1(i,2)+nstatesmax
-      end do
-      do i=1,nstatesrate
-        itmp2(i+nstatestot+nstatesinc)=itmp1(i,3)+2*nstatesmax
+      ind=izero
+      do i=1,3
+        do j=1,nstatout(i)
+          ind=ind+ione
+          istatoutc(ind)=istatout(j,i)+(i-1)*nstatesmax
+        end do
       end do
 c
 c...  create and open UCD file if UCD output is desired
 c
       if(iucd.ne.izero) then
-        call open_ucd(kucd,iprestress,nstep,ucdroot)
-c******  can write header using itmp1 array
-        call write_gauss_ucd_header(
+        iopt=4
+        call open_ucd(kucd,iprestress,nstep,ucdroot,iopt)
+        call write_ucd_header(istatoutc,nstatestot,kucd)
+      end if
 c
 c...  loop over element families
 c
-      do ifam=i,nvfamilies
+      do ifam=1,nvfamilies
         nelfamily=ivfamily(1,ifam)
         matmodel=ivfamily(2,ifam)
         indstate=ivfamily(3,ifam)
         nstate=infmatmod(2,matmodel)
-        if(idout.gt.1) write(kw,700) ifam
 c
         if(matmodel.eq.1) then
           call write_state_cmp(
-     &     state(indstate),dstate(indstate),nelfamily,nstate,           ! elemfamily
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
      &     get_state_1,                                                 ! materl
      &     ngauss,                                                      ! eltype
-     &     deltu,nstep,                                                 ! timdat
-     &     itmp,                                                        ! ioopts
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
-c
-c...  loop over number of state variables
-c
-      do i=1,nstatesmax
-        if(istatout(1,i).ne.izero) then
-          nout=izero
-          do iel=1,numelt
-            imat=infiel(2,iel)
-            ietype=infiel(3,iel)
-            ngauss=infetype(1,ietype)
-            matmodel=infmat(1,imat)
-            nstate=infmatmod(2,matmodel)
-            indstate=infiel(5,iel)+matmodpt(i,matmodel)
-            do l=1,ngauss
-              indstateg=indstate+(l-1)*nstate
-              if(ismatmod(i,matmodel).eq.izero) then
-                call fill(stmp,zero,nstr)
-              else
-                call dcopy(nstr,state(1,indstateg),ione,stmp,ione)
-              end if
-              if(idout.gt.1) then
-                nout=nout+1
-                if(nout.eq.1.or.mod(nout,m50).eq.izero) then
-                  write(kw,2000) i,(labels(j),j=1,nstr)
-                  write(kw,*) ' '
-                end if
-                write(kw,3000) iel,l,(stmp(j),j=1,nstr)
-              end if
-              if(idsk.eq.ione) write(kp,1500) iel,l,(stmp(j),j=1,nstr)
-              if(idsk.eq.itwo) write(kp) stmp
-            end do
-          end do
+        else if(matmodel.eq.2) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_2,                                                 ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.3) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_3,                                                 ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.4) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_4,                                                 ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.5) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_5,                                                 ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.6) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_6,                                                 ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.7) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_7,                                                 ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.8) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_8,                                                 ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.9) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_9,                                                 ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.10) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_10,                                                ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.11) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_11,                                                ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.12) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_12,                                                ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.13) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_13,                                                ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.14) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_14,                                                ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.15) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_15,                                                ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.16) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_16,                                                ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.17) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_17,                                                ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.18) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_18,                                                ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.19) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_19,                                                ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else if(matmodel.eq.20) then
+          call write_state_cmp(
+     &     state(indstate),dstate(indstate),nelfamily,nstate,ielg,      ! elemfamily
+     &     get_state_20,                                                ! materl
+     &     ngauss,                                                      ! eltype
+     &     delti,nstep,                                                 ! timdat
+     &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
+        else
+          ierr=101
+          errstrng="write_state_drv"
+          return
         end if
-c
-c...  output increments/rates, if desired.
-c
-        if(istatout(2,i).ne.izero) then
-          tmult=one
-          statedescr="   i n c r e m e n t "
-          if(istatout(2,i).eq.ione) then
-            if(delt.gt.zero) tmult=one/delt
-            statedescr="   r a t e "
-          end if
-cdebug          write(6,*) "delt,nstep,tmult:",delt,nstep,tmult
-          nout=izero
-          do iel=1,numelt
-            imat=infiel(2,iel)
-            ietype=infiel(3,iel)
-            ngauss=infetype(1,ietype)
-            matmodel=infmat(1,imat)
-            nstate=infmatmod(2,matmodel)
-            indstate=infiel(5,iel)+matmodpt(i,matmodel)
-            do l=1,ngauss
-              indstateg=indstate+(l-1)*nstate
-              call fill(stmp,zero,nstr)
-              if(ismatmod(i,matmodel).ne.izero) call daxpy(nstr,tmult,
-     &         dstate(1,indstateg),ione,stmp,ione)
-              if(idout.gt.1) then
-                nout=nout+1
-                if(nout.eq.1.or.mod(nout,m50).eq.izero) then
-                  write(kw,2500) statedescr,i,(labels(j),j=1,nstr)
-                  write(kw,*) ' '
-                end if
-                write(kw,3000) iel,l,(stmp(j),j=1,nstr)
-              end if
-              if(idsk.eq.ione) write(kp,1500) iel,l,(stmp(j),j=1,nstr)
-              if(idsk.eq.itwo) write(kp) stmp
-            end do
-          end do
-        end if
+        ielg=ielg+nelfamily
       end do
-      if(iucd.ne.izero) close(kucd)
       return
-2000  format(///1x,' s t a t e   v a r i a b l e ',i3,///,
-     &' elem #  gausspt',5x,5(a4,11x),a4)
-2500  format(///1x,' s t a t e   v a r i a b l e ',a21,i3,///,
-     &' elem #  gausspt',5x,5(a4,11x),a4)
-3000  format(1x,i7,1x,i7,1x,6(1pe15.6))
-1500  format(2i7,6e16.7)
       end
 c
 c version
-c $Id: write_state_drv.f,v 1.1 2005/03/23 02:47:34 willic3 Exp $
+c $Id: write_state_drv.f,v 1.2 2005/03/23 23:30:31 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
