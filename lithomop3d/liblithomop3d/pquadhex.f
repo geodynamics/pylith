@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine pquadhex(sh,shj,gauss,infetype,intord)
+      subroutine pquadhex(sh,gauss,nen,ngauss,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a quadratic (20-node)
@@ -46,11 +46,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer intord
-      integer infetype(4)
-      double precision sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax)
-      double precision gauss(nsd+1,ngaussmax)
+      integer nen,ngauss,intord
+      double precision sh(nsd+1,nen,ngauss)
+      double precision gauss(nsd+1,ngauss)
 c
 c...  local constants
 c
@@ -75,7 +73,7 @@ c
 c
 c...  local variables
 c
-      integer nen,ngauss,nec,nee,i,l,l1,l2,l3,nshsize,ngssize
+      integer i,l,l1,l2,l3,nshsize,ngssize
       double precision g1,rr,ss,tt,rrw,ssw,ttw,drr,dss,dtt
       double precision uu,dur,dus,dut,v,vi,rp,ri,sp,si,tp,ti
       double precision w(3)
@@ -96,15 +94,11 @@ c
 c
 c...  definitions
 c
-      nshsize=(nsd+1)*nenmax*ngaussmax
-      ngssize=(nsd+1)*ngaussmax
+      nshsize=(nsd+1)*nen*ngauss
+      ngssize=(nsd+1)*ngauss
 c
 c...  Quadratic hex definition
 c
-      nen=20
-      ngauss=ieight
-      nec=nsd*nen
-      nee=ndof*nen
       do l=1,ngauss
         gauss(1,l)=r(l)*root3i
         gauss(2,l)=s(l)*root3i
@@ -112,7 +106,6 @@ c
         gauss(4,l)=one
       end do
       if(intord.ne.2) then
-        ngauss=27
         g1=sqrt(three/five)
         w(1)=five/nine
         w(2)=eight/nine
@@ -136,14 +129,6 @@ c
           end do
         end do
       end if
-cdebug      do idb=1,ngauss
-cdebug        write(6,*) "gauss:",(gauss(jdb,idb),jdb=1,4)
-cdebug      end do
-c
-      infetype(1)=ngauss
-      infetype(2)=nen
-      infetype(3)=nec
-      infetype(4)=nee
 c
       do l=1,ngauss
         do i=1,nen
@@ -163,18 +148,12 @@ c
           sh(3,i,l)=dtt*rr*ss*uu+dut*rr*ss*tt
         end do
       end do
-cdebug      do idb=1,ngauss
-cdebug        do jdb=1,nen
-cdebug          write(6,*) "sh:",(sh(kdb,jdb,idb),kdb=1,4)
-cdebug        end do
-cdebug      end do
-      call dcopy(nshsize,sh,ione,shj,ione)
 c
       return
       end
 c
 c version
-c $Id: pquadhex.f,v 1.5 2004/08/12 02:14:20 willic3 Exp $
+c $Id: pquadhex.f,v 1.6 2005/03/22 04:45:55 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine plinpyr(sh,shj,gauss,infetype,intord)
+      subroutine plinpyr(sh,gauss,nen,ngauss,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a linear pyramid.
@@ -45,11 +45,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer intord
-      integer infetype(4)
-      double precision sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax)
-      double precision gauss(nsd+1,ngaussmax)
+      integer nen,ngauss,intord
+      double precision sh(nsd+1,nen,ngauss)
+      double precision gauss(nsd+1,ngauss)
 c
 c...  local constants
 c
@@ -75,26 +73,21 @@ c
 c
 c...  local variables
 c
-      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
+      integer i,l,nshsize,ngssize
       double precision rr,ss,tt,g1,w1
 c
 c...  definitions
 c
-      nshsize=(nsd+1)*nenmax*ngaussmax
-      ngssize=(nsd+1)*ngaussmax
+      nshsize=(nsd+1)*nen*ngauss
+      ngssize=(nsd+1)*ngauss
 c
 c...  Linear wedge definition
 c
-      nen=ifive
-      ngauss=ione
-      nec=nsd*nen
-      nee=ndof*nen
       gauss(1,1)=zero
       gauss(2,1)=zero
       gauss(3,1)=-half
       gauss(4,1)=c1/c2
       if(intord.ne.2) then
-        ngauss=ifive
         g1=eight*sqrt(two/c3)/five
         w1=c4/c5
         do l=1,ngauss
@@ -107,11 +100,6 @@ c
         gauss(4,5)=c6/c2
       end if
 c
-      infetype(1)=ngauss
-      infetype(2)=nen
-      infetype(3)=nec
-      infetype(4)=nee
-c
       do l=1,ngauss
         do i=1,nen
           rr=half*(one+r(i)*gauss(1,l))
@@ -123,13 +111,12 @@ c
           sh(3,i,l)=t(i)*rr*ss
         end do
       end do
-      call dcopy(nshsize,sh,ione,shj,ione)
 c
       return
       end
 c
 c version
-c $Id: plinpyr.f,v 1.3 2004/07/07 19:26:42 willic3 Exp $
+c $Id: plinpyr.f,v 1.4 2005/03/22 04:45:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine plintet(sh,shj,gauss,infetype,intord)
+      subroutine plintet(sh,gauss,nen,ngauss,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a linear tetrahedron.
@@ -45,11 +45,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer intord
-      integer infetype(4)
-      double precision sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax)
-      double precision gauss(nsd+1,ngaussmax)
+      integer nen,ngauss,intord
+      double precision sh(nsd+1,nen,ngauss)
+      double precision gauss(nsd+1,ngauss)
 c
 c...  local constants
 c
@@ -67,32 +65,23 @@ c
 c
 c...  local variables
 c
-      integer nen,ngauss,nec,nee,i,nshsize,ngssize
+      integer i,nshsize,ngssize
       double precision rr,ss,tt,uu
       double precision tetvol
 c
 c...  definitions
 c
       tetvol=sixth
-      nshsize=(nsd+1)*nenmax*ngaussmax
-      ngssize=(nsd+1)*ngaussmax
+      nshsize=(nsd+1)*nen*ngauss
+      ngssize=(nsd+1)*ngauss
 c
 c...  Linear hex definition
 c     One-point integration is used in all cases.
 c
-      nen=ifour
-      ngauss=ione
-      nec=nsd*nen
-      nee=ndof*nen
       gauss(1,1)=fourth
       gauss(2,1)=fourth
       gauss(3,1)=fourth
       gauss(4,1)=tetvol
-c
-      infetype(1)=ngauss
-      infetype(2)=nen
-      infetype(3)=nec
-      infetype(4)=nee
 c
       do i=1,nen
         rr=r(i)*gauss(1,1)
@@ -104,13 +93,12 @@ c
         sh(2,i,1)=s(i)-u(i)
         sh(3,i,1)=t(i)-u(i)
       end do
-      call dcopy(nshsize,sh,ione,shj,ione)
 c
       return
       end
 c
 c version
-c $Id: plintet.f,v 1.3 2004/08/12 02:11:24 willic3 Exp $
+c $Id: plintet.f,v 1.4 2005/03/22 04:45:55 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
