@@ -34,7 +34,7 @@ c
      & x,numnp,                                                         ! global
      & s,stemp,                                                         ! stiff
      & dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,             ! elemnt
-     & infmat,numat,                                                    ! materl
+     & infmat,infmatmod,numat,                                          ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & skew,numrot,                                                     ! skew
      & nfault,dfault,tfault,numfn,                                      ! split
@@ -49,6 +49,7 @@ c...  parameter definitions
 c
       include "ndimens.inc"
       include "nshape.inc"
+      include "materials.inc"
       include "nconsts.inc"
       include "rconsts.inc"
 c
@@ -56,8 +57,9 @@ c...  subroutine arguments
 c
       integer neq,numnp,ndmatsz,numelt,nconsz,numat,numrot,numfn,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
-      integer infiel(6,numelt),iddmat(nstr,nstr),infmat(6,numat)
-      integer infetype(4,netypes),nfault(3,numfn)
+      integer infiel(6,numelt),iddmat(nstr,nstr),infmat(3,numat)
+      integer infmatmod(5,nmatmodmax),infetype(4,netypes)
+      integer nfault(3,numfn)
       character errstrng*(*)
       double precision bdisp(neq),x(nsd,numnp),s(neemax*neemax)
       double precision stemp(neemax*neemax),dfault(ndof,numfn)
@@ -73,8 +75,8 @@ c
 c
 c...  local variables
 c
-      integer i,iel,indien,imat,imatvar,ietype,nen,inddmat,ngauss,nee
-      integer ngaussdim
+      integer i,iel,indien,imat,matmodel,imatvar,ietype,nen,inddmat
+      integer ngauss,nee,ngaussdim
       double precision p(60),dl(60)
 c
 cdebug      write(6,*) "Hello from formf_ss_f!"
@@ -86,10 +88,11 @@ c
         iel=nfault(1,i)
         indien=infiel(1,iel)
         imat=infiel(2,iel)
-        imatvar=infmat(4,imat)
         ietype=infiel(3,iel)
-        nen=infetype(2,ietype)
         inddmat=infiel(6,iel)
+        matmodel=infmat(1,imat)
+        imatvar=infmatmod(4,matmodel)
+        nen=infetype(2,ietype)
         ngauss=infetype(1,ietype)
         nee=infetype(4,ietype)
         ngaussdim=ngauss
@@ -118,7 +121,7 @@ c
       end
 c
 c version
-c $Id: formf_ss.f,v 1.2 2004/06/21 21:03:39 willic3 Exp $
+c $Id: formf_ss.f,v 1.3 2004/07/08 21:15:31 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
