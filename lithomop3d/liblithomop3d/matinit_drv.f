@@ -39,7 +39,7 @@ c
      & numelt,nconsz,                                                   ! elemnt
      & prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,               ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
-     & histry,rtimdat,ntimdat,nhist,lastep,matinit_cmp,                 ! timdat
+     & histry,rtimdat,ntimdat,rgiter,nhist,lastep,matinit_cmp,          ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
@@ -83,6 +83,7 @@ c...  included dimension and type statements
 c
       include "rtimdat_dim.inc"
       include "ntimdat_dim.inc"
+      include "rgiter_dim.inc"
 c
 c...  external routines
 c
@@ -92,20 +93,21 @@ c
 c
 c...  local variables
 c
-      integer imat,matmodel,nmatel,imatvar,nprop,indprop,matgpt
+      integer imat,matmodel,nmatel,imatvar,nstate,nprop,indprop,matgpt
       double precision ptmp(100)
       logical matchg
-cdebug      integer idebug,jdebug
+cdebug      integer idb,jdb
 c
 c...  included variable definitions
 c
       include "rtimdat_def.inc"
       include "ntimdat_def.inc"
+      include "rgiter_def.inc"
 c
 cdebug      write(6,*) "Hello from matinit_drv_f!"
 c
       call fill(alnz,zero,nnz)
-      call fill(dmat,zero,nddmat*ndmatsz)
+c*      call fill(dmat,zero,nddmat*ndmatsz)
       matgpt=1
       tminmax=big
 c
@@ -116,6 +118,7 @@ c
         matmodel=infmat(1,imat)
         nmatel=infmat(2,imat)
         indprop=infmat(3,imat)
+        nstate=infmatmod(2,matmodel)
         nprop=infmatmod(3,matmodel)
         imatvar=infmatmod(4,matmodel)
         matchg=.false.
@@ -131,10 +134,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_1,                 ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_1,          ! materl
      &     td_matinit_1,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -147,10 +150,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_2,                 ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_2,          ! materl
      &     td_matinit_2,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -163,10 +166,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_3,                 ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_3,          ! materl
      &     td_matinit_3,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -179,10 +182,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_4,                 ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_4,          ! materl
      &     td_matinit_4,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -195,10 +198,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_5,                 ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_5,          ! materl
      &     td_matinit_5,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -211,10 +214,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_6,                 ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_6,          ! materl
      &     td_matinit_6,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -227,10 +230,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_7,                 ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_7,          ! materl
      &     td_matinit_7,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -243,10 +246,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_8,                 ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_8,          ! materl
      &     td_matinit_8,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -259,10 +262,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_9,                 ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_9,          ! materl
      &     td_matinit_9,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -275,10 +278,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_10,                ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_10,         ! materl
      &     td_matinit_10,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -291,10 +294,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_11,                ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_11,         ! materl
      &     td_matinit_11,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -307,10 +310,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_12,                ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_12,         ! materl
      &     td_matinit_12,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -323,10 +326,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_13,                ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_13,         ! materl
      &     td_matinit_13,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -339,10 +342,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_14,                ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_14,         ! materl
      &     td_matinit_14,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -355,10 +358,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_15,                ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_15,         ! materl
      &     td_matinit_15,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -371,10 +374,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_16,                ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_16,         ! materl
      &     td_matinit_16,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -387,10 +390,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_17,                ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_17,         ! materl
      &     td_matinit_17,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -403,10 +406,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_18,                ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_18,         ! materl
      &     td_matinit_18,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -419,10 +422,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_19,                ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_19,         ! materl
      &     td_matinit_19,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -435,10 +438,10 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_20,                ! materl
+     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_20,         ! materl
      &     td_matinit_20,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
-     &     rtimdat,ntimdat,                                             ! timdat
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -453,11 +456,11 @@ c
 c...  debugging output
 c
 cdebug      write(6,*) "DMAT array:"
-cdebug      do idebug=1,ndmatsz
-cdebug        write(6,*) (dmat(jdebug,idebug),jdebug=1,nddmat)
+cdebug      do idb=1,ndmatsz
+cdebug        write(6,*) (dmat(jdb,idb),jdb=1,nddmat)
 cdebug      end do
 cdebug      write(6,*) "ALNZ array:"
-cdebug      write(6,*) (alnz(idebug),idebug=1,nnz)
+cdebug      write(6,*) (alnz(idb),idb=1,nnz)
 c
 c...  add Winkler elements to stiffness matrix diagonals
 c
@@ -475,7 +478,7 @@ c
       end
 c
 c version
-c $Id: matinit_drv.f,v 1.4 2004/08/02 21:18:33 willic3 Exp $
+c $Id: matinit_drv.f,v 1.5 2004/08/12 02:07:33 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
