@@ -31,9 +31,8 @@ c
 c
       subroutine write_state(
      & state,dstate,infiel,nstatesz,numelt,                             ! elemnt
-     & infmat,numat,                                                    ! materl
+     & infmat,infmatmod,ismatmod,numat,                                 ! materl
      & infetype,                                                        ! eltype
-     & infmatmod,                                                       ! matmod
      & delt,                                                            ! timdat
      & istatout,                                                        ! ioopts
      & idout,idsk,kw,kp)                                                ! ioinfo
@@ -54,8 +53,9 @@ c
 c...  subroutine arguments
 c
       integer nstatesz,numelt,numat,idout,idsk,kw,kp
-      integer infiel(6,numelt),infmat(6,numat),infetype(4,netypes)
-      integer infmatmod(nstatesmax,nmatmodmax),istatout(2,nstatesmax)
+      integer infiel(6,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
+      integer ismatmod(nstatesmax,nmatmodmax),infetype(4,netypes)
+      integer istatout(2,nstatesmax)
       double precision delt
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
 c
@@ -93,26 +93,26 @@ c
       do i=1,nmatmodmax
         matmodpt(1,i)=izero
         do j=2,nstatesmax
-          matmodpt(j,i)=matmodpt(j-1,i)+infmatmod(j-1,i)*nstr
+          matmodpt(j,i)=matmodpt(j-1,i)+ismatmod(j-1,i)*nstr
         end do
       end do
 c
 c...  loop over number of state variables
 c
       do i=1,nstatesmax
-        if(istatout(1,i).ne.0) then
-          nout=0
+        if(istatout(1,i).ne.izero) then
+          nout=izero
           do iel=1,numelt
             imat=infiel(2,iel)
             ietype=infiel(3,iel)
             ngauss=infetype(1,ietype)
             matmodel=infmat(1,imat)
-            nstate=infmat(3,imat)
+            nstate=infmatmod(2,matmodel)
             indstate=infiel(5,iel)+matmodpt(i,matmodel)
             incgauss=nstate*nstr
             do l=1,ngauss
               indstateg=indstate+(l-1)*incgauss
-              if(infmatmod(i,matmodel).eq.izero) then
+              if(ismatmod(i,matmodel).eq.izero) then
                 call fill(stmp,zero,nstr)
               else
                 call dcopy(nstr,state(1,indstateg),ione,stmp,ione)
@@ -142,13 +142,13 @@ c
             ietype=infiel(3,iel)
             ngauss=infetype(1,ietype)
             matmodel=infmat(1,imat)
-            nstate=infmat(3,imat)
+            nstate=infmatmod(2,matmodel)
             indstate=infiel(5,iel)+matmodpt(i,matmodel)
             incgauss=nstate*nstr
             do l=1,ngauss
               indstateg=indstate+(l-1)*incgauss
               call fill(stmp,zero,nstr)
-              if(infmatmod(i,matmodel).ne.izero) call daxpy(nstr,tmult,
+              if(ismatmod(i,matmodel).ne.izero) call daxpy(nstr,tmult,
      &         state(1,indstateg),ione,stmp,ione)
               if(idout.gt.1) then
                 nout=nout+1
@@ -172,7 +172,7 @@ c
       end
 c
 c version
-c $Id: write_state.f,v 1.1 2004/06/18 14:26:29 willic3 Exp $
+c $Id: write_state.f,v 1.2 2004/07/08 21:01:40 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
