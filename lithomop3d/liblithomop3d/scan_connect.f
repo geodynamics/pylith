@@ -29,12 +29,15 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine scan_connect(neni,infmat,infmatmod,matmod,
-     & indprop,numat,numelt,nconsz,kr,cfile,ierr,errstrng)
+      subroutine scan_connect(neni,infmatmod,ivflist,maxvfamilies,
+     & numat,numelv,nvfamilies,ietypev,kr,cfile,ierr,errstrng)
 c
 c...  subroutine to perform an initial scan of the element connectivity
 c     file to determine the total number of elements and the number of
-c     elements of each material type.
+c     elements of each material type.  At present, each material type
+c     is assumed to represent an 'element family', and only a single
+c     element type is allowed.  In the near future, families will be
+c     defined by material model (not type) and element type.
 c
 c     Note that the variable netypesi (and the associated arrays) only
 c     defines the number of 'primitive' element types, and does not
@@ -59,9 +62,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer numat,numelt,nconsz,kr,ierr
-      integer neni(netypesi),infmat(3,numat),infmatmod(5,nmatmodmax)
-      integer matmod(numat),indprop(numat)
+      integer maxvfamilies,numat,numelv,nvfamilies,ietypev,kr,ierr
+      integer neni(netypesi),infmatmod(5,nmatmodmax)
+      integer ivflist(maxvfamilies)
       character cfile*(*),errstrng*(*)
 c
 c...  local variables
@@ -72,17 +75,17 @@ c
 c...  open input file
 c
       ierr=izero
-      numelt=izero
-      nconsz=izero
-      call ifill(infmat,izero,ithree*numat)
+      numelv=izero
+      ietypev=izero
+      call ifill(ifamilyv,izero,ithree*nvfamilies)
       open(kr,file=cfile,status="old",err=20)
 c
-c...  set up part of the infmat array that has already been determined
+c...  set up part of the ifamilyv array that has already been determined
 c     by python material property input routine.
 c
-      do i=1,numat
-        infmat(1,i)=matmod(i)
-        infmat(3,i)=indprop(i)
+      do i=1,nvfamilies
+        ifamilyv(2,i)=matmod(i)
+        ifamilyv(3,i)=indprop(i)
       end do
 c
 c... scan the file, counting the number of entries for each type of
@@ -93,13 +96,22 @@ c    would need to scan each line twice to determine whether it was a
 c    comment.
 c
       call pskip(kr)
+      read(kr,*,end=10,err=30) n,ietypei,imat,infin,
+     & (ien(j),j=1,neni(ietypei))
+      ietypev=ietypei
+      backspace(kr)
+      if(ietypev.le.izero.or.ietypev.gt.netypesi) then
+        ierr=106
+        errstrng="scan_connect"
+        return
+      end if
  40   continue
         read(kr,*,end=10,err=30) n,ietypei,imat,infin,
      &   (ien(j),j=1,neni(ietypei))
 c
-        matm=infmat(1,imat)
+        matm=ifamilyv(2,imat)
 c
-        if(ietypei.le.izero.or.ietypei.gt.netypesi) then
+        if(ietypei.ne.ietypev) then
           ierr=106
           errstrng="scan_connect"
           return
@@ -117,9 +129,8 @@ c
           return
         end if
 c
-        numelt=numelt+ione
-        nconsz=nconsz+neni(ietypei)
-        infmat(2,imat)=infmat(2,imat)+ione
+        numelv=numelv+ione
+        ifamilyv(1,imat)=ifamilyv(1,imat)+ione
 c
         go to 40
 c
@@ -146,7 +157,7 @@ c
       end
 c
 c version
-c $Id: scan_connect.f,v 1.2 2004/07/09 17:01:13 willic3 Exp $
+c $Id: scan_connect.f,v 1.3 2005/03/19 01:53:32 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
