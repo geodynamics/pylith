@@ -38,16 +38,16 @@ c     z and bres.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
       integer neq,nnz
       integer ja(nnz)
       double precision alnz(nnz),bres(neq),z(neq),rtz
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -89,7 +89,7 @@ c
       end
 c
 c version
-c $Id: gspre.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: gspre.f,v 1.2 2004/07/07 14:17:41 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
