@@ -35,18 +35,17 @@ c...  routine to perform a weighted least-squares fit
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "rconsts.inc"
+      integer mmax
+      parameter (mmax=10)
+c
 c...  subroutine arguments
 c
       integer ndat,ma,npc
       double precision x(ndat),y(ndat),sig(ndat),a(ma),covar(npc,npc)
       double precision xn(3,5)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
-c
-      integer mmax
-      parameter (mmax=10)
 c
 c...  local variables
 c
@@ -83,7 +82,7 @@ c
       end
 c
 c version
-c $Id: lfit.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: lfit.f,v 1.2 2004/07/07 15:55:35 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
