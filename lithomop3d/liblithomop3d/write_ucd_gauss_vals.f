@@ -57,7 +57,7 @@ c
 c...  subroutine arguments
 c
       integer nstatesz,numelt,numat,nstep,kucd,iprestress
-      integer infiel(6,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
+      integer infiel(7,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
       integer ismatmod(nstatesmax,nmatmodmax),infetype(4,netypes)
       integer istatout(2,nstatesmax)
       character ucdroot*(*)
@@ -212,7 +212,7 @@ c
       end
 c
 c version
-c $Id: write_ucd_gauss_vals.f,v 1.3 2005/01/19 20:34:25 willic3 Exp $
+c $Id: write_ucd_gauss_vals.f,v 1.4 2005/02/24 00:26:34 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

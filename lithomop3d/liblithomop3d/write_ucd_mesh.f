@@ -54,7 +54,7 @@ c
 c...  subroutine arguments
 c
       integer numnp,numelt,nconsz,kucd
-      integer ien(nconsz),infiel(6,numelt),infetype(4,netypes)
+      integer ien(nconsz),infiel(7,numelt),infetype(4,netypes)
       integer istatout(2,nstatesmax)
       character ucdroot*(*)
       double precision x(nsd,numnp),sh(nsd+1,nenmax,ngaussmax,netypes)
@@ -178,7 +178,7 @@ c
       end
 c
 c version
-c $Id: write_ucd_mesh.f,v 1.4 2004/08/31 19:14:54 willic3 Exp $
+c $Id: write_ucd_mesh.f,v 1.5 2005/02/24 00:26:34 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
