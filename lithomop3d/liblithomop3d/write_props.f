@@ -48,6 +48,10 @@ c
       double precision prop(npropsz)
       character ofile*(*),pfile*(*),errstrng*(*)
 c
+c...  external routines
+c
+      include "mat_prt_ext.inc"
+c
 c...  local variables
 c
       integer imat,matmodel,indprop,nprop
@@ -173,7 +177,7 @@ c
       end
 c
 c version
-c $Id: write_props.f,v 1.1 2004/07/12 17:55:32 willic3 Exp $
+c $Id: write_props.f,v 1.2 2004/07/13 16:26:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
