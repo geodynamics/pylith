@@ -190,7 +190,7 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
   PyObject *pyA;
   Mat A;
   int size;
-  int ierr;
+  // int ierr;
   // PetscInt size;
 
   int ok = PyArg_ParseTuple(args, "i:createPETScMat", &size);
@@ -198,11 +198,14 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
     return 0;
   }
 
-  ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, size, size);
-
   // if (MatCreate(PETSC_COMM_WORLD, size, size, PETSC_DETERMINE, PETSC_DETERMINE, &A)) {
   if (MatCreate(PETSC_COMM_WORLD, &A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
+    return 0;
+  }
+
+  if (MatSetSizes(A, PETSC_DETERMINE, PETSC_DETERMINE, size, size)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Mat");
     return 0;
   }
 
@@ -313,6 +316,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.8 2005/03/31 23:27:57 willic3 Exp $
+// $Id: sparse.cc,v 1.9 2005/04/01 23:56:34 willic3 Exp $
 
 // End of file
