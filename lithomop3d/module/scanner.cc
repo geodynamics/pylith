@@ -151,8 +151,8 @@ PyObject * pylithomop3d_scan_connect(PyObject *, PyObject *args)
 		 &connectivitySize,
 		 &f77FileInput,
 		 connectivityInputFile,
-		 errorstring,
 		 &errorcode,
+		 errorstring,
 		 strlen(connectivityInputFile),
 		 strlen(errorstring));
     
@@ -782,6 +782,6 @@ PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: scanner.cc,v 1.2 2004/07/19 18:40:07 willic3 Exp $
+// $Id: scanner.cc,v 1.3 2004/07/20 20:11:36 willic3 Exp $
 
 // End of file
