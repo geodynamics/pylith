@@ -36,16 +36,16 @@ c     the global matrix is stored in modified sparse row (MSR) format.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
       integer nee,numel,numsn,nnz
       double precision alnz(nnz),s(nee,nee)
       integer lm(nee*numel),lmx(nee*numel),ja(nnz)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -100,7 +100,7 @@ c
       end
 c
 c version
-c $Id: addstf.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: addstf.f,v 1.2 2004/06/18 14:50:42 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
