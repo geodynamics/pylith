@@ -28,10 +28,10 @@ PROJ_SRCS = \
         adfldp.f \
         adjid.f \
         bdeld_ss.f \
-        bdiff.f \
         bmatrixb.f \
         bmatrixn.f \
         bnmatrix.f \
+        bsum.f \
         choldc2.f \
         cholsl.f \
         ckdiag.f \
@@ -176,7 +176,6 @@ PROJ_SRCS = \
         td_strs_cmp_ss.f \
         td_strs_mat_cmp_ss.f \
         transp.f \
-        unlock.f \
         update_state.f \
         viscos.f \
         winklf.f \
@@ -197,6 +196,8 @@ PROJ_SRCS = \
 
 all: $(PROJ_SAR) export
 
+testit: test
+
 #--------------------------------------------------------------------------
 # build the shared object
 
@@ -207,12 +208,14 @@ $(PROJ_SAR): product_dirs $(PROJ_OBJS)
 #
 export:: export-libraries
 
+test:: show-configuration show-project cpp-configuration fortran-configuration
+
 
 EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.8 2004/08/25 00:06:42 willic3 Exp $
+# $Id: Make.mm,v 1.9 2005/01/05 22:08:50 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
