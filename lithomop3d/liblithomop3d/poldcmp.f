@@ -36,16 +36,16 @@ c   gradient, given the linear strain and rotation matrices
 c
       include "implicit.inc"
 c
-c...  subroutine arguments
-c
-      double precision ee(6),wr(3),r(3,3),u(3,3)
-c
-c...  defined constants
+c...  parameter definitions
 c
       include "rconsts.inc"
 c
       integer idim
       parameter(idim=3)
+c
+c...  subroutine arguments
+c
+      double precision ee(6),wr(3),r(3,3),u(3,3)
 c
 c...  intrinsic functions
 c
@@ -102,7 +102,7 @@ c
       end
 c
 c version
-c $Id: poldcmp.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: poldcmp.f,v 1.2 2004/07/07 19:36:04 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
