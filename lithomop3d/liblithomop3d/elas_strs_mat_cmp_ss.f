@@ -38,7 +38,8 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,ndmatsz, ! elemnt
      & numelt,nconsz,                                                   ! elemnt
-     & prop,infmat,nprop,matgpt,elas_strs_mat,td_strs_mat,matchg,       ! materl
+     & prop,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_mat,           ! materl
+     & td_strs_mat,matchg,                                              ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
      & skew,numrot,                                                     ! skew
@@ -61,9 +62,9 @@ c
 c...  subroutine arguments
 c
       integer nnz,neq,numnp,numslp,numsn,numfn,nstatesz,ndmatsz,numelt
-      integer nconsz,nprop,matgpt,numrot,ierr
+      integer nconsz,nmatel,imatvar,nstate,nprop,matgpt,numrot,ierr
       integer ja(nnz),ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
-      integer lmf(nconsz),infiel(6,numelt),iddmat(nstr,nstr),infmat(6)
+      integer lmf(nconsz),infiel(6,numelt),iddmat(nstr,nstr)
       integer infetype(4,netypes)
       character errstrng*(*)
       logical matchg
@@ -92,8 +93,8 @@ c
 c
 c...  local variables
 c
-      integer nmatel,nstate,ind,iel,indien,ietype,indstate,inddmat
-      integer ngauss,nen,nee,l,indstateg,inddmatg,imatvar,ngtest
+      integer ind,iel,indien,ietype,indstate,inddmat
+      integer ngauss,nen,nee,l,indstateg,inddmatg,ngtest
       integer ngaussdim,incstate
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 c
@@ -105,9 +106,6 @@ c
 c
 cdebug      write(6,*) "Hello from elas_strs_mat_cmp_ss_f!"
 c
-      nmatel=infmat(2)
-      nstate=infmat(3)
-      imatvar=infmat(4)
       ngtest=izero
       if(imatvar.eq.izero) ngtest=ngaussmax
       incstate=nstr*nstate
@@ -181,7 +179,7 @@ c
       end
 c
 c version
-c $Id: elas_strs_mat_cmp_ss.f,v 1.3 2004/07/02 17:57:23 willic3 Exp $
+c $Id: elas_strs_mat_cmp_ss.f,v 1.4 2004/07/08 21:38:09 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
