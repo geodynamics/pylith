@@ -68,17 +68,17 @@ extern char pylithomop3d_read_hist__doc__[];
 extern "C"
 PyObject * pylithomop3d_read_hist(PyObject *, PyObject *);
 
-// read prestresses
-extern char pylithomop3d_read_prestr__name__[];
-extern char pylithomop3d_read_prestr__doc__[];
+// read material history info
+extern char pylithomop3d_read_mathist__name__[];
+extern char pylithomop3d_read_mathist__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_prestr(PyObject *, PyObject *);
+PyObject * pylithomop3d_read_mathist(PyObject *, PyObject *);
 
-// read material properties
-extern char pylithomop3d_read_prop__name__[];
-extern char pylithomop3d_read_prop__doc__[];
-extern "C"
-PyObject * pylithomop3d_read_prop(PyObject *, PyObject *);
+// read prestresses
+// extern char pylithomop3d_read_prestr__name__[];
+// extern char pylithomop3d_read_prestr__doc__[];
+// extern "C"
+// PyObject * pylithomop3d_read_prestr(PyObject *, PyObject *);
 
 // read local coordinate rotations
 extern char pylithomop3d_read_skew__name__[];
@@ -98,6 +98,12 @@ extern char pylithomop3d_read_split__doc__[];
 extern "C"
 PyObject * pylithomop3d_read_split(PyObject *, PyObject *);
 
+// read state output information
+extern char pylithomop3d_read_stateout__name__[];
+extern char pylithomop3d_read_stateout__doc__[];
+extern "C"
+PyObject * pylithomop3d_read_stateout(PyObject *, PyObject *);
+
 // read time step group informations
 extern char pylithomop3d_read_timdat__name__[];
 extern char pylithomop3d_read_timdat__doc__[];
@@ -105,10 +111,10 @@ extern "C"
 PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *);
 
 // read traction boundary conditions
-extern char pylithomop3d_read_traction__name__[];
-extern char pylithomop3d_read_traction__doc__[];
-extern "C"
-PyObject * pylithomop3d_read_traction(PyObject *, PyObject *);
+// extern char pylithomop3d_read_traction__name__[];
+// extern char pylithomop3d_read_traction__doc__[];
+// extern "C"
+// PyObject * pylithomop3d_read_traction(PyObject *, PyObject *);
 
 // read winkler force information
 extern char pylithomop3d_read_wink__name__[];
@@ -125,6 +131,6 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *);
 #endif
 
 // version
-// $Id: parser.h,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: parser.h,v 1.2 2004/07/20 00:44:48 willic3 Exp $
 
 // End of file
