@@ -40,6 +40,7 @@ c
 c
 c...  parameter definitions
 c
+      include "nconsts.inc"
       include "rconsts.inc"
 c
 c...  subroutine arguments
@@ -58,6 +59,8 @@ c
       double precision sum
 c
 c*      write(6,*) "Hello from choldc2_f!"
+c
+      ierr=izero
 c
       do i=1,n
         do j=i,n
@@ -81,7 +84,7 @@ c
       end
 c
 c version
-c $Id: choldc2.f,v 1.3 2004/06/21 19:58:22 willic3 Exp $
+c $Id: choldc2.f,v 1.4 2004/06/21 20:08:27 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
