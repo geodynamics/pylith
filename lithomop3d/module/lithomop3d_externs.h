@@ -646,6 +646,7 @@ extern "C" {
 		      int *,
 		      int *,
 		      int *,
+		      int *,
 		      char *,
 		      char *,
 		      char *,
@@ -790,6 +791,8 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
+		   int *,
+		   int *,
 		   char *,
 		   char *,
 		   char *,
@@ -801,6 +804,8 @@ extern "C" {
 		   int);
 
   void read_split_f(double *,
+		    int *,
+		    int *,
 		    int *,
 		    int *,
 		    int *,
@@ -1235,6 +1240,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.16 2005/04/01 23:54:26 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.17 2005/04/05 22:36:34 willic3 Exp $
 
 // End of file
