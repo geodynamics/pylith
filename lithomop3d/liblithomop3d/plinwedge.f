@@ -29,26 +29,29 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine plinwedge(sh,shj,gauss,ngauss,nen,nsd,nenmax,ngaussmax,
-     & intord)
+      subroutine plinwedge(sh,shj,gauss,infetype,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a linear wedge.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nsd,nenmax,ngaussmax,intord
-      integer ngauss,nen
+      integer intord
+      integer infetype(4)
       double precision sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax)
       double precision gauss(nsd+1,ngaussmax)
 c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
+c...  local constants
 c
       double precision r(6),s(6),t(6),u(6)
       data r/ 1d0, 0d0, 0d0, 1d0, 0d0, 0d0/
@@ -65,7 +68,7 @@ c
 c
 c...  local variables
 c
-      integer i,l,nshsize,ngssize
+      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
       double precision rr,ss,tt,uu,drr,dss,dtt
       double precision trivol
 c
@@ -79,6 +82,8 @@ c...  Linear wedge definition
 c
       nen=isix
       ngauss=ione
+      nec=nsd*nen
+      nee=ndof*nen
       gauss(1,1)=zero
       gauss(2,1)=zero
       gauss(3,1)=zero
@@ -93,6 +98,12 @@ c
         end do
         gauss(3,2)=-root3i
       end if 
+c
+      infetype(1)=ngauss
+      infetype(2)=nen
+      infetype(3)=nec
+      infetype(4)=nee
+c
       do l=1,ngauss
         do i=1,nen
           rr=one-r(i)+r(i)*gauss(1,l)
@@ -114,7 +125,7 @@ c
       end
 c
 c version
-c $Id: plinwedge.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: plinwedge.f,v 1.2 2004/07/07 19:34:02 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
