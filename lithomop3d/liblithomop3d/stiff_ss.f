@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine stiff_ss(
-     & xl,                                                              ! global
+     & xl,iddmat,                                                       ! global
      & dmat,ien,iel,                                                    ! elemnt
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & s,                                                               ! stiff
@@ -52,7 +52,7 @@ c
 c...  subroutine arguments
 c
       integer iel,nen,ngauss,nee,ierr
-      integer ien(nen)
+      integer iddmat(nstr,nstr),ien(nen)
       character errstrng*(*)
       double precision xl(nsd,nen),dmat(nddmat,ngauss)
       double precision gauss(nsd+1,ngauss),sh(nsd+1,nen,ngauss)
@@ -67,7 +67,10 @@ c
       integer l
       double precision shd(4,nenmax,ngaussmax),b(6,3*nenmax)
       double precision shbar(4,nenmax),db(6,3*nenmax),det(ngaussmax)
+      double precision dtmp(6,6)
       double precision vol
+c
+cdebug      integer idb,jdb
 c
 c...form shape functions for each integration point
 c
@@ -83,14 +86,25 @@ c   integral over element
 c
       do l=1,ngauss
         call bmatrix(b,shd(1,1,l),shbar,nen)
-        call dspmv("u",nstr,det(l),dmat(1,l),b,ione,zero,db,ione)
+        call getmat(dtmp,dmat(1,l),iddmat,nstr,nddmat)
+        call dsymm("l","l",nstr,nee,det(l),dtmp,nstr,b,nstr,zero,db,
+     &    nstr)
+c*        call dspmv("u",nstr,det(l),dmat(1,l),b,ione,zero,db,ione)
         call dgemm("t","n",nee,nee,nstr,one,b,nstr,db,nstr,one,s,nee)
+cdebug        write(6,*) "det:",det(l)
+cdebug        do idb=1,nee
+cdebug          write(6,*) "b:",(b(jdb,idb),jdb=1,nstr)
+cdebug        end do
+cdebug        write(6,*) "dmat:",(dmat(jdb,l),jdb=1,nddmat)
       end do
+cdebug      do idb=1,nee
+cdebug        write(6,*) "idb,s(idb,idb):",idb,s(idb,idb)
+cdebug      end do
       return
       end
 c
 c version
-c $Id: stiff_ss.f,v 1.5 2005/03/19 01:49:49 willic3 Exp $
+c $Id: stiff_ss.f,v 1.6 2005/04/01 23:31:35 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
