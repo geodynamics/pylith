@@ -59,7 +59,7 @@ c
 c
       do i=1,numnp
         if((skew(1,i).ne.zero).and.(skew(nskdim,i).ne.zero)) then
-          call formrt(skew(1,i),rot,nskdim)
+          call formrt(skew(1,i),rot)
 	  call dcopy(ndof,d(1,i),ione,dtemp,ione)
 	  call dgemv("n",ndof,ndof,one,rot,ithree,dtemp,ione,zero,
      &     d(1,i),ione)
@@ -69,7 +69,7 @@ c
       end
 c
 c version
-c $Id: rdisp.f,v 1.2 2004/07/01 21:03:17 willic3 Exp $
+c $Id: rdisp.f,v 1.3 2004/07/05 19:37:35 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
