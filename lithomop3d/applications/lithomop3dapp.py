@@ -38,10 +38,10 @@ if __name__ == "__main__":
     from lithomop3d.Application import Application
 
     app = Application()
-    app.main()
+    app.run()
     
 
 # version
-__id__ = "$Id: lithomop3dapp.py,v 1.1 2004/08/02 21:38:38 willic3 Exp $"
+__id__ = "$Id: lithomop3dapp.py,v 1.2 2005/03/11 02:30:46 willic3 Exp $"
 
 #  End of file 
