@@ -145,7 +145,7 @@ c
       fac=e/(pr2*pr3)
       dd=pr1*fac
       od=pr*fac
-      ss=pr3*fac
+      ss=half*pr3*fac
       do i=1,3
         dmat(iddmat(i,i))=dd
         dmat(iddmat(i+3,i+3))=ss
@@ -383,6 +383,28 @@ c
       end
 c
 c
+      subroutine get_state_1(state,dstate,sout,nstate)
+c
+c...  routine to transfer state variables into sout
+c
+      include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "materials.inc"
+      include "nconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nstate
+      double precision state(nstate),dstate(nstate),sout(3*nstatesmax)
+c
+      call dcopy(nstate,state,ione,sout,ione)
+      call dcopy(nstate,dstate,ione,sout(nstatesmax+ione),ione)
+      return
+      end
+c
+c
       subroutine update_state_1(state,dstate,nstate)
 c
 c...  routine to update state variables at the end of a time step.
@@ -420,7 +442,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.17 2005/03/23 02:51:02 willic3 Exp $
+c $Id: mat_1.f,v 1.18 2005/03/24 02:08:57 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
