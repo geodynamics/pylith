@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -29,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_mathist(mhist,infmat,numat,npropsz,nhist,
+      subroutine read_mathist(mhist,ivfamily,nvfamilies,npropsz,nhist,
      & kr,kw,kp,idout,idsk,mhfile,ofile,pfile,ierr,errstrng)
 c
 c...     reads material history information.
@@ -49,13 +48,13 @@ c
 c
 c...  subroutine arguments
 c
-      integer numat,npropsz,nhist,kr,kw,kp,idout,idsk,ierr
-      integer mhist(npropsz),infmat(3,numat)
+      integer nvfamilies,npropsz,nhist,kr,kw,kp,idout,idsk,ierr
+      integer mhist(npropsz),ivfamily(5,nvfamilies)
       character mhfile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  local variables
 c
-      integer imat,iprop,imhist,indprop,indpropg,i
+      integer ifam,iprop,imhist,indprop,indpropg,i
 c
       ierr=izero
       call ifill(mhist,izero,npropsz)
@@ -75,16 +74,16 @@ c...  read material histories, if present
 c
  70   continue
         call pskip(kr)
-        read(kr,*,end=60,err=30) imat,iprop,imhist
+        read(kr,*,end=60,err=30) ifam,iprop,imhist
         if(imhist.le.izero.or.imhist.gt.nhist) then
           ierr=100
           errstrng="read_mathist"
           return
         end if
-        indprop=infmat(3,imat)
+        indprop=ivfamily(5,ifam)
         indpropg=indprop+iprop-ione
         mhist(indpropg)=imhist
-        if(idout.gt.izero) write(kw,810,err=50) imat,iprop,imhist
+        if(idout.gt.izero) write(kw,810,err=50) ifam,iprop,imhist
         go to 70
  60   continue
       close(kr)
@@ -135,7 +134,7 @@ c
       end
 c
 c version
-c $Id: read_mathist.f,v 1.3 2004/08/25 01:12:48 willic3 Exp $
+c $Id: read_mathist.f,v 1.4 2005/03/26 00:50:58 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
