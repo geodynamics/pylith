@@ -59,14 +59,13 @@ PROJ_SRCS = \
         get_units.f \
         getder.f \
         getjac.f \
-        getmat.f \
         getshapb.f \
         getshapn.f \
         gload_cmp_ss.f \
         gload_drv.f \
         gravld.f \
-        gspre.f \
         id_split.f \
+	idisp.f \
         ifill.f \
         indexx.f \
         infcmp.f \
@@ -118,7 +117,7 @@ PROJ_SRCS = \
         nchar.f \
         nfind.f \
         nnblnk.f \
-        pcginv.f \
+	open_ucd.f \
         plinhex.f \
         plinpyr.f \
         plintet.f \
@@ -181,7 +180,8 @@ PROJ_SRCS = \
         td_strs_cmp_ss.f \
         td_strs_mat_cmp_ss.F \
         transp.f \
-        update_state.f \
+        update_state_cmp.f \
+        update_state_drv.f \
         viscos.F \
         winklf.f \
         winklr.F \
@@ -189,10 +189,11 @@ PROJ_SRCS = \
         write_global_info.f \
         write_props.f \
         write_sparse_info.f \
-        write_state.f \
+        write_state_cmp.f \
+        write_state_drv.f \
         write_strscomp.f \
         write_subiter.f \
-        write_ucd_gauss_vals.f \
+        write_ucd_header.f \
         write_ucd_mesh.f \
         write_ucd_node_vals.f \
 
@@ -220,7 +221,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.17 2005/03/12 01:57:41 willic3 Exp $
+# $Id: Make.mm,v 1.18 2005/03/30 04:49:10 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
