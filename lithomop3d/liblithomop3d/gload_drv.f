@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine gload_drv(
-     & b,bres,gvec1,gvec2,grav,neq,                                     ! force
+     & bgravity,ngravflag,grav,neq,                                     ! force
      & x,d,numnp,                                                       ! global
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
@@ -55,13 +55,13 @@ c
 c
 c...  subroutine arguments
 c
-      integer neq,numnp,numslp,numfn,numelt,nconsz,numat,npropsz,nhist
-      integer lastep,numrot,ierr
+      integer ngravflag,neq,numnp,numslp,numfn,numelt,nconsz,numat
+      integer npropsz,nhist,lastep,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
       integer infiel(6,numelt),mhist(npropsz),infmat(3,numat)
       integer infmatmod(5,nmatmodmax),infetype(4,netypes)
       character errstrng*(*)
-      double precision b(neq),bres(neq),gvec1(neq),gvec2(neq),grav(ndof)
+      double precision bgravity(ngravflag*neq),grav(ndof)
       double precision x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
       double precision tfault(ndof,numfn),prop(npropsz)
       double precision gauss(nsd+1,ngaussmax,netypes)
@@ -81,7 +81,7 @@ c...  local variables
 c
       integer i,imat,matgpt,matmodel,nmatel,nprop,indprop
       logical matchg
-      double precision gsum,dens,dif
+      double precision gsum,dens
       double precision ptmp(100)
 c
 c...  included variable definitions
@@ -96,7 +96,7 @@ c
         gsum=gsum+grav(i)*grav(i)
       end do
       if(gsum.eq.zero) return
-      call fill(gvec2,zero,neq)
+      call fill(bgravity,zero,neq)
       matgpt=1
 c
 c...  loop over material groups
@@ -115,7 +115,7 @@ c
         dens=ptmp(1)
 c
         call gload_cmp(
-     &   gvec2,grav,neq,                                                ! force
+     &   bgravity,grav,neq,                                             ! force
      &   x,d,numnp,                                                     ! global
      &   dx,numslp,                                                     ! slip
      &   tfault,numfn,                                                  ! fault
@@ -134,18 +134,18 @@ c...find difference between computed total body force for new nodal
 c   positions (gvec2) and current body force (gvec1) and update
 c   body force vector and global load vector by this amount.
 c
-      do i=1,neq
-        dif=gvec2(i)-gvec1(i)
-        gvec1(i)=gvec2(i)
-        b(i)=b(i)+dif
-        bres(i)=bres(i)+dif
-      end do
+c*      do i=1,neq
+c*        dif=gvec2(i)-gvec1(i)
+c*        gvec1(i)=gvec2(i)
+c*        b(i)=b(i)+dif
+c*        bres(i)=bres(i)+dif
+c*      end do
 c
       return
       end
 c
 c version
-c $Id: gload_drv.f,v 1.2 2004/07/08 21:25:16 willic3 Exp $
+c $Id: gload_drv.f,v 1.3 2005/01/05 22:44:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
