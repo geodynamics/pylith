@@ -81,6 +81,18 @@ c
       integer imat,npage,matmod,i,n,j,inf,ietypei,ngauss,nstate,imatvar
       integer ietype,nen,i1,i2
 c
+cdebug      write(6,*) "Hello from read_connect_f!"
+cdebug      write(6,*) nconsz,numelt,numnp,numat,nstatesz,ndmatsz,kr,kw,kp
+cdebug      write(6,*) (neni(i),i=1,netypesi)
+cdebug      do i=1,netypes
+cdebug        write(6,*) (infetype(j,i),j=1,4)
+cdebug      end do
+cdebug      do i=1,numat
+cdebug        write(6,*) (infmat(j,i),j=1,3)
+cdebug      end do
+cdebug      do i=1,nmatmodmax
+cdebug        write(6,*) (infmatmod(j,i),j=1,5)
+cdebug      end do
       call ifill(ien,izero,nconsz)
       call ifill(indmat,izero,numat)
       call ifill(imgrp,izero,numat)
@@ -102,7 +114,7 @@ c
       open(kr,file=ifile,status="old",err=20)
       call pskip(kr)
       do i=1,numelt
-        if(i.ne.ione) infiel(1,i)=infiel(1,i-1)+neni(ietypei)-1
+        if(i.ne.ione) infiel(1,i)=infiel(1,i-1)+neni(ietypei)
         read(kr,*,end=30,err=30) n,ietypei,imat,inf,
      &   (ien(j),j=infiel(1,i),infiel(1,i)+neni(ietypei)-1)
         infiel(2,i)=imat
@@ -138,17 +150,23 @@ c...  set state variable and material matrix indices, and increment the
 c     total size of the state variable and material matrices.
 c
         infiel(5,i)=nstatesz+ione
-        infiel(6,i)=ndmatsz+ione
         ngauss=infetype(1,infiel(3,i))
         nstate=infmatmod(2,matmod)
         imatvar=infmatmod(4,matmod)
-        nstatesz=nstatesz+nstr*nstate*ngauss
+        nstatesz=nstatesz+nstate*ngauss
         if(imatvar.eq.izero) then
-          if(imgrp(imat).gt.izero) ndmatsz=ndmatsz+ngaussmax
+          if(imgrp(imat).eq.izero) then
+            infiel(6,i)=ndmatsz+ione
+            ndmatsz=ndmatsz+ngaussmax
+          else
+            infiel(6,i)=infiel(6,infiel(4,i-1))
+          end if
         else
+          infiel(6,i)=ndmatsz+ione
           ndmatsz=ndmatsz+ngauss
         end if
         imgrp(imat)=imgrp(imat)+ione
+cdebug        write(6,*) i,(infiel(j,i),j=1,6)
       end do
       close(kr)
 c
@@ -193,7 +211,7 @@ c
             write(kw,2000)(head(j),j,j=1,nen)
             write(kw,2500)
           end if
-          write(kw,3000) i,imat,ietype,ngauss,(ien(i),i=i1,i2)
+          write(kw,3000) i,imat,ietype,ngauss,(ien(j),j=i1,i2)
         end do
         write(kw,4000)
         close(kw)
@@ -249,17 +267,17 @@ c
 c
 1000  format(30i7)
 2000  format(1x,///,
-     x' e l e m e n t  d a t a ',//,5x,
-     x' element    material  element  number',20(a4,i2,4x))
-2500  format(5x,'  number      type    gauss',/,
-     x       5x,'                     points',/)
+     x          ' e l e m e n t  d a t a ',//,5x,
+     x          ' element    material  element  number  ',20(a4,i2,4x))
+2500  format(5x,'             number     type   gauss  ',/,
+     x       5x,'                               points  ',/)
 3000  format(6x,i7,25(5x,i7))
 4000  format(//)
 c
       end
 c
 c version
-c $Id: read_connect.f,v 1.2 2004/07/09 20:22:41 willic3 Exp $
+c $Id: read_connect.f,v 1.3 2004/08/02 21:25:14 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
