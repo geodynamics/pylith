@@ -124,6 +124,10 @@ class Lithomop3d_scan(Component):
         self._geometryTypeInt = 0
         self._numberSpaceDimensions = 0
         self._numberDegreesFreedom = 0
+        # Note:  eventually the variable below should disappear, and the
+        # total size of the state variable array for each material model
+        # should be used instead.  This means that all state variable
+        # bookkeeping should be done within the material model routines.
         self._stateVariableDimension = 0
         self._materialMatrixDimension = 0
         self._numberSkewDimensions = 0
@@ -133,14 +137,14 @@ class Lithomop3d_scan(Component):
         self._listIddmat = [0]
 
         # Invariant parameters related to element type
-        self._maxElementNodes = 0
-        self._maxGaussPoints = 0
-        self._maxElementEquations = 0
+        # self._maxElementNodes = 0
+        # self._maxGaussPoints = 0
+        # self._maxElementEquations = 0
         self._numberElementTypes = 0
         self._numberElementTypesBase = 0
         self._numberElementNodesBase = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self._pointerToListArrayNumberElementNodesBase = None
-        self._pointerToElementTypeInfo = None
+        # self._pointerToElementTypeInfo = None
 
         # Invariant parameters related to material model
         self._maxMaterialModels = 0
@@ -199,11 +203,16 @@ class Lithomop3d_scan(Component):
         self._pointerToListArrayPropertyListIndex = None
         self._materialModel = [0]
         self._pointerToListArrayMaterialModel = None
-        self._pointerToMaterialInfo = None
 
-        self._elementInfo = [0, 0]
-        self._numberElements = 0
-        self._connectivitySize = 0
+        self._volumeElementDimens = [0, 0, 0]
+        self._numberVolumeElements = 0
+        self._volumeElementType = 0
+        self._numberVolumeElementFamilies = 0
+        self._pointerToVolumeElementInfo = None
+        self._pointerToVolumeElementFamilyInfo = None
+        self._maxNumberElementFamilies = 0
+        self._numberAllowedVolumeElementTypes = 0
+        self._pointerToElementFamilyList = None
 
         self._numberPrestressEntries = 0
 
@@ -393,46 +402,17 @@ class Lithomop3d_scan(Component):
             16,17,18,19,20,21]
 
         # Invariant parameters related to element type
-        self._maxElementNodes = 20
-        self._maxGaussPoints = 27
-        self._maxElementEquations = self._numberDegreesFreedom*self._maxElementNodes
+        # self._maxElementNodes = 20
+        # self._maxGaussPoints = 27
+        # self._maxElementEquations = self._numberDegreesFreedom*self._maxElementNodes
         self._numberElementTypes = 62
         self._numberElementTypesBase = 10
         self._numberElementNodesBase = [8, 7, 6, 5, 4, 20, 18, 15, 13, 10]
         self._pointerToListArrayNumberElementNodesBase = lithomop3d.intListToArray(
             self._numberElementNodesBase)
 	self._memorySize += self._numberElementTypesBase*self._intSize
-        self._pointerToElementTypeInfo = lithomop3d.allocateInt(
-            4*self._numberElementTypes)
-	self._memorySize += 4*self._numberElementTypes*self._intSize
-        self._pointerToSh = lithomop3d.allocateDouble(
-            (self._numberSpaceDimensions+1)*
-            self._maxElementNodes*
-            self._maxGaussPoints*
-            self._numberElementTypes)
-	self._memorySize += (self._numberSpaceDimensions+1)* \
-            self._maxElementNodes* \
-            self._maxGaussPoints* \
-            self._numberElementTypes* \
-	    self._doubleSize
-        self._pointerToShj = lithomop3d.allocateDouble(
-            (self._numberSpaceDimensions+1)*
-            self._maxElementNodes*
-            self._maxGaussPoints*
-            self._numberElementTypes)
-	self._memorySize += (self._numberSpaceDimensions+1)* \
-            self._maxElementNodes* \
-            self._maxGaussPoints* \
-            self._numberElementTypes* \
-	    self._doubleSize
-        self._pointerToGauss = lithomop3d.allocateDouble(
-            (self._numberSpaceDimensions+1)*
-            self._maxGaussPoints*
-            self._numberElementTypes)
-	self._memorySize += (self._numberSpaceDimensions+1)* \
-            self._maxGaussPoints* \
-            self._numberElementTypes* \
-	    self._doubleSize
+        self._pointerToVolumeElementInfo = lithomop3d.allocateInt(4)
+	self._memorySize += 4*self._intSize
 
         # Invariant parameters related to material model
         self._maxMaterialModels = 20
@@ -481,14 +461,6 @@ class Lithomop3d_scan(Component):
         else:
             self._quadratureOrderInt = 1
 
-        # print "Just before lithomop3d.preshape:"
-        lithomop3d.preshape(
-            self._pointerToSh,
-            self._pointerToShj,
-            self._pointerToGauss,
-            self._pointerToElementTypeInfo,
-            self._quadratureOrderInt)
-        # print "Just after lithomop3d.preshape:"
 
         # Parameters derived from the number of entries in a file.
         # try:
@@ -557,10 +529,8 @@ class Lithomop3d_scan(Component):
             f77FileInput,
             self._loadHistoryInputFile)
 
-        # print "Just before matinfo.readprop"
         self._numberMaterials = matinfo.readprop(self._materialPropertiesInputFile)
-        # print "Just after matinfo.readprop"
-        # print "numberMaterials = %i" % self._numberMaterials
+
         self._propertyList = matinfo.propertyList
         self._propertyListIndex = matinfo.propertyIndex
         self._materialModel = matinfo.materialModel
@@ -574,24 +544,83 @@ class Lithomop3d_scan(Component):
         self._pointerToListArrayMaterialModel = lithomop3d.intListToArray(
             self._materialModel)
         self._memorySize += self._numberMaterials*self._intSize
-        self._pointerToMaterialInfo = lithomop3d.allocateInt(
-            3*self._numberMaterials)
-        self._memorySize += 3*self._numberMaterials*self._intSize
 
-        self._elementInfo = lithomop3d.scan_connect(
-            self._pointerToListArrayNumberElementNodesBase,
-            self._pointerToMaterialInfo,
+        # At present, we assume that the number of element families is equal to
+        # the number of material types used, since only one volume type at a
+        # time is allowed.
+        self._numberAllowedVolumeElementTypes = 1
+        self._maxNumberVolumeElementFamilies = self._numberAllowedVolumeElementTypes* \
+                                               self._numberMaterials
+        self._pointerToVolumeElementFamilyList = litomopd3d.allocateInt(
+            self._numberVolumeElementFamilies)
+        self._memorySize += self._numberVolumeElementFamilies*self._intSize
+
+        # self._pointerToMaterialInfo = lithomop3d.allocateInt(
+        #     3*self._numberMaterials)
+        # self._memorySize += 3*self._numberMaterials*self._intSize
+        self._volumeElementDimens = [0, 0, 0]
+        self._numberVolumeElements = 0
+        self._volumeElementType = 0
+        self._numberVolumeElementFamilies = 0
+        self._pointerToVolumeElementInfo = None
+        self._pointerToVolumeElementFamilyInfo = None
+        self._numberAllowedVolumeElementTypes = 0
+        self._maxNumberVolumeElementFamilies = 0
+        self._pointerToVolumeElementFamilyList = None
+
+        self._volumeElementDimens = lithomop3d.scan_connect(
+            self._pointerToVolumeElementFamilyList,
             self._pointerToMaterialModelInfo,
-            self._pointerToListArrayMaterialModel,
-            self._pointerToListArrayPropertyListIndex,
+            self._pointerToListArrayNumberElementNodesBase,
+            self._maxNumberVolumeElementFamilies,
             self._numberMaterials,
             f77FileInput,
             self._connectivityInputFile)
-        self._numberElements = self._elementInfo[0]
-        self._connectivitySize = self._elementInfo[1]
+
+        self._numberVolumeElements = self._volumeElementDimens[0]
+        self._volumeElementType = self._volumeElementDimens[1]
+        self._numberVolumeElementFamilies = self._volumeElementDimens[2]
+
         self._pointerToListArrayMaterialModel = None
         self._pointerToListArrayPropertyListIndex = None
         self._memorySize -= 2*self._numberMaterials*self._intSize
+
+        # print "Just before lithomop3d.preshape:"
+        self._pointerToSh = lithomop3d.allocateDouble(
+            (self._numberSpaceDimensions+1)*
+            self._maxElementNodes*
+            self._maxGaussPoints*
+            self._numberElementTypes)
+	self._memorySize += (self._numberSpaceDimensions+1)* \
+            self._maxElementNodes* \
+            self._maxGaussPoints* \
+            self._numberElementTypes* \
+	    self._doubleSize
+        self._pointerToShj = lithomop3d.allocateDouble(
+            (self._numberSpaceDimensions+1)*
+            self._maxElementNodes*
+            self._maxGaussPoints*
+            self._numberElementTypes)
+	self._memorySize += (self._numberSpaceDimensions+1)* \
+            self._maxElementNodes* \
+            self._maxGaussPoints* \
+            self._numberElementTypes* \
+	    self._doubleSize
+        self._pointerToGauss = lithomop3d.allocateDouble(
+            (self._numberSpaceDimensions+1)*
+            self._maxGaussPoints*
+            self._numberElementTypes)
+	self._memorySize += (self._numberSpaceDimensions+1)* \
+            self._maxGaussPoints* \
+            self._numberElementTypes* \
+	    self._doubleSize
+        lithomop3d.preshape(
+            self._pointerToSh,
+            self._pointerToShj,
+            self._pointerToGauss,
+            self._pointerToElementTypeInfo,
+            self._quadratureOrderInt)
+        # print "Just after lithomop3d.preshape:"
 
         # self._numberPrestressEntries = lithomop3d.scan_prestr(
         #     self._stateVariableDimension,
@@ -692,6 +721,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.15 2005/03/11 02:16:56 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.16 2005/03/19 01:57:03 willic3 Exp $
 
 # End of file 

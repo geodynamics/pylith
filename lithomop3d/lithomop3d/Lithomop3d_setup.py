@@ -102,7 +102,8 @@ class Lithomop3d_setup(Component):
         self.f77UcdOutput = lm3dscan.f77UcdOutput
 
                                                                    
-        # Initialize and define some integer parameters based on string or logical parameters in python
+        # Initialize and define some integer parameters based on string
+        # or logical parameters in python
 
         self.asciiOutputInt = 0
         if lm3dscan.inventory.asciiOutput == "none":
@@ -248,7 +249,14 @@ class Lithomop3d_setup(Component):
         self.numberMaterials = lm3dscan._numberMaterials
         self.propertyListSize = lm3dscan._propertyListSize
         self.pointerToListArrayPropertyList = lm3dscan._pointerToListArrayPropertyList
-        self.pointerToMaterialInfo = lm3dscan._pointerToMaterialInfo
+        # self.pointerToMaterialInfo = lm3dscan._pointerToMaterialInfo
+        self.pointerToListArrayPropertyListIndex = lm3dscan._pointerToListArrayPropertyListIndex
+        self.pointerToListArrayMaterialModel = lm3dscan._pointerToListArrayMaterialModel
+
+        self.numberVolumeElements = lm3dscan._numberVolumeElements
+        self.volumeElementType = lm3dscan._volumeElementType
+        self.numberVolumeElementFamilies = lm3dscan._numberVolumeElementFamilies
+        self.pointerToVolumeElementFamilyList = lm3dscan._pointerToVolumeElementFamilyList
 
         self.numberElements = lm3dscan._numberElements
         self.connectivitySize = lm3dscan._connectivitySize
@@ -349,6 +357,8 @@ class Lithomop3d_setup(Component):
         self.pointerToS = None
         self.pointerToStemp = None
 
+
+        self.pointerToVolumeElementInfo = None
         self.pointerToState = None
         self.pointerToDstate = None
         self.stateSize = 0
@@ -1445,6 +1455,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.19 2005/03/12 02:05:56 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.20 2005/03/19 01:57:04 willic3 Exp $
 
 # End of file 
