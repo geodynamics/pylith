@@ -30,9 +30,10 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine viscos(
-     & alnz,pcg,zcg,ja,                                                 ! sparse
-     & b,btot,bres,pvec,gvec1,gvec2,grav,                               ! force
-     & x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,                       ! global
+     & alnz,pcg,zcg,dprev,ja,                                           ! sparse
+     & bextern,btraction,bgravity,bconcforce,bprestress,bintern,bresid, ! force
+     & bwork,dispvec,nforce,grav,                                       ! force
+     & x,d,deld,dcur,id,iwink,wink,nsysdat,                             ! global
      & ibond,bond,                                                      ! bc
      & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
      & fault,nfault,dfault,tfault,                                      ! split
@@ -64,16 +65,24 @@ c
 c
 c...  subroutine arguments
 c
-      integer ja(*),id(*),iwink(*),ibond(*),idx(*),iwinkx(*),idslp(*)
-      integer ipslp(*),idhist(*),nfault(*),ien(*),lm(*),lmx(*),lmf(*)
-      integer infiel(*),iddmat(*),ielno(*),iside(*),ihistry(*),mhist(*)
-      integer infmat(*),infmatmod(*),ismatmod(*),infetype(*),maxstp(*)
-      integer maxit(*),ntdinit(*),lgdef(*),itmax(*),iprint(*)
+      integer ierr
+      integer ja(*)
+      integer id(*),iwink(*)
+      integer ibond(*)
+      integer idx(*),iwinkx(*),idslp(*),ipslp(*),idhist(*)
+      integer nfault(*)
+      integer ien(*),lm(*),lmx(*),lmf(*),infiel(*),iddmat(*)
+      integer ielno(*),iside(*),ihistry(*)
+      integer mhist(*),infmat(*),infmatmod(*),ismatmod(*)
+      integer infetype(*)
+      integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
+      integer iprint(*)
       integer istatout(*)
-      double precision alnz(*),pcg(*),zcg(*)
-      double precision b(*),btot(*),bres(*),pvec(*),gvec1(*),gvec2(*)
-      double precision grav(*)
-      double precision x(*),d(*),deld(*),dprev(*),dcur(*),wink(*)
+      double precision alnz(*),pcg(*),zcg(*),dprev(*)
+      double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
+      double precision bprestress(*),bintern(*),bresid(*),bwork(*)
+      double precision dispvec(*),grav(*)
+      double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision bond(*)
       double precision dx(*),deldx(*),dxcur(*),diforc(*),winkx(*)
       double precision fault(*),dfault(*),tfault(*)
@@ -88,6 +97,7 @@ c
 c
 c...  included dimension and type statements
 c
+      include "nforce_dim.inc"
       include "nsysdat_dim.inc"
       include "npar_dim.inc"
       include "ntimdat_dim.inc"
@@ -118,12 +128,13 @@ c
 c...  local variables
 c
 cdebug      integer idb
-      integer indexx,ntot,jcyc,nfirst,naxstp,i,j,ierr
+      integer indexx,ntot,jcyc,nfirst,naxstp,i,j
       double precision time,tminmax
       logical ltim,fulout,unlck,unlckf,skc,reform
 c
 c...  included variable definitions
 c
+      include "nforce_def.inc"
       include "nsysdat_def.inc"
       include "npar_def.inc"
       include "ntimdat_def.inc"
@@ -190,6 +201,10 @@ c...  clear arrays at beginning of time step
 c
             call fill(deld,zero,ndof*numnp)
             call fill(deldx,zero,ndof*numnp)
+            call fill(bextern,zero,neq*nextflag)
+            call fill(btraction,zero,neq*ntractflag)
+            call fill(bconcforce,zero,neq*nconcflag)
+c*            call fill(bintern,zero,neq)
             if(skc) then
               call skclear(idslp,skew,numsn,numnp)
               call skcomp(x,d,skew,idslp,ipslp,ipstrs,numsn,numnp,nstep,
@@ -239,8 +254,8 @@ c
 c...  apply boundary conditions
 c
 cdebug            write(6,*) "Before load:"
-            call load(id,ibond,bond,d,deld,btot,histry,deltp,numnp,neq,
-     &       nhist,nstep,lastep,ierr,errstrng)
+            call load(id,ibond,bond,d,deld,bconcforce,histry,deltp,
+     &       numnp,neq,nconcflag,nhist,nstep,lastep,ierr,errstrng)
 cdebug            write(6,*) "After load:"
             if(ierr.ne.izero) return
 c
@@ -256,22 +271,25 @@ c...  add loads from changes in differential forces across internal
 c        interfaces
 c
             if(numdif.ne.izero) then
-              call loadx(btot,diforc,histry,idx,idhist,neq,numnp,nhist,
-     &         nstep,lastep,ierr,errstrng)
+              call loadx(bconcforce,diforc,histry,idx,idhist,neq,
+     &         nconcflag,numnp,nhist,nstep,lastep,ierr,errstrng)
               if(ierr.ne.izero) return
             end if
 c
 c...  compute change in load vector if winkler forces are removed
 c
-            call fill(zcg,zero,neq)
-            if(nwink.ne.izero.and.unlck) call unlock(zcg,btot,id,iwink,
-     &       idhist,ibond,bond,histry,nstep,numnp,nwink,nhist,neq,
-     &       numdif,lastep,ione)
-            if(nwinkx.ne.izero.and.unlckf) call unlock(zcg,btot,idx,
-     &       iwinkx,idhist,ibond,diforc,histry,nstep,numnp,nwinkx,nhist,
-     &       neq,numdif,lastep,itwo)
+c****  I believe that this is no longer necessary, since Winkler forces
+c****  are added to the internal force vector at every iteration.
+c
+c*            call fill(zcg,zero,neq)
+c*            if(nwink.ne.izero.and.unlck) call unlock(zcg,btot,id,iwink,
+c*     &       idhist,ibond,bond,histry,nstep,numnp,nwink,nhist,neq,
+c*     &       numdif,lastep,ione)
+c*            if(nwinkx.ne.izero.and.unlckf) call unlock(zcg,btot,idx,
+c*     &       iwinkx,idhist,ibond,diforc,histry,nstep,numnp,nwinkx,nhist,
+c*     &       neq,numdif,lastep,itwo)
 cdebug            write(6,*) "After unlock:"
-	    call daxpy(neq,one,zcg,ione,btot,ione)
+c*	    call daxpy(neq,one,zcg,ione,btot,ione)
 c
 c...  reform time-dependent material and stiffness matrices if
 c     requested, compute forces due to applied displacements and split
@@ -303,7 +321,7 @@ c
               if(ierr.ne.izero) return
 c
               call formdf_ss(
-     &         b,neq,                                                   ! force
+     &         bintern,neq,                                             ! force
      &         x,d,dcur,numnp,                                          ! global
      &         s,stemp,                                                 ! stiff
      &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
@@ -317,7 +335,7 @@ c
               if(ierr.ne.izero) return
 c
               if(numfn.ne.izero) call formf_ss(
-     &         b,neq,                                                   ! force
+     &         bintern,neq,                                             ! force
      &         x,numnp,                                                 ! global
      &         s,stemp,                                                 ! stiff
      &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
@@ -332,9 +350,10 @@ c
               if(ierr.ne.izero) return
 c
               call iterate(
-     &         alnz,pcg,zcg,ja,                                         ! sparse
-     &         b,btot,bres,pvec,gvec1,gvec2,grav,                       ! force
-     &         x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,               ! global
+     &         alnz,pcg,zcg,dprev,ja,                                   ! sparse
+     &         bextern,btraction,bgravity,bconcforce,bprestress,bintern,! force
+     &         bresid,bwork,dispvec,nforce,grav,                        ! force
+     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
      &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
      &         nfault,dfault,tfault,                                    ! fault
      &         s,stemp,                                                 ! stiff
@@ -379,7 +398,7 @@ c
               if(ierr.ne.izero) return
 c
               call formdf_ss(
-     &         b,neq,                                                   ! force
+     &         bintern,neq,                                             ! force
      &         x,d,dcur,numnp,                                          ! global
      &         s,stemp,                                                 ! stiff
      &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
@@ -393,7 +412,7 @@ c
               if(ierr.ne.izero) return
 c
               if(numfn.ne.izero) call formf_ss(
-     &         b,neq,                                                   ! force
+     &         bintern,neq,                                             ! force
      &         x,numnp,                                                 ! global
      &         s,stemp,                                                 ! stiff
      &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
@@ -408,9 +427,10 @@ c
               if(ierr.ne.izero) return
 c
               call iterate(
-     &         alnz,pcg,zcg,ja,                                         ! sparse
-     &         b,btot,bres,pvec,gvec1,gvec2,grav,                       ! force
-     &         x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,               ! global
+     &         alnz,pcg,zcg,dprev,ja,                                   ! sparse
+     &         bextern,btraction,bgravity,bconcforce,bprestress,bintern,! force
+     &         bresid,bwork,dispvec,nforce,grav,                        ! force
+     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
      &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
      &         nfault,dfault,tfault,                                    ! fault
      &         s,stemp,                                                 ! stiff
@@ -451,7 +471,7 @@ c
 clater              if(ierr.ne.izero) return
 c
 clater              call formdf_ld(
-clater     &         b,neq,                                                   ! force
+clater     &         bintern,neq,                                             ! force
 clater     &         x,d,dcur,numnp,                                          ! global
 clater     &         s,stemp,                                                 ! stiff
 clater     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
@@ -464,7 +484,7 @@ c
 clater              if(ierr.ne.izero) return
 c
 clater              if(numfn.ne.izero) call formf_ld(
-clater     &         b,neq,                                                   ! force
+clater     &         bintern,neq,                                             ! force
 clater     &         x,numnp,                                                 ! global
 clater     &         s,stemp,                                                 ! stiff
 clater     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
@@ -478,9 +498,10 @@ c
 clater              if(ierr.ne.izero) return
 c
 clater              call iterate(
-clater     &         alnz,pcg,zcg,ja,                                         ! sparse
-clater     &         b,btot,bres,pvec,gvec1,gvec2,grav,                       ! force
-clater     &         x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,               ! global
+clater     &         alnz,pcg,zcg,dprev,ja,                                   ! sparse
+clater     &         bextern,btraction,bgravity,bconcforce,bprestress,bintern,! force
+clater     &         bresid,bwork,dispvec,nforce,grav,                        ! force
+clater     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
 clater     &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
 clater     &         nfault,dfault,tfault,                                    ! fault
 clater     &         s,stemp,                                                 ! stiff
@@ -517,7 +538,7 @@ c
 clater              if(ierr.ne.izero) return
 c
 clater              call formdf_ld(
-clater     &         b,neq,                                                   ! force
+clater     &         bintern,neq,                                             ! force
 clater     &         x,d,dcur,numnp,                                          ! global
 clater     &         s,stemp,                                                 ! stiff
 clater     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
@@ -530,7 +551,7 @@ c
 clater              if(ierr.ne.izero) return
 c
 clater              if(numfn.ne.izero) call formf_ld(
-clater     &         b,neq,                                                   ! force
+clater     &         bintern,neq,                                             ! force
 clater     &         x,numnp,                                                 ! global
 clater     &         s,stemp,                                                 ! stiff
 clater     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
@@ -544,9 +565,10 @@ c
 clater              if(ierr.ne.izero) return
 c
 clater              call iterate(
-clater     &         alnz,pcg,zcg,ja,                                         ! sparse
-clater     &         b,btot,bres,pvec,gvec1,gvec2,grav,                       ! force
-clater     &         x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,               ! global
+clater     &         alnz,pcg,zcg,dprev,ja,                                   ! sparse
+clater     &         bextern,btraction,bgravity,bconcforce,bprestress,bintern,! force
+clater     &         bresid,bwork,dispvec,nforce,grav,                        ! force
+clater     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
 clater     &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
 clater     &         nfault,dfault,tfault,                                    ! fault
 clater     &         s,stemp,                                                 ! stiff
@@ -626,7 +648,7 @@ c
       end
 c
 c version
-c $Id: viscos.f,v 1.6 2004/08/25 00:59:45 willic3 Exp $
+c $Id: viscos.f,v 1.7 2005/01/05 22:32:07 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
