@@ -34,9 +34,9 @@ c
      & x,d,numnp,                                                       ! global
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
-     & ien,lm,lmx,lmf,infiel,numelt,nconsz,                             ! elemnt
-     & dens,matgpt,nmatel,matchg,                                       ! materl
-     & gauss,shj,infetype,                                              ! eltype
+     & ien,lm,lmx,lmf,nelfamily,ielg,                                   ! elemfamily
+     & dens,matchg,                                                     ! materl
+     & gauss,shj,nen,ngauss,nee,                                        ! eltype
      & rtimdat,ntimdat,                                                 ! timdat
      & skew,numrot,                                                     ! skew
      & ierr,errstrng)                                                   ! errcode
@@ -55,17 +55,17 @@ c
 c
 c...  subroutine arguments
 c
-      integer neq,numnp,numslp,numfn,numelt,nconsz,matgpt,nmatel,numrot
-      integer ierr
-      integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(7,numelt),infetype(4,netypes)
+      integer neq,numnp,numslp,numfn,nelfamily,ielg,nen,ngauss,nee
+      integer numrot,ierr
+      integer ien(nen,nelfamily),lm(ndof*nen,nelfamily)
+      integer lmx(ndof*nen,nelfamily),lmf(nen,nelfamily)
       character errstrng*(*)
       logical matchg
       double precision bgravity(neq),grav(ndof)
       double precision x(nsd,numnp),d(ndof,numnp)
       double precision dx(ndof,numnp),tfault(ndof,numfn),dens
-      double precision gauss(nsd+1,ngaussmax,netypes)
-      double precision shj(nsd+1,nenmax,ngaussmax,netypes)
+      double precision gauss(nsd+1,ngauss)
+      double precision shj(nsd+1,nen,ngauss)
       double precision skew(nskdim,numnp)
 c
 c...  included dimension and type statements
@@ -75,7 +75,7 @@ c
 c
 c...  local variables
 c
-      integer ind,iel,indien,ietype,ngauss,nen,nee
+      integer ielf
       double precision p(60),xl(60)
 c
 c...  included variable definitions
@@ -86,39 +86,34 @@ c
 cdebug      write(6,*) "Hello from gload_cmp_ss_f!"
 c
 c
-c...  loop over elements in a material group
+c...  loop over elements in a family
 c
-      do ind=matgpt,matgpt+nmatel-1
-        iel=infiel(4,ind)
-        indien=infiel(1,iel)
-        ietype=infiel(3,iel)
-        ngauss=infetype(1,ietype)
-        nen=infetype(2,ietype)
-        nee=infetype(4,ietype)
+      do ielf=1,nelfamily
 c
 c...  localize coordinates
 c
-        call lcoord(x,xl,ien(indien),nen,numnp)
+        call lcoord(x,xl,ien(1,ielf),nen,numnp)
         call fill(p,zero,nee)
 c
 c...  compute element body force
 c
-        call gravld(p,grav,xl,iel,nen,dens,gauss(1,1,ietype),
-     &   shj(1,1,1,ietype),ngauss,ierr,errstrng)
+        call gravld(p,grav,xl,ielg,nen,dens,gauss,shj,ngauss,ierr,
+     &   errstrng)
 c
 c...  rotate body forces if necessary
 c
-        if(numrot.ne.0) call rpforc(p,skew,ien(indien),numnp,nen)
+        if(numrot.ne.izero) call rpforc(p,skew,ien(1,ielf),numnp,nen)
 c
 c...  add element forces to global vector (bgravity)
 c
-        call addfor(bgravity,p,lm(1,indien),lmx(1,indien),neq,nee)
+        call addfor(bgravity,p,lm(1,ielf),lmx(1,ielf),neq,nee)
+        ielg=ielg+ione
       end do
       return
       end
 c
 c version
-c $Id: gload_cmp_ss.f,v 1.4 2005/02/24 00:00:44 willic3 Exp $
+c $Id: gload_cmp_ss.f,v 1.5 2005/03/21 22:13:15 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
