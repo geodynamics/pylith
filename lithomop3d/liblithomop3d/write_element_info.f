@@ -65,8 +65,8 @@ c...  echo input to output file
 c
       if(idout.gt.izero) then
         open(kw,file=ofile,status="old",access="append")
-        write(kw,700) elmlbl,numelv,intorder(intord),ipstrs,ipauto,tpois,
-     &   tyoungs
+        write(kw,700) elmlbl,numelv,intorder(intord),ipstrs,ipauto,
+     &   tpois,tyoungs
         close(kw)
       end if
 c
@@ -91,7 +91,7 @@ c
       end
 c
 c version
-c $Id: write_element_info.f,v 1.5 2005/03/22 19:51:15 willic3 Exp $
+c $Id: write_element_info.f,v 1.6 2005/03/30 19:34:46 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
