@@ -34,12 +34,12 @@
 
 // exceptionhandler plus safe string concatenation
 
-extern char* safestrcat(char* dest, const char* src, const int destsize)
-extern int exceptionhandler(const int errorcode, const char* errorstring)
+extern char* safestrcat(char* dest, const char* src, const int destsize);
+extern int exceptionhandler(const int errorcode, const char* errorstring);
 
 #endif
 
 // version
-// $Id: exceptionhandler.h,v 1.1 2004/07/16 21:17:34 willic3 Exp $
+// $Id: exceptionhandler.h,v 1.2 2004/07/20 21:29:27 willic3 Exp $
 
 // End of file
