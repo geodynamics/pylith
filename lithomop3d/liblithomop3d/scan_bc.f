@@ -53,16 +53,21 @@ c...  subroutine arguments
 c
       integer numbc,kr,ierr
       character displacement_units*(*),velocity_units*(*)
-      character force_units*(*),bcfile*(*),errstrng*(*)
+      character force_units*(*),bcfile*(*),errstrng*(*),errtmp*512
 c
 c...  local constants
 c
       character def(3)*18
       data def/"displacement_units","velocity_units","force_units"/
 c
+c...  external functions
+c
+      integer nchar,nnblnk
+      external nchar,nnblnk
+c
 c...  local variables
 c
-      integer nget,j,n
+      integer nget,j,n,i1,i2
       integer ibond(3)
       double precision bond(3)
       character units(3)*80
@@ -77,8 +82,13 @@ c
 c
 c...  get units, returning error 2 if they aren't found.
 c
-      call get_units(kr,nget,units_defined,units,def,ierr,errstrng)
-      if(ierr.ne.izero) return
+      call get_units(kr,nget,units_defined,units,def,ierr,errtmp)
+      if(ierr.ne.izero) then
+        i1=nnblnk(errtmp)
+        i2=nchar(errtmp)
+        errstrng="scan_bc:"//errtmp(i1:i2)
+        return
+      end if
       displacement_units=units(1)
       velocity_units=units(2)
       force_units=units(3)
@@ -121,7 +131,7 @@ c
       end
 c
 c version
-c $Id: scan_bc.f,v 1.2 2004/07/12 19:39:59 willic3 Exp $
+c $Id: scan_bc.f,v 1.3 2004/08/12 20:49:27 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
