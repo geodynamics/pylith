@@ -39,6 +39,7 @@ update: clean
 
 EXPORT_PYTHON_MODULES = \
 	Application.py \
+	ElementTypeDef.py \
 	KeywordValueParse.py \
 	Lithomop3d_run.py \
 	Lithomop3d_scan.py \
@@ -52,7 +53,7 @@ export:: export-python-modules
 
 
 # version
-# $Id: Make.mm,v 1.2 2004/07/20 20:49:11 willic3 Exp $
+# $Id: Make.mm,v 1.3 2005/04/01 23:50:50 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
