@@ -35,7 +35,10 @@
 #include <Python.h>
 
 #include "elastc.h"
+#include "exceptionhandler.h"
 #include "lithomop3d_externs.h"
+#include <stdio.h>
+#include <string.h>
 
 
 // Perform the elastic solution.
@@ -55,94 +58,90 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   PyObject* pyPointerToPvec;
   PyObject* pyPointerToGvec1;
   PyObject* pyPointerToGvec2;
+  PyObject* pyPointerToListArrayGrav;
   PyObject* pyPointerToX;                 // Global arrays
   PyObject* pyPointerToD;
-  PyObject* pyPointerToDx;
   PyObject* pyPointerToDeld;
-  PyObject* pyPointerToDeldx;
   PyObject* pyPointerToDprev;
   PyObject* pyPointerToDcur;
-  PyObject* pyPointerToDxcur;
   PyObject* pyPointerToId;
+  PyObject* pyPointerToIwink;
+  PyObject* pyPointerToWink;
+  PyObject* pyPointerToListArrayNsysdat;
+  PyObject* pyPointerToIbond;              // Boundary condition arrays
+  PyObject* pyPointerToBond;
+  PyObject* pyPointerToDx;                 // Slippery node arrays
+  PyObject* pyPointerToDeldx;
+  PyObject* pyPointerToDxcur;
+  PyObject* pyPointerToDiforc;
   PyObject* pyPointerToIdx;
-  PyObject* pyPointerToSkew;
-  PyObject* pyPointerToHistry;
-  PyObject* pyPointerToIen;                // Element arrays
-  PyObject* pyPointerToInfin;
-  PyObject* pyPointerToMat;
+  PyObject* pyPointerToIwinkx;
+  PyObject* pyPointerToWinkx;
+  PyObject* pyPointerToIdslp;
+  PyObject* pyPointerToIpslp;
+  PyObject* pyPointerToIdhist;
+  PyObject* pyPointerToFault;               // Split node arrays
+  PyObject* pyPointerToNfault;
+  PyObject* pyPointerToDfault;
+  PyObject* pyPointerToTfault;
+  PyObject* pyPointerToS;                   // Local stiffness matrix arrays
+  PyObject* pyPointerToStemp;
+  PyObject* pyPointerToState;               // Element arrays
+  PyObject* pyPointerToDstate;
+  PyObject* pyPointerToDmat;
+  PyObject* pyPointerToIen;
   PyObject* pyPointerToLm;
   PyObject* pyPointerToLmx;
   PyObject* pyPointerToLmf;
-  PyObject* pyPointerToProp;
-  PyObject* pyPointerToListArrayGauss;
-  PyObject* pyPointerToIbond;              // Boundary condition arrays
-  PyObject* pyPointerToBond;
-  PyObject* pyPointerToDmat;               // Gauss point arrays
-  PyObject* pyPointerToStn;
-  PyObject* pyPointerToScur;
-  PyObject* pyPointerToSt0;
-  PyObject* pyPointerToEps;
-  PyObject* pyPointerToDeps;
-  PyObject* pyPointerToBeta;
-  PyObject* pyPointerToDbeta;
-  PyObject* pyPointerToBetb;
-  PyObject* pyPointerToDbetb;
+  PyObject* pyPointerToInfiel;
   PyObject* pyPointerToListArrayIddmat;
+  PyObject* pyPointerToListArrayNpar;
   PyObject* pyPointerToIelno;               // Traction BC arrays
   PyObject* pyPointerToIside;
   PyObject* pyPointerToIhistry;
   PyObject* pyPointerToPres;
   PyObject* pyPointerToPdir;
-  PyObject* pyPointerToMaxstp;              // Time step arrays
+  PyObject* pyPointerToListArrayPropertyList; // Material property arrays
+  PyObject* pyPointerToMhist;
+  PyObject* pyPointerToMaterialInfo;
+  PyObject* pyPointerToMaterialModelInfo;
+  PyObject* pyPointerToMaterialModelStates;
+  PyObject* pyPointerGauss;                 // Element type arrays
+  PyObject* pyPointerToSh;
+  PyObject* pyPointerToShj;
+  PyObject* pyPointerToElementTypeInfo;
+  PyObject* pyPointerToHistry;              // Time information
+  PyObject* pyPointerToListArrayRtimdat;
+  PyObject* pyPointerToListArrayNtimdat;
+  PyObject* pyPointerToListArrayNvisdat;
+  PyObject* pyPointerToMaxstp;
   PyObject* pyPointerToDelt;
   PyObject* pyPointerToAlfa;
   PyObject* pyPointerToMaxit;
-  PyObject* pyPointerToMaxitc;
+  PyObject* pyPointerToNtdinit;
   PyObject* pyPointerToLgdef;
   PyObject* pyPointerToIbbar;
   PyObject* pyPointerToUtol;
   PyObject* pyPointerToFtol;
   PyObject* pyPointerToEtol;
   PyObject* pyPointerToItmax;
-  PyObject* pyPointerToFault;               // Split node arrays
-  PyObject* pyPointerToNfault;
-  PyObject* pyPointerToDfault;
-  PyObject* pyPointerToTfault;
-  PyObject* pyPointerToIdftn;
-  PyObject* pyPointerToIdslp;               // Slippery node arrays
-  PyObject* pyPointerToIpslp;
-  PyObject* pyPointerToDiforc;
-  PyObject* pyPointerToIdhist;
-  PyObject* pyPointerToIwink;               // Winkler arrays
-  PyObject* pyPointerToWink;
-  PyObject* pyPointerToIwinkx;
-  PyObject* pyPointerToWinkx;
-  PyObject* pyPointerToS;                   // Local stiffness matrix arrays
-  PyObject* pyPointerToStemp;
-  PyObject* pyPointerToListArrayGcurr;      // Global variables stored as lists
-  PyObject* pyPointerToListArrayGi;         // in python and as arrays in f77.
+  PyObject* pyPointerToListArrayRgiter;   // Iterative solution information
+  PyObject* pyPointerToListArrayGcurr;
+  PyObject* pyPointerToListArrayGi;
   PyObject* pyPointerToListArrayGprev;
-  PyObject* pyPointerToListArrayGrav;
   PyObject* pyPointerToListArrayGtol;
-  PyObject* pyPointerToListArrayNcodat;
-  PyObject* pyPointerToListArrayNconsts;
-  PyObject* pyPointerToListArrayNdimens;
-  PyObject* pyPointerToListArrayNpar;
-  PyObject* pyPointerToListArrayNprint;
-  PyObject* pyPointerToListArrayNsiter;
-  PyObject* pyPointerToListArrayNsysdat;
-  PyObject* pyPointerToListArrayNtimdat;
-  PyObject* pyPointerToListArrayNunits;
-  PyObject* pyPointerToListArrayNvisdat;
-  PyObject* pyPointerToListArrayRconsts;
-  PyObject* pyPointerToListArrayRgiter;
   PyObject* pyPointerToListArrayRmin;
   PyObject* pyPointerToListArrayRmult;
-  PyObject* pyPointerToListArrayRtimdat;
+  PyObject* pyPointerToListArrayNsiter;
+  PyObject* pyPointerToSkew;             // Skew rotation information
+  PyObject* pyPointerToListArrayNcodat;  // Input/output information
+  PyObject* pyPointerToListArrayNunits;
+  PyObject* pyPointerToListArrayNprint;
+  PyObject* pyPointerToIstatout;
   char* asciiOutputFile;                     // Output file names
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOss:elastc",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOss:elastc",
 			    &pyPointerToAlnz,              // Sparse matrix arrays
 			    &pyPointerToPcg,
 			    &pyPointerToZcg,
@@ -153,191 +152,187 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 			    &pyPointerToPvec,
 			    &pyPointerToGvec1,
 			    &pyPointerToGvec2,
+			    &pyPointerToListArrayGrav,
 			    &pyPointerToX,                 // Global arrays
 			    &pyPointerToD,
-			    &pyPointerToDx,
 			    &pyPointerToDeld,
-			    &pyPointerToDeldx,
 			    &pyPointerToDprev,
 			    &pyPointerToDcur,
-			    &pyPointerToDxcur,
 			    &pyPointerToId,
+			    &pyPointerToIwink,
+			    &pyPointerToWink,
+			    &pyPointerToListArrayNsysdat,
+			    &pyPointerToIbond,              // Boundary condition arrays
+			    &pyPointerToBond,
+			    &pyPointerToDx,                 // Slippery node arrays
+			    &pyPointerToDeldx,
+			    &pyPointerToDxcur,
+			    &pyPointerToDiforc,
 			    &pyPointerToIdx,
-			    &pyPointerToSkew,
-			    &pyPointerToHistry,
-			    &pyPointerToIen,                // Element arrays
-			    &pyPointerToInfin,
-			    &pyPointerToMat,
+			    &pyPointerToIwinkx,
+			    &pyPointerToWinkx,
+			    &pyPointerToIdslp,
+			    &pyPointerToIpslp,
+			    &pyPointerToIdhist,
+			    &pyPointerToFault,               // Split node arrays
+			    &pyPointerToNfault,
+			    &pyPointerToDfault,
+			    &pyPointerToTfault,
+			    &pyPointerToS,                   // Local stiffness matrix arrays
+			    &pyPointerToStemp,
+			    &pyPointerToState,               // Element arrays
+			    &pyPointerToDstate,
+			    &pyPointerToDmat,
+			    &pyPointerToIen,
 			    &pyPointerToLm,
 			    &pyPointerToLmx,
 			    &pyPointerToLmf,
-			    &pyPointerToProp,
-			    &pyPointerToListArrayGauss,
-			    &pyPointerToIbond,              // Boundary condition arrays
-			    &pyPointerToBond,
-			    &pyPointerToDmat,               // Gauss point arrays
-			    &pyPointerToStn,
-			    &pyPointerToScur,
-			    &pyPointerToSt0,
-			    &pyPointerToEps,
-			    &pyPointerToDeps,
-			    &pyPointerToBeta,
-			    &pyPointerToDbeta,
-			    &pyPointerToBetb,
-			    &pyPointerToDbetb,
+			    &pyPointerToInfiel,
 			    &pyPointerToListArrayIddmat,
+			    &pyPointerToListArrayNpar,
 			    &pyPointerToIelno,               // Traction BC arrays
 			    &pyPointerToIside,
 			    &pyPointerToIhistry,
 			    &pyPointerToPres,
 			    &pyPointerToPdir,
-			    &pyPointerToMaxstp,              // Time step arrays
+			    &pyPointerToListArrayPropertyList, // Material property arrays
+			    &pyPointerToMhist,
+			    &pyPointerToMaterialInfo,
+			    &pyPointerToMaterialModelInfo,
+			    &pyPointerToMaterialModelStates,
+			    &pyPointerGauss,                 // Element type arrays
+			    &pyPointerToSh,
+			    &pyPointerToShj,
+			    &pyPointerToElementTypeInfo,
+			    &pyPointerToHistry,              // Time information
+			    &pyPointerToListArrayRtimdat,
+			    &pyPointerToListArrayNtimdat,
+			    &pyPointerToListArrayNvisdat,
+			    &pyPointerToMaxstp,
 			    &pyPointerToDelt,
 			    &pyPointerToAlfa,
 			    &pyPointerToMaxit,
-			    &pyPointerToMaxitc,
+			    &pyPointerToNtdinit,
 			    &pyPointerToLgdef,
 			    &pyPointerToIbbar,
 			    &pyPointerToUtol,
 			    &pyPointerToFtol,
 			    &pyPointerToEtol,
 			    &pyPointerToItmax,
-			    &pyPointerToFault,               // Split node arrays
-			    &pyPointerToNfault,
-			    &pyPointerToDfault,
-			    &pyPointerToTfault,
-			    &pyPointerToIdftn,
-			    &pyPointerToIdslp,               // Slippery node arrays
-			    &pyPointerToIpslp,
-			    &pyPointerToDiforc,
-			    &pyPointerToIdhist,
-			    &pyPointerToIwink,               // Winkler arrays
-			    &pyPointerToWink,
-			    &pyPointerToIwinkx,
-			    &pyPointerToWinkx,
-			    &pyPointerToS,                   // Local stiffness matrix arrays
-			    &pyPointerToStemp,
-			    &pyPointerToListArrayGcurr,      // Global variables stored as lists
-			    &pyPointerToListArrayGi,         // in python and as arrays in f77.
+			    &pyPointerToListArrayRgiter,   // Iterative solution information
+			    &pyPointerToListArrayGcurr,
+			    &pyPointerToListArrayGi,
 			    &pyPointerToListArrayGprev,
-			    &pyPointerToListArrayGrav,
 			    &pyPointerToListArrayGtol,
-			    &pyPointerToListArrayNcodat,
-			    &pyPointerToListArrayNconsts,
-			    &pyPointerToListArrayNdimens,
-			    &pyPointerToListArrayNpar,
-			    &pyPointerToListArrayNprint,
-			    &pyPointerToListArrayNsiter,
-			    &pyPointerToListArrayNsysdat,
-			    &pyPointerToListArrayNtimdat,
-			    &pyPointerToListArrayNunits,
-			    &pyPointerToListArrayNvisdat,
-			    &pyPointerToListArrayRconsts,
-			    &pyPointerToListArrayRgiter,
 			    &pyPointerToListArrayRmin,
 			    &pyPointerToListArrayRmult,
-			    &pyPointerToListArrayRtimdat,
+			    &pyPointerToListArrayNsiter,
+			    &pyPointerToSkew,             // Skew rotation information
+			    &pyPointerToListArrayNcodat,  // Input/output information
+			    &pyPointerToListArrayNunits,
+			    &pyPointerToListArrayNprint,
+			    &pyPointerToIstatout,
 			    &asciiOutputFile,                     // Output file names
 			    &plotOutputFile);
+
 
   if (!ok) {
     return 0;
   }
 
-  double* pointerToAlnz = (double*) PyCObject_AsVoidPtr(pyPointerToAlnz);
-  double* pointerToPcg = (double*) PyCObject_AsVoidPtr(pyPointerToPcg);
-  double* pointerToZcg = (double*) PyCObject_AsVoidPtr(pyPointerToZcg);
-  int* pointerToJa = (int*) PyCObject_AsVoidPtr(pyPointerToJa);
-  double* pointerToB  = (double*) PyCObject_AsVoidPtr(pyPointerToB);
-  double* pointerToBtot = (double*) PyCObject_AsVoidPtr(pyPointerToBtot);
-  double* pointerToBres = (double*) PyCObject_AsVoidPtr(pyPointerToBres);
-  double* pointerToPvec = (double*) PyCObject_AsVoidPtr(pyPointerToPvec);
-  double* pointerToGvec1 = (double*) PyCObject_AsVoidPtr(pyPointerToGvec1);
-  double* pointerToGvec2 = (double*) PyCObject_AsVoidPtr(pyPointerToGvec2);
-  double* pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
-  double* pointerToD = (double*) PyCObject_AsVoidPtr(pyPointerToD);
-  double* pointerToDx = (double*) PyCObject_AsVoidPtr(pyPointerToDx);
-  double* pointerToDeld = (double*) PyCObject_AsVoidPtr(pyPointerToDeld);
-  double* pointerToDeldx = (double*) PyCObject_AsVoidPtr(pyPointerToDeldx);
-  double* pointerToDprev = (double*) PyCObject_AsVoidPtr(pyPointerToDprev);
-  double* pointerToDcur = (double*) PyCObject_AsVoidPtr(pyPointerToDcur);
-  double* pointerToDxcur = (double*) PyCObject_AsVoidPtr(pyPointerToDxcur);
-  int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
-  int* pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
-  double* pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
-  double* pointerToHistry = (double*) PyCObject_AsVoidPtr(pyPointerToHistry);
-  int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int* pointerToInfin = (int*) PyCObject_AsVoidPtr(pyPointerToInfin);
-  int* pointerToMat = (int*) PyCObject_AsVoidPtr(pyPointerToMat);
-  int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
-  int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int* pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
-  double* pointerToProp = (double*) PyCObject_AsVoidPtr(pyPointerToProp);
-  double* pointerToListArrayGauss = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGauss);
-  int* pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
-  double* pointerToBond = (double*) PyCObject_AsVoidPtr(pyPointerToBond);
-  double* pointerToDmat = (double*) PyCObject_AsVoidPtr(pyPointerToDmat);
-  double* pointerToStn = (double*) PyCObject_AsVoidPtr(pyPointerToStn);
-  double* pointerToScur = (double*) PyCObject_AsVoidPtr(pyPointerToScur);
-  double* pointerToSt0 = (double*) PyCObject_AsVoidPtr(pyPointerToSt0);
-  double* pointerToEps = (double*) PyCObject_AsVoidPtr(pyPointerToEps);
-  double* pointerToDeps = (double*) PyCObject_AsVoidPtr(pyPointerToDeps);
-  double* pointerToBeta = (double*) PyCObject_AsVoidPtr(pyPointerToBeta);
-  double* pointerToDbeta = (double*) PyCObject_AsVoidPtr(pyPointerToDbeta);
-  double* pointerToBetb = (double*) PyCObject_AsVoidPtr(pyPointerToBetb);
-  double* pointerToDbetb = (double*) PyCObject_AsVoidPtr(pyPointerToDbetb);
-  int* pointerToListArrayIddmat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayIddmat);
-  int* pointerToIelno = (int*) PyCObject_AsVoidPtr(pyPointerToIelno);
-  int* pointerToIside = (int*) PyCObject_AsVoidPtr(pyPointerToIside);
-  int* pointerToIhistry = (int*) PyCObject_AsVoidPtr(pyPointerToIhistry);
-  double* pointerToPres = (double*) PyCObject_AsVoidPtr(pyPointerToPres);
-  double* pointerToPdir = (double*) PyCObject_AsVoidPtr(pyPointerToPdir);
-  int* pointerToMaxstp = (int*) PyCObject_AsVoidPtr(pyPointerToMaxstp);
-  double* pointerToDelt = (double*) PyCObject_AsVoidPtr(pyPointerToDelt);
-  double* pointerToAlfa = (double*) PyCObject_AsVoidPtr(pyPointerToAlfa);
-  int* pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
-  int* pointerToMaxitc = (int*) PyCObject_AsVoidPtr(pyPointerToMaxitc);
-  int* pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
-  int* pointerToIbbar = (int*) PyCObject_AsVoidPtr(pyPointerToIbbar);
-  double* pointerToUtol = (double*) PyCObject_AsVoidPtr(pyPointerToUtol);
-  double* pointerToFtol = (double*) PyCObject_AsVoidPtr(pyPointerToFtol);
-  double* pointerToEtol = (double*) PyCObject_AsVoidPtr(pyPointerToEtol);
-  int* pointerToItmax = (int*) PyCObject_AsVoidPtr(pyPointerToItmax);
-  double* pointerToFault = (double*) PyCObject_AsVoidPtr(pyPointerToFault);
-  int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
-  double* pointerToDfault = (double*) PyCObject_AsVoidPtr(pyPointerToDfault);
-  double* pointerToTfault = (double*) PyCObject_AsVoidPtr(pyPointerToTfault);
-  int* pointerToIdftn = (int*) PyCObject_AsVoidPtr(pyPointerToIdftn);
-  int* pointerToIdslp = (int*) PyCObject_AsVoidPtr(pyPointerToIdslp);
-  int* pointerToIpslp = (int*) PyCObject_AsVoidPtr(pyPointerToIpslp);
-  double* pointerToDiforc = (double*) PyCObject_AsVoidPtr(pyPointerToDiforc);
-  int* pointerToIdhist = (int*) PyCObject_AsVoidPtr(pyPointerToIdhist);
-  int* pointerToIwink = (int*) PyCObject_AsVoidPtr(pyPointerToIwink);
-  double* pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
-  int* pointerToIwinkx = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkx);
-  double* pointerToWinkx = (double*) PyCObject_AsVoidPtr(pyPointerToWinkx);
-  double* pointerToS = (double*) PyCObject_AsVoidPtr(pyPointerToS);
-  double* pointerToStemp = (double*) PyCObject_AsVoidPtr(pyPointerToStemp);
-  double* pointerToListArrayGcurr = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGcurr);
-  double* pointerToListArrayGi = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGi);
-  double* pointerToListArrayGprev = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGprev);
-  double* pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
-  double* pointerToListArrayGtol = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGtol);
-  int* pointerToListArrayNcodat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNcodat);
-  int* pointerToListArrayNconsts = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNconsts);
-  int* pointerToListArrayNdimens = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNdimens);
-  int* pointerToListArrayNpar = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNpar);
-  int* pointerToListArrayNprint = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
-  int* pointerToListArrayNsiter = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNsiter);
-  int* pointerToListArrayNsysdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNsysdat);
-  int* pointerToListArrayNtimdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNtimdat);
-  int* pointerToListArrayNunits = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNunits);
-  int* pointerToListArrayNvisdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNvisdat);
-  double* pointerToListArrayRconsts = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRconsts);
-  double* pointerToListArrayRgiter = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRgiter);
-  double* pointerToListArrayRmin = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRmin);
-  double* pointerToListArrayRmult = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRmult);
-  double* pointerToListArrayRtimdat = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRtimdat);
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
+  double*  pointerToAlnz = (double*) PyCObject_AsVoidPtr(pyPointerToAlnz);
+  double*  pointerToPcg = (double*) PyCObject_AsVoidPtr(pyPointerToPcg);
+  double*  pointerToZcg = (double*) PyCObject_AsVoidPtr(pyPointerToZcg);
+  int*  pointerToJa = (int*) PyCObject_AsVoidPtr(pyPointerToJa);
+  double*  pointerToB = (double*) PyCObject_AsVoidPtr(pyPointerToB);
+  double*  pointerToBtot = (double*) PyCObject_AsVoidPtr(pyPointerToBtot);
+  double*  pointerToBres = (double*) PyCObject_AsVoidPtr(pyPointerToBres);
+  double*  pointerToPvec = (double*) PyCObject_AsVoidPtr(pyPointerToPvec);
+  double*  pointerToGvec1 = (double*) PyCObject_AsVoidPtr(pyPointerToGvec1);
+  double*  pointerToGvec2 = (double*) PyCObject_AsVoidPtr(pyPointerToGvec2);
+  double*  pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
+  double*  pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
+  double*  pointerToD = (double*) PyCObject_AsVoidPtr(pyPointerToD);
+  double*  pointerToDeld = (double*) PyCObject_AsVoidPtr(pyPointerToDeld);
+  double*  pointerToDprev = (double*) PyCObject_AsVoidPtr(pyPointerToDprev);
+  double*  pointerToDcur = (double*) PyCObject_AsVoidPtr(pyPointerToDcur);
+  int*  pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
+  int*  pointerToIwink = (int*) PyCObject_AsVoidPtr(pyPointerToIwink);
+  double*  pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
+  int*  pointerToListArrayNsysdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNsysdat);
+  int*  pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
+  double*  pointerToBond = (double*) PyCObject_AsVoidPtr(pyPointerToBond);
+  double*  pointerToDx = (double*) PyCObject_AsVoidPtr(pyPointerToDx);
+  double*  pointerToDeldx = (double*) PyCObject_AsVoidPtr(pyPointerToDeldx);
+  double*  pointerToDxcur = (double*) PyCObject_AsVoidPtr(pyPointerToDxcur);
+  double*  pointerToDiforc = (double*) PyCObject_AsVoidPtr(pyPointerToDiforc);
+  int*  pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
+  int*  pointerToIwinkx = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkx);
+  double*  pointerToWinkx = (double*) PyCObject_AsVoidPtr(pyPointerToWinkx);
+  int*  pointerToIdslp = (int*) PyCObject_AsVoidPtr(pyPointerToIdslp);
+  int*  pointerToIpslp = (int*) PyCObject_AsVoidPtr(pyPointerToIpslp);
+  int*  pointerToIdhist = (int*) PyCObject_AsVoidPtr(pyPointerToIdhist);
+  double*  pointerToFault = (double*) PyCObject_AsVoidPtr(pyPointerToFault);
+  int*  pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
+  double*  pointerToDfault = (double*) PyCObject_AsVoidPtr(pyPointerToDfault);
+  double*  pointerToTfault = (double*) PyCObject_AsVoidPtr(pyPointerToTfault);
+  double*  pointerToS = (double*) PyCObject_AsVoidPtr(pyPointerToS);
+  double*  pointerToStemp = (double*) PyCObject_AsVoidPtr(pyPointerToStemp);
+  double*  pointerToState = (double*) PyCObject_AsVoidPtr(pyPointerToState);
+  double*  pointerToDstate = (double*) PyCObject_AsVoidPtr(pyPointerToDstate);
+  double*  pointerToDmat = (double*) PyCObject_AsVoidPtr(pyPointerToDmat);
+  int*  pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
+  int*  pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
+  int*  pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
+  int*  pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
+  int*  pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
+  int*  pointerToListArrayIddmat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayIddmat);
+  int*  pointerToListArrayNpar = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNpar);
+  int*  pointerToIelno = (int*) PyCObject_AsVoidPtr(pyPointerToIelno);
+  int*  pointerToIside = (int*) PyCObject_AsVoidPtr(pyPointerToIside);
+  int*  pointerToIhistry = (int*) PyCObject_AsVoidPtr(pyPointerToIhistry);
+  double*  pointerToPres = (double*) PyCObject_AsVoidPtr(pyPointerToPres);
+  double*  pointerToPdir = (double*) PyCObject_AsVoidPtr(pyPointerToPdir);
+  double*  pointerToListArrayPropertyList = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyList);
+  int*  pointerToMhist = (int*) PyCObject_AsVoidPtr(pyPointerToMhist);
+  int*  pointerToMaterialInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialInfo);
+  int*  pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
+  int*  pointerToMaterialModelStates = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelStates);
+  double*  pointerGauss = (double*) PyCObject_AsVoidPtr(pyPointerGauss);
+  double*  pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
+  double*  pointerToShj = (double*) PyCObject_AsVoidPtr(pyPointerToShj);
+  int*  pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
+  double*  pointerToHistry = (double*) PyCObject_AsVoidPtr(pyPointerToHistry);
+  double*  pointerToListArrayRtimdat = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRtimdat);
+  int*  pointerToListArrayNtimdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNtimdat);
+  int*  pointerToListArrayNvisdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNvisdat);
+  int*  pointerToMaxstp = (int*) PyCObject_AsVoidPtr(pyPointerToMaxstp);
+  double*  pointerToDelt = (double*) PyCObject_AsVoidPtr(pyPointerToDelt);
+  double*  pointerToAlfa = (double*) PyCObject_AsVoidPtr(pyPointerToAlfa);
+  int*  pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
+  int*  pointerToNtdinit = (int*) PyCObject_AsVoidPtr(pyPointerToNtdinit);
+  int*  pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
+  int*  pointerToIbbar = (int*) PyCObject_AsVoidPtr(pyPointerToIbbar);
+  double*  pointerToUtol = (double*) PyCObject_AsVoidPtr(pyPointerToUtol);
+  double*  pointerToFtol = (double*) PyCObject_AsVoidPtr(pyPointerToFtol);
+  double*  pointerToEtol = (double*) PyCObject_AsVoidPtr(pyPointerToEtol);
+  int*  pointerToItmax = (int*) PyCObject_AsVoidPtr(pyPointerToItmax);
+  double*  pointerToListArrayRgiter = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRgiter);
+  double*  pointerToListArrayGcurr = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGcurr);
+  double*  pointerToListArrayGi = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGi);
+  double*  pointerToListArrayGprev = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGprev);
+  double*  pointerToListArrayGtol = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGtol);
+  double*  pointerToListArrayRmin = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRmin);
+  double*  pointerToListArrayRmult = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRmult);
+  int*  pointerToListArrayNsiter = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNsiter);
+  double*  pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
+  int*  pointerToListArrayNcodat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNcodat);
+  int*  pointerToListArrayNunits = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNunits);
+  int*  pointerToListArrayNprint = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
+  int*  pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
 
   elastc_f(pointerToAlnz,              // Sparse matrix arrays
 	   pointerToPcg,
@@ -349,95 +344,97 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 	   pointerToPvec,
 	   pointerToGvec1,
 	   pointerToGvec2,
+	   pointerToListArrayGrav,
 	   pointerToX,                 // Global arrays
 	   pointerToD,
-	   pointerToDx,
 	   pointerToDeld,
-	   pointerToDeldx,
 	   pointerToDprev,
 	   pointerToDcur,
-	   pointerToDxcur,
 	   pointerToId,
+	   pointerToIwink,
+	   pointerToWink,
+	   pointerToListArrayNsysdat,
+	   pointerToIbond,              // Boundary condition arrays
+	   pointerToBond,
+	   pointerToDx,                 // Slippery node arrays
+	   pointerToDeldx,
+	   pointerToDxcur,
+	   pointerToDiforc,
 	   pointerToIdx,
-	   pointerToSkew,
-	   pointerToHistry,
-	   pointerToIen,                // Element arrays
-	   pointerToInfin,
-	   pointerToMat,
+	   pointerToIwinkx,
+	   pointerToWinkx,
+	   pointerToIdslp,
+	   pointerToIpslp,
+	   pointerToIdhist,
+	   pointerToFault,               // Split node arrays
+	   pointerToNfault,
+	   pointerToDfault,
+	   pointerToTfault,
+	   pointerToS,                   // Local stiffness matrix arrays
+	   pointerToStemp,
+	   pointerToState,               // Element arrays
+	   pointerToDstate,
+	   pointerToDmat,
+	   pointerToIen,
 	   pointerToLm,
 	   pointerToLmx,
 	   pointerToLmf,
-	   pointerToProp,
-	   pointerToListArrayGauss,
-	   pointerToIbond,              // Boundary condition arrays
-	   pointerToBond,
-	   pointerToDmat,               // Gauss point arrays
-	   pointerToStn,
-	   pointerToScur,
-	   pointerToSt0,
-	   pointerToEps,
-	   pointerToDeps,
-	   pointerToBeta,
-	   pointerToDbeta,
-	   pointerToBetb,
-	   pointerToDbetb,
+	   pointerToInfiel,
 	   pointerToListArrayIddmat,
+	   pointerToListArrayNpar,
 	   pointerToIelno,               // Traction BC arrays
 	   pointerToIside,
 	   pointerToIhistry,
 	   pointerToPres,
 	   pointerToPdir,
-	   pointerToMaxstp,              // Time step arrays
+	   pointerToListArrayPropertyList, // Material property arrays
+	   pointerToMhist,
+	   pointerToMaterialInfo,
+	   pointerToMaterialModelInfo,
+	   pointerToMaterialModelStates,
+	   pointerGauss,                 // Element type arrays
+	   pointerToSh,
+	   pointerToShj,
+	   pointerToElementTypeInfo,
+	   pointerToHistry,              // Time information
+	   pointerToListArrayRtimdat,
+	   pointerToListArrayNtimdat,
+	   pointerToListArrayNvisdat,
+	   pointerToMaxstp,
 	   pointerToDelt,
 	   pointerToAlfa,
 	   pointerToMaxit,
-	   pointerToMaxitc,
+	   pointerToNtdinit,
 	   pointerToLgdef,
 	   pointerToIbbar,
 	   pointerToUtol,
 	   pointerToFtol,
 	   pointerToEtol,
 	   pointerToItmax,
-	   pointerToFault,               // Split node arrays
-	   pointerToNfault,
-	   pointerToDfault,
-	   pointerToTfault,
-	   pointerToIdftn,
-	   pointerToIdslp,               // Slippery node arrays
-	   pointerToIpslp,
-	   pointerToDiforc,
-	   pointerToIdhist,
-	   pointerToIwink,               // Winkler arrays
-	   pointerToWink,
-	   pointerToIwinkx,
-	   pointerToWinkx,
-	   pointerToS,                   // Local stiffness matrix arrays
-	   pointerToStemp,
-	   pointerToListArrayGcurr,      // Global variables stored as lists
-	   pointerToListArrayGi,         // in python and as arrays in f77.
+	   pointerToListArrayRgiter,   // Iterative solution information
+	   pointerToListArrayGcurr,
+	   pointerToListArrayGi,
 	   pointerToListArrayGprev,
-	   pointerToListArrayGrav,
 	   pointerToListArrayGtol,
-	   pointerToListArrayNcodat,
-	   pointerToListArrayNconsts,
-	   pointerToListArrayNdimens,
-	   pointerToListArrayNpar,
-	   pointerToListArrayNprint,
-	   pointerToListArrayNsiter,
-	   pointerToListArrayNsysdat,
-	   pointerToListArrayNtimdat,
-	   pointerToListArrayNunits,
-	   pointerToListArrayNvisdat,
-	   pointerToListArrayRconsts,
-	   pointerToListArrayRgiter,
 	   pointerToListArrayRmin,
 	   pointerToListArrayRmult,
-	   pointerToListArrayRtimdat,
-	   asciiOutputFile,              // Output file names
+	   pointerToListArrayNsiter,
+	   pointerToSkew,             // Skew rotation information
+	   pointerToListArrayNcodat,  // Input/output information
+	   pointerToListArrayNunits,
+	   pointerToListArrayNprint,
+	   pointerToIstatout,
+	   asciiOutputFile,                     // Output file names
 	   plotOutputFile,
-	   strlen(asciiOutputFile),
-	   strlen(plotOutputFile));
+	   &errorcode,                          // Error codes
+	   errorstring,
+	   strlen(asciiOutputFile),             // String lengths
+	   strlen(plotOutputFile),
+	   strlen(errorstring));
 
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
@@ -451,6 +448,6 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 
 
 // version
-// $Id: elastc.cc,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: elastc.cc,v 1.2 2004/07/20 16:10:57 willic3 Exp $
 
 // End of file
