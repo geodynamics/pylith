@@ -29,96 +29,111 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine viscos(alnz,pcg,zcg,ja,                                ! sparse
-     & b,btot,bres,pvec,gvec1,gvec2,                                    ! force
-     & x,d,dx,deld,deldx,dprev,dcur,dxcur,id,idx,skew,histry,           ! global
-     & ien,infin,mat,lm,lmx,lmf,prop,gauss,                             ! elemnt
+      subroutine viscos(
+     & alnz,pcg,zcg,ja,                                                 ! sparse
+     & b,btot,bres,pvec,gvec1,gvec2,grav,                               ! force
+     & x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,                       ! global
      & ibond,bond,                                                      ! bc
-     & dmat,stn,scur,st0,eps,deps,beta,dbeta,betb,dbetb,iddmat,         ! stress
+     & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
+     & fault,nfault,dfault,tfault,                                      ! split
+     & s,stemp,                                                         ! stiff
+     & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,             ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
-     & maxstp,delt,alfa,maxit,maxitc,lgdef,ibbar,utol,ftol,etol,itmax,  ! timdat
-     & iprint,                                                          ! output
-     & fault,nfault,dfault,tfault,idftn,                                ! split
-     & idslp,ipslp,diforc,idhist,                                       ! slip
-     & iwink,wink,iwinkx,winkx,                                         ! wink
-     & s,stemp,                                                         ! local
-     & gcurr,gi,gprev,grav,gtol,ncodat,ndimens,                         ! info
-     & npar,nprint,nsiter,nsysdat,ntimdat,nunits,nvisdat,rgiter,        ! info
-     & rmin,rmult,rtimdat,                                              ! info
-     & ofile,pfile)                                                     ! files
-
+     & prop,mhist,infmat,infmatmod,ismatmod,                            ! materl
+     & gauss,sh,shj,infetype,                                           ! eltype
+     & histry,rtimdat,ntimdat,nvisdat,maxstp,delt,alfa,maxit,ntdinit,   ! timdat
+     & lgdef,ibbar,utol,ftol,etol,itmax,                                ! timdat
+     & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
+     & skew,                                                            ! skew
+     & iprint,ncodat,nunits,nprint,istatout,                            ! ioinfo
+     & ofile,pfile,                                                     ! files
+     & ierr,errstrng)                                                   ! errcode
 c
 c...subroutine to solve the time dependent problem and perform the
 c   time stepping
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "materials.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ja(*),id(*),idx(*),ien(*),infin(*),mat(*),lm(*),lmx(*)
-      integer lmf(*),ibond(*),ielno(*),iside(*),ihistry(*),maxstp(*)
-      integer maxit(*),maxitc(*),lgdef(*),ibbar(*),itmax(*),iprint(*)
-      integer nfault(*),idftn(*),idslp(*),ipslp(*),idhist(*),iwink(*)
-      integer iwinkx(*)
-      double precision alnz(*),pcg(*),zcg(*),b(*),btot(*),bres(*)
-      double precision pvec(*),gvec1(*),gvec2(*),x(*),d(*),dx(*),deld(*)
-      double precision deldx(*),dprev(*),dcur(*),dxcur(*),skew(*)
-      double precision histry(*),prop(*),gauss(*),bond(*),dmat(*),stn(*)
-      double precision scur(*),st0(*),eps(*),deps(*),beta(*),dbeta(*)
-      double precision betb(*),dbetb(*),pres(*),pdir(*),delt(*),alfa(*)
-      double precision utol(*),ftol(*),etol(*),fault(*),dfault(*)
-      double precision tfault(*),diforc(*),wink(*),winkx(*),s(*)
-      double precision stemp(*)
-      character ofile*(*),pfile*(*)
+      integer ja(*),id(*),iwink(*),ibond(*),idx(*),iwinkx(*),idslp(*)
+      integer ipslp(*),idhist(*),nfault(*),ien(*),lm(*),lmx(*),lmf(*)
+      integer infiel(*),iddmat(*),ielno(*),iside(*),ihistry(*),mhist(*)
+      integer infmat(*),infmatmod(*),ismatmod(*),infetype(*),maxstp(*)
+      integer maxit(*),ntdinit(*),lgdef(*),ibbar(*),itmax(*),iprint(*)
+      integer istatout(*)
+      double precision alnz(*),pcg(*),zcg(*)
+      double precision b(*),btot(*),bres(*),pvec(*),gvec1(*),gvec2(*)
+      double precision grav(*)
+      double precision x(*),d(*),deld(*),dprev(*),dcur(*),wink(*)
+      double precision bond(*)
+      double precision dx(*),deldx(*),dxcur(*),diforc(*),winkx(*)
+      double precision fault(*),dfault(*),tfault(*)
+      double precision s(*),stemp(*)
+      double precision state(*),dstate(*),dmat(*)
+      double precision pres(*),pdir(*)
+      double precision prop(*)
+      double precision gauss(*),sh(*),shj(*)
+      double precision histry(*),delt(*),alfa(*),utol(*),ftol(*),etol(*)
+      double precision skew(*)
+      character ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
-      include "iddmat_dim.inc"
+      include "nsysdat_dim.inc"
+      include "npar_dim.inc"
+      include "ntimdat_dim.inc"
+      include "nvisdat_dim.inc"
+      include "nsiter_dim.inc"
+      include "ncodat_dim.inc"
+      include "nunits_dim.inc"
+      include "nprint_dim.inc"
+      include "rtimdat_dim.inc"
+      include "rgiter_dim.inc"
       include "gcurr_dim.inc"
       include "gi_dim.inc"
       include "gprev_dim.inc"
-      include "grav_dim.inc"
       include "gtol_dim.inc"
-      include "ncodat_dim.inc"
-      include "ndimens_dim.inc"
-      include "npar_dim.inc"
-      include "nprint_dim.inc"
-      include "nsiter_dim.inc"
-      include "nsysdat_dim.inc"
-      include "ntimdat_dim.inc"
-      include "nunits_dim.inc"
-      include "nvisdat_dim.inc"
-      include "rgiter_dim.inc"
       include "rmin_dim.inc"
       include "rmult_dim.inc"
-      include "rtimdat_dim.inc"
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  intrinsic functions
 c
       intrinsic abs,mod
 c
+c...  external routines
+c
+      external bmatrixn,bmatrixb,getshapn,getshapb
+      external td_matinit_cmp_ss,gload_cmp_ss,td_strs_cmp_ss
+      external td_strs_mat_cmp_ss
+c
 c...  local variables
 c
 cdebug      integer idb
-      integer indexx,ntot,jcyc,nfirst,naxstp,i,j,ii
-      double precision time
+      integer indexx,ntot,jcyc,nfirst,naxstp,i,j,ierr
+      double precision time,tminmax
       logical ltim,fulout,unlck,unlckf,skc,reform
 c
 c...  included variable definitions
 c
-      include "ndimens_def.inc"
-      include "npar_def.inc"
-      include "nprint_def.inc"
       include "nsysdat_def.inc"
-      include "nunits_def.inc"
-      include "nvisdat_def.inc"
+      include "npar_def.inc"
       include "ntimdat_def.inc"
+      include "nvisdat_def.inc"
+      include "nsiter_def.inc"
+      include "ncodat_def.inc"
+      include "nunits_def.inc"
+      include "nprint_def.inc"
       include "rtimdat_def.inc"
+      include "rgiter_def.inc"
 c
 c...  open output files for appending, if necessary
 c
@@ -126,172 +141,422 @@ cdebug      write(6,*) "Hello from viscos_f!"
 cdebug      write(6,*) "From viscos_f, ngauss,nsd,gauss:",ngauss,nsd,
 cdebug     & (gauss(idb),idb=1,(nsd+1)*ngauss)
 c
-      if(idout.gt.1) open(kw,file=ofile,status="old",access="append")
-      if(idsk.eq.0) open(kp,file=pfile,status="old",access="append")
-      if(idsk.eq.1) open(kp,file=pfile,status="old",form="unformatted",
-     & access="append")
+      if(idout.gt.ione) open(kw,file=ofile,status="old",access="append")
+      if(idsk.eq.izero) open(kp,file=pfile,status="old",access="append")
+      if(idsk.eq.ione) open(kp,file=pfile,status="old",
+     & form="unformatted",access="append")
 c
-c...signal user that viscous computation is begun
+c...  signal user that viscous computation is begun
 c
       write(kto,2000)
 c
-c...loop over complete cycles
+c...  loop over complete cycles
 c
       reform=.false.
-      if(ireform.eq.1) reform=.true.
+      if(ireform.eq.ione) reform=.true.
       indexx=1
       ntot=0
       do jcyc=1,ncycle
-        if(ncycle.gt.1) write(kto,2001) jcyc
+        if(ncycle.gt.ione) write(kto,2001) jcyc
         nfirst=izero
         naxstp=izero
         nstep=izero
         time=zero
 c
-c...loop over time step groups
+c...  loop over time step groups
 c
         do i=2,nintg
 c
-c...define constants to control stepping in current group
+c...  define constants to control stepping in current group
 c
-          call const(maxstp,delt,alfa,maxit,maxitc,lgdef,ibbar,utol,
+          call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,ibbar,utol,
      &     ftol,etol,itmax,nintg,i,naxstp,nfirst,rtimdat,deltp,alfap,
-     &     ntimdat,nstep,maxitp,maxitcp,lgdefp,ibbarp,itmaxp,gtol)
+     &     ntimdat,nstep,maxitp,ntdinitp,lgdefp,ibbarp,itmaxp,gtol)
 cdebug          write(6,*) nintg,i,naxstp,nfirst,deltp,alfap,maxitp,maxitcp,
 cdebug     &     lgdefp,ibbarp,itmaxp,(gtol(idb),idb=1,3)
           ltim=.true.
-          if(alfap.eq.zero) ltim=.false.
 c
-c...loop over time steps in current group
+c...  loop over time steps in current group
 c
           do j=nfirst,naxstp
-            ntot=ntot+1
-            nstep=nstep+1
+            ntot=ntot+ione
+            nstep=nstep+ione
             ntimdat(1)=nstep
             time=time+deltp
             skc=(numslp.ne.0.and.(iskopt.eq.2.or.(iskopt.le.0.and.
      &       abs(iskopt).eq.nstep)))
 c
-c...clear arrays at beginning of time step
+c...  clear arrays at beginning of time step
 c
             call fill(deld,zero,ndof*numnp)
             call fill(deldx,zero,ndof*numnp)
             if(skc) then
-              call skclear(idslp,skew,numsn,nskdim,numnp)
-              call skcomp(x,d,skew,idslp,ipslp,nsd,ndof,nskdim,npdim,
-     &         ipstrs,numsn,numnp,nstep,lgdefp,kto)
+              call skclear(idslp,skew,numsn,numnp)
+              call skcomp(x,d,skew,idslp,ipslp,ipstrs,numsn,numnp,nstep,
+     &         lgdefp,ierr,errstrng)
+              if(ierr.ne.izero) return
             end if
 c
-c...test for reform and refactor interval, whether full output
-c   occurs in this step
+c...  see whether winkler forces are locked or unlocked in this step.
 c
-            if(nwink.ne.0) call cklock(iwink,histry,ltim,nwink,nstep,
-     &       nhist,lastep,unlck)
-            if(nwinkx.ne.0) call cklock(iwinkx,histry,ltim,nwinkx,nstep,
-     &       nhist,lastep,unlckf)
-            reform=(alfap.ne.0.0.or.lgdefp.ne.0).and.
-     &       (mod(j,maxitp).eq.0).or.ltim
+            if(nwink.ne.izero) call cklock(iwink,histry,ltim,nwink,
+     &       nstep,nhist,lastep,unlck)
+            if(nwinkx.ne.izero) call cklock(iwinkx,histry,ltim,nwinkx,
+     &       nstep,nhist,lastep,unlckf)
+c
+c...  test for reform and refactor interval, whether full output
+c     occurs in this step
+c
             ireform=izero
-            if(reform) ireform=1
+            if(ntdinitp.eq.izero) then
+              reform=.false.
+            else
+              reform=(mod(j,ntdinitp).eq.izero)
+            end if
+            reform=reform.or.ltim
+            if(reform) ireform=ione
             ntimdat(10)=ireform
             fulout=.false.
             if(ntot.eq.iprint(indexx)) fulout=.true.
 c
-            if(idout.gt.1) write(kw,1000) time,ntot,jcyc
+            if(idout.gt.ione) write(kw,1000) time,ntot,jcyc
 C***********************************
-            if(fulout.and.idsk.eq.0) write(kp,700) ntot
+            if(fulout.and.idsk.eq.izero) write(kp,700) ntot
 C***********************************
-            if(fulout.and.idsk.eq.0) write(kp,4000) time
-            if(fulout.and.idsk.eq.1) write(kp) ntot
-            if(fulout.and.idsk.eq.1) write(kp) time
+            if(fulout.and.idsk.eq.izero) write(kp,4000) time
+            if(fulout.and.idsk.eq.ione) write(kp) ntot
+            if(fulout.and.idsk.eq.ione) write(kp) time
             write(kto,5000) time,ntot,lastep*ncycle
 c*            call flush(kto)
 c*            call flush(kw)
 c*            call flush(kp)
 c
-c...apply boundary conditions
+c...  apply boundary conditions
 c
-            call load(id,ibond,bond,d,deld,btot,histry,deltp,ndof,numnp,
-     &       neq,nhist,nstep,lastep,idout,kto,kw)
+            call load(id,ibond,bond,d,deld,btot,histry,deltp,numnp,neq,
+     &       nhist,nstep,lastep,ierr,errstrng)
+            if(ierr.ne.izero) return
 c
-c...compute current split node displacements
+c...  compute current split node displacements
 c
-            if(numfn.ne.0) call loadf(fault,dfault,histry,deltp,nfault,
-     &       nstep,ndof,numfn,nhist,lastep,idout,kto,kw)
+            if(numfn.ne.izero) then
+              call loadf(fault,dfault,histry,deltp,nfault,nstep,numfn,
+     &         nhist,lastep,ierr,errstrng)
+              if(ierr.ne.izero) return
+            end if
 c
-c...add loads from changes in differential forces across internal
+c...  add loads from changes in differential forces across internal
 c        interfaces
 c
-            if(numdif.ne.0) call loadx(btot,diforc,histry,idx,idhist,
-     &       ndof,neq,numnp,nhist,nstep,lastep,idout,kto,kw)
+            if(numdif.ne.izero) then
+              call loadx(btot,diforc,histry,idx,idhist,neq,numnp,nhist,
+     &         nstep,lastep,ierr,errstrng)
+              if(ierr.ne.izero) return
+            end if
 c
-c...compute change in load vector if winkler forces are removed
+c...  compute change in load vector if winkler forces are removed
 c
             call fill(zcg,zero,neq)
-            if(nwink.ne.0.and.unlck) call unlock(zcg,btot,id,iwink,
-     &       idhist,ibond,bond,histry,nstep,ndof,numnp,nwink,nhist,neq,
+            if(nwink.ne.izero.and.unlck) call unlock(zcg,btot,id,iwink,
+     &       idhist,ibond,bond,histry,nstep,numnp,nwink,nhist,neq,
      &       numdif,lastep,ione)
-            if(nwinkx.ne.0.and.unlckf) call unlock(zcg,btot,idx,iwinkx,
-     &       idhist,ibond,diforc,histry,nstep,ndof,numnp,nwinkx,nhist,
+            if(nwinkx.ne.izero.and.unlckf) call unlock(zcg,btot,idx,
+     &       iwinkx,idhist,ibond,diforc,histry,nstep,numnp,nwinkx,nhist,
      &       neq,numdif,lastep,itwo)
 	    call daxpy(neq,one,zcg,ione,btot,ione)
 c
-c...compute forces due to applied displacements and split nodes
+c...  reform time-dependent material and stiffness matrices if
+c     requested, compute forces due to applied displacements and split
+c     nodes, and perform iterative solution.
 c
-            ii=ione
-            call formmat(stn,dmat,deps,beta,betb,
-     &       prop,mat,iddmat,
-     &       histry,rtimdat,ntimdat,rgiter,ii,
-     &       ngauss,nddmat,ndmat,nprop,numat,ndof,nstr,numel,ipstrs,
-     &       nhist,lastep,idout,kto,kw)
-            call formdf(b,x,d,dx,tfault,deld,skew,prop,dmat,stn,histry,
-     &       s,stemp,gauss,ien,infin,lm,lmx,lmf,mat,iddmat,ngauss,
-     &       nddmat,ndmat,nprop,numat,nsd,ndof,nstr,nen,nee,neq,numel,
-     &       numnp,numfn,numslp,numrot,nskdim,ipstrs,nstep,lgdefp,
-     &       ibbarp,nhist,lastep,idout,kto,kw,ivisc,iplas,imhist)
-            if(numfn.ne.0) call formf(b,x,d,dx,skew,histry,
-     &       ien,lm,lmx,lmf,gauss,
-     &       mat,infin,prop,dmat,stn,
-     &       nfault,dfault,tfault,
-     &       s,stemp,iddmat,
-     &       ngauss,nddmat,ndmat,nprop,numat,nsd,ndof,nstr,nen,nee,neq,
-     &       numel,numnp,numfn,numslp,numrot,nskdim,ipstrs,nstep,lgdefp,
-     &       ibbarp,nhist,lastep,idout,kto,kw,ivisc,iplas,imhist)
+            if(lgdefp.eq.izero.and.ibbarp.eq.izero) then
+              if(reform) call matinit_drv(
+     &         alnz,ja,nnz,neq,                                         ! sparse
+     &         x,d,iwink,wink,numnp,nwink,                              ! global
+     &         dx,iwinkx,winkx,numslp,numsn,nwinkx,                     ! slip
+     &         tfault,numfn,                                            ! fault
+     &         s,stemp,                                                 ! stiff
+     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz, ! elemnt
+     &         ndmatsz,numelt,nconsz,                                   ! elemnt
+     &         prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,       ! materl
+     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         histry,rtimdat,ntimdat,nhist,lastep,td_matinit_cmp_ss,   ! timdat
+     &         skew,numrot,                                             ! skew
+     &         getshapn,bmatrixn,                                       ! bbar
+     &         ierr,errstrng)                                           ! errcode
 c
-c...compute iterative solution to the elastic problem
-c   return if convergence achieved or maximum iterations exceeded
+              if(ierr.ne.izero) return
 c
-            call iterate(alnz,pcg,zcg,ja,                               ! sparse
-     &       b,btot,bres,pvec,gvec1,gvec2,                              ! force
-     &       x,d,dx,deld,deldx,dprev,dcur,dxcur,id,idx,skew,histry,     ! global
-     &       ien,infin,mat,lm,lmx,lmf,prop,gauss,                       ! elemnt
-     &       dmat,stn,scur,st0,eps,deps,beta,dbeta,betb,dbetb,iddmat,   ! stress
-     &       ielno,iside,ihistry,pres,pdir,                             ! tractn
-     &       nfault,dfault,tfault,                                      ! split
-     &       idslp,ipslp,                                               ! slip
-     &       iwink,wink,iwinkx,winkx,                                   ! wink
-     &       s,stemp,                                                   ! local
-     &       gcurr,gi,gprev,grav,gtol,ncodat,                           ! info
-     &       ndimens,npar,nprint,nsiter,nsysdat,ntimdat,nunits,nvisdat, ! info
-     &       rgiter,rmin,rmult,rtimdat)                                 ! info
+              call formdf_ss(
+     &         b,neq,                                                   ! force
+     &         x,d,dcur,numnp,                                          ! global
+     &         s,stemp,                                                 ! stiff
+     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
+     &         infmat,infmatmod,numat,                                  ! materl
+     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         skew,numrot,                                             ! skew
+     &         getshapn,bmatrixn,                                       ! bbar
+     &         ierr,errstrng)                                           ! errcode
 c
-c...print displacements at all nodes when requested.
+              if(ierr.ne.izero) return
+c
+              if(numfn.ne.izero) call formf_ss(
+     &         b,neq,                                                   ! force
+     &         x,numnp,                                                 ! global
+     &         s,stemp,                                                 ! stiff
+     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
+     &         infmat,infmatmod,numat,                                  ! materl
+     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         skew,numrot,                                             ! skew
+     &         nfault,dfault,tfault,numfn,                              ! split
+     &         getshapn,bmatrixn,                                       ! bbar
+     &         ierr,errstrng)                                           ! errcode
+c
+              if(ierr.ne.izero) return
+c
+              call iterate(
+     &         alnz,pcg,zcg,ja,                                         ! sparse
+     &         b,btot,bres,pvec,gvec1,gvec2,grav,                       ! force
+     &         x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,               ! global
+     &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
+     &         nfault,dfault,tfault,                                    ! fault
+     &         s,stemp,                                                 ! stiff
+     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,     ! elemnt
+     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
+     &         prop,mhist,infmat,infmatmod,                             ! materl
+     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
+     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
+     &         skew,                                                    ! skew
+     &         ncodat,nunits,nprint,                                    ! ioinfo
+     &         getshapn,bmatrixn,gload_cmp_ss,td_strs_cmp_ss,           ! external
+     &         td_strs_mat_cmp_ss,                                      ! external
+     &         ierr,errstrng)                                           ! errcode
+c
+              if(ierr.ne.izero) return
+c
+            else if(lgdefp.eq.izero.and.ibbarp.eq.ione) then
+              if(reform) call matinit_drv(
+     &         alnz,ja,nnz,neq,                                         ! sparse
+     &         x,d,iwink,wink,numnp,nwink,                              ! global
+     &         dx,iwinkx,winkx,numslp,numsn,nwinkx,                     ! slip
+     &         tfault,numfn,                                            ! fault
+     &         s,stemp,                                                 ! stiff
+     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz, ! elemnt
+     &         ndmatsz,numelt,nconsz,                                   ! elemnt
+     &         prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,       ! materl
+     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         histry,rtimdat,ntimdat,nhist,lastep,td_matinit_cmp_ss,   ! timdat
+     &         skew,numrot,                                             ! skew
+     &         getshapb,bmatrixb,                                       ! bbar
+     &         ierr,errstrng)                                           ! errcode
+c
+              if(ierr.ne.izero) return
+c
+              call formdf_ss(
+     &         b,neq,                                                   ! force
+     &         x,d,dcur,numnp,                                          ! global
+     &         s,stemp,                                                 ! stiff
+     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
+     &         infmat,infmatmod,numat,                                  ! materl
+     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         skew,numrot,                                             ! skew
+     &         getshapb,bmatrixb,                                       ! bbar
+     &         ierr,errstrng)                                           ! errcode
+c
+              if(ierr.ne.izero) return
+c
+              if(numfn.ne.izero) call formf_ss(
+     &         b,neq,                                                   ! force
+     &         x,numnp,                                                 ! global
+     &         s,stemp,                                                 ! stiff
+     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
+     &         infmat,infmatmod,numat,                                  ! materl
+     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         skew,numrot,                                             ! skew
+     &         nfault,dfault,tfault,numfn,                              ! split
+     &         getshapb,bmatrixb,                                       ! bbar
+     &         ierr,errstrng)                                           ! errcode
+c
+              if(ierr.ne.izero) return
+c
+              call iterate(
+     &         alnz,pcg,zcg,ja,                                         ! sparse
+     &         b,btot,bres,pvec,gvec1,gvec2,grav,                       ! force
+     &         x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,               ! global
+     &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
+     &         nfault,dfault,tfault,                                    ! fault
+     &         s,stemp,                                                 ! stiff
+     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,     ! elemnt
+     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
+     &         prop,mhist,infmat,infmatmod,                             ! materl
+     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
+     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
+     &         skew,                                                    ! skew
+     &         ncodat,nunits,nprint,                                    ! ioinfo
+     &         getshapb,bmatrixb,gload_cmp_ss,td_strs_cmp_ss,           ! external
+     &         td_strs_mat_cmp_ss,                                      ! external
+     &         ierr,errstrng)                                           ! errcode
+c
+              if(ierr.ne.izero) return
+c
+clater            else if(lgdefp.eq.ione.and.ibbarp.eq.izero) then
+clater              if(reform) call matinit_drv(
+clater     &         alnz,ja,nnz,neq,                                         ! sparse
+clater     &         x,d,iwink,wink,numnp,nwink,                              ! global
+clater     &         dx,iwinkx,winkx,numslp,numsn,nwinkx,                     ! slip
+clater     &         tfault,numfn,                                            ! fault
+clater     &         s,stemp,                                                 ! stiff
+clater     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz, ! elemnt
+clater     &         ndmatsz,numelt,nconsz,                                   ! elemnt
+clater     &         prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,       ! materl
+clater     &         gauss,sh,shj,infetype,                                   ! eltype
+clater     &         histry,rtimdat,ntimdat,nhist,lastep,td_matinit_cmp_ld,   ! timdat
+clater     &         skew,numrot,                                             ! skew
+clater     &         getshapn,bmatrixn,                                       ! bbar
+clater     &         ierr,errstrng)                                           ! errcode
+c
+clater              if(ierr.ne.izero) return
+c
+clater              call formdf_ld(
+clater     &         b,neq,                                                   ! force
+clater     &         x,d,dcur,numnp,                                          ! global
+clater     &         s,stemp,                                                 ! stiff
+clater     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
+clater     &         infmat,infmatmod,numat,                                  ! materl
+clater     &         gauss,sh,shj,infetype,                                   ! eltype
+clater     &         skew,numrot,                                             ! skew
+clater     &         getshapn,bmatrixn,                                       ! bbar
+clater     &         ierr,errstrng)                                           ! errcode
+c
+clater              if(ierr.ne.izero) return
+c
+clater              if(numfn.ne.izero) call formf_ld(
+clater     &         b,neq,                                                   ! force
+clater     &         x,numnp,                                                 ! global
+clater     &         s,stemp,                                                 ! stiff
+clater     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
+clater     &         infmat,infmatmod,numat,                                  ! materl
+clater     &         gauss,sh,shj,infetype,                                   ! eltype
+clater     &         skew,numrot,                                             ! skew
+clater     &         nfault,dfault,tfault,numfn,                              ! split
+clater     &         getshapn,bmatrixn,                                       ! bbar
+clater     &         ierr,errstrng)                                           ! errcode
+c
+clater              if(ierr.ne.izero) return
+c
+clater              call iterate(
+clater     &         alnz,pcg,zcg,ja,                                         ! sparse
+clater     &         b,btot,bres,pvec,gvec1,gvec2,grav,                       ! force
+clater     &         x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,               ! global
+clater     &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
+clater     &         nfault,dfault,tfault,                                    ! fault
+clater     &         s,stemp,                                                 ! stiff
+clater     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,     ! elemnt
+clater     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
+clater     &         prop,mhist,infmat,infmatmod,                             ! materl
+clater     &         gauss,sh,shj,infetype,                                   ! eltype
+clater     &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
+clater     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
+clater     &         skew,                                                    ! skew
+clater     &         ncodat,nunits,nprint,                                    ! ioinfo
+clater     &         getshapn,bmatrixn,gload_cmp_ld,td_strs_cmp_ld,           ! external
+clater     &         td_strs_mat_cmp_ld,                                      ! external
+clater     &         ierr,errstrng)                                           ! errcode
+c
+clater              if(ierr.ne.izero) return
+c
+clater            else if(lgdefp.eq.ione.and.ibbarp.eq.ione) then
+clater              if(reform) call matinit_drv(
+clater     &         alnz,ja,nnz,neq,                                         ! sparse
+clater     &         x,d,iwink,wink,numnp,nwink,                              ! global
+clater     &         dx,iwinkx,winkx,numslp,numsn,nwinkx,                     ! slip
+clater     &         tfault,numfn,                                            ! fault
+clater     &         s,stemp,                                                 ! stiff
+clater     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz, ! elemnt
+clater     &         ndmatsz,numelt,nconsz,                                   ! elemnt
+clater     &         prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,       ! materl
+clater     &         gauss,sh,shj,infetype,                                   ! eltype
+clater     &         histry,rtimdat,ntimdat,nhist,lastep,td_matinit_cmp_ld,   ! timdat
+clater     &         skew,numrot,                                             ! skew
+clater     &         getshapb,bmatrixb,                                       ! bbar
+clater     &         ierr,errstrng)                                           ! errcode
+c
+clater              if(ierr.ne.izero) return
+c
+clater              call formdf_ld(
+clater     &         b,neq,                                                   ! force
+clater     &         x,d,dcur,numnp,                                          ! global
+clater     &         s,stemp,                                                 ! stiff
+clater     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
+clater     &         infmat,infmatmod,numat,                                  ! materl
+clater     &         gauss,sh,shj,infetype,                                   ! eltype
+clater     &         skew,numrot,                                             ! skew
+clater     &         getshapb,bmatrixb,                                       ! bbar
+clater     &         ierr,errstrng)                                           ! errcode
+c
+clater              if(ierr.ne.izero) return
+c
+clater              if(numfn.ne.izero) call formf_ld(
+clater     &         b,neq,                                                   ! force
+clater     &         x,numnp,                                                 ! global
+clater     &         s,stemp,                                                 ! stiff
+clater     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
+clater     &         infmat,infmatmod,numat,                                  ! materl
+clater     &         gauss,sh,shj,infetype,                                   ! eltype
+clater     &         skew,numrot,                                             ! skew
+clater     &         nfault,dfault,tfault,numfn,                              ! split
+clater     &         getshapb,bmatrixb,                                       ! bbar
+clater     &         ierr,errstrng)                                           ! errcode
+c
+clater              if(ierr.ne.izero) return
+c
+clater              call iterate(
+clater     &         alnz,pcg,zcg,ja,                                         ! sparse
+clater     &         b,btot,bres,pvec,gvec1,gvec2,grav,                       ! force
+clater     &         x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,               ! global
+clater     &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
+clater     &         nfault,dfault,tfault,                                    ! fault
+clater     &         s,stemp,                                                 ! stiff
+clater     &         state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,     ! elemnt
+clater     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
+clater     &         prop,mhist,infmat,infmatmod,                             ! materl
+clater     &         gauss,sh,shj,infetype,                                   ! eltype
+clater     &         histry,rtimdat,ntimdat,nvisdat,                          ! timdat
+clater     &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
+clater     &         skew,                                                    ! skew
+clater     &         ncodat,nunits,nprint,                                    ! ioinfo
+clater     &         getshapb,bmatrixb,gload_cmp_ld,td_strs_cmp_ld,           ! external
+clater     &         td_strs_mat_cmp_ld,                                      ! external
+clater     &         ierr,errstrng)                                           ! errcode
+c
+clater              if(ierr.ne.izero) return
+c
+            end if
+c
+c...  print displacements at all nodes when requested.
 c
             if(fulout) then
-              call printd(d,deld,deltp,idslp,ndof,numnp,numnp,ione,
+              call printd(d,deld,deltp,idslp,numnp,numnp,ione,
      &         idout,idsk,kto,kw,kp)
-              call printf(tfault,dfault,deltp,nfault,ndof,numfn,idout,
+              call printf(tfault,dfault,deltp,nfault,numfn,idout,
      &         idsk,kw,kp)
-              call printd(dx,deldx,deltp,idslp,ndof,numnp,numsn,itwo,
+              call printd(dx,deldx,deltp,idslp,numnp,numsn,itwo,
      &         idout,idsk,kto,kw,kp)
-              call printl(idx,iwinkx,idslp,histry,ndof,numsn,numnp,
+              call printl(idx,iwinkx,idslp,histry,numsn,numnp,
      &         nstep,nhist,nwinkx,lastep,idsk,kp)
             end if
 c
-c...print stresses in all elements when requested
+c...  print stresses and strains in all elements when requested
 c
-            if(fulout) call prints(stn,eps,deps,beta,dbeta,betb,dbetb,
-     &       nstr,ngauss,numel,nstep,idout,idsk,kw,kp,ivisc,iplas)
+            if(fulout) call write_state(
+     &       state,dstate,infiel,nstatesz,numelt,                       ! elemnt
+     &       infmat,infmatmod,ismatmod,numat,                           ! materl
+     &       infetype,                                                  ! eltype
+     &       delt,nstep,                                                ! timdat
+     &       istatout,                                                  ! ioopts
+     &       idout,idsk,kw,kp)                                          ! ioinfo
             ltim=.false.
             if(fulout) indexx=indexx+1
             if(indexx.gt.icontr) indexx=icontr
@@ -299,8 +564,8 @@ c
         end do
       end do
       write(kto,800) ntimdat(7),ntimdat(8),ntimdat(9)
-      if(idout.gt.1) write(kw,800) ntimdat(7),ntimdat(8),ntimdat(9)
-      if(idout.gt.1) close(kw)
+      if(idout.gt.ione) write(kw,800) ntimdat(7),ntimdat(8),ntimdat(9)
+      if(idout.gt.ione) close(kw)
       close(kp)
 c
  700  format('STEP ',i7)
@@ -318,7 +583,7 @@ c
       end
 c
 c version
-c $Id: viscos.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: viscos.f,v 1.2 2004/07/13 17:39:36 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
