@@ -53,6 +53,7 @@ PROJ_SRCS = \
         formf_ss.f \
         formrt.f \
         funcs.f \
+	get_initial_stress.f \
         get_units.f \
         getder.f \
         getjac.f \
@@ -217,7 +218,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.10 2005/01/19 20:08:43 willic3 Exp $
+# $Id: Make.mm,v 1.11 2005/02/23 23:48:01 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
