@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine mathist(ptmp,prop,mhist,histry,nprop,imat,nstep,nhist,
-     & lastep,matchg,ierr)
+     & lastep,matchg,ierr,errstrng)
 c
 c...subroutine to assign material properties based on time histories
 c
@@ -41,6 +41,7 @@ c
       integer nprop,imat,nstep,nhist,lastep,ierr
       integer mhist(nprop)
       logical matchg
+      character errstrng*(*)
       double precision ptmp(nprop),prop(nprop),histry(nhist,lastep+1)
 c
 c...  defined constants
@@ -60,6 +61,7 @@ c
         if(mhist(i).ne.izero) then
           if(mhist(i).gt.nhist.or.mhist(i).lt.0) then
             ierr=100
+            errstrng="mathist"
             return
           end if
           ptmp(i)=histry(mhist(i),nstep+1)*prop(i)
@@ -71,7 +73,7 @@ c
       end
 c
 c version
-c $Id: mathist.f,v 1.3 2004/06/16 15:44:54 willic3 Exp $
+c $Id: mathist.f,v 1.4 2004/07/05 19:40:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
