@@ -110,7 +110,7 @@ c
       integer nstate,nprop,nstate0,n0states,imat
       double precision ptmp(100)
       logical matchg
-cdebug      integer idb,jdb
+cdebug      integer idb,jdb,kdb
 c
 c...  included variable definitions
 c
@@ -119,7 +119,15 @@ c
       include "rgiter_def.inc"
 c
 cdebug      write(6,*) "Hello from matinit_drv_f!"
-c*      call fill(dmat,zero,nddmat*ndmatsz)
+c
+cdebug      do idb=1,ngauss
+cdebug        write(6,*) "gauss:",(gauss(jdb,idb),jdb=1,nsd+1)
+cdebug        do jdb=1,nen
+cdebug          write(6,*) "sh:",(sh(kdb,jdb,idb),kdb=1,nsd+1)
+cdebug          write(6,*) "shj:",(shj(kdb,jdb,idb),kdb=1,nsd+1)
+cdebug        end do
+cdebug      end do
+c
       tminmax=big
       nrftot=ntimdat(7)
       nrftot=nrftot+1
@@ -490,7 +498,7 @@ c
       end
 c
 c version
-c $Id: matinit_drv.F,v 1.2 2005/03/21 23:05:27 willic3 Exp $
+c $Id: matinit_drv.F,v 1.3 2005/04/01 23:26:52 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
