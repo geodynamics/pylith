@@ -29,8 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine pquadhex(sh,shj,gauss,ngauss,nen,nsd,nenmax,ngaussmax,
-     & intord)
+      subroutine pquadhex(sh,shj,gauss,ngauss,nen,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a quadratic (20-node)
@@ -38,18 +37,21 @@ c    hexahedron.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nsd,nenmax,ngaussmax,intord
-      integer ngauss,nen
+      integer ngauss,nen,intord
       double precision sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax)
       double precision gauss(nsd+1,ngaussmax)
 c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
+c...  local data definitions
 c
       double precision r(20),s(20),t(20)
       data r/-1d0, 1d0, 1d0,-1d0,-1d0, 1d0, 1d0,-1d0,
@@ -68,19 +70,23 @@ c
 c
 c...  user-defined functions
 c
-      double precision gquad,dgquad
+      double precision gquad,dgquad,hquad,dhquadr,dhquads,dhquadt
 c
 c...  local variables
 c
       integer i,l,l1,l2,l3,nshsize,ngssize
-      double precision g1,w1,w2,rr,ss,tt,rrw,ssw,ttw,drr,dss,dtt,beta
-      double precision betai
+      double precision g1,w1,w2,rr,ss,tt,rrw,ssw,ttw,drr,dss,dtt
+      double precision uu,dur,dus,dut,v,vi,rp,ri,sp,si,tp,ti
 c
 c...  function definitions
 c
-      gquad(beta,betai)=(half*(one-abs(betai))+half)*(one+beta*betai+
-     & (abs(betai)-one)*beta*beta)
-      dgquad(beta,betai)=half*betai-two*beta*(one-abs(betai))
+      gquad(v,vi)=(half*(one-abs(vi))+half)*(one+v*vi+(abs(vi)-one)*v*v)
+      dgquad(v,vi)=(half*(one-abs(vi))+half)*(vi+two*v*(abs(vi)-one))
+      hquad(rp,sp,tp,ri,si,ti)=abs(ri*si*ti)*(ri*rp+si*sp+ti*tp-two)+
+     & one-abs(ri*si*ti)
+      dhquadr(ri,si,ti)=abs(ri*si*ti)*ri
+      dhquads(ri,si,ti)=abs(ri*si*ti)*si
+      dhquadt(ri,si,ti)=abs(ri*si*ti)*ti
 c
 c...  definitions
 c
@@ -126,23 +132,17 @@ c
           rr=gquad(gauss(1,l),r(i))
           ss=gquad(gauss(2,l),s(i))
           tt=gquad(gauss(3,l),t(i))
+          uu=hquad(gauss(1,l),gauss(2,l),gauss(3,l),r(i),s(i),t(i))
           drr=dgquad(gauss(1,l),r(i))
           dss=dgquad(gauss(2,l),s(i))
           dtt=dgquad(gauss(3,l),t(i))
-          sh(4,i,l)=rr*ss*tt
-          sh(1,i,l)=drr*ss*tt
-          sh(2,i,l)=dss*rr*tt
-          sh(3,i,l)=dtt*rr*ss
-        end do
-        do i=1,4
-          sh(i,1,l)=sh(i,1,l)-half*(sh(i,9,l)+sh(i,12,l)+ sh(i,17,l))
-          sh(i,2,l)=sh(i,2,l)-half*(sh(i,9,l)+sh(i,10,l)+sh(i,18,l))
-          sh(i,3,l)=sh(i,3,l)-half*(sh(i,10,l)+sh(i,11,l)+sh(i,19,l))
-          sh(i,4,l)=sh(i,4,l)-half*(sh(i,11,l)+sh(i,12,l)+sh(i,20,l))
-          sh(i,5,l)=sh(i,5,l)-half*(sh(i,13,l)+sh(i,16,l)+sh(i,17,l))
-          sh(i,6,l)=sh(i,6,l)-half*(sh(i,13,l)+sh(i,14,l)+sh(i,18,l))
-          sh(i,7,l)=sh(i,7,l)-half*(sh(i,14,l)+sh(i,15,l)+sh(i,19,l))
-          sh(i,8,l)=sh(i,8,l)-half*(sh(i,15,l)+sh(i,16,l)+sh(i,20,l))
+          dur=dhquadr(r(i),s(i),t(i))
+          dus=dhquads(r(i),s(i),t(i))
+          dut=dhquadt(r(i),s(i),t(i))
+          sh(4,i,l)=rr*ss*tt*uu
+          sh(1,i,l)=drr*ss*tt*uu+dur*rr*ss*tt
+          sh(2,i,l)=dss*rr*tt*uu+dus*rr*ss*tt
+          sh(3,i,l)=dtt*rr*ss*uu+dut*rr*ss*tt
         end do
       end do
       call dcopy(nshsize,sh,ione,shj,ione)
@@ -151,7 +151,7 @@ c
       end
 c
 c version
-c $Id: pquadhex.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: pquadhex.f,v 1.2 2004/07/06 19:14:36 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
