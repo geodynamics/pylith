@@ -187,6 +187,7 @@ class Lithomop3d_setup(Component):
 
         # Invariant parameters related to element type
         self.maxElementEquations = lm3dscan._maxElementEquations
+        self.maxNumberVolumeElementFamilies = lm3dscan._maxNumberVolumeElementFamilies
         self.pointerToListArrayNumberElementNodesBase = lm3dscan._pointerToListArrayNumberElementNodesBase
 
         # Invariant parameters related to material model
@@ -197,7 +198,6 @@ class Lithomop3d_setup(Component):
 
         # Parameters derived from values in the inventory or the category 2 parameters.
         self.analysisTypeInt = lm3dscan._analysisTypeInt
-        self.quadratureOrderInt = lm3dscan._quadratureOrderInt
         self.prestressAutoComputeInt = lm3dscan._prestressAutoComputeInt
         self.prestressAutoChangeElasticPropsInt = lm3dscan._prestressAutoChangeElasticPropsInt
 
@@ -264,7 +264,7 @@ class Lithomop3d_setup(Component):
         print "Reading problem definition and allocating storage:"
 
         lithomop3d.PetscInitialize()
-        self.elasticStage, self.viscousStage, self.iterateEvent = lithomop3d.setupPETScLogging()
+        self.autoprestrStage, self.elasticStage, self.viscousStage, self.iterateEvent = lithomop3d.setupPETScLogging()
 
         eltype=ElementTypeDef()
 
@@ -289,6 +289,7 @@ class Lithomop3d_setup(Component):
         self.pointerToBintern = None
         self.pointerToBresid = None
         self.pointerToDispVec = None
+        self.pointerToDprev = None
         self.listNforce = [0, 0, 0, 0, 0, 0]
         self.pointerToListArrayNforce = None
 
@@ -362,6 +363,7 @@ class Lithomop3d_setup(Component):
         self.numberVolumeElementNodes = 0
         self.numberVolumeElementGaussPoints = 0
         self.numberVolumeElementEquations = 0
+	self.connectivitySize = 0
 
         self.pointerToHistry = None
         self.listRtimdat = [0.0, 0.0, 0.0]
@@ -375,6 +377,7 @@ class Lithomop3d_setup(Component):
         self.currentNumberTotalIterations = 0
         self.currentNumberReforms = 0
         self.currentNumberTotalPcgIterations = 0
+	self.reformFlagInt = 0
         self.pointerToListArrayNtimdat = None
         self.listNvisdat = [0, 0, 0, 0]
         self.pointerToListArrayNvisdat = None
@@ -493,13 +496,14 @@ class Lithomop3d_setup(Component):
             self.numberSpaceDimensions,
             self.numberDegreesFreedom)
 
-        self.elementTypeInfo = eltype.getdef.elementTypeInfo
-        self.pointerToSh = eltype.getdef.pointerToSh
-        self.pointerToShj = eltype.getdef.pointerToShj
-        self.pointerToGauss = eltype.getdef.pointerToGauss
-        self.numberVolumeElementNodes = eltype.getdef.numberElementNodes
-        self.numberVolumeElementGaussPoints = eltype.getdef.numberElementGaussPoints
-        self.numberVolumeElementEquations = eltype.getdef.numberElementEquations
+        self.elementTypeInfo = eltype.elementTypeInfo
+        self.pointerToSh = eltype.pointerToSh
+        self.pointerToShj = eltype.pointerToShj
+        self.pointerToGauss = eltype.pointerToGauss
+        self.numberVolumeElementNodes = eltype.numberVolumeElementNodes
+        self.numberVolumeElementGaussPoints = eltype.numberVolumeElementGaussPoints
+        self.numberVolumeElementEquations = eltype.numberVolumeElementEquations
+	self.connectivitySize = self.numberVolumeElements*self.numberVolumeElementNodes
         self.pointerToListArrayElementTypeInfo = lithomop3d.intListToArray(
             self.elementTypeInfo)
 	self.memorySize += 4*self.intSize
@@ -580,14 +584,11 @@ class Lithomop3d_setup(Component):
             self.asciiOutputInt,
             self.asciiOutputFile)
         
-        # lithomop3d.write_subiter(
-        #     self.pointerToListArrayRmult,
-        #     self.pointerToListArrayRmin,
-        #     self.preconditionerTypeInt,
-        #     self.maxPcgIterations,
-        #     self.f77AsciiOutput,
-        #     self.asciiOutputInt,
-        #     self.asciiOutputFile)
+        lithomop3d.write_subiter(
+            self.usePreviousDisplacementFlag,
+            self.f77AsciiOutput,
+            self.asciiOutputInt,
+            self.asciiOutputFile)
                              
         # Allocate and read time step, time output, and load history info.
         self.pointerToHistry = lithomop3d.allocateDouble(
@@ -717,11 +718,11 @@ class Lithomop3d_setup(Component):
                            self.numberVolumeElements*self.intSize
         self.pointerToIvfamily = lithomop3d.allocateInt(
             5*self.numberVolumeElementFamilies)
-        self.memorySize += 5*self.numberVolumeElementFamilies*intSize
+        self.memorySize += 5*self.numberVolumeElementFamilies*self.intSize
 
         self.pointerToIvftmp = lithomop3d.allocateInt(
             self.numberVolumeElementFamilies)
-        self.memorySize += self.numberVolumeElementFamilies*intSize
+        self.memorySize += self.numberVolumeElementFamilies*self.intSize
 
         if self.numberPrestressEntries != 0 or self.prestressAutoComputeInt != 0:
             self.prestressFlag = 1
@@ -1207,6 +1208,9 @@ class Lithomop3d_setup(Component):
         self.pointerToDispVec = lithomop3d.allocateDouble(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.doubleSize
+        self.pointerToDprev = lithomop3d.allocateDouble(
+            self.usePreviousDisplacementFlag*self.numberGlobalEquations)
+	self.memorySize += self.usePreviousDisplacementFlag*self.numberGlobalEquations*self.doubleSize
             
         # Displacement arrays
         self.pointerToD = lithomop3d.allocateDouble(
@@ -1327,14 +1331,6 @@ class Lithomop3d_setup(Component):
             self.listNprint)
 	self.memorySize += 4*self.intSize
 
-        # nsiter array
-        self.listNsiter = [
-            self.preconditionerTypeInt,
-            self.maxPcgIterations]
-        self.pointerToListArrayNsiter = lithomop3d.intListToArray(
-            self.listNsiter)
-	self.memorySize += 2*self.intSize
-
         # nsysdat array
         self.listNsysdat = [
             self.numberNodes,
@@ -1437,6 +1433,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.21 2005/03/30 01:56:39 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.22 2005/04/01 23:49:59 willic3 Exp $
 
 # End of file 
