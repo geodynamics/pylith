@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_wink(wink,wscal,iwink,id,numnp,ndof,nwink,nwinke,
-     & kr,kw,idout,ierr,wfile,ofile)
+      subroutine read_wink(wink,wscal,iwink,id,numnp,nwink,nwinke,
+     & kr,kw,idout,wfile,ofile,ierr,errstrng)
 c
 c....program for reading and printing data on winkler restoring forces
 c
@@ -42,15 +42,26 @@ c                               iwink = 0, no winkler forces,
 c                               iwink = 1, applied throuthout computatin
 c                               iwink = -n, uses load history factor n
 c
+c     Error codes:
+c         0:  No error
+c         1:  Error opening input file (only if nwink.ne.zero)
+c         2:  Error opening output file
+c         3:  Read error
+c         4:  Write error
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer numnp,ndof,nwink,nwinke,kr,kw,idout,ierr
+      integer numnp,nwink,nwinke,kr,kw,idout,ierr
       integer iwink(2,nwink),id(ndof,numnp)
       double precision wink(nwink),wscal(3)
-      character wfile*(*),ofile*(*)
+      character wfile*(*),ofile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -72,27 +83,28 @@ c
 c
 c...  open output file
 c
-      if(idout.gt.0) open(kw,file=ofile,status="old",access="append")
+      ierr=izero
+      if(idout.gt.izero) open(kw,file=ofile,err=40,status="old",
+     & access="append")
 c
 c...  open input file
 c
-      ierr=0
-      if(nwink.eq.0) return
+      if(nwink.eq.izero) return
       open(kr,file=wfile,status="old",err=20)
 c
 c.......read winkler force data and output results, if desired
 c
       call pskip(kr)
-      nwtot=0
-      nlines=0
+      nwtot=izero
+      nlines=izero
       npage=50
       do i=1,nwinke
         read(kr,*,err=30,end=30) n,(iwtmp(j),j=1,ndof),
      &   (wtmp(j),j=1,ndof)
-        nnz=0
+        nnz=izero
         do j=1,ndof
           wtmp(j)=wscal(j)*wtmp(j)
-          if(iwtmp(j).ne.0) then
+          if(iwtmp(j).ne.izero) then
             nnz=nnz+1
             nwtot=nwtot+1
             iwink(1,nwtot)=iwtmp(j)
@@ -100,18 +112,19 @@ c
             wink(nwtot)=wtmp(j)
           end if
         end do
-        if(idout.gt.0.and.nnz.ne.0) then
-          if(mod(nlines,npage).eq.0) then
-            write(kw,1000)
-            write(kw,3000) (labeld(iline),iline=1,ndof)
-            write(kw,2005)
+        if(idout.gt.izero.and.nnz.ne.izero) then
+          if(mod(nlines,npage).eq.izero) then
+            write(kw,1000,err=50)
+            write(kw,3000,err=50) (labeld(iline),iline=1,ndof)
+            write(kw,2005,err=50)
           end if
           nlines=nlines+1
-          write(kw,2020) n,(wtmp(iline),iwtmp(iline),iline=1,ndof)
+          write(kw,2020,err=50) n,(wtmp(iline),iwtmp(iline),
+     &     iline=1,ndof)
         end if 
       end do
       close(kr)
-      if(idout.gt.0) close(kw)
+      if(idout.gt.izero) close(kw)
 c
 c...  normal return
 c
@@ -121,6 +134,7 @@ c...  error opening input file
 c
  20   continue
         ierr=1
+        errstrng="read_wink"
         close(kr)
         return
 c
@@ -128,7 +142,24 @@ c...  error reading input file
 c
  30   continue
         ierr=3
+        errstrng="read_wink"
         close(kr)
+        return
+c
+c...  error opening output file
+c
+ 40   continue
+        ierr=2
+        errstrng="read_wink"
+        close(kw)
+        return
+c
+c...  error reading input file
+c
+ 50   continue
+        ierr=4
+        errstrng="read_wink"
+        close(kw)
         return
 c
  2005 format(/)
@@ -146,7 +177,7 @@ c     & ' t o r i n g   f o r c e s',//)
       end
 c
 c version
-c $Id: read_wink.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: read_wink.f,v 1.2 2004/07/12 19:23:29 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
