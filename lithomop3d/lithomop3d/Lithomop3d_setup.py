@@ -48,6 +48,7 @@ class Lithomop3d_setup(Component):
 
     def initialize(self, scanner):
         lm3dscan = scanner
+        lm3dscan.preinitialize()
 
 	print ""
         print "Hello from lm3dsetup.initialize (begin)!"
@@ -1636,6 +1637,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.16 2005/03/10 01:10:37 knepley Exp $
+# $Id: Lithomop3d_setup.py,v 1.17 2005/03/11 02:17:39 willic3 Exp $
 
 # End of file 
