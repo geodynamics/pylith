@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine getjac(x,xs,det,shj,nen,nsd,iel,ierr)
+      subroutine getjac(x,xs,det,shj,nen,iel,ierr,errstrng)
 c
 c...  subroutine to compute the jacobian determinant given the element
 c     coordinates and the shape functions in natural coordinates.
@@ -42,15 +42,18 @@ c       x(nsd,nen)                    = local nodal coordinates
 c
       include "implicit.inc"
 c
-c...  subroutine arguments
+c...  parameter definitions
 c
-      integer nen,nsd,iel,ierr
-      double precision x(nsd,nen),xs(nsd,nsd),det,shj(4,8)
-c
-c...  defined constants
-c
+      include "ndimens.inc"
+      include "nshape.inc"
       include "nconsts.inc"
       include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nen,iel,ierr
+      character errstrng
+      double precision x(nsd,nen),xs(nsd,nsd),det,shj(nsd+1,nenmax)
 c
 cdebug      write(6,*) "Hello from getjac_f!"
 c
@@ -58,20 +61,23 @@ c
 c
 c...calculate jacobian matrix for (x,y,z) to (r,s,t) transformation
 c
-      call dgemm("n","t",nsd,nsd,nen,one,shj,ifour,x,nsd,zero,xs,nsd)
+      call dgemm("n","t",nsd,nsd,nen,one,shj,nsd+1,x,nsd,zero,xs,nsd)
 c
 c...form determinant of jacobian matrix and check for error condition
 c
       det=xs(1,1)*xs(2,2)*xs(3,3)+xs(1,2)*xs(2,3)*xs(3,1)+xs(1,3)
      & *xs(2,1)*xs(3,2)-xs(1,3)*xs(2,2)*xs(3,1)-xs(1,2)*xs(2,1)
      & *xs(3,3)-xs(1,1)*xs(2,3)*xs(3,2)
-      if(det.le.zero) ierr=-iel
+      if(det.le.zero) then
+        ierr=-iel
+        errstrng="Zero or negative determinant from getjac"
+      end if
 c
       return
       end
 c
 c version
-c $Id: getjac.f,v 1.2 2004/06/17 18:06:40 willic3 Exp $
+c $Id: getjac.f,v 1.3 2004/07/01 19:48:21 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
