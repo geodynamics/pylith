@@ -4,9 +4,8 @@ c ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -442,7 +441,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.18 2005/03/24 02:08:57 willic3 Exp $
+c $Id: mat_1.f,v 1.19 2005/04/01 23:10:16 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
