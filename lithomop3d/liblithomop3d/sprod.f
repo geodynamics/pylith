@@ -46,7 +46,7 @@ c...  defined constants
 c
       include "rconsts.inc"
 c
-c*      write(6,*) "Hello from sprod_f!"
+cdebug      write(6,*) "Hello from sprod_f!"
 c
       sprod=half*(r1(1)*r2(1)+r1(2)*r2(2)+r1(3)*r2(3))+r1(4)*r2(4)+
      & r1(5)*r2(5)+r1(6)*r2(6)
@@ -54,7 +54,7 @@ c
       end
 c
 c version
-c $Id: sprod.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: sprod.f,v 1.2 2004/08/12 02:27:00 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
