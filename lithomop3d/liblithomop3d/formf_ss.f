@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine formf_ss(
-     & bdisp,neq,                                                       ! force
+     & bintern,neq,                                                     ! force
      & x,numnp,                                                         ! global
      & s,stemp,                                                         ! stiff
      & dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,             ! elemnt
@@ -61,7 +61,7 @@ c
       integer infmatmod(5,nmatmodmax),infetype(4,netypes)
       integer nfault(3,numfn)
       character errstrng*(*)
-      double precision bdisp(neq),x(nsd,numnp),s(neemax*neemax)
+      double precision bintern(neq),x(nsd,numnp),s(neemax*neemax)
       double precision stemp(neemax*neemax),dfault(ndof,numfn)
       double precision tfault(ndof,numfn),dmat(nddmat,ndmatsz)
       double precision gauss(nsd+1,ngaussmax,netypes)
@@ -115,13 +115,13 @@ c
 c
         call lflteq(dl,dfault(1,i),nfault(1,i),ien(indien),nen)
 	call dsymv("u",nee,one,s,nee,dl,ione,zero,p,ione)
-        call addfor(bdisp,p,lm(1,indien),lmx(1,indien),neq,nee)
+        call addfor(bintern,p,lm(1,indien),lmx(1,indien),neq,nee)
       end do
       return
       end
 c
 c version
-c $Id: formf_ss.f,v 1.3 2004/07/08 21:15:31 willic3 Exp $
+c $Id: formf_ss.f,v 1.4 2005/01/05 22:46:42 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
