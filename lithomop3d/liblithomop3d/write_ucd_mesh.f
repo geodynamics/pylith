@@ -133,7 +133,7 @@ c
           if(ietype.eq.61) indtype=inine
           if(ietype.eq.62) indtype=10
           do j=1,nen
-            itmp(j)=ien(nen+j-1,ielg)
+            itmp(j)=ien(j,ielg)
           end do
           write(kucd,"(2i7,2x,a4,20i7)") ielg,matmodel,eltype(indtype),
      &     (itmp(inducd(j,indtype)),j=1,nen)
@@ -170,7 +170,7 @@ c
       end
 c
 c version
-c $Id: write_ucd_mesh.f,v 1.6 2005/03/26 00:41:01 willic3 Exp $
+c $Id: write_ucd_mesh.f,v 1.7 2005/04/05 23:00:56 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
