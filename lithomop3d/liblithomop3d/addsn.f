@@ -39,6 +39,7 @@ c
 c...  parameter definitions
 c
       include "ndimens.inc"
+      include "nconsts.inc"
       include "rconsts.inc"
 c
 c...  subroutine arguments
@@ -61,7 +62,7 @@ c
         k=ien(i)
         slip=.false.
         do j=1,ndof
-          if(lmx(j,i).ne.0) then
+          if(lmx(j,i).ne.izero) then
             slip=.true.
             sgn=sign(one,dble(lmx(j,i)))
           end if
@@ -76,7 +77,7 @@ c
       end
 c
 c version
-c $Id: addsn.f,v 1.2 2004/06/18 14:49:30 willic3 Exp $
+c $Id: addsn.f,v 1.3 2004/07/06 20:12:00 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
