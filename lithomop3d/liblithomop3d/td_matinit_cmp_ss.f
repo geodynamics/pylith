@@ -37,10 +37,10 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,         ! elemnt
      & ndmatsz,numelt,nconsz,                                           ! elemnt
-     & prop,nprop,matgpt,imatvar,nmatel,elas_matinit,td_matinit,matchg, ! materl
-     & tminmax,                                                         ! materl
+     & prop,nstate,nprop,matgpt,imatvar,nmatel,elas_matinit,td_matinit, ! materl
+     & matchg,tminmax,                                                  ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
-     & rtimdat,ntimdat,                                                 ! timdat
+     & rtimdat,ntimdat,rgiter,                                          ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
@@ -60,7 +60,7 @@ c
 c...  subroutine arguments
 c
       integer nnz,neq,numnp,numslp,numsn,numfn,nstatesz,ndmatsz,numelt
-      integer nconsz,nprop,matgpt,imatvar,nmatel,numrot,ierr
+      integer nconsz,nprop,nstate,matgpt,imatvar,nmatel,numrot,ierr
       logical matchg
       integer ja(nnz),ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
       integer lmf(nconsz),infiel(6,numelt),iddmat(nstr,nstr)
@@ -80,6 +80,7 @@ c...  included dimension and type statements
 c
       include "rtimdat_dim.inc"
       include "ntimdat_dim.inc"
+      include "rgiter_dim.inc"
 c
 c...  external routines
 c
@@ -87,7 +88,7 @@ c
 c
 c...  local variables
 c
-      integer iel,indstate0,inddmat0,ietype,nstate,ng
+      integer iel,indstate0,inddmat0,ietype,ng
       integer inddmatg,l,ind,indstate,inddmat,ngauss,indstateg
       integer indien,nen,nee,ngtest,ngaussdim
       double precision tmax
@@ -96,6 +97,7 @@ c...  included variable definitions
 c
       include "rtimdat_def.inc"
       include "ntimdat_def.inc"
+      include "rgiter_def.inc"
 c
 cdebug      write(6,*) "Hello from td_matinit_cmp_ss_f!"
 c
@@ -110,8 +112,8 @@ c
       ietype=infiel(3,iel)
       if(imatvar.eq.izero) then
         call td_matinit(state(1,indstate0),dstate(1,indstate0),
-     &   dmat(1,inddmat0),prop,iddmat,tmax,nstate,nprop,matchg,ierr,
-     &   errstrng)
+     &   dmat(1,inddmat0),prop,rtimdat,rgiter,ntimdat,iddmat,tmax,
+     &   nstate,nprop,matchg,ierr,errstrng)
         if(ierr.ne.izero) return
         ng=ngaussmax
         inddmatg=inddmat0
@@ -132,10 +134,13 @@ c
           ngauss=infetype(1,ietype)
           inddmatg=inddmat
           indstateg=indstate
+cdebug          write(6,*) "ind,matgpt,iel,ietype,indstate,inddmat,ngauss:",
+cdebug     &     ind,matgpt,iel,ietype,indstate,inddmat,ngauss
           do l=1,ngauss
+cdebug            write(6,*) "l,inddmatg,indstateg:",l,inddmatg,indstateg
             call td_matinit(state(1,indstateg),dstate(1,indstateg),
-     &       dmat(1,inddmatg),prop,iddmat,tmax,nstate,nprop,matchg,
-     &       ierr,errstrng)
+     &       dmat(1,inddmatg),prop,rtimdat,rgiter,ntimdat,iddmat,tmax,
+     &       nstate,nprop,matchg,ierr,errstrng)
             if(ierr.ne.izero) return
             tminmax=min(tminmax,tmax)
             inddmatg=inddmatg+ione
@@ -143,6 +148,7 @@ c
           end do
         end do
       end if
+cdebug      write(6,*) "tminmax:",tminmax
 c
 c...  loop over elements in group and add element stiffness to global
 c     stiffness.
@@ -177,7 +183,7 @@ c
       end
 c
 c version
-c $Id: td_matinit_cmp_ss.f,v 1.3 2004/08/02 21:29:45 willic3 Exp $
+c $Id: td_matinit_cmp_ss.f,v 1.4 2004/08/12 02:31:39 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
