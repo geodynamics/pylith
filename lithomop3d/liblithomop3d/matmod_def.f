@@ -110,8 +110,9 @@ c
       ismatmod(1,4) =ione
       ismatmod(2,4) =ione
 c
-c...  Dummy definition for Maxwell viscoelastic material
+c...  Definition for Maxwell viscoelastic material
 c
+      infmatmod(1,5) = ione
       infmatmod(2,5) = ithree
       infmatmod(3,5) = ifour
       infmatmod(4,5) = ione
@@ -123,7 +124,7 @@ c
 c...  Dummy definitions for remaining materials
 c
       do i=6,nmatmodmax
-        do j=1,5
+        do j=2,5
           infmatmod(j,i)=infmatmod(j,5)
         end do
         do j=1,nstatesmax
@@ -135,7 +136,7 @@ c
       end
 c
 c version
-c $Id: matmod_def.f,v 1.2 2004/07/12 21:33:30 willic3 Exp $
+c $Id: matmod_def.f,v 1.3 2004/08/12 02:08:44 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
