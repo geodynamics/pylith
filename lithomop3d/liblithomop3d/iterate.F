@@ -30,17 +30,17 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine iterate(
-     & A,pcg,zcg,dprev,                                                 ! sparse
+     & A,                                                               ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
      & dispvec,nforce,grav,                                             ! force
-     & x,d,deld,dcur,id,iwink,wink,nsysdat,                             ! global
+     & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
      & dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                     ! slip
      & nfault,dfault,tfault,                                            ! fault
      & s,stemp,                                                         ! stiff
-     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,      ! elemnt
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,           ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
-     & prop,mhist,infmat,infmatmod,tminmax,                             ! materl
-     & gauss,sh,shj,infetype,                                           ! eltype
+     & prop,mhist,infmatmod,tminmax,                                    ! materl
+     & gauss,sh,shj,nen,ngauss,nee,nec,                                 ! eltype
      & histry,rtimdat,ntimdat,nvisdat,iprestress,                       ! timdat
      & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
      & skew,                                                            ! skew
@@ -93,16 +93,14 @@ c
 c
 c...  subroutine arguments
 c
-      integer iprestress,ierr
-      integer id(*),iwink(*)
+      integer nen,ngauss,nee,nec,iprestress,ierr
+      integer id(*),iwink(*),iddmat(*)
       integer idx(*),iwinkx(*),idslp(*),ipslp(*)
       integer nfault(*)
-      integer ien(*),lm(*),lmx(*),lmf(*),infiel(*),iddmat(*)
+      integer ien(*),lm(*),lmx(*),lmf(*),ivfamily(*)
       integer ielno(*),iside(*),ihistry(*)
-      integer mhist(*),infmat(*),infmatmod(*)
-      integer infetype(*)
+      integer mhist(*),infmatmod(*)
       character errstrng*(*)
-      double precision pcg(*),zcg(*),dprev(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
       double precision bintern(*),bresid(*),bwork(*)
       double precision dispvec(*),grav(*)
@@ -167,10 +165,6 @@ c
 c...initialize convergence criteria
 c
 cdebug      write(6,*) "Hello from iterate_f!"
-cdebug      write(6,*) "nextflag, ntractflag, ngravflag, nconcflag,"
-cdebug      write(6,*) "nprestrflag, nprevdflag:"
-cdebug      write(6,*) nextflag,ntractflag,ngravflag,nconcflag,
-cdebug     & nprestrflag, nprevdflag
 c
       call PetscLogEventBegin(iterateEvent, ierr)
       fulout=.true.
@@ -196,8 +190,6 @@ c
         ireform=0
         if(reform) ireform=1
         ntimdat(9)=ireform
-cdebug        write(6,*) "updats,reform,ireform,iter,maxitp:",
-cdebug     &   updats,reform,ireform,iter,maxitp
         used=nstep.gt.0.and.(nsol.eq.3.or.nsol.eq.4).and.iter.eq.1
         if(iter.gt.1) fulout=.false.
 c
@@ -219,9 +211,9 @@ c
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     ien,lm,lmx,lmf,infiel,numelt,nconsz,                         ! elemnt
-     &     prop,mhist,infmat,infmatmod,numat,npropsz,                   ! materl
-     &     gauss,shj,infetype,                                          ! eltype
+     &     ien,lm,lmx,lmf,ivfamily,nvfamilies,numelv,                   ! elemnt
+     &     prop,mhist,infmatmod,npropsz,                                ! materl
+     &     gauss,shj,nen,ngauss,nee,                                    ! eltype
      &     histry,rtimdat,ntimdat,nhist,lastep,gload_cmp,               ! timdat
      &     skew,numrot,                                                 ! skew
      &     ierr,errstrng)                                               ! errcod
@@ -245,7 +237,7 @@ ccc PETSc BLOCK
         call KSPSetfromOptions(ksp, ierr)
         if (nprevdflag .eq. 1) then
           call KSPSetInitialGuessNonzero(ksp, 1, ierr)
-          call dcopy(neq, dprev, 1, dispvec, 1)
+c*          call dcopy(neq, dprev, 1, dispvec, 1)
         end if
         call KSPSetOperators(ksp,A,A,DIFFERENT_NONZERO_PATTERN,ierr)
         call KSPSolve(ksp, rhs, sol, ierr)
@@ -314,15 +306,14 @@ c
           call stress_mat_drv(
      &     A,nnz,                                                       ! sparse
      &     bintern,neq,                                                 ! force
-     &     x,d,iwink,wink,numnp,nwink,                                  ! global
+     &     x,d,iwink,wink,numnp,nwink,iddmat,                           ! global
      &     dx,iwinkx,winkx,numslp,numsn,nwinkx,                         ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,           ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies, ! elemnt
+     &     numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,         ! elemnt
+     &     prop,mhist,infmatmod,npropsz,tminmax,                        ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_mat_cmp,   ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -333,11 +324,10 @@ c
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,           ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies, ! elemnt
+     &     numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,         ! elemnt
+     &     prop,mhist,infmatmod,npropsz,tminmax,                        ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,       ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -354,8 +344,8 @@ c...if solution has converged, set equilibrium stresses and creep
 c   strains to their current values
 c
         if(converge) then
-          call update_state(state,dstate,infiel,infmat,infmatmod,
-     &     infetype,nstatesz,numelt,numat,ierr,errstrng)
+          call update_state_drv(state,dstate,ivfamily,infmatmod,
+     &     nvfamilies,numelv,nstatesz,ngauss,ierr,errstrng)
           call PetscLogEventEnd(iterateEvent, ierr)
           return
         end if
@@ -367,7 +357,7 @@ c
       end
 c
 c version
-c $Id: iterate.F,v 1.5 2005/03/11 04:07:41 knepley Exp $
+c $Id: iterate.F,v 1.6 2005/03/25 23:34:15 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
