@@ -35,8 +35,9 @@ c
      & dx,numslp,numsn,                                                 ! slip
      & tfault,numfn,                                                    ! fault
      & s,stemp,                                                         ! stiff
-     & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,         ! elemnt
-     & ndmatsz,numelt,nconsz,                                           ! elemnt
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,  ! elemnt
+     & nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,       ! elemnt
+     & nstate0,                                                         ! elemnt
      & prop,nstate,nprop,matgpt,imatvar,nmatel,elas_matinit,td_matinit, ! materl
      & prestr_matinit,matchg,tminmax,                                   ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
@@ -59,17 +60,19 @@ c
 c
 c...  subroutine arguments
 c
-      integer nnz,neq,numnp,numslp,numsn,numfn,nstatesz,ndmatsz,numelt
-      integer nconsz,nprop,nstate,matgpt,imatvar,nmatel,numrot,ierr
+      integer nnz,neq,numnp,numslp,numsn,numfn,nstatesz,nstatesz0
+      integer ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,nstate0
+      integer nprop,nstate,matgpt,imatvar,nmatel,numrot,ierr
       logical matchg
       integer ja(nnz),ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
-      integer lmf(nconsz),infiel(6,numelt),iddmat(nstr,nstr)
+      integer lmf(nconsz),infiel(7,numelt),iddmat(nstr,nstr)
       integer infetype(4,netypes)
       character errstrng*(*)
       double precision alnz(nnz),x(nsd,numnp),d(ndof,numnp)
       double precision dx(ndof,numnp),tfault(ndof,numfn)
       double precision s(neemax*neemax),stemp(neemax*neemax)
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
+      double precision state0(nstate0,nstatesz0)
       double precision dmat(nddmat,ndmatsz),prop(nprop),tminmax
       double precision gauss(nsd+1,ngaussmax,netypes)
       double precision sh(nsd+1,nenmax,ngaussmax,netypes)
@@ -88,7 +91,7 @@ c
 c
 c...  local variables
 c
-      integer iel,indstate0,inddmat0,ietype,ng
+      integer iel,indstate0,indstate0g,ietype,ng
       integer inddmatg,l,ind,indstate,inddmat,ngauss,indstateg
       integer indien,nen,nee,ngtest,ngaussdim
       double precision tmax
@@ -107,19 +110,20 @@ c     zero, there is only one d-matrix for the group, and that is all
 c     that needs to be done.
 c
       iel=infiel(4,matgpt)
-      indstate0=infiel(5,iel)
-      inddmat0=infiel(6,iel)
+      indstate=infiel(5,iel)
+      indstate0=infiel(7,iel)
+      inddmat=infiel(6,iel)
       ietype=infiel(3,iel)
       if(imatvar.eq.izero) then
-        call td_matinit(state(1,indstate0),dstate(1,indstate0),
-     &   dmat(1,inddmat0),prop,rtimdat,rgiter,ntimdat,iddmat,tmax,
-     &   nstate,nprop,matchg,ierr,errstrng)
+        call td_matinit(state(1,indstate),dstate(1,indstate),
+     &   state0(1,indstate0),dmat(1,inddmat),prop,rtimdat,rgiter,
+     &   ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,errstrng)
         if(ierr.ne.izero) return
         ng=ngaussmax
-        inddmatg=inddmat0
+        inddmatg=inddmat
         do l=2,ng
           inddmatg=inddmatg+ione
-          call dcopy(nddmat,dmat(1,inddmat0),ione,dmat(1,inddmatg),ione)
+          call dcopy(nddmat,dmat(1,inddmat),ione,dmat(1,inddmatg),ione)
         end do
       else
 c
@@ -131,20 +135,24 @@ c
           ietype=infiel(3,iel)
           indstate=infiel(5,iel)
           inddmat=infiel(6,iel)
+          indstate0=infiel(7,iel)
           ngauss=infetype(1,ietype)
           inddmatg=inddmat
           indstateg=indstate
+          indstate0g=indstate0
 cdebug          write(6,*) "ind,matgpt,iel,ietype,indstate,inddmat,ngauss:",
 cdebug     &     ind,matgpt,iel,ietype,indstate,inddmat,ngauss
           do l=1,ngauss
 cdebug            write(6,*) "l,inddmatg,indstateg:",l,inddmatg,indstateg
             call td_matinit(state(1,indstateg),dstate(1,indstateg),
-     &       dmat(1,inddmatg),prop,rtimdat,rgiter,ntimdat,iddmat,tmax,
-     &       nstate,nprop,matchg,ierr,errstrng)
+     &       state0(1,indstate0g),dmat(1,inddmatg),prop,rtimdat,rgiter,
+     &       ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     &       errstrng)
             if(ierr.ne.izero) return
             tminmax=min(tminmax,tmax)
             inddmatg=inddmatg+ione
             indstateg=indstateg+nstate
+            indstate0g=indstate0g+ione
           end do
         end do
       end if
@@ -183,7 +191,7 @@ c
       end
 c
 c version
-c $Id: td_matinit_cmp_ss.f,v 1.5 2005/01/26 15:35:08 willic3 Exp $
+c $Id: td_matinit_cmp_ss.f,v 1.6 2005/02/24 00:21:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
