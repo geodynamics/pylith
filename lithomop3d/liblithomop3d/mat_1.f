@@ -331,10 +331,48 @@ c
 c
       return
       end
+c
+c
+      subroutine prestr_mat_1(dmat,prop,autofac,iddmat,nprop,ierr,
+     & errstrng)
+c
+c...  subroutine to form the material matrix for an integration point
+c     for prestress computation.  The material matrix is assumed to be
+c     independent of the state variables in this case.
+c     Note also that only the upper triangle is used (or available), as
+c     dmat is assumed to always be symmetric.
+c
+      include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nprop,ierr
+      integer iddmat(nstr,nstr)
+      character errstrng*(*)
+      double precision autofac,dmat(nddmat),prop(nprop)
+c
+c...  local variables
+c
+      integer i,j
+      double precision ptmp(10)
+      double precision e,pr,pr1,pr2,pr3,fac,dd,od,ss
+c
+      call dcopy(nprop,prop,ione,ptmp,ione)
+      ptmp(2)=autofac*ptmp(2)
+      call elas_mat_1(dmat,ptmp,iddmat,nprop,ierr,errstrng)
+      return
+      end
+c
+c
 c       
 
 c version
-c $Id: mat_1.f,v 1.12 2004/08/25 01:12:48 willic3 Exp $
+c $Id: mat_1.f,v 1.13 2005/01/18 19:30:39 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
