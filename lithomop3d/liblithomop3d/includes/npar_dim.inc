@@ -22,11 +22,11 @@ c
 c
 c...  scalar parameters associated with arrays
 c
-      integer numel,numat,numpr,numslp,numfn,ndmat,ipstrs,nppts,ngauss,
-     & numdif
+      integer numelt,numat,numpr,numslp,numfn,ipstrs,nstatesz,ndmatsz,
+     & nconsz,numdif
 c
 c version
-c $Id: npar_dim.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: npar_dim.inc,v 1.2 2004/07/05 18:28:10 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
