@@ -22,10 +22,10 @@ c
 c
 c...  scalar parameters associated with arrays
 c
-      real*8 deltp,alfap,tpois
+      real*8 deltp,alfap,autofac
 c
 c version
-c $Id: rtimdat_dim.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: rtimdat_dim.inc,v 1.2 2005/01/17 20:43:38 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
