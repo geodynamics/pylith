@@ -66,7 +66,6 @@ class Lithomop3d_run(Component):
         self.pointerToPcg = lm3dsetup.pointerToPcg
         self.pointerToZcg = lm3dsetup.pointerToZcg
         self.pointerToDprev = lm3dsetup.pointerToDprev
-        self.pointerToBwork = lm3dsetup.pointerToBwork
         self.pointerToJa = lm3dsetup.pointerToJa
 
         # self.pointerToB = lm3dsetup.pointerToB
@@ -511,6 +510,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.8 2005/01/06 01:51:23 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.9 2005/01/06 20:10:06 willic3 Exp $
 
 # End of file 
