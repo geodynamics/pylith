@@ -88,6 +88,7 @@ PyObject * pylithomop3d_read_bc(PyObject *, PyObject *args)
   int* pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
   int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
   int numberGlobalEquations = 0;
+  int numberConcForces = 0;
 
   read_bc_f(pointerToBond,
 	    &displacementScaleFactor,
@@ -98,6 +99,7 @@ PyObject * pylithomop3d_read_bc(PyObject *, PyObject *args)
 	    &numberNodes,
 	    &numberBcEntries,
 	    &numberGlobalEquations,
+	    &numberConcForces,
 	    &f77FileInput,
 	    &f77AsciiOutput,
 	    &asciiOutputInt,
@@ -121,7 +123,8 @@ PyObject * pylithomop3d_read_bc(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i", numberGlobalEquations);
+  return Py_BuildValue("ii", numberGlobalEquations,
+		  numberConcForces);
 }
 
 
@@ -1358,6 +1361,6 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: parser.cc,v 1.4 2004/07/21 20:03:25 willic3 Exp $
+// $Id: parser.cc,v 1.5 2005/01/06 16:26:40 willic3 Exp $
 
 // End of file
