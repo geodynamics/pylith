@@ -58,7 +58,7 @@ c
       integer neq,numnp,numslp,numfn,numelt,nconsz,matgpt,nmatel,numrot
       integer ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(6,numelt),infetype(4,netypes)
+      integer infiel(7,numelt),infetype(4,netypes)
       character errstrng*(*)
       logical matchg
       double precision bgravity(neq),grav(ndof)
@@ -118,7 +118,7 @@ c
       end
 c
 c version
-c $Id: gload_cmp_ss.f,v 1.3 2005/01/05 22:42:43 willic3 Exp $
+c $Id: gload_cmp_ss.f,v 1.4 2005/02/24 00:00:44 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
