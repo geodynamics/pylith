@@ -69,7 +69,9 @@ class Lithomop3d_scan(Component):
         self.gravityY = 0.0*m/(s*s)
         self.gravityZ = 0.0*m/(s*s)
         self.prestressAutoCompute = False
-        self.prestressAutoComputePoisson = -0.49
+        self.prestressAutoChangeElasticProps = False
+        self.prestressAutoComputePoisson = 0.49
+        self.prestressAutoComputeYoungs = 1.0e30*Pa
         self.prestressScaleXx = 1.0
         self.prestressScaleYy = 1.0
         self.prestressScaleZz = 1.0
@@ -143,6 +145,7 @@ class Lithomop3d_scan(Component):
         # Invariant parameters related to material model
         self._maxMaterialModels = 0
         self._maxStateVariables = 0
+        self._maxState0Variables = 0
         self._pointerToMaterialModelInfo = None
         self._pointerToMaterialModelStates = None
 
@@ -151,6 +154,7 @@ class Lithomop3d_scan(Component):
         self._quadratureOrderInt = 0
         self._analysisTypeInt = 0
         self._prestressAutoComputeInt = 0
+        self._prestressAutoChangeElasticPropsInt = 0
         self._pointerToSh = None
         self._pointerToShj = None
         self._pointerToGauss = None
@@ -248,6 +252,7 @@ class Lithomop3d_scan(Component):
         # Define information needed from other functions:
         f77FileInput = self.f77FileInput
         prestressAutoCompute = self.prestressAutoCompute
+        prestressAutoChangeElasticProps = self.prestressAutoChangeElasticProps
         quadratureOrder = self.quadratureOrder
         
         analysisType = self.inventory.analysisType
@@ -431,6 +436,7 @@ class Lithomop3d_scan(Component):
         # Invariant parameters related to material model
         self._maxMaterialModels = 20
         self._maxStateVariables = 4
+        self._maxState0Variables = 6
         self._pointerToMaterialModelInfo = lithomop3d.allocateInt(
             5*self._maxMaterialModels)
 	self._memorySize += 5*self._maxMaterialModels*self._intSize
@@ -459,6 +465,11 @@ class Lithomop3d_scan(Component):
             self._prestressAutoComputeInt = 1
         else:
             self._prestressAutoComputeInt = 0
+
+        if prestressAutoChangeElasticProps:
+            self._prestressAutoChangeElasticPropsInt = 1
+        else:
+            self._prestressAutoChangeElasticPropsInt = 0
 
         if quadratureOrder == "Full":
             self._quadratureOrderInt = 1
@@ -795,6 +806,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.13 2005/02/01 23:38:34 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.14 2005/02/24 00:38:34 willic3 Exp $
 
 # End of file 
