@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_element_info(numel,intord,ipstrs,ipauto,tpois,
+      subroutine write_element_info(numelv,intord,ipstrs,ipauto,tpois,
      & tyoungs,kw,idout,ofile)
 c
 c...subroutine to write element and prestress parameters
@@ -42,7 +42,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer numel,intord,ipstrs,ipauto,kw,idout
+      integer numelv,intord,ipstrs,ipauto,kw,idout
       double precision tpois,tyoungs
       character ofile*(*)
 c
@@ -65,7 +65,7 @@ c...  echo input to output file
 c
       if(idout.gt.izero) then
         open(kw,file=ofile,status="old",access="append")
-        write(kw,700) elmlbl,numel,intorder(intord),ipstrs,ipauto,tpois,
+        write(kw,700) elmlbl,numelv,intorder(intord),ipstrs,ipauto,tpois,
      &   tyoungs
         close(kw)
       end if
@@ -73,7 +73,7 @@ c
 700   format(1x,///,
      &' e l e m e n t    s y s t e m   d a t a',///,5x,
      &' element type:  ',a40,//,5x,
-     &' number of elements . . . . . . . . . . . . .(numel) =',i7,//,5x,
+     &' number of volume elements. . . . . . . . . (numelv) =',i7,//,5x,
      &' integration order . . . . . . . . . . . = ',a17,//,5x,
      &' prestress option. . . . . . . . . . . . . .(ipstrs) =',i5,/ ,5x,
      &'    eq.0, prestresses are read from the input file    ', / ,5x,
@@ -91,7 +91,7 @@ c
       end
 c
 c version
-c $Id: write_element_info.f,v 1.4 2005/02/24 00:24:35 willic3 Exp $
+c $Id: write_element_info.f,v 1.5 2005/03/22 19:51:15 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
