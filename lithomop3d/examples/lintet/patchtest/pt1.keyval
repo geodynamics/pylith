@@ -70,7 +70,7 @@
 #			the strain-displacement matrix.  This can be
 #			useful in nearly-incompressible problems.
 #
-#quadratureOrder = Full
+#quadratureOrder = "Full"
 #
 #
 # Gravitational acceleration in each direction.
