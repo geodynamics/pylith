@@ -1,0 +1,29 @@
+# Sample file defining which state variables are to be output for
+# the elastic and time dependent solutions.  There will be two lines
+# to be read:  The first defines the variables to output for the
+# elastic solution and the second defines the variables to output for
+# the time-dependent solution.
+# The entries are as follows:
+#     istatout1:  0 = Do not output stress
+#                 1 = Output stress
+#     istatout2:  0 = Do not output stress increment
+#                 1 = Output stress rate
+#                 2 = Output stress increment
+#     istatout3:  0 = Do not output strain
+#                 1 = Output strain
+#     istatout4:  0 = Do not output strain increment
+#                 1 = Output strain rate
+#                 2 = Output strain increment
+#     istatout5:  0 = Do not output viscous strain
+#                 1 = Output viscous strain
+#     istatout6:  0 = Do not output viscous strain increment
+#                 1 = Output viscous strain rate
+#                 2 = Output viscous strain increment
+#     istatout7:  0 = Do not output plastic strain
+#                 1 = Output plastic strain
+#     istatout8:  0 = Do not output plastic strain increment
+#                 1 = Output plastic strain rate
+#                 2 = Output plastic strain increment
+# istatout1 istatout2 istatout3 istatout4 istatout5 istatout6 istatout7 istatout8
+      1         0         1         0         0         0         0         0
+      1         1         1         1         1         1         0         0
