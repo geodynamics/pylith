@@ -1,14 +1,9 @@
       program readnetgen
 c
 c...  quick and dirty code to translate netgen neutral format to a
-c     format suitable for lithomop.  The domain is assumed to be a
-c     rectangular solid.  Geometry assumptions:
-c             xmin = left
-c             xmax = right
-c             ymin = front
-c             ymax = back
-c             zmin = bottom
-c             zmax = top
+c     format suitable for lithomop.  All boundaries for which BC
+c     are to be applied should be flagged with a boundary condition
+c     code.  This also applies to any faults in the model.
 c
 c     At present, code is only set up for linear tetrahedra, although
 c     this would be easy to change.
@@ -18,10 +13,10 @@ c
 c...  parameters
 c
       integer nsd,maxnodes,maxelmts,nen,maxnbrs,maxflts,maxfnodes
-      integer nsides,maxmatf,ietyp,inf
+      integer maxbnds,maxmatf,ietyp,inf
       parameter(nsd=3,maxnodes=500000,maxelmts=500000,nen=4,
-     & maxnbrs=100,maxflts=6,maxfnodes=10000,nsides=6,maxmatf=5,
-     & ietyp=5,inf=0)
+     & maxnbrs=100,maxflts=6,maxfnodes=100000,
+     & maxbnds=30,maxmatf=5,ietyp=5,inf=0)
       integer kti,kto,kr,kw
       parameter(kti=5,kto=6,kr=10,kw=11)
       double precision eps
@@ -31,17 +26,20 @@ c...  local constants
 c
       integer icflip(4)
       data icflip/1,3,2,4/
-      integer kwb(nsides),kwc(nsides),kwfb(maxflts),kwfc(maxflts)
-      data kwb/12,13,14,15,16,17/
-      data kwc/18,19,20,21,22,23/
+      integer kwb,kwc,kwfb(maxflts),kwfc(maxflts)
+      data kwb/12/
+      data kwc/13/
       data kwfb/12,13,14,15,16,17/
       data kwfc/18,19,20,21,22,23/
+      integer izero
+      data izero/0/
 c
 c...  parameters read from parameter file
 c
-      integer ibc(nsd,nsides),isn(nsd)
+      integer nbc,iconopt
+      integer ibcode(maxbnds),ibc(nsd,maxbnds),isn(nsd)
       integer iftype(maxflts),nmatf(2,maxflts),ifmat(2,maxflts,maxmatf)
-      double precision xlim(2,nsd),bc(nsd,nsides),fsplit(nsd,2,maxflts)
+      double precision bc(nsd,maxbnds),fsplit(nsd,2,maxflts)
       double precision cscale
 c
 c...  filenames
@@ -52,8 +50,8 @@ c
 c
 c...  parameters and variables read from netgen file
 c
-      integer numnp,numel,numflt,iconopt,nbcfac,ibcflt,ibcfac
-      integer ien(nen,maxelmts),mat(maxelmts)
+      integer numnp,numel,numflt,nbcfac,ibcflt,ibcfac
+      integer ien(nen,maxelmts),mat(maxelmts),ibcvert(3)
       double precision x(nsd,maxnodes)
 c
 c...  external routines
@@ -64,15 +62,19 @@ c
 c
 c...  local variables
 c
-      double precision dr,det,sgn,xl(nsd,nen),xtmp(nsd)
+      double precision det,sgn,xl(nsd,nen),xtmp(nsd)
       integer iadjf(maxflts*maxfnodes,maxnbrs),inodef(maxflts*maxfnodes)
-      integer ientmp(nen),nelsf(maxflts*maxfnodes),ibcnode(maxnodes)
-      integer ifhist(maxflts),idir(nsd),ibcvert(3)
+      integer ientmp(nen),nelsf(maxflts*maxfnodes),ifltnode(maxnodes)
+      integer ifhist(maxflts),idir(nsd),ibcnode(maxnodes,maxbnds)
+      integer nbcnodes(maxbnds)
       integer i,j,k,l,jj,i1,i2,j1,j2,nenl,nsdl,nfltnodes,kk
       integer iel,nflip
-      character cstring*15,cside(6)*6,cfnum*2
+      character cstring*15,cbound(maxbnds)*3,cfnum*2
       data cstring/"coord_units = m"/
-      data cside/"left","right","front","back","bottom","top"/
+      data cbound/
+     & "b01","b02","b03","b04","b05","b06","b07","b08","b09","b10",
+     & "b11","b12","b13","b14","b15","b16","b17","b18","b19","b20",
+     & "b21","b22","b23","b24","b25","b26","b27","b28","b29","b30"/
 c
       nenl=nen
       nsdl=nsd
@@ -81,6 +83,8 @@ c
       read(kti,"(a200)") fileroot
       i1=nnblnk(fileroot)
       i2=nchar(fileroot)
+      call ifill(ibcnode,izero,maxnodes*maxbnds)
+      call ifill(nbcnodes,izero,maxbnds)
 c
 c...  read parameter file
 c
@@ -93,13 +97,13 @@ c
       read(kr,*) cscale,(idir(i),i=1,nsd)
       if(cscale.eq.0.0d0) cscale=1.0d0
 c
-c...  box dimensions and bc
+c...  bc info
 c
       call pskip(kr)
-      read(kr,*) ((xlim(j,i),j=1,2),i=1,nsd)
-      do i=1,nsides
+      read(kr,*) nbc
+      do i=1,nbc
         call pskip(kr)
-        read(kr,*) (ibc(j,i),bc(j,i),j=1,nsd)
+        read(kr,*) ibcode(i),(ibc(j,i),bc(j,i),j=1,nsd)
       end do
 c...  connectivity order option
 c
@@ -120,48 +124,23 @@ c
       end do
       close(kr)
 c
-c...  read and output nodal coordinates and bc info
+c...  read and output nodal coordinates
 c
       ifile=fileroot(i1:i2)//".netgen"
       open(file=ifile,unit=kr,status="old")
       nfile=fileroot(i1:i2)//".coord"
       open(file=nfile,unit=kw,status="new")
-      do i=1,nsides
-        j1=nnblnk(cside(i))
-        j2=nchar(cside(i))
-        bcfile=fileroot(i1:i2)//"."//cside(i)(j1:j2)//".bc"
-        bccfile=fileroot(i1:i2)//"."//cside(i)(j1:j2)//".coord"
-        open(file=bcfile,unit=kwb(i),status="new")
-        open(file=bccfile,unit=kwc(i),status="new")
-      end do
       write(kw,"(a15)") cstring
       read(kr,*) numnp
       do i=1,numnp
-        ibcnode(i)=0
+        ifltnode(i)=0
         read(kr,*) (xtmp(j),j=1,nsd)
         do j=1,nsd
           x(j,i)=cscale*xtmp(idir(j))
         end do
         write(kw,"(i7,3(2x,1pe15.8))") i,(x(j,i),j=1,nsd)
-        jj=0
-        do j=1,nsd
-          do k=1,2
-            jj=jj+1
-            dr=abs(x(j,i)-xlim(k,j))
-            if(dr.lt.eps) then
-              write(kwb(jj),"(i7,3i4,3(2x,1pe15.8))") i,
-     &         (ibc(l,jj),l=1,nsd),(bc(l,jj),l=1,nsd)
-              write(kwc(jj),"(i7,3(2x,1pe15.8))") i,
-     &         (x(l,i),l=1,nsd)
-            end if
-          end do
-        end do
       end do
       close(kw)
-      do i=1,nsides
-        close(kwb(i))
-        close(kwc(i))
-      end do
 c
 c...  read and output connectivity info
 c
@@ -204,24 +183,50 @@ cdebug          write(kto,*) "i,det:",i,det
       close(kw)
 c
 c...  read face BC codes to determine which nodes are associated
-c     with each fault
+c     with each boundary and fault.
 c
       read(kr,*) nbcfac
       do i=1,nbcfac
         read(kr,*) ibcfac,(ibcvert(j),j=1,3)
         if(ibcfac.eq.ibcflt) then
           do j=1,3
-            ibcnode(ibcvert(j))=1
+            ifltnode(ibcvert(j))=1
+          end do
+        else
+          do j=1,nbc
+            if(ibcfac.eq.ibcode(j)) then
+              do k=1,3
+                ibcnode(ibcvert(k),j)=ibcfac
+              end do
+            end if
           end do
         end if
       end do
       nfltnodes=0
       do i=1,numnp
-        if(ibcnode(i).eq.1) then
+        if(ifltnode(i).eq.1) then
           nfltnodes=nfltnodes+1
           inodef(nfltnodes)=i
           nelsf(nfltnodes)=0
         end if
+      end do
+c
+c...  output BC and BC coordinates
+c
+      do i=1,nbc
+        bcfile=fileroot(i1:i2)//"."//cbound(i)//".bc"
+        bccfile=fileroot(i1:i2)//"."//cbound(i)//".coord"
+        open(file=bcfile,unit=kwb,status="new")
+        open(file=bccfile,unit=kwc,status="new")
+        do j=1,numnp
+          if(ibcnode(j,i).ne.izero) then
+            write(kwb,"(i7,3(2x,i3),3(2x,1pe15.8))") j,
+     &       (ibc(k,i),k=1,nsd),(bc(k,i),k=1,nsd)
+            write(kwc,"(i7,3(2x,1pe15.8))") j,(x(k,j),k=1,nsd)
+          end if
+        end do
+        close(kwb)
+        close(kwc)
       end do
 c
 c...  determine which elements contain each node on the faults
@@ -277,13 +282,28 @@ c
           end do
         end do
       end do
-      do i=1,nsides
+      do i=1,numflt
         close(kwfb(i))
         close(kwfc(i))
       end do
       write(kto,700) nflip
 700   format("Number of connectivities flipped:  ",i7)
       stop
+      end
+c
+c
+      subroutine ifill(iarr,ival,nlen)
+c
+c...  subroutine to fill an integer array with a given value
+c
+      implicit none
+      integer ival,nlen
+      integer iarr(nlen)
+      integer i
+      do i=1,nlen
+        iarr(i)=ival
+      end do
+      return
       end
 c
 c
