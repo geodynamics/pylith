@@ -35,8 +35,10 @@
 #include <Python.h>
 
 #include "scanner.h"
+#include "exceptionhandler.h"
 #include "lithomop3d_externs.h"
-// #include <stdio.h>
+#include <stdio.h>
+#include <string.h>
 
 
 // Scan boundary conditions
@@ -46,15 +48,13 @@ char pylithomop3d_scan_bc__name__[] = "scan_bc";
 
 PyObject * pylithomop3d_scan_bc(PyObject *, PyObject *args)
 {
-  int numberDegreesFreedom;
   int f77FileInput;
   char* displacementUnits;
   char* velocityUnits;
   char* forceUnits;
   char* bcInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iissss:scan_bc",
-			    &numberDegreesFreedom,
+  int ok = PyArg_ParseTuple(args, "issss:scan_bc",
 			    &f77FileInput,
 			    &displacementUnits,
 			    &velocityUnits,
@@ -65,46 +65,28 @@ PyObject * pylithomop3d_scan_bc(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int numberBcEntries = 0;
 
-  scan_bc_f(&numberDegreesFreedom,
-	    &numberBcEntries,
+  scan_bc_f(&numberBcEntries,
 	    &f77FileInput,
-	    &errorCode,
 	    displacementUnits,
 	    velocityUnits,
 	    forceUnits,
 	    bcInputFile,
+	    &errorcode,
+	    errorstring,
 	    strlen(displacementUnits),
 	    strlen(velocityUnits),
 	    strlen(forceUnits),
-	    strlen(bcInputFile));
+	    strlen(bcInputFile),
+	    strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error opening BC input file:");
-      break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: All units not specified for BC:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading BC input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"BC assigned for nonexistent node:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading BC input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -125,12 +107,22 @@ char pylithomop3d_scan_connect__name__[] = "scan_connect";
 
 PyObject * pylithomop3d_scan_connect(PyObject *, PyObject *args)
 {
-  int numberElementNodes;
+  PyObject* pyPointerToListArrayNumberElementNodesBase;
+  PyObject* pyPointerToMaterialInfo;
+  PyObject* pyPointerToMaterialModelInfo;
+  PyObject* pyPointerToListArrayMaterialModel;
+  PyObject* pyPointerToListArrayPropertyListIndex;
+  int numberMaterials;
   int f77FileInput;
   char* connectivityInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iis:scan_connect",
-			    &numberElementNodes,
+  int ok = PyArg_ParseTuple(args, "OOOOOiis:scan_connect",
+			    &pyPointerToListArrayNumberElementNodesBase,
+			    &pyPointerToMaterialInfo,
+			    &pyPointerToMaterialModelInfo,
+			    &pyPointerToListArrayMaterialModel,
+			    &pyPointerToListArrayPropertyListIndex,
+			    &numberMaterials,
 			    &f77FileInput,
 			    &connectivityInputFile);
 
@@ -138,43 +130,35 @@ PyObject * pylithomop3d_scan_connect(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int* pointerToListArrayNumberElementNodesBase = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNumberElementNodesBase);
+  int* pointerToMaterialInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialInfo);
+  int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
+  int* pointerToListArrayMaterialModel = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayMaterialModel);
+  int* pointerToListArrayPropertyListIndex = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyListIndex);
   int numberElements = 0;
+  int connectivitySize = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
 
-  scan_connect_f(&numberElementNodes,
+  scan_connect_f(pointerToListArrayNumberElementNodesBase,
+		 pointerToMaterialInfo,
+		 pointerToMaterialModelInfo,
+		 pointerToListArrayMaterialModel,
+		 pointerToListArrayPropertyListIndex,
+		 &numberMaterials,
 		 &numberElements,
+		 &connectivitySize,
 		 &f77FileInput,
-		 &errorCode,
-		 connectivityInputFile,strlen(connectivityInputFile));
+		 connectivityInputFile,
+		 errorstring,
+		 &errorcode,
+		 strlen(connectivityInputFile),
+		 strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error opening connectivity input file:");
-      break;
-      //    case 2:
-              //PyErr_SetString(PyExc_ValueError,
-	                  //"Connectivity units not specified:");
-              //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading connectivity input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Bad material number:");
-            //break;
-          //case 5:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Bad connectivity:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading connectivity input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -184,7 +168,8 @@ PyObject * pylithomop3d_scan_connect(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i", numberElements);
+  return Py_BuildValue("ii", numberElements,
+		       connectivitySize);
 }
 
 
@@ -195,13 +180,11 @@ char pylithomop3d_scan_coords__name__[] = "scan_coords";
 
 PyObject * pylithomop3d_scan_coords(PyObject *, PyObject *args)
 {
-  int numberSpaceDimensions;
   int f77FileInput;
   char *coordinateUnits;
   char *coordinateInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iiss:scan_coords",
-			    &numberSpaceDimensions,
+  int ok = PyArg_ParseTuple(args, "iss:scan_coords",
 			    &f77FileInput,
 			    &coordinateUnits,
 			    &coordinateInputFile);
@@ -210,47 +193,29 @@ PyObject * pylithomop3d_scan_coords(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int numberNodes = 0;
 
-  scan_coords_f(&numberSpaceDimensions,
-		&numberNodes,
+  scan_coords_f(&numberNodes,
 		&f77FileInput,
-		&errorCode,
 		coordinateUnits,
 		coordinateInputFile,
+		&errorcode,
+		errorstring,
 		strlen(coordinateUnits),
-		strlen(coordinateInputFile));
+		strlen(coordinateInputFile),
+		strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error opening coordinate input file:");
-      break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Coordinate units not specified:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading coordinate input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading coordinate input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberSpaceDimensions:" << numberSpaceDimensions
+    << "numberSpaceDimensions:" << numberNodes
     << journal::endl;
 
   // return
@@ -266,13 +231,11 @@ char pylithomop3d_scan_diff__name__[] = "scan_diff";
 
 PyObject * pylithomop3d_scan_diff(PyObject *, PyObject *args)
 {
-  int numberDegreesFreedom;
   int numberSlipperyNodeEntries;
   int f77FileInput;
   char* differentialForceInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iiis:scan_diff",
-			    &numberDegreesFreedom,
+  int ok = PyArg_ParseTuple(args, "iis:scan_diff",
 			    &numberSlipperyNodeEntries,
 			    &f77FileInput,
 			    &differentialForceInputFile);
@@ -281,40 +244,23 @@ PyObject * pylithomop3d_scan_diff(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int numberDifferentialForceEntries = 0;
 
-  scan_diff_f(&numberDegreesFreedom,
-	      &numberSlipperyNodeEntries,
+  scan_diff_f(&numberSlipperyNodeEntries,
 	      &numberDifferentialForceEntries,
 	      &f77FileInput,
-	      &errorCode,
-	      differentialForceInputFile,strlen(differentialForceInputFile));
+	      differentialForceInputFile,
+	      &errorcode,
+	      errorstring,
+	      strlen(differentialForceInputFile),
+	      strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //    case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening coordinate input file:");
-            //break;
-          //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading differential force input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Differential force applied to non-slippery node:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading differential force input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -350,40 +296,24 @@ PyObject * pylithomop3d_scan_fuldat(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int numberFullOutputs = 0;
 
   scan_fuldat_f(&analysisTypeInt,
 		&totalNumberTimeSteps,
 		&numberFullOutputs,
 		&f77FileInput,
-		&errorCode,
-		fullOutputInputFile,strlen(fullOutputInputFile));
+		fullOutputInputFile,
+		&errorcode,
+		errorstring,
+		strlen(fullOutputInputFile),
+		strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error opening file specifying time steps for output:");
-      break;
-      //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading file specifying time steps for output:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading time steps to output:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -415,38 +345,22 @@ PyObject * pylithomop3d_scan_hist(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int numberLoadHistories = 0;
 
   scan_hist_f(&numberLoadHistories,
 	      &f77FileInput,
-	      &errorCode,
-	      loadHistoryInputFile,strlen(loadHistoryInputFile));
+	      loadHistoryInputFile,
+	      &errorcode,
+	      errorstring,
+	      strlen(loadHistoryInputFile),
+	      strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening load history input file:");
-            //break;
-      //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Load history units not specified:");
-      //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading load history input file:");
-      break;
-    //case 4:
-      //PyErr_SetString(PyExc_ValueError,
-		      //"Load history times are out of order:");
-      //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading load history input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -462,169 +376,58 @@ PyObject * pylithomop3d_scan_hist(PyObject *, PyObject *args)
 
 // Read element prestresses
 
-char pylithomop3d_scan_prestr__doc__[] = "";
-char pylithomop3d_scan_prestr__name__[] = "scan_prestr";
+  // char pylithomop3d_scan_prestr__doc__[] = "";
+  // char pylithomop3d_scan_prestr__name__[] = "scan_prestr";
 
-PyObject * pylithomop3d_scan_prestr(PyObject *, PyObject *args)
-{
-  int numberStressComponents;
-  int numberPrestressGaussPoints;
-  int numberElements;
-  int prestressAutoComputeInt;
-  int f77FileInput;
-  char* prestressInputFile;
+  // PyObject * pylithomop3d_scan_prestr(PyObject *, PyObject *args)
+  // {
+  //   int numberStressComponents;
+  //   int numberPrestressGaussPoints;
+  //   int numberElements;
+  //   int prestressAutoComputeInt;
+  //   int f77FileInput;
+  //   char* prestressInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iiiiis:scan_prestr",
-			    &numberStressComponents,
-			    &numberPrestressGaussPoints,
-			    &numberElements,
-			    &prestressAutoComputeInt,
-			    &f77FileInput,
-			    &prestressInputFile);
+  //   int ok = PyArg_ParseTuple(args, "iiiiis:scan_prestr",
+  // 			    &numberStressComponents,
+  // 			    &numberPrestressGaussPoints,
+  // 			    &numberElements,
+  // 			    &prestressAutoComputeInt,
+  // 			    &f77FileInput,
+  // 			    &prestressInputFile);
 
-  if (!ok) {
-    return 0;
-  }
+  //   if (!ok) {
+  //     return 0;
+  //   }
 
-  int errorCode = 0;
-  int numberPrestressEntries = 0;
+  //   int errorcode = 0;
+  //   const int maxsize = 1024;
+  //   char errorstring[maxsize];
+  //   int numberPrestressEntries = 0;
 
-  scan_prestr_f(&numberStressComponents,
-		&numberPrestressGaussPoints,
-		&numberPrestressEntries,
-		&numberElements,
-		&prestressAutoComputeInt,
-		&f77FileInput,
-		&errorCode,
-		prestressInputFile,strlen(prestressInputFile));
+  //   scan_prestr_f(&numberStressComponents,
+  // 		&numberPrestressGaussPoints,
+  // 		&numberPrestressEntries,
+  // 		&numberElements,
+  // 		&prestressAutoComputeInt,
+  // 		&f77FileInput,
+  // 		&errorcode,
+  // 		prestressInputFile,strlen(prestressInputFile));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening coordinate input file:");
-            //break;
-          //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading prestress input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading prestress input file:");
-    }
+  //   if(0 != exceptionhandler(errorcode, errorstring)) {
+  //     return 0;
+  //   }
 
-  journal::debug_t debug("lithomop3d");
-  debug
-    << journal::at(__HERE__)
-    << "numberPrestressEntries:" << numberPrestressEntries
-    << journal::endl;
+  //   journal::debug_t debug("lithomop3d");
+  //   debug
+  //     << journal::at(__HERE__)
+  //     << "numberPrestressEntries:" << numberPrestressEntries
+  //     << journal::endl;
 
   // return
-  Py_INCREF(Py_None);
-  return Py_BuildValue("i",numberPrestressEntries);
-}
-
-
-// Read material properties
-
-char pylithomop3d_scan_prop__doc__[] = "";
-char pylithomop3d_scan_prop__name__[] = "scan_prop";
-
-PyObject * pylithomop3d_scan_prop(PyObject *, PyObject *args)
-{
-  int numberMaterialProperties;
-  int f77FileInput;
-  char* densityUnits;
-  char* youngUnits;
-  char* viscosityCoefficientUnits;
-  char* cohesionUnits;
-  char* materialPropertiesInputFile;
-
-  int ok = PyArg_ParseTuple(args, "iisssss:scan_prop",
-			    &numberMaterialProperties,
-			    &f77FileInput,
-			    &densityUnits,
-			    &youngUnits,
-			    &viscosityCoefficientUnits,
-			    &cohesionUnits,
-			    &materialPropertiesInputFile);
-
-  if (!ok) {
-    return 0;
-  }
-
-  int errorCode = 0;
-  int numberMaterialTypes = 0;
-  int viscousFlagInt = 0;
-  int plasticFlagInt = 0;
-  int materialHistoryFlagInt = 0;
-
-  scan_prop_f(&numberMaterialProperties,
-	      &numberMaterialTypes,
-	      &f77FileInput,
-	      &errorCode,
-	      densityUnits,
-	      youngUnits,
-	      viscosityCoefficientUnits,
-	      cohesionUnits,
-	      &viscousFlagInt,
-	      &plasticFlagInt,
-	      &materialHistoryFlagInt,
-	      materialPropertiesInputFile,
-	      strlen(densityUnits),
-	      strlen(youngUnits),
-	      strlen(viscosityCoefficientUnits),
-	      strlen(cohesionUnits),
-	      strlen(materialPropertiesInputFile));
-    
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error opening material properties input file:");
-      break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: All material property units not specified:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading material properties input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading material properties input file:");
-    }
-
-  journal::debug_t debug("lithomop3d");
-  debug
-    << journal::at(__HERE__)
-    << "numberMaterialTypes:" << numberMaterialTypes
-    << journal::endl;
-
-  // return
-  Py_INCREF(Py_None);
-  return Py_BuildValue("iiii",numberMaterialTypes,
-		       viscousFlagInt,
-		       plasticFlagInt,
-		       materialHistoryFlagInt);
-}
+  //   Py_INCREF(Py_None);
+  //   return Py_BuildValue("i",numberPrestressEntries);
+  // }
 
 
 // Read local coordinate rotations
@@ -634,13 +437,11 @@ char pylithomop3d_scan_skew__name__[] = "scan_skew";
 
 PyObject * pylithomop3d_scan_skew(PyObject *, PyObject *args)
 {
-  int numberSkewDimensions;
   int f77FileInput;
   char* rotationUnits;
   char* rotationInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iiss:scan_skew",
-			    &numberSkewDimensions,
+  int ok = PyArg_ParseTuple(args, "iss:scan_skew",
 			    &f77FileInput,
 			    &rotationUnits,
 			    &rotationInputFile);
@@ -649,42 +450,24 @@ PyObject * pylithomop3d_scan_skew(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int numberRotationEntries = 0;
 
-  scan_skew_f(&numberSkewDimensions,
-	      &numberRotationEntries,
+  scan_skew_f(&numberRotationEntries,
 	      &f77FileInput,
-	      &errorCode,
 	      rotationUnits,
 	      rotationInputFile,
+	      &errorcode,
+	      errorstring,
 	      strlen(rotationUnits),
-	      strlen(rotationInputFile));
+	      strlen(rotationInputFile),
+	      strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening coordinate input file:");
-            //break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Rotation units not specified:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading rotation input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading rotation input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -705,12 +488,10 @@ char pylithomop3d_scan_slip__name__[] = "scan_slip";
 
 PyObject * pylithomop3d_scan_slip(PyObject *, PyObject *args)
 {
-  int numberDegreesFreedom;
   int f77FileInput;
   char* slipperyNodeInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iis:scan_slip",
-			    &numberDegreesFreedom,
+  int ok = PyArg_ParseTuple(args, "is:scan_slip",
 			    &f77FileInput,
 			    &slipperyNodeInputFile);
 
@@ -718,39 +499,22 @@ PyObject * pylithomop3d_scan_slip(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int numberSlipperyNodeEntries = 0;
 
-  scan_slip_f(&numberDegreesFreedom,
-	      &numberSlipperyNodeEntries,
+  scan_slip_f(&numberSlipperyNodeEntries,
 	      &f77FileInput,
-	      &errorCode,
-	      slipperyNodeInputFile,strlen(slipperyNodeInputFile));
+	      slipperyNodeInputFile,
+	      &errorcode,
+	      errorstring,
+	      strlen(slipperyNodeInputFile),
+	      strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening coordinate input file:");
-            //break;
-          //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading slippery nodes input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading slippery nodes input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -771,12 +535,10 @@ char pylithomop3d_scan_split__name__[] = "scan_split";
 
 PyObject * pylithomop3d_scan_split(PyObject *, PyObject *args)
 {
-  int numberDegreesFreedom;
   int f77FileInput;
   char* splitNodeInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iis:scan_split",
-			    &numberDegreesFreedom,
+  int ok = PyArg_ParseTuple(args, "is:scan_split",
 			    &f77FileInput,
 			    &splitNodeInputFile);
 
@@ -784,39 +546,22 @@ PyObject * pylithomop3d_scan_split(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int numberSplitNodeEntries = 0;
 
-  scan_split_f(&numberDegreesFreedom,
-	       &numberSplitNodeEntries,
+  scan_split_f(&numberSplitNodeEntries,
 	       &f77FileInput,
-	       &errorCode,
-	       splitNodeInputFile,strlen(splitNodeInputFile));
+	       splitNodeInputFile,
+	       &errorcode,
+	       errorstring,
+	       strlen(splitNodeInputFile),
+	       strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening coordinate input file:");
-            //break;
-          //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading split nodes input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading split nodes input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -850,43 +595,26 @@ PyObject * pylithomop3d_scan_timdat(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int numberTimeStepGroups = 0;
   int totalNumberTimeSteps = 0;
 
   scan_timdat_f(&totalNumberTimeSteps,
 		&numberTimeStepGroups,
 		&f77FileInput,
-		&errorCode,
 		timeUnits,
 		timeStepInputFile,
+		&errorcode,
+		errorstring,
 		strlen(timeUnits),
-		strlen(timeStepInputFile));
+		strlen(timeStepInputFile),
+		strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error opening time step input file:");
-      break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Time units not specified:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading time step input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading time step input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -902,76 +630,53 @@ PyObject * pylithomop3d_scan_timdat(PyObject *, PyObject *args)
 
 // Read traction BC
 
-char pylithomop3d_scan_traction__doc__[] = "";
-char pylithomop3d_scan_traction__name__[] = "scan_traction";
+// char pylithomop3d_scan_traction__doc__[] = "";
+// char pylithomop3d_scan_traction__name__[] = "scan_traction";
 
-PyObject * pylithomop3d_scan_traction(PyObject *, PyObject *args)
-{
-  int numberElementNodes;
-  int numberTractionDirections;
-  char* tractionBcUnits;
-  int f77FileInput;
-  char* tractionInputFile;
+// PyObject * pylithomop3d_scan_traction(PyObject *, PyObject *args)
+// {
+  // char* tractionBcUnits;
+  // int f77FileInput;
+  // char* tractionInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iisis:scan_traction",
-			    &numberElementNodes,
-			    &numberTractionDirections,
-			    &tractionBcUnits,
-			    &f77FileInput,
-			    &tractionInputFile);
+  // int ok = PyArg_ParseTuple(args, "sis:scan_traction",
+			    // &tractionBcUnits,
+			    // &f77FileInput,
+			    // &tractionInputFile);
 
-  if (!ok) {
-    return 0;
-  }
+  // if (!ok) {
+    // return 0;
+  // }
 
-  int errorCode = 0;
-  int numberTractionBc = 0;
+  // int errorcode = 0;
+  // const int maxsize = 1024;
+  // char errorstring[maxsize];
+  // int numberTractionBc = 0;
 
-  scan_traction_f(&numberElementNodes,
-		  &numberTractionDirections,
-		  &numberTractionBc,
-		  &f77FileInput,
-		  &errorCode,
-		  tractionBcUnits,
-		  tractionInputFile,
-		  strlen(tractionBcUnits),
-		  strlen(tractionInputFile));
+  // scan_traction_f(&numberTractionBc,
+		  // &f77FileInput,
+		  // tractionBcUnits,
+		  // tractionInputFile,
+		  // &errorcode,
+		  // errorstring,
+		  // strlen(tractionBcUnits),
+		  // strlen(tractionInputFile),
+		  // strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening traction input file:");
-            //break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Traction units not specified:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading traction input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading traction input file:");
-    }
+  // if(0 != exceptionhandler(errorcode, errorstring)) {
+    // return 0;
+  // }
 
-  journal::debug_t debug("lithomop3d");
-  debug
-    << journal::at(__HERE__)
-    << "numberTractionBc:" << numberTractionBc
-    << journal::endl;
+  // journal::debug_t debug("lithomop3d");
+  // debug
+    // << journal::at(__HERE__)
+    // << "numberTractionBc:" << numberTractionBc
+    // << journal::endl;
 
   // return
-  Py_INCREF(Py_None);
-  return Py_BuildValue("i",numberTractionBc);
-}
+  // Py_INCREF(Py_None);
+  // return Py_BuildValue("i",numberTractionBc);
+// }
 
 
 // Read winkler BC
@@ -981,13 +686,11 @@ char pylithomop3d_scan_wink__name__[] = "scan_wink";
 
 PyObject * pylithomop3d_scan_wink(PyObject *, PyObject *args)
 {
-  int numberDegreesFreedom;
   int numberWinklerForces;
   int f77FileInput;
   char* winklerInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iiis:scan_wink",
-			    &numberDegreesFreedom,
+  int ok = PyArg_ParseTuple(args, "iis:scan_wink",
 			    &numberWinklerForces,
 			    &f77FileInput,
 			    &winklerInputFile);
@@ -996,40 +699,23 @@ PyObject * pylithomop3d_scan_wink(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int numberWinklerEntries = 0;
 
-  scan_wink_f(&numberDegreesFreedom,
-	      &numberWinklerEntries,
+  scan_wink_f(&numberWinklerEntries,
 	      &numberWinklerForces,
 	      &f77FileInput,
-	      &errorCode,
-	      winklerInputFile,strlen(winklerInputFile));
+	      winklerInputFile,
+	      &errorcode,
+	      errorstring,
+	      strlen(winklerInputFile),
+	      strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening winkler input file:");
-            //break;
-      //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading winkler input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading winkler input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -1050,14 +736,12 @@ char pylithomop3d_scan_winkx__name__[] = "scan_winkx";
 
 PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
 {
-  int numberDegreesFreedom;
   int numberSlipperyWinklerForces;
   int numberSlipperyNodeEntries;
   int f77FileInput;
   char* slipperyWinklerInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iiiis:scan_winkx",
-			    &numberDegreesFreedom,
+  int ok = PyArg_ParseTuple(args, "iiis:scan_winkx",
 			    &numberSlipperyWinklerForces,
 			    &numberSlipperyNodeEntries,
 			    &f77FileInput,
@@ -1067,41 +751,24 @@ PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
     return 0;
   }
 
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int numberSlipperyWinklerEntries = 0;
 
-  scan_winkx_f(&numberDegreesFreedom,
-	       &numberSlipperyNodeEntries,
+  scan_winkx_f(&numberSlipperyNodeEntries,
 	       &numberSlipperyWinklerEntries,
 	       &numberSlipperyWinklerForces,
 	       &f77FileInput,
-	       &errorCode,
-	       slipperyWinklerInputFile,strlen(slipperyWinklerInputFile));
+	       slipperyWinklerInputFile,
+	       &errorcode,
+	       errorstring,
+	       strlen(slipperyWinklerInputFile),
+	       strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening winkler input file for slippery nodes:");
-            //break;
-      //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Scanner: Error reading winkler input file for slippery nodes:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Scanner: Unknown error reading winkler input file for slippery nodes:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -1115,6 +782,6 @@ PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: scanner.cc,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: scanner.cc,v 1.2 2004/07/19 18:40:07 willic3 Exp $
 
 // End of file
