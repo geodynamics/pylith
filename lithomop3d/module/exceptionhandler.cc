@@ -62,7 +62,7 @@ exceptionhandler(const int errorcode,
 {
   // Generate python exceptions from error codes
 
-  const int maxsize = 1024;
+  const int maxsize = 2048;
   char errormsg[maxsize];
   // copy at most 1023 chars (account for terminating '\0')
   strncpy(errormsg, errorstring, maxsize-1);
@@ -202,6 +202,6 @@ exceptionhandler(const int errorcode,
 }
     
 // version
-// $Id: exceptionhandler.cc,v 1.1 2004/07/16 21:11:32 willic3 Exp $
+// $Id: exceptionhandler.cc,v 1.2 2004/08/12 23:38:42 willic3 Exp $
 
 // End of file
