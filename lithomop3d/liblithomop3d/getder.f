@@ -64,14 +64,23 @@ c
 c...transform natural derivatives to (x,y,z) derivatives using an
 c   explicit 3x3 matrix inversion routine
 c
+cdebug      a11 = (xs(2,2)*xs(3,3))-(xs(2,3)*xs(3,2))
+cdebug      a12 =-(xs(1,2)*xs(3,3))+(xs(1,3)*xs(3,2))
+cdebug      a13 = (xs(1,2)*xs(2,3))-(xs(1,3)*xs(2,2))
+cdebug      a21 =-(xs(2,1)*xs(3,3))+(xs(2,3)*xs(3,1))
+cdebug      a22 = (xs(1,1)*xs(3,3))-(xs(1,3)*xs(3,1))
+cdebug      a23 =-(xs(1,1)*xs(2,3))+(xs(1,3)*xs(2,1))
+cdebug      a31 = (xs(2,1)*xs(3,2))-(xs(2,2)*xs(3,1))
+cdebug      a32 =-(xs(1,1)*xs(3,2))+(xs(1,2)*xs(3,1))
+cdebug      a33 = (xs(1,1)*xs(2,2))-(xs(1,2)*xs(2,1))
       a11 = (xs(2,2)*xs(3,3))-(xs(2,3)*xs(3,2))
-      a12 =-(xs(1,2)*xs(3,3))+(xs(1,3)*xs(3,2))
-      a13 = (xs(1,2)*xs(2,3))-(xs(1,3)*xs(2,2))
-      a21 =-(xs(2,1)*xs(3,3))+(xs(2,3)*xs(3,1))
+      a12 =-(xs(2,1)*xs(3,3))+(xs(3,1)*xs(2,3))
+      a13 = (xs(2,1)*xs(3,2))-(xs(3,1)*xs(2,2))
+      a21 =-(xs(1,2)*xs(3,3))+(xs(3,2)*xs(1,3))
       a22 = (xs(1,1)*xs(3,3))-(xs(1,3)*xs(3,1))
-      a23 =-(xs(1,1)*xs(2,3))+(xs(1,3)*xs(2,1))
-      a31 = (xs(2,1)*xs(3,2))-(xs(2,2)*xs(3,1))
-      a32 =-(xs(1,1)*xs(3,2))+(xs(1,2)*xs(3,1))
+      a23 =-(xs(1,1)*xs(3,2))+(xs(3,1)*xs(1,2))
+      a31 = (xs(1,2)*xs(2,3))-(xs(2,2)*xs(1,3))
+      a32 =-(xs(1,1)*xs(2,3))+(xs(2,1)*xs(1,3))
       a33 = (xs(1,1)*xs(2,2))-(xs(1,2)*xs(2,1))
       detinv=one/det
       do i=1,nen
@@ -85,7 +94,7 @@ c
       end
 c
 c version
-c $Id: getder.f,v 1.3 2004/07/05 20:15:49 willic3 Exp $
+c $Id: getder.f,v 1.4 2004/08/12 01:25:34 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
