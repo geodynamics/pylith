@@ -500,6 +500,7 @@ class Lithomop3d_setup(Component):
             self.asciiOutputFile,
             self.plotOutputFile)
 
+	# print "After write_global info"
         # Node-based info (coordinates, ID arrays, displacement arrays, winkler arrays,
         #  BC, and skew BC).
 
@@ -554,6 +555,7 @@ class Lithomop3d_setup(Component):
             self.coordinateInputFile,
             self.asciiOutputFile,
             self.plotOutputFile)
+	# print "After read_coords"
 
         self.numberGlobalEquations = lithomop3d.read_bc(
             self.pointerToBond,
@@ -570,6 +572,7 @@ class Lithomop3d_setup(Component):
             self.bcInputFile,
             self.asciiOutputFile)
         self.currentNumberEquations = self.numberGlobalEquations
+	# print "After read_bc"
 
         lithomop3d.read_wink(
             self.pointerToWink,
@@ -584,6 +587,7 @@ class Lithomop3d_setup(Component):
             self.asciiOutputInt,
             self.winklerInputFile,
             self.asciiOutputFile)
+	# print "After read_wink"
 
         lithomop3d.read_skew(
             self.pointerToSkew,
@@ -596,6 +600,7 @@ class Lithomop3d_setup(Component):
             self.asciiOutputInt,
             self.rotationInputFile,
             self.asciiOutputFile)
+	# print "After read_skew"
 
         # except IOError, error:
             # print "Situation:", error
@@ -616,6 +621,7 @@ class Lithomop3d_setup(Component):
             self.f77AsciiOutput,
             self.asciiOutputInt,
             self.asciiOutputFile)
+	# print "After write_strscomp"
         
         lithomop3d.write_subiter(
             self.pointerToListArrayRmult,
@@ -625,6 +631,7 @@ class Lithomop3d_setup(Component):
             self.f77AsciiOutput,
             self.asciiOutputInt,
             self.asciiOutputFile)
+	# print "After write_subiter"
                              
         # Allocate and read time step, time output, and load history info.
         self.pointerToHistry = lithomop3d.allocateDouble(
@@ -693,6 +700,7 @@ class Lithomop3d_setup(Component):
             self.asciiOutputInt,
             self.timeStepInputFile,
             self.asciiOutputFile)
+	# print "After read_timdat"
 
         lithomop3d.read_fuldat(
             self.pointerToIprint,
@@ -708,6 +716,7 @@ class Lithomop3d_setup(Component):
             self.fullOutputInputFile,
             self.asciiOutputFile,
             self.plotOutputFile)
+	# print "After read_fuldat"
 
         lithomop3d.read_stateout(
             self.pointerToIstatout,
@@ -719,6 +728,7 @@ class Lithomop3d_setup(Component):
             self.stateVariableInputFile,
             self.asciiOutputFile,
             self.plotOutputFile)
+	# print "After read_stateout"
 
         lithomop3d.read_hist(
             self.pointerToHistry,
@@ -732,6 +742,7 @@ class Lithomop3d_setup(Component):
             self.asciiOutputFile)
         self.pointerToTimes = None
         self.memorySize -= (self.totalNumberTimeSteps+1)*self.doubleSize
+	# print "After read_hist"
             
         # except IOError, error:
             # print "Situation:", error
@@ -753,6 +764,7 @@ class Lithomop3d_setup(Component):
             self.f77AsciiOutput,
             self.asciiOutputInt,
             self.asciiOutputFile)
+	# print "After write_element_info"
 
         self.pointerToIen = lithomop3d.allocateInt(
             self.connectivitySize)
@@ -862,6 +874,7 @@ class Lithomop3d_setup(Component):
                 self.f77UcdOutput,
                 self.ucdOutputRoot)
                 
+        # print "Just after write_ucd_mesh"
         # print "Just after read_connect"
         # print "memorySize: %d" % self.memorySize
         # lithomop3d.read_prestr(
@@ -1526,6 +1539,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.10 2004/08/25 01:55:26 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.11 2004/08/31 19:13:07 willic3 Exp $
 
 # End of file 
