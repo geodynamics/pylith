@@ -12,7 +12,7 @@
 #
 
 
-from testpy.KeywordValueParse import KeywordValueParse
+from lithomop3d.KeywordValueParse import KeywordValueParse
 
 class MaterialModel:
 
@@ -21,7 +21,7 @@ class MaterialModel:
 
         lineparse = KeywordValueParse()
 
-        print "Hello from MaterialModel.readprop!"
+        # print "Hello from MaterialModel.readprop!"
 
         endMaterial = False
         while not endMaterial:
@@ -51,6 +51,6 @@ class MaterialModel:
         return
 
 # version
-# $Id: MaterialModel.py,v 1.1 2004/07/14 21:17:37 willic3 Exp $
+# $Id: MaterialModel.py,v 1.2 2004/08/12 16:52:15 willic3 Exp $
 
 # End of file 
