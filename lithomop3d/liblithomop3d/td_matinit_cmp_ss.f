@@ -37,7 +37,8 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,         ! elemnt
      & ndmatsz,numelt,nconsz,                                           ! elemnt
-     & prop,infmat,nprop,matgpt,elas_matinit,td_matinit,matchg,tminmax, ! materl
+     & prop,nprop,matgpt,imatvar,nmatel,elas_matinit,td_matinit,matchg, ! materl
+     & tminmax,                                                         ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & rtimdat,ntimdat,                                                 ! timdat
      & skew,numrot,                                                     ! skew
@@ -59,10 +60,10 @@ c
 c...  subroutine arguments
 c
       integer nnz,neq,numnp,numslp,numsn,numfn,nstatesz,ndmatsz,numelt
-      integer nconsz,nprop,matgpt,numrot,ierr
+      integer nconsz,nprop,matgpt,imatvar,nmatel,numrot,ierr
       logical matchg
       integer ja(nnz),ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
-      integer lmf(nconsz),infiel(6,numelt),iddmat(nstr,nstr),infmat(6)
+      integer lmf(nconsz),infiel(6,numelt),iddmat(nstr,nstr)
       integer infetype(4,netypes)
       character errstrng*(*)
       double precision alnz(nnz),x(nsd,numnp),d(ndof,numnp)
@@ -86,7 +87,7 @@ c
 c
 c...  local variables
 c
-      integer nmatel,imatvar,iel,indstate0,inddmat0,ietype,nstate,ng
+      integer iel,indstate0,inddmat0,ietype,nstate,ng
       integer inddmatg,l,nstateinc,ind,indstate,inddmat,ngauss,indstateg
       integer indien,nen,nee,ngtest,ngaussdim
       double precision tmax
@@ -98,8 +99,6 @@ c
 c
 cdebug      write(6,*) "Hello from td_matinit_cmp_ss_f!"
 c
-      nmatel=infmat(2)
-      imatvar=infmat(4)
 c
 c...  compute d-matrix for first element in the group.  If imatvar is
 c     zero, there is only one d-matrix for the group, and that is all
@@ -179,7 +178,7 @@ c
       end
 c
 c version
-c $Id: td_matinit_cmp_ss.f,v 1.1 2004/06/25 21:37:15 willic3 Exp $
+c $Id: td_matinit_cmp_ss.f,v 1.2 2004/07/09 01:29:45 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
