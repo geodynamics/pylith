@@ -78,11 +78,11 @@ c
         write(kw,800,err=50) ((istatout(j,i),j=1,2),i=1,nstatesmax)
         close(kw)
       end if
-      if(idsk.eq.izero) then
+      if(idsk.eq.ione) then
         open(kp,file=pfile,err=40,status="old",access="append")
         write(kp,810,err=50) ((istatout(j,i),j=1,2),i=1,nstatesmax)
       end if
-      if(idsk.eq.1) then
+      if(idsk.eq.itwo) then
         open(kp,file=pfile,err=40,status="old",access="append",
      &   form="unformatted")
         write(kp,err=50) istatout
@@ -143,7 +143,7 @@ c
       end
 c
 c version
-c $Id: read_stateout.f,v 1.2 2004/08/24 16:45:38 willic3 Exp $
+c $Id: read_stateout.f,v 1.3 2004/08/25 01:14:19 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
