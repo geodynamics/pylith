@@ -33,9 +33,9 @@ c
      & bintern,neq,                                                     ! force
      & x,numnp,                                                         ! global
      & s,stemp,                                                         ! stiff
-     & dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,             ! elemnt
-     & infmat,infmatmod,numat,                                          ! materl
-     & gauss,sh,shj,infetype,                                           ! eltype
+     & dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,                      ! elemnt
+     & infmatmod,                                                       ! materl
+     & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & skew,numrot,                                                     ! skew
      & nfault,dfault,tfault,numfn,                                      ! split
      & getshape,bmatrix,                                                ! bbar
@@ -55,18 +55,18 @@ c
 c
 c...  subroutine arguments
 c
-      integer neq,numnp,ndmatsz,numelt,nconsz,numat,numrot,numfn,ierr
-      integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
-      integer infiel(7,numelt),iddmat(nstr,nstr),infmat(3,numat)
-      integer infmatmod(5,nmatmodmax),infetype(4,netypes)
+      integer neq,numnp,nvfamilies,numelv,nen,ngauss,nee,numrot,numfn
+      integer ierr
+      integer ien(nen,numelv),lm(ndof*nen,numelv),lmx(ndof*nen,numelv)
+      integer ivfamily(5,nvfamilies),infmatmod(6,nmatmodmax)
       integer nfault(3,numfn)
       character errstrng*(*)
       double precision bintern(neq),x(nsd,numnp),s(neemax*neemax)
       double precision stemp(neemax*neemax),dfault(ndof,numfn)
-      double precision tfault(ndof,numfn),dmat(nddmat,ndmatsz)
-      double precision gauss(nsd+1,ngaussmax,netypes)
-      double precision sh(nsd+1,nenmax,ngaussmax,netypes)
-      double precision shj(nsd+1,nenmax,ngaussmax,netypes)
+      double precision tfault(ndof,numfn),dmat(nddmat*ngauss,numelv)
+      double precision gauss(nsd+1,ngauss)
+      double precision sh(nsd+1,nen,ngauss)
+      double precision shj(nsd+1,nen,ngauss)
       double precision skew(nskdim,numnp)
 c
 c...  external routines
@@ -75,8 +75,7 @@ c
 c
 c...  local variables
 c
-      integer i,iel,indien,imat,matmodel,imatvar,ietype,nen,inddmat
-      integer ngauss,nee,ngaussdim
+      integer i,ielg
       double precision p(60),dl(60)
 c
 cdebug      write(6,*) "Hello from formf_ss_f!"
@@ -85,43 +84,30 @@ c
 c...  loop over split node entries
 c
       do i=1,numfn
-        iel=nfault(1,i)
-        indien=infiel(1,iel)
-        imat=infiel(2,iel)
-        ietype=infiel(3,iel)
-        inddmat=infiel(6,iel)
-        matmodel=infmat(1,imat)
-        imatvar=infmatmod(4,matmodel)
-        nen=infetype(2,ietype)
-        ngauss=infetype(1,ietype)
-        nee=infetype(4,ietype)
-        ngaussdim=ngauss
-        if(imatvar.eq.izero) ngaussdim=ngaussmax
+        ielg=nfault(1,i)
 c
 c...  form element stiffness matrix
 c
         call formes_ss(
      &   x,numnp,                                                       ! global
      &   s,stemp,                                                       ! stiff
-     &   dmat(1,inddmat),ien(indien),lm(1,indien),iddmat,               ! elemnt
-     &   iel,                                                           ! elemnt
-     &   gauss(1,1,ietype),sh(1,1,1,ietype),shj(1,1,1,ietype),          ! eltype
-     &   ngauss,ngaussdim,nen,nee,                                      ! eltype
+     &   dmat(1,ielg),ien(1,ielg),lm(1,ielg),ielg,                      ! elemnt
+     &   gauss,sh,shj,nen,ngauss,nee,                                   ! eltype
      &   skew,numrot,                                                   ! skew
      &   getshape,bmatrix,                                              ! bbar
      &   ierr,errstrng)                                                 ! errcode
 c
         if(ierr.ne.izero) return
 c
-        call lflteq(dl,dfault(1,i),nfault(1,i),ien(indien),nen)
+        call lflteq(dl,dfault(1,i),nfault(1,i),ien(1,ielg),nen)
 	call dsymv("u",nee,one,s,nee,dl,ione,zero,p,ione)
-        call addfor(bintern,p,lm(1,indien),lmx(1,indien),neq,nee)
+        call addfor(bintern,p,lm(1,ielg),lmx(1,ielg),neq,nee)
       end do
       return
       end
 c
 c version
-c $Id: formf_ss.f,v 1.5 2005/02/23 23:58:48 willic3 Exp $
+c $Id: formf_ss.f,v 1.6 2005/03/21 19:31:06 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
