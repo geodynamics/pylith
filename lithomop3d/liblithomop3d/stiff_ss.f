@@ -35,7 +35,6 @@ c
      & gauss,sh,shj,ngauss,ngaussdim,nen,                               ! eltype
      & s,nee,                                                           ! stiff
      & getshape,bmatrix,                                                ! bbar
-     & idout,kto,kw,                                                    ! ioinf
      & ierr)                                                            ! errcode
 c
 c...computes the local stiffness matrix at the given integration points.
@@ -49,8 +48,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer nsd,ndof,nstr,nddmat,iel,ngauss,ngaussdim,nen,nee,idout
-      integer kto,kw,ierr
+      integer nsd,ndof,nstr,nddmat,iel,ngauss,ngaussdim,nen,nee
       integer ien(nen),iddmat(nstr,nstr)
       double precision xl(nsd,nen),dmat(nddmat,ngaussdim)
       double precision gauss(nsd+1,ngaussmax),sh(nsd+1,nenmax,ngaussmax)
@@ -95,7 +93,7 @@ c
       end
 c
 c version
-c $Id: stiff_ss.f,v 1.2 2004/06/15 18:37:06 willic3 Exp $
+c $Id: stiff_ss.f,v 1.3 2004/06/16 20:21:31 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
