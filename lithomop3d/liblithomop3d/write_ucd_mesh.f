@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -31,9 +30,9 @@ c
 c
       subroutine write_ucd_mesh(
      & x,numnp,                                                         ! global
-     & ien,infiel,numelt,nconsz,                                        ! elemnt
-     & sh,infetype,                                                     ! eltype
-     & istatout,                                                        ! ioopts
+     & ien,ivfamily,numelv,nvfamilies,                                  ! elemnt
+     & sh,nen,ngauss,ietype,                                            ! eltype
+     & istatout,nstatout,                                               ! ioopts
      & kucd,ucdroot)                                                    ! ioinfo
 c
 c...  Specialized routine to output mesh info for SCEC benchmarks.
@@ -53,11 +52,11 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,numelt,nconsz,kucd
-      integer ien(nconsz),infiel(7,numelt),infetype(4,netypes)
-      integer istatout(2,nstatesmax)
+      integer numnp,numelv,nvfamilies,nen,ngauss,ietype,kucd
+      integer ien(nen,numelv),ivfamily(5,nvfamilies)
+      integer istatout(nstatesmax,3),nstatout(3)
       character ucdroot*(*)
-      double precision x(nsd,numnp),sh(nsd+1,nenmax,ngaussmax,netypes)
+      double precision x(nsd,numnp),sh(nsd+1,nen,ngauss)
 c
 c...  local constants
 c
@@ -84,33 +83,30 @@ c
 c
 c...  local variables
 c
-      integer nnattr,neattr,nngattr,negattr,nmattr,i,j,indien,imat
-      integer ietype,ngauss,nen,numelg,l,ngpts,indtype,i1,i2,igpt
+      integer nnattr,neattr,nngattr,negattr,nmattr,i,j
+      integer iprestress,nstep,iopt
+      integer ielg,ifam,ielf,nelfamily,matmodel
+      integer numelg,l,ngpts,indtype,igpt
       integer itmp(20)
       double precision xl(nsd,nenmax),xg(nsd)
-      character filenm*200
 c
 cdebug      write(6,*) "Hello from write_ucdmesh_f!"
 c
       nnattr=ndof
       neattr=izero
-      nngattr=izero
+      nngattr=nstatout(1)+nstatout(2)+nstatout(3)
       negattr=izero
       nmattr=izero
       numelg=izero
-      ngpts=izero
-      do i=1,nstatesmax
-        nngattr=nngattr+nstr*istatout(1,i)
-        nngattr=nngattr+nstr*istatout(2,i)
-      end do
-      i1=nnblnk(ucdroot)
-      i2=nchar(ucdroot)
+      ngpts=ngauss*numelv
+      iprestress=izero
+      nstep=izero
+      iopt=ione
+      call open_ucd(kucd,iprestress,nstep,ucdroot,iopt)
 c
 c...  write mesh info
 c
-      filenm=ucdroot(i1:i2)//".mesh.inp"
-      open(kucd,file=filenm,status="new")
-      write(kucd,"(5i7)") numnp,numelt,nnattr,neattr,nmattr
+      write(kucd,"(5i7)") numnp,numelv,nnattr,neattr,nmattr
 c
 c...  write nodal coordinates
 c
@@ -120,55 +116,51 @@ c
 c
 c...  write element connectivities
 c
-      do i=1,numelt
-        indien=infiel(1,i)
-        imat=infiel(2,i)
-        ietype=infiel(3,i)
-        nen=infetype(2,ietype)
-        ngauss=infetype(1,ietype)
-        ngpts=ngpts+ngauss
-        indtype=ione
-        if(ietype.eq.28) indtype=itwo
-        if(ietype.eq.29) indtype=ithree
-        if(ietype.eq.30) indtype=ifour
-        if(ietype.eq.31) indtype=ifive
-        if(ietype.gt.31) indtype=isix
-        if(ietype.eq.59) indtype=iseven
-        if(ietype.eq.60) indtype=ieight
-        if(ietype.eq.61) indtype=inine
-        if(ietype.eq.62) indtype=10
-        do j=1,nen
-          itmp(j)=ien(indien+j-1)
+      ielg=izero
+      do ifam=1,nvfamilies
+        nelfamily=ivfamily(1,ifam)
+        matmodel=ivfamily(2,ifam)
+        do ielf=1,nelfamily
+          ielg=ielg+1
+          indtype=ione
+          if(ietype.eq.28) indtype=itwo
+          if(ietype.eq.29) indtype=ithree
+          if(ietype.eq.30) indtype=ifour
+          if(ietype.eq.31) indtype=ifive
+          if(ietype.gt.31) indtype=isix
+          if(ietype.eq.59) indtype=iseven
+          if(ietype.eq.60) indtype=ieight
+          if(ietype.eq.61) indtype=inine
+          if(ietype.eq.62) indtype=10
+          do j=1,nen
+            itmp(j)=ien(nen+j-1,ielg)
+          end do
+          write(kucd,"(2i7,2x,a4,20i7)") ielg,matmodel,eltype(indtype),
+     &     (itmp(inducd(j,indtype)),j=1,nen)
         end do
-        write(kucd,"(2i7,2x,a4,20i7)") i,imat,eltype(indtype),
-     &   (itmp(inducd(j,indtype)),j=1,nen)
       end do
       close(kucd)
 c
 c...  write Gauss point info
 c
-      filenm=ucdroot(i1:i2)//".gmesh.inp"
-      open(kucd,file=filenm,status="new")
+      iopt=itwo
+      call open_ucd(kucd,iprestress,nstep,ucdroot,iopt)
       write(kucd,"(5i7)") ngpts,numelg,nngattr,negattr,nmattr
 c
 c...  write Gauss coordinates
 c
       igpt=izero
-      do i=1,numelt
-        indien=infiel(1,i)
-        ietype=infiel(3,i)
-        nen=infetype(2,ietype)
-        ngauss=infetype(1,ietype)
-        call lcoord(x,xl,ien(indien),nen,numnp)
+      do ielg=1,numelv
+        call lcoord(x,xl,ien(1,ielg),nen,numnp)
         do l=1,ngauss
           igpt=igpt+ione
           xg(1)=zero
           xg(2)=zero
           xg(3)=zero
           do j=1,nen
-            xg(1)=xg(1)+xl(1,j)*sh(4,j,l,ietype)
-            xg(2)=xg(2)+xl(2,j)*sh(4,j,l,ietype)
-            xg(3)=xg(3)+xl(3,j)*sh(4,j,l,ietype)
+            xg(1)=xg(1)+xl(1,j)*sh(4,j,l)
+            xg(2)=xg(2)+xl(2,j)*sh(4,j,l)
+            xg(3)=xg(3)+xl(3,j)*sh(4,j,l)
           end do
           write(kucd,"(i7,3(2x,1pe15.8))") igpt,(xg(j),j=1,nsd)
         end do
@@ -178,7 +170,7 @@ c
       end
 c
 c version
-c $Id: write_ucd_mesh.f,v 1.5 2005/02/24 00:26:34 willic3 Exp $
+c $Id: write_ucd_mesh.f,v 1.6 2005/03/26 00:41:01 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
