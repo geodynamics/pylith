@@ -69,16 +69,10 @@ extern "C"
 PyObject * pylithomop3d_scan_hist(PyObject *, PyObject *);
 
 // scan prestress file
-extern char pylithomop3d_scan_prestr__name__[];
-extern char pylithomop3d_scan_prestr__doc__[];
-extern "C"
-PyObject * pylithomop3d_scan_prestr(PyObject *, PyObject *);
-
-// scan material properties file
-extern char pylithomop3d_scan_prop__name__[];
-extern char pylithomop3d_scan_prop__doc__[];
-extern "C"
-PyObject * pylithomop3d_scan_prop(PyObject *, PyObject *);
+// extern char pylithomop3d_scan_prestr__name__[];
+// extern char pylithomop3d_scan_prestr__doc__[];
+// extern "C"
+// PyObject * pylithomop3d_scan_prestr(PyObject *, PyObject *);
 
 // scan local coordinate rotations file
 extern char pylithomop3d_scan_skew__name__[];
@@ -105,10 +99,10 @@ extern "C"
 PyObject * pylithomop3d_scan_timdat(PyObject *, PyObject *);
 
 // scan traction boundary conditions file
-extern char pylithomop3d_scan_traction__name__[];
-extern char pylithomop3d_scan_traction__doc__[];
-extern "C"
-PyObject * pylithomop3d_scan_traction(PyObject *, PyObject *);
+// extern char pylithomop3d_scan_traction__name__[];
+// extern char pylithomop3d_scan_traction__doc__[];
+// extern "C"
+// PyObject * pylithomop3d_scan_traction(PyObject *, PyObject *);
 
 // scan winkler forces info file
 extern char pylithomop3d_scan_wink__name__[];
@@ -125,6 +119,6 @@ PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *);
 #endif
 
 // version
-// $Id: scanner.h,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: scanner.h,v 1.2 2004/07/19 18:42:15 willic3 Exp $
 
 // End of file
