@@ -29,12 +29,12 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_connect(ien,mat,ienind,nen,neni,ietype,numel,
-     & ngauss,netypes,netypesi,nconsize,numelt,numnp,numat,kr,kw,kp,
-     & idout,idsk,ierr,ifile,ofile,pfile)
+      subroutine read_connect(neni,infetype,infmat,infmatmod,ien,infiel,
+     & indmat,imgrp,nconsz,numelt,numnp,numat,nstatesz,ndmatsz,kr,kw,kp,
+     & idout,idsk,ifile,ofile,pfile,ierr,errstrng)
 c
-c      this subroutine reads element connectivities, material types, and
-c      infinite element info
+c      this subroutine reads element types and connectivities, material
+c      types, and infinite element info.
 c      The initial element type and the infinite element info are used
 c      together to form the final element types, which includes all
 c      infinite element permutations.
@@ -42,26 +42,32 @@ c
 c      Error codes:
 c          0:  No error
 c          1:  Error opening input file
-c          2:  Units not specified (not applicable for this routine)
 c          3:  Read error
-c          4:  Bad material number
-c          5:  Bad connectivity
+c        106:  Illegal element type
+c        101:  Attempt to use undefined material model
+c        107:  Illegal material type
+c        108:  Undefined node used for connectivity
 c
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "materials.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer netypes,netypesi,nconsize,numelt,numnp,numat,kr,kw,kp
+      integer nconsz,numelt,numnp,numat,nstatesz,ndmatsz,kr,kw,kp
       integer idout,idsk,ierr
-      integer ien(nconsize),mat(numelt),ienind(numelt),nen(netypes)
-      integer neni(netypesi),ietype(numelt),numel(netypes)
-      integer ngauss(netypes)
-      character ifile*(*),ofile*(*),pfile*(*)
+      integer neni(netypesi),infetype(4,netypes),infmat(3,numat)
+      integer infmatmod(5,nmatmodmax),ien(nconsz),infiel(6,numelt)
+      integer indmat(numat),imgrp(numat)
+      character ifile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
-c...  defined constants
-c
-      include "nconsts.inc"
+c...  local variables
 c
       character*4 head(20)
       data head/20*'node'/
@@ -72,89 +78,146 @@ c
 c
 c...  local variables
 c
-      integer npage,n,i,j,inf,ietypei,i1,i2
+      integer imat,npage,matmod,i,n,j,inf,ietypei,ngauss,nstate,imatvar
+      integer ietype,nen,i1,i2
+c
+      call ifill(ien,izero,nconsz)
+      call ifill(indmat,izero,numat)
+      call ifill(imgrp,izero,numat)
+      call ifill(infiel,izero,isix*numelt)
+      nstatesz=izero
+      ndmatsz=izero
+      ierr=izero
+c
+c...  set initial pointers for different material types
+c
+      indmat(1)=ione
+      do imat=2,numat
+        indmat(imat)=indmat(imat-1)+infmat(2,imat)
+      end do
 c
 c...  read connectivity, material number, and infinite element info
 c
-      call ifill(numel,izero,netypes)
-      ierr=izero
-      ienind(1)=ione
+      infiel(1,1)=ione
       open(kr,file=ifile,status="old",err=20)
       call pskip(kr)
       do i=1,numelt
-        if(i.ne.1) ienind(i)=ienind(i-1)+neni(ietypei)-1
-        read(kr,*,end=30,err=30) n,ietypei,mat(i),inf,
-     &   (ien(j),j=ienind(i),ienind(i)+neni(ietypei)-1)
-        call infcmp(ietypei,ietype(i),inf)
-        numel(ietype(i))=numel(ietype(i))+1
+        if(i.ne.ione) infiel(1,i)=infiel(1,i-1)+neni(ietypei)-1
+        read(kr,*,end=30,err=30) n,ietypei,imat,inf,
+     &   (ien(j),j=infiel(1,i),infiel(1,i)+neni(ietypei)-1)
+        infiel(2,i)=imat
+c
+c...  set global element type, after first checking for illegal
+c     element type
+c
+        if(ietypei.le.izero.or.ietypei.gt.netypesi) then
+          ierr=106
+          errstrng="read_connect"
+          return
+        end if
+        call infcmp(ietypei,infiel(3,i),inf)
+c
+c...  index element into its material type group, after first checking
+c     for illegal material type or material model
+c
+        matmod=infmat(1,imat)
+        if(imat.le.izero.or.imat.gt.numat) then
+          ierr=107
+          errstrng="read_connect"
+          return
+        end if
+        if(matmod.gt.nmatmodmax.or.infmatmod(1,matmod).eq.izero) then
+          ierr=101
+          errstrng="read_connect"
+          return
+        end if
+        infiel(4,indmat(imat))=i
+        indmat(imat)=indmat(imat)+ione
+c
+c...  set state variable and material matrix indices, and increment the
+c     total size of the state variable and material matrices.
+c
+        infiel(5,i)=nstatesz+ione
+        infiel(6,i)=ndmatsz+ione
+        ngauss=infetype(1,infiel(3,i))
+        nstate=infmatmod(2,matmod)
+        imatvar=infmatmod(4,matmod)
+        nstatesz=nstatesz+nstr*nstate*ngauss
+        if(imatvar.eq.izero) then
+          if(imgrp(imat).gt.izero) ndmatsz=ndmatsz+ngaussmax
+        else
+          ndmatsz=ndmatsz+ngauss
+        end if
+        imgrp(imat)=imgrp(imat)+ione
       end do
       close(kr)
 c
 c...  output plot info, if desired
 c
-      if(idsk.eq.0) then
-        open(kp,file=pfile,status="old",access="append")
-        write(kp,1000) netypes,numelt
-        write(kp,1000) (numel(j),j=1,netypes)
-        write(kp,1000) (ngauss(j),j=1,netypes)
+      if(idsk.eq.izero) then
+        open(kp,file=pfile,err=40,status="old",access="append")
+        write(kp,1000,err=50) numelt
         do i=1,numelt
-          i1=ienind(i)
-          i2=ienind(i)+nen(ietype(i))-1
-          write(kp,1000) i,mat(i),ietype(i),i1,(ien(j),j=i1,i2)
+          imat=infiel(2,i)
+          ietype=infiel(3,i)
+          ngauss=infetype(1,ietype)
+          nen=infetype(2,ietype)
+          i1=infiel(1,i)
+          i2=infiel(1,i)+nen-1
+          write(kp,1000) i,imat,ietype,ngauss,(ien(j),j=i1,i2)
         end do
         close(kp)
-      else if(idsk.eq.1) then
-        open(kp,file=pfile,status="old",access="append",
+      else if(idsk.eq.ione) then
+        open(kp,file=pfile,err=40,status="old",access="append",
      &   form="unformatted")
-        write(kp),netypes,numelt
-        write(kp) numel
-        write(kp) ngauss
-        write(kp) mat
-        write(kp) ietype
-        write(kp) ienind
-        write(kp) ien
+        write(kp,err=50) numelt,nconsz
+        write(kp,err=50) infetype
+        write(kp,err=50) infiel
+        write(kp,err=50) ien
         close(kp)
       end if
 c
 c...  output ascii info, if desired
 c
-      if(idout.gt.0) then
+      if(idout.gt.izero) then
         open(kw,file=ofile,status="old",access="append")
         npage=50
-        do n=1,numel
-          if(n.eq.1.or.mod(n,npage).eq.0) then
-            write(kw,2000)(head(i),i,i=1,nen(ietype(n)))
+        do i=1,numelt
+          imat=infiel(2,i)
+          ietype=infiel(3,i)
+          ngauss=infetype(1,ietype)
+          nen=infetype(2,ietype)
+          i1=infiel(1,i)
+          i2=infiel(1,i)+nen-1
+          if(i.eq.ione.or.mod(n,npage).eq.izero) then
+            write(kw,2000)(head(j),j,j=1,nen)
             write(kw,2500)
           end if
-          i1=ienind(n)
-          i2=ienind(n)+nen(ietype(n))-1
-          write(kw,3000) n,mat(n),ietype(n),(ien(i),i=i1,i2)
+          write(kw,3000) i,imat,ietype,ngauss,(ien(i),i=i1,i2)
         end do
         write(kw,4000)
         close(kw)
       end if
 c
-c......test for zero or out-of-bound entries in ien array and
-c      zero or out-of bounds material numbers
+c......test for zero or out-of-bound entries in ien array
 c
-      do n=1,numel
-        if((mat(n).le.0).or.(mat(n).gt.numat)) then
-          ierr=4
+      do i=1,nconsz
+        if(ien(i).le.izero.or.ien(i).gt.numnp) then
+          ierr=108
+          errstrng="read_connect"
           return
         end if
-        do i=ienind(n),ienind(n)+nen(ietype(n))-1
-          if((ien(i).le.0).or.(ien(i).gt.numnp)) then
-            ierr=5
-            return
-          end if
-        end do
       end do
+c
+c...  normal return
+c
       return
 c
 c...  error opening input file
 c
  20   continue
         ierr=1
+        errstrng="read_connect"
         close(kr)
         return
 c
@@ -162,26 +225,41 @@ c...  error reading input file
 c
  30   continue
         ierr=3
+        errstrng="read_connect"
         close(kr)
+        return
+c
+c...  error opening output file
+c
+ 40   continue
+        ierr=2
+        errstrng="read_connect"
+        close(kw)
+        close(kp)
+        return
+c
+c...  error writing to output file
+c
+ 50   continue
+        ierr=4
+        errstrng="read_connect"
+        close(kw)
+        close(kp)
         return
 c
 1000  format(30i7)
 2000  format(1x,///,
      x' e l e m e n t  d a t a ',//,5x,
-     x' element    material  infinite',20(a4,i2,4x))
-2500  format(5x,'  number    element',/,
-     x       5x,'              code',/)
-3000  format(6x,i5,10(5x,i7))
+     x' element    material  element  number',20(a4,i2,4x))
+2500  format(5x,'  number      type    gauss',/,
+     x       5x,'                     points',/)
+3000  format(6x,i7,25(5x,i7))
 4000  format(//)
-6000  format('ien array generation failure in element # ',i7,
-     & ' at node # ',i7)
-7000  format('material number of element # ',i7,
-     & ' is ',i5, ', which is not defined')
 c
       end
 c
 c version
-c $Id: read_connect.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: read_connect.f,v 1.2 2004/07/09 20:22:41 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
