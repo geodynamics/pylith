@@ -6,7 +6,6 @@ c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
 c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2005 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -60,11 +59,10 @@ c
 c
 c...  local variables
 c
-      integer ielg,ifam,nelfamily,matmodel,indstate,nstate
+      integer ifam,nelfamily,matmodel,indstate,nstate
 c
 cdebug      write(6,*) "Hello from update_state_drv_f!"
 c
-      ielg=ione
 c
 c...  loop over element families
 c
@@ -143,7 +141,7 @@ c
       end
 c
 c version
-c $Id: update_state_drv.f,v 1.2 2005/04/01 23:14:33 willic3 Exp $
+c $Id: update_state_drv.f,v 1.3 2005/04/05 23:02:40 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
