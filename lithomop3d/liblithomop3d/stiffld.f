@@ -65,7 +65,7 @@ c
       idim=ndof*ndof
       call fill(stnm,zero,idim*idim)
       do l=1,ngauss
-        call bnmatrx(bn,shd(1,1,l),nen)
+        call bnmatrix(bn,shd(1,1,l),nen)
         do i=1,3
           stnm(3*(i-1)+1,3*(i-1)+1)=stn(1,l)
           stnm(3*(i-1)+2,3*(i-1)+2)=stn(2,l)
@@ -85,7 +85,7 @@ c
       end
 c
 c version
-c $Id: stiffld.f,v 1.3 2004/08/12 02:27:46 willic3 Exp $
+c $Id: stiffld.f,v 1.4 2004/08/12 22:53:10 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
