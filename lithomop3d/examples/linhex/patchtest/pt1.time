@@ -17,10 +17,10 @@
 #            parameter with values that can range from 0.0 (fully
 #            explicit) to 1.0 (fully implicit).  The value is
 #            generally set to 0.5.
-#   maxit  = maximum number of time steps before stiffness matrix is
-#            reformed.
-#   maxitc = maximum number of equilibrium iterations before stiffness
+#   maxit  = maximum number of equilibrium iterations before stiffness
 #            matrix is reformed.
+#   ntdinit= number of time steps between initial reformation of
+#            stiffness matrix (before any iterations).
 #   lgdef  = large deformation solution flag.  This is an integer
 #            parameter with 3 possible values:
 #            0:  linear strain
@@ -55,5 +55,5 @@ time_units = year    # This should be converted to seconds.
 # (other than n) in a seperate array (list), and return the number of
 # time step groups read (nintg).
 #
-# n maxstp delt alfa maxit maxitc lgdef  utol   ftol    etol  itmax
-  0   1   0.e+0  5.e-1  1     4      0  1.0e+0  1.0e+0 1.0e+0  1
+# n maxstp delt alfa maxit ntdinit lgdef  utol   ftol    etol  itmax
+  0   1   0.e+0  5.e-1  1     4      0   1.0e+0  1.0e+0 1.0e+0  1
