@@ -37,7 +37,8 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,         ! elemnt
      & ndmatsz,numelt,nconsz,                                           ! elemnt
-     & prop,infmat,nprop,matgpt,elas_matinit,td_matinit,matchg,tminmax, ! materl
+     & prop,nprop,matgpt,imatvar,nmatel,elas_matinit,td_matinit,matchg, ! materl
+     & tminmax,                                                         ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & rtimdat,ntimdat,                                                 ! timdat
      & skew,numrot,                                                     ! skew
@@ -58,10 +59,10 @@ c
 c...  subroutine arguments
 c
       integer nnz,neq,numnp,numslp,numsn,numfn,nstatesz,ndmatsz,numelt
-      integer nconsz,nprop,matgpt,numrot,ierr
+      integer nconsz,nprop,matgpt,imatvar,nmatel,numrot,ierr
       logical matchg
       integer ja(nnz),ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
-      integer lmf(nconsz),infiel(6,numelt),iddmat(nstr,nstr),infmat(6)
+      integer lmf(nconsz),infiel(6,numelt),iddmat(nstr,nstr)
       integer infetype(4,netypes)
       character errstrng*(*)
       double precision alnz(nnz),x(nsd,numnp),d(ndof,numnp)
@@ -85,7 +86,7 @@ c
 c
 c...  local variables
 c
-      integer nmatel,imatvar,iel,inddmat0,ietype,ngauss,ng,inddmatg
+      integer iel,inddmat0,ietype,ngauss,ng,inddmatg
       integer l,ind,inddmat,indien,nen,nee,ngtest,ngaussdim
 c
 c...  included variable definitions
@@ -95,8 +96,6 @@ c
 c
 cdebug      write(6,*) "Hello from elas_matinit_cmp_ss_f!"
 c
-      nmatel=infmat(2)
-      imatvar=infmat(4)
       tminmax=big
 c
 c...  compute d-matrix for first element in the group.  If imatvar is
@@ -170,7 +169,7 @@ c
       end
 c
 c version
-c $Id: elas_matinit_cmp_ss.f,v 1.2 2004/07/01 17:19:50 willic3 Exp $
+c $Id: elas_matinit_cmp_ss.f,v 1.3 2004/07/08 20:32:25 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
