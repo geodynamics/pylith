@@ -35,15 +35,15 @@ c...  determines the minimum nonblank length of a string
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      character blank*1
+      parameter(blank=' ')
+c
 c...  function arguments
 c
       integer nchar
       character*(*) string
-c
-c...  defined constants
-c
-      character blank*1
-      parameter(blank=' ')
 c
 c...  intrinsic functions
 c
@@ -66,7 +66,7 @@ c
       end
 c
 c version
-c $Id: nchar.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: nchar.f,v 1.2 2004/07/07 18:59:23 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
