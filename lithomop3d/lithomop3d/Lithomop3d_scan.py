@@ -206,6 +206,7 @@ class Lithomop3d_scan(Component):
         self._numberTractionBc = 0
         self._tractionBcUnits = "tractionBcUnitsInitial12345678"
         self._tractionBcScaleFactor = 0.0
+        self._tractionFlag = 0
 
         self._numberSplitNodeEntries = 0
 
@@ -595,11 +596,12 @@ class Lithomop3d_scan(Component):
         #     f77FileInput,
         #     self._tractionInputFile)
 
-        # if self._numberTractionBc != 0:
+        if self._numberTractionBc != 0:
         #     self._tractionBcScaleString = \
         #                                 1.0*uparser.parse(string.strip(self._tractionBcUnits))
         #     self._tractionBcScaleFactor = \
         #                                 self._tractionBcScaleString/pyre.units.SI.pascal
+            self._tractionFlag = 1
 
         self._numberSplitNodeEntries = lithomop3d.scan_split(
             f77FileInput,
@@ -793,6 +795,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.12 2005/01/06 01:40:10 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.13 2005/02/01 23:38:34 willic3 Exp $
 
 # End of file 
