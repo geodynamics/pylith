@@ -36,16 +36,16 @@ c   applied loads
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      double precision alpha
+      parameter(alpha=-1.0d0)
+c
 c...  subroutine arguments
 c
       integer neq
       double precision b(neq),btot(neq),bres(neq)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      double precision alpha
-      parameter(alpha=-1d0)
 c
       call dcopy(neq,btot,ione,bres,ione)
       call daxpy(neq,alpha,b,ione,bres,ione)
@@ -53,7 +53,7 @@ c
       end
 c
 c version
-c $Id: bdiff.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: bdiff.f,v 1.2 2004/06/18 15:00:15 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
