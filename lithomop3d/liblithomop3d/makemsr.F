@@ -55,7 +55,6 @@ c
 c...  subroutine arguments
 c
       integer neq,nnz,iwork,nmin,nmax
-cdebug      integer neq,nnz,iwork
       integer indx(neq),link(iwork),nbrs(iwork)
       double precision wavg
 c
@@ -106,7 +105,7 @@ cdebug      call flush(6)
       end
 c
 c version
-c $Id: makemsr.F,v 1.1 2005/03/11 04:07:41 knepley Exp $
+c $Id: makemsr.F,v 1.2 2005/04/01 23:36:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
