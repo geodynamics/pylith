@@ -1,0 +1,97 @@
+Mesh object:
+
+    1.  Nodes object:
+        1.1  Number of spatial dimensions.
+        1.2  Number of nodes.
+        1.3  Nodal coordinate array.
+        1.4  Pointer to nodal coordinate array.
+
+    2.  Elements object:
+        2.1  Number of elements.
+        2.2  ElementNodes object for each element:
+            2.2.1  Integer element type.
+                   At present, I use a single integer to determine the
+		   infinite element info.  This integer is also a
+		   pointer into an element info array.  The element info
+		   array gives the number of nodes for the element type
+                   as well as the number of Gauss points that the user
+		   has specified for that element type.
+            2.2.2  Integer array containing nodes associated with the
+	           element.
+            2.2.3  Unsure at present how a pointer should be set up???
+	2.3  Connectivities object for each element:
+            2.3.1  Integer number of element neighbors.
+	    2.3.2  Integer array containing element neighbors.
+	    2.3.3  Pointer to 2.3.2.
+    3.  NodalBoundaries object:
+        3.1  Number of nodal boundaries.
+        3.2  NodalBoundary object:
+            3.2.1  Number of nodes on boundary.
+            3.2.2  Integer array of node numbers on the boundary.
+            3.2.3  Pointer to 3.2.2.
+
+    4.  ElementBoundaries object:
+        4.1  Number of element boundaries.
+        4.2  ElementBoundary object:
+            4.2.1  Number of facets (edges or faces) on boundary.
+            4.2.2  BoundaryElementNodes object:
+                4.2.2.1  Integer face type, analogous to 2.2.1.
+                4.2.2.2  Integer array containing nodes associated with
+		         the face.
+                4.2.2.3  Unsure at present how a pointer should be set
+		         up???
+
+The most complicated part of this is dealing with the Elements and
+ElementBoundaries objects.  As far as the Elements object goes, it
+will somehow have to duplicate or replace how I'm presently dealing
+with elements, which is somewhat convoluted:
+
+There are 5 main f77 integer arrays that all relate in some way to
+elements:
+
+ien(connectivitySize):  Integer array containing node numbers for all
+			elements.
+
+infiel(6,numberElements): Integer array containing the following info:
+	1:	Pointer into ien array for each element.
+	2:	Material type for each element (this should change).
+	3:	Element type (includes infinite element info).
+	4:	Sort key so that elements are sorted by material type
+		(this should change).
+	5:	Pointer into state variable array for each element.
+	6:	Pointer into material matrix array for each element.
+
+infetype(4,numberElementTypes):
+	1:	Number Gauss points for element type.
+	2:	Number nodes defining element type.
+	3:	Number of element coordinates.
+	4:	Number of element equations.
+	Note that the last two entries are easily derived from entry
+	#2 once the number of spatial dimensions and degrees of
+	freedom per node are known.  Also, there are presently 62
+	element types (this includes infinite element permutations) so
+	this array is very small.
+
+infmat(3,numberMaterials):
+	1:	Material model #.
+	2:	Number of elements of this material type (this should
+		change).
+	3:	Pointer into the material property array for each
+		material type.
+	Note:  The number of materials can presently be as large as the
+	number of elements, since this represents a particular set of
+	parameter values for a particular material model.  In the
+	future, I need to change this so that a different material type
+	can be specified for each integration point.
+
+infmatmod(5,maxNumberMaterialModels):
+	1:	Integer indicating whether material model is defined.
+	2:	Number of state variables required by the model.
+	3:	Number of material properties required by the model.
+	4:	Integer indicating whether material matrix is dependent
+		on state variables.
+	5:	Integer indicating whether material matrix dependence
+		on state variables is linear.
+	Note:  in retrospect, entries 4 and 5 should be combined, but
+	since this is a small array anyway, there is not much of a
+	penalty.  This array is determined at program initialization.
