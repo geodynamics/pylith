@@ -39,6 +39,7 @@ c
 c...  subroutine arguments
 c
       integer nprop,imat,nstep,nhist,lastep,ierr
+      integer mhist(nprop)
       logical matchg
       double precision ptmp(nprop),prop(nprop),histry(nhist,lastep+1)
 c
@@ -70,7 +71,7 @@ c
       end
 c
 c version
-c $Id: mathist.f,v 1.2 2004/06/16 15:43:49 willic3 Exp $
+c $Id: mathist.f,v 1.3 2004/06/16 15:44:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
