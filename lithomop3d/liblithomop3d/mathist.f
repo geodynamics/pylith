@@ -32,9 +32,13 @@ c
       subroutine mathist(ptmp,prop,mhist,histry,nprop,imat,nstep,nhist,
      & lastep,matchg,ierr,errstrng)
 c
-c...subroutine to assign material properties based on time histories
+c...  subroutine to assign material properties based on time histories
 c
       include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
 c
 c...  subroutine arguments
 c
@@ -43,10 +47,6 @@ c
       logical matchg
       character errstrng*(*)
       double precision ptmp(nprop),prop(nprop),histry(nhist,lastep+1)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
 c
 c...  local variables
 c
@@ -73,7 +73,7 @@ c
       end
 c
 c version
-c $Id: mathist.f,v 1.4 2004/07/05 19:40:17 willic3 Exp $
+c $Id: mathist.f,v 1.5 2004/07/07 18:57:07 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
