@@ -62,7 +62,7 @@ c
      & return
       if(dens.eq.zero) return
       do l=1,ngauss
-        call getjac(xl,xs,det,shj(1,1,l),nen,nsd,iel,ierr,errstrng)
+        call getjac(xl,xs,det,shj(1,1,l),nen,iel,ierr,errstrng)
         if(ierr.ne.izero) return
         det=det*gauss(4,l)*dens
         rl1=det*grav(1)
@@ -78,7 +78,7 @@ c
       end
 c
 c version
-c $Id: gravld.f,v 1.2 2004/07/01 19:36:18 willic3 Exp $
+c $Id: gravld.f,v 1.3 2004/07/01 19:49:59 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
