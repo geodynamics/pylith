@@ -29,8 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine localf(ien,lmf,infiel,nconsz,numelt,infetype,nfault,
-     & numfn)
+      subroutine localf(ien,lmf,numelv,nfault,numfn,nen)
 c
 c.......subroutine to localize nfault array for efficient computation
 c
@@ -44,32 +43,28 @@ c
 c
 c...  subroutine arguments
 c
-      integer nconsz,numelt,numfn
-      integer ien(nconsz),lmf(nconsz),infiel(7,numelt)
-      integer infetype(4,netypes),nfault(3,numfn)
+      integer numelv,numfn,nen
+      integer ien(nen,numelv),lmf(nen,numelv),nfault(3,numfn)
 c
 c...  local variables
 c
-      integer i,j,iel,indien,ietype,nen,node
+      integer i,j,ielg,node
 c
-      call ifill(lmf,izero,nconsz)
+      call ifill(lmf,izero,nen*numelv)
       if(numfn.eq.izero) return
 c
       do i=1,numfn
-        iel=nfault(1,i)
-        indien=infiel(1,iel)
-        ietype=infiel(3,iel)
-        nen=infetype(2,ietype)
+        ielg=nfault(1,i)
         node=nfault(2,i)
-        do j=indien,indien+nen-1
-          if(node.eq.ien(j)) lmf(j)=i
+        do j=1,nen
+          if(node.eq.ien(j,ielg)) lmf(j,ielg)=i
         end do
       end do
       return
       end
 c
 c version
-c $Id: localf.f,v 1.3 2005/02/24 00:03:56 willic3 Exp $
+c $Id: localf.f,v 1.4 2005/03/21 22:35:18 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -29,8 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine localx(idx,numnp,ien,lmx,infiel,nconsz,numelt,infetype,
-     & nslip,numslp)
+      subroutine localx(idx,numnp,ien,lmx,numelv,nslip,numslp,nen)
 c
 c......subroutine to localize idx array and transfer sign information
 c       to lmx array
@@ -45,9 +44,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,nconsz,numelt,numslp
-      integer idx(ndof,numnp),ien(nconsz),lmx(ndof,nconsz)
-      integer infiel(7,numelt),infetype(4,netypes),nslip(nsdim,numslp)
+      integer numnp,numelv,numslp,nen
+      integer idx(ndof,numnp),ien(nen,numelv),lmx(ndof,nen,numelv)
+      integer nslip(nsdim,numslp)
 c
 c...  intrinsic functions
 c
@@ -55,21 +54,18 @@ c
 c
 c...  local variables
 c
-      integer i,j,k,iel,indien,ietype,nen,node
+      integer i,j,k,ielg,node
 c
-      call ifill(lmx,izero,ndof*nconsz)
+      call ifill(lmx,izero,ndof*nen*numelv)
       if(numslp.eq.izero) return
 c
       do i=1,numslp
-        iel=nslip(1,i)
-        indien=infiel(1,iel)
-        ietype=infiel(3,iel)
-        nen=infetype(2,ietype)
+        ielg=nslip(1,i)
         node=nslip(2,i)
-        do j=indien,indien+nen-1
-          if(node.eq.ien(j)) then
+        do j=1,nen
+          if(node.eq.ien(j,ielg)) then
             do k=1,ndof
-              lmx(k,j)=sign(idx(k,node),nslip(2+k,i))
+              lmx(k,j,ielg)=sign(idx(k,node),nslip(2+k,i))
             end do
           end if
         end do
@@ -78,7 +74,7 @@ c
       end
 c
 c version
-c $Id: localx.f,v 1.3 2005/02/24 00:03:56 willic3 Exp $
+c $Id: localx.f,v 1.4 2005/03/21 22:35:18 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

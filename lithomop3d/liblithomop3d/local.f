@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine local(id,numnp,ien,lm,infiel,nconsz,numelt,infetype)
+      subroutine local(id,numnp,ien,lm,numelv,nen)
 c
 c.... subroutine to localize id array
 c
@@ -42,22 +42,18 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,nconsz,numelt
-      integer id(ndof,numnp),ien(nconsz),lm(ndof,nconsz)
-      integer infiel(7,numelt),infetype(4,netypes)
+      integer numnp,numelv,nen
+      integer id(ndof,numnp),ien(nen,numelv),lm(ndof,nen,numelv)
 c
 c...  local variables
 c
-      integer iel,j,i,nn,indien,ietype,nen
+      integer ielg,j,i,nn
 c
-      do iel=1,numelt
-        indien=infiel(1,iel)
-        ietype=infiel(3,iel)
-        nen=infetype(2,ietype)
-        do j=indien,indien+nen-1
-          nn=ien(j)
+      do ielg=1,numelv
+        do j=1,nen
+          nn=ien(j,ielg)
           do i=1,ndof
-            lm(i,j)=id(i,nn)
+            lm(i,j,ielg)=id(i,nn)
           end do
         end do
       end do
@@ -65,7 +61,7 @@ c
       end
 c
 c version
-c $Id: local.f,v 1.3 2005/02/24 00:03:56 willic3 Exp $
+c $Id: local.f,v 1.4 2005/03/21 22:35:18 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
