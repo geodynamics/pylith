@@ -30,9 +30,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine elasmatdrv(
-     & dmat,infmat,nstr,nddmat,ndmatsz,numat,                           ! materl
-     & infiel,numelt,                                                   ! elmnt
-     & prop,infprop,mhist,iddmat,npropsz,                               ! props
+     & dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,                   ! elemnt
+     & prop,mhist,infmat,numat,npropsz,                                 ! materl
      & infetype,netypes,ngaussmax,                                      ! eltype
      & histry,nhist,nstep,lastep,                                       ! timdat
      & idout,kto,kw)                                                    ! fileinf
@@ -43,10 +42,10 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstr,nddmat,ndmatsz,numat,numelt,npropsz,netypes,ngaussmax
+      integer nstr,nddmat,ndmatsz,numelt,numat,npropsz,netypes,ngaussmax
       integer nhist,nstep,lastep,idout,kto,kw
-      integer infmat(4,numat),infiel(6,numelt),infprop(2,numat)
-      integer mhist(2,numat),iddmat(nstr,nstr),infetype(4,netypes)
+      integer infiel(6,numelt),iddmat(nstr,nstr),mhist(npropsz)
+      integer infmat(6,numat),infetype(4,netypes)
       double precision dmat(nddmat,ndmatsz),prop(npropsz)
       double precision histry(nhist,lastep+1)
 c
@@ -76,10 +75,10 @@ c
       do imat=1,numat
         matmodel=infmat(1,imat)
         nmatel=infmat(2,imat)
-        nprop=infprop(1,imat)
-        indprop=infprop(2,imat)
+        nprop=infmat(5,imat)
+        indprop=infmat(6,imat)
         matchg=.false.
-        call mathist(ptmp,prop(indprop),mhist(1,indprop),histry,nprop,
+        call mathist(ptmp,prop(indprop),mhist(indprop),histry,nprop,
      &   imat,nstep,nhist,lastep,matchg,idout,kto,kw)
         if(matmodel.eq.1) then
           call elasmatcmp(dmat,ptmp,nstr,nddmat,ndmatsz,nprop,
@@ -208,7 +207,7 @@ c
       end
 c
 c version
-c $Id: elasmatdrv.f,v 1.1 2004/05/24 21:01:45 willic3 Exp $
+c $Id: elasmatdrv.f,v 1.2 2004/05/25 15:34:27 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

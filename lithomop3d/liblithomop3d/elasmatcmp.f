@@ -30,11 +30,9 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine elasmatcmp(
-     & dmat,prop,nstr,nddmat,ndmatsz,nprop,
-     & infmat,matgpt,elasmat,
-     & infiel,numelt,
-     & infetype,netypes,ngaussmax,
-     & iddmat)
+     & dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,                   ! elemnt
+     & prop,infmat,nprop,matgpt,elasmat,                                ! materl
+     & infetype,netypes,ngaussmax)                                      ! eltype
 c
 c...  compute subroutine to form the d-matrix for the elastic solution
 c
@@ -42,8 +40,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstr,nddmat,ndmatsz,nprop,numelt,matgpt,netypes,ngaussmax
-      integer infmat(4),infiel(6,numelt),infetype(4,netypes)
+      integer nstr,nddmat,ndmatsz,numelt,nprop,matgpt,netypes,ngaussmax
+      integer infmat(6),infiel(6,numelt),infetype(4,netypes)
       integer iddmat(nstr,nstr)
       double precision dmat(nddmat,ndmatsz),prop(nprop)
 c
@@ -104,7 +102,7 @@ c
       end
 c
 c version
-c $Id: elasmatcmp.f,v 1.1 2004/05/24 21:01:45 willic3 Exp $
+c $Id: elasmatcmp.f,v 1.2 2004/05/25 15:34:32 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
