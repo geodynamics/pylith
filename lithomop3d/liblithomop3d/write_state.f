@@ -49,6 +49,8 @@ c
       include "ndimens.inc"
       include "nshape.inc"
       include "materials.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
@@ -62,11 +64,6 @@ c
 c...  included dimension and type statements
 c
       include "labels_dim.inc"
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -133,10 +130,10 @@ c
 c
 c...  output increments/rates, if desired.
 c
-        if(istatout(2,i).ne.0) then
+        if(istatout(2,i).ne.izero) then
           tmult=one
           if(istatout(2,i).eq.ione.and.delt.gt.zero) tmult=one/delt
-          nout=0
+          nout=izero
           do iel=1,numelt
             imat=infiel(2,iel)
             ietype=infiel(3,iel)
@@ -158,8 +155,8 @@ c
                 end if
                 write(kw,3000) iel,l,(stmp(i),i=1,nstr)
               end if
-              if(idsk.eq.0) write(kp,1500) iel,l,(stmp(i),i=1,nstr)
-              if(idsk.eq.1) write(kp) stmp
+              if(idsk.eq.izero) write(kp,1500) iel,l,(stmp(i),i=1,nstr)
+              if(idsk.eq.ione) write(kp) stmp
             end do
           end do
         end if
@@ -172,7 +169,7 @@ c
       end
 c
 c version
-c $Id: write_state.f,v 1.2 2004/07/08 21:01:40 willic3 Exp $
+c $Id: write_state.f,v 1.3 2004/07/12 21:22:42 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
