@@ -15,11 +15,11 @@ test: clean
 	lithomop3dapp.py -lm3dscan.fileRoot=bm1a
 
 clean::
-	$(RM_F) bm1a.ascii bm1a.plot
+	$(RM_F) bm1a.ascii bm1a.plot bm1a*.inp
 
 
 # version
-# $Id: Make.mm,v 1.1 2004/08/17 04:15:31 willic3 Exp $
+# $Id: Make.mm,v 1.2 2004/08/25 17:01:39 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
