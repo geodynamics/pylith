@@ -36,7 +36,6 @@ c
      & gauss,sh,shj,ngauss,ngaussdim,nen,nee,                           ! eltype
      & skew,nskdim,numrot,                                              ! skew
      & getshape,bmatrix,                                                ! bbar
-     & idout,kto,kw,                                                    ! ioinfo
      & ierr)                                                            ! errcode
 c
 c...  subroutine to form the elemental stiffness matrix
@@ -50,7 +49,7 @@ c
 c...  subroutine arguments
 c
       integer nsd,ndof,numnp,nstr,nddmat,iel,ngauss,ngaussdim,nen,nee
-      integer nskdim,numrot,idout,kto,kw,ierr
+      integer nskdim,numrot,ierr
       integer ien(nen),lm(ndof,nen),iddmat(nstr,nstr)
       double precision x(nsd,numnp),s(neemax*neemax)
       double precision stemp(neemax*neemax),dmat(nddmat,ngaussdim)
@@ -87,7 +86,6 @@ c
      & gauss,sh,shj,ngauss,ngaussdim,nen,                               ! eltype
      & s,nee,                                                           ! stiff
      & getshape,bmatrix,                                                ! bbar
-     & idout,kto,kw,                                                    ! ioinf
      & ierr)                                                            ! errcode
 c
       if(ierr.ne.izero) return
@@ -99,7 +97,7 @@ c
       end
 c
 c version
-c $Id: formes_ss.f,v 1.1 2004/06/15 19:41:56 willic3 Exp $
+c $Id: formes_ss.f,v 1.2 2004/06/16 20:24:46 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
