@@ -140,7 +140,7 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   char* asciiOutputFile;                     // Output file names
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOss:elastc",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOss:elastc",
 			    &pyPointerToAlnz,              // Sparse matrix arrays
 			    &pyPointerToPcg,
 			    &pyPointerToZcg,
@@ -444,6 +444,6 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 
 
 // version
-// $Id: elastc.cc,v 1.3 2004/07/21 19:57:25 willic3 Exp $
+// $Id: elastc.cc,v 1.4 2004/07/21 20:02:03 willic3 Exp $
 
 // End of file
