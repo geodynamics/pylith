@@ -104,9 +104,15 @@ extern char pylithomop3d_write_subiter__doc__[];
 extern "C"
 PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *);
 
+// write mesh info to UCD file
+extern char pylithomop3d_write_ucd_mesh__name__[];
+extern char pylithomop3d_write_ucd_mesh__doc__[];
+extern "C"
+PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *);
+
 #endif
 
 // version
-// $Id: input_misc.h,v 1.2 2004/07/20 00:32:04 willic3 Exp $
+// $Id: input_misc.h,v 1.3 2004/08/25 01:35:37 willic3 Exp $
 
 // End of file
