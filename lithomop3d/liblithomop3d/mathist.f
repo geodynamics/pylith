@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine mathist(ptmp,prop,histry,nprop,m,nstep,nhist,lastep,
-     & idout,kto,kw,imhist)
+      subroutine mathist(ptmp,prop,mhist,histry,nprop,imat,nstep,nhist,
+     & lastep,matchg,ierr)
 c
 c...subroutine to assign material properties based on time histories
 c
@@ -38,48 +38,39 @@ c
 c
 c...  subroutine arguments
 c
-      integer nprop,m,nstep,nhist,lastep,idout,kto,kw,imhist
+      integer nprop,imat,nstep,nhist,lastep,ierr
+      logical matchg
       double precision ptmp(nprop),prop(nprop),histry(nhist,lastep+1)
 c
 c...  defined constants
 c
       include "nconsts.inc"
-      include "rconsts.inc"
-c
-c...  intrinsic functions
-c
-      intrinsic nint,abs
 c
 c...  local variables
 c
-      integer ihist,i
+      integer i
 c
 c*      write(6,*) "Hello from mathist_f!"
 c
-      if(imhist.eq.1) then
-        ihist=nint(prop(nprop))
-        if(ihist.gt.nhist.or.ihist.lt.0) then
-          if(idout.gt.1) write(kw,1000) ihist,m
-          write(kto,1000) ihist,m
-          stop
+      ierr=0
+      matchg=.false.
+      do i=1,nprop
+        ptmp(i)=prop(i)
+        if(mhist(i).ne.izero) then
+          if(mhist(i).gt.nhist.or.mhist(i).lt.0) then
+            ierr=100
+            return
+          end if
+          ptmp(i)=histry(mhist(i),nstep+1)*prop(i)
+          matchg=.true.
         end if
-        do i=1,nprop-1
-          ptmp(i)=abs(prop(i))
-          if(prop(i).lt.zero.and.ihist.ne.0)
-     &     ptmp(i)=histry(ihist,nstep+1)*abs(prop(i))
-        end do
-      else
-	call dcopy(nprop,prop,ione,ptmp,ione)
-      end if
+      end do
 c
-1000  format(//' fatal material property error!'//
-     & ' attempt to use undefined load history # ',i5,
-     & ' for material set # ',i5)
       return
       end
 c
 c version
-c $Id: mathist.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: mathist.f,v 1.2 2004/06/16 15:43:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
