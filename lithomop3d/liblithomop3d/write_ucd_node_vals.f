@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_ucd_node_vals(d,deld,deltp,nstep,numnp,kucd,
-     & ucdroot)
+     & ucdroot,iprestress)
 c
 c...  Specialized routine to output displacement info for SCEC
 c     benchmarks.
@@ -53,7 +53,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstep,numnp,kucd
+      integer nstep,numnp,kucd,iprestress
       character ucdroot*(*)
       double precision d(ndof,numnp),deld(ndof,numnp),deltp
 c
@@ -80,7 +80,11 @@ cdebug      write(6,*) "Hello from write_ucd_node_vals!"
 c
       i1=nnblnk(ucdroot)
       i2=nchar(ucdroot)
-      write(cstep,"(i5.5)") nstep
+      if(iprestress.eq.izero) then
+        write(cstep,"(i5.5)") nstep
+      else
+        cstep="prest"
+      end if
 c
 c...  write mesh info
 c
@@ -101,7 +105,7 @@ c
       end
 c
 c version
-c $Id: write_ucd_node_vals.f,v 1.2 2004/08/25 01:29:42 willic3 Exp $
+c $Id: write_ucd_node_vals.f,v 1.3 2005/01/19 20:28:04 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
