@@ -20,7 +20,7 @@ c...  associate local names with array elements
 c
       nstep=ntimdat(1)
       maxitp=ntimdat(2)
-      maxitcp=ntimdat(3)
+      ntdinit=ntimdat(3)
       lgdefp=ntimdat(4)
       ibbarp=ntimdat(5)
       itmaxp=ntimdat(6)
@@ -28,12 +28,9 @@ c
       nrftot=ntimdat(8)
       ndtot=ntimdat(9)
       ireform=ntimdat(10)
-      ivisc=ntimdat(11)
-      iplas=ntimdat(12)
-      imhist=ntimdat(13)
 c
 c version
-c $Id: ntimdat_def.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: ntimdat_def.inc,v 1.2 2004/06/23 20:42:16 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
