@@ -44,20 +44,23 @@
 #define localf_f localf_
 #define localx_f localx_
 #define makemsr_f makemsr_
+#define matmod_def_f matmod_def_
 #define nfind_f nfind_
+#define preshape_f preshape_
 #define read_bc_f read_bc_
 #define read_connect_f read_connect_
 #define read_coords_f read_coords_
 #define read_diff_f read_diff_
 #define read_fuldat_f read_fuldat_
 #define read_hist_f read_hist_
-#define read_prestr_f read_prestr_
-#define read_prop_f read_prop_
+#define read_mathist_f read_mathist_
+// #define read_prestr_f read_prestr_
 #define read_skew_f read_skew_
 #define read_slip_f read_slip_
 #define read_split_f read_split_
+#define read_stateout_f read_stateout_
 #define read_timdat_f read_timdat_
-#define read_traction_f read_traction_
+// #define read_traction_f read_traction_
 #define read_wink_f read_wink_
 #define read_winkx_f read_winkx_
 #define scan_bc_f scan_bc_
@@ -66,18 +69,18 @@
 #define scan_diff_f scan_diff_
 #define scan_fuldat_f scan_fuldat_
 #define scan_hist_f scan_hist_
-#define scan_prestr_f scan_prestr_
-#define scan_prop_f scan_prop_
+// #define scan_prestr_f scan_prestr_
 #define scan_skew_f scan_skew_
 #define scan_slip_f scan_slip_
 #define scan_split_f scan_split_
 #define scan_timdat_f scan_timdat_
-#define scan_traction_f scan_traction_
+// #define scan_traction_f scan_traction_
 #define scan_wink_f scan_wink_
 #define scan_winkx_f scan_winkx_
 #define viscos_f viscos_
 #define write_element_info_f write_element_info_
 #define write_global_info_f write_global_info_
+#define write_props_f write_props_
 #define write_sparse_info_f write_sparse_info_
 #define write_strscomp_f write_strscomp_
 #define write_subiter_f write_subiter_
@@ -92,20 +95,23 @@
 #define localf_f localf
 #define localx_f localx
 #define makemsr_f makemsr
+#define matmod_def_f matmod_def
 #define nfind_f nfind
+#define preshape_f preshape
 #define read_bc_f read_bc
 #define read_connect_f read_connect
 #define read_coords_f read_coords
 #define read_diff_f read_diff
 #define read_fuldat_f read_fuldat
 #define read_hist_f read_hist
-#define read_prestr_f read_prestr
-#define read_prop_f read_prop
+#define read_mathist_f read_mathist
+// #define read_prestr_f read_prestr
 #define read_skew_f read_skew
 #define read_slip_f read_slip
 #define read_split_f read_split
+#define read_stateout_f read_stateout
 #define read_timdat_f read_timdat
-#define read_traction_f read_traction
+// #define read_traction_f read_traction
 #define read_wink_f read_wink
 #define read_winkx_f read_winkx
 #define scan_bc_f scan_bc
@@ -114,18 +120,18 @@
 #define scan_diff_f scan_diff
 #define scan_fuldat_f scan_fuldat
 #define scan_hist_f scan_hist
-#define scan_prestr_f scan_prestr
-#define scan_prop_f scan_prop
+// #define scan_prestr_f scan_prestr
 #define scan_skew_f scan_skew
 #define scan_slip_f scan_slip
 #define scan_split_f scan_split
 #define scan_timdat_f scan_timdat
-#define scan_traction_f scan_traction
+// #define scan_traction_f scan_traction
 #define scan_wink_f scan_wink
 #define scan_winkx_f scan_winkx
 #define viscos_f viscos
 #define write_element_info_f write_element_info
 #define write_global_info_f write_global_info
+#define write_props_f write_props
 #define write_sparse_info_f write_sparse_info
 #define write_strscomp_f write_strscomp
 #define write_subiter_f write_subiter
@@ -140,20 +146,23 @@
 #define localf_f localf__
 #define localx_f localx__
 #define makemsr_f makemsr__
+#define matmod_def_f matmod_def__
 #define nfind_f nfind__
+#define preshape_f preshape__
 #define read_bc_f read_bc__
 #define read_connect_f read_connect__
 #define read_coords_f read_coords__
 #define read_diff_f read_diff__
 #define read_fuldat_f read_fuldat__
 #define read_hist_f read_hist__
-#define read_prestr_f read_prestr__
-#define read_prop_f read_prop__
+#define read_mathist_f read_mathist__
+// #define read_prestr_f read_prestr__
 #define read_skew_f read_skew__
 #define read_slip_f read_slip__
 #define read_split_f read_split__
+#define read_stateout_f read_stateout__
 #define read_timdat_f read_timdat__
-#define read_traction_f read_traction__
+// #define read_traction_f read_traction__
 #define read_wink_f read_wink__
 #define read_winkx_f read_winkx__
 #define scan_bc_f scan_bc__
@@ -162,18 +171,18 @@
 #define scan_diff_f scan_diff__
 #define scan_fuldat_f scan_fuldat__
 #define scan_hist_f scan_hist__
-#define scan_prestr_f scan_prestr__
-#define scan_prop_f scan_prop__
+// #define scan_prestr_f scan_prestr__
 #define scan_skew_f scan_skew__
 #define scan_slip_f scan_slip__
 #define scan_split_f scan_split__
 #define scan_timdat_f scan_timdat__
-#define scan_traction_f scan_traction__
+// #define scan_traction_f scan_traction__
 #define scan_wink_f scan_wink__
 #define scan_winkx_f scan_winkx__
 #define viscos_f viscos__
 #define write_element_info_f write_element_info__
 #define write_global_info_f write_global_info__
+#define write_props_f write_props__
 #define write_sparse_info_f write_sparse_info__
 #define write_strscomp_f write_strscomp__
 #define write_subiter_f write_subiter__
@@ -188,20 +197,23 @@
 #define localf_f LOCALF
 #define localx_f LOCALX
 #define makemsr_f MAKEMSR
+#define matmod_def_f MATMOD_DEF
 #define nfind_f NFIND
+#define preshape_f PRESHAPE
 #define read_bc_f READ_BC
 #define read_connect_f READ_CONNECT
 #define read_coords_f READ_COORDS
 #define read_diff_f READ_DIFF
 #define read_fuldat_f READ_FULDAT
 #define read_hist_f READ_HIST
-#define read_prestr_f READ_PRESTR
-#define read_prop_f READ_PROP
+#define read_mathist_f READ_MATHIST
+// #define read_prestr_f READ_PRESTR
 #define read_skew_f READ_SKEW
 #define read_slip_f READ_SLIP
 #define read_split_f READ_SPLIT
+#define read_stateout_f READ_STATEOUT
 #define read_timdat_f READ_TIMDAT
-#define read_traction_f READ_TRACTION
+// #define read_traction_f READ_TRACTION
 #define read_wink_f READ_WINK
 #define read_winkx_f READ_WINKX
 #define scan_bc_f SCAN_BC
@@ -210,18 +222,18 @@
 #define scan_diff_f SCAN_DIFF
 #define scan_fuldat_f SCAN_FULDAT
 #define scan_hist_f SCAN_HIST
-#define scan_prestr_f SCAN_PRESTR
-#define scan_prop_f SCAN_PROP
+// #define scan_prestr_f SCAN_PRESTR
 #define scan_skew_f SCAN_SKEW
 #define scan_slip_f SCAN_SLIP
 #define scan_split_f SCAN_SPLIT
 #define scan_timdat_f SCAN_TIMDAT
-#define scan_traction_f SCAN_TRACTION
+// #define scan_traction_f SCAN_TRACTION
 #define scan_wink_f SCAN_WINK
 #define scan_winkx_f SCAN_WINKX
 #define viscos_f VISCOS
 #define write_element_info_f WRITE_ELEMENT_INFO
 #define write_global_info_f WRITE_GLOBAL_INFO
+#define write_props_f WRITE_PROPS
 #define write_sparse_info_f WRITE_SPARSE_INFO
 #define write_strscomp_f WRITE_STRSCOMP
 #define write_subiter_f WRITE_SUBITER
@@ -240,20 +252,23 @@
 #define localf_f localf_
 #define localx_f localx_
 #define makemsr_f makemsr_
+#define matmod_def_f matmod_def__
 #define nfind_f nfind_
+#define preshape_f preshape_
 #define read_bc_f read_bc__
 #define read_connect_f read_connect__
 #define read_coords_f read_coords__
 #define read_diff_f read_diff__
 #define read_fuldat_f read_fuldat__
 #define read_hist_f read_hist__
-#define read_prestr_f read_prestr__
-#define read_prop_f read_prop__
+#define read_mathist_f read_mathist__
+// #define read_prestr_f read_prestr__
 #define read_skew_f read_skew__
 #define read_slip_f read_slip__
 #define read_split_f read_split__
+#define read_stateout_f read_stateout__
 #define read_timdat_f read_timdat__
-#define read_traction_f read_traction__
+// #define read_traction_f read_traction__
 #define read_wink_f read_wink__
 #define read_winkx_f read_winkx__
 #define scan_bc_f scan_bc__
@@ -262,18 +277,18 @@
 #define scan_diff_f scan_diff__
 #define scan_fuldat_f scan_fuldat__
 #define scan_hist_f scan_hist__
-#define scan_prestr_f scan_prestr__
-#define scan_prop_f scan_prop__
+// #define scan_prestr_f scan_prestr__
 #define scan_skew_f scan_skew__
 #define scan_slip_f scan_slip__
 #define scan_split_f scan_split__
 #define scan_timdat_f scan_timdat__
-#define scan_traction_f scan_traction__
+// #define scan_traction_f scan_traction__
 #define scan_wink_f scan_wink__
 #define scan_winkx_f scan_winkx__
 #define viscos_f viscos_
 #define write_element_info_f write_element_info__
 #define write_global_info_f write_global_info__
+#define write_props_f write_props__
 #define write_sparse_info_f write_sparse_info__
 #define write_strscomp_f write_strscomp__
 #define write_subiter_f write_subiter__
@@ -294,24 +309,20 @@ extern "C" {
 	       int *,
 	       int *,
 	       int *,
-	       int *,
-	       int *,
 	       int *);
 
-  void elastc_f(double *,
+  void elastc_f(double *,          // sparse
 		double *,
 		double *,
 		int *,
+		double *,          // force
 		double *,
 		double *,
 		double *,
 		double *,
 		double *,
 		double *,
-		double *,
-		double *,
-		double *,
-		double *,
+		double *,          // global
 		double *,
 		double *,
 		double *,
@@ -319,62 +330,26 @@ extern "C" {
 		int *,
 		int *,
 		double *,
-		double *,
 		int *,
-		int *,
-		int *,
-		int *,
-		int *,
-		int *,
+		int *,             // bc
 		double *,
-		double *,
-		int *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
+		double *,          // slip
 		double *,
 		double *,
 		double *,
 		int *,
 		int *,
-		int *,
-		int *,
-		double *,
-		double *,
-		int *,
-		double *,
 		double *,
 		int *,
 		int *,
 		int *,
+		double *,          // split
 		int *,
 		double *,
 		double *,
+		double *,          // stiff
 		double *,
-		int *,
-		double *,
-		int *,
-		double *,
-		double *,
-		int *,
-		int *,
-		int *,
-		double *,
-		int *,
-		int *,
-		double *,
-		int *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
+		double *,          // element
 		double *,
 		double *,
 		int *,
@@ -384,16 +359,53 @@ extern "C" {
 		int *,
 		int *,
 		int *,
+		int *,             // traction
+		int *,
+		int *,
+		double *,
+		double *,
+		double *,          // material
+		int *,
+		int *,
+		int *,
+		int *,
+		double *,          // element type
+		double *,
+		double *,
+		int *,
+		double *,          // time data
+		double *,
 		int *,
 		int *,
 		int *,
 		double *,
 		double *,
+		int *,
+		int *,
+		int *,
+		int *,
 		double *,
 		double *,
 		double *,
+		int *,
+		double *,          // iterations
+		double *,
+		double *,
+		double *,
+		double *,
+		double *,
+		double *,
+		int *,
+		double *,          // skew
+		int *,             // i/o info
+		int *,
+		int *,
+		int *,
+		char *,            // files
 		char *,
+		int *,             // error codes
 		char *,
+		int,               // string lengths
 		int,
 		int);
 
@@ -406,14 +418,6 @@ extern "C" {
 		  int *,
 		  char *,int);
 
-  void local_f(int *,
-	       int *,
-	       int *,
-	       int *,
-	       int *,
-	       int *,
-	       int *);
-
   void lnklst_f(int *,
 		int *,
 		int *,
@@ -424,9 +428,26 @@ extern "C" {
 		int *,
 		int *,
 		int *,
-		int *);
+		int *,
+		int *,
+		int *,
+		int *,
+		int *,
+		char *,
+		int);
+
+  void local_f(int *,
+	       int *,
+	       int *,
+	       int *,
+	       int *,
+	       int *,
+	       int *,
+	       int *);
 
   void localf_f(int *,
+		int *,
+		int *,
 		int *,
 		int *,
 		int *,
@@ -455,6 +476,9 @@ extern "C" {
 		 int *,
 		 double *);
 
+  void matmod_def_f(int *,
+		    int *);
+
   void nfind_f(double *,
 	       double *,
 	       int *,
@@ -465,11 +489,13 @@ extern "C" {
 	       int *,
 	       int *,
 	       int *,
-	       int *,
-	       int *,
-	       int *,
-	       int *,
 	       int *);
+
+  void preshape_f(double *,
+		  double *,
+		  double *,
+		  int *,
+		  int *);
 
   void read_bc_f(double*,
 		 double*,
@@ -483,10 +509,11 @@ extern "C" {
 		 int *,
 		 int *,
 		 int *,
-		 int *,
-		 int *,
 		 char *,
 		 char *,
+		 int *,
+		 char *,
+		 int,
 		 int,
 		 int);
 
@@ -504,9 +531,17 @@ extern "C" {
 		      int *,
 		      int *,
 		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
 		      char *,
 		      char *,
 		      char *,
+		      int *,
+		      char *,
+		      int,
 		      int,
 		      int,
 		      int);
@@ -519,11 +554,12 @@ extern "C" {
 		     int *,
 		     int *,
 		     int *,
+		     char *,
+		     char *,
+		     char *,
 		     int *,
-		     int *,
 		     char *,
-		     char *,
-		     char *,
+		     int,
 		     int,
 		     int,
 		     int);
@@ -537,11 +573,11 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
-		   int *,
-		   int *,
-		   int *,
 		   char *,
 		   char *,
+		   int *,
+		   char *,
+		   int,
 		   int,
 		   int);
 
@@ -555,10 +591,12 @@ extern "C" {
 		     int *,
 		     int *,
 		     int *,
+		     char *,
+		     char *,
+		     char *,
 		     int *,
 		     char *,
-		     char *,
-		     char *,
+		     int,
 		     int,
 		     int,
 		     int);
@@ -570,53 +608,51 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
-		   int *,
 		   char *,
 		   char *,
-		   int,
-		   int);
-
-  void read_prestr_f(double *,
-		     double *,
-		     double *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     char *,
-		     char *,
-		     int,
-		     int);
-
-  void read_prop_f(double *,
-		   double *,
-		   double *,
-		   double *,
-		   double *,
-		   double *,
 		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   char *,
-		   char *,
 		   char *,
 		   int,
 		   int,
 		   int);
+
+  void read_mathist_f(int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      char *,
+		      char *,
+		      char *,
+		      int *,
+		      char *,
+		      int,
+		      int,
+		      int,
+		      int);
+
+  // void read_prestr_f(double *,
+		     // double *,
+		     // double *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // char *,
+		     // char *,
+		     // int,
+		     // int);
 
   void read_skew_f(double *,
 		   double *,
@@ -625,11 +661,11 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
-		   int *,
-		   int *,
-		   int *,
 		   char *,
 		   char *,
+		   int *,
+		   char *,
+		   int,
 		   int,
 		   int);
 
@@ -643,12 +679,12 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
-		   int *,
-		   int *,
-		   int *,
 		   char *,
 		   char *,
 		   char *,
+		   int *,
+		   char *,
+		   int,
 		   int,
 		   int,
 		   int);
@@ -663,14 +699,31 @@ extern "C" {
 		    int *,
 		    int *,
 		    int *,
+		    char *,
+		    char *,
+		    char *,
 		    int *,
-		    int *,
 		    char *,
-		    char *,
-		    char *,
+		    int,
 		    int,
 		    int,
 		    int);
+
+  void read_stateout_f(int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       char *,
+		       char *,
+		       char *,
+		       int *,
+		       char *,
+		       int,
+		       int,
+		       int,
+		       int);
 
   void read_timdat_f(double *,
 		     double *,
@@ -690,29 +743,31 @@ extern "C" {
 		     int *,
 		     int *,
 		     int *,
+		     char *,
+		     char *,
 		     int *,
 		     char *,
-		     char *,
+		     int,
 		     int,
 		     int);
 
-  void read_traction_f(double *,
-		       double *,
-		       double *,
-		       int *,
-		       int *,
-		       int *,
-		       int *,
-		       int *,
-		       int *,
-		       int *,
-		       int *,
-		       int *,
-		       int *,
-		       char *,
-		       char *,
-		       int,
-		       int);
+  // void read_traction_f(double *,
+		       // double *,
+		       // double *,
+		       // int *,
+		       // int *,
+		       // int *,
+		       // int *,
+		       // int *,
+		       // int *,
+		       // int *,
+		       // int *,
+		       // int *,
+		       // int *,
+		       // char *,
+		       // char *,
+		       // int,
+		       // int);
 
   void read_wink_f(double *,
 		   double *,
@@ -724,10 +779,11 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
-		   int *,
-		   int *,
 		   char *,
 		   char *,
+		   int *,
+		   char *,
+		   int,
 		   int,
 		   int);
 
@@ -741,21 +797,23 @@ extern "C" {
 		    int *,
 		    int *,
 		    int *,
-		    int *,
-		    int *,
 		    char *,
 		    char *,
+		    int *,
+		    char *,
+		    int,
 		    int,
 		    int);
 
   void scan_bc_f(int *,
 		 int *,
+		 char *,
+		 char *,
+		 char *,
+		 char *,
 		 int *,
-		 int *,
 		 char *,
-		 char *,
-		 char *,
-		 char *,
+		 int,
 		 int,
 		 int,
 		 int,
@@ -765,132 +823,141 @@ extern "C" {
 		      int *,
 		      int *,
 		      int *,
-		      char *,int);
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      char *,
+		      int *,
+		      char *,
+		      int,
+		      int);
 
   void scan_coords_f(int *,
 		     int *,
-		     int *,
-		     int *,
 		     char *,
 		     char *,
+		     int *,
+		     char *,
+		     int,
 		     int,
 		     int);
 
   void scan_diff_f(int *,
 		   int *,
 		   int *,
+		   char *,
 		   int *,
-		   int *,
-		   char *,int);
+		   char *,
+		   int,
+		   int);
 
   void scan_fuldat_f(int *,
 		     int *,
 		     int *,
 		     int *,
+		     char *,
 		     int *,
-		     char *,int);
+		     char *,
+		     int,
+		     int);
 
   void scan_hist_f(int *,
 		   int *,
-		   int *,
-		   char *,int);
-
-  void scan_prestr_f(int *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     char *,int);
-
-  void scan_prop_f(int *,
-		   int *,
-		   int *,
-		   int *,
-		   char *,
-		   char *,
-		   char *,
 		   char *,
 		   int *,
-		   int *,
-		   int *,
 		   char *,
-		   int,
-		   int,
-		   int,
 		   int,
 		   int);
 
+  // void scan_prestr_f(int *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // int *,
+		     // char *,int);
+
   void scan_skew_f(int *,
 		   int *,
-		   int *,
-		   int *,
 		   char *,
 		   char *,
+		   int *,
+		   char *,
+		   int,
 		   int,
 		   int);
 
   void scan_slip_f(int *,
 		   int *,
+		   char *,
 		   int *,
-		   int *,
-		   char *,int);
+		   char *,
+		   int,
+		   int);
 
   void scan_split_f(int *,
 		    int *,
+		    char *,
 		    int *,
-		    int *,
-		    char *,int);
+		    char *,
+		    int,
+		    int);
 
   void scan_timdat_f(int *,
 		     int *,
 		     int *,
+		     char *,
+		     char *,
 		     int *,
 		     char *,
-		     char *,
+		     int,
 		     int,
 		     int);
 
-  void scan_traction_f(int *,
-		       int *,
-		       int *,
-		       int *,
-		       int *,
-		       char *,
-		       char *,
-		       int,
-		       int);
+  // void scan_traction_f(int *,
+		       // int *,
+		       // int *,
+		       // int *,
+		       // int *,
+		       // char *,
+		       // char *,
+		       // int,
+		       // int);
 
   void scan_wink_f(int *,
 		   int *,
 		   int *,
+		   char *,
 		   int *,
-		   int *,
-		   char *,int);
+		   char *,
+		   int,
+		   int);
 
   void scan_winkx_f(int *,
 		    int *,
 		    int *,
 		    int *,
+		    char *,
 		    int *,
-		    int *,
-		    char *,int);
+		    char *,
+		    int,
+		    int);
 
-  void viscos_f(double *,
+  void viscos_f(double *,          // sparse
 		double *,
 		double *,
 		int *,
+		double *,          // force
 		double *,
 		double *,
 		double *,
 		double *,
 		double *,
 		double *,
-		double *,
-		double *,
-		double *,
-		double *,
+		double *,          // global
 		double *,
 		double *,
 		double *,
@@ -898,40 +965,10 @@ extern "C" {
 		int *,
 		int *,
 		double *,
-		double *,
 		int *,
-		int *,
-		int *,
-		int *,
-		int *,
-		int *,
+		int *,             // bc
 		double *,
-		double *,
-		int *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		double *,
-		int *,
-		int *,
-		int *,
-		int *,
-		double *,
-		double *,
-		int *,
-		double *,
-		double *,
-		int *,
-		int *,
-		int *,
-		int *,
+		double *,          // slip
 		double *,
 		double *,
 		double *,
@@ -939,22 +976,15 @@ extern "C" {
 		int *,
 		double *,
 		int *,
-		double *,
-		double *,
 		int *,
 		int *,
-		int *,
-		double *,
-		int *,
-		int *,
-		double *,
+		double *,          // split
 		int *,
 		double *,
 		double *,
+		double *,          // stiff
 		double *,
-		double *,
-		double *,
-		double *,
+		double *,          // element
 		double *,
 		double *,
 		int *,
@@ -964,24 +994,60 @@ extern "C" {
 		int *,
 		int *,
 		int *,
+		int *,             // traction
+		int *,
+		int *,
+		double *,
+		double *,
+		double *,          // material
+		int *,
+		int *,
+		int *,
+		int *,
+		double *,          // element type
+		double *,
+		double *,
+		int *,
+		double *,          // time data
+		double *,
 		int *,
 		int *,
 		int *,
 		double *,
 		double *,
+		int *,
+		int *,
+		int *,
+		int *,
 		double *,
 		double *,
 		double *,
+		int *,
+		double *,          // iterations
+		double *,
+		double *,
+		double *,
+		double *,
+		double *,
+		double *,
+		int *,
+		double *,          // skew
+		int *,             // i/o info
+		int *,
+		int *,
+		int *,
+		int *,
+		char *,            // files
 		char *,
+		int *,             // error codes
 		char *,
+		int,               // string lengths
 		int,
 		int);
 
   void write_element_info_f(int *,
 			    int *,
-			    int *,
 			    double *,
-			    int *,
 			    int *,
 			    int *,
 			    char *,int);
@@ -994,16 +1060,29 @@ extern "C" {
 			   int *,
 			   int *,
 			   int *,
-			   int *,
-			   int *,
-			   int *,
-			   int *,
-			   int *,
 			   char *,
 			   char *,
 			   int,
 			   int,
 			   int);
+
+  void write_props_f(double *,
+		     double *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     char *,
+		     char *,
+		     int *,
+		     char *,
+		     int,
+		     int,
+		     int);
 
   void write_sparse_info_f(int *,
 			   int *,
@@ -1034,6 +1113,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.2 2004/07/20 20:26:00 willic3 Exp $
 
 // End of file
