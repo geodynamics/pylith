@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine presurql(pres,pdir,xl,p,ien,iside,infin,n,nen,nsd,
-     & ndof,npdir,idout,kto,kw)
+      subroutine presurql(pres,pdir,xl,p,ien,iside,infin,n,nen,
+     & idout,kto,kw)
 c
 c...subroutine to compute local load vector for traction BC
 c
@@ -54,9 +54,13 @@ c    the rest of the code.  This may be altered in the future.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+c
 c...  subroutine arguments
 c
-      integer iside,infin,n,nen,nsd,ndof,npdir,idout,kto,kw
+      integer iside,infin,n,nen,idout,kto,kw
       integer ien(nen)
       double precision pres(nen/2),pdir(npdir),xl(nsd,nen),p(ndof,nen)
 c
@@ -100,7 +104,7 @@ c
       double precision g,vmag,ds,det
       double precision sh(4,8),ptmp(3,4),v1(3),v2(3),vc(3),rgs(3)
 c
-c*      write(6,*) "Hello from presurql_f!"
+cdebug      write(6,*) "Hello from presurql_f!"
 c
       g=root3i
 c
@@ -153,7 +157,7 @@ c
         rgs(1)=rf(iiside)+ri(iiside)*g*rg(ipnt)
         rgs(2)=sf(iiside)+si(iiside)*g*sg(ipnt)
         rgs(3)=tf(iiside)+ti(iiside)*g*tg(ipnt)
-        call shapql(rgs,xl,det,sh,ien,nen,nsd,infin,iopt,n,idout,kto,kw)
+        call shapql(rgs,xl,det,sh,ien,nen,infin,iopt,n,idout,kto,kw)
 c
 c...  compute surface element for use in integration
 c
@@ -179,7 +183,7 @@ c
       end
 c
 c version
-c $Id: presurql.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: presurql.f,v 1.2 2004/08/12 02:22:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
