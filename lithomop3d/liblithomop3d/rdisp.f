@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine rdisp(d,skew,ndof,numnp,nskdim)
+      subroutine rdisp(d,skew,numnp)
 c
 c...rotates displacement vector to global coordinate directions
 c***  Note:  this could probably be done much more efficiently
@@ -41,15 +41,16 @@ c     skew computation).
 c
       include "implicit.inc"
 c
-c...  subroutine arguments
+c...  parameter definitions
 c
-      integer ndof,numnp,nskdim
-      double precision d(ndof,numnp),skew(nskdim,numnp)
-c
-c...  defined constants
-c
+      include "ndimens.inc"
       include "nconsts.inc"
       include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer numnp
+      double precision d(ndof,numnp),skew(nskdim,numnp)
 c
 c...  local variables
 c
@@ -68,7 +69,7 @@ c
       end
 c
 c version
-c $Id: rdisp.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: rdisp.f,v 1.2 2004/07/01 21:03:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
