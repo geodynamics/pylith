@@ -78,7 +78,7 @@ class Lithomop3d_run(Component):
         self.pointerToBtraction = lm3dsetup.pointerToBtraction
         self.pointerToBgravity = lm3dsetup.pointerToBgravity
         self.pointerToBconcForce = lm3dsetup.pointerToBconcForce
-        self.pointerToBprestress = lm3dsetup.pointerToBprestress
+        # self.pointerToBprestress = lm3dsetup.pointerToBprestress
         self.pointerToBintern = lm3dsetup.pointerToBintern
         self.pointerToBresid = lm3dsetup.pointerToBresid
         self.pointerToBwork = lm3dsetup.pointerToBwork
@@ -124,6 +124,7 @@ class Lithomop3d_run(Component):
 
         self.pointerToState = lm3dsetup.pointerToState
         self.pointerToDstate = lm3dsetup.pointerToDstate
+        self.pointerToState0 = lm3dsetup.pointerToState0
         self.pointerToDmat = lm3dsetup.pointerToDmat
         self.pointerToIen = lm3dsetup.pointerToIen
         self.pointerToLm = lm3dsetup.pointerToLm
@@ -132,6 +133,8 @@ class Lithomop3d_run(Component):
         self.pointerToInfiel = lm3dsetup.pointerToInfiel
         self.pointerToListArrayIddmat = lm3dsetup.pointerToListArrayIddmat
         self.pointerToListArrayNpar = lm3dsetup.pointerToListArrayNpar
+
+        self.prestressAutoComputeInt = lm3dsetup.prestressAutoComputeInt
 
         self.pointerToIelno = lm3dsetup.pointerToIelno
         self.pointerToIside = lm3dsetup.pointerToIside
@@ -290,11 +293,115 @@ class Lithomop3d_run(Component):
 
 	print ""
 	print "Approximate memory allocation for f77 arrays (MB): %g" % self.memorySizeMB
-	# print "Just before lithomop3d.elastc:"
+	# print "Just before lithomop3d.autoprestr:"
 
-        # Perform elastic solution, if requested.
+        # Compute gravitational prestresses, if requested.
 
         if self.analysisType == "elasticSolution" or self.analysisType == "fullSolution":
+            if self.prestressAutoComputeInt == 1:
+                lithomop3d.autoprestr(
+                    self.pointerToAlnz,
+                    self.pointerToPcg,
+                    self.pointerToZcg,
+                    self.pointerToDprev,
+                    self.pointerToJa,
+                    self.pointerToBextern,
+                    self.pointerToBtraction,
+                    self.pointerToBgravity,
+                    self.pointerToBconcForce,
+                    # self.pointerToBprestress,
+                    self.pointerToBintern,
+                    self.pointerToBresid,
+                    self.pointerToBwork,
+                    self.pointerToDispVec,
+                    self.pointerToListArrayNforce,
+                    self.pointerToListArrayGrav,
+                    self.pointerToX,
+                    self.pointerToD,
+                    self.pointerToDeld,
+                    self.pointerToDcur,
+                    self.pointerToId,
+                    self.pointerToIwink,
+                    self.pointerToWink,
+                    self.pointerToListArrayNsysdat,
+                    self.pointerToIbond,
+                    self.pointerToBond,
+                    self.pointerToDx,
+                    self.pointerToDeldx,
+                    self.pointerToDxcur,
+                    self.pointerToDiforc,
+                    self.pointerToIdx,
+                    self.pointerToIwinkx,
+                    self.pointerToWinkx,
+                    self.pointerToIdslp,
+                    self.pointerToIpslp,
+                    self.pointerToIdhist,
+                    self.pointerToFault,
+                    self.pointerToNfault,
+                    self.pointerToDfault,
+                    self.pointerToTfault,
+                    self.pointerToS,
+                    self.pointerToStemp,
+                    self.pointerToState,
+                    self.pointerToDstate,
+                    self.pointerToState0,
+                    self.pointerToDmat,
+                    self.pointerToIen,
+                    self.pointerToLm,
+                    self.pointerToLmx,
+                    self.pointerToLmf,
+                    self.pointerToInfiel,
+                    self.pointerToListArrayIddmat,
+                    self.pointerToListArrayNpar,
+                    self.pointerToIelno,
+                    self.pointerToIside,
+                    self.pointerToIhistry,
+                    self.pointerToPres,
+                    self.pointerToPdir,
+                    self.pointerToListArrayPropertyList,
+                    self.pointerToMhist,
+                    self.pointerToMaterialInfo,
+                    self.pointerToMaterialModelInfo,
+                    self.pointerToMaterialModelStates,
+                    self.pointerToGauss,
+                    self.pointerToSh,
+                    self.pointerToShj,
+                    self.pointerToElementTypeInfo,
+                    self.pointerToHistry,
+                    self.pointerToListArrayRtimdat,
+                    self.pointerToListArrayNtimdat,
+                    self.pointerToListArrayNvisdat,
+                    self.pointerToMaxstp,
+                    self.pointerToDelt,
+                    self.pointerToAlfa,
+                    self.pointerToMaxit,
+                    self.pointerToNtdinit,
+                    self.pointerToLgdef,
+                    self.pointerToUtol,
+                    self.pointerToFtol,
+                    self.pointerToEtol,
+                    self.pointerToItmax,
+                    self.pointerToListArrayRgiter,
+                    self.pointerToListArrayGcurr,
+                    self.pointerToListArrayGi,
+                    self.pointerToListArrayGprev,
+                    self.pointerToListArrayGtol,
+                    self.pointerToListArrayRmin,
+                    self.pointerToListArrayRmult,
+                    self.pointerToListArrayNsiter,
+                    self.pointerToSkew,
+                    self.pointerToListArrayNcodat,
+                    self.pointerToListArrayNunits,
+                    self.pointerToListArrayNprint,
+                    self.pointerToIstatout,
+                    self.asciiOutputFile,
+                    self.plotOutputFile,
+                    self.ucdOutputRoot)
+
+            # print "Just before lithomop3d.elastc:"
+
+            # Perform elastic solution, if requested.
+            
             lithomop3d.elastc(
                 self.pointerToAlnz,
                 self.pointerToPcg,
@@ -305,7 +412,7 @@ class Lithomop3d_run(Component):
                 self.pointerToBtraction,
                 self.pointerToBgravity,
                 self.pointerToBconcForce,
-                self.pointerToBprestress,
+                # self.pointerToBprestress,
                 self.pointerToBintern,
                 self.pointerToBresid,
                 self.pointerToBwork,
@@ -340,6 +447,7 @@ class Lithomop3d_run(Component):
                 self.pointerToStemp,
                 self.pointerToState,
                 self.pointerToDstate,
+                self.pointerToState0,
                 self.pointerToDmat,
                 self.pointerToIen,
                 self.pointerToLm,
@@ -406,7 +514,7 @@ class Lithomop3d_run(Component):
                 self.pointerToBtraction,
                 self.pointerToBgravity,
                 self.pointerToBconcForce,
-                self.pointerToBprestress,
+                # self.pointerToBprestress,
                 self.pointerToBintern,
                 self.pointerToBresid,
                 self.pointerToBwork,
@@ -441,6 +549,7 @@ class Lithomop3d_run(Component):
                 self.pointerToStemp,
                 self.pointerToState,
                 self.pointerToDstate,
+                self.pointerToState0,
                 self.pointerToDmat,
                 self.pointerToIen,
                 self.pointerToLm,
@@ -510,6 +619,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.9 2005/01/06 20:10:06 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.10 2005/02/24 00:38:34 willic3 Exp $
 
 # End of file 

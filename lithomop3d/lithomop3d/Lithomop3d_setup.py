@@ -92,6 +92,7 @@ class Lithomop3d_setup(Component):
 	# print "lm3dsetup.gravityZ: %g" % self.gravityZ
 
         self.prestressAutoComputePoisson = lm3dscan.prestressAutoComputePoisson
+        self.prestressAutoComputeYoungs = lm3dscan.prestressAutoComputeYoungs
         self.prestressScaleXx = lm3dscan.prestressScaleXx
         self.prestressScaleYy = lm3dscan.prestressScaleYy
         self.prestressScaleZz = lm3dscan.prestressScaleZz
@@ -161,7 +162,6 @@ class Lithomop3d_setup(Component):
             self.preconditionerTypeInt = 1
 
         # Get some parameters from the inventory list.
-
         self.title = lm3dscan.inventory.title
         self.numberCycles = lm3dscan.inventory.numberCycles
 
@@ -172,8 +172,8 @@ class Lithomop3d_setup(Component):
 	self.memorySize = lm3dscan._memorySize
 	self.intSize = lm3dscan._intSize
 	self.doubleSize = lm3dscan._doubleSize
-        # First get all filenames
 
+        # First get all filenames
         self.asciiOutputFile = lm3dscan._asciiOutputFile
         self.plotOutputFile = lm3dscan._plotOutputFile
         self.ucdOutputRoot = lm3dscan._ucdOutputRoot
@@ -222,6 +222,7 @@ class Lithomop3d_setup(Component):
         # Invariant parameters related to material model
         self.maxMaterialModels = lm3dscan._maxMaterialModels
         self.maxStateVariables = lm3dscan._maxStateVariables
+        self.maxState0Variables = lm3dscan._maxState0Variables
         self.pointerToMaterialModelInfo = lm3dscan._pointerToMaterialModelInfo
         self.pointerToMaterialModelStates = lm3dscan._pointerToMaterialModelStates
 
@@ -230,10 +231,9 @@ class Lithomop3d_setup(Component):
         self.analysisTypeInt = lm3dscan._analysisTypeInt
         self.quadratureOrderInt = lm3dscan._quadratureOrderInt
         self.prestressAutoComputeInt = lm3dscan._prestressAutoComputeInt
-
+        self.prestressAutoChangeElasticPropsInt = lm3dscan._prestressAutoChangeElasticPropsInt
 
         # Parameters derived from the number of entries in a file
-
         self.numberNodes = lm3dscan._numberNodes
         self.coordinateScaleFactor = lm3dscan._coordinateScaleFactor
 
@@ -319,7 +319,7 @@ class Lithomop3d_setup(Component):
         self.pointerToBtraction = None
         self.pointerToBgravity = None
         self.pointerToBconcForce = None
-        self.pointerToBprestress = None
+        # self.pointerToBprestress = None
         self.pointerToBintern = None
         self.pointerToBresid = None
         self.pointerToBwork = None
@@ -371,17 +371,20 @@ class Lithomop3d_setup(Component):
         self.pointerToState = None
         self.pointerToDstate = None
         self.stateSize = 0
+        self.pointerToState0 = None
+        self.state0Size = 0
         self.pointerToDmat = None
         self.dmatSize = 0
+        self.totalVolumeGaussPoints = 0
         self.pointerToIen = None
         self.pointerToLm = None
         self.pointerToLmx = None
         self.pointerToLmf = None
         self.pointerToInfiel = None
         self.pointerToListArrayIddmat = None
-        self.listNpar = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.listNpar = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.pointerToListArrayNpar = None
-        self.elementSizeInfo = [0, 0]
+        self.elementSizeInfo = [0, 0, 0, 0]
 
 	#  The following pointers are temporarily being set to numeric
 	#  values to avoid error messages from python.
@@ -794,7 +797,9 @@ class Lithomop3d_setup(Component):
             self.numberElements,
             self.quadratureOrderInt,
             self.prestressAutoComputeInt,
+            self.prestressAutoChangeElasticPropsInt,
             self.prestressAutoComputePoisson,
+            self.prestressAutoComputeYoungs.value,
             self.f77AsciiOutput,
             self.asciiOutputInt,
             self.asciiOutputFile)
@@ -804,8 +809,8 @@ class Lithomop3d_setup(Component):
             self.connectivitySize)
 	self.memorySize += self.connectivitySize*self.intSize
         self.pointerToInfiel = lithomop3d.allocateInt(
-            6*self.numberElements)
-	self.memorySize += 6*self.numberElements*self.intSize
+            7*self.numberElements)
+	self.memorySize += 7*self.numberElements*self.intSize
         self.pointerToIndmat = lithomop3d.allocateInt(
             self.numberMaterials)
 	self.memorySize += self.numberMaterials*self.intSize
@@ -861,7 +866,8 @@ class Lithomop3d_setup(Component):
         # print "numberNodes: %i" % self.numberNodes
         # print "numberMaterials: %i" % self.numberMaterials
         # print "f77FileInput: %i" % self.f77FileInput
-
+        if self.numberPrestressEntries != 0 or self.prestressAutoComputeInt != 0:
+            self.prestressFlag = 1
 
         self.elementSizeInfo = lithomop3d.read_connect(
             self.pointerToListArrayNumberElementNodesBase,
@@ -873,6 +879,7 @@ class Lithomop3d_setup(Component):
             self.pointerToIndmat,
             self.pointerToImgrp,
             self.connectivitySize,
+            self.prestressFlag,
             self.numberElements,
             self.numberNodes,
             self.numberMaterials,
@@ -886,8 +893,11 @@ class Lithomop3d_setup(Component):
             self.plotOutputFile)
         self.stateSize = self.elementSizeInfo[0]
         self.dmatSize = self.elementSizeInfo[1]
+        self.totalVolumeGaussPoints = self.elementSizeInfo[2]
+        self.state0Size = self.elementSizeInfo[3]
         # print "stateSize: %i" % self.stateSize
         # print "dmatSize: %i" % self.dmatSize
+        # print "state0size: %i" % self.state0size
         self.pointerToIndmat = None
         self.memorySize -= self.numberMaterials*self.intSize
         self.pointerToImgrp = None
@@ -1363,9 +1373,7 @@ class Lithomop3d_setup(Component):
             self.gravityFlag = 1
         if self.numberConcForces != 0 or self.numberDifferentialForceEntries != 0:
             self.concForceFlag = 1
-        if self.numberPrestressEntries != 0:
-            self.prestressFlag = 1
-        if self.tractionFlag != 0 or self.gravityFlag != 0 or self.concForceFlag != 0 or self.prestressFlag != 0:
+        if self.tractionFlag != 0 or self.gravityFlag != 0 or self.concForceFlag != 0:
             self.externFlag = 1
 
         self.pointerToBextern = lithomop3d.allocateDouble(
@@ -1479,6 +1487,10 @@ class Lithomop3d_setup(Component):
         self.pointerToListArrayIddmat = lithomop3d.intListToArray( 
             self.listIddmat)
 	self.memorySize += 36*self.intSize
+        self.pointerToState0 = lithomop3d.allocateDouble(
+            self.state0Size*self.maxState0Variables)
+        self.memorySize += self.state0Size* \
+                           self.maxState0Variables*self.doubleSize
 	# print "memorySize: %d" % self.memorySize
 
 
@@ -1500,14 +1512,17 @@ class Lithomop3d_setup(Component):
             self.numberSlipperyNodeEntries,
             self.numberSplitNodeEntries,
             self.prestressAutoComputeInt,
+            self.prestressAutoChangeElasticPropsInt,
             self.stateSize,
+            self.state0Size,
             self.dmatSize,
             self.connectivitySize,
             self.numberDifferentialForceEntries,
-            self.quadratureOrderInt]
+            self.quadratureOrderInt,
+            self.maxState0Variables]
         self.pointerToListArrayNpar = lithomop3d.intListToArray(
             self.listNpar)
-	self.memorySize += 11*self.intSize
+	self.memorySize += 14*self.intSize
 
         # nprint array
         self.listNprint = [
@@ -1581,10 +1596,11 @@ class Lithomop3d_setup(Component):
         self.listRtimdat = [
             self.currentTimeStepSize,
             self.currentAlfaParameter,
-            self.prestressAutoComputePoisson]
+            self.prestressAutoComputePoisson,
+            self.prestressAutoComputeYoungs.value]
         self.pointerToListArrayRtimdat = lithomop3d.doubleListToArray(
             self.listRtimdat)
-	self.memorySize += 3*self.doubleSize
+	self.memorySize += 4*self.doubleSize
 
 	print ""
 	print ""
@@ -1615,6 +1631,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.13 2005/01/06 19:54:04 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.14 2005/02/24 00:38:34 willic3 Exp $
 
 # End of file 
