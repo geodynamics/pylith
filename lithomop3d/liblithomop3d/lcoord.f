@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine lcoord(x,xl,ien,nen,nsd,numnp)
+      subroutine lcoord(x,xl,ien,nen,numnp)
 c
 c...program to localize coordinate data
 c
@@ -37,15 +37,16 @@ c        xl(nsd,nen) = element nodal coordinates
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nen,nsd,numnp
+      integer nen,numnp
       integer ien(nen)
       double precision x(nsd,numnp),xl(nsd,nen)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  local variables
 c
@@ -62,7 +63,7 @@ c
       end
 c
 c version
-c $Id: lcoord.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: lcoord.f,v 1.2 2004/07/05 19:46:01 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
