@@ -4,9 +4,8 @@ c ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -104,15 +103,17 @@ c
 c...  return error code, as this material is not yet defined
 c
       ierr=101
-      errstrng="mat_prt_12"
+      errstrng="elas_mat_12"
       return
       end
 c
 c
-      subroutine elas_strs_12(state,ee,dmat,nstate,ierr,errstrng)
+      subroutine elas_strs_12(state,state0,ee,scur,dmat,nstate,nstate0,
+     & ierr,errstrng)
 c
 c...  subroutine to compute stresses for the elastic solution.
-c     The current total strain is contained in ee.
+c     The current total strain is contained in ee and the computed
+c     total strerss should be copied to scur.
 c
       include "implicit.inc"
 c
@@ -124,20 +125,22 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,ierr
-      double precision state(nstr,nstate),ee(nstr),dmat(nddmat)
+      integer nstate,nstate0,ierr
+      double precision state(nstate),state0(nstate0),ee(nstr),scur(nstr)
+      double precision dmat(nddmat)
       character errstrng*(*)
 c
 c...  return error code, as this material is not yet defined
 c
       ierr=101
-      errstrng="mat_prt_12"
+      errstrng="elas_strs_12"
       return
       end
 c
 c
-      subroutine td_matinit_12(state,dstate,dmat,prop,rtimdat,rgiter,
-     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_matinit_12(state,dstate,state0,dmat,prop,rtimdat,
+     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & errstrng)
 c
 c...  subroutine to form the material matrix for an integration point
 c     for the time-dependent solution.  This routine is meant to be
@@ -157,11 +160,11 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nprop,ierr
+      integer nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
-      double precision state(nstr,nstate),dstate(nstr,nstate)
-      double precision dmat(nddmat),prop(nprop),tmax
+      double precision state(nstate),dstate(nstate)
+      double precision state0(nstate0),dmat(nddmat),prop(nprop),tmax
       logical matchg
 c
 c...  included dimension and type statements
@@ -179,13 +182,14 @@ c
 c...  return error code, as this material is not yet defined
 c
       ierr=101
-      errstrng="mat_prt_12"
+      errstrng="td_matinit_12"
       return
       end
 c
 c
-      subroutine td_strs_12(state,dstate,ee,dmat,prop,rtimdat,rgiter,
-     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_strs_12(state,dstate,state0,ee,scur,dmat,prop,
+     & rtimdat,rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
+     & ierr,errstrng)
 c
 c...  subroutine to compute the current stress for the time-dependent
 c     solution.
@@ -202,12 +206,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nprop,ierr
+      integer nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg
-      double precision state(nstr,nstate),dstate(nstr,nstate),ee(nstr)
-      double precision dmat(nddmat),prop(nprop),tmax
+      double precision state(nstate),dstate(nstate),state0(nstate0)
+      double precision ee(nstr),scur(nstr),dmat(nddmat),prop(nprop),tmax
 c
 c...  included dimension and type statements
 c
@@ -224,14 +228,15 @@ c
 c...  return error code, as this material is not yet defined
 c
       ierr=101
-      errstrng="mat_prt_12"
+      errstrng="td_strs_12"
 c
       return
       end
 c
 c
-      subroutine td_strs_mat_12(state,dstate,ee,dmat,prop,rtimdat,
-     & rgiter,ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_strs_mat_12(state,dstate,state0,ee,scur,dmat,prop,
+     & rtimdat,rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
+     & ierr,errstrng)
 c
 c...  subroutine to compute the current stress and updated material
 c     matrix for the time-dependent solution.  Since this is a purely
@@ -250,12 +255,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nprop,ierr
+      integer nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg
-      double precision state(nstr,nstate),dstate(nstr,nstate),ee(nstr)
-      double precision dmat(nddmat),prop(nprop),tmax
+      double precision state(nstate),dstate(nstate),state0(nstate0)
+      double precision ee(nstr),scur(nstr),dmat(nddmat),prop(nprop),tmax
 c
 c...  included dimension and type statements
 c
@@ -272,14 +277,14 @@ c
 c...  return error code, as this material is not yet defined
 c
       ierr=101
-      errstrng="mat_prt_12"
+      errstrng="td_strs_mat_12"
 c
       return
       end
 c
 c
-      subroutine prestr_mat_12(dmat,prop,autofac,iddmat,nprop,ierr,
-     & errstrng)
+      subroutine prestr_mat_12(dmat,prop,tpois,tyoungs,iddmat,ipauto,
+     & nprop,ierr,errstrng)
 c
 c...  subroutine to form the material matrix for an integration point
 c     for prestress computation.  The material matrix is assumed to be
@@ -297,24 +302,78 @@ c
 c
 c...  subroutine arguments
 c
-      integer nprop,ierr
+      integer ipauto,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
-      double precision autofac,dmat(nddmat),prop(nprop)
+      double precision tpois,tyoungs,dmat(nddmat),prop(nprop)
 c
 c...  local variables
 c
       double precision ptmp(10)
 c
       call dcopy(nprop,prop,ione,ptmp,ione)
-      ptmp(2)=autofac*ptmp(2)
+      if(ipauto.eq.ione) then
+        ptmp(2)=tyoungs
+        ptmp(3)=tpois
+      end if
       call elas_mat_12(dmat,ptmp,iddmat,nprop,ierr,errstrng)
       return
       end
+c
+c
+      subroutine get_state_12(state,dstate,sout,nstate)
+c
+c...  routine to transfer state variables into sout
+c
+      include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "materials.inc"
+      include "nconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nstate
+      double precision state(nstate),dstate(nstate),sout(3*nstatesmax)
+c
+      return
+      end
+c
+c
+      subroutine update_state_12(state,dstate,nstate)
+c
+c...  routine to update state variables at the end of a time step.
+c     After updating, state should contain the current total values
+c     and dstate should contain the incremental changes since the
+c     previous time step.
+c     On input, dstate contains the current stress and strain values and
+c     state contains the values from the previous time step.
+c
+      include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nstate
+      double precision state(nstate),dstate(nstate)
+c
+c...  local data
+c
+c
+c...  local variables
+c
+c
+      return
+      end
+c
 c       
-
 c version
-c $Id: mat_12.f,v 1.4 2005/01/18 19:45:55 willic3 Exp $
+c $Id: mat_12.f,v 1.5 2005/04/01 23:10:16 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
