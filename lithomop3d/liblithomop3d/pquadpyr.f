@@ -29,26 +29,29 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine pquadpyr(sh,shj,gauss,ngauss,nen,nsd,nenmax,ngaussmax,
-     & intord)
+      subroutine pquadpyr(sh,shj,gauss,infetype,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a quadratic pyramid.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nsd,nenmax,ngaussmax,intord
-      integer ngauss,nen
+      integer intord
+      integer infetype(4)
       double precision sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax)
       double precision gauss(nsd+1,ngaussmax)
 c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
+c...  local constants
 c
       double precision c1,c2,c3,c4,c5
       parameter(c1 =  15.0d0,
@@ -63,8 +66,8 @@ c
      &          g3 =  0.580939660561084423142479797240d0,
      &          g4 = -0.830065359477124183006535947712d0,
      &          g5 =  0.524394036075370071893249885853d0,
-     &          g6 = -one/seven,
-     &          g7 = -nine/28.0d0,
+     &          g6 = -(one/seven),
+     &          g7 = -(nine/28.0d0),
      &          w1 =  0.515003019323671497584541062801d0,
      &          w2 =  0.257183745242064658853721141309d0,
      &          w3 =  0.419515737191525949778403607347d0,
@@ -89,7 +92,7 @@ c
 c
 c...  local variables
 c
-      integer i,l,nshsize,ngssize
+      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
       double precision q(9),h(3),dq(9,2),dh(3)
       double precision rr,ss,tt,g,w
 c
@@ -101,6 +104,8 @@ c
 c...  Quadratic pyramid definition
 c
       nen=13
+      nec=nsd*nen
+      nee=ndof*nen
       if(intord.eq.2) then
         ngauss=ifive
         g=eight*sqrt(two/c1)/five
@@ -108,7 +113,7 @@ c
         do l=1,ngauss
           gauss(1,l)=r(l)*g
           gauss(2,l)=s(l)*g
-          gauss(3,l)=-two*third
+          gauss(3,l)=-(two*third)
           gauss(4,l)=w
         end do
         gauss(3,5)=two/five
@@ -144,6 +149,12 @@ c
         gauss(3,13)=g5
         gauss(4,13)=w4
       end if
+c
+      infetype(1)=ngauss
+      infetype(2)=nen
+      infetype(3)=nec
+      infetype(4)=nee
+c
       do l=1,ngauss
         rr=gauss(1,l)
         ss=gauss(2,l)
@@ -160,27 +171,27 @@ c
         h(1)=half*(tt*tt-tt)
         h(2)=half*(tt*tt+tt)
         h(3)=one-tt*tt
-        dq(1,1)=-fourth*((one-ss)*(-rr-ss-one)+(one-rr)*(one-ss))
-        dq(2,1)= fourth*((one-ss)*( rr-ss-one)+(one+rr)*(one-ss))
-        dq(3,1)= fourth*((one+ss)*( rr+ss-one)+(one+rr)*(one+ss))
-        dq(4,1)=-fourth*((one+ss)*(-rr+ss-one)+(one-rr)*(one+ss))
-        dq(5,1)=-rr*(one-ss)
-        dq(6,1)= half*(one-ss*ss)
-        dq(7,1)=-rr*(one+ss)
-        dq(8,1)=-half*(one-ss*ss)
-        dq(1,2)=-fourth*((one-rr)*(-rr-ss-one)+(one-rr)*(one-ss))
-        dq(2,2)=-fourth*((one+rr)*( rr-ss-one)+(one+rr)*(one-ss))
-        dq(3,2)= fourth*((one+rr)*( rr+ss-one)+(one+rr)*(one+ss))
-        dq(4,2)= fourth*((one-rr)*(-rr+ss-one)+(one-rr)*(one+ss))
-        dq(5,2)=-half*(one-rr*rr)
-        dq(6,2)=-ss*(one+rr)
-        dq(7,2)= half*(one-rr*rr)
-        dq(8,2)=-ss*(one-rr)
+        dq(1,1)=(-fourth)*((one-ss)*(-rr-ss-one)+(one-rr)*(one-ss))
+        dq(2,1)=( fourth)*((one-ss)*( rr-ss-one)+(one+rr)*(one-ss))
+        dq(3,1)=( fourth)*((one+ss)*( rr+ss-one)+(one+rr)*(one+ss))
+        dq(4,1)=(-fourth)*((one+ss)*(-rr+ss-one)+(one-rr)*(one+ss))
+        dq(5,1)=(-rr)*(one-ss)
+        dq(6,1)=( half)*(one-ss*ss)
+        dq(7,1)=(-rr)*(one+ss)
+        dq(8,1)=(-half)*(one-ss*ss)
+        dq(1,2)=(-fourth)*((one-rr)*(-rr-ss-one)+(one-rr)*(one-ss))
+        dq(2,2)=(-fourth)*((one+rr)*( rr-ss-one)+(one+rr)*(one-ss))
+        dq(3,2)=( fourth)*((one+rr)*( rr+ss-one)+(one+rr)*(one+ss))
+        dq(4,2)=( fourth)*((one-rr)*(-rr+ss-one)+(one-rr)*(one+ss))
+        dq(5,2)=(-half)*(one-rr*rr)
+        dq(6,2)=(-ss)*(one+rr)
+        dq(7,2)=( half)*(one-rr*rr)
+        dq(8,2)=(-ss)*(one-rr)
         dq(9,1)=zero
         dq(9,2)=zero
         dh(1)=half*(two*tt-one)
         dh(2)=half*(two*tt+one)
-        dh(3)=-two*tt
+        dh(3)=(-two)*tt
         do i=1,nen
           sh(4,i,l)=q(iq(i))*h(ih(i))
           sh(1,i,l)=dq(iq(i),1)*h(ih(i))
@@ -194,7 +205,7 @@ c
       end
 c
 c version
-c $Id: pquadpyr.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: pquadpyr.f,v 1.2 2004/07/07 19:48:45 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
