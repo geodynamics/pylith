@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine printv(a,b,id,idx,neq,ndof,numnp,iout,idout,kw)
+      subroutine printv(a,b,id,idx,neq,numnp,iout,idout,kw)
 c
 c...program to print one or two vectors of length neq, along with
 c   data on correlation between equation number and node
@@ -40,9 +40,13 @@ c        iout = 2, print diagonals of stiffness matrix
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+c
 c...  subroutine arguments
 c
-      integer neq,ndof,numnp,iout,idout,kw
+      integer neq,numnp,iout,idout,kw
       integer id(ndof,numnp),idx(ndof,numnp)
       double precision a(neq),b(neq)
 c
@@ -105,7 +109,7 @@ c
       end
 c
 c version
-c $Id: printv.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: printv.f,v 1.2 2004/07/05 19:42:08 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
