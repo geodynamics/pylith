@@ -150,7 +150,7 @@ c
       fac=e/(pr2*pr3)
       dd=pr1*fac
       od=pr*fac
-      ss=half*pr3*fac
+      ss=pr3*fac
       do i=1,3
         dmat(iddmat(i,i))=dd
         dmat(iddmat(i+3,i+3))=ss
@@ -163,7 +163,8 @@ cdebug      write(6,*) "dmat:",(dmat(idb),idb=1,nddmat)
       end
 c
 c
-      subroutine elas_strs_5(state,ee,dmat,nstate,ierr,errstrng)
+      subroutine elas_strs_5(state,state0,ee,dmat,nstate,nstate0,ierr,
+     & errstrng)
 c
 c...  subroutine to compute stresses for the elastic solution.  For this
 c     material, there are 3 state variables:  total stress, total
@@ -184,18 +185,21 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,ierr
-      double precision state(nstr,nstate),ee(nstr),dmat(nddmat)
+      integer nstate,nstate0,ierr
+      double precision state(nstr,nstate),state0(nstate0),ee(nstr)
+      double precision dmat(nddmat)
       character errstrng*(*)
 c
       call dcopy(nstr,ee,ione,state(1,2),ione)
-      call dspmv("u",nstr,one,dmat,state(1,2),ione,zero,state(1,1),ione)
+      call dcopy(nstr,state0,ione,state(1,1),ione)
+      call dspmv("u",nstr,one,dmat,state(1,2),ione,one,state(1,1),ione)
       return
       end
 c
 c
-      subroutine td_matinit_5(state,dstate,dmat,prop,rtimdat,rgiter,
-     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_matinit_5(state,dstate,state0,dmat,prop,rtimdat,
+     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & errstrng)
 c
 c...  subroutine to form the material matrix for an integration point
 c     for the time-dependent solution.  This routine is meant to be
@@ -218,11 +222,11 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nprop,ierr
+      integer nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       double precision state(nstr,nstate),dstate(nstr,nstate)
-      double precision dmat(nddmat),prop(nprop),tmax
+      double precision state0(nstate0),dmat(nddmat),prop(nprop),tmax
       logical matchg
 c
 c...  included dimension and type statements
@@ -250,14 +254,14 @@ c
       pr=prop(3)
       vis=prop(4)
       f1=third*e/(one-two*pr)
-      f2=one/((one+pr)/e+half*alfap*deltp/vis)
-      dmat(iddmat(1,1))=f1+two*third*f2
+      f2=third/((one+pr)/e+half*alfap*deltp/vis)
+      dmat(iddmat(1,1))=f1+two*f2
       dmat(iddmat(2,2))=dmat(iddmat(1,1))
       dmat(iddmat(3,3))=dmat(iddmat(1,1))
-      dmat(iddmat(1,2))=f1-third*f2
+      dmat(iddmat(1,2))=f1-f2
       dmat(iddmat(1,3))=dmat(iddmat(1,2))
       dmat(iddmat(2,3))=dmat(iddmat(1,2))
-      dmat(iddmat(4,4))=half*f2
+      dmat(iddmat(4,4))=three*f2
       dmat(iddmat(5,5))=dmat(iddmat(4,4))
       dmat(iddmat(6,6))=dmat(iddmat(4,4))
 cdebug      write(6,*) "dmat:",(dmat(idb),idb=1,nddmat)
@@ -265,8 +269,9 @@ cdebug      write(6,*) "dmat:",(dmat(idb),idb=1,nddmat)
       end
 c
 c
-      subroutine td_strs_5(state,dstate,ee,dmat,prop,rtimdat,rgiter,
-     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_strs_5(state,dstate,state0,ee,dmat,prop,rtimdat,
+     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & errstrng)
 c
 c...  subroutine to compute the current values for stress, total strain,
 c     and viscous strain increment.
@@ -281,11 +286,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nprop,ierr
+      integer nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg
-      double precision state(nstr,nstate),dstate(nstr,nstate),ee(nstr)
+      double precision state(nstr,nstate),dstate(nstr,nstate)
+      double precision state0(nstate0),ee(nstr)
       double precision dmat(nddmat),prop(nprop),tmax
 c
 c...  included dimension and type statements
@@ -303,7 +309,7 @@ c...  local variables
 c
       integer i
       double precision e,pr,vis,rmu,f1,f2,emean,smean,eet,stau,smeantp
-      double precision sdev,sdevtp
+      double precision sdev,sdevtp,smean0,sdev0,fac1,fac2,rvis
 c
 c...  included variable definitions
 c
@@ -317,33 +323,42 @@ c
       pr=prop(3)
       vis=prop(4)
       rmu=half*e/(one+pr)
+      rvis=one/vis
       tmax=two*vis/rmu
-      f1=half*deltp*(one-alfap)/vis
-      f2=one/((one+pr)/e+half*alfap*deltp/vis)
+      fac1=half*deltp*rvis
+      fac2=(one+pr)/e
+      f1=fac1*(one-alfap)
+      f2=one/(fac2+fac1*alfap)
       emean=third*(ee(1)+ee(2)+ee(3))
       smean=e*emean/(one-two*pr)
+      smean0=third*(state0(1)+state0(2)+state0(3))
       smeantp=third*(state(1,1)+state(2,1)+state(3,1))
-cdebug      write(6,*) "e,pr,vis,rmu,tmax,f1,f2,emean,smean,smeantp:",
-cdebug     & e,pr,vis,rmu,tmax,f1,f2,emean,smean,smeantp
+cdebug      write(6,*) "e,pr,vis,rmu,tmax,deltp,alfap,f1,f2,emean,smean"
+cdebug      write(6,*) "smean0,smeantp,emean:"
+cdebug      write(6,*) e,pr,vis,rmu,tmax,deltp,alfap,f1,f2,emean,smean,smean0,
+cdebug     & smeantp,emean
       do i=1,nstr
         eet=ee(i)-diag(i)*emean-state(i,3)
         sdevtp=state(i,1)-diag(i)*smeantp
-        sdev=f2*(eet-f1*sdevtp)
-        dstate(i,1)=sdev+diag(i)*smean
+        sdev0=state0(i)-diag(i)*smean0
+        sdev=f2*(eet-f1*sdevtp+fac2*sdev0)
+        dstate(i,1)=sdev+diag(i)*(smean+smean0)
         stau=(one-alfap)*sdevtp+alfap*sdev
-        dstate(i,3)=half*deltp*stau/vis
+        dstate(i,3)=half*deltp*stau*rvis
         dstate(i,2)=ee(i)
-cdebug        write(6,*) "i,eet,sdevtp,sdev,ds1,ds2,ds3,s1,s2,s3,stau:",
-cdebug     &   i,eet,sdevtp,sdev,dstate(i,1),dstate(i,2),dstate(i,3),
-cdebug     &   state(i,1),state(i,2),state(i,3),stau
+cdebug        write(6,*) "i,ee,eet,sdevtp,sdev0,sdev,ds1,ds2,ds3,s1,s2,s3,",
+cdebug     &   "stau:",
+cdebug     &   i,ee(i),eet,sdevtp,sdev0,sdev,dstate(i,1),dstate(i,2),
+cdebug     &   dstate(i,3),state(i,1),state(i,2),state(i,3),stau
       end do
 c
       return
       end
 c
 c
-      subroutine td_strs_mat_5(state,dstate,ee,dmat,prop,rtimdat,rgiter,
-     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_strs_mat_5(state,dstate,state0,ee,dmat,prop,rtimdat,
+     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & errstrng)
 c
 c...  subroutine to compute the current stress and updated material
 c     matrix for the time-dependent solution.
@@ -360,11 +375,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nprop,ierr
+      integer nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg
-      double precision state(nstr,nstate),dstate(nstr,nstate),ee(nstr)
+      double precision state(nstr,nstate),dstate(nstr,nstate)
+      double precision state0(nstate0),ee(nstr)
       double precision dmat(nddmat),prop(nprop),tmax
 c
 c...  included dimension and type statements
@@ -379,17 +395,17 @@ c
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-      call td_matinit_5(state,dstate,dmat,prop,rtimdat,
-     & rgiter,ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
-      call td_strs_5(state,dstate,ee,dmat,prop,rtimdat,rgiter,ntimdat,
-     & iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
+      call td_matinit_5(state,dstate,state0,dmat,prop,rtimdat,rgiter,
+     & ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,errstrng)
+      call td_strs_5(state,dstate,state0,ee,dmat,prop,rtimdat,rgiter,
+     & ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,errstrng)
 c
       return
       end
 c
 c
-      subroutine prestr_mat_5(dmat,prop,autofac,iddmat,nprop,ierr,
-     & errstrng)
+      subroutine prestr_mat_5(dmat,prop,tpois,tyoungs,iddmat,ipauto,
+     & nprop,ierr,errstrng)
 c
 c...  subroutine to form the material matrix for an integration point
 c     for prestress computation.  The material matrix is assumed to be
@@ -407,24 +423,27 @@ c
 c
 c...  subroutine arguments
 c
-      integer nprop,ierr
+      integer ipauto,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
-      double precision autofac,dmat(nddmat),prop(nprop)
+      double precision tpois,tyoungs,dmat(nddmat),prop(nprop)
 c
 c...  local variables
 c
       double precision ptmp(10)
 c
       call dcopy(nprop,prop,ione,ptmp,ione)
-      ptmp(2)=autofac*ptmp(2)
+      if(ipauto.eq.ione) then
+        ptmp(2)=tyoungs
+        ptmp(3)=tpois
+      end if
       call elas_mat_5(dmat,ptmp,iddmat,nprop,ierr,errstrng)
       return
       end
 c       
 
 c version
-c $Id: mat_5.f,v 1.6 2005/01/18 19:40:36 willic3 Exp $
+c $Id: mat_5.f,v 1.7 2005/02/24 00:14:45 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
