@@ -37,7 +37,7 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,ndmatsz, ! elemnt
      & numelt,nconsz,                                                   ! elemnt
-     & prop,mhist,infmat,numat,npropsz,tminmax,                         ! materl
+     & prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,               ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & histry,rtimdat,ntimdat,nhist,lastep,matinit_cmp,                 ! timdat
      & skew,numrot,                                                     ! skew
@@ -53,6 +53,7 @@ c...  parameter definitions
 c
       include "ndimens.inc"
       include "nshape.inc"
+      include "materials.inc"
       include "nconsts.inc"
       include "rconsts.inc"
 c
@@ -64,7 +65,8 @@ c
       integer ja(nnz),iwink(2,nwink),iwinkx(2,nwinkx),ien(nconsz)
       integer lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
       integer infiel(6,numelt),iddmat(nstr,nstr),mhist(npropsz)
-      integer infmat(6,numat),infetype(4,netypes)
+      integer infmat(3,numat),infmatmod(5,nmatmodmax)
+      integer infetype(4,netypes)
       character errstrng*(*)
       double precision alnz(nnz),x(nsd,numnp),d(ndof,numnp)
       double precision wink(nwink),dx(ndof,numnp),winkx(nwinkx)
@@ -90,7 +92,7 @@ c
 c
 c...  local variables
 c
-      integer imat,matmodel,nmatel,nprop,indprop,matgpt
+      integer imat,matmodel,nmatel,imatvar,nprop,indprop,matgpt
       double precision ptmp(100)
       logical matchg
 c
@@ -112,8 +114,9 @@ c
       do imat=1,numat
         matmodel=infmat(1,imat)
         nmatel=infmat(2,imat)
-        nprop=infmat(5,imat)
-        indprop=infmat(6,imat)
+        indprop=infmat(3,imat)
+        nprop=infmatmod(3,matmodel)
+        imatvar=infmatmod(4,matmodel)
         matchg=.false.
         call mathist(ptmp,prop(indprop),mhist(indprop),histry,nprop,
      &   imat,nstep,nhist,lastep,matchg,ierr,errstrng)
@@ -127,7 +130,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_1,                 ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_1,                 ! materl
      &     td_matinit_1,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -143,7 +146,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_2,                 ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_2,                 ! materl
      &     td_matinit_2,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -159,7 +162,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_3,                 ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_3,                 ! materl
      &     td_matinit_3,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -175,7 +178,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_4,                 ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_4,                 ! materl
      &     td_matinit_4,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -191,7 +194,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_5,                 ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_5,                 ! materl
      &     td_matinit_5,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -207,7 +210,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_6,                 ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_6,                 ! materl
      &     td_matinit_6,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -223,7 +226,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_7,                 ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_7,                 ! materl
      &     td_matinit_7,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -239,7 +242,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_8,                 ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_8,                 ! materl
      &     td_matinit_8,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -255,7 +258,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_9,                 ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_9,                 ! materl
      &     td_matinit_9,matchg,tminmax,                                 ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -271,7 +274,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_10,                ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_10,                ! materl
      &     td_matinit_10,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -287,7 +290,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_11,                ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_11,                ! materl
      &     td_matinit_11,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -303,7 +306,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_12,                ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_12,                ! materl
      &     td_matinit_12,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -319,7 +322,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_13,                ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_13,                ! materl
      &     td_matinit_13,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -335,7 +338,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_14,                ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_14,                ! materl
      &     td_matinit_14,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -351,7 +354,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_15,                ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_15,                ! materl
      &     td_matinit_15,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -367,7 +370,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_16,                ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_16,                ! materl
      &     td_matinit_16,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -383,7 +386,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_17,                ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_17,                ! materl
      &     td_matinit_17,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -399,7 +402,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_18,                ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_18,                ! materl
      &     td_matinit_18,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -415,7 +418,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_19,                ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_19,                ! materl
      &     td_matinit_19,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -431,7 +434,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     ptmp,infmat(1,imat),nprop,matgpt,elas_mat_20,                ! materl
+     &     ptmp,nprop,matgpt,imatvar,nmatel,elas_mat_20,                ! materl
      &     td_matinit_20,matchg,tminmax,                                ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,                                             ! timdat
@@ -462,7 +465,7 @@ c
       end
 c
 c version
-c $Id: matinit_drv.f,v 1.2 2004/07/01 17:32:22 willic3 Exp $
+c $Id: matinit_drv.f,v 1.3 2004/07/08 20:32:57 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
