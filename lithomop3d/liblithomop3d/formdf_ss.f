@@ -79,6 +79,7 @@ c
       integer matgpt,imat,matmodel,nmatel,imatvar,ngtest,ielg,iel,indien
       integer ietype,nen,inddmat,ngauss,nee,ngaussdim,i
       double precision p(60),dld(60)
+cdebug      integer idebug
 c
 cdebug      write(6,*) "Hello from formdf_ss_f!"
 c
@@ -131,6 +132,10 @@ c
           call fill(p,zero,nee)
           call dsymv("u",nee,one,s,nee,dld,ione,zero,p,ione)
           call addfor(bdisp,p,lm(1,indien),lmx(1,indien),neq,nee)
+cdebug          write(6,*) "P vector:"
+cdebug          write(6,*) (p(idebug),idebug=1,nee)
+cdebug          write(6,*) "B vector:"
+cdebug          write(6,*) (bdisp(idebug),idebug=1,neq)
  150      continue
         end do
         matgpt=matgpt+nmatel
@@ -139,7 +144,7 @@ c
       end
 c
 c version
-c $Id: formdf_ss.f,v 1.4 2004/07/08 21:09:48 willic3 Exp $
+c $Id: formdf_ss.f,v 1.5 2004/08/02 21:14:29 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
