@@ -94,7 +94,7 @@ c...  local variables
 c
       integer nmatel,nstate,ind,iel,indien,ietype,indstate,inddmat
       integer ngauss,nen,nee,l,indstateg,inddmatg,imatvar,ngtest
-      integer ngaussdim
+      integer ngaussdim,incstate
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 c
 c...  included variable definitions
@@ -110,6 +110,7 @@ c
       imatvar=infmat(4)
       ngtest=izero
       if(imatvar.eq.izero) ngtest=ngaussmax
+      incstate=nstr*nstate
 c
 c...  loop over elements in a material group
 c
@@ -122,6 +123,8 @@ c
         ngauss=infetype(1,ietype)
         nen=infetype(2,ietype)
         nee=infetype(4,ietype)
+        indstateg=indstate
+        inddmatg=inddmat
 c
 c...  localize coordinates and displacements
 c
@@ -141,11 +144,12 @@ c...  loop over gauss points, compute stresses, and transfer them into
 c     scur
 c
         do l=1,ngauss
-          indstateg=indstate+(l-1)*nstate*nstr
-          inddmatg=inddmat+(l-1)*nddmat
-          call elas_strs(state(1,indstateg),ee(nstr*(l-1)),
+          call elas_strs(dstate(1,indstateg),ee(nstr*(l-1)),
      &     dmat(1,inddmatg),nstate)
-          call dcopy(nstr,state(1,indstateg),ione,scur(nstr*(l-1)),ione)
+          call dcopy(nstr,dstate(1,indstateg),ione,scur(nstr*(l-1)),
+     &     ione)
+          indstateg=indstateg+incstate
+          inddmatg=inddmatg+nddmat
         end do
 c
 c...  compute equivalent nodal loads and add them to global load
@@ -177,7 +181,7 @@ c
       end
 c
 c version
-c $Id: elas_strs_mat_cmp_ss.f,v 1.2 2004/06/25 15:37:09 willic3 Exp $
+c $Id: elas_strs_mat_cmp_ss.f,v 1.3 2004/07/02 17:57:23 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
