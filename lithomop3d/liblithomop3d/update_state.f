@@ -60,7 +60,7 @@ c
 c
 cdebug      write(6,*) "Hello from update_state_f!"
 c
-      matgpt=1
+      matgpt=ione
       sub=-one
 c
 c...  loop over material groups
@@ -141,7 +141,7 @@ c
       end
 c
 c version
-c $Id: update_state.f,v 1.3 2004/07/09 15:29:20 willic3 Exp $
+c $Id: update_state.f,v 1.4 2004/07/12 21:07:20 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
