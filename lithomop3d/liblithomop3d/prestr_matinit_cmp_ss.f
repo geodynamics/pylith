@@ -35,8 +35,9 @@ c
      & dx,numslp,numsn,                                                 ! slip
      & tfault,numfn,                                                    ! fault
      & s,stemp,                                                         ! stiff
-     & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,         ! elemnt
-     & ndmatsz,numelt,nconsz,                                           ! elemnt
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,  ! elemnt
+     & nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,       ! elemnt
+     & nstate0,                                                         ! elemnt
      & prop,nstate,nprop,matgpt,imatvar,nmatel,elas_matinit,td_matinit, ! materl
      & prestr_matinit,matchg,tminmax,                                   ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
@@ -59,17 +60,19 @@ c
 c
 c...  subroutine arguments
 c
-      integer nnz,neq,numnp,numslp,numsn,numfn,nstatesz,ndmatsz,numelt
-      integer nconsz,nprop,nstate,matgpt,imatvar,nmatel,numrot,ierr
+      integer nnz,neq,numnp,numslp,numsn,numfn,nstatesz,nstatesz0
+      integer ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,nprop
+      integer nstate0,nstate,matgpt,imatvar,nmatel,numrot,ierr
       logical matchg
       integer ja(nnz),ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
-      integer lmf(nconsz),infiel(6,numelt),iddmat(nstr,nstr)
+      integer lmf(nconsz),infiel(7,numelt),iddmat(nstr,nstr)
       integer infetype(4,netypes)
       character errstrng*(*)
       double precision alnz(nnz),x(nsd,numnp),d(ndof,numnp)
       double precision dx(ndof,numnp),tfault(ndof,numfn)
       double precision s(neemax*neemax),stemp(neemax*neemax)
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
+      double precision state0(nstate0,nstatesz0)
       double precision dmat(nddmat,ndmatsz),prop(nprop),tminmax
       double precision gauss(nsd+1,ngaussmax,netypes)
       double precision sh(nsd+1,nenmax,ngaussmax,netypes)
@@ -109,8 +112,8 @@ c
       iel=infiel(4,matgpt)
       inddmat0=infiel(6,iel)
       ietype=infiel(3,iel)
-      call prestr_matinit(dmat(1,inddmat0),prop,autofac,iddmat,nprop,
-     & ierr,errstrng)
+      call prestr_matinit(dmat(1,inddmat0),prop,tpois,tyoungs,iddmat,
+     & ipauto,nprop,ierr,errstrng)
       if(ierr.ne.izero) return
       ngauss=infetype(1,ietype)
       ng=ngauss
@@ -177,7 +180,7 @@ c
       end
 c
 c version
-c $Id: prestr_matinit_cmp_ss.f,v 1.1 2005/01/17 22:14:46 willic3 Exp $
+c $Id: prestr_matinit_cmp_ss.f,v 1.2 2005/02/24 00:16:41 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
