@@ -157,7 +157,7 @@ c
         rgs(1)=rf(iiside)+ri(iiside)*g*rg(ipnt)
         rgs(2)=sf(iiside)+si(iiside)*g*sg(ipnt)
         rgs(3)=tf(iiside)+ti(iiside)*g*tg(ipnt)
-        call shapql(rgs,xl,det,sh,ien,nen,infin,iopt,n,idout,kto,kw)
+clater        call shapql(rgs,xl,det,sh,ien,nen,infin,iopt,n,idout,kto,kw)
 c
 c...  compute surface element for use in integration
 c
@@ -183,7 +183,7 @@ c
       end
 c
 c version
-c $Id: presurql.f,v 1.2 2004/08/12 02:22:17 willic3 Exp $
+c $Id: presurql.f,v 1.3 2004/08/12 22:53:10 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
