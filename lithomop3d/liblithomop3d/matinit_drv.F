@@ -75,7 +75,7 @@ c
       integer npropsz,nen,ngauss,nee,nhist,lastep,numrot,ierr
       integer iwink(2,nwink),iddmat(nstr,nstr),iwinkx(2,nwinkx)
       integer ien(nen,numelv)
-      integer lm(ndof*nen,numelv),lmx(ndof*nen,numelv),lmf(nen*numelv)
+      integer lm(ndof*nen,numelv),lmx(ndof*nen,numelv),lmf(nen,numelv)
       integer ivfamily(5,nvfamilies),mhist(npropsz)
       integer infmatmod(6,nmatmodmax)
       character errstrng*(*)
@@ -120,14 +120,6 @@ c
 c
 cdebug      write(6,*) "Hello from matinit_drv_f!"
 c
-cdebug      do idb=1,ngauss
-cdebug        write(6,*) "gauss:",(gauss(jdb,idb),jdb=1,nsd+1)
-cdebug        do jdb=1,nen
-cdebug          write(6,*) "sh:",(sh(kdb,jdb,idb),kdb=1,nsd+1)
-cdebug          write(6,*) "shj:",(shj(kdb,jdb,idb),kdb=1,nsd+1)
-cdebug        end do
-cdebug      end do
-c
       tminmax=big
       nrftot=ntimdat(7)
       nrftot=nrftot+1
@@ -160,8 +152,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_1,td_matinit_1,prestr_mat_1,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -176,8 +170,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_2,td_matinit_2,prestr_mat_2,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -192,8 +188,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_3,td_matinit_3,prestr_mat_3,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -208,8 +206,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_4,td_matinit_4,prestr_mat_4,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -224,8 +224,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_5,td_matinit_5,prestr_mat_5,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -240,8 +242,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_6,td_matinit_6,prestr_mat_6,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -256,8 +260,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_7,td_matinit_7,prestr_mat_7,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -272,8 +278,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_8,td_matinit_8,prestr_mat_8,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -288,8 +296,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_9,td_matinit_9,prestr_mat_9,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -304,8 +314,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_10,td_matinit_10,prestr_mat_10,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -320,8 +332,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_11,td_matinit_11,prestr_mat_11,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -336,8 +350,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_12,td_matinit_12,prestr_mat_12,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -352,8 +368,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_13,td_matinit_13,prestr_mat_13,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -368,8 +386,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_14,td_matinit_14,prestr_mat_14,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -384,8 +404,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_15,td_matinit_15,prestr_mat_15,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -400,8 +422,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_16,td_matinit_16,prestr_mat_16,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -416,8 +440,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_17,td_matinit_17,prestr_mat_17,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -432,8 +458,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_18,td_matinit_18,prestr_mat_18,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -448,8 +476,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_19,td_matinit_19,prestr_mat_19,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -464,8 +494,10 @@ c
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
-     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
+     &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
+     &     ielg,                                                        ! elemfamily
      &     ptmp,nprop,elas_mat_20,td_matinit_20,prestr_mat_20,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -498,7 +530,7 @@ c
       end
 c
 c version
-c $Id: matinit_drv.F,v 1.3 2005/04/01 23:26:52 willic3 Exp $
+c $Id: matinit_drv.F,v 1.4 2005/04/05 23:04:30 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
