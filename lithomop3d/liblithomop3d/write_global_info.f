@@ -29,33 +29,38 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_global_info(title,idout,idsk,ngem,numnp,nsd,ndof,
-     & icode,idebug,nstr,nen,kw,kp,ofile,pfile)
+      subroutine write_global_info(title,idout,idsk,numnp,
+     & icode,idebug,kw,kp,ofile,pfile)
 c
 c...subroutine to write global control parameters
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer idout,idsk,ngem,numnp,nsd,ndof,icode,idebug,nstr,nen,kw,kp
+      integer idout,idsk,numnp,icode,idebug,kw,kp
       character title*(*),ofile*(*),pfile*(*)
 c
-      if(idout.gt.0) then
+      if(idout.gt.izero) then
         open(kw,file=ofile,status="new",access="append")
         write(kw,500)
         write(kw,1000) title,idout,idsk,ngem,numnp,nsd,ndof,icode,idebug
         close(kw)
       end if
-      if(idsk.eq.0) then
+      if(idsk.eq.izero) then
         open(kp,file=pfile,status="new",access="append")
         write(kp,2000) title
-        write(kp,3000) ngem,numnp,nsd,ndof,nstr,nen
+        write(kp,3000) ngem,numnp,nsd,ndof,nstr
       else if(idsk.eq.1) then
         open(kp,file=pfile,status="new",access="append",
      &   form="unformatted")
         write(kp) title
-        write(kp) ngem,numnp,nsd,ndof,nstr,nen
+        write(kp) ngem,numnp,nsd,ndof,nstr
       end if
       close(kp)
 c
@@ -64,7 +69,7 @@ c
  500  format(//,7x,
      x'******************************************************',/,7x,
      x'*                                                    *',/,7x,
-     x'*               PYCRUST 0.8 OUTPUT                   *',/,7x,
+     x'*              LITHOMOP 0.9 OUTPUT                   *',/,7x,
      x'*                                                    *',/,7x,
      x'*        Copyright 2004 by Charles A. Williams.      *',/,7x,
      x'*          Rensselaer Polytechnic Institute.         *',/,7x,
@@ -110,7 +115,7 @@ c
       end
 c
 c version
-c $Id: write_global_info.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: write_global_info.f,v 1.2 2004/07/12 21:18:18 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
