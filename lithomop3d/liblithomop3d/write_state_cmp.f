@@ -34,7 +34,7 @@ c
      & get_state,                                                       ! materl
      & ngauss,                                                          ! eltype
      & delti,nstep,                                                     ! timdat
-     & itmp1,itmp2,nstatestot,nstatesinc,nstatesrate,nstatesout,        ! ioopts
+     & istatout,istatoutc,nstatout,nstatestot,nout,npts,                ! ioopts
      & idout,idsk,iucd,kw,kp,kucd)                                      ! ioinfo
 c
 c...  computation routine to update state variables within an element family
@@ -44,13 +44,14 @@ c
 c...  parameter definitions
 c
       include "materials.inc"
+      include "nconsts.inc"
       include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer nelfamily,nstate,ielg,ngauss,nstep,nstatestot,nstatesinc
-      integer nstatesrate,nstatesout,idout,idsk,iucd,kw,kp,kucd
-      integer itmp1(nstatesmax,3),itmp2(nstatesout)
+      integer nelfamily,nstate,ielg,ngauss,nstep,nstatestot,nout,npts
+      integer idout,idsk,iucd,kw,kp,kucd
+      integer istatout(nstatesmax,3),istatoutc(nstatestot),nstatout(3)
       double precision state(nstate,ngauss,nelfamily)
       double precision dstate(nstate,ngauss,nelfamily)
       double precision delti
@@ -70,31 +71,83 @@ c
 c
 c...  local variables
 c
-      integer ielf,l,nout
+      integer ielga,ielgp,ielf,j,l
       double precision sout(3*nstatesmax)
 c
 c...  included variable definitions
 c
-      include "labels_dim.inc"
+      include "labels_def.inc"
 c
-      nout=izero
+      ielga=ielg
+      ielgp=ielg
 c
-c...  loop over elements in a family and write requested output
+c...  output to human-readable ascii file
 c
-      do ielf=1,nelfamily
-	do l=1,ngauss
-          nout=nout+ione
-	  call get_state(state,dstate,sout,nstate)
-          call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
-     &     sout(2*nstatesmax+ione),ione)
-	end do
-        ielg=ielg+ione
-      end do
+      if(idout.gt.1) then
+        do ielf=1,nelfamily
+          do l=1,ngauss
+            nout=nout+ione
+            call get_state(state,dstate,sout,nstate)
+            call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
+     &       sout(2*nstatesmax+ione),ione)
+            if(nout.eq.1.or.mod(nout,npage).eq.izero) then
+              write(kw,700) (labels(istatoutc(j)),j=1,nstatestot)
+              write(kw,"(/)")
+            end if
+            write(kw,710) ielg,l,(sout(istatoutc(j)),j=1,nstatestot)
+          end do
+          ielga=ielga+ione
+        end do
+      end if
 c
+c...  output to ascii plot file
+c
+      if(idsk.eq.1) then
+        do ielf=1,nelfamily
+          do l=1,ngauss
+            call get_state(state,dstate,sout,nstate)
+            call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
+     &       sout(2*nstatesmax+ione),ione)
+            write(kw,720) ielg,l,(sout(istatoutc(j)),j=1,nstatestot)
+          end do
+          ielgp=ielgp+ione
+        end do
+      end if
+c
+c...  output to binary plot file
+c
+      if(idsk.eq.2) then
+        do ielf=1,nelfamily
+          do l=1,ngauss
+            call get_state(state,dstate,sout,nstate)
+            call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
+     &       sout(2*nstatesmax+ione),ione)
+            write(kp) (sout(istatoutc(j)),j=1,nstatestot)
+          end do
+        end do
+      end if
+c
+c...  output to UCD file
+c
+      if(iucd.ne.0) then
+        do ielf=1,nelfamily
+          do l=1,ngauss
+            npts=npts+ione
+            call get_state(state,dstate,sout,nstate)
+            call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
+     &       sout(2*nstatesmax+ione),ione)
+            write(kucd,720) nout,(sout(istatoutc(j)),j=1,nstatestot)
+          end do
+        end do
+      end if
+c
+ 700  format(2x,"elmt",4x,"gspt",100(:5x,a11))
+ 710  format(2(1x,i7),100(:2x,1pe15.8))
+ 720  format(i7,100(:2x,1pe15.8))
       return
       end
 c
 c version
-c $Id: write_state_cmp.f,v 1.1 2005/03/23 02:44:50 willic3 Exp $
+c $Id: write_state_cmp.f,v 1.2 2005/03/23 18:23:33 willic3 Exp $
 c
 c End of file 
