@@ -89,6 +89,7 @@ c...  external routines
 c
       include "elas_matinit_ext.inc"
       include "td_matinit_ext.inc"
+      include "prestr_matinit_ext.inc"
       external matinit_cmp,getshape,bmatrix
 c
 c...  local variables
@@ -138,7 +139,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_1,          ! materl
-     &     td_matinit_1,matchg,tminmax,                                 ! materl
+     &     td_matinit_1,prestr_mat_1,matchg,tminmax,                    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -154,7 +155,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_2,          ! materl
-     &     td_matinit_2,matchg,tminmax,                                 ! materl
+     &     td_matinit_2,prestr_mat_2,matchg,tminmax,                    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -170,7 +171,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_3,          ! materl
-     &     td_matinit_3,matchg,tminmax,                                 ! materl
+     &     td_matinit_3,prestr_mat_3,matchg,tminmax,                    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -186,7 +187,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_4,          ! materl
-     &     td_matinit_4,matchg,tminmax,                                 ! materl
+     &     td_matinit_4,prestr_mat_4,matchg,tminmax,                    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -202,7 +203,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_5,          ! materl
-     &     td_matinit_5,matchg,tminmax,                                 ! materl
+     &     td_matinit_5,prestr_mat_5,matchg,tminmax,                    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -218,7 +219,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_6,          ! materl
-     &     td_matinit_6,matchg,tminmax,                                 ! materl
+     &     td_matinit_6,prestr_mat_6,matchg,tminmax,                    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -234,7 +235,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_7,          ! materl
-     &     td_matinit_7,matchg,tminmax,                                 ! materl
+     &     td_matinit_7,prestr_mat_7,matchg,tminmax,                    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -250,7 +251,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_8,          ! materl
-     &     td_matinit_8,matchg,tminmax,                                 ! materl
+     &     td_matinit_8,prestr_mat_8,matchg,tminmax,                    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -266,7 +267,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_9,          ! materl
-     &     td_matinit_9,matchg,tminmax,                                 ! materl
+     &     td_matinit_9,prestr_mat_9,matchg,tminmax,                    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -282,7 +283,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_10,         ! materl
-     &     td_matinit_10,matchg,tminmax,                                ! materl
+     &     td_matinit_10,prestr_mat_10,matchg,tminmax,                  ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -298,7 +299,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_11,         ! materl
-     &     td_matinit_11,matchg,tminmax,                                ! materl
+     &     td_matinit_11,prestr_mat_11,matchg,tminmax,                  ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -314,7 +315,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_12,         ! materl
-     &     td_matinit_12,matchg,tminmax,                                ! materl
+     &     td_matinit_12,prestr_mat_12,matchg,tminmax,                  ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -330,7 +331,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_13,         ! materl
-     &     td_matinit_13,matchg,tminmax,                                ! materl
+     &     td_matinit_13,prestr_mat_13,matchg,tminmax,                  ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -346,7 +347,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_14,         ! materl
-     &     td_matinit_14,matchg,tminmax,                                ! materl
+     &     td_matinit_14,prestr_mat_14,matchg,tminmax,                  ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -362,7 +363,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_15,         ! materl
-     &     td_matinit_15,matchg,tminmax,                                ! materl
+     &     td_matinit_15,prestr_mat_15,matchg,tminmax,                  ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -378,7 +379,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_16,         ! materl
-     &     td_matinit_16,matchg,tminmax,                                ! materl
+     &     td_matinit_16,prestr_mat_16,matchg,tminmax,                  ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -394,7 +395,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_17,         ! materl
-     &     td_matinit_17,matchg,tminmax,                                ! materl
+     &     td_matinit_17,prestr_mat_17,matchg,tminmax,                  ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -410,7 +411,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_18,         ! materl
-     &     td_matinit_18,matchg,tminmax,                                ! materl
+     &     td_matinit_18,prestr_mat_18,matchg,tminmax,                  ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -426,7 +427,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_19,         ! materl
-     &     td_matinit_19,matchg,tminmax,                                ! materl
+     &     td_matinit_19,prestr_mat_19,matchg,tminmax,                  ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -442,7 +443,7 @@ c
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
      &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_20,         ! materl
-     &     td_matinit_20,matchg,tminmax,                                ! materl
+     &     td_matinit_20,prestr_mat_20,matchg,tminmax,                  ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -481,7 +482,7 @@ c
       end
 c
 c version
-c $Id: matinit_drv.f,v 1.6 2004/08/12 20:47:48 willic3 Exp $
+c $Id: matinit_drv.f,v 1.7 2005/01/17 22:05:00 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
