@@ -29,26 +29,35 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine local(id,ien,lm,nen,ndof,numel,numnp)
+      subroutine local(id,numnp,ien,lm,infiel,nconsz,numelt,infetype)
 c
 c.... subroutine to localize id array
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+c
 c...  subroutine arguments
 c
-      integer nen,ndof,numel,numnp
-      integer id(ndof,numnp),ien(nen,numel),lm(ndof,nen,numel)
+      integer numnp,nconsz,numelt
+      integer id(ndof,numnp),ien(nconsz),lm(ndof,nconsz)
+      integer infiel(6,numelt),infetype(4,netypes)
 c
 c...  local variables
 c
-      integer i,j,k,nn
+      integer iel,j,i,nn,indien,ietype,nen
 c
-      do k=1,numel
-        do j=1,nen
-          nn=ien(j,k)
+      do iel=1,numelt
+        indien=infiel(1,iel)
+        ietype=infiel(3,iel)
+        nen=infetype(2,ietype)
+        do j=indien,indien+nen-1
+          nn=ien(j)
           do i=1,ndof
-            lm(i,j,k)=id(i,nn)
+            lm(i,j)=id(i,nn)
           end do
         end do
       end do
@@ -56,7 +65,7 @@ c
       end
 c
 c version
-c $Id: local.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: local.f,v 1.2 2004/07/07 18:14:44 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
