@@ -101,9 +101,9 @@ c
         errstrng="mat_prt_1"
         return
 c
- 700  format("Material number:       ",i7,/,
-     &       "Material type:         ",a24,/,
-     &       "Number of properties:  ",i7,/)
+ 700  format(/,5x,"Material number:       ",i7,/,5x,
+     &            "Material type:         ",a24,/,5x,
+     &            "Number of properties:  ",i7,/)
  710  format(15x,a15,3x,1pe15.8)
 c
       end
@@ -216,8 +216,20 @@ c
       double precision dmat(nddmat),prop(nprop),tmax
       logical matchg
 c
+c...  included dimension and type statements
+c
+      include "rtimdat_dim.inc"
+      include "rgiter_dim.inc"
+      include "ntimdat_dim.inc"
+c
 c...  local variables
 c
+c
+c...  included variable definitions
+c
+      include "rtimdat_def.inc"
+      include "rgiter_def.inc"
+      include "ntimdat_def.inc"
 c
       tmax=big
       if(.not.matchg) return
@@ -321,7 +333,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.9 2004/08/02 20:34:49 willic3 Exp $
+c $Id: mat_1.f,v 1.10 2004/08/12 01:59:11 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
