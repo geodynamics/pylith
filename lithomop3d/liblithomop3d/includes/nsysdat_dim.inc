@@ -18,15 +18,15 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      integer nsysdat(13)
+      integer nsysdat(11)
 c
 c...  scalar parameters associated with arrays
 c
-      integer numnp,neq,nnz,nee,nec,numrot,nprestr,numsn,numflt,
-     & nprop,nwink,nwinkx,iskopt
+      integer numnp,neq,nnz,numrot,nprestr,numsn,numflt,npropsz,nwink,
+     & nwinkx,iskopt
 c
 c version
-c $Id: nsysdat_dim.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: nsysdat_dim.inc,v 1.2 2004/07/05 18:32:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
