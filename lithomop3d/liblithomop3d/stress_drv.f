@@ -101,7 +101,7 @@ c
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-cdebug      write(6,*) "Hello from stress_drv_f!"
+      write(6,*) "Hello from stress_drv_f!"
 c
       call fill(b,zero,neq)
       matgpt=1
@@ -431,7 +431,7 @@ c
       end
 c
 c version
-c $Id: stress_drv.f,v 1.6 2004/07/21 19:08:15 willic3 Exp $
+c $Id: stress_drv.f,v 1.7 2004/08/02 21:28:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
