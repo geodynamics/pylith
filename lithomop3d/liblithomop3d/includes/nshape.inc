@@ -10,21 +10,25 @@ c <LicenseText>
 c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
-c...  nshape.inc:  A header that defines the maximum number of nodes
-c     and Gauss points per element.
+c...  nshape.inc:  A header that defines element type information.
+c
 c     At present, the largest number of nodes per element is 20 (for a
 c     quadratic hexahedron).  The largest number of Gauss points also
 c     occurs for this element, with a value of 27 (for 3x3x3
-c     integration).
+c     integration).  The maximum number of element equations is derived
+c     from nenmax, and the number of different element types is
+c     presently 62 (this includes all of the infinite element
+c     permutations).
+c
 c     This header should be included before any subroutine arguments,
 c     as the parameters will generally be used to dimension the
 c     arguments.
 c
-      integer nenmax,ngaussmax,neemax
-      parameter(nenmax=20,ngaussmax=27,neemax=3*nenmax)
+      integer nenmax,ngaussmax,neemax,netypes
+      parameter(nenmax=20,ngaussmax=27,neemax=3*nenmax,netypes=62)
 c
 c version
-c $Id: nshape.inc,v 1.2 2004/06/15 18:18:09 willic3 Exp $
+c $Id: nshape.inc,v 1.3 2004/06/18 13:46:06 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
