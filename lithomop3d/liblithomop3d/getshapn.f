@@ -65,6 +65,7 @@ c...compute shape function derivatives over number of strain integration
 c   points, and then compute average dilatational component.
 c
 cdebug      write(6,*) "Hello from getshapn_f!"
+cdebug      write(6,*) "iel,nen,ngauss:",iel,nen,ngauss
 c
       vol=zero
       do l=1,ngauss
@@ -73,12 +74,13 @@ c
         call getder(det(l),sh(1,1,l),shd(1,1,l),xs,nen)
         det(l)=gauss(4,l)*det(l)
         vol=vol+det(l)
+cdebug        write(6,*) "l,det,vol:",l,det(l),vol
       end do
       return
       end
 c
 c version
-c $Id: getshapn.f,v 1.4 2004/07/05 20:04:32 willic3 Exp $
+c $Id: getshapn.f,v 1.5 2004/08/12 01:29:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

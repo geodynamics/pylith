@@ -56,7 +56,7 @@ c
       integer l,j
       double precision xs(3,3),det,rl1,rl2,rl3
 c
-c*      write(6,*) "Hello from gravld_f!"
+cdebug      write(6,*) "Hello from gravld_f!"
 c
       if((grav(1)*grav(1)+grav(2)*grav(2)+grav(3)*grav(3)).eq.zero)
      & return
@@ -78,7 +78,7 @@ c
       end
 c
 c version
-c $Id: gravld.f,v 1.3 2004/07/01 19:49:59 willic3 Exp $
+c $Id: gravld.f,v 1.4 2004/08/12 01:30:01 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -56,7 +56,7 @@ c...  local variables
 c
       double precision smean
 c
-c*      write(6,*) "Hello from invar_f!"
+cdebug      write(6,*) "Hello from invar_f!"
 c
       sinv1=stn(1)+stn(2)+stn(3)
       smean=sinv1/three
@@ -71,7 +71,7 @@ c
       end
 c
 c version
-c $Id: invar.f,v 1.2 2004/07/07 15:31:08 willic3 Exp $
+c $Id: invar.f,v 1.3 2004/08/12 01:32:43 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
