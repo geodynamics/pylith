@@ -4,7 +4,7 @@
 #  for undefined variables and to see what intrinsics are used.
 #
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-PROJ_F77_INCLUDES= -I$(MAC_ROOT)/packages/lithomop/lithomop3d/liblithomop3d/includes
+PROJ_F77_INCLUDES= -I$(GEOFRAME_DIR)/packages/lithomop/lithomop3d/liblithomop3d/includes
 
 FFLAGC= -fno-silent -fno-ugly -fno-f77 -ff90 -fpedantic -Wall -fbackslash -Wsurprising -W $(PROJ_F77_INCLUDES)
 
