@@ -55,45 +55,65 @@ c
 c
 c...  local variables
 c
-      integer inext,iel,indien,ietype,nee,neeq,i,ii,irow,loc,j,jj,icol
+      integer inext,iel,indlm,ietype,nee,neeq,i,ii,irow,loc,j,jj,icol
       integer loctmp,ival,locsav
+cdebug      integer idb,jdb,idbind
 c
 cdebug      write(6,*) "Hello from lnklst_f!"
 c
+cdebug      write(6,*) "neq,nconsz,numelt,iwork,nsizea,nnz,numsn:",neq,nconsz,
+cdebug     & numelt,iwork,nsizea,nnz,numsn
+cdebug      open(15,file="lnklst.info")
+cdebug      write(15,*) (lm(idb),idb=1,ndof*nconsz)
+cdebug      write(15,*) (lmx(idb),idb=1,ndof*nconsz)
+cdebug      do idb=1,numelt
+cdebug        write(15,*) (infiel(jdb,idb),jdb=1,6)
+cdebug      end do
+cdebug      do idb=1,netypes
+cdebug        write(15,*) (infetype(jdb,idb),jdb=1,4)
+cdebug      end do
+cdebug      close(15)
       call ifill(indx,izero,neq)
       call ifill(link,izero,iwork)
       call ifill(nbrs,izero,iwork)
+cdebug      do idb=1,netypes
+cdebug        write(6,*) "infetype:",(infetype(jdb,idb),jdb=1,4)
+cdebug      end do
+cdebug      write(6,*) "lm:",(lm(idb),idb=1,ndof*nconsz)
+cdebug      write(6,*) "lmx:",(lm(idb),idb=1,ndof*nconsz)
 c
       inext=ione
       do iel=1,numelt
 c
 c      check that available storage is not exceeded
-c*     Temporary output to stdout that should be replaced by an
-c*     exception.
 c
-        if(inext.gt.iwork) then
+        if((inext+neemax*neemax).gt.iwork) then
           ierr=300
-          write(errstrng,700) inext-iwork
+          write(errstrng,700) inext+neemax*neemax-iwork
+cdebug          write(6,*) "Uncaught exception?"
           return
         end if
-        indien=infiel(1,iel)
+        indlm=ndof*(infiel(1,iel)-ione)+ione
         ietype=infiel(3,iel)
         nee=infetype(4,ietype)
         neeq=nee
         if(numsn.ne.izero) neeq=itwo*nee
+cdebug        write(6,*) "iel,indlm,ietype,nee,neeq:",
+cdebug     &   iel,indlm,ietype,nee,neeq
 c
         do i=1,neeq
-          ii=indien+i-1
-          if(i.le.nee) irow=lm(ii)
+          ii=indlm+i-1
+          irow=lm(ii)
           if(i.gt.nee) irow=abs(lmx(ii-nee))
           if(irow.ne.izero) then
             loc=indx(irow)
             do j=1,neeq
-              jj=indien+j-1
-              if(j.le.nee) icol=lm(jj)
+              jj=indlm+j-1
+              icol=lm(jj)
               if(j.gt.nee) icol=abs(lmx(jj-nee))
-cdebug            write(6,*) "i,j,irow,icol,loc:",i,j,irow,icol,loc
               if(icol.ne.izero.and.icol.ne.irow) then
+cdebug                write(6,*) "iel,i,j,ii,jj,irow,icol,loc,inext:",
+cdebug     &           iel,i,j,ii,jj,irow,icol,loc,inext
                 if(loc.eq.izero) then
                   loc=inext
                   indx(irow)=inext
@@ -119,14 +139,30 @@ cdebug            write(6,*) "i,j,irow,icol,loc:",i,j,irow,icol,loc
           end if
         end do
       end do
+cdebug      write(6,*) "After loop in lnklst!"
+cdebug      call flush(6)
       nsizea=inext-ione
       nnz=nsizea+neq+ione
+cdebug      write(6,*) "nsizea,nnz,neq:",nsizea,nnz,neq
+cdebug      call flush(6)
+cdebug      idbind=max(inext-100,1)
+cdebug      write(6,*) "end of nbrs:",(nbrs(idb),idb=idbind,inext)
+cdebug      write(6,*) "end of link:",(link(idb),idb=idbind,inext)
+cdebug      idbind=max(neq-100,1)
+cdebug      write(6,*) "end of indx:",(indx(idb),idb=idbind,neq)
+cdebug      call flush(6)
+cdebug      open(15,file="makemsr.info")
+cdebug      write(15,*) neq,nnz,iwork
+cdebug      write(15,*) (indx(idb),idb=1,neq)
+cdebug      write(15,*) (link(idb),idb=1,iwork)
+cdebug      write(15,*) (nbrs(idb),idb=1,iwork)
+cdebug      close(15)
  700  format("lnklst:  Working storage exceeded by ",i7)
       return
       end
 c
 c version
-c $Id: lnklst.f,v 1.3 2004/07/16 16:02:21 willic3 Exp $
+c $Id: lnklst.f,v 1.4 2004/08/12 01:50:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
