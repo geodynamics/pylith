@@ -61,16 +61,16 @@ c
 c...  parameters
 c
       character labelp(3)*15,modelname*24
-      parameter(labelp(1)="Density",
-     &          labelp(2)="Young's modulus",
-     &          labelp(3)="Poisson's ratio")
+      data labelp/"Density",
+     &            "Young's modulus",
+     &            "Poisson's ratio"/
       parameter(modelname="Isotropic Linear Elastic")
       integer mattype
       parameter(mattype=1)
 c
 c...  local variables
 c
-      integer i,j
+      integer i
 c
 c...  open output files
 c
@@ -192,15 +192,14 @@ c
 c...  parameters
 c
       double precision zero
-      integer ione
-      parameter(zero=0.0d0,ione=1)
+      parameter(zero=0.0d0)
 c
 c...  local variables
 c
       double precision str(6)
       integer i
 c
-      call dscal(nstr,zero,str,ione)
+      call fill(str,zero,nstr)
       if(idout.gt.0) write(kw,700) iel,igauss,(str(i),i=1,nstr)
       if(idsk.eq.0) write(kp,710) (str(i),i=1,nstr)
       if(idsk.eq.1) write(kp) str
@@ -227,15 +226,14 @@ c
 c...  parameters
 c
       double precision zero
-      integer ione
-      parameter(zero=0.0d0,ione=1)
+      parameter(zero=0.0d0)
 c
 c...  local variables
 c
       double precision str(6)
       integer i
 c
-      call dscal(nstr,zero,str,ione)
+      call fill(str,zero,nstr)
       if(idout.gt.0) write(kw,700) iel,igauss,(str(i),i=1,nstr)
       if(idsk.eq.0) write(kp,710) (str(i),i=1,nstr)
       if(idsk.eq.1) write(kp) str
@@ -274,9 +272,6 @@ c
       integer i,j
       double precision e,pr,pr1,pr2,pr3,fac,dd,od,ss
 c
-c****  note following call is not needed if dmat is assumed to be
-c****  initially zero.  That would probably be more efficient.
-      call dscal(nddmat,zero,dmat,inc)
       e=prop(2)
       pr=prop(3)
       pr1=1.0d0-pr
@@ -362,7 +357,7 @@ c
 c
       if(.not.matchg) return
 c
-      call dscal(nddmat,zero,dmat,inc)
+      call fill(dmat,zero,nddmat)
       e=prop(2)
       pr=prop(3)
       pr1=1.0d0-pr
@@ -415,7 +410,7 @@ c
 c       
 
 c version
-c $Id: mat1.f,v 1.2 2004/05/20 21:13:21 willic3 Exp $
+c $Id: mat1.f,v 1.3 2004/05/24 21:03:25 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
