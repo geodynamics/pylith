@@ -29,32 +29,35 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_hist(histry,times,nhist,lastep,kr,kw,idout,ierr,
-     & hfile,ofile)
+      subroutine read_hist(histry,times,nhist,lastep,kr,kw,idout,
+     & hfile,ofile,ierr,errstrng)
 c
 c       reads load history definitions, constructs load histories
 c       and echos load histories to the output file.
 c
 c     Error codes:
 c         0:  No error
-c         1:  Error opening input file (no exception should be raised
-c             in this case since a load history definition file is
-c             optional)
-c         2:  Units not specified (not applicable for this routine)
+c         1:  Error opening input file (only if nhist is greater than
+c             zero).
+c         2:  Error opening output file
 c         3:  Read error
-c         4:  Times given are out of order
+c         4:  Write error
+c       111:  Times given are out of order
 c
       include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
       integer nhist,lastep,kr,kw,idout,ierr
       double precision histry(nhist,lastep+1),times(lastep+1)
-      character hfile*(*),ofile*(*)
+      character hfile*(*),ofile*(*),errstrng*(*)
 c
-c...  defined constants
-c
-      include "rconsts.inc"
+c...  local constants
 c
       character*1 star(30)
       data star/30*'*'/
@@ -69,20 +72,20 @@ c
       double precision fac,range,defval
       integer i,npoints,j,k,kkp,kk,nstars,l
 c
-      ierr=0
-      if(idout.gt.0) then
-        open(kw,file=ofile,status="old",access="append")
-        write(kw,1000) nhist
-        if(nhist.eq.0) close(kw)
+      ierr=izero
+      if(idout.gt.izero) then
+        open(kw,file=ofile,err=60,status="old",access="append")
+        write(kw,1000,err=70) nhist
+        if(nhist.eq.izero) close(kw)
       end if
-      if(nhist.eq.0) return
+      if(nhist.eq.izero) return
 c
 c...  read load histories
 c
       open(kr,file=hfile,status="old",err=20)
       call pskip(kr)
       do i=1,nhist
-        if(idout.gt.0) write(kw,2000) i
+        if(idout.gt.izero) write(kw,2000,err=70) i
         read(kr,*,end=30,err=30) npoints,defval
         do j=1,lastep+1
           histry(i,j)=defval
@@ -97,7 +100,7 @@ c     Note that it is possible to specify a time greater than the last
 c     time for which computations are performed.
 c
           kk=1
-          diff=1.0d30
+          diff=big
           do k=1,lastep+1
             diffc=abs(time-times(k))
             if(diffc.lt.diff) then
@@ -109,12 +112,13 @@ c
 c...  assign loads, using linear interpolation if required
 c
           histry(i,kk)=hload
-          if(j.gt.1) then
+          if(j.gt.ione) then
             dt=times(kk)-times(kkp)
             dh=hload-hloadp
             dhdt=dh/dt
             if(dt.le.zero) then
-              ierr=4
+              ierr=111
+              errstrng="read_hist"
               return
             end if
             do k=kkp+1,kk-1
@@ -143,13 +147,13 @@ c
             else
               nstars=30
             end if
-            write(kw,3000) j-1,times(j),histry(i,j),
+            write(kw,3000,err=70) j-1,times(j),histry(i,j),
      &       '|',(star(l),l=1,nstars)
           end do
         end if
       end do
       close(kr)
-      if(idout.gt.0) close(kw)
+      if(idout.gt.izero) close(kw)
 c
 c...  normal return
 c
@@ -159,6 +163,7 @@ c...  error opening input file
 c
  20   continue
         ierr=1
+        errstrng="read_hist"
         close(kr)
         return
 c
@@ -166,7 +171,24 @@ c...  error reading input file
 c
  30   continue
         ierr=3
+        errstrng="read_hist"
         close(kr)
+        return
+c
+c...  error opening output file
+c
+ 60   continue
+        ierr=2
+        errstrng="read_hist"
+        close(kw)
+        return
+c
+c...  error writing to output file
+c
+ 70   continue
+        ierr=4
+        errstrng="read_hist"
+        close(kw)
         return
 c
 1000  format(///' l o a d   h i s t o r y   f a c t o r s'///,
@@ -178,7 +200,7 @@ c
       end
 c
 c version
-c $Id: read_hist.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: read_hist.f,v 1.2 2004/07/12 18:10:27 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
