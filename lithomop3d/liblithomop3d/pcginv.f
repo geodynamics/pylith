@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine pcginv(alnz,b,d,bres,p,z,dprev,rmin,rmult,
-     & gcurr,gprev,ja,nsiter,neq,nnz,ndtot,idout,kto,kw,used)
+      subroutine pcginv(alnz,bresid,dispvec,bwork,p,z,dprev,rmin,rmult,
+     & gcurr,gprev,ja,nsiter,neq,nprevdflag,nnz,ndtot,idout,kto,kw,used)
 c
 c...  subroutine to solve for the displacement increments d, using a
 c     preconditioned conjugate gradient solver.  The type of
@@ -39,8 +39,19 @@ c     or nsol=3, the preconditioner is simply the inverse of the
 c     stiffness matrix diagonals.  If nsol=2 or nsol=4, a symmetrized
 c     Gauss-Seidel preconditioner is used.  This routine also assumes
 c     the stiffness matrix is stored in modified sparse row (MSR) format.
-c     Note that vector b in this routine actually corresponds to vector
-c     bres in the calling routine (iterate), and vice-versa.
+c
+c     The main vectors used in this routine are:
+c       bresid(neq):  The input residual vector. It is unchanged on exit.
+c       dispvec(neq): The output displacement vector. The initial values
+c                     do not matter.
+c       bwork(neq):   Working vector into which the contents of bresid
+c                     are transferred.  On exit it will contain the
+c                     residual forces due to the displacement increments
+c                     in dispvec.
+c       p(neq):       Working vector used by the PCG solution.
+c       z(neq):       Working vector used by the PCG solution.
+c       dprev(neq):   Vector containing initial guesses for the
+c                     displacements, if nsol = 3 or 4.
 c
       include "implicit.inc"
 c
@@ -51,10 +62,10 @@ c
 c
 c...  subroutine arguments
 c
-      integer neq,nnz,ndtot,idout,kto,kw
+      integer neq,nprevdflag,nnz,ndtot,idout,kto,kw
       integer ja(nnz)
-      double precision alnz(nnz),b(neq),d(neq),bres(neq),p(neq),z(neq)
-      double precision dprev(neq)
+      double precision alnz(nnz),bresid(neq),dispvec(neq),bwork(neq)
+      double precision p(neq),z(neq),dprev(nprevdflag*neq)
       logical used
 c
 c...  included dimension and type statements
@@ -91,12 +102,15 @@ c...  determine convergence criteria based on convergence rate of
 c     nonlinear solution
 c
 cdebug      write(6,*) "Hello from pcginv_f!"
-cdebug      write(6,*) "alnz:",(alnz(idb),idb=1,neq)
-cdebug      write(6,*) "b:",(b(idb),idb=1,neq)
-cdebug      write(6,*) "d:",(d(idb),idb=1,neq)
-cdebug      write(6,*) "bres:",(bres(idb),idb=1,neq)
-cdebug      write(6,*) "p:",(p(idb),idb=1,neq)
-cdebug      write(6,*) "z:",(z(idb),idb=1,neq)
+cdebug      write(6,*) "neq,nprevdflag,nnz,ndtot,idout,kto,kw,used:"
+cdebug      write(6,*) neq,nprevdflag,nnz,ndtot,idout,kto,kw,used
+cdebug      write(6,*) "alnz(1-200):",(alnz(idb),idb=1,200)
+cdebug      write(6,*) "alnz(5001-5200):",(alnz(idb),idb=5001,5200)
+cdebug      write(6,*) "bresid:",(bresid(idb),idb=1,200)
+cdebug      write(6,*) "dispvec:",(dispvec(idb),idb=1,200)
+cdebug      write(6,*) "bwork:",(bwork(idb),idb=1,200)
+cdebug      write(6,*) "p:",(p(idb),idb=1,200)
+cdebug      write(6,*) "z:",(z(idb),idb=1,200)
 c
       do i=1,3
         cnvnl(i)=gcurr(i)/gprev(i)
@@ -114,27 +128,27 @@ c
       else
         ip=2
       end if
-      call dcopy(neq,b,ione,bres,ione)
+      call dcopy(neq,bresid,ione,bwork,ione)
       if(.not.used) then
-        call fill(d,zero,neq)
+        call fill(dispvec,zero,neq)
       else
-cdebug2        write(6,*) "Test in pcginv!"
-        call dcopy(neq,dprev,ione,d,ione)
+cdebug        write(6,*) "Test in pcginv!"
+        call dcopy(neq,dprev,ione,dispvec,ione)
         etmp=zero
-	tmp(1)=dnrm2(neq,d,ione)
-	tmp(2)=dnrm2(neq,bres,ione)
+	tmp(1)=dnrm2(neq,dispvec,ione)
+	tmp(2)=dnrm2(neq,bwork,ione)
         tmp(3)=zero
         do i=1,neq
-          en=d(i)*bres(i)
+          en=dispvec(i)*bwork(i)
           tmp(3)=tmp(3)+en*en
-          bres(i)=bres(i)-d(i)*alnz(i)
+          bwork(i)=bwork(i)-dispvec(i)*alnz(i)
           do j=ja(i),ja(i+1)-1
-            bres(i)=bres(i)-d(ja(j))*alnz(j)
+            bwork(i)=bwork(i)-dispvec(ja(j))*alnz(j)
           end do
-          en=d(i)*bres(i)
+          en=dispvec(i)*bwork(i)
           etmp=etmp+en*en
         end do
-	ftmp=dnrm2(neq,bres,ione)
+	ftmp=dnrm2(neq,bwork,ione)
         etmp=sqrt(etmp)
         tmp(3)=sqrt(tmp(3))
         do i=1,3
@@ -146,18 +160,21 @@ cdebug2        write(6,*) "Test in pcginv!"
 	acc(2)=ftmp/tmp(2)
 	acc(3)=etmp/tmp(3)
 	l=0
+c*
+c****  I'm not sure why the following 4 lines are here.  This will always
+c****  make the solution exit with a divergence error.
 	converge=.true.
 	if(idout.gt.1) write(kw,800) l
 	write(kto,800) l
 	go to 10
       end if
       if(ip.eq.1) then
-        call dcopy(neq,bres,ione,z,ione)
+        call dcopy(neq,bwork,ione,z,ione)
 	call dtbsv("u","n","n",neq,izero,alnz,ione,z,ione)
         call dcopy(neq,z,ione,p,ione)
-	rtz0=ddot(neq,bres,ione,z,ione)
+	rtz0=ddot(neq,bwork,ione,z,ione)
       else if(ip.eq.2) then
-        call gspre(alnz,bres,z,rtz0,ja,neq,nnz)
+        call gspre(alnz,bwork,z,rtz0,ja,neq,nnz)
         call dcopy(neq,z,ione,p,ione)
       end if
 c
@@ -183,21 +200,21 @@ c
 c...  compute displacements and residuals for this iteration
 c
         call fill(tmp,zero,ithree)
-	ftmp=dnrm2(neq,bres,ione)
+	ftmp=dnrm2(neq,bwork,ione)
         do i=1,neq
           deld=alf*p(i)
-          en=deld*bres(i)
+          en=deld*bwork(i)
           tmp(1)=tmp(1)+deld*deld
           tmp(3)=tmp(3)+en*en
-          d(i)=d(i)+deld
+          dispvec(i)=dispvec(i)+deld
         end do
-	call daxpy(neq,-alf,z,ione,bres,ione)
+	call daxpy(neq,-alf,z,ione,bwork,ione)
 	if(ip.eq.1) then
-          call dcopy(neq,bres,ione,z,ione)
+          call dcopy(neq,bwork,ione,z,ione)
 	  call dtbsv("u","n","n",neq,izero,alnz,ione,z,ione)
-	  rtz1=ddot(neq,bres,ione,z,ione)
+	  rtz1=ddot(neq,bwork,ione,z,ione)
 	end if
-	tmp(2)=dnrm2(neq,bres,ione)
+	tmp(2)=dnrm2(neq,bwork,ione)
         tmp(1)=sqrt(tmp(1))
         tmp(3)=sqrt(tmp(3))
         if(l.eq.1.and.(.not.used)) then
@@ -244,7 +261,7 @@ c
 c
 c...  compute new z-vector using symmetrized Gauss-Seidel preconditioner
 c
-        if(ip.eq.2) call gspre(alnz,bres,z,rtz1,ja,neq,nnz)
+        if(ip.eq.2) call gspre(alnz,bwork,z,rtz1,ja,neq,nnz)
         bet=rtz1
         if(rtz0.ne.zero) bet=rtz1/rtz0
         rtz0=rtz1
@@ -257,19 +274,19 @@ c
       if(idout.gt.1) write(kw,820) maxcg
       write(kto,820) maxcg
 10    continue
-      if(nsol.gt.2) call dcopy(neq,d,ione,p,ione)
-      call dcopy(neq,d,ione,z,ione)
+c*      if(nsol.gt.2) call dcopy(neq,d,ione,p,ione)
+c*      call dcopy(neq,d,ione,z,ione)
       if(idout.gt.1) write(kw,900) (cnvnl(i),i=1,3),(scurr(i),i=1,3),
      & (si(i),i=1,3),(acc(i),i=1,3),(sstol(i),i=1,3)
       write(kto,900) (cnvnl(i),i=1,3),(scurr(i),i=1,3),
      & (si(i),i=1,3),(acc(i),i=1,3),(sstol(i),i=1,3)
 cdebug      write(6,*) "From end of pcginv_f!"
-cdebug      write(6,*) "alnz:",(alnz(idb),idb=1,neq)
-cdebug      write(6,*) "b:",(b(idb),idb=1,neq)
-cdebug      write(6,*) "d:",(d(idb),idb=1,neq)
-cdebug      write(6,*) "bres:",(bres(idb),idb=1,neq)
-cdebug      write(6,*) "p:",(p(idb),idb=1,neq)
-cdebug      write(6,*) "z:",(z(idb),idb=1,neq)
+cdebug      write(6,*) "alnz:",(alnz(idb),idb=1,200)
+cdebug      write(6,*) "bresid:",(bresid(idb),idb=1,200)
+cdebug      write(6,*) "dispvec:",(dispvec(idb),idb=1,200)
+cdebug      write(6,*) "bwork:",(bwork(idb),idb=1,200)
+cdebug      write(6,*) "p:",(p(idb),idb=1,200)
+cdebug      write(6,*) "z:",(z(idb),idb=1,200)
 800   format(/,
      & '     WARNING!  Apparent divergence in subiteration #',i5,'!',//)
 810   format(/,
@@ -288,7 +305,7 @@ cdebug      write(6,*) "z:",(z(idb),idb=1,neq)
       end
 c
 c version
-c $Id: pcginv.f,v 1.2 2004/07/01 20:57:31 willic3 Exp $
+c $Id: pcginv.f,v 1.3 2005/01/05 22:26:15 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
