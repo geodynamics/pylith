@@ -30,8 +30,8 @@ c
 c
       subroutine viscos(
      & A,                                                               ! sparse
-     & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
-     & dispvec,nforce,grav,                                             ! force
+     & bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,    ! force
+     & nforce,grav,                                                     ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
      & ibond,bond,                                                      ! bc
      & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
@@ -91,7 +91,7 @@ c
       integer iprint(*)
       integer istatout(*),nstatout(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
-      double precision bintern(*),bresid(*),bwork(*),dispvec(*),grav(*)
+      double precision bintern(*),bresid(*),dispvec(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision bond(*)
       double precision dx(*),deldx(*),dxcur(*),diforc(*),winkx(*)
@@ -374,7 +374,7 @@ c
               call iterate(
      &         A,                                                       ! sparse
      &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
-     &         bwork,dispvec,nforce,grav,                               ! force
+     &         dispvec,nforce,grav,                                     ! force
      &         x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,              ! global
      &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
      &         nfault,dfault,tfault,                                    ! fault
@@ -453,7 +453,7 @@ c
               call iterate(
      &         A,                                                       ! sparse
      &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
-     &         bwork,dispvec,nforce,grav,                               ! force
+     &         dispvec,nforce,grav,                                     ! force
      &         x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,              ! global
      &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
      &         nfault,dfault,tfault,                                    ! fault
@@ -526,7 +526,7 @@ c
 clater              call iterate(
 clater     &         A,                                               ! sparse
 clater     &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
-clater     &         bwork,dispvec,nforce,grav,                               ! force
+clater     &         dispvec,nforce,grav,                                     ! force
 clater     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
 clater     &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
 clater     &         nfault,dfault,tfault,                                    ! fault
@@ -595,7 +595,7 @@ c
 clater              call iterate(
 clater     &         A,                                               ! sparse
 clater     &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
-clater     &         bwork,dispvec,nforce,grav,                               ! force
+clater     &         dispvec,nforce,grav,                                     ! force
 clater     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
 clater     &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
 clater     &         nfault,dfault,tfault,                                    ! fault
@@ -677,7 +677,7 @@ c
       end
 c
 c version
-c $Id: viscos.F,v 1.5 2005/03/25 23:32:57 willic3 Exp $
+c $Id: viscos.F,v 1.6 2005/03/29 01:28:12 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
