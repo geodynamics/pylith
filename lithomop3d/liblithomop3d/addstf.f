@@ -55,7 +55,13 @@ c... local variables
 c
       integer nloop,i,irow,ii,j,icol,jj,itmp,l
       double precision signi,signj
+cdebug      integer idb,jdb
 c
+cdebug      write(6,*) "Hello from addstf_f!"
+c
+      do idb=1,nee
+cdebug        write(6,*) "s:",(s(jdb,idb),jdb=1,nee)
+      end do
       nloop=nee
       if(numsn.ne.izero) nloop=itwo*nee
       do i=1,nloop
@@ -100,7 +106,7 @@ c
       end
 c
 c version
-c $Id: addstf.f,v 1.3 2004/06/23 18:37:44 willic3 Exp $
+c $Id: addstf.f,v 1.4 2004/08/02 21:02:59 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

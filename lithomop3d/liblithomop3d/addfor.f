@@ -51,23 +51,28 @@ c...  intrinsic functions
 c
       intrinsic abs,sign,dble
 c
-c...  local functions
+c...  local variables
 c
       integer j,k,l
       double precision sgn
+c
+cdebug      write(6,*) "Hello from addfor_f!"
 c
       do j=1,nee
         k=lm(j)
         l=abs(lmx(j))
         sgn=sign(one,dble(lmx(j)))
+cdebug        write(6,*) j,k,l,sgn
+cdebug        write(6,*) j,p(j)
         if(k.ne.izero) b(k)=b(k)+p(j)
         if(l.ne.izero) b(l)=b(l)+p(j)*sgn
+cdebug        if(k.ne.izero) write(6,*) k,b(k)
       end do
       return
       end
 c
 c version
-c $Id: addfor.f,v 1.3 2004/07/06 20:10:09 willic3 Exp $
+c $Id: addfor.f,v 1.4 2004/08/02 21:02:59 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
