@@ -30,36 +30,34 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine formes_ss(
-     & x,nsd,ndof,numnp,                                                ! global
+     & x,,numnp,                                                        ! global
      & s,stemp,                                                         ! stiff
-     & dmat,ien,lm,iddmat,nstr,nddmat,iel,                              ! elemnt
+     & dmat,ien,lm,iddmat,iel,                                          ! elemnt
      & gauss,sh,shj,ngauss,ngaussdim,nen,nee,                           ! eltype
-     & skew,nskdim,numrot,                                              ! skew
+     & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
-     & ierr)                                                            ! errcode
+     & ierr,errstrng)                                                   ! errcode
 c
 c...  subroutine to form the elemental stiffness matrix
 c
       include "implicit.inc"
 c
-c...  dimension parameters
+c...  parameter definitions
 c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer nsd,ndof,numnp,nstr,nddmat,iel,ngauss,ngaussdim,nen,nee
-      integer nskdim,numrot,ierr
+      integer numnp,iel,ngauss,ngaussdim,nen,nee,numrot,ierr
       integer ien(nen),lm(ndof,nen),iddmat(nstr,nstr)
+      character errstrng*(*)
       double precision x(nsd,numnp),s(neemax*neemax)
       double precision stemp(neemax*neemax),dmat(nddmat,ngaussdim)
       double precision gauss(nsd+1,ngaussmax),sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax),skew(nskdim,numnp)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  external routines
 c
@@ -75,29 +73,28 @@ c
 c
 c...  localize coordinates
 c
-      call lcoord(x,xl,ien,nen,nsd,numnp)
+      call lcoord(x,xl,ien,nen,numnp)
 c
 c...  construct local stiffness matrix, symmetrize it, and rotate for
 c     skew boundary conditions
 c
       call stiff_ss(
-     & xl,nsd,ndof,                                                     ! global
-     & dmat,ien,iddmat,nstr,nddmat,iel,                                 ! elemnt
+     & xl,                                                              ! global
+     & dmat,ien,iddmat,iel,                                             ! elemnt
      & gauss,sh,shj,ngauss,ngaussdim,nen,                               ! eltype
      & s,nee,                                                           ! stiff
      & getshape,bmatrix,                                                ! bbar
-     & ierr)                                                            ! errcode
+     & ierr,errstrng)                                                   ! errcode
 c
       if(ierr.ne.izero) return
 c
-      if(numrot.ne.izero) call rstiff(s,stemp,skew,ien,ndof,numnp,nen,
-     & nee,nskdim)
+      if(numrot.ne.izero) call rstiff(s,stemp,skew,ien,numnp,nen,nee)
 c
       return
       end
 c
 c version
-c $Id: formes_ss.f,v 1.2 2004/06/16 20:24:46 willic3 Exp $
+c $Id: formes_ss.f,v 1.3 2004/06/21 20:55:18 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
