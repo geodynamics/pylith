@@ -62,7 +62,8 @@ class Lithomop3d_setup(Component):
         self.winklerScaleY = lm3dscan.winklerScaleY
         self.winklerScaleZ = lm3dscan.winklerScaleZ
 
-        self.stressTolerance = lm3dscan.stressTolerance.value
+        # self.stressTolerance = lm3dscan.stressTolerance.value
+        self.stressTolerance = lm3dscan.stressTolerance
         self.minimumStrainPerturbation = lm3dscan.minimumStrainPerturbation
         self.initialStrainPerturbation = lm3dscan.initialStrainPerturbation
         self.preconditionerType = lm3dscan.preconditionerType
@@ -76,9 +77,19 @@ class Lithomop3d_setup(Component):
         self.minForceAccuracy = lm3dscan.minForceAccuracy
         self.minEnergyAccuracy = lm3dscan.minEnergyAccuracy
 
-        self.gravityX = lm3dscan.gravityX.value
-        self.gravityY = lm3dscan.gravityY.value
-        self.gravityZ = lm3dscan.gravityZ.value
+        # self.gravityX = lm3dscan.gravityX.value
+        # self.gravityY = lm3dscan.gravityY.value
+        # self.gravityZ = lm3dscan.gravityZ.value
+        self.gravityX = lm3dscan.gravityX
+        self.gravityY = lm3dscan.gravityY
+        self.gravityZ = lm3dscan.gravityZ
+        # I need to fix this behavior for all units values.
+        # The type is different depending on whether the default value is
+        # used or parsed from a file.  I probably need to rethink how I
+        # parse things.
+	# print "lm3dsetup.gravityX: %g" % self.gravityX
+	# print "lm3dsetup.gravityY: %g" % self.gravityY
+	# print "lm3dsetup.gravityZ: %g" % self.gravityZ
 
         self.prestressAutoComputePoisson = lm3dscan.prestressAutoComputePoisson
         self.prestressScaleXx = lm3dscan.prestressScaleXx
@@ -135,14 +146,17 @@ class Lithomop3d_setup(Component):
             self.autoRotateSlipperyNodesInt = 1
 
         self.preconditionerTypeInt = 0
+        self.usePreviousDisplacementFlag = 0
         if lm3dscan.preconditionerType == "diagonalNoUpdate":
             self.preconditionerTypeInt = 1
         elif lm3dscan.preconditionerType == "gaussSeidelNoUpdate":
             self.preconditionerTypeInt = 2
         elif lm3dscan.preconditionerType == "diagonalUpdate":
             self.preconditionerTypeInt = 3
+            self.usePreviousDisplacementFlag = 1
         elif lm3dscan.preconditionerType == "gaussSeidelUpdate":
             self.preconditionerTypeInt = 4
+            self.usePreviousDisplacementFlag = 1
         else:
             self.preconditionerTypeInt = 1
 
@@ -293,19 +307,37 @@ class Lithomop3d_setup(Component):
         self.pointerToPcg = None
         self.pointerToZcg = None
 
-        self.pointerToB = None
-        self.pointerToBtot = None
-        self.pointerToBres = None
-        self.pointerToPvec = None
-        self.pointerToGvec1 = None
-        self.pointerToGvec2 = None
+        self.externFlag = 0
+        self.tractionFlag = 0
+        self.gravityFlag = 0
+        self.concForceFlag = 0
+        self.numberConcForces = 0
+        self.prestressFlag = 0
+        
+        self.pointerToBextern = None
+        self.pointerToBtraction = None
+        self.pointerToBgravity = None
+        self.pointerToBconcForce = None
+        self.pointerToBprestress = None
+        self.pointerToBintern = None
+        self.pointerToBresid = None
+        self.pointerToBwork = None
+        self.pointerToDispVec = None
+        # self.pointerToBwork = None
+
+        # self.pointerToB = None
+        # self.pointerToBtot = None
+        # self.pointerToBres = None
+        # self.pointerToPvec = None
+        # self.pointerToGvec1 = None
+        # self.pointerToGvec2 = None
         self.listGrav = [0.0, 0.0, 0.0]
         self.pointerToListArrayGrav = None
 
         self.pointerToX = None
         self.pointerToD = None
         self.pointerToDeld = None
-        self.pointerToDprev = None
+        # self.pointerToDprev = None
         self.pointerToDcur = None
         self.pointerToId = None
         self.pointerToIwink = None
@@ -315,6 +347,7 @@ class Lithomop3d_setup(Component):
 
         self.pointerToIbond = None
         self.pointerToBond = None
+	self.bcInfo = [0, 0]
 
         self.pointerToDx = None
         self.pointerToDeldx = None
@@ -460,9 +493,9 @@ class Lithomop3d_setup(Component):
 	self.memorySize += 3*self.doubleSize
 
         self.listGrav = [
-            self.gravityX,
-            self.gravityY,
-            self.gravityZ]
+            self.gravityX.value,
+            self.gravityY.value,
+            self.gravityZ.value]
         self.pointerToListArrayGrav = lithomop3d.doubleListToArray(
             self.listGrav)
 	self.memorySize += 3*self.doubleSize
@@ -557,7 +590,7 @@ class Lithomop3d_setup(Component):
             self.plotOutputFile)
 	# print "After read_coords"
 
-        self.numberGlobalEquations = lithomop3d.read_bc(
+        self.bcInfo = lithomop3d.read_bc(
             self.pointerToBond,
             self.displacementScaleFactor,
             self.velocityScaleFactor,
@@ -571,6 +604,8 @@ class Lithomop3d_setup(Component):
             self.asciiOutputInt,
             self.bcInputFile,
             self.asciiOutputFile)
+	self.numberGlobalEquations = self.bcInfo[0]
+	self.numberConcForces = self.bcInfo[1]
         self.currentNumberEquations = self.numberGlobalEquations
 	# print "After read_bc"
 
@@ -615,7 +650,7 @@ class Lithomop3d_setup(Component):
 
         # Output stress computation and subiteration parameters.
         lithomop3d.write_strscomp(
-            self.stressTolerance,
+            self.stressTolerance.value,
             self.minimumStrainPerturbation,
             self.initialStrainPerturbation,
             self.f77AsciiOutput,
@@ -1315,26 +1350,71 @@ class Lithomop3d_setup(Component):
         self.pointerToZcg = lithomop3d.allocateDouble(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.doubleSize
+        self.pointerToDprev = lithomop3d.allocateDouble(
+            self.usePreviousDisplacementFlag*self.numberGlobalEquations)
+	self.memorySize += self.usePreviousDisplacementFlag*self.numberGlobalEquations*self.doubleSize
+        self.pointerToBwork = lithomop3d.allocateDouble(
+            self.numberGlobalEquations)
+	self.memorySize += self.numberGlobalEquations*self.doubleSize
 
         # Force vectors
-        self.pointerToB = lithomop3d.allocateDouble(
+        if self.numberTractionBc != 0:
+            self.tractionFlag = 1
+        if self.gravityX.value != 0.0 or self.gravityY.value != 0.0 or self.gravityZ.value != 0.0:
+            self.gravityFlag = 1
+        if self.numberConcForces != 0 or self.numberDifferentialForceEntries != 0:
+            self.concForceFlag = 1
+        if self.numberPrestressEntries != 0:
+            self.prestressFlag = 1
+        if self.tractionFlag != 0 or self.gravityFlag != 0 or self.concForceFlag != 0 or self.prestressFlag != 0:
+            self.externFlag = 1
+
+        self.pointerToBextern = lithomop3d.allocateDouble(
+            self.externFlag*self.numberGlobalEquations)
+	self.memorySize += self.externFlag*self.numberGlobalEquations*self.doubleSize
+        self.pointerToBtraction = lithomop3d.allocateDouble(
+            self.tractionFlag*self.numberGlobalEquations)
+	self.memorySize += self.tractionFlag*self.numberGlobalEquations*self.doubleSize
+        self.pointerToBgravity = lithomop3d.allocateDouble(
+            self.gravityFlag*self.numberGlobalEquations)
+	self.memorySize += self.gravityFlag*self.numberGlobalEquations*self.doubleSize
+        self.pointerToBconcForce = lithomop3d.allocateDouble(
+            self.concForceFlag*self.numberGlobalEquations)
+	self.memorySize += self.concForceFlag*self.numberGlobalEquations*self.doubleSize
+        self.pointerToBprestress = lithomop3d.allocateDouble(
+            self.prestressFlag*self.numberGlobalEquations)
+	self.memorySize += self.prestressFlag*self.numberGlobalEquations*self.doubleSize
+        self.pointerToBintern = lithomop3d.allocateDouble(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.doubleSize
-        self.pointerToBtot = lithomop3d.allocateDouble(
+        self.pointerToBresid = lithomop3d.allocateDouble(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.doubleSize
-        self.pointerToBres = lithomop3d.allocateDouble(
+        self.pointerToBwork = lithomop3d.allocateDouble(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.doubleSize
-        self.pointerToGvec1 = lithomop3d.allocateDouble(
+        self.pointerToDispVec = lithomop3d.allocateDouble(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.doubleSize
-        self.pointerToGvec2 = lithomop3d.allocateDouble(
-            self.numberGlobalEquations)
-	self.memorySize += self.numberGlobalEquations*self.doubleSize
-        self.pointerToPvec = lithomop3d.allocateDouble(
-            self.numberGlobalEquations)
-	self.memorySize += self.numberGlobalEquations*self.doubleSize
+            
+        # self.pointerToB = lithomop3d.allocateDouble(
+            # self.numberGlobalEquations)
+	# self.memorySize += self.numberGlobalEquations*self.doubleSize
+        # self.pointerToBtot = lithomop3d.allocateDouble(
+            # self.numberGlobalEquations)
+	# self.memorySize += self.numberGlobalEquations*self.doubleSize
+        # self.pointerToBres = lithomop3d.allocateDouble(
+            # self.numberGlobalEquations)
+	# self.memorySize += self.numberGlobalEquations*self.doubleSize
+        # self.pointerToGvec1 = lithomop3d.allocateDouble(
+            # self.numberGlobalEquations)
+	# self.memorySize += self.numberGlobalEquations*self.doubleSize
+        # self.pointerToGvec2 = lithomop3d.allocateDouble(
+            # self.numberGlobalEquations)
+	# self.memorySize += self.numberGlobalEquations*self.doubleSize
+        # self.pointerToPvec = lithomop3d.allocateDouble(
+            # self.numberGlobalEquations)
+	# self.memorySize += self.numberGlobalEquations*self.doubleSize
 
         # Displacement arrays
         self.pointerToD = lithomop3d.allocateDouble(
@@ -1345,9 +1425,6 @@ class Lithomop3d_setup(Component):
             self.numberDegreesFreedom*self.numberNodes)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberNodes*self.doubleSize
-        self.pointerToDprev = lithomop3d.allocateDouble(
-            self.numberGlobalEquations)
-	self.memorySize += self.numberGlobalEquations*self.doubleSize
         self.pointerToDcur = lithomop3d.allocateDouble(
             self.numberDegreesFreedom*self.numberNodes)
 	self.memorySize += self.numberDegreesFreedom* \
@@ -1492,7 +1569,7 @@ class Lithomop3d_setup(Component):
             
         # rgiter array
         self.listRgiter = [
-            self.stressTolerance,
+            self.stressTolerance.value,
             self.minimumStrainPerturbation,
             self.initialStrainPerturbation]
         self.pointerToListArrayRgiter = lithomop3d.doubleListToArray(
@@ -1539,6 +1616,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.11 2004/08/31 19:13:07 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.12 2005/01/06 01:58:21 willic3 Exp $
 
 # End of file 
