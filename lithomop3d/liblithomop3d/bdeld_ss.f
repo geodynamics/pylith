@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine bdeldss(xl,dl,sh,shj,ee,det,gauss,n,
+      subroutine bdeld_ss(xl,dl,sh,shj,ee,det,gauss,iel,
      & nen,nee,nsd,ndof,nstr,ngauss,ierr,getshape,bmatrix)
 c
 c...  Subroutine to compute strain increments in each element.
@@ -44,11 +44,14 @@ c     corresponding routine is called depending on whether B-bar is
 c     being used.
 c
       include "implicit.inc"
+c
+c...  dimension parameters
+c
       include "nshape.inc"
 c
 c...  subroutine arguments
 c
-      integer n,nen,nee,nsd,ndof,nstr,ngauss,ierr
+      integer iel,nen,nee,nsd,ndof,nstr,ngauss,ierr
       double precision xl(nsd,nen),dl(ndof*nen)
       double precision sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax),ee(nstr,ngauss)
@@ -65,7 +68,7 @@ c
 c
 c...  local variables
 c
-      integer l,i,nee
+      integer l
       double precision shd(4,nenmax,ngaussmax),b(6,3*nenmax)
       double precision shbar(4,nenmax),vol
 c
@@ -74,12 +77,11 @@ c   points, and then compute average dilatational component.
 c
 cdebug      write(6,*) "Hello from bdeld_ss_f!"
 c
-      call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,n,nen,nsd,
+      call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,nsd,
      & ngauss,ierr)
       if(ierr.ne.0) return
 c
-c...construct b matrix and compute strains and rotations at gauss
-c   point(s)
+c...construct b matrix and compute strains at gauss point(s)
 c
       do l=1,ngauss
         call bmatrix(b,shd(1,1,l),shbar,nsd,ndof,nen,nstr)
@@ -89,7 +91,7 @@ c
       end
 c
 c version
-c $Id: bdeld_ss.f,v 1.1 2004/06/14 21:40:22 willic3 Exp $
+c $Id: bdeld_ss.f,v 1.2 2004/06/16 16:57:13 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
