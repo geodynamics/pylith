@@ -135,7 +135,8 @@ c
           indstateg=indstate+(l-1)*nstate*nstr
           inddmatg=inddmat+(l-1)*nddmat
           call elas_strs(state(1,indstateg),ee(nstr*(l-1)),
-     &     dmat(1,inddmatg),nstate)
+     &     dmat(1,inddmatg),nstate,ierr,errstrng)
+          if(ierr.ne.izero) return
           call dcopy(nstr,state(1,indstateg),ione,scur(nstr*(l-1)),ione)
         end do
 c
@@ -153,7 +154,7 @@ c
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.6 2004/06/24 20:09:47 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.7 2004/06/25 19:40:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
