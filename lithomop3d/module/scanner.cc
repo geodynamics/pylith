@@ -624,7 +624,8 @@ PyObject * pylithomop3d_scan_timdat(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("ii",numberTimeStepGroups, totalNumberTimeSteps);
+  return Py_BuildValue("ii",numberTimeStepGroups,
+		       totalNumberTimeSteps);
 }
 
 
@@ -686,12 +687,10 @@ char pylithomop3d_scan_wink__name__[] = "scan_wink";
 
 PyObject * pylithomop3d_scan_wink(PyObject *, PyObject *args)
 {
-  int numberWinklerForces;
   int f77FileInput;
   char* winklerInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iis:scan_wink",
-			    &numberWinklerForces,
+  int ok = PyArg_ParseTuple(args, "is:scan_wink",
 			    &f77FileInput,
 			    &winklerInputFile);
 
@@ -703,6 +702,7 @@ PyObject * pylithomop3d_scan_wink(PyObject *, PyObject *args)
   const int maxsize = 1024;
   char errorstring[maxsize];
   int numberWinklerEntries = 0;
+  int numberWinklerForces = 0;
 
   scan_wink_f(&numberWinklerEntries,
 	      &numberWinklerForces,
@@ -725,7 +725,8 @@ PyObject * pylithomop3d_scan_wink(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i",numberWinklerEntries);
+  return Py_BuildValue("ii",numberWinklerEntries,
+	               numberWinklerForces);
 }
 
 
@@ -736,13 +737,11 @@ char pylithomop3d_scan_winkx__name__[] = "scan_winkx";
 
 PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
 {
-  int numberSlipperyWinklerForces;
   int numberSlipperyNodeEntries;
   int f77FileInput;
   char* slipperyWinklerInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iiis:scan_winkx",
-			    &numberSlipperyWinklerForces,
+  int ok = PyArg_ParseTuple(args, "iis:scan_winkx",
 			    &numberSlipperyNodeEntries,
 			    &f77FileInput,
 			    &slipperyWinklerInputFile);
@@ -755,6 +754,7 @@ PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
   const int maxsize = 1024;
   char errorstring[maxsize];
   int numberSlipperyWinklerEntries = 0;
+  int numberSlipperyWinklerForces = 0;
 
   scan_winkx_f(&numberSlipperyNodeEntries,
 	       &numberSlipperyWinklerEntries,
@@ -778,10 +778,11 @@ PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i",numberSlipperyWinklerEntries);
+  return Py_BuildValue("ii",numberSlipperyWinklerEntries,
+		       numberSlipperyWinklerForces);
 }
     
 // version
-// $Id: scanner.cc,v 1.3 2004/07/20 20:11:36 willic3 Exp $
+// $Id: scanner.cc,v 1.4 2004/08/12 15:08:40 willic3 Exp $
 
 // End of file
