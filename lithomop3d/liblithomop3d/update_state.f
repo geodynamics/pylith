@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine update_state(state,dstate,infiel,infmat,infetype,
-     & nstatesz,numelt,numat,ierr,errstrng)
+      subroutine update_state(state,dstate,infiel,infmat,infmatmod,
+     & infetype,nstatesz,numelt,numat,ierr,errstrng)
 c
 c...program to update state variables after iteration convergence
 c
@@ -40,20 +40,22 @@ c...  parameter definitions
 c
       include "ndimens.inc"
       include "nshape.inc"
+      include "materials.inc"
       include "nconsts.inc"
       include "rconsts.inc"
 c
 c...  subroutine arguments
 c
       integer nstatesz,numelt,numat,ierr
-      integer infiel(6,numelt),infmat(6,numat),infetype(4,netypes)
+      integer infiel(6,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
+      integer infetype(4,netypes)
       character errstrng*(*)
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
 c
 c...  local variables
 c
-      integer matgpt,imat,nmatel,nstate,incstate,ielg,iel,ietype
-      integer indstate,indstateg,ngauss,l
+      integer matgpt,imat,matmodel,nmatel,nstate,incstate,ielg,iel
+      integer ietype,indstate,indstateg,ngauss,l
       double precision sub
 c
 cdebug      write(6,*) "Hello from update_state_f!"
@@ -64,8 +66,9 @@ c
 c...  loop over material groups
 c
       do imat=1,numat
+        matmodel=infmat(1,imat)
         nmatel=infmat(2,imat)
-        nstate=infmat(3,imat)
+        nstate=infmatmod(3,matmodel)
         incstate=nstr*nstate
 c
 c...  loop over elements in group, updating appropriate state variables
@@ -138,7 +141,7 @@ c
       end
 c
 c version
-c $Id: update_state.f,v 1.1 2004/07/02 19:54:37 willic3 Exp $
+c $Id: update_state.f,v 1.2 2004/07/09 15:25:16 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
