@@ -53,6 +53,7 @@ class Lithomop3d_run(Component):
         # possibly modified there.  Get all required info from the inventory.
 
         # PETSc logging
+        self.autoprestrStage = lm3dsetup.autoprestrStage
         self.elasticStage = lm3dsetup.elasticStage
         self.viscousStage = lm3dsetup.viscousStage
         self.iterateEvent = lm3dsetup.iterateEvent
@@ -74,6 +75,7 @@ class Lithomop3d_run(Component):
         self.pointerToBintern = lm3dsetup.pointerToBintern
         self.pointerToBresid = lm3dsetup.pointerToBresid
         self.pointerToDispVec = lm3dsetup.pointerToDispVec
+        self.pointerToDprev = lm3dsetup.pointerToDprev
         self.pointerToListArrayNforce = lm3dsetup.pointerToListArrayNforce
         self.pointerToListArrayGrav = lm3dsetup.pointerToListArrayGrav
 
@@ -204,6 +206,7 @@ class Lithomop3d_run(Component):
                     self.pointerToBintern,
                     self.pointerToBresid,
                     self.pointerToDispVec,
+                    self.pointerToDprev,
                     self.pointerToListArrayNforce,
                     self.pointerToListArrayGrav,
                     self.pointerToX,
@@ -279,9 +282,8 @@ class Lithomop3d_run(Component):
                     self.asciiOutputFile,
                     self.plotOutputFile,
                     self.ucdOutputRoot,
+                    self.autoprestrStage,
                     self.iterateEvent)
-
-            # print "Just before lithomop3d.elastc:"
 
             # Perform elastic solution, if requested.
             
@@ -294,6 +296,7 @@ class Lithomop3d_run(Component):
                 self.pointerToBintern,
                 self.pointerToBresid,
                 self.pointerToDispVec,
+                self.pointerToDprev,
                 self.pointerToListArrayNforce,
                 self.pointerToListArrayGrav,
                 self.pointerToX,
@@ -384,6 +387,7 @@ class Lithomop3d_run(Component):
                 self.pointerToBintern,
                 self.pointerToBresid,
                 self.pointerToDispVec,
+                self.pointerToDprev,
                 self.pointerToListArrayNforce,
                 self.pointerToListArrayGrav,
                 self.pointerToX,
@@ -479,6 +483,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.14 2005/03/30 01:56:39 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.15 2005/04/01 23:42:09 willic3 Exp $
 
 # End of file 
