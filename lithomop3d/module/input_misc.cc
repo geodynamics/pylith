@@ -410,14 +410,16 @@ char pylithomop3d_write_element_info__name__[] = "write_element_info";
 PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
 {
   int numberElements;
+  int quadratureOrderInt;
   int prestressAutoComputeInt;
   double prestressAutoComputePoisson;
   int f77AsciiOutput;
   int asciiOutputInt;
   char* asciiOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "iidiis:write_element_info",
+  int ok = PyArg_ParseTuple(args, "iiidiis:write_element_info",
 			    &numberElements,
+			    &quadratureOrderInt,
 			    &prestressAutoComputeInt,
 			    &prestressAutoComputePoisson,
 			    &f77AsciiOutput,
@@ -429,6 +431,7 @@ PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
   }
 
   write_element_info_f(&numberElements,
+		       &quadratureOrderInt,
 		       &prestressAutoComputeInt,
 		       &prestressAutoComputePoisson,
 		       &f77AsciiOutput,
@@ -743,6 +746,6 @@ PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *args)
 
 
 // version
-// $Id: input_misc.cc,v 1.3 2004/07/20 20:22:03 willic3 Exp $
+// $Id: input_misc.cc,v 1.4 2004/08/02 21:41:41 willic3 Exp $
 
 // End of file
