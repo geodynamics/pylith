@@ -114,7 +114,7 @@ c
       if(imatvar.eq.izero) ng=ngaussmax
       inddmatg=inddmat0
       do l=2,ng
-        inddmatg=inddmatg+nddmat
+        inddmatg=inddmatg+ione
         call dcopy(nddmat,dmat(1,inddmat0),ione,dmat(1,inddmatg),ione)
       end do
 c
@@ -129,7 +129,7 @@ c
           ngauss=infetype(1,ietype)
           inddmatg=inddmat
           do l=1,ngauss
-            inddmatg=inddmat+nddmat
+            inddmatg=inddmatg+ione
             call dcopy(nddmat,dmat(1,inddmat0),ione,dmat(1,inddmatg),
      &       ione)
           end do
@@ -169,7 +169,7 @@ c
       end
 c
 c version
-c $Id: elas_matinit_cmp_ss.f,v 1.3 2004/07/08 20:32:25 willic3 Exp $
+c $Id: elas_matinit_cmp_ss.f,v 1.4 2004/08/02 21:08:57 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
