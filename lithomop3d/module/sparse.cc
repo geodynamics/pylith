@@ -41,6 +41,93 @@
 #include <string.h>
 
 
+// Compute number of nonzero entries in stiffness matrix
+
+char pylithomop3d_cmp_stiffsz__doc__[] = "";
+char pylithomop3d_cmp_stiffsz__name__[] = "cmp_stiffsz";
+
+PyObject * pylithomop3d_cmp_stiffsz(PyObject *, PyObject *args)
+{
+  int numberGlobalEquations;
+  PyObject* pyPointerToLm;
+  PyObject* pyPointerToLmx;
+  PyObject* pyPointerToInfiel;
+  int connectivitySize;
+  int numberElements;
+  PyObject* pyPointerToElementTypeInfo;
+  int totalNumberSlipperyNodes;
+
+  int ok = PyArg_ParseTuple(args, "iOOOiiOi:cmp_stiffsz",
+			    &numberGlobalEquations,
+			    &pyPointerToLm,
+			    &pyPointerToLmx,
+			    &pyPointerToInfiel,
+			    &connectivitySize,
+			    &numberElements,
+			    &pyPointerToElementTypeInfo,
+			    &totalNumberSlipperyNodes);
+
+  // printf("Hello from pylithomop3d_cmp_stiffsz!\n");
+  // printf("numberGlobalEquations = %d\n", numberGlobalEquations);
+  // printf("connectivitySize = %d\n", connectivitySize);
+  // printf("numberElements = %d\n", numberElements);
+  // printf("workingArraySize = %d\n", workingArraySize);
+
+
+  if (!ok) {
+    return 0;
+  }
+
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
+  int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
+  int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
+  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
+  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
+  int workingArraySize = 0;
+
+  // printf("pointerToLm = %d\n", pointerToLm);
+  // printf("pointerToLmx = %d\n", pointerToLmx);
+  // printf("pointerToInfiel = %d\n", pointerToInfiel);
+  // printf("pointerToElementTypeInfo = %d\n", pointerToElementTypeInfo);
+  // printf("connectivitySize = %d\n", connectivitySize);
+  // printf("numberElements = %d\n", numberElements);
+  // printf("workingArraySize = %d\n", workingArraySize);
+  // printf("totalNumberSlipperyNodes = %d\n", totalNumberSlipperyNodes);
+
+  cmp_stiffsz_f(&numberGlobalEquations,
+	   	pointerToLm,
+	   	pointerToLmx,
+	   	pointerToInfiel,
+	   	&connectivitySize,
+	   	&numberElements,
+	   	pointerToElementTypeInfo,
+	   	&workingArraySize,
+	   	&totalNumberSlipperyNodes,
+	   	&errorcode,
+	   	errorstring,
+	   	strlen(errorstring));
+
+  // printf("workingArraySize = %d\n", workingArraySize);
+
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
+		  
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "workingArraySize:" << workingArraySize
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_BuildValue("i", workingArraySize);
+}
+
+
+
 // Create linked list of nonzero row and column entries in the stiffness matrix
 
 char pylithomop3d_lnklst__doc__[] = "";
@@ -96,8 +183,8 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
   int* pointerToIndx = (int*) PyCObject_AsVoidPtr(pyPointerToIndx);
   int* pointerToLink = (int*) PyCObject_AsVoidPtr(pyPointerToLink);
   int* pointerToNbrs = (int*) PyCObject_AsVoidPtr(pyPointerToNbrs);
-  int stiffnessOffDiagonalSize = 0;
-  int stiffnessMatrixSize = 0;
+  int stiffnessMatrixSize =0;
+  int stiffnessOffDiagonalSize =0;
 
   // printf("pointerToLm = %d\n", pointerToLm);
   // printf("pointerToLmx = %d\n", pointerToLmx);
@@ -108,9 +195,8 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
   // printf("pointerToNbrs = %d\n", pointerToNbrs);
   // printf("connectivitySize = %d\n", connectivitySize);
   // printf("numberElements = %d\n", numberElements);
-  // printf("workingArraySize = %d\n", workingArraySize);
-  // printf("stiffnessOffDiagonalSize = %d\n", stiffnessOffDiagonalSize);
   // printf("stiffnessMatrixSize = %d\n", stiffnessMatrixSize);
+  // printf("stiffnessOffDiagonalSize = %d\n", stiffnessOffDiagonalSize);
   // printf("totalNumberSlipperyNodes = %d\n", totalNumberSlipperyNodes);
 
   lnklst_f(&numberGlobalEquations,
@@ -131,8 +217,8 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
 	   errorstring,
 	   strlen(errorstring));
 
-  // printf("stiffnessMatrixSize = %d\n", stiffnessMatrixSize);
   // printf("stiffnessOffDiagonalSize = %d\n", stiffnessOffDiagonalSize);
+  // printf("stiffnessMatrixSize = %d\n", stiffnessMatrixSize);
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -146,7 +232,8 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("ii", stiffnessMatrixSize, stiffnessOffDiagonalSize);
+  return Py_BuildValue("ii", stiffnessMatrixSize,
+		  stiffnessOffDiagonalSize);
 }
 
 
@@ -223,6 +310,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.4 2004/08/12 15:12:03 willic3 Exp $
+// $Id: sparse.cc,v 1.5 2004/08/25 01:37:16 willic3 Exp $
 
 // End of file

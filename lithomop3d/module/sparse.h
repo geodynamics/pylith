@@ -32,6 +32,12 @@
 #if !defined(pylithomop3d_sparse_h)
 #define pylithomop3d_sparse_h
 
+// compute maximum number of nonzero entries in stiffness matrix
+extern char pylithomop3d_cmp_stiffsz__name__[];
+extern char pylithomop3d_cmp_stiffsz__doc__[];
+extern "C"
+PyObject * pylithomop3d_cmp_stiffsz(PyObject *, PyObject *);
+
 // create linked list for sparse matrix
 extern char pylithomop3d_lnklst__name__[];
 extern char pylithomop3d_lnklst__doc__[];
@@ -47,6 +53,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *);
 #endif
 
 // version
-// $Id: sparse.h,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: sparse.h,v 1.2 2004/08/25 01:37:16 willic3 Exp $
 
 // End of file
