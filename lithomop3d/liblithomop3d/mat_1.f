@@ -39,24 +39,26 @@ c       Material properties:               Density
 c                                          Young's modulus
 c                                          Poisson's ratio
 c
-      subroutine mat_prt_1(prop,nprop,matnum,idout,idsk,kw,kp,ierr,
-     & ofile,pfile)
+      subroutine mat_prt_1(prop,nprop,matnum,idout,idsk,kw,kp,
+     & ofile,pfile,ierr,errstrng)
 c
 c...  subroutine to output material properties for material model 1.
 c
 c     Error codes:
-c         0:  No error
-c         1:  Error opening output file
-c         2:  Not used
-c         3:  Write error
+c         2:  Error opening output file
+c         4:  Write error
 c
       include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
 c
 c...  subroutine arguments
 c
       integer nprop,matnum,idout,idsk,kw,kp,ierr
       double precision prop(nprop)
-      character ofile*(*),pfile*(*)
+      character ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  parameters
 c
@@ -74,36 +76,50 @@ c
 c
 c...  open output files
 c
-      ierr=0
-      if(idout.gt.0) open(kw,file=ofile,status="old",access="append")
-      if(idsk.eq.0) open(kp,file=pfile,status="old",access="append")
-      if(idsk.eq.1) open(kp,file=pfile,status="old",access="append",
-     & form="unformatted")
+      ierr=izero
+      if(idout.gt.izero) open(kw,file=ofile,err=10,status="old",
+     & access="append")
+      if(idsk.eq.izero) open(kp,file=pfile,err=10,status="old",
+     & access="append")
+      if(idsk.eq.ione) open(kp,file=pfile,err=10,status="old",
+     & access="append",form="unformatted")
 c
 c...  output plot results
 c
-      if(idsk.eq.0) then
-	write(kp,"(3i7)") matnum,mattype,nprop
-	write(kp,"(1pe15.8,20(2x,1pe15.8))") (prop(i),i=1,nprop)
-      else if(idsk.eq.1) then
-	write(kp) matnum,mattype,nprop
-	write(kp) prop
+      if(idsk.eq.izero) then
+	write(kp,"(3i7)",err=20) matnum,mattype,nprop
+	write(kp,"(1pe15.8,20(2x,1pe15.8))",err=20) (prop(i),i=1,nprop)
+      else if(idsk.eq.ione) then
+	write(kp,err=20) matnum,mattype,nprop
+	write(kp,err=20) prop
       end if
 c
 c...  output ascii results, if desired
 c
-      if(idout.gt.0) then
-	write(kw,700) matnum,modelname,nprop
+      if(idout.gt.izero) then
+	write(kw,700,err=20) matnum,modelname,nprop
 	do i=1,nprop
-	  write(kw,710) labelp(i),prop(i)
+	  write(kw,710,err=20) labelp(i),prop(i)
         end do
       end if
+c
+      return
+c
+c...  error returns
+c
+ 10   continue
+        ierr=2
+        errstrng="mat_prt_1"
+        return
+ 20   continue
+        ierr=4
+        errstrng="mat_prt_1"
+        return
 c
  700  format("Material number:   ",i7,/,10x,a80,/,
      &       "Number of properties:  ",i7,/)
  710  format(15x,a15,3x,1pe15.8)
 c
-      return
       end
 c
 c
@@ -232,7 +248,6 @@ c...  subroutine to compute the current stress for the time-dependent
 c     solution.
 c     Note that only the upper triangle is used (or available), as
 c     dmat is assumed to always be symmetric.
-c     Note also that
 c
       include "implicit.inc"
 c
@@ -295,7 +310,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.5 2004/07/02 19:14:20 willic3 Exp $
+c $Id: mat_1.f,v 1.6 2004/07/07 18:55:13 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
