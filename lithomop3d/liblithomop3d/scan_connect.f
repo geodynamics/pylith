@@ -28,8 +28,9 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine scan_connect(neni,infmatmod,ivflist,maxvfamilies,
-     & numelv,nvfamilies,ietypev,kr,cfile,ierr,errstrng)
+      subroutine scan_connect(neni,infmatmod,infmat,ivflist,
+     & maxvfamilies,numat,numelv,nvfamilies,ietypev,kr,cfile,ierr,
+     & errstrng)
 c
 c...  subroutine to perform an initial scan of the element connectivity
 c     file to determine the total number of elements and the number of
@@ -61,23 +62,26 @@ c
 c
 c...  subroutine arguments
 c
-      integer maxvfamilies,numelv,nvfamilies,ietypev,kr,ierr
-      integer neni(netypesi),infmatmod(6,nmatmodmax)
-      integer ivflist(2,maxvfamilies)
+      integer maxvfamilies,numat,numelv,nvfamilies,ietypev,kr,ierr
+      integer neni(netypesi),infmatmod(6,nmatmodmax),infmat(numat)
+      integer ivflist(3,maxvfamilies)
       character cfile*(*),errstrng*(*)
 c
 c...  local variables
 c
-      integer j,n,ietypei,imat,infin
+      integer j,n,ietype,ietypel,imat,infin
       integer ien(20)
+c
+cdebug      write(6,*) "Hello from scan_connect_f!"
 c
 c...  open input file
 c
+cdebug      write(6,*) "maxvfamilies:",maxvfamilies
       ierr=izero
       numelv=izero
       ietypev=izero
       nvfamilies=izero
-      call ifill(ivflist,izero,itwo*maxvfamilies)
+      call ifill(ivflist,izero,ithree*maxvfamilies)
       open(kr,file=cfile,status="old",err=20)
 c
 c... scan the file, counting the number of entries for each type of
@@ -88,26 +92,26 @@ c    would need to scan each line twice to determine whether it was a
 c    comment.
 c
       call pskip(kr)
-      read(kr,*,end=10,err=30) n,ietypei,imat,infin,
-     & (ien(j),j=1,neni(ietypei))
-      ietypev=ietypei
+      read(kr,*,end=10,err=30) n,ietypel,imat,infin,
+     & (ien(j),j=1,neni(ietypel))
+      call infcmp(ietypel,ietypev,infin)
       backspace(kr)
-      if(ietypev.le.izero.or.ietypev.gt.netypesi) then
+      if(ietypel.le.izero.or.ietypel.gt.netypesi) then
         ierr=106
         errstrng="scan_connect"
         return
       end if
  40   continue
-        read(kr,*,end=10,err=30) n,ietypei,imat,infin,
-     &   (ien(j),j=1,neni(ietypei))
+        read(kr,*,end=10,err=30) n,ietype,imat,infin,
+     &   (ien(j),j=1,neni(ietype))
 c
-        if(ietypei.ne.ietypev) then
+        if(ietype.ne.ietypel) then
           ierr=106
           errstrng="scan_connect"
           return
         end if
 c
-        if(imat.le.izero.or.imat.gt.maxvfamilies) then
+        if(imat.le.izero.or.imat.gt.numat) then
           ierr=107
           errstrng="scan_connect"
           return
@@ -115,20 +119,24 @@ c
 c
         ivflist(1,imat)=ivflist(1,imat)+ione
         ivflist(2,imat)=imat
+        ivflist(3,imat)=infmat(imat)
         numelv=numelv+ione
 c
         go to 40
-c
-c...  determine the number of element families
-c
-      do j=1,maxvfamilies
-        if(ivflist(1,j).ne.izero) nvfamilies=nvfamilies+1
-      end do
 c
 c...  normal return
 c
  10   continue
         close(kr)
+c
+c...  determine the number of element families
+c
+        do j=1,maxvfamilies
+cdebug          write(6,*) "j,ivflist(1,j),ivflist(2,j):"
+cdebug          write(6,*) j,ivflist(1,j),ivflist(2,j)
+          if(ivflist(1,j).ne.izero) nvfamilies=nvfamilies+1
+        end do
+cdebug        write(6,*) "nvfamilies:",nvfamilies
         return
 c
 c...  error opening file
@@ -148,7 +156,7 @@ c
       end
 c
 c version
-c $Id: scan_connect.f,v 1.5 2005/03/28 19:50:24 willic3 Exp $
+c $Id: scan_connect.f,v 1.6 2005/04/01 23:24:41 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
