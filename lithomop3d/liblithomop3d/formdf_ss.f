@@ -31,14 +31,14 @@ c
 c
       subroutine formdf_ss(
      & bdisp,neq,                                                       ! force
-     & x,d,deld,nsd,ndof,numnp,                                         ! global
+     & x,d,deld,numnp,                                                  ! global
      & s,stemp,                                                         ! stiff
-     & dmat,ien,lm,lmx,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,nconsz, ! elemnt
+     & dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,             ! elemnt
      & infmat,numat,                                                    ! materl
-     & gauss,sh,shj,infetype,netypes,                                   ! eltype
-     & skew,nskdim,numrot,                                              ! skew
+     & gauss,sh,shj,infetype,                                           ! eltype
+     & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
-     & ierr)                                                            ! errcode
+     & ierr,errstrng)                                                   ! errcode
 c
 c...program to compute forces due to kinematic boundary conditions
 c***  Leave this routine essentially 'as-is' for now.  In the near
@@ -47,17 +47,20 @@ c***  loop over elements.
 c
       include "implicit.inc"
 c
-c...  dimension parameters
+c...  parameter definitions
 c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer neq,nsd,ndof,numnp,nstr,nddmat,ndmatsz,numelt,nconsz,numat
-      integer netypes,nskdim,numrot,ierr
+      integer neq,numnp,ndmatsz,numelt,nconsz,numat,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
       integer infiel(6,numelt),iddmat(nstr,nstr),infmat(6,numat)
       integer infetype(4,netypes)
+      character errstrng*(*)
       double precision bdisp(neq),x(nsd,numnp),d(ndof,numnp)
       double precision deld(ndof,numnp),s(neemax*neemax)
       double precision stemp(neemax*neemax),dmat(nddmat,ndmatsz)
@@ -65,11 +68,6 @@ c
       double precision sh(nsd+1,nenmax,ngaussmax,netypes)
       double precision shj(nsd+1,nenmax,ngaussmax,netypes)
       double precision skew(nskdim,numnp)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  external routines
 c
@@ -100,7 +98,7 @@ c
 c
 c...  localize displacement BC
 c
-          call ldisbc(dld,deld,ien(indien),lm(1,indien),ndof,nen,numnp)
+          call ldisbc(dld,deld,ien(indien),lm(1,indien),nen,numnp)
           do i=1,ndof*nen
             if(dld(i).ne.zero) go to 100
           end do
@@ -115,15 +113,14 @@ c
           ngaussdim=max(ngauss,ngtest)
 c
           call formes_ss(
-     &     x,nsd,ndof,numnp,                                            ! global
+     &     x,numnp,                                                     ! global
      &     s,stemp,                                                     ! stiff
-     &     dmat(1,inddmat),ien(indien),lm(1,indien),iddmat,nstr,nddmat, ! elemnt
-     &     iel,                                                         ! elemnt
+     &     dmat(1,inddmat),ien(indien),lm(1,indien),iddmat,iel,         ! elemnt
      &     gauss(1,1,ietype),sh(1,1,1,ietype),shj(1,1,1,ietype),        ! eltype
      &     ngauss,ngaussdim,nen,nee,                                    ! eltype
-     &     skew,nskdim,numrot,                                          ! skew
+     &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
-     &     ierr)                                                        ! errcode
+     &     ierr,errstrng)                                               ! errcode
 c
           if(ierr.ne.izero) return
 c
@@ -140,7 +137,7 @@ c
       end
 c
 c version
-c $Id: formdf_ss.f,v 1.2 2004/06/16 20:23:33 willic3 Exp $
+c $Id: formdf_ss.f,v 1.3 2004/06/21 19:49:04 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
