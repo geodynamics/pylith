@@ -29,13 +29,12 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_bc(bond,dscale,vscale,fscale,ibond,id,numnp,
-     & numbc,neq,nconcforce,kr,kw,idout,bcfile,ofile,ierr,errstrng)
+      subroutine read_bc(bond,dscale,vscale,fscale,ibond,numnp,
+     & numbc,nconcforce,kr,kw,idout,bcfile,ofile,ierr,errstrng)
 c
 c...  subroutine to read in boundary conditions.  The bc types are
 c     stored in the ibond array and the bc value is stored in the bond
-c     array.  The id array contains the global equation numbers.  The
-c     number of equations is computed and stored in neq.
+c     array.
 c     The input file simply consists of numbc lines with 1 + 2*ndof
 c     entries per line.
 c
@@ -56,8 +55,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,numbc,neq,nconcforce,kr,kw,idout,ierr
-      integer ibond(ndof,numnp),id(ndof,numnp)
+      integer numnp,numbc,nconcforce,kr,kw,idout,ierr
+      integer ibond(ndof,numnp)
       double precision bond(ndof,numnp)
       double precision dscale,vscale,fscale
       character bcfile*(*),ofile*(*),errstrng*(*)
@@ -78,7 +77,7 @@ c
 c...  local variables
 c
       integer ihist(3),itype(3)
-      integer i,j,n,nlines,npage,imode,iihist,iitype
+      integer i,j,n,nlines,npage,imode
       double precision scale(4)
       character dummy*80
       logical nonzed
@@ -116,7 +115,6 @@ c...  read BC, returning an error code if node is out of range
 c
       call fill(bond,zero,ndof*numnp)
       call ifill(ibond,izero,ndof*numnp)
-      call ifill(id,izero,ndof*numnp)
       call pskip(kr)
       do i=1,numbc
         read(kr,*,end=30,err=30) n,(ibond(j,n),j=1,ndof),
@@ -167,22 +165,6 @@ c
         close(kw)
       end if
 c
-c.... establish equation numbers and create id array
-c
-      neq=0
-      do n=1,numnp
-        do i=1,ndof
-          id(i,n)=0
-          imode=ibond(i,n)
-          iihist=imode/10
-          iitype=imode-10*iihist
-          if((iitype.eq.0).or.(iitype.eq.3)) then
-            neq=neq+1
-            id(i,n)=neq
-          end if
-        end do
-      end do
-c
 c...  normal return
 c
       return
@@ -218,7 +200,7 @@ c
       end
 c
 c version
-c $Id: read_bc.f,v 1.3 2005/01/06 01:15:31 willic3 Exp $
+c $Id: read_bc.f,v 1.4 2005/03/12 01:59:39 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
