@@ -134,6 +134,7 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
   PyObject* pyPointerToIen;
   PyObject* pyPointerToIvfamily;
   PyObject* pyPointerToIvftmp;
+  PyObject* pyPointerToIndxiel;
   int maxNumberVolumeElementFamilies;
   int numberVolumeElementFamilies;
   int prestressFlag;
@@ -148,7 +149,7 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOiiOOOiiiiiiiiiisss:read_connect",
+  int ok = PyArg_ParseTuple(args, "OOiiOOOOiiiiiiiiiisss:read_connect",
                             &pyPointerToMaterialModelInfo,
                             &pyPointerToVolumeElementFamilyList,
                             &numberVolumeElementNodes,
@@ -156,6 +157,7 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
                             &pyPointerToIen,
                             &pyPointerToIvfamily,
                             &pyPointerToIvftmp,
+                            &pyPointerToIndxiel,
                             &maxNumberVolumeElementFamilies,
                             &numberVolumeElementFamilies,
                             &prestressFlag,
@@ -182,6 +184,7 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
   int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
   int* pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
   int* pointerToIvftmp = (int*) PyCObject_AsVoidPtr(pyPointerToIvftmp);
+  int* pointerToIndxiel = (int*) PyCObject_AsVoidPtr(pyPointerToIndxiel);
   int stateSize = 0;
   int state0Size = 0;
   int propertySize = 0;
@@ -193,6 +196,7 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
 		 pointerToIen,
 		 pointerToIvfamily,
 		 pointerToIvftmp,
+		 pointerToIndxiel,
                  &maxNumberVolumeElementFamilies,
                  &numberVolumeElementFamilies,
                  &prestressFlag,
@@ -779,9 +783,11 @@ char pylithomop3d_read_slip__name__[] = "read_slip";
 PyObject * pylithomop3d_read_slip(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToNslip;
+  PyObject* pyPointerToIndxiel;
   int numberSlipperyNodeEntries;
   int numberNodes;
   int autoRotateSlipperyNodesInt;
+  int numberVolumeElements;
   int f77FileInput;
   int f77AsciiOutput;
   int f77PlotOutput;
@@ -791,11 +797,13 @@ PyObject * pylithomop3d_read_slip(PyObject *, PyObject *args)
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "Oiiiiiiiisss:read_slip",
+  int ok = PyArg_ParseTuple(args, "OOiiiiiiiiisss:read_slip",
 			    &pyPointerToNslip,
+			    &pyPointerToIndxiel,
 			    &numberSlipperyNodeEntries,
 			    &numberNodes,
 			    &autoRotateSlipperyNodesInt,
+			    &numberVolumeElements,
 			    &f77FileInput,
 			    &f77AsciiOutput,
 			    &f77PlotOutput,
@@ -813,13 +821,16 @@ PyObject * pylithomop3d_read_slip(PyObject *, PyObject *args)
   const int maxsize = 4096;
   char errorstring[maxsize];
   int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
+  int* pointerToIndxiel = (int*) PyCObject_AsVoidPtr(pyPointerToIndxiel);
   int totalNumberSlipperyNodes = 0;
 
   read_slip_f(pointerToNslip,
+	      pointerToIndxiel,
 	      &numberSlipperyNodeEntries,
 	      &totalNumberSlipperyNodes,
 	      &numberNodes,
 	      &autoRotateSlipperyNodesInt,
+	      &numberVolumeElements,
 	      &f77FileInput,
 	      &f77AsciiOutput,
 	      &f77PlotOutput,
@@ -860,8 +871,10 @@ PyObject * pylithomop3d_read_split(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToFault;
   PyObject* pyPointerToNfault;
+  PyObject* pyPointerToIndxiel;
   int numberSplitNodeEntries;
   int numberNodes;
+  int numberVolumeElements;
   int f77FileInput;
   int f77AsciiOutput;
   int f77PlotOutput;
@@ -871,11 +884,13 @@ PyObject * pylithomop3d_read_split(PyObject *, PyObject *args)
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOiiiiiiisss:read_split",
+  int ok = PyArg_ParseTuple(args, "OOOiiiiiiiisss:read_split",
 			    &pyPointerToFault,
 			    &pyPointerToNfault,
+			    &pyPointerToIndxiel,
 			    &numberSplitNodeEntries,
 			    &numberNodes,
+			    &numberVolumeElements,
 			    &f77FileInput,
 			    &f77AsciiOutput,
 			    &f77PlotOutput,
@@ -894,13 +909,16 @@ PyObject * pylithomop3d_read_split(PyObject *, PyObject *args)
   char errorstring[maxsize];
   double* pointerToFault = (double*) PyCObject_AsVoidPtr(pyPointerToFault);
   int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
+  int* pointerToIndxiel = (int*) PyCObject_AsVoidPtr(pyPointerToIndxiel);
   int totalNumberSplitNodes = 0;
 
   read_split_f(pointerToFault,
 	       pointerToNfault,
+	       pointerToIndxiel,
 	       &numberSplitNodeEntries,
 	       &totalNumberSplitNodes,
 	       &numberNodes,
+	       &numberVolumeElements,
 	       &f77FileInput,
 	       &f77AsciiOutput,
 	       &f77PlotOutput,
@@ -1358,6 +1376,6 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: parser.cc,v 1.8 2005/03/31 23:27:57 willic3 Exp $
+// $Id: parser.cc,v 1.9 2005/04/05 22:36:34 willic3 Exp $
 
 // End of file
