@@ -38,7 +38,7 @@ c
      & nconsz,                                                          ! elemnt
      & prop,mhist,infmat,numat,npropsz,                                 ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
-     & histry,rtimdat,ntimdat,nhist,lastep,stress_cmp,                  ! timdat
+     & histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,           ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
@@ -75,6 +75,7 @@ c
 c...  included dimension and type statements
 c
       include "rtimdat_dim.inc"
+      include "rgiter_dim.inc"
       include "ntimdat_dim.inc"
 c
 c...  intrinsic functions
@@ -95,6 +96,7 @@ c
 c...  included variable definitions
 c
       include "rtimdat_def.inc"
+      include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
 cdebug      write(6,*) "Hello from stress_drv_f!"
@@ -124,6 +126,7 @@ c
      &     numelt,nconsz,                                               ! elemnt
      &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_1,td_strs_1,      ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -136,6 +139,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_2,                           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -148,6 +152,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_3,                           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -160,6 +165,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_4,                           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -172,6 +178,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_5,                           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -184,6 +191,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_6,                           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -196,6 +204,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_7,                           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -208,6 +217,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_8,                           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -220,6 +230,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_9,                           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -232,6 +243,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_10,                          ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -244,6 +256,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_11,                          ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -256,6 +269,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_12,                          ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -268,6 +282,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_13,                          ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -280,6 +295,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_14,                          ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -292,6 +308,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_15,                          ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -304,6 +321,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_16,                          ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -316,6 +334,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_17,                          ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -328,6 +347,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_18,                          ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -340,6 +360,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_19,                          ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -352,6 +373,7 @@ c
      &     nconsz,                                                      ! elemnt
      &     infmat(1,imat),matgpt,elas_strs_20,                          ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
+     &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -366,7 +388,7 @@ c
       end
 c
 c version
-c $Id: stress_drv.f,v 1.1 2004/06/23 21:05:21 willic3 Exp $
+c $Id: stress_drv.f,v 1.2 2004/06/24 21:46:43 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
