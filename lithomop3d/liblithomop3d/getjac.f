@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine getjac(x,xs,det,shj,nen,nsd,n,ierr)
+      subroutine getjac(x,xs,det,shj,nen,nsd,iel,ierr)
 c
 c...  subroutine to compute the jacobian determinant given the element
 c     coordinates and the shape functions in natural coordinates.
@@ -44,7 +44,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer nen,nsd,n,ierr
+      integer nen,nsd,iel,ierr
       double precision x(nsd,nen),xs(nsd,nsd),det,shj(4,8)
 c
 c...  defined constants
@@ -65,13 +65,13 @@ c
       det=xs(1,1)*xs(2,2)*xs(3,3)+xs(1,2)*xs(2,3)*xs(3,1)+xs(1,3)
      & *xs(2,1)*xs(3,2)-xs(1,3)*xs(2,2)*xs(3,1)-xs(1,2)*xs(2,1)
      & *xs(3,3)-xs(1,1)*xs(2,3)*xs(3,2)
-      if(det.le.zero) ierr=n
+      if(det.le.zero) ierr=-iel
 c
       return
       end
 c
 c version
-c $Id: getjac.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: getjac.f,v 1.2 2004/06/17 18:06:40 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
