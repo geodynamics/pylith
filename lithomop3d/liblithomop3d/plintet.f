@@ -54,10 +54,10 @@ c
 c...  local constants
 c
       double precision r(4),s(4),t(4),u(4)
-      data r/ 1d0, 0d0, 0d0, 0d0/
-      data s/ 0d0, 1d0, 0d0, 0d0/
-      data t/ 0d0, 0d0, 1d0, 0d0/
-      data u/ 0d0, 0d0, 0d0, 1d0/
+      data u/ 1d0, 0d0, 0d0, 0d0/
+      data r/ 0d0, 1d0, 0d0, 0d0/
+      data s/ 0d0, 0d0, 1d0, 0d0/
+      data t/ 0d0, 0d0, 0d0, 1d0/
 c
 c...  intrinsic functions
 c
@@ -110,7 +110,7 @@ c
       end
 c
 c version
-c $Id: plintet.f,v 1.2 2004/07/07 19:28:30 willic3 Exp $
+c $Id: plintet.f,v 1.3 2004/08/12 02:11:24 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
