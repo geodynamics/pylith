@@ -39,6 +39,7 @@
 #include "input_misc.h"    // miscellaneous input and indexing routines
 #include "parser.h"        // parsers
 #include "scanner.h"       // scanners
+#include "setup.h"         // initialization/setup routines
 #include "sparse.h"        // sparse matrix routines
 #include "viscos.h"        // time-dependent solution driver
 #include "misc.h"          // miscellaneous methods
@@ -95,9 +96,17 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_makemsr__name__, pylithomop3d_makemsr,
      METH_VARARGS, pylithomop3d_makemsr__doc__},
 
+    // initialize material model information
+    {pylithomop3d_matmod_def__name__, pylithomop3d_matmod_def,
+     METH_VARARGS, pylithomop3d_matmod_def__doc__},
+
     // find closest fault neignbors for slippery nodes
     {pylithomop3d_nfind__name__, pylithomop3d_nfind,
      METH_VARARGS, pylithomop3d_nfind__doc__},
+
+    // precompute shape function information
+    {pylithomop3d_preshape__name__, pylithomop3d_preshape,
+     METH_VARARGS, pylithomop3d_preshape__doc__},
 
     // read boundary conditions
     {pylithomop3d_read_bc__name__, pylithomop3d_read_bc,
@@ -123,13 +132,13 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_read_hist__name__, pylithomop3d_read_hist,
      METH_VARARGS, pylithomop3d_read_hist__doc__},
 
-    // read prestresses
-    {pylithomop3d_read_prestr__name__, pylithomop3d_read_prestr,
-     METH_VARARGS, pylithomop3d_read_prestr__doc__},
+    // read material history info
+    {pylithomop3d_read_mathist__name__, pylithomop3d_read_mathist,
+     METH_VARARGS, pylithomop3d_read_mathist__doc__},
 
-    // read material properties
-    {pylithomop3d_read_prop__name__, pylithomop3d_read_prop,
-     METH_VARARGS, pylithomop3d_read_prop__doc__},
+    // read prestresses
+    // {pylithomop3d_read_prestr__name__, pylithomop3d_read_prestr,
+     // METH_VARARGS, pylithomop3d_read_prestr__doc__},
 
     // read local coordinate rotations
     {pylithomop3d_read_skew__name__, pylithomop3d_read_skew,
@@ -143,13 +152,17 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_read_split__name__, pylithomop3d_read_split,
      METH_VARARGS, pylithomop3d_read_split__doc__},
 
+    // read state output information
+    {pylithomop3d_read_stateout__name__, pylithomop3d_read_stateout,
+     METH_VARARGS, pylithomop3d_read_stateout__doc__},
+
     // read time step group information
     {pylithomop3d_read_timdat__name__, pylithomop3d_read_timdat,
      METH_VARARGS, pylithomop3d_read_timdat__doc__},
 
     // read traction boundary conditions
-    {pylithomop3d_read_traction__name__, pylithomop3d_read_traction,
-     METH_VARARGS, pylithomop3d_read_traction__doc__},
+    // {pylithomop3d_read_traction__name__, pylithomop3d_read_traction,
+     // METH_VARARGS, pylithomop3d_read_traction__doc__},
 
     // read winkler force information
     {pylithomop3d_read_wink__name__, pylithomop3d_read_wink,
@@ -184,12 +197,8 @@ struct PyMethodDef pylithomop3d_methods[] = {
      METH_VARARGS, pylithomop3d_scan_hist__doc__},
 
     // scan prestress file
-    {pylithomop3d_scan_prestr__name__, pylithomop3d_scan_prestr,
-     METH_VARARGS, pylithomop3d_scan_prestr__doc__},
-
-    // scan material properties file
-    {pylithomop3d_scan_prop__name__, pylithomop3d_scan_prop,
-     METH_VARARGS, pylithomop3d_scan_prop__doc__},
+    // {pylithomop3d_scan_prestr__name__, pylithomop3d_scan_prestr,
+     // METH_VARARGS, pylithomop3d_scan_prestr__doc__},
 
     // scan local coordinate rotations file
     {pylithomop3d_scan_skew__name__, pylithomop3d_scan_skew,
@@ -208,8 +217,8 @@ struct PyMethodDef pylithomop3d_methods[] = {
      METH_VARARGS, pylithomop3d_scan_timdat__doc__},
 
     // scan traction boundary conditions file
-    {pylithomop3d_scan_traction__name__, pylithomop3d_scan_traction,
-     METH_VARARGS, pylithomop3d_scan_traction__doc__},
+    // {pylithomop3d_scan_traction__name__, pylithomop3d_scan_traction,
+     // METH_VARARGS, pylithomop3d_scan_traction__doc__},
 
     // scan winkler forces info file
     {pylithomop3d_scan_wink__name__, pylithomop3d_scan_wink,
@@ -230,6 +239,10 @@ struct PyMethodDef pylithomop3d_methods[] = {
     // write out global control information
     {pylithomop3d_write_global_info__name__, pylithomop3d_write_global_info,
      METH_VARARGS, pylithomop3d_write_global_info__doc__},
+
+    // write out material property information
+    {pylithomop3d_write_props__name__, pylithomop3d_write_props,
+     METH_VARARGS, pylithomop3d_write_props__doc__},
 
     // write out sparse matrix information
     {pylithomop3d_write_sparse_info__name__, pylithomop3d_write_sparse_info,
@@ -254,6 +267,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
 };
 
 // version
-// $Id: bindings.cc,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: bindings.cc,v 1.2 2004/07/20 14:57:47 willic3 Exp $
 
 // End of file
