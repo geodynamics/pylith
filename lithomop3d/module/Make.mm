@@ -34,7 +34,7 @@ PACKAGE = lithomop3dmodule
 MODULE = lithomop3d
 
 include std-pythonmodule.def
-include local.def
+# include local.def
 
 PROJ_CXX_SRCLIB = -ljournal -llithomop3d
 PROJ_LIBRARIES += $(LCXX_FORTRAN)
@@ -55,7 +55,7 @@ PROJ_SRCS = \
 
 
 # version
-# $Id: Make.mm,v 1.3 2004/08/17 03:26:24 willic3 Exp $
+# $Id: Make.mm,v 1.4 2004/08/18 21:07:30 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
