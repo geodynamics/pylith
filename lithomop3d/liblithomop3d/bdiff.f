@@ -46,20 +46,20 @@ c...  subroutine arguments
 c
       integer neq
       double precision b(neq),btot(neq),bres(neq)
-cdebug      integer idebug
+cdebug      integer idb
 c
 cdebug      write(6,*) "Hello from bdiff_f!"
 c
       call dcopy(neq,btot,ione,bres,ione)
       call daxpy(neq,alpha,b,ione,bres,ione)
-      do idebug=1,neq
-cdebug        write(6,*) b(idebug),btot(idebug),bres(idebug)
-      end do
+cdebug      do idb=1,neq
+cdebug        write(6,*) b(idb),btot(idb),bres(idb)
+cdebug      end do
       return
       end
 c
 c version
-c $Id: bdiff.f,v 1.3 2004/08/02 21:02:59 willic3 Exp $
+c $Id: bdiff.f,v 1.4 2004/08/12 01:05:27 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
