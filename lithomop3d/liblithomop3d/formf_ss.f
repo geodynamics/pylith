@@ -31,31 +31,34 @@ c
 c
       subroutine formf_ss(
      & bdisp,neq,                                                       ! force
-     & x,nsd,ndof,numnp,                                                ! global
+     & x,numnp,                                                         ! global
      & s,stemp,                                                         ! stiff
-     & dmat,ien,lm,lmx,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,nconsz, ! elemnt
+     & dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,             ! elemnt
      & infmat,numat,                                                    ! materl
-     & gauss,sh,shj,infetype,netypes,                                   ! eltype
-     & skew,nskdim,numrot,                                              ! skew
+     & gauss,sh,shj,infetype,                                           ! eltype
+     & skew,numrot,                                                     ! skew
      & nfault,dfault,tfault,numfn,                                      ! split
      & getshape,bmatrix,                                                ! bbar
-     & ierr)                                                            ! errcode
+     & ierr,errstrng)                                                   ! errcode
 c
 c      generates forces due to faulted nodes
 c
       include "implicit.inc"
 c
-c...  dimension parameters
+c...  parameter definitions
 c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer neq,nsd,ndof,numnp,nstr,nddmat,ndmatsz,numelt,nconsz,numat
-      integer netypes,nskdim,numrot,numfn,ierr
+      integer neq,numnp,ndmatsz,numelt,nconsz,numat,numrot,numfn,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
       integer infiel(6,numelt),iddmat(nstr,nstr),infmat(6,numat)
       integer infetype(4,netypes),nfault(3,numfn)
+      character errstrng*(*)
       double precision bdisp(neq),x(nsd,numnp),s(neemax*neemax)
       double precision stemp(neemax*neemax),dfault(ndof,numfn)
       double precision tfault(ndof,numfn),dmat(nddmat,ndmatsz)
@@ -63,11 +66,6 @@ c
       double precision sh(nsd+1,nenmax,ngaussmax,netypes)
       double precision shj(nsd+1,nenmax,ngaussmax,netypes)
       double precision skew(nskdim,numnp)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  external routines
 c
@@ -100,19 +98,19 @@ c
 c...  form element stiffness matrix
 c
         call formes_ss(
-     &   x,nsd,ndof,numnp,                                              ! global
+     &   x,numnp,                                                       ! global
      &   s,stemp,                                                       ! stiff
-     &   dmat(1,inddmat),ien(indien),lm(1,indien),iddmat,nstr,nddmat,   ! elemnt
+     &   dmat(1,inddmat),ien(indien),lm(1,indien),iddmat,               ! elemnt
      &   iel,                                                           ! elemnt
      &   gauss(1,1,ietype),sh(1,1,1,ietype),shj(1,1,1,ietype),          ! eltype
      &   ngauss,ngaussdim,nen,nee,                                      ! eltype
-     &   skew,nskdim,numrot,                                            ! skew
+     &   skew,numrot,                                                   ! skew
      &   getshape,bmatrix,                                              ! bbar
-     &   ierr)                                                          ! errcode
+     &   ierr,errstrng)                                                 ! errcode
 c
         if(ierr.ne.izero) return
 c
-        call lflteq(dl,dfault(1,i),nfault(1,i),ien(indien),nen,ndof)
+        call lflteq(dl,dfault(1,i),nfault(1,i),ien(indien),nen)
 	call dsymv("u",nee,one,s,nee,dl,ione,zero,p,ione)
         call addfor(bdisp,p,lm(1,indien),lmx(1,indien),neq,nee)
       end do
@@ -120,7 +118,7 @@ c
       end
 c
 c version
-c $Id: formf_ss.f,v 1.1 2004/06/16 21:14:06 willic3 Exp $
+c $Id: formf_ss.f,v 1.2 2004/06/21 21:03:39 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
