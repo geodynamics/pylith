@@ -269,6 +269,11 @@ class Lithomop3d_scan(Component):
         else:
             self._fullOutputInputFile = self.inventory.fullOutputInputFile
 
+        if self.inventory.stateVariableInputFile == "None":
+            self._stateVariableInputFile = self.inventory.fileRoot + ".statevar"
+        else:
+            self._stateVariableInputFile = self.inventory.stateVariableInputFile
+
         if self.inventory.loadHistoryInputFile == "None":
             self._loadHistoryInputFile = self.inventory.fileRoot + ".hist"
         else:
@@ -620,6 +625,10 @@ class Lithomop3d_scan(Component):
                 default="None"),
 
             pyre.properties.str(
+                "stateVariableInputFile",
+                default="None"),
+
+            pyre.properties.str(
                 "loadHistoryInputFile",
                 default="None"),
 
@@ -712,6 +721,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.4 2004/07/15 21:30:01 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.5 2004/07/16 18:21:47 willic3 Exp $
 
 # End of file 
