@@ -31,14 +31,14 @@ c
 c
       subroutine elastc(
      & alnz,pcg,zcg,dprev,ja,                                           ! sparse
-     & bextern,btraction,bgravity,bconcforce,bprestress,bintern,bresid, ! force
-     & bwork,dispvec,nforce,grav,                                       ! force
+     & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
+     & dispvec,nforce,grav,                                             ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,                             ! global
      & ibond,bond,                                                      ! bc
      & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
      & fault,nfault,dfault,tfault,                                      ! fault
      & s,stemp,                                                         ! stiff
-     & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,             ! elemnt
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,      ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
      & prop,mhist,infmat,infmatmod,ismatmod,                            ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
@@ -78,14 +78,13 @@ c
       integer istatout(*)
       double precision alnz(*),pcg(*),zcg(*),dprev(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
-      double precision bprestress(*),bintern(*),bresid(*),bwork(*)
-      double precision dispvec(*),grav(*)
+      double precision bintern(*),bresid(*),bwork(*),dispvec(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision bond(*)
       double precision dx(*),deldx(*),dxcur(*),diforc(*),winkx(*)
       double precision fault(*),dfault(*),tfault(*)
       double precision s(*),stemp(*)
-      double precision state(*),dstate(*),dmat(*)
+      double precision state(*),dstate(*),state0(*),dmat(*)
       double precision  pres(*),pdir(*)
       double precision prop(*)
       double precision gauss(*),sh(*),shj(*)
@@ -158,7 +157,7 @@ cdebug     & nprestrflag, nprevdflag
       call fill(btraction,zero,neq*ntractflag)
       call fill(bgravity,zero,neq*ngravflag)
       call fill(bconcforce,zero,neq*nconcflag)
-      call fill(bintern,zero,neq)
+      if(nprestrflag.eq.izero) call fill(bintern,zero,neq)
       call fill(deld,zero,ndof*numnp)
       call fill(deldx,zero,ndof*numnp)
       call fill(dcur,zero,ndof*numnp)
@@ -168,6 +167,7 @@ cdebug     & nprestrflag, nprevdflag
       call fill(state,zero,nstr*nstatesz)
       call fill(dmat,zero,nddmat*ndmatsz)
       call fill(dstate,zero,nstr*nstatesz)
+      if(nprestrflag.eq.izero) call fill(state0,zero,nstate0*nstatesz0)
       if(numfn.ne.izero) call fill(tfault,zero,numfn*ndof)
 c
       write(kto,600)
@@ -191,6 +191,7 @@ cdebug      write(6,*) "Before const:"
      & etol,itmax,nintg,igroup,naxstp,nfirst,rtimdat,deltp,alfap,
      & ntimdat,nstep,maxitp,ntdinitp,lgdefp,itmaxp,gtol)
 cdebug      write(6,*) "After const:"
+cdebug      write(6,*) "ireform,ntimdat(9):",ireform,ntimdat(9)
       if(skc) then
         call skclear(idslp,skew,numsn,numnp)
         call skcomp(x,d,skew,idslp,ipslp,ipstrs,numsn,numnp,nstep,
@@ -245,8 +246,9 @@ cdebug        write(6,*) "Before matinit_drv (1):"
      &   dx,iwinkx,winkx,numslp,numsn,nwinkx,                           ! slip
      &   tfault,numfn,                                                  ! fault
      &   s,stemp,                                                       ! stiff
-     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,       ! elemnt
-     &   ndmatsz,numelt,nconsz,                                         ! elemnt
+     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,! elemnt
+     &   nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,     ! elemnt
+     &   nstate0,                                                       ! elemnt
      &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
      &   histry,rtimdat,ntimdat,rgiter,nhist,lastep,                    ! timdat
@@ -289,13 +291,13 @@ c
 c
         call iterate(
      &   alnz,pcg,zcg,dprev,ja,                                         ! sparse
-     &   bextern,btraction,bgravity,bconcforce,bprestress,bintern,      ! force
-     &   bresid,bwork,dispvec,nforce,grav,                              ! force
+     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
+     &   dispvec,nforce,grav,                                           ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
      &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
      &   nfault,dfault,tfault,                                          ! fault
      &   s,stemp,                                                       ! stiff
-     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! elemnt
+     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,    ! elemnt
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
      &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
@@ -318,8 +320,9 @@ c
      &   dx,iwinkx,winkx,numslp,numsn,nwinkx,                           ! slip
      &   tfault,numfn,                                                  ! fault
      &   s,stemp,                                                       ! stiff
-     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,       ! elemnt
-     &   ndmatsz,numelt,nconsz,                                         ! elemnt
+     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,! elemnt
+     &   nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,     ! elemnt
+     &   nstate0,                                                       ! elemnt
      &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
      &   histry,rtimdat,ntimdat,rgiter,nhist,lastep,                    ! timdat
@@ -362,13 +365,13 @@ c
 c
         call iterate(
      &   alnz,pcg,zcg,dprev,ja,                                         ! sparse
-     &   bextern,btraction,bgravity,bconcforce,bprestress,bintern,      ! force
-     &   bresid,bwork,dispvec,nforce,grav,                              ! force
+     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
+     &   dispvec,nforce,grav,                                           ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
      &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
      &   nfault,dfault,tfault,                                          ! fault
      &   s,stemp,                                                       ! stiff
-     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! elemnt
+     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,    ! elemnt
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
      &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
@@ -391,8 +394,9 @@ clater     &   x,d,iwink,wink,numnp,nwink,                                    ! 
 clater     &   dx,iwinkx,winkx,numslp,numsn,nwinkx,                           ! slip
 clater     &   tfault,numfn,                                                  ! fault
 clater     &   s,stemp,                                                       ! stiff
-clater     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,       ! elemnt
-clater     &   ndmatsz,numelt,nconsz,                                         ! elemnt
+clater     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,! elemnt
+clater     &   nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,     ! elemnt
+clater     &   nstate0,                                                       ! elemnt
 clater     &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
 clater     &   histry,rtimdat,ntimdat,nhist,lastep,elas_matinit_cmp_ld,       ! timdat
@@ -431,13 +435,13 @@ clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
 clater     &   alnz,pcg,zcg,dprev,ja,                                         ! sparse
-clater     &   bextern,btraction,bgravity,bconcforce,bprestress,bintern,      ! force
+clater     &   bextern,btraction,bgravity,bconcforce,bintern,                 ! force
 clater     &   bresid,bwork,dispvec,nforce,grav,                              ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
 clater     &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
 clater     &   nfault,dfault,tfault,                                          ! fault
 clater     &   s,stemp,                                                       ! stiff
-clater     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! elemnt
+clater     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,    ! elemnt
 clater     &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
 clater     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
@@ -459,8 +463,9 @@ clater     &   x,d,iwink,wink,numnp,nwink,                                    ! 
 clater     &   dx,iwinkx,winkx,numslp,numsn,nwinkx,                           ! slip
 clater     &   tfault,numfn,                                                  ! fault
 clater     &   s,stemp,                                                       ! stiff
-clater     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,       ! elemnt
-clater     &   ndmatsz,numelt,nconsz,                                         ! elemnt
+clater     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,! elemnt
+clater     &   nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,     ! elemnt
+clater     &   nstate0,                                                       ! elemnt
 clater     &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
 clater     &   histry,rtimdat,ntimdat,nhist,lastep,elas_matinit_cmp_ld,       ! timdat
@@ -499,13 +504,13 @@ clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
 clater     &   alnz,pcg,zcg,dprev,ja,                                         ! sparse
-clater     &   bextern,btraction,bgravity,bconcforce,bprestress,bintern,      ! force
+clater     &   bextern,btraction,bgravity,bconcforce,bintern,                 ! force
 clater     &   bresid,bwork,dispvec,nforce,grav,                              ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
 clater     &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
 clater     &   nfault,dfault,tfault,                                          ! fault
 clater     &   s,stemp,                                                       ! stiff
-clater     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! elemnt
+clater     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,    ! elemnt
 clater     &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
 clater     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
@@ -599,7 +604,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.14 2005/01/19 20:35:20 willic3 Exp $
+c $Id: elastc.f,v 1.15 2005/02/23 23:56:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
