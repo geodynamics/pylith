@@ -87,6 +87,8 @@ c...  Linear wedge definition
 c
       nen=ifive
       ngauss=ione
+      nec=nsd*nen
+      nee=ndof*nen
       gauss(1,1)=zero
       gauss(2,1)=zero
       gauss(3,1)=-half
@@ -127,7 +129,7 @@ c
       end
 c
 c version
-c $Id: plinpyr.f,v 1.2 2004/07/07 19:22:15 willic3 Exp $
+c $Id: plinpyr.f,v 1.3 2004/07/07 19:26:42 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
