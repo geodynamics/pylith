@@ -31,7 +31,7 @@ c
       subroutine iterate(
      & A,                                                               ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,    ! force
-     & nforce,grav,                                                     ! force
+     & dprev,nforce,grav,                                               ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
      & dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                     ! slip
      & nfault,dfault,tfault,                                            ! fault
@@ -102,7 +102,7 @@ c
       character errstrng*(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
       double precision bintern(*),bresid(*)
-      double precision dispvec(*),grav(*)
+      double precision dispvec(*),dprev(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision dx(*),deldx(*),dxcur(*),winkx(*)
       double precision dfault(*),tfault(*)
@@ -228,9 +228,9 @@ ccc PETSc BLOCK
      &                               ierr)
         call KSPCreate(MPI_COMM_WORLD, ksp, ierr)
         call KSPSetfromOptions(ksp, ierr)
-        if (nprevdflag .eq. 1) then
+        if (used) then
           call KSPSetInitialGuessNonzero(ksp, 1, ierr)
-c*          call dcopy(neq, dprev, 1, dispvec, 1)
+          call dcopy(neq, dprev, 1, dispvec, 1)
         end if
         call KSPSetOperators(ksp,A,A,DIFFERENT_NONZERO_PATTERN,ierr)
         call KSPSolve(ksp, rhs, sol, ierr)
@@ -314,7 +314,7 @@ c
         else
           call stress_drv(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
      &     state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies, ! elemnt
@@ -350,7 +350,7 @@ c
       end
 c
 c version
-c $Id: iterate.F,v 1.8 2005/03/30 01:51:17 willic3 Exp $
+c $Id: iterate.F,v 1.9 2005/04/01 23:01:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

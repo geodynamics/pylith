@@ -47,7 +47,7 @@ c
      & skew,                                                            ! skew
      & ncodat,nunits,nprint,istatout,nstatout,                          ! ioinfo
      & ofile,pfile,ucdroot,                                             ! files
-     & iterateEvent,                                                    ! PETSc logging
+     & autoprestrStage,iterateEvent,                                    ! PETSc logging
      & ierr,errstrng)                                                   ! errcode
 c
 c...  subroutine to automatically compute prestresses due to application
@@ -64,6 +64,7 @@ c
 c
 c     PETSc objects
 c
+      PetscInt autoprestrStage
       PetscEvent iterateEvent
       Mat A
 c
@@ -257,7 +258,7 @@ c
 c
 c*        call formdf_ss(
 c*     &   bintern,neq,                                                   ! force
-c*     &   x,d,dcur,numnp,                                                ! global
+c*     &   x,d,dcur,numnp,iddmat,                                         ! global
 c*     &   s,stemp,                                                       ! stiff
 c*     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 c*     &   infmat,infmatmod,numat,                                        ! materl
@@ -271,7 +272,7 @@ c*        if(ierr.ne.izero) return
 c
 c*        if(numfn.ne.izero) call formf_ss(
 c*     &   bintern,neq,                                                   ! force
-c*     &   x,numnp,                                                       ! global
+c*     &   x,numnp,iddmat,                                                ! global
 c*     &   s,stemp,                                                       ! stiff
 c*     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 c*     &   infmat,infmatmod,numat,                                        ! materl
@@ -302,6 +303,7 @@ c
      &   ncodat,nunits,nprint,                                          ! ioinfo
      &   getshapn,bmatrixn,gload_cmp_ss,elas_strs_cmp_ss,               ! external
      &   elas_strs_mat_cmp_ss,                                          ! external
+     &   iterateEvent,                                                  ! PETSc logging
      &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After iterate (1):"
 c
@@ -330,7 +332,7 @@ c
 c
 c*        call formdf_ss(
 c*     &   bintern,neq,                                                   ! force
-c*     &   x,d,dcur,numnp,                                                ! global
+c*     &   x,d,dcur,numnp,iddmat,                                         ! global
 c*     &   s,stemp,                                                       ! stiff
 c*     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 c*     &   infmat,infmatmod,numat,                                        ! materl
@@ -344,7 +346,7 @@ c*        if(ierr.ne.izero) return
 c
 c*        if(numfn.ne.izero) call formf_ss(
 c*     &   bintern,neq,                                                   ! force
-c*     &   x,numnp,                                                       ! global
+c*     &   x,numnp,iddmat,                                                ! global
 c*     &   s,stemp,                                                       ! stiff
 c*     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 c*     &   infmat,infmatmod,numat,                                        ! materl
@@ -375,6 +377,7 @@ c
      &   ncodat,nunits,nprint,                                          ! ioinfo
      &   getshapb,bmatrixb,gload_cmp_ss,elas_strs_cmp_ss,               ! external
      &   elas_strs_mat_cmp_ss,                                          ! external
+     &   iterateEvent,                                                  ! PETSc logging
      &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After iterate (2):"
 c
@@ -402,7 +405,7 @@ clater        if(ierr.ne.izero) return
 c
 c*clater        call formdf_ld(
 c*clater     &   bintern,neq,                                                   ! force
-c*clater     &   x,d,dcur,numnp,                                                ! global
+c*clater     &   x,d,dcur,numnp,iddmat,                                         ! global
 c*clater     &   s,stemp,                                                       ! stiff
 c*clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 c*clater     &   infmat,infmatmod,numat,                                        ! materl
@@ -415,7 +418,7 @@ c*clater        if(ierr.ne.izero) return
 c
 c*clater        if(numfn.ne.izero) call formf_ld(
 c*clater     &   bintern,neq,                                                   ! force
-c*clater     &   x,numnp,                                                       ! global
+c*clater     &   x,numnp,iddmat,                                                ! global
 c*clater     &   s,stemp,                                                       ! stiff
 c*clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 c*clater     &   infmat,infmatmod,numat,                                        ! materl
@@ -471,7 +474,7 @@ clater        if(ierr.ne.izero) return
 c
 c*clater        call formdf_ld(
 c*clater     &   bintern,neq,                                                   ! force
-c*clater     &   x,d,dcur,numnp,                                                ! global
+c*clater     &   x,d,dcur,numnp,iddmat,                                         ! global
 c*clater     &   s,stemp,                                                       ! stiff
 c*clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 c*clater     &   infmat,infmatmod,numat,                                        ! materl
@@ -484,7 +487,7 @@ c*clater        if(ierr.ne.izero) return
 c
 c*clater        if(numfn.ne.izero) call formf_ld(
 c*clater     &   bintern,neq,                                                   ! force
-c*clater     &   x,numnp,                                                       ! global
+c*clater     &   x,numnp,iddmat,                                                ! global
 c*clater     &   s,stemp,                                                       ! stiff
 c*clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
 c*clater     &   infmat,infmatmod,numat,                                        ! materl
@@ -554,7 +557,8 @@ c
      & ngauss,                                                          ! eltype
      & delt,nstep,                                                      ! timdat
      & istatout,nstatout,                                               ! ioopts
-     & idout,idsk,iucd,kw,kp,kucd,ucdroot,iprestress)                   ! ioinfo
+     & idout,idsk,iucd,kw,kp,kucd,ucdroot,iprestress,                   ! ioinfo
+     & ierr,errstrng)                                                   ! errcode
 cdebug      write(6,*) "After write_state:"
 c
       if(nintg.eq.1) then
@@ -582,7 +586,7 @@ c
       end
 c
 c version
-c $Id: autoprestr.F,v 1.5 2005/03/30 01:51:17 willic3 Exp $
+c $Id: autoprestr.F,v 1.6 2005/04/01 23:01:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
