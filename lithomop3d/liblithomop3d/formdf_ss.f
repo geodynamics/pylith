@@ -31,7 +31,7 @@ c
 c
       subroutine formdf_ss(
      & bintern,neq,                                                     ! force
-     & x,d,deld,numnp,                                                  ! global
+     & x,d,deld,numnp,iddmat,                                           ! global
      & s,stemp,                                                         ! stiff
      & dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,                      ! elemnt
      & infmatmod,                                                       ! materl
@@ -58,6 +58,7 @@ c
 c...  subroutine arguments
 c
       integer neq,numnp,nvfamilies,numelv,nen,ngauss,nee,numrot,ierr
+      integer iddmat(nstr,nstr)
       integer ien(nen,numelv),lm(ndof*nen,numelv),lmx(ndof*nen,numelv)
       integer ivfamily(5,nvfamilies),infmatmod(6,nmatmodmax)
       character errstrng*(*)
@@ -102,7 +103,7 @@ c
 c...  form element stiffness matrix
 c
           call formes_ss(
-     &     x,numnp,                                                     ! global
+     &     x,numnp,iddmat,                                              ! global
      &     s,stemp,                                                     ! stiff
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),ielg,                    ! elemnt
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -124,7 +125,7 @@ c
       end
 c
 c version
-c $Id: formdf_ss.f,v 1.9 2005/03/21 19:30:32 willic3 Exp $
+c $Id: formdf_ss.f,v 1.10 2005/04/01 23:34:12 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

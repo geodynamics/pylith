@@ -120,7 +120,7 @@ c
         end do
 c
         call formes_ss(
-     &   x,numnp,                                                       ! global
+     &   x,numnp,iddmat,                                                ! global
      &   s,stemp,                                                       ! stiff
      &   dmat(1,1,ielf),ien(1,ielf),lm(1,ielf),ielg,                    ! elemnt
      &   gauss,sh,shj,nen,ngauss,nee,                                   ! eltype
@@ -138,7 +138,7 @@ c
       end
 c
 c version
-c $Id: prestr_matinit_cmp_ss.F,v 1.2 2005/03/22 19:18:51 willic3 Exp $
+c $Id: prestr_matinit_cmp_ss.F,v 1.3 2005/04/01 23:34:12 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
