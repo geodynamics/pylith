@@ -29,21 +29,21 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine formrt(skew,rot,nskdim)
+      subroutine formrt(skew,rot)
 c
 c...constructs a three dimensional rotation matrix rot from the euler
 c   angles contained in the array skew.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nskdim
       double precision skew(nskdim),rot(3,3)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -72,7 +72,7 @@ c
       end
 c
 c version
-c $Id: formrt.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: formrt.f,v 1.2 2004/07/01 19:59:04 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
