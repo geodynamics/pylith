@@ -38,7 +38,7 @@ c
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,         ! elemnt
      & ndmatsz,numelt,nconsz,                                           ! elemnt
      & prop,nstate,nprop,matgpt,imatvar,nmatel,elas_matinit,td_matinit, ! materl
-     & matchg,tminmax,                                                  ! materl
+     & prestr_matinit,matchg,tminmax,                                   ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
      & skew,numrot,                                                     ! skew
@@ -83,7 +83,7 @@ c
 c
 c...  external routines
 c
-      external elas_matinit,td_matinit,getshape,bmatrix
+      external elas_matinit,td_matinit,prestr_matinit,getshape,bmatrix
 c
 c...  local variables
 c
@@ -176,7 +176,7 @@ c
       end
 c
 c version
-c $Id: elas_matinit_cmp_ss.f,v 1.5 2004/08/12 01:17:34 willic3 Exp $
+c $Id: elas_matinit_cmp_ss.f,v 1.6 2005/01/26 15:35:08 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
