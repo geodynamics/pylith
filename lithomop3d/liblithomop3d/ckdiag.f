@@ -60,7 +60,7 @@ c
         if(alnz(i).lt.zero) in=in+1
       end do
       if((iz.ne.0).or.(in.ne.0)) then
-        ierr=1
+        ierr=103
         write(errstrng,1000) iz,in
       end if
  1000 format("ckdiag: ",i7," zero diags,",i7," neg diags")
@@ -68,7 +68,7 @@ c
       end
 c
 c version
-c $Id: ckdiag.f,v 1.3 2004/06/21 20:07:14 willic3 Exp $
+c $Id: ckdiag.f,v 1.4 2004/07/06 20:18:50 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
