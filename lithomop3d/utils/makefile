@@ -50,6 +50,9 @@ LINALG=  -Wl,-framework -Wl,vecLib
 lh2qh: lh2qh.o
 	$(FCOMPL) $(opt) -o lh2qh lh2qh.o
 
+lt2qt: lt2qt.o
+	$(FCOMPL) $(opt) -o lt2qt lt2qt.o
+
 fixqt: fixqt.o
 	$(FCOMPL) $(opt) -o fixqt fixqt.o
 
