@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -36,7 +35,7 @@ c
      & tfault,numfn,                                                    ! fault
      & s,stemp,                                                         ! stiff
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,               ! elemfamily
-     & nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,               ! elemfamily
+     & nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,          ! elemfamily
      & prop,nprop,elas_matinit,td_matinit,prestr_matinit,matchg,tminmax,! materl
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
@@ -133,7 +132,7 @@ c
      &     ierr,errstrng)
         end do
         call formes_ss(
-     &   x,numnp,                                                       ! global
+     &   x,numnp,iddmat,                                                ! global
      &   s,stemp,                                                       ! stiff
      &   dmat(1,1,ielf),ien(1,ielf),lm(1,ielf),ielg,                    ! elemnt
      &   gauss,sh,shj,nen,ngauss,nee,                                   ! eltype
@@ -144,13 +143,14 @@ c
         if(ierr.ne.izero) return
 c
         call addstf(A,s,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz)
+        ielg=ielg+ione
       end do
 c
       return
       end
 c
 c version
-c $Id: td_matinit_cmp_ss.F,v 1.2 2005/03/19 01:49:49 willic3 Exp $
+c $Id: td_matinit_cmp_ss.F,v 1.3 2005/04/01 23:18:42 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
