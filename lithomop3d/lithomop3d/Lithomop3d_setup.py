@@ -651,7 +651,7 @@ class Lithomop3d_setup(Component):
                 self.asciiOutputFile,
                 self.plotOutputFile)
 
-            lithomop3d.read_statout(
+            lithomop3d.read_stateout(
                 self.pointerToIstatout,
                 self.f77FileInput,
                 self.f77AsciiOutput,
@@ -1276,6 +1276,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.2 2004/07/16 19:26:37 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.3 2004/07/19 21:41:29 willic3 Exp $
 
 # End of file 
