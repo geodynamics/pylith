@@ -230,14 +230,18 @@ class Lithomop3d_scan(Component):
                 line = file.readline()
                 if not line: break
                 keyvals = keyparse.parseline(line)
-                if keyvals[2]:
+                if keyvals[3]:
 		    # print keyvals
-		    if type(keyvals[1]) == str:
+                    # print type(keyvals[2])
+		    if type(keyvals[2]) == str:
 			# print 'Evaluated as string'
-		        exec 'self.' + keyvals[0] + '=' + "keyvals[1]"
+		        exec 'self.' + keyvals[0] + '=' + "keyvals[2]"
+                    elif type(keyvals[2]) == pyre.units.unit.unit:
+                        # print 'Evaluated as dimensional'
+                        exec 'self.' + keyvals[0] + '=' + 'uparser.parse(str(keyvals[2]))'
 		    else:
 			# print 'Evaluated as other'
-		        exec 'self.' + keyvals[0] + '=' + str(keyvals[1])
+		        exec 'self.' + keyvals[0] + '=' + str(keyvals[2])
             file.close()
 
         # Define information needed from other functions:
@@ -789,6 +793,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.11 2004/08/25 01:50:27 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.12 2005/01/06 01:40:10 willic3 Exp $
 
 # End of file 
