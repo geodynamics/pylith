@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine skcomp(x,d,skew,idslp,ipslp,ipstrs,numsn,numnp,nstep,
-     & lgdefp,kto)
+     & lgdefp,ierr,errstrng)
 c
 c...  subroutine to compute skew angles for a given load vector and
 c     fault orientation
@@ -47,9 +47,10 @@ c
 c
 c...  subroutine arguments
 c
-      integer ipstrs,numsn,numnp,nstep,lgdefp,kto
+      integer ipstrs,numsn,numnp,nstep,lgdefp,ierr
       integer idslp(numsn),ipslp(npdim,numsn)
       double precision x(nsd,numnp),d(ndof,numnp),skew(nskdim,numnp)
+      character errstrng*(*)
 c
 c...  intrinsic functions
 c
@@ -69,8 +70,9 @@ c
       if(numsn.eq.ifour) nd=ifour
       if(numsn.eq.ithree) nd=ithree
       if(numsn.lt.ithree) then
-        write(kto,*) 'Not enough points to define a plane in skcomp!'
-        stop
+        ierr=112
+        errstrng="skcomp"
+        return
       end if
       ncvm=ithree
       ldtmp=lgdefp
@@ -154,14 +156,13 @@ c*        write(17,710) n,a(1),a(2),a(3),rdeg*skew(1,n),rdeg*skew(2,n)
       end do
 c*      write(17,720)
 c*      call flush(17)
-700   format('Results for total iteration # ',i6,/)
 710   format(i6,5(2x,1pe12.5))
 720   format(///)
       return
       end
 c
 c version
-c $Id: skcomp.f,v 1.2 2004/07/12 20:30:45 willic3 Exp $
+c $Id: skcomp.f,v 1.3 2004/07/13 16:40:58 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
