@@ -30,15 +30,11 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine get_initial_stress(
-     & state,state0,infiel,nstatesz,nstatesz0,numelt,                   ! elemnt
-     & infmat,infmatmod,numat,nstate0,                                  ! materl
-     & infetype)                                                        ! eltype
+     & state,state0,ivfamily,nvfamilies,numelv,nstatesz,nstatesz0,      ! elemnt
+     & infmatmod,                                                       ! materl
+     & nen,ngauss)                                                      ! eltype
 c
 c...  routine to copy computed stresses into initial stress array
-c     Note:  this is an initial version.  Future versions should allow
-c     arbitrary first dimensions for state and state0, and will thus
-c     require material-model-specific routines to retrieve the
-c     appropriate values.
 c
       include "implicit.inc"
 c
@@ -52,10 +48,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstatesz,nstatesz0,numelt,numat,nstate0
-      integer infiel(7,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
-      integer infetype(4,netypes)
-      double precision state(nstr,nstatesz),state0(nstate0,nstatesz0)
+      integer nvfamilies,numelv,nstatesz,nstatesz0,nen,ngauss
+      integer ivfamily(5,nvfamilies),infmatmod(6,nmatmodmax)
+      double precision state(nstatesz),state0(nstatesz0)
 c
 c...  included dimension and type statements
 c
@@ -66,8 +61,8 @@ c
 c
 c...  local variables
 c
-      integer iel,imat,ietype,ngauss,matmodel,nstate,indstate,l
-      integer indstateg,indstate0
+      integer ifam,nelfamily,matmodel,indstate,indstate0,nstate,nstate0
+      integer ielf,l
 cdebug      integer idb,jdb
 c
 c...  included variable definitions
@@ -76,28 +71,32 @@ c
 cdebug      write(6,*) "Hello from get_initial_stress_f!"
 c
 c
-c...  loop over number of elements
+c...  loop over number of element families
 c
-      do iel=1,numelt
-        imat=infiel(2,iel)
-        ietype=infiel(3,iel)
-        ngauss=infetype(1,ietype)
-        matmodel=infmat(1,imat)
+      do ifam=1,nvfamilies
+        nelfamily=ivfamily(1,ifam)
+        matmodel=ivfamily(2,ifam)
+        indstate=ivfamily(3,ifam)
+        indstate0=ivfamily(4,ifam)
         nstate=infmatmod(2,matmodel)
-        indstate=infiel(5,iel)
-        indstate0=infiel(7,iel)
-        do l=1,ngauss
-          indstateg=indstate+(l-1)*nstate
-          call dcopy(nstr,state(1,indstateg),ione,state0(1,indstate0),
-     &     ione)
-          indstate0=indstate0+ione
+        nstate0=infmatmod(6,matmodel)
+c
+c...  loop over elements in a family and then gauss points for each
+c     element
+c
+        do ielf=1,nelfamily
+          do l=1,ngauss
+            indstate=indstate+(l-1)*nstate
+            indstate0=indstate0+(l-1)*nstate0
+            call dcopy(nstr,state(indstate),ione,state0(indstate0),ione)
+          end do
         end do
       end do
       return
       end
 c
 c version
-c $Id: get_initial_stress.f,v 1.1 2005/02/23 23:47:25 willic3 Exp $
+c $Id: get_initial_stress.f,v 1.2 2005/03/21 19:48:57 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
