@@ -63,7 +63,7 @@ c
       integer npropsz,nen,ngauss,nee,nhist,lastep,numrot,ierr
       integer iddmat(nstr,nstr)
       integer ien(nen,numelv),lm(ndof*nen,numelv),lmx(ndof*nen,numelv)
-      integer lmf(nen,numelv),ivfamily(6,nvfamilies)
+      integer lmf(nen,numelv),ivfamily(5,nvfamilies)
       integer mhist(npropsz),infmatmod(6,nmatmodmax)
       character errstrng*(*)
       double precision bintern(neq),x(nsd,numnp),d(ndof,numnp)
@@ -468,7 +468,7 @@ c*****************************
       end
 c
 c version
-c $Id: stress_drv.f,v 1.11 2005/03/19 01:49:49 willic3 Exp $
+c $Id: stress_drv.f,v 1.12 2005/03/21 20:11:26 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
