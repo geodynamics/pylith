@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine lfit(x,y,sig,ndat,a,ma,covar,npc,xn)
+      subroutine lfit(x,y,sig,ndat,a,ma,covar,npc,xn,ierr,errstrng)
 c
 c...  routine to perform a weighted least-squares fit
 c
@@ -43,9 +43,10 @@ c
 c
 c...  subroutine arguments
 c
-      integer ndat,ma,npc
+      integer ndat,ma,npc,ierr
       double precision x(ndat),y(ndat),sig(ndat),a(ma),covar(npc,npc)
       double precision xn(3,5)
+      character errstrng*(*)
 c
 c...  local variables
 c
@@ -53,7 +54,7 @@ c
       double precision sig2i,wt,ym,beta(mmax),afunc(mmax)
 c
 c
-c*      write(6,*) "Hello from lfit_f!"
+cdebug      write(6,*) "Hello from lfit_f!"
 c
       do j=1,ma
         do k=1,ma
@@ -62,7 +63,7 @@ c
         beta(j)=zero
       end do
       do i=1,ndat
-        call funcs(x(i),xn,afunc,ma)
+        call funcs(x(i),xn,afunc,ma,ndat)
         ym=y(i)
         sig2i=one/(sig(i)*sig(i))
         do j=1,ma
@@ -73,7 +74,7 @@ c
           beta(j)=beta(j)+ym*wt
         end do
       end do
-      call choldc2(covar,npc,ma,a)
+      call choldc2(covar,npc,ma,a,ierr,errstrng)
       call cholsl(covar,npc,ma,a,beta,beta)
       do j=1,ma
         a(j)=beta(j)
@@ -82,7 +83,7 @@ c
       end
 c
 c version
-c $Id: lfit.f,v 1.2 2004/07/07 15:55:35 willic3 Exp $
+c $Id: lfit.f,v 1.3 2004/08/12 01:39:52 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
