@@ -36,16 +36,16 @@ c     Numerical Recipes.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      integer m,nstack
+      parameter (m=7,nstack=50)
+c
 c...  subroutine arguments
 c
       integer n
       integer indx(n)
       double precision arr(n)
-c
-c...  defined constants
-c
-      integer m,nstack
-      parameter (m=7,nstack=50)
 c
 c...  local variables
 c
@@ -123,7 +123,7 @@ c
       END
 c
 c version
-c $Id: indexx.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: indexx.f,v 1.2 2004/07/07 14:20:22 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
