@@ -54,7 +54,7 @@ c...  local variables
 c
       integer k,i
 c
-c*      write(6,*) "Hello from bmatrixn_f!"
+cdebug      write(6,*) "Hello from bmatrixn_f!"
 c
       k=1
       do i=1,nen
@@ -82,7 +82,7 @@ c
       end
 c
 c version
-c $Id: bmatrixn.f,v 1.2 2004/06/18 15:04:55 willic3 Exp $
+c $Id: bmatrixn.f,v 1.3 2004/08/12 01:07:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

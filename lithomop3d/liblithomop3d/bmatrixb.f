@@ -55,7 +55,7 @@ c
       integer k,i
       double precision dil1,dil2,dil3
 c
-c*      write(6,*) "Hello from bmatrixb_f!"
+cdebug      write(6,*) "Hello from bmatrixb_f!"
 c
       k=1
       do i=1,nen
@@ -86,7 +86,7 @@ c
       end
 c
 c version
-c $Id: bmatrixb.f,v 1.2 2004/06/18 15:03:20 willic3 Exp $
+c $Id: bmatrixb.f,v 1.3 2004/08/12 01:06:26 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
