@@ -56,6 +56,8 @@ c...  local variables
 c
       integer i,j,k,ielg,node
 c
+cdebug      write(6,*) "Hello from localx_f!"
+c
       call ifill(lmx,izero,ndof*nen*numelv)
       if(numslp.eq.izero) return
 c
@@ -74,7 +76,7 @@ c
       end
 c
 c version
-c $Id: localx.f,v 1.4 2005/03/21 22:35:18 willic3 Exp $
+c $Id: localx.f,v 1.5 2005/04/05 23:00:22 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
