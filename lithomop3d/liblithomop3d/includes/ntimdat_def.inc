@@ -22,15 +22,14 @@ c
       maxitp=ntimdat(2)
       ntdinitp=ntimdat(3)
       lgdefp=ntimdat(4)
-      ibbarp=ntimdat(5)
-      itmaxp=ntimdat(6)
-      nittot=ntimdat(7)
-      nrftot=ntimdat(8)
-      ndtot=ntimdat(9)
-      ireform=ntimdat(10)
+      itmaxp=ntimdat(5)
+      nittot=ntimdat(6)
+      nrftot=ntimdat(7)
+      ndtot=ntimdat(8)
+      ireform=ntimdat(9)
 c
 c version
-c $Id: ntimdat_def.inc,v 1.3 2004/06/23 20:47:20 willic3 Exp $
+c $Id: ntimdat_def.inc,v 1.4 2004/07/21 15:24:20 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
