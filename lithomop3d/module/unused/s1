@@ -1,0 +1,3 @@
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
