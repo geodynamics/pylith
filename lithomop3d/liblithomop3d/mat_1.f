@@ -40,12 +40,11 @@ c                                          Young's modulus
 c                                          Poisson's ratio
 c
       subroutine mat_prt_1(prop,nprop,matnum,idout,idsk,kw,kp,
-     & ofile,pfile,ierr,errstrng)
+     & ierr,errstrng)
 c
 c...  subroutine to output material properties for material model 1.
 c
 c     Error codes:
-c         2:  Error opening output file
 c         4:  Write error
 c
       include "implicit.inc"
@@ -58,9 +57,9 @@ c...  subroutine arguments
 c
       integer nprop,matnum,idout,idsk,kw,kp,ierr
       double precision prop(nprop)
-      character ofile*(*),pfile*(*),errstrng*(*)
+      character errstrng*(*)
 c
-c...  parameters
+c...  local constants
 c
       character labelp(3)*15,modelname*24
       data labelp/"Density",
@@ -74,44 +73,30 @@ c...  local variables
 c
       integer i
 c
-c...  open output files
-c
-      ierr=izero
-      if(idout.gt.izero) open(kw,file=ofile,err=10,status="old",
-     & access="append")
-      if(idsk.eq.izero) open(kp,file=pfile,err=10,status="old",
-     & access="append")
-      if(idsk.eq.ione) open(kp,file=pfile,err=10,status="old",
-     & access="append",form="unformatted")
-c
 c...  output plot results
 c
       if(idsk.eq.izero) then
-	write(kp,"(3i7)",err=20) matnum,mattype,nprop
-	write(kp,"(1pe15.8,20(2x,1pe15.8))",err=20) (prop(i),i=1,nprop)
+	write(kp,"(3i7)",err=10) matnum,mattype,nprop
+	write(kp,"(1pe15.8,20(2x,1pe15.8))",err=10) (prop(i),i=1,nprop)
       else if(idsk.eq.ione) then
-	write(kp,err=20) matnum,mattype,nprop
-	write(kp,err=20) prop
+	write(kp,err=10) matnum,mattype,nprop
+	write(kp,err=10) prop
       end if
 c
 c...  output ascii results, if desired
 c
       if(idout.gt.izero) then
-	write(kw,700,err=20) matnum,modelname,nprop
+	write(kw,700,err=10) matnum,modelname,nprop
 	do i=1,nprop
-	  write(kw,710,err=20) labelp(i),prop(i)
+	  write(kw,710,err=10) labelp(i),prop(i)
         end do
       end if
 c
       return
 c
-c...  error returns
+c...  error writing to output file
 c
  10   continue
-        ierr=2
-        errstrng="mat_prt_1"
-        return
- 20   continue
         ierr=4
         errstrng="mat_prt_1"
         return
@@ -310,7 +295,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.6 2004/07/07 18:55:13 willic3 Exp $
+c $Id: mat_1.f,v 1.7 2004/07/12 17:53:31 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
