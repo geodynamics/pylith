@@ -38,7 +38,7 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,             ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
-     & prop,mhist,infmat,                                               ! materl
+     & prop,mhist,infmat,infmatmod,                                     ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & histry,rtimdat,ntimdat,nvisdat,                                  ! timdat
      & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
@@ -77,7 +77,7 @@ c
       integer ja(*),id(*),iwink(*),idx(*),iwinkx(*),idslp(*),ipslp(*)
       integer nfault(*),ien(*),lm(*),lmx(*),lmf(*),infiel(*),iddmat(*)
       integer ielno(*),iside(*),ihistry(*),mhist(*),infmat(*)
-      integer infetype(*)
+      integer infmatmod(*),infetype(*)
       character errstrng*(*)
       double precision alnz(*),pcg(*),zcg(*)
       double precision b(*),btot(*),bres(*),pvec(*),gvec1(*),gvec2(*)
@@ -187,7 +187,7 @@ c
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
      &     ien,lm,lmx,lmf,infiel,numelt,nconsz,                         ! elemnt
-     &     prop,mhist,infmat,numat,npropsz,                             ! materl
+     &     prop,mhist,infmat,infmatmod,numat,npropsz,                   ! materl
      &     gauss,shj,infetype,                                          ! eltype
      &     histry,rtimdat,ntimdat,nhist,lastep,gload_cmp,               ! timdat
      &     skew,numrot,                                                 ! skew
@@ -297,7 +297,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     prop,mhist,infmat,numat,npropsz,                             ! materl
+     &     prop,mhist,infmat,infmatmod,numat,npropsz,                   ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_mat_cmp,   ! timdat
      &     skew,numrot,                                                 ! skew
@@ -311,7 +311,7 @@ c
      &     tfault,numfn,                                                ! fault
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
      &     numelt,nconsz,                                               ! elemnt
-     &     prop,mhist,infmat,numat,npropsz,                             ! materl
+     &     prop,mhist,infmat,infmatmod,numat,npropsz,                   ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,       ! timdat
      &     skew,numrot,                                                 ! skew
@@ -328,8 +328,8 @@ c...if solution has converged, set equilibrium stresses and creep
 c   strains to their current values
 c
         if(converge) then
-          call update_state(state,dstate,infiel,infmat,infetype,
-     &     nstatesz,numelt,numat,ierr,errstrng)
+          call update_state(state,dstate,infiel,infmat,infmatmod,
+     &     infetype,nstatesz,numelt,numat,ierr,errstrng)
           return
         end if
         reform=.false.
@@ -338,7 +338,7 @@ c
       end
 c
 c version
-c $Id: iterate.f,v 1.2 2004/07/05 20:37:17 willic3 Exp $
+c $Id: iterate.f,v 1.3 2004/07/08 21:43:03 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
