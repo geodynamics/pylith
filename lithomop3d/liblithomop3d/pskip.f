@@ -42,7 +42,7 @@ c...  subroutine arguments
 c
       integer iunit
 c
-c...  defined constants
+c...  local constants
 c
       character leader*1
       data leader/'#'/
@@ -51,7 +51,7 @@ c...  intrinsic functions
 c
       intrinsic index
 c
-c...  user-defined functions
+c...  external functions
 c
       integer nchar,nnblnk
       external nchar,nnblnk
@@ -59,7 +59,7 @@ c
 c...  local variables
 c
       integer inblnk
-      character string*80,leader*1
+      character string*80
 c
  10   continue
         read(iunit,"(a80)",end=20) string
@@ -72,7 +72,7 @@ c
       end
 c
 c version
-c $Id: pskip.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: pskip.f,v 1.2 2004/07/07 20:43:53 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
