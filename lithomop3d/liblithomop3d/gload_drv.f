@@ -58,7 +58,7 @@ c
       integer ngravflag,neq,numnp,numslp,numfn,numelt,nconsz,numat
       integer npropsz,nhist,lastep,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(6,numelt),mhist(npropsz),infmat(3,numat)
+      integer infiel(7,numelt),mhist(npropsz),infmat(3,numat)
       integer infmatmod(5,nmatmodmax),infetype(4,netypes)
       character errstrng*(*)
       double precision bgravity(ngravflag*neq),grav(ndof)
@@ -145,7 +145,7 @@ c
       end
 c
 c version
-c $Id: gload_drv.f,v 1.3 2005/01/05 22:44:37 willic3 Exp $
+c $Id: gload_drv.f,v 1.4 2005/02/24 00:01:04 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
