@@ -31,31 +31,35 @@ c
 c
       subroutine elas_strs_cmp_ss(
      & b,neq,                                                           ! force
-     & x,d,dx,nsd,ndof,numnp,                                           ! global
+     & x,d,dx,numnp,                                                    ! global
      & tfault,numfn,numslp,                                             ! fault
-     & state,dmat,ien,lm,lmx,lmf,infiel,nstr,nddmat,nstatesz,ndmatsz,   ! elemnt
+     & state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,               ! elemnt
      & numelt,nconsz,                                                   ! elemnt
      & infmat,matgpt,elas_strs,                                         ! materl
-     & gauss,sh,shj,infetype,netypes,                                   ! eltype
-     & skew,nskdim,numrot,                                              ! skew
+     & gauss,sh,shj,infetype,                                           ! eltype
+     & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
-     & ierr)                                                            ! errcode
+     & ierr,errstrng)                                                   ! errcode
 c
 c...program to compute the total stress and strain for the current
 c   iteration for a given material model
 c
       include "implicit.inc"
 c
-c...  dimension parameters
+c...  parameter definitions
 c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer neq,nsd,ndof,numnp,numfn,numslp,nstr,nddmat,nstatesz
-      integer ndmatsz,numelt,nconsz,matgpt,netypes,nskdim,numrot,ierr
+      integer neq,numnp,numfn,numslp,nstatesz
+      integer ndmatsz,numelt,nconsz,matgpt,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
       integer infiel(6,numelt),infmat(6),infetype(4,netypes)
+      character errstrng*(*)
       double precision b(neq),x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
       double precision tfault(ndof,numfn)
       double precision state(nstr,nstatesz),dmat(nddmat,ndmatsz)
@@ -63,11 +67,6 @@ c
       double precision sh(nsd+1,nenmax,ngaussmax,netypes)
       double precision shj(nsd+1,nenmax,ngaussmax,netypes)
       double precision skew(nskdim,numnp)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -103,18 +102,17 @@ c
 c
 c...  localize coordinates and displacements
 c
-        call lcoord(x,xl,ien(indien),nen,nsd,numnp)
-        call ldisp(dl,d,ien(indien),ndof,nen,numnp)
-        if(numfn.ne.0) call adfldp(dl,lmf(indien),tfault,ndof,nen,numfn)
-        if(numslp.ne.0) call addsn(dl,dx,ien,lmx(1,indien),ndof,nen,
-     &   numnp)
+        call lcoord(x,xl,ien(indien),nen,numnp)
+        call ldisp(dl,d,ien(indien),nen,numnp)
+        if(numfn.ne.0) call adfldp(dl,lmf(indien),tfault,nen,numfn)
+        if(numslp.ne.0) call addsn(dl,dx,ien,lmx(1,indien),nen,numnp)
 c
 c...  compute strains
 c
         call bdeld_ss(xl,dl,sh(1,1,1,ietype),shj(1,1,1,ietype),ee,det,
-     &   gauss(1,1,ietype),iel,nen,nee,nsd,ndof,nstr,ngauss,ierr,
-     &   getshape,bmatrix)
-        if(ierr.ne.0) return
+     &   gauss(1,1,ietype),iel,nen,nee,ngauss,getshape,bmatrix,ierr,
+     &   errstrng)
+        if(ierr.ne.izero) return
 c
 c...  loop over gauss points, compute stresses, and transfer them into
 c     scur
@@ -123,7 +121,7 @@ c
           indstateg=indstate+(l-1)*nstate*nstr
           inddmatg=inddmat+(l-1)*nddmat
           call elas_strs(state(1,indstateg),ee(nstr*(l-1)),
-     &     dmat(1,inddmatg),nstr,nstate,nddmat)
+     &     dmat(1,inddmatg),nstate)
           call dcopy(nstr,state(1,indstateg),ione,scur(nstr*(l-1)),ione)
         end do
 c
@@ -131,23 +129,22 @@ c...  compute equivalent nodal loads
 c
         call fill(p,zero,ndof*nen)
         call eforce(xl,sh(1,1,1,ietype),shj(1,1,1,ietype),det,
-     &   gauss(1,1,ietype),scur,p,iel,nen,nsd,ndof,nstr,ngauss,ierr,
-     &   getshape,bmatrix)
-        if(ierr.ne.0) return
-        if(numrot.ne.0) call rpforc(p,skew,ien(indien),ndof,numnp,nen,
-     &   nskdim)
+     &   gauss(1,1,ietype),scur,p,iel,nen,ngauss,getshape,bmatrix,ierr,
+     &   errstrng)
+        if(ierr.ne.izero) return
+        if(numrot.ne.izero) call rpforc(p,skew,ien(indien),numnp,nen)
 c**        if(debug) then
 c**          if(ind.eq.1.or.mod(ind,npage).eq.0) write(kw,1000)
 c**          call prntforc(iel,p,ien(indien),nen,ndof,idout,kw)
 c**        end if
         call addfor(b,p,lm(1,indien),lmx(1,indien),neq,nee)
       end do
- 1000 format(//," local forces computed from stress field",//)
+c** 1000 format(//," local forces computed from stress field",//)
       return
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.3 2004/06/17 20:42:41 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.4 2004/06/21 20:34:31 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
