@@ -19,7 +19,7 @@ class KeywordValueParse:
 
         uparser = pyre.units.parser()
 
-        print "Hello from KeywordValueParse.parseline!"
+        # print "Hello from KeywordValueParse.parseline!"
 
         self.keyvals[2] = False
         comment = line.find('#')
@@ -33,7 +33,12 @@ class KeywordValueParse:
             uvalue = uparser.parse(rawvalue)
             value =uvalue.value
         except (NameError, AttributeError):
-            value = eval(rawvalue)
+	    try:
+                value = eval(rawvalue)
+	    except (NameError):
+		value = rawvalue
+            except:
+		return self.keyvals
         except:
             return self.keyvals
 
@@ -45,12 +50,12 @@ class KeywordValueParse:
 
 
     def __init__(self):
-        print "Hello from KeywordValueParse.__init__!"
-        print ""
+        # print "Hello from KeywordValueParse.__init__!"
+        # print ""
         self.keyvals = [None, None, None]
         return
 
 # version
-# $Id: KeywordValueParse.py,v 1.1 2004/05/13 21:35:40 willic3 Exp $
+# $Id: KeywordValueParse.py,v 1.2 2004/08/12 15:18:55 willic3 Exp $
 
 # End of file 
