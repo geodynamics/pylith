@@ -29,25 +29,27 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine skcomp(x,d,skew,idslp,ipslp,nsd,ndof,nskdim,npdim,
-     & ipstrs,numsn,numnp,nstep,lgdefp,kto)
+      subroutine skcomp(x,d,skew,idslp,ipslp,ipstrs,numsn,numnp,nstep,
+     & lgdefp,kto)
 c
 c...  subroutine to compute skew angles for a given load vector and
 c     fault orientation
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+      double precision eps,rdeg
+      parameter(eps=1.0d-8,rdeg=180.0d0/pi)
+c
 c...  subroutine arguments
 c
-      integer nsd,ndof,nskdim,npdim,ipstrs,numsn,numnp,nstep,lgdefp,kto
+      integer ipstrs,numsn,numnp,nstep,lgdefp,kto
       integer idslp(numsn),ipslp(npdim,numsn)
       double precision x(nsd,numnp),d(ndof,numnp),skew(nskdim,numnp)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
-      double precision eps,big,rdeg
-      parameter(eps=1.0d-8,big=1.0d30,rdeg=180.0d0/pi)
 c
 c...  intrinsic functions
 c
@@ -62,19 +64,19 @@ c
 c
 c*      write(6,*) "Hello from skcomp_f!"
 c
-      ma=3
-      nd=5
-      if(numsn.eq.4) nd=4
-      if(numsn.eq.3) nd=3
-      if(numsn.lt.3) then
+      ma=ithree
+      nd=ifive
+      if(numsn.eq.ifour) nd=ifour
+      if(numsn.eq.ithree) nd=ithree
+      if(numsn.lt.ithree) then
         write(kto,*) 'Not enough points to define a plane in skcomp!'
         stop
       end if
-      ncvm=3
+      ncvm=ithree
       ldtmp=lgdefp
-      if(ipstrs.eq.1.and.nstep.eq.0) ldtmp=0
+      if(ipstrs.eq.ione.and.nstep.eq.izero) ldtmp=izero
       rm=one
-      if(ldtmp.eq.0) rm=zero
+      if(ldtmp.eq.izero) rm=zero
 c
 c...  loop over slippery nodes, and compute normal for each plane
 c
@@ -159,7 +161,7 @@ c*      call flush(17)
       end
 c
 c version
-c $Id: skcomp.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: skcomp.f,v 1.2 2004/07/12 20:30:45 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
