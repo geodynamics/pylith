@@ -1,0 +1,1 @@
+lithomop3dapp.py --lm3dscan.fileRoot="../examples/patchtest/pt" --lm3dscan.keywordEqualsValueFile="../examples/patchtest/pt-2pt.keyval" --lm3dscan.bcInputFile="../examples/patchtest/pt-test1.bc" --lm3dscan.timeStepInputFile="../examples/patchtest/pt-nobbar.time" --lm3dscan.asciiOutputFile="../examples/patchtest/pt-test1-1pt-nobbar.ascii"
