@@ -87,6 +87,25 @@ PROJ_SRCS = \
         localx.f \
         makemsr.f \
         mat_1.f \
+        mat_2.f \
+        mat_3.f \
+        mat_4.f \
+        mat_5.f \
+        mat_6.f \
+        mat_7.f \
+        mat_8.f \
+        mat_9.f \
+        mat_10.f \
+        mat_11.f \
+        mat_12.f \
+        mat_13.f \
+        mat_14.f \
+        mat_15.f \
+        mat_16.f \
+        mat_17.f \
+        mat_18.f \
+        mat_19.f \
+        mat_20.f \
         mathist.f \
         matinit_drv.f \
         matmod_def.f \
@@ -191,7 +210,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.3 2004/07/13 20:20:57 willic3 Exp $
+# $Id: Make.mm,v 1.4 2004/07/22 00:51:07 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
