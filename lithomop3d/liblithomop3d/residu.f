@@ -29,8 +29,9 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine residu(b,bres,btot,deld,gtol,gi,gprev,gcurr,id,idx,neq,
-     & numnp,iter,itmaxp,idebug,idout,kto,kw,converge)
+      subroutine residu(bextern,bintern,bresid,dispvec,gtol,gi,gprev,
+     & gcurr,id,idx,neq,nextflag,numnp,iter,itmaxp,idebug,idout,kto,kw,
+     & converge)
 c
 c...computes the deviation from overall force and energy balance
 c
@@ -43,12 +44,15 @@ c
       include "rconsts.inc"
       integer iout
       parameter(iout=1)
+      double precision alpha
+      parameter(alpha=-1.0d0)
 c
 c...  subroutine arguments
 c
-      integer neq,numnp,iter,itmaxp,idebug,idout,kto,kw
+      integer neq,nextflag,numnp,iter,itmaxp,idebug,idout,kto,kw
       integer id(ndof,numnp),idx(ndof,numnp)
-      double precision b(neq),bres(neq),btot(neq),deld(neq)
+      double precision bextern(nextflag*neq),bintern(neq),bresid(neq)
+      double precision dispvec(neq)
       logical converge
 c
 c...  included dimension and type statements
@@ -76,22 +80,28 @@ cdebug      integer idb
       logical debug,div(3)
 c
 cdebug      write(6,*) "Hello from residu_f!"
-cdebug      write(6,*) "btot:",(btot(idb),idb=1,neq)
-cdebug      write(6,*) "b:",(b(idb),idb=1,neq)
-cdebug      write(6,*) "bres:",(bres(idb),idb=1,neq)
-cdebug      write(6,*) "deld:",(deld(idb),idb=1,neq)
+cdebug      write(6,*) "bextern:",(bextern(idb),idb=1,neq)
+cdebug      write(6,*) "bintern:",(bintern(idb),idb=1,neq)
+cdebug      write(6,*) "bresid:",(bresid(idb),idb=1,neq)
+cdebug      write(6,*) "dispvec:",(dispvec(idb),idb=1,neq)
 c
       tmp(3)=zero
       debug=(idebug.eq.1).and.(idout.gt.1)
-      if(debug) call printv(b,btot,id,idx,neq,numnp,iout,idout,kw)
-      ftmp=dnrm2(neq,bres,ione)
+      if(debug) call printv(bresid,bextern,id,idx,neq,numnp,iout,idout,
+     & kw)
+      ftmp=dnrm2(neq,bresid,ione)
       do i=1,neq
-        en=deld(i)*bres(i)
+        en=dispvec(i)*bresid(i)
         tmp(3)=tmp(3)+en*en
-        bres(i)=btot(i)-b(i)
       end do
-      tmp(1)=dnrm2(neq,deld,ione)
-      tmp(2)=dnrm2(neq,bres,ione)
+      if(nextflag.eq.izero) then
+        call fill(bresid,zero,neq)
+      else
+        call dcopy(neq,bextern,ione,bresid,ione)
+      end if
+      call daxpy(neq,alpha,bintern,ione,bresid,ione)
+      tmp(1)=dnrm2(neq,dispvec,ione)
+      tmp(2)=dnrm2(neq,bresid,ione)
       tmp(3)=sqrt(tmp(3))
       if(iter.eq.1) then
         gi(1)=tmp(1)
@@ -141,10 +151,10 @@ c
      &   acc(1),acc(2),acc(3)
       end if
 cdebug      write(6,*) "From end of residu_f!"
-cdebug      write(6,*) "btot:",(btot(idb),idb=1,neq)
-cdebug      write(6,*) "b:",(b(idb),idb=1,neq)
-cdebug      write(6,*) "bres:",(bres(idb),idb=1,neq)
-cdebug      write(6,*) "deld:",(deld(idb),idb=1,neq)
+cdebug      write(6,*) "bextern:",(bextern(idb),idb=1,neq)
+cdebug      write(6,*) "bintern:",(bintern(idb),idb=1,neq)
+cdebug      write(6,*) "bresid:",(bresid(idb),idb=1,neq)
+cdebug      write(6,*) "dispvec:",(dispvec(idb),idb=1,neq)
 800   format(/,
      & '   WARNING!  Apparent divergence in iteration #',i5,'!',//)
 810   format(/,
@@ -160,7 +170,7 @@ cdebug      write(6,*) "deld:",(deld(idb),idb=1,neq)
       end
 c
 c version
-c $Id: residu.f,v 1.2 2004/07/02 20:44:54 willic3 Exp $
+c $Id: residu.f,v 1.3 2005/01/05 22:33:11 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
