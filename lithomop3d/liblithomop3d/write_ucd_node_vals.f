@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_ucd_node_vals(d,deld,deltp,nstep,numnp,kw,
-     & fileroot)
+      subroutine write_ucd_node_vals(d,deld,deltp,nstep,numnp,kucd,
+     & ucdroot)
 c
 c...  Specialized routine to output displacement info for SCEC
 c     benchmarks.
@@ -53,8 +53,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstep,numnp,kw
-      character fileroot*(*)
+      integer nstep,numnp,kucd
+      character ucdroot*(*)
       double precision d(ndof,numnp),deld(ndof,numnp),deltp
 c
 c...  local constants
@@ -78,30 +78,30 @@ c
 c
 cdebug      write(6,*) "Hello from write_ucd_node_vals!"
 c
-      i1=nnblnk(fileroot)
-      i2=nchar(fileroot)
+      i1=nnblnk(ucdroot)
+      i2=nchar(ucdroot)
       write(cstep,"(i5.5)") nstep
 c
 c...  write mesh info
 c
-      filenm=fileroot(i1:i2)//"mesh.time."//cstep//".inp"
-      open(kw,file=filenm,status="new")
-      write(kw,"(7i7)") nnvals,(ival(i),i=1,nnvals)
+      filenm=ucdroot(i1:i2)//".mesh.time."//cstep//".inp"
+      open(kucd,file=filenm,status="new")
+      write(kucd,"(7i7)") nnvals,(ival(i),i=1,nnvals)
       do i=1,nnvals
-        write(kw,"(a9)") dout(i)
+        write(kucd,"(a9)") dout(i)
       end do
 c
 c...  write nodal displacements
 c
       do i=1,numnp
-        write(kw,"(i7,3(2x,1pe15.8))") i,(d(j,i),j=1,ndof)
+        write(kucd,"(i7,3(2x,1pe15.8))") i,(d(j,i),j=1,ndof)
       end do
-      close(kw)
+      close(kucd)
       return
       end
 c
 c version
-c $Id: write_ucd_node_vals.f,v 1.1 2004/08/23 19:47:07 willic3 Exp $
+c $Id: write_ucd_node_vals.f,v 1.2 2004/08/25 01:29:42 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
