@@ -80,6 +80,12 @@ extern char pylithomop3d_write_global_info__doc__[];
 extern "C"
 PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *);
 
+// write out material property info
+extern char pylithomop3d_write_props__name__[];
+extern char pylithomop3d_write_props__doc__[];
+extern "C"
+PyObject * pylithomop3d_write_props(PyObject *, PyObject *);
+
 // write out sparse matrix information
 extern char pylithomop3d_write_sparse_info__name__[];
 extern char pylithomop3d_write_sparse_info__doc__[];
@@ -101,6 +107,6 @@ PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *);
 #endif
 
 // version
-// $Id: input_misc.h,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: input_misc.h,v 1.2 2004/07/20 00:32:04 willic3 Exp $
 
 // End of file
