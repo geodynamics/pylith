@@ -35,7 +35,7 @@ c
      & infetype,                                                        ! eltype
      & delt,nstep,                                                      ! timdat
      & istatout,                                                        ! ioopts
-     & kucd,ucdroot)                                                    ! ioinfo
+     & kucd,ucdroot,iprestress)                                         ! ioinfo
 c
 c...  Specialized routine to output element info for SCEC benchmarks.
 c     This routine creates the nodal value portion of the UCD file for
@@ -56,7 +56,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstatesz,numelt,numat,nstep,kucd
+      integer nstatesz,numelt,numat,nstep,kucd,iprestress
       integer infiel(6,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
       integer ismatmod(nstatesmax,nmatmodmax),infetype(4,netypes)
       integer istatout(2,nstatesmax)
@@ -119,7 +119,11 @@ cdebug      write(6,*) "Hello from write_ucd_gauss_vals!"
 c
       i1=nnblnk(ucdroot)
       i2=nchar(ucdroot)
-      write(cstep,"(i5.5)") nstep
+      if(iprestress.eq.izero) then
+        write(cstep,"(i5.5)") nstep
+      else
+        cstep="prest"
+      end if
 c
 c...  determine how many values will be written
 c
@@ -208,7 +212,7 @@ c
       end
 c
 c version
-c $Id: write_ucd_gauss_vals.f,v 1.2 2004/08/25 01:22:01 willic3 Exp $
+c $Id: write_ucd_gauss_vals.f,v 1.3 2005/01/19 20:34:25 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
