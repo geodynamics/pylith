@@ -36,15 +36,15 @@ c   of freedom
 c
       include "implicit.inc"
 c
+c... parameter definitions
+c
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
       integer neq,nee
       integer lm(nee),lmx(nee)
       double precision b(neq),p(nee)
-c
-c... defined constants
-c
-      include "rconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -66,7 +66,7 @@ c
       end
 c
 c version
-c $Id: addfor.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: addfor.f,v 1.2 2004/06/18 14:45:46 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
