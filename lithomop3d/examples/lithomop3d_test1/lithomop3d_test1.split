@@ -1,0 +1,89 @@
+# Sample split node input file for 3D problem.  The entries are as
+# follows:
+#
+#   iels   = element number.
+#   inods  = node number.
+#   ihist  = time history option:
+#            0:  slip in elastic solution only.
+#           -1:  slip at constant velocity.
+#            n:  slip according to load history definition n.
+#   spl(i) = amount of displacement for each degree of freedom.  Note
+#            that this is actually a velocity if ihist = -1.
+#
+# In the finite element code, the integer quantities are all stored in
+# a single integer array of dimension (3,numfn), where numfn is the
+# number of faulted node entries read from this file.  The parsing
+# routine should return the value of numfn.  The storage is as follows:
+#   nfault(1,i) = iels
+#   nfault(2,i) = inods
+#   nfault(3,i) = ihist
+#
+# The real displacements/velocities are stored in a single real array
+# rfault of dimension (ndof, numfn), where ndof is the number of degrees
+# of freedom per node.
+#
+# Units should be specified for both possible interpretations of
+# rfault (displacement or velocity).
+#
+# Note:  Units are being commented out for now, as they are not presently
+# used in the code.
+#
+# split_displacement_units = m
+# split_velocity_units = m/s
+#
+#  The following split node displacements define 1 m of right-lateral
+#  slip in the y-direction on the top 2 sets of nodes in the y-z plane.
+#
+# Note:  The current implementation does not allow comments within the
+# split node definition list!
+#
+#   iels   inods    ihist     splitx   splity     splitz
+#
+      10     18        0        0.0      0.5        0.0
+      14     18        0        0.0      0.5        0.0
+      14     23        0        0.0      0.5        0.0
+      10     43        0        0.0      0.5        0.0
+      14     43        0        0.0      0.5        0.0
+      14     48        0        0.0      0.5        0.0
+      26     43        0        0.0      0.5        0.0
+      30     43        0        0.0      0.5        0.0
+      30     48        0        0.0      0.5        0.0
+      26     68        0        0.0      0.5        0.0
+      30     68        0        0.0      0.5        0.0
+      30     73        0        0.0      0.5        0.0
+      42     68        0        0.0      0.5        0.0
+      46     68        0        0.0      0.5        0.0
+      46     73        0        0.0      0.5        0.0
+      42     93        0        0.0      0.5        0.0
+      46     93        0        0.0      0.5        0.0
+      46     98        0        0.0      0.5        0.0
+      58     93        0        0.0      0.5        0.0
+      62     93        0        0.0      0.5        0.0
+      62     98        0        0.0      0.5        0.0
+      58    118        0        0.0      0.5        0.0
+      62    118        0        0.0      0.5        0.0
+      62    123        0        0.0      0.5        0.0
+      11     18        0        0.0     -0.5        0.0
+      15     18        0        0.0     -0.5        0.0
+      15     23        0        0.0     -0.5        0.0
+      11     43        0        0.0     -0.5        0.0
+      15     43        0        0.0     -0.5        0.0
+      15     48        0        0.0     -0.5        0.0
+      27     43        0        0.0     -0.5        0.0
+      31     43        0        0.0     -0.5        0.0
+      31     48        0        0.0     -0.5        0.0
+      27     68        0        0.0     -0.5        0.0
+      31     68        0        0.0     -0.5        0.0
+      31     73        0        0.0     -0.5        0.0
+      43     68        0        0.0     -0.5        0.0
+      47     68        0        0.0     -0.5        0.0
+      47     73        0        0.0     -0.5        0.0
+      43     93        0        0.0     -0.5        0.0
+      47     93        0        0.0     -0.5        0.0
+      47     98        0        0.0     -0.5        0.0
+      59     93        0        0.0     -0.5        0.0
+      63     93        0        0.0     -0.5        0.0
+      63     98        0        0.0     -0.5        0.0
+      59    118        0        0.0     -0.5        0.0
+      63    118        0        0.0     -0.5        0.0
+      63    123        0        0.0     -0.5        0.0
