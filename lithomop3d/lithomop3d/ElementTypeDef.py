@@ -37,47 +37,48 @@ class ElementTypeDef:
                numberSpaceDimensions,
                numberDegreesFreedom):
 
+	import lithomop3d
+
         print "Hello from ElementTypeDef.getdef!"
 
-        self.numberElementNodes = self.elementNodes[elementType - 1]
-
+        self.numberVolumeElementNodes = self.elementNodes[elementType - 1]
 
         if quadratureOrderInt == 1:
-            self.numberElementGaussPoints = \
+            self.numberVolumeElementGaussPoints = \
                                           self.elementFullGauss[elementType -1]
         elif quadratureOrderInt == 2:
-            self.numberElementGaussPoints =  \
+            self.numberVolumeElementGaussPoints =  \
                                           self.elementReducedGauss[elementType -1]
         elif quadratureOrderInt == 3:
-            self.numberElementGaussPoints = \
+            self.numberVolumeElementGaussPoints = \
                                            self.elementFullGauss[elementType -1]
 
-
-        self.numberElementEquations = \
+        self.numberVolumeElementEquations = \
                                     numberDegreesFreedom * \
-                                    self.numberElementNodes
-        self.numberElementCoordinates = \
-                                      numberSpaceDimensions * \
-                                      self.numberElementNodes
+                                    self.numberVolumeElementNodes
 
-        self.elementTypeInfo = [self.numberElementNodes,
-                                self.numberElementGaussPoints,
-                                self.numberElementEquations,
-                                self.numberElementCoordinates]
+        self.numberVolumeElementCoordinates = \
+                                      numberSpaceDimensions * \
+                                      self.numberVolumeElementNodes
+
+        self.elementTypeInfo = [self.numberVolumeElementNodes,
+                                self.numberVolumeElementGaussPoints,
+                                self.numberVolumeElementEquations,
+                                self.numberVolumeElementCoordinates]
 
         self.pointerToSh = lithomop3d.allocateDouble(
             (numberSpaceDimensions+1)*
-            numberElementNodes*
-            numberElementGaussPoints)
+            self.numberVolumeElementNodes*
+            self.numberVolumeElementGaussPoints)
             
         self.pointerToShj = lithomop3d.allocateDouble(
             (numberSpaceDimensions+1)*
-            numberElementNodes*
-            numberElementGaussPoints)
+            self.numberVolumeElementNodes*
+            self.numberVolumeElementGaussPoints)
             
         self.pointerToGauss = lithomop3d.allocateDouble(
             (numberSpaceDimensions+1)*
-            numberElementGaussPoints)
+            self.numberVolumeElementGaussPoints)
 
         lithomop3d.preshape(
             self.pointerToSh,
@@ -85,8 +86,8 @@ class ElementTypeDef:
             self.pointerToGauss,
             quadratureOrderInt,
             elementType,
-            self.numberElementNodes,
-            self.numberElementGaussPoints)
+            self.numberVolumeElementNodes,
+            self.numberVolumeElementGaussPoints)
         
         return
 
@@ -94,10 +95,10 @@ class ElementTypeDef:
     def __init__(self):
 	print ""
         print "Hello from ElementTypeDef.__init__!"
-        self.numberElementNodes = 0
-        self.numberElementGaussPoints = 0
-        self.numberElementEquations = 0
-        self.numberElementCoordinates = 0
+        self.numberVolumeElementNodes = 0
+        self.numberVolumeElementGaussPoints = 0
+        self.numberVolumeElementEquations = 0
+        self.numberVolumeElementCoordinates = 0
         self.elementTypeInfo = [0, 0, 0, 0]
         self.pointerToListArrayElementTypeInfo = None
         self.pointerToSh = None
@@ -127,6 +128,6 @@ class ElementTypeDef:
         return
 
 # version
-# $Id: ElementTypeDef.py,v 1.1 2005/03/22 02:26:26 willic3 Exp $
+# $Id: ElementTypeDef.py,v 1.2 2005/04/01 23:40:46 willic3 Exp $
 
 # End of file 
