@@ -142,7 +142,7 @@ c
 c
         if(ierr.ne.izero) return
 c
-        call addstf(A,s,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz)
+        call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz)
         ielg=ielg+ione
       end do
 c
@@ -150,7 +150,7 @@ c
       end
 c
 c version
-c $Id: td_matinit_cmp_ss.F,v 1.3 2005/04/01 23:18:42 willic3 Exp $
+c $Id: td_matinit_cmp_ss.F,v 1.4 2005/04/05 22:57:56 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
