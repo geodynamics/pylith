@@ -20,10 +20,10 @@ c...  associate local names with array elements
 c
       deltp=rtimdat(1)
       alfap=rtimdat(2)
-      tpois=rtimdat(3)
+      autofac=rtimdat(3)
 c
 c version
-c $Id: rtimdat_def.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: rtimdat_def.inc,v 1.2 2005/01/17 20:42:28 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
