@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine addstf(alnz,s,lm,lmx,ja,nee,numel,numsn,nnz)
+      subroutine addstf(alnz,s,lm,lmx,ja,nee,numsn,nnz)
 c
 c...  subroutine to add local stiffness matrix to global matrix, where
 c     the global matrix is stored in modified sparse row (MSR) format.
@@ -43,9 +43,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer nee,numel,numsn,nnz
+      integer nee,numsn,nnz
+      integer lm(nee),lmx(nee),ja(nnz)
       double precision alnz(nnz),s(nee,nee)
-      integer lm(nee*numel),lmx(nee*numel),ja(nnz)
 c
 c...  intrinsic functions
 c
@@ -100,7 +100,7 @@ c
       end
 c
 c version
-c $Id: addstf.f,v 1.2 2004/06/18 14:50:42 willic3 Exp $
+c $Id: addstf.f,v 1.3 2004/06/23 18:37:44 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
