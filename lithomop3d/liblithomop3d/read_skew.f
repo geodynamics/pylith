@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_skew(skew,runits,numrot,nskdim,numnp,iskopt,kr,kw,
-     & idout,ierr,sfile,ofile)
+      subroutine read_skew(skew,runits,numrot,numnp,iskopt,kr,kw,
+     & idout,sfile,ofile,ierr,errstrng)
 c
 c        program to read and print the array "skew" that specifies
 c        local coordinate rotations at each node.  used for applying
@@ -39,23 +39,29 @@ c        coordinate system.
 c
 c     Error codes:
 c         0:  No error
-c         1:  Error opening input file (this should not produce an
-c             exception since skew BC are optional)
-c         2:  Units not specified
+c         1:  Error opening input file (only if numrot.ne.zero and
+c             iskopt.eq.1)
+c         2:  Error opening output file
 c         3:  Read error
+c         4:  Write error
+c         5:  Units not specified
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer numrot,nskdim,numnp,iskopt,kr,kw,idout,ierr
+      integer numrot,numnp,iskopt,kr,kw,idout,ierr
       double precision skew(nskdim,numnp)
       double precision runits
-      character sfile*(*),ofile*(*)
+      character sfile*(*),ofile*(*),errstrng*(*)
 c
-c...  defined constants
-c
-      include "rconsts.inc"
+c...  local constants
 c
       character label(2)*5
       data label/'alpha',' beta'/
@@ -71,8 +77,8 @@ c
 c
       ierr=0
       call fill(skew,zero,nskdim*numnp)
-      if(numrot.eq.0) then
-        if(iskopt.eq.2) numrot=numnp
+      if(numrot.eq.izero) then
+        if(iskopt.eq.itwo) numrot=numnp
         return
       end if
 c
@@ -82,28 +88,30 @@ c
       call pskip(kr)
       read(kr,"(a80)") dummy
       j=index(dummy,"=")
-      if(j.eq.0) then
-        ierr=2
+      if(j.eq.izero) then
+        ierr=5
+        errstrng="read_skew"
         return
       end if
 c
 c...  read skew BC and write them to ascii output file, if desired
 c
       call pskip(kr)
-      if(idout.gt.0) then
-        open(kw,file=ofile,status="old",access="append")
-        write(kw,1000) iskopt,(label(i),i=1,nskdim)
-        write(kw,1050)
+      if(idout.gt.izero) then
+        open(kw,file=ofile,err=40,status="old",access="append")
+        write(kw,1000,err=50) iskopt,(label(i),i=1,nskdim)
+        write(kw,1050,err=50)
       end if
       do i=1,numrot
         read(kr,*,err=30,end=30) n,(skew(j,n),j=1,nskdim)
-        if(idout.gt.0) write(kw,2000) n,(skew(j,n),j=1,nskdim)
+        if(idout.gt.izero) write(kw,2000,err=40) n,(skew(j,n),
+     &   j=1,nskdim)
         do j=1,nskdim
           skew(j,n)=runits*skew(j,n)
         end do
       end do
       close(kr)
-      if(idout.gt.0) close(kw)
+      if(idout.gt.izero) close(kw)
 c
 c...  normal return
 c
@@ -113,6 +121,7 @@ c...  error opening input file
 c
 20    continue
         ierr=1
+        errstrng="read_skew"
         close(kr)
         return
 c
@@ -120,7 +129,24 @@ c...  error reading input file
 c
 30    continue
         ierr=3
+        errstrng="read_skew"
         close(kr)
+        return
+c
+c...  error opening output file
+c
+40    continue
+        ierr=2
+        errstrng="read_skew"
+        close(kw)
+        return
+c
+c...  error writing to output file
+c
+50    continue
+        ierr=4
+        errstrng="read_skew"
+        close(kw)
         return
 c
  1000 format(1x,///,
@@ -138,7 +164,7 @@ c
       end
 c
 c version
-c $Id: read_skew.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: read_skew.f,v 1.2 2004/07/12 18:37:28 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
