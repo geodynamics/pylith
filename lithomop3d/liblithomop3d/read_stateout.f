@@ -115,17 +115,17 @@ c...  output results, if desired
 c
       if(idout.gt.izero) then
         open(kw,file=ofile,err=40,status="old",access="append")
+        write(kw,700,err=50)
         if(nstatout(1).ne.izero) then
-          write(kw,700,err=50)
           write(kw,730,err=50) (labels(istatout(i,1)),i=1,nstatout(1))
         end if
         if(nstatout(2).ne.izero) then
-          write(kw,710,err=50)
-          write(kw,730,err=50) (labels(istatout(i,2)),i=1,nstatout(2))
+          write(kw,730,err=50) 
+     &     (labels(nstatesmax+istatout(i,2)),i=1,nstatout(2))
         end if
         if(nstatout(3).ne.izero) then
-          write(kw,720,err=50)
-          write(kw,730,err=50) (labels(istatout(i,3)),i=1,nstatout(3))
+          write(kw,730,err=50) 
+     &     (labels(2*nstatesmax+istatout(i,3)),i=1,nstatout(3))
         end if
         close(kw)
       end if
@@ -182,19 +182,15 @@ c
         return
 c
  700  format(//,
-     & " State variable total values to be output:",/)
- 710  format(//,
-     & " State variable incremental values to be output:",/)
- 720  format(//,
-     & " State variable rate values to be output:",/)
- 730  format(4x,6(:2x,a6))
+     & " State variables to be output:",/)
+ 730  format(4x,6(:1x,a11))
 c
  810  format(16i5)
 c
       end
 c
 c version
-c $Id: read_stateout.f,v 1.5 2005/03/23 16:55:47 willic3 Exp $
+c $Id: read_stateout.f,v 1.6 2005/03/23 17:14:51 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
