@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine getshapn(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,nsd,
-     & ngauss,ierr)
+      subroutine getshapn(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,
+     & ngauss,ierr,errstrng)
 c
 c...  Subroutine to compute shape functions and derivatives at
 c     Gauss points.
@@ -40,26 +40,24 @@ c     Bbar selective integration.
 c
       include "implicit.inc"
 c
-c...  dimension parameters
+c...  parameter definitions
 c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer iel,nen,nsd,ngauss,ierr
+      integer iel,nen,ngauss,ierr
+      character errstrng*(*)
       double precision xl(nsd,nen),sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax)
       double precision shd(nsd+1,nenmax,ngaussmax),shbar(nsd+1,nenmax)
       double precision det(ngauss),gauss(nsd+1,ngaussmax),vol
 c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
-c
 c...  local variables
 c
-cdebug      integer idb,jdb
       integer l
       double precision xs(3,3)
 c
@@ -70,9 +68,9 @@ cdebug      write(6,*) "Hello from getshapn_f!"
 c
       vol=zero
       do l=1,ngauss
-        call getjac(xl,xs,det(l),shj(1,1,l),nen,nsd,iel,ierr)
-        if(ierr.ne.0) return
-        call getder(det(l),sh(1,1,l),shd(1,1,l),xs,nen,nsd)
+        call getjac(xl,xs,det(l),shj(1,1,l),nen,iel,ierr,errstrng)
+        if(ierr.ne.izero) return
+        call getder(det(l),sh(1,1,l),shd(1,1,l),xs,nen)
         det(l)=gauss(4,l)*det(l)
         vol=vol+det(l)
       end do
@@ -80,7 +78,7 @@ c
       end
 c
 c version
-c $Id: getshapn.f,v 1.3 2004/06/17 18:10:57 willic3 Exp $
+c $Id: getshapn.f,v 1.4 2004/07/05 20:04:32 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
