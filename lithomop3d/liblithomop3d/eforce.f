@@ -29,29 +29,30 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine eforce(xl,sh,shj,det,gauss,evp,p,n,nen,nsd,ndof,nstr,
-     & ngauss,ierr,getshape,bmatrix)
+      subroutine eforce(xl,sh,shj,det,gauss,evp,p,iel,nen,ngauss,ierr,
+     & getshape,bmatrix)
 c
 c...this subroutine computes the effective forces at each node
 c   within an element: p=(b)t*evp, where p is the local force vector,
 c   b is the strain-displacement matrix, and evp is the stress
 c
       include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "rconsts.inc"
+      include "nconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer n,nen,nsd,ndof,nstr,ngauss,ierr
+      integer iel,nen,ierr
       double precision xl(nsd,nen),sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax),det(ngaussmax)
       double precision gauss(nsd+1,ngaussmax),evp(nstr,ngauss)
       double precision p(ndof*nen)
       external getshape,bmatrix
-c
-c...  defined constants
-c
-      include "rconsts.inc"
-      include "nconsts.inc"
 c
 c...  local variables
 c
@@ -62,18 +63,19 @@ c
 cdebug      write(6,*) "Hello from eforce_f!"
 c
       nee=ndof*nen
-      call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,n,nen,nsd,ngauss,
+      call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,ngauss,
      & ierr)
+      if(ierr.ne.izero) return
 c
       do l=1,ngauss
-        call bmatrix(b,sh(1,1,l),shbar,nsd,ndof,nen,nstr)
+        call bmatrix(b,sh(1,1,l),shbar,nen)
         call dgemv("t",nstr,nee,det(l),b,nstr,evp(1,l),ione,one,p,ione)
       end do
       return
       end
 c
 c version
-c $Id: eforce.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: eforce.f,v 1.2 2004/06/18 15:29:21 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
