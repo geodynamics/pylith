@@ -29,40 +29,47 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine localf(nfault,ien,lmf,numfn,nen,numel)
+      subroutine localf(ien,lmf,infiel,nconsz,numelt,infetype,nfault,
+     & numfn)
 c
 c.......subroutine to localize nfault array for efficient computation
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer numfn,nen,numel
-      integer nfault(3,numfn),lmf(nen,numel),ien(nen,numel)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
+      integer nconsz,numelt,numfn
+      integer ien(nconsz),lmf(nconsz),infiel(6,numelt)
+      integer infetype(4,netypes),nfault(3,numfn)
 c
 c...  local variables
 c
-      integer i,j,nelem,node
+      integer i,j,iel,indien,ietype,nen,node
 c
-      call ifill(lmf,izero,nen*numel)
-      if(numfn.eq.0) return
+      call ifill(lmf,izero,nconsz)
+      if(numfn.eq.izero) return
 c
       do i=1,numfn
-        nelem=nfault(1,i)
+        iel=nfault(1,i)
+        indien=infiel(1,iel)
+        ietype=infiel(3,iel)
+        nen=infetype(2,ietype)
         node=nfault(2,i)
-        do j=1,nen
-          if(node.eq.ien(j,nelem)) lmf(j,nelem)=i
+        do j=indien,indien+nen-1
+          if(node.eq.ien(j)) lmf(j)=i
         end do
       end do
       return
       end
 c
 c version
-c $Id: localf.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: localf.f,v 1.2 2004/07/07 18:27:14 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
