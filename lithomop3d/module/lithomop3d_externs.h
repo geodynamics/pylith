@@ -1045,6 +1045,7 @@ extern "C" {
 
   void write_element_info_f(int *,
 			    int *,
+			    int *,
 			    double *,
 			    int *,
 			    int *,
@@ -1111,6 +1112,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.4 2004/07/21 20:09:21 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.5 2004/08/02 21:42:18 willic3 Exp $
 
 // End of file
