@@ -46,30 +46,23 @@ c
       integer io
       double precision v,va,vv,dvv
 c
-c...  intrinsic functions
-c
-      intrinsic abs
-c
 c...  local variables
 c
-      double precision sgn,fac,fac1
+      double precision fac
 c
 c*      write(6,*) "Hello from infellh_f!"
 c
-      vv=half*(one+va*v)
+      fac=one+va*v
+      vv=half*fac
       dvv=half*va
       if(io.eq.izero) return
-      sgn=one
-      if(io.eq.1) sgn=-one
-      fac=one-sgn*v
-      fac1=half*abs(va+sgn)
-      vv=fac1+two*v*va/fac
-      dvv=two*va/(fac*fac)
+      vv=two/fac
+      dvv=-two*va/(fac*fac)
       return
       end
 c
 c version
-c $Id: infellh.f,v 1.1 2004/07/06 14:17:49 willic3 Exp $
+c $Id: infellh.f,v 1.2 2004/07/06 15:28:11 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
