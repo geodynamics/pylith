@@ -131,247 +131,266 @@ c
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.2) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_2,                           ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_2,td_strs_2,      ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.3) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_3,                           ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_3,td_strs_3,      ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.4) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_4,                           ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_4,td_strs_4,      ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.5) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_5,                           ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_5,td_strs_5,      ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.6) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_6,                           ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_6,td_strs_6,      ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.7) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_7,                           ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_7,td_strs_7,      ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.8) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_8,                           ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_8,td_strs_8,      ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.9) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_9,                           ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_9,td_strs_9,      ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.10) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_10,                          ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_10,td_strs_10,    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.11) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_11,                          ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_11,td_strs_11,    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.12) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_12,                          ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_12,td_strs_12,    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.13) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_13,                          ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_13,td_strs_13,    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.14) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_14,                          ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_14,td_strs_14,    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.15) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_15,                          ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_15,td_strs_15,    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.16) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_16,                          ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_16,td_strs_16,    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.17) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_17,                          ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_17,td_strs_17,    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.18) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_18,                          ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_18,td_strs_18,    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.19) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_19,                          ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_19,td_strs_19,    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.20) then
-          call elas_strs_cmp_ss(
+          call stress_cmp(
      &     b,neq,                                                       ! force
-     &     x,d,dx,numnp,                                                ! global
-     &     tfault,numfn,numslp,                                         ! fault
-     &     state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,numelt,    ! elemnt
-     &     nconsz,                                                      ! elemnt
-     &     infmat(1,imat),matgpt,elas_strs_20,                          ! materl
+     &     x,d,numnp,                                                   ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! fault
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
+     &     numelt,nconsz,                                               ! elemnt
+     &     ptmp,infmat(1,imat),nprop,matgpt,elas_strs_20,td_strs_20,    ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
@@ -379,7 +398,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else
           ierr=101
-          errstrng="elas_strs_drv_ss"
+          errstrng="stress_drv"
         end if
         if(ierr.ne.izero) return
         matgpt=matgpt+nmatel
@@ -388,7 +407,7 @@ c
       end
 c
 c version
-c $Id: stress_drv.f,v 1.2 2004/06/24 21:46:43 willic3 Exp $
+c $Id: stress_drv.f,v 1.3 2004/07/02 18:07:28 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
