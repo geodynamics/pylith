@@ -34,7 +34,7 @@ c
      & x,d,numnp,                                                       ! global
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
-     & state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,        ! elemnt
+     & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,ndmatsz, ! elemnt
      & numelt,nconsz,                                                   ! elemnt
      & prop,nmatel,nstate,nprop,matgpt,elas_strs,td_strs,matchg,tminmax,! materl
      & gauss,sh,shj,infetype,                                           ! eltype
@@ -60,7 +60,7 @@ c
       integer neq,numnp,numslp,numfn,nstatesz,ndmatsz,numelt,nconsz
       integer nmatel,nstate,nprop,matgpt,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(6,numelt),infetype(4,netypes)
+      integer infiel(6,numelt),iddmat(nstr,nstr),infetype(4,netypes)
       character errstrng*(*)
       logical matchg
       double precision b(neq),x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
@@ -157,7 +157,7 @@ c
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.10 2004/07/21 18:45:57 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.11 2004/07/21 19:23:24 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
