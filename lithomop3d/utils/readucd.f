@@ -260,10 +260,10 @@ c
                 iel=iadjf(j,k)
                 if(mat(iel).eq.ifmat(kk,i,l)) then
                   if(iftype(i).eq.1) then
-                    write(kwfb(i),"(2i7,3(2x,1pe15.8))") iel,inodef(j),
-     &               ifhist(i),(fsplit(jj,kk,i),jj=1,nsd)
+                    write(kwfb(i),"(2i7,i4,3(2x,1pe15.8))") iel,
+     &               inodef(j),ifhist(i),(fsplit(jj,kk,i),jj=1,nsd)
                   else
-                    write(kwfb(i),"(2i7,5i4)") iel,inodef(j),
+                    write(kwfb(i),"(2i7,3i4)") iel,inodef(j),
      &               (isn(jj),jj=1,nsd)
                   end if
                   write(kwfc(i),"(3i7,3(2x,1pe15.8))") 
