@@ -35,7 +35,7 @@ c
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
      & ien,lm,lmx,lmf,infiel,numelt,nconsz,                             ! elemnt
-     & prop,mhist,infmat,numat,npropsz,                                 ! materl
+     & prop,mhist,infmat,infmatmod,numat,npropsz,                       ! materl
      & gauss,shj,infetype,                                              ! eltype
      & histry,rtimdat,ntimdat,nhist,lastep,gload_cmp,                   ! timdat
      & skew,numrot,                                                     ! skew
@@ -49,6 +49,7 @@ c...  parameter definitions
 c
       include "ndimens.inc"
       include "nshape.inc"
+      include "materials.inc"
       include "nconsts.inc"
       include "rconsts.inc"
 c
@@ -57,8 +58,8 @@ c
       integer neq,numnp,numslp,numfn,numelt,nconsz,numat,npropsz,nhist
       integer lastep,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(6,numelt),mhist(npropsz),infmat(6,numat)
-      integer infetype(4,netypes)
+      integer infiel(6,numelt),mhist(npropsz),infmat(3,numat)
+      integer infmatmod(5,nmatmodmax),infetype(4,netypes)
       character errstrng*(*)
       double precision b(neq),bres(neq),gvec1(neq),gvec2(neq),grav(ndof)
       double precision x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
@@ -78,7 +79,7 @@ c
 c
 c...  local variables
 c
-      integer i,imat,matgpt,nmatel,nprop,indprop
+      integer i,imat,matgpt,matmodel,nmatel,nprop,indprop
       logical matchg
       double precision gsum,dens,dif
       double precision ptmp(100)
@@ -101,9 +102,10 @@ c
 c...  loop over material groups
 c
       do imat=1,numat
+        matmodel=infmat(1,imat)
         nmatel=infmat(2,imat)
-        nprop=infmat(5,imat)
-        indprop=infmat(6,imat)
+        nprop=infmatmod(3,matmodel)
+        indprop=infmat(3,imat)
         matchg=.false.
         call mathist(ptmp,prop(indprop),mhist(indprop),histry,nprop,
      &   imat,nstep,nhist,lastep,matchg,ierr,errstrng)
@@ -118,7 +120,7 @@ c
      &   dx,numslp,                                                     ! slip
      &   tfault,numfn,                                                  ! fault
      &   ien,lm,lmx,lmf,infiel,numelt,nconsz,                           ! elemnt
-     &   dens,infmat(1,imat),matgpt,nmatel,matchg,                      ! materl
+     &   dens,matgpt,nmatel,matchg,                                     ! materl
      &   gauss,shj,infetype,                                            ! eltype
      &   rtimdat,ntimdat,                                               ! timdat
      &   skew,numrot,                                                   ! skew
@@ -143,7 +145,7 @@ c
       end
 c
 c version
-c $Id: gload_drv.f,v 1.1 2004/07/01 20:17:23 willic3 Exp $
+c $Id: gload_drv.f,v 1.2 2004/07/08 21:25:16 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
