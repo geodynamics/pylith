@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine matmod_def(infmatmod,ismatmod)
+      subroutine matmod_def(infmatmod)
 c
 c...  quick and dirty method of defining global parameters for all
 c     material models.
@@ -73,10 +73,6 @@ c                               assumed to be stresses, but this may
 c                               change in the future.
 c                 
 c
-c     In addition, this routine generates a simple integer (binary)
-c     matrix (ismatmod) indicating whether a state variable is used for
-c     a particular material model.
-c
       include "implicit.inc"
 c
 c...  parameter definitions
@@ -86,7 +82,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer infmatmod(6,nmatmodmax),ismatmod(nstatesmax,nmatmodmax)
+      integer infmatmod(6,nmatmodmax)
 c
 c...  local variables
 c
@@ -95,7 +91,6 @@ c
 cdebug      write(6,*) "Hello from matmod_def_f!"
 c
       call ifill(infmatmod,izero,6*nmatmodmax)
-      call ifill(ismatmod,izero,nstatesmax*nmatmodmax)
 c
 c...  Definitions for isotropic elastic material
 c
@@ -103,9 +98,6 @@ c
       infmatmod(2,1) =12
       infmatmod(3,1) =ithree
       infmatmod(6,1) =6
-      do i=1,infmatmod(2,1)
-        ismatmod(i,1) =ione
-      end do
 c
 c...  Dummy definitions for additional elastic material models
 c
@@ -115,11 +107,6 @@ c
       infmatmod(6,2) =6
       infmatmod(6,3) =6
       infmatmod(6,4) =6
-      do i=1,infmatmod(2,2)
-        ismatmod(i,2) =ione
-        ismatmod(i,3) =ione
-        ismatmod(i,4) =ione
-      end do
 c
 c...  Definition for Maxwell viscoelastic material
 c
@@ -129,9 +116,6 @@ c
       infmatmod(4,5) = ione
       infmatmod(5,5) = izero
       infmatmod(6,5) = 6
-      do i=1,infmatmod(2,5)
-        ismatmod(i,1) =ione
-      end do
 c
 c...  Dummy definitions for remaining materials
 c
@@ -139,16 +123,13 @@ c
         do j=2,6
           infmatmod(j,i)=infmatmod(j,5)
         end do
-        do j=1,nstatesmax
-          ismatmod(j,i)=ismatmod(j,5)
-        end do
       end do
 c
       return
       end
 c
 c version
-c $Id: matmod_def.f,v 1.4 2005/03/21 23:19:11 willic3 Exp $
+c $Id: matmod_def.f,v 1.5 2005/03/28 23:52:18 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
