@@ -29,7 +29,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-from testpy.MaterialModel.MaterialModel import MaterialModel
+from lithomop3d.MaterialModel.MaterialModel import MaterialModel
 
 class IsotropicLinearElastic(MaterialModel):
     """Basic definitions for an isotropic linear elastic material"""
@@ -52,10 +52,10 @@ class IsotropicLinearElastic(MaterialModel):
         Only 2 state variables (stress and strain) are required to describe
         this material."""
 
-        print "Hello from IsotropicLinearElastic.__init__!"
-        print ""
+        # print "Hello from IsotropicLinearElastic.__init__!"
+        # print ""
         self.materialModel = 1
-        self.numberMaterialProperties = 3
+        self.numberProperties = 3
         self.materialVariation = False
         self.numberStateVariables = 2
         self.propertyDict = {'density': None,
@@ -70,6 +70,6 @@ class IsotropicLinearElastic(MaterialModel):
         return
 
 # version
-# $Id: IsotropicLinearElastic.py,v 1.1 2004/07/14 21:17:37 willic3 Exp $
+# $Id: IsotropicLinearElastic.py,v 1.2 2004/08/12 16:47:30 willic3 Exp $
 
 # End of file 
