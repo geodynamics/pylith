@@ -73,8 +73,10 @@ c...  local variables
 c
       integer matmodpt(nstatesmax,nmatmodmax)
       integer m50,i,iel,imat,ietype,ngauss,matmodel,nstate,indstate,l
-      integer indstateg,nout,j,incgauss,iout
+      integer indstateg,nout,j,iout
       double precision stmp(6),tmult
+      character statedescr*21
+cdebug      integer idb,jdb
 c
 c...  included variable definitions
 c
@@ -92,9 +94,21 @@ c
       do i=1,nmatmodmax
         matmodpt(1,i)=izero
         do j=2,nstatesmax
-          matmodpt(j,i)=matmodpt(j-1,i)+ismatmod(j-1,i)*nstr
+          matmodpt(j,i)=matmodpt(j-1,i)+ismatmod(j-1,i)
         end do
       end do
+cdebug      do idb=1,nstatesz
+cdebug        write(6,*) "state:",(state(jdb,idb),jdb=1,nstr)
+cdebug      end do
+cdebug      do idb=1,nstatesz
+cdebug        write(6,*) "dstate:",(dstate(jdb,idb),jdb=1,nstr)
+cdebug      end do
+cdebug      do idb=1,nmatmodmax
+cdebug        write(6,*) "matmodpt:",(matmodpt(jdb,idb),jdb=1,nstatesmax)
+cdebug      end do
+cdebug      do idb=1,nmatmodmax
+cdebug        write(6,*) "ismatmod:",(ismatmod(jdb,idb),jdb=1,nstatesmax)
+cdebug      end do
 c
 c...  loop over number of state variables
 c
@@ -108,9 +122,8 @@ c
             matmodel=infmat(1,imat)
             nstate=infmatmod(2,matmodel)
             indstate=infiel(5,iel)+matmodpt(i,matmodel)
-            incgauss=nstate*nstr
             do l=1,ngauss
-              indstateg=indstate+(l-1)*incgauss
+              indstateg=indstate+(l-1)*nstate
               if(ismatmod(i,matmodel).eq.izero) then
                 call fill(stmp,zero,nstr)
               else
@@ -119,7 +132,7 @@ c
               if(idout.gt.1) then
                 nout=nout+1
                 if(nout.eq.1.or.mod(nout,m50).eq.izero) then
-                  write(kw,2000) (labels(j),j=1,nstr)
+                  write(kw,2000) i,(labels(j),j=1,nstr)
                   write(kw,*) ' '
                 end if
                 write(kw,3000) iel,l,(stmp(j),j=1,nstr)
@@ -134,7 +147,11 @@ c...  output increments/rates, if desired.
 c
         if(istatout(2,i,iout).ne.izero) then
           tmult=one
-          if(istatout(2,i,iout).eq.ione.and.delt.gt.zero) tmult=one/delt
+          statedescr="   i n c r e m e n t "
+          if(istatout(2,i,iout).eq.ione) then
+            if(delt.gt.zero) tmult=one/delt
+            statedescr="   r a t e "
+          end if
           nout=izero
           do iel=1,numelt
             imat=infiel(2,iel)
@@ -143,35 +160,36 @@ c
             matmodel=infmat(1,imat)
             nstate=infmatmod(2,matmodel)
             indstate=infiel(5,iel)+matmodpt(i,matmodel)
-            incgauss=nstate*nstr
             do l=1,ngauss
-              indstateg=indstate+(l-1)*incgauss
+              indstateg=indstate+(l-1)*nstate
               call fill(stmp,zero,nstr)
               if(ismatmod(i,matmodel).ne.izero) call daxpy(nstr,tmult,
      &         state(1,indstateg),ione,stmp,ione)
               if(idout.gt.1) then
                 nout=nout+1
                 if(nout.eq.1.or.mod(nout,m50).eq.izero) then
-                  write(kw,2000) (labels(i),i=1,nstr)
+                  write(kw,2500) statedescr,i,(labels(j),j=1,nstr)
                   write(kw,*) ' '
                 end if
-                write(kw,3000) iel,l,(stmp(i),i=1,nstr)
+                write(kw,3000) iel,l,(stmp(j),j=1,nstr)
               end if
-              if(idsk.eq.izero) write(kp,1500) iel,l,(stmp(i),i=1,nstr)
+              if(idsk.eq.izero) write(kp,1500) iel,l,(stmp(j),j=1,nstr)
               if(idsk.eq.ione) write(kp) stmp
             end do
           end do
         end if
       end do
       return
-2000  format(///1x,' s t r e s s              '///
+2000  format(///1x,' s t a t e   v a r i a b l e ',i3,///,
+     &' elem #  gausspt',5x,5(a4,11x),a4)
+2500  format(///1x,' s t a t e   v a r i a b l e ',a21,i3,///,
      &' elem #  gausspt',5x,5(a4,11x),a4)
 3000  format(1x,i7,1x,i7,1x,6(1pe15.6))
 1500  format(2i7,6e16.7)
       end
 c
 c version
-c $Id: write_state.f,v 1.4 2004/07/13 16:12:40 willic3 Exp $
+c $Id: write_state.f,v 1.5 2004/08/02 21:35:07 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
