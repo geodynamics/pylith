@@ -57,7 +57,7 @@ c
 c
 c...  local variables
 c
-cdebug      integer idb,jdb
+cdebug      integer idb,jdb,kdb
       integer l,nee
       double precision shd(4,nenmax,ngaussmax),shbar(4,20),b(6,60),vol
 c
@@ -66,17 +66,29 @@ c
       nee=ndof*nen
       call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,ngauss,
      & ierr,errstrng)
+cdebug      write(6,*) "shd:"
+cdebug      do idb=1,ngauss
+cdebug        write(6,*) "det:",det(idb)
+cdebug        do jdb=1,nen
+cdebug          write(6,*) (shd(kdb,jdb,idb),kdb=1,4)
+cdebug        end do
+cdebug      end do
       if(ierr.ne.izero) return
 c
       do l=1,ngauss
-        call bmatrix(b,sh(1,1,l),shbar,nen)
+        call bmatrix(b,shd(1,1,l),shbar,nen)
+cdebug        do idb=1,nee
+cdebug          write(6,*) "b:",(b(jdb,idb),jdb=1,nstr)
+cdebug        end do
         call dgemv("t",nstr,nee,det(l),b,nstr,evp(1,l),ione,one,p,ione)
+cdebug        write(6,*) "evp:",(evp(idb,l),idb=1,nstr)
+cdebug        write(6,*) "p:",(p(idb),idb=1,nee)
       end do
       return
       end
 c
 c version
-c $Id: eforce.f,v 1.4 2004/07/05 19:51:37 willic3 Exp $
+c $Id: eforce.f,v 1.5 2004/08/02 21:07:51 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
