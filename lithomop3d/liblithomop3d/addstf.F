@@ -66,6 +66,7 @@ c
 cdebug      write(6,*) "Hello from addstf_f!"
 c
       do i=1,nee
+cdebug        write(6,*) "i,lm(i),s(i,i):",i,lm(i),s(i,i)
         lm(i) = lm(i) - 1
         lmx(i) = lmx(i) - 1
       end do
@@ -119,7 +120,7 @@ c
       end
 c
 c version
-c $Id: addstf.F,v 1.3 2005/03/30 19:46:45 willic3 Exp $
+c $Id: addstf.F,v 1.4 2005/04/01 23:25:40 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
