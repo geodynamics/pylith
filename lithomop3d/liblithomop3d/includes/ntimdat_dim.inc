@@ -18,15 +18,15 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      integer ntimdat(10)
+      integer ntimdat(9)
 c
 c...  scalar parameters associated with arrays
 c
-      integer nstep,maxitp,ntdinitp,lgdefp,ibbarp,itmaxp,nittot,nrftot,
+      integer nstep,maxitp,ntdinitp,lgdefp,itmaxp,nittot,nrftot,
      & ndtot,ireform
 c
 c version
-c $Id: ntimdat_dim.inc,v 1.3 2004/06/23 20:47:59 willic3 Exp $
+c $Id: ntimdat_dim.inc,v 1.4 2004/07/21 15:25:26 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
