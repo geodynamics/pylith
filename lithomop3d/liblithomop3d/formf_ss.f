@@ -57,7 +57,7 @@ c...  subroutine arguments
 c
       integer neq,numnp,ndmatsz,numelt,nconsz,numat,numrot,numfn,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
-      integer infiel(6,numelt),iddmat(nstr,nstr),infmat(3,numat)
+      integer infiel(7,numelt),iddmat(nstr,nstr),infmat(3,numat)
       integer infmatmod(5,nmatmodmax),infetype(4,netypes)
       integer nfault(3,numfn)
       character errstrng*(*)
@@ -121,7 +121,7 @@ c
       end
 c
 c version
-c $Id: formf_ss.f,v 1.4 2005/01/05 22:46:42 willic3 Exp $
+c $Id: formf_ss.f,v 1.5 2005/02/23 23:58:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
