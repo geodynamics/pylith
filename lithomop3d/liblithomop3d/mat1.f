@@ -297,11 +297,11 @@ c****  initially zero.  That would probably be more efficient.
       end
 c
 c
-      subroutine elasstrs1(state,dmat,nstr,nstate,nddmat)
+      subroutine elasstrs1(state,ee,dmat,nstr,nstate,nddmat)
 c
 c...  subroutine to compute stresses for the elastic solution.  For this
 c     material, there are just 2 state variables:  total stress and
-c     total strain.
+c     total strain.  The current total strain is contained in ee.
 c
 c     state(nstr,1) = Cauchy stress
 c     state(nstr,2) = linear strain
@@ -311,7 +311,7 @@ c
 c...  subroutine arguments
 c
       integer nstr,nstate,nddmat
-      double precision state(nstr,nstate),dmat(nddmat)
+      double precision state(nstr,nstate),ee(nstr),dmat(nddmat)
 c
 c...  parameters
 c
@@ -319,6 +319,7 @@ c
       integer ione
       parameter(zero=0.0d0,one=1.0d0,ione=1)
 c
+      call dcopy(nstr,ee,ione,state(1,2),ione)
       call dspmv("u",nstr,one,dmat,state(1,2),ione,zero,state(1,1),ione)
       return
       end
@@ -414,7 +415,7 @@ c
 c       
 
 c version
-c $Id: mat1.f,v 1.1 2004/05/19 16:41:12 willic3 Exp $
+c $Id: mat1.f,v 1.2 2004/05/20 21:13:21 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
