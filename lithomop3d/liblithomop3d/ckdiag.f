@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine ckdiag(alnz,nzero,neq,nnz,idout,kto,kw)
+      subroutine ckdiag(alnz,neq,nnz,ierr,errstrng)
 c
 c...program to test for zero or negative diagonals of the
 c   stiffness matrix
@@ -42,7 +42,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer nzero,neq,nnz,idout,kto,kw
+      integer neq,nnz,ierr
+      character errstrng*(*)
       double precision alnz(nnz)
 c
 c...  local variables
@@ -53,24 +54,21 @@ cdebug      write(6,*) "Hello from ckdiag_f!"
 c
       iz=0
       in=0
-      nzero=0
+      ierr=0
       do i=1,neq
         if(alnz(i).eq.zero) iz=iz+1
         if(alnz(i).lt.zero) in=in+1
       end do
       if((iz.ne.0).or.(in.ne.0)) then
-        nzero=1
-        if(idout.gt.1) write(kw,1000) iz,in
-        write(kto,1000) iz,in
+        ierr=1
+        write(errstrng,1000) iz,in
       end if
- 1000 format(///' ***fatal error in stiffness matrix!'/
-     & ' ',i7,' zero diagonals found'/
-     & ' ',i7,' negative diagonals found'/)
+ 1000 format("ckdiag: ",i7," zero diags,",i7," neg diags")
       return
       end
 c
 c version
-c $Id: ckdiag.f,v 1.2 2004/06/18 15:22:21 willic3 Exp $
+c $Id: ckdiag.f,v 1.3 2004/06/21 20:07:14 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
