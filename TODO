@@ -25,6 +25,9 @@ evaluating performance bottlenecks.
 implement Drucker-Prager elasto-plastic model.  Look into viscoplastic
 models.
 
+6.  Create function in array.cc to deallocate memory for arrays, and
+then put in python calls for arrays that need to be deallocated.
+
 Longer-term priorities, 3/11/2005:
 
 1.  Create shape function info and integration routines for cohesive
