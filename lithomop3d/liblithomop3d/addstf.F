@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -63,13 +62,9 @@ c... local variables
 c
       integer nloop,i,irow,ii,j,icol,jj,itmp,l
       double precision signi,signj
-cdebug      integer idb,jdb
 c
 cdebug      write(6,*) "Hello from addstf_f!"
 c
-cdebug      do idb=1,nee
-cdebug        write(6,*) "s:",(s(jdb,idb),jdb=1,nee)
-cdebug      end do
       do i=1,nee
         lm(i) = lm(i) - 1
         lmx(i) = lmx(i) - 1
@@ -124,7 +119,7 @@ cdebug      end do
       end
 c
 c version
-c $Id: addstf.F,v 1.1 2005/03/11 04:07:40 knepley Exp $
+c $Id: addstf.F,v 1.2 2005/03/25 01:19:43 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
