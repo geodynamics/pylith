@@ -150,7 +150,6 @@ class Lithomop3d_scan(Component):
 
         # Parameters derived from values in the inventory or the
         # category 2 parameters above.
-        self._quadratureOrderInt = 0
         self._analysisTypeInt = 0
         self._prestressAutoComputeInt = 0
         self._prestressAutoChangeElasticPropsInt = 0
@@ -239,16 +238,11 @@ class Lithomop3d_scan(Component):
                 if not line: break
                 keyvals = keyparse.parseline(line)
                 if keyvals[3]:
-		    # print keyvals
-                    # print type(keyvals[2])
 		    if type(keyvals[2]) == str:
-			# print 'Evaluated as string'
 		        exec 'self.' + keyvals[0] + '=' + "keyvals[2]"
                     elif type(keyvals[2]) == pyre.units.unit.unit:
-                        # print 'Evaluated as dimensional'
                         exec 'self.' + keyvals[0] + '=' + 'uparser.parse(str(keyvals[2]))'
 		    else:
-			# print 'Evaluated as other'
 		        exec 'self.' + keyvals[0] + '=' + str(keyvals[2])
             file.close()
 
@@ -395,9 +389,9 @@ class Lithomop3d_scan(Component):
             16,17,18,19,20,21]
 
         # Invariant parameters related to element type
-        # self._maxElementNodes = 20
-        # self._maxGaussPoints = 27
-        # self._maxElementEquations = self._numberDegreesFreedom*self._maxElementNodes
+        self._maxElementNodes = 20
+        self._maxGaussPoints = 27
+        self._maxElementEquations = self._numberDegreesFreedom*self._maxElementNodes
         self._numberElementTypes = 62
         self._numberElementTypesBase = 10
         self._numberElementNodesBase = [8, 7, 6, 5, 4, 20, 18, 15, 13, 10]
@@ -440,13 +434,10 @@ class Lithomop3d_scan(Component):
             self._prestressAutoChangeElasticPropsInt = 0
 
         # Parameters derived from the number of entries in a file.
-        # try:
-        # print "Just before lithomop3d.scan_coords:"
         self._numberNodes = lithomop3d.scan_coords(
             f77FileInput,
             self._coordinateUnits,
             self._coordinateInputFile)
-        # print "Just after lithomop3d.scan_coords:"
 
         self._coordinateScaleString = \
                                     uparser.parse(string.strip(self._coordinateUnits))
@@ -529,15 +520,17 @@ class Lithomop3d_scan(Component):
         self._maxNumberVolumeElementFamilies = self._numberAllowedVolumeElementTypes* \
                                                self._numberMaterials
 
-        self._pointerToVolumeElementFamilyList = litomopd3d.allocateInt(
-            2*self._maxNumberVolumeElementFamilies)
-        self._memorySize += 2*self._maxNumberVolumeElementFamilies*self._intSize
+        self._pointerToVolumeElementFamilyList = lithomop3d.allocateInt(
+            3*self._maxNumberVolumeElementFamilies)
+        self._memorySize += 3*self._maxNumberVolumeElementFamilies*self._intSize
 
         self._volumeElementDimens = lithomop3d.scan_connect(
             self._pointerToListArrayNumberElementNodesBase,
             self._pointerToMaterialModelInfo,
+            self._pointerToListArrayMaterialModel,
             self._pointerToVolumeElementFamilyList,
             self._maxNumberVolumeElementFamilies,
+	    self._numberMaterials,
             f77FileInput,
             self._connectivityInputFile)
 
@@ -591,13 +584,6 @@ class Lithomop3d_scan(Component):
         self._numberSlipperyWinklerEntries = self._slipperyWinklerInfo[0]
         self._numberSlipperyWinklerForces = self._slipperyWinklerInfo[1]
 
-        # except IOError, error:
-            # print "Situation:", error
-        # except ValueError, error:
-            # print "Situation:", error
-        # except:
-            # print "Exception from Lithomop3d_scan!"
-                
 	print ""
         print "Hello from lm3dscan._init (end)!"
 
@@ -648,6 +634,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.17 2005/03/30 01:56:39 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.18 2005/04/01 23:45:14 willic3 Exp $
 
 # End of file 
