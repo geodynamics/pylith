@@ -31,15 +31,14 @@ c
 c
       subroutine matinit_drv(
      & A,nnz,neq,                                                       ! sparse
-     & x,d,iwink,wink,numnp,nwink,                                      ! global
+     & x,d,iwink,wink,numnp,nwink,iddmat,                               ! global
      & dx,iwinkx,winkx,numslp,numsn,nwinkx,                             ! slip
      & tfault,numfn,                                                    ! fault
      & s,stemp,                                                         ! stiff
-     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,  ! elemnt
-     & nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,       ! elemnt
-     & nstate0,                                                         ! elemnt
-     & prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,               ! materl
-     & gauss,sh,shj,infetype,                                           ! eltype
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies,     ! elemnt
+     & numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,             ! elemnt
+     & prop,mhist,infmatmod,npropsz,tminmax,                            ! materl
+     & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & histry,rtimdat,ntimdat,rgiter,nhist,lastep,matinit_cmp,          ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
@@ -52,10 +51,10 @@ c
 c
 c     PETSC includes
 c
-#include "include/finclude/petsc.h"
-#include "include/finclude/petsclog.h"
-#include "include/finclude/petscvec.h"
-#include "include/finclude/petscmat.h"
+#include "finclude/petsc.h"
+#include "finclude/petsclog.h"
+#include "finclude/petscvec.h"
+#include "finclude/petscmat.h"
 c
 c     PETSc objects
 c
@@ -71,25 +70,25 @@ c
 c
 c...  subroutine arguments
 c
-      integer nnz,neq,numnp,nwink,numslp,numsn,nwinkx,numfn,nstatesz
-      integer nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto
-      integer nstate0,numat,npropsz,nhist,lastep,numrot,ierr
-      integer iwink(2,nwink),iwinkx(2,nwinkx),ien(nconsz)
-      integer lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(7,numelt),iddmat(nstr,nstr),mhist(npropsz)
-      integer infmat(3,numat),infmatmod(5,nmatmodmax)
-      integer infetype(4,netypes)
+      integer nnz,neq,numnp,nwink,numslp,numsn,nwinkx,numfn,nvfamilies
+      integer numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto
+      integer npropsz,nen,ngauss,nee,nhist,lastep,numrot,ierr
+      integer iwink(2,nwink),iddmat(nstr,nstr),iwinkx(2,nwinkx)
+      integer ien(nen,numelv)
+      integer lm(ndof*nen,numelv),lmx(ndof*nen,numelv),lmf(nen*numelv)
+      integer ivfamily(5,nvfamilies),mhist(npropsz)
+      integer infmatmod(6,nmatmodmax)
       character errstrng*(*)
       double precision x(nsd,numnp),d(ndof,numnp)
       double precision wink(nwink),dx(ndof,numnp),winkx(nwinkx)
       double precision tfault(ndof,numfn)
       double precision s(neemax*neemax),stemp(neemax*neemax)
-      double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
-      double precision state0(nstate0,nstatesz0)
-      double precision dmat(nddmat,ndmatsz),prop(npropsz),tminmax
-      double precision gauss(nsd+1,ngaussmax,netypes)
-      double precision sh(nsd+1,nenmax,ngaussmax,netypes)
-      double precision shj(nsd+1,nenmax,ngaussmax,netypes)
+      double precision state(nstatesz),dstate(nstatesz)
+      double precision state0(nstatesz0)
+      double precision dmat(nddmat*ngauss,numelv),prop(npropsz),tminmax
+      double precision gauss(nsd+1,ngauss)
+      double precision sh(nsd+1,nen,ngauss)
+      double precision shj(nsd+1,nen,ngauss)
       double precision histry(nhist,lastep+1),skew(nskdim,numnp)
 c
 c...  included dimension and type statements
@@ -107,7 +106,8 @@ c
 c
 c...  local variables
 c
-      integer imat,matmodel,nmatel,imatvar,nstate,nprop,indprop,matgpt
+      integer ielg,ifam,nelfamily,matmodel,indstate,indstate0,indprop
+      integer nstate,nprop,nstate0,n0states,imat
       double precision ptmp(100)
       logical matchg
 cdebug      integer idb,jdb
@@ -120,22 +120,27 @@ c
 c
 cdebug      write(6,*) "Hello from matinit_drv_f!"
 c*      call fill(dmat,zero,nddmat*ndmatsz)
-      matgpt=1
       tminmax=big
       nrftot=ntimdat(7)
       nrftot=nrftot+1
       ntimdat(7)=nrftot
+      ielg=ione
 c
-c...  loop over material groups and then select appropriate material
+c...  loop over element families and then select appropriate material
 c     model routine
 c
-      do imat=1,numat
-        matmodel=infmat(1,imat)
-        nmatel=infmat(2,imat)
-        indprop=infmat(3,imat)
+      do ifam=1,nvfamilies
+        nelfamily=ivfamily(1,ifam)
+        matmodel=ivfamily(2,ifam)
+        indstate=ivfamily(3,ifam)
+        indstate0=ivfamily(4,ifam)
+        indprop=ivfamily(5,ifam)
         nstate=infmatmod(2,matmodel)
         nprop=infmatmod(3,matmodel)
-        imatvar=infmatmod(4,matmodel)
+        nstate0=infmatmod(6,matmodel)
+        n0states=ione
+        if(ipstrs.ne.izero) n0states=nelfamily
+        imat=ifam
         matchg=.false.
         call mathist(ptmp,prop(indprop),mhist(indprop),histry,nprop,
      &   imat,nstep,nhist,lastep,matchg,ierr,errstrng)
@@ -143,16 +148,15 @@ c
         if(matmodel.eq.1) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_1,          ! materl
-     &     td_matinit_1,prestr_mat_1,matchg,tminmax,                    ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_1,td_matinit_1,prestr_mat_1,matchg,      ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -160,16 +164,15 @@ c
         else if(matmodel.eq.2) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_2,          ! materl
-     &     td_matinit_2,prestr_mat_2,matchg,tminmax,                    ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_2,td_matinit_2,prestr_mat_2,matchg,      ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -177,16 +180,15 @@ c
         else if(matmodel.eq.3) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_3,          ! materl
-     &     td_matinit_3,prestr_mat_3,matchg,tminmax,                    ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_3,td_matinit_3,prestr_mat_3,matchg,      ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -194,16 +196,15 @@ c
         else if(matmodel.eq.4) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_4,          ! materl
-     &     td_matinit_4,prestr_mat_4,matchg,tminmax,                    ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_4,td_matinit_4,prestr_mat_4,matchg,      ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -211,16 +212,15 @@ c
         else if(matmodel.eq.5) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_5,          ! materl
-     &     td_matinit_5,prestr_mat_5,matchg,tminmax,                    ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_5,td_matinit_5,prestr_mat_5,matchg,      ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -228,16 +228,15 @@ c
         else if(matmodel.eq.6) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_6,          ! materl
-     &     td_matinit_6,prestr_mat_6,matchg,tminmax,                    ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_6,td_matinit_6,prestr_mat_6,matchg,      ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -245,16 +244,15 @@ c
         else if(matmodel.eq.7) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_7,          ! materl
-     &     td_matinit_7,prestr_mat_7,matchg,tminmax,                    ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_7,td_matinit_7,prestr_mat_7,matchg,      ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -262,16 +260,15 @@ c
         else if(matmodel.eq.8) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_8,          ! materl
-     &     td_matinit_8,prestr_mat_8,matchg,tminmax,                    ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_8,td_matinit_8,prestr_mat_8,matchg,      ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -279,16 +276,15 @@ c
         else if(matmodel.eq.9) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_9,          ! materl
-     &     td_matinit_9,prestr_mat_9,matchg,tminmax,                    ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_9,td_matinit_9,prestr_mat_9,matchg,      ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -296,16 +292,15 @@ c
         else if(matmodel.eq.10) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_10,         ! materl
-     &     td_matinit_10,prestr_mat_10,matchg,tminmax,                  ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_10,td_matinit_10,prestr_mat_10,matchg,   ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -313,16 +308,15 @@ c
         else if(matmodel.eq.11) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_11,         ! materl
-     &     td_matinit_11,prestr_mat_11,matchg,tminmax,                  ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_11,td_matinit_11,prestr_mat_11,matchg,   ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -330,16 +324,15 @@ c
         else if(matmodel.eq.12) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_12,         ! materl
-     &     td_matinit_12,prestr_mat_12,matchg,tminmax,                  ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_12,td_matinit_12,prestr_mat_12,matchg,   ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -347,16 +340,15 @@ c
         else if(matmodel.eq.13) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_13,         ! materl
-     &     td_matinit_13,prestr_mat_13,matchg,tminmax,                  ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_13,td_matinit_13,prestr_mat_13,matchg,   ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -364,16 +356,15 @@ c
         else if(matmodel.eq.14) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_14,         ! materl
-     &     td_matinit_14,prestr_mat_14,matchg,tminmax,                  ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_14,td_matinit_14,prestr_mat_14,matchg,   ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -381,16 +372,15 @@ c
         else if(matmodel.eq.15) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_15,         ! materl
-     &     td_matinit_15,prestr_mat_15,matchg,tminmax,                  ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_15,td_matinit_15,prestr_mat_15,matchg,   ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -398,16 +388,15 @@ c
         else if(matmodel.eq.16) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_16,         ! materl
-     &     td_matinit_16,prestr_mat_16,matchg,tminmax,                  ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_16,td_matinit_16,prestr_mat_16,matchg,   ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -415,16 +404,15 @@ c
         else if(matmodel.eq.17) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_17,         ! materl
-     &     td_matinit_17,prestr_mat_17,matchg,tminmax,                  ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_17,td_matinit_17,prestr_mat_17,matchg,   ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -432,16 +420,15 @@ c
         else if(matmodel.eq.18) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_18,         ! materl
-     &     td_matinit_18,prestr_mat_18,matchg,tminmax,                  ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_18,td_matinit_18,prestr_mat_18,matchg,   ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -449,16 +436,15 @@ c
         else if(matmodel.eq.19) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_19,         ! materl
-     &     td_matinit_19,prestr_mat_19,matchg,tminmax,                  ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_19,td_matinit_19,prestr_mat_19,matchg,   ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -466,16 +452,15 @@ c
         else if(matmodel.eq.20) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
      &     s,stemp,                                                     ! stiff
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nstate,nprop,matgpt,imatvar,nmatel,elas_mat_20,         ! materl
-     &     td_matinit_20,prestr_mat_20,matchg,tminmax,                  ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,           ! elemfamily
+     &     nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,      ! elemfamily
+     &     ptmp,nprop,elas_mat_20,td_matinit_20,prestr_mat_20,matchg,   ! materl
+     &     tminmax,                                                     ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -485,15 +470,7 @@ c
           errstrng="matinit_drv"
         end if
         if(ierr.ne.izero) return
-        matgpt=matgpt+nmatel
       end do
-c
-c...  debugging output
-c
-cdebug      write(6,*) "DMAT array:"
-cdebug      do idb=1,ndmatsz
-cdebug        write(6,*) (dmat(jdb,idb),jdb=1,nddmat)
-cdebug      end do
 c
 c...  add Winkler elements to stiffness matrix diagonals
 c
@@ -513,7 +490,7 @@ c
       end
 c
 c version
-c $Id: matinit_drv.F,v 1.1 2005/03/11 04:07:41 knepley Exp $
+c $Id: matinit_drv.F,v 1.2 2005/03/21 23:05:27 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
