@@ -31,8 +31,8 @@ c
 c
       subroutine autoprestr(
      & A,                                                               ! sparse
-     & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
-     & dispvec,nforce,grav,                                             ! force
+     & bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,    ! force
+     & nforce,grav,                                                     ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
      & ibond,bond,                                                      ! bc
      & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
@@ -90,7 +90,7 @@ c
       integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
       integer istatout(*),nstatout(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
-      double precision bintern(*),bresid(*),bwork(*),dispvec(*),grav(*)
+      double precision bintern(*),bresid(*),dispvec(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision bond(*)
       double precision dx(*),deldx(*),dxcur(*),diforc(*),winkx(*)
@@ -294,8 +294,8 @@ c*        if(ierr.ne.izero) return
 c
         call iterate(
      &   A,                                                             ! sparse
-     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
-     &   dispvec,nforce,grav,                                           ! force
+     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
+     &   nforce,grav,                                                   ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
      &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
      &   nfault,dfault,tfault,                                          ! fault
@@ -367,8 +367,8 @@ c*        if(ierr.ne.izero) return
 c
         call iterate(
      &   A,                                                             ! sparse
-     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
-     &   dispvec,nforce,grav,                                           ! force
+     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
+     &   nforce,grav,                                                   ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
      &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
      &   nfault,dfault,tfault,                                          ! fault
@@ -437,8 +437,8 @@ c*clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
 clater     &   A,                                                     ! sparse
-clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
-clater     &   dispvec,nforce,grav,                                           ! force
+clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
+clater     &   nforce,grav,                                                   ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
 clater     &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
 clater     &   nfault,dfault,tfault,                                          ! fault
@@ -506,8 +506,8 @@ c*clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
 clater     &   A,                                                     ! sparse
-clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
-clater     &   dispvec,nforce,grav,                                           ! force
+clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
+clater     &   nforce,grav,                                                   ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
 clater     &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
 clater     &   nfault,dfault,tfault,                                          ! fault
@@ -590,7 +590,7 @@ c
       end
 c
 c version
-c $Id: autoprestr.F,v 1.3 2005/03/25 23:29:49 willic3 Exp $
+c $Id: autoprestr.F,v 1.4 2005/03/29 01:30:53 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
