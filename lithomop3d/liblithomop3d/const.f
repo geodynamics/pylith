@@ -29,9 +29,9 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine const(maxstp,delt,alfa,maxit,ntdinit,lgdef,ibbar,utol,
+      subroutine const(maxstp,delt,alfa,maxit,ntdinit,lgdef,utol,
      & ftol,etol,itmax,nintg,i,naxstp,nfirst,rtimdat,deltp,alfap,
-     & ntimdat,nstep,maxitp,ntdinitp,lgdefp,ibbarp,itmaxp,gtol)
+     & ntimdat,nstep,maxitp,ntdinitp,lgdefp,itmaxp,gtol)
 c
 c...this subroutine defines the constants for each time step group.
 c
@@ -41,7 +41,7 @@ c...  subroutine arguments
 c
       integer nintg,i,naxstp,nfirst
       integer maxstp(nintg),maxit(nintg),ntdinit(nintg)
-      integer lgdef(nintg),ibbar(nintg),itmax(nintg)
+      integer lgdef(nintg),itmax(nintg)
       double precision delt(nintg),alfa(nintg),utol(nintg),ftol(nintg)
       double precision etol(nintg)
 c
@@ -69,10 +69,8 @@ c
       ntimdat(3)=ntdinitp
       lgdefp=lgdef(ii)
       ntimdat(4)=lgdefp
-      ibbarp=ibbar(ii)
-      ntimdat(5)=ibbarp
       itmaxp=itmax(ii)
-      ntimdat(6)=itmaxp
+      ntimdat(5)=itmaxp
       gtol(1)=utol(ii)
       gtol(2)=ftol(ii)
       gtol(3)=etol(ii)
@@ -82,7 +80,7 @@ c
       end
 c
 c version
-c $Id: const.f,v 1.2 2004/06/23 20:52:09 willic3 Exp $
+c $Id: const.f,v 1.3 2004/07/21 15:29:05 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
