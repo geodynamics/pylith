@@ -30,34 +30,33 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine stiff_ss(
-     & xl,nsd,ndof,                                                     ! global
-     & dmat,ien,iddmat,nstr,nddmat,iel,                                 ! elemnt
+     & xl,                                                              ! global
+     & dmat,ien,iddmat,iel,                                             ! elemnt
      & gauss,sh,shj,ngauss,ngaussdim,nen,                               ! eltype
      & s,nee,                                                           ! stiff
      & getshape,bmatrix,                                                ! bbar
-     & ierr)                                                            ! errcode
+     & ierr,errstrng)                                                   ! errcode
 c
 c...computes the local stiffness matrix at the given integration points.
 c   k=(b)t*d*b.
 c
       include "implicit.inc"
 c
-c...  dimension parameters
+c...  parameter definitions
 c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer nsd,ndof,nstr,nddmat,iel,ngauss,ngaussdim,nen,nee
+      integer iel,ngauss,ngaussdim,nen,nee,ierr
       integer ien(nen),iddmat(nstr,nstr)
+      character errstrng*(*)
       double precision xl(nsd,nen),dmat(nddmat,ngaussdim)
       double precision gauss(nsd+1,ngaussmax),sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax),s(nee,nee)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  external routines
 c
@@ -74,16 +73,16 @@ c...form shape functions for each integration point
 c
 cdebug      write(6,*) "Hello from stiff_ss_f!"
 c
-      call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,nsd,
-     & ngauss,ierr)
-      if(ierr.ne.0) return
+      call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,ngauss,
+     & ierr,errstrng)
+      if(ierr.ne.izero) return
 c
 c...construct b matrix, then form intermediate db=dmat*b, and finally
 c   the stiffness (b)t*dmat*b multiplied by appropriate weight for
 c   integral over element
 c
       do l=1,ngauss
-        call bmatrix(b,shd(1,1,l),shbar,nsd,ndof,nen,nstr)
+        call bmatrix(b,shd(1,1,l),shbar,nen)
         call getmat(dtmp,dmat(1,l),iddmat,nstr,nddmat)
         call dsymm("l","l",nstr,nee,det(l),dtmp,nstr,b,nstr,zero,db,
      &   nstr)
@@ -93,7 +92,7 @@ c
       end
 c
 c version
-c $Id: stiff_ss.f,v 1.3 2004/06/16 20:21:31 willic3 Exp $
+c $Id: stiff_ss.f,v 1.4 2004/07/05 20:21:43 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
