@@ -42,7 +42,7 @@ c
      & prop,mhist,infmat,infmatmod,ismatmod,                            ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & histry,rtimdat,ntimdat,nvisdat,maxstp,delt,alfa,maxit,ntdinit,   ! timdat
-     & lgdef,ibbar,utol,ftol,etol,itmax,                                ! timdat
+     & lgdef,utol,ftol,etol,itmax,                                      ! timdat
      & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
      & skew,                                                            ! skew
      & ncodat,nunits,nprint,istatout,                                   ! ioinfo
@@ -69,7 +69,7 @@ c
       integer lmf(*),infiel(*),iddmat(*),ielno(*),iside(*)
       integer ihistry(*),mhist(*),infmat(*),infmatmod(*),ismatmod(*)
       integer infetype(*),maxstp(*),maxit(*),ntdinit(*),lgdef(*)
-      integer ibbar(*),itmax(*),istatout(*)
+      integer itmax(*),istatout(*)
       double precision alnz(*),pcg(*),zcg(*)
       double precision b(*),btot(*),bres(*),pvec(*),gvec1(*),gvec2(*)
       double precision grav(*)
@@ -162,15 +162,15 @@ c*      call flush(kto)
       ntimdat(1)=nstep
       naxstp=izero
       nittot=izero
-      ntimdat(7)=nittot
+      ntimdat(6)=nittot
       nrftot=izero
-      ntimdat(8)=nrftot
+      ntimdat(7)=nrftot
       ndtot=izero
-      ntimdat(9)=ndtot
-      ntimdat(10)=ireform
-      call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,ibbar,utol,ftol,
+      ntimdat(8)=ndtot
+      ntimdat(9)=ireform
+      call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,utol,ftol,
      & etol,itmax,nintg,igroup,naxstp,nfirst,rtimdat,deltp,alfap,
-     & ntimdat,nstep,maxitp,ntdinitp,lgdefp,ibbarp,itmaxp,gtol)
+     & ntimdat,nstep,maxitp,ntdinitp,lgdefp,itmaxp,gtol)
       if(skc) then
         call skclear(idslp,skew,numsn,numnp)
         call skcomp(x,d,skew,idslp,ipslp,ipstrs,numsn,numnp,nstep,
@@ -233,7 +233,7 @@ c******  might be passing a routine name in from python/c++.
 c******  Another thing to consider is that I will need to pass in some extra
 c******  info that isn't currently needed for the small strain case.
 c
-      if(lgdefp.eq.izero.and.ibbarp.eq.izero) then
+      if(lgdefp.eq.izero.and.intord.ne.ithree) then
         call matinit_drv(
      &   alnz,ja,nnz,neq,                                               ! sparse
      &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -299,7 +299,7 @@ c
 c
         if(ierr.ne.izero) return
 c
-      else if(lgdefp.eq.izero.and.ibbarp.eq.ione) then
+      else if(lgdefp.eq.izero.and.intord.eq.ithree) then
         call matinit_drv(
      &   alnz,ja,nnz,neq,                                               ! sparse
      &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -365,7 +365,7 @@ c
 c
         if(ierr.ne.izero) return
 c
-clater      else if(lgdefp.eq.ione.and.ibbarp.eq.izero) then
+clater      else if(lgdefp.eq.ione.and.intord.ne.ithree) then
 clater        call matinit_drv(
 clater     &   alnz,ja,nnz,neq,                                               ! sparse
 clater     &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -431,7 +431,7 @@ clater     &   ierr,errstrng)                                                 ! 
 c
 clater        if(ierr.ne.izero) return
 c
-clater      else if(lgdefp.eq.1.and.ibbarp.eq.1) then
+clater      else if(lgdefp.eq.1.and.intord.eq.ithree) then
 clater        call matinit_drv(
 clater     &   alnz,ja,nnz,neq,                                               ! sparse
 clater     &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -561,7 +561,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.4 2004/07/13 17:40:12 willic3 Exp $
+c $Id: elastc.f,v 1.5 2004/07/21 15:38:01 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
