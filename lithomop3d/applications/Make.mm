@@ -51,10 +51,11 @@ update: clean
 EXPORT_BINS = \
     lithomop3dapp.py
 
-export:: export-binaries
+export:: 
+	$(CP) lithomop3dapp.py $(EXPORT_ROOT)/bin/.
 
 
 # version
-# $Id: Make.mm,v 1.1 2004/08/02 21:38:38 willic3 Exp $
+# $Id: Make.mm,v 1.2 2004/08/13 02:36:46 willic3 Exp $
 
 # End of file
