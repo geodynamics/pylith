@@ -197,7 +197,7 @@ all: $(PROJ_SAR) export
 # build the shared object
 
 $(PROJ_SAR): product_dirs $(PROJ_OBJS)
-	$(CXX) -o $(PROJ_SAR) $(PROJ_OBJS) $(LCXXFLAGS)
+	$(CXX) -o $(PROJ_SAR) $(PROJ_OBJS) $(LCXXFLAGS) $(LCXX_FORTRAN)
 
 #--------------------------------------------------------------------------
 #
@@ -208,7 +208,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.5 2004/08/02 21:01:25 willic3 Exp $
+# $Id: Make.mm,v 1.6 2004/08/17 03:27:00 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
