@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine bdeld_ss(xl,dl,sh,shj,ee,det,gauss,iel,nen,nee,ngauss,
-     & ierr,getshape,bmatrix)
+     & getshape,bmatrix,ierr,errstrng)
 c
 c...  Subroutine to compute strain increments in each element.
 c     Strain is evaluated at the number of gauss points specified by
@@ -55,6 +55,7 @@ c
 c...  subroutine arguments
 c
       integer iel,nen,nee,ngauss,ierr
+      character errstrng*(*)
       double precision xl(nsd,nen),dl(ndof*nen)
       double precision sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax),ee(nstr,ngauss)
@@ -77,7 +78,7 @@ c...compute shape function derivatives over number of strain integration
 c   points, and then compute average dilatational component.
 c
       call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,ngauss,
-     & ierr)
+     & ierr,errstrng)
       if(ierr.ne.0) return
 c
 c...construct b matrix and compute strains at gauss point(s)
@@ -90,7 +91,7 @@ c
       end
 c
 c version
-c $Id: bdeld_ss.f,v 1.3 2004/06/18 14:58:45 willic3 Exp $
+c $Id: bdeld_ss.f,v 1.4 2004/06/21 19:53:03 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
