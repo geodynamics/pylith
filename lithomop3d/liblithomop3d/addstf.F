@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine addstf(A,s,lm,lmx,nee,numsn,nnz)
+      subroutine addstf(A,s,stemp,lm,lmx,nee,numsn,nnz)
 c
 c...  subroutine to add local stiffness matrix to global matrix, where
 c     the global matrix is stored in modified sparse row (MSR) format.
@@ -45,6 +45,7 @@ c
 c
 c...  parameter definitions
 c
+      include "nshape.inc"
       include "nconsts.inc"
       include "rconsts.inc"
 c
@@ -52,7 +53,7 @@ c...  subroutine arguments
 c
       integer nee,numsn,nnz,ierr
       integer lm(nee),lmx(nee)
-      double precision s(nee,nee)
+      double precision s(nee,nee),stemp(nee,nee)
 c
 c...  intrinsic functions
 c
@@ -61,57 +62,47 @@ c
 c... local variables
 c
       integer i,j
+      integer lmxt(neemax)
       double precision signi,signj
+      logical slip
+c
+cdebug      integer idb,jdb
 c
 cdebug      write(6,*) "Hello from addstf_f!"
 c
+      slip=.false.
       do i=1,nee
 cdebug        write(6,*) "i,lm(i),s(i,i):",i,lm(i),s(i,i)
+        if(lmx(i).ne.izero) slip=.true.
         lm(i) = lm(i) - 1
+        lmxt(i) = abs(lmx(i))-1
         lmx(i) = lmx(i) - 1
       end do
       call MatSetValues(A, nee, lm, nee, lm, s, ADD_VALUES, ierr)
-      do i=1,nee
-        signi=sign(one,dble(lmx(i)))
-        do j=1,nee
-          s(i,j) = signi*s(i,j)
+      if(slip) then
+        do i=1,nee
+          signi=sign(one,dble(lmx(i)))
+          do j=1,nee
+            stemp(i,j) = signi*s(i,j)
+          end do
         end do
-      end do
-      call MatSetValues(A, nee, lmx, nee, lm, s, ADD_VALUES, ierr)
-      do i=1,nee
-        signi=sign(one,dble(lmx(i)))
-        do j=1,nee
-          s(i,j) = signi*s(i,j)
+        call MatSetValues(A, nee, lmxt, nee, lm,stemp, ADD_VALUES, ierr)
+        do i=1,nee
+          do j=1,nee
+            signj=sign(one,dble(lmx(j)))
+            stemp(i,j) = signj*s(i,j)
+          end do
         end do
-      end do
-      do i=1,nee
-        do j=1,nee
-          signj=sign(one,dble(lmx(j)))
-          s(i,j) = signj*s(i,j)
+        call MatSetValues(A, nee, lm, nee, lmxt,stemp, ADD_VALUES, ierr)
+        do i=1,nee
+          signi=sign(one,dble(lmx(i)))
+          do j=1,nee
+            signj=sign(one,dble(lmx(j)))
+            stemp(i,j) = signi*signj*s(i,j)
+          end do
         end do
-      end do
-      call MatSetValues(A, nee, lm, nee, lmx, s, ADD_VALUES, ierr)
-      do i=1,nee
-        do j=1,nee
-          signj=sign(one,dble(lmx(j)))
-          s(i,j) = signj*s(i,j)
-        end do
-      end do
-      do i=1,nee
-        signi=sign(one,dble(lmx(i)))
-        do j=1,nee
-          signj=sign(one,dble(lmx(j)))
-          s(i,j) = signi*signj*s(i,j)
-        end do
-      end do
-      call MatSetValues(A, nee, lmx, nee, lmx, s, ADD_VALUES, ierr)
-      do i=1,nee
-        signi=sign(one,dble(lmx(i)))
-        do j=1,nee
-          signj=sign(one,dble(lmx(j)))
-          s(i,j) = signi*signj*s(i,j)
-        end do
-      end do
+        call MatSetValues(A, nee, lmxt,nee,lmxt,stemp, ADD_VALUES, ierr)
+      end if
       do i=1,nee
         lm(i) = lm(i) + 1
         lmx(i) = lmx(i) + 1
@@ -120,7 +111,7 @@ cdebug        write(6,*) "i,lm(i),s(i,i):",i,lm(i),s(i,i)
       end
 c
 c version
-c $Id: addstf.F,v 1.4 2005/04/01 23:25:40 willic3 Exp $
+c $Id: addstf.F,v 1.5 2005/04/05 22:52:25 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
