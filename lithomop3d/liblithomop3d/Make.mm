@@ -21,140 +21,154 @@ PROJ_TMPDIR = $(BLD_TMPDIR)/$(PROJECT)/$(PACKAGE)
 PROJ_CLEAN += $(PROJ_INCDIR) $(PROJ_SAR)
 
 PROJ_SRCS = \
+	addfor.f \
         addpr.f \
+        addsn.f \
+        addstf.f \
+        adfldp.f \
+        adjid.f \
+        bdeld_ss.f \
+        bdiff.f \
+        bmatrixb.f \
+        bmatrixn.f \
+        bnmatrix.f \
+        choldc2.f \
+        cholsl.f \
         ckdiag.f \
         cklock.f \
         const.f \
-        elastc.f \
-        formdf.f \
-        formes.f \
-        formf.f \
-        formk.f \
-        formmat.f \
-        gload.f \
-        iterate.f \
-        ldupdat.f \
-        load.f \
-        loadf.f \
-        loadx.f \
-        mathist.f \
-        printd.f \
-        printf.f \
-        printl.f \
-        prints.f \
-        printv.f \
-        prntforc.f \
-        residu.f \
-        stresn.f \
-        unlock.f \
-        viscos.f \
-        winklf.f \
-        winklr.f \
-        addstf.f \
-        gspre.f \
-        isort.f \
-        lnklst.f \
-        makemsr.f \
-        pcginv.f \
-	adjid.f \
-	convert_case.f \
-	get_units.f \
-	id_split.f \
-	local.f \
-	localf.f \
-	localx.f \
-	nchar.f \
-	nfind.f \
-	nnblnk.f \
-	pskip.f \
-	read_bc.f \
-	read_connect.f \
-	read_coords.f \
-	read_diff.f \
-	read_fuldat.f \
-	read_hist.f \
-	read_prestr.f \
-	read_prop.f \
-	read_skew.f \
-	read_slip.f \
-	read_split.f \
-	read_timdat.f \
-	read_traction.f \
-	read_wink.f \
-	read_winkx.f \
-	scan_bc.f \
-	scan_connect.f \
-	scan_coords.f \
-	scan_diff.f \
-	scan_fuldat.f \
-	scan_hist.f \
-	scan_prestr.f \
-	scan_prop.f \
-	scan_skew.f \
-	scan_slip.f \
-	scan_split.f \
-	scan_timdat.f \
-	scan_traction.f \
-	scan_wink.f \
-	scan_winkx.f \
-	write_element_info.f \
-	write_global_info.f \
-	write_sparse_info.f \
-	write_strscomp.f \
-	write_subiter.f \
-        addfor.f \
-        addsn.f \
-        adfldp.f \
-        bdiff.f \
+        convert_case.f \
+        cross.f \
         disp.f \
+        eforce.f \
+        elas_matinit_cmp_ss.f \
+        elas_strs_cmp_ss.f \
+        elas_strs_mat_cmp_ss.f \
+        elastc.f \
         fill.f \
+        formdf_ss.f \
+        formes_ss.f \
+        formf_ss.f \
+        formrt.f \
+        funcs.f \
+        get_units.f \
+        getder.f \
+        getjac.f \
         getmat.f \
+        getshapb.f \
+        getshapn.f \
+        gload_cmp_ss.f \
+        gload_drv.f \
+        gravld.f \
+        gspre.f \
+        id_split.f \
         ifill.f \
         indexx.f \
+        infcmp.f \
+        infellh.f \
+        infelqh.f \
+        invar.f \
         iquate.f \
+        isort.f \
+        iterate.f \
+        jacobi.f \
         lcoord.f \
         ldisbc.f \
         ldisp.f \
-        lflteq.f \
-        skclear.f \
-        symmet.f \
-        transp.f \
-        bdeldql.f \
-        bmatrixql.f \
-        bnmatrxql.f \
-        choldc2.f \
-        cholsl.f \
-        cross.f \
-        eforceql.f \
-        eqstrsql.f \
-        esf.f \
-        esfcomp.f \
-        formrt.f \
-        funcs.f \
-        gravldql.f \
-        infel.f \
-        invar.f \
-        jacobi.f \
+        ldupdat.f \
         lfit.f \
-        matflg.f \
-        matinit.f \
-        matprtb.f \
-        meanshql.f \
+        lflteq.f \
+        lnklst.f \
+        load.f \
+        loadf.f \
+        loadx.f \
+        local.f \
+        localf.f \
+        localx.f \
+        makemsr.f \
+        mat_1.f \
+        mathist.f \
+        matinit_drv.f \
+        matmod_def.f \
+        meansh.f \
+        nchar.f \
+        nfind.f \
+        nnblnk.f \
+        pcginv.f \
+        plinhex.f \
+        plinpyr.f \
+        plintet.f \
+        plinwedge.f \
         poldcmp.f \
+        pquadhex.f \
+        pquadpyr.f \
+        pquadtet.f \
+        pquadwedge.f \
+        preshape.f \
         presurql.f \
+        printd.f \
+        printf.f \
+        printl.f \
+        printv.f \
+        prntforc.f \
+        pskip.f \
         rdisp.f \
+        read_bc.f \
+        read_connect.f \
+        read_coords.f \
+        read_diff.f \
+        read_fuldat.f \
+        read_hist.f \
+        read_mathist.f \
+        read_skew.f \
+        read_slip.f \
+        read_split.f \
+        read_stateout.f \
+        read_timdat.f \
+        read_wink.f \
+        read_winkx.f \
+        residu.f \
         rpforc.f \
         rsplit.f \
         rstiff.f \
         rstress.f \
-        rtsafe.f \
-        shapql.f \
+        scan_bc.f \
+        scan_connect.f \
+        scan_coords.f \
+        scan_diff.f \
+        scan_fuldat.f \
+        scan_hist.f \
+        scan_skew.f \
+        scan_slip.f \
+        scan_split.f \
+        scan_timdat.f \
+        scan_wink.f \
+        scan_winkx.f \
+        skclear.f \
         skcomp.f \
         sprod.f \
-        stiffldql.f \
-        stiffql.f \
-        stresld.f \
-        zbrac.f \
+        stiff_ss.f \
+        stiffld.f \
+        stress_drv.f \
+        stress_mat_drv.f \
+        symmet.f \
+        td_matinit_cmp_ss.f \
+        td_strs_cmp_ss.f \
+        td_strs_mat_cmp_ss.f \
+        testacc.f \
+        transp.f \
+        unlock.f \
+        update_state.f \
+        viscos.f \
+        winklf.f \
+        winklr.f \
+        write_element_info.f \
+        write_global_info.f \
+        write_props.f \
+        write_sparse_info.f \
+        write_state.f \
+        write_strscomp.f \
+        write_subiter.f \
 
 
 #--------------------------------------------------------------------------
@@ -178,7 +192,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+# $Id: Make.mm,v 1.2 2004/07/13 19:59:45 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
