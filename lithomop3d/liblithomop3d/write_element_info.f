@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_element_info(numel,intord,ipstrs,tpois,kw,idout,
-     & ofile)
+      subroutine write_element_info(numel,intord,ipstrs,ipauto,tpois,
+     & tyoungs,kw,idout,ofile)
 c
 c...subroutine to write element and prestress parameters
 c
@@ -42,8 +42,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer numel,intord,ipstrs,kw,idout
-      double precision tpois
+      integer numel,intord,ipstrs,ipauto,kw,idout
+      double precision tpois,tyoungs
       character ofile*(*)
 c
 c...  included dimension and type statements
@@ -65,7 +65,8 @@ c...  echo input to output file
 c
       if(idout.gt.izero) then
         open(kw,file=ofile,status="old",access="append")
-        write(kw,700) elmlbl,numel,intorder(intord),ipstrs,tpois
+        write(kw,700) elmlbl,numel,intorder(intord),ipstrs,ipauto,tpois,
+     &   tyoungs
         close(kw)
       end if
 c
@@ -76,15 +77,21 @@ c
      &' integration order . . . . . . . . . . . = ',a17,//,5x,
      &' prestress option. . . . . . . . . . . . . .(ipstrs) =',i5,/ ,5x,
      &'    eq.0, prestresses are read from the input file    ', / ,5x,
-     &'    eq.1, prestresses computed from elastic solution  ', / ,5x,
-     &'          assuming near-incompressibility             ', / ,5x,
-     &' poissons ratio for prestresses. . . . . . . (tpois) =',1pe15.8,
-     & /,5x,'    only used for ipstrs=1',/)
+     &'    eq.1, gravitational prestresses automatically     ', / ,5x,
+     &'          computed                                    ', / ,5x,
+     &' prestress auto-computation option . . . . .(ipauto) =',i5,/ ,5x,
+     &'    eq.0, computation uses assigned elastic properties', / ,5x,
+     &'    eq.1, properties listed below are used for        ', / ,5x,
+     &'          auto-computation                            ', / ,5x,
+     &' poissons ratio for auto-computation . . . . (tpois) =',1pe15.8,
+     & /,5x,'    only used for ipstrs=1 and ipauto=1',/,5x,
+     &' youngs modulus for auto-computation . . . (tyoungs) =',1pe15.8,
+     & /,5x,'    only used for ipstrs=1 and ipauto=1',/)
       return
       end
 c
 c version
-c $Id: write_element_info.f,v 1.3 2004/08/02 21:33:26 willic3 Exp $
+c $Id: write_element_info.f,v 1.4 2005/02/24 00:24:35 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
