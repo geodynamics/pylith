@@ -354,7 +354,6 @@ class Lithomop3d_setup(Component):
         self.pointerToMaxit = None
         self.pointerToNtdinit = None
         self.pointerToLgdef = None
-        self.pointerToIbbar = None
         self.pointerToUtol = None
         self.pointerToFtol = None
         self.pointerToEtol = None
@@ -596,8 +595,6 @@ class Lithomop3d_setup(Component):
             self.numberTimeStepGroups)
         self.pointerToLgdef = lithomop3d.allocateInt(
             self.numberTimeStepGroups)
-        self.pointerToIbbar = lithomop3d.allocateInt(
-            self.numberTimeStepGroups)
         self.pointerToUtol = lithomop3d.allocateDouble(
             self.numberTimeStepGroups)
         self.pointerToFtol = lithomop3d.allocateDouble(
@@ -626,7 +623,6 @@ class Lithomop3d_setup(Component):
                 self.pointerToMaxit,
                 self.pointerToNtdinit,
                 self.pointerToLgdef,
-                self.pointerToIbbar,
                 self.pointerToItmax,
                 self.numberTimeStepGroups,
                 self.totalNumberTimeSteps,
@@ -1276,6 +1272,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.3 2004/07/19 21:41:29 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.4 2004/07/21 20:10:40 willic3 Exp $
 
 # End of file 
