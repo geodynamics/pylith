@@ -103,9 +103,9 @@ c
         errstrng="mat_prt_5"
         return
 c
- 700  format("Material number:       ",i7,/,
-     &       "Material type:         ",a37,/,
-     &       "Number of properties:  ",i7,/)
+ 700  format(/,5x,"Material number:       ",i7,/,5x,
+     &            "Material type:         ",a37,/,5x,
+     &            "Number of properties:  ",i7,/)
  710  format(15x,a15,3x,1pe15.8)
 c
       end
@@ -137,6 +137,9 @@ c...  local variables
 c
       integer i,j
       double precision e,pr,pr1,pr2,pr3,fac,dd,od,ss
+cdebug      integer idb
+c
+cdebug      write(6,*) "Hello from elas_mat_5_f!"
 c
       e=prop(2)
       pr=prop(3)
@@ -154,6 +157,7 @@ c
           dmat(iddmat(i,j))=od
         end do
       end do
+cdebug      write(6,*) "dmat:",(dmat(idb),idb=1,nddmat)
       return
       end
 c
@@ -229,12 +233,15 @@ c
 c...  local variables
 c
       double precision e,pr,vis,f1,f2
+cdebug      integer idb
 c
 c...  included variable definitions
 c
       include "rtimdat_def.inc"
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
+c
+cdebug      write(6,*) "Hello from td_matinit_5_f!"
 c
       tmax=big
       e=prop(2)
@@ -251,6 +258,7 @@ c
       dmat(iddmat(4,4))=half*f2
       dmat(iddmat(5,5))=dmat(iddmat(4,4))
       dmat(iddmat(6,6))=dmat(iddmat(4,4))
+cdebug      write(6,*) "dmat:",(dmat(idb),idb=1,nddmat)
       return
       end
 c
@@ -292,13 +300,16 @@ c
 c...  local variables
 c
       integer i
-      double precision e,pr,vis,rmu,f1,f2,emean,eet,stau
+      double precision e,pr,vis,rmu,f1,f2,emean,smean,eet,stau,smeantp
+      double precision sdev,sdevtp
 c
 c...  included variable definitions
 c
       include "rtimdat_def.inc"
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
+c
+cdebug      write(6,*) "Hello from td_strs_5!"
 c
       e=prop(2)
       pr=prop(3)
@@ -308,12 +319,21 @@ c
       f1=half*deltp*(one-alfap)/vis
       f2=one/((one+pr)/e+half*alfap*deltp/vis)
       emean=third*(ee(1)+ee(2)+ee(3))
+      smean=e*emean/(one-two*pr)
+      smeantp=third*(state(1,1)+state(2,1)+state(3,1))
+cdebug      write(6,*) "e,pr,vis,rmu,tmax,f1,f2,emean,smean,smeantp:",
+cdebug     & e,pr,vis,rmu,tmax,f1,f2,emean,smean,smeantp
       do i=1,nstr
         eet=ee(i)-diag(i)*emean-state(i,3)
-        dstate(i,1)=f2*(eet-f1*state(i,1))
-        stau=(one-alfap)*state(i,1)+alfap*dstate(i,1)
+        sdevtp=state(i,1)-diag(i)*smeantp
+        sdev=f2*(eet-f1*sdevtp)
+        dstate(i,1)=sdev+diag(i)*smean
+        stau=(one-alfap)*sdevtp+alfap*sdev
         dstate(i,3)=half*deltp*stau/vis
         dstate(i,2)=ee(i)
+cdebug        write(6,*) "i,eet,sdevtp,sdev,ds1,ds2,ds3,s1,s2,s3,stau:",
+cdebug     &   i,eet,sdevtp,sdev,dstate(i,1),dstate(i,2),dstate(i,3),
+cdebug     &   state(i,1),state(i,2),state(i,3),stau
       end do
 c
       return
@@ -369,7 +389,7 @@ c
 c       
 
 c version
-c $Id: mat_5.f,v 1.2 2004/08/02 20:36:42 willic3 Exp $
+c $Id: mat_5.f,v 1.3 2004/08/12 02:01:55 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
