@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine bmatrixn(b,sh,shbar,nsd,ndof,nen,nstr)
+      subroutine bmatrixn(b,sh,shbar,nen)
 c
 c...computes the linear strain-displacement matrix b(nstr,ndof*nen)
 c
@@ -37,17 +37,18 @@ c      This routine does not use Hughes' B-bar formulation.
 c      The shbar array is ignored.
 c
       include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer nsd,ndof,nen,nstr
+      integer nen
       double precision b(nstr,ndof*nenmax),sh(nsd+1,nenmax)
       double precision shbar(nsd+1,nenmax)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  local variables
 c
@@ -81,7 +82,7 @@ c
       end
 c
 c version
-c $Id: bmatrixn.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: bmatrixn.f,v 1.2 2004/06/18 15:04:55 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
