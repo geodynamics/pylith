@@ -64,11 +64,16 @@ c       are passed in.
 c
       include "implicit.inc"
 c
+c     PETSC includes
+c
 #include "finclude/petsc.h"
 #include "finclude/petsclog.h"
 #include "finclude/petscvec.h"
 #include "finclude/petscmat.h"
 #include "finclude/petscksp.h"
+c
+c     PETSc objects
+c
       PetscEvent iterateEvent
       PetscTruth flag
       PetscInt useSolver
@@ -236,22 +241,6 @@ c
      &     useSolver, flag, ierr)
         if (useSolver .ne. 0) then
 ccc PETSc BLOCK
-c       Create A from alnz, ja, nnz, neq
-          do nz = neq+2,nnz
-             ja(nz) = ja(nz) - 1
-          end do
-          do row = 0, neq-1
-            call MatSetValues(A, 1, row, 1, row, alnz(row+1),
-     &                        INSERT_VALUES, ierr)
-            call MatSetValues(A, 1, row, ja(row+2) - ja(row+1),
-     &                        ja(ja(row+1)), alnz(ja(row+1)),
-     &                        INSERT_VALUES, ierr)
-          end do
-          do nz = neq+2,nnz
-             ja(nz) = ja(nz) + 1
-          end do
-          call MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY, ierr)
-          call MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY, ierr)
           call VecCreateSeqWithArray(MPI_COMM_WORLD, neq, bresid, rhs,
      &                               ierr)
           call VecCreateSeqWithArray(MPI_COMM_WORLD, neq, dispvec,sol,
@@ -340,7 +329,7 @@ c
         if(reform) then
           write(kto,650)
           call stress_mat_drv(
-     &     alnz,ja,nnz,                                                 ! sparse
+     &     A,alnz,ja,nnz,                                               ! sparse
      &     bintern,neq,                                                 ! force
      &     x,d,iwink,wink,numnp,nwink,                                  ! global
      &     dx,iwinkx,winkx,numslp,numsn,nwinkx,                         ! slip
@@ -395,7 +384,7 @@ c
       end
 c
 c version
-c $Id: iterate.F,v 1.3 2005/03/10 01:10:36 knepley Exp $
+c $Id: iterate.F,v 1.4 2005/03/11 03:20:10 knepley Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

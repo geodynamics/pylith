@@ -318,7 +318,7 @@ cdebug              write(6,*) "reform:",reform
               if(reform) then
                 write(kto,650)
                 call matinit_drv(
-     &           alnz,ja,nnz,neq,                                       ! sparse
+     &           A,alnz,ja,nnz,neq,                                     ! sparse
      &           x,d,iwink,wink,numnp,nwink,                            ! global
      &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
      &           tfault,numfn,                                          ! fault
@@ -398,7 +398,7 @@ cdebug              write(6,*) "reform:",reform
               if(reform) then
                 write(kto,650)
                 call matinit_drv(
-     &           alnz,ja,nnz,neq,                                       ! sparse
+     &           A,alnz,ja,nnz,neq,                                     ! sparse
      &           x,d,iwink,wink,numnp,nwink,                            ! global
      &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
      &           tfault,numfn,                                          ! fault
@@ -677,7 +677,7 @@ c
       end
 c
 c version
-c $Id: viscos.F,v 1.2 2005/03/10 01:10:37 knepley Exp $
+c $Id: viscos.F,v 1.3 2005/03/11 03:20:10 knepley Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
