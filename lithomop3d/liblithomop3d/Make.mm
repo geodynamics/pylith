@@ -155,7 +155,6 @@ PROJ_SRCS = \
         td_matinit_cmp_ss.f \
         td_strs_cmp_ss.f \
         td_strs_mat_cmp_ss.f \
-        testacc.f \
         transp.f \
         unlock.f \
         update_state.f \
@@ -192,7 +191,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.2 2004/07/13 19:59:45 willic3 Exp $
+# $Id: Make.mm,v 1.3 2004/07/13 20:20:57 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
