@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -30,23 +29,23 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine viscos(
-     & A,pcg,zcg,dprev,                                                 ! sparse
+     & A,                                                               ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
      & dispvec,nforce,grav,                                             ! force
-     & x,d,deld,dcur,id,iwink,wink,nsysdat,                             ! global
+     & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
      & ibond,bond,                                                      ! bc
      & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
      & fault,nfault,dfault,tfault,                                      ! split
      & s,stemp,                                                         ! stiff
-     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,      ! elemnt
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,           ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
-     & prop,mhist,infmat,infmatmod,ismatmod,                            ! materl
+     & prop,mhist,infmatmod,                                            ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & histry,rtimdat,ntimdat,nvisdat,maxstp,delt,alfa,maxit,ntdinit,   ! timdat
      & lgdef,utol,ftol,etol,itmax,                                      ! timdat
      & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
      & skew,                                                            ! skew
-     & iprint,ncodat,nunits,nprint,istatout,                            ! ioinfo
+     & iprint,ncodat,nunits,nprint,istatout,nstatout,                   ! ioinfo
      & ofile,pfile,ucdroot,                                             ! files
      & viscousStage, iterateEvent,                                      ! PETSc logging
      & ierr,errstrng)                                                   ! errcode
@@ -58,10 +57,10 @@ c
 c
 c     PETSC includes
 c
-#include "include/finclude/petsc.h"
-#include "include/finclude/petsclog.h"
-#include "include/finclude/petscvec.h"
-#include "include/finclude/petscmat.h"
+#include "finclude/petsc.h"
+#include "finclude/petsclog.h"
+#include "finclude/petscvec.h"
+#include "finclude/petscmat.h"
 c
 c     PETSc objects
 c
@@ -80,18 +79,17 @@ c
 c...  subroutine arguments
 c
       integer ierr
-      integer id(*),iwink(*)
+      integer id(*),iwink(*),iddmat(*)
       integer ibond(*)
       integer idx(*),iwinkx(*),idslp(*),ipslp(*),idhist(*)
       integer nfault(*)
-      integer ien(*),lm(*),lmx(*),lmf(*),infiel(*),iddmat(*)
+      integer ien(*),lm(*),lmx(*),lmf(*),ivfamily(*)
       integer ielno(*),iside(*),ihistry(*)
-      integer mhist(*),infmat(*),infmatmod(*),ismatmod(*)
-      integer infetype(*)
+      integer mhist(*),infmatmod(*)
+      integer infetype(4)
       integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
       integer iprint(*)
-      integer istatout(*)
-      double precision pcg(*),zcg(*),dprev(*)
+      integer istatout(*),nstatout(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
       double precision bintern(*),bresid(*),bwork(*),dispvec(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
@@ -141,6 +139,7 @@ c...  local variables
 c
 cdebug      integer idb
       integer indexx,ntot,jcyc,nfirst,naxstp,i,j,iprestress
+      integer nen,ngauss,nee,nec
       double precision time,tminmax
       logical ltim,fulout,unlck,unlckf,skc,reform
 c
@@ -163,6 +162,12 @@ c
 cdebug      write(6,*) "Hello from viscos_f!"
 c
       call PetscLogStagePush(viscousStage, ierr)
+c
+      nen=infetype(1)
+      ngauss=infetype(2)
+      nee=infetype(3)
+      nec=infetype(4)
+c
       if(idout.gt.ione) open(kw,file=ofile,status="old",access="append")
       if(idsk.eq.ione) open(kp,file=pfile,status="old",access="append")
       if(idsk.eq.itwo) open(kp,file=pfile,status="old",
@@ -318,15 +323,15 @@ cdebug              write(6,*) "reform:",reform
                 write(kto,650)
                 call matinit_drv(
      &           A,nnz,neq,                                             ! sparse
-     &           x,d,iwink,wink,numnp,nwink,                            ! global
+     &           x,d,iwink,wink,numnp,nwink,iddmat,                     ! global
      &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
      &           tfault,numfn,                                          ! fault
      &           s,stemp,                                               ! stiff
-     &           state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat, ! elemnt
-     &           nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,  ! elemnt
-     &           ipstrs,ipauto,nstate0,                                 ! elemnt
-     &           prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,     ! materl
-     &           gauss,sh,shj,infetype,                                 ! eltype
+     &           state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,      ! elemnt
+     &           nvfamilies,numelv,nstatesz,nstatesz0,nprestrflag,      ! elemnt
+     &           ipstrs,ipauto,                                         ! elemnt
+     &           prop,mhist,infmatmod,npropsz,tminmax,                  ! materl
+     &           gauss,sh,shj,nen,ngauss,nee,                           ! eltype
      &           histry,rtimdat,ntimdat,rgiter,nhist,lastep,            ! timdat
      &           td_matinit_cmp_ss,                                     ! timdat
      &           skew,numrot,                                           ! skew
@@ -341,9 +346,9 @@ c
      &         bintern,neq,                                             ! force
      &         x,d,dcur,numnp,                                          ! global
      &         s,stemp,                                                 ! stiff
-     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
-     &         infmat,infmatmod,numat,                                  ! materl
-     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,              ! elemnt
+     &         infmatmod,                                               ! materl
+     &         gauss,sh,shj,nen,ngauss,nee,                             ! eltype
      &         skew,numrot,                                             ! skew
      &         getshapn,bmatrixn,                                       ! bbar
      &         ierr,errstrng)                                           ! errcode
@@ -355,9 +360,9 @@ c
      &         bintern,neq,                                             ! force
      &         x,numnp,                                                 ! global
      &         s,stemp,                                                 ! stiff
-     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
-     &         infmat,infmatmod,numat,                                  ! materl
-     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,              ! elemnt
+     &         infmatmod,                                               ! materl
+     &         gauss,sh,shj,nen,ngauss,nee,                             ! eltype
      &         skew,numrot,                                             ! skew
      &         nfault,dfault,tfault,numfn,                              ! split
      &         getshapn,bmatrixn,                                       ! bbar
@@ -367,18 +372,17 @@ c
               if(ierr.ne.izero) return
 c
               call iterate(
-     &         A,pcg,zcg,dprev,                                         ! sparse
+     &         A,                                                       ! sparse
      &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
      &         bwork,dispvec,nforce,grav,                               ! force
-     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
+     &         x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,              ! global
      &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
      &         nfault,dfault,tfault,                                    ! fault
      &         s,stemp,                                                 ! stiff
-     &         state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,   ! elemnt
-     &         npar,                                                    ! elemnt
+     &         state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,   ! elemnt
      &         ielno,iside,ihistry,pres,pdir,                           ! tractn
-     &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
-     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         prop,mhist,infmatmod,tminmax,                            ! materl
+     &         gauss,sh,shj,nen,ngauss,nee,nec,                         ! eltype
      &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
      &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
      &         skew,                                                    ! skew
@@ -398,15 +402,15 @@ cdebug              write(6,*) "reform:",reform
                 write(kto,650)
                 call matinit_drv(
      &           A,nnz,neq,                                             ! sparse
-     &           x,d,iwink,wink,numnp,nwink,                            ! global
+     &           x,d,iwink,wink,numnp,nwink,iddmat,                     ! global
      &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
      &           tfault,numfn,                                          ! fault
      &           s,stemp,                                               ! stiff
-     &           state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat, ! elemnt
-     &           nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,  ! elemnt
-     &           ipstrs,ipauto,nstate0,                                 ! elemnt
-     &           prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,     ! materl
-     &           gauss,sh,shj,infetype,                                 ! eltype
+     &           state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,      ! elemnt
+     &           nvfamilies,numelv,nstatesz,nstatesz0,nprestrflag,      ! elemnt
+     &           ipstrs,ipauto,                                         ! elemnt
+     &           prop,mhist,infmatmod,npropsz,tminmax,                  ! materl
+     &           gauss,sh,shj,nen,ngauss,nee,                           ! eltype
      &           histry,rtimdat,ntimdat,rgiter,nhist,lastep,            ! timdat
      &           td_matinit_cmp_ss,                                     ! timdat
      &           skew,numrot,                                           ! skew
@@ -421,9 +425,9 @@ c
      &         bintern,neq,                                             ! force
      &         x,d,dcur,numnp,                                          ! global
      &         s,stemp,                                                 ! stiff
-     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
-     &         infmat,infmatmod,numat,                                  ! materl
-     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,              ! elemnt
+     &         infmatmod,                                               ! materl
+     &         gauss,sh,shj,nen,ngauss,nee,                             ! eltype
      &         skew,numrot,                                             ! skew
      &         getshapb,bmatrixb,                                       ! bbar
      &         ierr,errstrng)                                           ! errcode
@@ -435,9 +439,9 @@ c
      &         bintern,neq,                                             ! force
      &         x,numnp,                                                 ! global
      &         s,stemp,                                                 ! stiff
-     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
-     &         infmat,infmatmod,numat,                                  ! materl
-     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,              ! elemnt
+     &         infmatmod,                                               ! materl
+     &         gauss,sh,shj,nen,ngauss,nee,                             ! eltype
      &         skew,numrot,                                             ! skew
      &         nfault,dfault,tfault,numfn,                              ! split
      &         getshapb,bmatrixb,                                       ! bbar
@@ -447,18 +451,17 @@ c
               if(ierr.ne.izero) return
 c
               call iterate(
-     &         A,pcg,zcg,dprev,                                         ! sparse
+     &         A,                                                       ! sparse
      &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
      &         bwork,dispvec,nforce,grav,                               ! force
-     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
+     &         x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,              ! global
      &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
      &         nfault,dfault,tfault,                                    ! fault
      &         s,stemp,                                                 ! stiff
-     &         state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,   ! elemnt
-     &         npar,                                                    ! elemnt
+     &         state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,   ! elemnt
      &         ielno,iside,ihistry,pres,pdir,                           ! tractn
-     &         prop,mhist,infmat,infmatmod,tminmax,                     ! materl
-     &         gauss,sh,shj,infetype,                                   ! eltype
+     &         prop,mhist,infmatmod,tminmax,                            ! materl
+     &         gauss,sh,shj,nen,ngauss,nee,nec,                         ! eltype
      &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
      &         rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,            ! iterate
      &         skew,                                                    ! skew
@@ -521,7 +524,7 @@ c
 clater              if(ierr.ne.izero) return
 c
 clater              call iterate(
-clater     &         A,pcg,zcg,dprev,                                         ! sparse
+clater     &         A,                                               ! sparse
 clater     &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
 clater     &         bwork,dispvec,nforce,grav,                               ! force
 clater     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
@@ -590,7 +593,7 @@ c
 clater              if(ierr.ne.izero) return
 c
 clater              call iterate(
-clater     &         A,pcg,zcg,dprev,                                         ! sparse
+clater     &         A,                                               ! sparse
 clater     &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
 clater     &         bwork,dispvec,nforce,grav,                               ! force
 clater     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
@@ -615,6 +618,11 @@ clater              if(ierr.ne.izero) return
 c
             end if
 c
+c...  transfer current displacement increments into displacement vector
+c     if a nonzero starting guess is desired.
+c
+            if(nprevdflag.eq.1) call idisp(deld,dispvec,id,numnp,neq)
+c
 c...  print displacements at all nodes when requested.
 c
             if(fulout) then
@@ -633,20 +641,13 @@ c
 c...  print stresses and strains in all elements when requested
 c
             if(fulout) then
-              call write_state(
-     &         state,dstate,infiel,nstatesz,numelt,                     ! elemnt
-     &         infmat,infmatmod,ismatmod,numat,                         ! materl
-     &         infetype,                                                ! eltype
+              call write_state_drv(
+     &         state,dstate,ivfamily,nvfamilies,numelv,nstatesz,        ! elemnt
+     &         infmatmod,                                               ! materl
+     &         ngauss,                                                  ! eltype
      &         deltp,nstep,                                             ! timdat
-     &         istatout,                                                ! ioopts
-     &         idout,idsk,kw,kp)                                        ! ioinfo
-              call write_ucd_gauss_vals(
-     &         state,dstate,infiel,nstatesz,numelt,                     ! elemnt
-     &         infmat,infmatmod,ismatmod,numat,                         ! materl
-     &         infetype,                                                ! eltype
-     &         deltp,nstep,                                             ! timdat
-     &         istatout,                                                ! ioopts
-     &         kucd,ucdroot,iprestress)                                 ! ioinfo
+     &         istatout,nstatout,                                       ! ioopts
+     &         idout,idsk,iucd,kw,kp,kucd,ucdroot,iprestress)           ! ioinfo
             end if
             ltim=.false.
             if(fulout) indexx=indexx+1
@@ -676,7 +677,7 @@ c
       end
 c
 c version
-c $Id: viscos.F,v 1.4 2005/03/11 04:07:41 knepley Exp $
+c $Id: viscos.F,v 1.5 2005/03/25 23:32:57 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
