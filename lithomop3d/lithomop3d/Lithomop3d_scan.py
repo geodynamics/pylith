@@ -586,7 +586,7 @@ class Lithomop3d_scan(Component):
 
             pyre.properties.str(
                 "fileRoot",
-                default=os.path.join("..","examples","linhex","patchtest","pt1"),
+                default=os.path.join("..","examples","linhex","patchtest","pt1")),
 
             pyre.properties.str(
                 "keywordEqualsValueFile",
@@ -721,6 +721,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.6 2004/07/21 14:55:52 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.7 2004/07/21 14:58:03 willic3 Exp $
 
 # End of file 
