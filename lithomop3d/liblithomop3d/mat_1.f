@@ -136,6 +136,7 @@ c
       integer i,j
       double precision e,pr,pr1,pr2,pr3,fac,dd,od,ss
 c
+      call fill(dmat,zero,nddmat)
       e=prop(2)
       pr=prop(3)
       pr1=one-pr
@@ -333,7 +334,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.10 2004/08/12 01:59:11 willic3 Exp $
+c $Id: mat_1.f,v 1.11 2004/08/12 20:43:09 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
