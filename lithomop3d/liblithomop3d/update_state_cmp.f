@@ -54,9 +54,15 @@ c...  local variables
 c
       integer ielf,l
 c
+cdebug      integer idb
+c
+cdebug      write(6,*) "Hello from update_state_cmp_f!"
+c
       do ielf=1,nelfamily
 	do l=1,ngauss
-	  call update_state(state,dstate,nstate)
+	  call update_state(state(1,l,ielf),dstate(1,l,ielf),nstate)
+cdebug          write(6,*) "state:",(state(idb,l,ielf),idb=1,nstate)
+cdebug          write(6,*) "dstate:",(dstate(idb,l,ielf),idb=1,nstate)
 	end do
       end do
 c
@@ -64,6 +70,6 @@ c
       end
 c
 c version
-c $Id: update_state_cmp.f,v 1.1 2005/03/22 22:23:30 willic3 Exp $
+c $Id: update_state_cmp.f,v 1.2 2005/04/01 23:14:33 willic3 Exp $
 c
 c End of file 
