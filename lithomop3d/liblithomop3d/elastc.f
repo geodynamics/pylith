@@ -113,7 +113,7 @@ c
 c
 c...  local variables
 c
-      integer ii,igroup,naxstp,nfirst
+      integer igroup,naxstp,nfirst
       double precision time,tminmax
       logical*4 fulout,skc
 c
@@ -132,11 +132,12 @@ c
 c
 cdebug      write(6,*) "Hello from elastc_f!"
 c
-      if(idout.ne.0) open(kw,file=ofile,status="old",access="append")
-      if(idsk.eq.0) open(kp,file=pfile,status="old",access="append")
-      if(idsk.eq.1) open(kp,file=pfile,status="old",form="unformatted",
+      if(idout.ne.izero) open(kw,file=ofile,status="old",
      & access="append")
-      skc=iskopt.ge.0.and.iskopt.ne.1.and.numslp.ne.0
+      if(idsk.eq.izero) open(kp,file=pfile,status="old",access="append")
+      if(idsk.eq.ione) open(kp,file=pfile,status="old",
+     & form="unformatted",access="append")
+      skc=iskopt.ge.izero.and.iskopt.ne.ione.and.numslp.ne.izero
       call fill(bres,zero,neq)
       call fill(btot,zero,neq)
       call fill(gvec1,zero,neq)
@@ -150,30 +151,32 @@ c
       call fill(state,zero,nstr*nstatesz)
 c***  Note:  This should be modified for prestresses.
       call fill(dstate,zero,nstr*nstatesz)
-      if(numfn.ne.0) call fill(tfault,zero,numfn*ndof)
+      if(numfn.ne.izero) call fill(tfault,zero,numfn*ndof)
 c
       write(kto,600)
 c*      call flush(kto)
       fulout=.true.
-      ireform=1
-      igroup=1
-      nstep=0
+      ireform=ione
+      igroup=ione
+      nstep=izero
       ntimdat(1)=nstep
-      naxstp=0
-      nittot=0
+      naxstp=izero
+      nittot=izero
       ntimdat(7)=nittot
-      nrftot=0
+      nrftot=izero
       ntimdat(8)=nrftot
-      ndtot=0
+      ndtot=izero
       ntimdat(9)=ndtot
       ntimdat(10)=ireform
       call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,ibbar,utol,ftol,
      & etol,itmax,nintg,igroup,naxstp,nfirst,rtimdat,deltp,alfap,
      & ntimdat,nstep,maxitp,ntdinitp,lgdefp,ibbarp,itmaxp,gtol)
-      if(skc) call skclear(idslp,skew,numsn,numnp)
-      if(skc) call skcomp(x,d,skew,idslp,ipslp,ipstrs,numsn,numnp,nstep,
-     & lgdefp,ierr,errstrng)
-      if(ierr.ne.izero) return
+      if(skc) then
+        call skclear(idslp,skew,numsn,numnp)
+        call skcomp(x,d,skew,idslp,ipslp,ipstrs,numsn,numnp,nstep,
+     &   lgdefp,ierr,errstrng)
+        if(ierr.ne.izero) return
+      end if
 c
 c...transfer boundary conditions into global load vector btot(neq)
 c   and displacement increment vector deld(ndof,numnp)
@@ -184,7 +187,7 @@ c
 c
 c...compute current split node displacements
 c
-      if(numfn.ne.0) then
+      if(numfn.ne.izero) then
         call loadf(fault,dfault,histry,deltp,nfault,nstep,numfn,nhist,
      &   lastep,ierr,errstrng)
         if(ierr.ne.izero) return
@@ -192,10 +195,11 @@ c
 c
 c...add differential forces across internal free interfaces
 c
-      if(numdif.ne.0) call loadx(btot,diforc,histry,idx,idhist,neq,
-     & numnp,nhist,nstep,lastep,ierr,errstrng)
-      if(ierr.ne.izero) return
-      ii=1
+      if(numdif.ne.izero) then
+        call loadx(btot,diforc,histry,idx,idhist,neq,numnp,nhist,nstep,
+     &   lastep,ierr,errstrng)
+        if(ierr.ne.izero) return
+      end if
 c
 c...  initialize elastic material matrices and stiffness matrix, 
 c     compute forces due to applied displacements and split nodes,
@@ -229,7 +233,7 @@ c******  might be passing a routine name in from python/c++.
 c******  Another thing to consider is that I will need to pass in some extra
 c******  info that isn't currently needed for the small strain case.
 c
-      if(lgdefp.eq.0.and.ibbarp.eq.0) then
+      if(lgdefp.eq.izero.and.ibbarp.eq.izero) then
         call matinit_drv(
      &   alnz,ja,nnz,neq,                                               ! sparse
      &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -295,7 +299,7 @@ c
 c
         if(ierr.ne.izero) return
 c
-      else if(lgdefp.eq.0.and.ibbarp.eq.1) then
+      else if(lgdefp.eq.izero.and.ibbarp.eq.ione) then
         call matinit_drv(
      &   alnz,ja,nnz,neq,                                               ! sparse
      &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -361,7 +365,7 @@ c
 c
         if(ierr.ne.izero) return
 c
-clater      else if(lgdefp.eq.1.and.ibbarp.eq.0) then
+clater      else if(lgdefp.eq.ione.and.ibbarp.eq.izero) then
 clater        call matinit_drv(
 clater     &   alnz,ja,nnz,neq,                                               ! sparse
 clater     &   x,d,iwink,wink,numnp,nwink,                                    ! global
@@ -557,7 +561,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.3 2004/07/13 16:11:16 willic3 Exp $
+c $Id: elastc.f,v 1.4 2004/07/13 17:40:12 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
