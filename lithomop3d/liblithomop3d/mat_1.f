@@ -175,8 +175,8 @@ c
 c...  subroutine arguments
 c
       integer nstate,ierr
-      character errstrng*(*)
       double precision state(nstr,nstate),ee(nstr),dmat(nddmat)
+      character errstrng*(*)
 c
       call dcopy(nstr,ee,ione,state(1,2),ione)
       call dspmv("u",nstr,one,dmat,state(1,2),ione,zero,state(1,1),ione)
@@ -226,8 +226,8 @@ c
       end
 c
 c
-      subroutine td_strs_1(state,dstate,ee,dmat,prop,iddmat,tmax,
-     & nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_strs_1(state,dstate,ee,dmat,prop,rtimdat,rgiter,
+     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
 c
 c...  subroutine to compute the current stress for the time-dependent
 c     solution.
@@ -251,6 +251,19 @@ c
       double precision state(nstr,nstate),dstate(nstr,nstate),ee(nstr)
       double precision dmat(nddmat),prop(nprop),tmax
 c
+c...  included dimension and type statements
+c
+      include "rtimdat_dim.inc"
+      include "rgiter_dim.inc"
+      include "ntimdat_dim.inc"
+c
+c...  included variable definitions
+c
+      include "rtimdat_def.inc"
+      include "rgiter_def.inc"
+      include "ntimdat_def.inc"
+c
+      tmax=big
       call dcopy(nstr,ee,ione,dstate(1,2),ione)
       call dspmv("u",nstr,one,dmat,dstate(1,2),ione,zero,dstate(1,1),
      & ione)
@@ -259,8 +272,8 @@ c
       end
 c
 c
-      subroutine td_strs_mat_1(state,dstate,ee,dmat,prop,iddmat,tmax,
-     & nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_strs_mat_1(state,dstate,ee,dmat,prop,rtimdat,rgiter,
+     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
 c
 c...  subroutine to compute the current stress and updated material
 c     matrix for the time-dependent solution.  Since this is a purely
@@ -286,16 +299,28 @@ c
       double precision state(nstr,nstate),dstate(nstr,nstate),ee(nstr)
       double precision dmat(nddmat),prop(nprop),tmax
 c
+c...  included dimension and type statements
+c
+      include "rtimdat_dim.inc"
+      include "rgiter_dim.inc"
+      include "ntimdat_dim.inc"
+c
+c...  included variable definitions
+c
+      include "rtimdat_def.inc"
+      include "rgiter_def.inc"
+      include "ntimdat_def.inc"
+c
       if(matchg) call elas_mat_1(dmat,prop,iddmat,nprop,ierr,errstrng)
-      call td_strs_1(state,dstate,ee,dmat,prop,iddmat,tmax,nstate,nprop,
-     & matchg,ierr,errstrng)
+      call td_strs_1(state,dstate,ee,dmat,prop,rtimdat,rgiter,ntimdat,
+     & iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
 c
       return
       end
 c       
 
 c version
-c $Id: mat_1.f,v 1.7 2004/07/12 17:53:31 willic3 Exp $
+c $Id: mat_1.f,v 1.8 2004/07/21 19:18:23 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
