@@ -57,12 +57,12 @@ c
       dvv=half*va
       if(io.eq.izero) return
       vv=two/fac
-      dvv=-two*va/(fac*fac)
+      dvv=(-two)*va/(fac*fac)
       return
       end
 c
 c version
-c $Id: infellh.f,v 1.2 2004/07/06 15:28:11 willic3 Exp $
+c $Id: infellh.f,v 1.3 2004/07/06 15:30:12 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
