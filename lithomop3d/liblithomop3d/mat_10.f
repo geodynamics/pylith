@@ -136,8 +136,8 @@ c
       end
 c
 c
-      subroutine td_matinit_10(state,dstate,dmat,prop,iddmat,tmax,
-     & nstate,nprop,matchg,ierr,errstrng)
+      subroutine td_matinit_10(state,dstate,dmat,prop,rtimdat,rgiter,
+     & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
 c
 c...  subroutine to form the material matrix for an integration point
 c     for the time-dependent solution.  This routine is meant to be
@@ -267,7 +267,7 @@ c
 c       
 
 c version
-c $Id: mat_10.f,v 1.1 2004/07/22 00:36:43 willic3 Exp $
+c $Id: mat_10.f,v 1.2 2004/08/02 21:17:43 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
