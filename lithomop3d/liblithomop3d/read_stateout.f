@@ -33,7 +33,8 @@ c
      & ofile,pfile,ierr,errstrng)
 c
 c...     reads integer array indicating which state variables
-c        to output for elastic and time-dependent solutions.
+c        to output.  It is assumed that the same set of variables are
+c        desired for both the elastic and time-dependent solutions.
 c
 c     Error codes:
 c         0:  No error
@@ -52,38 +53,34 @@ c
 c...  subroutine arguments
 c
       integer kr,kw,kp,idout,idsk,ierr
-      integer istatout(2,nstatesmax,2)
+      integer istatout(2,nstatesmax)
       character stfile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  local variables
 c
-      integer i,j,k
+      integer i,j
 c
       ierr=izero
 c
 c...  open input file and read information on state variable output.
-c     At present, lines are required for both elastic and time-dependent
-c     solutions, even if problem is purely elastic.
+c     The same variables will be output for both the elastic and
+c     time-dependent solutions.
 c
       open(kr,file=stfile,status="old",err=20)
       call pskip(kr)
-      read(kr,*,err=30,end=30) ((istatout(j,i,1),j=1,2),i=1,nstatesmax)
-      call pskip(kr)
-      read(kr,*,err=30,end=30) ((istatout(j,i,2),j=1,2),i=1,nstatesmax)
+      read(kr,*,err=30,end=30) ((istatout(j,i),j=1,2),i=1,nstatesmax)
       close(kr)
 c
 c...  output results, if desired
 c
       if(idout.gt.izero) then
         open(kw,file=ofile,err=40,status="old",access="append")
-        write(kw,800,err=50) (((istatout(j,i,k),j=1,2),i=1,nstatesmax),
-     &   k=1,2)
+        write(kw,800,err=50) ((istatout(j,i),j=1,2),i=1,nstatesmax)
         close(kw)
       end if
       if(idsk.eq.izero) then
         open(kp,file=pfile,err=40,status="old",access="append")
-        write(kp,810,err=50) (((istatout(j,i,k),j=1,2),i=1,nstatesmax),
-     &   k=1,2)
+        write(kp,810,err=50) ((istatout(j,i),j=1,2),i=1,nstatesmax)
       end if
       if(idsk.eq.1) then
         open(kp,file=pfile,err=40,status="old",access="append",
@@ -133,15 +130,10 @@ c
  800  format(//,
      & ' state variable output options',/,
      & ' These integers indicate which state variables are to be',/,
-     & ' output for the elastic and timd-dependent solutions.',/,
+     & ' output for the elastic and time-dependent solutions.',/,
      & ' For stress/strain increments, either a rate (1) or an',/,
      & ' increment (2) can be selected.',//,
-     & '  Elastic Solution         Total      Increment',/,
-     & '   Stress                 ',i5,8x,i5,/,
-     & '   Strain                 ',i5,8x,i5,/,
-     & '   Viscous strain         ',i5,8x,i5,/,
-     & '   Plastic strain         ',i5,8x,i5,/,
-     & '  Time-dependent Solution  Total      Increment',/,
+     & '  State Variable           Total      Increment',/,
      & '   Stress                 ',i5,8x,i5,/,
      & '   Strain                 ',i5,8x,i5,/,
      & '   Viscous strain         ',i5,8x,i5,/,
@@ -151,7 +143,7 @@ c
       end
 c
 c version
-c $Id: read_stateout.f,v 1.1 2004/07/13 19:23:17 willic3 Exp $
+c $Id: read_stateout.f,v 1.2 2004/08/24 16:45:38 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
