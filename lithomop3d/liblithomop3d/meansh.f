@@ -54,7 +54,7 @@ c
       integer l
       double precision volinv,wt
 c
-c*      write(6,*) "Hello from meansh_f!"
+cdebug      write(6,*) "Hello from meansh_f!"
 c
       call fill(shbar,zero,(nsd+1)*nenmax)
       volinv=one/vol
@@ -66,7 +66,7 @@ c
       end
 c
 c version
-c $Id: meansh.f,v 1.3 2004/07/05 20:18:41 willic3 Exp $
+c $Id: meansh.f,v 1.4 2004/08/12 02:09:29 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
