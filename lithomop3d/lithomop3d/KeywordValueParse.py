@@ -21,7 +21,7 @@ class KeywordValueParse:
 
         # print "Hello from KeywordValueParse.parseline!"
 
-        self.keyvals[2] = False
+        self.keyvals[3] = False
         comment = line.find('#')
         if comment == 0: return self.keyvals
         stest = line[:comment].split('=')
@@ -39,12 +39,14 @@ class KeywordValueParse:
 		value = rawvalue
             except:
 		return self.keyvals
+            uvalue = value
         except:
             return self.keyvals
 
         self.keyvals[0] = key
         self.keyvals[1] = value
-        self.keyvals[2] = True
+        self.keyvals[2] = uvalue
+        self.keyvals[3] = True
 
         return self.keyvals
 
@@ -52,10 +54,10 @@ class KeywordValueParse:
     def __init__(self):
         print ""
         print "Hello from KeywordValueParse.__init__!"
-        self.keyvals = [None, None, None]
+        self.keyvals = [None, None, None,None]
         return
 
 # version
-# $Id: KeywordValueParse.py,v 1.3 2004/08/12 17:11:17 willic3 Exp $
+# $Id: KeywordValueParse.py,v 1.4 2005/01/06 01:45:13 willic3 Exp $
 
 # End of file 
