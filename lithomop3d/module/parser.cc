@@ -35,8 +35,10 @@
 #include <Python.h>
 
 #include "parser.h"
+#include "exceptionhandler.h"
 #include "lithomop3d_externs.h"
-// #include <stdio.h>
+#include <stdio.h>
+#include <string.h>
 
 
 // Read boundary conditions
@@ -52,7 +54,6 @@ PyObject * pylithomop3d_read_bc(PyObject *, PyObject *args)
   double forceScaleFactor;
   PyObject* pyPointerToIbond;
   PyObject* pyPointerToId;
-  int numberDegreesFreedom;
   int numberNodes;
   int numberBcEntries;
   int f77FileInput;
@@ -61,14 +62,13 @@ PyObject * pylithomop3d_read_bc(PyObject *, PyObject *args)
   char* bcInputFile;
   char* asciiOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OdddOOiiiiiiss:read_bc",
+  int ok = PyArg_ParseTuple(args, "OdddOOiiiiiss:read_bc",
 			    &pyPointerToBond,
 			    &displacementScaleFactor,
 			    &velocityScaleFactor,
 			    &forceScaleFactor,
 			    &pyPointerToIbond,
 			    &pyPointerToId,
-			    &numberDegreesFreedom,
 			    &numberNodes,
 			    &numberBcEntries,
 			    &f77FileInput,
@@ -81,10 +81,12 @@ PyObject * pylithomop3d_read_bc(PyObject *, PyObject *args)
     return 0;
   }
 
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   double* pointerToBond = (double*) PyCObject_AsVoidPtr(pyPointerToBond);
   int* pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
   int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
-  int errorCode = 0;
   int numberGlobalEquations = 0;
 
   read_bc_f(pointerToBond,
@@ -93,43 +95,23 @@ PyObject * pylithomop3d_read_bc(PyObject *, PyObject *args)
 	    &forceScaleFactor,
 	    pointerToIbond,
 	    pointerToId,
-	    &numberDegreesFreedom,
 	    &numberNodes,
 	    &numberBcEntries,
 	    &numberGlobalEquations,
 	    &f77FileInput,
 	    &f77AsciiOutput,
 	    &asciiOutputInt,
-	    &errorCode,
 	    bcInputFile,
 	    asciiOutputFile,
+	    &errorcode,
+	    errorstring,
 	    strlen(bcInputFile),
-	    strlen(asciiOutputFile));
+	    strlen(asciiOutputFile),
+	    strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error opening BC input file:");
-      break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: All units not specified for BC:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading BC input file:");
-      break;
-    case 4:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: BC assigned for nonexistent node:");
-      break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading BC input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -150,14 +132,18 @@ char pylithomop3d_read_connect__name__[] = "read_connect";
 
 PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
 {
+  PyObject* pyPointerToListArrayNumberElementNodesBase;
+  PyObject* pyPointerToElementTypeInfo;
+  PyObject* pyPointerToMaterialInfo;
+  PyObject* pyPointerToMaterialModelInfo;
   PyObject* pyPointerToIen;
-  PyObject* pyPointerToMat;
-  PyObject* pyPointerToInfin;
-  int numberElementNodes;
+  PyObject* pyPointerToInfiel;
+  PyObject* pyPointerToIndmat;
+  PyObject* pyPointerToImgrp;
+  int connectivitySize;
   int numberElements;
   int numberNodes;
-  int numberMaterialTypes;
-  int numberGaussPoints;
+  int numberMaterials;
   int f77FileInput;
   int f77AsciiOutput;
   int f77PlotOutput;
@@ -167,15 +153,19 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOiiiiiiiiiisss:read_connect",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOiiiiiiiiisss:read_connect",
+			    &pyPointerToListArrayNumberElementNodesBase,
+			    &pyPointerToElementTypeInfo,
+			    &pyPointerToMaterialInfo,
+			    &pyPointerToMaterialModelInfo,
 			    &pyPointerToIen,
-			    &pyPointerToMat,
-			    &pyPointerToInfin,
-			    &numberElementNodes,
+			    &pyPointerToInfiel,
+			    &pyPointerToIndmat,
+			    &pyPointerToImgrp,
+			    &connectivitySize,
 			    &numberElements,
 			    &numberNodes,
-			    &numberMaterialTypes,
-			    &numberGaussPoints,
+			    &numberMaterials,
 			    &f77FileInput,
 			    &f77AsciiOutput,
 			    &f77PlotOutput,
@@ -189,70 +179,63 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
     return 0;
   }
 
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
+  int* pointerToListArrayNumberElementNodesBase = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNumberElementNodesBase);
+  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
+  int* pointerToMaterialInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialInfo);
+  int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
   int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int* pointerToMat = (int*) PyCObject_AsVoidPtr(pyPointerToMat);
-  int* pointerToInfin = (int*) PyCObject_AsVoidPtr(pyPointerToInfin);
-  int errorCode = 0;
+  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
+  int* pointerToIndmat = (int*) PyCObject_AsVoidPtr(pyPointerToIndmat);
+  int* pointerToImgrp = (int*) PyCObject_AsVoidPtr(pyPointerToImgrp);
+  int stateSize = 0;
+  int dmatSize = 0;
 
-  read_connect_f(pointerToIen,
-		 pointerToMat,
-		 pointerToInfin,
-		 &numberElementNodes,
+  read_connect_f(pointerToListArrayNumberElementNodesBase,
+		 pointerToElementTypeInfo,
+		 pointerToMaterialInfo,
+		 pointerToMaterialModelInfo,
+		 pointerToIen,
+		 pointerToInfiel,
+		 pointerToIndmat,
+		 pointerToImgrp,
+		 &connectivitySize,
 		 &numberElements,
 		 &numberNodes,
-		 &numberMaterialTypes,
-		 &numberGaussPoints,
+		 &numberMaterials,
+		 &stateSize,
+		 &dmatSize,
 		 &f77FileInput,
 		 &f77AsciiOutput,
 		 &f77PlotOutput,
 		 &asciiOutputInt,
 		 &plotOutputInt,
-		 &errorCode,
 		 connectivityInputFile,
 		 asciiOutputFile,
 		 plotOutputFile,
+		 &errorcode,
+		 errorstring,
 		 strlen(connectivityInputFile),
 		 strlen(asciiOutputFile),
-		 strlen(plotOutputFile));
-    
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error opening connectivity input file:");
-      break;
-      //    case 2:
-              //PyErr_SetString(PyExc_ValueError,
-	                  //"Connectivity units not specified:");
-              //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading connectivity input file:");
-      break;
-    case 4:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Bad material number:");
-      break;
-    case 5:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Bad connectivity:");
-      break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading connectivity input file:");
-    }
+		 strlen(plotOutputFile),
+		 strlen(errorstring));
+
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberMaterialTypes:" << numberMaterialTypes
+    << "numberMaterials:" << numberMaterials
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_None;
+  return Py_BuildValue("ii", stateSize,
+		       dmatSize);
 }
 
 
@@ -265,7 +248,6 @@ PyObject * pylithomop3d_read_coords(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToX;
   double coordinateScaleFactor;
-  int numberSpaceDimensions;
   int numberNodes;
   int f77FileInput;
   int f77AsciiOutput;
@@ -276,10 +258,9 @@ PyObject * pylithomop3d_read_coords(PyObject *, PyObject *args)
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "Odiiiiiiisss:read_coords",
+  int ok = PyArg_ParseTuple(args, "Odiiiiiisss:read_coords",
 			    &pyPointerToX,
 			    &coordinateScaleFactor,
-			    &numberSpaceDimensions,
 			    &numberNodes,
 			    &f77FileInput,
 			    &f77AsciiOutput,
@@ -294,55 +275,37 @@ PyObject * pylithomop3d_read_coords(PyObject *, PyObject *args)
     return 0;
   }
 
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   double* pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
-  int errorCode = 0;
 
   read_coords_f(pointerToX,
 		&coordinateScaleFactor,
-		&numberSpaceDimensions,
 		&numberNodes,
 		&f77FileInput,
 		&f77AsciiOutput,
 		&f77PlotOutput,
 		&asciiOutputInt,
 		&plotOutputInt,
-		&errorCode,
 		coordinateInputFile,
 		asciiOutputFile,
 		plotOutputFile,
+		&errorcode,
+		errorstring,
 		strlen(coordinateInputFile),
 		strlen(asciiOutputFile),
-		strlen(plotOutputFile));
+		strlen(plotOutputFile),
+		strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error opening coordinate input file:");
-      break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Coordinate units not specified:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading coordinate input file:");
-      break;
-    case 4:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Wrong number of nodes read:");
-      break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading coordinate input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberSpaceDimensions:" << numberSpaceDimensions
+    << "coordinateScaleFactor:" << coordinateScaleFactor
     << journal::endl;
 
   // return
@@ -363,24 +326,20 @@ PyObject * pylithomop3d_read_diff(PyObject *, PyObject *args)
   PyObject* pyPointerToIdhist;
   int numberSlipperyNodeEntries;
   int numberDifferentialForceEntries;
-  int numberDegreesFreedom;
   int numberNodes;
-  int numberSlipDimensions;
   int f77FileInput;
   int f77AsciiOutput;
   int asciiOutputInt;
   char* differentialForceInputFile;
   char* asciiOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOiiiiiiiiss:read_diff",
+  int ok = PyArg_ParseTuple(args, "OOOiiiiiiss:read_diff",
 			    &pyPointerToDiforc,
 			    &pyPointerToNslip,
 			    &pyPointerToIdhist,
 			    &numberSlipperyNodeEntries,
 			    &numberDifferentialForceEntries,
-			    &numberDegreesFreedom,
 			    &numberNodes,
-			    &numberSlipDimensions,
 			    &f77FileInput,
 			    &f77AsciiOutput,
 			    &asciiOutputInt,
@@ -391,52 +350,33 @@ PyObject * pylithomop3d_read_diff(PyObject *, PyObject *args)
     return 0;
   }
 
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   double* pointerToDiforc = (double*) PyCObject_AsVoidPtr(pyPointerToDiforc);
   int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
   int* pointerToIdhist = (int*) PyCObject_AsVoidPtr(pyPointerToIdhist);
-  int errorCode = 0;
 
   read_diff_f(pointerToDiforc,
 	      pointerToNslip,
 	      pointerToIdhist,
 	      &numberSlipperyNodeEntries,
 	      &numberDifferentialForceEntries,
-	      &numberDegreesFreedom,
 	      &numberNodes,
-	      &numberSlipDimensions,
 	      &f77FileInput,
 	      &f77AsciiOutput,
 	      &asciiOutputInt,
-	      &errorCode,
 	      differentialForceInputFile,
 	      asciiOutputFile,
+	      &errorcode,
+	      errorstring,
 	      strlen(differentialForceInputFile),
-	      strlen(asciiOutputFile));
+	      strlen(asciiOutputFile),
+	      strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //    case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening coordinate input file:");
-            //break;
-          //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading differential force input file:");
-      break;
-    case 4:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Differential force applied to non-slippery node:");
-      break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading differential force input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -490,8 +430,10 @@ PyObject * pylithomop3d_read_fuldat(PyObject *, PyObject *args)
     return 0;
   }
 
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int* pointerToIprint = (int*) PyCObject_AsVoidPtr(pyPointerToIprint);
-  int errorCode = 0;
 
   read_fuldat_f(pointerToIprint,
 		&numberFullOutputs,
@@ -503,38 +445,19 @@ PyObject * pylithomop3d_read_fuldat(PyObject *, PyObject *args)
 		&f77PlotOutput,
 		&asciiOutputInt,
 		&plotOutputInt,
-		&errorCode,
 		fullOutputInputFile,
 		asciiOutputFile,
 		plotOutputFile,
+		&errorcode,
+		errorstring,
 		strlen(fullOutputInputFile),
 		strlen(asciiOutputFile),
-		strlen(plotOutputFile));
+		strlen(plotOutputFile),
+		strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error opening file specifying time steps for output:");
-      break;
-      //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading file specifying time steps for output:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading time steps to output:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -555,10 +478,10 @@ char pylithomop3d_read_hist__name__[] = "read_hist";
 
 PyObject * pylithomop3d_read_hist(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToHist;
+  PyObject* pyPointerToHistry;
   PyObject* pyPointerToTimes;
   int numberLoadHistories;
-  int numberTimeSteps;
+  int totalNumberTimeSteps;
   int f77FileInput;
   int f77AsciiOutput;
   int asciiOutputInt;
@@ -566,10 +489,10 @@ PyObject * pylithomop3d_read_hist(PyObject *, PyObject *args)
   char* asciiOutputFile;
 
   int ok = PyArg_ParseTuple(args, "OOiiiiiss:read_hist",
-			    &pyPointerToHist,
+			    &pyPointerToHistry,
 			    &pyPointerToTimes,
 			    &numberLoadHistories,
-			    &numberTimeSteps,
+			    &totalNumberTimeSteps,
 			    &f77FileInput,
 			    &f77AsciiOutput,
 			    &asciiOutputInt,
@@ -580,47 +503,30 @@ PyObject * pylithomop3d_read_hist(PyObject *, PyObject *args)
     return 0;
   }
 
-  double* pointerToHist = (double*) PyCObject_AsVoidPtr(pyPointerToHist);
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
+  double* pointerToHistry = (double*) PyCObject_AsVoidPtr(pyPointerToHistry);
   double* pointerToTimes = (double*) PyCObject_AsVoidPtr(pyPointerToTimes);
-  int errorCode = 0;
 
-  read_hist_f(pointerToHist,
+  read_hist_f(pointerToHistry,
 	      pointerToTimes,
 	      &numberLoadHistories,
-	      &numberTimeSteps,
+	      &totalNumberTimeSteps,
 	      &f77FileInput,
 	      &f77AsciiOutput,
 	      &asciiOutputInt,
-	      &errorCode,
 	      loadHistoryInputFile,
 	      asciiOutputFile,
+	      &errorcode,
+	      errorstring,
 	      strlen(loadHistoryInputFile),
-	      strlen(asciiOutputFile));
+	      strlen(asciiOutputFile),
+	      strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening load history input file:");
-            //break;
-      //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Load history units not specified:");
-      //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading load history input file:");
-      break;
-    case 4:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Load history times are out of order:");
-      break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading load history input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -634,223 +540,167 @@ PyObject * pylithomop3d_read_hist(PyObject *, PyObject *args)
 }
 
 
-// Read element prestresses
+// Read material histories
 
-char pylithomop3d_read_prestr__doc__[] = "";
-char pylithomop3d_read_prestr__name__[] = "read_prestr";
+char pylithomop3d_read_mathist__doc__[] = "";
+char pylithomop3d_read_mathist__name__[] = "read_mathist";
 
-PyObject * pylithomop3d_read_prestr(PyObject *, PyObject *args)
+PyObject * pylithomop3d_read_mathist(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToStn;
-  PyObject* pyPointerToSt0;
-  PyObject* pyPointerToListArrayPrscal;
-  int numberStressComponents;
-  int numberGaussPoints;
-  int numberPrestressGaussPoints;
-  int numberElements;
-  int numberPrestressEntries;
-  int prestressAutoComputeInt;
-  int asciiOutputInt;
-  int f77FileInput;
-  int f77AsciiOutput;
-  char* prestressInputFile;
-  char* asciiOutputFile;
-
-  int ok = PyArg_ParseTuple(args, "OOOiiiiiiiiiss:read_prestr",
-			    &pyPointerToStn,
-			    &pyPointerToSt0,
-			    &pyPointerToListArrayPrscal,
-			    &numberStressComponents,
-			    &numberGaussPoints,
-			    &numberPrestressGaussPoints,
-			    &numberElements,
-			    &numberPrestressEntries,
-			    &prestressAutoComputeInt,
-			    &asciiOutputInt,
-			    &f77FileInput,
-			    &f77AsciiOutput,
-			    &prestressInputFile,
-			    &asciiOutputFile);
-
-  if (!ok) {
-    return 0;
-  }
-
-  double* pointerToStn = (double*) PyCObject_AsVoidPtr(pyPointerToStn);
-  double* pointerToSt0 = (double*) PyCObject_AsVoidPtr(pyPointerToSt0);
-  double* pointerToListArrayPrscal = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPrscal);
-  int errorCode = 0;
-
-  read_prestr_f(pointerToStn,
-		pointerToSt0,
-		pointerToListArrayPrscal,
-		&numberStressComponents,
-		&numberGaussPoints,
-		&numberPrestressGaussPoints,
-		&numberElements,
-		&numberPrestressEntries,
-		&prestressAutoComputeInt,
-		&asciiOutputInt,
-		&f77FileInput,
-		&f77AsciiOutput,
-		&errorCode,
-		prestressInputFile,
-		asciiOutputFile,
-		strlen(prestressInputFile),
-		strlen(asciiOutputFile));
-    
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening coordinate input file:");
-            //break;
-          //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading prestress input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading prestress input file:");
-    }
-
-  journal::debug_t debug("lithomop3d");
-  debug
-    << journal::at(__HERE__)
-    << "numberPrestressEntries:" << numberPrestressEntries
-    << journal::endl;
-
-  // return
-  Py_INCREF(Py_None);
-  return Py_None;
-}
-
-
-// Read material properties
-
-char pylithomop3d_read_prop__doc__[] = "";
-char pylithomop3d_read_prop__name__[] = "read_prop";
-
-PyObject * pylithomop3d_read_prop(PyObject *, PyObject *args)
-{
-  PyObject* pyPointerToProp;
-  PyObject* pyPointerToListArrayGrav;
-  double densityScaleFactor;
-  double youngScaleFactor;
-  double viscosityCoefficientScaleFactor;
-  double cohesionScaleFactor;
-  int numberDegreesFreedom;
-  int numberMaterialProperties;
-  int numberMaterialTypes;
-  int asciiOutputInt;
-  int plotOutputInt;
+  PyObject* pyPointerToMhist;
+  PyObject* pyPointerToMaterialInfo;
+  int numberMaterials;
+  int propertyListSize;
+  int numberLoadHistories;
   int f77FileInput;
   int f77AsciiOutput;
   int f77PlotOutput;
-  int viscousFlagInt;
-  int plasticFlagInt;
-  char* materialPropertiesInputFile;
+  int asciiOutputInt;
+  int plotOutputInt;
+  char* materialHistoryInputFile;
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOddddiiiiiiiiiisss:read_prop",
-			    &pyPointerToProp,
-			    &pyPointerToListArrayGrav,
-			    &densityScaleFactor,
-			    &youngScaleFactor,
-			    &viscosityCoefficientScaleFactor,
-			    &cohesionScaleFactor,
-			    &numberDegreesFreedom,
-			    &numberMaterialProperties,
-			    &numberMaterialTypes,
-			    &asciiOutputInt,
-			    &plotOutputInt,
-			    &f77FileInput,
-			    &f77AsciiOutput,
-			    &f77PlotOutput,
-			    &viscousFlagInt,
-			    &plasticFlagInt,
-			    &materialPropertiesInputFile,
-			    &asciiOutputFile,
+  int ok = PyArg_ParseTuple(args, "OOiiiiiiiisss:read_mathist",
+			    &pyPointerToMhist,
+  			    &pyPointerToMaterialInfo,
+  			    &numberMaterials,
+  			    &propertyListSize,
+  			    &numberLoadHistories,
+  			    &f77FileInput,
+  			    &f77AsciiOutput,
+  			    &f77PlotOutput,
+  			    &asciiOutputInt,
+  			    &plotOutputInt,
+  			    &materialHistoryInputFile,
+  			    &asciiOutputFile,
 			    &plotOutputFile);
 
   if (!ok) {
     return 0;
   }
 
-  double* pointerToProp = (double*) PyCObject_AsVoidPtr(pyPointerToProp);
-  double* pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
-  int errorCode = 0;
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
+  int* pointerToMhist = (int*) PyCObject_AsVoidPtr(pyPointerToMhist);
+  int* pointerToMaterialInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialInfo);
 
-  read_prop_f(pointerToProp,
-	      pointerToListArrayGrav,
-	      &densityScaleFactor,
-	      &youngScaleFactor,
-	      &viscosityCoefficientScaleFactor,
-	      &cohesionScaleFactor,
-	      &numberDegreesFreedom,
-	      &numberMaterialProperties,
-	      &numberMaterialTypes,
-	      &asciiOutputInt,
-	      &plotOutputInt,
-	      &f77FileInput,
-	      &f77AsciiOutput,
-	      &f77PlotOutput,
-	      &errorCode,
-	      &viscousFlagInt,
-	      &plasticFlagInt,
-	      materialPropertiesInputFile,
-	      asciiOutputFile,
-	      plotOutputFile,
-	      strlen(materialPropertiesInputFile),
-	      strlen(asciiOutputFile),
-	      strlen(plotOutputFile));
+  read_mathist_f(pointerToMhist,
+		 pointerToMaterialInfo,
+		 &numberMaterials,
+		 &propertyListSize,
+		 &numberLoadHistories,
+		 &f77FileInput,
+		 &f77AsciiOutput,
+		 &f77PlotOutput,
+		 &asciiOutputInt,
+		 &plotOutputInt,
+		 materialHistoryInputFile,
+		 asciiOutputFile,
+		 plotOutputFile,
+		 &errorcode,
+		 errorstring,
+		 strlen(asciiOutputFile),
+		 strlen(plotOutputFile),
+		 strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error opening material properties input file:");
-      break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: All material property units not specified:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading material properties input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading material properties input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
     << journal::at(__HERE__)
-    << "numberMaterialTypes:" << numberMaterialTypes
+    << "numberMaterials:" << numberMaterials
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
   return Py_None;
 }
+
+// Read element prestresses
+
+// char pylithomop3d_read_prestr__doc__[] = "";
+// char pylithomop3d_read_prestr__name__[] = "read_prestr";
+
+// PyObject * pylithomop3d_read_prestr(PyObject *, PyObject *args)
+// {
+  // PyObject* pyPointerToStn;
+  // PyObject* pyPointerToSt0;
+  // PyObject* pyPointerToListArrayPrscal;
+  // int numberStressComponents;
+  // int numberGaussPoints;
+  // int numberPrestressGaussPoints;
+  // int numberElements;
+  // int numberPrestressEntries;
+  // int prestressAutoComputeInt;
+  // int asciiOutputInt;
+  // int f77FileInput;
+  // int f77AsciiOutput;
+  // char* prestressInputFile;
+  // char* asciiOutputFile;
+
+  // int ok = PyArg_ParseTuple(args, "OOOiiiiiiiiiss:read_prestr",
+			    // &pyPointerToStn,
+			    // &pyPointerToSt0,
+			    // &pyPointerToListArrayPrscal,
+			    // &numberStressComponents,
+			    // &numberGaussPoints,
+			    // &numberPrestressGaussPoints,
+			    // &numberElements,
+			    // &numberPrestressEntries,
+			    // &prestressAutoComputeInt,
+			    // &asciiOutputInt,
+			    // &f77FileInput,
+			    // &f77AsciiOutput,
+			    // &prestressInputFile,
+			    // &asciiOutputFile);
+
+  // if (!ok) {
+    // return 0;
+  // }
+
+  // int errorcode = 0;
+  // const int maxsize = 1024;
+  // char errorstring[maxsize];
+  // double* pointerToStn = (double*) PyCObject_AsVoidPtr(pyPointerToStn);
+  // double* pointerToSt0 = (double*) PyCObject_AsVoidPtr(pyPointerToSt0);
+  // double* pointerToListArrayPrscal = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPrscal);
+
+  // read_prestr_f(pointerToStn,
+		// pointerToSt0,
+		// pointerToListArrayPrscal,
+		// &numberStressComponents,
+		// &numberGaussPoints,
+		// &numberPrestressGaussPoints,
+		// &numberElements,
+		// &numberPrestressEntries,
+		// &prestressAutoComputeInt,
+		// &asciiOutputInt,
+		// &f77FileInput,
+		// &f77AsciiOutput,
+		// &errorcode,
+		// prestressInputFile,
+		// asciiOutputFile,
+		// strlen(prestressInputFile),
+		// strlen(asciiOutputFile));
+    
+// if(0 != exceptionhandler(errorcode, errorstring)) {
+    // return 0;
+  // }
+
+  // journal::debug_t debug("lithomop3d");
+  // debug
+    // << journal::at(__HERE__)
+    // << "numberPrestressEntries:" << numberPrestressEntries
+    // << journal::endl;
+
+  // return
+  // Py_INCREF(Py_None);
+  // return Py_None;
+// }
 
 
 // Read local coordinate rotations
@@ -863,7 +713,6 @@ PyObject * pylithomop3d_read_skew(PyObject *, PyObject *args)
   PyObject* pyPointerToSkew;
   double rotationScaleFactor;
   int numberRotationEntries;
-  int numberSkewDimensions;
   int numberNodes;
   int autoRotateSlipperyNodesInt;
   int f77FileInput;
@@ -872,11 +721,10 @@ PyObject * pylithomop3d_read_skew(PyObject *, PyObject *args)
   char* rotationInputFile;
   char* asciiOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "Odiiiiiiiss:read_skew",
+  int ok = PyArg_ParseTuple(args, "Odiiiiiiss:read_skew",
 			    &pyPointerToSkew,
 			    &rotationScaleFactor,
 			    &numberRotationEntries,
-			    &numberSkewDimensions,
 			    &numberNodes,
 			    &autoRotateSlipperyNodesInt,
 			    &f77FileInput,
@@ -889,48 +737,30 @@ PyObject * pylithomop3d_read_skew(PyObject *, PyObject *args)
     return 0;
   }
 
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   double* pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
-  int errorCode = 0;
 
   read_skew_f(pointerToSkew,
 	      &rotationScaleFactor,
 	      &numberRotationEntries,
-	      &numberSkewDimensions,
 	      &numberNodes,
 	      &autoRotateSlipperyNodesInt,
 	      &f77FileInput,
 	      &f77AsciiOutput,
 	      &asciiOutputInt,
-	      &errorCode,
 	      rotationInputFile,
 	      asciiOutputFile,
+	      &errorcode,
+	      errorstring,
 	      strlen(rotationInputFile),
-	      strlen(asciiOutputFile));
+	      strlen(asciiOutputFile),
+	      strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening coordinate input file:");
-            //break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Rotation units not specified:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading rotation input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading rotation input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -953,10 +783,8 @@ PyObject * pylithomop3d_read_slip(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToNslip;
   int numberSlipperyNodeEntries;
-  int numberDegreesFreedom;
   int numberNodes;
   int autoRotateSlipperyNodesInt;
-  int numberSlipDimensions;
   int f77FileInput;
   int f77AsciiOutput;
   int f77PlotOutput;
@@ -966,13 +794,11 @@ PyObject * pylithomop3d_read_slip(PyObject *, PyObject *args)
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "Oiiiiiiiiiisss:read_slip",
+  int ok = PyArg_ParseTuple(args, "Oiiiiiiiisss:read_slip",
 			    &pyPointerToNslip,
 			    &numberSlipperyNodeEntries,
-			    &numberDegreesFreedom,
 			    &numberNodes,
 			    &autoRotateSlipperyNodesInt,
-			    &numberSlipDimensions,
 			    &f77FileInput,
 			    &f77AsciiOutput,
 			    &f77PlotOutput,
@@ -986,54 +812,35 @@ PyObject * pylithomop3d_read_slip(PyObject *, PyObject *args)
     return 0;
   }
 
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
   int totalNumberSlipperyNodes = 0;
-  int errorCode = 0;
 
   read_slip_f(pointerToNslip,
 	      &numberSlipperyNodeEntries,
 	      &totalNumberSlipperyNodes,
-	      &numberDegreesFreedom,
 	      &numberNodes,
 	      &autoRotateSlipperyNodesInt,
-	      &numberSlipDimensions,
 	      &f77FileInput,
 	      &f77AsciiOutput,
 	      &f77PlotOutput,
 	      &asciiOutputInt,
 	      &plotOutputInt,
-	      &errorCode,
 	      slipperyNodeInputFile,
 	      asciiOutputFile,
 	      plotOutputFile,
+	      &errorcode,
+	      errorstring,
 	      strlen(slipperyNodeInputFile),
 	      strlen(asciiOutputFile),
-	      strlen(plotOutputFile));
+	      strlen(plotOutputFile),
+	      strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening coordinate input file:");
-            //break;
-          //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading slippery nodes input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading slippery nodes input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -1057,7 +864,6 @@ PyObject * pylithomop3d_read_split(PyObject *, PyObject *args)
   PyObject* pyPointerToFault;
   PyObject* pyPointerToNfault;
   int numberSplitNodeEntries;
-  int numberDegreesFreedom;
   int numberNodes;
   int f77FileInput;
   int f77AsciiOutput;
@@ -1068,11 +874,10 @@ PyObject * pylithomop3d_read_split(PyObject *, PyObject *args)
   char* asciiOutputFile;
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOiiiiiiiisss:read_split",
+  int ok = PyArg_ParseTuple(args, "OOiiiiiiisss:read_split",
 			    &pyPointerToFault,
 			    &pyPointerToNfault,
 			    &numberSplitNodeEntries,
-			    &numberDegreesFreedom,
 			    &numberNodes,
 			    &f77FileInput,
 			    &f77AsciiOutput,
@@ -1087,54 +892,36 @@ PyObject * pylithomop3d_read_split(PyObject *, PyObject *args)
     return 0;
   }
 
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   double* pointerToFault = (double*) PyCObject_AsVoidPtr(pyPointerToFault);
   int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
   int totalNumberSplitNodes = 0;
-  int errorCode = 0;
 
   read_split_f(pointerToFault,
 	       pointerToNfault,
 	       &numberSplitNodeEntries,
 	       &totalNumberSplitNodes,
-	       &numberDegreesFreedom,
 	       &numberNodes,
 	       &f77FileInput,
 	       &f77AsciiOutput,
 	       &f77PlotOutput,
 	       &asciiOutputInt,
 	       &plotOutputInt,
-	       &errorCode,
 	       splitNodeInputFile,
 	       asciiOutputFile,
 	       plotOutputFile,
+	       &errorcode,
+	       errorstring,
 	       strlen(splitNodeInputFile),
 	       strlen(asciiOutputFile),
-	       strlen(plotOutputFile));
+	       strlen(plotOutputFile),
+	       strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-      //case 1:
-            //PyErr_SetString(PyExc_IOError,
-		            //"Error opening coordinate input file:");
-            //break;
-          //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading split nodes input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading split nodes input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -1145,6 +932,75 @@ PyObject * pylithomop3d_read_split(PyObject *, PyObject *args)
   // return
   Py_INCREF(Py_None);
   return Py_BuildValue("i", totalNumberSplitNodes);
+}
+
+
+// Read state output information
+
+char pylithomop3d_read_stateout__doc__[] = "";
+char pylithomop3d_read_stateout__name__[] = "read_stateout";
+
+PyObject * pylithomop3d_read_stateout(PyObject *, PyObject *args)
+{
+  PyObject* pyPointerToIstatout;
+  int f77FileInput;
+  int f77AsciiOutput;
+  int f77PlotOutput;
+  int asciiOutputInt;
+  int plotOutputInt;
+  char* stateVariableInputFile;
+  char* asciiOutputFile;
+  char* plotOutputFile;
+
+  int ok = PyArg_ParseTuple(args, "Oiiiiisss:read_stateout",
+			    &pyPointerToIstatout,
+			    &f77FileInput,
+			    &f77AsciiOutput,
+			    &f77PlotOutput,
+			    &asciiOutputInt,
+			    &plotOutputInt,
+			    &stateVariableInputFile,
+			    &asciiOutputFile,
+			    &plotOutputFile);
+
+  if (!ok) {
+    return 0;
+  }
+
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
+  int* pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
+
+  read_stateout_f(pointerToIstatout,
+	       &f77FileInput,
+	       &f77AsciiOutput,
+	       &f77PlotOutput,
+	       &asciiOutputInt,
+	       &plotOutputInt,
+	       stateVariableInputFile,
+	       asciiOutputFile,
+	       plotOutputFile,
+	       &errorcode,
+	       errorstring,
+	       strlen(stateVariableInputFile),
+	       strlen(asciiOutputFile),
+	       strlen(plotOutputFile),
+	       strlen(errorstring));
+    
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
+
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "pointerToIstatout:" << pointerToIstatout
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
 }
 
 
@@ -1164,7 +1020,7 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
   double timeScaleFactor;
   PyObject* pyPointerToMaxstp;
   PyObject* pyPointerToMaxit;
-  PyObject* pyPointerToMaxitc;
+  PyObject* pyPointerToNtdinit;
   PyObject* pyPointerToLgdef;
   PyObject* pyPointerToIbbar;
   PyObject* pyPointerToItmax;
@@ -1186,7 +1042,7 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
 			    &timeScaleFactor,
 			    &pyPointerToMaxstp,
 			    &pyPointerToMaxit,
-			    &pyPointerToMaxitc,
+			    &pyPointerToNtdinit,
 			    &pyPointerToLgdef,
 			    &pyPointerToIbbar,
 			    &pyPointerToItmax,
@@ -1202,6 +1058,9 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
     return 0;
   }
 
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   double* pointerToDelt = (double*) PyCObject_AsVoidPtr(pyPointerToDelt);
   double* pointerToAlfa = (double*) PyCObject_AsVoidPtr(pyPointerToAlfa);
   double* pointerToUtol = (double*) PyCObject_AsVoidPtr(pyPointerToUtol);
@@ -1210,11 +1069,10 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
   double* pointerToTimes = (double*) PyCObject_AsVoidPtr(pyPointerToTimes);
   int* pointerToMaxstp = (int*) PyCObject_AsVoidPtr(pyPointerToMaxstp);
   int* pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
-  int* pointerToMaxitc = (int*) PyCObject_AsVoidPtr(pyPointerToMaxitc);
+  int* pointerToNtdinit = (int*) PyCObject_AsVoidPtr(pyPointerToNtdinit);
   int* pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
   int* pointerToIbbar = (int*) PyCObject_AsVoidPtr(pyPointerToIbbar);
   int* pointerToItmax = (int*) PyCObject_AsVoidPtr(pyPointerToItmax);
-  int errorCode = 0;
 
   read_timdat_f(pointerToDelt,
 		pointerToAlfa,
@@ -1225,7 +1083,7 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
 		&timeScaleFactor,
 		pointerToMaxstp,
 		pointerToMaxit,
-		pointerToMaxitc,
+		pointerToNtdinit,
 		pointerToLgdef,
 		pointerToIbbar,
 		pointerToItmax,
@@ -1234,36 +1092,17 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
 		&f77FileInput,
 		&f77AsciiOutput,
 		&asciiOutputInt,
-		&errorCode,
 		timeStepInputFile,
 		asciiOutputFile,
+		&errorcode,
+		errorstring,
 		strlen(timeStepInputFile),
-		strlen(asciiOutputFile));
+		strlen(asciiOutputFile),
+		strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error opening time step input file:");
-      break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Time units not specified:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading time step input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading time step input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -1279,106 +1118,87 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
 
 // Read traction BC
 
-char pylithomop3d_read_traction__doc__[] = "";
-char pylithomop3d_read_traction__name__[] = "read_traction";
+// char pylithomop3d_read_traction__doc__[] = "";
+// char pylithomop3d_read_traction__name__[] = "read_traction";
 
-PyObject * pylithomop3d_read_traction(PyObject *, PyObject *args)
-{
-  PyObject* pyPointerToPres;
-  PyObject* pyPointerToPdir;
-  double tractionBcScaleFactor;
-  PyObject* pyPointerToIelno;
-  PyObject* pyPointerToIside;
-  PyObject* pyPointerToIhistry;
-  int numberTractionBc;
-  int numberElementNodes;
-  int numberTractionDirections;
-  int f77FileInput;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* tractionInputFile;
-  char* asciiOutputFile;
+// PyObject * pylithomop3d_read_traction(PyObject *, PyObject *args)
+// {
+  // PyObject* pyPointerToPres;
+  // PyObject* pyPointerToPdir;
+  // double tractionBcScaleFactor;
+  // PyObject* pyPointerToIelno;
+  // PyObject* pyPointerToIside;
+  // PyObject* pyPointerToIhistry;
+  // int numberTractionBc;
+  // int numberElementNodes;
+  // int numberTractionDirections;
+  // int f77FileInput;
+  // int f77AsciiOutput;
+  // int asciiOutputInt;
+  // char* tractionInputFile;
+  // char* asciiOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOdOOOiiiiiiss:read_traction",
-			    &pyPointerToPres,
-			    &pyPointerToPdir,
-			    &tractionBcScaleFactor,
-			    &pyPointerToIelno,
-			    &pyPointerToIside,
-			    &pyPointerToIhistry,
-			    &numberTractionBc,
-			    &numberElementNodes,
-			    &numberTractionDirections,
-			    &f77FileInput,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &tractionInputFile,
-			    &asciiOutputFile);
+  // int ok = PyArg_ParseTuple(args, "OOdOOOiiiiiiss:read_traction",
+			    // &pyPointerToPres,
+			    // &pyPointerToPdir,
+			    // &tractionBcScaleFactor,
+			    // &pyPointerToIelno,
+			    // &pyPointerToIside,
+			    // &pyPointerToIhistry,
+			    // &numberTractionBc,
+			    // &numberElementNodes,
+			    // &numberTractionDirections,
+			    // &f77FileInput,
+			    // &f77AsciiOutput,
+			    // &asciiOutputInt,
+			    // &tractionInputFile,
+			    // &asciiOutputFile);
 
-  if (!ok) {
-    return 0;
-  }
+  // if (!ok) {
+    // return 0;
+  // }
 
-  double* pointerToPres = (double*) PyCObject_AsVoidPtr(pyPointerToPres);
-  double* pointerToPdir = (double*) PyCObject_AsVoidPtr(pyPointerToPdir);
-  int* pointerToIelno = (int*) PyCObject_AsVoidPtr(pyPointerToIelno);
-  int* pointerToIside = (int*) PyCObject_AsVoidPtr(pyPointerToIside);
-  int* pointerToIhistry = (int*) PyCObject_AsVoidPtr(pyPointerToIhistry);
-  int errorCode = 0;
+  // int errorcode = 0;
+  // const int maxsize = 1024;
+  // char errorstring[maxsize];
+  // double* pointerToPres = (double*) PyCObject_AsVoidPtr(pyPointerToPres);
+  // double* pointerToPdir = (double*) PyCObject_AsVoidPtr(pyPointerToPdir);
+  // int* pointerToIelno = (int*) PyCObject_AsVoidPtr(pyPointerToIelno);
+  // int* pointerToIside = (int*) PyCObject_AsVoidPtr(pyPointerToIside);
+  // int* pointerToIhistry = (int*) PyCObject_AsVoidPtr(pyPointerToIhistry);
 
-  read_traction_f(pointerToPres,
-		  pointerToPdir,
-		  &tractionBcScaleFactor,
-		  pointerToIelno,
-		  pointerToIside,
-		  pointerToIhistry,
-		  &numberTractionBc,
-		  &numberElementNodes,
-		  &numberTractionDirections,
-		  &f77FileInput,
-		  &f77AsciiOutput,
-		  &asciiOutputInt,
-		  &errorCode,
-		  tractionInputFile,
-		  asciiOutputFile,
-		  strlen(tractionInputFile),
-		  strlen(asciiOutputFile));
+  // read_traction_f(pointerToPres,
+		  // pointerToPdir,
+		  // &tractionBcScaleFactor,
+		  // pointerToIelno,
+		  // pointerToIside,
+		  // pointerToIhistry,
+		  // &numberTractionBc,
+		  // &numberElementNodes,
+		  // &numberTractionDirections,
+		  // &f77FileInput,
+		  // &f77AsciiOutput,
+		  // &asciiOutputInt,
+		  // &errorcode,
+		  // tractionInputFile,
+		  // asciiOutputFile,
+		  // strlen(tractionInputFile),
+		  // strlen(asciiOutputFile));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error opening traction input file:");
-      break;
-    case 2:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Traction units not specified:");
-      break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading traction input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading traction input file:");
-    }
+// if(0 != exceptionhandler(errorcode, errorstring)) {
+    // return 0;
+  // }
 
-  journal::debug_t debug("lithomop3d");
-  debug
-    << journal::at(__HERE__)
-    << "numberTractionBc:" << numberTractionBc
-    << journal::endl;
+  // journal::debug_t debug("lithomop3d");
+  // debug
+    // << journal::at(__HERE__)
+    // << "numberTractionBc:" << numberTractionBc
+    // << journal::endl;
 
   // return
-  Py_INCREF(Py_None);
-  return Py_None;
-}
+  // Py_INCREF(Py_None);
+  // return Py_None;
+// }
 
 
 // Read winkler BC
@@ -1393,7 +1213,6 @@ PyObject * pylithomop3d_read_wink(PyObject *, PyObject *args)
   PyObject* pyPointerToIwink;
   PyObject* pyPointerToId;
   int numberNodes;
-  int numberDegreesFreedom;
   int numberWinklerForces;
   int numberWinklerEntries;
   int f77FileInput;
@@ -1402,13 +1221,12 @@ PyObject * pylithomop3d_read_wink(PyObject *, PyObject *args)
   char* winklerInputFile;
   char* asciiOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOOiiiiiiiss:read_wink",
+  int ok = PyArg_ParseTuple(args, "OOOOiiiiiiss:read_wink",
 			    &pyPointerToWink,
 			    &pyPointerToListArrayWscal,
 			    &pyPointerToIwink,
 			    &pyPointerToId,
 			    &numberNodes,
-			    &numberDegreesFreedom,
 			    &numberWinklerForces,
 			    &numberWinklerEntries,
 			    &f77FileInput,
@@ -1421,53 +1239,35 @@ PyObject * pylithomop3d_read_wink(PyObject *, PyObject *args)
     return 0;
   }
 
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   double* pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
   double* pointerToListArrayWscal = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayWscal);
   int* pointerToIwink = (int*) PyCObject_AsVoidPtr(pyPointerToIwink);
   int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
-  int errorCode = 0;
 
   read_wink_f(pointerToWink,
 	      pointerToListArrayWscal,
 	      pointerToIwink,
 	      pointerToId,
 	      &numberNodes,
-	      &numberDegreesFreedom,
 	      &numberWinklerForces,
 	      &numberWinklerEntries,
 	      &f77FileInput,
 	      &f77AsciiOutput,
 	      &asciiOutputInt,
-	      &errorCode,
 	      winklerInputFile,
 	      asciiOutputFile,
+	      &errorcode,
+	      errorstring,
 	      strlen(winklerInputFile),
-	      strlen(asciiOutputFile));
+	      strlen(asciiOutputFile),
+	      strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error opening winkler input file:");
-      break;
-      //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading winkler input file:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading winkler input file:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -1493,7 +1293,6 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *args)
   PyObject* pyPointerToIwinkx;
   PyObject* pyPointerToIdx;
   int numberNodes;
-  int numberDegreesFreedom;
   int numberSlipperyWinklerForces;
   int numberSlipperyWinklerEntries;
   int f77FileInput;
@@ -1502,13 +1301,12 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *args)
   char* slipperyWinklerInputFile;
   char* asciiOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOOiiiiiiiss:read_winkx",
+  int ok = PyArg_ParseTuple(args, "OOOOiiiiiiss:read_winkx",
 			    &pyPointerToWinkx,
 			    &pyPointerToListArrayWxscal,
 			    &pyPointerToIwinkx,
 			    &pyPointerToIdx,
 			    &numberNodes,
-			    &numberDegreesFreedom,
 			    &numberSlipperyWinklerForces,
 			    &numberSlipperyWinklerEntries,
 			    &f77FileInput,
@@ -1521,53 +1319,35 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *args)
     return 0;
   }
 
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   double* pointerToWinkx = (double*) PyCObject_AsVoidPtr(pyPointerToWinkx);
   double* pointerToListArrayWxscal = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayWxscal);
   int* pointerToIwinkx = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkx);
   int* pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
-  int errorCode = 0;
 
   read_winkx_f(pointerToWinkx,
 	       pointerToListArrayWxscal,
 	       pointerToIwinkx,
 	       pointerToIdx,
 	       &numberNodes,
-	       &numberDegreesFreedom,
 	       &numberSlipperyWinklerForces,
 	       &numberSlipperyWinklerEntries,
 	       &f77FileInput,
 	       &f77AsciiOutput,
 	       &asciiOutputInt,
-	       &errorCode,
 	       slipperyWinklerInputFile,
 	       asciiOutputFile,
+	       &errorcode,
+	       errorstring,
 	       strlen(slipperyWinklerInputFile),
-	       strlen(asciiOutputFile));
+	       strlen(asciiOutputFile),
+	       strlen(errorstring));
     
-  switch(errorCode)
-    {
-    case 0:
-      break;
-    case 1:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error opening winkler input file for slippery nodes:");
-      break;
-      //case 2:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Coordinate units not specified:");
-            //break;
-    case 3:
-      PyErr_SetString(PyExc_IOError,
-		      "Parser: Error reading winkler input file for slippery nodes:");
-      break;
-      //case 4:
-            //PyErr_SetString(PyExc_ValueError,
-		            //"Wrong number of nodes read:");
-            //break;
-    default:
-      PyErr_SetString(PyExc_ValueError,
-		      "Parser: Unknown error reading winkler input file for slippery nodes:");
-    }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -1581,6 +1361,6 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: parser.cc,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: parser.cc,v 1.2 2004/07/19 21:40:13 willic3 Exp $
 
 // End of file
