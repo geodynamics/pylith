@@ -99,7 +99,7 @@ c
             write(kw,1000,err=60) (labeld(j),j=1,ndof)
             write(kw,*,err=60) ' '
           end if
-          if(iskopt.ne.ione.and.ndof.gt.itwo) then
+          if(iskopt.ne.ione) then
             if(nslip(3,i).ne.izero) then
               nslip(4,i)=nslip(3,i)
               nslip(5,i)=izero
@@ -183,7 +183,7 @@ c
       end
 c
 c version
-c $Id: read_slip.f,v 1.2 2004/07/12 18:51:00 willic3 Exp $
+c $Id: read_slip.f,v 1.3 2004/08/02 21:27:06 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
