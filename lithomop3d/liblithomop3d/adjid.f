@@ -29,45 +29,45 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine adjid(id,idx,nslip,idslp,numslp,ndof,numnp,numsn,neq,
-     & nsdim)
+      subroutine adjid(id,idx,nslip,idslp,numslp,numnp,numsn,neq)
 c
 c      adjusts id array and creates idx array for additional degrees
 c      of freedom associated with free slip interfaces
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer numslp,ndof,numnp,numsn,neq,nsdim
+      integer numslp,numnp,numsn,neq
       integer id(ndof,numnp),idx(ndof,numnp),nslip(nsdim,numslp)
       integer idslp(numsn)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
 c
 c...  local variables
 c
       integer n,j,i,ii,nn,ns
 c
       call ifill(idx,izero,ndof*numnp)
-      if(numslp.eq.0) return
-      ns=0
+      if(numslp.eq.izero) return
+      ns=izero
       do n=1,numnp
         do j=1,numslp
           if(n.eq.nslip(2,j)) then
             ns=ns+1
             idslp(ns)=n
             do i=1,ndof
-              if((nslip(2+i,j).ne.0).and.(id(i,n).ne.0)) then
+              if((nslip(2+i,j).ne.izero).and.(id(i,n).ne.izero)) then
                 idx(i,n)=id(i,n)
                 do ii=i,ndof
-                  if(id(ii,n).ne.0) id(ii,n)=id(ii,n)+1
+                  if(id(ii,n).ne.izero) id(ii,n)=id(ii,n)+1
                 end do
                 do nn=n+1,numnp
                   do ii=1,ndof
-                    if(id(ii,nn).ne.0) id(ii,nn)=id(ii,nn)+1
+                    if(id(ii,nn).ne.izero) id(ii,nn)=id(ii,nn)+1
                   end do
                 end do
                 neq=neq+1
@@ -82,7 +82,7 @@ c
       end
 c
 c version
-c $Id: adjid.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: adjid.f,v 1.2 2004/06/18 14:55:02 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
