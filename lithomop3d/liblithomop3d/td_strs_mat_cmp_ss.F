@@ -164,7 +164,7 @@ c
 c...  compute element stiffness and add it to global stiffness
 c
         call formes_ss(
-     &   x,numnp,                                                       ! global
+     &   x,numnp,iddmat,                                                ! global
      &   s,stemp,                                                       ! stiff
      &   dmat(1,1,ielf),ien(1,ielf),lm(1,ielf),ielg,                    ! elemfamily
      &   gauss,sh,shj,nen,ngauss,nee,                                   ! eltype
@@ -179,7 +179,7 @@ c
       end
 c
 c version
-c $Id: td_strs_mat_cmp_ss.F,v 1.2 2005/03/25 23:27:45 willic3 Exp $
+c $Id: td_strs_mat_cmp_ss.F,v 1.3 2005/04/01 23:34:12 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

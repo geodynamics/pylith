@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine formes_ss(
-     & x,numnp,                                                         ! global
+     & x,numnp,iddmat,                                                  ! global
      & s,stemp,                                                         ! stiff
      & dmat,ien,lm,iel,                                                 ! elemnt
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
@@ -52,7 +52,7 @@ c
 c...  subroutine arguments
 c
       integer numnp,iel,nen,ngauss,nee,numrot,ierr
-      integer ien(nen),lm(ndof,nen)
+      integer iddmat(nstr,nstr),ien(nen),lm(ndof,nen)
       character errstrng*(*)
       double precision x(nsd,numnp),s(neemax*neemax)
       double precision stemp(neemax*neemax),dmat(nddmat,ngauss)
@@ -79,7 +79,7 @@ c...  construct local stiffness matrix, symmetrize it, and rotate for
 c     skew boundary conditions
 c
       call stiff_ss(
-     & xl,                                                              ! global
+     & xl,iddmat,                                                       ! global
      & dmat,ien,iel,                                                    ! elemnt
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & s,                                                               ! stiff
@@ -94,7 +94,7 @@ c
       end
 c
 c version
-c $Id: formes_ss.f,v 1.5 2005/03/19 01:49:49 willic3 Exp $
+c $Id: formes_ss.f,v 1.6 2005/04/01 23:34:13 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
