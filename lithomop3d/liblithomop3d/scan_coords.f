@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine scan_coords(nsd,numnp,kr,ierr,coord_units,cfile)
+      subroutine scan_coords(numnp,kr,coord_units,cfile,ierr,errstrng)
 c
 c...  subroutine to perform an initial scan of the nodal coordinates
 c     file to determine the number of nodal points and the units of
@@ -38,17 +38,22 @@ c
 c     Error codes:
 c         0:  No error
 c         1:  Error opening input file
-c         2:  Units not specified
 c         3:  Read error
+c         5:  Units not specified
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nsd,numnp,kr,ierr
-      character coord_units*(*),cfile*(*)
+      integer numnp,kr,ierr
+      character coord_units*(*),cfile*(*),errstrng*(*)
 c
-c...  defined constants
+c...  local constants
 c
       character def(1)*11
       data def/"coord_units"/
@@ -62,15 +67,15 @@ c
 c
 c...  open input file
 c
-      ierr=0
-      numnp=0
-      nget=1
+      ierr=izero
+      numnp=izero
+      nget=ione
       open(kr,file=cfile,status="old",err=20)
 c
 c...  get coordinate units, returning error 2 if they aren't found.
 c
-      call get_units(kr,ierr,nget,units_defined,units,def)
-      if(ierr.eq.2) return
+      call get_units(kr,nget,units_defined,units,def,ierr,errstrng)
+      if(ierr.ne.izero) return
       coord_units=units(1)
 c
 c... scan the file, counting the number of entries.
@@ -82,7 +87,7 @@ c
       call pskip(kr)
  40   continue
         read(kr,*,end=10,err=30) n,(x(j),j=1,nsd)
-        numnp=numnp+1
+        numnp=numnp+ione
         go to 40
 c
 c...  normal return
@@ -96,19 +101,21 @@ c
  20   continue
         close(kr)
 	ierr=1
+        errstrng="scan_coords"
         return
 c
 c...  read error
 c
  30   continue
-        ierr=3
         close(kr)
+        ierr=3
+        errstrng="scan_coords"
         return
 c
       end
 c
 c version
-c $Id: scan_coords.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: scan_coords.f,v 1.2 2004/07/12 19:44:14 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
