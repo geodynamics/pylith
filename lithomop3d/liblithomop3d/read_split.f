@@ -92,27 +92,27 @@ c...  open output files
 c
       if(idout.gt.izero) open(kw,file=ofile,err=50,status="old",
      & access="append")
-      if(idsk.eq.izero) open(kp,file=pfile,err=50,status="old",
-     & access="append")
       if(idsk.eq.ione) open(kp,file=pfile,err=50,status="old",
+     & access="append")
+      if(idsk.eq.itwo) open(kp,file=pfile,err=50,status="old",
      & access="append",form="unformatted")
 c
 c...  output results if requested
 c
-      if(idsk.eq.izero) write(kp,"(i7)") numfn
-      if(idsk.eq.ione) write(kp) numfn
-      if(idout.gt.izero.or.idsk.eq.izero) then
+      if(idsk.eq.ione) write(kp,"(i7)") numfn
+      if(idsk.eq.itwo) write(kp) numfn
+      if(idout.gt.izero.or.idsk.eq.ione) then
         npage=50
         do i=1,numfn
           if((i.eq.ione.or.mod(i,npage).eq.izero).and.idout.gt.izero)
      &     write(kw,3000,err=60)
           if(idout.gt.izero) write(kw,4000,err=60) (nfault(j,i),j=1,3),
      &     (fault(j,i),j=1,ndof)
-          if(idsk.eq.izero) write(kp,5000,err=60) (nfault(j,i),j=1,2)
+          if(idsk.eq.ione) write(kp,5000,err=60) (nfault(j,i),j=1,2)
         end do
       end if
-      if(idsk.eq.ione.and.numfn.ne.izero) write(kp,err=60) nfault
-      if(idsk.eq.ione.and.numfn.ne.izero) write(kp,err=60) fault
+      if(idsk.eq.itwo.and.numfn.ne.izero) write(kp,err=60) nfault
+      if(idsk.eq.itwo.and.numfn.ne.izero) write(kp,err=60) fault
 c
 c     compute total number of split nodes
 c
@@ -180,7 +180,7 @@ c
       end
 c
 c version
-c $Id: read_split.f,v 1.2 2004/07/12 19:01:28 willic3 Exp $
+c $Id: read_split.f,v 1.3 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

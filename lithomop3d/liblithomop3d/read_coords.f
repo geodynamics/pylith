@@ -98,7 +98,7 @@ c
 c...  read the coordinate entries
 c
       do i=1,numnp
-	call pskip(kr)
+        call pskip(kr)
         read(kr,*,end=40,err=30) n,(x(j,i),j=1,nsd)
         do j=1,nsd
           x(j,i)=cscale*x(j,i)
@@ -108,15 +108,15 @@ c
 c
 c...  output coordinates to plot file
 c
-      if(idsk.eq.0) then
+      if(idsk.eq.1) then
         open(kp,file=pfile,err=50,status="old",access="append")
-	do i=1,numnp
-	  write(kp,"(i7,3(1pe16.8))",err=60) i,(x(j,i),j=1,nsd)
+        do i=1,numnp
+          write(kp,"(i7,3(1pe16.8))",err=60) i,(x(j,i),j=1,nsd)
         end do
-      else
+      else if(idsk.eq.2) then
         open(kp,file=pfile,err=50,status="old",access="append",
      &   form="unformatted")
-	write(kp,err=60) x
+        write(kp,err=60) x
       end if
       close(kp)
 c
@@ -124,11 +124,11 @@ c...  output coordinates to human-readable file
 c
       if(idout.gt.izero) then
         open(kw,file=ofile,err=50,status="old",access="append")
-	do i=1,numnp
-	  if(i.eq.1.or.mod(i,npage).eq.0) write(kw,1000)
+        do i=1,numnp
+          if(i.eq.1.or.mod(i,npage).eq.0) write(kw,1000)
      &     (labelc(j),j=1,nsd)
-	  write(kw,"(6x,i7,10x,3(1pe20.8))",err=60) i,(x(j,i),j=1,nsd)
-	end do
+          write(kw,"(6x,i7,10x,3(1pe20.8))",err=60) i,(x(j,i),j=1,nsd)
+        end do
         close(kw)
       end if
 c
@@ -182,7 +182,7 @@ c
       end
 c
 c version
-c $Id: read_coords.f,v 1.2 2004/07/08 02:07:14 willic3 Exp $
+c $Id: read_coords.f,v 1.3 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

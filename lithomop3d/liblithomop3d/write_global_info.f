@@ -52,11 +52,11 @@ c
         write(kw,1000) title,idout,idsk,ngem,numnp,nsd,ndof,icode,idebug
         close(kw)
       end if
-      if(idsk.eq.izero) then
+      if(idsk.eq.ione) then
         open(kp,file=pfile,status="new",access="append")
         write(kp,2000) title
         write(kp,3000) ngem,numnp,nsd,ndof,nstr
-      else if(idsk.eq.1) then
+      else if(idsk.eq.itwo) then
         open(kp,file=pfile,status="new",access="append",
      &   form="unformatted")
         write(kp) title
@@ -78,15 +78,16 @@ c
      x'******************************************************',//)
 1000  format(1x,a70,///,
      x' c o n t r o l   i n f o r m a t i o n                 ',  //,5x,
-     x' feout.dat output option. . . . . . . . . . . (idout) =',i5,//,
+     x' ascii file output option . . . . . . . . . . (idout) =',i5,//,
      x 5x,
-     x'    eq.0,  no feout.dat file                           ',   /,5x,
+     x'    eq.0,  no ascii output file                        ',   /,5x,
      x'    eq.1,  echo input                                  ',   /,5x,
      x'    eq.2,  full output                                 ',  //,5x,
      x' fedsk.dat output option. . . . . . . . . . . (idsk ) =',i5,//,
      x 5x,
-     x'    eq.0,  ascii output                                ',   /,5x,
-     x'    eq.1,  binary output                               ',  //,5x,
+     x'    eq.0,  no output                                   ',   /,5x,
+     x'    eq.1,  ascii output                                ',   /,5x,
+     x'    eq.2,  binary output                               ',  //,5x,
      x' geometry type  . . . . . . . . . . . . . . . (ngem ) =',i5,//,
      x 5x,
      x'    eq.0,  axisymmetric                                ',  / ,5x,
@@ -115,7 +116,7 @@ c
       end
 c
 c version
-c $Id: write_global_info.f,v 1.2 2004/07/12 21:18:18 willic3 Exp $
+c $Id: write_global_info.f,v 1.3 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -81,13 +81,13 @@ c
         else
           ilock=0
         end if
-        if(idsk.eq.1) write(kp) ilock
+        if(idsk.eq.2) write(kp) ilock
       end do
       return
       end
 c
 c version
-c $Id: printl.f,v 1.2 2004/07/07 20:29:06 willic3 Exp $
+c $Id: printl.f,v 1.3 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

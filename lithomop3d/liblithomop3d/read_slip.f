@@ -80,15 +80,15 @@ c...  open output files
 c
       if(idout.gt.izero) open(kw,file=ofile,err=50,status="old",
      & access="append")
-      if(idsk.eq.izero) open(kp,file=pfile,err=50,status="old",
-     & access="append")
       if(idsk.eq.ione) open(kp,file=pfile,err=50,status="old",
+     & access="append")
+      if(idsk.eq.itwo) open(kp,file=pfile,err=50,status="old",
      & access="append",form="unformatted")
 c
 c...  read slippery node entries, and output results if desired
 c
-      if(idsk.eq.izero) write(kp,3000,err=60) numslp
-      if(idsk.eq.ione) write(kp,err=60) numslp
+      if(idsk.eq.ione) write(kp,3000,err=60) numslp
+      if(idsk.eq.itwo) write(kp,err=60) numslp
       if(numslp.ne.izero) then
         call pskip(kr)
         npage=50
@@ -114,11 +114,11 @@ c
           end if
           if(idout.gt.izero) write(kw,2000,err=60) (nslip(j,i),
      &     j=1,ndof+2)
-          if(idsk.eq.izero) write(kp,3000,err=60) (nslip(j,i),
+          if(idsk.eq.ione) write(kp,3000,err=60) (nslip(j,i),
      &     j=1,ndof+2)
         end do
       end if
-      if(idsk.eq.ione.and.numslp.ne.izero) write(kp) nslip
+      if(idsk.eq.itwo.and.numslp.ne.izero) write(kp) nslip
 c
 c...  determine number of slippery nodes
 c
@@ -131,8 +131,8 @@ c
         end do
  40     continue
       end do
-      if(idsk.eq.izero) write(kp,"(i7)",err=60) numsn
-      if(idsk.eq.ione) write(kp,err=60) numsn
+      if(idsk.eq.ione) write(kp,"(i7)",err=60) numsn
+      if(idsk.eq.itwo) write(kp,err=60) numsn
       close(kr)
       if(idout.gt.ione) close(kw)
       close(kp)
@@ -183,7 +183,7 @@ c
       end
 c
 c version
-c $Id: read_slip.f,v 1.3 2004/08/02 21:27:06 willic3 Exp $
+c $Id: read_slip.f,v 1.4 2004/08/25 01:12:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
