@@ -250,7 +250,7 @@
 #define write_subiter_f WRITE_SUBITER
 #define write_ucd_mesh_f WRITE_UCD_MESH
 
-#elif defined(F77EXTERNS_COMPAQ_F90)
+#elif defined(F77EXTERNS_COMPAQ_F90) || defined (F77EXTERNS_SOMETIMES_EXTRATRAILINGBAR)
 
 // symbols that contain underbars get two underbars at the end
 // symbols that do not contain underbars get one underbar at the end
@@ -1282,6 +1282,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.11 2005/03/10 01:10:38 knepley Exp $
+// $Id: lithomop3d_externs.h,v 1.12 2005/03/11 02:40:24 willic3 Exp $
 
 // End of file
