@@ -56,4 +56,4 @@ time_units = year    # This should be converted to seconds.
 # time step groups read (nintg).
 #
 # n maxstp delt alfa maxit ntdinit lgdef  utol   ftol    etol  itmax
-  0   1   0.e+0  5.e-1  1     4      0   1.0e+0  1.0e+0 1.0e+0  1
+  0   1   0.e+0  5.e-1  4     1      0   1.0e+0  1.0e+0 1.0e+0  1
