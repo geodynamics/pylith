@@ -287,7 +287,7 @@ c
      &   s,stemp,                                                       ! stiff
      &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! elemnt
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
-     &   prop,mhist,infmat,infmatmod,                                   ! materl
+     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
      &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
      &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
@@ -353,7 +353,7 @@ c
      &   s,stemp,                                                       ! stiff
      &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! elemnt
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
-     &   prop,mhist,infmat,infmatmod,                                   ! materl
+     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
      &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
      &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
@@ -419,7 +419,7 @@ clater     &   nfault,dfault,tfault,                                          ! 
 clater     &   s,stemp,                                                       ! stiff
 clater     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! elemnt
 clater     &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
-clater     &   prop,mhist,infmat,infmatmod,                                   ! materl
+clater     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
 clater     &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
 clater     &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
@@ -485,7 +485,7 @@ clater     &   nfault,dfault,tfault,                                          ! 
 clater     &   s,stemp,                                                       ! stiff
 clater     &   state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,           ! elemnt
 clater     &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
-clater     &   prop,mhist,infmat,infmatmod,                                   ! materl
+clater     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
 clater     &   histry,rtimdat,ntimdat,nvisdat,                                ! timdat
 clater     &   rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                  ! iterate
@@ -561,7 +561,7 @@ c
       end
 c
 c version
-c $Id: elastc.f,v 1.6 2004/07/21 15:39:41 willic3 Exp $
+c $Id: elastc.f,v 1.7 2004/07/21 19:46:07 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
