@@ -1,0 +1,6 @@
+# Time steps for which full output is desired for prestress test 1.
+#
+	 1
+        10
+        50
+       100

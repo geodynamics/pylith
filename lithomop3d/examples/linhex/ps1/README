@@ -1,0 +1,6 @@
+This is a set of simple tests of the automatic computation of 
+initial stresses for problems with gravity.  This set of examples is
+primarily for the purpose of testing the implementation, but anyone
+wishing to try these tests can run them all by simply typing 'mm'.
+Note that each test runs for 100 time steps, so they will take a while
+to run.
