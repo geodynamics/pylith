@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine plinhex(sh,shj,gauss,infetype,intord)
+      subroutine plinhex(sh,gauss,nen,ngauss,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a trilinear hexahedron.
@@ -45,11 +45,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer intord
-      integer infetype(4)
-      double precision sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax)
-      double precision gauss(nsd+1,ngaussmax)
+      integer nen,ngauss,intord
+      double precision sh(nsd+1,nen,ngauss)
+      double precision gauss(nsd+1,ngauss)
 c
 c...  local constants
 c
@@ -67,7 +65,7 @@ c
 c
 c...  local variables
 c
-      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
+      integer i,l,nshsize,ngssize
       double precision rr,ss,tt
 c
 cdebug      integer idb
@@ -76,37 +74,24 @@ cdebug      write(6,*) "Hello from plinhex_f!"
 c
 c...  definitions
 c
-      nshsize=(nsd+1)*nenmax*ngaussmax
-      ngssize=(nsd+1)*ngaussmax
+      nshsize=(nsd+1)*nen*ngauss
+      ngssize=(nsd+1)*ngauss
 c
 c...  Linear hex definition
 c
-      nen=ieight
-      ngauss=ione
-      nec=nsd*nen
-      nee=ndof*nen
       gauss(1,1)=zero
       gauss(2,1)=zero
       gauss(3,1)=zero
       gauss(4,1)=eight
       if(intord.ne.2) then
-        ngauss=ieight
-cdebug        write(6,*) "gauss:"
         do l=1,ngauss
           gauss(1,l)=r(l)*root3i
           gauss(2,l)=s(l)*root3i
           gauss(3,l)=t(l)*root3i
           gauss(4,l)=one
-cdebug          write(6,"(4(2x,1pe16.9))") (gauss(idb,l),idb=1,4)
         end do
       end if
 c
-      infetype(1)=ngauss
-      infetype(2)=nen
-      infetype(3)=nec
-      infetype(4)=nee
-c
-cdebug      write(6,*) "sh:"
       do l=1,ngauss
         do i=1,nen
           rr=one+r(i)*gauss(1,l)
@@ -116,16 +101,14 @@ cdebug      write(6,*) "sh:"
           sh(1,i,l)=eighth*r(i)*ss*tt
           sh(2,i,l)=eighth*s(i)*rr*tt
           sh(3,i,l)=eighth*t(i)*rr*ss
-cdebug          write(6,"(4(2x,1pe16.9))") (sh(idb,i,l),idb=1,4)
         end do
       end do
-      call dcopy(nshsize,sh,ione,shj,ione)
 c
       return
       end
 c
 c version
-c $Id: plinhex.f,v 1.3 2005/03/17 18:38:05 willic3 Exp $
+c $Id: plinhex.f,v 1.4 2005/03/22 04:45:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

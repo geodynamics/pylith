@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine pquadpyr(sh,shj,gauss,infetype,intord)
+      subroutine pquadpyr(sh,gauss,nen,ngauss,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a quadratic pyramid.
@@ -45,11 +45,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer intord
-      integer infetype(4)
-      double precision sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax)
-      double precision gauss(nsd+1,ngaussmax)
+      integer nen,ngauss,intord
+      double precision sh(nsd+1,nen,ngauss)
+      double precision gauss(nsd+1,ngauss)
 c
 c...  local constants
 c
@@ -92,22 +90,18 @@ c
 c
 c...  local variables
 c
-      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
+      integer i,l,nshsize,ngssize
       double precision q(9),h(3),dq(9,2),dh(3)
       double precision rr,ss,tt,g,w
 c
 c...  definitions
 c
-      nshsize=(nsd+1)*nenmax*ngaussmax
-      ngssize=(nsd+1)*ngaussmax
+      nshsize=(nsd+1)*nen*ngauss
+      ngssize=(nsd+1)*ngauss
 c
 c...  Quadratic pyramid definition
 c
-      nen=13
-      nec=nsd*nen
-      nee=ndof*nen
       if(intord.eq.2) then
-        ngauss=ifive
         g=eight*sqrt(two/c1)/five
         w=c2/c3
         do l=1,ngauss
@@ -119,7 +113,6 @@ c
         gauss(3,5)=two/five
         gauss(4,5)=c4/c5
       else
-        ngauss=13
         do l=1,4
           gauss(1,l)=r(l)*g1
           gauss(2,l)=s(l)*g1
@@ -149,11 +142,6 @@ c
         gauss(3,13)=g5
         gauss(4,13)=w4
       end if
-c
-      infetype(1)=ngauss
-      infetype(2)=nen
-      infetype(3)=nec
-      infetype(4)=nee
 c
       do l=1,ngauss
         rr=gauss(1,l)
@@ -199,13 +187,12 @@ c
           sh(3,i,l)=q(iq(i))*dh(ih(i))
         end do
       end do
-      call dcopy(nshsize,sh,ione,shj,ione)
 c
       return
       end
 c
 c version
-c $Id: pquadpyr.f,v 1.2 2004/07/07 19:48:45 willic3 Exp $
+c $Id: pquadpyr.f,v 1.3 2005/03/22 04:45:55 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

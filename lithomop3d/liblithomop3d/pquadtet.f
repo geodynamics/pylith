@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine pquadtet(sh,shj,gauss,infetype,intord)
+      subroutine pquadtet(sh,gauss,nen,ngauss,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a quadratic tetrahedron.
@@ -45,19 +45,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer intord
-      integer infetype(4)
-      double precision sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax)
-      double precision gauss(nsd+1,ngaussmax)
+      integer nen,ngauss,intord
+      double precision sh(nsd+1,nen,ngauss)
+      double precision gauss(nsd+1,ngauss)
 c
 c...  local constants
 c
-c*      double precision r(10),s(10),t(10),u(10)
-c*      data r/ 1d0, 0d0, 0d0, 0d0,0.5d0,0.0d0,0.5d0,0.5d0,0.0d0,0.0d0/
-c*      data s/ 0d0, 1d0, 0d0, 0d0,0.5d0,0.5d0,0.0d0,0.0d0,0.5d0,0.0d0/
-c*      data t/ 0d0, 0d0, 1d0, 0d0,0.0d0,0.5d0,0.5d0,0.0d0,0.0d0,0.5d0/
-c*      data u/ 0d0, 0d0, 0d0, 1d0,0.0d0,0.0d0,0.0d0,0.5d0,0.5d0,0.5d0/
 c
 c...  intrinsic functions
 c
@@ -68,39 +61,26 @@ c
 c
 c...  local variables
 c
-c*      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
-      integer nen,ngauss,nec,nee,l,nshsize,ngssize
-c*      double precision g1,g2,rr,ss,tt,uu,drr,dss,dtt,duu
+      integer l,nshsize,ngssize
       double precision g1,g2,rr,ss,tt,uu
       double precision tetvol
-cdebug      integer idb,jdb
-cdebug      double precision dbsum
 c
 cdebug      write(6,*) "Hello from pquadtet_f!"
 c
 c...  definitions
 c
       tetvol=sixth
-cdebug      tetvol=one
-      nshsize=(nsd+1)*nenmax*ngaussmax
-      ngssize=(nsd+1)*ngaussmax
+      nshsize=(nsd+1)*nen*ngauss
+      ngssize=(nsd+1)*ngauss
 c
 c...  Quadratic tet definition
 c
-      nen=10
-      nec=nsd*nen
-      nee=ndof*nen
       if(intord.eq.2) then
-        ngauss=ione
         gauss(1,1)=fourth
         gauss(2,1)=fourth
         gauss(3,1)=fourth
         gauss(4,1)=tetvol
-cdebug        gauss(1,1)=fourth-0.01d0
-cdebug        gauss(2,1)=fourth-0.01d0
-cdebug        gauss(3,1)=fourth-0.01d0
       else
-        ngauss=ifour
         g1=(five-sqrt(five))/20.0d0
         g2=(five+three*sqrt(five))/20.0d0
         do l=1,ngauss
@@ -112,21 +92,11 @@ cdebug        gauss(3,1)=fourth-0.01d0
         end do
       end if
 c
-      infetype(1)=ngauss
-      infetype(2)=nen
-      infetype(3)=nec
-      infetype(4)=nee
-c
       do l=1,ngauss
         rr=gauss(1,l)
         ss=gauss(2,l)
         tt=gauss(3,l)
-c*        uu=g1
-c*        if(l.eq.ione) uu=g2
-c*        if(intord.eq.itwo) uu=fourth
         uu=one-rr-ss-tt
-cdebug        write(6,*) "l:",l
-cdebug        write(6,*) "rr,ss,tt,uu:",rr,ss,tt,uu
         sh(4,1,l)=uu*(two*uu-one)
         sh(1,1,l)=one-four*uu
         sh(2,1,l)=one-four*uu
@@ -167,21 +137,13 @@ cdebug        write(6,*) "rr,ss,tt,uu:",rr,ss,tt,uu
         sh(1,10,l)=zero
         sh(2,10,l)=four*tt
         sh(3,10,l)=four*ss
-cdebug        dbsum=zero
-cdebug        do idb=1,nen
-cdebug          write(6,*) "sh:",(sh(jdb,idb,l),jdb=1,4)
-cdebug          dbsum=dbsum+sh(4,idb,l)
-cdebug        end do
-cdebug        write(6,*) "l, sum sh:",l,dbsum
-cdebug        write(6,*) "gauss:",(gauss(idb,l),idb=1,4)
       end do
-      call dcopy(nshsize,sh,ione,shj,ione)
 c
       return
       end
 c
 c version
-c $Id: pquadtet.f,v 1.4 2004/08/12 02:19:36 willic3 Exp $
+c $Id: pquadtet.f,v 1.5 2005/03/22 04:45:55 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

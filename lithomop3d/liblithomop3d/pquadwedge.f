@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine pquadwedge(sh,shj,gauss,infetype,intord)
+      subroutine pquadwedge(sh,gauss,nen,ngauss,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a quadratic wedge.
@@ -45,11 +45,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer intord
-      integer infetype(4)
-      double precision sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax)
-      double precision gauss(nsd+1,ngaussmax)
+      integer nen,ngauss,intord
+      double precision sh(nsd+1,nen,ngauss)
+      double precision gauss(nsd+1,ngauss)
 c
 c...  local constants
 c
@@ -66,7 +64,7 @@ c
 c
 c...  local variables
 c
-      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
+      integer i,l,nshsize,ngssize
       double precision t(6),h(3),dt(6,2),dh(3)
       double precision rr,ss,tt,uu,g1,w1
       double precision trivol
@@ -74,15 +72,11 @@ c
 c...  definitions
 c
       trivol=third
-      nshsize=(nsd+1)*nenmax*ngaussmax
-      ngssize=(nsd+1)*ngaussmax
+      nshsize=(nsd+1)*nen*ngauss
+      ngssize=(nsd+1)*ngauss
 c
 c...  quadratic wedge definition
 c
-      nen=15
-      ngauss=itwo
-      nec=nsd*nen
-      nee=ndof*nen
       do l=1,ngauss
         gauss(1,l)=third
         gauss(2,l)=third
@@ -91,7 +85,6 @@ c
       end do
       gauss(3,2)=-root3i
       if(intord.ne.2) then
-        ngauss=inine
         do l=1,ngauss
           do i=1,nen
             g1=dble(l-2)*sqrt(three/five)
@@ -113,11 +106,6 @@ c
           end do
         end do
       end if
-c
-      infetype(1)=ngauss
-      infetype(2)=nen
-      infetype(3)=nec
-      infetype(4)=nee
 c
       do l=1,ngauss
         rr=gauss(1,l)
@@ -155,13 +143,12 @@ c
           sh(3,i,l)=t(it(i))*dh(ih(i))
         end do
       end do
-      call dcopy(nshsize,sh,ione,shj,ione)
 c
       return
       end
 c
 c version
-c $Id: pquadwedge.f,v 1.2 2004/07/07 19:56:52 willic3 Exp $
+c $Id: pquadwedge.f,v 1.3 2005/03/22 04:45:55 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

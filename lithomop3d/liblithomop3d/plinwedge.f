@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine plinwedge(sh,shj,gauss,infetype,intord)
+      subroutine plinwedge(sh,gauss,nen,ngauss,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a linear wedge.
@@ -45,11 +45,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer intord
-      integer infetype(4)
-      double precision sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax)
-      double precision gauss(nsd+1,ngaussmax)
+      integer nen,ngauss,intord
+      double precision sh(nsd+1,nen,ngauss)
+      double precision gauss(nsd+1,ngauss)
 c
 c...  local constants
 c
@@ -68,28 +66,23 @@ c
 c
 c...  local variables
 c
-      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
+      integer i,l,nshsize,ngssize
       double precision rr,ss,tt,uu,drr,dss,dtt
       double precision trivol
 c
 c...  definitions
 c
       trivol=half
-      nshsize=(nsd+1)*nenmax*ngaussmax
-      ngssize=(nsd+1)*ngaussmax
+      nshsize=(nsd+1)*nen*ngauss
+      ngssize=(nsd+1)*ngauss
 c
 c...  Linear wedge definition
 c
-      nen=isix
-      ngauss=ione
-      nec=nsd*nen
-      nee=ndof*nen
       gauss(1,1)=zero
       gauss(2,1)=zero
       gauss(3,1)=zero
       gauss(4,1)=two*trivol
       if(intord.ne.2) then
-        ngauss=itwo
         do l=1,ngauss
           gauss(1,l)=third
           gauss(2,l)=third
@@ -98,11 +91,6 @@ c
         end do
         gauss(3,2)=-root3i
       end if 
-c
-      infetype(1)=ngauss
-      infetype(2)=nen
-      infetype(3)=nec
-      infetype(4)=nee
 c
       do l=1,ngauss
         do i=1,nen
@@ -119,13 +107,12 @@ c
           sh(3,i,l)=half*dtt*rr*ss
         end do
       end do
-      call dcopy(nshsize,sh,ione,shj,ione)
 c
       return
       end
 c
 c version
-c $Id: plinwedge.f,v 1.2 2004/07/07 19:34:02 willic3 Exp $
+c $Id: plinwedge.f,v 1.3 2005/03/22 04:45:55 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
