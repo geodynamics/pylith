@@ -575,6 +575,7 @@ class Lithomop3d_scan(Component):
     class Inventory(Component.Inventory):
 
         import pyre.properties
+        import os
 #  I don't think this is being used in this section any more.
 #        from pyre.units.pressure import pascal
 
@@ -721,6 +722,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.7 2004/07/21 14:58:03 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.8 2004/07/22 00:54:23 willic3 Exp $
 
 # End of file 
