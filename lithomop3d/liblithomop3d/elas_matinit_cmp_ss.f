@@ -37,10 +37,10 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,         ! elemnt
      & ndmatsz,numelt,nconsz,                                           ! elemnt
-     & prop,nprop,matgpt,imatvar,nmatel,elas_matinit,td_matinit,matchg, ! materl
-     & tminmax,                                                         ! materl
+     & prop,nstate,nprop,matgpt,imatvar,nmatel,elas_matinit,td_matinit, ! materl
+     & matchg,tminmax,                                                  ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
-     & rtimdat,ntimdat,                                                 ! timdat
+     & rtimdat,ntimdat,rgiter,                                          ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
@@ -59,7 +59,7 @@ c
 c...  subroutine arguments
 c
       integer nnz,neq,numnp,numslp,numsn,numfn,nstatesz,ndmatsz,numelt
-      integer nconsz,nprop,matgpt,imatvar,nmatel,numrot,ierr
+      integer nconsz,nprop,nstate,matgpt,imatvar,nmatel,numrot,ierr
       logical matchg
       integer ja(nnz),ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
       integer lmf(nconsz),infiel(6,numelt),iddmat(nstr,nstr)
@@ -79,6 +79,7 @@ c...  included dimension and type statements
 c
       include "rtimdat_dim.inc"
       include "ntimdat_dim.inc"
+      include "rgiter_dim.inc"
 c
 c...  external routines
 c
@@ -93,6 +94,7 @@ c...  included variable definitions
 c
       include "rtimdat_def.inc"
       include "ntimdat_def.inc"
+      include "rgiter_def.inc"
 c
 cdebug      write(6,*) "Hello from elas_matinit_cmp_ss_f!"
 c
@@ -113,6 +115,8 @@ c
       ng=ngauss
       if(imatvar.eq.izero) ng=ngaussmax
       inddmatg=inddmat0
+cdebug      write(6,*) "iel,inddmat0,ietype,ngauss,ng,ngaussmax,inddmatg:",
+cdebug     & iel,inddmat0,ietype,ngauss,ng,ngaussmax,inddmatg
       do l=2,ng
         inddmatg=inddmatg+ione
         call dcopy(nddmat,dmat(1,inddmat0),ione,dmat(1,inddmatg),ione)
@@ -121,7 +125,7 @@ c
 c...  loop over elements in group if there is material property
 c     variation for the material type.
 c
-      if(imatvar.ne.0) then
+      if(imatvar.ne.izero) then
         do ind=matgpt+1,matgpt+nmatel-1
           iel=infiel(4,ind)
           ietype=infiel(3,iel)
@@ -129,9 +133,12 @@ c
           ngauss=infetype(1,ietype)
           inddmatg=inddmat
           do l=1,ngauss
-            inddmatg=inddmatg+ione
+cdebug            write(6,*)
+cdebug     &       "ind,matgpt,iel,ietype,inddmat,ngauss,l,inddmatg:",
+cdebug     &       ind,matgpt,iel,ietype,inddmat,ngauss,l,inddmatg
             call dcopy(nddmat,dmat(1,inddmat0),ione,dmat(1,inddmatg),
      &       ione)
+            inddmatg=inddmatg+ione
           end do
         end do
       end if
@@ -169,7 +176,7 @@ c
       end
 c
 c version
-c $Id: elas_matinit_cmp_ss.f,v 1.4 2004/08/02 21:08:57 willic3 Exp $
+c $Id: elas_matinit_cmp_ss.f,v 1.5 2004/08/12 01:17:34 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
