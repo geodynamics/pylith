@@ -138,8 +138,6 @@ c
 c...  open output files for appending, if necessary
 c
 cdebug      write(6,*) "Hello from viscos_f!"
-cdebug      write(6,*) "From viscos_f, ngauss,nsd,gauss:",ngauss,nsd,
-cdebug     & (gauss(idb),idb=1,(nsd+1)*ngauss)
 c
       if(idout.gt.ione) open(kw,file=ofile,status="old",access="append")
       if(idsk.eq.izero) open(kp,file=pfile,status="old",access="append")
@@ -169,9 +167,11 @@ c
 c
 c...  define constants to control stepping in current group
 c
+cdebug          write(6,*) "Before const:"
           call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,utol,
      &     ftol,etol,itmax,nintg,i,naxstp,nfirst,rtimdat,deltp,alfap,
      &     ntimdat,nstep,maxitp,ntdinitp,lgdefp,itmaxp,gtol)
+cdebug          write(6,*) "After const:"
 cdebug          write(6,*) nintg,i,naxstp,nfirst,deltp,alfap,maxitp,maxitcp,
 cdebug     &     lgdefp,itmaxp,(gtol(idb),idb=1,3)
           ltim=.true.
@@ -199,10 +199,12 @@ c
 c
 c...  see whether winkler forces are locked or unlocked in this step.
 c
+cdebug            write(6,*) "Before cklock:"
             if(nwink.ne.izero) call cklock(iwink,histry,ltim,nwink,
      &       nstep,nhist,lastep,unlck)
             if(nwinkx.ne.izero) call cklock(iwinkx,histry,ltim,nwinkx,
      &       nstep,nhist,lastep,unlckf)
+cdebug            write(6,*) "After cklock:"
 c
 c...  test for reform and refactor interval, whether full output
 c     occurs in this step
@@ -210,6 +212,9 @@ c
             ireform=izero
             if(ntdinitp.eq.izero) then
               reform=.false.
+            else if(ntdinitp.lt.izero) then
+              reform=.false.
+              if(j.eq.nfirst) reform=.true.
             else
               reform=(mod(j,ntdinitp).eq.izero)
             end if
@@ -227,14 +232,16 @@ C***********************************
             if(fulout.and.idsk.eq.ione) write(kp) ntot
             if(fulout.and.idsk.eq.ione) write(kp) time
             write(kto,5000) time,ntot,lastep*ncycle
-c*            call flush(kto)
+            call flush(kto)
 c*            call flush(kw)
 c*            call flush(kp)
 c
 c...  apply boundary conditions
 c
+cdebug            write(6,*) "Before load:"
             call load(id,ibond,bond,d,deld,btot,histry,deltp,numnp,neq,
      &       nhist,nstep,lastep,ierr,errstrng)
+cdebug            write(6,*) "After load:"
             if(ierr.ne.izero) return
 c
 c...  compute current split node displacements
@@ -263,6 +270,7 @@ c
             if(nwinkx.ne.izero.and.unlckf) call unlock(zcg,btot,idx,
      &       iwinkx,idhist,ibond,diforc,histry,nstep,numnp,nwinkx,nhist,
      &       neq,numdif,lastep,itwo)
+cdebug            write(6,*) "After unlock:"
 	    call daxpy(neq,one,zcg,ione,btot,ione)
 c
 c...  reform time-dependent material and stiffness matrices if
@@ -270,6 +278,8 @@ c     requested, compute forces due to applied displacements and split
 c     nodes, and perform iterative solution.
 c
             if(lgdefp.eq.izero.and.intord.ne.ithree) then
+cdebug              write(6,*) "Before matinit_drv (1):"
+cdebug              write(6,*) "reform:",reform
               if(reform) call matinit_drv(
      &         alnz,ja,nnz,neq,                                         ! sparse
      &         x,d,iwink,wink,numnp,nwink,                              ! global
@@ -280,10 +290,12 @@ c
      &         ndmatsz,numelt,nconsz,                                   ! elemnt
      &         prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,       ! materl
      &         gauss,sh,shj,infetype,                                   ! eltype
-     &         histry,rtimdat,ntimdat,nhist,lastep,td_matinit_cmp_ss,   ! timdat
+     &         histry,rtimdat,ntimdat,rgiter,nhist,lastep,              ! timdat
+     &         td_matinit_cmp_ss,                                       ! timdat
      &         skew,numrot,                                             ! skew
      &         getshapn,bmatrixn,                                       ! bbar
      &         ierr,errstrng)                                           ! errcode
+cdebug              write(6,*) "After matinit_drv (1):"
 c
               if(ierr.ne.izero) return
 c
@@ -297,6 +309,7 @@ c
      &         skew,numrot,                                             ! skew
      &         getshapn,bmatrixn,                                       ! bbar
      &         ierr,errstrng)                                           ! errcode
+cdebug              write(6,*) "After formdf_ss (1):"
 c
               if(ierr.ne.izero) return
 c
@@ -311,6 +324,7 @@ c
      &         nfault,dfault,tfault,numfn,                              ! split
      &         getshapn,bmatrixn,                                       ! bbar
      &         ierr,errstrng)                                           ! errcode
+cdebug              write(6,*) "After formf_ss (1):"
 c
               if(ierr.ne.izero) return
 c
@@ -332,10 +346,13 @@ c
      &         getshapn,bmatrixn,gload_cmp_ss,td_strs_cmp_ss,           ! external
      &         td_strs_mat_cmp_ss,                                      ! external
      &         ierr,errstrng)                                           ! errcode
+cdebug              write(6,*) "After iterate (1):"
 c
               if(ierr.ne.izero) return
 c
             else if(lgdefp.eq.izero.and.intord.eq.ithree) then
+cdebug              write(6,*) "Before matinit_drv (2):"
+cdebug              write(6,*) "reform:",reform
               if(reform) call matinit_drv(
      &         alnz,ja,nnz,neq,                                         ! sparse
      &         x,d,iwink,wink,numnp,nwink,                              ! global
@@ -346,10 +363,12 @@ c
      &         ndmatsz,numelt,nconsz,                                   ! elemnt
      &         prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,       ! materl
      &         gauss,sh,shj,infetype,                                   ! eltype
-     &         histry,rtimdat,ntimdat,nhist,lastep,td_matinit_cmp_ss,   ! timdat
+     &         histry,rtimdat,ntimdat,rgiter,nhist,lastep,              ! timdat
+     &         td_matinit_cmp_ss,                                       ! timdat
      &         skew,numrot,                                             ! skew
      &         getshapb,bmatrixb,                                       ! bbar
      &         ierr,errstrng)                                           ! errcode
+cdebug              write(6,*) "After matinit_drv (2):"
 c
               if(ierr.ne.izero) return
 c
@@ -363,6 +382,7 @@ c
      &         skew,numrot,                                             ! skew
      &         getshapb,bmatrixb,                                       ! bbar
      &         ierr,errstrng)                                           ! errcode
+cdebug              write(6,*) "After formdf_ss (2):"
 c
               if(ierr.ne.izero) return
 c
@@ -377,6 +397,7 @@ c
      &         nfault,dfault,tfault,numfn,                              ! split
      &         getshapb,bmatrixb,                                       ! bbar
      &         ierr,errstrng)                                           ! errcode
+cdebug              write(6,*) "After formf_ss (2):"
 c
               if(ierr.ne.izero) return
 c
@@ -398,6 +419,7 @@ c
      &         getshapb,bmatrixb,gload_cmp_ss,td_strs_cmp_ss,           ! external
      &         td_strs_mat_cmp_ss,                                      ! external
      &         ierr,errstrng)                                           ! errcode
+cdebug              write(6,*) "After iterate (2):"
 c
               if(ierr.ne.izero) return
 c
@@ -554,7 +576,7 @@ c
      &       state,dstate,infiel,nstatesz,numelt,                       ! elemnt
      &       infmat,infmatmod,ismatmod,numat,                           ! materl
      &       infetype,                                                  ! eltype
-     &       delt,nstep,                                                ! timdat
+     &       deltp,nstep,                                               ! timdat
      &       istatout,                                                  ! ioopts
      &       idout,idsk,kw,kp)                                          ! ioinfo
             ltim=.false.
@@ -583,7 +605,7 @@ c
       end
 c
 c version
-c $Id: viscos.f,v 1.3 2004/07/21 19:38:05 willic3 Exp $
+c $Id: viscos.f,v 1.4 2004/08/12 02:34:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
