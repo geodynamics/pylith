@@ -90,7 +90,7 @@ PROJ_SRCS = \
         local.f \
         localf.f \
         localx.f \
-        makemsr.f \
+        makemsr.F \
         mat_1.f \
         mat_2.f \
         mat_3.f \
@@ -220,7 +220,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.12 2005/03/08 02:14:26 knepley Exp $
+# $Id: Make.mm,v 1.13 2005/03/09 17:46:34 knepley Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
