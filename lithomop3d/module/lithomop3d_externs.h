@@ -537,6 +537,8 @@ extern "C" {
 		char *,            // files
 		char *,
 		char *,
+                int *,
+                int *,
 		int *,             // error codes
 		char *,
 		int,               // string lengths
@@ -1182,6 +1184,8 @@ extern "C" {
 		char *,            // files
 		char *,
 		char *,
+                int *,
+                int *,
 		int *,             // error codes
 		char *,
 		int,               // string lengths
@@ -1272,6 +1276,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.9 2005/02/24 00:41:01 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.10 2005/03/08 02:14:27 knepley Exp $
 
 // End of file

@@ -16,6 +16,8 @@ include local.def
 PROJECT = lithomop3d
 PACKAGE = liblithomop3d
 
+include petsc/default.def
+
 PROJ_SAR = $(BLD_LIBDIR)/$(PACKAGE).$(EXT_SAR)
 PROJ_TMPDIR = $(BLD_TMPDIR)/$(PROJECT)/$(PACKAGE)
 PROJ_CLEAN += $(PROJ_INCDIR) $(PROJ_SAR)
@@ -46,7 +48,7 @@ PROJ_SRCS = \
         elas_matinit_cmp_ss.f \
         elas_strs_cmp_ss.f \
         elas_strs_mat_cmp_ss.f \
-        elastc.f \
+        elastc.F \
         fill.f \
         formdf_ss.f \
         formes_ss.f \
@@ -73,7 +75,7 @@ PROJ_SRCS = \
         invar.f \
         iquate.f \
         isort.f \
-        iterate.f \
+        iterate.F \
         jacobi.f \
         lcoord.f \
         ldisbc.f \
@@ -180,7 +182,7 @@ PROJ_SRCS = \
         td_strs_mat_cmp_ss.f \
         transp.f \
         update_state.f \
-        viscos.f \
+        viscos.F \
         winklf.f \
         winklr.f \
         write_element_info.f \
@@ -218,7 +220,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.11 2005/02/23 23:48:01 willic3 Exp $
+# $Id: Make.mm,v 1.12 2005/03/08 02:14:26 knepley Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 

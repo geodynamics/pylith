@@ -40,6 +40,107 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <petscsnes.h>
+
+// Initialize PETSc
+
+char pylithomop3d_petsc_initialize__doc__[] = "";
+char pylithomop3d_petsc_initialize__name__[] = "PetscInitialize";
+
+PyObject * pylithomop3d_petsc_initialize(PyObject *, PyObject *)
+{
+  PyObject *sysMod = PyImport_ImportModule("sys");
+  PyObject *argList = PyObject_GetAttrString(sysMod, "argv");
+  int argc = PySequence_Length(argList);
+  char **argv = (char **) malloc(argc * sizeof(char *));
+  int a;
+
+  for(a = 0; a < argc; a++) {
+    char *arg = PyString_AsString(PyList_GetItem(argList, a));
+
+    argv[a] = (char *) malloc((strlen(arg)+1)* sizeof(char));
+    strcpy(argv[a], arg);
+  }
+  if (PetscInitialize(&argc, &argv, NULL, "Lithomop 3D")) {
+    PyErr_SetString(PyExc_RuntimeError, "PETSc failed to initialize");
+    return 0;
+  }
+    
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "Initializing PETSc"
+    << journal::endl;
+
+  // cleanup
+  for(a = 0; a < argc; a++) {
+    free(argv[a]);
+  }
+  free(argv);
+  Py_DECREF(argList);
+  Py_DECREF(sysMod);
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+// Finalize PETSc
+
+char pylithomop3d_petsc_finalize__doc__[] = "";
+char pylithomop3d_petsc_finalize__name__[] = "PetscFinalize";
+
+PyObject * pylithomop3d_petsc_finalize(PyObject *, PyObject *)
+{
+  if (PetscFinalize()) {
+    PyErr_SetString(PyExc_RuntimeError, "PETSc failed to finalize");
+    return 0;
+  }
+    
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "Finalizing PETSc"
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+// Setup PETSc Logging
+
+char pylithomop3d_setup_petsc_logging__doc__[] = "";
+char pylithomop3d_setup_petsc_logging__name__[] = "setupPETScLogging";
+
+PyObject * pylithomop3d_setup_petsc_logging(PyObject *, PyObject *)
+{
+  PetscInt elasticStage, viscousStage;
+  PetscEvent iterateEvent;
+  PyObject *_pyReturn;
+
+  if (PetscLogStageRegister(&elasticStage, "Elastic Solve")) {
+    PyErr_SetString(PyExc_RuntimeError, "PETSc failed create stage");
+    return 0;
+  }
+  if (PetscLogStageRegister(&viscousStage, "Viscous Solve")) {
+    PyErr_SetString(PyExc_RuntimeError, "PETSc failed create stage");
+    return 0;
+  }
+  if (PetscLogEventRegister(&iterateEvent, "Iterate", KSP_COOKIE)) {
+    PyErr_SetString(PyExc_RuntimeError, "PETSc failed create event");
+    return 0;
+  }
+    
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "Setup PETSc logging"
+    << journal::endl;
+
+  // return logging handles
+  _pyReturn = Py_BuildValue("iii", elasticStage, viscousStage, iterateEvent);
+  return _pyReturn;
+}
 
 // Initialize material model info
 
@@ -123,6 +224,6 @@ PyObject * pylithomop3d_preshape(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: setup.cc,v 1.1 2004/07/19 19:07:25 willic3 Exp $
+// $Id: setup.cc,v 1.2 2005/03/08 02:14:27 knepley Exp $
 
 // End of file

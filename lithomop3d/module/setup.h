@@ -32,6 +32,24 @@
 #if !defined(pylithomop3d_setup_h)
 #define pylithomop3d_setup_h
 
+// Initialize PETSc
+extern char pylithomop3d_petsc_initialize__doc__[];
+extern char pylithomop3d_petsc_initialize__name__[];
+extern "C"
+PyObject * pylithomop3d_petsc_initialize(PyObject *, PyObject *);
+
+// Finalize PETSc
+extern char pylithomop3d_petsc_finalize__doc__[];
+extern char pylithomop3d_petsc_finalize__name__[];
+extern "C"
+PyObject * pylithomop3d_petsc_finalize(PyObject *, PyObject *);
+
+// Setup PETSc Logging
+extern char pylithomop3d_setup_petsc_logging__doc__[];
+extern char pylithomop3d_setup_petsc_logging__name__[];
+extern "C"
+PyObject * pylithomop3d_setup_petsc_logging(PyObject *, PyObject *);
+
 // Initialize material model info
 extern char pylithomop3d_matmod_def__name__[];
 extern char pylithomop3d_matmod_def__doc__[];
@@ -47,6 +65,6 @@ PyObject * pylithomop3d_preshape(PyObject *, PyObject *);
 #endif
 
 // version
-// $Id: setup.h,v 1.1 2004/07/19 19:10:13 willic3 Exp $
+// $Id: setup.h,v 1.2 2005/03/08 02:14:27 knepley Exp $
 
 // End of file

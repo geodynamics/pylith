@@ -66,11 +66,17 @@ class Application(BaseApplication):
         inventory = [
             pyre.facilities.facility("scanner", default=Lithomop3d_scan()),
             pyre.facilities.facility("setup", default=Lithomop3d_setup()),
-            pyre.facilities.facility("solver", default=Lithomop3d_run())
+            pyre.facilities.facility("solver", default=Lithomop3d_run()),
+            pyre.properties.str("ksp_monitor",default="1"),
+            pyre.properties.str("ksp_view",default="1"),
+            pyre.properties.str("log_summary",default="1"),
+            pyre.properties.str("pc_type",default="jacobi"),
+            pyre.properties.str("start_in_debugger",default="0"),
+            pyre.properties.str("petsc_solver",default="0"),
             ]
 
 
 # version
-# $Id: Application.py,v 1.1 2004/04/14 21:22:47 willic3 Exp $
+# $Id: Application.py,v 1.2 2005/03/08 02:14:26 knepley Exp $
 
 # End of file 

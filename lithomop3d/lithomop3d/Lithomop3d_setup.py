@@ -294,6 +294,9 @@ class Lithomop3d_setup(Component):
         print "Hello from lm3dsetup.run (begin)!"
         print "Reading problem definition and allocating storage:"
 
+        lithomop3d.PetscInitialize()
+        self.elasticStage, self.viscousStage, self.iterateEvent = lithomop3d.setupPETScLogging()
+
         # Initialize parameters that are defined in this function
 
         self.numberGlobalEquations = 0
@@ -1631,6 +1634,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.14 2005/02/24 00:38:34 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.15 2005/03/08 02:14:26 knepley Exp $
 
 # End of file 

@@ -49,6 +49,18 @@
 
 struct PyMethodDef pylithomop3d_methods[] = {
 
+    // initialize PETSc
+    {pylithomop3d_petsc_initialize__name__, pylithomop3d_petsc_initialize,
+     METH_VARARGS, pylithomop3d_petsc_initialize__doc__},
+
+    // finalize PETSc
+    {pylithomop3d_petsc_finalize__name__, pylithomop3d_petsc_finalize,
+     METH_VARARGS, pylithomop3d_petsc_finalize__doc__},
+
+    // Setup PETSc Logging
+    {pylithomop3d_setup_petsc_logging__name__, pylithomop3d_setup_petsc_logging,
+     METH_VARARGS, pylithomop3d_setup_petsc_logging__doc__},
+
     // adjust id array for slippery nodes
     {pylithomop3d_adjid__name__, pylithomop3d_adjid,
      METH_VARARGS, pylithomop3d_adjid__doc__},
@@ -280,6 +292,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
 };
 
 // version
-// $Id: bindings.cc,v 1.4 2005/01/18 20:01:12 willic3 Exp $
+// $Id: bindings.cc,v 1.5 2005/03/08 02:14:27 knepley Exp $
 
 // End of file

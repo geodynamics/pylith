@@ -52,6 +52,11 @@ class Lithomop3d_run(Component):
         # The only parameters required from Lithomop3d_scan are those in the
         # inventory.  All others have been imported into Lithomop3d_setup, and
         # possibly modified there.  Get all required info from the inventory.
+
+        # PETSc logging
+        self.elasticStage = lm3dsetup.elasticStage
+        self.viscousStage = lm3dsetup.viscousStage
+        self.iterateEvent = lm3dsetup.iterateEvent
         
         self.analysisType = lm3dscan.inventory.analysisType
 
@@ -296,7 +301,6 @@ class Lithomop3d_run(Component):
 	# print "Just before lithomop3d.autoprestr:"
 
         # Compute gravitational prestresses, if requested.
-
         if self.analysisType == "elasticSolution" or self.analysisType == "fullSolution":
             if self.prestressAutoComputeInt == 1:
                 lithomop3d.autoprestr(
@@ -499,7 +503,9 @@ class Lithomop3d_run(Component):
                 self.pointerToIstatout,
                 self.asciiOutputFile,
                 self.plotOutputFile,
-                self.ucdOutputRoot)
+                self.ucdOutputRoot,
+                self.elasticStage,
+                self.iterateEvent)
 
         # Perform time-dependent solution, if requested.
 
@@ -602,8 +608,10 @@ class Lithomop3d_run(Component):
                 self.pointerToIstatout,
                 self.asciiOutputFile,
                 self.plotOutputFile,
-                self.ucdOutputRoot)
-                          
+                self.ucdOutputRoot,
+                self.viscousStage,
+                self.iterateEvent)
+        lithomop3d.PetscFinalize()
 	print ""
         print "Hello from lm3drun.run (end)!"
         return
@@ -619,6 +627,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.10 2005/02/24 00:38:34 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.11 2005/03/08 02:14:26 knepley Exp $
 
 # End of file 
