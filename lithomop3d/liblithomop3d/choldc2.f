@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine choldc2(a,n,np,p)
+      subroutine choldc2(a,n,np,p,ierr,errstrng)
 c
 c...  Subroutine to perform Cholesky decomposition.
 c     Adapted from Numerical Recipes.
@@ -44,7 +44,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer n,np
+      integer n,np,ierr
+      character errstrng*(*)
       double precision a(np,np),p(n)
 c
 c...  intrinsic functions
@@ -65,7 +66,11 @@ c
             sum=sum-a(i,k)*a(j,k)
           end do
           if(i.eq.j)then
-            if(sum.le.zero)pause 'choldc failed'
+            if(sum.le.zero)then
+              ierr=110
+              errstrng="choldc2"
+              return
+            end if
             p(i)=sqrt(sum)
           else
             a(j,i)=sum/p(i)
@@ -76,7 +81,7 @@ c
       end
 c
 c version
-c $Id: choldc2.f,v 1.2 2004/06/18 15:18:04 willic3 Exp $
+c $Id: choldc2.f,v 1.3 2004/06/21 19:58:22 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
