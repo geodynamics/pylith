@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine scan_bc(ndof,numbc,kr,ierr,displacement_units,
-     & velocity_units,force_units,bcfile)
+      subroutine scan_bc(numbc,kr,displacement_units,
+     & velocity_units,force_units,bcfile,ierr,errstrng)
 c
 c...  subroutine to perform an initial scan of the boundary condition
 c     file to determine the number of boundary condition entries and the
@@ -39,18 +39,23 @@ c
 c     Error codes:
 c         0:  No error
 c         1:  Error opening input file
-c         2:  Units not specified
 c         3:  Read error
+c         5:  Units not specified
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,numbc,kr,ierr
+      integer numbc,kr,ierr
       character displacement_units*(*),velocity_units*(*)
-      character force_units*(*),bcfile*(*)
+      character force_units*(*),bcfile*(*),errstrng*(*)
 c
-c...  defined constants
+c...  local constants
 c
       character def(3)*18
       data def/"displacement_units","velocity_units","force_units"/
@@ -65,15 +70,15 @@ c
 c
 c...  open input file
 c
-      ierr=0
-      numbc=0
-      nget=3
+      ierr=izero
+      numbc=izero
+      nget=ithree
       open(kr,file=bcfile,status="old",err=20)
 c
 c...  get units, returning error 2 if they aren't found.
 c
-      call get_units(kr,ierr,nget,units_defined,units,def)
-      if(ierr.eq.2) return
+      call get_units(kr,nget,units_defined,units,def,ierr,errstrng)
+      if(ierr.ne.izero) return
       displacement_units=units(1)
       velocity_units=units(2)
       force_units=units(3)
@@ -102,19 +107,21 @@ c
  20   continue
         close(kr)
 	ierr=1
+        errstrng="scan_bc"
         return
 c
 c...  read error
 c
  30   continue
-        ierr=3
         close(kr)
+        ierr=3
+        errstrng="scan_bc"
         return
 c
       end
 c
 c version
-c $Id: scan_bc.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: scan_bc.f,v 1.2 2004/07/12 19:39:59 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
