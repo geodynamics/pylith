@@ -33,7 +33,7 @@ c
      & state,dstate,infiel,nstatesz,numelt,                             ! elemnt
      & infmat,infmatmod,ismatmod,numat,                                 ! materl
      & infetype,                                                        ! eltype
-     & delt,                                                            ! timdat
+     & delt,nstep,                                                      ! timdat
      & istatout,                                                        ! ioopts
      & idout,idsk,kw,kp)                                                ! ioinfo
 c
@@ -54,10 +54,10 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstatesz,numelt,numat,idout,idsk,kw,kp
+      integer nstatesz,numelt,numat,nstep,idout,idsk,kw,kp
       integer infiel(6,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
       integer ismatmod(nstatesmax,nmatmodmax),infetype(4,netypes)
-      integer istatout(2,nstatesmax)
+      integer istatout(2,nstatesmax,2)
       double precision delt
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
 c
@@ -73,7 +73,7 @@ c...  local variables
 c
       integer matmodpt(nstatesmax,nmatmodmax)
       integer m50,i,iel,imat,ietype,ngauss,matmodel,nstate,indstate,l
-      integer indstateg,nout,j,incgauss
+      integer indstateg,nout,j,incgauss,iout
       double precision stmp(6),tmult
 c
 c...  included variable definitions
@@ -83,6 +83,8 @@ c
 cdebug      write(6,*) "Hello from write_state_f!"
 c
       m50=50
+      iout=ione
+      if(nstep.gt.izero) iout=itwo
 c
 c...  define pointer array for location of state variables for each
 c     material model.
@@ -97,7 +99,7 @@ c
 c...  loop over number of state variables
 c
       do i=1,nstatesmax
-        if(istatout(1,i).ne.izero) then
+        if(istatout(1,i,iout).ne.izero) then
           nout=izero
           do iel=1,numelt
             imat=infiel(2,iel)
@@ -130,9 +132,9 @@ c
 c
 c...  output increments/rates, if desired.
 c
-        if(istatout(2,i).ne.izero) then
+        if(istatout(2,i,iout).ne.izero) then
           tmult=one
-          if(istatout(2,i).eq.ione.and.delt.gt.zero) tmult=one/delt
+          if(istatout(2,i,iout).eq.ione.and.delt.gt.zero) tmult=one/delt
           nout=izero
           do iel=1,numelt
             imat=infiel(2,iel)
@@ -169,7 +171,7 @@ c
       end
 c
 c version
-c $Id: write_state.f,v 1.3 2004/07/12 21:22:42 willic3 Exp $
+c $Id: write_state.f,v 1.4 2004/07/13 16:12:40 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
