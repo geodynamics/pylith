@@ -34,8 +34,9 @@ c
      & x,d,numnp,                                                       ! global
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
-     & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,ndmatsz, ! elemnt
-     & numelt,nconsz,                                                   ! elemnt
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,  ! elemnt
+     & nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,       ! elemnt
+     & nstate0,                                                         ! elemnt
      & prop,nmatel,nstate,nprop,matgpt,elas_strs,td_strs,matchg,tminmax,! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
@@ -57,16 +58,18 @@ c
 c
 c...  subroutine arguments
 c
-      integer neq,numnp,numslp,numfn,nstatesz,ndmatsz,numelt,nconsz
+      integer neq,numnp,numslp,numfn,nstatesz,nstatesz0,ndmatsz,numelt
+      integer nconsz,nprestrflag,ipstrs,ipauto,nstate0
       integer nmatel,nstate,nprop,matgpt,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(6,numelt),iddmat(nstr,nstr),infetype(4,netypes)
+      integer infiel(7,numelt),iddmat(nstr,nstr),infetype(4,netypes)
       character errstrng*(*)
       logical matchg
       double precision bintern(neq),x(nsd,numnp),d(ndof,numnp)
       double precision dx(ndof,numnp)
       double precision tfault(ndof,numfn)
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
+      double precision state0(nstate0,nstatesz0)
       double precision dmat(nddmat,ndmatsz),prop(nprop),tminmax
       double precision gauss(nsd+1,ngaussmax,netypes)
       double precision sh(nsd+1,nenmax,ngaussmax,netypes)
@@ -89,8 +92,8 @@ c
 c
 c...  local variables
 c
-      integer ind,iel,indien,ietype,indstate,inddmat
-      integer ngauss,nen,nee,l,indstateg,inddmatg
+      integer ind,iel,indien,ietype,indstate,inddmat,indstate0
+      integer ngauss,nen,nee,l,indstateg,inddmatg,indstate0g
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 cdebug      integer idb
 c
@@ -110,10 +113,12 @@ c
         ietype=infiel(3,iel)
         indstate=infiel(5,iel)
         inddmat=infiel(6,iel)
+        indstate0=infiel(7,iel)
         ngauss=infetype(1,ietype)
         nen=infetype(2,ietype)
         nee=infetype(4,ietype)
         indstateg=indstate
+        indstate0g=indstate0
         inddmatg=inddmat
 c
 c...  localize coordinates and displacements
@@ -137,12 +142,16 @@ c...  loop over gauss points, compute stresses, and transfer them into
 c     scur
 c
         do l=1,ngauss
-          call elas_strs(dstate(1,indstateg),ee(nstr*(l-1)+1),
-     &     dmat(1,inddmatg),nstate,ierr,errstrng)
+cdebug          write(6,*) "ind,iel,indstate0g,state0:",ind,iel,indstate0g,
+cdebug     &     (state0(idb,indstate0g),idb=1,nstate0)
+          call elas_strs(dstate(1,indstateg),state0(1,indstate0g),
+     &     ee(nstr*(l-1)+1),dmat(1,inddmatg),nstate,nstate0,ierr,
+     &     errstrng)
           if(ierr.ne.izero) return
           call dcopy(nstr,dstate(1,indstateg),ione,scur(nstr*(l-1)+1),
      &     ione)
           indstateg=indstateg+nstate
+          indstate0g=indstate0g+ione
           inddmatg=inddmatg+ione
         end do
 cdebug        write(6,*) "scur:",(scur(idb),idb=1,nstr*ngauss)
@@ -163,7 +172,7 @@ cdebug        write(6,*) "bintern:",(bintern(idb),idb=1,neq)
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.13 2005/01/05 22:39:08 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.14 2005/02/23 23:54:22 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
