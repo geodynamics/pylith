@@ -35,6 +35,7 @@
 #include "bindings.h"
 
 #include "array.h"         // array allocation and conversion functions
+#include "autoprestr.h"    // prestress autocomputation
 #include "elastc.h"        // elastic solution driver
 #include "input_misc.h"    // miscellaneous input and indexing routines
 #include "parser.h"        // parsers
@@ -59,6 +60,10 @@ struct PyMethodDef pylithomop3d_methods[] = {
     // allocate a double array
     {pylithomop3d_allocateDouble__name__, pylithomop3d_allocateDouble,
      METH_VARARGS, pylithomop3d_allocateDouble__doc__},
+
+    // compute gravitational prestresses
+    {pylithomop3d_autoprestr__name__, pylithomop3d_autoprestr,
+     METH_VARARGS, pylithomop3d_autoprestr__doc__},
 
     // compute maximum number of nonzero entries in stiffness matrix
     {pylithomop3d_cmp_stiffsz__name__, pylithomop3d_cmp_stiffsz,
@@ -275,6 +280,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
 };
 
 // version
-// $Id: bindings.cc,v 1.3 2004/08/25 01:33:07 willic3 Exp $
+// $Id: bindings.cc,v 1.4 2005/01/18 20:01:12 willic3 Exp $
 
 // End of file
