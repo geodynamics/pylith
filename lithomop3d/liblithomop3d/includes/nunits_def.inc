@@ -23,9 +23,10 @@ c
       kr=nunits(3)
       kw=nunits(4)
       kp=nunits(5)
+      kucd=nunits(6)
 c
 c version
-c $Id: nunits_def.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: nunits_def.inc,v 1.2 2004/08/25 01:31:26 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
