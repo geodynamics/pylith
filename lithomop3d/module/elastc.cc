@@ -120,7 +120,6 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   PyObject* pyPointerToMaxit;
   PyObject* pyPointerToNtdinit;
   PyObject* pyPointerToLgdef;
-  PyObject* pyPointerToIbbar;
   PyObject* pyPointerToUtol;
   PyObject* pyPointerToFtol;
   PyObject* pyPointerToEtol;
@@ -214,7 +213,6 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 			    &pyPointerToMaxit,
 			    &pyPointerToNtdinit,
 			    &pyPointerToLgdef,
-			    &pyPointerToIbbar,
 			    &pyPointerToUtol,
 			    &pyPointerToFtol,
 			    &pyPointerToEtol,
@@ -315,7 +313,6 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   int*  pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
   int*  pointerToNtdinit = (int*) PyCObject_AsVoidPtr(pyPointerToNtdinit);
   int*  pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
-  int*  pointerToIbbar = (int*) PyCObject_AsVoidPtr(pyPointerToIbbar);
   double*  pointerToUtol = (double*) PyCObject_AsVoidPtr(pyPointerToUtol);
   double*  pointerToFtol = (double*) PyCObject_AsVoidPtr(pyPointerToFtol);
   double*  pointerToEtol = (double*) PyCObject_AsVoidPtr(pyPointerToEtol);
@@ -406,7 +403,6 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 	   pointerToMaxit,
 	   pointerToNtdinit,
 	   pointerToLgdef,
-	   pointerToIbbar,
 	   pointerToUtol,
 	   pointerToFtol,
 	   pointerToEtol,
@@ -448,6 +444,6 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 
 
 // version
-// $Id: elastc.cc,v 1.2 2004/07/20 16:10:57 willic3 Exp $
+// $Id: elastc.cc,v 1.3 2004/07/21 19:57:25 willic3 Exp $
 
 // End of file
