@@ -31,7 +31,7 @@ c
 c
       subroutine td_strs_mat_cmp_ss(
      & alnz,ja,nnz,                                                     ! sparse
-     & b,neq,                                                           ! force
+     & bintern,neq,                                                     ! force
      & x,d,numnp,                                                       ! global
      & dx,numslp,numsn,                                                 ! slip
      & tfault,numfn,                                                    ! fault
@@ -69,7 +69,7 @@ c
       integer infetype(4,netypes)
       character errstrng*(*)
       logical matchg
-      double precision alnz(nnz),b(neq),x(nsd,numnp),d(ndof,numnp)
+      double precision alnz(nnz),bintern(neq),x(nsd,numnp),d(ndof,numnp)
       double precision dx(ndof,numnp),tfault(ndof,numfn)
       double precision s(neemax*neemax),stemp(neemax*neemax)
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
@@ -162,7 +162,7 @@ c
      &   errstrng)
         if(ierr.ne.izero) return
         if(numrot.ne.izero) call rpforc(p,skew,ien(indien),numnp,nen)
-        call addfor(b,p,lm(1,indien),lmx(1,indien),neq,nee)
+        call addfor(bintern,p,lm(1,indien),lmx(1,indien),neq,nee)
 c
 c...  compute element stiffness and add it to global stiffness
 c
@@ -183,7 +183,7 @@ c
       end
 c
 c version
-c $Id: td_strs_mat_cmp_ss.f,v 1.5 2004/08/02 21:31:25 willic3 Exp $
+c $Id: td_strs_mat_cmp_ss.f,v 1.6 2005/01/05 22:37:27 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

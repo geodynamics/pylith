@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine gload_cmp_ss(
-     & gvec2,grav,neq,                                                  ! force
+     & bgravity,grav,neq,                                               ! force
      & x,d,numnp,                                                       ! global
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
@@ -61,7 +61,8 @@ c
       integer infiel(6,numelt),infetype(4,netypes)
       character errstrng*(*)
       logical matchg
-      double precision gvec2(neq),grav(ndof),x(nsd,numnp),d(ndof,numnp)
+      double precision bgravity(neq),grav(ndof)
+      double precision x(nsd,numnp),d(ndof,numnp)
       double precision dx(ndof,numnp),tfault(ndof,numfn),dens
       double precision gauss(nsd+1,ngaussmax,netypes)
       double precision shj(nsd+1,nenmax,ngaussmax,netypes)
@@ -109,15 +110,15 @@ c...  rotate body forces if necessary
 c
         if(numrot.ne.0) call rpforc(p,skew,ien(indien),numnp,nen)
 c
-c...  add element forces to global vector (gvec2)
+c...  add element forces to global vector (bgravity)
 c
-        call addfor(gvec2,p,lm(1,indien),lmx(1,indien),neq,nee)
+        call addfor(bgravity,p,lm(1,indien),lmx(1,indien),neq,nee)
       end do
       return
       end
 c
 c version
-c $Id: gload_cmp_ss.f,v 1.2 2004/07/08 21:24:10 willic3 Exp $
+c $Id: gload_cmp_ss.f,v 1.3 2005/01/05 22:42:43 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
