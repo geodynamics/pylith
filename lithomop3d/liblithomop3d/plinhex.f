@@ -70,6 +70,10 @@ c
       integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
       double precision rr,ss,tt
 c
+cdebug      integer idb
+c
+cdebug      write(6,*) "Hello from plinhex_f!"
+c
 c...  definitions
 c
       nshsize=(nsd+1)*nenmax*ngaussmax
@@ -87,11 +91,13 @@ c
       gauss(4,1)=eight
       if(intord.ne.2) then
         ngauss=ieight
+cdebug        write(6,*) "gauss:"
         do l=1,ngauss
           gauss(1,l)=r(l)*root3i
           gauss(2,l)=s(l)*root3i
           gauss(3,l)=t(l)*root3i
           gauss(4,l)=one
+cdebug          write(6,"(4(2x,1pe16.9))") (gauss(idb,l),idb=1,4)
         end do
       end if
 c
@@ -100,6 +106,7 @@ c
       infetype(3)=nec
       infetype(4)=nee
 c
+cdebug      write(6,*) "sh:"
       do l=1,ngauss
         do i=1,nen
           rr=one+r(i)*gauss(1,l)
@@ -109,6 +116,7 @@ c
           sh(1,i,l)=eighth*r(i)*ss*tt
           sh(2,i,l)=eighth*s(i)*rr*tt
           sh(3,i,l)=eighth*t(i)*rr*ss
+cdebug          write(6,"(4(2x,1pe16.9))") (sh(idb,i,l),idb=1,4)
         end do
       end do
       call dcopy(nshsize,sh,ione,shj,ione)
@@ -117,7 +125,7 @@ c
       end
 c
 c version
-c $Id: plinhex.f,v 1.2 2004/07/07 19:17:02 willic3 Exp $
+c $Id: plinhex.f,v 1.3 2005/03/17 18:38:05 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
