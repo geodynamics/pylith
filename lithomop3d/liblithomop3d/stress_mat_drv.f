@@ -110,8 +110,12 @@ c
 cdebug      write(6,*) "Hello from stress_mat_drv_f!"
 c
       call fill(b,zero,neq)
+      call fill(alnz,zero,nnz)
       matgpt=1
       tminmax=big
+      nrftot=ntimdat(7)
+      nrftot=nrftot+1
+      ntimdat(7)=nrftot
 c
 c...  loop over material groups and then select appropriate material model
 c     routine
@@ -478,7 +482,7 @@ c
       end
 c
 c version
-c $Id: stress_mat_drv.f,v 1.4 2004/07/21 18:23:15 willic3 Exp $
+c $Id: stress_mat_drv.f,v 1.5 2004/08/12 20:50:07 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
