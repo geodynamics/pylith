@@ -724,6 +724,10 @@ class Lithomop3d_setup(Component):
             self.numberVolumeElementFamilies)
         self.memorySize += self.numberVolumeElementFamilies*self.intSize
 
+        self.pointerToIndxiel = lithomop3d.allocateInt(
+            self.numberVolumeElements)
+	self.memorySize += self.numberVolumeElements*self.intSize
+
         if self.numberPrestressEntries != 0 or self.prestressAutoComputeInt != 0:
             self.prestressFlag = 1
 
@@ -735,6 +739,7 @@ class Lithomop3d_setup(Component):
             self.pointerToIen,
             self.pointerToIvfamily,
             self.pointerToIvftmp,
+            self.pointerToIndxiel,
             self.maxNumberVolumeElementFamilies,
             self.numberVolumeElementFamilies,
             self.prestressFlag,
@@ -877,8 +882,10 @@ class Lithomop3d_setup(Component):
         self.totalNumberSplitNodes = lithomop3d.read_split(
             self.pointerToFault,
             self.pointerToNfault,
+            self.pointerToIndxiel,
             self.numberSplitNodeEntries,
             self.numberNodes,
+            self.numberVolumeElements,
             self.f77FileInput,
             self.f77AsciiOutput,
             self.f77PlotOutput,
@@ -890,9 +897,11 @@ class Lithomop3d_setup(Component):
 
         self.totalNumberSlipperyNodes = lithomop3d.read_slip(
             self.pointerToNslip,
+            self.pointerToIndxiel,
             self.numberSlipperyNodeEntries,
             self.numberNodes,
             self.autoRotateSlipperyNodesInt,
+            self.numberVolumeElements,
             self.f77FileInput,
             self.f77AsciiOutput,
             self.f77PlotOutput,
@@ -914,6 +923,9 @@ class Lithomop3d_setup(Component):
             self.asciiOutputInt,
             self.differentialForceInputFile,
             self.asciiOutputFile)
+
+        self.pointerToIndxiel = None
+	self.memorySize -= self.numberVolumeElements*self.intSize
 
 
         # Create Idftn array for split nodes.  At present, this array is only used within
@@ -1433,6 +1445,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.22 2005/04/01 23:49:59 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.23 2005/04/05 23:07:26 willic3 Exp $
 
 # End of file 
