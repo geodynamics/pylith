@@ -30,8 +30,9 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine read_connect(neni,infetype,infmat,infmatmod,ien,infiel,
-     & indmat,imgrp,nconsz,numelt,numnp,numat,nstatesz,ndmatsz,kr,kw,kp,
-     & idout,idsk,ifile,ofile,pfile,ierr,errstrng)
+     & indmat,imgrp,nconsz,nprestrflag,numelt,ngausstot,numnp,numat,
+     & nstatesz,nstatesz0,ndmatsz,kr,kw,kp,idout,idsk,ifile,ofile,pfile,
+     & ierr,errstrng)
 c
 c      this subroutine reads element types and connectivities, material
 c      types, and infinite element info.
@@ -60,10 +61,10 @@ c
 c
 c...  subroutine arguments
 c
-      integer nconsz,numelt,numnp,numat,nstatesz,ndmatsz,kr,kw,kp
-      integer idout,idsk,ierr
+      integer nconsz,nprestrflag,numelt,ngausstot,numnp,numat
+      integer nstatesz,ndmatsz,kr,kw,kp,idout,idsk,ierr
       integer neni(netypesi),infetype(4,netypes),infmat(3,numat)
-      integer infmatmod(5,nmatmodmax),ien(nconsz),infiel(6,numelt)
+      integer infmatmod(5,nmatmodmax),ien(nconsz),infiel(7,numelt)
       integer indmat(numat),imgrp(numat)
       character ifile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
@@ -79,7 +80,7 @@ c
 c...  local variables
 c
       integer imat,npage,matmod,i,n,j,inf,ietypei,ngauss,nstate,imatvar
-      integer ietype,nen,i1,i2
+      integer ietype,nen,i1,i2,incstate0,nstatesz0
 cdebug      integer idb,jdb
 c
 cdebug      write(6,*) "Hello from read_connect_f!"
@@ -100,9 +101,13 @@ cdebug      end do
       call ifill(ien,izero,nconsz)
       call ifill(indmat,izero,numat)
       call ifill(imgrp,izero,numat)
-      call ifill(infiel,izero,isix*numelt)
+      call ifill(infiel,izero,iseven*numelt)
       nstatesz=izero
+      ngausstot=izero
       ndmatsz=izero
+      incstate0=izero
+      nstatesz0=izero
+      if(nprestrflag.ne.izero) incstate0=ione
       ierr=izero
 c
 c...  set initial pointers for different material types
@@ -155,11 +160,14 @@ c
 c...  set state variable and material matrix indices, and increment the
 c     total size of the state variable and material matrices.
 c
-        infiel(5,i)=nstatesz+ione
         ngauss=infetype(1,infiel(3,i))
+        infiel(5,i)=nstatesz+ione
+        infiel(7,i)=nstatesz0+ione
+        ngausstot=ngausstot+ngauss
         nstate=infmatmod(2,matmod)
         imatvar=infmatmod(4,matmod)
         nstatesz=nstatesz+nstate*ngauss
+        nstatesz0=nstatesz0+incstate0*ngauss
         if(imatvar.eq.izero) then
           if(imgrp(imat).eq.izero) then
             infiel(6,i)=ndmatsz+ione
@@ -173,8 +181,9 @@ cdebug            infiel(6,i)=infiel(6,infiel(4,i-1))
           infiel(6,i)=ndmatsz+ione
           ndmatsz=ndmatsz+ngauss
         end if
-cdebug        write(6,*) i,(infiel(jdb,i),jdb=1,6)
+cdebug        write(6,*) "i,infiel:",i,(infiel(jdb,i),jdb=1,7)
       end do
+      if(nprestrflag.eq.izero) nstatesz0=ngaussmax
       close(kr)
 cdebug      write(6,*) "infiel:"
 cdebug      do idb=1,numelt
@@ -288,7 +297,7 @@ c
       end
 c
 c version
-c $Id: read_connect.f,v 1.5 2004/08/25 01:12:48 willic3 Exp $
+c $Id: read_connect.f,v 1.6 2005/02/24 00:17:58 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
