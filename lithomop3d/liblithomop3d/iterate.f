@@ -38,7 +38,7 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,             ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
-     & prop,mhist,infmat,infmatmod,                                     ! materl
+     & prop,mhist,infmat,infmatmod,tminmax,                             ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & histry,rtimdat,ntimdat,nvisdat,                                  ! timdat
      & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
@@ -88,7 +88,7 @@ c
       double precision s(*),stemp(*)
       double precision state(*),dstate(*),dmat(*)
       double precision pres(*),pdir(*)
-      double precision prop(*)
+      double precision prop(*),tminmax
       double precision gauss(*),sh(*),shj(*)
       double precision histry(*)
       double precision skew(*)
@@ -297,7 +297,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
      &     ndmatsz,numelt,nconsz,                                       ! elemnt
-     &     prop,mhist,infmat,infmatmod,numat,npropsz,                   ! materl
+     &     prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_mat_cmp,   ! timdat
      &     skew,numrot,                                                 ! skew
@@ -309,9 +309,9 @@ c
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,    ! elemnt
-     &     numelt,nconsz,                                               ! elemnt
-     &     prop,mhist,infmat,infmatmod,numat,npropsz,                   ! materl
+     &     state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,     ! elemnt
+     &     ndmatsz,numelt,nconsz,                                       ! elemnt
+     &     prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,           ! materl
      &     gauss,sh,shj,infetype,                                       ! eltype
      &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,       ! timdat
      &     skew,numrot,                                                 ! skew
@@ -338,7 +338,7 @@ c
       end
 c
 c version
-c $Id: iterate.f,v 1.4 2004/07/21 15:43:51 willic3 Exp $
+c $Id: iterate.f,v 1.5 2004/07/21 19:44:53 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
