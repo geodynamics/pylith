@@ -446,3 +446,214 @@ Need to put in python or f77 routine to compute
 ismatmod(nstatesmax,nmatmodmax) matrix.  The quickest way to do this
 would be to do it in matmod_def.
 
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 2, 2004 4:22:13 PM EDT
+To: 	  willic3@rpi.edu
+
+New idea that would probably be more efficient:
+
+For routines that loop over Gauss points, pass in the entire state
+array for the element, rather than a temporary array.  In the
+routines, the array would be dimensioned as:
+state(nstr,nstate,ngauss), and looping could be performed
+appropriately.  Temporary arrays would then not be necessary.
+Double-check whether this can be implemented efficiently (e.g.,
+problems with indexing in BLAS) before trying it.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 4, 2004 5:48:36 PM EDT
+To: 	  willic3@rpi.edu
+
+Something still seems messed up for viscous solution -- probably in
+td_strs_5.  I need to do a thorough comparison of the variables from
+there with those from original code and see how this relates with my
+solution.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 5, 2004 10:45:52 PM EDT
+To: 	  willic3@rpi.edu
+Reply-To: 	  willic3@rpi.edu
+
+Things to try:
+
+Just use the mesh provided by netgen.  Make my own single tet mesh to
+see how it compares to tetgen -- maybe try this in lithomop.  See if
+there is a problem with having negative coordinates?  There shouldn't
+be, but this should be checked.  Output x, xs, and sh from getjac
+routine -- make sure x is correct.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 7, 2004 9:29:45 PM EDT
+To: 	  willic3@rpi.edu
+Reply-To: 	  willic3@rpi.edu
+
+Try running quadratic hex version of BM1.  See if there is some
+fundamental problem with the way I'm dealing with quadratic elements.
+I need to set up new BC for what I have so far.
+
+Go through quadratic tet stuff one more time if hexes work -- probably
+change things back to the way they were, and double-check everything
+one more time.
+
+If I can't get them working, start putting together my presentation
+and look into doing BM 5 with hexes and/or linear tets.  Get all of
+that finished before messing with quadratic tets again.
+
+Other things to think about:
+
+Why do I have to manually remove module from build directory?  What is
+the pyre error message at the end of every run -- how to get rid of
+it?  Quick and dirty output format useful for plotting.  Input
+preprocessors?
+
+
+
+
+From: 	  willic3@rpi.edu
+	Subject: 	To Do
+	Date: 	August 9, 2004 9:50:53 PM EDT
+	To: 	  willic3@rpi.edu
+	Reply-To: 	  willic3@rpi.edu
+
+Last try for quadratic tets: try simple version of bm1 (already
+started as bm1b). Trace through all logic for shape function stuff --
+see what is different for quadratic tets.  Also try single-point
+integration again, and if it works, compare results to linear tets.
+Set up problem for BM 5.  Start putting together presentation.  E-mail
+Michael about possible meeting.  Register for SCEC meeting.  Try
+organizing office -- find receipts from Compgeo meeting to do expense
+report while in Los Alamos.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 10, 2004 10:35:03 PM EDT
+To: 	  willic3@rpi.edu
+Reply-To: 	  willic3@rpi.edu
+
+Update utility codes from laptop, as well as mesh info for bm5.
+Priorities:
+
+1.  Start putting talk together.
+2.  Finish putting together BM5 test from Carl's mesh.
+3.  Start cleaning up and checking in code and test problems.
+4.  Alternative solution of BM5 using tetgen or netgen?
+5.  Start thinking about front-ends and back-ends for code (output UCD
+or OpenDX format?).
+6.  Keep trying to fix quadratic tets.
+7.  Start putting together paperwork and other items needed for trip.
+8.  Clean and sort office.
+
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 11, 2004 10:40:35 PM EDT
+To: 	  willic3@rpi.edu
+
+Look at previous to do list.
+Finish getting everything checked into repository.
+Build optimized version of code and set up comparisons for BM 1.
+Create directories and files to be used for tutorials -- write down
+necessary steps to get things set up.
+
+Lower priority: Look into visualization options, try meshing BM5 with
+netgen.
+
+Get together figures and presentation pieces and start putting that
+together.
+
+Make sure everything ends up updated on my laptop.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 23, 2004 3:20:30 PM EDT
+To: 	  willic3@rpi.edu
+
+For output values, I should use the arrays idispout and istatout to
+determine which nodal and Gauss point values are output.  There should
+just be a single array for all time steps.  They can both be read with
+a renamed/modified version of the read_statout routine.  These arrays
+will be used with printd, prints, and the ucd output routines.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 24, 2004 7:27:57 PM EDT
+To: 	  willic3@rpi.edu
+
+Make sure computed Gauss point coordinates are correct.
+If so, download Carl's latest BM descriptions and set up at least one
+problem.
+E-mail output results to Carl (can use results I already have for BM
+1) to make sure format is OK.
+Fix everything in example directories to correspond to new setup.
+Create input files for BM5-7.
+Will need to write utility code to compute Winkler BC for BM6.
+
+Once this is done and test problems work, send a mass e-mail informing
+everyone of the changes and telling them how to update and get the
+benchmark input files.
+
+Continue debugging code, especially quadratic tets.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 26, 2004 5:55:10 PM EDT
+To: 	  willic3@rpi.edu
+
+Finish fixing readnetgen code, and try fixing readucd in the same way.
+Try to do quick and dirty code to compute Winkler BC for tets.
+
+Abstracts for SCEC and AGU -- see if Mark or others want to be on AGU
+abstract.
+
+Come up with at least one mesh from beginning to end and put it on
+geoframework web site.  I'll need to get BC from Noah.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	September 13, 2004 9:31:06 PM EDT
+To: 	  willic3@rpi.edu
+Reply-To: 	  willic3@rpi.edu
+
+Finish setting up quadratic tet meshes.
+
+I can get fault coordinates using Kaleidagraph, but I still need to
+get all elements attached to each node.  As one option, I may be able
+to modify lt2qt so that it uses fault (and maybe boundary) info and
+transfers this info to the quadratic mesh.  Alternatively, I can just
+compute an adjacency array and output that info.
+
+
+
+
