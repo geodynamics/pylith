@@ -19,10 +19,10 @@ __all__ = ["MaterialModel",
 	   "IsotropicLinearMaxwellViscoelastic"]
 
 def copyright():
-    return "testpy pyre module: Copyright (c) 1998-2003 California Institute of Technology";
+    return "lithomop3d pyre module: Copyright (c) 1998-2003 California Institute of Technology";
 
 
 # version
-__id__ = "$Id: __init__.py,v 1.1 2004/07/14 21:17:37 willic3 Exp $"
+__id__ = "$Id: __init__.py,v 1.2 2004/08/12 16:53:24 willic3 Exp $"
 
 #  End of file 
