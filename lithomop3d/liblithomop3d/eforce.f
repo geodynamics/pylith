@@ -49,9 +49,9 @@ c...  subroutine arguments
 c
       integer iel,nen,ngauss,ierr
       character errstrng*(*)
-      double precision xl(nsd,nen),sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax),det(ngaussmax)
-      double precision gauss(nsd+1,ngaussmax),evp(nstr,ngauss)
+      double precision xl(nsd,nen),sh(nsd+1,nen,ngauss)
+      double precision shj(nsd+1,nen,ngauss),det(ngauss)
+      double precision gauss(nsd+1,ngauss),evp(nstr,ngauss)
       double precision p(ndof*nen)
       external getshape,bmatrix
 c
@@ -88,7 +88,7 @@ cdebug        write(6,*) "p:",(p(idb),idb=1,nee)
       end
 c
 c version
-c $Id: eforce.f,v 1.5 2004/08/02 21:07:51 willic3 Exp $
+c $Id: eforce.f,v 1.6 2005/03/19 01:49:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

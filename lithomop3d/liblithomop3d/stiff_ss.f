@@ -31,9 +31,9 @@ c
 c
       subroutine stiff_ss(
      & xl,                                                              ! global
-     & dmat,ien,iddmat,iel,                                             ! elemnt
-     & gauss,sh,shj,ngauss,ngaussdim,nen,                               ! eltype
-     & s,nee,                                                           ! stiff
+     & dmat,ien,iel,                                                    ! elemnt
+     & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
+     & s,                                                               ! stiff
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
 c
@@ -51,12 +51,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer iel,ngauss,ngaussdim,nen,nee,ierr
-      integer ien(nen),iddmat(nstr,nstr)
+      integer iel,nen,ngauss,nee,ierr
+      integer ien(nen)
       character errstrng*(*)
-      double precision xl(nsd,nen),dmat(nddmat,ngaussdim)
-      double precision gauss(nsd+1,ngaussmax),sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax),s(nee,nee)
+      double precision xl(nsd,nen),dmat(nddmat,ngauss)
+      double precision gauss(nsd+1,ngauss),sh(nsd+1,nen,ngauss)
+      double precision shj(nsd+1,nen,ngauss),s(nee,nee)
 c
 c...  external routines
 c
@@ -65,7 +65,7 @@ c
 c...  local variables
 c
       integer l
-      double precision shd(4,nenmax,ngaussmax),b(6,3*nenmax),dtmp(6,6)
+      double precision shd(4,nenmax,ngaussmax),b(6,3*nenmax)
       double precision shbar(4,nenmax),db(6,3*nenmax),det(ngaussmax)
       double precision vol
 c
@@ -83,16 +83,14 @@ c   integral over element
 c
       do l=1,ngauss
         call bmatrix(b,shd(1,1,l),shbar,nen)
-        call getmat(dtmp,dmat(1,l),iddmat,nstr,nddmat)
-        call dsymm("l","l",nstr,nee,det(l),dtmp,nstr,b,nstr,zero,db,
-     &   nstr)
+        call dspmv("u",nstr,det(l),dmat(1,l),b,ione,zero,db,ione)
         call dgemm("t","n",nee,nee,nstr,one,b,nstr,db,nstr,one,s,nee)
       end do
       return
       end
 c
 c version
-c $Id: stiff_ss.f,v 1.4 2004/07/05 20:21:43 willic3 Exp $
+c $Id: stiff_ss.f,v 1.5 2005/03/19 01:49:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

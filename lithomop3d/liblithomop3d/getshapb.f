@@ -51,10 +51,10 @@ c...  subroutine arguments
 c
       integer iel,nen,ngauss,ierr
       character errstrng*(*)
-      double precision xl(nsd,nen),sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax)
+      double precision xl(nsd,nen),sh(nsd+1,nen,ngauss)
+      double precision shj(nsd+1,nen,ngauss)
       double precision shd(nsd+1,nenmax,ngaussmax),shbar(nsd+1,nenmax)
-      double precision det(ngauss),gauss(nsd+1,ngaussmax),vol
+      double precision det(ngauss),gauss(nsd+1,ngauss),vol
 c
 c...  local variables
 c
@@ -79,7 +79,7 @@ c
       end
 c
 c version
-c $Id: getshapb.f,v 1.4 2004/07/05 20:01:13 willic3 Exp $
+c $Id: getshapb.f,v 1.5 2005/03/19 01:49:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

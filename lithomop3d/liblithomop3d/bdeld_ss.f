@@ -57,9 +57,9 @@ c
       integer iel,nen,nee,ngauss,ierr
       character errstrng*(*)
       double precision xl(nsd,nen),dl(ndof*nen)
-      double precision sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax),ee(nstr,ngauss)
-      double precision det(ngauss),gauss(nsd+1,ngaussmax)
+      double precision sh(nsd+1,nen,ngauss)
+      double precision shj(nsd+1,nen,ngauss),ee(nstr,ngauss)
+      double precision det(ngauss),gauss(nsd+1,ngauss)
 c
 c...  external routines
 c
@@ -79,7 +79,7 @@ c   points, and then compute average dilatational component.
 c
       call getshape(xl,sh,shj,shd,shbar,det,gauss,vol,iel,nen,ngauss,
      & ierr,errstrng)
-      if(ierr.ne.0) return
+      if(ierr.ne.izero) return
 c
 c...construct b matrix and compute strains at gauss point(s)
 c
@@ -91,7 +91,7 @@ c
       end
 c
 c version
-c $Id: bdeld_ss.f,v 1.4 2004/06/21 19:53:03 willic3 Exp $
+c $Id: bdeld_ss.f,v 1.5 2005/03/19 01:49:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

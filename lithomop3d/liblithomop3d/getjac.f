@@ -53,7 +53,7 @@ c...  subroutine arguments
 c
       integer nen,iel,ierr
       character errstrng*(*)
-      double precision x(nsd,nen),xs(nsd,nsd),det,shj(nsd+1,nenmax)
+      double precision x(nsd,nen),xs(nsd,nsd),det,shj(nsd+1,nen)
 c
 c...  local variables
 c
@@ -98,7 +98,7 @@ c
       end
 c
 c version
-c $Id: getjac.f,v 1.7 2005/02/24 00:00:13 willic3 Exp $
+c $Id: getjac.f,v 1.8 2005/03/19 01:49:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
