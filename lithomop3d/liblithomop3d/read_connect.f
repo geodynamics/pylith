@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine read_connect(infmatmod,ivflist,nen,ngauss,ien,ivfamily,
-     & ivftmp,maxvfamilies,nvfamilies,nprestrflag,numelv,numnp,
+     & ivftmp,indxiel,maxvfamilies,nvfamilies,nprestrflag,numelv,numnp,
      & nstatesz,nstatesz0,npropsz,kr,kw,kp,idout,idsk,ifile,ofile,pfile,
      & ierr,errstrng)
 c
@@ -65,6 +65,7 @@ c
       integer numnp,nstatesz,nstatesz0,npropsz,kr,kw,kp,idout,idsk,ierr
       integer infmatmod(6,nmatmodmax),ivflist(3,maxvfamilies)
       integer ivfamily(5,nvfamilies),ivftmp(nvfamilies),ien(nen,numelv)
+      integer indxiel(numelv)
       character ifile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  local variables
@@ -173,6 +174,7 @@ c...  store element nodes in the proper family and update the pointer
 c     array for that family
 c
         iloc=ivftmp(imat)
+        indxiel(i)=iloc
         call iquate(ien(1,iloc),itmp,nen)
         ivftmp(imat)=ivftmp(imat)+ione
       end do
@@ -288,7 +290,7 @@ c
       end
 c
 c version
-c $Id: read_connect.f,v 1.8 2005/04/01 23:24:41 willic3 Exp $
+c $Id: read_connect.f,v 1.9 2005/04/05 22:39:56 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
