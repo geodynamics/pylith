@@ -70,7 +70,7 @@
 #			the strain-displacement matrix.  This can be
 #			useful in nearly-incompressible problems.
 #
-quadratureOrder = Reduced
+quadratureOrder = "Reduced"
 #
 #
 # Gravitational acceleration in each direction.
