@@ -30,9 +30,10 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine iterate(
-     & alnz,pcg,zcg,ja,                                                 ! sparse
-     & b,btot,bres,pvec,gvec1,gvec2,grav,                               ! force
-     & x,d,deld,dprev,dcur,id,iwink,wink,nsysdat,                       ! global
+     & alnz,pcg,zcg,dprev,ja,                                           ! sparse
+     & bextern,btraction,bgravity,bconcforce,bprestress,bintern,bresid, ! force
+     & bwork,dispvec,nforce,grav,                                       ! force
+     & x,d,deld,dcur,id,iwink,wink,nsysdat,                             ! global
      & dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                     ! slip
      & nfault,dfault,tfault,                                            ! fault
      & s,stemp,                                                         ! stiff
@@ -74,15 +75,20 @@ c
 c...  subroutine arguments
 c
       integer ierr
-      integer ja(*),id(*),iwink(*),idx(*),iwinkx(*),idslp(*),ipslp(*)
-      integer nfault(*),ien(*),lm(*),lmx(*),lmf(*),infiel(*),iddmat(*)
-      integer ielno(*),iside(*),ihistry(*),mhist(*),infmat(*)
-      integer infmatmod(*),infetype(*)
+      integer ja(*)
+      integer id(*),iwink(*)
+      integer idx(*),iwinkx(*),idslp(*),ipslp(*)
+      integer nfault(*)
+      integer ien(*),lm(*),lmx(*),lmf(*),infiel(*),iddmat(*)
+      integer ielno(*),iside(*),ihistry(*)
+      integer mhist(*),infmat(*),infmatmod(*)
+      integer infetype(*)
       character errstrng*(*)
-      double precision alnz(*),pcg(*),zcg(*)
-      double precision b(*),btot(*),bres(*),pvec(*),gvec1(*),gvec2(*)
-      double precision grav(*)
-      double precision x(*),d(*),deld(*),dprev(*),dcur(*),wink(*)
+      double precision alnz(*),pcg(*),zcg(*),dprev(*)
+      double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
+      double precision bprestress(*),bintern(*),bresid(*),bwork(*)
+      double precision dispvec(*),grav(*)
+      double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision dx(*),deldx(*),dxcur(*),winkx(*)
       double precision dfault(*),tfault(*)
       double precision s(*),stemp(*)
@@ -95,6 +101,7 @@ c
 c
 c...  included dimension and type statements
 c
+      include "nforce_dim.inc"
       include "nsysdat_dim.inc"
       include "npar_dim.inc"
       include "rtimdat_dim.inc"
@@ -127,6 +134,7 @@ c
 c
 c...  included variable definitions
 c
+      include "nforce_def.inc"
       include "nsysdat_def.inc"
       include "npar_def.inc"
       include "rtimdat_def.inc"
@@ -141,6 +149,10 @@ c
 c...initialize convergence criteria
 c
 cdebug      write(6,*) "Hello from iterate_f!"
+cdebug      write(6,*) "nextflag, ntractflag, ngravflag, nconcflag,"
+cdebug      write(6,*) "nprestrflag, nprevdflag:"
+cdebug      write(6,*) nextflag,ntractflag,ngravflag,nconcflag,
+cdebug     & nprestrflag, nprevdflag
 c
       fulout=.true.
       converge=.false.
@@ -165,7 +177,7 @@ c
         ireform=0
         if(reform) ireform=1
         ntimdat(9)=ireform
-        used=nstep.gt.0.and.(nsol.eq.2.or.nsol.eq.4).and.iter.eq.1
+        used=nstep.gt.0.and.(nsol.eq.3.or.nsol.eq.4).and.iter.eq.1
         if(iter.gt.1) fulout=.false.
 c
 c...add pressure forces,if present, to global load vector
@@ -182,7 +194,7 @@ c...add gravity body forces to global load vector
 c
         if(iter.eq.1.or.updats) then
           call gload_drv(
-     &     b,bres,gvec1,gvec2,grav,neq,                                 ! force
+     &     bgravity,ngravflag,grav,neq,                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -221,18 +233,25 @@ c**        end if
 c
 c...for first iteration compute residual force vector
 c
-        if(iter.eq.1) call bdiff(b,btot,bres,neq)
+c*        if(iter.eq.1) call bdiff(b,btot,bres,neq)
+c
+c...  compute total external load and residual force vector
+c
+        call bsum(bextern,btraction,bgravity,bconcforce,bprestress,
+     &   bintern,bresid,nextflag,ntractflag,ngravflag,nconcflag,
+     &   nprestrflag,neq)
 c
 c...compute the global displacement increment vector using a
 c   preconditioned conjugate gradients iterative solver.  Upon
 c   return the vector gvec2 contains the displacements.
 c
-        call pcginv(alnz,bres,gvec2,b,pcg,zcg,dprev,rmin,rmult,
-     &   gcurr,gprev,ja,nsiter,neq,nnz,ndtot,idout,kto,kw,used)
+        call pcginv(alnz,bresid,dispvec,bwork,pcg,zcg,dprev,rmin,rmult,
+     &   gcurr,gprev,ja,nsiter,neq,nprevdflag,nnz,ndtot,idout,kto,kw,
+     &   used)
         ntimdat(8)=ndtot
-        if(nsol.eq.2.or.nsol.eq.4) then
+        if(nsol.eq.3.or.nsol.eq.4) then
           if(iter.eq.1) call fill(dprev,zero,neq)
-          call daxpy(neq,one,gvec2,ione,dprev,ione)
+          call daxpy(neq,one,dispvec,ione,dprev,ione)
         end if
 c
 c...for first iteration, update displacements to reflect boundary
@@ -258,8 +277,8 @@ c   dxcur(ndof,numnp)
 c
         call fill(dcur,zero,ndof*numnp)
         call fill(dxcur,zero,ndof*numnp)
-        call disp(gvec2,dcur,id,numnp,neq)
-        if(numslp.ne.0) call disp(gvec2,dxcur,idx,numnp,neq)
+        call disp(dispvec,dcur,id,numnp,neq)
+        if(numslp.ne.0) call disp(dispvec,dxcur,idx,numnp,neq)
 c
 c...rotate skewed coordinates to global system
 c
@@ -268,12 +287,16 @@ c
           if(numslp.ne.0) call rdisp(dxcur,skew,numnp)
         end if
 c
-c...compute contribution to global load vector from winkler boundary
+c...  zero internal force vector prior to reconputing it.
+c
+        call fill(bintern,zero,neq)
+c
+c...compute contribution to internal force vector from winkler boundary
 c   conditions
 c
-        if(nwink.ne.0) call winklf(btot,gvec2,iwink,wink,histry,nwink,
-     &   nhist,nstep,neq,lastep)
-        if(nwinkx.ne.0) call winklf(btot,gvec2,iwinkx,winkx,histry,
+        if(nwink.ne.0) call winklf(bintern,dispvec,iwink,wink,histry,
+     &   nwink,nhist,nstep,neq,lastep)
+        if(nwinkx.ne.0) call winklf(bintern,dispvec,iwinkx,winkx,histry,
      &   nwinkx,nhist,nstep,neq,lastep)
 c
 c...update the total displacement and the displacement increment
@@ -291,7 +314,7 @@ c
           write(kto,650)
           call stress_mat_drv(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,iwink,wink,numnp,nwink,                                  ! global
      &     dx,iwinkx,winkx,numslp,numsn,nwinkx,                         ! slip
      &     tfault,numfn,                                                ! fault
@@ -306,7 +329,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else
           call stress_drv(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -322,8 +345,9 @@ c
 c
 c...compute the out-of-balance forces and convergence criteria
 c
-        call residu(b,bres,btot,gvec2,gtol,gi,gprev,gcurr,id,idx,neq,
-     &   numnp,iter,itmaxp,idebug,idout,kto,kw,converge)
+        call residu(bextern,bintern,bresid,dispvec,gtol,gi,gprev,gcurr,
+     &   id,idx,neq,nextflag,numnp,iter,itmaxp,idebug,idout,kto,kw,
+     &   converge)
 c
 c...if solution has converged, set equilibrium stresses and creep
 c   strains to their current values
@@ -340,7 +364,7 @@ c
       end
 c
 c version
-c $Id: iterate.f,v 1.6 2004/08/12 20:39:55 willic3 Exp $
+c $Id: iterate.f,v 1.7 2005/01/05 22:22:04 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
