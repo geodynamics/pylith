@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -30,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine scan_connect(neni,infmatmod,ivflist,maxvfamilies,
-     & numat,numelv,nvfamilies,ietypev,kr,cfile,ierr,errstrng)
+     & numelv,nvfamilies,ietypev,kr,cfile,ierr,errstrng)
 c
 c...  subroutine to perform an initial scan of the element connectivity
 c     file to determine the total number of elements and the number of
@@ -62,14 +61,14 @@ c
 c
 c...  subroutine arguments
 c
-      integer maxvfamilies,numat,numelv,nvfamilies,ietypev,kr,ierr
-      integer neni(netypesi),infmatmod(5,nmatmodmax)
+      integer maxvfamilies,numelv,nvfamilies,ietypev,kr,ierr
+      integer neni(netypesi),infmatmod(6,nmatmodmax)
       integer ivflist(maxvfamilies)
       character cfile*(*),errstrng*(*)
 c
 c...  local variables
 c
-      integer i,j,n,ietypei,imat,infin,matm
+      integer j,n,ietypei,imat,infin
       integer ien(20)
 c
 c...  open input file
@@ -77,16 +76,8 @@ c
       ierr=izero
       numelv=izero
       ietypev=izero
-      call ifill(ifamilyv,izero,ithree*nvfamilies)
+      call ifill(ivflist,izero,maxvfamilies)
       open(kr,file=cfile,status="old",err=20)
-c
-c...  set up part of the ifamilyv array that has already been determined
-c     by python material property input routine.
-c
-      do i=1,nvfamilies
-        ifamilyv(2,i)=matmod(i)
-        ifamilyv(3,i)=indprop(i)
-      end do
 c
 c... scan the file, counting the number of entries for each type of
 c    material.
@@ -109,28 +100,20 @@ c
         read(kr,*,end=10,err=30) n,ietypei,imat,infin,
      &   (ien(j),j=1,neni(ietypei))
 c
-        matm=ifamilyv(2,imat)
-c
         if(ietypei.ne.ietypev) then
           ierr=106
           errstrng="scan_connect"
           return
         end if
 c
-        if(imat.le.izero.or.imat.gt.numat) then
+        if(imat.le.izero.or.imat.gt.maxvfamilies) then
           ierr=107
           errstrng="scan_connect"
           return
         end if
 c
-        if(matm.gt.nmatmodmax.or.infmatmod(1,matm).eq.izero) then
-          ierr=101
-          errstrng="scan_connect"
-          return
-        end if
-c
+        ivflist(imat)=ivflist(imat)+ione
         numelv=numelv+ione
-        ifamilyv(1,imat)=ifamilyv(1,imat)+ione
 c
         go to 40
 c
@@ -157,7 +140,7 @@ c
       end
 c
 c version
-c $Id: scan_connect.f,v 1.3 2005/03/19 01:53:32 willic3 Exp $
+c $Id: scan_connect.f,v 1.4 2005/03/26 01:05:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
