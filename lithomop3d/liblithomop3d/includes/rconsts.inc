@@ -14,6 +14,7 @@ c...  rconsts_par.inc:  A set of commonly-used constants.
 c
       double precision zero,one,two,three,four,five,six,seven,eight,nine
       double precision half,third,fourth,fifth,sixth,eighth,root3,root3i
+      double precision pi,big
       parameter(zero   = 0.0d0,
      &          one    = 1.0d0,
      &          two    = 2.0d0,
@@ -33,10 +34,11 @@ c
      &          eighth = 0.125d0,
      &          root3  = 1.732050807568877293527446341505d0,
      &          root3i = 0.577350269189625764509148780502d0,
-     &          pi     = 3.141592653589793238462643383276d0)
+     &          pi     = 3.141592653589793238462643383276d0,
+     &          big    = 1.0d30)
 c
 c version
-c $Id: rconsts.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: rconsts.inc,v 1.2 2004/05/24 20:06:21 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
