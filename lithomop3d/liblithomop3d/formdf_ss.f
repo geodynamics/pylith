@@ -75,7 +75,7 @@ c
 c
 c...  local variables
 c
-      integer ifam,nelfamily,matmodel,ielf,ielg,i
+      integer ifam,nelfamily,ielf,ielg,i
       double precision p(60),dld(60)
 cdebug      integer idb
 c
@@ -87,7 +87,6 @@ c...  loop over element families
 c
       do ifam=1,nvfamilies
         nelfamily=ivfamily(1,ifam)
-        matmodel=ivfamily(2,ifam)
         do ielf=1,nelfamily
           ielg=ielg+ione
 c
@@ -125,7 +124,7 @@ c
       end
 c
 c version
-c $Id: formdf_ss.f,v 1.8 2005/03/21 19:12:43 willic3 Exp $
+c $Id: formdf_ss.f,v 1.9 2005/03/21 19:30:32 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
