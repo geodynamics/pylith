@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_slip(nslip,numslp,numsn,numnp,iskopt,
-     & kr,kw,kp,idout,idsk,slfile,ofile,pfile,ierr,errstrng)
+      subroutine read_slip(nslip,indxiel,numslp,numsn,numnp,iskopt,
+     & numelv,kr,kw,kp,idout,idsk,slfile,ofile,pfile,ierr,errstrng)
 c
 c...  reads and prints data on free slip interfaces
 c
@@ -50,8 +50,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer numslp,numsn,numnp,iskopt,kr,kw,kp,idout,idsk,ierr
-      integer nslip(nsdim,numslp)
+      integer numslp,numsn,numnp,iskopt,numelv,kr,kw,kp,idout,idsk,ierr
+      integer nslip(nsdim,numslp),indxiel(numelv)
       character slfile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
@@ -94,6 +94,7 @@ c
         npage=50
         do i=1,numslp
           read(kr,*,end=30,err=30) (nslip(j,i),j=1,nsdim)
+          nslip(1,i)=indxiel(nslip(1,i))
           if((i.eq.ione.or.mod(i,npage).eq.izero).and.
      &     idout.gt.izero) then
             write(kw,1000,err=60) (labeld(j),j=1,ndof)
@@ -183,7 +184,7 @@ c
       end
 c
 c version
-c $Id: read_slip.f,v 1.4 2004/08/25 01:12:48 willic3 Exp $
+c $Id: read_slip.f,v 1.5 2005/04/05 22:39:56 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

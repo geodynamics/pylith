@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_split(fault,nfault,numfn,numflt,numnp,kr,kw,
-     & kp,idout,idsk,spfile,ofile,pfile,ierr,errstrng)
+      subroutine read_split(fault,nfault,indxiel,numfn,numflt,numnp,
+     & numelv,kr,kw,kp,idout,idsk,spfile,ofile,pfile,ierr,errstrng)
 c
 c...  reads and prints data on split nodes
 c
@@ -60,8 +60,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer numfn,numflt,numnp,kr,kw,kp,idout,idsk,ierr
-      integer nfault(3,numfn)
+      integer numfn,numflt,numnp,numelv,kr,kw,kp,idout,idsk,ierr
+      integer nfault(3,numfn),indxiel(numelv)
       double precision fault(ndof,numfn)
       character spfile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
@@ -85,6 +85,7 @@ c
         do i=1,numfn
           read(kr,*,end=30,err=30) (nfault(j,i),j=1,3),
      &     (fault(j,i),j=1,ndof)
+          nfault(1,i)=indxiel(nfault(1,i))
         end do
       end if
 c
@@ -180,7 +181,7 @@ c
       end
 c
 c version
-c $Id: read_split.f,v 1.3 2004/08/25 01:12:48 willic3 Exp $
+c $Id: read_split.f,v 1.4 2005/04/05 22:39:56 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
