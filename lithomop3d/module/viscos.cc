@@ -120,7 +120,6 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   PyObject* pyPointerToMaxit;
   PyObject* pyPointerToNtdinit;
   PyObject* pyPointerToLgdef;
-  PyObject* pyPointerToIbbar;
   PyObject* pyPointerToUtol;
   PyObject* pyPointerToFtol;
   PyObject* pyPointerToEtol;
@@ -142,7 +141,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   char* asciiOutputFile;                     // Output file names
   char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOss:viscos",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOss:viscos",
 			    &pyPointerToAlnz,              // Sparse matrix arrays
 			    &pyPointerToPcg,
 			    &pyPointerToZcg,
@@ -215,7 +214,6 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 			    &pyPointerToMaxit,
 			    &pyPointerToNtdinit,
 			    &pyPointerToLgdef,
-			    &pyPointerToIbbar,
 			    &pyPointerToUtol,
 			    &pyPointerToFtol,
 			    &pyPointerToEtol,
@@ -316,7 +314,6 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   int*  pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
   int*  pointerToNtdinit = (int*) PyCObject_AsVoidPtr(pyPointerToNtdinit);
   int*  pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
-  int*  pointerToIbbar = (int*) PyCObject_AsVoidPtr(pyPointerToIbbar);
   double*  pointerToUtol = (double*) PyCObject_AsVoidPtr(pyPointerToUtol);
   double*  pointerToFtol = (double*) PyCObject_AsVoidPtr(pyPointerToFtol);
   double*  pointerToEtol = (double*) PyCObject_AsVoidPtr(pyPointerToEtol);
@@ -409,7 +406,6 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 	   pointerToMaxit,
 	   pointerToNtdinit,
 	   pointerToLgdef,
-	   pointerToIbbar,
 	   pointerToUtol,
 	   pointerToFtol,
 	   pointerToEtol,
@@ -454,6 +450,6 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 
 
 // version
-// $Id: viscos.cc,v 1.3 2004/07/20 21:31:41 willic3 Exp $
+// $Id: viscos.cc,v 1.4 2004/07/21 20:04:19 willic3 Exp $
 
 // End of file

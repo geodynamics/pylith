@@ -1023,7 +1023,6 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
   PyObject* pyPointerToMaxit;
   PyObject* pyPointerToNtdinit;
   PyObject* pyPointerToLgdef;
-  PyObject* pyPointerToIbbar;
   PyObject* pyPointerToItmax;
   int numberTimeStepGroups;
   int totalNumberTimeSteps;
@@ -1033,7 +1032,7 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
   char* timeStepInputFile;
   char* asciiOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOdOOOOOOiiiiiss:read_timdat",
+  int ok = PyArg_ParseTuple(args, "OOOOOOdOOOOOiiiiiss:read_timdat",
 			    &pyPointerToDelt,
 			    &pyPointerToAlfa,
 			    &pyPointerToUtol,
@@ -1045,7 +1044,6 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
 			    &pyPointerToMaxit,
 			    &pyPointerToNtdinit,
 			    &pyPointerToLgdef,
-			    &pyPointerToIbbar,
 			    &pyPointerToItmax,
 			    &numberTimeStepGroups,
 			    &totalNumberTimeSteps,
@@ -1072,7 +1070,6 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
   int* pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
   int* pointerToNtdinit = (int*) PyCObject_AsVoidPtr(pyPointerToNtdinit);
   int* pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
-  int* pointerToIbbar = (int*) PyCObject_AsVoidPtr(pyPointerToIbbar);
   int* pointerToItmax = (int*) PyCObject_AsVoidPtr(pyPointerToItmax);
 
   read_timdat_f(pointerToDelt,
@@ -1086,7 +1083,6 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
 		pointerToMaxit,
 		pointerToNtdinit,
 		pointerToLgdef,
-		pointerToIbbar,
 		pointerToItmax,
 		&numberTimeStepGroups,
 		&totalNumberTimeSteps,
@@ -1362,6 +1358,6 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: parser.cc,v 1.3 2004/07/20 19:57:27 willic3 Exp $
+// $Id: parser.cc,v 1.4 2004/07/21 20:03:25 willic3 Exp $
 
 // End of file
