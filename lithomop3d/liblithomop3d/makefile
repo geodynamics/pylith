@@ -6,7 +6,9 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PROJ_F77_INCLUDES= -I$(GEOFRAME_DIR)/packages/lithomop/lithomop3d/liblithomop3d/includes
 
-FFLAGC= -fno-silent -fno-ugly -fno-f77 -ff90 -fpedantic -Wall -fbackslash -Wsurprising -W $(PROJ_F77_INCLUDES)
+PROJ_CPP_INCLUDES= -I$(PETSC_DIR)/include -I$(PETSC_DIR)/bmake/$(PETSC_ARCH) -I$(MPI_INCDIR)
+
+FFLAGC= -fno-silent -fno-ugly -fno-f77 -ff90 -fpedantic -Wall -fbackslash -Wsurprising -W $(PROJ_F77_INCLUDES) $(PROJ_CPP_INCLUDES)
 
 CFLAGC= 
 
@@ -23,7 +25,10 @@ CCOMPL= gcc
 .SUFFIXES: .F .f .c .s .o .fil
 
 .F.f:
-	$(FCOMPL) -F $<
+	$(FCOMPL) $(FFLAGC) -F $<
+
+.F.o:
+	$(FCOMPL) -c $(FFLAGC) $(opt) $<
 
 .f.o:
 	$(FCOMPL) -c $(FFLAGC) $(opt) $<
