@@ -63,7 +63,7 @@ c...  subroutine arguments
 c
       integer maxvfamilies,numelv,nvfamilies,ietypev,kr,ierr
       integer neni(netypesi),infmatmod(6,nmatmodmax)
-      integer ivflist(maxvfamilies)
+      integer ivflist(2,maxvfamilies)
       character cfile*(*),errstrng*(*)
 c
 c...  local variables
@@ -76,11 +76,12 @@ c
       ierr=izero
       numelv=izero
       ietypev=izero
-      call ifill(ivflist,izero,maxvfamilies)
+      nvfamilies=izero
+      call ifill(ivflist,izero,itwo*maxvfamilies)
       open(kr,file=cfile,status="old",err=20)
 c
 c... scan the file, counting the number of entries for each type of
-c    material.
+c    material (element family).
 c    Note:  Due to speed considerations, we are not allowing the option
 c    of putting comments within the list.  To do this, we
 c    would need to scan each line twice to determine whether it was a
@@ -112,10 +113,17 @@ c
           return
         end if
 c
-        ivflist(imat)=ivflist(imat)+ione
+        ivflist(1,imat)=ivflist(1,imat)+ione
+        ivflist(2,imat)=imat
         numelv=numelv+ione
 c
         go to 40
+c
+c...  determine the number of element families
+c
+      do j=1,maxvfamilies
+        if(ivflist(1,j).ne.izero) nvfamilies=nvfamilies+1
+      end do
 c
 c...  normal return
 c
@@ -140,7 +148,7 @@ c
       end
 c
 c version
-c $Id: scan_connect.f,v 1.4 2005/03/26 01:05:54 willic3 Exp $
+c $Id: scan_connect.f,v 1.5 2005/03/28 19:50:24 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
