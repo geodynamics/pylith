@@ -69,7 +69,7 @@ c
  500  format(//,7x,
      x'******************************************************',/,7x,
      x'*                                                    *',/,7x,
-     x'*              LITHOMOP 0.9 OUTPUT                   *',/,7x,
+     x'*              LITHOMOP 0.7 OUTPUT                   *',/,7x,
      x'*                                                    *',/,7x,
      x'*        Copyright 2004 by Charles A. Williams.      *',/,7x,
      x'*          Rensselaer Polytechnic Institute.         *',/,7x,
@@ -116,7 +116,7 @@ c
       end
 c
 c version
-c $Id: write_global_info.f,v 1.3 2004/08/25 01:12:48 willic3 Exp $
+c $Id: write_global_info.f,v 1.4 2004/11/01 20:42:04 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
