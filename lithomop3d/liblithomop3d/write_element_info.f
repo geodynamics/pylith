@@ -29,16 +29,19 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_element_info(numel,ngauss,ipstrs,tpois,nppts,kw,
-     & idout,ofile)
+      subroutine write_element_info(numel,ipstrs,tpois,kw,idout,ofile)
 c
 c...subroutine to write element and prestress parameters
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer numel,ngauss,ipstrs,nppts,kw,idout
+      integer numel,ipstrs,kw,idout
       double precision tpois
       character ofile*(*)
 c
@@ -52,9 +55,9 @@ c
 c
 c...  echo input to output file
 c
-      if(idout.gt.0) then
+      if(idout.gt.izero) then
         open(kw,file=ofile,status="old",access="append")
-        write(kw,700) elmlbl,numel,ngauss,ipstrs,tpois,nppts
+        write(kw,700) elmlbl,numel,ipstrs,tpois
         close(kw)
       end if
 c
@@ -62,19 +65,17 @@ c
      &' e l e m e n t    s y s t e m   d a t a',///,5x,
      &' element type:  ',a40,//,5x,
      &' number of elements . . . . . . . . . . . . .(numel) =',i7,//,5x,
-     &' number of gauss points per element . . . . (ngauss) =',i7,//,5x,
      &' prestress option. . . . . . . . . . . . . .(ipstrs) =',i5,/ ,5x,
      &'    eq.0, prestresses are read from the input file    ', / ,5x,
      &'    eq.1, prestresses computed from elastic solution  ', / ,5x,
      &'          assuming near-incompressibility             ', / ,5x,
      &' poissons ratio for prestresses. . . . . . . (tpois) =',1pe15.8,
-     & /,5x,'    only used for ipstrs=1',/ ,5x,
-     &' number of prestress integration points. . . (nppts) =',i5,/)
+     & /,5x,'    only used for ipstrs=1',/)
       return
       end
 c
 c version
-c $Id: write_element_info.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: write_element_info.f,v 1.2 2004/07/15 19:53:39 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
