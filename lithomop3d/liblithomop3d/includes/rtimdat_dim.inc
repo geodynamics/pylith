@@ -18,14 +18,14 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      real*8 rtimdat(3)
+      real*8 rtimdat(4)
 c
 c...  scalar parameters associated with arrays
 c
-      real*8 deltp,alfap,autofac
+      real*8 deltp,alfap,tpois,tyoungs
 c
 c version
-c $Id: rtimdat_dim.inc,v 1.2 2005/01/17 20:43:38 willic3 Exp $
+c $Id: rtimdat_dim.inc,v 1.3 2005/02/24 00:32:40 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
