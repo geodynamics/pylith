@@ -39,7 +39,7 @@ c                             constant, force(i,j)=-wink(i,j)*disp(i,j)
 c
 c          iwink(ndof,numnp) = application mode:
 c                               iwink = 0, no winkler forces,
-c                               iwink = 1, applied throuthout computatin
+c                               iwink = 1, applied throuthout computation
 c                               iwink = -n, uses load history factor n
 c
 c     Error codes:
@@ -177,7 +177,7 @@ c     & ' t o r i n g   f o r c e s',//)
       end
 c
 c version
-c $Id: read_wink.f,v 1.2 2004/07/12 19:23:29 willic3 Exp $
+c $Id: read_wink.f,v 1.3 2005/04/02 22:11:15 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
