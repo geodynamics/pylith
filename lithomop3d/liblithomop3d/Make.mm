@@ -201,16 +201,14 @@ $(PROJ_SAR): product_dirs $(PROJ_OBJS)
 
 #--------------------------------------------------------------------------
 #
-export:: export-headers export-libraries
-
-EXPORT_HEADERS = \
+export:: export-libraries
 
 
 EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.4 2004/07/22 00:51:07 willic3 Exp $
+# $Id: Make.mm,v 1.5 2004/08/02 21:01:25 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
