@@ -89,8 +89,9 @@ c
 c...  local variables
 c
       integer ind,iel,indien,ietype,indstate,inddmat
-      integer ngauss,nen,nee,l,indstateg,inddmatg,incstate
+      integer ngauss,nen,nee,l,indstateg,inddmatg
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
+cdebug      integer idb
 c
 c...  included variable definitions
 c
@@ -99,8 +100,6 @@ c
       include "ntimdat_def.inc"
 c
 cdebug      write(6,*) "Hello from elas_strs_cmp_ss_f!"
-c
-      incstate=nstr*nstate
 c
 c...  loop over elements in a material group
 c
@@ -122,42 +121,48 @@ c
         call ldisp(dl,d,ien(indien),nen,numnp)
         if(numfn.ne.0) call adfldp(dl,lmf(indien),tfault,nen,numfn)
         if(numslp.ne.0) call addsn(dl,dx,ien,lmx(1,indien),nen,numnp)
+cdebug        write(6,*) "xl:",(xl(idb),idb=1,nsd*nen)
+cdebug        write(6,*) "dl:",(dl(idb),idb=1,ndof*nen)
 c
 c...  compute strains
 c
         call bdeld_ss(xl,dl,sh(1,1,1,ietype),shj(1,1,1,ietype),ee,det,
      &   gauss(1,1,ietype),iel,nen,nee,ngauss,getshape,bmatrix,ierr,
      &   errstrng)
+cdebug        write(6,*) "ee:",(ee(idb),idb=1,nstr*ngauss)
         if(ierr.ne.izero) return
 c
 c...  loop over gauss points, compute stresses, and transfer them into
 c     scur
 c
         do l=1,ngauss
-          call elas_strs(dstate(1,indstateg),ee(nstr*(l-1)),
+          call elas_strs(dstate(1,indstateg),ee(nstr*(l-1)+1),
      &     dmat(1,inddmatg),nstate,ierr,errstrng)
           if(ierr.ne.izero) return
-          call dcopy(nstr,dstate(1,indstateg),ione,scur(nstr*(l-1)),
+          call dcopy(nstr,dstate(1,indstateg),ione,scur(nstr*(l-1)+1),
      &     ione)
-          indstateg=indstateg+incstate
-          inddmatg=inddmatg+nddmat
+          indstateg=indstateg+nstate
+          inddmatg=inddmatg+ione
         end do
+cdebug        write(6,*) "scur:",(scur(idb),idb=1,nstr*ngauss)
 c
 c...  compute equivalent nodal loads
 c
-        call fill(p,zero,ndof*nen)
+        call fill(p,zero,nee)
         call eforce(xl,sh(1,1,1,ietype),shj(1,1,1,ietype),det,
      &   gauss(1,1,ietype),scur,p,iel,nen,ngauss,getshape,bmatrix,ierr,
      &   errstrng)
+cdebug        write(6,*) "p:",(p(idb),idb=1,nee)
         if(ierr.ne.izero) return
         if(numrot.ne.izero) call rpforc(p,skew,ien(indien),numnp,nen)
         call addfor(b,p,lm(1,indien),lmx(1,indien),neq,nee)
+cdebug        write(6,*) "b:",(b(idb),idb=1,neq)
       end do
       return
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.11 2004/07/21 19:23:24 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.12 2004/08/02 21:10:43 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
