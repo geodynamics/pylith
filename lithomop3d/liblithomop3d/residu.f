@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -52,15 +51,11 @@ c
       integer neq,nextflag,numnp,iter,itmaxp,idebug,idout,kto,kw
       integer id(ndof,numnp),idx(ndof,numnp)
       double precision bextern(nextflag*neq),bintern(neq),bresid(neq)
-      double precision dispvec(neq)
+      double precision dispvec(neq),gtol(3),gi(3),gprev(3),gcurr(3)
       logical converge
 c
 c...  included dimension and type statements
 c
-      include "gtol_dim.inc"
-      include "gi_dim.inc"
-      include "gprev_dim.inc"
-      include "gcurr_dim.inc"
 c
 c...  intrinsic functions
 c
@@ -80,10 +75,6 @@ cdebug      integer idb
       logical debug,div(3)
 c
 cdebug      write(6,*) "Hello from residu_f!"
-cdebug      write(6,*) "bextern:",(bextern(idb),idb=1,neq)
-cdebug      write(6,*) "bintern:",(bintern(idb),idb=1,neq)
-cdebug      write(6,*) "bresid:",(bresid(idb),idb=1,neq)
-cdebug      write(6,*) "dispvec:",(dispvec(idb),idb=1,neq)
 c
       tmp(3)=zero
       debug=(idebug.eq.1).and.(idout.gt.1)
@@ -150,11 +141,6 @@ c
         write(kto,900) gcurr(1),gcurr(2),gcurr(3),gi(1),gi(2),gi(3),
      &   acc(1),acc(2),acc(3)
       end if
-cdebug      write(6,*) "From end of residu_f!"
-cdebug      write(6,*) "bextern:",(bextern(idb),idb=1,neq)
-cdebug      write(6,*) "bintern:",(bintern(idb),idb=1,neq)
-cdebug      write(6,*) "bresid:",(bresid(idb),idb=1,neq)
-cdebug      write(6,*) "dispvec:",(dispvec(idb),idb=1,neq)
 800   format(/,
      & '   WARNING!  Apparent divergence in iteration #',i5,'!',//)
 810   format(/,
@@ -170,7 +156,7 @@ cdebug      write(6,*) "dispvec:",(dispvec(idb),idb=1,neq)
       end
 c
 c version
-c $Id: residu.f,v 1.3 2005/01/05 22:33:11 willic3 Exp $
+c $Id: residu.f,v 1.4 2005/03/29 21:43:32 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
