@@ -164,6 +164,7 @@ class Lithomop3d_run(Component):
 
         self.asciiOutputFile = lm3dsetup.asciiOutputFile
         self.plotOutputFile = lm3dsetup.plotOutputFile
+        self.ucdOutputRoot = lm3dsetup.ucdOutputRoot
 
 	print ""
         print "Hello from lm3drun.initialize (end)!"
@@ -357,7 +358,8 @@ class Lithomop3d_run(Component):
                 self.pointerToListArrayNprint,
                 self.pointerToIstatout,
                 self.asciiOutputFile,
-                self.plotOutputFile)
+                self.plotOutputFile,
+                self.ucdOutputRoot)
 
         # Perform time-dependent solution, if requested.
 
@@ -454,7 +456,8 @@ class Lithomop3d_run(Component):
                 self.pointerToListArrayNprint,
                 self.pointerToIstatout,
                 self.asciiOutputFile,
-                self.plotOutputFile)
+                self.plotOutputFile,
+                self.ucdOutputRoot)
                           
 	print ""
         print "Hello from lm3drun.run (end)!"
@@ -471,6 +474,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.5 2004/08/12 17:11:17 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.6 2004/08/25 01:47:36 willic3 Exp $
 
 # End of file 
