@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine unlock(b,btot,id,iwink,idhist,ibond,bond,histry,
-     & nstep,ndof,numnp,nwink,nhist,neq,numdif,lastep,iflag)
+     & nstep,numnp,nwink,nhist,neq,numdif,lastep,iflag)
 c
 c       program to remove the winkler forces and leave the applied
 c       forces at a specified step.  code uses load history factors
@@ -38,17 +38,21 @@ c       for forces, if they are defind
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nstep,ndof,numnp,nwink,nhist,neq,numdif,lastep,iflag
+      integer nstep,numnp,nwink,nhist,neq,numdif,lastep,iflag
       integer id(ndof,numnp),iwink(2,nwink),idhist(numnp)
       integer ibond(ndof,numnp)
       double precision b(neq),btot(neq),bond(ndof,numnp)
       double precision histry(nhist,lastep+1)
 c
-c...  defined constants
-c
-      include "rconsts.inc"
+c...  local constants
 c
       double precision cutoff
       parameter(cutoff=0.8d0)
@@ -62,24 +66,24 @@ cdebug      write(6,*) "Hello from unlock_f!"
 c
       do i=1,ndof
         do j=1,numnp
-          if(id(i,j).ne.0) then
+          if(id(i,j).ne.izero) then
             do k=1,nwink
               idk=iwink(2,k)
               if(id(i,j).eq.idk) then
                 mode=iwink(1,k)
-                if(mode.lt.0) then
+                if(mode.lt.izero) then
                   ihist=-mode
                   diff=histry(ihist,nstep+1)-histry(ihist,nstep)
                   if(diff.lt.-cutoff) then
-                    if(iflag.eq.1) then
+                    if(iflag.eq.ione) then
                       idforc=ibond(i,j)
                       forc=bond(i,j)
-                    else if(iflag.eq.2) then
+                    else if(iflag.eq.itwo) then
                       idforc=idhist(j)
                       forc=zero
-                      if(numdif.ne.0) forc=bond(i,j)
+                      if(numdif.ne.izero) forc=bond(i,j)
                     end if
-                    if(idforc.eq.0) then
+                    if(idforc.eq.izero) then
                       b(idk)=-btot(idk)+forc
                     else
                       b(idk)=-btot(idk)+forc*histry(idforc,nstep+1)
@@ -97,7 +101,7 @@ c
       end
 c
 c version
-c $Id: unlock.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: unlock.f,v 1.2 2004/07/12 21:04:56 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
