@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine scan_wink(ndof,nwinke,nwink,kr,ierr,wfile)
+      subroutine scan_wink(nwinke,nwink,kr,wfile,ierr,errstrng)
 c
 c...  subroutine to perform an initial scan of the winkler BC
 c     file to determine the number of winkler BC.
@@ -38,15 +38,19 @@ c     Error codes:
 c         0:  No error
 c         1:  Error opening input file (no exception should be raised
 c             in this case since a winkler BC file is optional)
-c         2:  Units not specified (not applicable for this routine)
 c         3:  Read error
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,nwinke,nwink,kr,ierr
-      character wfile*(*)
+      integer nwinke,nwink,kr,ierr
+      character wfile*(*),errstrng*(*)
 c
 c...  local variables
 c
@@ -56,9 +60,9 @@ c
 c
 c...  open input file
 c
-      ierr=0
-      nwinke=0
-      nwink=0
+      ierr=izero
+      nwinke=izero
+      nwink=izero
       open(kr,file=wfile,status="old",err=10)
 c
 c... scan the file, counting the number of entries.
@@ -71,10 +75,10 @@ c
  40   continue
         read(kr,*,end=10,err=30) n,(iwink(j),j=1,ndof),
      &   (wink(j),j=1,ndof)
-        nwinke=nwinke+1
-        nnz=0
+        nwinke=nwinke+ione
+        nnz=izero
         do j=1,ndof
-          if(iwink(j).ne.0) nnz=nnz+1
+          if(iwink(j).ne.izero) nnz=nnz+ione
         end do
         nwink=nwink+nnz
         go to 40
@@ -96,13 +100,14 @@ c...  read error
 c
  30   continue
         ierr=3
+        errstrng="scan_wink"
         close(kr)
         return
 c
       end
 c
 c version
-c $Id: scan_wink.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: scan_wink.f,v 1.2 2004/07/12 20:21:11 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
