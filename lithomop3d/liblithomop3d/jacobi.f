@@ -36,20 +36,18 @@ c   using Jacobi rotations.  Taken from Numerical Recipes.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "rconsts.inc"
+      integer nmax
+      parameter (nmax=100)
+      double precision eps,tval,gval
+      parameter(eps=1.0d-18,tval=0.2d0,gval=100.0d0)
+c
 c...  subroutine arguments
 c
       integer n,np,nrot
       double precision a(np,np),d(np),v(np,np)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
-c
-      integer nmax
-      parameter (nmax=100)
-c
-      double precision eps,tval,gval
-      parameter(eps=1.0d-18,tval=0.2d0,gval=100.0d0)
 c
 c...  intrinsic functions
 c
@@ -150,7 +148,7 @@ c
       end
 c
 c version
-c $Id: jacobi.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: jacobi.f,v 1.2 2004/07/07 15:34:15 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
