@@ -41,18 +41,20 @@ PROJ_CXX_SRCLIB = -ljournal -llithomop3d
 PROJ_SRCS = \
 	array.cc \
 	bindings.cc \
-	exceptions.cc \
 	elastc.cc \
+	exceptionhandler.cc \
+	exceptions.cc \
 	input_misc.cc \
+	misc.cc \
 	parser.cc \
 	scanner.cc \
+	setup.cc \
 	sparse.cc \
-	viscos.cc \
-	misc.cc
+	viscos.cc
 
 
 # version
-# $Id: Make.mm,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+# $Id: Make.mm,v 1.2 2004/07/20 20:29:22 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
