@@ -30,53 +30,54 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine ldupdat(d,dx,tfault,dl,xl,ien,lmx,lmf,
-     & ndof,nsd,nen,numnp,numfn,numslp,iopt,ldtmp)
+     & nen,numnp,numfn,numslp)
 c
 c...subroutine to update local coordinates for large deformation
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,nsd,nen,numnp,numfn,numslp,iopt,ldtmp
+      integer nen,numnp,numfn,numslp
       integer ien(nen),lmx(ndof,nen),lmf(nen)
       double precision d(ndof,numnp),dx(ndof,numnp),tfault(ndof,numfn)
       double precision dl(ndof*nen),xl(nsd*nen)
 c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
-c
 c...  local variables
 c
-      integer i
 c
 c*      write(6,*) "Hello from ldupdat_f"
 c
       call ldisp(dl,d,ien,ndof,nen,numnp)
       if(numfn.ne.0) call adfldp(dl,lmf,tfault,ndof,nen,numfn)
       if(numslp.ne.0) call addsn(dl,dx,ien,lmx,ndof,nen,numnp)
-      if(iopt.eq.1.and.ldtmp.ne.0) then
-        if(nsd.eq.ndof) then
-          call daxpy(nen*nsd,one,dl,ione,xl,ione)
+      call daxpy(nen*nsd,one,dl,ione,xl,ione)
+clater      if(iopt.eq.1.and.ldtmp.ne.0) then
+clater        if(nsd.eq.ndof) then
+clater          call daxpy(nen*nsd,one,dl,ione,xl,ione)
 c
 c...  Ugly (temporary) kludge to handle case where ndof.ne.nsd.
 c     I could use this same setup for all cases, but it's probably
 c     slower, and the special case only applies to out-of-plane
 c     problems.
 c
-        else
-          do i=1,nsd
-            call daxpy(nen,one,dl(i),ndof,xl(i),nsd)
-          end do
-        end if
-      end if
+clater        else
+clater          do i=1,nsd
+clater            call daxpy(nen,one,dl(i),ndof,xl(i),nsd)
+clater          end do
+clater        end if
+clater      end if
       return
       end
 c
 c version
-c $Id: ldupdat.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: ldupdat.f,v 1.2 2004/07/07 15:54:10 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
