@@ -29,17 +29,23 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine loadx(b,diforc,histry,idx,idhist,ndof,neq,numnp,
-     & nhist,nstep,lastep,idout,kto,kw)
+      subroutine loadx(b,diforc,histry,idx,idhist,neq,numnp,
+     & nhist,nstep,lastep,ierr,errstrng)
 c
 c...program to transfer differential forces into global load vector
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,neq,numnp,nhist,nstep,lastep,idout,kto,kw
+      integer neq,numnp,nhist,nstep,lastep,ierr
       integer idx(ndof,numnp),idhist(numnp)
+      character errstrng*(*)
       double precision b(neq),diforc(ndof,numnp),histry(nhist,lastep+1)
 c
 c...  local variables
@@ -51,31 +57,29 @@ cdebug      write(6,*) "Hello from loadx_f!"
 c
       do j=1,numnp
         ihist=idhist(j)
-        if((ihist.gt.nhist).or.(ihist.lt.0)) then
-          if(idout.gt.1) write(kw,1000) ihist,j
-          write(kto,1000) ihist,j
-          stop
+        if((ihist.gt.nhist).or.(ihist.lt.izero)) then
+          ierr=100
+          errstrng="loadx"
+          return
         end if
         do i=1,ndof
           k=idx(i,j)
-          if(k.ne.0) then
-            if((ihist.eq.0).and.(nstep.eq.0)) b(k)=b(k)+diforc(i,j)
-            if(ihist.gt.0) then
+          if(k.ne.izero) then
+            if((ihist.eq.izero).and.(nstep.eq.izero)) 
+     &       b(k)=b(k)+diforc(i,j)
+            if(ihist.gt.izero) then
               diff=histry(ihist,nstep+1)
-              if(nstep.gt.0) diff=diff-histry(ihist,nstep)
+              if(nstep.gt.izero) diff=diff-histry(ihist,nstep)
               b(k)=b(k)+diforc(i,j)*diff
             end if
           end if
         end do
       end do
       return
-1000  format(//' fatal slippery node error!'//
-     & ' attempt to use undefined load history # ',i5,
-     & ' for differential forces at node # ',i7)
       end
 c
 c version
-c $Id: loadx.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: loadx.f,v 1.2 2004/07/07 17:57:13 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
