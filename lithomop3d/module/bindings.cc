@@ -60,6 +60,10 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_allocateDouble__name__, pylithomop3d_allocateDouble,
      METH_VARARGS, pylithomop3d_allocateDouble__doc__},
 
+    // compute maximum number of nonzero entries in stiffness matrix
+    {pylithomop3d_cmp_stiffsz__name__, pylithomop3d_cmp_stiffsz,
+     METH_VARARGS, pylithomop3d_cmp_stiffsz__doc__},
+
     // convert a double list to an array
     {pylithomop3d_doubleListToArray__name__, pylithomop3d_doubleListToArray,
      METH_VARARGS, pylithomop3d_doubleListToArray__doc__},
@@ -256,6 +260,10 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_write_subiter__name__, pylithomop3d_write_subiter,
      METH_VARARGS, pylithomop3d_write_subiter__doc__},
 
+    // write mesh info to UCD file
+    {pylithomop3d_write_ucd_mesh__name__, pylithomop3d_write_ucd_mesh,
+     METH_VARARGS, pylithomop3d_write_ucd_mesh__doc__},
+
 
     // copyright note
     {pylithomop3d_copyright__name__, pylithomop3d_copyright,
@@ -267,6 +275,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
 };
 
 // version
-// $Id: bindings.cc,v 1.2 2004/07/20 14:57:47 willic3 Exp $
+// $Id: bindings.cc,v 1.3 2004/08/25 01:33:07 willic3 Exp $
 
 // End of file
