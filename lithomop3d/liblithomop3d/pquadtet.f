@@ -53,11 +53,11 @@ c
 c
 c...  local constants
 c
-      double precision r(10),s(10),t(10),u(10)
-      data r/ 1d0, 0d0, 0d0, 0d0,0.5d0,0.0d0,0.5d0,0.5d0,0.0d0,0.0d0/
-      data s/ 0d0, 1d0, 0d0, 0d0,0.5d0,0.5d0,0.0d0,0.0d0,0.5d0,0.0d0/
-      data t/ 0d0, 0d0, 1d0, 0d0,0.0d0,0.5d0,0.5d0,0.0d0,0.0d0,0.5d0/
-      data u/ 0d0, 0d0, 0d0, 1d0,0.0d0,0.0d0,0.0d0,0.5d0,0.5d0,0.5d0/
+c*      double precision r(10),s(10),t(10),u(10)
+c*      data r/ 1d0, 0d0, 0d0, 0d0,0.5d0,0.0d0,0.5d0,0.5d0,0.0d0,0.0d0/
+c*      data s/ 0d0, 1d0, 0d0, 0d0,0.5d0,0.5d0,0.0d0,0.0d0,0.5d0,0.0d0/
+c*      data t/ 0d0, 0d0, 1d0, 0d0,0.0d0,0.5d0,0.5d0,0.0d0,0.0d0,0.5d0/
+c*      data u/ 0d0, 0d0, 0d0, 1d0,0.0d0,0.0d0,0.0d0,0.5d0,0.5d0,0.5d0/
 c
 c...  intrinsic functions
 c
@@ -68,9 +68,15 @@ c
 c
 c...  local variables
 c
-      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
-      double precision g1,g2,rr,ss,tt,uu,drr,dss,dtt,duu
+c*      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
+      integer nen,ngauss,nec,nee,l,nshsize,ngssize
+c*      double precision g1,g2,rr,ss,tt,uu,drr,dss,dtt,duu
+      double precision g1,g2,rr,ss,tt,uu
       double precision tetvol
+cdebug      integer idb,jdb
+cdebug      double precision dbsum
+c
+cdebug      write(6,*) "Hello from pquadtet_f!"
 c
 c...  definitions
 c
@@ -108,28 +114,78 @@ c
       infetype(4)=nee
 c
       do l=1,ngauss
-        do i=1,nen
-          rr=r(i)*gauss(1,l)
-          ss=s(i)*gauss(2,l)
-          tt=t(i)*gauss(3,l)
-          uu=one-rr-ss-tt
-          if(i.le.4) then
-            sh(4,i,l)=rr*(two*rr-one)+ss*(two*ss-one)+tt*(two*tt-one)+
-     &       uu*(two*uu-one)
-            sh(1,i,l)=r(i)*(four*rr-one)-u(i)*(four*uu-one)
-            sh(2,i,l)=s(i)*(four*ss-one)-u(i)*(four*uu-one)
-            sh(3,i,l)=t(i)*(four*tt-one)-u(i)*(four*uu-one)
-          else
-            sh(4,i,l)=max(rr,one)*max(ss,one)*max(tt,one)*max(uu,one)
-            drr=eight*r(i)*max(ss,one)*max(tt,one)*max(uu,one)
-            dss=eight*s(i)*max(rr,one)*max(tt,one)*max(uu,one)
-            dtt=eight*t(i)*max(rr,one)*max(ss,one)*max(uu,one)
-            duu=(-eight)*u(i)*max(rr,one)*max(ss,one)*max(tt,one)
-            sh(1,i,l)=drr-duu
-            sh(2,i,l)=dss-duu
-            sh(3,i,l)=dtt-duu
-          end if
-        end do
+        rr=gauss(1,l)
+        ss=gauss(2,l)
+        tt=gauss(3,l)
+        uu=g1
+        if(l.eq.4) uu=g2
+        if(intord.eq.itwo) uu=fourth
+cdebug        write(6,*) "l:",l
+cdebug        write(6,*) "rr,ss,tt,uu:",rr,ss,tt,uu
+        sh(4,1,l)=rr*(two*rr-one)
+        sh(1,1,l)=four*rr-one
+        sh(2,1,l)=zero
+        sh(3,1,l)=zero
+        sh(4,2,l)=ss*(two*ss-one)
+        sh(1,2,l)=zero
+        sh(2,2,l)=four*ss-one
+        sh(3,2,l)=zero
+        sh(4,3,l)=tt*(two*tt-one)
+        sh(1,3,l)=zero
+        sh(2,3,l)=zero
+        sh(3,3,l)=four*tt-one
+        sh(4,4,l)=uu*(two*uu-one)
+        sh(1,4,l)=-(four*uu-one)
+        sh(2,4,l)=-(four*uu-one)
+        sh(3,4,l)=-(four*uu-one)
+        sh(4,5,l)=four*rr*ss
+        sh(1,5,l)=four*ss
+        sh(2,5,l)=four*rr
+        sh(3,5,l)=zero
+        sh(4,6,l)=four*ss*tt
+        sh(1,6,l)=zero
+        sh(2,6,l)=four*tt
+        sh(3,6,l)=four*ss
+        sh(4,7,l)=four*rr*tt
+        sh(1,7,l)=four*tt
+        sh(2,7,l)=zero
+        sh(3,7,l)=four*rr
+        sh(4,8,l)=four*rr*uu
+        sh(1,8,l)=four*(uu-rr)
+        sh(2,8,l)=-(four*rr)
+        sh(3,8,l)=-(four*rr)
+        sh(4,9,l)=four*ss*uu
+        sh(1,9,l)=-(four*ss)
+        sh(2,9,l)=four*(uu-ss)
+        sh(3,9,l)=-(four*ss)
+        sh(4,10,l)=four*tt*uu
+        sh(1,10,l)=-(four*tt)
+        sh(2,10,l)=-(four*tt)
+        sh(3,10,l)=four*(uu-tt)
+c*          if(i.le.4) then
+c*            sh(4,i,l)=rr*(two*rr-one)+ss*(two*ss-one)+tt*(two*tt-one)+
+c*     &       uu*(two*uu-one)
+c*            sh(1,i,l)=r(i)*(four*rr-one)-u(i)*(four*uu-one)
+c*            sh(2,i,l)=s(i)*(four*ss-one)-u(i)*(four*uu-one)
+c*            sh(3,i,l)=t(i)*(four*tt-one)-u(i)*(four*uu-one)
+c*          else
+c*            sh(4,i,l)=max(rr,one)*max(ss,one)*max(tt,one)*max(uu,one)
+c*            drr=eight*r(i)*max(ss,one)*max(tt,one)*max(uu,one)
+c*            dss=eight*s(i)*max(rr,one)*max(tt,one)*max(uu,one)
+c*            dtt=eight*t(i)*max(rr,one)*max(ss,one)*max(uu,one)
+c*            duu=(-eight)*u(i)*max(rr,one)*max(ss,one)*max(tt,one)
+c*            sh(1,i,l)=drr-duu
+c*            sh(2,i,l)=dss-duu
+c*            sh(3,i,l)=dtt-duu
+c*          end if
+c*        end do
+cdebug        dbsum=zero
+cdebug        do idb=1,nen
+cdebug          write(6,*) "sh:",(sh(jdb,idb,l),jdb=1,4)
+cdebug          dbsum=dbsum+sh(4,idb,l)
+cdebug        end do
+cdebug        write(6,*) "l, sum sh:",l,dbsum
+cdebug        write(6,*) "gauss:",(gauss(idb,l),idb=1,4)
       end do
       call dcopy(nshsize,sh,ione,shj,ione)
 c
@@ -137,7 +193,7 @@ c
       end
 c
 c version
-c $Id: pquadtet.f,v 1.2 2004/07/07 19:53:01 willic3 Exp $
+c $Id: pquadtet.f,v 1.3 2004/08/02 21:21:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
