@@ -34,7 +34,7 @@ c
      & x,d,deld,numnp,                                                  ! global
      & s,stemp,                                                         ! stiff
      & dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,             ! elemnt
-     & infmat,numat,                                                    ! materl
+     & infmat,infmatmod,numat,                                          ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
@@ -51,6 +51,7 @@ c...  parameter definitions
 c
       include "ndimens.inc"
       include "nshape.inc"
+      include "materials.inc"
       include "nconsts.inc"
       include "rconsts.inc"
 c
@@ -58,8 +59,8 @@ c...  subroutine arguments
 c
       integer neq,numnp,ndmatsz,numelt,nconsz,numat,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
-      integer infiel(6,numelt),iddmat(nstr,nstr),infmat(6,numat)
-      integer infetype(4,netypes)
+      integer infiel(6,numelt),iddmat(nstr,nstr),infmat(3,numat)
+      integer infmatmod(5,nmatmodmax),infetype(4,netypes)
       character errstrng*(*)
       double precision bdisp(neq),x(nsd,numnp),d(ndof,numnp)
       double precision deld(ndof,numnp),s(neemax*neemax)
@@ -75,8 +76,8 @@ c
 c
 c...  local variables
 c
-      integer matgpt,imat,nmatel,imatvar,ngtest,ielg,iel,indien,ietype
-      integer nen,inddmat,ngauss,nee,ngaussdim,i
+      integer matgpt,imat,matmodel,nmatel,imatvar,ngtest,ielg,iel,indien
+      integer ietype,nen,inddmat,ngauss,nee,ngaussdim,i
       double precision p(60),dld(60)
 c
 cdebug      write(6,*) "Hello from formdf_ss_f!"
@@ -86,8 +87,9 @@ c
 c...  loop over material groups
 c
       do imat=1,numat
+        matmodel=infmat(1,imat)
         nmatel=infmat(2,imat)
-        imatvar=infmat(4,imat)
+        imatvar=infmatmod(4,matmodel)
         ngtest=0
         if(imatvar.eq.izero) ngtest=ngaussmax
         do ielg=matgpt,matgpt+nmatel-1
@@ -137,7 +139,7 @@ c
       end
 c
 c version
-c $Id: formdf_ss.f,v 1.3 2004/06/21 19:49:04 willic3 Exp $
+c $Id: formdf_ss.f,v 1.4 2004/07/08 21:09:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
