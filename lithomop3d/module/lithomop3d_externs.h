@@ -661,6 +661,7 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
+		   int *,
 		   char *,
 		   char *,
 		   int *,
@@ -1113,6 +1114,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.2 2004/07/20 20:26:00 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.3 2004/07/20 21:30:41 willic3 Exp $
 
 // End of file
