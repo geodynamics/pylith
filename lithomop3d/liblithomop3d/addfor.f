@@ -38,6 +38,7 @@ c
 c
 c... parameter definitions
 c
+      include "nconsts.inc"
       include "rconsts.inc"
 c
 c...  subroutine arguments
@@ -59,14 +60,14 @@ c
         k=lm(j)
         l=abs(lmx(j))
         sgn=sign(one,dble(lmx(j)))
-        if(k.ne.0) b(k)=b(k)+p(j)
-        if(l.ne.0) b(l)=b(l)+p(j)*sgn
+        if(k.ne.izero) b(k)=b(k)+p(j)
+        if(l.ne.izero) b(l)=b(l)+p(j)*sgn
       end do
       return
       end
 c
 c version
-c $Id: addfor.f,v 1.2 2004/06/18 14:45:46 willic3 Exp $
+c $Id: addfor.f,v 1.3 2004/07/06 20:10:09 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
