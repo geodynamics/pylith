@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -29,13 +28,14 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_connect(neni,infetype,infmat,infmatmod,ien,infiel,
-     & indmat,imgrp,nconsz,nprestrflag,numelt,ngausstot,numnp,numat,
-     & nstatesz,nstatesz0,ndmatsz,kr,kw,kp,idout,idsk,ifile,ofile,pfile,
+      subroutine read_connect(infmatmod,ivflist,nen,ngauss,ien,ivfamily,
+     & ivftmp,maxvfamilies,nvfamilies,nprestrflag,numelv,numnp,
+     & nstatesz,nstatesz0,npropsz,kr,kw,kp,idout,idsk,ifile,ofile,pfile,
      & ierr,errstrng)
 c
 c      this subroutine reads element types and connectivities, material
-c      types, and infinite element info.
+c      types, and infinite element info, and sorts things into element
+c      families.
 c      The initial element type and the infinite element info are used
 c      together to form the final element types, which includes all
 c      infinite element permutations.
@@ -61,11 +61,10 @@ c
 c
 c...  subroutine arguments
 c
-      integer nconsz,nprestrflag,numelt,ngausstot,numnp,numat
-      integer nstatesz,ndmatsz,kr,kw,kp,idout,idsk,ierr
-      integer neni(netypesi),infetype(4,netypes),infmat(3,numat)
-      integer infmatmod(5,nmatmodmax),ien(nconsz),infiel(7,numelt)
-      integer indmat(numat),imgrp(numat)
+      integer nen,ngauss,maxvfamilies,nvfamilies,nprestrflag,numelv
+      integer numnp,nstatesz,nstatesz0,npropsz,kr,kw,kp,idout,idsk,ierr
+      integer infmatmod(6,nmatmodmax),ivflist(2,maxvfamilies)
+      integer ivfamily(5,nvfamilies),ivftmp(nvfamilies),ien(nen,numelv)
       character ifile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  local variables
@@ -79,71 +78,76 @@ c
 c
 c...  local variables
 c
-      integer imat,npage,matmod,i,n,j,inf,ietypei,ngauss,nstate,imatvar
-      integer ietype,nen,i1,i2,incstate0,nstatesz0
+      integer ifam,incstate0,nstate0max,nelfamily,j,matmod,nstate
+      integer nstate0,nprop,i,n,ietypev,imat,inf,iloc,npage,ielf,ielg
+      integer itmp(nenmax)
 cdebug      integer idb,jdb
 c
 cdebug      write(6,*) "Hello from read_connect_f!"
-cdebug      write(6,*) nconsz,numelt,numnp,numat,nstatesz,ndmatsz,kr,kw,kp
-cdebug      write(6,*) (neni(idb),idb=1,netypesi)
-cdebug      write(6,*) "infetype:"
-cdebug      do idb=1,netypes
-cdebug        write(6,*) (infetype(jdb,idb),jdb=1,4)
-cdebug      end do
-cdebug      write(6,*) "infmat:"
-cdebug      do idb=1,numat
-cdebug        write(6,*) (infmat(jdb,idb),jdb=1,3)
-cdebug      end do
-cdebug      write(6,*) "infmatmod:"
-cdebug      do idb=1,nmatmodmax
-cdebug        write(6,*) (infmatmod(jdb,idb),jdb=1,5)
-cdebug      end do
-      call ifill(ien,izero,nconsz)
-      call ifill(indmat,izero,numat)
-      call ifill(imgrp,izero,numat)
-      call ifill(infiel,izero,iseven*numelt)
+      call ifill(ien,izero,nen*numelv)
+      call ifill(ivfamily,izero,5*nvfamilies)
+      ifam=izero
       nstatesz=izero
-      ngausstot=izero
-      ndmatsz=izero
-      incstate0=izero
       nstatesz0=izero
+      npropsz=izero
+      incstate0=izero
+      nstate0max=izero
+      nelfamily=izero
       if(nprestrflag.ne.izero) incstate0=ione
       ierr=izero
 c
-c...  set initial pointers for different material types
+c...  set up element family information array (ivfamily)
 c
-      indmat(1)=ione
-      do imat=2,numat
-        indmat(imat)=indmat(imat-1)+infmat(2,imat-1)
+      do j=1,maxvfamilies
+        if(ivflist(1,j).ne.izero) then
+          ifam=ifam+ione
+          if(ifam.eq.ione) then
+            ivftmp(ifam)=ione
+          else
+            ivftmp(ifam)=ivftmp(ifam-ione)+nelfamily
+          end if
+          nelfamily=ivflist(1,j)
+          matmod=ivflist(2,j)
+          ivfamily(1,ifam)=nelfamily
+          ivfamily(2,ifam)=matmod
+          nstate=infmatmod(2,matmod)
+          nstate0=infmatmod(6,matmod)
+          nstate0max=max(nstate0max,nstate0)
+          nprop=infmatmod(3,matmod)
+          ivfamily(3,ifam)=nstatesz+ione
+          ivfamily(4,ifam)=nstatesz0+ione
+          ivfamily(5,ifam)=npropsz+ione
+          nstatesz=nstatesz+nstate*ngauss*nelfamily
+          nstatesz0=nstatesz0+incstate0*nstate0*ngauss*nelfamily
+          npropsz=npropsz+nprop
+        end if
       end do
-cdebug      write(6,*) "indmat:",(indmat(idb),idb=1,numat)
+c
+c...  set size of state0 array if there are no prestresses
+c
+      if(nprestrflag.eq.izero) nstatesz0=ngauss*nstate0max
 c
 c...  read connectivity, material number, and infinite element info
 c
-      infiel(1,1)=ione
       open(kr,file=ifile,status="old",err=20)
       call pskip(kr)
-      do i=1,numelt
-        if(i.ne.ione) infiel(1,i)=infiel(1,i-1)+neni(ietypei)
-        read(kr,*,end=30,err=30) n,ietypei,imat,inf,
-     &   (ien(j),j=infiel(1,i),infiel(1,i)+neni(ietypei)-1)
-        infiel(2,i)=imat
+      do i=1,numelv
+        read(kr,*,end=30,err=30) n,ietypev,imat,inf,(itmp(j),j=1,nen)
+        ifam=imat
+        matmod=ivfamily(2,ifam)
 c
-c...  set global element type, after first checking for illegal
-c     element type
+c...  check for illegal element type
 c
-        if(ietypei.le.izero.or.ietypei.gt.netypesi) then
+        if(ietypev.le.izero.or.ietypev.gt.netypesi) then
           ierr=106
           errstrng="read_connect"
           return
         end if
-        call infcmp(ietypei,infiel(3,i),inf)
+clater        call infcmp(ietypev,infiel(3,i),inf)
 c
-c...  index element into its material type group, after first checking
-c     for illegal material type or material model
+c...  check for illegal material type or material model
 c
-        matmod=infmat(1,imat)
-        if(imat.le.izero.or.imat.gt.numat) then
+        if(imat.le.izero.or.imat.gt.nvfamilies) then
           ierr=107
           errstrng="read_connect"
           return
@@ -153,64 +157,37 @@ c
           errstrng="read_connect"
           return
         end if
-cdebug        write(6,*) "i,imat,indmat(imat):",i,imat,indmat(imat)
-        infiel(4,indmat(imat))=i
-        indmat(imat)=indmat(imat)+ione
 c
-c...  set state variable and material matrix indices, and increment the
-c     total size of the state variable and material matrices.
+c...  store element nodes in the proper family and update the pointer
+c     array for that family
 c
-        ngauss=infetype(1,infiel(3,i))
-        infiel(5,i)=nstatesz+ione
-        infiel(7,i)=nstatesz0+ione
-        ngausstot=ngausstot+ngauss
-        nstate=infmatmod(2,matmod)
-        imatvar=infmatmod(4,matmod)
-        nstatesz=nstatesz+nstate*ngauss
-        nstatesz0=nstatesz0+incstate0*ngauss
-        if(imatvar.eq.izero) then
-          if(imgrp(imat).eq.izero) then
-            infiel(6,i)=ndmatsz+ione
-            ndmatsz=ndmatsz+ngaussmax
-            imgrp(imat)=infiel(6,i)
-          else
-            infiel(6,i)=imgrp(imat)
-cdebug            infiel(6,i)=infiel(6,infiel(4,i-1))
-          end if
-        else
-          infiel(6,i)=ndmatsz+ione
-          ndmatsz=ndmatsz+ngauss
-        end if
-cdebug        write(6,*) "i,infiel:",i,(infiel(jdb,i),jdb=1,7)
+        iloc=ivftmp(imat)
+        call iquate(ien(1,iloc),itmp,nen)
+        ivftmp(imat)=ivftmp(imat)+ione
       end do
-      if(nprestrflag.eq.izero) nstatesz0=ngaussmax
       close(kr)
-cdebug      write(6,*) "infiel:"
-cdebug      do idb=1,numelt
-cdebug        write(6,*) idb,(infiel(jdb,idb),jdb=1,6)
-cdebug      end do
 c
 c...  output plot info, if desired
 c
       if(idsk.eq.ione) then
         open(kp,file=pfile,err=40,status="old",access="append")
-        write(kp,1000,err=50) numelt
-        do i=1,numelt
-          imat=infiel(2,i)
-          ietype=infiel(3,i)
-          ngauss=infetype(1,ietype)
-          nen=infetype(2,ietype)
-          i1=infiel(1,i)
-          i2=infiel(1,i)+nen-1
-          write(kp,1000) i,imat,ietype,ngauss,(ien(j),j=i1,i2)
+        write(kp,1000,err=50) numelv
+        ielg=izero
+        do ifam=1,nvfamilies
+          nelfamily=ivfamily(1,ifam)
+          matmod=ivfamily(2,ifam)
+          do ielf=1,nelfamily
+            ielg=ielg+ione
+            write(kp,1000) ielg,matmod,ietypev,ngauss,
+     &       (ien(j,ielg),j=1,nen)
+          end do
         end do
         close(kp)
       else if(idsk.eq.itwo) then
         open(kp,file=pfile,err=40,status="old",access="append",
      &   form="unformatted")
-        write(kp,err=50) numelt,nconsz
-        write(kp,err=50) infetype
-        write(kp,err=50) infiel
+        write(kp,err=50) numelv,nen,ngauss
+        write(kp,err=50) ivfamily
         write(kp,err=50) ien
         close(kp)
       end if
@@ -220,18 +197,19 @@ c
       if(idout.gt.izero) then
         open(kw,file=ofile,status="old",access="append")
         npage=50
-        do i=1,numelt
-          imat=infiel(2,i)
-          ietype=infiel(3,i)
-          ngauss=infetype(1,ietype)
-          nen=infetype(2,ietype)
-          i1=infiel(1,i)
-          i2=infiel(1,i)+nen-1
-          if(i.eq.ione.or.mod(n,npage).eq.izero) then
-            write(kw,2000)(head(j),j,j=1,nen)
-            write(kw,2500)
-          end if
-          write(kw,3000) i,imat,ietype,ngauss,(ien(j),j=i1,i2)
+        ielg=izero
+        do ifam=1,nvfamilies
+          nelfamily=ivfamily(1,ifam)
+          matmod=ivfamily(2,ifam)
+          do ielf=1,nelfamily
+            ielg=ielg+ione
+            if(ielg.eq.ione.or.mod(ielg,npage).eq.izero) then
+              write(kw,2000)(head(j),j,j=1,nen)
+              write(kw,2500)
+            end if
+            write(kw,3000) ielg,matmod,ietypev,ngauss,
+     &       (ien(j,ielg),j=1,nen)
+          end do
         end do
         write(kw,4000)
         close(kw)
@@ -239,12 +217,14 @@ c
 c
 c......test for zero or out-of-bound entries in ien array
 c
-      do i=1,nconsz
-        if(ien(i).le.izero.or.ien(i).gt.numnp) then
-          ierr=108
-          errstrng="read_connect"
-          return
-        end if
+      do n=1,numelv
+        do j=1,nen
+          if(ien(j,n).le.izero.or.ien(j,n).gt.numnp) then
+            ierr=108
+            errstrng="read_connect"
+            return
+          end if
+        end do
       end do
 c
 c...  normal return
@@ -297,7 +277,7 @@ c
       end
 c
 c version
-c $Id: read_connect.f,v 1.6 2005/02/24 00:17:58 willic3 Exp $
+c $Id: read_connect.f,v 1.7 2005/03/28 19:53:38 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
