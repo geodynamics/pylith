@@ -62,13 +62,13 @@ c...  local variables
 c
       integer ielg,ifam,nelfamily,matmodel,indstate,nstate
 c
-cdebug      write(6,*) "Hello from update_state_f!"
+cdebug      write(6,*) "Hello from update_state_drv_f!"
 c
       ielg=ione
 c
 c...  loop over element families
 c
-      do ifam=1,nelfamily
+      do ifam=1,nvfamilies
         nelfamily=ivfamily(1,ifam)
         matmodel=ivfamily(2,ifam)
         indstate=ivfamily(3,ifam)
@@ -143,7 +143,7 @@ c
       end
 c
 c version
-c $Id: update_state_drv.f,v 1.1 2005/03/22 22:23:26 willic3 Exp $
+c $Id: update_state_drv.f,v 1.2 2005/04/01 23:14:33 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
