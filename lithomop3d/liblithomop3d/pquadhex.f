@@ -76,8 +76,10 @@ c
 c...  local variables
 c
       integer nen,ngauss,nec,nee,i,l,l1,l2,l3,nshsize,ngssize
-      double precision g1,w1,w2,rr,ss,tt,rrw,ssw,ttw,drr,dss,dtt
+      double precision g1,rr,ss,tt,rrw,ssw,ttw,drr,dss,dtt
       double precision uu,dur,dus,dut,v,vi,rp,ri,sp,si,tp,ti
+      double precision w(3)
+cdebug      integer idb,jdb,kdb
 c
 c...  function definitions
 c
@@ -88,6 +90,9 @@ c
       dhquadr(ri,si,ti)=abs(ri*si*ti)*ri
       dhquads(ri,si,ti)=abs(ri*si*ti)*si
       dhquadt(ri,si,ti)=abs(ri*si*ti)*ti
+c
+cdebug      write(6,*) "Hello from pquadhex_f!"
+c
 c
 c...  definitions
 c
@@ -109,18 +114,19 @@ c
       if(intord.ne.2) then
         ngauss=27
         g1=sqrt(three/five)
-        w1=five/nine
-        w2=eight/nine
+        w(1)=five/nine
+        w(2)=eight/nine
+        w(3)=five/nine
         l=0
         do l3=1,3
-          tt=dble(l3-2)
-          ttw=tt*w1+(abs(tt)-one)*w2
+          tt=dble(l3-itwo)
+          ttw=w(l3)
           do l2=1,3
-            ss=dble(l2-2)
-            ssw=ss*w1+(abs(ss)-one)*w2
+            ss=dble(l2-itwo)
+            ssw=w(l2)
             do l1=1,3
-              rr=dble(l1-2)
-              rrw=rr*w1+(abs(rr)-one)*w2
+              rr=dble(l1-itwo)
+              rrw=w(l1)
               l=l+1
               gauss(1,l)=rr*g1
               gauss(2,l)=ss*g1
@@ -130,6 +136,33 @@ c
           end do
         end do
       end if
+c*      if(intord.ne.2) then
+c*        ngauss=27
+c*        g1=sqrt(three/five)
+c*        w1=five/nine
+c*        w2=eight/nine
+c*        l=0
+c*        do l3=1,3
+c*          tt=dble(l3-2)
+c*          ttw=tt*w1+(abs(tt)-one)*w2
+c*          do l2=1,3
+c*            ss=dble(l2-2)
+c*            ssw=ss*w1+(abs(ss)-one)*w2
+c*            do l1=1,3
+c*              rr=dble(l1-2)
+c*              rrw=rr*w1+(abs(rr)-one)*w2
+c*              l=l+1
+c*              gauss(1,l)=rr*g1
+c*              gauss(2,l)=ss*g1
+c*              gauss(3,l)=tt*g1
+c*              gauss(4,l)=rrw*ssw*ttw
+c*            end do
+c*          end do
+c*        end do
+c*      end if
+cdebug      do idb=1,ngauss
+cdebug        write(6,*) "gauss:",(gauss(jdb,idb),jdb=1,4)
+cdebug      end do
 c
       infetype(1)=ngauss
       infetype(2)=nen
@@ -154,13 +187,18 @@ c
           sh(3,i,l)=dtt*rr*ss*uu+dut*rr*ss*tt
         end do
       end do
+cdebug      do idb=1,ngauss
+cdebug        do jdb=1,nen
+cdebug          write(6,*) "sh:",(sh(kdb,jdb,idb),kdb=1,4)
+cdebug        end do
+cdebug      end do
       call dcopy(nshsize,sh,ione,shj,ione)
 c
       return
       end
 c
 c version
-c $Id: pquadhex.f,v 1.3 2004/07/07 19:40:22 willic3 Exp $
+c $Id: pquadhex.f,v 1.4 2004/08/02 21:20:44 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
