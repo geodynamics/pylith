@@ -38,7 +38,6 @@ c
      & gauss,sh,shj,infetype,netypes,                                   ! eltype
      & skew,nskdim,numrot,                                              ! skew
      & getshape,bmatrix,                                                ! bbar
-     & idout,kto,kw,                                                    ! ioinfo
      & ierr)                                                            ! errcode
 c
 c...program to compute forces due to kinematic boundary conditions
@@ -55,7 +54,7 @@ c
 c...  subroutine arguments
 c
       integer neq,nsd,ndof,numnp,nstr,nddmat,ndmatsz,numelt,nconsz,numat
-      integer netypes,nskdim,numrot,idout,kto,kw,ierr
+      integer netypes,nskdim,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
       integer infiel(6,numelt),iddmat(nstr,nstr),infmat(6,numat)
       integer infetype(4,netypes)
@@ -124,7 +123,6 @@ c
      &     ngauss,ngaussdim,nen,nee,                                    ! eltype
      &     skew,nskdim,numrot,                                          ! skew
      &     getshape,bmatrix,                                            ! bbar
-     &     idout,kto,kw,                                                ! ioinfo
      &     ierr)                                                        ! errcode
 c
           if(ierr.ne.izero) return
@@ -142,7 +140,7 @@ c
       end
 c
 c version
-c $Id: formdf_ss.f,v 1.1 2004/06/15 19:52:10 willic3 Exp $
+c $Id: formdf_ss.f,v 1.2 2004/06/16 20:23:33 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
