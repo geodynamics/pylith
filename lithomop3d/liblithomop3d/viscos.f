@@ -595,7 +595,7 @@ c
               call printd(d,deld,deltp,idslp,numnp,numnp,ione,
      &         idout,idsk,kto,kw,kp)
               call write_ucd_node_vals(d,deld,deltp,nstep,numnp,kucd,
-     &         ucdroot)
+     &         ucdroot,iprestress)
               call printf(tfault,dfault,deltp,nfault,numfn,idout,
      &         idsk,kw,kp)
               call printd(dx,deldx,deltp,idslp,numnp,numsn,itwo,
@@ -620,7 +620,7 @@ c
      &         infetype,                                                ! eltype
      &         deltp,nstep,                                             ! timdat
      &         istatout,                                                ! ioopts
-     &         kucd,ucdroot)                                            ! ioinfo
+     &         kucd,ucdroot,iprestress)                                 ! ioinfo
             end if
             ltim=.false.
             if(fulout) indexx=indexx+1
@@ -649,7 +649,7 @@ c
       end
 c
 c version
-c $Id: viscos.f,v 1.8 2005/01/18 20:32:31 willic3 Exp $
+c $Id: viscos.f,v 1.9 2005/01/19 20:38:41 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
