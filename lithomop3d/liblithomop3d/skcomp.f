@@ -63,7 +63,7 @@ c
       double precision dnm,rat
       double precision a(3),xx(5),yy(5),sd(5),xl(3,5),cov(3,3)
 c
-c*      write(6,*) "Hello from skcomp_f!"
+cdebug      write(6,*) "Hello from skcomp_f!"
 c
       ma=ithree
       nd=ifive
@@ -107,7 +107,8 @@ c
           sdmin=min(sdmin,sd(i))
         end do
         sd(nd)=half*sdmin
-        call lfit(xx,yy,sd,nd,a,ma,cov,ncvm,xl)
+        call lfit(xx,yy,sd,nd,a,ma,cov,ncvm,xl,ierr,errstrng)
+        if(ierr.ne.izero) return
         amag=one/sqrt(a(1)*a(1)+a(2)*a(2)+a(3)*a(3))
         a(1)=a(1)*amag
         a(2)=a(2)*amag
@@ -162,7 +163,7 @@ c*      call flush(17)
       end
 c
 c version
-c $Id: skcomp.f,v 1.3 2004/07/13 16:40:58 willic3 Exp $
+c $Id: skcomp.f,v 1.4 2004/08/12 02:26:24 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
