@@ -25,5 +25,5 @@
 #                 1 = Output plastic strain rate
 #                 2 = Output plastic strain increment
 # istatout1 istatout2 istatout3 istatout4 istatout5 istatout6 istatout7 istatout8
-      1         1         1         1         1         1         1         1
+      1         1         1         1         0         0         0         0
       1         1         1         1         1         1         1         1
