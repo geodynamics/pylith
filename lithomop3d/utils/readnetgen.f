@@ -363,14 +363,9 @@ c
         i1=1
         i2=2
       end if
-      write(6,*) "idir,i1,i2:",idir,i1,i2
-      write(6,*) "xl:",x(i1,iv(1)),x(i2,iv(1))
-      write(6,*) "xl:",x(i1,iv(2)),x(i2,iv(2))
-      write(6,*) "xl:",x(i1,iv(3)),x(i2,iv(3))
       acomp=half*abs(x(i1,iv(1))*(x(i2,iv(2))-x(i2,iv(3)))+
      &               x(i1,iv(2))*(x(i2,iv(3))-x(i2,iv(1)))+
      &               x(i1,iv(3))*(x(i2,iv(1))-x(i2,iv(2))))
-      write(6,*) "area:",acomp
       return
       end
 c
@@ -574,7 +569,6 @@ c
           end do
         end do
         tetcmp=tetcmp+sgn*a(1,i)*det3(cof)
-cdebug        write(6,*) "i,a,tetcmp:",i,(a(j,i),j=1,4)
       end do
       return
       end
