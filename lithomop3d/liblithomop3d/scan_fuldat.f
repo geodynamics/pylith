@@ -29,7 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine scan_fuldat(icode,lastep,icontr,kr,ierr,fofile)
+      subroutine scan_fuldat(icode,lastep,icontr,kr,fofile,ierr,
+     & errstrng)
 c
 c...  subroutine to perform an initial scan of the file specifying the
 c     timesteps for which to produce output to determine the number of
@@ -40,15 +41,18 @@ c         0:  No error
 c         1:  Error opening input file (an exception should be raised if
 c             a full solution is being performed and the number of time
 c             steps is greater than zero)
-c         2:  Units not specified (not applicable for this routine)
 c         3:  Read error
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
       integer icode,lastep,icontr,kr,ierr
-      character fofile*(*)
+      character fofile*(*),errstrng*(*)
 c
 c...  local variables
 c
@@ -56,9 +60,9 @@ c
 c
 c...  open input file
 c
-      ierr=0
-      icontr=0
-      if(lastep.eq.0) return
+      ierr=izero
+      icontr=izero
+      if(lastep.eq.izero) return
       open(kr,file=fofile,status="old",err=20)
 c
 c... scan the file, counting the number of entries.
@@ -70,20 +74,26 @@ c
       call pskip(kr)
  40   continue
         read(kr,*,end=10,err=30) iprint
-        icontr=icontr+1
+        icontr=icontr+ione
         go to 40
 c
 c...  normal return
 c
  10   continue
-        if(icontr.eq.0.and.icode.eq.3) ierr=3
+        if(icontr.eq.izero.and.icode.eq.ithree) then
+          ierr=3
+          errstrng="scan_fuldat"
+        end if
         close(kr)
         return
 c
 c...  error opening file
 c
  20   continue
-	if(icode.eq.3) ierr=1
+	if(icode.eq.ithree) then
+          ierr=1
+          errstrng="scan_fuldat"
+        end if
         close(kr)
         return
 c
@@ -91,13 +101,14 @@ c...  read error
 c
  30   continue
         ierr=3
+        errstrng="scan_fuldat"
         close(kr)
         return
 c
       end
 c
 c version
-c $Id: scan_fuldat.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: scan_fuldat.f,v 1.2 2004/07/12 19:58:02 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
