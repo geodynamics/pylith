@@ -107,149 +107,7 @@ c
       end
 c
 c
-      subroutine str_prt_1(state,nstr,nstate,iel,igauss,idout,idsk,kw,
-     & kp)
-c
-c...  subroutine to print out stress components for material type 1.
-c
-      include "implicit.inc"
-c
-c...  subroutine arguments
-c
-      integer nstr,nstate,iel,igauss,idout,idsk,kw,kp
-      double precision state(nstr,nstate)
-c
-c...  parameters
-c
-      integer ione
-      parameter(ione=1)
-c
-c...  local variables
-c
-      double precision str(6)
-      integer i
-c
-      if(idout.gt.0) write(kw,700) iel,igauss,(state(i,1),i=1,nstr)
-      if(idsk.eq.0) write(kp,710) (state(i,1),i=1,nstr)
-      if(idsk.eq.1) then
-        call dcopy(nstr,state(1,1),ione,str,ione)
-        write(kp) str
-      end if
-c
- 700  format(2i7,6(2x,1pe15.8))
- 710  format(1pe15.8,5(2x,1pe15.8))
-c
-      return
-      end
-c
-c
-      subroutine stn_prt_1(state,nstr,nstate,iel,igauss,idout,idsk,kw,
-     & kp)
-c
-c...  subroutine to print out strain components for material type 1.
-c
-      include "implicit.inc"
-c
-c...  subroutine arguments
-c
-      integer nstr,nstate,iel,igauss,idout,idsk,kw,kp
-      double precision state(nstr,nstate)
-c
-c...  parameters
-c
-      integer ione
-      parameter(ione=1)
-c
-c...  local variables
-c
-      double precision str(6)
-      integer i
-c
-      if(idout.gt.0) write(kw,700) iel,igauss,(state(i,2),i=1,nstr)
-      if(idsk.eq.0) write(kp,710) (state(i,2),i=1,nstr)
-      if(idsk.eq.1) then
-        call dcopy(nstr,state(1,2),ione,str,ione)
-        write(kp) str
-      end if
-c
- 700  format(2i7,6(2x,1pe15.8))
- 710  format(1pe15.8,5(2x,1pe15.8))
-c
-      return
-      end
-c
-c
-      subroutine beta_prt_1(state,nstr,nstate,iel,igauss,idout,idsk,kw,
-     & kp)
-c
-c...  subroutine to print out viscous strain components for material
-c     type 1.
-c
-      include "implicit.inc"
-c
-c...  subroutine arguments
-c
-      integer nstr,nstate,iel,igauss,idout,idsk,kw,kp
-      double precision state(nstr,nstate)
-c
-c...  parameters
-c
-      double precision zero
-      parameter(zero=0.0d0)
-c
-c...  local variables
-c
-      double precision str(6)
-      integer i
-c
-      call fill(str,zero,nstr)
-      if(idout.gt.0) write(kw,700) iel,igauss,(str(i),i=1,nstr)
-      if(idsk.eq.0) write(kp,710) (str(i),i=1,nstr)
-      if(idsk.eq.1) write(kp) str
-c
- 700  format(2i7,6(2x,1pe15.8))
- 710  format(1pe15.8,5(2x,1pe15.8))
-c
-      return
-      end
-c
-c
-      subroutine betb_prt_1(state,nstr,nstate,iel,igauss,idout,idsk,kw,
-     & kp)
-c
-c...  subroutine to print out plastic strain components for material
-c     type 1.
-c
-      include "implicit.inc"
-c
-c...  subroutine arguments
-c
-      integer nstr,nstate,iel,igauss,idout,idsk,kw,kp
-      double precision state(nstr,nstate)
-c
-c...  parameters
-c
-      double precision zero
-      parameter(zero=0.0d0)
-c
-c...  local variables
-c
-      double precision str(6)
-      integer i
-c
-      call fill(str,zero,nstr)
-      if(idout.gt.0) write(kw,700) iel,igauss,(str(i),i=1,nstr)
-      if(idsk.eq.0) write(kp,710) (str(i),i=1,nstr)
-      if(idsk.eq.1) write(kp) str
-c
- 700  format(2i7,6(2x,1pe15.8))
- 710  format(1pe15.8,5(2x,1pe15.8))
-c
-      return
-      end
-c
-c
-      subroutine elas_mat_1(dmat,prop,iddmat,nstr,nddmat,nprop)
+      subroutine elas_mat_1(dmat,prop,iddmat,nprop)
 c
 c...  subroutine to form the material matrix for an integration point
 c     for the elastic solution.  The material matrix is assumed to be
@@ -259,17 +117,16 @@ c     dmat is assumed to always be symmetric.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nddmat,nprop,nstr
+      integer nprop
       integer iddmat(nstr,nstr)
       double precision dmat(nddmat),prop(nprop)
-c
-c...  parameters
-c
-      integer inc
-      double precision zero
-      parameter(inc=1,zero=0.0d0)
 c
 c...  local variables
 c
@@ -278,13 +135,13 @@ c
 c
       e=prop(2)
       pr=prop(3)
-      pr1=1.0d0-pr
-      pr2=1.0d0+pr
-      pr3=1.0d0-2.0d0*pr
+      pr1=one-pr
+      pr2=one+pr
+      pr3=one-two*pr
       fac=e/(pr2*pr3)
       dd=pr1*fac
       od=pr*fac
-      ss=0.5d0*pr3*fac
+      ss=half*pr3*fac
       do i=1,3
         dmat(iddmat(i,i))=dd
         dmat(iddmat(i+3,i+3))=ss
@@ -296,7 +153,7 @@ c
       end
 c
 c
-      subroutine elas_strs_1(state,ee,dmat,nstr,nstate,nddmat)
+      subroutine elas_strs_1(state,ee,dmat,nstate)
 c
 c...  subroutine to compute stresses for the elastic solution.  For this
 c     material, there are just 2 state variables:  total stress and
@@ -307,16 +164,16 @@ c     state(nstr,2) = linear strain
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nstr,nstate,nddmat
+      integer nstate
       double precision state(nstr,nstate),ee(nstr),dmat(nddmat)
-c
-c...  parameters
-c
-      double precision zero,one
-      integer ione
-      parameter(zero=0.0d0,one=1.0d0,ione=1)
 c
       call dcopy(nstr,ee,ione,state(1,2),ione)
       call dspmv("u",nstr,one,dmat,state(1,2),ione,zero,state(1,1),ione)
@@ -324,8 +181,7 @@ c
       end
 c
 c
-      subroutine td_mat_1(state,dmat,prop,iddmat,nstr,nstate,nddmat,
-     & nprop,matchg)
+      subroutine td_mat_1(state,dmat,prop,iddmat,nstate,nprop,matchg)
 c
 c...  subroutine to form the material matrix for an integration point
 c     for the time-dependent solution.  This routine is meant to be
@@ -341,18 +197,17 @@ c     dmat is assumed to always be symmetric.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nstr,nstate,nddmat,nprop
+      integer nstate,nprop
       integer iddmat(nstr,nstr)
       double precision state(nstr,nstate),dmat(nddmat),prop(nprop)
       logical matchg
-c
-c...  parameters
-c
-      integer inc
-      double precision zero
-      parameter(inc=1,zero=0.0d0)
 c
 c...  local variables
 c
@@ -364,13 +219,13 @@ c
       call fill(dmat,zero,nddmat)
       e=prop(2)
       pr=prop(3)
-      pr1=1.0d0-pr
-      pr2=1.0d0+pr
-      pr3=1.0d0-2.0d0*pr
+      pr1=one-pr
+      pr2=one+pr
+      pr3=one-two*pr
       fac=e/(pr2*pr3)
       dd=pr1*fac
       od=pr*fac
-      ss=0.5d0*pr3*fac
+      ss=half*pr3*fac
       do i=1,3
         dmat(iddmat(i,i))=dd
         dmat(iddmat(i+3,i+3))=ss
@@ -382,8 +237,7 @@ c
       end
 c
 c
-      subroutine td_mat_strs_1(state,dmat,prop,iddmat,nstr,nstate,
-     & nddmat,nprop)
+      subroutine td_mat_strs_1(state,dmat,prop,iddmat,nstate,nprop)
 c
 c...  subroutine to compute the current stress and updated material
 c     matrix for the time-dependent solution.  Since this is a purely
@@ -395,17 +249,17 @@ c     dmat is assumed to always be symmetric.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nstr,nstate,nddmat,nprop
+      integer nstate,nprop
       integer iddmat(nstr,nstr)
       double precision state(nstr,nstate),dmat(nddmat),prop(nprop)
-c
-c...  parameters
-c
-      double precision zero,one
-      integer ione
-      parameter(zero=0.0d0,one=1.0d0,ione=1)
 c
       call dspmv("u",nstr,one,dmat,state(1,2),ione,zero,state(1,1),ione)
 c
@@ -414,7 +268,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.1 2004/06/15 21:06:04 willic3 Exp $
+c $Id: mat_1.f,v 1.2 2004/06/18 14:40:55 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
