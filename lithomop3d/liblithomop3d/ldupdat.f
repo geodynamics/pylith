@@ -52,11 +52,11 @@ c
 c...  local variables
 c
 c
-c*      write(6,*) "Hello from ldupdat_f"
+cdebug      write(6,*) "Hello from ldupdat_f"
 c
-      call ldisp(dl,d,ien,ndof,nen,numnp)
-      if(numfn.ne.0) call adfldp(dl,lmf,tfault,ndof,nen,numfn)
-      if(numslp.ne.0) call addsn(dl,dx,ien,lmx,ndof,nen,numnp)
+      call ldisp(dl,d,ien,nen,numnp)
+      if(numfn.ne.0) call adfldp(dl,lmf,tfault,nen,numfn)
+      if(numslp.ne.0) call addsn(dl,dx,ien,lmx,nen,numnp)
       call daxpy(nen*nsd,one,dl,ione,xl,ione)
 clater      if(iopt.eq.1.and.ldtmp.ne.0) then
 clater        if(nsd.eq.ndof) then
@@ -77,7 +77,7 @@ clater      end if
       end
 c
 c version
-c $Id: ldupdat.f,v 1.2 2004/07/07 15:54:10 willic3 Exp $
+c $Id: ldupdat.f,v 1.3 2004/08/12 01:34:40 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
