@@ -27,6 +27,7 @@ PROJ_SRCS = \
         addstf.f \
         adfldp.f \
         adjid.f \
+        autoprestr.f \
         bdeld_ss.f \
         bmatrixb.f \
         bmatrixn.f \
@@ -125,6 +126,7 @@ PROJ_SRCS = \
         pquadtet.f \
         pquadwedge.f \
         preshape.f \
+        prestr_matinit_cmp_ss.f \
         presurql.f \
         printd.f \
         printf.f \
@@ -202,7 +204,7 @@ testit: test
 # build the shared object
 
 $(PROJ_SAR): product_dirs $(PROJ_OBJS)
-	$(CXX) -o $(PROJ_SAR) $(PROJ_OBJS) $(LCXXFLAGS) $(LCXX_FORTRAN) $(PROJ_LIBRARIES)
+	$(CXX) -o $(PROJ_SAR) $(PROJ_OBJS) $(PROJ_LCXX_FLAGS)
 
 #--------------------------------------------------------------------------
 #
@@ -215,7 +217,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.9 2005/01/05 22:08:50 willic3 Exp $
+# $Id: Make.mm,v 1.10 2005/01/19 20:08:43 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
