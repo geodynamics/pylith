@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine autoprestr(
-     & A,dprev,                                                         ! sparse
+     & A,                                                               ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
      & dispvec,nforce,grav,                                             ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
@@ -89,7 +89,6 @@ c
       integer infetype(4)
       integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
       integer istatout(*),nstatout(*)
-      double precision dprev(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
       double precision bintern(*),bresid(*),bwork(*),dispvec(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
@@ -165,7 +164,6 @@ c
       if(idsk.eq.itwo) open(kp,file=pfile,status="old",
      & form="unformatted",access="append")
       skc=iskopt.ge.izero.and.iskopt.ne.ione.and.numslp.ne.izero
-      call fill(dprev,zero,neq*nprevdflag)
       call fill(bextern,zero,neq*nextflag)
       call fill(btraction,zero,neq*ntractflag)
       call fill(bgravity,zero,neq*ngravflag)
@@ -295,7 +293,7 @@ c
 c*        if(ierr.ne.izero) return
 c
         call iterate(
-     &   A,dprev,                                                       ! sparse
+     &   A,                                                             ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
      &   dispvec,nforce,grav,                                           ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
@@ -368,7 +366,7 @@ c
 c*        if(ierr.ne.izero) return
 c
         call iterate(
-     &   A,dprev,                                                       ! sparse
+     &   A,                                                             ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
      &   dispvec,nforce,grav,                                           ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
@@ -438,7 +436,7 @@ c
 c*clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
-clater     &   A,dprev,                                               ! sparse
+clater     &   A,                                                     ! sparse
 clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
 clater     &   dispvec,nforce,grav,                                           ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
@@ -507,7 +505,7 @@ c
 c*clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
-clater     &   A,dprev,                                               ! sparse
+clater     &   A,                                                     ! sparse
 clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
 clater     &   dispvec,nforce,grav,                                           ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
@@ -592,7 +590,7 @@ c
       end
 c
 c version
-c $Id: autoprestr.F,v 1.2 2005/03/25 20:34:07 willic3 Exp $
+c $Id: autoprestr.F,v 1.3 2005/03/25 23:29:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
