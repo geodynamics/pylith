@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine scan_diff(ndof,numslp,numdif,kr,ierr,difile)
+      subroutine scan_diff(numslp,numdif,kr,difile,ierr,errstrng)
 c
 c...  subroutine to perform an initial scan of the slippery node
 c     differential forces input file to determine the number of
@@ -39,15 +39,19 @@ c     Error codes:
 c         0:  No error
 c         1:  Error opening input file (no exception should be raised
 c             in this case since a differential force file is optional)
-c         2:  Units not specified (not yet used for this routine)
 c         3:  Read error
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,numslp,numdif,kr,ierr
-      character difile*(*)
+      integer numslp,numdif,kr,ierr
+      character difile*(*),errstrng*(*)
 c
 c...  local variables
 c
@@ -56,9 +60,9 @@ c
 c
 c...  open input file
 c
-      ierr=0
-      numdif=0
-      if(numslp.eq.0) return
+      ierr=izero
+      numdif=izero
+      if(numslp.eq.izero) return
       open(kr,file=difile,status="old",err=10)
 c
 c... scan the file, counting the number of entries.
@@ -70,7 +74,7 @@ c
       call pskip(kr)
  40   continue
         read(kr,*,end=10,err=30) n,idhist,(diforc(j),j=1,ndof)
-        numdif=numdif+1
+        numdif=numdif+ione
         go to 40
 c
 c...  normal return
@@ -89,14 +93,15 @@ c
 c...  read error
 c
  30   continue
-        ierr=3
         close(kr)
+        ierr=3
+        errstrng="scan_diff"
         return
 c
       end
 c
 c version
-c $Id: scan_diff.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: scan_diff.f,v 1.2 2004/07/12 19:47:26 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
