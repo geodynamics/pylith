@@ -35,7 +35,10 @@
 #include <Python.h>
 
 #include "sparse.h"
+#include "exceptionhandler.h"
 #include "lithomop3d_externs.h"
+#include <stdio.h>
+#include <string.h>
 
 
 // Create linked list of nonzero row and column entries in the stiffness matrix
@@ -45,49 +48,71 @@ char pylithomop3d_lnklst__name__[] = "lnklst";
 
 PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
 {
+  int numberGlobalEquations;
   PyObject* pyPointerToLm;
   PyObject* pyPointerToLmx;
+  PyObject* pyPointerToInfiel;
+  int connectivitySize;
+  int numberElements;
+  PyObject* pyPointerToElementTypeInfo;
   PyObject* pyPointerToIndx;
   PyObject* pyPointerToLink;
   PyObject* pyPointerToNbrs;
-  int numberElementEquations;
-  int numberGlobalEquations;
-  int numberElements;
   int workingArraySize;
+  int totalNumberSlipperyNodes;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOiiii:lnklst",
+  int ok = PyArg_ParseTuple(args, "iOOOiiOOOOii:lnklst",
+			    &numberGlobalEquations,
 			    &pyPointerToLm,
 			    &pyPointerToLmx,
+			    &pyPointerToInfiel,
+			    &connectivitySize,
+			    &numberElements,
+			    &pyPointerToElementTypeInfo,
 			    &pyPointerToIndx,
 			    &pyPointerToLink,
 			    &pyPointerToNbrs,
-			    &numberElementEquations,
-			    &numberGlobalEquations,
-			    &numberElements,
-			    &workingArraySize);
+			    &workingArraySize,
+			    &totalNumberSlipperyNodes);
 
   if (!ok) {
     return 0;
   }
+
+  int errorcode = 0;
+  const int maxsize = 1024;
+  char errorstring[maxsize];
   int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
   int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
+  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
+  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
   int* pointerToIndx = (int*) PyCObject_AsVoidPtr(pyPointerToIndx);
   int* pointerToLink = (int*) PyCObject_AsVoidPtr(pyPointerToLink);
   int* pointerToNbrs = (int*) PyCObject_AsVoidPtr(pyPointerToNbrs);
-  int stiffnessMatrixSize = 0;
   int stiffnessOffDiagonalSize = 0;
+  int stiffnessMatrixSize = 0;
 
-  lnklst_f(pointerToLm,
+  lnklst_f(&numberGlobalEquations,
+	   pointerToLm,
 	   pointerToLmx,
+	   pointerToInfiel,
+	   &connectivitySize,
+	   &numberElements,
+	   pointerToElementTypeInfo,
 	   pointerToIndx,
 	   pointerToLink,
 	   pointerToNbrs,
-	   &numberElementEquations,
-	   &numberGlobalEquations,
-	   &numberElements,
 	   &workingArraySize,
 	   &stiffnessOffDiagonalSize,
-	   &stiffnessMatrixSize);
+	   &stiffnessMatrixSize,
+	   &totalNumberSlipperyNodes
+	   &errorcode,
+	   errorstring,
+	   strlen(errorstring));
+
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 		  
   journal::debug_t debug("lithomop3d");
   debug
@@ -163,6 +188,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.1 2004/04/14 21:24:47 willic3 Exp $
+// $Id: sparse.cc,v 1.2 2004/07/19 21:38:21 willic3 Exp $
 
 // End of file
