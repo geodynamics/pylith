@@ -29,27 +29,25 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine meansh(shbar,shd,vol,det,nsd,nen,ngauss)
+      subroutine meansh(shbar,shd,vol,det,nen,ngauss)
 c
 c...computes shape function averaged over integration points for
 c   b-bar modification to strain-displacement matrix
 c
       include "implicit.inc"
 c
-c...  dimension parameters
+c...  parameter definitions
 c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer nsd,nen,ngauss
+      integer nen,ngauss
       double precision shbar(nsd+1,nenmax),shd(nsd+1,nenmax,ngaussmax)
       double precision vol,det(ngauss)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
 c
 c...  local variables
 c
@@ -68,7 +66,7 @@ c
       end
 c
 c version
-c $Id: meansh.f,v 1.2 2004/06/15 19:43:32 willic3 Exp $
+c $Id: meansh.f,v 1.3 2004/07/05 20:18:41 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
