@@ -41,7 +41,7 @@ c
      & prop,mhist,infmatmod,tminmax,                                    ! materl
      & gauss,sh,shj,nen,ngauss,nee,nec,                                 ! eltype
      & histry,rtimdat,ntimdat,nvisdat,iprestress,                       ! timdat
-     & rgiter,gcurr,gi,gprev,gtol,rmin,rmult,nsiter,                    ! iterate
+     & rgiter,gtol,                                                     ! iterate
      & skew,                                                            ! skew
      & ncodat,nunits,nprint,                                            ! ioinfo
      & getshape,bmatrix,gload_cmp,stress_cmp,stress_mat_cmp,            ! external
@@ -123,13 +123,7 @@ c
       include "ntimdat_dim.inc"
       include "nvisdat_dim.inc"
       include "rgiter_dim.inc"
-      include "gcurr_dim.inc"
-      include "gi_dim.inc"
-      include "gprev_dim.inc"
       include "gtol_dim.inc"
-      include "rmin_dim.inc"
-      include "rmult_dim.inc"
-      include "nsiter_dim.inc"
       include "ncodat_dim.inc"
       include "nunits_dim.inc"
       include "nprint_dim.inc"
@@ -145,6 +139,7 @@ c
 c...  local variables
 c
       integer i,iter
+      double precision gi(3),gprev(3),gcurr(3)
       logical fulout,converge,updats,skc,used,reform
 c
 c...  included variable definitions
@@ -156,7 +151,6 @@ c
       include "ntimdat_def.inc"
       include "nvisdat_def.inc"
       include "rgiter_def.inc"
-      include "nsiter_def.inc"
       include "ncodat_def.inc"
       include "nunits_def.inc"
       include "nprint_def.inc"
@@ -189,7 +183,7 @@ c
         ireform=0
         if(reform) ireform=1
         ntimdat(9)=ireform
-        used=nstep.gt.0.and.(nsol.eq.3.or.nsol.eq.4).and.iter.eq.1
+        used=nstep.gt.0.and.nprevdflag.eq.1.and.iter.eq.1
         if(iter.gt.1) fulout=.false.
 c
 c...add pressure forces,if present, to global load vector
@@ -356,7 +350,7 @@ c
       end
 c
 c version
-c $Id: iterate.F,v 1.7 2005/03/29 01:29:12 willic3 Exp $
+c $Id: iterate.F,v 1.8 2005/03/30 01:51:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
