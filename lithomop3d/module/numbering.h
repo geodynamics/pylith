@@ -29,54 +29,48 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_input_misc_h)
-#define pylithomop3d_input_misc_h
+#if !defined(pylithomop3d_numbering_h)
+#define pylithomop3d_numbering_h
 
-// write out element and prestress information
-extern char pylithomop3d_write_element_info__name__[];
-extern char pylithomop3d_write_element_info__doc__[];
+// create id array
+extern char pylithomop3d_create_id__name__[];
+extern char pylithomop3d_create_id__doc__[];
 extern "C"
-PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *);
+PyObject * pylithomop3d_create_id(PyObject *, PyObject *);
 
-// write out global control information
-extern char pylithomop3d_write_global_info__name__[];
-extern char pylithomop3d_write_global_info__doc__[];
+// form id array for split nodes
+extern char pylithomop3d_id_split__name__[];
+extern char pylithomop3d_id_split__doc__[];
 extern "C"
-PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *);
+PyObject * pylithomop3d_id_split(PyObject *, PyObject *);
 
-// write out material property info
-extern char pylithomop3d_write_props__name__[];
-extern char pylithomop3d_write_props__doc__[];
+// localize id array
+extern char pylithomop3d_local__name__[];
+extern char pylithomop3d_local__doc__[];
 extern "C"
-PyObject * pylithomop3d_write_props(PyObject *, PyObject *);
+PyObject * pylithomop3d_local(PyObject *, PyObject *);
 
-// write out sparse matrix information
-extern char pylithomop3d_write_sparse_info__name__[];
-extern char pylithomop3d_write_sparse_info__doc__[];
+// localize id array for split nodes
+extern char pylithomop3d_localf__name__[];
+extern char pylithomop3d_localf__doc__[];
 extern "C"
-PyObject * pylithomop3d_write_sparse_info(PyObject *, PyObject *);
+PyObject * pylithomop3d_localf(PyObject *, PyObject *);
 
-// write out stress computation information
-extern char pylithomop3d_write_strscomp__name__[];
-extern char pylithomop3d_write_strscomp__doc__[];
+// localize id array for slippery nodes
+extern char pylithomop3d_localx__name__[];
+extern char pylithomop3d_localx__doc__[];
 extern "C"
-PyObject * pylithomop3d_write_strscomp(PyObject *, PyObject *);
+PyObject * pylithomop3d_localx(PyObject *, PyObject *);
 
-// write out subiteration convergence information
-extern char pylithomop3d_write_subiter__name__[];
-extern char pylithomop3d_write_subiter__doc__[];
+// find closest fault neignbors for slippery nodes
+extern char pylithomop3d_nfind__name__[];
+extern char pylithomop3d_nfind__doc__[];
 extern "C"
-PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *);
-
-// write mesh info to UCD file
-extern char pylithomop3d_write_ucd_mesh__name__[];
-extern char pylithomop3d_write_ucd_mesh__doc__[];
-extern "C"
-PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *);
+PyObject * pylithomop3d_nfind(PyObject *, PyObject *);
 
 #endif
 
 // version
-// $Id: input_misc.h,v 1.4 2005/03/12 02:03:18 willic3 Exp $
+// $Id: numbering.h,v 1.1 2005/03/12 02:03:18 willic3 Exp $
 
 // End of file

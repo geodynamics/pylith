@@ -49,6 +49,7 @@ PROJ_SRCS = \
 	exceptions.cc \
 	input_misc.cc \
 	misc.cc \
+	numbering.cc \
 	parser.cc \
 	scanner.cc \
 	setup.cc \
@@ -57,7 +58,7 @@ PROJ_SRCS = \
 
 
 # version
-# $Id: Make.mm,v 1.6 2005/03/08 02:14:27 knepley Exp $
+# $Id: Make.mm,v 1.7 2005/03/12 02:03:18 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 

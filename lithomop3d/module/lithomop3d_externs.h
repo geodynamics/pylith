@@ -36,9 +36,9 @@
 
 #if defined(F77EXTERNS_LOWERCASE_TRAILINGBAR)
 
-#define adjid_f adjid_
 #define autoprestr_f autoprestr_
 #define cmp_stiffsz_f cmp_stiffsz_
+#define create_id_f create_id_
 #define elastc_f elastc_
 #define id_split_f id_split_
 #define lnklst_f lnklst_
@@ -90,9 +90,9 @@
 
 #elif defined(F77EXTERNS_NOTRAILINGBAR)
 
-#define adjid_f adjid
 #define autoprestr_f autoprestr
 #define cmp_stiffsz_f cmp_stiffsz
+#define create_id_f create_id
 #define elastc_f elastc
 #define id_split_f id_split
 #define lnklst_f lnklst
@@ -144,9 +144,9 @@
 
 #elif defined(F77EXTERNS_EXTRATRAILINGBAR)
 
-#define adjid_f adjid__
 #define autoprestr_f autoprestr__
 #define cmp_stiffsz_f cmp_stiffsz__
+#define create_id_f create_id__
 #define elastc_f elastc__
 #define id_split_f id_split__
 #define lnklst_f lnklst__
@@ -198,9 +198,9 @@
 
 #elif defined(F77EXTERNS_UPPERCASE_NOTRAILINGBAR)
 
-#define adjid_f ADJID
 #define autoprestr_f AUTOPRESTR
 #define cmp_stiffsz_f CMP_STIFFSZ
+#define create_id_f CREATE_ID
 #define elastc_f ELASTC
 #define id_split_f ID_SPLIT
 #define lnklst_f LNKLST
@@ -256,9 +256,9 @@
 // symbols that do not contain underbars get one underbar at the end
 // this applies to the FORTRAN external, not the local macro alias!!!
 
-#define adjid_f adjid_
 #define autoprestr_f autoprestr_
 #define cmp_stiffsz_f cmp_stiffsz__
+#define create_id_f create_id__
 #define elastc_f elastc_
 #define id_split_f id_split__
 #define lnklst_f lnklst_
@@ -317,15 +317,6 @@
 #include <petscmat.h>
 
 extern "C" {
-
-  void adjid_f(int *,
-	       int *,
-	       int *,
-	       int *,
-	       int *,
-	       int *,
-	       int *,
-	       int *);
 
   void autoprestr_f(Mat *,             // sparse
 		    double *,
@@ -441,6 +432,16 @@ extern "C" {
 	             int *,
 	             int *,
 	             char *,int);
+
+  void create_id_f(int *,
+		   int *,
+		   int *,
+		   int *,
+		   int *,
+		   int *,
+		   int *,
+		   int *,
+		   int *);
 
   void elastc_f(Mat *,             // sparse
 		double *,
@@ -638,8 +639,6 @@ extern "C" {
 		 double*,
 		 double*,
 		 double*,
-		 int *,
-		 int *,
 		 int *,
 		 int *,
 		 int *,
@@ -1275,6 +1274,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.13 2005/03/11 04:07:42 knepley Exp $
+// $Id: lithomop3d_externs.h,v 1.14 2005/03/12 02:03:18 willic3 Exp $
 
 // End of file

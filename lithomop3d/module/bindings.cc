@@ -4,9 +4,9 @@
 // 
 //                               Charles A. Williams
 //                        Rensselaer Polytechnic Institute
-//                        (C) 2004 All Rights Reserved
+//                        (C) 2005 All Rights Reserved
 // 
-//  Copyright 2004 Rensselaer Polytechnic Institute.
+//  Copyright 2005 Rensselaer Polytechnic Institute.
 //  All worldwide rights reserved.  A license to use, copy, modify and
 //  distribute this software for non-commercial research purposes only
 //  is hereby granted, provided that this copyright notice and
@@ -37,7 +37,9 @@
 #include "array.h"         // array allocation and conversion functions
 #include "autoprestr.h"    // prestress autocomputation
 #include "elastc.h"        // elastic solution driver
-#include "input_misc.h"    // miscellaneous input and indexing routines
+#include "input_misc.h"    // miscellaneous output routines
+#include "numbering.h"     // routines to create global equation numbers
+                           // and localize them.
 #include "parser.h"        // parsers
 #include "scanner.h"       // scanners
 #include "setup.h"         // initialization/setup routines
@@ -61,10 +63,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_setup_petsc_logging__name__, pylithomop3d_setup_petsc_logging,
      METH_VARARGS, pylithomop3d_setup_petsc_logging__doc__},
 
-    // adjust id array for slippery nodes
-    {pylithomop3d_adjid__name__, pylithomop3d_adjid,
-     METH_VARARGS, pylithomop3d_adjid__doc__},
-
     // allocate an integer array
     {pylithomop3d_allocateInt__name__, pylithomop3d_allocateInt,
      METH_VARARGS, pylithomop3d_allocateInt__doc__},
@@ -80,6 +78,10 @@ struct PyMethodDef pylithomop3d_methods[] = {
     // compute maximum number of nonzero entries in stiffness matrix
     {pylithomop3d_cmp_stiffsz__name__, pylithomop3d_cmp_stiffsz,
      METH_VARARGS, pylithomop3d_cmp_stiffsz__doc__},
+
+    // create id and idx arrays
+    {pylithomop3d_create_id__name__, pylithomop3d_create_id,
+     METH_VARARGS, pylithomop3d_create_id__doc__},
 
     // convert a double list to an array
     {pylithomop3d_doubleListToArray__name__, pylithomop3d_doubleListToArray,
@@ -300,6 +302,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
 };
 
 // version
-// $Id: bindings.cc,v 1.6 2005/03/10 01:10:38 knepley Exp $
+// $Id: bindings.cc,v 1.7 2005/03/12 02:03:18 willic3 Exp $
 
 // End of file
