@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine ldisbc(dl,bond,ien,lm,ndof,nen,numnp)
+      subroutine ldisbc(dl,bond,ien,lm,nen,numnp)
 c
 c...program to localize prescribed displacement boundary conditions
 c   dl(ndof,nen) = element prescribed displacement boundary
@@ -37,16 +37,17 @@ c                         condition array
 c
       include "implicit.inc"
 c
-c...  subroutine arguments
+c...  parameter definitions
 c
-      integer ndof,nen,numnp
-      integer ien(nen),lm(ndof,nen)
-      double precision dl(ndof,nen),bond(ndof,numnp)
-c
-c...  defined constants
-c
+      include "ndimens.inc"
       include "nconsts.inc"
       include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nen,numnp
+      integer ien(nen),lm(ndof,nen)
+      double precision dl(ndof,nen),bond(ndof,numnp)
 c
 c...  local variables
 c
@@ -65,7 +66,7 @@ c
       end
 c
 c version
-c $Id: ldisbc.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: ldisbc.f,v 1.2 2004/07/07 15:46:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
