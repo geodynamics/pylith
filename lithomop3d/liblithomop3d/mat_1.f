@@ -252,8 +252,7 @@ c
       double precision dmat(nddmat),prop(nprop),tmax
 c
       call dcopy(nstr,ee,ione,dstate(1,2),ione)
-      call dcopy(nstr,state(1,1),ione,dstate(1,1),ione)
-      call dspmv("u",nstr,one,dmat,dstate(1,2),ione,one,dstate(1,1),
+      call dspmv("u",nstr,one,dmat,dstate(1,2),ione,zero,dstate(1,1),
      & ione)
 c
       return
@@ -296,7 +295,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.4 2004/07/02 18:29:11 willic3 Exp $
+c $Id: mat_1.f,v 1.5 2004/07/02 19:14:20 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
