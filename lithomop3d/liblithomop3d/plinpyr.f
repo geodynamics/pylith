@@ -29,26 +29,29 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine plinpyr(sh,shj,gauss,ngauss,nen,nsd,nenmax,ngaussmax,
-     & intord)
+      subroutine plinpyr(sh,shj,gauss,infetype,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a linear pyramid.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nsd,nenmax,ngaussmax,intord
-      integer ngauss,nen
+      integer intord
+      integer infetype(4)
       double precision sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax)
       double precision gauss(nsd+1,ngaussmax)
 c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
+c...  local constants
 c
       double precision c1,c2,c3,c4,c5,c6
       parameter(c1 = 128.0d0,
@@ -72,7 +75,7 @@ c
 c
 c...  local variables
 c
-      integer i,l,nshsize,ngssize
+      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
       double precision rr,ss,tt,g1,w1
 c
 c...  definitions
@@ -95,12 +98,18 @@ c
         do l=1,ngauss
           gauss(1,l)=r(l)*g1
           gauss(2,l)=s(l)*g1
-          gauss(3,l)=-two*third
+          gauss(3,l)=-(two*third)
           gauss(4,l)=w1
         end do
         gauss(3,5)=two/five
         gauss(4,5)=c6/c2
       end if
+c
+      infetype(1)=ngauss
+      infetype(2)=nen
+      infetype(3)=nec
+      infetype(4)=nee
+c
       do l=1,ngauss
         do i=1,nen
           rr=half*(one+r(i)*gauss(1,l))
@@ -118,7 +127,7 @@ c
       end
 c
 c version
-c $Id: plinpyr.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: plinpyr.f,v 1.2 2004/07/07 19:22:15 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
