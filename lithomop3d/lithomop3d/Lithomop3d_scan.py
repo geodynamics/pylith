@@ -95,7 +95,7 @@ class Lithomop3d_scan(Component):
 
 # derived or automatically-specified quantities (category 3)
 
-    def _init(self, parent):
+    def preinitialize(self):
 
         from Materials import Materials
         from KeywordValueParse import KeywordValueParse
@@ -229,6 +229,7 @@ class Lithomop3d_scan(Component):
         else:
             self._keywordEqualsValueFile = self.inventory.keywordEqualsValueFile
 
+        # print self._keywordEqualsValueFile
         if os.path.isfile(self._keywordEqualsValueFile):
             file=open(self._keywordEqualsValueFile, 'r')
             while 1:
@@ -649,163 +650,48 @@ class Lithomop3d_scan(Component):
 
     class Inventory(Component.Inventory):
 
-        import pyre.properties
+        import pyre.inventory
         import os
-#  I don't think this is being used in this section any more.
-#        from pyre.units.pressure import pascal
 
-
-        inventory = [
-            pyre.properties.str(
-                "title",
-                default="Patchtest 1 for linear hex elements, full quadrature."),
-
-            pyre.properties.str(
-                "fileRoot",
-                default=os.path.join("..","examples","linhex","patchtest","pt1")),
-
-            pyre.properties.str(
-                "keywordEqualsValueFile",
-                default="None"),
-
-            pyre.properties.str(
-                "asciiOutputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "plotOutputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "ucdOutputRoot",
-                default="None"),
-
-            pyre.properties.str(
-                "coordinateInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "bcInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "winklerInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "rotationInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "timeStepInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "fullOutputInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "stateVariableInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "loadHistoryInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "materialPropertiesInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "materialHistoryInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "connectivityInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "prestressInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "tractionInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "splitNodeInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "slipperyNodeInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "differentialForceInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "slipperyWinklerInputFile",
-                default="None"),
-
-            pyre.properties.str(
-                "asciiOutput",
-                default="echo",
-                validator=pyre.properties.choice(
-                [
-                 "none",
-                 "echo",
-                 "full"])),
-
-            pyre.properties.str(
-                "plotOutput",
-                default="none",
-                validator=pyre.properties.choice(
-                [
-                 "none",
-                 "ascii",
-                 "binary"])),
-
-            pyre.properties.bool(
-                "ucdOutput",
-                default=True),
-
-# Eliminating this option for now, as the geometry type is automatically
-# specified by using Lithomop3d.
-#            pyre.properties.str(
-#                "geometryType", default="3D",
-#                validator=pyre.properties.choice(["axisymmetric",
-#                                                  "planeStrain",
-#                                                  "planeStress",
-#                                                  "outOfPlane",
-#                                                  "3D"])),
-
-            pyre.properties.str(
-                "analysisType",
-                default="fullSolution",
-                validator=pyre.properties.choice(
-                [
-                 "dataCheck",
-                 "stiffnessFactor",
-                 "elasticSolution",
-                 "fullSolution"])),
-
-            pyre.properties.bool(
-                "debuggingOutput",
-                default=False),
-
-            pyre.properties.bool(
-                "autoRotateSlipperyNodes",
-                default=True),
-
-            pyre.properties.int(
-                "numberCycles",
-                default=1)
-
-            ]
+        title = pyre.inventory.str("title",
+                                   default="Patchtest 1 for linear hex elements, full quadrature.")
+        fileRoot = pyre.inventory.str("fileRoot",
+                                      default=os.path.join("..","examples","linhex","patchtest","pt1"))
+        keywordEqualsValueFile = pyre.inventory.str("keywordEqualsValueFile",default="None")
+        asciiOutputFile = pyre.inventory.str("asciiOutputFile",default="None")
+        plotOutputFile = pyre.inventory.str("plotOutputFile",default="None")
+        ucdOutputRoot = pyre.inventory.str("ucdOutputRoot",default="None")
+        coordinateInputFile = pyre.inventory.str("coordinateInputFile",default="None")
+        bcInputFile = pyre.inventory.str("bcInputFile",default="None")
+        winklerInputFile = pyre.inventory.str("winklerInputFile",default="None")
+        rotationInputFile = pyre.inventory.str("rotationInputFile",default="None")
+        timeStepInputFile = pyre.inventory.str("timeStepInputFile",default="None")
+        fullOutputInputFile = pyre.inventory.str("fullOutputInputFile",default="None")
+        stateVariableInputFile = pyre.inventory.str("stateVariableInputFile",default="None")
+        loadHistoryInputFile = pyre.inventory.str("loadHistoryInputFile",default="None")
+        materialPropertiesInputFile = pyre.inventory.str("materialPropertiesInputFile",default="None")
+        materialHistoryInputFile = pyre.inventory.str("materialHistoryInputFile",default="None")
+        connectivityInputFile = pyre.inventory.str("connectivityInputFile",default="None")
+        prestressInputFile = pyre.inventory.str("prestressInputFile",default="None")
+        tractionInputFile = pyre.inventory.str("tractionInputFile",default="None")
+        splitNodeInputFile = pyre.inventory.str("splitNodeInputFile",default="None")
+        slipperyNodeInputFile = pyre.inventory.str("slipperyNodeInputFile",default="None")
+        differentialForceInputFile = pyre.inventory.str("differentialForceInputFile",default="None")
+        slipperyWinklerInputFile = pyre.inventory.str("slipperyWinklerInputFile",default="None")
+        asciiOutput = pyre.inventory.str("asciiOutput",default="echo")
+        asciiOutput.validator = pyre.inventory.choice(["none","echo","full"])
+        plotOutput = pyre.inventory.str("plotOutput",default="none")
+        plotOutput.validator = pyre.inventory.choice(["none","ascii","binary"])
+        ucdOutput = pyre.inventory.bool("ucdOutput",default=True)
+        analysisType = pyre.inventory.str("analysisType",default="fullSolution")
+        analysisType.validator = pyre.inventory.choice(["dataCheck","stiffnessFactor",
+                                                        "elasticSolution","fullSolution"])
+        debuggingOutput = pyre.inventory.bool("debuggingOutput",default=False)
+        autoRotateSlipperyNodes = pyre.inventory.bool("autoRotateSlipperyNodes",default=True)
+        numberCycles = pyre.inventory.int("numberCycles",default=1)
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.14 2005/02/24 00:38:34 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.15 2005/03/11 02:16:56 willic3 Exp $
 
 # End of file 
