@@ -53,6 +53,9 @@ lh2qh: lh2qh.o
 fixqt: fixqt.o
 	$(FCOMPL) $(opt) -o fixqt fixqt.o
 
+readnetgen: readnetgen.o
+	$(FCOMPL) $(opt) -o readnetgen readnetgen.o
+
 readucd: readucd.o
 	$(FCOMPL) $(opt) -o readucd readucd.o
 
