@@ -31,11 +31,12 @@ c
 c
       subroutine elas_strs_cmp_ss(
      & b,neq,                                                           ! force
-     & x,d,dx,numnp,                                                    ! global
-     & tfault,numfn,numslp,                                             ! fault
-     & state,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,               ! elemnt
+     & x,d,numnp,                                                       ! global
+     & dx,numslp,                                                       ! slip
+     & tfault,numfn,                                                    ! fault
+     & state,dstate,dmat,ien,lm,lmx,lmf,infiel,nstatesz,ndmatsz,        ! elemnt
      & numelt,nconsz,                                                   ! elemnt
-     & infmat,matgpt,elas_strs,                                         ! materl
+     & prop,infmat,nprop,matgpt,elas_strs,td_strs,                      ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
@@ -55,14 +56,15 @@ c
 c
 c...  subroutine arguments
 c
-      integer neq,numnp,numfn,numslp,nstatesz
-      integer ndmatsz,numelt,nconsz,matgpt,numrot,ierr
+      integer neq,numnp,numslp,numfn,nstatesz,ndmatsz,numelt,nconsz
+      integer nprop,matgpt,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
       integer infiel(6,numelt),infmat(6),infetype(4,netypes)
       character errstrng*(*)
       double precision b(neq),x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
       double precision tfault(ndof,numfn)
-      double precision state(nstr,nstatesz),dmat(nddmat,ndmatsz)
+      double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
+      double precision dmat(nddmat,ndmatsz),prop(nprop)
       double precision gauss(nsd+1,ngaussmax,netypes)
       double precision sh(nsd+1,nenmax,ngaussmax,netypes)
       double precision shj(nsd+1,nenmax,ngaussmax,netypes)
@@ -74,17 +76,16 @@ c
 c
 c...  external routines
 c
-      external elas_strs,getshape,bmatrix
+      external elas_strs,td_strs,getshape,bmatrix
 c
 c...  local variables
 c
-      integer npage,nmatel,nstate,ind,iel,indien,ietype,indstate,inddmat
+      integer nmatel,nstate,ind,iel,indien,ietype,indstate,inddmat
       integer ngauss,nen,nee,l,indstateg,inddmatg
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 c
 cdebug      write(6,*) "Hello from elas_strs_cmp_ss_f!"
 c
-      npage=50
       nmatel=infmat(2)
       nstate=infmat(3)
 c
@@ -133,18 +134,13 @@ c
      &   errstrng)
         if(ierr.ne.izero) return
         if(numrot.ne.izero) call rpforc(p,skew,ien(indien),numnp,nen)
-c**        if(debug) then
-c**          if(ind.eq.1.or.mod(ind,npage).eq.0) write(kw,1000)
-c**          call prntforc(iel,p,ien(indien),nen,ndof,idout,kw)
-c**        end if
         call addfor(b,p,lm(1,indien),lmx(1,indien),neq,nee)
       end do
-c** 1000 format(//," local forces computed from stress field",//)
       return
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.4 2004/06/21 20:34:31 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.5 2004/06/24 16:40:52 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
