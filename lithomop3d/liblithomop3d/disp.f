@@ -29,21 +29,22 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine disp(b,d,id,ndof,numnp,neq)
+      subroutine disp(b,d,id,numnp,neq)
 c
 c...program to transfer computed nodal displacements into d array
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,numnp,neq
+      integer numnp,neq
       integer id(ndof,numnp)
       double precision b(neq),d(ndof,numnp)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
 c
 c...  local variables
 c
@@ -59,7 +60,7 @@ c
       end
 c
 c version
-c $Id: disp.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: disp.f,v 1.2 2004/06/18 15:25:16 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
