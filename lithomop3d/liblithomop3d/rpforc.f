@@ -29,22 +29,23 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine rpforc(p,skew,ien,ndof,numnp,nen,nskdim)
+      subroutine rpforc(p,skew,ien,numnp,nen)
 c
 c...rotates local force vector into skewed coordinate system
 c
       include "implicit.inc"
 c
-c...  subroutine arguments
+c...  parameter definitions
 c
-      integer ndof,numnp,nen,nskdim
-      integer ien(nen)
-      double precision p(ndof*nen),skew(nskdim,numnp)
-c
-c...  defined constants
-c
+      include "ndimens.inc"
       include "nconsts.inc"
       include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer numnp,nen
+      integer ien(nen)
+      double precision p(ndof*nen),skew(nskdim,numnp)
 c
 c...  local variables
 c
@@ -53,9 +54,9 @@ c
 c
       do i=1,nen
         k=ien(i)
-        if((skew(1,k).ne.zero).and.(skew(nskdim,k).ne.zero)) then
+        if((skew(1,k).ne.zero).and.(skew(itwo,k).ne.zero)) then
           ll=ndof*(i-1)
-          call formrt(skew(1,k),rot,nskdim)
+          call formrt(skew(1,k),rot)
 	  call dcopy(ndof,p(ll+1),ione,ptemp,ione)
 	  call dgemv("t",ndof,ndof,one,rot,ithree,ptemp,ione,zero,
      &     p(ll+1),ione)
@@ -65,7 +66,7 @@ c
       end
 c
 c version
-c $Id: rpforc.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: rpforc.f,v 1.2 2004/07/01 19:59:55 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
