@@ -343,6 +343,12 @@ class Lithomop3d_setup(Component):
         self.pointerToListArrayNpar = None
         self.elementSizeInfo = [0, 0]
 
+	#  The following pointers are temporarily being set to numeric
+	#  values to avoid error messages from python.
+	#  They are not being used at present, and whend they retain
+	#  the python value 'None', they cause problems.
+	#  Another option:  Set these to a value using an allocation of
+	#  zero length.
         self.pointerToIelno = None
         self.pointerToIside = None
         self.pointerToIhistry = None
@@ -863,16 +869,17 @@ class Lithomop3d_setup(Component):
             # print "Exception in block between read_prop and read_connect!", error
 
         # Read traction, split node, and slippery node input files.
-        # self.pointerToIelno = lithomop3d.allocateInt(
-        #     self.numberTractionBc)
-        # self.pointerToIside = lithomop3d.allocateInt(
-        #     self.numberTractionBc)
-        # self.pointerToIhistry = lithomop3d.allocateInt(
-        #     self.numberTractionBc)
-        # self.pointerToPres = lithomop3d.allocateDouble(
-        #     (self.numberElementNodes/2)*self.numberTractionBc)
-        # self.pointerToPdir = lithomop3d.allocateDouble(
-        #     self.numberTractionDirections*self.numberTractionBc)
+        self.pointerToIelno = lithomop3d.allocateInt(
+            self.numberTractionBc)
+        self.pointerToIside = lithomop3d.allocateInt(
+            self.numberTractionBc)
+        self.pointerToIhistry = lithomop3d.allocateInt(
+            self.numberTractionBc)
+	#  Note that the following dimension is definitely wrong.
+        self.pointerToPres = lithomop3d.allocateDouble(
+            self.numberTractionBc)
+        self.pointerToPdir = lithomop3d.allocateDouble(
+            self.numberTractionDirections*self.numberTractionBc)
         self.pointerToNfault = lithomop3d.allocateInt(
             3*self.numberSplitNodeEntries)
 	self.memorySize += 3*self.numberSplitNodeEntries*self.intSize
@@ -1474,6 +1481,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.7 2004/08/12 17:11:17 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.8 2004/08/14 15:37:01 willic3 Exp $
 
 # End of file 
