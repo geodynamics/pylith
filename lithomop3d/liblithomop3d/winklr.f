@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine winklr(alnz,iwink,wink,histry,nstep,nwink,nhist,nnz,
-     & lastep,idout,kto,kw)
+     & lastep,ierr,errstrng)
 c
 c...program to implement winkler restoring forces on nodes
 c   designated by iwink.  this program adds a constant given
@@ -39,11 +39,16 @@ c   global stiffness matrix.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nstep,nwink,nhist,nnz,lastep,idout,kto,kw
+      integer nstep,nwink,nhist,nnz,lastep,ierr
       integer iwink(2,nwink)
       double precision alnz(nnz),wink(nwink),histry(nhist,lastep+1)
+      character errstrng*(*)
 c
 c...  local variables
 c
@@ -54,26 +59,23 @@ c
       do i=1,nwink
         mode=iwink(1,i)
         k=iwink(2,i)
-        if(mode.eq.1) then
+        if(mode.eq.ione) then
           alnz(k)=alnz(k)+wink(i)
         else
           ihist=-mode
           if(ihist.gt.nhist) then
-            if(idout.gt.1) write(kw,1000) nhist,i,k
-            write(kto,1000) nhist,i,k
-            stop
+            ierr=100
+            errstrng="winklr"
+            return
           end if
           alnz(k)=alnz(k)+wink(i)*histry(ihist,nstep+1)
         end if
       end do
       return
-1000  format(//' fatal winkler force error!'//
-     & ' attempt to use undefined load history # ',i5,
-     & ' for winkler force # ',i5,' eqn. # = ',i7)
       end
 c
 c version
-c $Id: winklr.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: winklr.f,v 1.2 2004/07/12 21:12:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
