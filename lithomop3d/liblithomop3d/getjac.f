@@ -57,7 +57,7 @@ c
 c
 cdebug      write(6,*) "Hello from getjac_f!"
 c
-      ierr=0
+      ierr=izero
 c
 c...calculate jacobian matrix for (x,y,z) to (r,s,t) transformation
 c
@@ -69,15 +69,16 @@ c
      & *xs(2,1)*xs(3,2)-xs(1,3)*xs(2,2)*xs(3,1)-xs(1,2)*xs(2,1)
      & *xs(3,3)-xs(1,1)*xs(2,3)*xs(3,2)
       if(det.le.zero) then
-        ierr=-iel
-        errstrng="getjac"
+        ierr=113
+        write(errstrng,700) iel
       end if
 c
+ 700  format("getjac:  element # ",i7)
       return
       end
 c
 c version
-c $Id: getjac.f,v 1.4 2004/07/05 19:56:39 willic3 Exp $
+c $Id: getjac.f,v 1.5 2004/07/16 21:22:08 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
