@@ -68,7 +68,7 @@ c
       do imat=1,numat
         matmodel=infmat(1,imat)
         nmatel=infmat(2,imat)
-        nstate=infmatmod(3,matmodel)
+        nstate=infmatmod(2,matmodel)
         incstate=nstr*nstate
 c
 c...  loop over elements in group, updating appropriate state variables
@@ -141,7 +141,7 @@ c
       end
 c
 c version
-c $Id: update_state.f,v 1.2 2004/07/09 15:25:16 willic3 Exp $
+c $Id: update_state.f,v 1.3 2004/07/09 15:29:20 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
