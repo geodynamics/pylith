@@ -4,9 +4,8 @@
 #
 #                             Charles A. Williams
 #                       Rensselaer Polytechnic Institute
-#                        (C) 2004  All Rights Reserved
+#                        (C) 2005  All Rights Reserved
 #
-#  Copyright 2004 Rensselaer Polytechnic Institute.
 #  All worldwide rights reserved.  A license to use, copy, modify and
 #  distribute this software for non-commercial research purposes only
 #  is hereby granted, provided that this copyright notice and
@@ -68,31 +67,14 @@ class Lithomop3d_run(Component):
         
         self.numberTimeStepGroups = lm3dsetup.numberTimeStepGroups
 
-        self.pointerToPcg = lm3dsetup.pointerToPcg
-        self.pointerToZcg = lm3dsetup.pointerToZcg
-        self.pointerToDprev = lm3dsetup.pointerToDprev
-
-        # self.pointerToB = lm3dsetup.pointerToB
-        # self.pointerToBtot = lm3dsetup.pointerToBtot
-        # self.pointerToBres = lm3dsetup.pointerToBres
-        # self.pointerToPvec = lm3dsetup.pointerToPvec
-        # self.pointerToGvec1 = lm3dsetup.pointerToGvec1
-        # self.pointerToGvec2 = lm3dsetup.pointerToGvec2
         self.pointerToBextern = lm3dsetup.pointerToBextern
         self.pointerToBtraction = lm3dsetup.pointerToBtraction
         self.pointerToBgravity = lm3dsetup.pointerToBgravity
         self.pointerToBconcForce = lm3dsetup.pointerToBconcForce
-        # self.pointerToBprestress = lm3dsetup.pointerToBprestress
         self.pointerToBintern = lm3dsetup.pointerToBintern
         self.pointerToBresid = lm3dsetup.pointerToBresid
-        self.pointerToBwork = lm3dsetup.pointerToBwork
         self.pointerToDispVec = lm3dsetup.pointerToDispVec
-        self.externFlag = lm3dsetup.externFlag
-        self.tractionFlag = lm3dsetup.tractionFlag
-        self.gravityFlag = lm3dsetup.gravityFlag
-        self.concForceFlag = lm3dsetup.concForceFlag
-        self.prestressFlag = lm3dsetup.prestressFlag
-        self.usePreviousDisplacementFlag = lm3dsetup.usePreviousDisplacementFlag
+        self.pointerToListArrayNforce = lm3dsetup.pointerToListArrayNforce
         self.pointerToListArrayGrav = lm3dsetup.pointerToListArrayGrav
 
         self.pointerToX = lm3dsetup.pointerToX
@@ -103,6 +85,7 @@ class Lithomop3d_run(Component):
         self.pointerToIwink = lm3dsetup.pointerToIwink
         self.pointerToWink = lm3dsetup.pointerToWink
         self.pointerToListArrayNsysdat = lm3dsetup.pointerToListArrayNsysdat
+        self.pointerToListArrayIddmat = lm3dsetup.pointerToListArrayIddmat
 
         self.pointerToIbond = lm3dsetup.pointerToIbond
         self.pointerToBond = lm3dsetup.pointerToBond
@@ -134,8 +117,7 @@ class Lithomop3d_run(Component):
         self.pointerToLm = lm3dsetup.pointerToLm
         self.pointerToLmx = lm3dsetup.pointerToLmx
         self.pointerToLmf = lm3dsetup.pointerToLmf
-        self.pointerToInfiel = lm3dsetup.pointerToInfiel
-        self.pointerToListArrayIddmat = lm3dsetup.pointerToListArrayIddmat
+        self.pointerToIvfamily = lm3dsetup.pointerToIvfamily
         self.pointerToListArrayNpar = lm3dsetup.pointerToListArrayNpar
 
         self.prestressAutoComputeInt = lm3dsetup.prestressAutoComputeInt
@@ -148,17 +130,16 @@ class Lithomop3d_run(Component):
 
         self.pointerToListArrayPropertyList = lm3dsetup.pointerToListArrayPropertyList
         self.pointerToMhist = lm3dsetup.pointerToMhist
-        self.pointerToMaterialInfo = lm3dsetup.pointerToMaterialInfo
         self.pointerToMaterialModelInfo = lm3dsetup.pointerToMaterialModelInfo
-        self.pointerToMaterialModelStates = lm3dsetup.pointerToMaterialModelStates
 
         self.pointerToGauss = lm3dsetup.pointerToGauss
         self.pointerToSh = lm3dsetup.pointerToSh
         self.pointerToShj = lm3dsetup.pointerToShj
-        self.pointerToElementTypeInfo = lm3dsetup.pointerToElementTypeInfo
+        self.pointerToListArrayElementTypeInfo = lm3dsetup.pointerToListArrayElementTypeInfo
 
         self.pointerToHistry = lm3dsetup.pointerToHistry
         self.pointerToListArrayRtimdat = lm3dsetup.pointerToListArrayRtimdat
+        self.pointerToListArrayNtimdat = lm3dsetup.pointerToListArrayNtimdat
         self.pointerToListArrayNvisdat = lm3dsetup.pointerToListArrayNvisdat
         self.pointerToMaxstp = lm3dsetup.pointerToMaxstp
         self.pointerToDelt = lm3dsetup.pointerToDelt
@@ -172,9 +153,6 @@ class Lithomop3d_run(Component):
         self.pointerToItmax = lm3dsetup.pointerToItmax
 
         self.pointerToListArrayRgiter = lm3dsetup.pointerToListArrayRgiter
-        self.pointerToListArrayRmin = lm3dsetup.pointerToListArrayRmin
-        self.pointerToListArrayRmult = lm3dsetup.pointerToListArrayRmult
-        self.pointerToListArrayNsiter = lm3dsetup.pointerToListArrayNsiter
 
         self.pointerToSkew = lm3dsetup.pointerToSkew
 
@@ -183,6 +161,7 @@ class Lithomop3d_run(Component):
         self.pointerToListArrayNunits = lm3dsetup.pointerToListArrayNunits
         self.pointerToListArrayNprint = lm3dsetup.pointerToListArrayNprint
         self.pointerToIstatout = lm3dsetup.pointerToIstatout
+        self.pointerToNstatout = lm3dsetup.pointerToNstatout
 
         self.asciiOutputFile = lm3dsetup.asciiOutputFile
         self.plotOutputFile = lm3dsetup.plotOutputFile
@@ -205,92 +184,6 @@ class Lithomop3d_run(Component):
         print "Hello from lm3drun.run (begin)!"
         print "Beginning problem solution:"
 
-        # ntimdat array
-        self.currentTimeStep = 0
-        self.currentIterationsBetweenReform = 0
-        self.currentStepsBetweenReform = 0
-        self.currentLargeDeformationFlag = 0
-        self.currentBbarFlag = 0
-        self.currentMaximumIterations = 0
-        self.currentNumberTotalIterations = 0
-        self.currentNumberReforms = 0
-        self.currentNumberTotalPcgIterations = 0
-        self.reformFlagInt = 0
-        self.listNtimdat = [
-            self.currentTimeStep,
-            self.currentIterationsBetweenReform,
-            self.currentStepsBetweenReform,
-            self.currentLargeDeformationFlag,
-            self.currentMaximumIterations,
-            self.currentNumberTotalIterations,
-            self.currentNumberReforms,
-            self.currentNumberTotalPcgIterations,
-            self.reformFlagInt]
-        self.pointerToListArrayNtimdat = lithomop3d.intListToArray(
-            self.listNtimdat)
-	# print "After listNtimdat"
-	self.memorySize += 9*self.intSize
-
-        # gcurr array
-        self.currentDisplacementNorm = 0.0
-        self.currentForceNorm = 0.0
-        self.currentEnergyNorm = 0.0
-        self.listGcurr = [
-            self.currentDisplacementNorm,
-            self.currentForceNorm,
-            self.currentEnergyNorm]
-        self.pointerToListArrayGcurr = lithomop3d.doubleListToArray(
-            self.listGcurr)
-	self.memorySize += 3*self.doubleSize
-
-        # gi array
-        self.initialDisplacementNorm = 0.0
-        self.initialForceNorm = 0.0
-        self.initialEnergyNorm = 0.0
-        self.listGi = [
-            self.initialDisplacementNorm,
-            self.initialForceNorm,
-            self.initialEnergyNorm]
-        self.pointerToListArrayGi = lithomop3d.doubleListToArray(
-            self.listGi)
-	self.memorySize += 3*self.doubleSize
-        
-        # gprev array
-        self.previousDisplacementNorm = 0.0
-        self.previousForceNorm = 0.0
-        self.previousEnergyNorm = 0.0
-        self.listGprev = [
-            self.previousDisplacementNorm,
-            self.previousForceNorm,
-            self.previousEnergyNorm]
-        self.pointerToListArrayGprev = lithomop3d.doubleListToArray(
-            self.listGprev)
-	self.memorySize += 3*self.doubleSize
-        
-        # gtol array
-        self.currentDisplacementTolerance = 0.0
-        self.currentForceTolerance = 0.0
-        self.currentEnergyTolerance = 0.0
-        self.listGtol = [
-            self.currentDisplacementTolerance,
-            self.currentForceTolerance,
-            self.currentEnergyTolerance]
-        self.pointerToListArrayGtol = lithomop3d.doubleListToArray(
-            self.listGtol)
-	self.memorySize += 3*self.doubleSize
-
-        # Nforce array
-        self.listNforce = [
-            self.externFlag,
-            self.tractionFlag,
-            self.gravityFlag,
-            self.concForceFlag,
-            self.prestressFlag,
-            self.usePreviousDisplacementFlag]
-        self.pointerToListArrayNforce = lithomop3d.intListToArray(
-            self.listNforce)
-	self.memorySize += 6*self.intSize
-
         # Output approximate memory usage
         self.memorySizeMB =0.0
         self.memorySizeMB=self.memorySize/(1024.0*1024.0)
@@ -304,17 +197,12 @@ class Lithomop3d_run(Component):
             if self.prestressAutoComputeInt == 1:
                 lithomop3d.autoprestr(
                     self.A,
-                    self.pointerToPcg,
-                    self.pointerToZcg,
-                    self.pointerToDprev,
                     self.pointerToBextern,
                     self.pointerToBtraction,
                     self.pointerToBgravity,
                     self.pointerToBconcForce,
-                    # self.pointerToBprestress,
                     self.pointerToBintern,
                     self.pointerToBresid,
-                    self.pointerToBwork,
                     self.pointerToDispVec,
                     self.pointerToListArrayNforce,
                     self.pointerToListArrayGrav,
@@ -326,6 +214,7 @@ class Lithomop3d_run(Component):
                     self.pointerToIwink,
                     self.pointerToWink,
                     self.pointerToListArrayNsysdat,
+                    self.pointerToListArrayIddmat,
                     self.pointerToIbond,
                     self.pointerToBond,
                     self.pointerToDx,
@@ -352,8 +241,7 @@ class Lithomop3d_run(Component):
                     self.pointerToLm,
                     self.pointerToLmx,
                     self.pointerToLmf,
-                    self.pointerToInfiel,
-                    self.pointerToListArrayIddmat,
+                    self.pointerToIvfamily,
                     self.pointerToListArrayNpar,
                     self.pointerToIelno,
                     self.pointerToIside,
@@ -362,13 +250,11 @@ class Lithomop3d_run(Component):
                     self.pointerToPdir,
                     self.pointerToListArrayPropertyList,
                     self.pointerToMhist,
-                    self.pointerToMaterialInfo,
                     self.pointerToMaterialModelInfo,
-                    self.pointerToMaterialModelStates,
                     self.pointerToGauss,
                     self.pointerToSh,
                     self.pointerToShj,
-                    self.pointerToElementTypeInfo,
+                    self.pointerToListArrayElementTypeInfo,
                     self.pointerToHistry,
                     self.pointerToListArrayRtimdat,
                     self.pointerToListArrayNtimdat,
@@ -384,18 +270,12 @@ class Lithomop3d_run(Component):
                     self.pointerToEtol,
                     self.pointerToItmax,
                     self.pointerToListArrayRgiter,
-                    self.pointerToListArrayGcurr,
-                    self.pointerToListArrayGi,
-                    self.pointerToListArrayGprev,
-                    self.pointerToListArrayGtol,
-                    self.pointerToListArrayRmin,
-                    self.pointerToListArrayRmult,
-                    self.pointerToListArrayNsiter,
                     self.pointerToSkew,
                     self.pointerToListArrayNcodat,
                     self.pointerToListArrayNunits,
                     self.pointerToListArrayNprint,
                     self.pointerToIstatout,
+                    self.pointerToNstatout,
                     self.asciiOutputFile,
                     self.plotOutputFile,
                     self.ucdOutputRoot,
@@ -407,17 +287,12 @@ class Lithomop3d_run(Component):
             
             lithomop3d.elastc(
                 self.A,
-                self.pointerToPcg,
-                self.pointerToZcg,
-                self.pointerToDprev,
                 self.pointerToBextern,
                 self.pointerToBtraction,
                 self.pointerToBgravity,
                 self.pointerToBconcForce,
-                # self.pointerToBprestress,
                 self.pointerToBintern,
                 self.pointerToBresid,
-                self.pointerToBwork,
                 self.pointerToDispVec,
                 self.pointerToListArrayNforce,
                 self.pointerToListArrayGrav,
@@ -429,6 +304,7 @@ class Lithomop3d_run(Component):
                 self.pointerToIwink,
                 self.pointerToWink,
                 self.pointerToListArrayNsysdat,
+                self.pointerToListArrayIddmat,
                 self.pointerToIbond,
                 self.pointerToBond,
                 self.pointerToDx,
@@ -455,8 +331,7 @@ class Lithomop3d_run(Component):
                 self.pointerToLm,
                 self.pointerToLmx,
                 self.pointerToLmf,
-                self.pointerToInfiel,
-                self.pointerToListArrayIddmat,
+                self.pointerToIvfamily,
                 self.pointerToListArrayNpar,
                 self.pointerToIelno,
                 self.pointerToIside,
@@ -465,13 +340,11 @@ class Lithomop3d_run(Component):
                 self.pointerToPdir,
                 self.pointerToListArrayPropertyList,
                 self.pointerToMhist,
-                self.pointerToMaterialInfo,
                 self.pointerToMaterialModelInfo,
-                self.pointerToMaterialModelStates,
                 self.pointerToGauss,
                 self.pointerToSh,
                 self.pointerToShj,
-                self.pointerToElementTypeInfo,
+                self.pointerToListArrayElementTypeInfo,
                 self.pointerToHistry,
                 self.pointerToListArrayRtimdat,
                 self.pointerToListArrayNtimdat,
@@ -487,18 +360,12 @@ class Lithomop3d_run(Component):
                 self.pointerToEtol,
                 self.pointerToItmax,
                 self.pointerToListArrayRgiter,
-                self.pointerToListArrayGcurr,
-                self.pointerToListArrayGi,
-                self.pointerToListArrayGprev,
-                self.pointerToListArrayGtol,
-                self.pointerToListArrayRmin,
-                self.pointerToListArrayRmult,
-                self.pointerToListArrayNsiter,
                 self.pointerToSkew,
                 self.pointerToListArrayNcodat,
                 self.pointerToListArrayNunits,
                 self.pointerToListArrayNprint,
                 self.pointerToIstatout,
+                self.pointerToNstatout,
                 self.asciiOutputFile,
                 self.plotOutputFile,
                 self.ucdOutputRoot,
@@ -510,17 +377,12 @@ class Lithomop3d_run(Component):
         if self.analysisType == "fullSolution" and self.numberTimeStepGroups > 1:
             lithomop3d.viscos(
                 self.A,
-                self.pointerToPcg,
-                self.pointerToZcg,
-                self.pointerToDprev,
                 self.pointerToBextern,
                 self.pointerToBtraction,
                 self.pointerToBgravity,
                 self.pointerToBconcForce,
-                # self.pointerToBprestress,
                 self.pointerToBintern,
                 self.pointerToBresid,
-                self.pointerToBwork,
                 self.pointerToDispVec,
                 self.pointerToListArrayNforce,
                 self.pointerToListArrayGrav,
@@ -532,6 +394,7 @@ class Lithomop3d_run(Component):
                 self.pointerToIwink,
                 self.pointerToWink,
                 self.pointerToListArrayNsysdat,
+                self.pointerToListArrayIddmat,
                 self.pointerToIbond,
                 self.pointerToBond,
                 self.pointerToDx,
@@ -558,8 +421,7 @@ class Lithomop3d_run(Component):
                 self.pointerToLm,
                 self.pointerToLmx,
                 self.pointerToLmf,
-                self.pointerToInfiel,
-                self.pointerToListArrayIddmat,
+                self.pointerToIvfamily,
                 self.pointerToListArrayNpar,
                 self.pointerToIelno,
                 self.pointerToIside,
@@ -568,13 +430,11 @@ class Lithomop3d_run(Component):
                 self.pointerToPdir,
                 self.pointerToListArrayPropertyList,
                 self.pointerToMhist,
-                self.pointerToMaterialInfo,
                 self.pointerToMaterialModelInfo,
-                self.pointerToMaterialModelStates,
                 self.pointerToGauss,
                 self.pointerToSh,
                 self.pointerToShj,
-                self.pointerToElementTypeInfo,
+                self.pointerToListArrayElementTypeInfo,
                 self.pointerToHistry,
                 self.pointerToListArrayRtimdat,
                 self.pointerToListArrayNtimdat,
@@ -590,19 +450,13 @@ class Lithomop3d_run(Component):
                 self.pointerToEtol,
                 self.pointerToItmax,
                 self.pointerToListArrayRgiter,
-                self.pointerToListArrayGcurr,
-                self.pointerToListArrayGi,
-                self.pointerToListArrayGprev,
-                self.pointerToListArrayGtol,
-                self.pointerToListArrayRmin,
-                self.pointerToListArrayRmult,
-                self.pointerToListArrayNsiter,
                 self.pointerToSkew,
                 self.pointerToIprint,
                 self.pointerToListArrayNcodat,
                 self.pointerToListArrayNunits,
                 self.pointerToListArrayNprint,
                 self.pointerToIstatout,
+                self.pointerToNstatout,
                 self.asciiOutputFile,
                 self.plotOutputFile,
                 self.ucdOutputRoot,
@@ -625,6 +479,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.13 2005/03/11 04:07:42 knepley Exp $
+# $Id: Lithomop3d_run.py,v 1.14 2005/03/30 01:56:39 willic3 Exp $
 
 # End of file 

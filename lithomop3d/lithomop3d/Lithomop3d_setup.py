@@ -6,7 +6,6 @@
 #                       Rensselaer Polytechnic Institute
 #                        (C) 2005  All Rights Reserved
 #
-#  Copyright 2005 Rensselaer Polytechnic Institute.
 #  All worldwide rights reserved.  A license to use, copy, modify and
 #  distribute this software for non-commercial research purposes only
 #  is hereby granted, provided that this copyright notice and
@@ -66,16 +65,8 @@ class Lithomop3d_setup(Component):
         self.stressTolerance = lm3dscan.stressTolerance
         self.minimumStrainPerturbation = lm3dscan.minimumStrainPerturbation
         self.initialStrainPerturbation = lm3dscan.initialStrainPerturbation
-        self.preconditionerType = lm3dscan.preconditionerType
-        self.maxPcgIterations = lm3dscan.maxPcgIterations
 
-        self.displacementAccuracyMult = lm3dscan.displacementAccuracyMult
-        self.forceAccuracyMult = lm3dscan.forceAccuracyMult
-        self.energyAccuracyMult = lm3dscan.energyAccuracyMult
-        
-        self.minDisplacementAccuracy = lm3dscan.minDisplacementAccuracy
-        self.minForceAccuracy = lm3dscan.minForceAccuracy
-        self.minEnergyAccuracy = lm3dscan.minEnergyAccuracy
+        self.usePreviousDisplacementFlag = lm3dscan.usePreviousDisplacementFlag
 
         self.gravityX = lm3dscan.gravityX
         self.gravityY = lm3dscan.gravityY
@@ -104,6 +95,16 @@ class Lithomop3d_setup(Component):
                                                                    
         # Initialize and define some integer parameters based on string
         # or logical parameters in python
+
+        self.quadratureOrderInt = 0
+        if lm3dscan.quadratureOrder == "Full":
+            self.quadratureOrderInt = 1
+        elif quadratureOrder == "Reduced":
+            self.quadratureOrderInt = 2
+        elif quadratureOrder == "Selective":
+            self.quadratureOrderInt = 3
+        else:
+            self.quadratureOrderInt = 1
 
         self.asciiOutputInt = 0
         if lm3dscan.inventory.asciiOutput == "none":
@@ -136,21 +137,6 @@ class Lithomop3d_setup(Component):
             self.autoRotateSlipperyNodesInt = 2
         else:
             self.autoRotateSlipperyNodesInt = 1
-
-        self.preconditionerTypeInt = 0
-        self.usePreviousDisplacementFlag = 0
-        if lm3dscan.preconditionerType == "diagonalNoUpdate":
-            self.preconditionerTypeInt = 1
-        elif lm3dscan.preconditionerType == "gaussSeidelNoUpdate":
-            self.preconditionerTypeInt = 2
-        elif lm3dscan.preconditionerType == "diagonalUpdate":
-            self.preconditionerTypeInt = 3
-            self.usePreviousDisplacementFlag = 1
-        elif lm3dscan.preconditionerType == "gaussSeidelUpdate":
-            self.preconditionerTypeInt = 4
-            self.usePreviousDisplacementFlag = 1
-        else:
-            self.preconditionerTypeInt = 1
 
         # Get some parameters from the inventory list.
         self.title = lm3dscan.inventory.title
@@ -200,22 +186,14 @@ class Lithomop3d_setup(Component):
         self.listIddmat = lm3dscan._listIddmat
 
         # Invariant parameters related to element type
-        self.maxElementNodes = lm3dscan._maxElementNodes
-        self.maxGaussPoints = lm3dscan._maxGaussPoints
         self.maxElementEquations = lm3dscan._maxElementEquations
-        self.numberElementTypes = lm3dscan._numberElementTypes
         self.pointerToListArrayNumberElementNodesBase = lm3dscan._pointerToListArrayNumberElementNodesBase
-        self.pointerToElementTypeInfo = lm3dscan._pointerToElementTypeInfo
-        self.pointerToSh = lm3dscan._pointerToSh
-        self.pointerToShj = lm3dscan._pointerToShj
-        self.pointerToGauss = lm3dscan._pointerToGauss
 
         # Invariant parameters related to material model
         self.maxMaterialModels = lm3dscan._maxMaterialModels
         self.maxStateVariables = lm3dscan._maxStateVariables
         self.maxState0Variables = lm3dscan._maxState0Variables
         self.pointerToMaterialModelInfo = lm3dscan._pointerToMaterialModelInfo
-        self.pointerToMaterialModelStates = lm3dscan._pointerToMaterialModelStates
 
         # Parameters derived from values in the inventory or the category 2 parameters.
         self.analysisTypeInt = lm3dscan._analysisTypeInt
@@ -247,19 +225,12 @@ class Lithomop3d_setup(Component):
         self.numberLoadHistories = lm3dscan._numberLoadHistories
 
         self.numberMaterials = lm3dscan._numberMaterials
-        self.propertyListSize = lm3dscan._propertyListSize
         self.pointerToListArrayPropertyList = lm3dscan._pointerToListArrayPropertyList
-        # self.pointerToMaterialInfo = lm3dscan._pointerToMaterialInfo
-        self.pointerToListArrayPropertyListIndex = lm3dscan._pointerToListArrayPropertyListIndex
-        self.pointerToListArrayMaterialModel = lm3dscan._pointerToListArrayMaterialModel
 
         self.numberVolumeElements = lm3dscan._numberVolumeElements
-        self.volumeElementType = lm3dscan._volumeElementType
         self.numberVolumeElementFamilies = lm3dscan._numberVolumeElementFamilies
+        self.volumeElementType = lm3dscan._volumeElementType
         self.pointerToVolumeElementFamilyList = lm3dscan._pointerToVolumeElementFamilyList
-
-        self.numberElements = lm3dscan._numberElements
-        self.connectivitySize = lm3dscan._connectivitySize
 
         self.numberPrestressEntries = lm3dscan._numberPrestressEntries
 
@@ -279,6 +250,7 @@ class Lithomop3d_setup(Component):
         return
 
     def run(self):
+        from ElementTypeDef import ElementTypeDef
         import lithomop3d
 
         # This function performs a lot of memory allocation, and also bundles several
@@ -294,16 +266,14 @@ class Lithomop3d_setup(Component):
         lithomop3d.PetscInitialize()
         self.elasticStage, self.viscousStage, self.iterateEvent = lithomop3d.setupPETScLogging()
 
+        eltype=ElementTypeDef()
+
         # Initialize parameters that are defined in this function
 
         self.numberGlobalEquations = 0
 
         self.totalNumberSplitNodes = 0
         self.totalNumberSlipperyNodes = 0
-
-        self.pointerToPcg = None
-        self.pointerToZcg = None
-        self.pointerToDprev = None
 
         self.externFlag = 0
         self.tractionFlag = 0
@@ -318,8 +288,9 @@ class Lithomop3d_setup(Component):
         self.pointerToBconcForce = None
         self.pointerToBintern = None
         self.pointerToBresid = None
-        self.pointerToBwork = None
         self.pointerToDispVec = None
+        self.listNforce = [0, 0, 0, 0, 0, 0]
+        self.pointerToListArrayNforce = None
 
         self.listGrav = [0.0, 0.0, 0.0]
         self.pointerToListArrayGrav = None
@@ -333,6 +304,7 @@ class Lithomop3d_setup(Component):
         self.pointerToWink = None
         self.listNsysdat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.pointerToListArrayNsysdat = None
+        self.pointerToListArrayIddmat = None
 
         self.pointerToIbond = None
         self.pointerToBond = None
@@ -357,25 +329,21 @@ class Lithomop3d_setup(Component):
         self.pointerToS = None
         self.pointerToStemp = None
 
-
-        self.pointerToVolumeElementInfo = None
         self.pointerToState = None
         self.pointerToDstate = None
         self.stateSize = 0
         self.pointerToState0 = None
         self.state0Size = 0
         self.pointerToDmat = None
-        self.dmatSize = 0
-        self.totalVolumeGaussPoints = 0
         self.pointerToIen = None
         self.pointerToLm = None
         self.pointerToLmx = None
         self.pointerToLmf = None
-        self.pointerToInfiel = None
-        self.pointerToListArrayIddmat = None
-        self.listNpar = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.pointerToIvfamily = None
+        self.listNpar = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.pointerToListArrayNpar = None
         self.elementSizeInfo = [0, 0, 0, 0]
+        self.pointerToIvftmp = None
 
         self.pointerToIelno = None
         self.pointerToIside = None
@@ -384,10 +352,30 @@ class Lithomop3d_setup(Component):
         self.pointerToPdir = None
 
         self.pointerToMhist = None
+        self.propertySize = 0
+
+        self.elementTypeInfo = [0, 0, 0, 0]
+        self.pointerToListArrayElementTypeInfo = None
+        self.pointerToSh = None
+        self.pointerToShj = None
+        self.pointerToGauss = None
+        self.numberVolumeElementNodes = 0
+        self.numberVolumeElementGaussPoints = 0
+        self.numberVolumeElementEquations = 0
 
         self.pointerToHistry = None
         self.listRtimdat = [0.0, 0.0, 0.0]
         self.pointerToListArrayRtimdat = None
+        self.listNtimdat = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.currentTimeStep = 0
+        self.currentIterationsBetweenReform = 0
+        self.currentStepsBetweenReform = 0
+        self.currentLargeDeformationFlag = 0
+        self.currentMaximumIterations = 0
+        self.currentNumberTotalIterations = 0
+        self.currentNumberReforms = 0
+        self.currentNumberTotalPcgIterations = 0
+        self.pointerToListArrayNtimdat = None
         self.listNvisdat = [0, 0, 0, 0]
         self.pointerToListArrayNvisdat = None
         self.pointerToMaxstp = None
@@ -403,12 +391,6 @@ class Lithomop3d_setup(Component):
 
         self.listRgiter = [0.0, 0.0, 0.0]
         self.pointerToListArrayRgiter = None
-        self.listRmin = [0.0, 0.0, 0.0]
-        self.pointerToListArrayRmin = None
-        self.listRmult = [0.0, 0.0, 0.0]
-        self.pointerToListArrayRmult = None
-        self.listNsiter = [0, 0]
-        self.pointerToListArrayNsiter = None
         
         self.pointerToSkew = None
 
@@ -420,12 +402,11 @@ class Lithomop3d_setup(Component):
         self.listNprint = [0, 0, 0]
         self.pointerToListArrayNprint = None
         self.pointerToIstatout = None
+        self.pointerToNstatout = None
 
 
         # Arrays that can be deallocated after use.
         self.pointerToTimes = None
-        self.pointerToIndmat = None
-        self.pointerToImgrp = None
         self.pointerToNslip = None
         self.pointerToXtmp = None
         self.pointerToItmp = None
@@ -461,22 +442,6 @@ class Lithomop3d_setup(Component):
             self.winklerScaleZ]
         self.pointerToListArrayWscal = lithomop3d.doubleListToArray(
             self.listWscal)
-	self.memorySize += 3*self.doubleSize
-
-        self.listRmult = [
-            self.displacementAccuracyMult,
-            self.forceAccuracyMult,
-            self.energyAccuracyMult]
-        self.pointerToListArrayRmult = lithomop3d.doubleListToArray(
-            self.listRmult)
-	self.memorySize += 3*self.doubleSize
-
-        self.listRmin = [
-            self.minDisplacementAccuracy,
-            self.minForceAccuracy,
-            self.minEnergyAccuracy]
-        self.pointerToListArrayRmin = lithomop3d.doubleListToArray(
-            self.listRmin)
 	self.memorySize += 3*self.doubleSize
 
         self.listGrav = [
@@ -519,6 +484,25 @@ class Lithomop3d_setup(Component):
             self.f77PlotOutput,
             self.asciiOutputFile,
             self.plotOutputFile)
+
+        # Set up global integration for volume elements.
+
+        eltype.getdef(
+            self.volumeElementType,
+            self.quadratureOrderInt,
+            self.numberSpaceDimensions,
+            self.numberDegreesFreedom)
+
+        self.elementTypeInfo = eltype.getdef.elementTypeInfo
+        self.pointerToSh = eltype.getdef.pointerToSh
+        self.pointerToShj = eltype.getdef.pointerToShj
+        self.pointerToGauss = eltype.getdef.pointerToGauss
+        self.numberVolumeElementNodes = eltype.getdef.numberElementNodes
+        self.numberVolumeElementGaussPoints = eltype.getdef.numberElementGaussPoints
+        self.numberVolumeElementEquations = eltype.getdef.numberElementEquations
+        self.pointerToListArrayElementTypeInfo = lithomop3d.intListToArray(
+            self.elementTypeInfo)
+	self.memorySize += 4*self.intSize
 
         # Node-based info (coordinates, displacement arrays, BC, and skew BC).
 
@@ -596,14 +580,14 @@ class Lithomop3d_setup(Component):
             self.asciiOutputInt,
             self.asciiOutputFile)
         
-        lithomop3d.write_subiter(
-            self.pointerToListArrayRmult,
-            self.pointerToListArrayRmin,
-            self.preconditionerTypeInt,
-            self.maxPcgIterations,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+        # lithomop3d.write_subiter(
+        #     self.pointerToListArrayRmult,
+        #     self.pointerToListArrayRmin,
+        #     self.preconditionerTypeInt,
+        #     self.maxPcgIterations,
+        #     self.f77AsciiOutput,
+        #     self.asciiOutputInt,
+        #     self.asciiOutputFile)
                              
         # Allocate and read time step, time output, and load history info.
         self.pointerToHistry = lithomop3d.allocateDouble(
@@ -648,8 +632,10 @@ class Lithomop3d_setup(Component):
             self.totalNumberTimeSteps+1)
 	self.memorySize += (self.totalNumberTimeSteps+1)*self.doubleSize
         self.pointerToIstatout = lithomop3d.allocateInt(
-            2*self.maxStateVariables)
-	self.memorySize += 4*self.maxStateVariables*self.intSize
+            3*self.maxStateVariables)
+	self.memorySize += 3*self.maxStateVariables*self.intSize
+        self.pointerToNstatout = lithomop3d.allocateInt(3)
+	self.memorySize += 3*self.intSize
 
         lithomop3d.read_timdat(
             self.pointerToDelt,
@@ -689,6 +675,7 @@ class Lithomop3d_setup(Component):
 
         lithomop3d.read_stateout(
             self.pointerToIstatout,
+            self.pointerToNstatout,
             self.f77FileInput,
             self.f77AsciiOutput,
             self.f77PlotOutput,
@@ -714,7 +701,7 @@ class Lithomop3d_setup(Component):
 
         # Allocate and read info on material properties, connectivities, and prestresses
         lithomop3d.write_element_info(
-            self.numberElements,
+            self.numberVolumeElements,
             self.quadratureOrderInt,
             self.prestressAutoComputeInt,
             self.prestressAutoChangeElasticPropsInt,
@@ -725,67 +712,33 @@ class Lithomop3d_setup(Component):
             self.asciiOutputFile)
 
         self.pointerToIen = lithomop3d.allocateInt(
-            self.connectivitySize)
-	self.memorySize += self.connectivitySize*self.intSize
-        self.pointerToInfiel = lithomop3d.allocateInt(
-            7*self.numberElements)
-	self.memorySize += 7*self.numberElements*self.intSize
-        self.pointerToIndmat = lithomop3d.allocateInt(
-            self.numberMaterials)
-	self.memorySize += self.numberMaterials*self.intSize
-        self.pointerToImgrp = lithomop3d.allocateInt(
-            self.numberMaterials)
-	self.memorySize += self.numberMaterials*self.intSize
-        self.pointerToMhist = lithomop3d.allocateInt(
-            self.propertyListSize)
-	self.memorySize += self.propertyListSize*self.intSize
+            self.numberVolumeElementNodes*self.numberVolumeElements)
+	self.memorySize += self.numberVolumeElementNodes* \
+                           self.numberVolumeElements*self.intSize
+        self.pointerToIvfamily = lithomop3d.allocateInt(
+            5*self.numberVolumeElementFamilies)
+        self.memorySize += 5*self.numberVolumeElementFamilies*intSize
 
-        lithomop3d.write_props(
-            self.pointerToListArrayPropertyList,
-            self.pointerToListArrayGrav,
-            self.pointerToMaterialInfo,
-            self.pointerToMaterialModelInfo,
-            self.numberMaterials,
-            self.propertyListSize,
-            self.asciiOutputInt,
-            self.plotOutputInt,
-            self.f77AsciiOutput,
-            self.f77PlotOutput,
-            self.asciiOutputFile,
-            self.plotOutputFile)
-
-        lithomop3d.read_mathist(
-            self.pointerToMhist,
-            self.pointerToMaterialInfo,
-            self.numberMaterials,
-            self.propertyListSize,
-            self.numberLoadHistories,
-            self.f77FileInput,
-            self.f77AsciiOutput,
-            self.f77PlotOutput,
-            self.asciiOutputInt,
-            self.plotOutputInt,
-            self.materialHistoryInputFile,
-            self.asciiOutputFile,
-            self.plotOutputFile)
+        self.pointerToIvftmp = lithomop3d.allocateInt(
+            self.numberVolumeElementFamilies)
+        self.memorySize += self.numberVolumeElementFamilies*intSize
 
         if self.numberPrestressEntries != 0 or self.prestressAutoComputeInt != 0:
             self.prestressFlag = 1
 
         self.elementSizeInfo = lithomop3d.read_connect(
-            self.pointerToListArrayNumberElementNodesBase,
-            self.pointerToElementTypeInfo,
-            self.pointerToMaterialInfo,
             self.pointerToMaterialModelInfo,
+            self.pointerToVolumeElementFamilyList,
+            self.numberVolumeElementNodes,
+            self.numberVolumeElementGaussPoints,
             self.pointerToIen,
-            self.pointerToInfiel,
-            self.pointerToIndmat,
-            self.pointerToImgrp,
-            self.connectivitySize,
+            self.pointerToIvfamily,
+            self.pointerToIvftmp,
+            self.maxNumberVolumeElementFamilies,
+            self.numberVolumeElementFamilies,
             self.prestressFlag,
-            self.numberElements,
+            self.numberVolumeElements,
             self.numberNodes,
-            self.numberMaterials,
             self.f77FileInput,
             self.f77AsciiOutput,
             self.f77PlotOutput,
@@ -796,13 +749,41 @@ class Lithomop3d_setup(Component):
             self.plotOutputFile)
 
         self.stateSize = self.elementSizeInfo[0]
-        self.dmatSize = self.elementSizeInfo[1]
-        self.totalVolumeGaussPoints = self.elementSizeInfo[2]
-        self.state0Size = self.elementSizeInfo[3]
-        self.pointerToIndmat = None
-        self.memorySize -= self.numberMaterials*self.intSize
-        self.pointerToImgrp = None
-        self.memorySize -= self.numberMaterials*self.intSize
+        self.state0Size = self.elementSizeInfo[1]
+        self.propertySize = self.elementSizeInfo[2]
+
+        self.pointerToMhist = lithomop3d.allocateInt(
+            self.propertySize)
+	self.memorySize += self.propertySize*self.intSize
+
+        lithomop3d.write_props(
+            self.pointerToListArrayPropertyList,
+            self.pointerToListArrayGrav,
+            self.pointerToIvfamily,
+            self.pointerToMaterialModelInfo,
+            self.numberVolumeElementFamilies,
+            self.propertySize,
+            self.asciiOutputInt,
+            self.plotOutputInt,
+            self.f77AsciiOutput,
+            self.f77PlotOutput,
+            self.asciiOutputFile,
+            self.plotOutputFile)
+
+        lithomop3d.read_mathist(
+            self.pointerToMhist,
+            self.pointerToIvfamily,
+            self.numberVolumeElementFamilies,
+            self.propertySize,
+            self.numberLoadHistories,
+            self.f77FileInput,
+            self.f77AsciiOutput,
+            self.f77PlotOutput,
+            self.asciiOutputInt,
+            self.plotOutputInt,
+            self.materialHistoryInputFile,
+            self.asciiOutputFile,
+            self.plotOutputFile)
 
         # write mesh info to UCD file, if requested
         if self.ucdOutputInt == 1:
@@ -810,12 +791,15 @@ class Lithomop3d_setup(Component):
                 self.pointerToX,
                 self.numberNodes,
                 self.pointerToIen,
-                self.pointerToInfiel,
-                self.numberElements,
-                self.connectivitySize,
+                self.pointerToIvfamily,
+                self.numberVolumeElements,
+                self.numberVolumeElementFamilies,
                 self.pointerToSh,
-                self.pointerToElementTypeInfo,
+                self.numberVolumeElementNodes,
+                self.numberVolumeElementGaussPoints,
+                self.volumeElementType,
                 self.pointerToIstatout,
+                self.pointerToNstatout,
                 self.f77UcdOutput,
                 self.ucdOutputRoot)
                 
@@ -1090,32 +1074,26 @@ class Lithomop3d_setup(Component):
             self.numberNodes,
             self.pointerToIen,
             self.pointerToLm,
-            self.pointerToInfiel,
-            self.connectivitySize,
-            self.numberElements,
-            self.pointerToElementTypeInfo)
+            self.numberVolumeElements,
+            self.numberVolumeElementNodes)
 
         lithomop3d.localf(
             self.pointerToIen,
             self.pointerToLmf,
-            self.pointerToInfiel,
-            self.connectivitySize,
-            self.numberElements,
-            self.pointerToElementTypeInfo,
+            self.numberVolumeElements,
             self.pointerToNfault,
-            self.numberSplitNodeEntries)
+            self.numberSplitNodeEntries,
+            self.numberVolumeElementNodes)
 
         lithomop3d.localx(
             self.pointerToIdx,
             self.numberNodes,
             self.pointerToIen,
             self.pointerToLmx,
-            self.pointerToInfiel,
-            self.connectivitySize,
-            self.numberElements,
-            self.pointerToElementTypeInfo,
+            self.numberVolumeElements,
             self.pointerToNslip,
-            self.numberSlipperyNodeEntries)
+            self.numberSlipperyNodeEntries,
+            self.numberVolumeElementNodes)
         self.pointerToNslip = None
 	self.memorySize -= self.numberSlipDimensions* \
 	    self.numberSlipperyNodeEntries*self.intSize
@@ -1126,11 +1104,9 @@ class Lithomop3d_setup(Component):
             self.numberGlobalEquations,
             self.pointerToLm,
             self.pointerToLmx,
-            self.pointerToInfiel,
-            self.connectivitySize,
-            self.numberElements,
-            self.pointerToElementTypeInfo,
-            self.totalNumberSlipperyNodes)
+            self.numberVolumeElements,
+            self.totalNumberSlipperyNodes,
+            self.numberVolumeElementNodes)
 
 
         self.pointerToIndx = lithomop3d.allocateInt(
@@ -1147,10 +1123,9 @@ class Lithomop3d_setup(Component):
             self.numberGlobalEquations,
             self.pointerToLm,
             self.pointerToLmx,
-            self.pointerToInfiel,
-            self.connectivitySize,
-            self.numberElements,
-            self.pointerToElementTypeInfo,
+            self.numberVolumeElements,
+            self.numberVolumeElementNodes,
+            self.numberVolumeElementEquations,
             self.pointerToIndx,
             self.pointerToLink,
             self.pointerToNbrs,
@@ -1200,18 +1175,6 @@ class Lithomop3d_setup(Component):
 
         # Sparse matrix arrays
 	self.memorySize += self.stiffnessMatrixSize*self.doubleSize
-        self.pointerToPcg = lithomop3d.allocateDouble(
-            self.numberGlobalEquations)
-	self.memorySize += self.numberGlobalEquations*self.doubleSize
-        self.pointerToZcg = lithomop3d.allocateDouble(
-            self.numberGlobalEquations)
-	self.memorySize += self.numberGlobalEquations*self.doubleSize
-        self.pointerToDprev = lithomop3d.allocateDouble(
-            self.usePreviousDisplacementFlag*self.numberGlobalEquations)
-	self.memorySize += self.usePreviousDisplacementFlag*self.numberGlobalEquations*self.doubleSize
-        self.pointerToBwork = lithomop3d.allocateDouble(
-            self.numberGlobalEquations)
-	self.memorySize += self.numberGlobalEquations*self.doubleSize
 
         # Force vectors
         if self.numberTractionBc != 0:
@@ -1235,16 +1198,10 @@ class Lithomop3d_setup(Component):
         self.pointerToBconcForce = lithomop3d.allocateDouble(
             self.concForceFlag*self.numberGlobalEquations)
 	self.memorySize += self.concForceFlag*self.numberGlobalEquations*self.doubleSize
-        self.pointerToBprestress = lithomop3d.allocateDouble(
-            self.prestressFlag*self.numberGlobalEquations)
-	self.memorySize += self.prestressFlag*self.numberGlobalEquations*self.doubleSize
         self.pointerToBintern = lithomop3d.allocateDouble(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.doubleSize
         self.pointerToBresid = lithomop3d.allocateDouble(
-            self.numberGlobalEquations)
-	self.memorySize += self.numberGlobalEquations*self.doubleSize
-        self.pointerToBwork = lithomop3d.allocateDouble(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.doubleSize
         self.pointerToDispVec = lithomop3d.allocateDouble(
@@ -1301,27 +1258,39 @@ class Lithomop3d_setup(Component):
 
         # Element arrays
         self.pointerToState = lithomop3d.allocateDouble(
-            self.stateVariableDimension*self.stateSize)
-	self.memorySize += self.stateVariableDimension* \
-	    self.stateSize*self.doubleSize
+            self.stateSize)
+	self.memorySize += self.stateSize*self.doubleSize
         self.pointerToDstate = lithomop3d.allocateDouble(
-            self.stateVariableDimension*self.stateSize)
-	self.memorySize += self.stateVariableDimension* \
-	    self.stateSize*self.doubleSize
+            self.stateSize)
+	self.memorySize += self.stateSize*self.doubleSize
         self.pointerToDmat = lithomop3d.allocateDouble(
-            self.materialMatrixDimension*self.dmatSize)
+            self.materialMatrixDimension*
+            self.numberVolumeElementGaussPoints*
+            self.numberVolumeElements)
 	self.memorySize += self.materialMatrixDimension* \
-	    self.dmatSize*self.doubleSize
+	    self.numberVolumeElementGaussPoints* \
+            self.numberVolumeElements*self.doubleSize
         self.pointerToListArrayIddmat = lithomop3d.intListToArray( 
             self.listIddmat)
 	self.memorySize += 36*self.intSize
         self.pointerToState0 = lithomop3d.allocateDouble(
-            self.state0Size*self.maxState0Variables)
-        self.memorySize += self.state0Size* \
-                           self.maxState0Variables*self.doubleSize
+            self.state0Size)
+        self.memorySize += self.state0Size*self.doubleSize
 
         # Create arrays from lists that will be needed for the solution
 
+        # nforce array
+        self.listNforce = [
+            self.externFlag,
+            self.tractionFlag,
+            self.gravityFlag,
+            self.concForceFlag,
+            self.prestressFlag,
+            self.usePreviousDisplacementFlag]
+        self.pointerToListArrayNforce = lithomop3d.intListToArray(
+            self.listNforce)
+	self.memorySize += 6*self.intSize
+           
         # ncodat array
         self.listNcodat = [
             self.analysisTypeInt,
@@ -1332,7 +1301,7 @@ class Lithomop3d_setup(Component):
             
         # npar array
         self.listNpar = [
-            self.numberElements,
+            self.numberVolumeElements,
             self.numberMaterials,
             self.numberTractionBc,
             self.numberSlipperyNodeEntries,
@@ -1341,14 +1310,12 @@ class Lithomop3d_setup(Component):
             self.prestressAutoChangeElasticPropsInt,
             self.stateSize,
             self.state0Size,
-            self.dmatSize,
-            self.connectivitySize,
+            self.numberVolumeElementFamilies,
             self.numberDifferentialForceEntries,
-            self.quadratureOrderInt,
-            self.maxState0Variables]
+            self.quadratureOrderInt]
         self.pointerToListArrayNpar = lithomop3d.intListToArray(
             self.listNpar)
-	self.memorySize += 14*self.intSize
+	self.memorySize += 12*self.intSize
 
         # nprint array
         self.listNprint = [
@@ -1377,7 +1344,7 @@ class Lithomop3d_setup(Component):
             self.numberPrestressEntries,
             self.totalNumberSlipperyNodes,
             self.totalNumberSplitNodes,
-            self.propertyListSize,
+            self.propertySize,
             self.numberWinklerForces,
             self.numberSlipperyWinklerForces,
             self.autoRotateSlipperyNodesInt]
@@ -1428,6 +1395,21 @@ class Lithomop3d_setup(Component):
             self.listRtimdat)
 	self.memorySize += 4*self.doubleSize
 
+        # ntimdat array
+        self.listNtimdat = [
+            self.currentTimeStep,
+            self.currentIterationsBetweenReform,
+            self.currentStepsBetweenReform,
+            self.currentLargeDeformationFlag,
+            self.currentMaximumIterations,
+            self.currentNumberTotalIterations,
+            self.currentNumberReforms,
+            self.currentNumberTotalPcgIterations,
+            self.reformFlagInt]
+        self.pointerToListArrayNtimdat = lithomop3d.intListToArray(
+            self.listNtimdat)
+        self.memorySize += 9*self.intSize
+
 	print ""
 	print ""
         print "Sparse matrix information:"
@@ -1455,6 +1437,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.20 2005/03/19 01:57:04 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.21 2005/03/30 01:56:39 willic3 Exp $
 
 # End of file 
