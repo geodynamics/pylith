@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine load(id,ibond,bond,d,deld,b,histry,deltp,ndof,numnp,
-     & neq,nhist,nstep,lastep,idout,kto,kw)
+      subroutine load(id,ibond,bond,d,deld,b,histry,deltp,numnp,
+     & neq,nhist,nstep,lastep,ierr,errstrng)
 c
 c...program to transfer nodal boundary conditions into appropriate
 c   vectors:
@@ -43,16 +43,19 @@ c        histry(nhist,lastep+1) = load history factor
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer ndof,numnp,neq,nhist,nstep,lastep,idout,kto,kw
+      integer numnp,neq,nhist,nstep,lastep,ierr
       integer id(ndof,numnp),ibond(ndof,numnp)
+      character errstrng*(*)
       double precision bond(ndof,numnp),b(neq),d(ndof,numnp)
       double precision deld(ndof,numnp),histry(nhist,lastep+1),deltp
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  local variables
 c
@@ -66,42 +69,43 @@ c
           ihist=imode/10
           itype=imode-10*ihist
 c*          write(6,"(3i7)") imode,ihist,itype
-          if((ihist.gt.nhist).or.(ihist.lt.0)) then
-            if(idout.gt.1) write(kw,1000) ihist,itype,j
-            write(kto,1000) ihist,itype,j
-            stop
+          if((ihist.gt.nhist).or.(ihist.lt.izero)) then
+            ierr=100
+            errstrng="load"
+            return
           end if
 c
 c...specified displacment, condition 1
 c
-          if(itype.eq.1) then
-            if(nstep.eq.0) then
+          if(itype.eq.ione) then
+            if(nstep.eq.izero) then
               d(i,j)=bond(i,j)
-              if(ihist.ne.0) d(i,j)=bond(i,j)*histry(ihist,1)
-            else if(nstep.ge.1) then
-              if(ihist.ne.0) deld(i,j)=bond(i,j)*(histry(ihist,nstep+1)
-     &                                  -histry(ihist,nstep))
+              if(ihist.ne.izero) d(i,j)=bond(i,j)*histry(ihist,1)
+            else if(nstep.ge.ione) then
+              if(ihist.ne.izero) deld(i,j)=bond(i,j)*
+     &         (histry(ihist,nstep+1)-histry(ihist,nstep))
             end if
 c
 c...specified velocity, condition 2
 c
-          else if(itype.eq.2) then
-            if(nstep.eq.0) then
+          else if(itype.eq.itwo) then
+            if(nstep.eq.izero) then
               d(i,j)=zero
             else
               deld(i,j)=deltp*bond(i,j)
-              if(ihist.ne.0) deld(i,j)=deld(i,j)*histry(ihist,nstep+1)
+              if(ihist.ne.izero) deld(i,j)=deld(i,j)*
+     &         histry(ihist,nstep+1)
             end if
 c
 c...applied force, condition 3
 c
-          else if(itype.eq.3) then
+          else if(itype.eq.ithree) then
             k=id(i,j)
-            if(nstep.eq.0) then
+            if(nstep.eq.izero) then
               b(k)=bond(i,j)
-              if(ihist.ne.0) b(k)=bond(i,j)*histry(ihist,1)
-            else if(nstep.ge.1) then
-              if(ihist.ne.0) b(k)=bond(i,j)*(histry(ihist,nstep+1)
+              if(ihist.ne.izero) b(k)=bond(i,j)*histry(ihist,1)
+            else if(nstep.ge.ione) then
+              if(ihist.ne.izero) b(k)=bond(i,j)*(histry(ihist,nstep+1)
      &                                 -histry(ihist,nstep))
             end if
           end if
@@ -114,7 +118,7 @@ c
       end
 c
 c version
-c $Id: load.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: load.f,v 1.2 2004/07/07 17:45:43 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
