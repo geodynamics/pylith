@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_mathist(mhist,infmat,numat,npropsz,
+      subroutine read_mathist(mhist,infmat,numat,npropsz,nhist,
      & kr,kw,kp,idout,idsk,mhfile,ofile,pfile,ierr,errstrng)
 c
 c...     reads material history information.
@@ -39,6 +39,7 @@ c         0:  No error
 c         2:  Error opening output file
 c         3:  Read error
 c         4:  Write error
+c       100:  Attempt to use undefined history
 c
       include "implicit.inc"
 c
@@ -48,7 +49,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer numat,npropsz,kr,kw,kp,idout,idsk,ierr
+      integer numat,npropsz,nhist,kr,kw,kp,idout,idsk,ierr
       integer mhist(npropsz),infmat(3,numat)
       character mhfile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
@@ -75,6 +76,11 @@ c
  70   continue
         call pskip(kr)
         read(kr,*,end=60,err=30) imat,iprop,imhist
+        if(imhist.le.izero.or.imhist.gt.nhist) then
+          ierr=100
+          errstrng="read_mathist"
+          return
+        end if
         indprop=infmat(3,imat)
         indpropg=indprop+iprop-ione
         mhist(indpropg)=imhist
@@ -129,7 +135,7 @@ c
       end
 c
 c version
-c $Id: read_mathist.f,v 1.1 2004/07/13 19:54:30 willic3 Exp $
+c $Id: read_mathist.f,v 1.2 2004/07/16 18:06:28 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
