@@ -601,6 +601,7 @@ PyObject * pylithomop3d_read_mathist(PyObject *, PyObject *args)
 		 plotOutputFile,
 		 &errorcode,
 		 errorstring,
+		 strlen(materialHistoryInputFile),
 		 strlen(asciiOutputFile),
 		 strlen(plotOutputFile),
 		 strlen(errorstring));
@@ -1361,6 +1362,6 @@ PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: parser.cc,v 1.2 2004/07/19 21:40:13 willic3 Exp $
+// $Id: parser.cc,v 1.3 2004/07/20 19:57:27 willic3 Exp $
 
 // End of file
