@@ -18,7 +18,7 @@ c     it should be included after all type, data, etc. statements.
 c
 c...  associate local names with array elements
 c
-      numelt=npar(1)
+      numelv=npar(1)
       numat=npar(2)
       numpr=npar(3)
       numslp=npar(4)
@@ -27,14 +27,12 @@ c
       ipauto=npar(7)
       nstatesz=npar(8)
       nstatesz0=npar(9)
-      ndmatsz=npar(10)
-      nconsz=npar(11)
-      numdif=npar(12)
-      intord=npar(13)
-      nstate0=npar(14)
+      nvfamilies=npar(10)
+      numdif=npar(11)
+      intord=npar(12)
 c
 c version
-c $Id: npar_def.inc,v 1.4 2005/02/24 00:30:50 willic3 Exp $
+c $Id: npar_def.inc,v 1.5 2005/03/25 01:36:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c

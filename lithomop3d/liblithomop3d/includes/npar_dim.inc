@@ -18,15 +18,15 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      integer npar(14)
+      integer npar(12)
 c
 c...  scalar parameters associated with arrays
 c
-      integer numelt,numat,numpr,numslp,numfn,ipstrs,ipauto,nstatesz,
-     & nstatesz0,ndmatsz,nconsz,numdif,intord,nstate0
+      integer numelv,numat,numpr,numslp,numfn,ipstrs,ipauto,nstatesz,
+     & nstatesz0,nvfamilies,numdif,intord
 c
 c version
-c $Id: npar_dim.inc,v 1.4 2005/02/24 00:30:50 willic3 Exp $
+c $Id: npar_dim.inc,v 1.5 2005/03/25 01:36:54 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
