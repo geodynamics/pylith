@@ -45,6 +45,7 @@ class Lithomop3d_run(Component):
         lm3dscan = scanner
         lm3dsetup = setup
 
+	print ""
         print "Hello from lm3drun.initialize (begin)!"
         print "Importing information from other modules:"
 
@@ -164,6 +165,7 @@ class Lithomop3d_run(Component):
         self.asciiOutputFile = lm3dsetup.asciiOutputFile
         self.plotOutputFile = lm3dsetup.plotOutputFile
 
+	print ""
         print "Hello from lm3drun.initialize (end)!"
 
         return
@@ -176,6 +178,7 @@ class Lithomop3d_run(Component):
         # and should not be accessed directly except as a member of the list.
         # They should not have been defined previously.
 
+	print ""
         print "Hello from lm3drun.run (begin)!"
         print "Beginning problem solution:"
 
@@ -256,6 +259,7 @@ class Lithomop3d_run(Component):
         self.memorySizeMB =0.0
         self.memorySizeMB=self.memorySize/(1024.0*1024.0)
 
+	print ""
 	print "Approximate memory allocation for f77 arrays (MB): %g" % self.memorySizeMB
 	# print "Just before lithomop3d.elastc:"
 
@@ -452,6 +456,7 @@ class Lithomop3d_run(Component):
                 self.asciiOutputFile,
                 self.plotOutputFile)
                           
+	print ""
         print "Hello from lm3drun.run (end)!"
         return
 
@@ -459,12 +464,13 @@ class Lithomop3d_run(Component):
     def __init__(self):
         Component.__init__(self, "lm3drun", "solver")
 
+	print ""
         print "Hello from lm3drun.__init__!"
 
         return
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.4 2004/08/12 16:40:59 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.5 2004/08/12 17:11:17 willic3 Exp $
 
 # End of file 

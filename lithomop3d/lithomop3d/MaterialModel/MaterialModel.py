@@ -45,12 +45,12 @@ class MaterialModel:
 
 
     def __init__(self):
-        print "Hello from MaterialModel.__init__!"
         print ""
+        print "Hello from MaterialModel.__init__!"
         self.propertyList = [0.0] * self.numberProperties
         return
 
 # version
-# $Id: MaterialModel.py,v 1.2 2004/08/12 16:52:15 willic3 Exp $
+# $Id: MaterialModel.py,v 1.3 2004/08/12 17:11:17 willic3 Exp $
 
 # End of file 
