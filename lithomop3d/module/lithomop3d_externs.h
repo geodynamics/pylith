@@ -37,6 +37,7 @@
 #if defined(F77EXTERNS_LOWERCASE_TRAILINGBAR)
 
 #define adjid_f adjid_
+#define autoprestr_f autoprestr_
 #define cmp_stiffsz_f cmp_stiffsz_
 #define elastc_f elastc_
 #define id_split_f id_split_
@@ -90,6 +91,7 @@
 #elif defined(F77EXTERNS_NOTRAILINGBAR)
 
 #define adjid_f adjid
+#define autoprestr_f autoprestr
 #define cmp_stiffsz_f cmp_stiffsz
 #define elastc_f elastc
 #define id_split_f id_split
@@ -143,6 +145,7 @@
 #elif defined(F77EXTERNS_EXTRATRAILINGBAR)
 
 #define adjid_f adjid__
+#define autoprestr_f autoprestr__
 #define cmp_stiffsz_f cmp_stiffsz__
 #define elastc_f elastc__
 #define id_split_f id_split__
@@ -196,6 +199,7 @@
 #elif defined(F77EXTERNS_UPPERCASE_NOTRAILINGBAR)
 
 #define adjid_f ADJID
+#define autoprestr_f AUTOPRESTR
 #define cmp_stiffsz_f CMP_STIFFSZ
 #define elastc_f ELASTC
 #define id_split_f ID_SPLIT
@@ -253,6 +257,7 @@
 // this applies to the FORTRAN external, not the local macro alias!!!
 
 #define adjid_f adjid_
+#define autoprestr_f autoprestr_
 #define cmp_stiffsz_f cmp_stiffsz__
 #define elastc_f elastc_
 #define id_split_f id_split__
@@ -320,6 +325,109 @@ extern "C" {
 	       int *,
 	       int *,
 	       int *);
+
+  void autoprestr_f(double *,          // sparse
+		    double *,
+		    double *,
+		    double *,
+		    int *,
+		    double *,          // force
+		    double *,
+		    double *,
+		    double *,
+		    double *,
+		    double *,
+		    double *,
+		    double *,
+		    double *,
+		    int *,
+		    double *,
+		    double *,          // global
+		    double *,
+		    double *,
+		    double *,
+		    int *,
+		    int *,
+		    double *,
+		    int *,
+		    int *,             // bc
+		    double *,
+		    double *,          // slip
+		    double *,
+		    double *,
+		    double *,
+		    int *,
+		    int *,
+		    double *,
+		    int *,
+		    int *,
+		    int *,
+		    double *,          // split
+		    int *,
+		    double *,
+		    double *,
+		    double *,          // stiff
+		    double *,
+		    double *,          // element
+		    double *,
+		    double *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,             // traction
+		    int *,
+		    int *,
+		    double *,
+		    double *,
+		    double *,          // material
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    double *,          // element type
+		    double *,
+		    double *,
+		    int *,
+		    double *,          // time data
+		    double *,
+		    int *,
+		    int *,
+		    int *,
+		    double *,
+		    double *,
+		    int *,
+		    int *,
+		    int *,
+		    double *,
+		    double *,
+		    double *,
+		    int *,
+		    double *,          // iterations
+		    double *,
+		    double *,
+		    double *,
+		    double *,
+		    double *,
+		    double *,
+		    int *,
+		    double *,          // skew
+		    int *,             // i/o info
+		    int *,
+		    int *,
+		    int *,
+		    char *,            // files
+		    char *,
+		    char *,
+		    int *,             // error codes
+		    char *,
+		    int,               // string lengths
+		    int,
+		    int,
+		    int);
 
   void cmp_stiffsz_f(int *,
 	             int *,
@@ -1159,6 +1267,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.7 2005/01/06 16:25:30 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.8 2005/01/18 20:43:47 willic3 Exp $
 
 // End of file
