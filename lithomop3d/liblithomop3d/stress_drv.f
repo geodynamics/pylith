@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine stress_drv(
-     & b,neq,                                                           ! force
+     & bintern,neq,                                                     ! force
      & x,d,numnp,                                                       ! global
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
@@ -65,7 +65,8 @@ c
       integer infmat(3,numat),infmatmod(5,nmatmodmax)
       integer infetype(4,netypes)
       character errstrng*(*)
-      double precision b(neq),x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
+      double precision bintern(neq),x(nsd,numnp),d(ndof,numnp)
+      double precision dx(ndof,numnp)
       double precision tfault(ndof,numfn)
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
       double precision dmat(nddmat,ndmatsz),prop(npropsz),tminmax
@@ -103,7 +104,6 @@ c
 c
 cdebug      write(6,*) "Hello from stress_drv_f!"
 c
-      call fill(b,zero,neq)
       matgpt=1
       tminmax=big
 c
@@ -122,7 +122,7 @@ c
         if(ierr.ne.izero) return
         if(matmodel.eq.1) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -137,7 +137,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.2) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -152,7 +152,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.3) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -167,7 +167,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.4) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -182,7 +182,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.5) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -197,7 +197,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.6) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -212,7 +212,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.7) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -227,7 +227,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.8) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -242,7 +242,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.9) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -257,7 +257,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.10) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -272,7 +272,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.11) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -287,7 +287,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.12) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -302,7 +302,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.13) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -317,7 +317,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.14) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -332,7 +332,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.15) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -347,7 +347,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.16) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -362,7 +362,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.17) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -377,7 +377,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.18) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -392,7 +392,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.19) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -407,7 +407,7 @@ c
      &     ierr,errstrng)                                               ! errcode
         else if(matmodel.eq.20) then
           call stress_cmp(
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
@@ -431,7 +431,7 @@ c
       end
 c
 c version
-c $Id: stress_drv.f,v 1.8 2004/08/12 02:28:35 willic3 Exp $
+c $Id: stress_drv.f,v 1.9 2005/01/05 22:40:01 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -31,7 +31,7 @@ c
 c
       subroutine stress_mat_drv(
      & alnz,ja,nnz,                                                     ! sparse
-     & b,neq,                                                           ! force
+     & bintern,neq,                                                     ! force
      & x,d,iwink,wink,numnp,nwink,                                      ! global
      & dx,iwinkx,winkx,numslp,numsn,nwinkx,                             ! slip
      & tfault,numfn,                                                    ! fault
@@ -69,7 +69,7 @@ c
       integer infmat(3,numat),infmatmod(5,nmatmodmax)
       integer infetype(4,netypes)
       character errstrng*(*)
-      double precision alnz(nnz),b(neq),x(nsd,numnp),d(ndof,numnp)
+      double precision alnz(nnz),bintern(neq),x(nsd,numnp),d(ndof,numnp)
       double precision wink(nwink),dx(ndof,numnp),winkx(nwinkx)
       double precision tfault(ndof,numfn),s(neemax*neemax)
       double precision stemp(neemax*neemax),state(nstr,nstatesz)
@@ -109,7 +109,6 @@ c
 c
 cdebug      write(6,*) "Hello from stress_mat_drv_f!"
 c
-      call fill(b,zero,neq)
       call fill(alnz,zero,nnz)
       matgpt=1
       tminmax=big
@@ -134,7 +133,7 @@ c
         if(matmodel.eq.1) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -151,7 +150,7 @@ c
         else if(matmodel.eq.2) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -168,7 +167,7 @@ c
         else if(matmodel.eq.3) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -185,7 +184,7 @@ c
         else if(matmodel.eq.4) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -202,7 +201,7 @@ c
         else if(matmodel.eq.5) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -219,7 +218,7 @@ c
         else if(matmodel.eq.6) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -236,7 +235,7 @@ c
         else if(matmodel.eq.7) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -253,7 +252,7 @@ c
         else if(matmodel.eq.8) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -270,7 +269,7 @@ c
         else if(matmodel.eq.9) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -287,7 +286,7 @@ c
         else if(matmodel.eq.10) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -304,7 +303,7 @@ c
         else if(matmodel.eq.11) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -321,7 +320,7 @@ c
         else if(matmodel.eq.12) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -338,7 +337,7 @@ c
         else if(matmodel.eq.13) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -355,7 +354,7 @@ c
         else if(matmodel.eq.14) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -372,7 +371,7 @@ c
         else if(matmodel.eq.15) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -389,7 +388,7 @@ c
         else if(matmodel.eq.16) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -406,7 +405,7 @@ c
         else if(matmodel.eq.17) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -423,7 +422,7 @@ c
         else if(matmodel.eq.18) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -440,7 +439,7 @@ c
         else if(matmodel.eq.19) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -457,7 +456,7 @@ c
         else if(matmodel.eq.20) then
           call stress_mat_cmp(
      &     alnz,ja,nnz,                                                 ! sparse
-     &     b,neq,                                                       ! force
+     &     bintern,neq,                                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,numsn,                                             ! slip
      &     tfault,numfn,                                                ! fault
@@ -482,7 +481,7 @@ c
       end
 c
 c version
-c $Id: stress_mat_drv.f,v 1.5 2004/08/12 20:50:07 willic3 Exp $
+c $Id: stress_mat_drv.f,v 1.6 2005/01/05 22:41:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

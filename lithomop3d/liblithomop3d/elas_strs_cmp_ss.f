@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine elas_strs_cmp_ss(
-     & b,neq,                                                           ! force
+     & bintern,neq,                                                     ! force
      & x,d,numnp,                                                       ! global
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
@@ -63,7 +63,8 @@ c
       integer infiel(6,numelt),iddmat(nstr,nstr),infetype(4,netypes)
       character errstrng*(*)
       logical matchg
-      double precision b(neq),x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
+      double precision bintern(neq),x(nsd,numnp),d(ndof,numnp)
+      double precision dx(ndof,numnp)
       double precision tfault(ndof,numfn)
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
       double precision dmat(nddmat,ndmatsz),prop(nprop),tminmax
@@ -155,14 +156,14 @@ c
 cdebug        write(6,*) "p:",(p(idb),idb=1,nee)
         if(ierr.ne.izero) return
         if(numrot.ne.izero) call rpforc(p,skew,ien(indien),numnp,nen)
-        call addfor(b,p,lm(1,indien),lmx(1,indien),neq,nee)
-cdebug        write(6,*) "b:",(b(idb),idb=1,neq)
+        call addfor(bintern,p,lm(1,indien),lmx(1,indien),neq,nee)
+cdebug        write(6,*) "bintern:",(bintern(idb),idb=1,neq)
       end do
       return
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.12 2004/08/02 21:10:43 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.13 2005/01/05 22:39:08 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
