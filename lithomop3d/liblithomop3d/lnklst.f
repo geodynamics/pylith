@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -29,8 +28,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine lnklst(neq,lm,lmx,infiel,nconsz,numelt,infetype,indx,
-     & link,nbrs,iwork,nsizea,nnz,numsn,ierr,errstrng)
+      subroutine lnklst(neq,lm,lmx,numelv,nen,nee,indx,link,nbrs,iwork,
+     & nsizea,nnz,numsn,ierr,errstrng)
 c
 c      program to create a linked list of nonzero row and column entries
 c
@@ -44,9 +43,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer neq,nconsz,numelt,iwork,nsizea,nnz,numsn,ierr
-      integer lm(ndof*nconsz),lmx(ndof*nconsz),infiel(7,numelt)
-      integer infetype(4,netypes),indx(neq),link(iwork),nbrs(iwork)
+      integer neq,numelv,nen,nee,iwork,nsizea,nnz,numsn,ierr
+      integer lm(nee,numelv),lmx(nee,numelv)
+      integer indx(neq),link(iwork),nbrs(iwork)
       character errstrng*(*)
 c
 c...  intrinsic functions
@@ -55,65 +54,43 @@ c
 c
 c...  local variables
 c
-      integer inext,iel,indlm,ietype,nee,neeq,i,ii,irow,loc,j,jj,icol
+      integer inext,ielg,neeq,i,irow,loc,j,icol
       integer loctmp,ival,locsav
-cdebug      integer idb,jdb,idbind
 c
 cdebug      write(6,*) "Hello from lnklst_f!"
 c
-cdebug      write(6,*) "neq,nconsz,numelt,iwork,nsizea,nnz,numsn:",neq,nconsz,
-cdebug     & numelt,iwork,nsizea,nnz,numsn
-cdebug      open(15,file="lnklst.info")
-cdebug      write(15,*) (lm(idb),idb=1,ndof*nconsz)
-cdebug      write(15,*) (lmx(idb),idb=1,ndof*nconsz)
-cdebug      do idb=1,numelt
-cdebug        write(15,*) (infiel(jdb,idb),jdb=1,6)
-cdebug      end do
-cdebug      do idb=1,netypes
-cdebug        write(15,*) (infetype(jdb,idb),jdb=1,4)
-cdebug      end do
-cdebug      close(15)
       call ifill(indx,izero,neq)
       call ifill(link,izero,iwork)
       call ifill(nbrs,izero,iwork)
-cdebug      do idb=1,netypes
-cdebug        write(6,*) "infetype:",(infetype(jdb,idb),jdb=1,4)
-cdebug      end do
-cdebug      write(6,*) "lm:",(lm(idb),idb=1,ndof*nconsz)
-cdebug      write(6,*) "lmx:",(lm(idb),idb=1,ndof*nconsz)
 c
+      neeq=nee
+      if(numsn.ne.izero) neeq=2*nee
       inext=ione
-      do iel=1,numelt
+      do ielg=1,numelv
 c
 c      check that available storage is not exceeded
 c
-        if((inext+neemax*neemax).gt.iwork) then
+        if((inext+nee*nee).gt.iwork) then
           ierr=300
-          write(errstrng,700) inext+neemax*neemax-iwork
-cdebug          write(6,*) "Uncaught exception?"
+          write(errstrng,700) inext+nee*nee-iwork
           return
         end if
-        indlm=ndof*(infiel(1,iel)-ione)+ione
-        ietype=infiel(3,iel)
-        nee=infetype(4,ietype)
-        neeq=nee
-        if(numsn.ne.izero) neeq=itwo*nee
-cdebug        write(6,*) "iel,indlm,ietype,nee,neeq:",
-cdebug     &   iel,indlm,ietype,nee,neeq
 c
         do i=1,neeq
-          ii=indlm+i-1
-          irow=lm(ii)
-          if(i.gt.nee) irow=abs(lmx(ii-nee))
+          if(i.le.nee) then
+            irow=lm(i,ielg)
+          else
+            irow=abs(lmx(i-nee,ielg))
+          end if
           if(irow.ne.izero) then
             loc=indx(irow)
             do j=1,neeq
-              jj=indlm+j-1
-              icol=lm(jj)
-              if(j.gt.nee) icol=abs(lmx(jj-nee))
+              if(j.le.nee) then
+                icol=lm(j,ielg)
+              else
+                icol=abs(lmx(j-nee,ielg))
+              end if
               if(icol.ne.izero.and.icol.ne.irow) then
-cdebug                write(6,*) "iel,i,j,ii,jj,irow,icol,loc,inext:",
-cdebug     &           iel,i,j,ii,jj,irow,icol,loc,inext
                 if(loc.eq.izero) then
                   loc=inext
                   indx(irow)=inext
@@ -139,30 +116,14 @@ cdebug     &           iel,i,j,ii,jj,irow,icol,loc,inext
           end if
         end do
       end do
-cdebug      write(6,*) "After loop in lnklst!"
-cdebug      call flush(6)
       nsizea=inext-ione
       nnz=nsizea+neq+ione
-cdebug      write(6,*) "nsizea,nnz,neq:",nsizea,nnz,neq
-cdebug      call flush(6)
-cdebug      idbind=max(inext-100,1)
-cdebug      write(6,*) "end of nbrs:",(nbrs(idb),idb=idbind,inext)
-cdebug      write(6,*) "end of link:",(link(idb),idb=idbind,inext)
-cdebug      idbind=max(neq-100,1)
-cdebug      write(6,*) "end of indx:",(indx(idb),idb=idbind,neq)
-cdebug      call flush(6)
-cdebug      open(15,file="makemsr.info")
-cdebug      write(15,*) neq,nnz,iwork
-cdebug      write(15,*) (indx(idb),idb=1,neq)
-cdebug      write(15,*) (link(idb),idb=1,iwork)
-cdebug      write(15,*) (nbrs(idb),idb=1,iwork)
-cdebug      close(15)
  700  format("lnklst:  Working storage exceeded by ",i7)
       return
       end
 c
 c version
-c $Id: lnklst.f,v 1.5 2005/02/24 00:03:08 willic3 Exp $
+c $Id: lnklst.f,v 1.6 2005/03/25 23:04:26 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
