@@ -29,34 +29,34 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_slip(nslip,numslp,numsn,ndof,numnp,iskopt,nsdim,
-     & kr,kw,kp,idout,idsk,ierr,slfile,ofile,pfile)
+      subroutine read_slip(nslip,numslp,numsn,numnp,iskopt,
+     & kr,kw,kp,idout,idsk,slfile,ofile,pfile,ierr,errstrng)
 c
 c...  reads and prints data on free slip interfaces
 c
 c     Error codes:
 c         0:  No error
-c         1:  Error opening input file (no exception should be raised
-c             in this case since a slippery node file is optional)
-c         2:  Units not specified (not applicable for this routine)
+c         1:  Error opening input file (only if numslp.ne.zero)
+c         2:  Error opening output file
 c         3:  Read error
+c         4:  Write error
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer numslp,numsn,ndof,numnp,iskopt,nsdim,kr,kw,kp,idout,idsk
-      integer ierr
+      integer numslp,numsn,numnp,iskopt,kr,kw,kp,idout,idsk,ierr
       integer nslip(nsdim,numslp)
-      character slfile*(*),ofile*(*),pfile*(*)
+      character slfile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
       include "labeld_dim.inc"
-c
-c...  defined constants
-c
-      include "nconsts.inc"
 c
 c...  intrinsic functions
       intrinsic mod
@@ -74,62 +74,67 @@ c
       ierr=0
       numsn=0
       call ifill(nslip,izero,nsdim*numslp)
-      if(numslp.ne.0) open(kr,file=slfile,status="old",err=20)
+      if(numslp.ne.izero) open(kr,file=slfile,status="old",err=20)
 c
 c...  open output files
 c
-      if(idout.gt.0) open(kw,file=ofile,status="old",access="append")
-      if(idsk.eq.0) open(kp,file=pfile,status="old",access="append")
-      if(idsk.eq.1) open(kp,file=pfile,status="old",access="append",
-     & form="unformatted")
+      if(idout.gt.izero) open(kw,file=ofile,err=50,status="old",
+     & access="append")
+      if(idsk.eq.izero) open(kp,file=pfile,err=50,status="old",
+     & access="append")
+      if(idsk.eq.ione) open(kp,file=pfile,err=50,status="old",
+     & access="append",form="unformatted")
 c
 c...  read slippery node entries, and output results if desired
 c
-      if(idsk.eq.0) write(kp,3000) numslp
-      if(idsk.eq.1) write(kp) numslp
-      if(numslp.ne.0) then
+      if(idsk.eq.izero) write(kp,3000,err=60) numslp
+      if(idsk.eq.ione) write(kp,err=60) numslp
+      if(numslp.ne.izero) then
         call pskip(kr)
         npage=50
         do i=1,numslp
           read(kr,*,end=30,err=30) (nslip(j,i),j=1,nsdim)
-          if((i.eq.1.or.mod(i,npage).eq.0).and.idout.gt.0) then
-            write(kw,1000) (labeld(j),j=1,ndof)
-            write(kw,*) ' '
+          if((i.eq.ione.or.mod(i,npage).eq.izero).and.
+     &     idout.gt.izero) then
+            write(kw,1000,err=60) (labeld(j),j=1,ndof)
+            write(kw,*,err=60) ' '
           end if
-          if(iskopt.ne.1.and.ndof.gt.2) then
-            if(nslip(3,i).ne.0) then
+          if(iskopt.ne.ione.and.ndof.gt.itwo) then
+            if(nslip(3,i).ne.izero) then
               nslip(4,i)=nslip(3,i)
-              nslip(5,i)=0
-            else if(nslip(4,i).ne.0) then
+              nslip(5,i)=izero
+            else if(nslip(4,i).ne.izero) then
               nslip(3,i)=nslip(4,i)
-              nslip(5,i)=0
-            else if(nslip(5,i).ne.0) then
+              nslip(5,i)=izero
+            else if(nslip(5,i).ne.izero) then
               nslip(3,i)=nslip(5,i)
               nslip(4,i)=nslip(5,i)
-              nslip(5,i)=0
+              nslip(5,i)=izero
             end if
           end if
-          if(idout.gt.0) write(kw,2000) (nslip(j,i),j=1,ndof+2)
-          if(idsk.eq.0) write(kp,3000) (nslip(j,i),j=1,ndof+2)
+          if(idout.gt.izero) write(kw,2000,err=60) (nslip(j,i),
+     &     j=1,ndof+2)
+          if(idsk.eq.izero) write(kp,3000,err=60) (nslip(j,i),
+     &     j=1,ndof+2)
         end do
       end if
-      if(idsk.eq.1.and.numslp.ne.0) write(kp) nslip
+      if(idsk.eq.ione.and.numslp.ne.izero) write(kp) nslip
 c
 c...  determine number of slippery nodes
 c
       do n=1,numnp
         do j=1,numslp
           if(n.eq.nslip(2,j)) then
-            numsn=numsn+1
+            numsn=numsn+ione
             go to 40
           end if
         end do
  40     continue
       end do
-      if(idsk.eq.0) write(kp,"(i7)") numsn
-      if(idsk.eq.1) write(kp) numsn
+      if(idsk.eq.izero) write(kp,"(i7)",err=60) numsn
+      if(idsk.eq.ione) write(kp,err=60) numsn
       close(kr)
-      if(idout.gt.1) close(kw)
+      if(idout.gt.ione) close(kw)
       close(kp)
 c
 c...  normal return
@@ -140,13 +145,31 @@ c...  error opening input file
 c
  20   continue
         ierr=1
+        errstrng="read_slip"
         close(kr)
         return
 c
 c...  error reading input file
 c
  30   continue
-        ierr=1
+        ierr=3
+        errstrng="read_slip"
+        close(kr)
+        return
+c
+c...  error opening output file
+c
+ 50   continue
+        ierr=2
+        errstrng="read_slip"
+        close(kr)
+        return
+c
+c...  error writing to output file
+c
+ 60   continue
+        ierr=4
+        errstrng="read_slip"
         close(kr)
         return
 c
@@ -160,7 +183,7 @@ c
       end
 c
 c version
-c $Id: read_slip.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: read_slip.f,v 1.2 2004/07/12 18:51:00 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
