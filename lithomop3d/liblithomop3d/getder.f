@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine getder(det,sh,shd,xs,nen,nsd)
+      subroutine getder(det,sh,shd,xs,nen)
 c
 c...  subroutine to compute shape function derivatives in
 c     global coordinates
@@ -43,14 +43,15 @@ c        det                              = jacobian matrix determinant
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nen,nsd
+      integer nen
       double precision det,sh(nsd+1,nen),shd(nsd+1,nen),xs(nsd,nsd)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  local variables
 c
@@ -59,7 +60,6 @@ c
 c
 cdebug      write(6,*) "Hello from getder_f!"
 c
-      detinv=one/det
 c
 c...transform natural derivatives to (x,y,z) derivatives using an
 c   explicit 3x3 matrix inversion routine
@@ -85,7 +85,7 @@ c
       end
 c
 c version
-c $Id: getder.f,v 1.2 2004/06/15 19:44:47 willic3 Exp $
+c $Id: getder.f,v 1.3 2004/07/05 20:15:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
