@@ -290,7 +290,7 @@ c
       call dcopy(nstr,ee,ione,dstate(7),ione)
       call dcopy(nstr,state0,ione,dstate,ione)
       call dspmv("u",nstr,one,dmat,dstate(7),ione,one,dstate,ione)
-      call dcopy(nstr,state,ione,scur,ione)
+      call dcopy(nstr,dstate,ione,scur,ione)
 c
       return
       end
@@ -383,10 +383,44 @@ c
       end
 c
 c
+      subroutine update_state_1(state,dstate,nstate)
+c
+c...  routine to update state variables at the end of a time step.
+c     After updating, state should contain the current total values
+c     and dstate should contain the incremental changes since the
+c     previous time step.
+c     On input, dstate contains the current stress and strain values and
+c     state contains the values from the previous time step.
+c
+      include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nstate
+      double precision state(nstate),dstate(nstate)
+c
+c...  local data
+c
+      double precision sub
+      data sub/-1.0d0/
+c
+c...  local variables
+c
+      call daxpy(nstate,sub,state,ione,dstate,ione)
+      call daxpy(nstate,one,dstate,ione,state,ione)
+c
+      return
+      end
+c
 c       
 
 c version
-c $Id: mat_1.f,v 1.16 2005/03/19 01:49:49 willic3 Exp $
+c $Id: mat_1.f,v 1.17 2005/03/23 02:51:02 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
