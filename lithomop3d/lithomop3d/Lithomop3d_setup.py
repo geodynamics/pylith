@@ -306,6 +306,7 @@ class Lithomop3d_setup(Component):
         self.pointerToJa = None
         self.pointerToPcg = None
         self.pointerToZcg = None
+        self.pointerToDprev = None
 
         self.externFlag = 0
         self.tractionFlag = 0
@@ -323,7 +324,6 @@ class Lithomop3d_setup(Component):
         self.pointerToBresid = None
         self.pointerToBwork = None
         self.pointerToDispVec = None
-        # self.pointerToBwork = None
 
         # self.pointerToB = None
         # self.pointerToBtot = None
@@ -337,7 +337,6 @@ class Lithomop3d_setup(Component):
         self.pointerToX = None
         self.pointerToD = None
         self.pointerToDeld = None
-        # self.pointerToDprev = None
         self.pointerToDcur = None
         self.pointerToId = None
         self.pointerToIwink = None
@@ -1616,6 +1615,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.12 2005/01/06 01:58:21 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.13 2005/01/06 19:54:04 willic3 Exp $
 
 # End of file 
