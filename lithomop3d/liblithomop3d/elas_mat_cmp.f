@@ -30,28 +30,26 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine elas_mat_cmp(
-     & dmat,infiel,iddmat,nstr,nddmat,ndmatsz,numelt,                   ! elemnt
+     & dmat,infiel,iddmat,ndmatsz,numelt,                               ! elemnt
      & prop,infmat,nprop,matgpt,elas_mat,                               ! materl
-     & infetype,netypes)                                                ! eltype
+     & infetype)                                                        ! eltype
 c
 c...  compute subroutine to form the d-matrix for the elastic solution
 c
       include "implicit.inc"
 c
-c...  dimension parameters
+c...  parameter definitions
 c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "nconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer nstr,nddmat,ndmatsz,numelt,nprop,matgpt,netypes
+      integer ndmatsz,numelt,nprop,matgpt
       integer infmat(6),infiel(6,numelt),infetype(4,netypes)
       integer iddmat(nstr,nstr)
       double precision dmat(nddmat,ndmatsz),prop(nprop)
-c
-c...  defined constants
-c
-      include "nconsts.inc"
 c
 c...  external routines
 c
@@ -75,7 +73,7 @@ c
       iel=infiel(4,matgpt)
       inddmat0=infiel(6,iel)
       ietype=infiel(3,iel)
-      call elas_mat(dmat(1,inddmat0),prop,iddmat,nstr,nddmat,nprop)
+      call elas_mat(dmat(1,inddmat0),prop,iddmat,nprop)
       ngauss=infetype(1,ietype)
       ng=ngauss
       if(imatvar.eq.izero) ng=ngaussmax
@@ -106,7 +104,7 @@ c
       end
 c
 c version
-c $Id: elas_mat_cmp.f,v 1.1 2004/06/16 16:07:29 willic3 Exp $
+c $Id: elas_mat_cmp.f,v 1.2 2004/06/18 15:32:27 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
