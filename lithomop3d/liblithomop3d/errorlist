@@ -23,5 +23,8 @@
    106		Invalid element type specified.
    107		Invalid material type specified.
    108		Undefined node used in connectivity.
+   109		Differential force applied to non-slippery node.
    110          Matrix not positive-definite.
+   111		Load history times are out of order.
+   112		Not enough points to define a plane for slippery nodes.
     -x		Zero or negative jacobian for element x.
