@@ -54,7 +54,7 @@ c
 c...  subroutine arguments
 c
       integer nstatesz,numelt,numat,nstep,idout,idsk,kw,kp
-      integer infiel(6,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
+      integer infiel(7,numelt),infmat(3,numat),infmatmod(5,nmatmodmax)
       integer ismatmod(nstatesmax,nmatmodmax),infetype(4,netypes)
       integer istatout(2,nstatesmax)
       double precision delt
@@ -187,7 +187,7 @@ cdebug          write(6,*) "delt,nstep,tmult:",delt,nstep,tmult
       end
 c
 c version
-c $Id: write_state.f,v 1.8 2004/08/31 18:58:45 willic3 Exp $
+c $Id: write_state.f,v 1.9 2005/02/24 00:25:29 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
