@@ -88,7 +88,7 @@ c
 c...  local variables
 c
       integer nmatel,nstate,ind,iel,indien,ietype,indstate,inddmat
-      integer ngauss,nen,nee,l,indstateg,inddmatg
+      integer ngauss,nen,nee,l,indstateg,inddmatg,incstate
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 c
 c...  included variable definitions
@@ -101,6 +101,7 @@ cdebug      write(6,*) "Hello from td_strs_cmp_ss_f!"
 c
       nmatel=infmat(2)
       nstate=infmat(3)
+      incstate=nstr*nstate
 c
 c...  loop over elements in a material group
 c
@@ -113,6 +114,8 @@ c
         ngauss=infetype(1,ietype)
         nen=infetype(2,ietype)
         nee=infetype(4,ietype)
+        indstateg=indstate
+        inddmatg=inddmat
 c
 c...  localize coordinates and displacements
 c
@@ -132,12 +135,13 @@ c...  loop over gauss points, compute stresses, and transfer them into
 c     scur
 c
         do l=1,ngauss
-          indstateg=indstate+(l-1)*nstate*nstr
-          inddmatg=inddmat+(l-1)*nddmat
           call td_strs(state(1,indstateg),dstate(1,indstateg),
      &     ee(nstr*(l-1)),dmat(1,inddmatg),prop,rtimdat,rgiter,ntimdat,
      &     nstate)
-          call dcopy(nstr,state(1,indstateg),ione,scur(nstr*(l-1)),ione)
+          call dcopy(nstr,dstate(1,indstateg),ione,scur(nstr*(l-1)),
+     &     ione)
+          indstateg=indstateg+incstate
+          inddmatg=inddmatg+nddmat
         end do
 c
 c...  compute equivalent nodal loads
@@ -154,7 +158,7 @@ c
       end
 c
 c version
-c $Id: td_strs_cmp_ss.f,v 1.1 2004/06/24 20:06:03 willic3 Exp $
+c $Id: td_strs_cmp_ss.f,v 1.2 2004/07/02 18:36:36 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
