@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine viscos(
-     & A, alnz,pcg,zcg,dprev,ja,                                        ! sparse
+     & A,pcg,zcg,dprev,                                                 ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
      & dispvec,nforce,grav,                                             ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,                             ! global
@@ -80,7 +80,6 @@ c
 c...  subroutine arguments
 c
       integer ierr
-      integer ja(*)
       integer id(*),iwink(*)
       integer ibond(*)
       integer idx(*),iwinkx(*),idslp(*),ipslp(*),idhist(*)
@@ -92,7 +91,7 @@ c
       integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
       integer iprint(*)
       integer istatout(*)
-      double precision alnz(*),pcg(*),zcg(*),dprev(*)
+      double precision pcg(*),zcg(*),dprev(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
       double precision bintern(*),bresid(*),bwork(*),dispvec(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
@@ -318,7 +317,7 @@ cdebug              write(6,*) "reform:",reform
               if(reform) then
                 write(kto,650)
                 call matinit_drv(
-     &           A,alnz,ja,nnz,neq,                                     ! sparse
+     &           A,nnz,neq,                                             ! sparse
      &           x,d,iwink,wink,numnp,nwink,                            ! global
      &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
      &           tfault,numfn,                                          ! fault
@@ -368,7 +367,7 @@ c
               if(ierr.ne.izero) return
 c
               call iterate(
-     &         A, alnz,pcg,zcg,dprev,ja,                                ! sparse
+     &         A,pcg,zcg,dprev,                                         ! sparse
      &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
      &         bwork,dispvec,nforce,grav,                               ! force
      &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
@@ -398,7 +397,7 @@ cdebug              write(6,*) "reform:",reform
               if(reform) then
                 write(kto,650)
                 call matinit_drv(
-     &           A,alnz,ja,nnz,neq,                                     ! sparse
+     &           A,nnz,neq,                                             ! sparse
      &           x,d,iwink,wink,numnp,nwink,                            ! global
      &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
      &           tfault,numfn,                                          ! fault
@@ -448,7 +447,7 @@ c
               if(ierr.ne.izero) return
 c
               call iterate(
-     &         A, alnz,pcg,zcg,dprev,ja,                                ! sparse
+     &         A,pcg,zcg,dprev,                                         ! sparse
      &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
      &         bwork,dispvec,nforce,grav,                               ! force
      &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
@@ -476,7 +475,7 @@ clater            else if(lgdefp.eq.ione.and.intord.ne.ithree) then
 clater              if(reform) then
 clater                write(kto,650)
 clater                call matinit_drv(
-clater     &           alnz,ja,nnz,neq,                                       ! sparse
+clater     &           A,nnz,neq,                                             ! sparse
 clater     &           x,d,iwink,wink,numnp,nwink,                            ! global
 clater     &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
 clater     &           tfault,numfn,                                          ! fault
@@ -522,7 +521,7 @@ c
 clater              if(ierr.ne.izero) return
 c
 clater              call iterate(
-clater     &         A, alnz,pcg,zcg,dprev,ja,                                ! sparse
+clater     &         A,pcg,zcg,dprev,                                         ! sparse
 clater     &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
 clater     &         bwork,dispvec,nforce,grav,                               ! force
 clater     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
@@ -546,7 +545,7 @@ clater              if(ierr.ne.izero) return
 c
 clater            else if(lgdefp.eq.ione.and.intord.eq.ithree) then
 clater              if(reform) call matinit_drv(
-clater     &         alnz,ja,nnz,neq,                                         ! sparse
+clater     &         A,nnz,neq,                                               ! sparse
 clater     &         x,d,iwink,wink,numnp,nwink,                              ! global
 clater     &         dx,iwinkx,winkx,numslp,numsn,nwinkx,                     ! slip
 clater     &         tfault,numfn,                                            ! fault
@@ -591,7 +590,7 @@ c
 clater              if(ierr.ne.izero) return
 c
 clater              call iterate(
-clater     &         A, alnz,pcg,zcg,dprev,ja,                                ! sparse
+clater     &         A,pcg,zcg,dprev,                                         ! sparse
 clater     &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
 clater     &         bwork,dispvec,nforce,grav,                               ! force
 clater     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
@@ -677,7 +676,7 @@ c
       end
 c
 c version
-c $Id: viscos.F,v 1.3 2005/03/11 03:20:10 knepley Exp $
+c $Id: viscos.F,v 1.4 2005/03/11 04:07:41 knepley Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

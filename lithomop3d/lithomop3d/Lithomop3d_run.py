@@ -68,11 +68,9 @@ class Lithomop3d_run(Component):
         
         self.numberTimeStepGroups = lm3dsetup.numberTimeStepGroups
 
-        self.pointerToAlnz = lm3dsetup.pointerToAlnz
         self.pointerToPcg = lm3dsetup.pointerToPcg
         self.pointerToZcg = lm3dsetup.pointerToZcg
         self.pointerToDprev = lm3dsetup.pointerToDprev
-        self.pointerToJa = lm3dsetup.pointerToJa
 
         # self.pointerToB = lm3dsetup.pointerToB
         # self.pointerToBtot = lm3dsetup.pointerToBtot
@@ -306,11 +304,9 @@ class Lithomop3d_run(Component):
             if self.prestressAutoComputeInt == 1:
                 lithomop3d.autoprestr(
                     self.A,
-                    self.pointerToAlnz,
                     self.pointerToPcg,
                     self.pointerToZcg,
                     self.pointerToDprev,
-                    self.pointerToJa,
                     self.pointerToBextern,
                     self.pointerToBtraction,
                     self.pointerToBgravity,
@@ -411,11 +407,9 @@ class Lithomop3d_run(Component):
             
             lithomop3d.elastc(
                 self.A,
-                self.pointerToAlnz,
                 self.pointerToPcg,
                 self.pointerToZcg,
                 self.pointerToDprev,
-                self.pointerToJa,
                 self.pointerToBextern,
                 self.pointerToBtraction,
                 self.pointerToBgravity,
@@ -516,11 +510,9 @@ class Lithomop3d_run(Component):
         if self.analysisType == "fullSolution" and self.numberTimeStepGroups > 1:
             lithomop3d.viscos(
                 self.A,
-                self.pointerToAlnz,
                 self.pointerToPcg,
                 self.pointerToZcg,
                 self.pointerToDprev,
-                self.pointerToJa,
                 self.pointerToBextern,
                 self.pointerToBtraction,
                 self.pointerToBgravity,
@@ -633,6 +625,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.12 2005/03/10 01:10:37 knepley Exp $
+# $Id: Lithomop3d_run.py,v 1.13 2005/03/11 04:07:42 knepley Exp $
 
 # End of file 

@@ -30,7 +30,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine iterate(
-     & A, alnz,pcg,zcg,dprev,ja,                                        ! sparse
+     & A,pcg,zcg,dprev,                                                 ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
      & dispvec,nforce,grav,                                             ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,                             ! global
@@ -94,7 +94,6 @@ c
 c...  subroutine arguments
 c
       integer iprestress,ierr
-      integer ja(*)
       integer id(*),iwink(*)
       integer idx(*),iwinkx(*),idslp(*),ipslp(*)
       integer nfault(*)
@@ -103,7 +102,7 @@ c
       integer mhist(*),infmat(*),infmatmod(*)
       integer infetype(*)
       character errstrng*(*)
-      double precision alnz(*),pcg(*),zcg(*),dprev(*)
+      double precision pcg(*),zcg(*),dprev(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
       double precision bintern(*),bresid(*),bwork(*)
       double precision dispvec(*),grav(*)
@@ -237,38 +236,22 @@ c...compute the global displacement increment vector using a
 c   preconditioned conjugate gradients iterative solver.  Upon
 c   return the vector dispvec contains the displacements.
 c
-        call PetscOptionsGetInt(PETSC_NULL_CHARACTER, '-petsc_solver',
-     &     useSolver, flag, ierr)
-        if (useSolver .ne. 0) then
 ccc PETSc BLOCK
-          call VecCreateSeqWithArray(MPI_COMM_WORLD, neq, bresid, rhs,
+        call VecCreateSeqWithArray(MPI_COMM_WORLD, neq, bresid, rhs,
      &                               ierr)
-          call VecCreateSeqWithArray(MPI_COMM_WORLD, neq, dispvec,sol,
+        call VecCreateSeqWithArray(MPI_COMM_WORLD, neq, dispvec,sol,
      &                               ierr)
-          call KSPCreate(MPI_COMM_WORLD, ksp, ierr)
-          call KSPSetfromOptions(ksp, ierr)
-          if (nprevdflag .eq. 1) then
-            call KSPSetInitialGuessNonzero(ksp, 1, ierr)
-            call dcopy(neq, dprev, 1, dispvec, 1)
-          end if
-          call KSPSetOperators(ksp,A,A,DIFFERENT_NONZERO_PATTERN,ierr)
-          call KSPSolve(ksp, rhs, sol, ierr)
-          call KSPDestroy(ksp, ierr)
-          call VecDestroy(rhs, ierr)
-          call VecDestroy(sol, ierr)
-ccc
-        else
-ccc ORIGINAL BLOCK
-          call pcginv(alnz,bresid,dispvec,bwork,pcg,zcg,dprev,rmin,rmult
-     &      ,gcurr,gprev,ja,nsiter,neq,nprevdflag,nnz,ndtot,idout,kto,kw
-     &      ,used)
-          ntimdat(8)=ndtot
-          if(nsol.eq.3.or.nsol.eq.4) then
-            if(iter.eq.1) call fill(dprev,zero,neq)
-            call daxpy(neq,one,dispvec,ione,dprev,ione)
-          end if
-ccc
+        call KSPCreate(MPI_COMM_WORLD, ksp, ierr)
+        call KSPSetfromOptions(ksp, ierr)
+        if (nprevdflag .eq. 1) then
+          call KSPSetInitialGuessNonzero(ksp, 1, ierr)
+          call dcopy(neq, dprev, 1, dispvec, 1)
         end if
+        call KSPSetOperators(ksp,A,A,DIFFERENT_NONZERO_PATTERN,ierr)
+        call KSPSolve(ksp, rhs, sol, ierr)
+        call KSPDestroy(ksp, ierr)
+        call VecDestroy(rhs, ierr)
+        call VecDestroy(sol, ierr)
 c
 c...for first iteration, update displacements to reflect boundary
 c   conditions
@@ -329,7 +312,7 @@ c
         if(reform) then
           write(kto,650)
           call stress_mat_drv(
-     &     A,alnz,ja,nnz,                                               ! sparse
+     &     A,nnz,                                                       ! sparse
      &     bintern,neq,                                                 ! force
      &     x,d,iwink,wink,numnp,nwink,                                  ! global
      &     dx,iwinkx,winkx,numslp,numsn,nwinkx,                         ! slip
@@ -384,7 +367,7 @@ c
       end
 c
 c version
-c $Id: iterate.F,v 1.4 2005/03/11 03:20:10 knepley Exp $
+c $Id: iterate.F,v 1.5 2005/03/11 04:07:41 knepley Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
