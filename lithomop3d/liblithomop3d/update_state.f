@@ -54,7 +54,7 @@ c
 c
 c...  local variables
 c
-      integer matgpt,imat,matmodel,nmatel,nstate,incstate,ielg,iel
+      integer matgpt,imat,matmodel,nmatel,nstate,ielg,iel
       integer ietype,indstate,indstateg,ngauss,l
       double precision sub
 c
@@ -69,7 +69,6 @@ c
         matmodel=infmat(1,imat)
         nmatel=infmat(2,imat)
         nstate=infmatmod(2,matmodel)
-        incstate=nstr*nstate
 c
 c...  loop over elements in group, updating appropriate state variables
 c
@@ -83,12 +82,12 @@ c
             do l=1,ngauss
               call dcopy(nstr,dstate(1,indstateg),ione,
      &         state(1,indstateg),ione)
-              call daxpy(nstr,sub,state(1,indstateg+nstr),ione,
-     &         dstate(1,indstateg+nstr),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+nstr),ione,
-     &         state(1,indstateg+nstr),ione)
+              call daxpy(nstr,sub,state(1,indstateg+ione),ione,
+     &         dstate(1,indstateg+ione),ione)
+              call daxpy(nstr,one,dstate(1,indstateg+ione),ione,
+     &         state(1,indstateg+ione),ione)
+              indstateg=indstateg+nstate
             end do
-            indstateg=indstateg+incstate
           end do
         else if(nstate.eq.ithree) then
           do ielg=matgpt,matgpt+nmatel-1
@@ -100,14 +99,14 @@ c
             do l=1,ngauss
               call dcopy(nstr,dstate(1,indstateg),ione,
      &         state(1,indstateg),ione)
-              call daxpy(nstr,sub,state(1,indstateg+nstr),ione,
-     &         dstate(1,indstateg+nstr),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+nstr),ione,
-     &         state(1,indstateg+nstr),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+2*nstr),ione,
-     &         state(1,indstateg+2*nstr),ione)
+              call daxpy(nstr,sub,state(1,indstateg+ione),ione,
+     &         dstate(1,indstateg+ione),ione)
+              call daxpy(nstr,one,dstate(1,indstateg+ione),ione,
+     &         state(1,indstateg+ione),ione)
+              call daxpy(nstr,one,dstate(1,indstateg+itwo),ione,
+     &         state(1,indstateg+itwo),ione)
+              indstateg=indstateg+nstate
             end do
-            indstateg=indstateg+incstate
           end do
         else if(nstate.eq.ifour) then
           do ielg=matgpt,matgpt+nmatel-1
@@ -119,16 +118,16 @@ c
             do l=1,ngauss
               call dcopy(nstr,dstate(1,indstateg),ione,
      &         state(1,indstateg),ione)
-              call daxpy(nstr,sub,state(1,indstateg+nstr),ione,
-     &         dstate(1,indstateg+nstr),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+nstr),ione,
-     &         state(1,indstateg+nstr),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+2*nstr),ione,
-     &         state(1,indstateg+2*nstr),ione)
-              call daxpy(nstr,one,dstate(1,indstateg+3*nstr),ione,
-     &         state(1,indstateg+3*nstr),ione)
+              call daxpy(nstr,sub,state(1,indstateg+ione),ione,
+     &         dstate(1,indstateg+ione),ione)
+              call daxpy(nstr,one,dstate(1,indstateg+ione),ione,
+     &         state(1,indstateg+ione),ione)
+              call daxpy(nstr,one,dstate(1,indstateg+itwo),ione,
+     &         state(1,indstateg+itwo),ione)
+              call daxpy(nstr,one,dstate(1,indstateg+ithree),ione,
+     &         state(1,indstateg+ithree),ione)
+              indstateg=indstateg+nstate
             end do
-            indstateg=indstateg+incstate
           end do
         else
           ierr=102
@@ -141,7 +140,7 @@ c
       end
 c
 c version
-c $Id: update_state.f,v 1.4 2004/07/12 21:07:20 willic3 Exp $
+c $Id: update_state.f,v 1.5 2004/08/02 21:32:09 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
