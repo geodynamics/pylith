@@ -24,14 +24,17 @@ c
       numslp=npar(4)
       numfn=npar(5)
       ipstrs=npar(6)
-      nstatesz=npar(7)
-      ndmatsz=npar(8)
-      nconsz=npar(9)
-      numdif=npar(10)
-      intord=npar(11)
+      ipauto=npar(7)
+      nstatesz=npar(8)
+      nstatesz0=npar(9)
+      ndmatsz=npar(10)
+      nconsz=npar(11)
+      numdif=npar(12)
+      intord=npar(13)
+      nstate0=npar(14)
 c
 c version
-c $Id: npar_def.inc,v 1.3 2004/07/21 15:22:14 willic3 Exp $
+c $Id: npar_def.inc,v 1.4 2005/02/24 00:30:50 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
