@@ -29,27 +29,30 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine gravld(xl,shj,grav,dens,gauss,p,n,nen,nsd,ndof,
-     & ngauss,ierr)
+      subroutine gravld(p,grav,xl,iel,nen,dens,gauss,shj,ngauss,ierr,
+     & errstrng)
 c
 c...computes the local forces due to gravitational acceleration
 c
       include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "ndimens.inc"
       include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer n,nen,nsd,ndof,ngauss,ierr
-      double precision xl(nsd,nen),shj(nsd+1,nenmax,ngaussmax),grav(3)
-      double precision dens,gauss(nsd+1,ngaussmax),p(ndof*nen)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
+      integer iel,nen,ngauss,ierr
+      character errstrng*(*)
+      double precision p(ndof*nen),grav(ndof),xl(nsd,nen),dens
+      double precision gauss(nsd+1,ngaussmax)
+      double precision shj(nsd+1,nenmax,ngaussmax)
 c
 c...  local variables
 c
-cdebug      integer idb,jdb
       integer l,j
       double precision xs(3,3),det,rl1,rl2,rl3
 c
@@ -59,23 +62,23 @@ c
      & return
       if(dens.eq.zero) return
       do l=1,ngauss
-        call getjac(xl,xs,det,shj(1,1,l),nen,nsd,n,ierr)
-        if(ierr.ne.0) return
+        call getjac(xl,xs,det,shj(1,1,l),nen,nsd,iel,ierr,errstrng)
+        if(ierr.ne.izero) return
         det=det*gauss(4,l)*dens
         rl1=det*grav(1)
         rl2=det*grav(2)
         rl3=det*grav(3)
         do j=1,nen
-          p(3*j-2)=p(3*j-2)+rl1*sh(4,j)
-          p(3*j-1)=p(3*j-1)+rl2*sh(4,j)
-          p(3*j  )=p(3*j  )+rl3*sh(4,j)
+          p(3*j-2)=p(3*j-2)+rl1*shj(4,j,l)
+          p(3*j-1)=p(3*j-1)+rl2*shj(4,j,l)
+          p(3*j  )=p(3*j  )+rl3*shj(4,j,l)
         end do
       end do
       return
       end
 c
 c version
-c $Id: gravld.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: gravld.f,v 1.2 2004/07/01 19:36:18 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
