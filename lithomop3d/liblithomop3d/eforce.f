@@ -47,7 +47,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer iel,nen,ierr
+      integer iel,nen,ngauss,ierr
       character errstrng*(*)
       double precision xl(nsd,nen),sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax),det(ngaussmax)
@@ -76,7 +76,7 @@ c
       end
 c
 c version
-c $Id: eforce.f,v 1.3 2004/06/21 20:11:19 willic3 Exp $
+c $Id: eforce.f,v 1.4 2004/07/05 19:51:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
