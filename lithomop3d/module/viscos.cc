@@ -57,7 +57,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   PyObject* pyPointerToBtraction;
   PyObject* pyPointerToBgravity;
   PyObject* pyPointerToBconcForce;
-  PyObject* pyPointerToBprestress;
+  // PyObject* pyPointerToBprestress;
   PyObject* pyPointerToBintern;
   PyObject* pyPointerToBresid;
   PyObject* pyPointerToBwork;
@@ -92,6 +92,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   PyObject* pyPointerToStemp;
   PyObject* pyPointerToState;                 // Element arrays
   PyObject* pyPointerToDstate;
+  PyObject* pyPointerToState0;
   PyObject* pyPointerToDmat;
   PyObject* pyPointerToIen;
   PyObject* pyPointerToLm;
@@ -156,7 +157,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 			    &pyPointerToBtraction,
 			    &pyPointerToBgravity,
 			    &pyPointerToBconcForce,
-			    &pyPointerToBprestress,
+			    // &pyPointerToBprestress,
 			    &pyPointerToBintern,
 			    &pyPointerToBresid,
 			    &pyPointerToBwork,
@@ -191,6 +192,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 			    &pyPointerToStemp,
 			    &pyPointerToState,                 // Element arrays
 			    &pyPointerToDstate,
+			    &pyPointerToState0,
 			    &pyPointerToDmat,
 			    &pyPointerToIen,
 			    &pyPointerToLm,
@@ -261,7 +263,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   double*  pointerToBtraction = (double*) PyCObject_AsVoidPtr(pyPointerToBtraction);
   double*  pointerToBgravity = (double*) PyCObject_AsVoidPtr(pyPointerToBgravity);
   double*  pointerToBconcForce = (double*) PyCObject_AsVoidPtr(pyPointerToBconcForce);
-  double*  pointerToBprestress = (double*) PyCObject_AsVoidPtr(pyPointerToBprestress);
+  // double*  pointerToBprestress = (double*) PyCObject_AsVoidPtr(pyPointerToBprestress);
   double*  pointerToBintern = (double*) PyCObject_AsVoidPtr(pyPointerToBintern);
   double*  pointerToBresid = (double*) PyCObject_AsVoidPtr(pyPointerToBresid);
   double*  pointerToBwork = (double*) PyCObject_AsVoidPtr(pyPointerToBwork);
@@ -296,6 +298,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   double*  pointerToStemp = (double*) PyCObject_AsVoidPtr(pyPointerToStemp);
   double*  pointerToState = (double*) PyCObject_AsVoidPtr(pyPointerToState);
   double*  pointerToDstate = (double*) PyCObject_AsVoidPtr(pyPointerToDstate);
+  double*  pointerToState0 = (double*) PyCObject_AsVoidPtr(pyPointerToState0);
   double*  pointerToDmat = (double*) PyCObject_AsVoidPtr(pyPointerToDmat);
   int*  pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
   int*  pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
@@ -357,7 +360,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 	   pointerToBtraction,
 	   pointerToBgravity,
 	   pointerToBconcForce,
-	   pointerToBprestress,
+	   // pointerToBprestress,
 	   pointerToBintern,
 	   pointerToBresid,
 	   pointerToBwork,
@@ -392,6 +395,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 	   pointerToStemp,
 	   pointerToState,                    // Element arrays
 	   pointerToDstate,
+	   pointerToState0,
 	   pointerToDmat,
 	   pointerToIen,
 	   pointerToLm,
@@ -470,6 +474,6 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
 
 
 // version
-// $Id: viscos.cc,v 1.6 2005/01/06 16:17:37 willic3 Exp $
+// $Id: viscos.cc,v 1.7 2005/02/24 00:41:01 willic3 Exp $
 
 // End of file

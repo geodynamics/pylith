@@ -339,7 +339,6 @@ extern "C" {
 		    double *,
 		    double *,
 		    double *,
-		    double *,
 		    int *,
 		    double *,
 		    double *,          // global
@@ -369,6 +368,7 @@ extern "C" {
 		    double *,          // stiff
 		    double *,
 		    double *,          // element
+		    double *,
 		    double *,
 		    double *,
 		    int *,
@@ -454,7 +454,6 @@ extern "C" {
 		double *,
 		double *,
 		double *,
-		double *,
 		int *,
 		double *,
 		double *,          // global
@@ -484,6 +483,7 @@ extern "C" {
 		double *,          // stiff
 		double *,
 		double *,          // element
+		double *,
 		double *,
 		double *,
 		int *,
@@ -654,6 +654,9 @@ extern "C" {
 		 int);
 
   void read_connect_f(int *,
+		      int *,
+		      int *,
+		      int *,
 		      int *,
 		      int *,
 		      int *,
@@ -1095,7 +1098,6 @@ extern "C" {
 		double *,
 		double *,
 		double *,
-		double *,
 		int *,
 		double *,
 		double *,          // global
@@ -1125,6 +1127,7 @@ extern "C" {
 		double *,          // stiff
 		double *,
 		double *,          // element
+		double *,
 		double *,
 		double *,
 		int *,
@@ -1189,6 +1192,8 @@ extern "C" {
   void write_element_info_f(int *,
 			    int *,
 			    int *,
+			    int *,
+			    double *,
 			    double *,
 			    int *,
 			    int *,
@@ -1267,6 +1272,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.8 2005/01/18 20:43:47 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.9 2005/02/24 00:41:01 willic3 Exp $
 
 // End of file
