@@ -141,6 +141,7 @@ cdebug      integer idb
 c
 cdebug      write(6,*) "Hello from elas_mat_5_f!"
 c
+      call fill(dmat,zero,nddmat)
       e=prop(2)
       pr=prop(3)
       pr1=one-pr
@@ -243,6 +244,7 @@ c
 c
 cdebug      write(6,*) "Hello from td_matinit_5_f!"
 c
+      call fill(dmat,zero,nddmat)
       tmax=big
       e=prop(2)
       pr=prop(3)
@@ -344,9 +346,7 @@ c
      & ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
 c
 c...  subroutine to compute the current stress and updated material
-c     matrix for the time-dependent solution.  Since this is a purely
-c     elastic material, the material matrix should not change unless the
-c     material properties have changed for a time step.
+c     matrix for the time-dependent solution.
 c     Note that only the upper triangle is used (or available), as
 c     dmat is assumed to always be symmetric.
 c
@@ -379,7 +379,7 @@ c
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-      if(matchg) call td_matinit_5(state,dstate,dmat,prop,rtimdat,
+      call td_matinit_5(state,dstate,dmat,prop,rtimdat,
      & rgiter,ntimdat,iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
       call td_strs_5(state,dstate,ee,dmat,prop,rtimdat,rgiter,ntimdat,
      & iddmat,tmax,nstate,nprop,matchg,ierr,errstrng)
@@ -389,7 +389,7 @@ c
 c       
 
 c version
-c $Id: mat_5.f,v 1.3 2004/08/12 02:01:55 willic3 Exp $
+c $Id: mat_5.f,v 1.4 2004/08/12 20:46:16 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 
