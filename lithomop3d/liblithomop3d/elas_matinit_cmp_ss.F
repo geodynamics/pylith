@@ -4,9 +4,9 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
+c  Copyright 2005 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -31,16 +31,15 @@ c
 c
       subroutine elas_matinit_cmp_ss(
      & A,nnz,neq,                                                       ! sparse
-     & x,d,numnp,                                                       ! global
+     & x,d,numnp,iddmat,                                                ! global
      & dx,numslp,numsn,                                                 ! slip
      & tfault,numfn,                                                    ! fault
      & s,stemp,                                                         ! stiff
-     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,  ! elemnt
-     & nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,       ! elemnt
-     & nstate0,                                                         ! elemnt
-     & prop,nstate,nprop,matgpt,imatvar,nmatel,elas_matinit,td_matinit, ! materl
-     & prestr_matinit,matchg,tminmax,                                   ! materl
-     & gauss,sh,shj,infetype,                                           ! eltype
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,               ! elemfamily
+     & nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,               ! elemfamily
+     & ielg,                                                            ! elemnt
+     & prop,nprop,elas_matinit,td_matinit,prestr_matinit,matchg,tminmax,! materl
+     & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
@@ -67,23 +66,29 @@ c
 c
 c...  subroutine arguments
 c
-      integer nnz,neq,numnp,numslp,numsn,numfn,nstatesz,nstatesz0
-      integer ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,nprop
-      integer nstate0,nstate,matgpt,imatvar,nmatel,numrot,ierr
+      integer nnz,neq,numnp,numslp,numsn,numfn,nelfamily,nstate,nstate0
+      integer nprestrflag,ipstrs,ipauto,n0states
+c
+c... the ielg variable below contains the global element number, while
+c    the local variable ielf contains the element number within a given
+c    family.
+c
+      integer ielg
+      integer nprop,nen,ngauss,nee,numrot,ierr
       logical matchg
-      integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
-      integer lmf(nconsz),infiel(7,numelt),iddmat(nstr,nstr)
-      integer infetype(4,netypes)
+      integer iddmat(nstr,nstr)
+      integer ien(nen,nelfamily),lm(ndof*nen,nelfamily)
+      integer lmx(ndof*nen,nelfamily),lmf(nen,nelfamily)
       character errstrng*(*)
       double precision x(nsd,numnp),d(ndof,numnp)
       double precision dx(ndof,numnp),tfault(ndof,numfn)
       double precision s(neemax*neemax),stemp(neemax*neemax)
-      double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
-      double precision state0(nstate0,nstatesz0)
-      double precision dmat(nddmat,ndmatsz),prop(nprop),tminmax
-      double precision gauss(nsd+1,ngaussmax,netypes)
-      double precision sh(nsd+1,nenmax,ngaussmax,netypes)
-      double precision shj(nsd+1,nenmax,ngaussmax,netypes)
+      double precision state(nstate,ngauss,nelfamily)
+      double precision dstate(nstate,ngauss,nelfamily)
+      double precision state0(nstate0,ngauss,n0states)
+      double precision dmat(nddmat,ngauss,nelfamily),prop(nprop),tminmax
+      double precision gauss(nsd+1,ngauss),sh(nsd+1,nen,ngauss)
+      double precision shj(nsd+1,nen,ngauss)
       double precision skew(nskdim,numnp)
 c
 c...  included dimension and type statements
@@ -98,8 +103,7 @@ c
 c
 c...  local variables
 c
-      integer iel,inddmat0,ietype,ngauss,ng,inddmatg
-      integer l,ind,inddmat,indien,nen,nee,ngtest,ngaussdim
+      integer ielf,l
 c
 c...  included variable definitions
 c
@@ -111,83 +115,32 @@ cdebug      write(6,*) "Hello from elas_matinit_cmp_ss_f!"
 c
       tminmax=big
 c
-c...  compute d-matrix for first element in the group.  If imatvar is
-c     zero, there is only one d-matrix for the group, and that is all
-c     that needs to be done.  Otherwise, since this is the elastic
-c     solution, the same matrix can be copied into each slot.
-c
-      iel=infiel(4,matgpt)
-      inddmat0=infiel(6,iel)
-      ietype=infiel(3,iel)
-      call elas_matinit(dmat(1,inddmat0),prop,iddmat,nprop,ierr,
-     & errstrng)
-      if(ierr.ne.izero) return
-      ngauss=infetype(1,ietype)
-      ng=ngauss
-      if(imatvar.eq.izero) ng=ngaussmax
-      inddmatg=inddmat0
-cdebug      write(6,*) "iel,inddmat0,ietype,ngauss,ng,ngaussmax,inddmatg:",
-cdebug     & iel,inddmat0,ietype,ngauss,ng,ngaussmax,inddmatg
-      do l=2,ng
-        inddmatg=inddmatg+ione
-        call dcopy(nddmat,dmat(1,inddmat0),ione,dmat(1,inddmatg),ione)
-      end do
-c
-c...  loop over elements in group if there is material property
-c     variation for the material type.
-c
-      if(imatvar.ne.izero) then
-        do ind=matgpt+1,matgpt+nmatel-1
-          iel=infiel(4,ind)
-          ietype=infiel(3,iel)
-          inddmat=infiel(6,iel)
-          ngauss=infetype(1,ietype)
-          inddmatg=inddmat
-          do l=1,ngauss
-cdebug            write(6,*)
-cdebug     &       "ind,matgpt,iel,ietype,inddmat,ngauss,l,inddmatg:",
-cdebug     &       ind,matgpt,iel,ietype,inddmat,ngauss,l,inddmatg
-            call dcopy(nddmat,dmat(1,inddmat0),ione,dmat(1,inddmatg),
-     &       ione)
-            inddmatg=inddmatg+ione
-          end do
-        end do
-      end if
-c
-c...  loop over elements in group and add element stiffness to global
+c...  loop over elements in a family and add element stiffness to global
 c     stiffness.
 c
-      ngtest=0
-      if(imatvar.eq.izero) ngtest=ngaussmax
-      do ind=matgpt,matgpt+nmatel-1
-        iel=infiel(4,ind)
-        indien=infiel(1,iel)
-        ietype=infiel(3,iel)
-        nen=infetype(2,ietype)
-        inddmat=infiel(6,iel)
-        ngauss=infetype(1,ietype)
-        nee=infetype(4,ietype)
-        ngaussdim=max(ngauss,ngtest)
+      do ielf=1,nelfamily
+        do l=1,ngauss
+          call elas_matinit(dmat(1,l,ielf),prop,iddmat,nprop,ierr,
+     &     errstrng)
+        end do
         call formes_ss(
      &   x,numnp,                                                       ! global
      &   s,stemp,                                                       ! stiff
-     &   dmat(1,inddmat),ien(indien),lm(1,indien),iddmat,iel,           ! elemnt
-     &   gauss(1,1,ietype),sh(1,1,1,ietype),shj(1,1,1,ietype),          ! eltype
-     &   ngauss,ngaussdim,nen,nee,                                      ! eltype
+     &   dmat(1,1,ielf),ien(1,ielf),lm(1,ielf),ielg,                    ! elemnt
+     &   gauss,sh,shj,nen,ngauss,nee,                                   ! eltype
      &   skew,numrot,                                                   ! skew
      &   getshape,bmatrix,                                              ! bbar
      &   ierr,errstrng)                                                 ! errcod
-c
         if(ierr.ne.izero) return
-c
-        call addstf(A,s,lm(1,indien),lmx(1,indien),nee,numsn,nnz)
+        call addstf(A,s,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz)
+        ielg=ielg+ione
       end do
 c
       return
       end
 c
 c version
-c $Id: elas_matinit_cmp_ss.F,v 1.1 2005/03/11 04:07:40 knepley Exp $
+c $Id: elas_matinit_cmp_ss.F,v 1.2 2005/03/19 01:49:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

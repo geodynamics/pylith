@@ -31,14 +31,13 @@ c
 c
       subroutine stress_drv(
      & bintern,neq,                                                     ! force
-     & x,d,numnp,                                                       ! global
+     & x,d,numnp,iddmat,                                                ! global
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
-     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,  ! elemnt
-     & nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,       ! elemnt
-     & nstate0,                                                         ! elemnt
-     & prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,               ! materl
-     & gauss,sh,shj,infetype,                                           ! eltype
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies,     ! elemnt
+     & numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,             ! elemnt
+     & prop,mhist,infmatmod,npropsz,tminmax,                            ! materl
+     & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,           ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
@@ -59,23 +58,22 @@ c
 c
 c...  subroutine arguments
 c
-      integer neq,numnp,numslp,numfn,nstatesz,nstatesz0,ndmatsz,numelt
-      integer nconsz,nprestrflag,ipstrs,ipauto,nstate0
-      integer numat,npropsz,nhist,lastep,numrot,ierr
-      integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(7,numelt),iddmat(nstr,nstr),mhist(npropsz)
-      integer infmat(3,numat),infmatmod(5,nmatmodmax)
-      integer infetype(4,netypes)
+      integer neq,numnp,numslp,numfn,nvfamilies,numelv,nstatesz
+      integer nstatesz0,nprestrflag,ipstrs,ipauto
+      integer npropsz,nen,ngauss,nee,nhist,lastep,numrot,ierr
+      integer iddmat(nstr,nstr)
+      integer ien(nen,numelv),lm(ndof*nen,numelv),lmx(ndof*nen,numelv)
+      integer lmf(nen,numelv),ivfamily(6,nvfamilies)
+      integer mhist(npropsz),infmatmod(6,nmatmodmax)
       character errstrng*(*)
       double precision bintern(neq),x(nsd,numnp),d(ndof,numnp)
       double precision dx(ndof,numnp)
       double precision tfault(ndof,numfn)
-      double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
-      double precision state0(nstate0,nstatesz0)
-      double precision dmat(nddmat,ndmatsz),prop(npropsz),tminmax
-      double precision gauss(nsd+1,ngaussmax,netypes)
-      double precision sh(nsd+1,nenmax,ngaussmax,netypes)
-      double precision shj(nsd+1,nenmax,ngaussmax,netypes)
+      double precision state(nstatesz),dstate(nstatesz)
+      double precision state0(nstatesz0)
+      double precision dmat(nddmat*ngauss,numelv),prop(npropsz),tminmax
+      double precision gauss(nsd+1,ngauss)
+      double precision sh(nsd+1,nen,ngauss),shj(nsd+1,nen,ngauss)
       double precision histry(nhist,lastep+1),skew(nskdim,numnp)
 c
 c...  included dimension and type statements
@@ -95,7 +93,8 @@ c
 c
 c...  local variables
 c
-      integer matgpt,imat,matmodel,nmatel,nstate,nprop,indprop
+      integer ifam,nelfamily,matmodel,indstate,indstate0,indprop
+      integer nstate,nprop,nstate0,imat,indiel,n0states
       logical matchg
       double precision ptmp(100)
 c
@@ -107,18 +106,33 @@ c
 c
 cdebug      write(6,*) "Hello from stress_drv_f!"
 c
-      matgpt=1
       tminmax=big
+      indiel=ione
 c
 c...  loop over material groups and then select appropriate material model
 c     routine
 c
-      do imat=1,numat
-        matmodel=infmat(1,imat)
-        nmatel=infmat(2,imat)
-        indprop=infmat(3,imat)
+      do ifam=1,nvfamilies
+        nelfamily=ivfamily(1,ifam)
+        matmodel=ivfamily(2,ifam)
+        indstate=ivfamily(3,ifam)
+        indstate0=ivfamily(4,ifam)
+        indprop=ivfamily(5,ifam)
         nstate=infmatmod(2,matmodel)
         nprop=infmatmod(3,matmodel)
+        nstate0=infmatmod(6,matmodel)
+        n0states=ione
+        if(ipstrs.ne.izero) n0states=nelfamily
+c*****************************
+c       Temporary kludge.  In the near future, properties will be
+c       obtained from a spatial database.  For now, an element family
+c       is assumed to be defined by its material type.  In the next
+c       refinement, it will be defined by a material model (and
+c       possibly other characteristics such as element type), and
+c       actual properties will be defined by the database for a given
+c       location/time.
+c*****************************
+        imat=ifam
         matchg=.false.
         call mathist(ptmp,prop(indprop),mhist(indprop),histry,nprop,
      &   imat,nstep,nhist,lastep,matchg,ierr,errstrng)
@@ -126,15 +140,15 @@ c
         if(matmodel.eq.1) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_1,td_strs_1,       ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_1,td_strs_1,matchg,tminmax,             ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -142,15 +156,15 @@ c
         else if(matmodel.eq.2) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_2,td_strs_2,       ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_2,td_strs_2,matchg,tminmax,             ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -158,15 +172,15 @@ c
         else if(matmodel.eq.3) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_3,td_strs_3,       ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_3,td_strs_3,matchg,tminmax,             ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -174,15 +188,15 @@ c
         else if(matmodel.eq.4) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_4,td_strs_4,       ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_4,td_strs_4,matchg,tminmax,             ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -190,15 +204,15 @@ c
         else if(matmodel.eq.5) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_5,td_strs_5,       ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_5,td_strs_5,matchg,tminmax,             ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -206,15 +220,15 @@ c
         else if(matmodel.eq.6) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_6,td_strs_6,       ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_6,td_strs_6,matchg,tminmax,             ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -222,15 +236,15 @@ c
         else if(matmodel.eq.7) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_7,td_strs_7,       ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_7,td_strs_7,matchg,tminmax,             ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -238,15 +252,15 @@ c
         else if(matmodel.eq.8) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_8,td_strs_8,       ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_8,td_strs_8,matchg,tminmax,             ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -254,15 +268,15 @@ c
         else if(matmodel.eq.9) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_9,td_strs_9,       ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_9,td_strs_9,matchg,tminmax,             ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -270,15 +284,15 @@ c
         else if(matmodel.eq.10) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_10,td_strs_10,     ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_10,td_strs_10,matchg,tminmax,           ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -286,15 +300,15 @@ c
         else if(matmodel.eq.11) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_11,td_strs_11,     ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_11,td_strs_11,matchg,tminmax,           ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -302,15 +316,15 @@ c
         else if(matmodel.eq.12) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_12,td_strs_12,     ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_12,td_strs_12,matchg,tminmax,           ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -318,15 +332,15 @@ c
         else if(matmodel.eq.13) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_13,td_strs_13,     ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_13,td_strs_13,matchg,tminmax,           ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -334,15 +348,15 @@ c
         else if(matmodel.eq.14) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_14,td_strs_14,     ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_14,td_strs_14,matchg,tminmax,           ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -350,15 +364,15 @@ c
         else if(matmodel.eq.15) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_15,td_strs_15,     ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_15,td_strs_15,matchg,tminmax,           ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -366,15 +380,15 @@ c
         else if(matmodel.eq.16) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_16,td_strs_16,     ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_16,td_strs_16,matchg,tminmax,           ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -382,15 +396,15 @@ c
         else if(matmodel.eq.17) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_17,td_strs_17,     ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_17,td_strs_17,matchg,tminmax,           ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -398,15 +412,15 @@ c
         else if(matmodel.eq.18) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_18,td_strs_18,     ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_18,td_strs_18,matchg,tminmax,           ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -414,15 +428,15 @@ c
         else if(matmodel.eq.19) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_19,td_strs_19,     ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_19,td_strs_19,matchg,tminmax,           ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -430,15 +444,15 @@ c
         else if(matmodel.eq.20) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
-     &     x,d,numnp,                                                   ! global
+     &     x,d,numnp,iddmat,                                            ! global
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
-     &     state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,       ! elemnt
-     &     nstatesz,nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs, ! elemnt
-     &     ipauto,nstate0,                                              ! elemnt
-     &     ptmp,nmatel,nstate,nprop,matgpt,elas_strs_20,td_strs_20,     ! materl
-     &     matchg,tminmax,                                              ! materl
-     &     gauss,sh,shj,infetype,                                       ! eltype
+     &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
+     &     dmat(1,indiel),ien(1,indiel),lm(1,indiel),lmx(1,indiel),     ! elemfamily
+     &     lmf(1,indiel),nelfamily,nstate,nstate0,nprestrflag,ipstrs,   ! elemfamily
+     &     ipauto,n0states,                                             ! elemfamily
+     &     ptmp,nprop,elas_strs_20,td_strs_20,matchg,tminmax,           ! materl
+     &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     rtimdat,ntimdat,rgiter,                                      ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
@@ -448,13 +462,13 @@ c
           errstrng="stress_drv"
         end if
         if(ierr.ne.izero) return
-        matgpt=matgpt+nmatel
+        indiel=indiel+nelfamily
       end do
       return
       end
 c
 c version
-c $Id: stress_drv.f,v 1.10 2005/02/24 00:19:08 willic3 Exp $
+c $Id: stress_drv.f,v 1.11 2005/03/19 01:49:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

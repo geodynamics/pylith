@@ -32,8 +32,8 @@ c
       subroutine formes_ss(
      & x,numnp,                                                         ! global
      & s,stemp,                                                         ! stiff
-     & dmat,ien,lm,iddmat,iel,                                          ! elemnt
-     & gauss,sh,shj,ngauss,ngaussdim,nen,nee,                           ! eltype
+     & dmat,ien,lm,iel,                                                 ! elemnt
+     & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
@@ -51,13 +51,13 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,iel,ngauss,ngaussdim,nen,nee,numrot,ierr
-      integer ien(nen),lm(ndof,nen),iddmat(nstr,nstr)
+      integer numnp,iel,nen,ngauss,nee,numrot,ierr
+      integer ien(nen),lm(ndof,nen)
       character errstrng*(*)
       double precision x(nsd,numnp),s(neemax*neemax)
-      double precision stemp(neemax*neemax),dmat(nddmat,ngaussdim)
-      double precision gauss(nsd+1,ngaussmax),sh(nsd+1,nenmax,ngaussmax)
-      double precision shj(nsd+1,nenmax,ngaussmax),skew(nskdim,numnp)
+      double precision stemp(neemax*neemax),dmat(nddmat,ngauss)
+      double precision gauss(nsd+1,ngauss),sh(nsd+1,nen,ngauss)
+      double precision shj(nsd+1,nen,ngauss),skew(nskdim,numnp)
 c
 c...  external routines
 c
@@ -80,9 +80,9 @@ c     skew boundary conditions
 c
       call stiff_ss(
      & xl,                                                              ! global
-     & dmat,ien,iddmat,iel,                                             ! elemnt
-     & gauss,sh,shj,ngauss,ngaussdim,nen,                               ! eltype
-     & s,nee,                                                           ! stiff
+     & dmat,ien,iel,                                                    ! elemnt
+     & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
+     & s,                                                               ! stiff
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
 c
@@ -94,7 +94,7 @@ c
       end
 c
 c version
-c $Id: formes_ss.f,v 1.4 2004/07/05 19:55:37 willic3 Exp $
+c $Id: formes_ss.f,v 1.5 2005/03/19 01:49:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

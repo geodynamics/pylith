@@ -157,15 +157,18 @@ c
       end
 c
 c
-      subroutine elas_strs_1(state,state0,ee,dmat,nstate,nstate0,ierr,
-     & errstrng)
+      subroutine elas_strs_1(state,state0,ee,scur,dmat,nstate,nstate0,
+     & ierr,errstrng)
 c
 c...  subroutine to compute stresses for the elastic solution.  For this
-c     material, there are just 2 state variables:  total stress and
-c     total strain.  The current total strain is contained in ee.
+c     material, there are just 2 sets of state variables:  total stress
+c     and total strain.  The current total strain is contained in ee and
+c     the computed total stress should be copied to scur.
 c
-c     state(nstr,1) = Cauchy stress
-c     state(nstr,2) = linear strain
+c     state(1:6)  = Cauchy stress
+c     state(7:12) = linear strain
+c
+c     The state0 array contains initial stresses.
 c
       include "implicit.inc"
 c
@@ -178,13 +181,14 @@ c
 c...  subroutine arguments
 c
       integer nstate,nstate0,ierr
-      double precision state(nstr,nstate),state0(nstate0),ee(nstr)
+      double precision state(nstate),state0(nstate0),ee(nstr),scur(nstr)
       double precision dmat(nddmat)
       character errstrng*(*)
 c
-      call dcopy(nstr,ee,ione,state(1,2),ione)
-      call dcopy(nstr,state0,ione,state(1,1),ione)
-      call dspmv("u",nstr,one,dmat,state(1,2),ione,one,state(1,1),ione)
+      call dcopy(nstr,ee,ione,state(7),ione)
+      call dcopy(nstr,state0,ione,state,ione)
+      call dspmv("u",nstr,one,dmat,state(7),ione,one,state,ione)
+      call dcopy(nstr,state,ione,scur,ione)
       return
       end
 c
@@ -217,7 +221,7 @@ c
       integer nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
-      double precision state(nstr,nstate),dstate(nstr,nstate)
+      double precision state(nstate),dstate(nstate)
       double precision state0(nstate0),dmat(nddmat),prop(nprop),tmax
       logical matchg
 c
@@ -244,9 +248,9 @@ c
       end
 c
 c
-      subroutine td_strs_1(state,dstate,state0,ee,dmat,prop,rtimdat,
-     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
-     & errstrng)
+      subroutine td_strs_1(state,dstate,state0,ee,scur,dmat,prop,
+     & rtimdat,rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
+     & ierr,errstrng)
 c
 c...  subroutine to compute the current stress for the time-dependent
 c     solution.
@@ -267,9 +271,8 @@ c
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg
-      double precision state(nstr,nstate),dstate(nstr,nstate)
-      double precision state0(nstate0),ee(nstr)
-      double precision dmat(nddmat),prop(nprop),tmax
+      double precision state(nstate),dstate(nstate),state0(nstate0)
+      double precision ee(nstr),scur(nstr),dmat(nddmat),prop(nprop),tmax
 c
 c...  included dimension and type statements
 c
@@ -284,18 +287,18 @@ c
       include "ntimdat_def.inc"
 c
       tmax=big
-      call dcopy(nstr,ee,ione,dstate(1,2),ione)
-      call dcopy(nstr,state0,ione,dstate(1,1),ione)
-      call dspmv("u",nstr,one,dmat,dstate(1,2),ione,one,dstate(1,1),
-     & ione)
+      call dcopy(nstr,ee,ione,dstate(7),ione)
+      call dcopy(nstr,state0,ione,dstate,ione)
+      call dspmv("u",nstr,one,dmat,dstate(7),ione,one,dstate,ione)
+      call dcopy(nstr,state,ione,scur,ione)
 c
       return
       end
 c
 c
-      subroutine td_strs_mat_1(state,dstate,state0,ee,dmat,prop,rtimdat,
-     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
-     & errstrng)
+      subroutine td_strs_mat_1(state,dstate,state0,ee,scur,dmat,prop,
+     & rtimdat,rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
+     & ierr,errstrng)
 c
 c...  subroutine to compute the current stress and updated material
 c     matrix for the time-dependent solution.  Since this is a purely
@@ -318,9 +321,8 @@ c
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg
-      double precision state(nstr,nstate),dstate(nstr,nstate)
-      double precision state0(nstate0),ee(nstr)
-      double precision dmat(nddmat),prop(nprop),tmax
+      double precision state(nstate),dstate(nstate),state0(nstate0)
+      double precision ee(nstr),scur(nstr),dmat(nddmat),prop(nprop),tmax
 c
 c...  included dimension and type statements
 c
@@ -335,8 +337,9 @@ c
       include "ntimdat_def.inc"
 c
       if(matchg) call elas_mat_1(dmat,prop,iddmat,nprop,ierr,errstrng)
-      call td_strs_1(state,dstate,state0,ee,dmat,prop,rtimdat,rgiter,
-     & ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,errstrng)
+      call td_strs_1(state,dstate,state0,ee,scur,dmat,prop,rtimdat,
+     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
+     & ierr,errstrng)
 c
       return
       end
@@ -383,7 +386,7 @@ c
 c       
 
 c version
-c $Id: mat_1.f,v 1.15 2005/02/24 00:07:03 willic3 Exp $
+c $Id: mat_1.f,v 1.16 2005/03/19 01:49:49 willic3 Exp $
 
 c Generated automatically by Fortran77Mill on Tue May 18 14:18:50 2004
 

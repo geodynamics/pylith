@@ -29,8 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine cmp_stiffsz(neq,lm,lmx,infiel,nconsz,numelt,infetype,
-     & iwork,numsn,ierr,errstrng)
+      subroutine cmp_stiffsz(neq,lm,lmx,numelv,iwork,numsn,nen,
+     & ierr,errstrng)
 c
 c      program to compute an upper bound on the number of nonzero
 c      entries in the stiffness matrix.  Duplicate contributions from
@@ -46,9 +46,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer neq,nconsz,numelt,iwork,numsn,ierr
-      integer lm(ndof*nconsz),lmx(ndof*nconsz),infiel(7,numelt)
-      integer infetype(4,netypes)
+      integer neq,numelv,iwork,numsn,nen,ierr
+      integer lm(ndof*nen,numelv),lmx(ndof*nen,numelv)
       character errstrng*(*)
 c
 c...  intrinsic functions
@@ -57,38 +56,40 @@ c
 c
 c...  local variables
 c
-      integer iel,indlm,ietype,nee,neeq,i,ii,irow,j,jj,icol
+      integer iel,nee,neeq,i,irow,j,icol
 c
 cdebug      write(6,*) "Hello from cmp_stiffsz_f!"
 c
       iwork=izero
-      do iel=1,numelt
-        indlm=ndof*(infiel(1,iel)-ione)+ione
-        ietype=infiel(3,iel)
-        nee=infetype(4,ietype)
-        neeq=nee
-        if(numsn.ne.izero) neeq=itwo*nee
+      nee=ndof*nen
+      neeq=nee
+      if(numsn.ne.izero) neeq=itwo*nee
+      do iel=1,numelv
 c
         do i=1,neeq
-          ii=indlm+i-1
-          irow=lm(ii)
-          if(i.gt.nee) irow=abs(lmx(ii-nee))
+          if(i.le.nee) then
+            irow=lm(i,iel)
+          else
+            irow=abs(lmx(i-nee,iel))
+          end if
           if(irow.ne.izero) then
             do j=1,neeq
-              jj=indlm+j-1
-              icol=lm(jj)
-              if(j.gt.nee) icol=abs(lmx(jj-nee))
+              if(j.le.nee) then
+                icol=lm(j,iel)
+              else
+                icol=abs(lmx(j-nee,iel))
+              end if
               if(icol.ne.izero.and.icol.ne.irow) iwork=iwork+ione
             end do
           end if
         end do
       end do
-      iwork=iwork+neemax*neemax
+      iwork=iwork+neeq*neeq
       return
       end
 c
 c version
-c $Id: cmp_stiffsz.f,v 1.3 2005/02/23 23:52:06 willic3 Exp $
+c $Id: cmp_stiffsz.f,v 1.4 2005/03/19 01:49:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -31,21 +31,21 @@ c
 c
       subroutine elas_strs_cmp_ss(
      & bintern,neq,                                                     ! force
-     & x,d,numnp,                                                       ! global
+     & x,d,numnp,iddmat,                                                ! global
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
-     & state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,  ! elemnt
-     & nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,       ! elemnt
-     & nstate0,                                                         ! elemnt
-     & prop,nmatel,nstate,nprop,matgpt,elas_strs,td_strs,matchg,tminmax,! materl
-     & gauss,sh,shj,infetype,                                           ! eltype
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,               ! elemfamily
+     & nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,               ! elemfamily
+     & ielg,                                                            ! elemnt
+     & prop,nprop,elas_strs,td_strs,matchg,tminmax,                     ! materl
+     & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
 c
 c...program to compute the total stress and strain for the current
-c   iteration for a given material model
+c   iteration for a given element family
 c
       include "implicit.inc"
 c
@@ -58,22 +58,29 @@ c
 c
 c...  subroutine arguments
 c
-      integer neq,numnp,numslp,numfn,nstatesz,nstatesz0,ndmatsz,numelt
-      integer nconsz,nprestrflag,ipstrs,ipauto,nstate0
-      integer nmatel,nstate,nprop,matgpt,numrot,ierr
-      integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(7,numelt),iddmat(nstr,nstr),infetype(4,netypes)
+      integer neq,numnp,numslp,numfn,nelfamily,nstate,nstate0,n0states
+c
+c... the ielg variable below contains the global element number, while
+c    the local variable ielf contains the element number within a given
+c    family.
+c
+      integer ielg
+      integer nprestrflag,ipstrs,ipauto,nprop,nen,ngauss,nee,numrot,ierr
+      integer iddmat(nstr,nstr)
+      integer ien(nen,nelfamily),lm(ndof*nen,nelfamily)
+      integer lmx(ndof*nen,nelfamily),lmf(nen,nelfamily)
       character errstrng*(*)
       logical matchg
       double precision bintern(neq),x(nsd,numnp),d(ndof,numnp)
       double precision dx(ndof,numnp)
       double precision tfault(ndof,numfn)
-      double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
-      double precision state0(nstate0,nstatesz0)
-      double precision dmat(nddmat,ndmatsz),prop(nprop),tminmax
-      double precision gauss(nsd+1,ngaussmax,netypes)
-      double precision sh(nsd+1,nenmax,ngaussmax,netypes)
-      double precision shj(nsd+1,nenmax,ngaussmax,netypes)
+      double precision state(nstate,ngauss,nelfamily)
+      double precision dstate(nstate,ngauss,nelfamily)
+      double precision state0(nstate0,ngauss,n0states)
+      double precision dmat(nddmat,ngauss,nelfamily),prop(nprop),tminmax
+      double precision gauss(nsd+1,ngauss)
+      double precision sh(nsd+1,nen,ngauss)
+      double precision shj(nsd+1,nen,ngauss)
       double precision skew(nskdim,numnp)
 c
 c...  included dimension and type statements
@@ -92,8 +99,7 @@ c
 c
 c...  local variables
 c
-      integer ind,iel,indien,ietype,indstate,inddmat,indstate0
-      integer ngauss,nen,nee,l,indstateg,inddmatg,indstate0g
+      integer ielf,incstate0,indstate0,l
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 cdebug      integer idb
 c
@@ -105,36 +111,31 @@ c
 c
 cdebug      write(6,*) "Hello from elas_strs_cmp_ss_f!"
 c
-c...  loop over elements in a material group
+      incstate0=izero
+      indstate0=ione
+      if(ipstrs.ne.izero) then
+        incstate0=ione
+        indstate0=izero
+      end if
 c
-      do ind=matgpt,matgpt+nmatel-1
-        iel=infiel(4,ind)
-        indien=infiel(1,iel)
-        ietype=infiel(3,iel)
-        indstate=infiel(5,iel)
-        inddmat=infiel(6,iel)
-        indstate0=infiel(7,iel)
-        ngauss=infetype(1,ietype)
-        nen=infetype(2,ietype)
-        nee=infetype(4,ietype)
-        indstateg=indstate
-        indstate0g=indstate0
-        inddmatg=inddmat
+c...  loop over elements in a family
+c
+      do ielf=1,nelfamily
+        indstate0=indstate0+incstate0
 c
 c...  localize coordinates and displacements
 c
-        call lcoord(x,xl,ien(indien),nen,numnp)
-        call ldisp(dl,d,ien(indien),nen,numnp)
-        if(numfn.ne.0) call adfldp(dl,lmf(indien),tfault,nen,numfn)
-        if(numslp.ne.0) call addsn(dl,dx,ien,lmx(1,indien),nen,numnp)
+        call lcoord(x,xl,ien(1,ielf),nen,numnp)
+        call ldisp(dl,d,ien(1,ielf),nen,numnp)
+        if(numfn.ne.0) call adfldp(dl,lmf(1,ielf),tfault,nen,numfn)
+        if(numslp.ne.0) call addsn(dl,dx,ien,lmx(1,ielf),nen,numnp)
 cdebug        write(6,*) "xl:",(xl(idb),idb=1,nsd*nen)
 cdebug        write(6,*) "dl:",(dl(idb),idb=1,ndof*nen)
 c
 c...  compute strains
 c
-        call bdeld_ss(xl,dl,sh(1,1,1,ietype),shj(1,1,1,ietype),ee,det,
-     &   gauss(1,1,ietype),iel,nen,nee,ngauss,getshape,bmatrix,ierr,
-     &   errstrng)
+        call bdeld_ss(xl,dl,sh,shj,ee,det,gauss,ielg,nen,nee,ngauss,
+     &   getshape,bmatrix,ierr,errstrng)
 cdebug        write(6,*) "ee:",(ee(idb),idb=1,nstr*ngauss)
         if(ierr.ne.izero) return
 c
@@ -142,37 +143,30 @@ c...  loop over gauss points, compute stresses, and transfer them into
 c     scur
 c
         do l=1,ngauss
-cdebug          write(6,*) "ind,iel,indstate0g,state0:",ind,iel,indstate0g,
-cdebug     &     (state0(idb,indstate0g),idb=1,nstate0)
-          call elas_strs(dstate(1,indstateg),state0(1,indstate0g),
-     &     ee(nstr*(l-1)+1),dmat(1,inddmatg),nstate,nstate0,ierr,
-     &     errstrng)
+          call elas_strs(dstate(1,l,ielf),state0(1,l,indstate0),
+     &     ee(nstr*(l-1)+1),scur(nstr*(l-1)+1),dmat(1,l,ielf),
+     &     nstate,nstate0,ierr,errstrng)
           if(ierr.ne.izero) return
-          call dcopy(nstr,dstate(1,indstateg),ione,scur(nstr*(l-1)+1),
-     &     ione)
-          indstateg=indstateg+nstate
-          indstate0g=indstate0g+ione
-          inddmatg=inddmatg+ione
         end do
 cdebug        write(6,*) "scur:",(scur(idb),idb=1,nstr*ngauss)
 c
 c...  compute equivalent nodal loads
 c
         call fill(p,zero,nee)
-        call eforce(xl,sh(1,1,1,ietype),shj(1,1,1,ietype),det,
-     &   gauss(1,1,ietype),scur,p,iel,nen,ngauss,getshape,bmatrix,ierr,
-     &   errstrng)
+        call eforce(xl,sh,shj,det,gauss,scur,p,ielg,nen,ngauss,getshape,
+     &   bmatrix,ierr,errstrng)
 cdebug        write(6,*) "p:",(p(idb),idb=1,nee)
         if(ierr.ne.izero) return
-        if(numrot.ne.izero) call rpforc(p,skew,ien(indien),numnp,nen)
-        call addfor(bintern,p,lm(1,indien),lmx(1,indien),neq,nee)
+        if(numrot.ne.izero) call rpforc(p,skew,ien(1,ielf),numnp,nen)
+        call addfor(bintern,p,lm(1,ielf),lmx(1,ielf),neq,nee)
 cdebug        write(6,*) "bintern:",(bintern(idb),idb=1,neq)
+        ielg=ielg+ione
       end do
       return
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.14 2005/02/23 23:54:22 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.15 2005/03/19 01:49:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
