@@ -1,0 +1,5 @@
+After talking to Matt and seeing if Lagrange multipliers are OK:
+
+1.  Come up with routines for integration of surfaces/cohesive elements, analogous to solid element routines.
+
+2.  Algorithms for setting stiffness matrix and vector structure for cohesive elements.
