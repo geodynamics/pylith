@@ -59,7 +59,7 @@ c...  subroutine arguments
 c
       integer neq,numnp,ndmatsz,numelt,nconsz,numat,numrot,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz)
-      integer infiel(6,numelt),iddmat(nstr,nstr),infmat(3,numat)
+      integer infiel(7,numelt),iddmat(nstr,nstr),infmat(3,numat)
       integer infmatmod(5,nmatmodmax),infetype(4,netypes)
       character errstrng*(*)
       double precision bintern(neq),x(nsd,numnp),d(ndof,numnp)
@@ -142,7 +142,7 @@ cdebug      write(6,*) (bintern(idb),idb=1,200)
       end
 c
 c version
-c $Id: formdf_ss.f,v 1.6 2005/01/05 22:10:29 willic3 Exp $
+c $Id: formdf_ss.f,v 1.7 2005/02/23 23:57:20 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
