@@ -61,9 +61,21 @@ c
 c
 c...  local constants
 c
-      character eltype(10)*4
-      data eltype/"hex","wrk","wdg","pyr","tet",
-     & "qhex","qwrk","qwdg","qpyr","qtet"/
+      integer inducd(nenmax,10)
+      data inducd/
+     & 1, 2, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     & 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     & 1, 2, 3, 4, 5, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     & 5, 1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     & 4, 1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     & 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,
+     & 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18, 0, 0,
+     & 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,14,13,15, 0, 0, 0, 0, 0,
+     & 5, 1, 2, 3, 4,10,11,12,13, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0, 0,
+     & 4, 1, 2, 3, 8, 9,10, 5, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0/
+      character eltype(10)*5
+      data eltype/"hex","wrick","prism","pyr","tet",
+     & "hex","wrick","prism","pyr","tet"/
 c
 c...  external functions
 c
@@ -125,7 +137,7 @@ c
         if(ietype.eq.61) indtype=inine
         if(ietype.eq.62) indtype=10
         write(kucd,"(2i7,2x,a4,20i7)") i,imat,eltype(indtype),
-     &   (ien(j),j=indien,indien+nen-1)
+     &   (ien(inducd(j,indtype)),j=indien,indien+nen-1)
       end do
       close(kucd)
 c
@@ -162,7 +174,7 @@ c
       end
 c
 c version
-c $Id: write_ucd_mesh.f,v 1.2 2004/08/25 01:29:42 willic3 Exp $
+c $Id: write_ucd_mesh.f,v 1.3 2004/08/26 18:48:59 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
