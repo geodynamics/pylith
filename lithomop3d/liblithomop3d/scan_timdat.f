@@ -29,7 +29,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine scan_timdat(lastep,nintg,kr,ierr,time_units,tfile)
+      subroutine scan_timdat(lastep,nintg,kr,time_units,tfile,ierr,
+     & errstrng)
 c
 c...  subroutine to perform an initial scan of the timestep groups
 c     input file to determine the number of time step groups, the total
@@ -41,17 +42,21 @@ c
 c     Error codes:
 c         0:  No error
 c         1:  Error opening input file
-c         2:  Units not specified
 c         3:  Read error
+c         5:  Units not specified
 c
       include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
 c
 c...  subroutine arguments
 c
       integer lastep,nintg,kr,ierr
-      character time_units*(*),tfile*(*)
+      character time_units*(*),tfile*(*),errstrng*(*)
 c
-c...  defined constants
+c...  local constants
 c
       character def(1)*18
       data def/"time_units"/
@@ -68,16 +73,16 @@ c...  open input file
 c
 cdebug      write(6,*) "Hello from scan_timdat_f!"
 c
-      ierr=0
-      nintg=0
-      lastep=0
-      nget=1
+      ierr=izero
+      nintg=izero
+      lastep=izero
+      nget=ione
       open(kr,file=tfile,status="old",err=20)
 c
 c...  get units, returning error 2 if they aren't found.
 c
-      call get_units(kr,ierr,nget,units_defined,units,def)
-      if(ierr.eq.2) return
+      call get_units(kr,nget,units_defined,units,def,ierr,errstrng)
+      if(ierr.ne.izero) return
       time_units=units(1)
 c
 c... scan the file, counting the number of entries.
@@ -90,8 +95,8 @@ c
  40   continue
         read(kr,*,end=10,err=30) n,maxstp,delt,alfa,maxit,maxitc,lgdef,
      &   ibbar,utol,ftol,etol,itmax
-        nintg=nintg+1
-        if(nintg.gt.1) lastep=lastep+maxstp
+        nintg=nintg+ione
+        if(nintg.gt.ione) lastep=lastep+maxstp
 cdebug        write(6,*) n,maxstp,delt,alfa,maxit,maxitc,lgdef,ibbar,utol,
 cdebug     &   ftol,etol,itmax,nintg,lastep
         go to 40
@@ -99,7 +104,10 @@ c
 c...  normal return
 c
  10   continue
-        if(nintg.eq.0) ierr=3
+        if(nintg.eq.izero) then
+          ierr=3
+          errstrng="scan_timdat"
+        end if
         close(kr)
 cdebug        write(6,*) "First error code ",ierr
         return
@@ -108,6 +116,7 @@ c...  error opening file
 c
  20   continue
         ierr=1
+        errstrng="scan_timdat"
         close(kr)
 cdebug        write(6,*) "Second error code ",ierr
         return
@@ -116,6 +125,7 @@ c...  read error
 c
  30   continue
         ierr=3
+        errstrng="scan_timdat"
         close(kr)
 cdebug        write(6,*) "Third error code ",ierr
         return
@@ -123,7 +133,7 @@ c
       end
 c
 c version
-c $Id: scan_timdat.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: scan_timdat.f,v 1.2 2004/07/12 20:16:53 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
