@@ -105,7 +105,7 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
 	   &workingArraySize,
 	   &stiffnessOffDiagonalSize,
 	   &stiffnessMatrixSize,
-	   &totalNumberSlipperyNodes
+	   &totalNumberSlipperyNodes,
 	   &errorcode,
 	   errorstring,
 	   strlen(errorstring));
@@ -188,6 +188,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.2 2004/07/19 21:38:21 willic3 Exp $
+// $Id: sparse.cc,v 1.3 2004/07/20 21:23:02 willic3 Exp $
 
 // End of file
