@@ -202,6 +202,7 @@ class Lithomop3d_setup(Component):
         # Parameters derived from values in the inventory or the
         # category 2 parameters.
         self.analysisTypeInt = lm3dscan._analysisTypeInt
+        self.quadratureOrderInt = lm3dscan._quadratureOrderInt
         self.prestressAutoComputeInt = lm3dscan._prestressAutoComputeInt
 
 
@@ -331,7 +332,7 @@ class Lithomop3d_setup(Component):
         self.pointerToLmf = None
         self.pointerToInfiel = None
         self.pointerToListArrayIddmat = None
-        self.listNpar = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.listNpar = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.pointerToListArrayNpar = None
         self.elementSizeInfo = [0, 0]
 
@@ -1185,7 +1186,8 @@ class Lithomop3d_setup(Component):
             self.stateSize,
             self.dmatSize,
             self.connectivitySize,
-            self.numberDifferentialForceEntries]
+            self.numberDifferentialForceEntries,
+            self.quadratureOrderInt]
         self.pointerToListArrayNpar = lithomop3d.intListToArray(
             self.listNpar)
 
@@ -1272,6 +1274,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.4 2004/07/21 20:10:40 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.5 2004/07/21 20:16:57 willic3 Exp $
 
 # End of file 
