@@ -95,6 +95,7 @@ c
       integer imat,matmodel,nmatel,imatvar,nprop,indprop,matgpt
       double precision ptmp(100)
       logical matchg
+cdebug      integer idebug,jdebug
 c
 c...  included variable definitions
 c
@@ -449,6 +450,15 @@ c
         matgpt=matgpt+nmatel
       end do
 c
+c...  debugging output
+c
+cdebug      write(6,*) "DMAT array:"
+cdebug      do idebug=1,ndmatsz
+cdebug        write(6,*) (dmat(jdebug,idebug),jdebug=1,nddmat)
+cdebug      end do
+cdebug      write(6,*) "ALNZ array:"
+cdebug      write(6,*) (alnz(idebug),idebug=1,nnz)
+c
 c...  add Winkler elements to stiffness matrix diagonals
 c
       if(nwink.ne.izero) call winklr(alnz,iwink,wink,histry,nstep,
@@ -465,7 +475,7 @@ c
       end
 c
 c version
-c $Id: matinit_drv.f,v 1.3 2004/07/08 20:32:57 willic3 Exp $
+c $Id: matinit_drv.f,v 1.4 2004/08/02 21:18:33 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
