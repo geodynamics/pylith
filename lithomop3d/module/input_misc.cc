@@ -745,7 +745,75 @@ PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *args)
 }
 
 
+// Write mesh info to UCD file
+
+char pylithomop3d_write_ucd_mesh__doc__[] = "";
+char pylithomop3d_write_ucd_mesh__name__[] = "write_ucd_mesh";
+
+PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *args)
+{
+  PyObject* pyPointerToX;
+  int numberNodes;
+  PyObject* pyPointerToIen;
+  PyObject* pyPointerToInfiel;
+  int numberElements;
+  int connectivitySize;
+  PyObject* pyPointerToSh;
+  PyObject* pyPointerToElementTypeInfo;
+  PyObject* pyPointerToIstatout;
+  int f77UcdOutput;
+  char* ucdOutputRoot;
+
+  int ok = PyArg_ParseTuple(args, "OiOOiiOOOis:write_ucd_mesh",
+			    &pyPointerToX,
+			    &numberNodes,
+			    &pyPointerToIen,
+			    &pyPointerToInfiel,
+			    &numberElements,
+			    &connectivitySize,
+			    &pyPointerToSh,
+			    &pyPointerToElementTypeInfo,
+			    &pyPointerToIstatout,
+			    &f77UcdOutput,
+			    &ucdOutputRoot);
+
+  if (!ok) {
+    return 0;
+  }
+
+  double* pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
+  int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
+  int* pointerToInfiel = (int*) PyCObject_AsVoidPtr(pyPointerToInfiel);
+  double* pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
+  int* pointerToElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToElementTypeInfo);
+  int* pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
+
+  write_ucd_mesh_f(pointerToX,
+		   &numberNodes,
+		   pointerToIen,
+		   pointerToInfiel,
+		   &numberElements,
+		   &connectivitySize,
+		   pointerToSh,
+		   pointerToElementTypeInfo,
+		   pointerToIstatout,
+		   &f77UcdOutput,
+		   ucdOutputRoot,strlen(ucdOutputRoot));
+		  
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "numberElements:" << numberElements
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+
+
 // version
-// $Id: input_misc.cc,v 1.4 2004/08/02 21:41:41 willic3 Exp $
+// $Id: input_misc.cc,v 1.5 2004/08/25 01:35:37 willic3 Exp $
 
 // End of file
