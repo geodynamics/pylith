@@ -582,11 +582,11 @@ class Lithomop3d_scan(Component):
         inventory = [
             pyre.properties.str(
                 "title",
-                default="LITHOMOP3D simulation"),
+                default="Patchtest 1 for linear hex elements, full quadrature."),
 
             pyre.properties.str(
                 "fileRoot",
-                default="../examples/lithomop3d_test1/lithomop3d_test1"),
+                default=os.path.join("..","examples","linhex","patchtest","pt1"),
 
             pyre.properties.str(
                 "keywordEqualsValueFile",
@@ -721,6 +721,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.5 2004/07/16 18:21:47 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.6 2004/07/21 14:55:52 willic3 Exp $
 
 # End of file 
