@@ -50,7 +50,7 @@ c...  local variables
 c
       double precision fac
 c
-c*      write(6,*) "Hello from infellh_f!"
+cdebug      write(6,*) "Hello from infellh_f!"
 c
       fac=one+va*v
       vv=half*fac
@@ -62,7 +62,7 @@ c
       end
 c
 c version
-c $Id: infellh.f,v 1.3 2004/07/06 15:30:12 willic3 Exp $
+c $Id: infellh.f,v 1.4 2004/08/12 01:31:32 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -58,7 +58,7 @@ c
       integer i,ip,iq,j
       double precision c,g,h,s,sm,t,tau,theta,tresh,b(nmax),z(nmax)
 c
-c*      write(6,*) "Hello from jacobi_f!"
+cdebug      write(6,*) "Hello from jacobi_f!"
 c
       do 12 ip=1,n
         do 11 iq=1,n
@@ -148,7 +148,7 @@ c
       end
 c
 c version
-c $Id: jacobi.f,v 1.2 2004/07/07 15:34:15 willic3 Exp $
+c $Id: jacobi.f,v 1.3 2004/08/12 01:33:20 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
