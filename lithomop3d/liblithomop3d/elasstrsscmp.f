@@ -29,14 +29,16 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine elasstrsscmp(x,b,d,dx,tfault,nsd,ndof,numnp,neq,numfn,
-     & numslp,
-     & state,dmat,nstr,nddmat,nstatesz,ndmatsz,
-     & ien,lm,lmx,lmf,infiel,numelt,nconsz,
-     & infmat,matgpt,elasstrs,getshape,bmatrix,
-     & infetype,gauss,sh,shj,netypes,ngaussmax,nenmax,
-     & skew,nskdim,numrot,
-     & idebug,idout,kto,kw,ierr)
+      subroutine elasstrsscmp(
+     & b,neq,                                                           ! force
+     & x,d,dx,nsd,ndof,numnp,                                           ! global
+     & tfault,numfn,numslp,                                             ! fault
+     & state,dmat,ien,lm,lmx,lmf,infiel,nstr,nddmat,nstatesz,ndmatsz,   ! elemnt
+     & numelt,nconsz,                                                   ! elemnt
+     & infmat,matgpt,elasstrs,                                          ! materl
+     & gauss,sh,shj,infetype,netypes,ngaussmax,nenmax,                  ! eltype
+     & skew,nskdim,numrot,                                              ! skew
+     & getshape,bmatrix,idebug,idout,kto,kw,ierr)                       ! info
 c
 c...program to compute the total stress and strain for the current
 c   iteration for a given material model
@@ -45,12 +47,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer nsd,ndof,numnp,neq,numfn,numslp,nstr,nddmat,nstatesz
+      integer neq,nsd,ndof,numnp,numfn,numslp,nstr,nddmat,nstatesz
       integer ndmatsz,numelt,nconsz,matgpt,netypes,ngaussmax,nenmax
       integer nskdim,numrot,idebug,idout,kto,kw,ierr
       integer ien(nconsz),lm(ndof,nconsz),lmx(ndof,nconsz),lmf(nconsz)
-      integer infiel(6,numelt),infmat(3),infetype(4,netypes)
-      double precision x(nsd,numnp),b(neq),d(ndof,numnp),dx(ndof,numnp)
+      integer infiel(6,numelt),infmat(6),infetype(4,netypes)
+      double precision b(neq),x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
       double precision tfault(ndof,numfn)
       double precision state(nstr,nstatesz),dmat(nddmat,ndmatsz)
       double precision gauss(nsd+1,ngaussmax,netypes)
@@ -143,7 +145,7 @@ c
       end
 c
 c version
-c $Id: elasstrsscmp.f,v 1.1 2004/05/24 21:01:45 willic3 Exp $
+c $Id: elasstrsscmp.f,v 1.2 2004/05/25 17:40:24 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
