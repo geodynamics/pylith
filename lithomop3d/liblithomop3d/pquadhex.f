@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine pquadhex(sh,shj,gauss,ngauss,nen,intord)
+      subroutine pquadhex(sh,shj,gauss,infetype,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a quadratic (20-node)
@@ -46,12 +46,13 @@ c
 c
 c...  subroutine arguments
 c
-      integer ngauss,nen,intord
+      integer intord
+      integer infetype(4)
       double precision sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax)
       double precision gauss(nsd+1,ngaussmax)
 c
-c...  local data definitions
+c...  local constants
 c
       double precision r(20),s(20),t(20)
       data r/-1d0, 1d0, 1d0,-1d0,-1d0, 1d0, 1d0,-1d0,
@@ -74,7 +75,7 @@ c
 c
 c...  local variables
 c
-      integer i,l,l1,l2,l3,nshsize,ngssize
+      integer nen,ngauss,nec,nee,i,l,l1,l2,l3,nshsize,ngssize
       double precision g1,w1,w2,rr,ss,tt,rrw,ssw,ttw,drr,dss,dtt
       double precision uu,dur,dus,dut,v,vi,rp,ri,sp,si,tp,ti
 c
@@ -97,6 +98,8 @@ c...  Quadratic hex definition
 c
       nen=20
       ngauss=ieight
+      nec=nsd*nen
+      nee=ndof*nen
       do l=1,ngauss
         gauss(1,l)=r(l)*root3i
         gauss(2,l)=s(l)*root3i
@@ -127,6 +130,12 @@ c
           end do
         end do
       end if
+c
+      infetype(1)=ngauss
+      infetype(2)=nen
+      infetype(3)=nec
+      infetype(4)=nee
+c
       do l=1,ngauss
         do i=1,nen
           rr=gquad(gauss(1,l),r(i))
@@ -151,7 +160,7 @@ c
       end
 c
 c version
-c $Id: pquadhex.f,v 1.2 2004/07/06 19:14:36 willic3 Exp $
+c $Id: pquadhex.f,v 1.3 2004/07/07 19:40:22 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
