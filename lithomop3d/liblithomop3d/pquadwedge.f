@@ -29,26 +29,29 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine pquadwedge(sh,shj,gauss,ngauss,nen,nsd,nenmax,
-     & ngaussmax,intord)
+      subroutine pquadwedge(sh,shj,gauss,infetype,intord)
 c
 c... Subroutine to compute shape functions in natural coordinates,
 c    integration points, and weights for a quadratic wedge.
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nshape.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nsd,nenmax,ngaussmax,intord
-      integer ngauss,nen
+      integer intord
+      integer infetype(4)
       double precision sh(nsd+1,nenmax,ngaussmax)
       double precision shj(nsd+1,nenmax,ngaussmax)
       double precision gauss(nsd+1,ngaussmax)
 c
-c...  defined constants
-c
-      include "nconsts.inc"
-      include "rconsts.inc"
+c...  local constants
 c
       integer it(15),ih(15)
       data it/1,2,3,1,2,3,4,5,6,4,5,6,1,2,3/
@@ -63,7 +66,7 @@ c
 c
 c...  local variables
 c
-      integer i,l,nshsize,ngssize
+      integer nen,ngauss,nec,nee,i,l,nshsize,ngssize
       double precision t(6),h(3),dt(6,2),dh(3)
       double precision rr,ss,tt,uu,g1,w1
       double precision trivol
@@ -78,6 +81,8 @@ c...  quadratic wedge definition
 c
       nen=15
       ngauss=itwo
+      nec=nsd*nen
+      nee=ndof*nen
       do l=1,ngauss
         gauss(1,l)=third
         gauss(2,l)=third
@@ -108,6 +113,12 @@ c
           end do
         end do
       end if
+c
+      infetype(1)=ngauss
+      infetype(2)=nen
+      infetype(3)=nec
+      infetype(4)=nee
+c
       do l=1,ngauss
         rr=gauss(1,l)
         ss=gauss(2,l)
@@ -126,14 +137,14 @@ c
         dt(2,1)=zero
         dt(3,1)=one-four*uu
         dt(4,1)=four*ss
-        dt(5,1)=-four*ss
+        dt(5,1)=(-four)*ss
         dt(6,1)=four*(uu-rr)
         dt(1,2)=zero
         dt(2,2)=four*ss-one
         dt(3,2)=one-four*uu
         dt(4,2)=four*rr
         dt(5,2)=four*(uu-ss)
-        dt(6,2)=-four*rr
+        dt(6,2)=(-four)*rr
         dh(1)=half*(two*tt+one)
         dh(2)=half*(two*tt-one)
         dh(3)=one-two*tt
@@ -150,7 +161,7 @@ c
       end
 c
 c version
-c $Id: pquadwedge.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: pquadwedge.f,v 1.2 2004/07/07 19:56:52 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
