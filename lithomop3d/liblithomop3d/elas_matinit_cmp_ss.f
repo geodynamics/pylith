@@ -37,7 +37,7 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,         ! elemnt
      & ndmatsz,numelt,nconsz,                                           ! elemnt
-     & prop,infmat,nprop,matgpt,elas_matinit,td_matinit,matchg,         ! materl
+     & prop,infmat,nprop,matgpt,elas_matinit,td_matinit,matchg,tminmax, ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & rtimdat,ntimdat,                                                 ! timdat
      & skew,numrot,                                                     ! skew
@@ -68,7 +68,7 @@ c
       double precision dx(ndof,numnp),tfault(ndof,numfn)
       double precision s(neemax*neemax),stemp(neemax*neemax)
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
-      double precision dmat(nddmat,ndmatsz),prop(nprop)
+      double precision dmat(nddmat,ndmatsz),prop(nprop),tminmax
       double precision gauss(nsd+1,ngaussmax,netypes)
       double precision sh(nsd+1,nenmax,ngaussmax,netypes)
       double precision shj(nsd+1,nenmax,ngaussmax,netypes)
@@ -97,6 +97,7 @@ cdebug      write(6,*) "Hello from elas_matinit_cmp_ss_f!"
 c
       nmatel=infmat(2)
       imatvar=infmat(4)
+      tminmax=big
 c
 c...  compute d-matrix for first element in the group.  If imatvar is
 c     zero, there is only one d-matrix for the group, and that is all
@@ -169,7 +170,7 @@ c
       end
 c
 c version
-c $Id: elas_matinit_cmp_ss.f,v 1.1 2004/06/23 19:19:21 willic3 Exp $
+c $Id: elas_matinit_cmp_ss.f,v 1.2 2004/07/01 17:19:50 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
