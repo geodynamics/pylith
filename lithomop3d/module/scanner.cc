@@ -108,16 +108,20 @@ PyObject * pylithomop3d_scan_connect(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToListArrayNumberElementNodesBase;
   PyObject* pyPointerToMaterialModelInfo;
+  PyObject* pyPointerToListArrayMaterialModel;
   PyObject* pyPointerToVolumeElementFamilyList;
   int maxNumberVolumeElementFamilies;
+  int numberMaterials;
   int f77FileInput;
   char* connectivityInputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOiis:scan_connect",
+  int ok = PyArg_ParseTuple(args, "OOOOiiis:scan_connect",
 			    &pyPointerToListArrayNumberElementNodesBase,
 			    &pyPointerToMaterialModelInfo,
+                            &pyPointerToListArrayMaterialModel,
 			    &pyPointerToVolumeElementFamilyList,
 			    &maxNumberVolumeElementFamilies,
+			    &numberMaterials,
 			    &f77FileInput,
 			    &connectivityInputFile);
 
@@ -127,6 +131,7 @@ PyObject * pylithomop3d_scan_connect(PyObject *, PyObject *args)
 
   int* pointerToListArrayNumberElementNodesBase = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNumberElementNodesBase);
   int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
+  int* pointerToListArrayMaterialModel = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayMaterialModel);
   int* pointerToVolumeElementFamilyList = (int*) PyCObject_AsVoidPtr(pyPointerToVolumeElementFamilyList);
   int numberVolumeElements = 0;
   int numberVolumeElementFamilies = 0;
@@ -137,8 +142,10 @@ PyObject * pylithomop3d_scan_connect(PyObject *, PyObject *args)
 
   scan_connect_f(pointerToListArrayNumberElementNodesBase,
 		 pointerToMaterialModelInfo,
+		 pointerToListArrayMaterialModel,
 		 pointerToVolumeElementFamilyList,
 		 &maxNumberVolumeElementFamilies,
+		 &numberMaterials,
 		 &numberVolumeElements,
 		 &numberVolumeElementFamilies,
 		 &volumeElementType,
@@ -777,6 +784,6 @@ PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: scanner.cc,v 1.5 2005/03/31 23:27:57 willic3 Exp $
+// $Id: scanner.cc,v 1.6 2005/04/01 23:54:57 willic3 Exp $
 
 // End of file
