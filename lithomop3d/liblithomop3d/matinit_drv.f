@@ -110,6 +110,9 @@ c
 c*      call fill(dmat,zero,nddmat*ndmatsz)
       matgpt=1
       tminmax=big
+      nrftot=ntimdat(7)
+      nrftot=nrftot+1
+      ntimdat(7)=nrftot
 c
 c...  loop over material groups and then select appropriate material
 c     model routine
@@ -478,7 +481,7 @@ c
       end
 c
 c version
-c $Id: matinit_drv.f,v 1.5 2004/08/12 02:07:33 willic3 Exp $
+c $Id: matinit_drv.f,v 1.6 2004/08/12 20:47:48 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
