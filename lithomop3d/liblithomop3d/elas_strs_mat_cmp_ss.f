@@ -39,7 +39,7 @@ c
      & state,dstate,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,ndmatsz, ! elemnt
      & numelt,nconsz,                                                   ! elemnt
      & prop,nmatel,imatvar,nstate,nprop,matgpt,elas_strs_mat,           ! materl
-     & td_strs_mat,matchg,                                              ! materl
+     & td_strs_mat,matchg,tminmax,                                      ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
      & skew,numrot,                                                     ! skew
@@ -72,7 +72,7 @@ c
       double precision dx(ndof,numnp),tfault(ndof,numfn)
       double precision s(neemax*neemax),stemp(neemax*neemax)
       double precision state(nstr,nstatesz),dstate(nstr,nstatesz)
-      double precision dmat(nddmat,ndmatsz),prop(nprop)
+      double precision dmat(nddmat,ndmatsz),prop(nprop),tminmax
       double precision gauss(nsd+1,ngaussmax,netypes)
       double precision sh(nsd+1,nenmax,ngaussmax,netypes)
       double precision shj(nsd+1,nenmax,ngaussmax,netypes)
@@ -179,7 +179,7 @@ c
       end
 c
 c version
-c $Id: elas_strs_mat_cmp_ss.f,v 1.5 2004/07/21 16:22:58 willic3 Exp $
+c $Id: elas_strs_mat_cmp_ss.f,v 1.6 2004/07/21 18:26:22 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
