@@ -184,7 +184,7 @@ PROJ_SRCS = \
         update_state.f \
         viscos.F \
         winklf.f \
-        winklr.f \
+        winklr.F \
         write_element_info.f \
         write_global_info.f \
         write_props.f \
@@ -220,7 +220,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.15 2005/03/11 03:20:09 knepley Exp $
+# $Id: Make.mm,v 1.16 2005/03/11 04:07:40 knepley Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 

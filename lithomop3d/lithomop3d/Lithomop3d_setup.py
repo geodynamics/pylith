@@ -306,8 +306,6 @@ class Lithomop3d_setup(Component):
         self.totalNumberSplitNodes = 0
         self.totalNumberSlipperyNodes = 0
 
-        self.pointerToAlnz = None
-        self.pointerToJa = None
         self.pointerToPcg = None
         self.pointerToZcg = None
         self.pointerToDprev = None
@@ -1302,8 +1300,6 @@ class Lithomop3d_setup(Component):
             # print "Exception in block lnklst!", error
 
         self.A = lithomop3d.createPETScMat(self.numberGlobalEquations)
-        self.pointerToJa = lithomop3d.allocateInt(
-            self.stiffnessMatrixSize)
 	self.memorySize += self.stiffnessMatrixSize*self.intSize
 
         # print "Just before makemsr"
@@ -1311,7 +1307,6 @@ class Lithomop3d_setup(Component):
 	# print "stiffnessOffDiagonalSize: %i" % self.stiffnessOffDiagonalSize
 	# print "memorySize: %d" % self.memorySize
         # lithomop3d.makemsr(
-            # self.pointerToJa,
             # self.pointerToIndx,
             # self.pointerToLink,
             # self.pointerToNbrs,
@@ -1321,7 +1316,6 @@ class Lithomop3d_setup(Component):
 
         self.stiffnessMatrixStats = lithomop3d.makemsr(
             self.A,
-            self.pointerToJa,
             self.pointerToIndx,
             self.pointerToLink,
             self.pointerToNbrs,
@@ -1356,8 +1350,6 @@ class Lithomop3d_setup(Component):
         # Allocate memory for all additional arrays
 
         # Sparse matrix arrays
-        self.pointerToAlnz = lithomop3d.allocateDouble(
-            self.stiffnessMatrixSize)
 	self.memorySize += self.stiffnessMatrixSize*self.doubleSize
         self.pointerToPcg = lithomop3d.allocateDouble(
             self.numberGlobalEquations)
@@ -1637,6 +1629,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.17 2005/03/11 02:17:39 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.18 2005/03/11 04:07:42 knepley Exp $
 
 # End of file 

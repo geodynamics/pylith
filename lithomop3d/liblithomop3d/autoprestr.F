@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine elastc(
+      subroutine autoprestr(
      & A,pcg,zcg,dprev,                                                 ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,      ! force
      & dispvec,nforce,grav,                                             ! force
@@ -48,10 +48,11 @@ c
      & skew,                                                            ! skew
      & ncodat,nunits,nprint,istatout,                                   ! ioinfo
      & ofile,pfile,ucdroot,                                             ! files
-     & elasticStage, iterateEvent,                                      ! PETSc logging
+     & iterateEvent,                                                    ! PETSc logging
      & ierr,errstrng)                                                   ! errcode
 c
-c...subroutine to construct and solve the elastic problem
+c...  subroutine to automatically compute prestresses due to application
+c     of body forces.
 c
       include "implicit.inc"
 c
@@ -64,7 +65,6 @@ c
 c
 c     PETSc objects
 c
-      PetscInt elasticStage, viscousStage
       PetscEvent iterateEvent
       Mat A
 c
@@ -128,7 +128,7 @@ c
 c...  external routines
 c
       external bmatrixn,bmatrixb,getshapn,getshapb
-      external elas_matinit_cmp_ss,gload_cmp_ss,elas_strs_cmp_ss
+      external prestr_matinit_cmp_ss,gload_cmp_ss,elas_strs_cmp_ss
       external elas_strs_mat_cmp_ss
 c
 c...  local variables
@@ -151,14 +151,12 @@ c
       include "rtimdat_def.inc"
       include "rgiter_def.inc"
 c
-cdebug      write(6,*) "Hello from elastc_f!"
+cdebug      write(6,*) "Hello from autoprestr_f!"
 c
 cdebug      write(6,*) "nextflag, ntractflag, ngravflag, nconcflag,"
 cdebug      write(6,*) "nprestrflag, nprevdflag:"
 cdebug      write(6,*) nextflag,ntractflag,ngravflag,nconcflag,
 cdebug     & nprestrflag, nprevdflag
-
-      call PetscLogStagePush(elasticStage, ierr)
       if(idout.ne.izero) open(kw,file=ofile,status="old",
      & access="append")
       if(idsk.eq.ione) open(kp,file=pfile,status="old",access="append")
@@ -172,7 +170,7 @@ cdebug     & nprestrflag, nprevdflag
       call fill(btraction,zero,neq*ntractflag)
       call fill(bgravity,zero,neq*ngravflag)
       call fill(bconcforce,zero,neq*nconcflag)
-      if(nprestrflag.eq.izero) call fill(bintern,zero,neq)
+      call fill(bintern,zero,neq)
       call fill(deld,zero,ndof*numnp)
       call fill(deldx,zero,ndof*numnp)
       call fill(dcur,zero,ndof*numnp)
@@ -180,9 +178,9 @@ cdebug     & nprestrflag, nprevdflag
       call fill(dx,zero,ndof*numnp)
       call fill(dxcur,zero,ndof*numnp)
       call fill(state,zero,nstr*nstatesz)
+      call fill(state0,zero,nstate0*nstatesz0)
       call fill(dmat,zero,nddmat*ndmatsz)
       call fill(dstate,zero,nstr*nstatesz)
-      if(nprestrflag.eq.izero) call fill(state0,zero,nstate0*nstatesz0)
       if(numfn.ne.izero) call fill(tfault,zero,numfn*ndof)
 c
       write(kto,600)
@@ -200,13 +198,12 @@ c*      call flush(kto)
       ndtot=izero
       ntimdat(8)=ndtot
       ntimdat(9)=ireform
-      iprestress=izero
+      iprestress=ione
 cdebug      write(6,*) "Before const:"
       call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,utol,ftol,
      & etol,itmax,nintg,igroup,naxstp,nfirst,rtimdat,deltp,alfap,
      & ntimdat,nstep,maxitp,ntdinitp,lgdefp,itmaxp,gtol)
 cdebug      write(6,*) "After const:"
-cdebug      write(6,*) "ireform,ntimdat(9):",ireform,ntimdat(9)
       if(skc) then
         call skclear(idslp,skew,numsn,numnp)
         call skcomp(x,d,skew,idslp,ipslp,ipstrs,numsn,numnp,nstep,
@@ -214,43 +211,37 @@ cdebug      write(6,*) "ireform,ntimdat(9):",ireform,ntimdat(9)
         if(ierr.ne.izero) return
       end if
 c
-c...transfer boundary conditions into concentrated load vector
-c   bconcforce(neq) and displacement increment vector deld(ndof,numnp).
+c...  at present, no force or displacement BC are applied when computing
+c     prestresses, which seems appropriate.
 c
-      call load(id,ibond,bond,dcur,deld,bconcforce,histry,deltp,numnp,
-     & neq,nconcflag,nhist,nstep,lastep,ierr,errstrng)
+c*      call load(id,ibond,bond,dcur,deld,bconcforce,histry,deltp,numnp,
+c*     & neq,nconcflag,nhist,nstep,lastep,ierr,errstrng)
 cdebug      write(6,*) "After load:"
-      if(ierr.ne.izero) return
+c*      if(ierr.ne.izero) return
 c
 c...compute current split node displacements
 c
-      if(numfn.ne.izero) then
-        call loadf(fault,dfault,histry,deltp,nfault,nstep,numfn,nhist,
-     &   lastep,ierr,errstrng)
-        if(ierr.ne.izero) return
-      end if
+c*      if(numfn.ne.izero) then
+c*        call loadf(fault,dfault,histry,deltp,nfault,nstep,numfn,nhist,
+c*     &   lastep,ierr,errstrng)
+c*        if(ierr.ne.izero) return
+c*      end if
 cdebug      write(6,*) "After loadf:"
 c
 c...add differential forces across internal free interfaces
 c
-      if(numdif.ne.izero) then
-        call loadx(bconcforce,diforc,histry,idx,idhist,neq,nconcflag,
-     &   numnp,nhist,nstep,lastep,ierr,errstrng)
-        if(ierr.ne.izero) return
-      end if
+c*      if(numdif.ne.izero) then
+c*        call loadx(bconcforce,diforc,histry,idx,idhist,neq,nconcflag,
+c*     &   numnp,nhist,nstep,lastep,ierr,errstrng)
+c*        if(ierr.ne.izero) return
+c*      end if
 cdebug      write(6,*) "After loadx:"
 c
 c...  initialize elastic material matrices and stiffness matrix, 
 c     compute forces due to applied displacements and split nodes,
 c     and perform iterative solution.
 c
-c******  see about whether lgdef and ibbar should be scalars rather than vectors
-c******  that vary for each time step.  If this is true, the routine names
-c******  for b-bar and small strain/large deformation could be passed in at
-c******  a higher level, which would simplify the code.  The only difficulty
-c******  might be passing a routine name in from python/c++.
-c******  Another thing to consider is that I will need to pass in some extra
-c******  info that isn't currently needed for the small strain case.
+c...  compute forces due to applied displacements and split nodes
 c
       if(lgdefp.eq.izero.and.intord.ne.ithree) then
 cdebug        write(6,*) "Before matinit_drv (1):"
@@ -267,7 +258,7 @@ cdebug        write(6,*) "Before matinit_drv (1):"
      &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
      &   histry,rtimdat,ntimdat,rgiter,nhist,lastep,                    ! timdat
-     &   elas_matinit_cmp_ss,                                           ! timdat
+     &   prestr_matinit_cmp_ss,                                         ! timdat
      &   skew,numrot,                                                   ! skew
      &   getshapn,bmatrixn,                                             ! bbar
      &   ierr,errstrng)                                                 ! errcode
@@ -275,34 +266,34 @@ cdebug        write(6,*) "After matinit_drv (1):"
 c
         if(ierr.ne.izero) return
 c
-        call formdf_ss(
-     &   bintern,neq,                                                   ! force
-     &   x,d,dcur,numnp,                                                ! global
-     &   s,stemp,                                                       ! stiff
-     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
-     &   infmat,infmatmod,numat,                                        ! materl
-     &   gauss,sh,shj,infetype,                                         ! eltype
-     &   skew,numrot,                                                   ! skew
-     &   getshapn,bmatrixn,                                             ! bbar
-     &   ierr,errstrng)                                                 ! errcode
+c*        call formdf_ss(
+c*     &   bintern,neq,                                                   ! force
+c*     &   x,d,dcur,numnp,                                                ! global
+c*     &   s,stemp,                                                       ! stiff
+c*     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
+c*     &   infmat,infmatmod,numat,                                        ! materl
+c*     &   gauss,sh,shj,infetype,                                         ! eltype
+c*     &   skew,numrot,                                                   ! skew
+c*     &   getshapn,bmatrixn,                                             ! bbar
+c*     &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After formdf_ss (1):"
 c
-        if(ierr.ne.izero) return
+c*        if(ierr.ne.izero) return
 c
-        if(numfn.ne.izero) call formf_ss(
-     &   bintern,neq,                                                   ! force
-     &   x,numnp,                                                       ! global
-     &   s,stemp,                                                       ! stiff
-     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
-     &   infmat,infmatmod,numat,                                        ! materl
-     &   gauss,sh,shj,infetype,                                         ! eltype
-     &   skew,numrot,                                                   ! skew
-     &   nfault,dfault,tfault,numfn,                                    ! split
-     &   getshapn,bmatrixn,                                             ! bbar
-     &   ierr,errstrng)                                                 ! errcode
+c*        if(numfn.ne.izero) call formf_ss(
+c*     &   bintern,neq,                                                   ! force
+c*     &   x,numnp,                                                       ! global
+c*     &   s,stemp,                                                       ! stiff
+c*     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
+c*     &   infmat,infmatmod,numat,                                        ! materl
+c*     &   gauss,sh,shj,infetype,                                         ! eltype
+c*     &   skew,numrot,                                                   ! skew
+c*     &   nfault,dfault,tfault,numfn,                                    ! split
+c*     &   getshapn,bmatrixn,                                             ! bbar
+c*     &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After formf_ss (1):"
 c
-        if(ierr.ne.izero) return
+c*        if(ierr.ne.izero) return
 c
         call iterate(
      &   A,pcg,zcg,dprev,                                               ! sparse
@@ -322,7 +313,6 @@ c
      &   ncodat,nunits,nprint,                                          ! ioinfo
      &   getshapn,bmatrixn,gload_cmp_ss,elas_strs_cmp_ss,               ! external
      &   elas_strs_mat_cmp_ss,                                          ! external
-     &   iterateEvent,                                                  ! PETSc logging
      &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After iterate (1):"
 c
@@ -342,7 +332,7 @@ c
      &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
      &   gauss,sh,shj,infetype,                                         ! eltype
      &   histry,rtimdat,ntimdat,rgiter,nhist,lastep,                    ! timdat
-     &   elas_matinit_cmp_ss,                                           ! timdat
+     &   prestr_matinit_cmp_ss,                                         ! timdat
      &   skew,numrot,                                                   ! skew
      &   getshapb,bmatrixb,                                             ! bbar
      &   ierr,errstrng)                                                 ! errcode
@@ -350,34 +340,34 @@ cdebug        write(6,*) "After matinit_drv (2):"
 c
         if(ierr.ne.izero) return
 c
-        call formdf_ss(
-     &   bintern,neq,                                                   ! force
-     &   x,d,dcur,numnp,                                                ! global
-     &   s,stemp,                                                       ! stiff
-     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
-     &   infmat,infmatmod,numat,                                        ! materl
-     &   gauss,sh,shj,infetype,                                         ! eltype
-     &   skew,numrot,                                                   ! skew
-     &   getshapb,bmatrixb,                                             ! bbar
-     &   ierr,errstrng)                                                 ! errcode
+c*        call formdf_ss(
+c*     &   bintern,neq,                                                   ! force
+c*     &   x,d,dcur,numnp,                                                ! global
+c*     &   s,stemp,                                                       ! stiff
+c*     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
+c*     &   infmat,infmatmod,numat,                                        ! materl
+c*     &   gauss,sh,shj,infetype,                                         ! eltype
+c*     &   skew,numrot,                                                   ! skew
+c*     &   getshapb,bmatrixb,                                             ! bbar
+c*     &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After formdf_ss (2):"
 c
-        if(ierr.ne.izero) return
+c*        if(ierr.ne.izero) return
 c
-        if(numfn.ne.izero) call formf_ss(
-     &   bintern,neq,                                                   ! force
-     &   x,numnp,                                                       ! global
-     &   s,stemp,                                                       ! stiff
-     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
-     &   infmat,infmatmod,numat,                                        ! materl
-     &   gauss,sh,shj,infetype,                                         ! eltype
-     &   skew,numrot,                                                   ! skew
-     &   nfault,dfault,tfault,numfn,                                    ! split
-     &   getshapb,bmatrixb,                                             ! bbar
-     &   ierr,errstrng)                                                 ! errcode
+c*        if(numfn.ne.izero) call formf_ss(
+c*     &   bintern,neq,                                                   ! force
+c*     &   x,numnp,                                                       ! global
+c*     &   s,stemp,                                                       ! stiff
+c*     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
+c*     &   infmat,infmatmod,numat,                                        ! materl
+c*     &   gauss,sh,shj,infetype,                                         ! eltype
+c*     &   skew,numrot,                                                   ! skew
+c*     &   nfault,dfault,tfault,numfn,                                    ! split
+c*     &   getshapb,bmatrixb,                                             ! bbar
+c*     &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After formf_ss (2):"
 c
-        if(ierr.ne.izero) return
+c*        if(ierr.ne.izero) return
 c
         call iterate(
      &   A,pcg,zcg,dprev,                                               ! sparse
@@ -397,7 +387,6 @@ c
      &   ncodat,nunits,nprint,                                          ! ioinfo
      &   getshapb,bmatrixb,gload_cmp_ss,elas_strs_cmp_ss,               ! external
      &   elas_strs_mat_cmp_ss,                                          ! external
-     &   iterateEvent,                                                  ! PETSc logging
      &   ierr,errstrng)                                                 ! errcode
 cdebug        write(6,*) "After iterate (2):"
 c
@@ -416,44 +405,44 @@ clater     &   nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,     ! 
 clater     &   nstate0,                                                       ! elemnt
 clater     &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
-clater     &   histry,rtimdat,ntimdat,nhist,lastep,elas_matinit_cmp_ld,       ! timdat
+clater     &   histry,rtimdat,ntimdat,nhist,lastep,prestr_matinit_cmp_ld,     ! timdat
 clater     &   skew,numrot,                                                   ! skew
 clater     &   getshapn,bmatrixn,                                             ! bbar
 clater     &   ierr,errstrng)                                                 ! errcode
 c
 clater        if(ierr.ne.izero) return
 c
-clater        call formdf_ld(
-clater     &   bintern,neq,                                                   ! force
-clater     &   x,d,dcur,numnp,                                                ! global
-clater     &   s,stemp,                                                       ! stiff
-clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
-clater     &   infmat,infmatmod,numat,                                        ! materl
-clater     &   gauss,sh,shj,infetype,                                         ! eltype
-clater     &   skew,numrot,                                                   ! skew
-clater     &   getshapn,bmatrixn,                                             ! bbar
-clater     &   ierr,errstrng)                                                 ! errcode
+c*clater        call formdf_ld(
+c*clater     &   bintern,neq,                                                   ! force
+c*clater     &   x,d,dcur,numnp,                                                ! global
+c*clater     &   s,stemp,                                                       ! stiff
+c*clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
+c*clater     &   infmat,infmatmod,numat,                                        ! materl
+c*clater     &   gauss,sh,shj,infetype,                                         ! eltype
+c*clater     &   skew,numrot,                                                   ! skew
+c*clater     &   getshapn,bmatrixn,                                             ! bbar
+c*clater     &   ierr,errstrng)                                                 ! errcode
 c
-clater        if(ierr.ne.izero) return
+c*clater        if(ierr.ne.izero) return
 c
-clater        if(numfn.ne.izero) call formf_ld(
-clater     &   bintern,neq,                                                   ! force
-clater     &   x,numnp,                                                       ! global
-clater     &   s,stemp,                                                       ! stiff
-clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
-clater     &   infmat,infmatmod,numat,                                        ! materl
-clater     &   gauss,sh,shj,infetype,                                         ! eltype
-clater     &   skew,numrot,                                                   ! skew
-clater     &   nfault,dfault,tfault,numfn,                                    ! split
-clater     &   getshapn,bmatrixn,                                             ! bbar
-clater     &   ierr,errstrng)                                                 ! errcode
+c*clater        if(numfn.ne.izero) call formf_ld(
+c*clater     &   bintern,neq,                                                   ! force
+c*clater     &   x,numnp,                                                       ! global
+c*clater     &   s,stemp,                                                       ! stiff
+c*clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
+c*clater     &   infmat,infmatmod,numat,                                        ! materl
+c*clater     &   gauss,sh,shj,infetype,                                         ! eltype
+c*clater     &   skew,numrot,                                                   ! skew
+c*clater     &   nfault,dfault,tfault,numfn,                                    ! split
+c*clater     &   getshapn,bmatrixn,                                             ! bbar
+c*clater     &   ierr,errstrng)                                                 ! errcode
 c
-clater        if(ierr.ne.izero) return
+c*clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
 clater     &   A,pcg,zcg,dprev,                                               ! sparse
-clater     &   bextern,btraction,bgravity,bconcforce,bintern,                 ! force
-clater     &   bresid,bwork,dispvec,nforce,grav,                              ! force
+clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
+clater     &   dispvec,nforce,grav,                                           ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
 clater     &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
 clater     &   nfault,dfault,tfault,                                          ! fault
@@ -468,7 +457,6 @@ clater     &   skew,                                                          ! 
 clater     &   ncodat,nunits,nprint,                                          ! ioinfo
 clater     &   getshapn,bmatrixn,gload_cmp_ld,elas_strs_cmp_ld,               ! external
 clater     &   elas_strs_mat_cmp_ld,                                          ! external
-clater     &   iterateEvent,                                                  ! PETSc logging
 clater     &   ierr,errstrng)                                                 ! errcode
 c
 clater        if(ierr.ne.izero) return
@@ -486,44 +474,44 @@ clater     &   nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,     ! 
 clater     &   nstate0,                                                       ! elemnt
 clater     &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
-clater     &   histry,rtimdat,ntimdat,nhist,lastep,elas_matinit_cmp_ld,       ! timdat
+clater     &   histry,rtimdat,ntimdat,nhist,lastep,prestr_matinit_cmp_ld,     ! timdat
 clater     &   skew,numrot,                                                   ! skew
 clater     &   getshapb,bmatrixb,                                             ! bbar
 clater     &   ierr,errstrng)                                                 ! errcode
 c
 clater        if(ierr.ne.izero) return
 c
-clater        call formdf_ld(
-clater     &   bintern,neq,                                                   ! force
-clater     &   x,d,dcur,numnp,                                                ! global
-clater     &   s,stemp,                                                       ! stiff
-clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
-clater     &   infmat,infmatmod,numat,                                        ! materl
-clater     &   gauss,sh,shj,infetype,                                         ! eltype
-clater     &   skew,numrot,                                                   ! skew
-clater     &   getshapb,bmatrixb,                                             ! bbar
-clater     &   ierr,errstrng)                                                 ! errcode
+c*clater        call formdf_ld(
+c*clater     &   bintern,neq,                                                   ! force
+c*clater     &   x,d,dcur,numnp,                                                ! global
+c*clater     &   s,stemp,                                                       ! stiff
+c*clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
+c*clater     &   infmat,infmatmod,numat,                                        ! materl
+c*clater     &   gauss,sh,shj,infetype,                                         ! eltype
+c*clater     &   skew,numrot,                                                   ! skew
+c*clater     &   getshapb,bmatrixb,                                             ! bbar
+c*clater     &   ierr,errstrng)                                                 ! errcode
 c
-clater        if(ierr.ne.izero) return
+c*clater        if(ierr.ne.izero) return
 c
-clater        if(numfn.ne.izero) call formf_ld(
-clater     &   bintern,neq,                                                   ! force
-clater     &   x,numnp,                                                       ! global
-clater     &   s,stemp,                                                       ! stiff
-clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
-clater     &   infmat,infmatmod,numat,                                        ! materl
-clater     &   gauss,sh,shj,infetype,                                         ! eltype
-clater     &   skew,numrot,                                                   ! skew
-clater     &   nfault,dfault,tfault,numfn,                                    ! split
-clater     &   getshapb,bmatrixb,                                             ! bbar
-clater     &   ierr,errstrng)                                                 ! errcode
+c*clater        if(numfn.ne.izero) call formf_ld(
+c*clater     &   bintern,neq,                                                   ! force
+c*clater     &   x,numnp,                                                       ! global
+c*clater     &   s,stemp,                                                       ! stiff
+c*clater     &   dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,           ! elemnt
+c*clater     &   infmat,infmatmod,numat,                                        ! materl
+c*clater     &   gauss,sh,shj,infetype,                                         ! eltype
+c*clater     &   skew,numrot,                                                   ! skew
+c*clater     &   nfault,dfault,tfault,numfn,                                    ! split
+c*clater     &   getshapb,bmatrixb,                                             ! bbar
+c*clater     &   ierr,errstrng)                                                 ! errcode
 c
-clater        if(ierr.ne.izero) return
+c*clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
 clater     &   A,pcg,zcg,dprev,                                               ! sparse
-clater     &   bextern,btraction,bgravity,bconcforce,bintern,                 ! force
-clater     &   bresid,bwork,dispvec,nforce,grav,                              ! force
+clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwork,    ! force
+clater     &   dispvec,nforce,grav,                                           ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
 clater     &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
 clater     &   nfault,dfault,tfault,                                          ! fault
@@ -538,31 +526,14 @@ clater     &   skew,                                                          ! 
 clater     &   ncodat,nunits,nprint,                                          ! ioinfo
 clater     &   getshapb,bmatrixb,gload_cmp_ld,elas_strs_cmp_ld,               ! external
 clater     &   elas_strs_mat_cmp_ld,                                          ! external
-clater     &   iterateEvent,                                                  ! PETSc logging
 clater     &   ierr,errstrng)                                                 ! errcode
 c
 clater        if(ierr.ne.izero) return
 c
       end if
 c
-c...if ipstrs=1, equate prestresses with current stresses, and set
-c   displacements to zero
-c
-c*      if(nprestr.ne.0.and.ipstrs.eq.1) then
-c*        call fill(d,zero,ndof*numnp)
-c*        call fill(dx,zero,ndof*numnp)
-c*        call fill(deld,zero,ndof*numnp)
-c*        call fill(deldx,zero,ndof*numnp)
-c*        call fill(dcur,zero,ndof*numnp)
-c*        call fill(dxcur,zero,ndof*numnp)
-c*        call fill(deps,zero,nstr*ngauss*numel)
-c*        call eqstrsql(st0,stn,x,gauss,ien,infin,nstr,ngauss,nppts,numel,
-c*     &   nen,nsd,numnp,idout,kto,kw)
-c*      end if
-c*********Note:  in the near future, all of the calls below should be
-c*********replaced by a single modular output section.
-c
 c...print all displacements, including faulted and slippery nodes
+c*    note that the following are all debugging calls, for now
 c
       time=zero
       if(idsk.eq.ione) write(kp,700) nstep
@@ -613,18 +584,23 @@ c
       if(idout.ne.0) close(kw)
       close(kp)
 c
-600   format(//,'Beginning elastic solution:',/)
+c...  copy stresses into initial stress array
+c
+      call get_initial_stress(state,state0,infiel,nstatesz,nstatesz0,
+     & numelt,infmat,infmatmod,numat,nstate0,infetype)
+      
+c
+600   format(//,'Beginning prestress computation:',/)
 650   format(//,"Reforming the stiffness matrix:",/)
 700   format('STEP ',i5)
 800   format(/," Total number of equilibrium iterations        = ",i7,/,
      &         " Total number of stiffness matrix reformations = ",i7,/,
      &         " Total number of displacement subiterations    = ",i7)
-      call PetscLogStagePop(ierr)
       return
       end
 c
 c version
-c $Id: elastc.F,v 1.4 2005/03/11 04:07:41 knepley Exp $
+c $Id: autoprestr.F,v 1.1 2005/03/11 04:07:40 knepley Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -327,12 +327,10 @@ extern "C" {
 	       int *,
 	       int *);
 
-  void autoprestr_f(Mat *,
-                    double *,          // sparse
+  void autoprestr_f(Mat *,             // sparse
 		    double *,
 		    double *,
 		    double *,
-		    int *,
 		    double *,          // force
 		    double *,
 		    double *,
@@ -444,12 +442,10 @@ extern "C" {
 	             int *,
 	             char *,int);
 
-  void elastc_f(Mat *,
-                double *,          // sparse
+  void elastc_f(Mat *,             // sparse
 		double *,
 		double *,
 		double *,
-		int *,
 		double *,          // force
 		double *,
 		double *,
@@ -607,7 +603,6 @@ extern "C" {
 		int *);
 
   void makemsr_f(Mat *,
-                 int *,
 		 int *,
 		 int *,
 		 int *,
@@ -1092,12 +1087,10 @@ extern "C" {
 		    int,
 		    int);
 
-  void viscos_f(Mat *,
-                double *,          // sparse
+  void viscos_f(Mat *,             // sparse
 		double *,
 		double *,
 		double *,
-		int *,
 		double *,          // force
 		double *,
 		double *,
@@ -1282,6 +1275,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.12 2005/03/11 02:40:24 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.13 2005/03/11 04:07:42 knepley Exp $
 
 // End of file

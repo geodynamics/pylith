@@ -308,7 +308,6 @@ char pylithomop3d_makemsr__name__[] = "makemsr";
 PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 {
   PyObject* pyA;
-  PyObject* pyPointerToJa;
   PyObject* pyPointerToIndx;
   PyObject* pyPointerToLink;
   PyObject* pyPointerToNbrs;
@@ -316,9 +315,8 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
   int stiffnessMatrixSize;
   int workingArraySize;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOiii:makemsr",
+  int ok = PyArg_ParseTuple(args, "OOOOiii:makemsr",
                             &pyA,
-			    &pyPointerToJa,
 			    &pyPointerToIndx,
 			    &pyPointerToLink,
 			    &pyPointerToNbrs,
@@ -335,7 +333,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
     return 0;
   }
   Mat A = (Mat) PyCObject_AsVoidPtr(pyA);
-  int* pointerToJa = (int*) PyCObject_AsVoidPtr(pyPointerToJa);
   int* pointerToIndx = (int*) PyCObject_AsVoidPtr(pyPointerToIndx);
   int* pointerToLink = (int*) PyCObject_AsVoidPtr(pyPointerToLink);
   int* pointerToNbrs = (int*) PyCObject_AsVoidPtr(pyPointerToNbrs);
@@ -344,7 +341,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
   double averageNonzeroTermsPerRow = 0.0;
 
   makemsr_f(&A,
-            pointerToJa,
 	    pointerToIndx,
 	    pointerToLink,
 	    pointerToNbrs,
@@ -377,6 +373,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.6 2005/03/10 01:10:39 knepley Exp $
+// $Id: sparse.cc,v 1.7 2005/03/11 04:07:42 knepley Exp $
 
 // End of file
