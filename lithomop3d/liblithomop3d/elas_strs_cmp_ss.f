@@ -38,6 +38,7 @@ c
      & numelt,nconsz,                                                   ! elemnt
      & prop,infmat,nprop,matgpt,elas_strs,td_strs,                      ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
+     & rtimdat,ntimdat,rgiter,                                          ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
@@ -70,6 +71,12 @@ c
       double precision shj(nsd+1,nenmax,ngaussmax,netypes)
       double precision skew(nskdim,numnp)
 c
+c...  included dimension and type statements
+c
+      include "rtimdat_dim.inc"
+      include "rgiter_dim.inc"
+      include "ntimdat_dim.inc"
+c
 c...  intrinsic functions
 c
       intrinsic mod
@@ -83,6 +90,12 @@ c
       integer nmatel,nstate,ind,iel,indien,ietype,indstate,inddmat
       integer ngauss,nen,nee,l,indstateg,inddmatg
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
+c
+c...  included variable definitions
+c
+      include "rtimdat_def.inc"
+      include "rgiter_def.inc"
+      include "ntimdat_def.inc"
 c
 cdebug      write(6,*) "Hello from elas_strs_cmp_ss_f!"
 c
@@ -140,7 +153,7 @@ c
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.5 2004/06/24 16:40:52 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.6 2004/06/24 20:09:47 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
