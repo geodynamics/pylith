@@ -142,7 +142,7 @@ c...  loop over gauss points, compute stresses, and transfer them into
 c     scur
 c
         do l=1,ngauss
-          call elas_strs(dstate(1,indstateg),ee(nstr*(l-1)),
+          call elas_strs_mat(dstate(1,indstateg),ee(nstr*(l-1)),
      &     dmat(1,inddmatg),nstate)
           call dcopy(nstr,dstate(1,indstateg),ione,scur(nstr*(l-1)),
      &     ione)
@@ -179,7 +179,7 @@ c
       end
 c
 c version
-c $Id: elas_strs_mat_cmp_ss.f,v 1.4 2004/07/08 21:38:09 willic3 Exp $
+c $Id: elas_strs_mat_cmp_ss.f,v 1.5 2004/07/21 16:22:58 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
