@@ -36,15 +36,15 @@ c      program to transform linked list into modified sparse row format
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
       integer neq,nnz,iwork,nmin,nmax
       integer ja(nnz),indx(neq),link(iwork),nbrs(iwork)
       double precision wavg
-c
-c...  defined constants
-c
-      include "nconsts.inc"
 c
 c...  intrinsic functions
 c
@@ -56,17 +56,17 @@ c
 c
       call ifill(ja,izero,nnz)
       ja(1)=neq+2
-      nmin=1
-      nmax=1
+      nmin=ione
+      nmax=ione
       wavg=neq
       do i=1,neq
         loc=indx(i)
-        ncol=0
+        ncol=izero
  20     continue
         ja(ja(i)+ncol)=nbrs(loc)
-        ncol=ncol+1
+        ncol=ncol+ione
         loc=link(loc)
-        if(loc.gt.0) goto 20
+        if(loc.gt.izero) goto 20
         nmin=min(nmin,ncol)
         nmax=max(nmax,ncol)
         wavg=wavg+dble(ncol)
@@ -78,12 +78,12 @@ c
       end do
       nmin=nmin+1
       nmax=nmax+1
-      if(neq.ne.0) wavg=wavg/dble(neq)
+      if(neq.ne.izero) wavg=wavg/dble(neq)
       return
       end
 c
 c version
-c $Id: makemsr.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: makemsr.f,v 1.2 2004/07/07 18:38:30 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
