@@ -23,14 +23,14 @@ include math/default.def
 
     EXT_F77 = f
     PROJ_F77_INCLUDES = ./includes
-    PROJ_LIBRARIES += $(MATH_LIBS)
+    # PROJ_LIBRARIES += $(MATH_LIBS)
 
 # C++
 
     PROJ_CXX_FLAGS += $(CXX_SOFLAGS)
-    PROJ_LCXX_FLAGS += $(LCXX_SARFLAGS)
+    PROJ_LCXX_FLAGS += $(LCXX_FORTRAN) $(MATH_LIBS)
 
 # version
-# $Id: local.def,v 1.2 2004/08/18 21:05:01 willic3 Exp $
+# $Id: local.def,v 1.3 2005/01/19 20:06:59 willic3 Exp $
 
 # End of file
