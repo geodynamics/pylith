@@ -63,7 +63,7 @@ c...  subroutine arguments
 c
       integer nen,ngauss,maxvfamilies,nvfamilies,nprestrflag,numelv
       integer numnp,nstatesz,nstatesz0,npropsz,kr,kw,kp,idout,idsk,ierr
-      integer infmatmod(6,nmatmodmax),ivflist(2,maxvfamilies)
+      integer infmatmod(6,nmatmodmax),ivflist(3,maxvfamilies)
       integer ivfamily(5,nvfamilies),ivftmp(nvfamilies),ien(nen,numelv)
       character ifile*(*),ofile*(*),pfile*(*),errstrng*(*)
 c
@@ -84,6 +84,12 @@ c
 cdebug      integer idb,jdb
 c
 cdebug      write(6,*) "Hello from read_connect_f!"
+cdebug      write(6,*) "nen,ngauss,maxvfamilies,nvfamilies,nprestrflag:"
+cdebug      write(6,*) nen,ngauss,maxvfamilies,nvfamilies,nprestrflag
+cdebug      write(6,*) "numelv,numnp,nstatesz,nstatesz0,npropsz,kr,kw,kp:"
+cdebug      write(6,*) numelv,numnp,nstatesz,nstatesz0,npropsz,kr,kw,kp
+cdebug      write(6,*) "idout,idsk,ierr:"
+cdebug      write(6,*) idout,idsk,ierr
       call ifill(ien,izero,nen*numelv)
       call ifill(ivfamily,izero,5*nvfamilies)
       ifam=izero
@@ -99,6 +105,7 @@ c
 c...  set up element family information array (ivfamily)
 c
       do j=1,maxvfamilies
+cdebug        write(6,*) "j,ivflist:",j,ivflist(1,j),ivflist(2,j)
         if(ivflist(1,j).ne.izero) then
           ifam=ifam+ione
           if(ifam.eq.ione) then
@@ -107,7 +114,7 @@ c
             ivftmp(ifam)=ivftmp(ifam-ione)+nelfamily
           end if
           nelfamily=ivflist(1,j)
-          matmod=ivflist(2,j)
+          matmod=ivflist(3,j)
           ivfamily(1,ifam)=nelfamily
           ivfamily(2,ifam)=matmod
           nstate=infmatmod(2,matmod)
@@ -120,6 +127,8 @@ c
           nstatesz=nstatesz+nstate*ngauss*nelfamily
           nstatesz0=nstatesz0+incstate0*nstate0*ngauss*nelfamily
           npropsz=npropsz+nprop
+cdebug          write(6,*) "ifam,ivftmp(ifam),nelfamily,matmod:"
+cdebug          write(6,*) ifam,ivftmp(ifam),nelfamily,matmod
         end if
       end do
 c
@@ -135,6 +144,8 @@ c
         read(kr,*,end=30,err=30) n,ietypev,imat,inf,(itmp(j),j=1,nen)
         ifam=imat
         matmod=ivfamily(2,ifam)
+cdebug        write(6,*) "i,n,ietypev,imat,inf,ifam,matmod:"
+cdebug        write(6,*) i,n,ietypev,imat,inf,ifam,matmod
 c
 c...  check for illegal element type
 c
@@ -277,7 +288,7 @@ c
       end
 c
 c version
-c $Id: read_connect.f,v 1.7 2005/03/28 19:53:38 willic3 Exp $
+c $Id: read_connect.f,v 1.8 2005/04/01 23:24:41 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
