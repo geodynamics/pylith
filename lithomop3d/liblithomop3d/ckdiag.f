@@ -36,14 +36,14 @@ c   stiffness matrix
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "rconsts.inc"
+c
 c...  subroutine arguments
 c
       integer nzero,neq,nnz,idout,kto,kw
       double precision alnz(nnz)
-c
-c...  defined constants
-c
-      include "rconsts.inc"
 c
 c...  local variables
 c
@@ -70,7 +70,7 @@ c
       end
 c
 c version
-c $Id: ckdiag.f,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: ckdiag.f,v 1.2 2004/06/18 15:22:21 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
