@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -42,8 +41,6 @@ c...  parameter definitions
 c
       include "nconsts.inc"
       include "rconsts.inc"
-      double precision alpha
-      parameter(alpha=-1.0d0)
 c
 c...  subroutine arguments
 c
@@ -51,6 +48,11 @@ c
       double precision bextern(nextflag*neq),btraction(ntractflag*neq)
       double precision bgravity(ngravflag*neq),bconcforce(nconcflag*neq)
       double precision bintern(neq),bresid(neq)
+c
+c...  local constants
+c
+      double precision alpha
+      data alpha/-1.0d0/
 c
 cdebug      integer idb
 c
@@ -91,7 +93,7 @@ cdebug      write(6,*) (bresid(idb),idb=1,200)
       end
 c
 c version
-c $Id: bsum.f,v 1.2 2005/02/23 23:50:57 willic3 Exp $
+c $Id: bsum.f,v 1.3 2005/04/08 00:30:36 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
