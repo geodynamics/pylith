@@ -66,6 +66,7 @@ c
 c
 cdebug      write(6,*) "Hello from ckdiag_f!"
 c
+cdebug      call MatView(A, PETSC_VIEWER_STDOUT_SELF, ierr)
       call MatGetSize(A, rows, cols, ierr)
       call VecCreate(MPI_COMM_WORLD, diag, ierr)
       call VecSetSizes(diag, PETSC_DECIDE, rows, ierr)
@@ -90,7 +91,7 @@ cdebug        write(6,*) "i,array(i):",i,array(i+offset)
       end
 c
 c version
-c $Id: ckdiag.F,v 1.2 2005/04/01 23:25:40 willic3 Exp $
+c $Id: ckdiag.F,v 1.3 2005/04/08 00:33:11 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
