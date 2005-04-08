@@ -62,7 +62,7 @@ c
 c... local variables
 c
       integer i,j
-      integer lmxt(neemax)
+      integer lmp(neemax),lmxpa(neemax)
       double precision signi,signj
       logical slip
 c
@@ -74,11 +74,10 @@ c
       do i=1,nee
 cdebug        write(6,*) "i,lm(i),s(i,i):",i,lm(i),s(i,i)
         if(lmx(i).ne.izero) slip=.true.
-        lm(i) = lm(i) - 1
-        lmxt(i) = abs(lmx(i))-1
-        lmx(i) = lmx(i) - 1
+        lmp(i) = lm(i) - 1
+        lmxpa(i) = abs(lmx(i))-1
       end do
-      call MatSetValues(A, nee, lm, nee, lm, s, ADD_VALUES, ierr)
+      call MatSetValues(A, nee, lmp, nee, lmp, s, ADD_VALUES, ierr)
       if(slip) then
         do i=1,nee
           signi=sign(one,dble(lmx(i)))
@@ -86,14 +85,14 @@ cdebug        write(6,*) "i,lm(i),s(i,i):",i,lm(i),s(i,i)
             stemp(i,j) = signi*s(i,j)
           end do
         end do
-        call MatSetValues(A, nee, lmxt, nee, lm,stemp, ADD_VALUES, ierr)
+        call MatSetValues(A, nee,lmp, nee,lmxpa,stemp, ADD_VALUES, ierr)
         do i=1,nee
           do j=1,nee
             signj=sign(one,dble(lmx(j)))
             stemp(i,j) = signj*s(i,j)
           end do
         end do
-        call MatSetValues(A, nee, lm, nee, lmxt,stemp, ADD_VALUES, ierr)
+        call MatSetValues(A, nee,lmxpa, nee,lmp,stemp, ADD_VALUES, ierr)
         do i=1,nee
           signi=sign(one,dble(lmx(i)))
           do j=1,nee
@@ -101,17 +100,13 @@ cdebug        write(6,*) "i,lm(i),s(i,i):",i,lm(i),s(i,i)
             stemp(i,j) = signi*signj*s(i,j)
           end do
         end do
-        call MatSetValues(A, nee, lmxt,nee,lmxt,stemp, ADD_VALUES, ierr)
+        call MatSetValues(A,nee,lmxpa,nee,lmxpa,stemp, ADD_VALUES, ierr)
       end if
-      do i=1,nee
-        lm(i) = lm(i) + 1
-        lmx(i) = lmx(i) + 1
-      end do
       return
       end
 c
 c version
-c $Id: addstf.F,v 1.5 2005/04/05 22:52:25 willic3 Exp $
+c $Id: addstf.F,v 1.6 2005/04/08 00:40:28 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
