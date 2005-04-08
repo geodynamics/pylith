@@ -50,6 +50,12 @@ c...  local variables
 c
       integer i,j,k
 c
+cdebug      integer idb
+c
+cdebug      write(6,*) "Hello from disp_f!"
+c
+cdebug      write(6,*) "b:",(b(idb),idb=1,neq)
+c
       do i=1,ndof
         do j=1,numnp
           k=id(i,j)
@@ -60,7 +66,7 @@ c
       end
 c
 c version
-c $Id: disp.f,v 1.2 2004/06/18 15:25:16 willic3 Exp $
+c $Id: disp.f,v 1.3 2005/04/08 00:33:52 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

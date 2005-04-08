@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -58,9 +57,14 @@ c
       double precision sgn
       logical*4 slip
 c
+cdebug      integer idb
+c
+cdebug      write(6,*) "Hello from addsn_f!"
+c
       do i=1,nen
         k=ien(i)
         slip=.false.
+cdebug        write(6,*) "i,k,lmx:",i,k,(lmx(idb,i),idb=1,ndof)
         do j=1,ndof
           if(lmx(j,i).ne.izero) then
             slip=.true.
@@ -71,13 +75,14 @@ c
           do j=1,ndof
             dl(j,i)=dl(j,i)+sgn*dx(j,k)
           end do
+cdebug          write(6,*) "sgn,dl:",sgn,(dl(idb,i),idb=1,ndof)
         end if
       end do
       return
       end
 c
 c version
-c $Id: addsn.f,v 1.3 2004/07/06 20:12:00 willic3 Exp $
+c $Id: addsn.f,v 1.4 2005/04/08 00:34:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
