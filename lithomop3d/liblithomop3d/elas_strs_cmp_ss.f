@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -101,7 +100,7 @@ c...  local variables
 c
       integer ielf,incstate0,indstate0,l
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
-cdebug      integer idb
+cdebug      integer idb,jdb
 c
 c...  included variable definitions
 c
@@ -128,15 +127,13 @@ c
         call lcoord(x,xl,ien(1,ielf),nen,numnp)
         call ldisp(dl,d,ien(1,ielf),nen,numnp)
         if(numfn.ne.0) call adfldp(dl,lmf(1,ielf),tfault,nen,numfn)
-        if(numslp.ne.0) call addsn(dl,dx,ien,lmx(1,ielf),nen,numnp)
-cdebug        write(6,*) "xl:",(xl(idb),idb=1,nsd*nen)
-cdebug        write(6,*) "dl:",(dl(idb),idb=1,ndof*nen)
+        if(numslp.ne.0) call addsn(dl,dx,ien(1,ielf),lmx(1,ielf),nen,
+     &   numnp)
 c
 c...  compute strains
 c
         call bdeld_ss(xl,dl,sh,shj,ee,det,gauss,ielg,nen,nee,ngauss,
      &   getshape,bmatrix,ierr,errstrng)
-cdebug        write(6,*) "ee:",(ee(idb),idb=1,nstr*ngauss)
         if(ierr.ne.izero) return
 c
 c...  loop over gauss points, compute stresses, and transfer them into
@@ -148,25 +145,22 @@ c
      &     nstate,nstate0,ierr,errstrng)
           if(ierr.ne.izero) return
         end do
-cdebug        write(6,*) "scur:",(scur(idb),idb=1,nstr*ngauss)
 c
 c...  compute equivalent nodal loads
 c
         call fill(p,zero,nee)
         call eforce(xl,sh,shj,det,gauss,scur,p,ielg,nen,ngauss,getshape,
      &   bmatrix,ierr,errstrng)
-cdebug        write(6,*) "p:",(p(idb),idb=1,nee)
         if(ierr.ne.izero) return
         if(numrot.ne.izero) call rpforc(p,skew,ien(1,ielf),numnp,nen)
         call addfor(bintern,p,lm(1,ielf),lmx(1,ielf),neq,nee)
-cdebug        write(6,*) "bintern:",(bintern(idb),idb=1,neq)
         ielg=ielg+ione
       end do
       return
       end
 c
 c version
-c $Id: elas_strs_cmp_ss.f,v 1.15 2005/03/19 01:49:49 willic3 Exp $
+c $Id: elas_strs_cmp_ss.f,v 1.16 2005/04/08 00:37:25 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
