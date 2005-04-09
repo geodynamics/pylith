@@ -29,16 +29,15 @@
 #
 
 test: clean
-        lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=bm1 -lm3dscan.ascii Output=full -lm3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9
-        # lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=bm1 -lm3dscan.ascii Output=full -lm3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9 -start_in_debugger noxterm
-
+	lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=bm1 -lm3dscan.asciiOutput=full -lm3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9
+	# lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=bm1 -lm3dscan.asciiOutput=full -lm3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -start_in_debugger noxterm
 
 clean::
 	$(RM_F) bm1.ascii bm1.plot bm1*.inp
 
 
 # version
-# $Id: Make.mm,v 1.2 2005/04/08 18:29:06 willic3 Exp $
+# $Id: Make.mm,v 1.3 2005/04/08 19:10:49 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
