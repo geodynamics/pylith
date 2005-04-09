@@ -975,6 +975,11 @@ class Lithomop3d_setup(Component):
             self.numberNodes,
             self.totalNumberSlipperyNodes)
 
+        self.pointerToIpslp = lithomop3d.allocateInt(
+            self.numberSlipNeighbors*self.totalNumberSlipperyNodes)
+        self.memorySize += self.numberSlipNeighbors* \
+                           self.totalNumberSlipperyNodes*self.intSize
+
 
         # If there are slippery nodes and the auto-rotation option is selected, find
         # neighboring nodes on the fault so that a best-fit plane can be determined at
@@ -992,11 +997,6 @@ class Lithomop3d_setup(Component):
             self.pointerToItmp2 = lithomop3d.allocateInt(
                 self.totalNumberSlipperyNodes)
 	    self.memorySize += self.totalNumberSlipperyNodes*self.intSize
-
-            self.pointerToIpslp = lithomop3d.allocateInt(
-                self.numberSlipNeighbors*self.totalNumberSlipperyNodes)
-            self.memorySize += self.numberSlipNeighbors* \
-                               self.totalNumberSlipperyNodes*self.intSize
             lithomop3d.nfind(
                 self.pointerToX,
                 self.pointerToXtmp,
@@ -1445,6 +1445,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.23 2005/04/05 23:07:26 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.24 2005/04/08 17:38:16 willic3 Exp $
 
 # End of file 
