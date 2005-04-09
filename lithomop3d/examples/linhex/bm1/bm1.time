@@ -53,12 +53,11 @@
 # size, with units of time.  I generally make sure everything is
 # converted to seconds, although I frequently specify time in years.
 #
-# Time step information for SCEC benchmark 1.
+# Time step information for split brick problem (elastic).
 #
 #
 time_units = year  # This should be converted to seconds.
 #
 # n maxstp delt alfa maxit ntdinit lgdef utol     ftol    etol  itmax
 #
-  0   1   0.e+0  5.e-1 1001   4      0  1.0e+00  1.0e+0  1.0e+00 1
-  1 100   0.1    5.e-1 1001  -1      0  1.0e+00  1.0e+0  1.0e+00 1
+  0   1   0.e+0  5.e-1 1001   4      0  1.0e+00  1.0e+00 1.0e+00 1

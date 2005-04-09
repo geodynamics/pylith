@@ -5,7 +5,7 @@
 # With the present implementation, there should not be any spaces
 # before the keyword.
 #
-# Non-default parameters to be used for SCEC BM 2.
+# Non-default parameters to be used for SCEC BM 1.
 #
 # Scaling factors applied to Winkler forces.  These factors may be
 # used as a quick and easy way of changing the density or gravitational
@@ -26,36 +26,12 @@
 #
 #
 # Parameters controlling the solution of the linear problem at each
-# iteration.  At present, the only solution method is preconditioned
-# conjugate gradients.  The user can select the preconditioner type,
-# the maximum number of iterations, and the factors controlling
-# convergence.  Preconditioner types are as follows:
-#    diagonalNoUpdate:      Diagonal preconditioning with an initial
-#                           guess of zero for the displacement vector.
-#    gaussSeidelNoUpdate:   Symmetrized Gauss-Seidel preconditioner with
-#                           an initial guess of zero for the displacement
-#                           vector.
-#    diagonalUpdate:        Diagonal preconditioning with an initial
-#                           guess for the displacement vector corresponding
-#                           to the displacement vector from the previous
-#                           time step.
-#    gaussSeidelUpdate:     Symmetrized Gauss-Seidel preconditioner with
-#                           an initial guess for the displacement vector
-#                           corresponding to the displacement vector from
-#                           the previous time step.
+# iteration.  This is now all controlled by PETSc command-line
+# arguments.  The only option now specified in this file is whether to
+# use the solution from the previous time step as the starting guess
+# for the current time step.
 #
-#    Note that the diagonal preconditioners generally require more iterations,
-#    but at less computational cost per iteration.  In theory, the more
-#    complex preconditioner should work better for more irregular meshes.
-#
-#preconditionerType = "diagonalNoUpdate"
-#maxPcgIterations = 3000
-#displacementAccuracyMult = 1.0
-#forceAccuracyMult = 1.0
-#energyAccuracyMult = 1.0
-#minDisplacementAccuracy = 1.0e-8
-#minForceAccuracy = 1.0e-8
-#minEnergyAccuracy = 1.0e-14
+#usePreviousDisplacementFlag = 0
 #
 #
 # Quadrature order for the problem.  The options are:
@@ -70,7 +46,7 @@
 #                       the strain-displacement matrix.  This can be
 #                       useful in nearly-incompressible problems.
 #
-#quadratureOrder = "Full"
+#quadratureOrder = Full
 #
 #
 # Gravitational acceleration in each direction.
@@ -81,15 +57,17 @@
 #
 #
 # Factors controlling computation of prestresses.  When gravity is being
-# used, an automatic computation option may be used, using an alternate
-# value for Poisson's ratio.  If prestressAutoComputePoisson is set to a
-# negative value, the original Poisson's ratio is used.  Each prestress
-# component may also be scaled.  This option is only useful if the
-# prestresses are read from a file (and not automatically computed).
+# used, an automatic computation option may be used, with the option of
+# using alternative values for Poisson's ratio and Young's modulus.
+# Each prestress component may also be scaled.  This option is only
+# useful if the prestresses are read from a file (and not automatically
+# computed).
 #
 #prestressAutoCompute = False
-#prestressQuadrature = 1
-#prestressAutoComputePoisson = -0.49
+#prestressAutoChangeElasticProperties = False
+#prestressAutoComputePoisson = 0.49
+#prestressAutoComputeYoungs = 1.0e30*Pa
+#
 #prestressScaleXx = 1.0
 #prestressScaleYy = 1.0
 #prestressScaleZz = 1.0
@@ -117,3 +95,4 @@
 #f77FileInput = 10
 #f77AsciiOutput = 11
 #f77PlotOutput = 12
+#f77UcdOutput = 13
