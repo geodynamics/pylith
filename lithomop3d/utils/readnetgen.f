@@ -308,6 +308,7 @@ c
           do j=1,nsd
             sgn=sign(1.0d0,fsplit(j,kk,i))
             isn(j)=nint(sgn)
+            if(fsplit(j,kk,i).eq.0.0d0) isn(j)=0
           end do
           do j=1,nfltnodes
             do k=1,nelsf(j)
