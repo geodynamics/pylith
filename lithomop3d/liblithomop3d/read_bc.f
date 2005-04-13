@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -30,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine read_bc(bond,dscale,vscale,fscale,ibond,numnp,
-     & numbc,nconcforce,kr,kw,idout,bcfile,ofile,ierr,errstrng)
+     & numbc,nconcforce,kr,bcfile,ierr,errstrng)
 c
 c...  subroutine to read in boundary conditions.  The bc types are
 c     stored in the ibond array and the bc value is stored in the bond
@@ -55,36 +54,31 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,numbc,nconcforce,kr,kw,idout,ierr
+      integer numnp,numbc,nconcforce,kr,ierr
       integer ibond(ndof,numnp)
       double precision bond(ndof,numnp)
       double precision dscale,vscale,fscale
-      character bcfile*(*),ofile*(*),errstrng*(*)
+      character bcfile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
-      include "labeld_dim.inc"
 c
 c...  local constants
 c
-      character ltype(4)*4
-      data ltype/'free','disp','velo','forc'/
 c
 c...  intrinsic functions
 c
-      intrinsic mod,index
+      intrinsic index
 c
 c...  local variables
 c
       integer ihist(3),itype(3)
-      integer i,j,n,nlines,npage,imode
+      integer i,j,n,imode
       double precision scale(4)
       character dummy*80
-      logical nonzed
 c
 c...  included variable definitions
 c
-      include "labeld_def.inc"
 c
 c...  open input file and define scaling factors
 c
@@ -134,37 +128,6 @@ c
       end do
       close(kr)
 c
-c...  output BC to ascii file, if requested
-c
-      if(idout.gt.0) then
-        open(kw,file=ofile,status="old",access="append")
-        write(kw,1000) (labeld(i),i=1,ndof)
-        write(kw,2000)
-	nlines=0
-        npage=50
-        do n=1,numnp
-          nonzed=.false.
-          do i=1,ndof
-            if(ibond(i,n).ne.0) nonzed=.true.
-          end do
-          if(nonzed) then
-            nlines=nlines+1
-            if(mod(nlines,npage).eq.0) then
-              write(kw,1000) (labeld(i),i=1,ndof)
-              write(kw,2000)
-            end if
-            do i=1,ndof
-              imode=ibond(i,n)
-              ihist(i)=imode/10
-              itype(i)=imode-10*ihist(i)
-            end do
-            write(kw,3000) n,(bond(i,n),ltype(itype(i)+1),ihist(i),
-     &       i=1,ndof)
-          end if
-        end do
-        close(kw)
-      end if
-c
 c...  normal return
 c
       return
@@ -185,22 +148,10 @@ c
         close(kr)
         return
 c
-1000  format(1x,///,'  n o d a l   f o r c e s   a n d   d i s p l a',
-     1 ' c e m e n t s',//,
-     2 '      key to boundary condition codes:',//,
-     3 '          free = unconstrained degree of freedom; the',/,
-     4 '                 numerical value is meaningless.',/,
-     5 '          disp = fixed displacement',/,
-     6 '          velo = constant velocity',/,
-     7 '          forc = applied (constant) force',//,
-     8 '      hfac = load history factor applied (0 if none)',///,
-     9 ' node # ',3(4x,a4,6x,'type  hfac  '))
-2000  format(' ')
-3000  format(1x,i7,2x,3(1pe12.5,2x,a4,1x,i3,4x))
       end
 c
 c version
-c $Id: read_bc.f,v 1.4 2005/03/12 01:59:39 willic3 Exp $
+c $Id: read_bc.f,v 1.5 2005/04/12 22:33:27 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
