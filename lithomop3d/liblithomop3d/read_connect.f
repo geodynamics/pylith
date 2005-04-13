@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_connect(ien,mat,infin,nen,numelv,numnp,nvfamilies,
+      subroutine read_connect(ien,mat,nen,numelv,numnp,nvfamilies,
      & kr,ifile,ierr,errstrng)
 c
 c      this subroutine reads element types and connectivities, material
@@ -55,7 +55,7 @@ c
 c...  subroutine arguments
 c
       integer nen,numelv,numnp,nvfamilies,kr,ierr
-      integer ien(nen,numelv),mat(numelv),infin(numelv)
+      integer ien(nen,numelv),mat(numelv)
       character ifile*(*),errstrng*(*)
 c
 c...  local variables
@@ -66,7 +66,7 @@ c
 c
 c...  local variables
 c
-      integer i,j,n,ietypev
+      integer i,j,n,ietypev,infin
 cdebug      integer idb,jdb
 c
 cdebug      write(6,*) "Hello from read_connect_f!"
@@ -79,7 +79,7 @@ c
       open(kr,file=ifile,status="old",err=20)
       call pskip(kr)
       do i=1,numelv
-        read(kr,*,end=30,err=30) n,ietypev,mat(i),infin(i),
+        read(kr,*,end=30,err=30) n,ietypev,mat(i),infin,
      &   (ien(j,i),j=1,nen)
 c
 c...  check for illegal element type
@@ -136,7 +136,7 @@ c
       end
 c
 c version
-c $Id: read_connect.f,v 1.10 2005/04/12 23:17:42 willic3 Exp $
+c $Id: read_connect.f,v 1.11 2005/04/13 00:37:51 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
