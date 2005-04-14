@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -29,8 +28,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_ucd_node_vals(d,deld,deltp,nstep,numnp,kucd,
-     & ucdroot,iprestress)
+      subroutine write_ucd_node_vals(d,deld,tfault,dfault,nfault,numfn,
+     & dx,deldx,idslp,numsn,deltp,nstep,numnp,kucd,ucdroot,iprestress)
 c
 c...  Specialized routine to output displacement info for SCEC
 c     benchmarks.
@@ -38,10 +37,12 @@ c     This routine creates the nodal value portion of the UCD file for
 c     each time step, including the header information.  Note that a
 c     complete UCD file is formed by concatenating the mesh output from
 c     write_ucdmesh with the file created by this routine.
-c     At present, only the total displacements are written.  In the near
+c     At present, displacements and velocities are written.  In the near
 c     future, the variable idispout should be used to determine whether
 c     to output displacements, displacement increments, and/or
 c     velocities.
+c     Note also that the split node output is not really a UCD file,
+c     since it contains both node and element information.
 c
       include "implicit.inc"
 c
@@ -53,18 +54,23 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstep,numnp,kucd,iprestress
+      integer numfn,numsn,nstep,numnp,kucd,iprestress
+      integer nfault(3,numfn),idslp(numsn)
+      double precision deltp
+      double precision d(ndof,numnp),deld(ndof,numnp)
+      double precision tfault(ndof,numfn),dfault(ndof,numfn)
+      double precision dx(ndof,numnp),deldx(ndof,numnp)
       character ucdroot*(*)
-      double precision d(ndof,numnp),deld(ndof,numnp),deltp
 c
 c...  local constants
 c
       integer nnvals
-      parameter(nnvals=3)
+      parameter(nnvals=6)
       integer ival(nnvals)
-      data ival/1,1,1/
-      character dout(3)*9
-      data dout/"X-Displ,m","Y-Displ,m","Z-Displ,m"/
+      data ival/1,1,1,1,1,1/
+      character dout(nnvals)*9
+      data dout/"X-Displ,m","Y-Displ,m","Z-Displ,m",
+     &          "X-Vel,m/s","Y-Vel,m/s","Z-Vel,m/s"/
 c
 c...  external functions
 c
@@ -73,11 +79,17 @@ c
 c
 c...  local variables
 c
-      integer i,j,i1,i2
+      integer i,j,i1,i2,inode
+      double precision rmult
       character filenm*200,cstep*5
 c
 cdebug      write(6,*) "Hello from write_ucd_node_vals!"
 c
+      if(deltp.ne.zero) then
+        rmult=one/deltp
+      else
+        rmult=one
+      end if
       i1=nnblnk(ucdroot)
       i2=nchar(ucdroot)
       if(iprestress.eq.izero) then
@@ -98,14 +110,48 @@ c
 c...  write nodal displacements
 c
       do i=1,numnp
-        write(kucd,"(i7,3(2x,1pe15.8))") i,(d(j,i),j=1,ndof)
+        write(kucd,"(i7,6(2x,1pe15.8))") i,(d(j,i),j=1,ndof),
+     &   (rmult*deld(j,i),j=1,ndof)
       end do
       close(kucd)
+c
+c...  write split node displacements, if there are any
+c
+      if(numfn.ne.0) then
+        filenm=ucdroot(i1:i2)//".mesh.split.time."//cstep//".inp"
+        open(kucd,file=filenm,status="new")
+        write(kucd,"(7i7)") nnvals,(ival(i),i=1,nnvals)
+        do i=1,nnvals
+          write(kucd,"(a9)") dout(i)
+        end do
+        do i=1,numfn
+          write(kucd,"(2i7,6(2x,1pe15.8))") nfault(1,i),nfault(2,i),
+     &     (tfault(j,i),j=1,ndof),(rmult*dfault(j,i),j=1,ndof)
+        end do
+        close(kucd)
+      end if
+c
+c...  write slippery node displacements, if there are any
+c
+      if(numsn.ne.0) then
+        filenm=ucdroot(i1:i2)//".mesh.slip.time."//cstep//".inp"
+        open(kucd,file=filenm,status="new")
+        write(kucd,"(7i7)") nnvals,(ival(i),i=1,nnvals)
+        do i=1,nnvals
+          write(kucd,"(a9)") dout(i)
+        end do
+        do i=1,numsn
+          inode=idslp(i)
+          write(kucd,"(i7,6(2x,1pe15.8))") idslp(inode),
+     &     (dx(j,inode),j=1,ndof),(rmult*deldx(j,inode),j=1,ndof)
+        end do
+        close(kucd)
+      end if
       return
       end
 c
 c version
-c $Id: write_ucd_node_vals.f,v 1.3 2005/01/19 20:28:04 willic3 Exp $
+c $Id: write_ucd_node_vals.f,v 1.4 2005/04/14 01:01:22 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
