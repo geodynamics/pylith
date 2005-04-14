@@ -36,6 +36,7 @@
 #include "sparse.h"
 #include "exceptionhandler.h"
 #include "lithomop3d_externs.h"
+#include "petscdeveloper.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -200,17 +201,16 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
 
 #ifdef PETSC_VERSION_MAJOR
 #if PETSC_VERSION_MAJOR == 2
+
 #ifdef PETSC_VERSION_MINOR
 #if PETSC_VERSION_MINOR == 2
+
 #ifdef PETSC_VERSION_SUBMINOR
 #if PETSC_VERSION_SUBMINOR == 1
-#ifdef PETSC_VERSION_PATCH
-#if PETSC_VERSION_PATCH < 42
-  if (MatCreate(PETSC_COMM_WORLD, size, size, PETSC_DETERMINE, PETSC_DETERMINE, &A)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
-    return 0;
-  }
-#else
+
+#ifdef PETSC_DEVELOPER_VERSION
+#if PETSC_DEVELOPER_VERSION == 1
+
   if (MatCreate(PETSC_COMM_WORLD, &A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
     return 0;
@@ -219,10 +219,30 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
     PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Mat");
     return 0;
   }
+#else
+
+  if (MatCreate(PETSC_COMM_WORLD, size, size, PETSC_DETERMINE, PETSC_DETERMINE, &A)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
+    return 0;
+  }
 #endif
 #else
-#error "Unsupported PETSc version"
+
+  if (MatCreate(PETSC_COMM_WORLD, size, size, PETSC_DETERMINE, PETSC_DETERMINE, &A)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
+    return 0;
+  }
 #endif
+#elif PETSC_VERSION_SUBMINOR > 1
+
+  if (MatCreate(PETSC_COMM_WORLD, &A)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
+    return 0;
+  }
+  if (MatSetSizes(A, PETSC_DETERMINE, PETSC_DETERMINE, size, size)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Mat");
+    return 0;
+  }
 #else
 #error "Unsupported PETSc version"
 #endif
@@ -349,6 +369,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.11 2005/04/05 15:47:55 willic3 Exp $
+// $Id: sparse.cc,v 1.12 2005/04/13 22:02:38 willic3 Exp $
 
 // End of file
