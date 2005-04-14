@@ -30,7 +30,7 @@ c
 c
       subroutine sort_elements(ien,mat,infmatmod,ivflist,ivfamily,iens,
      & ivftmp,indxiel,nen,ngauss,maxvfamilies,nvfamilies,nprestrflag,
-     & numelv,numnp,nstatesz,nstatesz0,npropsz,kr,ifile,ierr,errstrng)
+     & numelv,numnp,nstatesz,nstatesz0,npropsz,ierr,errstrng)
 c
 c      This routine sorts elements into element families and determines
 c      several sizes.
@@ -54,8 +54,6 @@ c        nprestrflag:      Prestress flag.  This is equal to 1 if
 c                          prestresses are being used.
 c        numelv:           Total number of volume elements.
 c        numnp:            Total number of nodes.
-c        kr:               Unit number for input file.
-c        ifile:            File name of input file.
 c        ien(nen,numelv):  Initial (unsorted) element node array.
 c                          This array may be deleted after use.
 c        mat(numelv):      Material type of each element.
@@ -120,11 +118,11 @@ c
 c...  subroutine arguments
 c
       integer nen,ngauss,maxvfamilies,nvfamilies,nprestrflag,numelv
-      integer numnp,nstatesz,nstatesz0,npropsz,kr,ierr
+      integer numnp,nstatesz,nstatesz0,npropsz,ierr
       integer ien(nen,numelv),mat(numelv),infmatmod(6,nmatmodmax)
       integer ivflist(3,maxvfamilies),ivfamily(5,nvfamilies)
       integer iens(nen,numelv),ivftmp(nvfamilies),indxiel(numelv)
-      character ifile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  local variables
 c
@@ -209,7 +207,7 @@ c
       end
 c
 c version
-c $Id: sort_elements.f,v 1.1 2005/04/13 00:23:53 willic3 Exp $
+c $Id: sort_elements.f,v 1.2 2005/04/14 00:55:02 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
