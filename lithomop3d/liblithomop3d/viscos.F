@@ -621,7 +621,8 @@ c
             if(fulout) then
               call printd(d,deld,deltp,idslp,numnp,numnp,ione,
      &         idout,idsk,kto,kw,kp)
-              call write_ucd_node_vals(d,deld,deltp,nstep,numnp,kucd,
+              call write_ucd_node_vals(d,deld,tfault,dfault,nfault,
+     &         numfn,dx,deldx,idslp,numsn,deltp,nstep,numnp,kucd,
      &         ucdroot,iprestress)
               call printf(tfault,dfault,deltp,nfault,numfn,idout,
      &         idsk,kw,kp)
@@ -671,7 +672,7 @@ c
       end
 c
 c version
-c $Id: viscos.F,v 1.8 2005/04/01 23:01:37 willic3 Exp $
+c $Id: viscos.F,v 1.9 2005/04/14 01:01:22 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
