@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -30,16 +29,14 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine read_diff(diforc,nslip,idhist,numslp,numdif,numnp,
-     & kr,kw,idout,difile,ofile,ierr,errstrng)
+     & kr,difile,ierr,errstrng)
 c
 c...  reads and prints differential forces applied to slippery nodes
 c
 c     Error codes:
 c         0:  No error
 c         1:  Error opening input file (if numdif.ne.zero)
-c         2:  Error opening output file (if numdif.ne.zero)
 c         3:  Read error
-c         4:  Read error
 c       109:  Differential force applied to non-slippery node
 c
       include "implicit.inc"
@@ -52,27 +49,24 @@ c
 c
 c...  subroutine arguments
 c
-      integer numslp,numdif,numnp,kr,kw,idout,ierr
+      integer numslp,numdif,numnp,kr,ierr
       integer nslip(nsdim,numslp),idhist(numnp)
       double precision diforc(ndof,numnp)
-      character difile*(*),ofile*(*),errstrng*(*)
+      character difile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
-      include "labeld_dim.inc"
 c
 c...  intrinsic functions
 c
-      intrinsic mod
 c
 c...  local variables
 c
-      integer nlines,npage,n,i,j
+      integer n,i,j
       logical slipry
 c
 c...  included variable definitions
 c
-      include "labeld_def.inc"
 c
 c...  open input file
 c
@@ -85,21 +79,9 @@ c
 c...  read differential force info and output results, if desired
 c
       call pskip(kr)
-      nlines=izero
-      npage=50
-      if(idout.gt.izero) open(kw,file=ofile,err=40,status="old",
-     & access="append")
       do i=1,numdif
         read(kr,*,end=30,err=30) n,idhist(n),(diforc(j,n),j=1,ndof)
         slipry=.false.
-        if(idout.gt.izero) then
-          nlines=nlines+1
-          if(nlines.eq.ione.or.mod(nlines,npage).eq.izero) then
-            write(kw,6000) (labeld(j),j=1,ndof)
-            write(kw,*) ' '
-          end if
-          write(kw,7000,err=50) n,idhist(n),(diforc(j,n),j=1,ndof)
-        end if
         do j=1,numslp
           if(n.eq.nslip(2,j)) slipry=.true.
         end do
@@ -110,7 +92,6 @@ c
         end if
       end do
       close(kr)
-      if(idout.gt.izero) close(kw)
 c
 c...  normal return
 c
@@ -132,29 +113,10 @@ c
         close(kr)
         return
 c
-c...  error opening output file
-c
- 40   continue
-        ierr=2
-        errstrng="read_diff"
-        close(kw)
-        return
-c
-c...  error writing to output file
-c
- 50   continue
-        ierr=4
-        errstrng="read_diff"
-        close(kw)
-        return
-c
- 6000 format(//' differential forces on slippery nodes'//
-     & 1x,'  node #   hfac  ',7x,6(a4,11x))
- 7000 format(1x,i7,3x,i7,3x,6(3x,1pe12.5))
       end
 c
 c version
-c $Id: read_diff.f,v 1.2 2004/07/12 14:34:29 willic3 Exp $
+c $Id: read_diff.f,v 1.3 2005/04/14 00:59:44 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -29,8 +28,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_hist(histry,times,nhist,lastep,kr,kw,idout,
-     & hfile,ofile,ierr,errstrng)
+      subroutine read_hist(histry,times,nhist,lastep,kr,hfile,
+     & ierr,errstrng)
 c
 c       reads load history definitions, constructs load histories
 c       and echos load histories to the output file.
@@ -39,9 +38,7 @@ c     Error codes:
 c         0:  No error
 c         1:  Error opening input file (only if nhist is greater than
 c             zero).
-c         2:  Error opening output file
 c         3:  Read error
-c         4:  Write error
 c       111:  Times given are out of order
 c
       include "implicit.inc"
@@ -53,14 +50,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer nhist,lastep,kr,kw,idout,ierr
+      integer nhist,lastep,kr,ierr
       double precision histry(nhist,lastep+1),times(lastep+1)
-      character hfile*(*),ofile*(*),errstrng*(*)
+      character hfile*(*),errstrng*(*)
 c
 c...  local constants
 c
-      character*1 star(30)
-      data star/30*'*'/
 c
 c...  intrinsic functions
 c
@@ -68,16 +63,10 @@ c
 c
 c... local variables
 c
-      double precision hloadp,time,hload,diff,diffc,dh,dt,dhdt,fmax,fmin
-      double precision fac,range,defval
-      integer i,npoints,j,k,kkp,kk,nstars,l
+      double precision hloadp,time,hload,diff,diffc,dh,dt,dhdt,defval
+      integer i,npoints,j,k,kkp,kk
 c
       ierr=izero
-      if(idout.gt.izero) then
-        open(kw,file=ofile,err=60,status="old",access="append")
-        write(kw,1000,err=70) nhist
-        if(nhist.eq.izero) close(kw)
-      end if
       if(nhist.eq.izero) return
 c
 c...  read load histories
@@ -85,7 +74,6 @@ c
       open(kr,file=hfile,status="old",err=20)
       call pskip(kr)
       do i=1,nhist
-        if(idout.gt.izero) write(kw,2000,err=70) i
         read(kr,*,end=30,err=30) npoints,defval
         do j=1,lastep+1
           histry(i,j)=defval
@@ -128,32 +116,8 @@ c
           hloadp=hload
           kkp=kk
         end do
-c
-c     echo load history and construct a miniplot
-c
-        if(idout.gt.0) then
-          fmax=-1.d32
-          fmin=1.d32
-          do j=1,lastep+1
-            fac=histry(i,j)
-            if(fac.gt.fmax) fmax=fac
-            if(fac.lt.fmin) fmin=fac
-          end do
-          if(fmin.gt.zero) fmin=zero
-          range=fmax-fmin
-          do j=1,lastep+1
-            if(range.ne.0) then
-              nstars=int(30.0d0*((histry(i,j)-fmin)/range)+.001d0)
-            else
-              nstars=30
-            end if
-            write(kw,3000,err=70) j-1,times(j),histry(i,j),
-     &       '|',(star(l),l=1,nstars)
-          end do
-        end if
       end do
       close(kr)
-      if(idout.gt.izero) close(kw)
 c
 c...  normal return
 c
@@ -175,32 +139,10 @@ c
         close(kr)
         return
 c
-c...  error opening output file
-c
- 60   continue
-        ierr=2
-        errstrng="read_hist"
-        close(kw)
-        return
-c
-c...  error writing to output file
-c
- 70   continue
-        ierr=4
-        errstrng="read_hist"
-        close(kw)
-        return
-c
-1000  format(///' l o a d   h i s t o r y   f a c t o r s'///,
-     &          ' number of load histories defined (nhist) ...',i2/)
-2000  format(// ' load history factor # ',i2//
-     1  '  time step       time            factor',
-     2 '               scaled miniplot'//)
-3000  format(2x,i5,7x,1pe12.4,4x,1pe12.4,5x,31a1)
       end
 c
 c version
-c $Id: read_hist.f,v 1.2 2004/07/12 18:10:27 willic3 Exp $
+c $Id: read_hist.f,v 1.3 2005/04/14 00:59:44 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

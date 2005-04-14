@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -29,8 +28,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_stateout(istatout,nstatout,kr,kw,kp,idout,idsk,
-     & stfile,ofile,pfile,ierr,errstrng)
+      subroutine read_stateout(istatout,nstatout,kr,stfile,
+     & ierr,errstrng)
 c
 c...     reads integer array indicating which state variables
 c        to output.  It is assumed that the same set of variables are
@@ -66,9 +65,7 @@ c
 c     Error codes:
 c         0:  No error
 c         1:  Error opening input file
-c         2:  Error opening output file
 c         3:  Read error
-c         4:  Write error
 c
       include "implicit.inc"
 c
@@ -79,13 +76,12 @@ c
 c
 c...  subroutine arguments
 c
-      integer kr,kw,kp,idout,idsk,ierr
+      integer kr,ierr
       integer istatout(nstatesmax,3),nstatout(3)
-      character stfile*(*),ofile*(*),pfile*(*),errstrng*(*)
+      character stfile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
-      include "labels_dim.inc"
 c
 c...  local variables
 c
@@ -93,7 +89,6 @@ c
 c
 c...  included variable definitions
 c
-      include "labels_def.inc"
 c
       ierr=izero
       call ifill(istatout,izero,3*nstatesmax)
@@ -110,38 +105,6 @@ c
      &   (istatout(j,i),j=1,nstatout(i))
       end do
       close(kr)
-c
-c...  output results, if desired
-c
-      if(idout.gt.izero) then
-        open(kw,file=ofile,err=40,status="old",access="append")
-        write(kw,700,err=50)
-        if(nstatout(1).ne.izero) then
-          write(kw,730,err=50) (labels(istatout(i,1)),i=1,nstatout(1))
-        end if
-        if(nstatout(2).ne.izero) then
-          write(kw,730,err=50) 
-     &     (labels(nstatesmax+istatout(i,2)),i=1,nstatout(2))
-        end if
-        if(nstatout(3).ne.izero) then
-          write(kw,730,err=50) 
-     &     (labels(2*nstatesmax+istatout(i,3)),i=1,nstatout(3))
-        end if
-        close(kw)
-      end if
-      if(idsk.eq.ione) then
-        open(kp,file=pfile,err=40,status="old",access="append")
-        do i=1,3
-          write(kp,810,err=50) nstatout(i),
-     &     (istatout(j,i),j=1,nstatout(i))
-        end do
-      end if
-      if(idsk.eq.itwo) then
-        open(kp,file=pfile,err=40,status="old",access="append",
-     &   form="unformatted")
-        write(kp,err=50) istatout
-      end if
-      close(kp)
 c
 c...  normal return
 c
@@ -163,34 +126,10 @@ c
         close(kr)
         return
 c
-c...  error opening output file
-c
- 40   continue
-        ierr=2
-        errstrng="read_stateout"
-        close(kw)
-        close(kp)
-        return
-c
-c...  error writing to output file
-c
- 50   continue
-        ierr=4
-        errstrng="read_stateout"
-        close(kw)
-        close(kp)
-        return
-c
- 700  format(//,
-     & " State variables to be output:",/)
- 730  format(4x,6(:1x,a11))
-c
- 810  format(16i5)
-c
       end
 c
 c version
-c $Id: read_stateout.f,v 1.6 2005/03/23 17:14:51 willic3 Exp $
+c $Id: read_stateout.f,v 1.7 2005/04/14 00:59:44 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
