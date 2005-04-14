@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -29,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine id_split(nfault,idftn,numnp,numfn,numflt,kp,idsk,pfile)
+      subroutine id_split(nfault,idftn,numnp,numfn,numflt)
 c
 c...  subroutine to store the node number of each split node in idftn.
 c     This routine needs to be called after nfault has been read
@@ -39,15 +38,14 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,numfn,numflt,kp,idsk
+      integer numnp,numfn,numflt
       integer nfault(3,numfn),idftn(numflt)
-      character pfile*(*)
 c
 c...  local variables
 c
       integer n,i,nn
 c
-c... find split nodes and store them in numflt
+c... find split nodes and store them in idftn
 c
       nn=0
       do n=1,numnp
@@ -61,24 +59,11 @@ c
  10     continue
       end do
 c
-c...  write results to plot file, if requested
-c
-      if(idsk.eq.1) then
-        open(kp,file=pfile,status="old",access="append")
-        write(kp,"(i7)") numflt
-      else if(idsk.eq.2) then
-        open(kp,file=pfile,status="old",access="append",
-     &   form="unformatted")
-        write(kp) numflt
-        if(numflt.ne.0) write(kp) (idftn(i),i=1,numflt)
-      end if
-      close(kp)
-c
       return
       end
 c
 c version
-c $Id: id_split.f,v 1.2 2004/08/25 01:12:48 willic3 Exp $
+c $Id: id_split.f,v 1.3 2005/04/14 00:56:09 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
