@@ -729,7 +729,7 @@ class Lithomop3d_setup(Component):
         self.pointerToIwink = None
         self.pointerToWink = None
 
-        # Split node ID array
+        # Split node ID array.  This can be deallocated after meshwrite function has been called.
         self.pointerToIdftn = None
 
         # Slippery node equation numbers and Winkler restoring force info
@@ -934,6 +934,10 @@ class Lithomop3d_setup(Component):
                            self.numberVolumeElements*self.intSize
         self.pointerToMat = None
 	self.memorySize -= self.numberVolumeElements*self.intSize
+        self.pointerToVolumeElementFamilyList = None
+        self.memorySize -= 3*self.maxNumberVolumeElementFamilies*self.intSize
+        self.pointerToIvftmp = None
+        self.memorySize -= self.numberVolumeElementFamilies*self.intSize
 
         # Sort traction BC (unimplemented at present).
 
@@ -1763,6 +1767,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.25 2005/04/15 00:16:36 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.26 2005/04/15 00:26:31 willic3 Exp $
 
 # End of file 
