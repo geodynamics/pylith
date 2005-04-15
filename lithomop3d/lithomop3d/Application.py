@@ -41,7 +41,12 @@ class Application(BaseScript):
 #        start = now()
         lm3dsetup = self.inventory.setup
         lm3dsetup.initialize(self.inventory.scanner)
-        lm3dsetup.run()
+        lm3dsetup.read()
+        lm3dsetup.numberequations()
+        lm3dsetup.sortmesh()
+        lm3dsetup.sparsesetup()
+        lm3dsetup.allocateremaining()
+        lm3dsetup.meshwrite()
         lm3drun = self.inventory.solver
         lm3drun.initialize(self.inventory.scanner, self.inventory.setup)
         lm3drun.run()
@@ -76,6 +81,6 @@ class Application(BaseScript):
 
 
 # version
-# $Id: Application.py,v 1.4 2005/03/11 02:15:07 willic3 Exp $
+# $Id: Application.py,v 1.5 2005/04/15 00:18:21 willic3 Exp $
 
 # End of file 
