@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -56,22 +55,23 @@ c
         open(kp,file=pfile,status="new",access="append")
         write(kp,2000) title
         write(kp,3000) ngem,numnp,nsd,ndof,nstr
+        close(kp)
       else if(idsk.eq.itwo) then
         open(kp,file=pfile,status="new",access="append",
      &   form="unformatted")
         write(kp) title
         write(kp) ngem,numnp,nsd,ndof,nstr
+        close(kp)
       end if
-      close(kp)
 c
       return
 c
  500  format(//,7x,
      x'******************************************************',/,7x,
      x'*                                                    *',/,7x,
-     x'*              LITHOMOP 0.7 OUTPUT                   *',/,7x,
+     x'*              LITHOMOP 0.71 OUTPUT                  *',/,7x,
      x'*                                                    *',/,7x,
-     x'*        Copyright 2004 by Charles A. Williams.      *',/,7x,
+     x'*        Copyright 2005 by Charles A. Williams.      *',/,7x,
      x'*          Rensselaer Polytechnic Institute.         *',/,7x,
      x'*                All rights reserved.                *',/,7x,
      x'*                                                    *',/,7x,
@@ -116,7 +116,7 @@ c
       end
 c
 c version
-c $Id: write_global_info.f,v 1.4 2004/11/01 20:42:04 willic3 Exp $
+c $Id: write_global_info.f,v 1.5 2005/04/16 00:47:07 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
