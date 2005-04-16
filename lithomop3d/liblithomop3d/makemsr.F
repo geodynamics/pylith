@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -66,13 +65,9 @@ c...  local variables
 c
       integer i,loc,ncol
 cdebug      integer idb
-cdebug      integer nmin,nmax
-cdebug      double precision wavg
 c
 cdebug      write(6,*) "Hello from makemsr_f!"
 c
-cdebug      write(6,*) "neq,nnz,iwork,nmin,nmax,wavg:",
-cdebug     & neq,nnz,iwork,nmin,nmax,wavg
       nmin=10000
       nmax=izero
       wavg=dble(neq)
@@ -94,8 +89,6 @@ cdebug     & neq,nnz,iwork,nmin,nmax,wavg
       nmin=nmin+ione
       nmax=nmax+ione
       if(neq.ne.izero) wavg=wavg/dble(neq)
-cdebug      write(6,*) "nmin,nmax,wavg,neq:",nmin,nmax,wavg,neq
-cdebug      call flush(6)
       call MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, ierr)
       call MatSeqAIJSetPreallocation(A, 0, row_array(row_offset+1),
      &                               ierr)
@@ -105,7 +98,7 @@ cdebug      call flush(6)
       end
 c
 c version
-c $Id: makemsr.F,v 1.2 2005/04/01 23:36:17 willic3 Exp $
+c $Id: makemsr.F,v 1.3 2005/04/16 00:43:31 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
