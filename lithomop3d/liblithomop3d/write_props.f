@@ -6,7 +6,6 @@ c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
 c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2005 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -169,7 +168,7 @@ c
 c...  normal return
 c
       if(idout.gt.izero) close(kw)
-      close(kp)
+      if(idsk.gt.izero) close(kp)
       return
 c
 c...  error opening output file
@@ -178,7 +177,7 @@ c
         ierr=2
         errstrng="write_props"
         if(idout.gt.izero) close(kw)
-        close(kp)
+        if(idsk.gt.izero) close(kp)
         return
 c
 c...  error writing to output file
@@ -187,7 +186,7 @@ c
         ierr=4
         errstrng="write_props"
         if(idout.gt.izero) close(kw)
-        close(kp)
+        if(idsk.gt.izero) close(kp)
         return
 c
  1000 format(1x,///,
@@ -201,7 +200,7 @@ c
       end
 c
 c version
-c $Id: write_props.f,v 1.5 2005/03/22 19:59:57 willic3 Exp $
+c $Id: write_props.f,v 1.6 2005/04/16 00:47:53 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
