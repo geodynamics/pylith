@@ -950,7 +950,7 @@ class Lithomop3d_setup(Component):
             self.numberVolumeElements)
 
         # Sort slippery node entries.
-        lithomop3d.sort_slippery_nodes(
+        lithomop3d.sort_slip_nodes(
             self.pointerToNslip,
             self.pointerToIndxiel,
             self.numberSlipperyNodeEntries,
@@ -1510,6 +1510,8 @@ class Lithomop3d_setup(Component):
         # Write out local coordinate rotations
         lithomop3d.write_skew(
             self.pointerToSkew,
+            self.numberRotationEntries,
+            self.autoRotateSlipperyNodesInt,
             self.numberNodes,
             self.f77AsciiOutput,
             self.asciiOutputInt,
@@ -1538,7 +1540,6 @@ class Lithomop3d_setup(Component):
             self.pointerToFtol,
             self.pointerToEtol,
             self.pointerToTimes,
-            self.timeScaleFactor,
             self.pointerToMaxstp,
             self.pointerToMaxit,
             self.pointerToNtdinit,
@@ -1591,6 +1592,9 @@ class Lithomop3d_setup(Component):
         # Write element info
         lithomop3d.write_element_info(
             self.numberVolumeElements,
+            self.numberVolumeElementNodes,
+	    self.numberVolumeElementGaussPoints,
+            self.volumeElementType,
             self.quadratureOrderInt,
             self.prestressAutoComputeInt,
             self.prestressAutoChangeElasticPropsInt,
@@ -1606,7 +1610,9 @@ class Lithomop3d_setup(Component):
             self.pointerToIvfamily,
             self.pointerToIndxiel,
             self.numberVolumeElementNodes,
+	    self.numberVolumeElementGaussPoints,
             self.numberVolumeElements,
+            self.volumeElementType,
             self.numberVolumeElementFamilies,
             self.f77AsciiOutput,
             self.f77PlotOutput,
@@ -1669,6 +1675,7 @@ class Lithomop3d_setup(Component):
         lithomop3d.write_slip(
             self.pointerToNslip,
             self.numberSlipperyNodeEntries,
+            self.totalNumberSlipperyNodes,
             self.numberNodes,
             self.f77AsciiOutput,
             self.f77PlotOutput,
@@ -1695,7 +1702,6 @@ class Lithomop3d_setup(Component):
 
         # Write split nodes to plot file, if requested and deallocate Idftn
         lithomop3d.write_split_plot(
-            self.pointerToNfault,
             self.pointerToIdftn,
             self.totalNumberSplitNodes,
             self.f77PlotOutput,
@@ -1767,6 +1773,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.26 2005/04/15 00:26:31 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.27 2005/04/16 00:28:17 willic3 Exp $
 
 # End of file 
