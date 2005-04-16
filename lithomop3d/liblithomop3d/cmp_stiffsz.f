@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -34,7 +33,8 @@ c
 c
 c      program to compute an upper bound on the number of nonzero
 c      entries in the stiffness matrix.  Duplicate contributions from
-c      different elements are not considered.
+c      different elements are not considered, so this is quite an
+c      overestimate.
 c
       include "implicit.inc"
 c
@@ -89,7 +89,7 @@ c
       end
 c
 c version
-c $Id: cmp_stiffsz.f,v 1.4 2005/03/19 01:49:49 willic3 Exp $
+c $Id: cmp_stiffsz.f,v 1.5 2005/04/16 00:39:30 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
