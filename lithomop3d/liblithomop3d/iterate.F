@@ -38,7 +38,7 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,           ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
-     & prop,mhist,infmatmod,tminmax,                                    ! materl
+     & prop,infmatmod,tminmax,                                          ! materl
      & gauss,sh,shj,nen,ngauss,nee,nec,                                 ! eltype
      & histry,rtimdat,ntimdat,nvisdat,iprestress,                       ! timdat
      & rgiter,gtol,                                                     ! iterate
@@ -98,7 +98,7 @@ c
       integer nfault(*)
       integer ien(*),lm(*),lmx(*),lmf(*),ivfamily(*)
       integer ielno(*),iside(*),ihistry(*)
-      integer mhist(*),infmatmod(*)
+      integer infmatmod(*)
       character errstrng*(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
       double precision bintern(*),bresid(*)
@@ -205,7 +205,7 @@ c
      &     dx,numslp,                                                   ! slip
      &     tfault,numfn,                                                ! fault
      &     ien,lm,lmx,lmf,ivfamily,nvfamilies,numelv,                   ! elemnt
-     &     prop,mhist,infmatmod,npropsz,                                ! materl
+     &     prop,infmatmod,npropsz,                                      ! materl
      &     gauss,shj,nen,ngauss,nee,                                    ! eltype
      &     histry,rtimdat,ntimdat,nhist,lastep,gload_cmp,               ! timdat
      &     skew,numrot,                                                 ! skew
@@ -305,7 +305,7 @@ c
      &     s,stemp,                                                     ! stiff
      &     state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies, ! elemnt
      &     numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,         ! elemnt
-     &     prop,mhist,infmatmod,npropsz,tminmax,                        ! materl
+     &     prop,infmatmod,npropsz,tminmax,                              ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_mat_cmp,   ! timdat
      &     skew,numrot,                                                 ! skew
@@ -319,7 +319,7 @@ c
      &     tfault,numfn,                                                ! fault
      &     state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies, ! elemnt
      &     numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,         ! elemnt
-     &     prop,mhist,infmatmod,npropsz,tminmax,                        ! materl
+     &     prop,infmatmod,npropsz,tminmax,                              ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,       ! timdat
      &     skew,numrot,                                                 ! skew
@@ -350,7 +350,7 @@ c
       end
 c
 c version
-c $Id: iterate.F,v 1.9 2005/04/01 23:01:37 willic3 Exp $
+c $Id: iterate.F,v 1.10 2005/04/16 00:38:59 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

@@ -39,7 +39,7 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,           ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
-     & prop,mhist,infmatmod,                                            ! materl
+     & prop,infmatmod,                                                  ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & histry,rtimdat,ntimdat,nvisdat,maxstp,delt,alfa,maxit,ntdinit,   ! timdat
      & lgdef,utol,ftol,etol,itmax,                                      ! timdat
@@ -85,7 +85,7 @@ c
       integer nfault(*)
       integer ien(*),lm(*),lmx(*),lmf(*),ivfamily(*)
       integer ielno(*),iside(*),ihistry(*)
-      integer mhist(*),infmatmod(*)
+      integer infmatmod(*)
       integer infetype(4)
       integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
       integer istatout(*),nstatout(*)
@@ -245,7 +245,7 @@ cdebug        write(6,*) "Before matinit_drv (1):"
      &   s,stemp,                                                       ! stiff
      &   state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies,   ! elemnt
      &   numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,           ! elemnt
-     &   prop,mhist,infmatmod,npropsz,tminmax,                          ! materl
+     &   prop,infmatmod,npropsz,tminmax,                                ! materl
      &   gauss,sh,shj,nen,ngauss,nee,                                   ! eltype
      &   histry,rtimdat,ntimdat,rgiter,nhist,lastep,                    ! timdat
      &   prestr_matinit_cmp_ss,                                         ! timdat
@@ -295,7 +295,7 @@ c
      &   s,stemp,                                                       ! stiff
      &   state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,         ! elemnt
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
-     &   prop,mhist,infmatmod,tminmax,                                  ! materl
+     &   prop,infmatmod,tminmax,                                        ! materl
      &   gauss,sh,shj,nen,ngauss,nee,nec,                               ! eltype
      &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
      &   rgiter,gtol,                                                   ! iterate
@@ -319,7 +319,7 @@ c
      &   s,stemp,                                                       ! stiff
      &   state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies,   ! elemnt
      &   numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,           ! elemnt
-     &   prop,mhist,infmatmod,npropsz,tminmax,                          ! materl
+     &   prop,infmatmod,npropsz,tminmax,                                ! materl
      &   gauss,sh,shj,nen,ngauss,nee,                                   ! eltype
      &   histry,rtimdat,ntimdat,rgiter,nhist,lastep,                    ! timdat
      &   prestr_matinit_cmp_ss,                                         ! timdat
@@ -369,7 +369,7 @@ c
      &   s,stemp,                                                       ! stiff
      &   state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,         ! elemnt
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
-     &   prop,mhist,infmatmod,tminmax,                                  ! materl
+     &   prop,infmatmod,tminmax,                                        ! materl
      &   gauss,sh,shj,nen,ngauss,nee,nec,                               ! eltype
      &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
      &   rgiter,gtol,                                                   ! iterate
@@ -394,7 +394,7 @@ clater     &   s,stemp,                                                       ! 
 clater     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,! elemnt
 clater     &   nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,     ! elemnt
 clater     &   nstate0,                                                       ! elemnt
-clater     &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
+clater     &   prop,infmat,infmatmod,numat,npropsz,tminmax,                   ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
 clater     &   histry,rtimdat,ntimdat,nhist,lastep,prestr_matinit_cmp_ld,     ! timdat
 clater     &   skew,numrot,                                                   ! skew
@@ -440,7 +440,7 @@ clater     &   nfault,dfault,tfault,                                          ! 
 clater     &   s,stemp,                                                       ! stiff
 clater     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,    ! elemnt
 clater     &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
-clater     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
+clater     &   prop,infmat,infmatmod,tminmax,                                 ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
 clater     &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
 clater     &   rgiter,gtol,                                                   ! iterate
@@ -463,7 +463,7 @@ clater     &   s,stemp,                                                       ! 
 clater     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,nstatesz,! elemnt
 clater     &   nstatesz0,ndmatsz,numelt,nconsz,nprestrflag,ipstrs,ipauto,     ! elemnt
 clater     &   nstate0,                                                       ! elemnt
-clater     &   prop,mhist,infmat,infmatmod,numat,npropsz,tminmax,             ! materl
+clater     &   prop,infmat,infmatmod,numat,npropsz,tminmax,                   ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
 clater     &   histry,rtimdat,ntimdat,nhist,lastep,prestr_matinit_cmp_ld,     ! timdat
 clater     &   skew,numrot,                                                   ! skew
@@ -509,7 +509,7 @@ clater     &   nfault,dfault,tfault,                                          ! 
 clater     &   s,stemp,                                                       ! stiff
 clater     &   state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,npar,    ! elemnt
 clater     &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
-clater     &   prop,mhist,infmat,infmatmod,tminmax,                           ! materl
+clater     &   prop,infmat,infmatmod,tminmax,                                 ! materl
 clater     &   gauss,sh,shj,infetype,                                         ! eltype
 clater     &   histry,rtimdat,ntimdat,nvisdat,iprestress,                     ! timdat
 clater     &   rgiter,gtol,                                                   ! iterate
@@ -587,7 +587,7 @@ c
       end
 c
 c version
-c $Id: autoprestr.F,v 1.7 2005/04/14 01:01:22 willic3 Exp $
+c $Id: autoprestr.F,v 1.8 2005/04/16 00:38:59 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
