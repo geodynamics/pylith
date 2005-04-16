@@ -57,7 +57,7 @@ c...  local variables
 c
       integer i
 c
-c...  open input file and read entries
+c...  swap element numbers to new values
 c
       if(numfn.eq.izero) return
       do i=1,numfn
@@ -68,7 +68,7 @@ c
       end
 c
 c version
-c $Id: sort_split_nodes.f,v 1.1 2005/04/14 00:48:18 willic3 Exp $
+c $Id: sort_split_nodes.f,v 1.2 2005/04/16 00:33:43 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
