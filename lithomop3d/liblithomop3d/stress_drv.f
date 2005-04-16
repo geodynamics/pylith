@@ -35,7 +35,7 @@ c
      & tfault,numfn,                                                    ! fault
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies,     ! elemnt
      & numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,             ! elemnt
-     & prop,mhist,infmatmod,npropsz,tminmax,                            ! materl
+     & prop,infmatmod,npropsz,tminmax,                                  ! materl
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,           ! timdat
      & skew,numrot,                                                     ! skew
@@ -63,7 +63,7 @@ c
       integer iddmat(nstr,nstr)
       integer ien(nen,numelv),lm(ndof*nen,numelv),lmx(ndof*nen,numelv)
       integer lmf(nen,numelv),ivfamily(5,nvfamilies)
-      integer mhist(npropsz),infmatmod(6,nmatmodmax)
+      integer infmatmod(6,nmatmodmax)
       character errstrng*(*)
       double precision bintern(neq),x(nsd,numnp),d(ndof,numnp)
       double precision dx(ndof,numnp)
@@ -133,9 +133,7 @@ c       location/time.
 c*****************************
         imat=ifam
         matchg=.false.
-        call mathist(ptmp,prop(indprop),mhist(indprop),histry,nprop,
-     &   imat,nstep,nhist,lastep,matchg,ierr,errstrng)
-        if(ierr.ne.izero) return
+        call dcopy(nprop,prop(indprop),ione,ptmp,ione)
         if(matmodel.eq.1) then
           call stress_cmp(
      &     bintern,neq,                                                 ! force
@@ -466,7 +464,7 @@ c*****************************
       end
 c
 c version
-c $Id: stress_drv.f,v 1.14 2005/04/01 23:16:45 willic3 Exp $
+c $Id: stress_drv.f,v 1.15 2005/04/16 00:40:50 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
