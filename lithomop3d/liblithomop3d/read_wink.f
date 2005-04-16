@@ -28,24 +28,18 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine read_wink(wink,wscal,iwink,id,numnp,nwink,nwinke,
-     & kr,wfile,ierr,errstrng)
+      subroutine read_wink(winkdef,wscal,iwinkdef,iwinkid,nwink,
+     & nwinke,kr,wfile,ierr,errstrng)
 c
 c....program for reading and data on winkler restoring forces
 c
-c          wink(ndof,numnp) = values of winkler restoring spring
+c          winkdef(ndof,nwinke) = values of winkler restoring spring
 c                             constant, force(i,j)=-wink(i,j)*disp(i,j)
 c
-c          iwtmp(ndof,numnp) = application mode:
+c          iwinkdef(ndof,nwinke) = application mode:
 c                               iwink = 0, no winkler forces,
 c                               iwink = 1, applied throuthout computation
 c                               iwink = -n, uses load history factor n
-c
-c        After input, the iwtmp array is transformed into the iwink
-c        array, which has the following components:
-c          iwink(1,i)       = nonzero application mode from iwtmp
-c          iwink(2,i)       = global equation number to which force is
-c                             applied
 c
 c     Error codes:
 c         0:  No error
@@ -58,12 +52,13 @@ c...  parameter definitions
 c
       include "ndimens.inc"
       include "nconsts.inc"
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer numnp,nwink,nwinke,kr,ierr
-      integer iwink(2,nwink),id(ndof,numnp)
-      double precision wink(nwink),wscal(3)
+      integer nwink,nwinke,kr,ierr
+      integer iwinkdef(ndof,nwinke),iwinkid(nwinke)
+      double precision winkdef(ndof,nwinke),wscal(3)
       character wfile*(*),errstrng*(*)
 c
 c...  included dimension and type statements
@@ -74,16 +69,12 @@ c
 c
 c...  local variables
 c
-      integer i,j,n,nwtot,nnz
-      integer iwtmp(3)
-      double precision wtmp(3)
-c
-c...  included variable definitions
-c
-c
-c...  open output file
+      integer i,j
 c
       ierr=izero
+      call ifill(iwinkid,izero,nwinke)
+      call ifill(iwinkdef,izero,ndof*nwinke)
+      call fill(winkdef,zero,ndof*nwinke)
 c
 c...  open input file
 c
@@ -93,20 +84,11 @@ c
 c.......read winkler force data and output results, if desired
 c
       call pskip(kr)
-      nwtot=izero
       do i=1,nwinke
-        read(kr,*,err=30,end=30) n,(iwtmp(j),j=1,ndof),
-     &   (wtmp(j),j=1,ndof)
-        nnz=izero
+        read(kr,*,err=30,end=30) iwinkid(i),(iwinkdef(j,i),j=1,ndof),
+     &   (winkdef(j,i),j=1,ndof)
         do j=1,ndof
-          wtmp(j)=wscal(j)*wtmp(j)
-          if(iwtmp(j).ne.izero) then
-            nnz=nnz+1
-            nwtot=nwtot+1
-            iwink(1,nwtot)=iwtmp(j)
-            iwink(2,nwtot)=id(j,n)
-            wink(nwtot)=wtmp(j)
-          end if
+          winkdef(j,i)=wscal(j)*winkdef(j,i)
         end do
       end do
       close(kr)
@@ -134,7 +116,7 @@ c
       end
 c
 c version
-c $Id: read_wink.f,v 1.4 2005/04/14 00:59:45 willic3 Exp $
+c $Id: read_wink.f,v 1.5 2005/04/16 00:45:25 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
