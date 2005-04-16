@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -29,8 +28,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_element_info(numelv,intord,ipstrs,ipauto,tpois,
-     & tyoungs,kw,idout,ofile)
+      subroutine write_element_info(numelv,nen,ngauss,ietypev,intord,
+     & ipstrs,ipauto,tpois,tyoungs,kw,idout,ofile)
 c
 c...subroutine to write element and prestress parameters
 c
@@ -42,7 +41,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer numelv,intord,ipstrs,ipauto,kw,idout
+      integer numelv,nen,ngauss,ietypev,intord,ipstrs,ipauto,kw,idout
       double precision tpois,tyoungs
       character ofile*(*)
 c
@@ -63,17 +62,19 @@ c
 c
 c...  echo input to output file
 c
-      if(idout.gt.izero) then
-        open(kw,file=ofile,status="old",access="append")
-        write(kw,700) elmlbl,numelv,intorder(intord),ipstrs,ipauto,
-     &   tpois,tyoungs
-        close(kw)
-      end if
+      if(idout.eq.izero) return
+      open(kw,file=ofile,status="old",access="append")
+      write(kw,700) elmlbl,numelv,nen,ngauss,ietypev,intorder(intord),
+     & ipstrs,ipauto,tpois,tyoungs
+      close(kw)
 c
 700   format(1x,///,
      &' e l e m e n t    s y s t e m   d a t a',///,5x,
      &' element type:  ',a40,//,5x,
      &' number of volume elements. . . . . . . . . (numelv) =',i7,//,5x,
+     &' number of volume element nodes . . . . . .    (nen) =',i7,//,5x,
+     &' number of volume element Gauss points. . . (ngauss) =',i7,//,5x,
+     &' volume element type. . . . . . . . . . . .(ietypev) =',i7,//,5x,
      &' integration order . . . . . . . . . . . = ',a17,//,5x,
      &' prestress option. . . . . . . . . . . . . .(ipstrs) =',i5,/ ,5x,
      &'    eq.0, prestresses are read from the input file    ', / ,5x,
@@ -91,7 +92,7 @@ c
       end
 c
 c version
-c $Id: write_element_info.f,v 1.6 2005/03/30 19:34:46 willic3 Exp $
+c $Id: write_element_info.f,v 1.7 2005/04/16 00:46:19 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
