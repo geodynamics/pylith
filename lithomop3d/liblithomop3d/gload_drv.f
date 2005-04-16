@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -35,7 +34,7 @@ c
      & dx,numslp,                                                       ! slip
      & tfault,numfn,                                                    ! fault
      & ien,lm,lmx,lmf,ivfamily,nvfamilies,numelv,                       ! elemnt
-     & prop,mhist,infmatmod,npropsz,                                    ! materl
+     & prop,infmatmod,npropsz,                                          ! materl
      & gauss,shj,nen,ngauss,nee,                                        ! eltype
      & histry,rtimdat,ntimdat,nhist,lastep,gload_cmp,                   ! timdat
      & skew,numrot,                                                     ! skew
@@ -59,7 +58,7 @@ c
       integer nen,ngauss,nee,nhist,lastep,numrot,ierr
       integer ien(nen,numelv),lm(ndof*nen,numelv),lmx(ndof*nen,numelv)
       integer lmf(nen,numelv),ivfamily(5,nvfamilies)
-      integer mhist(npropsz),infmatmod(6,nmatmodmax)
+      integer infmatmod(6,nmatmodmax)
       character errstrng*(*)
       double precision bgravity(ngravflag*neq),grav(ndof)
       double precision x(nsd,numnp),d(ndof,numnp),dx(ndof,numnp)
@@ -108,10 +107,7 @@ c
         nprop=infmatmod(3,matmodel)
         imat=ifam
         matchg=.false.
-        call mathist(ptmp,prop(indprop),mhist(indprop),histry,nprop,
-     &   imat,nstep,nhist,lastep,matchg,ierr,errstrng)
-c
-        if(ierr.ne.izero) return
+        call dcopy(nprop,prop(indprop),ione,ptmp,ione)
 c
         dens=ptmp(1)
 c
@@ -133,7 +129,7 @@ c
       end
 c
 c version
-c $Id: gload_drv.f,v 1.5 2005/03/21 22:13:15 willic3 Exp $
+c $Id: gload_drv.f,v 1.6 2005/04/16 00:40:50 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

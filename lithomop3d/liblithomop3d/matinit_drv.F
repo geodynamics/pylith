@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -37,7 +36,7 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies,     ! elemnt
      & numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,             ! elemnt
-     & prop,mhist,infmatmod,npropsz,tminmax,                            ! materl
+     & prop,infmatmod,npropsz,tminmax,                                  ! materl
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & histry,rtimdat,ntimdat,rgiter,nhist,lastep,matinit_cmp,          ! timdat
      & skew,numrot,                                                     ! skew
@@ -76,7 +75,7 @@ c
       integer iwink(2,nwink),iddmat(nstr,nstr),iwinkx(2,nwinkx)
       integer ien(nen,numelv)
       integer lm(ndof*nen,numelv),lmx(ndof*nen,numelv),lmf(nen,numelv)
-      integer ivfamily(5,nvfamilies),mhist(npropsz)
+      integer ivfamily(5,nvfamilies)
       integer infmatmod(6,nmatmodmax)
       character errstrng*(*)
       double precision x(nsd,numnp),d(ndof,numnp)
@@ -142,9 +141,7 @@ c
         if(ipstrs.ne.izero) n0states=nelfamily
         imat=ifam
         matchg=.false.
-        call mathist(ptmp,prop(indprop),mhist(indprop),histry,nprop,
-     &   imat,nstep,nhist,lastep,matchg,ierr,errstrng)
-        if(ierr.ne.izero) return
+        call dcopy(nprop,prop(indprop),ione,ptmp,ione)
         if(matmodel.eq.1) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
@@ -530,7 +527,7 @@ c
       end
 c
 c version
-c $Id: matinit_drv.F,v 1.4 2005/04/05 23:04:30 willic3 Exp $
+c $Id: matinit_drv.F,v 1.5 2005/04/16 00:40:50 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
