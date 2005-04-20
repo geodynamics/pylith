@@ -40,6 +40,69 @@
 #include <string.h>
 
 
+
+// Assign equation numbers to Iwink and Iwinkx arrays, and compact
+// Wink and Winkx arrays to correspond to assigned BC.
+
+char pylithomop3d_assign_wink__doc__[] = "";
+char pylithomop3d_assign_wink__name__[] = "assign_wink";
+
+PyObject * pylithomop3d_assign_wink(PyObject *, PyObject *args)
+{
+  PyObject* pyPointerToWinkdef;
+  PyObject* pyPointerToWink;
+  PyObject* pyPointerToIwinkdef;
+  PyObject* pyPointerToIwinkid;
+  PyObject* pyPointerToIwink;
+  PyObject* pyPointerToId;
+  int numberNodes;
+  int numberWinklerForces;
+  int numberWinklerEntries;
+
+  int ok = PyArg_ParseTuple(args, "OOOOOOiii:assign_wink",
+			    &pyPointerToWinkdef,
+			    &pyPointerToWink,
+			    &pyPointerToIwinkdef,
+			    &pyPointerToIwinkid,
+			    &pyPointerToIwink,
+			    &pyPointerToId,
+			    &numberNodes,
+			    &numberWinklerForces,
+			    &numberWinklerEntries);
+
+  if (!ok) {
+    return 0;
+  }
+
+  double* pointerToWinkdef = (double*) PyCObject_AsVoidPtr(pyPointerToWinkdef);
+  double* pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
+  int* pointerToIwinkdef = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkdef);
+  int* pointerToIwinkid = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkid);
+  int* pointerToIwink = (int*) PyCObject_AsVoidPtr(pyPointerToIwink);
+  int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
+
+  assign_wink_f(pointerToWinkdef,
+		pointerToWink,
+		pointerToIwinkdef,
+		pointerToIwinkid,
+		pointerToIwink,
+		pointerToId,
+		&numberNodes,
+		&numberWinklerForces,
+		&numberWinklerEntries);
+
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "numberWinklerForces:" << numberWinklerForces
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+    
+
 // Create Id and Idx arrays, and determine the number of equations.
 
 char pylithomop3d_create_id__doc__[] = "";
@@ -111,19 +174,13 @@ PyObject * pylithomop3d_id_split(PyObject *, PyObject *args)
   int numberNodes;
   int numberSplitNodeEntries;
   int totalNumberSplitNodes;
-  int f77PlotOutput;
-  int plotOutputInt;
-  char* plotOutputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOiiiiis:id_split",
+  int ok = PyArg_ParseTuple(args, "OOiii:id_split",
 			    &pyPointerToNfault,
 			    &pyPointerToIdftn,
 			    &numberNodes,
 			    &numberSplitNodeEntries,
-			    &totalNumberSplitNodes,
-			    &f77PlotOutput,
-			    &plotOutputInt,
-			    &plotOutputFile);
+			    &totalNumberSplitNodes);
 
   if (!ok) {
     return 0;
@@ -136,11 +193,7 @@ PyObject * pylithomop3d_id_split(PyObject *, PyObject *args)
 	     pointerToIdftn,
 	     &numberNodes,
 	     &numberSplitNodeEntries,
-	     &totalNumberSplitNodes,
-	     &f77PlotOutput,
-	     &plotOutputInt,
-	     plotOutputFile,
-	     strlen(plotOutputFile));
+	     &totalNumberSplitNodes);
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -153,160 +206,6 @@ PyObject * pylithomop3d_id_split(PyObject *, PyObject *args)
   return Py_None;
 }
     
-
-// Localize id array for reference by element
-
-char pylithomop3d_local__doc__[] = "";
-char pylithomop3d_local__name__[] = "local";
-
-PyObject * pylithomop3d_local(PyObject *, PyObject *args)
-{
-  PyObject* pyPointerToId;
-  int numberNodes;
-  PyObject* pyPointerToIen;
-  PyObject* pyPointerToLm;
-  int numberVolumeElements;
-  int numberVolumeElementNodes;
-
-  int ok = PyArg_ParseTuple(args, "OiOOii:local",
-			    &pyPointerToId,
-			    &numberNodes,
-			    &pyPointerToIen,
-			    &pyPointerToLm,
-			    &numberVolumeElements,
-			    &numberVolumeElementNodes);
-
-  if (!ok) {
-    return 0;
-  }
-
-  int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
-  int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
-
-  local_f(pointerToId,
-	  &numberNodes,
-	  pointerToIen,
-	  pointerToLm,
-	  &numberVolumeElements,
-	  &numberVolumeElementNodes);
-
-  journal::debug_t debug("lithomop3d");
-  debug
-    << journal::at(__HERE__)
-    << "numberVolumeElements:" << numberVolumeElements
-    << journal::endl;
-
-  // return
-  Py_INCREF(Py_None);
-  return Py_None;
-}
-    
-
-// Localize nfault array for reference by element
-
-char pylithomop3d_localf__doc__[] = "";
-char pylithomop3d_localf__name__[] = "localf";
-
-PyObject * pylithomop3d_localf(PyObject *, PyObject *args)
-{
-  PyObject* pyPointerToIen;
-  PyObject* pyPointerToLmf;
-  int numberVolumeElements;
-  PyObject* pyPointerToNfault;
-  int numberSplitNodeEntries;
-  int numberVolumeElementNodes;
-
-  int ok = PyArg_ParseTuple(args, "OOiOii:localf",
-			    &pyPointerToIen,
-			    &pyPointerToLmf,
-			    &numberVolumeElements,
-			    &pyPointerToNfault,
-			    &numberSplitNodeEntries,
-			    &numberVolumeElementNodes);
-
-  if (!ok) {
-    return 0;
-  }
-
-  int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int* pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
-  int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
-
-  localf_f(pointerToIen,
-	   pointerToLmf,
-	   &numberVolumeElements,
-	   pointerToNfault,
-	   &numberSplitNodeEntries,
-	   &numberVolumeElementNodes);
-		  
-  journal::debug_t debug("lithomop3d");
-  debug
-    << journal::at(__HERE__)
-    << "numberSplitNodeEntries:" << numberSplitNodeEntries
-    << journal::endl;
-
-  // return
-  Py_INCREF(Py_None);
-  return Py_None;
-}
-    
-
-// Localize idx array for reference by element
-
-char pylithomop3d_localx__doc__[] = "";
-char pylithomop3d_localx__name__[] = "localx";
-
-PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
-{
-  PyObject* pyPointerToIdx;
-  int numberNodes;
-  PyObject* pyPointerToIen;
-  PyObject* pyPointerToLmx;
-  int numberVolumeElements;
-  PyObject* pyPointerToNslip;
-  int numberSlipperyNodeEntries;
-  int numberVolumeElementNodes;
-
-  int ok = PyArg_ParseTuple(args, "OiOOiOii:localx",
-			    &pyPointerToIdx,
-  			    &numberNodes,
-  			    &pyPointerToIen,
-  			    &pyPointerToLmx,
-  			    &numberVolumeElements,
-  			    &pyPointerToNslip,
-			    &numberSlipperyNodeEntries,
-  			    &numberVolumeElementNodes);
-
-  if (!ok) {
-    return 0;
-  }
-
-  int* pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
-  int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
-
-  localx_f(pointerToIdx,
-	   &numberNodes,
-	   pointerToIen,
-	   pointerToLmx,
-	   &numberVolumeElements,
-	   pointerToNslip,
-	   &numberSlipperyNodeEntries,
-	   &numberVolumeElementNodes);
-
-  journal::debug_t debug("lithomop3d");
-  debug
-    << journal::at(__HERE__)
-    << "numberVolumeElements:" << numberVolumeElements
-    << journal::endl;
-
-  // return
-  Py_INCREF(Py_None);
-  return Py_None;
-}
-
 
 // Find closest fault neighbors for slippery nodes
 
@@ -377,6 +276,6 @@ PyObject * pylithomop3d_nfind(PyObject *, PyObject *args)
 }
 
 // version
-// $Id: numbering.cc,v 1.2 2005/03/31 23:27:57 willic3 Exp $
+// $Id: numbering.cc,v 1.3 2005/04/20 00:52:06 willic3 Exp $
 
 // End of file
