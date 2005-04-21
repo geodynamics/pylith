@@ -36,7 +36,6 @@
 #include "array.h"         // array allocation and conversion functions
 #include "autoprestr.h"    // prestress autocomputation
 #include "elastc.h"        // elastic solution driver
-#include "input_misc.h"    // miscellaneous output routines
 #include "numbering.h"     // routines to create global equation numbers
                            // and localize them.
 #include "parser.h"        // parsers
@@ -44,6 +43,7 @@
 #include "setup.h"         // initialization/setup routines
 #include "sparse.h"        // sparse matrix routines
 #include "viscos.h"        // time-dependent solution driver
+#include "write_modelinfo.h" // output routines
 #include "misc.h"          // miscellaneous methods
 
 // the method table
@@ -69,6 +69,10 @@ struct PyMethodDef pylithomop3d_methods[] = {
     // allocate a double array
     {pylithomop3d_allocateDouble__name__, pylithomop3d_allocateDouble,
      METH_VARARGS, pylithomop3d_allocateDouble__doc__},
+
+    // assign equation numbers for Winkler forces
+    {pylithomop3d_assign_wink__name__, pylithomop3d_assign_wink,
+     METH_VARARGS, pylithomop3d_assign_wink__doc__},
 
     // compute gravitational prestresses
     {pylithomop3d_autoprestr__name__, pylithomop3d_autoprestr,
@@ -162,10 +166,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_read_hist__name__, pylithomop3d_read_hist,
      METH_VARARGS, pylithomop3d_read_hist__doc__},
 
-    // read material history info
-    {pylithomop3d_read_mathist__name__, pylithomop3d_read_mathist,
-     METH_VARARGS, pylithomop3d_read_mathist__doc__},
-
     // read prestresses
     // {pylithomop3d_read_prestr__name__, pylithomop3d_read_prestr,
      // METH_VARARGS, pylithomop3d_read_prestr__doc__},
@@ -197,10 +197,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
     // read winkler force information
     {pylithomop3d_read_wink__name__, pylithomop3d_read_wink,
      METH_VARARGS, pylithomop3d_read_wink__doc__},
-
-    // read winkler force information for slippery nodes
-    {pylithomop3d_read_winkx__name__, pylithomop3d_read_winkx,
-     METH_VARARGS, pylithomop3d_read_winkx__doc__},
 
     // scan boundary condition file
     {pylithomop3d_scan_bc__name__, pylithomop3d_scan_bc,
@@ -258,25 +254,81 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_scan_winkx__name__, pylithomop3d_scan_winkx,
      METH_VARARGS, pylithomop3d_scan_winkx__doc__},
 
+    // sort elements into families
+    {pylithomop3d_sort_elements__name__, pylithomop3d_sort_elements,
+     METH_VARARGS, pylithomop3d_sort_elements__doc__},
+
+    // sort slippery node elements
+    {pylithomop3d_sort_slip_nodes__name__, pylithomop3d_sort_slip_nodes,
+     METH_VARARGS, pylithomop3d_sort_slip_nodes__doc__},
+
+    // sort split node elements
+    {pylithomop3d_sort_split_nodes__name__, pylithomop3d_sort_split_nodes,
+     METH_VARARGS, pylithomop3d_sort_split_nodes__doc__},
+
     // drive time-dependent solution
     {pylithomop3d_viscos__name__, pylithomop3d_viscos,
      METH_VARARGS, pylithomop3d_viscos__doc__},
+
+    // write out BC
+    {pylithomop3d_write_bc__name__, pylithomop3d_write_bc,
+     METH_VARARGS, pylithomop3d_write_bc__doc__},
+
+    // write out element node array
+    {pylithomop3d_write_connect__name__, pylithomop3d_write_connect,
+     METH_VARARGS, pylithomop3d_write_connect__doc__},
+
+    // write out nodal coordinates
+    {pylithomop3d_write_coords__name__, pylithomop3d_write_coords,
+     METH_VARARGS, pylithomop3d_write_coords__doc__},
+
+    // write out differential forces
+    {pylithomop3d_write_diff__name__, pylithomop3d_write_diff,
+     METH_VARARGS, pylithomop3d_write_diff__doc__},
 
     // write out element and prestress information
     {pylithomop3d_write_element_info__name__, pylithomop3d_write_element_info,
      METH_VARARGS, pylithomop3d_write_element_info__doc__},
 
+    // write out time steps at which full output is desired
+    {pylithomop3d_write_fuldat__name__, pylithomop3d_write_fuldat,
+     METH_VARARGS, pylithomop3d_write_fuldat__doc__},
+
     // write out global control information
     {pylithomop3d_write_global_info__name__, pylithomop3d_write_global_info,
      METH_VARARGS, pylithomop3d_write_global_info__doc__},
+
+    // write out time histories
+    {pylithomop3d_write_hist__name__, pylithomop3d_write_hist,
+     METH_VARARGS, pylithomop3d_write_hist__doc__},
 
     // write out material property information
     {pylithomop3d_write_props__name__, pylithomop3d_write_props,
      METH_VARARGS, pylithomop3d_write_props__doc__},
 
+    // write out local coordinate rotations
+    {pylithomop3d_write_skew__name__, pylithomop3d_write_skew,
+     METH_VARARGS, pylithomop3d_write_skew__doc__},
+
+    // write out slippery node definitions
+    {pylithomop3d_write_slip__name__, pylithomop3d_write_slip,
+     METH_VARARGS, pylithomop3d_write_slip__doc__},
+
     // write out sparse matrix information
     {pylithomop3d_write_sparse_info__name__, pylithomop3d_write_sparse_info,
      METH_VARARGS, pylithomop3d_write_sparse_info__doc__},
+
+    // write out split node definitions
+    {pylithomop3d_write_split__name__, pylithomop3d_write_split,
+     METH_VARARGS, pylithomop3d_write_split__doc__},
+
+    // write out split node info for plotting
+    {pylithomop3d_write_split_plot__name__, pylithomop3d_write_split_plot,
+     METH_VARARGS, pylithomop3d_write_split_plot__doc__},
+
+    // write out state variable output info
+    {pylithomop3d_write_stateout__name__, pylithomop3d_write_stateout,
+     METH_VARARGS, pylithomop3d_write_stateout__doc__},
 
     // write out stress computation information
     {pylithomop3d_write_strscomp__name__, pylithomop3d_write_strscomp,
@@ -286,9 +338,21 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_write_subiter__name__, pylithomop3d_write_subiter,
      METH_VARARGS, pylithomop3d_write_subiter__doc__},
 
+    // write out time step information
+    {pylithomop3d_write_timdat__name__, pylithomop3d_write_timdat,
+     METH_VARARGS, pylithomop3d_write_timdat__doc__},
+
     // write mesh info to UCD file
     {pylithomop3d_write_ucd_mesh__name__, pylithomop3d_write_ucd_mesh,
      METH_VARARGS, pylithomop3d_write_ucd_mesh__doc__},
+
+    // write out Winkler force info
+    {pylithomop3d_write_wink__name__, pylithomop3d_write_wink,
+     METH_VARARGS, pylithomop3d_write_wink__doc__},
+
+    // write out slippery node Winkler force info
+    {pylithomop3d_write_winkx__name__, pylithomop3d_write_winkx,
+     METH_VARARGS, pylithomop3d_write_winkx__doc__},
 
 
     // copyright note
@@ -301,6 +365,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
 };
 
 // version
-// $Id: bindings.cc,v 1.8 2005/03/31 23:27:57 willic3 Exp $
+// $Id: bindings.cc,v 1.9 2005/04/21 01:00:30 willic3 Exp $
 
 // End of file
