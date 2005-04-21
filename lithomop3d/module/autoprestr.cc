@@ -89,7 +89,7 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   PyObject* pyPointerToDstate;
   PyObject* pyPointerToState0;
   PyObject* pyPointerToDmat;
-  PyObject* pyPointerToIen;
+  PyObject* pyPointerToIens;
   PyObject* pyPointerToLm;
   PyObject* pyPointerToLmx;
   PyObject* pyPointerToLmf;
@@ -175,7 +175,7 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 			    &pyPointerToDstate,
 			    &pyPointerToState0,
 			    &pyPointerToDmat,
-			    &pyPointerToIen,
+			    &pyPointerToIens,
 			    &pyPointerToLm,
 			    &pyPointerToLmx,
 			    &pyPointerToLmf,
@@ -269,7 +269,7 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   double*  pointerToDstate = (double*) PyCObject_AsVoidPtr(pyPointerToDstate);
   double*  pointerToState0 = (double*) PyCObject_AsVoidPtr(pyPointerToState0);
   double*  pointerToDmat = (double*) PyCObject_AsVoidPtr(pyPointerToDmat);
-  int*  pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
+  int*  pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
   int*  pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
   int*  pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
   int*  pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
@@ -350,7 +350,7 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 	       pointerToDstate,
 	       pointerToState0,
 	       pointerToDmat,
-	       pointerToIen,
+	       pointerToIens,
 	       pointerToLm,
 	       pointerToLmx,
 	       pointerToLmf,
@@ -416,6 +416,6 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: autoprestr.cc,v 1.7 2005/04/20 23:06:46 willic3 Exp $
+// $Id: autoprestr.cc,v 1.8 2005/04/21 00:09:48 willic3 Exp $
 
 // End of file
