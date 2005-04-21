@@ -115,7 +115,7 @@ class Lithomop3d_run(Component):
         self.pointerToDstate = lm3dsetup.pointerToDstate
         self.pointerToState0 = lm3dsetup.pointerToState0
         self.pointerToDmat = lm3dsetup.pointerToDmat
-        self.pointerToIen = lm3dsetup.pointerToIen
+        self.pointerToIens = lm3dsetup.pointerToIens
         self.pointerToLm = lm3dsetup.pointerToLm
         self.pointerToLmx = lm3dsetup.pointerToLmx
         self.pointerToLmf = lm3dsetup.pointerToLmf
@@ -131,7 +131,6 @@ class Lithomop3d_run(Component):
         self.pointerToPdir = lm3dsetup.pointerToPdir
 
         self.pointerToListArrayPropertyList = lm3dsetup.pointerToListArrayPropertyList
-        self.pointerToMhist = lm3dsetup.pointerToMhist
         self.pointerToMaterialModelInfo = lm3dsetup.pointerToMaterialModelInfo
 
         self.pointerToGauss = lm3dsetup.pointerToGauss
@@ -240,7 +239,7 @@ class Lithomop3d_run(Component):
                     self.pointerToDstate,
                     self.pointerToState0,
                     self.pointerToDmat,
-                    self.pointerToIen,
+                    self.pointerToIens,
                     self.pointerToLm,
                     self.pointerToLmx,
                     self.pointerToLmf,
@@ -252,7 +251,6 @@ class Lithomop3d_run(Component):
                     self.pointerToPres,
                     self.pointerToPdir,
                     self.pointerToListArrayPropertyList,
-                    self.pointerToMhist,
                     self.pointerToMaterialModelInfo,
                     self.pointerToGauss,
                     self.pointerToSh,
@@ -330,7 +328,7 @@ class Lithomop3d_run(Component):
                 self.pointerToDstate,
                 self.pointerToState0,
                 self.pointerToDmat,
-                self.pointerToIen,
+                self.pointerToIens,
                 self.pointerToLm,
                 self.pointerToLmx,
                 self.pointerToLmf,
@@ -342,7 +340,6 @@ class Lithomop3d_run(Component):
                 self.pointerToPres,
                 self.pointerToPdir,
                 self.pointerToListArrayPropertyList,
-                self.pointerToMhist,
                 self.pointerToMaterialModelInfo,
                 self.pointerToGauss,
                 self.pointerToSh,
@@ -421,7 +418,7 @@ class Lithomop3d_run(Component):
                 self.pointerToDstate,
                 self.pointerToState0,
                 self.pointerToDmat,
-                self.pointerToIen,
+                self.pointerToIens,
                 self.pointerToLm,
                 self.pointerToLmx,
                 self.pointerToLmf,
@@ -433,7 +430,6 @@ class Lithomop3d_run(Component):
                 self.pointerToPres,
                 self.pointerToPdir,
                 self.pointerToListArrayPropertyList,
-                self.pointerToMhist,
                 self.pointerToMaterialModelInfo,
                 self.pointerToGauss,
                 self.pointerToSh,
@@ -483,6 +479,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.15 2005/04/01 23:42:09 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.16 2005/04/20 23:46:45 willic3 Exp $
 
 # End of file 
