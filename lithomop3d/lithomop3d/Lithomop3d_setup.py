@@ -1018,13 +1018,13 @@ class Lithomop3d_setup(Component):
         lithomop3d.local(
             self.pointerToId,
             self.numberNodes,
-            self.pointerToIen,
+            self.pointerToIens,
             self.pointerToLm,
             self.numberVolumeElements,
             self.numberVolumeElementNodes)
 
         lithomop3d.localf(
-            self.pointerToIen,
+            self.pointerToIens,
             self.pointerToLmf,
             self.numberVolumeElements,
             self.pointerToNfault,
@@ -1034,7 +1034,7 @@ class Lithomop3d_setup(Component):
         lithomop3d.localx(
             self.pointerToIdx,
             self.numberNodes,
-            self.pointerToIen,
+            self.pointerToIens,
             self.pointerToLmx,
             self.numberVolumeElements,
             self.pointerToNslip,
@@ -1644,7 +1644,7 @@ class Lithomop3d_setup(Component):
             lithomop3d.write_ucd_mesh(
                 self.pointerToX,
                 self.numberNodes,
-                self.pointerToIen,
+                self.pointerToIens,
                 self.pointerToIvfamily,
                 self.numberVolumeElements,
                 self.numberVolumeElementFamilies,
@@ -1662,8 +1662,6 @@ class Lithomop3d_setup(Component):
             self.pointerToFault,
             self.pointerToNfault,
             self.numberSplitNodeEntries,
-            self.numberNodes,
-            self.numberVolumeElements,
             self.f77AsciiOutput,
             self.f77PlotOutput,
             self.asciiOutputInt,
@@ -1676,7 +1674,6 @@ class Lithomop3d_setup(Component):
             self.pointerToNslip,
             self.numberSlipperyNodeEntries,
             self.totalNumberSlipperyNodes,
-            self.numberNodes,
             self.f77AsciiOutput,
             self.f77PlotOutput,
             self.asciiOutputInt,
@@ -1773,6 +1770,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.27 2005/04/16 00:28:17 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.28 2005/04/21 01:09:07 willic3 Exp $
 
 # End of file 
