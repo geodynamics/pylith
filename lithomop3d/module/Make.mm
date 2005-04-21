@@ -46,18 +46,19 @@ PROJ_SRCS = \
 	elastc.cc \
 	exceptionhandler.cc \
 	exceptions.cc \
-	input_misc.cc \
 	misc.cc \
 	numbering.cc \
 	parser.cc \
 	scanner.cc \
 	setup.cc \
+	sorting.cc \
 	sparse.cc \
-	viscos.cc
+	viscos.cc \
+	write_modelinfo.cc
 
 
 # version
-# $Id: Make.mm,v 1.8 2005/03/31 23:27:57 willic3 Exp $
+# $Id: Make.mm,v 1.9 2005/04/20 23:08:02 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
