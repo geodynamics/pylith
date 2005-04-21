@@ -104,7 +104,7 @@ c...  local variables
 c
       integer ielf,l
 c
-      integer idb
+cdebug      integer idb
 c
 c...  included variable definitions
 c
@@ -143,7 +143,7 @@ c
       end
 c
 c version
-c $Id: elas_matinit_cmp_ss.F,v 1.4 2005/04/05 22:54:54 willic3 Exp $
+c $Id: elas_matinit_cmp_ss.F,v 1.5 2005/04/21 01:33:34 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
