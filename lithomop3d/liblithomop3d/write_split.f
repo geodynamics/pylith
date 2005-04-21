@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_split(fault,nfault,numfn,numnp,numelv,kw,kp,
+      subroutine write_split(fault,nfault,numfn,kw,kp,
      & idout,idsk,ofile,pfile,ierr,errstrng)
 c
 c...  prints data on split nodes
@@ -53,7 +53,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer numfn,numnp,numelv,kw,kp,idout,idsk,ierr
+      integer numfn,kw,kp,idout,idsk,ierr
       integer nfault(3,numfn)
       double precision fault(ndof,numfn)
       character ofile*(*),pfile*(*),errstrng*(*)
@@ -127,7 +127,7 @@ c
       end
 c
 c version
-c $Id: write_split.f,v 1.1 2005/04/16 00:31:53 willic3 Exp $
+c $Id: write_split.f,v 1.2 2005/04/21 01:07:25 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

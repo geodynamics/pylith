@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_slip(nslip,numslp,numsn,numnp,kw,kp,idout,idsk,
+      subroutine write_slip(nslip,numslp,numsn,kw,kp,idout,idsk,
      & ofile,pfile,ierr,errstrng)
 c
 c...  prints data on free slip interfaces
@@ -47,7 +47,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer numslp,numsn,numnp,kw,kp,idout,idsk,ierr
+      integer numslp,numsn,kw,kp,idout,idsk,ierr
       integer nslip(nsdim,numslp)
       character ofile*(*),pfile*(*),errstrng*(*)
 c
@@ -135,7 +135,7 @@ c
       end
 c
 c version
-c $Id: write_slip.f,v 1.1 2005/04/16 00:31:52 willic3 Exp $
+c $Id: write_slip.f,v 1.2 2005/04/21 01:07:25 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
