@@ -938,23 +938,22 @@ PyObject * pylithomop3d_write_split_plot(PyObject *, PyObject *args)
 		     plotOutputFile,
 		     strlen(plotOutputFile));
     
+
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "totalNumberSplitNodes:" << totalNumberSplitNodes
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
 }
 
-journal::debug_t debug("lithomop3d");
-debug
-<< journal::at(__HERE__)
-  << "totalNumberSplitNodes:" << totalNumberSplitNodes
-				 << journal::endl;
 
-// return
-Py_INCREF(Py_None);
-return Py_None;
-}
+// Write state output information
 
-
-				    // Write state output information
-
-				    char pylithomop3d_write_stateout__doc__[] = "";
+char pylithomop3d_write_stateout__doc__[] = "";
 char pylithomop3d_write_stateout__name__[] = "write_stateout";
 
 PyObject * pylithomop3d_write_stateout(PyObject *, PyObject *args)
@@ -1403,6 +1402,6 @@ PyObject * pylithomop3d_write_winkx(PyObject *, PyObject *args)
 }
 
 // version
-// $Id: write_modelinfo.cc,v 1.1 2005/04/20 23:03:37 willic3 Exp $
+// $Id: write_modelinfo.cc,v 1.2 2005/04/21 00:07:31 willic3 Exp $
 
 // End of file
