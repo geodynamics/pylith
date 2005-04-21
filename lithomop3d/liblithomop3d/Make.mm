@@ -4,9 +4,26 @@
 #
 #                             Charles A. Williams
 #                       Rensselaer Polytechnic Institute
-#                        (C) 2003  All Rights Reserved
+#                        (C) 2005  All Rights Reserved
 #
-# <LicenseText>
+#  All worldwide rights reserved.  A license to use, copy, modify and
+#  distribute this software for non-commercial research purposes only
+#  is hereby granted, provided that this copyright notice and
+#  accompanying disclaimer is not modified or removed from the software.
+#
+#  DISCLAIMER:  The software is distributed "AS IS" without any express
+#  or implied warranty, including but not limited to, any implied
+#  warranties of merchantability or fitness for a particular purpose
+#  or any warranty of non-infringement of any current or pending patent
+#  rights.  The authors of the software make no representations about
+#  the suitability of this software for any particular purpose.  The
+#  entire risk as to the quality and performance of the software is with
+#  the user.  Should the software prove defective, the user assumes the
+#  cost of all necessary servicing, repair or correction.  In
+#  particular, neither Rensselaer Polytechnic Institute, nor the authors
+#  of the software are liable for any indirect, special, consequential,
+#  or incidental damages related to the software, to the maximum extent
+#  the law permits.
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
@@ -28,6 +45,7 @@ PROJ_SRCS = \
         addsn.f \
         addstf.F \
         adfldp.f \
+	assign_wink.f \
         autoprestr.F \
         bdeld_ss.f \
         bmatrixb.f \
@@ -111,7 +129,6 @@ PROJ_SRCS = \
         mat_18.f \
         mat_19.f \
         mat_20.f \
-        mathist.f \
         matinit_drv.F \
         matmod_def.f \
         meansh.f \
@@ -144,14 +161,12 @@ PROJ_SRCS = \
         read_diff.f \
         read_fuldat.f \
         read_hist.f \
-        read_mathist.f \
         read_skew.f \
         read_slip.f \
         read_split.f \
         read_stateout.f \
         read_timdat.f \
         read_wink.f \
-        read_winkx.f \
         residu.f \
         rpforc.f \
         rsplit.f \
@@ -171,6 +186,9 @@ PROJ_SRCS = \
         scan_winkx.f \
         skclear.f \
         skcomp.f \
+	sort_elements.f \
+	sort_slip_nodes.f \
+	sort_split_nodes.f \
         sprod.f \
         stiff_ss.f \
         stiffld.f \
@@ -186,17 +204,31 @@ PROJ_SRCS = \
         viscos.F \
         winklf.f \
         winklr.F \
+	write_bc.f \
+	write_connect.f \
+	write_cooords.f \
+	write_diff.f \
         write_element_info.f \
+	write_fuldat.f \
         write_global_info.f \
+	write_hist.f \
         write_props.f \
+	write_skew.f \
+	write_slip.f \
         write_sparse_info.f \
+	write_split.f \
+	write_split_plot.f \
         write_state_cmp.f \
         write_state_drv.f \
+        write_stateout.f \
         write_strscomp.f \
         write_subiter.f \
+        write_timdat.f \
         write_ucd_header.f \
         write_ucd_mesh.f \
         write_ucd_node_vals.f \
+        write_wink.f \
+        write_winkx.f
 
 
 #--------------------------------------------------------------------------
@@ -222,7 +254,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.19 2005/04/01 23:35:07 willic3 Exp $
+# $Id: Make.mm,v 1.20 2005/04/20 18:59:12 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
