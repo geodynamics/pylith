@@ -101,7 +101,6 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   PyObject* pyPointerToPres;
   PyObject* pyPointerToPdir;
   PyObject* pyPointerToListArrayPropertyList; // Material property arrays
-  PyObject* pyPointerToMhist;
   PyObject* pyPointerToMaterialModelInfo;
   PyObject* pyPointerToGauss;                 // Element type arrays
   PyObject* pyPointerToSh;
@@ -133,7 +132,7 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   char* ucdOutputRoot;
   int autoprestrStage, iterateEvent;          // PETSc logging
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:autoprestr",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:autoprestr",
 			    &pyA,                             // Sparse matrix arrays
 			    &pyPointerToBextern,               // Force vectors
 			    &pyPointerToBtraction,
@@ -188,7 +187,6 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 			    &pyPointerToPres,
 			    &pyPointerToPdir,
 			    &pyPointerToListArrayPropertyList, // Material property arrays
-			    &pyPointerToMhist,
 			    &pyPointerToMaterialModelInfo,
 			    &pyPointerToGauss,                 // Element type arrays
 			    &pyPointerToSh,
@@ -283,7 +281,6 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   double*  pointerToPres = (double*) PyCObject_AsVoidPtr(pyPointerToPres);
   double*  pointerToPdir = (double*) PyCObject_AsVoidPtr(pyPointerToPdir);
   double*  pointerToListArrayPropertyList = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyList);
-  int*  pointerToMhist = (int*) PyCObject_AsVoidPtr(pyPointerToMhist);
   int*  pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
   double*  pointerToGauss = (double*) PyCObject_AsVoidPtr(pyPointerToGauss);
   double*  pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
@@ -365,7 +362,6 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 	       pointerToPres,
 	       pointerToPdir,
 	       pointerToListArrayPropertyList,    // Material property arrays
-	       pointerToMhist,
 	       pointerToMaterialModelInfo,
 	       pointerToGauss,                    // Element type arrays
 	       pointerToSh,
@@ -420,6 +416,6 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: autoprestr.cc,v 1.6 2005/04/01 23:54:26 willic3 Exp $
+// $Id: autoprestr.cc,v 1.7 2005/04/20 23:06:46 willic3 Exp $
 
 // End of file
