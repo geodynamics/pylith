@@ -181,6 +181,161 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
    		  stiffnessOffDiagonalSize);
 }
 
+
+// Localize id array for reference by element
+
+char pylithomop3d_local__doc__[] = "";
+char pylithomop3d_local__name__[] = "local";
+
+PyObject * pylithomop3d_local(PyObject *, PyObject *args)
+{
+  PyObject* pyPointerToId;
+  int numberNodes;
+  PyObject* pyPointerToIens;
+  PyObject* pyPointerToLm;
+  int numberVolumeElements;
+  int numberVolumeElementNodes;
+
+  int ok = PyArg_ParseTuple(args, "OiOOii:local",
+			    &pyPointerToId,
+			    &numberNodes,
+			    &pyPointerToIens,
+			    &pyPointerToLm,
+			    &numberVolumeElements,
+			    &numberVolumeElementNodes);
+
+  if (!ok) {
+    return 0;
+  }
+
+  int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
+  int* pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
+  int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
+
+  local_f(pointerToId,
+	  &numberNodes,
+	  pointerToIens,
+	  pointerToLm,
+	  &numberVolumeElements,
+	  &numberVolumeElementNodes);
+
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "numberVolumeElements:" << numberVolumeElements
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+    
+
+// Localize nfault array for reference by element
+
+char pylithomop3d_localf__doc__[] = "";
+char pylithomop3d_localf__name__[] = "localf";
+
+PyObject * pylithomop3d_localf(PyObject *, PyObject *args)
+{
+  PyObject* pyPointerToIens;
+  PyObject* pyPointerToLmf;
+  int numberVolumeElements;
+  PyObject* pyPointerToNfault;
+  int numberSplitNodeEntries;
+  int numberVolumeElementNodes;
+
+  int ok = PyArg_ParseTuple(args, "OOiOii:localf",
+			    &pyPointerToIens,
+			    &pyPointerToLmf,
+			    &numberVolumeElements,
+			    &pyPointerToNfault,
+			    &numberSplitNodeEntries,
+			    &numberVolumeElementNodes);
+
+  if (!ok) {
+    return 0;
+  }
+
+  int* pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
+  int* pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
+  int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
+
+  localf_f(pointerToIens,
+	   pointerToLmf,
+	   &numberVolumeElements,
+	   pointerToNfault,
+	   &numberSplitNodeEntries,
+	   &numberVolumeElementNodes);
+		  
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "numberSplitNodeEntries:" << numberSplitNodeEntries
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+    
+
+// Localize idx array for reference by element
+
+char pylithomop3d_localx__doc__[] = "";
+char pylithomop3d_localx__name__[] = "localx";
+
+PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
+{
+  PyObject* pyPointerToIdx;
+  int numberNodes;
+  PyObject* pyPointerToIens;
+  PyObject* pyPointerToLmx;
+  int numberVolumeElements;
+  PyObject* pyPointerToNslip;
+  int numberSlipperyNodeEntries;
+  int numberVolumeElementNodes;
+
+  int ok = PyArg_ParseTuple(args, "OiOOiOii:localx",
+			    &pyPointerToIdx,
+  			    &numberNodes,
+  			    &pyPointerToIens,
+  			    &pyPointerToLmx,
+  			    &numberVolumeElements,
+  			    &pyPointerToNslip,
+			    &numberSlipperyNodeEntries,
+  			    &numberVolumeElementNodes);
+
+  if (!ok) {
+    return 0;
+  }
+
+  int* pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
+  int* pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
+  int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
+  int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
+
+  localx_f(pointerToIdx,
+	   &numberNodes,
+	   pointerToIens,
+	   pointerToLmx,
+	   &numberVolumeElements,
+	   pointerToNslip,
+	   &numberSlipperyNodeEntries,
+	   &numberVolumeElementNodes);
+
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "numberVolumeElements:" << numberVolumeElements
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+
 // Create a PETSc Mat
 #include <petscmat.h>
 char pylithomop3d_createPETScMat__doc__[] = "";
@@ -369,6 +524,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.12 2005/04/13 22:02:38 willic3 Exp $
+// $Id: sparse.cc,v 1.13 2005/04/20 20:40:16 willic3 Exp $
 
 // End of file
