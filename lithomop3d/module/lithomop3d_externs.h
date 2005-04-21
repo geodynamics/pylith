@@ -35,6 +35,7 @@
 
 #if defined(F77EXTERNS_LOWERCASE_TRAILINGBAR)
 
+#define assign_wink_f assign_wink_
 #define autoprestr_f autoprestr_
 #define cmp_stiffsz_f cmp_stiffsz_
 #define create_id_f create_id_
@@ -54,7 +55,7 @@
 #define read_diff_f read_diff_
 #define read_fuldat_f read_fuldat_
 #define read_hist_f read_hist_
-#define read_mathist_f read_mathist_
+// #define read_mathist_f read_mathist_
 // #define read_prestr_f read_prestr_
 #define read_skew_f read_skew_
 #define read_slip_f read_slip_
@@ -63,7 +64,7 @@
 #define read_timdat_f read_timdat_
 // #define read_traction_f read_traction_
 #define read_wink_f read_wink_
-#define read_winkx_f read_winkx_
+// #define read_winkx_f read_winkx_
 #define scan_bc_f scan_bc_
 #define scan_connect_f scan_connect_
 #define scan_coords_f scan_coords_
@@ -78,17 +79,35 @@
 // #define scan_traction_f scan_traction_
 #define scan_wink_f scan_wink_
 #define scan_winkx_f scan_winkx_
+#define sort_elements_f sort_elements_
+#define sort_slip_nodes_f sort_slip_nodes_
+#define sort_split_nodes_f sort_split_nodes_
 #define viscos_f viscos_
+#define write_bc_f write_bc_
+#define write_connect_f write_connect_
+#define write_coords_f write_coords_
+#define write_diff_f write_diff_
 #define write_element_info_f write_element_info_
+#define write_fuldat_f write_fuldat_
 #define write_global_info_f write_global_info_
+#define write_hist_f write_hist_
 #define write_props_f write_props_
+#define write_skew_f write_skew_
+#define write_slip_f write_slip_
 #define write_sparse_info_f write_sparse_info_
+#define write_split_f write_split_
+#define write_split_plot_f write_split_plot_
+#define write_stateout_f write_stateout_
 #define write_strscomp_f write_strscomp_
 #define write_subiter_f write_subiter_
+#define write_timdat_f write_timdat_
 #define write_ucd_mesh_f write_ucd_mesh_
+#define write_wink_f write_wink_
+#define write_winkx_f write_winkx_
 
 #elif defined(F77EXTERNS_NOTRAILINGBAR)
 
+#define assign_wink_f assign_wink
 #define autoprestr_f autoprestr
 #define cmp_stiffsz_f cmp_stiffsz
 #define create_id_f create_id
@@ -108,7 +127,7 @@
 #define read_diff_f read_diff
 #define read_fuldat_f read_fuldat
 #define read_hist_f read_hist
-#define read_mathist_f read_mathist
+// #define read_mathist_f read_mathist
 // #define read_prestr_f read_prestr
 #define read_skew_f read_skew
 #define read_slip_f read_slip
@@ -117,7 +136,7 @@
 #define read_timdat_f read_timdat
 // #define read_traction_f read_traction
 #define read_wink_f read_wink
-#define read_winkx_f read_winkx
+// #define read_winkx_f read_winkx
 #define scan_bc_f scan_bc
 #define scan_connect_f scan_connect
 #define scan_coords_f scan_coords
@@ -132,17 +151,35 @@
 // #define scan_traction_f scan_traction
 #define scan_wink_f scan_wink
 #define scan_winkx_f scan_winkx
+#define sort_elements_f sort_elements
+#define sort_slip_nodes_f sort_slip_nodes
+#define sort_split_nodes_f sort_split_nodes
 #define viscos_f viscos
+#define write_bc_f write_bc
+#define write_connect_f write_connect
+#define write_coords_f write_coords
+#define write_diff_f write_diff
 #define write_element_info_f write_element_info
+#define write_fuldat_f write_fuldat
 #define write_global_info_f write_global_info
+#define write_hist_f write_hist
 #define write_props_f write_props
+#define write_skew_f write_skew
+#define write_slip_f write_slip
 #define write_sparse_info_f write_sparse_info
+#define write_split_f write_split
+#define write_split_plot_f write_split_plot
+#define write_stateout_f write_stateout
 #define write_strscomp_f write_strscomp
 #define write_subiter_f write_subiter
+#define write_timdat_f write_timdat
 #define write_ucd_mesh_f write_ucd_mesh
+#define write_wink_f write_wink
+#define write_winkx_f write_winkx
 
 #elif defined(F77EXTERNS_EXTRATRAILINGBAR)
 
+#define assign_wink_f assign_wink__
 #define autoprestr_f autoprestr__
 #define cmp_stiffsz_f cmp_stiffsz__
 #define create_id_f create_id__
@@ -162,7 +199,7 @@
 #define read_diff_f read_diff__
 #define read_fuldat_f read_fuldat__
 #define read_hist_f read_hist__
-#define read_mathist_f read_mathist__
+// #define read_mathist_f read_mathist__
 // #define read_prestr_f read_prestr__
 #define read_skew_f read_skew__
 #define read_slip_f read_slip__
@@ -171,7 +208,7 @@
 #define read_timdat_f read_timdat__
 // #define read_traction_f read_traction__
 #define read_wink_f read_wink__
-#define read_winkx_f read_winkx__
+// #define read_winkx_f read_winkx__
 #define scan_bc_f scan_bc__
 #define scan_connect_f scan_connect__
 #define scan_coords_f scan_coords__
@@ -186,17 +223,35 @@
 // #define scan_traction_f scan_traction__
 #define scan_wink_f scan_wink__
 #define scan_winkx_f scan_winkx__
+#define sort_elements_f sort_elements__
+#define sort_slip_nodes_f sort_slip_nodes__
+#define sort_split_nodes_f sort_split_nodes__
 #define viscos_f viscos__
+#define write_bc_f write_bc__
+#define write_connect_f write_connect__
+#define write_coords_f write_coords__
+#define write_diff_f write_diff__
 #define write_element_info_f write_element_info__
+#define write_fuldat_f write_fuldat__
 #define write_global_info_f write_global_info__
+#define write_hist_f write_hist__
 #define write_props_f write_props__
+#define write_skew_f write_skew__
+#define write_slip_f write_slip__
 #define write_sparse_info_f write_sparse_info__
+#define write_split_f write_split__
+#define write_split_plot_f write_split_plot__
+#define write_stateout_f write_stateout__
 #define write_strscomp_f write_strscomp__
 #define write_subiter_f write_subiter__
+#define write_timdat_f write_timdat__
 #define write_ucd_mesh_f write_ucd_mesh__
+#define write_wink_f write_wink__
+#define write_winkx_f write_winkx__
 
 #elif defined(F77EXTERNS_UPPERCASE_NOTRAILINGBAR)
 
+#define assign_wink_f ASSIGN_WINK
 #define autoprestr_f AUTOPRESTR
 #define cmp_stiffsz_f CMP_STIFFSZ
 #define create_id_f CREATE_ID
@@ -216,7 +271,7 @@
 #define read_diff_f READ_DIFF
 #define read_fuldat_f READ_FULDAT
 #define read_hist_f READ_HIST
-#define read_mathist_f READ_MATHIST
+// #define read_mathist_f READ_MATHIST
 // #define read_prestr_f READ_PRESTR
 #define read_skew_f READ_SKEW
 #define read_slip_f READ_SLIP
@@ -225,7 +280,7 @@
 #define read_timdat_f READ_TIMDAT
 // #define read_traction_f READ_TRACTION
 #define read_wink_f READ_WINK
-#define read_winkx_f READ_WINKX
+// #define read_winkx_f READ_WINKX
 #define scan_bc_f SCAN_BC
 #define scan_connect_f SCAN_CONNECT
 #define scan_coords_f SCAN_COORDS
@@ -240,14 +295,31 @@
 // #define scan_traction_f SCAN_TRACTION
 #define scan_wink_f SCAN_WINK
 #define scan_winkx_f SCAN_WINKX
+#define sort_elements_f SORT_ELEMENTS
+#define sort_slip_nodes_f SORT_SLIP_NODES
+#define sort_split_nodes_f SORT_SPLIT_NODES
 #define viscos_f VISCOS
+#define write_bc_f WRITE_BC
+#define write_connect_f WRITE_CONNECT
+#define write_coords_f WRITE_COORDS
+#define write_diff_f WRITE_DIFF
 #define write_element_info_f WRITE_ELEMENT_INFO
+#define write_fuldat_f WRITE_FULDAT
 #define write_global_info_f WRITE_GLOBAL_INFO
+#define write_hist_f WRITE_HIST
 #define write_props_f WRITE_PROPS
+#define write_skew_f WRITE_SKEW
+#define write_slip_f WRITE_SLIP
 #define write_sparse_info_f WRITE_SPARSE_INFO
+#define write_split_f WRITE_SPLIT
+#define write_split_plot_f WRITE_SPLIT_PLOT
+#define write_stateout_f WRITE_STATEOUT
 #define write_strscomp_f WRITE_STRSCOMP
 #define write_subiter_f WRITE_SUBITER
+#define write_timdat_f WRITE_TIMDAT
 #define write_ucd_mesh_f WRITE_UCD_MESH
+#define write_wink_f WRITE_WINK
+#define write_winkx_f WRITE_WINKX
 
 #elif defined(F77EXTERNS_COMPAQ_F90) || defined (F77EXTERNS_SOMETIMES_TRAILINGBAR)
 
@@ -255,6 +327,7 @@
 // symbols that do not contain underbars get one underbar at the end
 // this applies to the FORTRAN external, not the local macro alias!!!
 
+#define assign_wink_f assign_wink__
 #define autoprestr_f autoprestr_
 #define cmp_stiffsz_f cmp_stiffsz__
 #define create_id_f create_id__
@@ -274,7 +347,7 @@
 #define read_diff_f read_diff__
 #define read_fuldat_f read_fuldat__
 #define read_hist_f read_hist__
-#define read_mathist_f read_mathist__
+// #define read_mathist_f read_mathist__
 // #define read_prestr_f read_prestr__
 #define read_skew_f read_skew__
 #define read_slip_f read_slip__
@@ -283,7 +356,7 @@
 #define read_timdat_f read_timdat__
 // #define read_traction_f read_traction__
 #define read_wink_f read_wink__
-#define read_winkx_f read_winkx__
+// #define read_winkx_f read_winkx__
 #define scan_bc_f scan_bc__
 #define scan_connect_f scan_connect__
 #define scan_coords_f scan_coords__
@@ -298,14 +371,31 @@
 // #define scan_traction_f scan_traction__
 #define scan_wink_f scan_wink__
 #define scan_winkx_f scan_winkx__
+#define sort_elements_f sort_elements__
+#define sort_slip_nodes_f sort_slip_nodes__
+#define sort_split_nodes_f sort_split_nodes__
 #define viscos_f viscos_
+#define write_bc_f write_bc__
+#define write_connect_f write_connect__
+#define write_coords_f write_coords__
+#define write_diff_f write_diff__
 #define write_element_info_f write_element_info__
+#define write_fuldat_f write_fuldat__
 #define write_global_info_f write_global_info__
+#define write_hist_f write_hist__
 #define write_props_f write_props__
+#define write_skew_f write_skew__
+#define write_slip_f write_slip__
 #define write_sparse_info_f write_sparse_info__
+#define write_split_f write_split__
+#define write_split_plot_f write_split_plot__
+#define write_stateout_f write_stateout__
 #define write_strscomp_f write_strscomp__
 #define write_subiter_f write_subiter__
+#define write_timdat_f write_timdat__
 #define write_ucd_mesh_f write_ucd_mesh__
+#define write_wink_f write_wink__
+#define write_winkx_f write_winkx__
 
 #else
 #error Unknown translation for FORTRAN external symbols
@@ -316,6 +406,16 @@
 #include <petscmat.h>
 
 extern "C" {
+
+  void assign_wink_f(double *,
+		     double *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     int *);
 
   void autoprestr_f(Mat *,             // sparse
 		    double *,          // force
@@ -371,7 +471,6 @@ extern "C" {
 		    double *,
 		    double *,
 		    double *,          // material
-		    int *,
 		    int *,
 		    double *,          // element type
 		    double *,
@@ -485,7 +584,6 @@ extern "C" {
 		double *,
 		double *,          // material
 		int *,
-		int *,
 		double *,          // element type
 		double *,
 		double *,
@@ -527,10 +625,7 @@ extern "C" {
 		  int *,
 		  int *,
 		  int *,
-		  int *,
-		  int *,
-		  int *,
-		  char *,int);
+		  int *);
 
   void lnklst_f(int *,
 		int *,
@@ -616,13 +711,9 @@ extern "C" {
 		 int *,
 		 int *,
 		 int *,
-		 int *,
-		 int *,
-		 char *,
 		 char *,
 		 int *,
 		 char *,
-		 int,
 		 int,
 		 int);
 
@@ -633,27 +724,9 @@ extern "C" {
 		      int *,
 		      int *,
 		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      char *,
-		      char *,
 		      char *,
 		      int *,
 		      char *,
-		      int,
-		      int,
 		      int,
 		      int);
 
@@ -661,17 +734,9 @@ extern "C" {
 		     double*,
 		     int *,
 		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     char *,
-		     char *,
 		     char *,
 		     int *,
 		     char *,
-		     int,
-		     int,
 		     int,
 		     int);
 
@@ -682,13 +747,9 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
-		   int *,
-		   int *,
-		   char *,
 		   char *,
 		   int *,
 		   char *,
-		   int,
 		   int,
 		   int);
 
@@ -698,17 +759,9 @@ extern "C" {
 		     int *,
 		     int *,
 		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     int *,
-		     char *,
-		     char *,
 		     char *,
 		     int *,
 		     char *,
-		     int,
-		     int,
 		     int,
 		     int);
 
@@ -717,35 +770,31 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
-		   int *,
-		   int *,
-		   char *,
 		   char *,
 		   int *,
 		   char *,
-		   int,
 		   int,
 		   int);
 
-  void read_mathist_f(int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      int *,
-		      char *,
-		      char *,
-		      char *,
-		      int *,
-		      char *,
-		      int,
-		      int,
-		      int,
-		      int);
+  // void read_mathist_f(int *,
+// 		      int *,
+// 		      int *,
+// 		      int *,
+// 		      int *,
+// 		      int *,
+// 		      int *,
+// 		      int *,
+// 		      int *,
+// 		      int *,
+// 		      char *,
+// 		      char *,
+// 		      char *,
+// 		      int *,
+// 		      char *,
+// 		      int,
+// 		      int,
+// 		      int,
+// 		      int);
 
   // void read_prestr_f(double *,
 		     // double *,
@@ -771,13 +820,9 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
-		   int *,
-		   int *,
-		   char *,
 		   char *,
 		   int *,
 		   char *,
-		   int,
 		   int,
 		   int);
 
@@ -787,19 +832,9 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   char *,
-		   char *,
 		   char *,
 		   int *,
 		   char *,
-		   int,
-		   int,
 		   int,
 		   int);
 
@@ -810,35 +845,18 @@ extern "C" {
 		    int *,
 		    int *,
 		    int *,
-		    int *,
-		    int *,
-		    int *,
-		    int *,
-		    int *,
-		    char *,
-		    char *,
 		    char *,
 		    int *,
 		    char *,
-		    int,
-		    int,
 		    int,
 		    int);
 
   void read_stateout_f(int *,
 		       int *,
 		       int *,
-		       int *,
-		       int *,
-		       int *,
-		       int *,
-		       char *,
-		       char *,
 		       char *,
 		       int *,
 		       char *,
-		       int,
-		       int,
 		       int,
 		       int);
 
@@ -857,13 +875,9 @@ extern "C" {
 		     int *,
 		     int *,
 		     int *,
-		     int *,
-		     int *,
-		     char *,
 		     char *,
 		     int *,
 		     char *,
-		     int,
 		     int,
 		     int);
 
@@ -892,34 +906,29 @@ extern "C" {
 		   int *,
 		   int *,
 		   int *,
-		   int *,
-		   int *,
-		   int *,
-		   char *,
 		   char *,
 		   int *,
 		   char *,
-		   int,
 		   int,
 		   int);
 
-  void read_winkx_f(double *,
-		    double *,
-		    int *,
-		    int *,
-		    int *,
-		    int *,
-		    int *,
-		    int *,
-		    int *,
-		    int *,
-		    char *,
-		    char *,
-		    int *,
-		    char *,
-		    int,
-		    int,
-		    int);
+//   void read_winkx_f(double *,
+// 		    double *,
+// 		    int *,
+// 		    int *,
+// 		    int *,
+// 		    int *,
+// 		    int *,
+// 		    int *,
+// 		    int *,
+// 		    int *,
+// 		    char *,
+// 		    char *,
+// 		    int *,
+// 		    char *,
+// 		    int,
+// 		    int,
+// 		    int);
 
   void scan_bc_f(int *,
 		 int *,
@@ -1063,6 +1072,38 @@ extern "C" {
 		    int,
 		    int);
 
+  void sort_elements_f(int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       char *,
+		       int);
+
+  void sort_slip_nodes_f(int *,
+		         int *,
+		         int *,
+		         int *);
+
+  void sort_split_nodes_f(int *,
+		          int *,
+		          int *,
+		          int *);
+
   void viscos_f(Mat *,             // sparse
 		double *,          // force
 		double *,
@@ -1118,7 +1159,6 @@ extern "C" {
 		double *,
 		double *,          // material
 		int *,
-		int *,
 		double *,          // element type
 		double *,
 		double *,
@@ -1157,7 +1197,69 @@ extern "C" {
 		int,
 		int);
 
+  void write_bc_f(double *,
+		  int *,
+		  int *,
+		  int *,
+		  int *,
+		  char *,
+		  int *,
+		  char *,
+		  int,
+		  int);
+
+  void write_connect_f(int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       int *,
+		       char *,
+		       char *,
+		       int *,
+		       char *,
+		       int,
+		       int,
+		       int);
+
+  void write_coords_f(double *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      char *,
+		      char *,
+		      int *,
+		      char *,
+		      int,
+		      int,
+		      int);
+
+  void write_diff_f(double *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    char *,
+		    int *,
+		    char *,
+		    int,
+		    int);
+
   void write_element_info_f(int *,
+			    int *,
+			    int *,
+			    int *,
 			    int *,
 			    int *,
 			    int *,
@@ -1166,6 +1268,23 @@ extern "C" {
 			    int *,
 			    int *,
 			    char *,int);
+
+  void write_fuldat_f(int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      char *,
+		      char *,
+		      int *,
+		      char *,
+		      int,
+		      int,
+		      int);
 
   void write_global_info_f(char *,
 			   int *,
@@ -1180,6 +1299,18 @@ extern "C" {
 			   int,
 			   int,
 			   int);
+
+  void write_hist_f(double *,
+		    double *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    char *,
+		    int *,
+		    char *,
+		    int,
+		    int);
 
   void write_props_f(double *,
 		     double *,
@@ -1199,6 +1330,33 @@ extern "C" {
 		     int,
 		     int);
 
+  void write_skew_f(double *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    char *,
+		    int *,
+		    char *,
+		    int,
+		    int);
+
+  void write_slip_f(int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    char *,
+		    char *,
+		    int *,
+		    char *,
+		    int,
+		    int,
+		    int);
+
   void write_sparse_info_f(int *,
 			   int *,
 			   int *,
@@ -1207,6 +1365,41 @@ extern "C" {
 			   int *,
 			   int *,
 			   char *,int);
+
+  void write_split_f(double *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     char *,
+		     char *,
+		     int *,
+		     char *,
+		     int,
+		     int,
+		     int);
+
+  void write_split_plot_f(int *,
+		          int *,
+		          int *,
+		          int *,
+			  char *,int);
+
+  void write_stateout_f(int *,
+		        int *,
+		        int *,
+		        int *,
+		        int *,
+		        int *,
+			char *,
+			char *,
+			int *,
+			char *,
+			int,
+			int,
+			int);
 
   void write_strscomp_f(double *,
 			double *,
@@ -1219,6 +1412,27 @@ extern "C" {
 		       int *,
 		       int *,
 		       char *,int);
+
+  void write_timdat_f(double *,
+		      double *,
+		      double *,
+		      double *,
+		      double *,
+		      double *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      int *,
+		      char *,
+		      int *,
+		      char *,
+		      int,
+		      int);
 
   void write_ucd_mesh_f(double *,
 		       	int *,
@@ -1234,12 +1448,36 @@ extern "C" {
 		       	int *,
 		       	int *,
 		       	char *,int);
+
+  void write_wink_f(double *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    char *,
+		    int *,
+		    char *,
+		    int,
+		    int);
+
+  void write_winkx_f(double *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     int *,
+		     char *,
+		     int *,
+		     char *,
+		     int,
+		     int);
 }
 
 #endif // lithomop3d_externs_h
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.17 2005/04/05 22:36:34 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.18 2005/04/21 00:59:07 willic3 Exp $
 
 // End of file
