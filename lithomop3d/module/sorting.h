@@ -38,20 +38,20 @@ extern "C"
 PyObject * pylithomop3d_sort_elements(PyObject *, PyObject *);
 
 // Sort slippery nodes according to reordered elements
-extern char pylithomop3d_sort_slip__name__[];
-extern char pylithomop3d_sort_slip__doc__[];
+extern char pylithomop3d_sort_slip_nodes__name__[];
+extern char pylithomop3d_sort_slip_nodes__doc__[];
 extern "C"
-PyObject * pylithomop3d_sort_slip(PyObject *, PyObject *);
+PyObject * pylithomop3d_sort_slip_nodes(PyObject *, PyObject *);
 
 // Sort split nodes according to reordered elements
-extern char pylithomop3d_sort_split__name__[];
-extern char pylithomop3d_sort_split__doc__[];
+extern char pylithomop3d_sort_split_nodes__name__[];
+extern char pylithomop3d_sort_split_nodes__doc__[];
 extern "C"
-PyObject * pylithomop3d_sort_split(PyObject *, PyObject *);
+PyObject * pylithomop3d_sort_split_nodes(PyObject *, PyObject *);
 
 #endif
 
 // version
-// $Id: sorting.h,v 1.1 2005/04/21 01:05:24 willic3 Exp $
+// $Id: sorting.h,v 1.2 2005/04/21 23:20:18 willic3 Exp $
 
 // End of file
