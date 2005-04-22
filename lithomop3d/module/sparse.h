@@ -43,13 +43,31 @@ extern char pylithomop3d_lnklst__doc__[];
 extern "C"
 PyObject * pylithomop3d_lnklst(PyObject *, PyObject *);
 
+// localize id array for reference by element
+extern char pylithomop3d_local__name__[];
+extern char pylithomop3d_local__doc__[];
+extern "C"
+PyObject * pylithomop3d_local(PyObject *, PyObject *);
+
+// localize nfault array for reference by element
+extern char pylithomop3d_localf__name__[];
+extern char pylithomop3d_localf__doc__[];
+extern "C"
+PyObject * pylithomop3d_localf(PyObject *, PyObject *);
+
+// localize idx array for reference by element
+extern char pylithomop3d_localx__name__[];
+extern char pylithomop3d_localx__doc__[];
+extern "C"
+PyObject * pylithomop3d_localx(PyObject *, PyObject *);
+
 // create a PETSc Mat
 extern char pylithomop3d_createPETScMat__name__[];
 extern char pylithomop3d_createPETScMat__doc__[];
 extern "C"
 PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *);
 
-// create a PETSc Mat
+// destroy a PETSc Mat
 extern char pylithomop3d_destroyPETScMat__name__[];
 extern char pylithomop3d_destroyPETScMat__doc__[];
 extern "C"
@@ -64,6 +82,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *);
 #endif
 
 // version
-// $Id: sparse.h,v 1.4 2005/03/31 23:27:58 willic3 Exp $
+// $Id: sparse.h,v 1.5 2005/04/21 23:21:00 willic3 Exp $
 
 // End of file
