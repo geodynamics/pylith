@@ -42,6 +42,7 @@
 #include "scanner.h"       // scanners
 #include "setup.h"         // initialization/setup routines
 #include "sparse.h"        // sparse matrix routines
+#include "sorting.h"        // element sorting routines
 #include "viscos.h"        // time-dependent solution driver
 #include "write_modelinfo.h" // output routines
 #include "misc.h"          // miscellaneous methods
@@ -365,6 +366,6 @@ struct PyMethodDef pylithomop3d_methods[] = {
 };
 
 // version
-// $Id: bindings.cc,v 1.9 2005/04/21 01:00:30 willic3 Exp $
+// $Id: bindings.cc,v 1.10 2005/04/21 23:16:35 willic3 Exp $
 
 // End of file
