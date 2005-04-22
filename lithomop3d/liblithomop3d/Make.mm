@@ -206,7 +206,7 @@ PROJ_SRCS = \
         winklr.F \
 	write_bc.f \
 	write_connect.f \
-	write_cooords.f \
+	write_coords.f \
 	write_diff.f \
         write_element_info.f \
 	write_fuldat.f \
@@ -254,7 +254,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.20 2005/04/20 18:59:12 willic3 Exp $
+# $Id: Make.mm,v 1.21 2005/04/21 23:13:39 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
