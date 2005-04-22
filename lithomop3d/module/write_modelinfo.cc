@@ -33,7 +33,7 @@
 
 #include <Python.h>
 
-#include "input_misc.h"
+#include "write_modelinfo.h"
 #include "exceptionhandler.h"
 #include "lithomop3d_externs.h"
 #include <stdio.h>
@@ -325,10 +325,10 @@ char pylithomop3d_write_element_info__name__[] = "write_element_info";
 PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
 {
   int numberVolumeElements;
-  int numberVolumeElementNodes,
-    int numberVolumeElementGaussPoints,
-    int volumeElementType,
-    int quadratureOrderInt;
+  int numberVolumeElementNodes;
+  int numberVolumeElementGaussPoints;
+  int volumeElementType;
+  int quadratureOrderInt;
   int prestressAutoComputeInt;
   int prestressAutoChangeElasticPropsInt;
   double prestressAutoComputePoisson;
@@ -1402,6 +1402,6 @@ PyObject * pylithomop3d_write_winkx(PyObject *, PyObject *args)
 }
 
 // version
-// $Id: write_modelinfo.cc,v 1.2 2005/04/21 00:07:31 willic3 Exp $
+// $Id: write_modelinfo.cc,v 1.3 2005/04/21 23:22:06 willic3 Exp $
 
 // End of file
