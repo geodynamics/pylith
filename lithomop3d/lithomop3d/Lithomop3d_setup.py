@@ -291,6 +291,18 @@ class Lithomop3d_setup(Component):
         self.pointerToIbond = None
         self.pointerToBond = None
 
+	# Time step information
+        self.pointerToMaxstp = None
+        self.pointerToDelt = None
+        self.pointerToAlfa = None
+        self.pointerToMaxit = None
+        self.pointerToNtdinit = None
+        self.pointerToLgdef = None
+        self.pointerToUtol = None
+        self.pointerToFtol = None
+        self.pointerToEtol = None
+        self.pointerToItmax = None
+
         # Split node arrays
         self.pointerToFault = None
         self.pointerToNfault = None
@@ -1194,16 +1206,6 @@ class Lithomop3d_setup(Component):
         self.pointerToListArrayNtimdat = None
         self.listNvisdat = [0, 0, 0, 0]
         self.pointerToListArrayNvisdat = None
-        self.pointerToMaxstp = None
-        self.pointerToDelt = None
-        self.pointerToAlfa = None
-        self.pointerToMaxit = None
-        self.pointerToNtdinit = None
-        self.pointerToLgdef = None
-        self.pointerToUtol = None
-        self.pointerToFtol = None
-        self.pointerToEtol = None
-        self.pointerToItmax = None
 
         # Tolerance information
         self.listRgiter = [0.0, 0.0, 0.0]
@@ -1218,7 +1220,6 @@ class Lithomop3d_setup(Component):
         self.pointerToListArrayGrav = lithomop3d.doubleListToArray(
             self.listGrav)
 	self.memorySize += 3*self.doubleSize
-            self.asciiOutputFile)
                              
         # Allocate memory for all additional arrays
 
@@ -1658,7 +1659,7 @@ class Lithomop3d_setup(Component):
                 self.ucdOutputRoot)
 
         # Write split node info
-        lithomoped.write_split(
+        lithomop3d.write_split(
             self.pointerToFault,
             self.pointerToNfault,
             self.numberSplitNodeEntries,
@@ -1770,6 +1771,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.28 2005/04/21 01:09:07 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.29 2005/04/21 23:15:25 willic3 Exp $
 
 # End of file 
