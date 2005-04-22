@@ -953,10 +953,10 @@ PyObject * pylithomop3d_read_wink(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
+  double* pointerToWinkdef = (double*) PyCObject_AsVoidPtr(pyPointerToWinkdef);
   double* pointerToListArrayWscal = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayWscal);
-  int* pointerToIwink = (int*) PyCObject_AsVoidPtr(pyPointerToIwink);
-  int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
+  int* pointerToIwinkdef = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkdef);
+  int* pointerToIwinkid = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkid);
 
   read_wink_f(pointerToWinkdef,
 	      pointerToListArrayWscal,
@@ -987,6 +987,6 @@ PyObject * pylithomop3d_read_wink(PyObject *, PyObject *args)
 }
 
 // version
-// $Id: parser.cc,v 1.10 2005/04/20 00:29:16 willic3 Exp $
+// $Id: parser.cc,v 1.11 2005/04/21 23:19:04 willic3 Exp $
 
 // End of file
