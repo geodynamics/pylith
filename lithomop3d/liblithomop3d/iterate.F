@@ -30,8 +30,8 @@ c
 c
       subroutine iterate(
      & A,                                                               ! sparse
-     & bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,    ! force
-     & dprev,nforce,grav,                                               ! force
+     & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,      ! force
+     & bwinkx,dispvec,dprev,nforce,grav,                                ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
      & dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                     ! slip
      & nfault,dfault,tfault,                                            ! fault
@@ -101,7 +101,7 @@ c
       integer infmatmod(*)
       character errstrng*(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
-      double precision bintern(*),bresid(*)
+      double precision bintern(*),bresid(*),bwink(*),bwinkx(*)
       double precision dispvec(*),dprev(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision dx(*),deldx(*),dxcur(*),winkx(*)
@@ -278,10 +278,10 @@ c
 c...compute contribution to internal force vector from winkler boundary
 c   conditions
 c
-        if(nwink.ne.0) call winklf(bintern,dispvec,iwink,wink,histry,
-     &   nwink,nhist,nstep,neq,lastep)
-        if(nwinkx.ne.0) call winklf(bintern,dispvec,iwinkx,winkx,histry,
-     &   nwinkx,nhist,nstep,neq,lastep)
+        if(nwink.ne.0) call winklf(bwink,bintern,dispvec,iwink,wink,
+     &   histry,nwink,nhist,nstep,neq,lastep)
+        if(nwinkx.ne.0) call winklf(bwinkx,bintern,dispvec,iwinkx,winkx,
+     &   histry,nwinkx,nhist,nstep,neq,lastep)
 c
 c...update the total displacement and the displacement increment
 c   for this step
@@ -350,7 +350,7 @@ c
       end
 c
 c version
-c $Id: iterate.F,v 1.10 2005/04/16 00:38:59 willic3 Exp $
+c $Id: iterate.F,v 1.11 2005/05/03 18:40:27 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
