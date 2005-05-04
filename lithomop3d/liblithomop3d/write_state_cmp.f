@@ -150,13 +150,13 @@ cdebug            write(6,*) "sout:",(sout(idb),idb=1,3*nstatesmax)
         end do
       end if
 c
- 700  format(2x,"elmt",4x,"gspt",100(:5x,a11))
+ 700  format(//,2x,"elmt",4x,"gspt",100(:5x,a11))
  710  format(2(1x,i7),100(:2x,1pe15.8))
  720  format(i7,100(:2x,1pe15.8))
       return
       end
 c
 c version
-c $Id: write_state_cmp.f,v 1.3 2005/04/01 23:12:41 willic3 Exp $
+c $Id: write_state_cmp.f,v 1.4 2005/05/03 18:42:05 willic3 Exp $
 c
 c End of file 
