@@ -18,15 +18,15 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      integer nforce(6)
+      integer nforce(8)
 c
 c...  scalar parameters associated with arrays
 c
       integer nextflag,ntractflag,ngravflag,nconcflag,nprestrflag,
-     & nprevdflag
+     & nwinkflag,nwinkxflag,nprevdflag
 c
 c version
-c $Id: nforce_dim.inc,v 1.1 2005/01/06 01:21:21 willic3 Exp $
+c $Id: nforce_dim.inc,v 1.2 2005/05/03 18:42:49 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
