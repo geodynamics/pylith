@@ -56,6 +56,8 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   PyObject* pyPointerToBconcForce;
   PyObject* pyPointerToBintern;
   PyObject* pyPointerToBresid;
+  PyObject* pyPointerToBwink;
+  PyObject* pyPointerToBwinkx;
   PyObject* pyPointerToDispVec;
   PyObject* pyPointerToDprev;
   PyObject* pyPointerToListArrayNforce;
@@ -134,7 +136,7 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   char* ucdOutputRoot;
   int elasticStage, iterateEvent;             // PETSc logging
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:elastc",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:elastc",
 			    &pyA,                              // Sparse matrix arrays
 			    &pyPointerToBextern,               // Force vectors
 			    &pyPointerToBtraction,
@@ -142,6 +144,8 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 			    &pyPointerToBconcForce,
 			    &pyPointerToBintern,
 			    &pyPointerToBresid,
+			    &pyPointerToBwink,
+			    &pyPointerToBwinkx,
 			    &pyPointerToDispVec,
 			    &pyPointerToDprev,
 			    &pyPointerToListArrayNforce,
@@ -236,6 +240,8 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   double*  pointerToBconcForce = (double*) PyCObject_AsVoidPtr(pyPointerToBconcForce);
   double*  pointerToBintern = (double*) PyCObject_AsVoidPtr(pyPointerToBintern);
   double*  pointerToBresid = (double*) PyCObject_AsVoidPtr(pyPointerToBresid);
+  double*  pointerToBwink = (double*) PyCObject_AsVoidPtr(pyPointerToBwink);
+  double*  pointerToBwinkx = (double*) PyCObject_AsVoidPtr(pyPointerToBwinkx);
   double*  pointerToDispVec = (double*) PyCObject_AsVoidPtr(pyPointerToDispVec);
   double*  pointerToDprev = (double*) PyCObject_AsVoidPtr(pyPointerToDprev);
   int*  pointerToListArrayNforce = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNforce);
@@ -317,6 +323,8 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 	   pointerToBconcForce,
 	   pointerToBintern,
 	   pointerToBresid,
+	   pointerToBwink,
+	   pointerToBwinkx,
 	   pointerToDispVec,
 	   pointerToDprev,
 	   pointerToListArrayNforce,
@@ -418,6 +426,6 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 
 
 // version
-// $Id: elastc.cc,v 1.13 2005/04/20 23:06:46 willic3 Exp $
+// $Id: elastc.cc,v 1.14 2005/05/03 18:48:20 willic3 Exp $
 
 // End of file

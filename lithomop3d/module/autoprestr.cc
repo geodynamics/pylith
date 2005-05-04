@@ -54,6 +54,8 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   PyObject* pyPointerToBconcForce;
   PyObject* pyPointerToBintern;
   PyObject* pyPointerToBresid;
+  PyObject* pyPointerToBwink;
+  PyObject* pyPointerToBwinkx;
   PyObject* pyPointerToDispVec;
   PyObject* pyPointerToDprev;
   PyObject* pyPointerToListArrayNforce;
@@ -132,7 +134,7 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   char* ucdOutputRoot;
   int autoprestrStage, iterateEvent;          // PETSc logging
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:autoprestr",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:autoprestr",
 			    &pyA,                             // Sparse matrix arrays
 			    &pyPointerToBextern,               // Force vectors
 			    &pyPointerToBtraction,
@@ -140,6 +142,8 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 			    &pyPointerToBconcForce,
 			    &pyPointerToBintern,
 			    &pyPointerToBresid,
+			    &pyPointerToBwink,
+			    &pyPointerToBwinkx,
 			    &pyPointerToDispVec,
 			    &pyPointerToDprev,
 			    &pyPointerToListArrayNforce,
@@ -234,6 +238,8 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   double*  pointerToBconcForce = (double*) PyCObject_AsVoidPtr(pyPointerToBconcForce);
   double*  pointerToBintern = (double*) PyCObject_AsVoidPtr(pyPointerToBintern);
   double*  pointerToBresid = (double*) PyCObject_AsVoidPtr(pyPointerToBresid);
+  double*  pointerToBwink = (double*) PyCObject_AsVoidPtr(pyPointerToBwink);
+  double*  pointerToBwinkx = (double*) PyCObject_AsVoidPtr(pyPointerToBwinkx);
   double*  pointerToDispVec = (double*) PyCObject_AsVoidPtr(pyPointerToDispVec);
   double*  pointerToDprev = (double*) PyCObject_AsVoidPtr(pyPointerToDprev);
   int*  pointerToListArrayNforce = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNforce);
@@ -315,6 +321,8 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 	       pointerToBconcForce,
 	       pointerToBintern,
 	       pointerToBresid,
+	       pointerToBwink,
+	       pointerToBwinkx,
 	       pointerToDispVec,
 	       pointerToDprev,
 	       pointerToListArrayNforce,
@@ -416,6 +424,6 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: autoprestr.cc,v 1.8 2005/04/21 00:09:48 willic3 Exp $
+// $Id: autoprestr.cc,v 1.9 2005/05/03 18:48:19 willic3 Exp $
 
 // End of file
