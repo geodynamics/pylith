@@ -30,8 +30,8 @@ c
 c
       subroutine viscos(
      & A,                                                               ! sparse
-     & bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,    ! force
-     & dprev,nforce,grav,                                               ! force
+     & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,      ! force
+     & bwinkx,dispvec,dprev,nforce,grav,                                ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
      & ibond,bond,                                                      ! bc
      & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
@@ -91,7 +91,8 @@ c
       integer iprint(*)
       integer istatout(*),nstatout(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
-      double precision bintern(*),bresid(*),dispvec(*),dprev(*),grav(*)
+      double precision bintern(*),bresid(*),bwink(*),bwinkx(*)
+      double precision dispvec(*),dprev(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision bond(*)
       double precision dx(*),deldx(*),dxcur(*),diforc(*),winkx(*)
@@ -292,18 +293,11 @@ c
 c
 c...  compute change in load vector if winkler forces are removed
 c
-c****  I believe that this is no longer necessary, since Winkler forces
-c****  are added to the internal force vector at every iteration.
-c
-c*            call fill(zcg,zero,neq)
-c*            if(nwink.ne.izero.and.unlck) call unlock(zcg,btot,id,iwink,
-c*     &       idhist,ibond,bond,histry,nstep,numnp,nwink,nhist,neq,
-c*     &       numdif,lastep,ione)
-c*            if(nwinkx.ne.izero.and.unlckf) call unlock(zcg,btot,idx,
-c*     &       iwinkx,idhist,ibond,diforc,histry,nstep,numnp,nwinkx,nhist,
-c*     &       neq,numdif,lastep,itwo)
+            if(nwink.ne.izero.and.unlck) call unlock(bwink,bintern,
+     &       iwink,histry,nstep,nwink,nhist,neq,lastep)
+            if(nwinkx.ne.izero.and.unlckf) call unlock(bwinkx,bintern,
+     &       iwinkx,histry,nstep,nwinkx,nhist,neq,lastep)
 cdebug            write(6,*) "After unlock:"
-c*	    call daxpy(neq,one,zcg,ione,btot,ione)
 c
 c...  reform time-dependent material and stiffness matrices if
 c     requested, compute forces due to applied displacements and split
@@ -367,7 +361,7 @@ c
               call iterate(
      &         A,                                                       ! sparse
      &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
-     &         dispvec,dprev,nforce,grav,                               ! force
+     &         bwink,bwinkx,dispvec,dprev,nforce,grav,                  ! force
      &         x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,              ! global
      &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
      &         nfault,dfault,tfault,                                    ! fault
@@ -446,7 +440,7 @@ c
               call iterate(
      &         A,                                                       ! sparse
      &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
-     &         dispvec,dprev,nforce,grav,                               ! force
+     &         bwink,bwinkx,dispvec,dprev,nforce,grav,                  ! force
      &         x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,              ! global
      &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
      &         nfault,dfault,tfault,                                    ! fault
@@ -519,7 +513,7 @@ c
 clater              call iterate(
 clater     &         A,                                               ! sparse
 clater     &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
-clater     &         dispvec,nforce,grav,                                     ! force
+clater     &         bwink,bwinkx,dispvec,nforce,grav,                        ! force
 clater     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
 clater     &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
 clater     &         nfault,dfault,tfault,                                    ! fault
@@ -588,7 +582,7 @@ c
 clater              call iterate(
 clater     &         A,                                               ! sparse
 clater     &         bextern,btraction,bgravity,bconcforce,bintern,bresid,    ! force
-clater     &         dispvec,nforce,grav,                                     ! force
+clater     &         bwink,bwinkx,dispvec,nforce,grav,                        ! force
 clater     &         x,d,deld,dcur,id,iwink,wink,nsysdat,                     ! global
 clater     &         dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,             ! slip
 clater     &         nfault,dfault,tfault,                                    ! fault
@@ -672,7 +666,7 @@ c
       end
 c
 c version
-c $Id: viscos.F,v 1.10 2005/04/16 00:38:59 willic3 Exp $
+c $Id: viscos.F,v 1.11 2005/05/03 18:39:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
