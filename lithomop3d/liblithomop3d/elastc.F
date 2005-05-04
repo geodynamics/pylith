@@ -30,8 +30,8 @@ c
 c
       subroutine elastc(
      & A,                                                               ! sparse
-     & bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,    ! force
-     & dprev,nforce,grav,                                               ! force
+     & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,      ! force
+     & bwinkx,dispvec,dprev,nforce,grav,                                ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
      & ibond,bond,                                                      ! bc
      & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
@@ -89,7 +89,8 @@ c
       integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
       integer istatout(*),nstatout(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
-      double precision bintern(*),bresid(*),dispvec(*),dprev(*),grav(*)
+      double precision bintern(*),bresid(*),bwink(*),bwinkx(*)
+      double precision dispvec(*),dprev(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision bond(*)
       double precision dx(*),deldx(*),dxcur(*),diforc(*),winkx(*)
@@ -165,6 +166,8 @@ c
       call fill(bgravity,zero,neq*ngravflag)
       call fill(bconcforce,zero,neq*nconcflag)
       if(nprestrflag.eq.izero) call fill(bintern,zero,neq)
+      call fill(bwink,zero,neq*nwinkflag)
+      call fill(bwinkx,zero,neq*nwinkxflag)
       call fill(deld,zero,ndof*numnp)
       call fill(deldx,zero,ndof*numnp)
       call fill(dcur,zero,ndof*numnp)
@@ -297,8 +300,8 @@ c
 c
         call iterate(
      &   A,                                                             ! sparse
-     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
-     &   dprev,nforce,grav,                                             ! force
+     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,    ! force
+     &   bwinkx,dispvec,dprev,nforce,grav,                              ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
      &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
      &   nfault,dfault,tfault,                                          ! fault
@@ -371,8 +374,8 @@ c
 c
         call iterate(
      &   A,                                                             ! sparse
-     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
-     &   dprev,nforce,grav,                                             ! force
+     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,    ! force
+     &   bwinkx,dispvec,dprev,nforce,grav,                              ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
      &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
      &   nfault,dfault,tfault,                                          ! fault
@@ -443,7 +446,7 @@ c
 clater        call iterate(
 clater     &   A,                                                     ! sparse
 clater     &   bextern,btraction,bgravity,bconcforce,bintern,                 ! force
-clater     &   bresid,dispvec,nforce,grav,                                    ! force
+clater     &   bresid,bwink,bwinkx,dispvec,nforce,grav,                       ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
 clater     &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
 clater     &   nfault,dfault,tfault,                                          ! fault
@@ -513,7 +516,7 @@ c
 clater        call iterate(
 clater     &   A,                                                     ! sparse
 clater     &   bextern,btraction,bgravity,bconcforce,bintern,                 ! force
-clater     &   bresid,dispvec,nforce,grav,                                    ! force
+clater     &   bresid,bwink,bwinkx,dispvec,nforce,grav,                       ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
 clater     &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
 clater     &   nfault,dfault,tfault,                                          ! fault
@@ -599,7 +602,7 @@ c
       end
 c
 c version
-c $Id: elastc.F,v 1.11 2005/04/16 00:38:59 willic3 Exp $
+c $Id: elastc.F,v 1.12 2005/05/03 18:39:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

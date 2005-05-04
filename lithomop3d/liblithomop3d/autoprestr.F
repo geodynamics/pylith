@@ -30,8 +30,8 @@ c
 c
       subroutine autoprestr(
      & A,                                                               ! sparse
-     & bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,    ! force
-     & dprev,nforce,grav,                                               ! force
+     & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,      ! force
+     & bwinkx,dispvec,dprev,nforce,grav,                                ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
      & ibond,bond,                                                      ! bc
      & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
@@ -90,7 +90,8 @@ c
       integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
       integer istatout(*),nstatout(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
-      double precision bintern(*),bresid(*),dispvec(*),dprev(*),grav(*)
+      double precision bintern(*),bresid(*),bwink(*),bwinkx(*)
+      double precision dispvec(*),dprev(*),grav(*)
       double precision x(*),d(*),deld(*),dcur(*),wink(*)
       double precision bond(*)
       double precision dx(*),deldx(*),dxcur(*),diforc(*),winkx(*)
@@ -161,6 +162,8 @@ c
       call fill(btraction,zero,neq*ntractflag)
       call fill(bgravity,zero,neq*ngravflag)
       call fill(bconcforce,zero,neq*nconcflag)
+      call fill(bwink,zero,neq*nwinkflag)
+      call fill(bwinkx,zero,neq*nwinkxflag)
       call fill(bintern,zero,neq)
       call fill(deld,zero,ndof*numnp)
       call fill(deldx,zero,ndof*numnp)
@@ -287,8 +290,8 @@ c*        if(ierr.ne.izero) return
 c
         call iterate(
      &   A,                                                             ! sparse
-     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
-     &   dprev,nforce,grav,                                             ! force
+     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,    ! force
+     &   bwinkx,dispvec,dprev,nforce,grav,                              ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
      &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
      &   nfault,dfault,tfault,                                          ! fault
@@ -361,8 +364,8 @@ c*        if(ierr.ne.izero) return
 c
         call iterate(
      &   A,                                                             ! sparse
-     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
-     &   dprev,nforce,grav,                                             ! force
+     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,    ! force
+     &   bwinkx,dispvec,dprev,nforce,grav,                              ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
      &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
      &   nfault,dfault,tfault,                                          ! fault
@@ -432,8 +435,8 @@ c*clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
 clater     &   A,                                                     ! sparse
-clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
-clater     &   dprev,nforce,grav,                                             ! force
+clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,    ! force
+clater     &   bwinkx,dispvec,dprev,nforce,grav,                              ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
 clater     &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
 clater     &   nfault,dfault,tfault,                                          ! fault
@@ -501,8 +504,8 @@ c*clater        if(ierr.ne.izero) return
 c
 clater        call iterate(
 clater     &   A,                                                     ! sparse
-clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,dispvec,  ! force
-clater     &   dprev,nforce,grav,                                             ! force
+clater     &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,    ! force
+clater     &   bwinkx,dispvec,dprev,nforce,grav,                              ! force
 clater     &   x,d,deld,dcur,id,iwink,wink,nsysdat,                           ! global
 clater     &   dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,                   ! slip
 clater     &   nfault,dfault,tfault,                                          ! fault
@@ -587,7 +590,7 @@ c
       end
 c
 c version
-c $Id: autoprestr.F,v 1.9 2005/04/21 01:34:03 willic3 Exp $
+c $Id: autoprestr.F,v 1.10 2005/05/03 18:39:36 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
