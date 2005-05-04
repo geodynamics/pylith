@@ -4,9 +4,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c                             Charles A. Williams
 c                       Rensselaer Polytechnic Institute
-c                        (C) 2004  All Rights Reserved
+c                        (C) 2005  All Rights Reserved
 c
-c  Copyright 2004 Rensselaer Polytechnic Institute.
 c  All worldwide rights reserved.  A license to use, copy, modify and
 c  distribute this software for non-commercial research purposes only
 c  is hereby granted, provided that this copyright notice and
@@ -29,8 +28,8 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine winklf(bintern,deld,iwink,wink,histry,nwink,nhist,
-     & nstep,neq,lastep)
+      subroutine winklf(bwink,bintern,deld,iwink,wink,histry,nwink,
+     & nhist,nstep,neq,lastep)
 c
 c       program to compute winkler restoring forces from the
 c       displacements and add them to the internal force vector bintern.
@@ -48,7 +47,7 @@ c...  subroutine arguments
 c
       integer nwink,nhist,nstep,neq,lastep
       integer iwink(2,nwink)
-      double precision bintern(neq),deld(neq),wink(nwink)
+      double precision bwink(neq),bintern(neq),deld(neq),wink(nwink)
       double precision histry(nhist,lastep+1)
 c
 c...  local variables
@@ -61,17 +60,18 @@ c
         mode=iwink(1,i)
         k=iwink(2,i)
         if(mode.eq.ione) then
-          bintern(k)=bintern(k)+wink(i)*deld(k)
+          bwink(k)=bwink(k)+wink(i)*deld(k)
         else
           ihist=-mode
-          bintern(k)=bintern(k)+wink(i)*deld(k)*histry(ihist,nstep+1)
+          bwink(k)=bwink(k)+wink(i)*deld(k)*histry(ihist,nstep+1)
         end if
+        bintern(k)=bintern(k)+bwink(k)
       end do
       return
       end
 c
 c version
-c $Id: winklf.f,v 1.3 2005/01/05 22:35:38 willic3 Exp $
+c $Id: winklf.f,v 1.4 2005/05/03 18:41:29 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
