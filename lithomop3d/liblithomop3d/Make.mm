@@ -199,6 +199,7 @@ PROJ_SRCS = \
         td_strs_cmp_ss.f \
         td_strs_mat_cmp_ss.F \
         transp.f \
+	unlock.f \
         update_state_cmp.f \
         update_state_drv.f \
         viscos.F \
@@ -254,7 +255,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.21 2005/04/21 23:13:39 willic3 Exp $
+# $Id: Make.mm,v 1.22 2005/05/03 18:38:10 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
