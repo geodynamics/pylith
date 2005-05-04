@@ -74,6 +74,8 @@ class Lithomop3d_run(Component):
         self.pointerToBconcForce = lm3dsetup.pointerToBconcForce
         self.pointerToBintern = lm3dsetup.pointerToBintern
         self.pointerToBresid = lm3dsetup.pointerToBresid
+        self.pointerToBwink = lm3dsetup.pointerToBwink
+        self.pointerToBwinkx = lm3dsetup.pointerToBwinkx
         self.pointerToDispVec = lm3dsetup.pointerToDispVec
         self.pointerToDprev = lm3dsetup.pointerToDprev
         self.pointerToListArrayNforce = lm3dsetup.pointerToListArrayNforce
@@ -204,6 +206,8 @@ class Lithomop3d_run(Component):
                     self.pointerToBconcForce,
                     self.pointerToBintern,
                     self.pointerToBresid,
+                    self.pointerToBwink,
+                    self.pointerToBwinkx,
                     self.pointerToDispVec,
                     self.pointerToDprev,
                     self.pointerToListArrayNforce,
@@ -293,6 +297,8 @@ class Lithomop3d_run(Component):
                 self.pointerToBconcForce,
                 self.pointerToBintern,
                 self.pointerToBresid,
+                self.pointerToBwink,
+                self.pointerToBwinkx,
                 self.pointerToDispVec,
                 self.pointerToDprev,
                 self.pointerToListArrayNforce,
@@ -383,6 +389,8 @@ class Lithomop3d_run(Component):
                 self.pointerToBconcForce,
                 self.pointerToBintern,
                 self.pointerToBresid,
+                self.pointerToBwink,
+                self.pointerToBwinkx,
                 self.pointerToDispVec,
                 self.pointerToDprev,
                 self.pointerToListArrayNforce,
@@ -479,6 +487,6 @@ class Lithomop3d_run(Component):
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.16 2005/04/20 23:46:45 willic3 Exp $
+# $Id: Lithomop3d_run.py,v 1.17 2005/05/03 18:47:35 willic3 Exp $
 
 # End of file 

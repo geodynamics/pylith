@@ -277,6 +277,8 @@ class Lithomop3d_setup(Component):
         self.concForceFlag = 0
         self.numberConcForces = 0
         self.prestressFlag = 0
+	self.winklerFlag = 0
+	self.slipperyWinklerFlag = 0
 
         # Nodal arrays and equation numbers
         self.pointerToX = None
@@ -1152,9 +1154,11 @@ class Lithomop3d_setup(Component):
         self.pointerToBconcForce = None
         self.pointerToBintern = None
         self.pointerToBresid = None
+        self.pointerToBwink = None
+        self.pointerToBwinkx = None
         self.pointerToDispVec = None
         self.pointerToDprev = None
-        self.listNforce = [0, 0, 0, 0, 0, 0]
+        self.listNforce = [0, 0, 0, 0, 0, 0, 0, 0]
         self.pointerToListArrayNforce = None
 
         # Body forces
@@ -1232,6 +1236,10 @@ class Lithomop3d_setup(Component):
             self.concForceFlag = 1
         if self.tractionFlag != 0 or self.gravityFlag != 0 or self.concForceFlag != 0:
             self.externFlag = 1
+	if self.numberWinklerForces != 0:
+	    self.winklerFlag = 1
+	if self.numberSlipperyWinklerForces != 0:
+	    self.slipperyWinklerFlag = 1
 
         self.pointerToBextern = lithomop3d.allocateDouble(
             self.externFlag*self.numberGlobalEquations)
@@ -1248,6 +1256,14 @@ class Lithomop3d_setup(Component):
         self.pointerToBconcForce = lithomop3d.allocateDouble(
             self.concForceFlag*self.numberGlobalEquations)
 	self.memorySize += self.concForceFlag* \
+                           self.numberGlobalEquations*self.doubleSize
+        self.pointerToBwink = lithomop3d.allocateDouble(
+            self.winklerFlag*self.numberGlobalEquations)
+	self.memorySize += self.winklerFlag* \
+                           self.numberGlobalEquations*self.doubleSize
+        self.pointerToBwinkx = lithomop3d.allocateDouble(
+            self.slipperyWinklerFlag*self.numberGlobalEquations)
+	self.memorySize += self.slipperyWinklerFlag* \
                            self.numberGlobalEquations*self.doubleSize
         self.pointerToBintern = lithomop3d.allocateDouble(
             self.numberGlobalEquations)
@@ -1341,10 +1357,12 @@ class Lithomop3d_setup(Component):
             self.gravityFlag,
             self.concForceFlag,
             self.prestressFlag,
+            self.winklerFlag,
+            self.slipperyWinklerFlag,
             self.usePreviousDisplacementFlag]
         self.pointerToListArrayNforce = lithomop3d.intListToArray(
             self.listNforce)
-	self.memorySize += 6*self.intSize
+	self.memorySize += 8*self.intSize
            
         # ncodat array
         self.listNcodat = [
@@ -1771,6 +1789,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.29 2005/04/21 23:15:25 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.30 2005/05/03 18:47:35 willic3 Exp $
 
 # End of file 
