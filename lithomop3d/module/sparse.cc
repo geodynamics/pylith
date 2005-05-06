@@ -354,33 +354,19 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
     return 0;
   }
 
-  // For now, only support PETSC version 2.2.1 or greater, since we don't know
-  // the previous calling conventions.  We are also making use of the new
-  // PETSC_VERSION_RELEASE variable to determine whether this is a developer
-  // version or not.
+  // We are supporting versions 2.x or greater, under the assumption that anyone
+  // using 2.2.x is using the release version.  If calling conventions change
+  // for version 2.3.x, we can use the new PETSC_VERSION_RELEASE variable to
+  // determine whether this is a developer version or not.
 
-#if defined (PETSC_VERSION_MAJOR) & defined (PETSC_VERSION_MINOR)
 #if PETSC_VERSION_MAJOR >= 2
+
 #if PETSC_VERSION_MINOR <= 2
-#if defined (PETSC_VERSION_RELEASE) & PETSC_VERSION_RELEASE == 0
-
-  if (MatCreate(PETSC_COMM_WORLD, &A)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
-    return 0;
-  }
-
-  if (MatSetSizes(A, PETSC_DETERMINE, PETSC_DETERMINE, size, size)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Mat");
-    return 0;
-  }
-
-#else                         // PETSC_VERSION_RELEASE != 0 (non-developer version)
 
   if (MatCreate(PETSC_COMM_WORLD, size, size, PETSC_DETERMINE, PETSC_DETERMINE, &A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
     return 0;
   }
-#endif                        // end PETSC_VERSION_RELEASE
 
 #else                         // PETSC_VERSION_MINOR > 2
 
@@ -397,9 +383,6 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
 #else                        // PETSC_VERSION_MAJOR < 2
 #error "Unsupported PETSc version!"
 #endif                       // end PETSC_VERSION_MAJOR >= 2
-#else                        // PETSC_VERSION_MAJOR and PETSC_VERSION_MINOR not defined
-#error "Unknown PETSc version!"
-#endif                       // end ifdef PETSC_VERSION_MAJOR and PETSC_VERSION_MINOR
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -508,6 +491,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.15 2005/05/04 18:44:44 willic3 Exp $
+// $Id: sparse.cc,v 1.16 2005/05/05 20:00:37 willic3 Exp $
 
 // End of file
