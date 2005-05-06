@@ -1,0 +1,7 @@
+# Time steps for which full output is desired for split brick problem.
+# Since this is an elastic problem, no entries are needed.
+#
+1
+5
+9
+10
