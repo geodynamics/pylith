@@ -331,7 +331,7 @@ c
 c
               call formdf_ss(
      &         bintern,neq,                                             ! force
-     &         x,d,dcur,numnp,iddmat,                                   ! global
+     &         x,d,deld,numnp,iddmat,                                   ! global
      &         s,stemp,                                                 ! stiff
      &         dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,              ! elemnt
      &         infmatmod,                                               ! materl
@@ -410,7 +410,7 @@ c
 c
               call formdf_ss(
      &         bintern,neq,                                             ! force
-     &         x,d,dcur,numnp,iddmat,                                   ! global
+     &         x,d,deld,numnp,iddmat,                                   ! global
      &         s,stemp,                                                 ! stiff
      &         dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,              ! elemnt
      &         infmatmod,                                               ! materl
@@ -485,7 +485,7 @@ clater              if(ierr.ne.izero) return
 c
 clater              call formdf_ld(
 clater     &         bintern,neq,                                             ! force
-clater     &         x,d,dcur,numnp,iddmat,                                   ! global
+clater     &         x,d,deld,numnp,iddmat,                                   ! global
 clater     &         s,stemp,                                                 ! stiff
 clater     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
 clater     &         infmat,infmatmod,numat,                                  ! materl
@@ -554,7 +554,7 @@ clater              if(ierr.ne.izero) return
 c
 clater              call formdf_ld(
 clater     &         bintern,neq,                                             ! force
-clater     &         x,d,dcur,numnp,iddmat,                                   ! global
+clater     &         x,d,deld,numnp,iddmat,                                   ! global
 clater     &         s,stemp,                                                 ! stiff
 clater     &         dmat,ien,lm,lmx,infiel,iddmat,ndmatsz,numelt,nconsz,     ! elemnt
 clater     &         infmat,infmatmod,numat,                                  ! materl
@@ -666,7 +666,7 @@ c
       end
 c
 c version
-c $Id: viscos.F,v 1.11 2005/05/03 18:39:37 willic3 Exp $
+c $Id: viscos.F,v 1.12 2005/05/05 20:42:55 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
