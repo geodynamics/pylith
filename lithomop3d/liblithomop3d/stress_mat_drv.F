@@ -126,6 +126,11 @@ c
       ntimdat(7)=nrftot
       ielg=ione
 c
+c...  Zero all entries in stiffness matrix
+c
+      call MatZeroEntries(A, ierr)
+
+c
 c...  loop over element families and then select appropriate material
 c     model routine.
 c
@@ -510,6 +515,19 @@ c
         end if
         if(ierr.ne.izero) return
       end do
+c
+c...  add Winkler elements to stiffness matrix diagonals
+c
+      if(nwink.ne.izero) call winklr(A,iwink,wink,histry,nstep,
+     & nwink,nhist,nnz,lastep,ierr,errstrng)
+      if(ierr.ne.izero) return
+      if(nwinkx.ne.izero) call winklr(A,iwinkx,winkx,histry,nstep,
+     & nwinkx,nhist,nnz,lastep,ierr,errstrng)
+      if(ierr.ne.izero) return
+c
+c...  assemble stiffness matrix and check for zero or negative
+c     diagonal entries
+c
       call MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY, ierr)
       call MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY, ierr)
       call ckdiag(A,ierr,errstrng)
@@ -517,7 +535,7 @@ c
       end
 c
 c version
-c $Id: stress_mat_drv.F,v 1.5 2005/04/16 00:40:50 willic3 Exp $
+c $Id: stress_mat_drv.F,v 1.6 2005/05/05 21:17:01 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
