@@ -36,7 +36,6 @@
 #include "sparse.h"
 #include "exceptionhandler.h"
 #include "lithomop3d_externs.h"
-#include "petscdeveloper.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -491,6 +490,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.16 2005/05/05 20:00:37 willic3 Exp $
+// $Id: sparse.cc,v 1.17 2005/05/05 20:37:08 willic3 Exp $
 
 // End of file
