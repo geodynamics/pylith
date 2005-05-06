@@ -125,6 +125,10 @@ c
       ntimdat(7)=nrftot
       ielg=ione
 c
+c...  Zero all entries in stiffness matrix
+c
+      call MatZeroEntries(A, ierr)
+c
 c...  loop over element families and then select appropriate material
 c     model routine
 c
@@ -527,7 +531,7 @@ c
       end
 c
 c version
-c $Id: matinit_drv.F,v 1.5 2005/04/16 00:40:50 willic3 Exp $
+c $Id: matinit_drv.F,v 1.6 2005/05/05 21:15:00 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
