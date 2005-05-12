@@ -92,7 +92,7 @@ c
 c
 cdebug      write(6,*) "Hello from write_ucdmesh_f!"
 c
-      nnattr=ndof
+      nnattr=itwo*ndof
       neattr=izero
       nngattr=nstatout(1)+nstatout(2)+nstatout(3)
       negattr=izero
@@ -116,22 +116,23 @@ c
 c
 c...  write element connectivities
 c
+      indtype=ione
+      if(ietype.eq.28) indtype=itwo
+      if(ietype.eq.29) indtype=ithree
+      if(ietype.eq.30) indtype=ifour
+      if(ietype.eq.31) indtype=ifive
+      if(ietype.gt.31) indtype=isix
+      if(ietype.eq.59) indtype=iseven
+      if(ietype.eq.60) indtype=ieight
+      if(ietype.eq.61) indtype=inine
+      if(ietype.eq.62) indtype=10
+c
       ielg=izero
       do ifam=1,nvfamilies
         nelfamily=ivfamily(1,ifam)
         matmodel=ivfamily(2,ifam)
         do ielf=1,nelfamily
           ielg=ielg+1
-          indtype=ione
-          if(ietype.eq.28) indtype=itwo
-          if(ietype.eq.29) indtype=ithree
-          if(ietype.eq.30) indtype=ifour
-          if(ietype.eq.31) indtype=ifive
-          if(ietype.gt.31) indtype=isix
-          if(ietype.eq.59) indtype=iseven
-          if(ietype.eq.60) indtype=ieight
-          if(ietype.eq.61) indtype=inine
-          if(ietype.eq.62) indtype=10
           do j=1,nen
             itmp(j)=ien(j,ielg)
           end do
@@ -170,7 +171,7 @@ c
       end
 c
 c version
-c $Id: write_ucd_mesh.f,v 1.7 2005/04/05 23:00:56 willic3 Exp $
+c $Id: write_ucd_mesh.f,v 1.8 2005/05/11 21:07:00 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
