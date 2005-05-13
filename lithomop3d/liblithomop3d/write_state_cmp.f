@@ -71,7 +71,7 @@ c
 c
 c...  local variables
 c
-      integer ielga,ielgp,ielgu,ielf,j,l
+      integer ielga,ielgp,ielf,j,l
       double precision sout(3*nstatesmax)
 c
 cdebug      integer idb
@@ -84,7 +84,6 @@ cdebug      write(6,*) "Hello from write_state_cmp_f!"
 c
       ielga=ielg
       ielgp=ielg
-      ielgu=ielg
       call fill(sout,zero,3*nstatesmax)
 c
 c...  output to human-readable ascii file
@@ -144,9 +143,8 @@ c
             call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
      &       sout(2*nstatesmax+ione),ione)
 cdebug            write(6,*) "sout:",(sout(idb),idb=1,3*nstatesmax)
-            write(kucd,720) ielgu,(sout(istatoutc(j)),j=1,nstatestot)
+            write(kucd,720) npts,(sout(istatoutc(j)),j=1,nstatestot)
           end do
-          ielgu=ielgu+ione
         end do
       end if
 c
@@ -157,6 +155,6 @@ c
       end
 c
 c version
-c $Id: write_state_cmp.f,v 1.4 2005/05/03 18:42:05 willic3 Exp $
+c $Id: write_state_cmp.f,v 1.5 2005/05/13 15:16:51 willic3 Exp $
 c
 c End of file 
