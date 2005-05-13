@@ -616,7 +616,7 @@ c
               call printd(d,deld,deltp,idslp,numnp,numnp,ione,
      &         idout,idsk,kto,kw,kp)
               call write_ucd_node_vals(d,deld,tfault,dfault,nfault,
-     &         numfn,dx,deldx,idslp,numsn,deltp,nstep,numnp,kucd,
+     &         numfn,dx,deldx,idslp,numsn,deltp,ntot,numnp,kucd,
      &         ucdroot,iprestress)
               call printf(tfault,dfault,deltp,nfault,numfn,idout,
      &         idsk,kw,kp)
@@ -633,7 +633,7 @@ c
      &         state,dstate,ivfamily,nvfamilies,numelv,nstatesz,        ! elemnt
      &         infmatmod,                                               ! materl
      &         ngauss,                                                  ! eltype
-     &         deltp,nstep,                                             ! timdat
+     &         deltp,ntot,                                              ! timdat
      &         istatout,nstatout,                                       ! ioopts
      &         idout,idsk,iucd,kw,kp,kucd,ucdroot,iprestress,           ! ioinfo
      &         ierr,errstrng)                                           ! errcode
@@ -666,7 +666,7 @@ c
       end
 c
 c version
-c $Id: viscos.F,v 1.12 2005/05/05 20:42:55 willic3 Exp $
+c $Id: viscos.F,v 1.13 2005/05/13 13:45:40 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
