@@ -28,6 +28,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
 
@@ -224,6 +225,6 @@ PyObject * pylithomop3d_sort_split_nodes(PyObject *, PyObject *args)
 }
 
 // version
-// $Id: sorting.cc,v 1.1 2005/04/21 01:06:09 willic3 Exp $
+// $Id: sorting.cc,v 1.2 2005/06/07 19:39:11 willic3 Exp $
 
 // End of file

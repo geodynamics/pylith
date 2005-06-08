@@ -403,7 +403,6 @@
 
 #endif
 
-#include <petscmat.h>
 
 extern "C" {
 
@@ -1484,6 +1483,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.19 2005/05/03 18:48:20 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.20 2005/06/07 19:39:11 willic3 Exp $
 
 // End of file

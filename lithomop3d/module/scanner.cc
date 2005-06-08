@@ -28,6 +28,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
 
@@ -784,6 +785,6 @@ PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: scanner.cc,v 1.6 2005/04/01 23:54:57 willic3 Exp $
+// $Id: scanner.cc,v 1.7 2005/06/07 19:39:11 willic3 Exp $
 
 // End of file

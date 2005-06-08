@@ -28,6 +28,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
 
@@ -987,6 +988,6 @@ PyObject * pylithomop3d_read_wink(PyObject *, PyObject *args)
 }
 
 // version
-// $Id: parser.cc,v 1.11 2005/04/21 23:19:04 willic3 Exp $
+// $Id: parser.cc,v 1.12 2005/06/07 19:39:11 willic3 Exp $
 
 // End of file

@@ -28,6 +28,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
 
@@ -1402,6 +1403,6 @@ PyObject * pylithomop3d_write_winkx(PyObject *, PyObject *args)
 }
 
 // version
-// $Id: write_modelinfo.cc,v 1.3 2005/04/21 23:22:06 willic3 Exp $
+// $Id: write_modelinfo.cc,v 1.4 2005/06/07 19:39:11 willic3 Exp $
 
 // End of file

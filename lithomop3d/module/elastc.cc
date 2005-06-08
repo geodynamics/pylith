@@ -28,6 +28,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
 
@@ -39,7 +40,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <petscmat.h>
 
 
 // Perform the elastic solution.
@@ -426,6 +426,6 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 
 
 // version
-// $Id: elastc.cc,v 1.14 2005/05/03 18:48:20 willic3 Exp $
+// $Id: elastc.cc,v 1.15 2005/06/07 19:39:11 willic3 Exp $
 
 // End of file
