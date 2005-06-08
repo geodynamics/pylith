@@ -28,6 +28,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
 
@@ -424,6 +425,6 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: autoprestr.cc,v 1.9 2005/05/03 18:48:19 willic3 Exp $
+// $Id: autoprestr.cc,v 1.10 2005/06/07 19:39:11 willic3 Exp $
 
 // End of file

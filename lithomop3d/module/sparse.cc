@@ -28,6 +28,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
 
@@ -336,7 +337,6 @@ PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
 
 
 // Create a PETSc Mat
-#include <petscmat.h>
 char pylithomop3d_createPETScMat__doc__[] = "";
 char pylithomop3d_createPETScMat__name__[] = "createPETScMat";
 
@@ -490,6 +490,6 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 
 
 // version
-// $Id: sparse.cc,v 1.17 2005/05/05 20:37:08 willic3 Exp $
+// $Id: sparse.cc,v 1.18 2005/06/07 19:39:11 willic3 Exp $
 
 // End of file

@@ -28,6 +28,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include <petscsnes.h>
 #include <portinfo>
 #include "journal/debug.h"
 
@@ -39,7 +40,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <petscsnes.h>
 
 // Initialize PETSc
 
@@ -238,6 +238,6 @@ PyObject * pylithomop3d_preshape(PyObject *, PyObject *args)
 }
     
 // version
-// $Id: setup.cc,v 1.3 2005/03/31 23:27:57 willic3 Exp $
+// $Id: setup.cc,v 1.4 2005/06/07 19:39:11 willic3 Exp $
 
 // End of file

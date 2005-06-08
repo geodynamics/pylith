@@ -28,6 +28,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
 
@@ -276,6 +277,6 @@ PyObject * pylithomop3d_nfind(PyObject *, PyObject *args)
 }
 
 // version
-// $Id: numbering.cc,v 1.3 2005/04/20 00:52:06 willic3 Exp $
+// $Id: numbering.cc,v 1.4 2005/06/07 19:39:11 willic3 Exp $
 
 // End of file
