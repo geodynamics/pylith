@@ -33,8 +33,6 @@ include local.def
 PROJECT = lithomop3d
 PACKAGE = liblithomop3d
 
-include petsc/default.def
-
 PROJ_SAR = $(BLD_LIBDIR)/$(PACKAGE).$(EXT_SAR)
 PROJ_TMPDIR = $(BLD_TMPDIR)/$(PROJECT)/$(PACKAGE)
 PROJ_CLEAN += $(PROJ_INCDIR) $(PROJ_SAR)
@@ -255,7 +253,7 @@ EXPORT_LIBS = $(PROJ_SAR)
 
 
 # version
-# $Id: Make.mm,v 1.22 2005/05/03 18:38:10 willic3 Exp $
+# $Id: Make.mm,v 1.23 2005/06/07 19:32:02 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
