@@ -54,7 +54,7 @@ c
 c
       do i=1,nen
         k=ien(i)
-        if((skew(1,k).ne.zero).and.(skew(itwo,k).ne.zero)) then
+        if((skew(1,k).ne.zero).or.(skew(nskdim,k).ne.zero)) then
           ll=ndof*(i-1)
           call formrt(skew(1,k),rot)
 	  call dcopy(ndof,p(ll+1),ione,ptemp,ione)
@@ -66,7 +66,7 @@ c
       end
 c
 c version
-c $Id: rpforc.f,v 1.2 2004/07/01 19:59:55 willic3 Exp $
+c $Id: rpforc.f,v 1.3 2005/06/08 21:48:12 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
