@@ -111,8 +111,8 @@ c
      &' Coordinate rotation option (iskopt) . . . . . .',i5,/,
      &'     1 = rotations are assigned',/,
      &'     2 = rotations are computed internally',///,
-     &'     alpha = cc rotation (degrees) from x axis in xy plane',/,
-     &'      beta = cc rotation (degrees) from x axis in xz plane',//,
+     &'     alpha = cc rotation (radians) from x axis in xy plane',/,
+     &'      beta = cc rotation (radians) from x axis in xz plane',//,
      &'   alpha rotation is applied first, then the beta rotation--',/,
      &'   this rotates the skew coordinates into the global system.',//,
      & 1x,'node #',2(10x,a5))
@@ -121,7 +121,7 @@ c
       end
 c
 c version
-c $Id: write_skew.f,v 1.1 2005/04/16 00:31:52 willic3 Exp $
+c $Id: write_skew.f,v 1.2 2005/06/08 21:49:00 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
