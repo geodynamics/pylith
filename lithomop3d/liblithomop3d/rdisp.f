@@ -58,7 +58,7 @@ c
       double precision rot(3,3),dtemp(3)
 c
       do i=1,numnp
-        if((skew(1,i).ne.zero).and.(skew(nskdim,i).ne.zero)) then
+        if((skew(1,i).ne.zero).or.(skew(nskdim,i).ne.zero)) then
           call formrt(skew(1,i),rot)
 	  call dcopy(ndof,d(1,i),ione,dtemp,ione)
 	  call dgemv("n",ndof,ndof,one,rot,ithree,dtemp,ione,zero,
@@ -69,7 +69,7 @@ c
       end
 c
 c version
-c $Id: rdisp.f,v 1.3 2004/07/05 19:37:35 willic3 Exp $
+c $Id: rdisp.f,v 1.4 2005/06/08 21:48:12 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

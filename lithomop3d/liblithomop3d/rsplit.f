@@ -54,7 +54,7 @@ c
 c
       do i=1,numfn
         node=nfault(2,i)
-        if((skew(1,node).ne.zero).and.(skew(nskdim,node).ne.zero)) then
+        if((skew(1,node).ne.zero).or.(skew(nskdim,node).ne.zero)) then
           call formrt(skew(1,node),rot)
           call dcopy(ndof,dfault(1,i),ione,ftemp,ione)
           call dgemv("n",ndof,ndof,one,rot,ithree,ftemp,ione,zero,
@@ -65,7 +65,7 @@ c
       end
 c
 c version
-c $Id: rsplit.f,v 1.2 2004/07/01 21:00:19 willic3 Exp $
+c $Id: rsplit.f,v 1.3 2005/06/08 21:48:12 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
