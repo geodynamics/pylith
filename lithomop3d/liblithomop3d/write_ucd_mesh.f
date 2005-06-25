@@ -33,7 +33,7 @@ c
      & ien,ivfamily,numelv,nvfamilies,                                  ! elemnt
      & sh,nen,ngauss,ietype,                                            ! eltype
      & istatout,nstatout,                                               ! ioopts
-     & kucd,ucdroot)                                                    ! ioinfo
+     & kucd,iucd,ucdroot)                                               ! ioinfo
 c
 c...  Specialized routine to output mesh info for SCEC benchmarks.
 c     This routine writes out the headers, coordinates, and
@@ -52,7 +52,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,numelv,nvfamilies,nen,ngauss,ietype,kucd
+      integer numnp,numelv,nvfamilies,nen,ngauss,ietype,kucd,iucd
       integer ien(nen,numelv),ivfamily(5,nvfamilies)
       integer istatout(nstatesmax,3),nstatout(3)
       character ucdroot*(*)
@@ -76,6 +76,10 @@ c
       data eltype/"hex","wrick","prism","pyr","tet",
      & "hex","wrick","prism","pyr","tet"/
 c
+c...  intrinsic functions
+c
+      intrinsic char,real
+c
 c...  external functions
 c
       integer nchar,nnblnk
@@ -83,15 +87,21 @@ c
 c
 c...  local variables
 c
-      integer nnattr,neattr,nngattr,negattr,nmattr,i,j
+      integer nnattr,neattr,nngattr,negattr,nmattr,nnlist,nglist,i,j
       integer iprestress,nstep,iopt
       integer ielg,ifam,ielf,nelfamily,matmodel
-      integer numelg,l,ngpts,indtype,igpt
+      integer numelg,l,ngpts,indtype,ictype,igpt
+      integer ibyte,intlen,floatlen,istride
       integer itmp(20)
       double precision xl(nsd,nenmax),xg(nsd)
+      character magnum*1
 c
 cdebug      write(6,*) "Hello from write_ucdmesh_f!"
 c
+      magnum=char(7)
+      ibyte=ione
+      intlen=ifour
+      floatlen=ifour
       nnattr=itwo*ndof
       neattr=izero
       nngattr=nstatout(1)+nstatout(2)+nstatout(3)
@@ -99,22 +109,13 @@ c
       nmattr=izero
       numelg=izero
       ngpts=ngauss*numelv
+      nnlist=numelv*nen
+      nglist=izero
       iprestress=izero
       nstep=izero
       iopt=ione
-      call open_ucd(kucd,iprestress,nstep,ucdroot,iopt)
 c
-c...  write mesh info
-c
-      write(kucd,"(5i7)") numnp,numelv,nnattr,neattr,nmattr
-c
-c...  write nodal coordinates
-c
-      do i=1,numnp
-        write(kucd,"(i7,3(2x,1pe15.8))") i,(x(j,i),j=1,nsd)
-      end do
-c
-c...  write element connectivities
+c...  determine element type info
 c
       indtype=ione
       if(ietype.eq.28) indtype=itwo
@@ -126,52 +127,157 @@ c
       if(ietype.eq.60) indtype=ieight
       if(ietype.eq.61) indtype=inine
       if(ietype.eq.62) indtype=10
+      if(indtype.eq.ione.or.indtype.eq.isix) ictype=iseven
+      if(indtype.eq.itwo.or.indtype.eq.iseven) ictype=ieight
+      if(indtype.eq.ithree.or.indtype.eq.ieight) ictype=isix
+      if(indtype.eq.ifour.or.indtype.eq.inine) ictype=ifive
+      if(indtype.eq.ifive.or.indtype.eq.10) ictype=ifour
 c
-      ielg=izero
-      do ifam=1,nvfamilies
-        nelfamily=ivfamily(1,ifam)
-        matmodel=ivfamily(2,ifam)
-        do ielf=1,nelfamily
-          ielg=ielg+1
-          do j=1,nen
-            itmp(j)=ien(j,ielg)
-          end do
-          write(kucd,"(2i7,2x,a4,20i7)") ielg,matmodel,eltype(indtype),
-     &     (itmp(inducd(j,indtype)),j=1,nen)
+c...  open UCD output file
+c
+      call open_ucd(kucd,iprestress,nstep,ucdroot,iopt,iucd)
+c
+c...  ascii ucd output
+c
+      if(iucd.eq.ione) then
+c
+c...  header info
+c
+        write(kucd,"(5i7)") numnp,numelv,nnattr,neattr,nmattr
+c
+c...  write nodal coordinates
+c
+        do i=1,numnp
+          write(kucd,"(i7,3(2x,1pe15.8))") i,(x(j,i),j=1,nsd)
         end do
-      end do
-      close(kucd)
+c
+c...  write element connectivities
+c
+        ielg=izero
+        do ifam=1,nvfamilies
+          nelfamily=ivfamily(1,ifam)
+          matmodel=ivfamily(2,ifam)
+          do ielf=1,nelfamily
+            ielg=ielg+1
+            do j=1,nen
+              itmp(j)=ien(j,ielg)
+            end do
+            write(kucd,"(2i7,2x,a4,20i7)") ielg,matmodel,
+     &       eltype(indtype),(itmp(inducd(j,indtype)),j=1,nen)
+          end do
+        end do
+        close(kucd)
 c
 c...  write Gauss point info
 c
-      iopt=itwo
-      call open_ucd(kucd,iprestress,nstep,ucdroot,iopt)
-      write(kucd,"(5i7)") ngpts,numelg,nngattr,negattr,nmattr
+        iopt=itwo
+        call open_ucd(kucd,iprestress,nstep,ucdroot,iopt,iucd)
+        write(kucd,"(5i7)") ngpts,numelg,nngattr,negattr,nmattr
 c
 c...  write Gauss coordinates
 c
-      igpt=izero
-      do ielg=1,numelv
-        call lcoord(x,xl,ien(1,ielg),nen,numnp)
-        do l=1,ngauss
-          igpt=igpt+ione
-          xg(1)=zero
-          xg(2)=zero
-          xg(3)=zero
-          do j=1,nen
-            xg(1)=xg(1)+xl(1,j)*sh(4,j,l)
-            xg(2)=xg(2)+xl(2,j)*sh(4,j,l)
-            xg(3)=xg(3)+xl(3,j)*sh(4,j,l)
+        igpt=izero
+        do ielg=1,numelv
+          call lcoord(x,xl,ien(1,ielg),nen,numnp)
+          do l=1,ngauss
+            igpt=igpt+ione
+            xg(1)=zero
+            xg(2)=zero
+            xg(3)=zero
+            do j=1,nen
+              xg(1)=xg(1)+xl(1,j)*sh(4,j,l)
+              xg(2)=xg(2)+xl(2,j)*sh(4,j,l)
+              xg(3)=xg(3)+xl(3,j)*sh(4,j,l)
+            end do
+            write(kucd,"(i7,3(2x,1pe15.8))") igpt,(xg(j),j=1,nsd)
           end do
-          write(kucd,"(i7,3(2x,1pe15.8))") igpt,(xg(j),j=1,nsd)
         end do
-      end do
-      close(kucd)
+        close(kucd)
+c
+c...  binary UCD output
+c
+      else if(iucd.eq.itwo) then
+c
+c...  header info
+c
+        write(kucd,rec=ibyte) magnum,numnp,numelv,nnattr,neattr,nmattr,
+     &   nnlist
+        ibyte=ibyte+ione+6*intlen
+c
+c...  element information
+c
+        ielg=izero
+        do ifam=1,nvfamilies
+          nelfamily=ivfamily(1,ifam)
+          matmodel=ivfamily(2,ifam)
+          do ielf=1,nelfamily
+            ielg=ielg+1
+            write(kucd,rec=ibyte) ielg,matmodel,nen,ictype
+            ibyte=ibyte+4*intlen
+          end do
+        end do
+c
+c...  element connectivity
+c
+        ielg=izero
+        do ifam=1,nvfamilies
+          nelfamily=ivfamily(1,ifam)
+          matmodel=ivfamily(2,ifam)
+          do ielf=1,nelfamily
+            ielg=ielg+1
+            do j=1,nen
+              itmp(j)=ien(j,ielg)
+            end do
+            write(kucd,rec=ibyte) (itmp(inducd(j,indtype)),j=1,nen)
+            ibyte=ibyte+nen*intlen
+          end do
+        end do
+c
+c...  nodal coordinates
+c
+        do i=1,nsd
+          write(kucd,rec=ibyte) (real(x(i,j)),j=1,numnp)
+          ibyte=ibyte+numnp*floatlen
+        end do
+        close(kucd)
+c
+c...  write Gauss point info
+c
+        ibyte=ione
+        iopt=itwo
+        call open_ucd(kucd,iprestress,nstep,ucdroot,iopt,iucd)
+        write(kucd,rec=ibyte) magnum,ngpts,numelg,nngattr,negattr,
+     &   nmattr,nglist
+        ibyte=ibyte+ione+6*intlen
+c
+c...  write Gauss coordinates
+c
+        istride=floatlen*ngpts
+        do ielg=1,numelv
+          call lcoord(x,xl,ien(1,ielg),nen,numnp)
+          do l=1,ngauss
+            xg(1)=zero
+            xg(2)=zero
+            xg(3)=zero
+            do j=1,nen
+              xg(1)=xg(1)+xl(1,j)*sh(4,j,l)
+              xg(2)=xg(2)+xl(2,j)*sh(4,j,l)
+              xg(3)=xg(3)+xl(3,j)*sh(4,j,l)
+            end do
+            write(kucd,rec=ibyte) real(xg(1))
+            write(kucd,rec=ibyte+istride) real(xg(2))
+            write(kucd,rec=ibyte+2*istride) real(xg(3))
+            ibyte=ibyte+floatlen
+          end do
+        end do
+        close(kucd)
+      end if
+c        
       return
       end
 c
 c version
-c $Id: write_ucd_mesh.f,v 1.8 2005/05/11 21:07:00 willic3 Exp $
+c $Id: write_ucd_mesh.f,v 1.9 2005/06/24 20:12:32 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
