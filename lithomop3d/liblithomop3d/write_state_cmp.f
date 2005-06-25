@@ -35,6 +35,7 @@ c
      & ngauss,                                                          ! eltype
      & delti,nstep,                                                     ! timdat
      & istatout,istatoutc,nstatout,nstatestot,nout,npts,                ! ioopts
+     & statemin,statemax,ibyteg,                                        ! binucd
      & idout,idsk,iucd,kw,kp,kucd)                                      ! ioinfo
 c
 c...  computation routine to update state variables within an element family
@@ -52,8 +53,10 @@ c
       integer nelfamily,nstate,ielg,ngauss,nstep,nstatestot,nout,npts
       integer idout,idsk,iucd,kw,kp,kucd
       integer istatout(nstatesmax,3),istatoutc(nstatestot),nstatout(3)
+      integer ibyteg(3*nstatesmax)
       double precision state(nstate,ngauss,nelfamily)
       double precision dstate(nstate,ngauss,nelfamily)
+      double precision statemin(3*nstatesmax),statemax(3*nstatesmax)
       double precision delti
 c
 c...  external routines
@@ -72,6 +75,7 @@ c
 c...  local variables
 c
       integer ielga,ielgp,ielf,j,l
+      integer floatlen,istate
       double precision sout(3*nstatesmax)
 c
 cdebug      integer idb
@@ -84,6 +88,7 @@ cdebug      write(6,*) "Hello from write_state_cmp_f!"
 c
       ielga=ielg
       ielgp=ielg
+      floatlen=ifour
       call fill(sout,zero,3*nstatesmax)
 c
 c...  output to human-readable ascii file
@@ -135,7 +140,7 @@ c
 c
 c...  output to UCD file
 c
-      if(iucd.ne.0) then
+      if(iucd.eq.1) then
         do ielf=1,nelfamily
           do l=1,ngauss
             npts=npts+ione
@@ -144,6 +149,21 @@ c
      &       sout(2*nstatesmax+ione),ione)
 cdebug            write(6,*) "sout:",(sout(idb),idb=1,3*nstatesmax)
             write(kucd,720) npts,(sout(istatoutc(j)),j=1,nstatestot)
+          end do
+        end do
+      else if(iucd.eq.2) then
+        do ielf=1,nelfamily
+          do l=1,ngauss
+            call get_state(state(1,l,ielf),dstate(1,l,ielf),sout,nstate)
+            call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
+     &       sout(2*nstatesmax+ione),ione)
+            do j=1,nstatestot
+              istate=istatoutc(j)
+              write(kucd,rec=ibyteg(j)) real(sout(istate))
+              statemin(istate)=min(statemin(istate),sout(istate))
+              statemax(istate)=max(statemax(istate),sout(istate))
+              ibyteg(j)=ibyteg(j)+floatlen
+            end do
           end do
         end do
       end if
@@ -155,6 +175,6 @@ c
       end
 c
 c version
-c $Id: write_state_cmp.f,v 1.5 2005/05/13 15:16:51 willic3 Exp $
+c $Id: write_state_cmp.f,v 1.6 2005/06/24 20:09:10 willic3 Exp $
 c
 c End of file 
