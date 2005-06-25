@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine open_ucd(kucd,iprestress,nstep,ucdroot,iopt)
+      subroutine open_ucd(kucd,iprestress,nstep,ucdroot,iopt,iucd)
 c
 c...  Routine to determine filename for UCD output and open the file.
 c
@@ -41,7 +41,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer kucd,iprestress,nstep,iopt
+      integer kucd,iprestress,nstep,iopt,iucd
       character ucdroot*(*)
 c
 c...  external functions
@@ -51,11 +51,12 @@ c
 c
 c...  local variables
 c
-      integer i1,i2
+      integer i1,i2,len
       character filenm*200,cstep*5
 c
 cdebug      write(6,*) "Hello from open_ucd_f!"
 c
+      len=ione
       i1=nnblnk(ucdroot)
       i2=nchar(ucdroot)
       if(iopt.eq.1) then
@@ -77,12 +78,17 @@ c
         end if
         filenm=ucdroot(i1:i2)//".gmesh.time."//cstep//".inp"
       end if
-      open(kucd,file=filenm,status="new")
+      if(iucd.eq.ione) then
+        open(kucd,file=filenm,status="new")
+      else if(iucd.eq.itwo) then
+        open(kucd,file=filenm,status="new",access="direct",recl=len,
+     &   form="unformatted")
+      end if
       return
       end
 c
 c version
-c $Id: open_ucd.f,v 1.1 2005/03/23 19:58:31 willic3 Exp $
+c $Id: open_ucd.f,v 1.2 2005/06/24 20:08:20 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
