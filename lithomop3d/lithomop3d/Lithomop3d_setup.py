@@ -124,8 +124,12 @@ class Lithomop3d_setup(Component):
             self.plotOutputInt = 2
             
         self.ucdOutputInt = 0
-        if lm3dscan.inventory.ucdOutput == True:
+        if lm3dscan.inventory.ucdOutput == "none":
+            self.ucdOutputInt = 0
+        elif lm3dscan.inventory.ucdOutput == "ascii":
             self.ucdOutputInt = 1
+        else:
+            self.ucdOutputInt = 2
             
         self.debuggingOutputInt = 0
         if lm3dscan.inventory.debuggingOutput:
@@ -1659,7 +1663,7 @@ class Lithomop3d_setup(Component):
             self.plotOutputFile)
 
         # Write mesh info to UCD file, if requested
-        if self.ucdOutputInt == 1:
+        if self.ucdOutputInt >= 0:
             lithomop3d.write_ucd_mesh(
                 self.pointerToX,
                 self.numberNodes,
@@ -1674,6 +1678,7 @@ class Lithomop3d_setup(Component):
                 self.pointerToIstatout,
                 self.pointerToNstatout,
                 self.f77UcdOutput,
+                self.ucdOutputInt,
                 self.ucdOutputRoot)
 
         # Write split node info
@@ -1789,6 +1794,6 @@ class Lithomop3d_setup(Component):
 
 
 # version
-# $Id: Lithomop3d_setup.py,v 1.30 2005/05/03 18:47:35 willic3 Exp $
+# $Id: Lithomop3d_setup.py,v 1.31 2005/06/24 20:22:03 willic3 Exp $
 
 # End of file 
