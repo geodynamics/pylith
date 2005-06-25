@@ -616,7 +616,7 @@ c
               call printd(d,deld,deltp,idslp,numnp,numnp,ione,
      &         idout,idsk,kto,kw,kp)
               call write_ucd_node_vals(d,deld,tfault,dfault,nfault,
-     &         numfn,dx,deldx,idslp,numsn,deltp,ntot,numnp,kucd,
+     &         numfn,dx,deldx,idslp,numsn,deltp,ntot,numnp,kucd,iucd,
      &         ucdroot,iprestress)
               call printf(tfault,dfault,deltp,nfault,numfn,idout,
      &         idsk,kw,kp)
@@ -666,7 +666,7 @@ c
       end
 c
 c version
-c $Id: viscos.F,v 1.13 2005/05/13 13:45:40 willic3 Exp $
+c $Id: viscos.F,v 1.14 2005/06/24 20:06:45 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
