@@ -1452,6 +1452,7 @@ extern "C" {
 		       	int *,
 		       	int *,
 		       	int *,
+		       	int *,
 		       	char *,int);
 
   void write_wink_f(double *,
@@ -1483,6 +1484,6 @@ extern "C" {
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.20 2005/06/07 19:39:11 willic3 Exp $
+// $Id: lithomop3d_externs.h,v 1.21 2005/06/24 20:17:43 willic3 Exp $
 
 // End of file
