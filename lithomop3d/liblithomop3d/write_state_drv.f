@@ -72,10 +72,12 @@ c
 c
 c...  local variables
 c
-      integer istatoutc(nstatesmax*3)
+      integer istatoutc(nstatesmax*3),ibyteg(3*nstatesmax)
       integer nstatestot,nout,npts,ind,i,j,iopt
       integer ifam,nelfamily,matmodel,indstate,nstate,ielg
+      integer ibyte,intlen,floatlen,istride
       double precision delti
+      double precision statemin(3*nstatesmax),statemax(3*nstatesmax)
 c
 c...  included variable definitions
 c
@@ -108,9 +110,22 @@ c...  create and open UCD file if UCD output is desired
 c
       if(iucd.ne.izero) then
         iopt=4
-        call open_ucd(kucd,iprestress,nstep,ucdroot,iopt)
-        call write_ucd_header(istatoutc,nstatestot,kucd)
+        call open_ucd(kucd,iprestress,nstep,ucdroot,iopt,iucd)
+        call write_ucd_header(istatoutc,nstatestot,kucd,iucd)
       end if
+c
+c...  initialize max, min, and byte location values for binary UCD
+c
+      intlen=ifour
+      floatlen=ifour
+      call fill(statemin,big,3*nstatesmax)
+      call fill(statemax,-big,3*nstatesmax)
+      ibyte=ione+2048+intlen*(1+nstatestot)
+      istride=ngauss*numelv*floatlen
+      ibyteg(1)=ibyte+2*floatlen*nstatestot
+      do i=2,nstatestot
+        ibyteg(i)=ibyteg(i-1)+istride
+      end do
 c
 c...  loop over element families
 c
@@ -128,6 +143,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.2) then
           call write_state_cmp(
@@ -136,6 +152,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.3) then
           call write_state_cmp(
@@ -144,6 +161,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.4) then
           call write_state_cmp(
@@ -152,6 +170,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.5) then
           call write_state_cmp(
@@ -160,6 +179,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.6) then
           call write_state_cmp(
@@ -168,6 +188,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.7) then
           call write_state_cmp(
@@ -176,6 +197,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.8) then
           call write_state_cmp(
@@ -184,6 +206,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.9) then
           call write_state_cmp(
@@ -192,6 +215,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.10) then
           call write_state_cmp(
@@ -200,6 +224,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.11) then
           call write_state_cmp(
@@ -208,6 +233,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.12) then
           call write_state_cmp(
@@ -216,6 +242,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.13) then
           call write_state_cmp(
@@ -224,6 +251,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.14) then
           call write_state_cmp(
@@ -232,6 +260,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.15) then
           call write_state_cmp(
@@ -240,6 +269,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.16) then
           call write_state_cmp(
@@ -248,6 +278,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.17) then
           call write_state_cmp(
@@ -256,6 +287,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.18) then
           call write_state_cmp(
@@ -264,6 +296,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.19) then
           call write_state_cmp(
@@ -272,6 +305,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else if(matmodel.eq.20) then
           call write_state_cmp(
@@ -280,6 +314,7 @@ c
      &     ngauss,                                                      ! eltype
      &     delti,nstep,                                                 ! timdat
      &     istatout,istatoutc,nstatout,nstatestot,nout,npts,            ! ioopts
+     &     statemin,statemax,ibyteg,                                    ! binucd
      &     idout,idsk,iucd,kw,kp,kucd)                                  ! ioinfo
         else
           ierr=101
@@ -288,11 +323,24 @@ c
         end if
         ielg=ielg+nelfamily
       end do
+c
+c...  output min and max values and footer for binary UCD file
+c
+      if(iucd.eq.2) then
+        write(kucd,rec=ibyte) (real(statemin(istatoutc(i))),
+     &   i=1,nstatestot)
+        ibyte=ibyte+nstatestot*floatlen
+        write(kucd,rec=ibyte) (real(statemax(istatoutc(i))),
+     &   i=1,nstatestot)
+        write(kucd,rec=ibyteg(nstatestot))
+     &   (real(statemax(istatoutc(i))),i=1,nstatestot)
+      end if
+      if(iucd.gt.izero) close(kucd)
       return
       end
 c
 c version
-c $Id: write_state_drv.f,v 1.3 2005/04/01 23:12:41 willic3 Exp $
+c $Id: write_state_drv.f,v 1.4 2005/06/24 20:10:37 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
