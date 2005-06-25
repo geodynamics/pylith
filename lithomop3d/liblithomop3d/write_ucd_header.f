@@ -29,7 +29,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_ucd_header(istatoutc,nstatestot,kucd)
+      subroutine write_ucd_header(istatoutc,nstatestot,kucd,iucd)
 c
 c...subroutine to write the header for a UCD file containing state
 c   variables
@@ -43,17 +43,23 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstatestot,kucd
+      integer nstatestot,kucd,iucd
       integer istatoutc(nstatestot)
 c
 c... included dimension and type statements
 c
       include "labels_dim.inc"
 c
+c...  local constants
+c
+      character stress*6,strain*4,strate*9
+      data stress,strain,strate/"Pascal","None","1/seconds"/
+c
 c...  local variables
 c
-      integer i
+      integer i,ibyte,indl,indu
       integer iout(3*nstatesmax)
+      character nlabels*1024,nunits*1024
 c
 c...  included variable definitions
 c
@@ -63,11 +69,36 @@ c
         iout(i)=ione
       end do
 c
-      write(kucd,"(100i5)") nstatestot,(iout(i),i=1,nstatestot)
+      if(iucd.eq.ione) then
+        write(kucd,"(100i5)") nstatestot,(iout(i),i=1,nstatestot)
 c
-      do i=1,nstatestot
-        write(kucd,"(a11)") labels(istatoutc(i))
-      end do
+        do i=1,nstatestot
+          write(kucd,"(a11)") labels(istatoutc(i))
+        end do
+      else if(iucd.eq.itwo) then
+        indl=ione
+        indu=ione
+        ibyte=ione
+        do i=1,nstatestot
+          nlabels(indl:indl+11)=labels(istatoutc(i))//"."
+          indl=indl+12
+          if(istatoutc(i).le.nstatesmax) then
+            nunits(indu:indu+6)=stress//"."
+            indu=indu+7
+          else if(istatoutc(i).le.2*nstatesmax) then
+            nunits(indu:indu+4)=strain//"."
+            indu=indu+5
+          else
+            nunits(indu:indu+9)=strate//"."
+            indu=indu+10
+          end if
+        end do
+        nlabels(1024:1024)="0"
+        nunits(1024:1024)="0"
+        write(kucd,rec=ibyte) nlabels,nunits
+        ibyte=ibyte+2048
+        write(kucd,rec=ibyte) nstatestot,(iout(i),i=1,nstatestot)
+      end if
 c
       return
       end
