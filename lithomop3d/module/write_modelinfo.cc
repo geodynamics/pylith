@@ -1221,9 +1221,10 @@ PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *args)
   PyObject* pyPointerToIstatout;
   PyObject* pyPointerToNstatout;
   int f77UcdOutput;
+  int ucdOutputInt;
   char* ucdOutputRoot;
 
-  int ok = PyArg_ParseTuple(args, "OiOOiiOiiiOOis:write_ucd_mesh",
+  int ok = PyArg_ParseTuple(args, "OiOOiiOiiiOOiis:write_ucd_mesh",
 			    &pyPointerToX,
 			    &numberNodes,
 			    &pyPointerToIens,
@@ -1237,6 +1238,7 @@ PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *args)
 			    &pyPointerToIstatout,
 			    &pyPointerToNstatout,
 			    &f77UcdOutput,
+			    &ucdOutputInt,
 			    &ucdOutputRoot);
 
   if (!ok) {
@@ -1263,6 +1265,7 @@ PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *args)
 		   pointerToIstatout,
 		   pointerToNstatout,
 		   &f77UcdOutput,
+		   &ucdOutputInt,
 		   ucdOutputRoot,strlen(ucdOutputRoot));
 		  
   journal::debug_t debug("lithomop3d");
@@ -1403,6 +1406,6 @@ PyObject * pylithomop3d_write_winkx(PyObject *, PyObject *args)
 }
 
 // version
-// $Id: write_modelinfo.cc,v 1.4 2005/06/07 19:39:11 willic3 Exp $
+// $Id: write_modelinfo.cc,v 1.5 2005/06/24 20:17:43 willic3 Exp $
 
 // End of file
