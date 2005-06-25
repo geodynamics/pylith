@@ -624,7 +624,8 @@ class Lithomop3d_scan(Component):
         asciiOutput.validator = pyre.inventory.choice(["none","echo","full"])
         plotOutput = pyre.inventory.str("plotOutput",default="none")
         plotOutput.validator = pyre.inventory.choice(["none","ascii","binary"])
-        ucdOutput = pyre.inventory.bool("ucdOutput",default=True)
+        ucdOutput = pyre.inventory.str("ucdOutput",default="binary")
+        ucdOutput.validator = pyre.inventory.choice(["none","ascii","binary"])
         analysisType = pyre.inventory.str("analysisType",default="fullSolution")
         analysisType.validator = pyre.inventory.choice(["dataCheck","stiffnessFactor",
                                                         "elasticSolution","fullSolution"])
@@ -634,6 +635,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.18 2005/04/01 23:45:14 willic3 Exp $
+# $Id: Lithomop3d_scan.py,v 1.19 2005/06/24 20:22:03 willic3 Exp $
 
 # End of file 
