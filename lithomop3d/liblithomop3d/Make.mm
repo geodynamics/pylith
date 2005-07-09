@@ -34,8 +34,9 @@ PROJECT = lithomop3d
 PACKAGE = liblithomop3d
 
 PROJ_SAR = $(BLD_LIBDIR)/$(PACKAGE).$(EXT_SAR)
+PROJ_DLL = $(BLD_LIBDIR)/$(PACKAGE).$(EXT_SO)
 PROJ_TMPDIR = $(BLD_TMPDIR)/$(PROJECT)/$(PACKAGE)
-PROJ_CLEAN += $(PROJ_INCDIR) $(PROJ_SAR)
+PROJ_CLEAN += $(PROJ_INCDIR) $(PROJ_SAR) $(PROJ_DLL)
 
 PROJ_SRCS = \
 	addfor.f \
@@ -250,10 +251,11 @@ test:: show-configuration show-project cpp-configuration fortran-configuration
 
 
 EXPORT_LIBS = $(PROJ_SAR)
+EXPORT_BINS = $(PROJ_DLL)
 
 
 # version
-# $Id: Make.mm,v 1.23 2005/06/07 19:32:02 willic3 Exp $
+# $Id: Make.mm,v 1.24 2005/07/08 21:32:24 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
