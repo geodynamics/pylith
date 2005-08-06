@@ -24,6 +24,7 @@ include petsc/default.def
 
     EXT_F77 = f
     PROJ_F77_INCLUDES = ./includes
+    PROJ_F77_DEFINES += $(FORTRAN_COMPILER_TYPE) $(FORTRAN_COMPILER_NAME)
     # PROJ_LIBRARIES += $(MATH_LIBS)
 
 # C++
@@ -32,6 +33,6 @@ include petsc/default.def
     PROJ_LCXX_FLAGS += $(LCXX_FORTRAN) $(EXTERNAL_LIBS)
 
 # version
-# $Id: local.def,v 1.4 2005/06/07 19:32:02 willic3 Exp $
+# $Id: local.def,v 1.5 2005/08/05 20:17:18 willic3 Exp $
 
 # End of file

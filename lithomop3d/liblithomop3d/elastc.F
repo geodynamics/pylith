@@ -153,11 +153,25 @@ c
       nee=infetype(3)
       nec=infetype(4)
 c
+c...  at present, it is assumed that all f77 compilers support
+c     access="append" and all f95 compilers support position="append".
+c     If exceptions are found we will have to use FORTRAN_COMPILER_NAME
+c     to differentiate.
+c
+#if defined FORTRAN_TYPE_F77
       if(idout.ne.izero) open(kw,file=ofile,status="old",
      & access="append")
       if(idsk.eq.ione) open(kp,file=pfile,status="old",access="append")
       if(idsk.eq.itwo) open(kp,file=pfile,status="old",
      & form="unformatted",access="append")
+#else
+      if(idout.ne.izero) open(kw,file=ofile,status="old",
+     & position="append")
+      if(idsk.eq.ione) open(kp,file=pfile,status="old",
+     & position="append")
+      if(idsk.eq.itwo) open(kp,file=pfile,status="old",
+     & form="unformatted",position="append")
+#endif
 c
       skc=iskopt.ge.izero.and.iskopt.ne.ione.and.numslp.ne.izero
 c
@@ -560,6 +574,10 @@ cdebug      write(6,*) "After printd (1):"
 cdebug      write(6,*) "After printf:"
       call printd(dx,deldx,deltp,idslp,numnp,numsn,itwo,idout,idsk,kto,
      & kw,kp)
+#if defined FORTRAN_NAME_GFORTRAN
+      if(iucd.eq.itwo) write(kto,*)
+     & "Binary UCD format turned off for gfortran!"
+#endif
       call write_ucd_node_vals(d,deld,tfault,dfault,nfault,numfn,dx,
      & deldx,idslp,numsn,deltp,nstep,numnp,kucd,iucd,ucdroot,iprestress)
 cdebug      write(6,*) "After printd (2):"
@@ -601,7 +619,7 @@ c
       end
 c
 c version
-c $Id: elastc.F,v 1.13 2005/06/24 20:06:45 willic3 Exp $
+c $Id: elastc.F,v 1.14 2005/08/05 20:17:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

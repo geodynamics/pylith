@@ -134,7 +134,7 @@ PROJ_SRCS = \
         nchar.f \
         nfind.f \
         nnblnk.f \
-	open_ucd.f \
+	open_ucd.F \
         plinhex.f \
         plinpyr.f \
         plintet.f \
@@ -204,31 +204,31 @@ PROJ_SRCS = \
         viscos.F \
         winklf.f \
         winklr.F \
-	write_bc.f \
-	write_connect.f \
-	write_coords.f \
-	write_diff.f \
-        write_element_info.f \
-	write_fuldat.f \
-        write_global_info.f \
-	write_hist.f \
-        write_props.f \
-	write_skew.f \
-	write_slip.f \
-        write_sparse_info.f \
-	write_split.f \
-	write_split_plot.f \
-        write_state_cmp.f \
-        write_state_drv.f \
-        write_stateout.f \
-        write_strscomp.f \
-        write_subiter.f \
-        write_timdat.f \
-        write_ucd_header.f \
-        write_ucd_mesh.f \
-        write_ucd_node_vals.f \
-        write_wink.f \
-        write_winkx.f
+	write_bc.F \
+	write_connect.F \
+	write_coords.F \
+	write_diff.F \
+        write_element_info.F \
+	write_fuldat.F \
+        write_global_info.F \
+	write_hist.F \
+        write_props.F \
+	write_skew.F \
+	write_slip.F \
+        write_sparse_info.F \
+	write_split.F \
+	write_split_plot.F \
+        write_state_cmp.F \
+        write_state_drv.F \
+        write_stateout.F \
+        write_strscomp.F \
+        write_subiter.F \
+        write_timdat.F \
+        write_ucd_header.F \
+        write_ucd_mesh.F \
+        write_ucd_node_vals.F \
+        write_wink.F \
+        write_winkx.F
 
 
 #--------------------------------------------------------------------------
@@ -255,7 +255,7 @@ EXPORT_BINS = $(PROJ_DLL)
 
 
 # version
-# $Id: Make.mm,v 1.24 2005/07/08 21:32:24 willic3 Exp $
+# $Id: Make.mm,v 1.25 2005/08/05 20:17:17 willic3 Exp $
 
 # Generated automatically by MakeMill on Tue Mar  2 17:05:23 2004
 
