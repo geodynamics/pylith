@@ -162,10 +162,24 @@ c
       nee=infetype(3)
       nec=infetype(4)
 c
+c...  at present, it is assumed that all f77 compilers support
+c     access="append" and all f95 compilers support position="append".
+c     If exceptions are found we will have to use FORTRAN_COMPILER_NAME
+c     to differentiate.
+c
+#if defined FORTRAN_TYPE_F77
       if(idout.gt.ione) open(kw,file=ofile,status="old",access="append")
       if(idsk.eq.ione) open(kp,file=pfile,status="old",access="append")
       if(idsk.eq.itwo) open(kp,file=pfile,status="old",
      & form="unformatted",access="append")
+#else
+      if(idout.gt.ione) open(kw,file=ofile,status="old",
+     & position="append")
+      if(idsk.eq.ione) open(kp,file=pfile,status="old",
+     & position="append")
+      if(idsk.eq.itwo) open(kp,file=pfile,status="old",
+     & form="unformatted",position="append")
+#endif
 c
 c...  signal user that viscous computation is begun
 c
@@ -666,7 +680,7 @@ c
       end
 c
 c version
-c $Id: viscos.F,v 1.14 2005/06/24 20:06:45 willic3 Exp $
+c $Id: viscos.F,v 1.15 2005/08/05 20:17:18 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c

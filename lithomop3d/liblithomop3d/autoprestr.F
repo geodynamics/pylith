@@ -152,11 +152,25 @@ c
       nee=infetype(3)
       nec=infetype(4)
 c
+c...  at present, it is assumed that all f77 compilers support
+c     access="append" and all f95 compilers support position="append".
+c     If exceptions are found we will have to use FORTRAN_COMPILER_NAME
+c     to differentiate.
+c
+#if defined FORTRAN_TYPE_F77
       if(idout.ne.izero) open(kw,file=ofile,status="old",
      & access="append")
       if(idsk.eq.ione) open(kp,file=pfile,status="old",access="append")
       if(idsk.eq.itwo) open(kp,file=pfile,status="old",
      & form="unformatted",access="append")
+#else
+      if(idout.ne.izero) open(kw,file=ofile,status="old",
+     & position="append")
+      if(idsk.eq.ione) open(kp,file=pfile,status="old",
+     & position="append")
+      if(idsk.eq.itwo) open(kp,file=pfile,status="old",
+     & form="unformatted",position="append")
+#endif
       skc=iskopt.ge.izero.and.iskopt.ne.ione.and.numslp.ne.izero
       call fill(bextern,zero,neq*nextflag)
       call fill(btraction,zero,neq*ntractflag)
@@ -589,7 +603,7 @@ c
       end
 c
 c version
-c $Id: autoprestr.F,v 1.11 2005/06/24 20:06:44 willic3 Exp $
+c $Id: autoprestr.F,v 1.12 2005/08/05 20:17:17 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
 c
