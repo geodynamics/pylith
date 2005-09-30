@@ -31,378 +31,75 @@
 #if !defined(lithomop3d_externs_h)
 #define lithomop3d_externs_h
 
-#if defined(NEEDS_F77_TRANSLATION)
-
-#if defined(F77EXTERNS_LOWERCASE_TRAILINGBAR)
-
-#define assign_wink_f assign_wink_
-#define autoprestr_f autoprestr_
-#define cmp_stiffsz_f cmp_stiffsz_
-#define create_id_f create_id_
-#define elastc_f elastc_
-#define id_split_f id_split_
-#define lnklst_f lnklst_
-#define local_f local_
-#define localf_f localf_
-#define localx_f localx_
-#define makemsr_f makemsr_
-#define matmod_def_f matmod_def_
-#define nfind_f nfind_
-#define preshape_f preshape_
-#define read_bc_f read_bc_
-#define read_connect_f read_connect_
-#define read_coords_f read_coords_
-#define read_diff_f read_diff_
-#define read_fuldat_f read_fuldat_
-#define read_hist_f read_hist_
-// #define read_mathist_f read_mathist_
-// #define read_prestr_f read_prestr_
-#define read_skew_f read_skew_
-#define read_slip_f read_slip_
-#define read_split_f read_split_
-#define read_stateout_f read_stateout_
-#define read_timdat_f read_timdat_
-// #define read_traction_f read_traction_
-#define read_wink_f read_wink_
-// #define read_winkx_f read_winkx_
-#define scan_bc_f scan_bc_
-#define scan_connect_f scan_connect_
-#define scan_coords_f scan_coords_
-#define scan_diff_f scan_diff_
-#define scan_fuldat_f scan_fuldat_
-#define scan_hist_f scan_hist_
-// #define scan_prestr_f scan_prestr_
-#define scan_skew_f scan_skew_
-#define scan_slip_f scan_slip_
-#define scan_split_f scan_split_
-#define scan_timdat_f scan_timdat_
-// #define scan_traction_f scan_traction_
-#define scan_wink_f scan_wink_
-#define scan_winkx_f scan_winkx_
-#define sort_elements_f sort_elements_
-#define sort_slip_nodes_f sort_slip_nodes_
-#define sort_split_nodes_f sort_split_nodes_
-#define viscos_f viscos_
-#define write_bc_f write_bc_
-#define write_connect_f write_connect_
-#define write_coords_f write_coords_
-#define write_diff_f write_diff_
-#define write_element_info_f write_element_info_
-#define write_fuldat_f write_fuldat_
-#define write_global_info_f write_global_info_
-#define write_hist_f write_hist_
-#define write_props_f write_props_
-#define write_skew_f write_skew_
-#define write_slip_f write_slip_
-#define write_sparse_info_f write_sparse_info_
-#define write_split_f write_split_
-#define write_split_plot_f write_split_plot_
-#define write_stateout_f write_stateout_
-#define write_strscomp_f write_strscomp_
-#define write_subiter_f write_subiter_
-#define write_timdat_f write_timdat_
-#define write_ucd_mesh_f write_ucd_mesh_
-#define write_wink_f write_wink_
-#define write_winkx_f write_winkx_
-
-#elif defined(F77EXTERNS_NOTRAILINGBAR)
-
-#define assign_wink_f assign_wink
-#define autoprestr_f autoprestr
-#define cmp_stiffsz_f cmp_stiffsz
-#define create_id_f create_id
-#define elastc_f elastc
-#define id_split_f id_split
-#define lnklst_f lnklst
-#define local_f local
-#define localf_f localf
-#define localx_f localx
-#define makemsr_f makemsr
-#define matmod_def_f matmod_def
-#define nfind_f nfind
-#define preshape_f preshape
-#define read_bc_f read_bc
-#define read_connect_f read_connect
-#define read_coords_f read_coords
-#define read_diff_f read_diff
-#define read_fuldat_f read_fuldat
-#define read_hist_f read_hist
-// #define read_mathist_f read_mathist
-// #define read_prestr_f read_prestr
-#define read_skew_f read_skew
-#define read_slip_f read_slip
-#define read_split_f read_split
-#define read_stateout_f read_stateout
-#define read_timdat_f read_timdat
-// #define read_traction_f read_traction
-#define read_wink_f read_wink
-// #define read_winkx_f read_winkx
-#define scan_bc_f scan_bc
-#define scan_connect_f scan_connect
-#define scan_coords_f scan_coords
-#define scan_diff_f scan_diff
-#define scan_fuldat_f scan_fuldat
-#define scan_hist_f scan_hist
-// #define scan_prestr_f scan_prestr
-#define scan_skew_f scan_skew
-#define scan_slip_f scan_slip
-#define scan_split_f scan_split
-#define scan_timdat_f scan_timdat
-// #define scan_traction_f scan_traction
-#define scan_wink_f scan_wink
-#define scan_winkx_f scan_winkx
-#define sort_elements_f sort_elements
-#define sort_slip_nodes_f sort_slip_nodes
-#define sort_split_nodes_f sort_split_nodes
-#define viscos_f viscos
-#define write_bc_f write_bc
-#define write_connect_f write_connect
-#define write_coords_f write_coords
-#define write_diff_f write_diff
-#define write_element_info_f write_element_info
-#define write_fuldat_f write_fuldat
-#define write_global_info_f write_global_info
-#define write_hist_f write_hist
-#define write_props_f write_props
-#define write_skew_f write_skew
-#define write_slip_f write_slip
-#define write_sparse_info_f write_sparse_info
-#define write_split_f write_split
-#define write_split_plot_f write_split_plot
-#define write_stateout_f write_stateout
-#define write_strscomp_f write_strscomp
-#define write_subiter_f write_subiter
-#define write_timdat_f write_timdat
-#define write_ucd_mesh_f write_ucd_mesh
-#define write_wink_f write_wink
-#define write_winkx_f write_winkx
-
-#elif defined(F77EXTERNS_EXTRATRAILINGBAR)
-
-#define assign_wink_f assign_wink__
-#define autoprestr_f autoprestr__
-#define cmp_stiffsz_f cmp_stiffsz__
-#define create_id_f create_id__
-#define elastc_f elastc__
-#define id_split_f id_split__
-#define lnklst_f lnklst__
-#define local_f local__
-#define localf_f localf__
-#define localx_f localx__
-#define makemsr_f makemsr__
-#define matmod_def_f matmod_def__
-#define nfind_f nfind__
-#define preshape_f preshape__
-#define read_bc_f read_bc__
-#define read_connect_f read_connect__
-#define read_coords_f read_coords__
-#define read_diff_f read_diff__
-#define read_fuldat_f read_fuldat__
-#define read_hist_f read_hist__
-// #define read_mathist_f read_mathist__
-// #define read_prestr_f read_prestr__
-#define read_skew_f read_skew__
-#define read_slip_f read_slip__
-#define read_split_f read_split__
-#define read_stateout_f read_stateout__
-#define read_timdat_f read_timdat__
-// #define read_traction_f read_traction__
-#define read_wink_f read_wink__
-// #define read_winkx_f read_winkx__
-#define scan_bc_f scan_bc__
-#define scan_connect_f scan_connect__
-#define scan_coords_f scan_coords__
-#define scan_diff_f scan_diff__
-#define scan_fuldat_f scan_fuldat__
-#define scan_hist_f scan_hist__
-// #define scan_prestr_f scan_prestr__
-#define scan_skew_f scan_skew__
-#define scan_slip_f scan_slip__
-#define scan_split_f scan_split__
-#define scan_timdat_f scan_timdat__
-// #define scan_traction_f scan_traction__
-#define scan_wink_f scan_wink__
-#define scan_winkx_f scan_winkx__
-#define sort_elements_f sort_elements__
-#define sort_slip_nodes_f sort_slip_nodes__
-#define sort_split_nodes_f sort_split_nodes__
-#define viscos_f viscos__
-#define write_bc_f write_bc__
-#define write_connect_f write_connect__
-#define write_coords_f write_coords__
-#define write_diff_f write_diff__
-#define write_element_info_f write_element_info__
-#define write_fuldat_f write_fuldat__
-#define write_global_info_f write_global_info__
-#define write_hist_f write_hist__
-#define write_props_f write_props__
-#define write_skew_f write_skew__
-#define write_slip_f write_slip__
-#define write_sparse_info_f write_sparse_info__
-#define write_split_f write_split__
-#define write_split_plot_f write_split_plot__
-#define write_stateout_f write_stateout__
-#define write_strscomp_f write_strscomp__
-#define write_subiter_f write_subiter__
-#define write_timdat_f write_timdat__
-#define write_ucd_mesh_f write_ucd_mesh__
-#define write_wink_f write_wink__
-#define write_winkx_f write_winkx__
-
-#elif defined(F77EXTERNS_UPPERCASE_NOTRAILINGBAR)
-
-#define assign_wink_f ASSIGN_WINK
-#define autoprestr_f AUTOPRESTR
-#define cmp_stiffsz_f CMP_STIFFSZ
-#define create_id_f CREATE_ID
-#define elastc_f ELASTC
-#define id_split_f ID_SPLIT
-#define lnklst_f LNKLST
-#define local_f LOCAL
-#define localf_f LOCALF
-#define localx_f LOCALX
-#define makemsr_f MAKEMSR
-#define matmod_def_f MATMOD_DEF
-#define nfind_f NFIND
-#define preshape_f PRESHAPE
-#define read_bc_f READ_BC
-#define read_connect_f READ_CONNECT
-#define read_coords_f READ_COORDS
-#define read_diff_f READ_DIFF
-#define read_fuldat_f READ_FULDAT
-#define read_hist_f READ_HIST
-// #define read_mathist_f READ_MATHIST
-// #define read_prestr_f READ_PRESTR
-#define read_skew_f READ_SKEW
-#define read_slip_f READ_SLIP
-#define read_split_f READ_SPLIT
-#define read_stateout_f READ_STATEOUT
-#define read_timdat_f READ_TIMDAT
-// #define read_traction_f READ_TRACTION
-#define read_wink_f READ_WINK
-// #define read_winkx_f READ_WINKX
-#define scan_bc_f SCAN_BC
-#define scan_connect_f SCAN_CONNECT
-#define scan_coords_f SCAN_COORDS
-#define scan_diff_f SCAN_DIFF
-#define scan_fuldat_f SCAN_FULDAT
-#define scan_hist_f SCAN_HIST
-// #define scan_prestr_f SCAN_PRESTR
-#define scan_skew_f SCAN_SKEW
-#define scan_slip_f SCAN_SLIP
-#define scan_split_f SCAN_SPLIT
-#define scan_timdat_f SCAN_TIMDAT
-// #define scan_traction_f SCAN_TRACTION
-#define scan_wink_f SCAN_WINK
-#define scan_winkx_f SCAN_WINKX
-#define sort_elements_f SORT_ELEMENTS
-#define sort_slip_nodes_f SORT_SLIP_NODES
-#define sort_split_nodes_f SORT_SPLIT_NODES
-#define viscos_f VISCOS
-#define write_bc_f WRITE_BC
-#define write_connect_f WRITE_CONNECT
-#define write_coords_f WRITE_COORDS
-#define write_diff_f WRITE_DIFF
-#define write_element_info_f WRITE_ELEMENT_INFO
-#define write_fuldat_f WRITE_FULDAT
-#define write_global_info_f WRITE_GLOBAL_INFO
-#define write_hist_f WRITE_HIST
-#define write_props_f WRITE_PROPS
-#define write_skew_f WRITE_SKEW
-#define write_slip_f WRITE_SLIP
-#define write_sparse_info_f WRITE_SPARSE_INFO
-#define write_split_f WRITE_SPLIT
-#define write_split_plot_f WRITE_SPLIT_PLOT
-#define write_stateout_f WRITE_STATEOUT
-#define write_strscomp_f WRITE_STRSCOMP
-#define write_subiter_f WRITE_SUBITER
-#define write_timdat_f WRITE_TIMDAT
-#define write_ucd_mesh_f WRITE_UCD_MESH
-#define write_wink_f WRITE_WINK
-#define write_winkx_f WRITE_WINKX
-
-#elif defined(F77EXTERNS_COMPAQ_F90) || defined (F77EXTERNS_SOMETIMES_TRAILINGBAR)
-
-// symbols that contain underbars get two underbars at the end
-// symbols that do not contain underbars get one underbar at the end
-// this applies to the FORTRAN external, not the local macro alias!!!
-
-#define assign_wink_f assign_wink__
-#define autoprestr_f autoprestr_
-#define cmp_stiffsz_f cmp_stiffsz__
-#define create_id_f create_id__
-#define elastc_f elastc_
-#define id_split_f id_split__
-#define lnklst_f lnklst_
-#define local_f local_
-#define localf_f localf_
-#define localx_f localx_
-#define makemsr_f makemsr_
-#define matmod_def_f matmod_def__
-#define nfind_f nfind_
-#define preshape_f preshape_
-#define read_bc_f read_bc__
-#define read_connect_f read_connect__
-#define read_coords_f read_coords__
-#define read_diff_f read_diff__
-#define read_fuldat_f read_fuldat__
-#define read_hist_f read_hist__
-// #define read_mathist_f read_mathist__
-// #define read_prestr_f read_prestr__
-#define read_skew_f read_skew__
-#define read_slip_f read_slip__
-#define read_split_f read_split__
-#define read_stateout_f read_stateout__
-#define read_timdat_f read_timdat__
-// #define read_traction_f read_traction__
-#define read_wink_f read_wink__
-// #define read_winkx_f read_winkx__
-#define scan_bc_f scan_bc__
-#define scan_connect_f scan_connect__
-#define scan_coords_f scan_coords__
-#define scan_diff_f scan_diff__
-#define scan_fuldat_f scan_fuldat__
-#define scan_hist_f scan_hist__
-// #define scan_prestr_f scan_prestr__
-#define scan_skew_f scan_skew__
-#define scan_slip_f scan_slip__
-#define scan_split_f scan_split__
-#define scan_timdat_f scan_timdat__
-// #define scan_traction_f scan_traction__
-#define scan_wink_f scan_wink__
-#define scan_winkx_f scan_winkx__
-#define sort_elements_f sort_elements__
-#define sort_slip_nodes_f sort_slip_nodes__
-#define sort_split_nodes_f sort_split_nodes__
-#define viscos_f viscos_
-#define write_bc_f write_bc__
-#define write_connect_f write_connect__
-#define write_coords_f write_coords__
-#define write_diff_f write_diff__
-#define write_element_info_f write_element_info__
-#define write_fuldat_f write_fuldat__
-#define write_global_info_f write_global_info__
-#define write_hist_f write_hist__
-#define write_props_f write_props__
-#define write_skew_f write_skew__
-#define write_slip_f write_slip__
-#define write_sparse_info_f write_sparse_info__
-#define write_split_f write_split__
-#define write_split_plot_f write_split_plot__
-#define write_stateout_f write_stateout__
-#define write_strscomp_f write_strscomp__
-#define write_subiter_f write_subiter__
-#define write_timdat_f write_timdat__
-#define write_ucd_mesh_f write_ucd_mesh__
-#define write_wink_f write_wink__
-#define write_winkx_f write_winkx__
-
-#else
-#error Unknown translation for FORTRAN external symbols
-#endif
-
-#endif
-
+#define assign_wink_f FC_FUNC_(assign_wink, ASSIGN_WINK)
+#define autoprestr_f FC_FUNC(autoprestr, AUTOPRESTR)
+#define cmp_stiffsz_f FC_FUNC_(cmp_stiffsz, CMP_STIFFSZ)
+#define create_id_f FC_FUNC_(create_id, CREATE_ID)
+#define elastc_f FC_FUNC(elastc, ELASTC)
+#define id_split_f FC_FUNC_(id_split, ID_SPLIT)
+#define lnklst_f FC_FUNC(lnklst, LNKLST)
+#define local_f FC_FUNC(local, LOCAL)
+#define localf_f FC_FUNC(localf, LOCALF)
+#define localx_f FC_FUNC(localx, LOCALX)
+#define makemsr_f FC_FUNC(makemsr, MAKEMSR)
+#define matmod_def_f FC_FUNC_(matmod_def, MATMOD_DEF)
+#define nfind_f FC_FUNC(nfind, NFIND)
+#define preshape_f FC_FUNC(preshape, PRESHAPE)
+#define read_bc_f FC_FUNC_(read_bc, READ_BC)
+#define read_connect_f FC_FUNC_(read_connect, READ_CONNECT)
+#define read_coords_f FC_FUNC_(read_coords, READ_COORDS)
+#define read_diff_f FC_FUNC_(read_diff, READ_DIFF)
+#define read_fuldat_f FC_FUNC_(read_fuldat, READ_FULDAT)
+#define read_hist_f FC_FUNC_(read_hist, READ_HIST)
+// #define read_mathist_f FC_FUNC_(read_mathist, READ_MATHIST)
+// #define read_prestr_f FC_FUNC_(read_prestr, READ_PRESTR)
+#define read_skew_f FC_FUNC_(read_skew, READ_SKEW)
+#define read_slip_f FC_FUNC_(read_slip, READ_SLIP)
+#define read_split_f FC_FUNC_(read_split, READ_SPLIT)
+#define read_stateout_f FC_FUNC_(read_stateout, READ_STATEOUT)
+#define read_timdat_f FC_FUNC_(read_timdat, READ_TIMDAT)
+// #define read_traction_f FC_FUNC_(read_traction, READ_TRACTION)
+#define read_wink_f FC_FUNC_(read_wink, READ_WINK)
+// #define read_winkx_f FC_FUNC_(read_winkx, READ_WINKX)
+#define scan_bc_f FC_FUNC_(scan_bc, SCAN_BC)
+#define scan_connect_f FC_FUNC_(scan_connect, SCAN_CONNECT)
+#define scan_coords_f FC_FUNC_(scan_coords, SCAN_COORDS)
+#define scan_diff_f FC_FUNC_(scan_diff, SCAN_DIFF)
+#define scan_fuldat_f FC_FUNC_(scan_fuldat, SCAN_FULDAT)
+#define scan_hist_f FC_FUNC_(scan_hist, SCAN_HIST)
+// #define scan_prestr_f FC_FUNC_(scan_prestr, SCAN_PRESTR)
+#define scan_skew_f FC_FUNC_(scan_skew, SCAN_SKEW)
+#define scan_slip_f FC_FUNC_(scan_slip, SCAN_SLIP)
+#define scan_split_f FC_FUNC_(scan_split, SCAN_SPLIT)
+#define scan_timdat_f FC_FUNC_(scan_timdat, SCAN_TIMDAT)
+// #define scan_traction_f FC_FUNC_(scan_traction, SCAN_TRACTION)
+#define scan_wink_f FC_FUNC_(scan_wink, SCAN_WINK)
+#define scan_winkx_f FC_FUNC_(scan_winkx, SCAN_WINKX)
+#define sort_elements_f FC_FUNC_(sort_elements, SORT_ELEMENTS)
+#define sort_slip_nodes_f FC_FUNC_(sort_slip_nodes, SORT_SLIP_NODES)
+#define sort_split_nodes_f FC_FUNC_(sort_split_nodes, SORT_SPLIT_NODES)
+#define viscos_f FC_FUNC(viscos, VISCOS)
+#define write_bc_f FC_FUNC_(write_bc, WRITE_BC)
+#define write_connect_f FC_FUNC_(write_connect, WRITE_CONNECT)
+#define write_coords_f FC_FUNC_(write_coords, WRITE_COORDS)
+#define write_diff_f FC_FUNC_(write_diff, WRITE_DIFF)
+#define write_element_info_f FC_FUNC_(write_element_info, WRITE_ELEMENT_INFO)
+#define write_fuldat_f FC_FUNC_(write_fuldat, WRITE_FULDAT)
+#define write_global_info_f FC_FUNC_(write_global_info, WRITE_GLOBAL_INFO)
+#define write_hist_f FC_FUNC_(write_hist, WRITE_HIST)
+#define write_props_f FC_FUNC_(write_props, WRITE_PROPS)
+#define write_skew_f FC_FUNC_(write_skew, WRITE_SKEW)
+#define write_slip_f FC_FUNC_(write_slip, WRITE_SLIP)
+#define write_sparse_info_f FC_FUNC_(write_sparse_info, WRITE_SPARSE_INFO)
+#define write_split_f FC_FUNC_(write_split, WRITE_SPLIT)
+#define write_split_plot_f FC_FUNC_(write_split_plot, WRITE_SPLIT_PLOT)
+#define write_stateout_f FC_FUNC_(write_stateout, WRITE_STATEOUT)
+#define write_strscomp_f FC_FUNC_(write_strscomp, WRITE_STRSCOMP)
+#define write_subiter_f FC_FUNC_(write_subiter, WRITE_SUBITER)
+#define write_timdat_f FC_FUNC_(write_timdat, WRITE_TIMDAT)
+#define write_ucd_mesh_f FC_FUNC_(write_ucd_mesh, WRITE_UCD_MESH)
+#define write_wink_f FC_FUNC_(write_wink, WRITE_WINK)
+#define write_winkx_f FC_FUNC_(write_winkx, WRITE_WINKX)
 
 extern "C" {
 
