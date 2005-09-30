@@ -36,6 +36,9 @@ AC_PROG_LIBTOOL
 # Checks for Python modules and packages.
 CIT_PATH_PYTHIA([0.8], [mpi])
 
+# Set the language for MPI tests.
+AC_LANG(C++)
+
 # Checks for libraries.
 CIT_CHECK_LIB_MPI
 
