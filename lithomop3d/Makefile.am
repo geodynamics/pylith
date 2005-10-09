@@ -7,9 +7,6 @@ SUBDIRS = liblithomop3d module
 nobase_python_PYTHON = \
 	lithomop3d/Application.py \
 	lithomop3d/ElementTypeDef.py \
-	lithomop3d/future/MeshWriteAscii.py \
-	lithomop3d/future/MeshWrite.py \
-	lithomop3d/future/MeshWriteUcd.py \
 	lithomop3d/__init__.py \
 	lithomop3d/KeywordValueParse.py \
 	lithomop3d/Lithomop3d_run.py \
