@@ -200,20 +200,19 @@ c
 c
 c...  header info
 c
+c...  The current setup uses autoconf to determine whether the fortran
+c     compiler supports old-style f77 unformatted direct access,
+c     stream I/O, or neither.  If neither is supported, binary output
+c     is turned off.
 c
-c...  The g95 compiler supports stream i/o, while the gfortran compiler
-c     does not.  At present, it is assumed that all f95 compilers other
-c     than gfortran support this feature.  Undoubtedly, exceptions will
-c     be found and the list below will need to be expanded.
-c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
         write(kucd,rec=ibyte) magnum,numnp,numelv,nnattr,neattr,nmattr,
      &   nnlist
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
         write(kucd,pos=ibyte) magnum,numnp,numelv,nnattr,neattr,nmattr,
      &   nnlist
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
         ibyte=ibyte+ione+6*intlen
 c
@@ -225,12 +224,12 @@ c
           matmodel=ivfamily(2,ifam)
           do ielf=1,nelfamily
             ielg=ielg+1
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
             write(kucd,rec=ibyte) ielg,matmodel,nen,ictype
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
             write(kucd,pos=ibyte) ielg,matmodel,nen,ictype
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
             ibyte=ibyte+4*intlen
           end do
@@ -247,12 +246,12 @@ c
             do j=1,nen
               itmp(j)=ien(j,ielg)
             end do
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
             write(kucd,rec=ibyte) (itmp(inducd(j,indtype)),j=1,nen)
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
             write(kucd,pos=ibyte) (itmp(inducd(j,indtype)),j=1,nen)
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
             ibyte=ibyte+nen*intlen
           end do
@@ -261,12 +260,12 @@ c
 c...  nodal coordinates
 c
         do i=1,nsd
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
           write(kucd,rec=ibyte) (real(x(i,j)),j=1,numnp)
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
           write(kucd,pos=ibyte) (real(x(i,j)),j=1,numnp)
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
           ibyte=ibyte+numnp*floatlen
         end do
@@ -277,14 +276,14 @@ c
         ibyte=ione
         iopt=itwo
         call open_ucd(kucd,iprestress,nstep,ucdroot,iopt,iucd)
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
         write(kucd,rec=ibyte) magnum,ngpts,numelg,nngattr,negattr,
      &   nmattr,nglist
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
         write(kucd,pos=ibyte) magnum,ngpts,numelg,nngattr,negattr,
      &   nmattr,nglist
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
         ibyte=ibyte+ione+6*intlen
 c
@@ -302,16 +301,16 @@ c
               xg(2)=xg(2)+xl(2,j)*sh(4,j,l)
               xg(3)=xg(3)+xl(3,j)*sh(4,j,l)
             end do
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
             write(kucd,rec=ibyte) real(xg(1))
             write(kucd,rec=ibyte+istride) real(xg(2))
             write(kucd,rec=ibyte+2*istride) real(xg(3))
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
             write(kucd,pos=ibyte) real(xg(1))
             write(kucd,pos=ibyte+istride) real(xg(2))
             write(kucd,pos=ibyte+2*istride) real(xg(3))
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
             ibyte=ibyte+floatlen
           end do

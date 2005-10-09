@@ -74,16 +74,16 @@ c
 c
 c...  write skew BC to ascii output file, if desired
 c
+c...  The current setup uses autoconf to determine whether the fortran
+c     compiler supports access="append", position="append", or neither.
+c     If neither is supported an error is returned.
 c
-c...  at present, it is assumed that all f77 compilers support
-c     access="append" and all f95 compilers support position="append".
-c     If exceptions are found we will have to use FORTRAN_COMPILER_NAME
-c     to differentiate.
-c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_ACCESS_APPEND
       open(kw,file=ofile,err=40,status="old",access="append")
-#else
+#elif defined FORTRAN_POSITION_APPEND
       open(kw,file=ofile,err=40,status="old",position="append")
+#else
+#error "Cannot determine method for appending to Fortran files!"
 #endif
       write(kw,1000,err=50) iskopt,(label(i),i=1,nskdim)
       write(kw,1050,err=50)

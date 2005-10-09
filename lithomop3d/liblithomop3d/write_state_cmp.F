@@ -160,17 +160,17 @@ cdebug            write(6,*) "sout:",(sout(idb),idb=1,3*nstatesmax)
             do j=1,nstatestot
               istate=istatoutc(j)
 c
-c...  The g95 compiler supports stream i/o, while the gfortran compiler
-c     does not.  At present, it is assumed that all f95 compilers other
-c     than gfortran support this feature.  Undoubtedly, exceptions will
-c     be found and the list below will need to be expanded.
+c...  The current setup uses autoconf to determine whether the fortran
+c     compiler supports old-style f77 unformatted direct access,
+c     stream I/O, or neither.  If neither is supported, binary output
+c     is turned off.
 c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
               write(kucd,rec=ibyteg(j)) real(sout(istate))
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
               write(kucd,pos=ibyteg(j)) real(sout(istate))
+#else
+#warning "Binary UCD output not supported for the Fortran compiler!"
 #endif
 
               statemin(istate)=min(statemin(istate),sout(istate))
