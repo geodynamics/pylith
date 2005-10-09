@@ -47,34 +47,50 @@ CIT_HEADER_MPI
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_LANG(Fortran)
-AC_MSG_CHECKING([whether $FC supports OPEN control item 'position'])
+AC_MSG_CHECKING([whether $FC supports OPEN control item 'position="append"'])
 AC_COMPILE_IFELSE([
-    AC_LANG_PROGRAM([], [[      open(kw,file="foo",status="old",position="append")]])
+    AC_LANG_PROGRAM([], [[      open(10,file="foo",status="old",position="append")]])
 ], [
     AC_MSG_RESULT(yes)
+    FCFLAGS="-DFORTRAN_POSITION_APPEND $FCFLAGS"; export FCFLAGS
 ], [
     AC_MSG_RESULT(no)
-    AC_MSG_CHECKING([whether $FC supports OPEN control item 'access'])
+    AC_MSG_CHECKING([whether $FC supports OPEN control item 'access="append"'])
     AC_COMPILE_IFELSE([
-        AC_LANG_PROGRAM([], [[      open(kw,file="foo",status="old",access="append")]])
+        AC_LANG_PROGRAM([], [[      open(10,file="foo",status="old",access="append")]])
     ], [
         AC_MSG_RESULT(yes)
-        FCFLAGS="-DFORTRAN_TYPE_F77 $FCFLAGS"; export FCFLAGS
+        FCFLAGS="-DFORTRAN_ACCESS_APPEND $FCFLAGS"; export FCFLAGS
     ], [
         AC_MSG_RESULT(no)
-        AC_MSG_FAILURE([can not determine Fortran type])
+        AC_MSG_FAILURE([cannot determine method for appending to Fortran files])
+        FCFLAGS="-DFORTRAN_NO_APPEND $FCFLAGS"; export FCFLAGS
     ])
 ])
-AC_MSG_CHECKING([whether $FC supports stream I/O])
+AC_MSG_CHECKING([whether $FC supports stream i/o])
 AC_COMPILE_IFELSE([
-    AC_LANG_PROGRAM([], [[
-       integer foo,kucd
-       open(kucd,file="foo",status="new",access="stream",
-     &   form="unformatted")
-       write(kucd,pos=ibyte) foo
-]])], [AC_MSG_RESULT(yes)],
-      [AC_MSG_RESULT(no)
-       FCFLAGS="-DFORTRAN_NAME_GFORTRAN $FCFLAGS"; export FCFLAGS])
+    AC_LANG_PROGRAM([], [[      open(10,file="foo",status="new",access="stream",
+     & form="unformatted")
+      write(10,pos=1) 1,2,3.0d0]])
+], [
+    AC_MSG_RESULT(yes)
+    FCFLAGS="-DFORTRAN_STREAM_IO $FCFLAGS"; export FCFLAGS
+], [
+        AC_MSG_RESULT(no)
+        AC_MSG_CHECKING([whether $FC supports f77-style binary direct-access i/o])
+        AC_COMPILE_IFELSE([
+            AC_LANG_PROGRAM([], [[      open(10,file="foo",status="new",access="direct",recl=1,
+     & form="unformatted")
+      write(10,rec=1) 1,2,3.0d0]])
+    ], [
+        AC_MSG_RESULT(yes)
+        FCFLAGS="-DFORTRAN_F77_IO $FCFLAGS"; export FCFLAGS
+    ], [
+        AC_MSG_RESULT(no)
+        AC_MSG_WARN([cannot determine how to produce binary direct-access files with variable record length])
+        FCFLAGS="-DFORTRAN_NO_BINARY $FCFLAGS"; export FCFLAGS
+    ])
+])
 
 # Checks for library functions.
 
