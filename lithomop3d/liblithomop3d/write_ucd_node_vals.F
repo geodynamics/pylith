@@ -88,7 +88,7 @@ c
       double precision vmin(6),vmax(6)
       character filenm*200,cstep*5
       character nlabels*1024,nunits*1024
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
       integer len
       len=ione
 #endif
@@ -182,19 +182,19 @@ c...  binary UCD output
 c
       else if(iucd.eq.itwo) then
 c
-c...  The g95 compiler supports stream i/o, while the gfortran compiler
-c     does not.  At present, it is assumed that all f95 compilers other
-c     than gfortran support this feature.  Undoubtedly, exceptions will
-c     be found and the list below will need to be expanded.
+c...  The current setup uses autoconf to determine whether the fortran
+c     compiler supports old-style f77 unformatted direct access,
+c     stream I/O, or neither.  If neither is supported, binary output
+c     is turned off.
 c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
         open(kucd,file=filenm,status="new",access="direct",recl=len,
      &   form="unformatted")
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
         open(kucd,file=filenm,status="new",access="stream",
      &   form="unformatted")
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
 c
 c...  determin min/max of data values
@@ -220,7 +220,7 @@ c
 c
 c...  write header info
 c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
         write(kucd,rec=ibyte) nlabels,nunits
         ibyte=ibyte+2048
         write(kucd,rec=ibyte) nnvals,(ival(i),i=1,nnvals)
@@ -228,9 +228,7 @@ c
         write(kucd,rec=ibyte) (real(vmin(i)),i=1,nnvals)
         ibyte=ibyte+floatlen*nnvals
         write(kucd,rec=ibyte) (real(vmax(i)),i=1,nnvals)
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
         write(kucd,pos=ibyte) nlabels,nunits
         ibyte=ibyte+2048
         write(kucd,pos=ibyte) nnvals,(ival(i),i=1,nnvals)
@@ -238,40 +236,42 @@ c
         write(kucd,pos=ibyte) (real(vmin(i)),i=1,nnvals)
         ibyte=ibyte+floatlen*nnvals
         write(kucd,pos=ibyte) (real(vmax(i)),i=1,nnvals)
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
         ibyte=ibyte+floatlen*nnvals
 c
 c...  write node data
 c
         do j=1,ndof
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
           write(kucd,rec=ibyte) (real(d(j,i)),i=1,numnp)
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
           write(kucd,pos=ibyte) (real(d(j,i)),i=1,numnp)
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
           ibyte=ibyte+numnp*floatlen
         end do
         do j=1,ndof
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
           write(kucd,rec=ibyte) (real(rmult*deld(j,i)),i=1,numnp)
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
           write(kucd,pos=ibyte) (real(rmult*deld(j,i)),i=1,numnp)
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
           ibyte=ibyte+numnp*floatlen
         end do
 c
 c...  write terminating values and close file
 c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
         write(kucd,rec=ibyte) (real(vmax(i)),i=1,nnvals)
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
         write(kucd,pos=ibyte) (real(vmax(i)),i=1,nnvals)
+#else
+#warning "Binary UCD output not supported with gfortran!"
 #endif
         close(kucd)
 c

@@ -96,21 +96,21 @@ c
         nlabels(1024:1024)="0"
         nunits(1024:1024)="0"
 c
-c...  The g95 compiler supports stream i/o, while the gfortran compiler
-c     does not.  At present, it is assumed that all f95 compilers other
-c     than gfortran support this feature.  Undoubtedly, exceptions will
-c     be found and the list below will need to be expanded.
+c...  The current setup uses autoconf to determine whether the fortran
+c     compiler supports old-style f77 unformatted direct access,
+c     stream I/O, or neither.  If neither is supported, binary output
+c     is turned off.
 c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
         write(kucd,rec=ibyte) nlabels,nunits
         ibyte=ibyte+2048
         write(kucd,rec=ibyte) nstatestot,(iout(i),i=1,nstatestot)
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
         write(kucd,pos=ibyte) nlabels,nunits
         ibyte=ibyte+2048
         write(kucd,pos=ibyte) nstatestot,(iout(i),i=1,nstatestot)
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
       end if
 c

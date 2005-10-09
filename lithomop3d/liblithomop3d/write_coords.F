@@ -73,27 +73,30 @@ c...  output coordinates to plot file, if requested
 c
       if(idsk.eq.1) then
 c
-c...  at present, it is assumed that all f77 compilers support
-c     access="append" and all f95 compilers support position="append".
-c     If exceptions are found we will have to use FORTRAN_COMPILER_NAME
-c     to differentiate.
+c...  The current setup uses autoconf to determine whether the fortran
+c     compiler supports access="append", position="append", or neither.
+c     If neither is supported an error is returned.
 c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_ACCESS_APPEND
         open(kp,file=pfile,err=50,status="old",access="append")
-#else
+#elif defined FORTRAN_POSITION_APPEND
         open(kp,file=pfile,err=50,status="old",position="append")
+#else
+#error "Cannot determine method for appending to Fortran files!"
 #endif
         do i=1,numnp
           write(kp,"(i7,3(1pe16.8))",err=60) i,(x(j,i),j=1,nsd)
         end do
         close(kp)
       else if(idsk.eq.2) then
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_ACCESS_APPEND
         open(kp,file=pfile,err=50,status="old",access="append",
      &   form="unformatted")
-#else
+#elif defined FORTRAN_POSITION_APPEND
         open(kp,file=pfile,err=50,status="old",position="append",
      &   form="unformatted")
+#else
+#error "Cannot determine method for appending to Fortran files!"
 #endif
         write(kp,err=60) x
         close(kp)
@@ -102,10 +105,12 @@ c
 c...  output coordinates to human-readable file
 c
       if(idout.gt.izero) then
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_ACCESS_APPEND
         open(kw,file=ofile,err=50,status="old",access="append")
-#else
+#elif defined FORTRAN_POSITION_APPEND
         open(kw,file=ofile,err=50,status="old",position="append")
+#else
+#error "Cannot determine method for appending to Fortran files!"
 #endif
         do i=1,numnp
           if(i.eq.1.or.mod(i,npage).eq.0) write(kw,1000)

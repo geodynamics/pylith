@@ -54,12 +54,12 @@ c
       integer i1,i2
       character filenm*200,cstep*5
 c
-c...  At present, it is assumed that all f77 compilers support
-c     unformatted direct access with a record length of 1 (byte).
-c     If exceptions are found we will have to use FORTRAN_COMPILER_NAME
-c     to differentiate.
+c...  The current setup uses autoconf to determine whether the fortran
+c     compiler supports old-style f77 unformatted direct access,
+c     stream I/O, or neither.  If neither is supported, binary output
+c     is turned off.
 c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
       integer len
       len=ione
 #endif
@@ -91,19 +91,19 @@ c
         open(kucd,file=filenm,status="new")
       else if(iucd.eq.itwo) then
 c
-c...  The g95 compiler supports stream i/o, while the gfortran compiler
-c     does not.  At present, it is assumed that all f95 compilers other
-c     than gfortran support this feature.  Undoubtedly, exceptions will
-c     be found and the list below will need to be expanded.
+c...  The current setup uses autoconf to determine whether the fortran
+c     compiler supports old-style f77 unformatted direct access,
+c     stream I/O, or neither.  If neither is supported, binary output
+c     is turned off.
 c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_F77_IO
         open(kucd,file=filenm,status="new",access="direct",recl=len,
      &   form="unformatted")
-#elif defined FORTRAN_NAME_GFORTRAN
-#warning "Binary UCD output not supported with gfortran!"
-#else
+#elif defined FORTRAN_STREAM_IO
         open(kucd,file=filenm,status="new",access="stream",
      &   form="unformatted")
+#else
+#warning "Binary UCD output not supported for this Fortran compiler!"
 #endif
       end if
       return

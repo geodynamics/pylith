@@ -75,15 +75,16 @@ c...  output plot info, if desired
 c
       if(idsk.eq.ione) then
 c
-c...  at present, it is assumed that all f77 compilers support
-c     access="append" and all f95 compilers support position="append".
-c     If exceptions are found we will have to use FORTRAN_COMPILER_NAME
-c     to differentiate.
+c...  The current setup uses autoconf to determine whether the fortran
+c     compiler supports access="append", position="append", or neither.
+c     If neither is supported an error is returned.
 c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_ACCESS_APPEND
         open(kp,file=pfile,err=40,status="old",access="append")
-#else
+#elif defined FORTRAN_POSITION_APPEND
         open(kp,file=pfile,err=40,status="old",position="append")
+#else
+#error "Cannot determine method for appending to Fortran files!"
 #endif
         write(kp,1000,err=50) numelv,ietypev,nen,ngauss
         ielg=izero
@@ -98,12 +99,14 @@ c
         end do
         close(kp)
       else if(idsk.eq.itwo) then
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_ACCESS_APPEND
         open(kp,file=pfile,err=40,status="old",access="append",
      &   form="unformatted")
-#else
+#elif defined FORTRAN_POSITION_APPEND
         open(kp,file=pfile,err=40,status="old",position="append",
      &   form="unformatted")
+#else
+#error "Cannot determine method for appending to Fortran files!"
 #endif
         write(kp,err=50) numelv,ietypev,nen,ngauss
         write(kp,err=50) ivfamily
@@ -114,10 +117,12 @@ c
 c...  output ascii info, if desired
 c
       if(idout.gt.izero) then
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_ACCESS_APPEND
         open(kw,file=ofile,status="old",access="append")
-#else
+#elif defined FORTRAN_POSITION_APPEND
         open(kw,file=ofile,status="old",position="append")
+#else
+#error "Cannot determine method for appending to Fortran files!"
 #endif
         npage=50
         ielg=izero

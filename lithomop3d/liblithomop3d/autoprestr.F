@@ -152,24 +152,25 @@ c
       nee=infetype(3)
       nec=infetype(4)
 c
-c...  at present, it is assumed that all f77 compilers support
-c     access="append" and all f95 compilers support position="append".
-c     If exceptions are found we will have to use FORTRAN_COMPILER_NAME
-c     to differentiate.
+c...  The current setup uses autoconf to determine whether the fortran
+c     compiler supports access="append", position="append", or neither.
+c     If neither is supported an error is returned.
 c
-#if defined FORTRAN_TYPE_F77
+#if defined FORTRAN_ACCESS_APPEND
       if(idout.ne.izero) open(kw,file=ofile,status="old",
      & access="append")
       if(idsk.eq.ione) open(kp,file=pfile,status="old",access="append")
       if(idsk.eq.itwo) open(kp,file=pfile,status="old",
      & form="unformatted",access="append")
-#else
+#elif defined FORTRAN_POSITION_APPEND
       if(idout.ne.izero) open(kw,file=ofile,status="old",
      & position="append")
       if(idsk.eq.ione) open(kp,file=pfile,status="old",
      & position="append")
       if(idsk.eq.itwo) open(kp,file=pfile,status="old",
      & form="unformatted",position="append")
+#else
+#error "Cannot determine method for appending to Fortran files!"
 #endif
       skc=iskopt.ge.izero.and.iskopt.ne.ione.and.numslp.ne.izero
       call fill(bextern,zero,neq*nextflag)
