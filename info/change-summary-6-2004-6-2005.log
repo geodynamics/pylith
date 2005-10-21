@@ -1,0 +1,131 @@
+Important changes to LithoMop from 6-2004 to 6-2005.
+
+June - August, 2004:
+
+1.  Changed code logic so that looping is now performed over material
+type, rather than just over elements.  This improves code efficiency
+and is a step toward implementing element families.  Driver an
+computational routines have been provided to implement this change.
+Routine names are passed down from high-level routines to simulate some
+aspects of object-oriented programming using f77.
+
+2.  Material models have been broken down from a single type to multiple
+types.  This provides greater efficiency and simplifies the user
+interface.  This will also make it easier to add new material models in
+the future.
+
+3.  The number of element types has been increased to 10 from the
+previously-available 2 (trilinear hex and linear wedge element).  The
+new elements consist of linear and quadratic versions of 5 basic element
+types and they can be mixed.
+
+4.  In conjunction with increasing the number of available elements, all
+geometry-independent shape function information is now precomputed,
+yielding much greater code efficiency.
+
+5.  Added some SCEC benchmarks to examples as well as simple methods for
+running them (using 'mm').
+
+6.  Added output of Ascii AVS UCD files.  These are useful for both
+visualization and comparison of results.
+
+September, 2004 - February, 2005:
+
+1.  Developed overview of revised code structure using UML diagrams.
+Many of the code aspects seen in the diagrams will form the basis for
+future merging of LithoMop and EqSim.
+
+2.  Complete revision of force vector setup, along with PCG solution
+vector setup.  The implementation is now much more clean and logical,
+and some errors discovered in previous versions of the code have been
+corrected.  Along with this, several problems with Winkler elements
+were corrected.  These revisions will greatly simplify the task of
+using PETSc with the code.
+
+3.  Came up with a new method of dealing with prestresses.  The method
+addresses both the problem of automatically computing gravitional
+initial stresses as well as the problem of how to deal with these
+within the code.  Since the code uses a total strain formulation for
+stress computations, it was necessary to create an initials state
+variable array to carry the prestresses through the computations.  This
+also means that prestresses must be included in the development of
+material models.  Three material models using this strategy have been
+developed so far (PDF's are posted on the website):  isotropic linear
+elastic, isotropic linear Maxwell viscoelastic, and isotropic power-law
+Maxwell viscoelastic.  All of these have been formulated to include
+initial stresses, and they all use an effective stress function approach
+and the alpha method of time integration.  At present, only the elastic
+and linear viscoelastic material models have been implemented.
+Additional models will be included once the overall structure for
+material model routines has been firmly established.
+
+4.  Set up several test problems for prestresses.
+
+
+March - June, 2005:
+
+1.  Updated the code to work with pythia-0.8 (it previously used
+pythia-0.5).  This involved changes to the high-level python routines.
+
+2.  Initial PETSc version of LithoMop, using PETSc linear solvers to
+replace the PCG solver in LithoMop.  Initial tests indicate performance
+increases of approximately a factor of 2.  Usage of PETSc in conjunction
+with the migration to pythia-0.8 also allows passing of PETSc options
+directly from the command line, and also provides simple access to
+debugging facilities.  Debugging was previously one of the most
+difficult  and time-consuming aspects of code development.
+
+3.  Changed code logic so that looping is now performed over element
+families.  The families are currently defined by their material type,
+but this definition will be extended in the near future to material
+model and element type.  At present, the ability to mix different
+element types has been removed, but this restriction will also be
+lifted in the near future.  This new change drastically reduces the
+amount of indexing required when looping over elements, improving code
+structure, efficiency, and memory usage.
+
+4.  Major reworking of the python driver Lithomop3d_setup.py.  The
+routine has now been broken into a number of separate functions that
+cleanly separate the tasks of input, equation numbering, sorting
+elements into families, setting up sparse matrix storage, allocation
+of auxiliary storage, and output of mesh information.  Many of these
+functions had been combined in TECTON/LithoMop.  These steps will
+facilitate the parallelization of the code, and is another step
+toward better Pyre integration.
+
+5.  Fixed numerous problems associated with the usage of split nodes
+and slippery nodes, particularly when using Winkler elements to lock
+and unlock a slippery node fault.  Also fixed some problems with
+local coordinate rotations.  Test problems (including SCEC BM 5 and
+a problem being developed by Ya-Ju Hsu at Caltech) now appear to work
+correctly.
+
+6.  Fixed a build problem that was preventing code from building at all
+on Mac OS X, as well as some Linux build problems.  There is still a
+problem when using Apple's gnu-based compilers in conjunction with an
+externally-installed g77 and PETSc, but there is a temporary workaround
+until the issue is resolved.
+
+7.  A tutorial web page is still being developed to walk users through
+the process of installing required software such as PETSc and MPI, as
+well as how to download and install pythia-0.8 and LithoMop.  The
+tutorial also includes initialization files and instructions for running
+some example problems.  More in-depth instructions for completely
+setting up a problem (using the NetGen mesh generation package in
+conjunction with some supplied utility codes), running it, and
+visualizing the results (using AVS UCD output with the ParaView
+visualization package) will also be provided.  This page may serve as
+an initial version of a user manual.
+
+Possible changes from June to early July, 2005:
+
+1.  Option for outputting binary AVS UCD files (ascii files are much too
+large for big problems with many time steps).
+
+2.  Initial parallel version of LithoMop.  This is dependent on mesh
+partitioning software being provided by Matt Knepley.
+
+3.  Possible usage of Brad Aagaard's Spatial Database package for
+specification of material properties and boundary conditions.  Usage of
+this package would greatly simplify specification of boundary conditions
+for some of the SCEC benchmarks with complex BC.
