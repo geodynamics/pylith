@@ -3,7 +3,7 @@
 # $Id: configure.ac,v 1.1 2005/08/24 22:45:51 leif Exp $
 
 AC_PREREQ(2.59)
-AC_INIT([Lithomop3d], [1.0.0], [willic3@rpi.edu])
+AC_INIT([Lithomop3d], [0.7.1], [willic3@rpi.edu])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_SRCDIR([lithomop3d/applications/lithomop3dapp.py])
 AC_CONFIG_HEADER([portinfo])
