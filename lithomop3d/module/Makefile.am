@@ -45,6 +45,7 @@ lithomop3dmodule_la_LIBADD = \
 	$(PETSC_FORTRAN_LIB_BASIC) \
 	$(PETSC_LIB_BASIC) \
 	$(PETSC_EXTERNAL_LIB_BASIC) \
+	$(FCLIBS) \
 	-ljournal
 
 ## end of Makefile.am
