@@ -335,6 +335,10 @@ PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
   return Py_None;
 }
 
+#include<petscmesh.h>
+
+extern PetscErrorCode MeshComputeGlobalScatter(ALE::Sieve *, ALE::IndexBundle *, VecScatter *);
+
 
 // Create a PETSc Mat
 char pylithomop3d_createPETScMat__doc__[] = "";
@@ -342,46 +346,63 @@ char pylithomop3d_createPETScMat__name__[] = "createPETScMat";
 
 PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
 {
-  PyObject *pyA;
+  PyObject *pyMesh, *pyA, *pyRhs, *pySol;
+  Mesh mesh;
+  ALE::IndexBundle *fieldBundle;
+  ALE::PreSieve *orientation;
   Mat A;
-  int size;
-  // int ierr;
-  // PetscInt size;
+  Vec rhs, sol;
+  PetscInt size;
+  PetscErrorCode ierr;
 
-  int ok = PyArg_ParseTuple(args, "i:createPETScMat", &size);
+  int ok = PyArg_ParseTuple(args, "O:createPETScMat", &pyMesh);
   if (!ok) {
     return 0;
   }
+
+  mesh = (Mesh) PyCObject_AsVoidPtr(pyMesh);
+  ierr = MeshGetBundle(mesh, (void **) &fieldBundle);
+  ierr = MeshGetOrientation(mesh, (void **) &orientation);
+  size = fieldBundle->getLocalSize();
 
   // We are supporting versions 2.x or greater, under the assumption that anyone
   // using 2.2.x is using the release version.  If calling conventions change
   // for version 2.3.x, we can use the new PETSC_VERSION_RELEASE variable to
   // determine whether this is a developer version or not.
-
-#if PETSC_VERSION_MAJOR >= 2
-
-#if PETSC_VERSION_MINOR <= 2
-
-  if (MatCreate(PETSC_COMM_WORLD, size, size, PETSC_DETERMINE, PETSC_DETERMINE, &A)) {
+  MPI_Comm comm = PETSC_COMM_WORLD;
+  if (MatCreate(comm, &A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
     return 0;
   }
-
-#else                         // PETSC_VERSION_MINOR > 2
-
-  if (MatCreate(PETSC_COMM_WORLD, &A)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
-    return 0;
-  }
-  if (MatSetSizes(A, PETSC_DETERMINE, PETSC_DETERMINE, size, size)) {
+  if (MatSetSizes(A, size, size, PETSC_DETERMINE, PETSC_DETERMINE)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Mat");
     return 0;
   }
-#endif                       // end PETSC_VERSION_MINOR <= 2
+  if (VecCreate(comm, &rhs)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Rhs");
+    return 0;
+  }
+  if (VecSetSizes(rhs, size, PETSC_DETERMINE)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Rhs");
+    return 0;
+  }
+  if (VecSetFromOptions(rhs)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not set options for PETSc Rhs");
+    return 0;
+  }
+  if (VecDuplicate(rhs, &sol)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Sol");
+    return 0;
+  }
 
-#else                        // PETSC_VERSION_MAJOR < 2
-#error "Unsupported PETSc version!"
-#endif                       // end PETSC_VERSION_MAJOR >= 2
+  ierr = PetscObjectCompose((PetscObject) A, "mesh", (PetscObject) mesh);
+
+  VecScatter injection;
+  ierr = MeshComputeGlobalScatter(fieldBundle->getTopology(), fieldBundle, &injection);
+  ierr = PetscObjectCompose((PetscObject) rhs, "mesh", (PetscObject) mesh);
+  ierr = PetscObjectCompose((PetscObject) rhs, "injection", (PetscObject) injection);
+  ierr = PetscObjectCompose((PetscObject) sol, "mesh", (PetscObject) mesh);
+  ierr = PetscObjectCompose((PetscObject) sol, "injection", (PetscObject) injection);
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -391,7 +412,9 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
 
   // return Py_None;
   pyA = PyCObject_FromVoidPtr(A, NULL);
-  return Py_BuildValue("N", pyA);
+  pyRhs = PyCObject_FromVoidPtr(rhs, NULL);
+  pySol = PyCObject_FromVoidPtr(sol, NULL);
+  return Py_BuildValue("NNN", pyA, pyRhs, pySol);
 }
 
 // Destroy a PETSc Mat
@@ -401,11 +424,11 @@ char pylithomop3d_destroyPETScMat__name__[] = "destroyPETScMat";
 
 PyObject * pylithomop3d_destroyPETScMat(PyObject *, PyObject *args)
 {
-  PyObject *pyA;
+  PyObject *pyA,*pyRhs, *pySol;
   Mat A;
-  int size;
+  Vec rhs, sol;
 
-  int ok = PyArg_ParseTuple(args, "O:destroyPETScMat", &pyA);
+  int ok = PyArg_ParseTuple(args, "OOO:destroyPETScMat", &pyA, &pyRhs, &pySol);
   if (!ok) {
     return 0;
   }
@@ -413,6 +436,16 @@ PyObject * pylithomop3d_destroyPETScMat(PyObject *, PyObject *args)
   A = (Mat) PyCObject_AsVoidPtr(pyA);
   if (MatDestroy(A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not destroy PETSc Mat");
+    return 0;
+  }
+  rhs = (Vec) PyCObject_AsVoidPtr(pyRhs);
+  if (VecDestroy(rhs)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not destroy PETSc Rhs");
+    return 0;
+  }
+  sol = (Vec) PyCObject_AsVoidPtr(pySol);
+  if (VecDestroy(sol)) {
+    PyErr_SetString(PyExc_RuntimeError, "Could not destroy PETSc Sol");
     return 0;
   }
 

@@ -29,6 +29,7 @@
 // 
 
 #include <petscmat.h>
+#include <petscmesh.h>
 #include <portinfo>
 #include "journal/debug.h"
 
@@ -40,6 +41,239 @@
 #include <stdio.h>
 #include <string.h>
 
+#undef __FUNCT__
+#define __FUNCT__ "IgnoreComments_PyLith"
+PetscErrorCode IgnoreComments_PyLith(char *buf, PetscInt bufSize, FILE *f)
+{
+  PetscFunctionBegin;
+  while((fgets(buf, bufSize, f) != NULL) && (buf[0] == '#')) {}
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
+#define __FUNCT__ "ReadBoundary_PyLith"
+PetscErrorCode ReadBoundary_PyLith(const char *baseFilename, PetscTruth useZeroBase, PetscInt *numBoundaryVertices, PetscInt *numBoundaryComponents, PetscInt **boundaryVertices, PetscScalar **boundaryValues)
+{
+  FILE          *f;
+  PetscInt       maxVerts= 1024, vertexCount = 0;
+  PetscInt       numComp = 3;
+  PetscInt      *verts;
+  PetscScalar   *values;
+  char           bcFilename[2048];
+  char           buf[2048];
+  PetscErrorCode ierr;
+
+  PetscFunctionBegin;
+  ierr = PetscStrcpy(bcFilename, baseFilename);
+  ierr = PetscStrcat(bcFilename, ".bc");
+  f = fopen(bcFilename, "r");CHKERRQ(ierr);
+  IgnoreComments_PyLith(buf, 2048, f);
+  /* Ignore displacement units */
+  fgets(buf, 2048, f);
+  /* Ignore velocity units */
+  fgets(buf, 2048, f);
+  /* Ignore force units */
+  fgets(buf, 2048, f);
+  IgnoreComments_PyLith(buf, 2048, f);
+  ierr = PetscMalloc(maxVerts*(numComp+1) * sizeof(PetscInt),    &verts);CHKERRQ(ierr);
+  ierr = PetscMalloc(maxVerts*numComp * sizeof(PetscScalar), &values);CHKERRQ(ierr);
+  do {
+    const char *v = strtok(buf, " ");
+    int vertex = atoi(v);
+        
+    if (!useZeroBase) vertex -= 1;
+    if (vertexCount == maxVerts) {
+      PetscInt *vtmp;
+      PetscScalar *ctmp;
+
+      vtmp = verts;
+      ierr = PetscMalloc(maxVerts*2*(numComp+1) * sizeof(PetscInt), &verts);CHKERRQ(ierr);
+      ierr = PetscMemcpy(verts, vtmp, maxVerts*(numComp+1) * sizeof(PetscInt));CHKERRQ(ierr);
+      ierr = PetscFree(vtmp);CHKERRQ(ierr);
+      ctmp = values;
+      ierr = PetscMalloc(maxVerts*2*numComp * sizeof(PetscScalar), &values);CHKERRQ(ierr);
+      ierr = PetscMemcpy(values, ctmp, maxVerts*numComp * sizeof(PetscScalar));CHKERRQ(ierr);
+      ierr = PetscFree(ctmp);CHKERRQ(ierr);
+      maxVerts *= 2;
+    }
+    verts[vertexCount*(numComp+1)+0] = vertex;
+    /* X boundary condition*/
+    v = strtok(NULL, " ");
+    verts[vertexCount*(numComp+1)+1] = atoi(v);
+    /* Y boundary condition*/
+    v = strtok(NULL, " ");
+    verts[vertexCount*(numComp+1)+2] = atoi(v);
+    /* Z boundary condition*/
+    v = strtok(NULL, " ");
+    verts[vertexCount*(numComp+1)+3] = atoi(v);
+    /* X boundary value */
+    v = strtok(NULL, " ");
+    values[vertexCount*numComp+0] = atof(v);
+    /* Y boundary value */
+    v = strtok(NULL, " ");
+    values[vertexCount*numComp+1] = atof(v);
+    /* Z boundary value */
+    v = strtok(NULL, " ");
+    values[vertexCount*numComp+2] = atof(v);
+    vertexCount++;
+  } while(fgets(buf, 2048, f) != NULL);
+  fclose(f);
+  *numBoundaryVertices = vertexCount;
+  *numBoundaryComponents = numComp;
+  *boundaryVertices = verts;
+  *boundaryValues   = values;
+  PetscFunctionReturn(0);
+}
+
+#include <src/dm/mesh/sieve/ALE_exception.hh>
+#include <src/dm/mesh/sieve/ALE_mem.hh>
+#include <src/dm/mesh/sieve/ALE_containers.hh>
+#include <src/dm/mesh/sieve/ALE.hh>
+#include <src/dm/mesh/sieve/PreSieve.hh>
+#include <src/dm/mesh/sieve/Sieve.hh>
+#include <src/dm/mesh/sieve/Stack.hh>
+#include <src/dm/mesh/sieve/IndexBundle.hh>
+
+#undef __FUNCT__
+#define __FUNCT__ "WriteBoundary_PyLith"
+PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Sieve *topology, ALE::Sieve *boundary, ALE::IndexBundle *boundaryBundle, Vec boundaryVec)
+{
+  FILE          *f;
+  char           bcFilename[2048];
+  PetscScalar   *boundaryValues;
+  PetscErrorCode ierr;
+
+  PetscFunctionBegin;
+  ALE::IndexBundle vertexBundle(topology);
+  vertexBundle.setFiberDimensionByDepth(0, 1);
+  vertexBundle.computeOverlapIndices();
+  vertexBundle.computeGlobalIndices();
+
+  ierr = PetscStrcpy(bcFilename, baseFilename);
+  ierr = PetscStrcat(bcFilename, ".bc");
+  f = fopen(bcFilename, "w");CHKERRQ(ierr);
+  fprintf(f, "displacement_units = m\n");
+  fprintf(f, "velocity_units = m/s\n");
+  fprintf(f, "force_units = newton\n");
+  fprintf(f, "#\n");
+  fprintf(f, "# The last row for each node applies\n");
+  fprintf(f, "#\n");
+  fprintf(f, "#  Node X BC Y BC Z BC   X Value          Y Value          Z Value\n");
+  fprintf(f, "#\n");
+  ALE::Obj<ALE::Point_set> vertices = boundary->cap();
+
+  ierr = VecGetArray(boundaryVec, &boundaryValues);
+  for(ALE::Point_set::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
+    ALE::Point                 vertex = *v_itor;
+    ALE::Obj<ALE::Point_array> intervals = vertexBundle.getLocalOrderedClosureIndices(ALE::Point_set(vertex));
+    ALE::Obj<ALE::Point_set>   support = boundary->support(vertex);
+    ALE::Point                 interval = boundaryBundle->getFiberInterval(vertex);
+    int                        constraints[3] = {0, 0, 0};
+
+    for(ALE::Point_set::iterator s_itor = support->begin(); s_itor != support->end(); s_itor++) {
+      ALE::Point boundaryPoint = *s_itor;
+
+      constraints[boundaryPoint.prefix] = boundaryPoint.index;
+    }
+    fprintf(f, "%7d %4d %4d %4d % 16.8E % 16.8E % 16.8E\n", intervals->begin()->prefix+1,
+            constraints[0], constraints[1], constraints[2],
+            boundaryValues[interval.prefix+0], boundaryValues[interval.prefix+1], boundaryValues[interval.prefix+2]);
+  }
+  ierr = VecRestoreArray(boundaryVec, &boundaryValues);
+  fclose(f);
+  PetscFunctionReturn(0);
+}
+
+// Process mesh
+
+char pylithomop3d_processMesh__doc__[] = "";
+char pylithomop3d_processMesh__name__[] = "processMesh";
+
+PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
+{
+  char *meshInputFile;
+  char  meshOutputFile[2048];
+
+  int ok = PyArg_ParseTuple(args, "s:processMesh", &meshInputFile);
+
+  if (!ok) {
+    return 0;
+  }
+
+  MPI_Comm          comm = PETSC_COMM_WORLD;
+  PetscMPIInt       rank;
+  Mesh              mesh;
+  ALE::Sieve       *topology;
+  ALE::PreSieve    *orientation;
+  ALE::Sieve       *boundary;
+  ALE::IndexBundle *boundaryBundle;
+  Vec               boundaryVec;
+  PetscViewer       viewer;
+  PetscInt         *boundaryVertices;
+  PetscScalar      *boundaryValues;
+  PetscInt          numBoundaryVertices, numBoundaryComponents;
+  PetscErrorCode    ierr;
+
+  ierr = MeshCreatePyLith(comm, meshInputFile, &mesh);
+  ierr = MeshDistribute(mesh);
+  ierr = ReadBoundary_PyLith(meshInputFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
+  ierr = MeshCreateBoundary(mesh, numBoundaryVertices, numBoundaryComponents, boundaryVertices, boundaryValues, (void **) &boundaryBundle, &boundaryVec);
+  ierr = PetscViewerCreate(comm, &viewer);
+  ierr = PetscViewerSetType(viewer, PETSC_VIEWER_ASCII);
+  ierr = PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_PYLITH_LOCAL);
+  ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ);
+  ierr = PetscExceptionTry1(PetscViewerFileSetName(viewer, meshInputFile), PETSC_ERR_FILE_OPEN);
+  if (PetscExceptionValue(ierr)) {
+    /* this means that a caller above me has also tryed this exception so I don't handle it here, pass it up */
+  } else if (PetscExceptionCaught(ierr, PETSC_ERR_FILE_OPEN)) {
+    ierr = 0;
+  } 
+  ierr = MeshView(mesh, viewer);
+  ierr = PetscViewerDestroy(viewer);
+
+  ierr = MPI_Comm_rank(comm, &rank);
+  sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
+  ierr = MeshGetTopology(mesh, (void **) &topology);
+  ierr = MeshGetOrientation(mesh, (void **) &orientation);
+  ierr = MeshGetBoundary(mesh, (void **) &boundary);
+  ierr = WriteBoundary_PyLith(meshOutputFile, topology, boundary, boundaryBundle, boundaryVec);
+
+  ALE::IndexBundle        *fieldBundle = new ALE::IndexBundle(topology);
+  ALE::Obj<ALE::Point_set> cap = boundary->cap();
+
+  fieldBundle->setFiberDimensionByDepth(0, 3);
+  for(ALE::Point_set::iterator b_itor = cap->begin(); b_itor != cap->end(); b_itor++) {
+    ALE::Point vertex = *b_itor;
+#if 0
+    int numConstraints = boundaryBundle->getFiberInterval(vertex).index;
+#else
+    ALE::Obj<ALE::Point_set> support = boundary->support(vertex);
+    int numConstraints = 0;
+
+    for(ALE::Point_set::iterator s_itor = support->begin(); s_itor != support->end(); s_itor++) {
+      numConstraints += (*s_itor).index;
+    }
+#endif
+    printf("Setting dimension of (%d, %d) to %d\n", vertex.prefix, vertex.index, 3 - numConstraints);
+    fieldBundle->setFiberDimension(vertex, 3 - numConstraints);
+  }
+  fieldBundle->computeOverlapIndices();
+  fieldBundle->computeGlobalIndices();
+  ierr = MeshSetBundle(mesh, (void *) fieldBundle);
+
+  ierr = VecDestroy(boundaryVec);
+  delete boundaryBundle;
+
+  journal::debug_t debug("lithomop3d");
+  debug
+    << journal::at(__HERE__)
+    << "Output new mesh into: " << meshOutputFile
+    << journal::endl;
+
+  // return
+  PyObject *pyMesh = PyCObject_FromVoidPtr(mesh, NULL);
+  return Py_BuildValue("sN", meshOutputFile, pyMesh);
+}
 
 // Scan boundary conditions
 
@@ -95,7 +329,6 @@ PyObject * pylithomop3d_scan_bc(PyObject *, PyObject *args)
     << journal::endl;
 
   // return
-  Py_INCREF(Py_None);
   return Py_BuildValue("i", numberBcEntries);
 }
 

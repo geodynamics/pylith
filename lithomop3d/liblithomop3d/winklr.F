@@ -65,13 +65,15 @@ c
 c
 c...  local variables
 c
-      integer i,mode,k,ihist,rows,cols
+      integer rows, cols, localRows, localCols
+      integer i,mode,k,ihist
 c
 cdebug      write(6,*) "Hello from winklr_f!"
 c
       call MatGetSize(A, rows, cols, ierr)
+      call MatGetLocalSize(A, localRows, localCols, ierr)
       call VecCreate(MPI_COMM_WORLD, winkler, ierr)
-      call VecSetSizes(winkler, PETSC_DECIDE, rows, ierr)
+      call VecSetSizes(winkler, localRows, rows, ierr)
       call VecSetFromOptions(winkler, ierr)
       call VecGetArray(winkler, array, offset, ierr)
       do i=1,nwink

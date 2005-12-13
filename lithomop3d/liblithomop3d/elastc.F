@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine elastc(
-     & A,                                                               ! sparse
+     & A,rhs,sol,                                                       ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,      ! force
      & bwinkx,dispvec,dprev,nforce,grav,                                ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
@@ -66,6 +66,7 @@ c
       PetscInt elasticStage
       PetscEvent iterateEvent
       Mat A
+      Vec rhs, sol
 c
 c...  parameter definitions
 c
@@ -314,7 +315,7 @@ c
         if(ierr.ne.izero) return
 c
         call iterate(
-     &   A,                                                             ! sparse
+     &   A,rhs,sol,                                                     ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,    ! force
      &   bwinkx,dispvec,dprev,nforce,grav,                              ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
@@ -388,7 +389,7 @@ c
         if(ierr.ne.izero) return
 c
         call iterate(
-     &   A,                                                             ! sparse
+     &   A,rhs,sol,                                                     ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,    ! force
      &   bwinkx,dispvec,dprev,nforce,grav,                              ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
