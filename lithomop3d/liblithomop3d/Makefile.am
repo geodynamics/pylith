@@ -135,7 +135,7 @@ liblithomop3d_la_SOURCES = \
 	read_stateout.f \
 	read_timdat.f \
 	read_wink.f \
-	residu.f \
+	residu.F \
 	rpforc.f \
 	rsplit.f \
 	rstiff.f \
