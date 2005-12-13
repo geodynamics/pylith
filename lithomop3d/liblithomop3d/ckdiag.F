@@ -47,7 +47,7 @@ c     PETSc objects
 c
       Mat A
       Vec diag
-      integer rows, cols
+      integer rows, cols, localRows, localCols
       PetscScalar array(1)
       PetscOffset offset
 c
@@ -68,15 +68,16 @@ cdebug      write(6,*) "Hello from ckdiag_f!"
 c
 cdebug      call MatView(A, PETSC_VIEWER_STDOUT_SELF, ierr)
       call MatGetSize(A, rows, cols, ierr)
+      call MatGetLocalSize(A, localRows, localCols, ierr)
       call VecCreate(MPI_COMM_WORLD, diag, ierr)
-      call VecSetSizes(diag, PETSC_DECIDE, rows, ierr)
+      call VecSetSizes(diag, localRows, rows, ierr)
       call VecSetFromOptions(diag, ierr)
       call MatGetDiagonal(A, diag, ierr)
       call VecGetArray(diag, array, offset, ierr)
       iz=0
       in=0
       ierr=0
-      do i=1,rows
+      do i=1,localRows
         if(array(i+offset).eq.zero) iz=iz+1
         if(array(i+offset).lt.zero) in=in+1
 cdebug        write(6,*) "i,array(i):",i,array(i+offset)

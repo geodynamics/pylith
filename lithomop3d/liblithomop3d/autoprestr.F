@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine autoprestr(
-     & A,                                                               ! sparse
+     & A,rhs,sol,                                                       ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,      ! force
      & bwinkx,dispvec,dprev,nforce,grav,                                ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
@@ -67,6 +67,7 @@ c
       PetscInt autoprestrStage
       PetscEvent iterateEvent
       Mat A
+      Vec rhs, sol
 c
 c...  parameter definitions
 c
@@ -304,7 +305,7 @@ c
 c*        if(ierr.ne.izero) return
 c
         call iterate(
-     &   A,                                                             ! sparse
+     &   A,rhs,sol,                                                     ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,    ! force
      &   bwinkx,dispvec,dprev,nforce,grav,                              ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global
@@ -378,7 +379,7 @@ c
 c*        if(ierr.ne.izero) return
 c
         call iterate(
-     &   A,                                                             ! sparse
+     &   A,rhs,sol,                                                     ! sparse
      &   bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,    ! force
      &   bwinkx,dispvec,dprev,nforce,grav,                              ! force
      &   x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                    ! global

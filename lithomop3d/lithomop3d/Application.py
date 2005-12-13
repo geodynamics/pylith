@@ -40,11 +40,14 @@ class Application(BaseScript):
 #        from time import clock as now
 #        start = now()
         lm3dsetup = self.inventory.setup
+        import lithomop3d
+        lithomop3d.PetscInitialize()
+        self.inventory.scanner.inventory.fileRoot, mesh = lithomop3d.processMesh(self.inventory.scanner.inventory.fileRoot)
         lm3dsetup.initialize(self.inventory.scanner)
         lm3dsetup.read()
         lm3dsetup.numberequations()
         lm3dsetup.sortmesh()
-        lm3dsetup.sparsesetup()
+        lm3dsetup.sparsesetup(mesh)
         lm3dsetup.allocateremaining()
         lm3dsetup.meshwrite()
         lm3drun = self.inventory.solver

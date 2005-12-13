@@ -44,7 +44,7 @@ class Lithomop3d_run(Component):
         lm3dscan = scanner
         lm3dsetup = setup
 
-	print ""
+        print ""
         print "Hello from lm3drun.initialize (begin)!"
         print "Importing information from other modules:"
 
@@ -58,13 +58,15 @@ class Lithomop3d_run(Component):
         self.viscousStage = lm3dsetup.viscousStage
         self.iterateEvent = lm3dsetup.iterateEvent
         self.A = lm3dsetup.A
+        self.rhs = lm3dsetup.rhs
+        self.sol = lm3dsetup.sol
         
         self.analysisType = lm3dscan.inventory.analysisType
 
         # Import all necessary pointers, etc. from Lithomop3d_setup.
-	self.memorySize = lm3dsetup.memorySize
-	self.intSize = lm3dsetup.intSize
-	self.doubleSize = lm3dsetup.doubleSize
+        self.memorySize = lm3dsetup.memorySize
+        self.intSize = lm3dsetup.intSize
+        self.doubleSize = lm3dsetup.doubleSize
         
         self.numberTimeStepGroups = lm3dsetup.numberTimeStepGroups
 
@@ -170,7 +172,7 @@ class Lithomop3d_run(Component):
         self.plotOutputFile = lm3dsetup.plotOutputFile
         self.ucdOutputRoot = lm3dsetup.ucdOutputRoot
 
-	print ""
+        print ""
         print "Hello from lm3drun.initialize (end)!"
 
         return
@@ -183,7 +185,7 @@ class Lithomop3d_run(Component):
         # and should not be accessed directly except as a member of the list.
         # They should not have been defined previously.
 
-	print ""
+        print ""
         print "Hello from lm3drun.run (begin)!"
         print "Beginning problem solution:"
 
@@ -191,15 +193,15 @@ class Lithomop3d_run(Component):
         self.memorySizeMB =0.0
         self.memorySizeMB=self.memorySize/(1024.0*1024.0)
 
-	print ""
-	print "Approximate memory allocation for f77 arrays (MB): %g" % self.memorySizeMB
-	# print "Just before lithomop3d.autoprestr:"
+        print ""
+        print "Approximate memory allocation for f77 arrays (MB): %g" % self.memorySizeMB
+        # print "Just before lithomop3d.autoprestr:"
 
         # Compute gravitational prestresses, if requested.
         if self.analysisType == "elasticSolution" or self.analysisType == "fullSolution":
             if self.prestressAutoComputeInt == 1:
                 lithomop3d.autoprestr(
-                    self.A,
+                    self.A,self.rhs,self.sol,
                     self.pointerToBextern,
                     self.pointerToBtraction,
                     self.pointerToBgravity,
@@ -290,7 +292,7 @@ class Lithomop3d_run(Component):
             # Perform elastic solution, if requested.
             
             lithomop3d.elastc(
-                self.A,
+                self.A,self.rhs,self.sol,
                 self.pointerToBextern,
                 self.pointerToBtraction,
                 self.pointerToBgravity,
@@ -382,7 +384,7 @@ class Lithomop3d_run(Component):
 
         if self.analysisType == "fullSolution" and self.numberTimeStepGroups > 1:
             lithomop3d.viscos(
-                self.A,
+                self.A,self.rhs,self.sol,
                 self.pointerToBextern,
                 self.pointerToBtraction,
                 self.pointerToBgravity,
@@ -470,9 +472,9 @@ class Lithomop3d_run(Component):
                 self.ucdOutputRoot,
                 self.viscousStage,
                 self.iterateEvent)
-        lithomop3d.destroyPETScMat(self.A)
+        lithomop3d.destroyPETScMat(self.A,self.rhs,self.sol)
         lithomop3d.PetscFinalize()
-	print ""
+        print ""
         print "Hello from lm3drun.run (end)!"
         return
 
@@ -480,7 +482,7 @@ class Lithomop3d_run(Component):
     def __init__(self):
         Component.__init__(self, "lm3drun", "solver")
 
-	print ""
+        print ""
         print "Hello from lm3drun.__init__!"
 
         return

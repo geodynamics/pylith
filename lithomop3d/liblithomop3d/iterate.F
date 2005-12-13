@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine iterate(
-     & A,                                                               ! sparse
+     & A,rhs,sol,                                                       ! sparse
      & bextern,btraction,bgravity,bconcforce,bintern,bresid,bwink,      ! force
      & bwinkx,dispvec,dprev,nforce,grav,                                ! force
      & x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,                      ! global
@@ -70,6 +70,7 @@ c
 #include "finclude/petscvec.h"
 #include "finclude/petscmat.h"
 #include "finclude/petscksp.h"
+#include "finclude/petscviewer.h"
 c
 c     PETSc objects
 c
@@ -77,9 +78,11 @@ c
       PetscTruth flag
       PetscInt useSolver
       Vec rhs, sol
+      Vec locRhs, locSol
       Mat A
       KSP ksp
       PetscInt row, nz
+      PetscViewer rhsCheck, solCheck
 c
 c...  parameter definitions
 c
@@ -200,6 +203,7 @@ c...add gravity body forces to global load vector
 c
         if(updats) then
           call gload_drv(
+     &     rhs,                                                         ! PETSc
      &     bgravity,ngravflag,grav,neq,                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
@@ -222,10 +226,10 @@ c   preconditioned conjugate gradients iterative solver.  Upon
 c   return the vector dispvec contains the displacements.
 c
 ccc PETSc BLOCK
-        call VecCreateSeqWithArray(MPI_COMM_WORLD, neq, bresid, rhs,
+        call VecCreateSeqWithArray(MPI_COMM_SELF, neq, bresid, rhs,
      &                               ierr)
-        call VecCreateSeqWithArray(MPI_COMM_WORLD, neq, dispvec,sol,
-     &                               ierr)
+        call assembleVectorComplete(rhs, locRhs, ADD_VALUES, ierr)
+        call VecDestroy(locRhs, ierr)
         call KSPCreate(MPI_COMM_WORLD, ksp, ierr)
         call KSPSetfromOptions(ksp, ierr)
         if (used) then
@@ -235,8 +239,10 @@ ccc PETSc BLOCK
         call KSPSetOperators(ksp,A,A,DIFFERENT_NONZERO_PATTERN,ierr)
         call KSPSolve(ksp, rhs, sol, ierr)
         call KSPDestroy(ksp, ierr)
-        call VecDestroy(rhs, ierr)
-        call VecDestroy(sol, ierr)
+        call VecCreateSeqWithArray(MPI_COMM_SELF, neq, dispvec, locSol,
+     &   ierr)
+        call restrictVector(sol, locSol, INSERT_VALUES, ierr)
+        call VecDestroy(locSol, ierr)
 c
 c...for first iteration, update displacements to reflect boundary
 c   conditions
@@ -329,7 +335,8 @@ c
 c
 c...compute the out-of-balance forces and convergence criteria
 c
-        call residu(bextern,bintern,bresid,dispvec,gtol,gi,gprev,gcurr,
+        call residu(rhs,sol,bextern,bintern,bresid,dispvec,
+     &   gtol,gi,gprev,gcurr,
      &   id,idx,neq,nextflag,numnp,iter,itmaxp,idebug,idout,kto,kw,
      &   converge)
 c

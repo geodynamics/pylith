@@ -50,6 +50,8 @@ char pylithomop3d_elastc__name__[] = "elastc";
 PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 {
   PyObject* pyA;                              // Sparse matrix arrays
+  PyObject* pyRhs;
+  PyObject* pySol;
   PyObject* pyPointerToBextern;               // Force vectors
   PyObject* pyPointerToBtraction;
   PyObject* pyPointerToBgravity;
@@ -136,8 +138,10 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   char* ucdOutputRoot;
   int elasticStage, iterateEvent;             // PETSc logging
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:elastc",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:elastc",
 			    &pyA,                              // Sparse matrix arrays
+			    &pyRhs,
+			    &pySol,
 			    &pyPointerToBextern,               // Force vectors
 			    &pyPointerToBtraction,
 			    &pyPointerToBgravity,
@@ -234,6 +238,8 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   const int maxsize = 4096;
   char errorstring[maxsize];
   Mat      A = (Mat) PyCObject_AsVoidPtr(pyA);
+  Vec      rhs = (Vec) PyCObject_AsVoidPtr(pyRhs);
+  Vec      sol = (Vec) PyCObject_AsVoidPtr(pySol);
   double*  pointerToBextern = (double*) PyCObject_AsVoidPtr(pyPointerToBextern);
   double*  pointerToBtraction = (double*) PyCObject_AsVoidPtr(pyPointerToBtraction);
   double*  pointerToBgravity = (double*) PyCObject_AsVoidPtr(pyPointerToBgravity);
@@ -317,6 +323,8 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
   int*  pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
 
   elastc_f(&A,                                // Sparse matrix arrays
+           &rhs,
+	   &sol,
 	   pointerToBextern,                  // Force vectors
 	   pointerToBtraction,
 	   pointerToBgravity,

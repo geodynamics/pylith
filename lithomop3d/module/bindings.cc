@@ -199,6 +199,10 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_read_wink__name__, pylithomop3d_read_wink,
      METH_VARARGS, pylithomop3d_read_wink__doc__},
 
+    // process mesh
+    {pylithomop3d_processMesh__name__, pylithomop3d_processMesh,
+     METH_VARARGS, pylithomop3d_processMesh__doc__},
+
     // scan boundary condition file
     {pylithomop3d_scan_bc__name__, pylithomop3d_scan_bc,
      METH_VARARGS, pylithomop3d_scan_bc__doc__},

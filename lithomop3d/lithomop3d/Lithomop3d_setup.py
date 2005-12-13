@@ -980,7 +980,7 @@ class Lithomop3d_setup(Component):
         return
 
         
-    def sparsesetup(self):
+    def sparsesetup(self, mesh):
 
         # This function sets up sparse matrix and associated storage.
 
@@ -990,12 +990,11 @@ class Lithomop3d_setup(Component):
         print "Hello from lm3dsetup.sparsesetup (begin)!"
         print "Setting up sparse matrix storage:"
         
-        # Initialize PETSc and set up logging
-        lithomop3d.PetscInitialize()
+        # Initialize PETSc logging
         self.autoprestrStage, \
-                              self.elasticStage, \
-                              self.viscousStage, \
-                              self.iterateEvent = lithomop3d.setupPETScLogging()
+        self.elasticStage, \
+        self.viscousStage, \
+        self.iterateEvent = lithomop3d.setupPETScLogging()
 
         # Initialize variables that are defined in this function.
 
@@ -1101,7 +1100,7 @@ class Lithomop3d_setup(Component):
         self.stiffnessOffDiagonalSize = self.stiffnessMatrixInfo[1]
 	self.stiffnessTrueSize = self.stiffnessMatrixSize-1
 
-        self.A = lithomop3d.createPETScMat(self.numberGlobalEquations)
+        self.A, self.rhs, self.sol = lithomop3d.createPETScMat(self.numberGlobalEquations)
 	self.memorySize += self.stiffnessMatrixSize*self.intSize
 
         self.stiffnessMatrixStats = lithomop3d.makemsr(
@@ -1128,6 +1127,7 @@ class Lithomop3d_setup(Component):
 	print ""
         print "Sparse matrix information:"
 	print ""
+        print "numberGlobalEquations:     %i" % self.numberGlobalEquations
         print "workingArraySize:          %i" % self.workingArraySize
         print "stiffnessMatrixSize:       %i" % self.stiffnessTrueSize
         print "stiffnessOffDiagonalSize:  %i" % self.stiffnessOffDiagonalSize

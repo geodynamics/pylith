@@ -114,6 +114,8 @@ extern "C" {
 		     int *);
 
   void autoprestr_f(Mat *,             // sparse
+		    Vec *,
+		    Vec *,
 		    double *,          // force
 		    double *,
 		    double *,
@@ -228,6 +230,8 @@ extern "C" {
 		   int *);
 
   void elastc_f(Mat *,             // sparse
+		Vec *,
+		Vec *,
 		double *,          // force
 		double *,
 		double *,

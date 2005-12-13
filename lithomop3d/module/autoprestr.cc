@@ -49,6 +49,8 @@ char pylithomop3d_autoprestr__name__[] = "autoprestr";
 PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
 {
   PyObject* pyA;                             // Sparse matrix array
+  PyObject* pyRhs;
+  PyObject* pySol;
   PyObject* pyPointerToBextern;               // Force vectors
   PyObject* pyPointerToBtraction;
   PyObject* pyPointerToBgravity;
@@ -135,93 +137,95 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   char* ucdOutputRoot;
   int autoprestrStage, iterateEvent;          // PETSc logging
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:autoprestr",
-			    &pyA,                             // Sparse matrix arrays
-			    &pyPointerToBextern,               // Force vectors
-			    &pyPointerToBtraction,
-			    &pyPointerToBgravity,
-			    &pyPointerToBconcForce,
-			    &pyPointerToBintern,
-			    &pyPointerToBresid,
-			    &pyPointerToBwink,
-			    &pyPointerToBwinkx,
-			    &pyPointerToDispVec,
-			    &pyPointerToDprev,
-			    &pyPointerToListArrayNforce,
-			    &pyPointerToListArrayGrav,
-			    &pyPointerToX,                     // Global arrays
-			    &pyPointerToD,
-			    &pyPointerToDeld,
-			    &pyPointerToDcur,
-			    &pyPointerToId,
-			    &pyPointerToIwink,
-			    &pyPointerToWink,
-			    &pyPointerToListArrayNsysdat,
-			    &pyPointerToListArrayIddmat,
-			    &pyPointerToIbond,                 // Boundary condition arrays
-			    &pyPointerToBond,
-			    &pyPointerToDx,                    // Slippery node arrays
-			    &pyPointerToDeldx,
-			    &pyPointerToDxcur,
-			    &pyPointerToDiforc,
-			    &pyPointerToIdx,
-			    &pyPointerToIwinkx,
-			    &pyPointerToWinkx,
-			    &pyPointerToIdslp,
-			    &pyPointerToIpslp,
-			    &pyPointerToIdhist,
-			    &pyPointerToFault,                 // Split node arrays
-			    &pyPointerToNfault,
-			    &pyPointerToDfault,
-			    &pyPointerToTfault,
-			    &pyPointerToS,                     // Local stiffness matrix arrays
-			    &pyPointerToStemp,
-			    &pyPointerToState,                 // Element arrays
-			    &pyPointerToDstate,
-			    &pyPointerToState0,
-			    &pyPointerToDmat,
-			    &pyPointerToIens,
-			    &pyPointerToLm,
-			    &pyPointerToLmx,
-			    &pyPointerToLmf,
-			    &pyPointerToIvfamily,
-			    &pyPointerToListArrayNpar,
-			    &pyPointerToIelno,                 // Traction BC arrays
-			    &pyPointerToIside,
-			    &pyPointerToIhistry,
-			    &pyPointerToPres,
-			    &pyPointerToPdir,
-			    &pyPointerToListArrayPropertyList, // Material property arrays
-			    &pyPointerToMaterialModelInfo,
-			    &pyPointerToGauss,                 // Element type arrays
-			    &pyPointerToSh,
-			    &pyPointerToShj,
-			    &pyPointerToListArrayElementTypeInfo,
-			    &pyPointerToHistry,                // Time information
-			    &pyPointerToListArrayRtimdat,
-			    &pyPointerToListArrayNtimdat,
-			    &pyPointerToListArrayNvisdat,
-			    &pyPointerToMaxstp,
-			    &pyPointerToDelt,
-			    &pyPointerToAlfa,
-			    &pyPointerToMaxit,
-			    &pyPointerToNtdinit,
-			    &pyPointerToLgdef,
-			    &pyPointerToUtol,
-			    &pyPointerToFtol,
-			    &pyPointerToEtol,
-			    &pyPointerToItmax,
-			    &pyPointerToListArrayRgiter,       // Iterative solution information
-			    &pyPointerToSkew,                  // Skew rotation information
-			    &pyPointerToListArrayNcodat,       // Input/output information
-			    &pyPointerToListArrayNunits,
-			    &pyPointerToListArrayNprint,
-			    &pyPointerToIstatout,
-			    &pyPointerToNstatout,
-			    &asciiOutputFile,                  // Output file names
-			    &plotOutputFile,
-			    &ucdOutputRoot,
-			    &autoprestrStage,                  // PETSc logging
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:autoprestr",
+                            &pyA,                             // Sparse matrix arrays
+                            &pyRhs,
+                            &pySol,
+                            &pyPointerToBextern,               // Force vectors
+                            &pyPointerToBtraction,
+                            &pyPointerToBgravity,
+                            &pyPointerToBconcForce,
+                            &pyPointerToBintern,
+                            &pyPointerToBresid,
+                            &pyPointerToBwink,
+                            &pyPointerToBwinkx,
+                            &pyPointerToDispVec,
+                            &pyPointerToDprev,
+                            &pyPointerToListArrayNforce,
+                            &pyPointerToListArrayGrav,
+                            &pyPointerToX,                     // Global arrays
+                            &pyPointerToD,
+                            &pyPointerToDeld,
+                            &pyPointerToDcur,
+                            &pyPointerToId,
+                            &pyPointerToIwink,
+                            &pyPointerToWink,
+                            &pyPointerToListArrayNsysdat,
+                            &pyPointerToListArrayIddmat,
+                            &pyPointerToIbond,                 // Boundary condition arrays
+                            &pyPointerToBond,
+                            &pyPointerToDx,                    // Slippery node arrays
+                            &pyPointerToDeldx,
+                            &pyPointerToDxcur,
+                            &pyPointerToDiforc,
+                            &pyPointerToIdx,
+                            &pyPointerToIwinkx,
+                            &pyPointerToWinkx,
+                            &pyPointerToIdslp,
+                            &pyPointerToIpslp,
+                            &pyPointerToIdhist,
+                            &pyPointerToFault,                 // Split node arrays
+                            &pyPointerToNfault,
+                            &pyPointerToDfault,
+                            &pyPointerToTfault,
+                            &pyPointerToS,                     // Local stiffness matrix arrays
+                            &pyPointerToStemp,
+                            &pyPointerToState,                 // Element arrays
+                            &pyPointerToDstate,
+                            &pyPointerToState0,
+                            &pyPointerToDmat,
+                            &pyPointerToIens,
+                            &pyPointerToLm,
+                            &pyPointerToLmx,
+                            &pyPointerToLmf,
+                            &pyPointerToIvfamily,
+                            &pyPointerToListArrayNpar,
+                            &pyPointerToIelno,                 // Traction BC arrays
+                            &pyPointerToIside,
+                            &pyPointerToIhistry,
+                            &pyPointerToPres,
+                            &pyPointerToPdir,
+                            &pyPointerToListArrayPropertyList, // Material property arrays
+                            &pyPointerToMaterialModelInfo,
+                            &pyPointerToGauss,                 // Element type arrays
+                            &pyPointerToSh,
+                            &pyPointerToShj,
+                            &pyPointerToListArrayElementTypeInfo,
+                            &pyPointerToHistry,                // Time information
+                            &pyPointerToListArrayRtimdat,
+                            &pyPointerToListArrayNtimdat,
+                            &pyPointerToListArrayNvisdat,
+                            &pyPointerToMaxstp,
+                            &pyPointerToDelt,
+                            &pyPointerToAlfa,
+                            &pyPointerToMaxit,
+                            &pyPointerToNtdinit,
+                            &pyPointerToLgdef,
+                            &pyPointerToUtol,
+                            &pyPointerToFtol,
+                            &pyPointerToEtol,
+                            &pyPointerToItmax,
+                            &pyPointerToListArrayRgiter,       // Iterative solution information
+                            &pyPointerToSkew,                  // Skew rotation information
+                            &pyPointerToListArrayNcodat,       // Input/output information
+                            &pyPointerToListArrayNunits,
+                            &pyPointerToListArrayNprint,
+                            &pyPointerToIstatout,
+                            &pyPointerToNstatout,
+                            &asciiOutputFile,                  // Output file names
+                            &plotOutputFile,
+                            &ucdOutputRoot,
+                            &autoprestrStage,                  // PETSc logging
                             &iterateEvent);
 
 
@@ -233,6 +237,8 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   const int maxsize = 4096;
   char errorstring[maxsize];
   Mat      A = (Mat) PyCObject_AsVoidPtr(pyA);
+  Vec      rhs = (Vec) PyCObject_AsVoidPtr(pyRhs);
+  Vec      sol = (Vec) PyCObject_AsVoidPtr(pySol);
   double*  pointerToBextern = (double*) PyCObject_AsVoidPtr(pyPointerToBextern);
   double*  pointerToBtraction = (double*) PyCObject_AsVoidPtr(pyPointerToBtraction);
   double*  pointerToBgravity = (double*) PyCObject_AsVoidPtr(pyPointerToBgravity);
@@ -316,98 +322,100 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   int*  pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
 
   autoprestr_f(&A,                                // Sparse matrix arrays
-	       pointerToBextern,                  // Force vectors
-	       pointerToBtraction,
-	       pointerToBgravity,
-	       pointerToBconcForce,
-	       pointerToBintern,
-	       pointerToBresid,
-	       pointerToBwink,
-	       pointerToBwinkx,
-	       pointerToDispVec,
-	       pointerToDprev,
-	       pointerToListArrayNforce,
-	       pointerToListArrayGrav,
-	       pointerToX,                        // Global arrays
-	       pointerToD,
-	       pointerToDeld,
-	       pointerToDcur,
-	       pointerToId,
-	       pointerToIwink,
-	       pointerToWink,
-	       pointerToListArrayNsysdat,
-	       pointerToListArrayIddmat,
-	       pointerToIbond,                    // Boundary condition arrays
-	       pointerToBond,
-	       pointerToDx,                       // Slippery node arrays
-	       pointerToDeldx,
-	       pointerToDxcur,
-	       pointerToDiforc,
-	       pointerToIdx,
-	       pointerToIwinkx,
-	       pointerToWinkx,
-	       pointerToIdslp,
-	       pointerToIpslp,
-	       pointerToIdhist,
-	       pointerToFault,                    // Split node arrays
-	       pointerToNfault,
-	       pointerToDfault,
-	       pointerToTfault,
-	       pointerToS,                        // Local stiffness matrix arrays
-	       pointerToStemp,
-	       pointerToState,                    // Element arrays
-	       pointerToDstate,
-	       pointerToState0,
-	       pointerToDmat,
-	       pointerToIens,
-	       pointerToLm,
-	       pointerToLmx,
-	       pointerToLmf,
-	       pointerToIvfamily,
-	       pointerToListArrayNpar,
-	       pointerToIelno,                    // Traction BC arrays
-	       pointerToIside,
-	       pointerToIhistry,
-	       pointerToPres,
-	       pointerToPdir,
-	       pointerToListArrayPropertyList,    // Material property arrays
-	       pointerToMaterialModelInfo,
-	       pointerToGauss,                    // Element type arrays
-	       pointerToSh,
-	       pointerToShj,
-	       pointerToListArrayElementTypeInfo,
-	       pointerToHistry,                   // Time information
-	       pointerToListArrayRtimdat,
-	       pointerToListArrayNtimdat,
-	       pointerToListArrayNvisdat,
-	       pointerToMaxstp,
-	       pointerToDelt,
-	       pointerToAlfa,
-	       pointerToMaxit,
-	       pointerToNtdinit,
-	       pointerToLgdef,
-	       pointerToUtol,
-	       pointerToFtol,
-	       pointerToEtol,
-	       pointerToItmax,
-	       pointerToListArrayRgiter,          // Iterative solution information
-	       pointerToSkew,                     // Skew rotation information
-	       pointerToListArrayNcodat,          // Input/output information
-	       pointerToListArrayNunits,
-	       pointerToListArrayNprint,
-	       pointerToIstatout,
-	       pointerToNstatout,
-	       asciiOutputFile,                   // Output file names
-	       plotOutputFile,
-	       ucdOutputRoot,
+               &rhs,
+               &sol,
+               pointerToBextern,                  // Force vectors
+               pointerToBtraction,
+               pointerToBgravity,
+               pointerToBconcForce,
+               pointerToBintern,
+               pointerToBresid,
+               pointerToBwink,
+               pointerToBwinkx,
+               pointerToDispVec,
+               pointerToDprev,
+               pointerToListArrayNforce,
+               pointerToListArrayGrav,
+               pointerToX,                        // Global arrays
+               pointerToD,
+               pointerToDeld,
+               pointerToDcur,
+               pointerToId,
+               pointerToIwink,
+               pointerToWink,
+               pointerToListArrayNsysdat,
+               pointerToListArrayIddmat,
+               pointerToIbond,                    // Boundary condition arrays
+               pointerToBond,
+               pointerToDx,                       // Slippery node arrays
+               pointerToDeldx,
+               pointerToDxcur,
+               pointerToDiforc,
+               pointerToIdx,
+               pointerToIwinkx,
+               pointerToWinkx,
+               pointerToIdslp,
+               pointerToIpslp,
+               pointerToIdhist,
+               pointerToFault,                    // Split node arrays
+               pointerToNfault,
+               pointerToDfault,
+               pointerToTfault,
+               pointerToS,                        // Local stiffness matrix arrays
+               pointerToStemp,
+               pointerToState,                    // Element arrays
+               pointerToDstate,
+               pointerToState0,
+               pointerToDmat,
+               pointerToIens,
+               pointerToLm,
+               pointerToLmx,
+               pointerToLmf,
+               pointerToIvfamily,
+               pointerToListArrayNpar,
+               pointerToIelno,                    // Traction BC arrays
+               pointerToIside,
+               pointerToIhistry,
+               pointerToPres,
+               pointerToPdir,
+               pointerToListArrayPropertyList,    // Material property arrays
+               pointerToMaterialModelInfo,
+               pointerToGauss,                    // Element type arrays
+               pointerToSh,
+               pointerToShj,
+               pointerToListArrayElementTypeInfo,
+               pointerToHistry,                   // Time information
+               pointerToListArrayRtimdat,
+               pointerToListArrayNtimdat,
+               pointerToListArrayNvisdat,
+               pointerToMaxstp,
+               pointerToDelt,
+               pointerToAlfa,
+               pointerToMaxit,
+               pointerToNtdinit,
+               pointerToLgdef,
+               pointerToUtol,
+               pointerToFtol,
+               pointerToEtol,
+               pointerToItmax,
+               pointerToListArrayRgiter,          // Iterative solution information
+               pointerToSkew,                     // Skew rotation information
+               pointerToListArrayNcodat,          // Input/output information
+               pointerToListArrayNunits,
+               pointerToListArrayNprint,
+               pointerToIstatout,
+               pointerToNstatout,
+               asciiOutputFile,                   // Output file names
+               plotOutputFile,
+               ucdOutputRoot,
                &autoprestrStage,
                &iterateEvent,
-	       &errorcode,                        // Error codes
-	       errorstring,
-	       strlen(asciiOutputFile),           // String lengths
-	       strlen(plotOutputFile),
-	       strlen(ucdOutputRoot),
-	       strlen(errorstring));
+               &errorcode,                        // Error codes
+               errorstring,
+               strlen(asciiOutputFile),           // String lengths
+               strlen(plotOutputFile),
+               strlen(ucdOutputRoot),
+               strlen(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
