@@ -116,10 +116,8 @@ c*            end if
           end if
         end do
       end do
+c
       return
-1000  format(//' fatal boundary condition error!'//
-     & ' attempt to use undefined load history # ',i5,
-     & ' for boundary condition of type ',i1,' at node ',i7)
       end
 c
 c version
