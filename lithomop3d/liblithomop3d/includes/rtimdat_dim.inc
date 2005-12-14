@@ -18,11 +18,11 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      real*8 rtimdat(4)
+      double precision rtimdat(4)
 c
 c...  scalar parameters associated with arrays
 c
-      real*8 deltp,alfap,tpois,tyoungs
+      double precision deltp,alfap,tpois,tyoungs
 c
 c version
 c $Id: rtimdat_dim.inc,v 1.3 2005/02/24 00:32:40 willic3 Exp $
