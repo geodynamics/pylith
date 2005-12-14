@@ -63,7 +63,7 @@ c
 c
 c...  local variables
 c
-      integer i,j,n,ii,nstep,nc
+      integer i,j,n,nstep,nc
       character dummy*80
 c
 cdebug      write(6,*) "Hello from read_timdat_f!"
@@ -104,7 +104,6 @@ c
       times(1)=zero
       nstep=izero
       do i=2,nintg
-        ii=i
         do j=1,maxstp(i)
           nstep=nstep+ione
           nc=nstep+1

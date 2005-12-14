@@ -64,7 +64,7 @@ c
 c
 c...  local variables
 c
-      integer i,l,nshsize,ngssize
+      integer i,l
       double precision t(6),h(3),dt(6,2),dh(3)
       double precision rr,ss,tt,uu,g1,w1
       double precision trivol
@@ -72,8 +72,6 @@ c
 c...  definitions
 c
       trivol=third
-      nshsize=(nsd+1)*nen*ngauss
-      ngssize=(nsd+1)*ngauss
 c
 c...  quadratic wedge definition
 c

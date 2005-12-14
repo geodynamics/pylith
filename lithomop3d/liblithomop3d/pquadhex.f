@@ -73,7 +73,7 @@ c
 c
 c...  local variables
 c
-      integer i,l,l1,l2,l3,nshsize,ngssize
+      integer i,l,l1,l2,l3
       double precision g1,rr,ss,tt,rrw,ssw,ttw,drr,dss,dtt
       double precision uu,dur,dus,dut,v,vi,rp,ri,sp,si,tp,ti
       double precision w(3)
@@ -94,8 +94,6 @@ c
 c
 c...  definitions
 c
-      nshsize=(nsd+1)*nen*ngauss
-      ngssize=(nsd+1)*ngauss
 c
 c...  Quadratic hex definition
 c

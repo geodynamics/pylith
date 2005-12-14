@@ -65,15 +65,13 @@ c
 c
 c...  local variables
 c
-      integer i,nshsize,ngssize
+      integer i
       double precision rr,ss,tt,uu
       double precision tetvol
 c
 c...  definitions
 c
       tetvol=sixth
-      nshsize=(nsd+1)*nen*ngauss
-      ngssize=(nsd+1)*ngauss
 c
 c...  Linear hex definition
 c     One-point integration is used in all cases.

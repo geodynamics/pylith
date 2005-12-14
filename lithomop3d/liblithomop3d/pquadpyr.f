@@ -90,14 +90,12 @@ c
 c
 c...  local variables
 c
-      integer i,l,nshsize,ngssize
+      integer i,l
       double precision q(9),h(3),dq(9,2),dh(3)
       double precision rr,ss,tt,g,w
 c
 c...  definitions
 c
-      nshsize=(nsd+1)*nen*ngauss
-      ngssize=(nsd+1)*ngauss
 c
 c...  Quadratic pyramid definition
 c

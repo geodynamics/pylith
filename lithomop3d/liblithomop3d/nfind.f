@@ -56,7 +56,7 @@ c
 c
 c...  local variables
 c
-      integer iflip,isp,ii,n,nelem,node,i,nssurf,isn,j,iadd,nn
+      integer iflip,isp,ii,n,node,i,nssurf,isn,j,iadd,nn
       double precision xdif
       logical*4 prev
 c
@@ -69,7 +69,6 @@ c
       call ifill(itmp1,izero,numsn)
       call ifill(itmp2,izero,numsn)
       do n=1,numslp
-        nelem=nslip(1,n)
         node=nslip(2,n)
         do i=1,ndof
           if(nslip(2+i,n).ne.izero) isn=nslip(2+i,n)
