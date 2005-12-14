@@ -4,11 +4,13 @@
 #  for undefined variables and to see what intrinsics are used.
 #
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-PROJ_F77_INCLUDES= -I$(GEOFRAME_DIR)/packages/lithomop/lithomop3d/liblithomop3d/includes
+PROJ_F77_INCLUDES= -I./includes
 
 PROJ_CPP_INCLUDES= -I$(PETSC_DIR)/include -I$(PETSC_DIR)/bmake/$(PETSC_ARCH) -I$(MPI_INCDIR)
 
-FFLAGC= -fno-silent -fno-ugly -fno-f77 -ff90 -fpedantic -Wall -fbackslash -Wsurprising -W $(PROJ_F77_INCLUDES) $(PROJ_CPP_INCLUDES)
+#FFLAGC= -fno-silent -fno-ugly -fno-f77 -ff90 -fpedantic -Wall -fbackslash -Wsurprising -W $(PROJ_F77_INCLUDES) $(PROJ_CPP_INCLUDES)
+
+FFLAGC= -Wall -fbackslash -W -DFORTRAN_POSITION_APPEND -DFORTRAN_STREAM_IO $(PROJ_F77_INCLUDES) $(PROJ_CPP_INCLUDES)
 
 CFLAGC= 
 
@@ -18,9 +20,9 @@ opt   = -g
 
 load  = 
 
-FCOMPL= g77
+FCOMPL= mpif90
 
-CCOMPL= gcc
+CCOMPL= mpicc
 
 .SUFFIXES: .F .f .c .s .o .fil
 
