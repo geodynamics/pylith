@@ -93,7 +93,7 @@ c
 c...  local variables
 c
       integer ielg,ifam,nelfamily,matmodel,indstate,indstate0,indprop
-      integer nstate,nprop,nstate0,imat,n0states
+      integer nstate,nprop,nstate0,n0states
       logical matchg
       double precision ptmp(100)
 c
@@ -131,7 +131,6 @@ c       possibly other characteristics such as element type), and
 c       actual properties will be defined by the database for a given
 c       location/time.
 c*****************************
-        imat=ifam
         matchg=.false.
         call dcopy(nprop,prop(indprop),ione,ptmp,ione)
         if(matmodel.eq.1) then
