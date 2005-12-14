@@ -18,7 +18,7 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      real*8 gtol(3)
+      double precision gtol(3)
 c
 c...  scalar parameters associated with arrays
 c

@@ -18,11 +18,11 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      real*8 rgiter(3)
+      double precision rgiter(3)
 c
 c...  scalar parameters associated with arrays
 c
-      real*8 stol,dtol,epert
+      double precision stol,dtol,epert
 c
 c version
 c $Id: rgiter_dim.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $

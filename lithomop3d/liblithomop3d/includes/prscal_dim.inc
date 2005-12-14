@@ -18,7 +18,7 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      real*8 prscal(6)
+      double precision prscal(6)
 c
 c version
 c $Id: prscal_dim.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
