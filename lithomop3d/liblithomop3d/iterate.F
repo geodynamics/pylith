@@ -203,7 +203,7 @@ c...add gravity body forces to global load vector
 c
         if(updats) then
           call gload_drv(
-     &     rhs,                                                         ! PETSc
+cpetsc     &     rhs,                                                         ! PETSc
      &     bgravity,ngravflag,grav,neq,                                 ! force
      &     x,d,numnp,                                                   ! global
      &     dx,numslp,                                                   ! slip
