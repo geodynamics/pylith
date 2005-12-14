@@ -65,7 +65,7 @@ c
 c
 c...  local variables
 c
-      integer i,l,nshsize,ngssize
+      integer i,l
       double precision rr,ss,tt
 c
 cdebug      integer idb
@@ -74,8 +74,6 @@ cdebug      write(6,*) "Hello from plinhex_f!"
 c
 c...  definitions
 c
-      nshsize=(nsd+1)*nen*ngauss
-      ngssize=(nsd+1)*ngauss
 c
 c...  Linear hex definition
 c

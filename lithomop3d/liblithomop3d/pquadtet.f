@@ -61,7 +61,7 @@ c
 c
 c...  local variables
 c
-      integer l,nshsize,ngssize
+      integer l
       double precision g1,g2,rr,ss,tt,uu
       double precision tetvol
 c
@@ -70,8 +70,6 @@ c
 c...  definitions
 c
       tetvol=sixth
-      nshsize=(nsd+1)*nen*ngauss
-      ngssize=(nsd+1)*ngauss
 c
 c...  Quadratic tet definition
 c

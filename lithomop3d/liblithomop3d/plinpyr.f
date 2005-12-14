@@ -73,13 +73,11 @@ c
 c
 c...  local variables
 c
-      integer i,l,nshsize,ngssize
+      integer i,l
       double precision rr,ss,tt,g1,w1
 c
 c...  definitions
 c
-      nshsize=(nsd+1)*nen*ngauss
-      ngssize=(nsd+1)*ngauss
 c
 c...  Linear wedge definition
 c

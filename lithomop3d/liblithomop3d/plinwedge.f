@@ -66,15 +66,13 @@ c
 c
 c...  local variables
 c
-      integer i,l,nshsize,ngssize
+      integer i,l
       double precision rr,ss,tt,uu,drr,dss,dtt
       double precision trivol
 c
 c...  definitions
 c
       trivol=half
-      nshsize=(nsd+1)*nen*ngauss
-      ngssize=(nsd+1)*ngauss
 c
 c...  Linear wedge definition
 c
