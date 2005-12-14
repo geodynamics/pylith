@@ -31,6 +31,12 @@
 #if !defined(pylithomop3d_scanner_h)
 #define pylithomop3d_scanner_h
 
+// process mesh
+extern char pylithomop3d_processMesh__name__[];
+extern char pylithomop3d_processMesh__doc__[];
+extern "C"
+PyObject * pylithomop3d_processMesh(PyObject *, PyObject *);
+
 // scan boundary condition file
 extern char pylithomop3d_scan_bc__name__[];
 extern char pylithomop3d_scan_bc__doc__[];
