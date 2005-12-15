@@ -102,7 +102,7 @@ c
 c
 c...  local variables
 c
-      integer ielf,incstate0,indstate0,l
+      integer ielf,incstate0,indstate0,l,ielgpetsc
       double precision tmax
 c
 c...  included variable definitions
@@ -119,6 +119,8 @@ c
         incstate0=ione
         indstate0=izero
       end if
+c     PETSc corection
+      ielgpetsc=ielg - 1
 c
 c...  loop over elements in a family and add element stiffness to global
 c     stiffness.
@@ -142,8 +144,10 @@ c
 c
         if(ierr.ne.izero) return
 c
-        call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz)
+        call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz,
+     &   ielgpetsc)
         ielg=ielg+ione
+        ielgpetsc=ielgpetsc+ione
       end do
 c
       return
