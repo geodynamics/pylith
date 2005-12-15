@@ -28,10 +28,12 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine addstf(A,s,stemp,lm,lmx,nee,numsn,nnz)
+      subroutine addstf(A,s,stemp,lm,lmx,nee,numsn,nnz,ielgpetsc)
 c
 c...  subroutine to add local stiffness matrix to global matrix, where
 c     the global matrix is stored in modified sparse row (MSR) format.
+c     This is a new version of the code that uses the assembleMatrix
+c     routine from Sieve/PETSc.
 c
       include "implicit.inc"
 c
@@ -51,9 +53,9 @@ c
 c
 c...  subroutine arguments
 c
-      integer nee,numsn,nnz,ierr
+      integer nee,numsn,nnz,ielgpetsc
       integer lm(nee),lmx(nee)
-      double precision s(nee,nee),stemp(nee,nee)
+      double precision s(neemax*neemax),stemp(neemax*neemax)
 c
 c...  intrinsic functions
 c
@@ -61,8 +63,8 @@ c
 c
 c... local variables
 c
-      integer i,j
-      integer lmp(neemax),lmxpa(neemax)
+      integer i,j,k,l,numeq,ierr
+cpetsc      integer lmp(neemax),lmxpa(neemax)
       double precision signi,signj
       logical slip
 c
@@ -73,35 +75,55 @@ c
       slip=.false.
       do i=1,nee
 cdebug        write(6,*) "i,lm(i),s(i,i):",i,lm(i),s(i,i)
+        if(lm(i).ne.izero) numeq = numeq + 1
         if(lmx(i).ne.izero) slip=.true.
-        lmp(i) = lm(i) - 1
-        lmxpa(i) = abs(lmx(i))-1
+cpetsc        lmp(i) = lm(i) - 1
+cpetsc        lmxpa(i) = abs(lmx(i))-1
       end do
-      call MatSetValues(A, nee, lmp, nee, lmp, s, ADD_VALUES, ierr)
-      if(slip) then
-        do i=1,nee
-          signi=sign(one,dble(lmx(i)))
+c     New Sieve section
+      numeq = 0
+      do i=1,nee
+        if(lm(i).ne.izero) numeq = numeq + 1
+      end do
+      k = 0
+      do i=1,nee
+        if(lm(i).ne.izero) then
+          l = 1
           do j=1,nee
-            stemp(i,j) = signi*s(i,j)
+            if(lm(j).ne.izero) then
+              stemp(k*numeq+l) = s((i-1)*nee+j)
+              l = l + 1
+            end if
           end do
-        end do
-        call MatSetValues(A, nee,lmp, nee,lmxpa,stemp, ADD_VALUES, ierr)
-        do i=1,nee
-          do j=1,nee
-            signj=sign(one,dble(lmx(j)))
-            stemp(i,j) = signj*s(i,j)
-          end do
-        end do
-        call MatSetValues(A, nee,lmxpa, nee,lmp,stemp, ADD_VALUES, ierr)
-        do i=1,nee
-          signi=sign(one,dble(lmx(i)))
-          do j=1,nee
-            signj=sign(one,dble(lmx(j)))
-            stemp(i,j) = signi*signj*s(i,j)
-          end do
-        end do
-        call MatSetValues(A,nee,lmxpa,nee,lmxpa,stemp, ADD_VALUES, ierr)
-      end if
+          k = k + 1
+        end if
+      end do
+      call assembleMatrix(A, ielgpetsc, stemp, ADD_VALUES, ierr)
+cpetsc      call MatSetValues(A, nee, lmp, nee, lmp, s, ADD_VALUES, ierr)
+cpetsc      if(slip) then
+cpetsc        do i=1,nee
+cpetsc          signi=sign(one,dble(lmx(i)))
+cpetsc          do j=1,nee
+cpetsc            stemp(i,j) = signi*s(i,j)
+cpetsc          end do
+cpetsc        end do
+cpetsc        call MatSetValues(A, nee,lmp, nee,lmxpa,stemp, ADD_VALUES, ierr)
+cpetsc        do i=1,nee
+cpetsc          do j=1,nee
+cpetsc            signj=sign(one,dble(lmx(j)))
+cpetsc            stemp(i,j) = signj*s(i,j)
+cpetsc          end do
+cpetsc        end do
+cpetsc        call MatSetValues(A, nee,lmxpa, nee,lmp,stemp, ADD_VALUES, ierr)
+cpetsc        do i=1,nee
+cpetsc          signi=sign(one,dble(lmx(i)))
+cpetsc          do j=1,nee
+cpetsc            signj=sign(one,dble(lmx(j)))
+cpetsc            stemp(i,j) = signi*signj*s(i,j)
+cpetsc          end do
+cpetsc        end do
+cpetsc        call MatSetValues(A,nee,lmxpa,nee,lmxpa,stemp, ADD_VALUES, ierr)
+cpetsc      end if
       return
       end
 c

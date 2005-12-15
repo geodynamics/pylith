@@ -109,7 +109,7 @@ c
 c
 c...  local variables
 c
-      integer ielf,incstate0,indstate0,i,j,k,l,numeq,ielgpetsc
+      integer ielf,incstate0,indstate0,l,ielgpetsc
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 c
 cdebug      integer idb,jdb
@@ -180,26 +180,27 @@ c
      &   getshape,bmatrix,                                              ! bbar
      &   ierr,errstrng)                                                 ! errcod
         if(ierr.ne.izero) return
-c        call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz)
+        call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz,
+     &   ielgpetsc)
 c       New Sieve section
-        numeq = 0
-        do i=1,nee
-          if(lm(i,ielf).ne.izero) numeq = numeq + 1
-        end do
-        k = 0
-        do i=1,nee
-          if(lm(i,ielf).ne.izero) then
-            l = 1
-            do j=1,nee
-              if(lm(j,ielf).ne.izero) then
-                stemp(k*numeq+l) = s((i-1)*nee+j)
-                l = l + 1
-              end if
-            end do
-            k = k + 1
-          end if
-        end do
-        call assembleMatrix(A, ielgpetsc, stemp, ADD_VALUES, ierr)
+cpetsc        numeq = 0
+cpetsc        do i=1,nee
+cpetsc          if(lm(i,ielf).ne.izero) numeq = numeq + 1
+cpetsc        end do
+cpetsc        k = 0
+cpetsc        do i=1,nee
+cpetsc          if(lm(i,ielf).ne.izero) then
+cpetsc            l = 1
+cpetsc            do j=1,nee
+cpetsc              if(lm(j,ielf).ne.izero) then
+cpetsc                stemp(k*numeq+l) = s((i-1)*nee+j)
+cpetsc                l = l + 1
+cpetsc              end if
+cpetsc            end do
+cpetsc            k = k + 1
+cpetsc          end if
+cpetsc        end do
+cpetsc        call assembleMatrix(A, ielgpetsc, stemp, ADD_VALUES, ierr)
 c
         ielg=ielg+ione
         ielgpetsc=ielgpetsc+ione
