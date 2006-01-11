@@ -28,8 +28,8 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#include <petscmat.h>
 #include <petscmesh.h>
+#include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
 
@@ -125,29 +125,21 @@ PetscErrorCode ReadBoundary_PyLith(const char *baseFilename, PetscTruth useZeroB
   PetscFunctionReturn(0);
 }
 
-#include <src/dm/mesh/sieve/ALE_exception.hh>
-#include <src/dm/mesh/sieve/ALE_mem.hh>
-#include <src/dm/mesh/sieve/ALE_containers.hh>
-#include <src/dm/mesh/sieve/ALE.hh>
-#include <src/dm/mesh/sieve/PreSieve.hh>
-#include <src/dm/mesh/sieve/Sieve.hh>
-#include <src/dm/mesh/sieve/Stack.hh>
-#include <src/dm/mesh/sieve/IndexBundle.hh>
-
 #undef __FUNCT__
 #define __FUNCT__ "WriteBoundary_PyLith"
-PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Sieve *topology, ALE::Sieve *boundary, ALE::IndexBundle *boundaryBundle, Vec boundaryVec)
+PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::def::Mesh::coordinate_type> boundary)
 {
-  FILE          *f;
-  char           bcFilename[2048];
-  PetscScalar   *boundaryValues;
-  PetscErrorCode ierr;
+  FILE                       *f;
+  char                        bcFilename[2048];
+  ALE::def::Mesh::bundle_type vertexBundle;
+  PetscErrorCode              ierr;
 
   PetscFunctionBegin;
-  ALE::IndexBundle vertexBundle(topology);
-  vertexBundle.setFiberDimensionByDepth(0, 1);
-  vertexBundle.computeOverlapIndices();
-  vertexBundle.computeGlobalIndices();
+  // Need to globalize indices (that is what we might use the value ints for)
+  vertexBundle.setTopology(boundary->getTopology());
+  vertexBundle.setPatch(boundary->getTopology()->base(), 0);
+  vertexBundle.setIndexDimensionByDepth(0, 1);
+  vertexBundle.orderPatches();
 
   ierr = PetscStrcpy(bcFilename, baseFilename);
   ierr = PetscStrcat(bcFilename, ".bc");
@@ -160,31 +152,32 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Sieve *topolo
   fprintf(f, "#\n");
   fprintf(f, "#  Node X BC Y BC Z BC   X Value          Y Value          Z Value\n");
   fprintf(f, "#\n");
-  ALE::Obj<ALE::Point_set> vertices = boundary->cap();
+  ALE::Obj<ALE::def::Mesh::sieve_type::depthSequence> vertices = boundary->getTopology()->depthStratum(0);
 
-  ierr = VecGetArray(boundaryVec, &boundaryValues);
-  for(ALE::Point_set::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
-    ALE::Point                 vertex = *v_itor;
-    ALE::Obj<ALE::Point_array> intervals = vertexBundle.getLocalOrderedClosureIndices(ALE::Point_set(vertex));
-    ALE::Obj<ALE::Point_set>   support = boundary->support(vertex);
-    ALE::Point                 interval = boundaryBundle->getFiberInterval(vertex);
-    int                        constraints[3] = {0, 0, 0};
+  for(ALE::def::Mesh::sieve_type::depthSequence::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
+    if (boundary->getIndexDimension(0, *v_itor)) {
+      //OLD: ALE::Obj<ALE::Point_array> intervals = vertexBundle.getLocalOrderedClosureIndices(ALE::Point_set(vertex));
+      ALE::def::Mesh::sieve_type::point_type vertexNum = vertexBundle.getIndex(0, *v_itor);
+      const double                          *values = boundary->restrict(0, *v_itor);
+      int                                    constraints[3] = {0, 0, 0};
 
-    for(ALE::Point_set::iterator s_itor = support->begin(); s_itor != support->end(); s_itor++) {
-      ALE::Point boundaryPoint = *s_itor;
 
-      constraints[boundaryPoint.prefix] = boundaryPoint.index;
+      for(int c = 0; c < 3; c++) {
+        if (boundary->getIndexDimension(0, *v_itor, c+1)) {
+          constraints[c] = 1;
+        }
+      }
+      fprintf(f, "%7d %4d %4d %4d % 16.8E % 16.8E % 16.8E\n", vertexNum.prefix+1,
+              constraints[0], constraints[1], constraints[2], values[0], values[1], values[2]);
     }
-    fprintf(f, "%7d %4d %4d %4d % 16.8E % 16.8E % 16.8E\n", intervals->begin()->prefix+1,
-            constraints[0], constraints[1], constraints[2],
-            boundaryValues[interval.prefix+0], boundaryValues[interval.prefix+1], boundaryValues[interval.prefix+2]);
   }
-  ierr = VecRestoreArray(boundaryVec, &boundaryValues);
   fclose(f);
   PetscFunctionReturn(0);
 }
 
 // Process mesh
+
+PetscErrorCode MeshView_Sieve_New(ALE::Obj<ALE::def::Mesh> mesh, PetscViewer viewer);
 
 char pylithomop3d_processMesh__doc__[] = "";
 char pylithomop3d_processMesh__name__[] = "processMesh";
@@ -202,67 +195,55 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
 
   MPI_Comm          comm = PETSC_COMM_WORLD;
   PetscMPIInt       rank;
-  Mesh              mesh;
-  ALE::Sieve       *topology;
-  ALE::PreSieve    *orientation;
-  ALE::Sieve       *boundary;
-  ALE::IndexBundle *boundaryBundle;
-  Vec               boundaryVec;
+  ALE::Obj<ALE::def::Mesh>                  mesh;
+  ALE::Obj<ALE::def::Mesh::sieve_type>      topology;
+  ALE::Obj<ALE::def::Mesh::coordinate_type> boundary;
   PetscViewer       viewer;
   PetscInt         *boundaryVertices;
   PetscScalar      *boundaryValues;
   PetscInt          numBoundaryVertices, numBoundaryComponents;
   PetscErrorCode    ierr;
 
-  ierr = MeshCreatePyLith(comm, meshInputFile, &mesh);
-  ierr = MeshDistribute(mesh);
+  ierr = MPI_Comm_rank(comm, &rank);
+  sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
+  mesh = ALE::def::PyLithBuilder::create(comm, meshInputFile);
+  //ierr = MeshDistribute(mesh);
   ierr = ReadBoundary_PyLith(meshInputFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
-  ierr = MeshCreateBoundary(mesh, numBoundaryVertices, numBoundaryComponents, boundaryVertices, boundaryValues, (void **) &boundaryBundle, &boundaryVec);
+  mesh->createBoundary(numBoundaryVertices, numBoundaryComponents, boundaryVertices, boundaryValues);
   ierr = PetscViewerCreate(comm, &viewer);
   ierr = PetscViewerSetType(viewer, PETSC_VIEWER_ASCII);
-  ierr = PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_PYLITH_LOCAL);
+  //ierr = PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_PYLITH_LOCAL);
+  ierr = PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_PYLITH);
   ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ);
-  ierr = PetscExceptionTry1(PetscViewerFileSetName(viewer, meshInputFile), PETSC_ERR_FILE_OPEN);
+  //ierr = PetscExceptionTry1(PetscViewerFileSetName(viewer, meshInputFile), PETSC_ERR_FILE_OPEN);
+  ierr = PetscExceptionTry1(PetscViewerFileSetName(viewer, meshOutputFile), PETSC_ERR_FILE_OPEN);
   if (PetscExceptionValue(ierr)) {
     /* this means that a caller above me has also tryed this exception so I don't handle it here, pass it up */
   } else if (PetscExceptionCaught(ierr, PETSC_ERR_FILE_OPEN)) {
     ierr = 0;
   } 
-  ierr = MeshView(mesh, viewer);
+  ierr = MeshView_Sieve_New(mesh, viewer);
   ierr = PetscViewerDestroy(viewer);
 
-  ierr = MPI_Comm_rank(comm, &rank);
-  sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
-  ierr = MeshGetTopology(mesh, (void **) &topology);
-  ierr = MeshGetOrientation(mesh, (void **) &orientation);
-  ierr = MeshGetBoundary(mesh, (void **) &boundary);
-  ierr = WriteBoundary_PyLith(meshOutputFile, topology, boundary, boundaryBundle, boundaryVec);
+  boundary = mesh->getBoundary();
+  ierr = WriteBoundary_PyLith(meshOutputFile, boundary);
 
-  ALE::IndexBundle        *fieldBundle = new ALE::IndexBundle(topology);
-  ALE::Obj<ALE::Point_set> cap = boundary->cap();
+  ALE::Obj<ALE::def::Mesh::coordinate_type> field = ALE::def::Mesh::coordinate_type();
+  ALE::Obj<ALE::def::Mesh::sieve_type::depthSequence> vertices = mesh->getTopology()->depthStratum(0);
 
-  fieldBundle->setFiberDimensionByDepth(0, 3);
-  for(ALE::Point_set::iterator b_itor = cap->begin(); b_itor != cap->end(); b_itor++) {
-    ALE::Point vertex = *b_itor;
-#if 0
-    int numConstraints = boundaryBundle->getFiberInterval(vertex).index;
-#else
-    ALE::Obj<ALE::Point_set> support = boundary->support(vertex);
-    int numConstraints = 0;
+  field->setTopology(mesh->getTopology());
+  field->setPatch(mesh->getTopology()->base(), 0);
+  field->setIndexDimensionByDepth(0, 3);
+  for(ALE::def::Mesh::sieve_type::depthSequence::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
+    if (boundary->getIndexDimension(0, *v_itor)) {
+      int numConstraints = boundary->getIndices(0, *v_itor)->size();
 
-    for(ALE::Point_set::iterator s_itor = support->begin(); s_itor != support->end(); s_itor++) {
-      numConstraints += (*s_itor).index;
+      std::cout << "Setting dimension of " << *v_itor << " to " << 3 - numConstraints << std::endl;
+      field->setIndexDimension(0, *v_itor, 3 - numConstraints);
     }
-#endif
-    printf("Setting dimension of (%d, %d) to %d\n", vertex.prefix, vertex.index, 3 - numConstraints);
-    fieldBundle->setFiberDimension(vertex, 3 - numConstraints);
   }
-  fieldBundle->computeOverlapIndices();
-  fieldBundle->computeGlobalIndices();
-  ierr = MeshSetBundle(mesh, (void *) fieldBundle);
-
-  ierr = VecDestroy(boundaryVec);
-  delete boundaryBundle;
+  field->orderPatches();
+  mesh->setField("displacement", field);
 
   journal::debug_t debug("lithomop3d");
   debug
@@ -271,7 +252,9 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
     << journal::endl;
 
   // return
-  PyObject *pyMesh = PyCObject_FromVoidPtr(mesh, NULL);
+  PyObject *pyMesh = PyCObject_FromVoidPtr(mesh.ptr(), NULL);
+  mesh.int_allocator.del(mesh.refCnt);
+  mesh.refCnt = NULL;
   return Py_BuildValue("sN", meshOutputFile, pyMesh);
 }
 

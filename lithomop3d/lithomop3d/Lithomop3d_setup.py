@@ -1100,7 +1100,7 @@ class Lithomop3d_setup(Component):
         self.stiffnessOffDiagonalSize = self.stiffnessMatrixInfo[1]
 	self.stiffnessTrueSize = self.stiffnessMatrixSize-1
 
-        self.A, self.rhs, self.sol = lithomop3d.createPETScMat(self.numberGlobalEquations)
+        self.A, self.rhs, self.sol = lithomop3d.createPETScMat(mesh)
 	self.memorySize += self.stiffnessMatrixSize*self.intSize
 
         self.stiffnessMatrixStats = lithomop3d.makemsr(

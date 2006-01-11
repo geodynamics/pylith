@@ -28,6 +28,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include<petscmesh.h>
 #include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
@@ -335,10 +336,7 @@ PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
   return Py_None;
 }
 
-#include<petscmesh.h>
-
 extern PetscErrorCode MeshComputeGlobalScatter(ALE::Sieve *, ALE::IndexBundle *, VecScatter *);
-
 
 // Create a PETSc Mat
 char pylithomop3d_createPETScMat__doc__[] = "";
@@ -347,29 +345,19 @@ char pylithomop3d_createPETScMat__name__[] = "createPETScMat";
 PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
 {
   PyObject *pyMesh, *pyA, *pyRhs, *pySol;
-  Mesh mesh;
-  ALE::IndexBundle *fieldBundle;
-  ALE::PreSieve *orientation;
-  Mat A;
-  Vec rhs, sol;
+  MPI_Comm comm = PETSC_COMM_WORLD;
+  Mat      A;
+  Vec      rhs, sol;
   PetscInt size;
-  PetscErrorCode ierr;
 
   int ok = PyArg_ParseTuple(args, "O:createPETScMat", &pyMesh);
   if (!ok) {
     return 0;
   }
 
-  mesh = (Mesh) PyCObject_AsVoidPtr(pyMesh);
-  ierr = MeshGetBundle(mesh, (void **) &fieldBundle);
-  ierr = MeshGetOrientation(mesh, (void **) &orientation);
-  size = fieldBundle->getLocalSize();
+  ALE::def::Mesh *mesh = (ALE::def::Mesh *) PyCObject_AsVoidPtr(pyMesh);
+  size = mesh->getField("displacement")->getIndexDimension(0);
 
-  // We are supporting versions 2.x or greater, under the assumption that anyone
-  // using 2.2.x is using the release version.  If calling conventions change
-  // for version 2.3.x, we can use the new PETSC_VERSION_RELEASE variable to
-  // determine whether this is a developer version or not.
-  MPI_Comm comm = PETSC_COMM_WORLD;
   if (MatCreate(comm, &A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
     return 0;
@@ -395,14 +383,26 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
     return 0;
   }
 
-  ierr = PetscObjectCompose((PetscObject) A, "mesh", (PetscObject) mesh);
+  PetscObjectContainer c;
+  PetscErrorCode       ierr;
 
-  VecScatter injection;
-  ierr = MeshComputeGlobalScatter(fieldBundle->getTopology(), fieldBundle, &injection);
-  ierr = PetscObjectCompose((PetscObject) rhs, "mesh", (PetscObject) mesh);
-  ierr = PetscObjectCompose((PetscObject) rhs, "injection", (PetscObject) injection);
-  ierr = PetscObjectCompose((PetscObject) sol, "mesh", (PetscObject) mesh);
-  ierr = PetscObjectCompose((PetscObject) sol, "injection", (PetscObject) injection);
+  ierr = PetscObjectContainerCreate(comm, &c);
+  ierr = PetscObjectContainerSetPointer(c, mesh);
+  ierr = PetscObjectCompose((PetscObject) A, "mesh", (PetscObject) c);
+  ierr = PetscObjectContainerDestroy(c);
+
+//   VecScatter injection;
+//   ierr = MeshComputeGlobalScatter(fieldBundle->getTopology(), fieldBundle, &injection);
+  ierr = PetscObjectContainerCreate(comm, &c);
+  ierr = PetscObjectContainerSetPointer(c, mesh);
+  ierr = PetscObjectCompose((PetscObject) rhs, "mesh", (PetscObject) c);
+  ierr = PetscObjectContainerDestroy(c);
+//   ierr = PetscObjectCompose((PetscObject) rhs, "injection", (PetscObject) injection);
+  ierr = PetscObjectContainerCreate(comm, &c);
+  ierr = PetscObjectContainerSetPointer(c, mesh);
+  ierr = PetscObjectCompose((PetscObject) sol, "mesh", (PetscObject) c);
+  ierr = PetscObjectContainerDestroy(c);
+//   ierr = PetscObjectCompose((PetscObject) sol, "injection", (PetscObject) injection);
 
   journal::debug_t debug("lithomop3d");
   debug
