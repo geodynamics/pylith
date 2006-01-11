@@ -226,7 +226,7 @@ c   preconditioned conjugate gradients iterative solver.  Upon
 c   return the vector dispvec contains the displacements.
 c
 ccc PETSc BLOCK
-        call VecCreateSeqWithArray(MPI_COMM_SELF, neq, bresid, rhs,
+        call VecCreateSeqWithArray(MPI_COMM_SELF, neq, bresid, locRhs,
      &                               ierr)
         call assembleVectorComplete(rhs, locRhs, ADD_VALUES, ierr)
         call VecDestroy(locRhs, ierr)

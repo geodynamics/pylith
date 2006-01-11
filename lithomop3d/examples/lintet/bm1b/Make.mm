@@ -13,7 +13,7 @@
 
 test: clean
 	lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=bm1b -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9
-	# lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=bm1b -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9 -start_in_debugger
+	#lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=bm1b -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9 -start_in_debugger
 
 clean::
 	$(RM_F) bm1b.ascii bm1b.plot bm1b*.inp

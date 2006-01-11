@@ -3,7 +3,7 @@
 
 CXX = $(MPICXX)
 CXXLD = @CXX@
-INCLUDES = $(PETSC_INCLUDE) -I$(PYTHON_INCDIR) $(MPIINCLUDES)
+INCLUDES = $(PETSC_INCLUDE) -I$(PETSC_DIR)/src/dm/mesh/sieve -I$(PYTHON_INCDIR) $(MPIINCLUDES)
 pkgpyexec_LTLIBRARIES = lithomop3dmodule.la
 lithomop3dmodule_la_SOURCES = \
 	array.cc \
