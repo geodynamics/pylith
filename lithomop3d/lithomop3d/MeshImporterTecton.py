@@ -36,21 +36,37 @@
 class MeshImporterTecton(MeshImporter):
   """Class for importing a mesh using Tecton-style (original LithoMop) input files."""
 
-##########  Somehow need to get filenames in here.
-  def mesh(self):
+  def mesh(self, coordInputFile, elemInputFile, numDims):
     """Get a finite element mesh."""
 
     from lithomop3d.Mesh import Mesh
     mesh = Mesh()
 
     # Get nodes
-    self._getNodes(mesh.nodes)
+    self._getNodes(mesh.nodes, coordInputFile, numDims)
 
     # Get elements and define element families and materials
     self._getElements(mesh.elements)
 
 
     return mesh
+
+  def _getNodes(self, nodes, coordInputFile, numDims):
+    """Gets dimensions and nodal coordinates from Tecton-style input file."""
+
+    import pyre.units
+    
+    self._nodeInfo = lithomop3d.scan_coords(
+      f77FileInput,
+      numDims,
+      coordInputFile)
+
+    self._numNodes = self._nodeInfo[0]
+    self._coordUnits = self._nodeInfo[1]
+    
+    self._coordScaleString = \
+                           uparser.parse(string.strip(self._coordUnits))
+    self._coordScaleFactor = self._coordScaleString.value
     
   def __init__(self, name="meshimporter"):
     """Constructor."""
