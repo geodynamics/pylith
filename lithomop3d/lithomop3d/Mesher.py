@@ -37,21 +37,16 @@ from pyre.components.Component import Component
 
 class Mesher(Component):
   """Python manager for mesh generation or importing."""
-  class Inventory(Component.Inventory):
-    """Python object for managing Mesher facilities and properties."""
 
-    import pyre.inventory
+  def generate(self):
+    """Create finite-element mesh."""
 
-    def mesh(self):
-      """Create finite-element mesh."""
+    return
 
-      mesh = Mesh()
-      return mesh
-
-    def __init__(self, name="mesher"):
-      """Constructor."""
-      Component.__init__(self, name, facility="mesher")
-      return
+  def __init__(self, name="mesher"):
+    """Constructor."""
+    Component.__init__(self, name, facility="mesher")
+    return
 
 # version
 __id__ = "$Id$"
