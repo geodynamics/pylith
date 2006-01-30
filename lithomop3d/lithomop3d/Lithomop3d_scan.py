@@ -109,7 +109,7 @@ class Lithomop3d_scan(Component):
         keyparse = KeywordValueParse()
 
 	print ""
-        print "Hello from lm3dscan._init (begin)!"
+        print "Hello from lm3dscan.preinitialize (begin)!"
         print "Scanning ascii files to determine dimensions:"
 
         # Initialization of all parameters
@@ -585,7 +585,7 @@ class Lithomop3d_scan(Component):
         self._numberSlipperyWinklerForces = self._slipperyWinklerInfo[1]
 
 	print ""
-        print "Hello from lm3dscan._init (end)!"
+        print "Hello from lm3dscan.preinitialize (end)!"
 
         return
 
