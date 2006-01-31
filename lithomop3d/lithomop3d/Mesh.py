@@ -38,25 +38,31 @@ class Mesh:
 
   def __init__(self):
     """Constructor."""
-    # Create dictionary for node info
+    # Create dictionary for node info.
     self.nodes = {'numNodes': 0,
                   'dim': 0,
                   'ptrCoords': None}
 
-    # Create dictionary for element info
+    # Create dictionary for element info.
     self.elements = {'numElems': 0,
                      'connSize': 0,
                      'ptrConns': None,
                      'ptrInitOrder': None}
 
-    # Create dictionary for element family info
+    # Create dictionary for element family info.
     self.elemFamily = {'numElemFamilies': 0,
                        'ptrElemFamilySizes': None,
                        'ptrElemFamilyMaterials': None}
 
-    # Create dictionary for material model info
+    # Create dictionary for material model info.
     self.materials = {'numMats': 0,
                       'ptrMats': None}
+
+    # List defining the number of nodes for each element type.
+    # Maybe this should also be a dictionary, but for now it's easier
+    # to deal with from fortran as a list. Also, this should probably
+    # be defined somewhere else.
+    self.numNodesPerElemType =  [8, 7, 6, 5, 4, 20, 18, 15, 13, 10]
 
     return
         
