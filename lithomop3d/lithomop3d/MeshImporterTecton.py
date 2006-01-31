@@ -36,64 +36,81 @@
 class MeshImporterTecton(MeshImporter):
   """Class for importing a mesh using Tecton-style (original LithoMop) input files."""
 
-  def mesh(self, coordInputFile, elemInputFile, numDims, f77FileInput):
+  class Inventory(MeshImporter.Inventory):
+
+    import pyre.inventory
+
+    coordFile = pyre.inventory.str("coordFile")
+    elemFile = pyre.inventory.str("elemFile")
+    f77FileInput = pyre.inventory.int("f77FileInput", default=10)
+
+
+  def generate(self):
     """Get a finite element mesh."""
 
     from lithomop3d.Mesh import Mesh
     mesh = Mesh()
 
     # Get nodes
-    self._getNodes(mesh.nodes, coordInputFile, numDims, f77FileInput)
+    mesh.nodes = self._getNodes()
 
     # Get elements and define element families and materials
-    self._getElements(mesh.elements, elemInputFile, f77FileInput)
+    mesh.elements, mesh.elemFamily = self._getElems(mesh.numNodesPerElemType)
 
 
     return mesh
 
-  def _getNodes(self, nodes, coordInputFile, numDims, f77FileInput):
+  def _getNodes(self):
     """Gets dimensions and nodal coordinates from Tecton-style input file."""
 
     import pyre.units
     import lithomop3d
     
-    self._nodeInfo = lithomop3d.scan_coords(
+    nodeInfo = lithomop3d.scan_coords(
       f77FileInput,
       numDims,
       coordInputFile)
 
-    self.numNodes = self._nodeInfo[0]
-    self._coordUnits = self._nodeInfo[1]
+    numNodes = nodeInfo[0]
+    numDims = nodeInfo[1]
+    coordUnits = nodeInfo[2]
     
-    self._coordScaleString = \
-                           uparser.parse(string.strip(self._coordUnits))
-    self._coordScaleFactor = self._coordScaleString.value
+    coordScaleString = \
+                     uparser.parse(string.strip(coordUnits))
+    coordScaleFactor = coordScaleString.value
 
-    self.ptrCoords = lithomop3d.allocateDouble(numDims*self.numNodes)
+    ptrCoords = lithomop3d.allocateDouble(numDims*numNodes)
 
-    nodes['numNodes'] = self.numNodes
+    nodes['numNodes'] = numNodes
     nodes['dim'] = numDims
-    nodes['ptrCoords'] = self.ptrCoords
+    nodes['ptrCoords'] = ptrCoords
 
     lithomop3d.read_coords(nodes,
-                           self._coordScaleFactor,
-                           self.f77FileInput,
-                           coordInputFile)
+                           coordScaleFactor,
+                           self.inventory.f77FileInput,
+                           self.inventory.coordInputFile)
 
-    return
+    return nodes
       
-    
+  def _getElems(self, numNodesPerElemType):
+    """Gets dimensions and element nodes from Tecton-style input file, and
+    defines element families based on material model."""
+
+    import lithomop3d
+
+    ptrNumNodesPerElemType = lithomop3d.intListToArray(numNodesPerElemType)
+    numElemTypes = len(numNodesPerElemType)
+
+    elemInfo = lithomop3d.scan_connect(
+      ptrNumNodesPerElemType,
+      
+      
+
     
   def __init__(self, name="meshimporter"):
     """Constructor."""
 
     Mesher.__init__(self, name)
-
-    self.numNodes = 0
-    self._coordUnits = 0.0
-    self._coordUnits = "coordUnitsInitial1234567890123"
-    self._coordScaleString = "coordScaleStringInitial1234567"
-    self.ptrCoords = None
 
     return
         
