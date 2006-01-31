@@ -33,17 +33,11 @@
 #
 # Initial attempt at a module that gets a Mesh object (generic version).
 
+from Mesher import Mesher
+
 class MeshImporter(Mesher):
   """Template for a generic MeshImporter class."""
 
-  def mesh(self):
-    """Get a finite element mesh."""
-
-    from lithomop3d.Mesh import Mesh
-    mesh = Mesh()
-
-    return mesh
-    
   def __init__(self, name="meshimporter"):
     """Constructor."""
     Mesher.__init__(self, name)
