@@ -45,18 +45,14 @@ class Mesh:
 
     # Create dictionary for element info.
     self.elements = {'numElems': 0,
-                     'connSize': 0,
+                     'numNodesPerElem': 0,
+                     'elemType': 0,
                      'ptrConns': None,
                      'ptrInitOrder': None}
 
     # Create dictionary for element family info.
     self.elemFamily = {'numElemFamilies': 0,
-                       'ptrElemFamilySizes': None,
-                       'ptrElemFamilyMaterials': None}
-
-    # Create dictionary for material model info.
-    self.materials = {'numMats': 0,
-                      'ptrMats': None}
+                       'ptrElemFamilySizes': None}
 
     # List defining the number of nodes for each element type.
     # Maybe this should also be a dictionary, but for now it's easier
