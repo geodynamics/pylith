@@ -40,12 +40,12 @@ class MeshImporterTecton(MeshImporter):
 
     import pyre.inventory
 
-    coordFile = pyre.inventory.str("coordFile",default="None")
-    elemFile = pyre.inventory.str("elemFile",default="None")
+    coordFile = pyre.inventory.str("coordFile",default="")
+    elemFile = pyre.inventory.str("elemFile",default="")
     f77FileInput = pyre.inventory.int("f77FileInput", default=10)
 
 
-  def generate(self, fileRoot, ptrMatModInfo):
+  def generate(self, fileRoot):
     """Get a finite element mesh."""
 
     from lithomop3d.Mesh import Mesh
@@ -55,8 +55,7 @@ class MeshImporterTecton(MeshImporter):
     mesh.nodes = self._getNodes(fileRoot)
 
     # Get elements and define element families and materials
-    mesh.elements, mesh.elemFamily = self._getElems(fileRoot, ptrMatModInfo)
-
+    mesh.elements, mesh.elemFamily = self._getElems(fileRoot)
 
     return mesh
 
@@ -67,65 +66,89 @@ class MeshImporterTecton(MeshImporter):
     import lithomop3d
 
     # Get input filename
-    if self.inventory.coordFile == "None":
-      coordInputFile = fileRoot + ".ascii"
+    if self.inventory.coordFile == "":
+      coordInputFile = fileRoot + ".coord"
     else:
       coordInputFile = self.inventory.coordFile
+
+    f77FileInput = self.inventory.f77FileInput
     
-    nodeInfo = lithomop3d.scan_coords(
+    numNodes, numDims, coordUnits = lithomop3d.scan_coords(
       f77FileInput,
-      numDims,
       coordInputFile)
 
-    numNodes = nodeInfo[0]
-    numDims = nodeInfo[1]
-    coordUnits = nodeInfo[2]
-    
     coordScaleString = \
                      uparser.parse(string.strip(coordUnits))
     coordScaleFactor = coordScaleString.value
 
     ptrCoords = lithomop3d.allocateDouble(numDims*numNodes)
 
-    nodes['numNodes'] = numNodes
-    nodes['dim'] = numDims
-    nodes['ptrCoords'] = ptrCoords
+    nodes = { 'numNodes': numNodes,
+              'dim': numDims,
+              'ptrCoords': ptrCoords }
 
     lithomop3d.read_coords(nodes,
                            coordScaleFactor,
-                           self.inventory.f77FileInput,
-                           self.inventory.coordInputFile)
+                           f77FileInput,
+                           coordInputFile)
 
     return nodes
       
-  def _getElems(self, fileRoot, ptrMatModInfo):
+
+  def _getElems(self, fileRoot):
     """Gets dimensions and element nodes from Tecton-style input file, and
-    defines element families based on material model."""
+    defines element families based on element group number."""
 
     import lithomop3d
 
+    # Get input filename
+    if self.inventory.elemFile == "":
+      elemInputFile = fileRoot + ".connect"
+    else:
+      elemInputFile = self.inventory.elemFile
+
+    f77FileInput = self.inventory.f77FileInput
+    
+
     ptrNumNodesPerElemType = lithomop3d.intListToArray(mesh.numNodesPerElemType)
     numElemTypes = len(numNodesPerElemType)
+    maxNumElemFamilies = 1024
+    ptrTmpElemFamilySizes = lithomop3d.allocateInt(maxNumElemFamilies)
 
-    #  I need to figure out how to get most of the material stuff out of here.
-    #  Current idea:
-    #  1.  In the element nodes file, specify a materialGroup for each element.
-    #  2.  In a separate file, identify a materialModel and spatialDatabase to be
-    #      used for each group.
-    #  3.  Ideally, the file identifying the model and database for each group would
-    #      be read before the mesh info, so that I would already know how many groups
-    #      there are.  If I don't do this, I won't know how large to allocate the array
-    #      that keeps track of the number of elements in each group.
-    #  For now, the number of groups could correspond to the number of element families,
-    #  although I have to decide if this is better than having it correspond to the
-    #  number of material models used (which will always be less than or equal to the
-    #  number of groups).  In the future, the element families could be extended to also
-    #  include element type.
-    elemInfo = lithomop3d.scan_connect(
+    numElems, numNodesPerElem, elemType, numElemFamilies = lithomop3d.scan_connect(
       ptrNumNodesPerElemType,
-      
-      
+      numElemTypes,
+      ptrTmpElemFamilySizes,
+      maxNumElemFamilies,
+      f77FileInput,
+      elemInputFile)
 
+    ptrConns = lithomop3d.allocateInt(numElems*numNodesPerElem)
+    ptrInitOrder = lithomop3d.allocateInt(numElems)
+
+    elements = {'numElems': numElems,
+                'numNodesPerElem': numNodesPerElem,
+                'elemType': elemType,
+                'ptrConns': ptrConns,
+                'ptrInitOrder': ptrInitOrder}
+
+    ptrElemFamilySizes = lithomop3d.allocateInt(numElemFamilies)
+
+    elemFamily = {'numElemFamilies': numElemFamilies,
+                  'ptrElemFamilySizes': ptrElemFamilySizes}
+      
+    lithomop3d.read_connect(
+      elements,
+      elemFamily,
+      ptrTmpElemFamilySizes,
+      maxNumElemFamilies,
+      f77FileInput,
+      elemInputFile)
+
+    ptrTmpElemFamilySizes = None
+
+    return elements, elemFamily
+      
     
   def __init__(self, name="meshimporter"):
     """Constructor."""
