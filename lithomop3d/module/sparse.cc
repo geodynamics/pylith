@@ -336,8 +336,6 @@ PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
   return Py_None;
 }
 
-extern PetscErrorCode MeshComputeGlobalScatter(ALE::Sieve *, ALE::IndexBundle *, VecScatter *);
-
 // Create a PETSc Mat
 char pylithomop3d_createPETScMat__doc__[] = "";
 char pylithomop3d_createPETScMat__name__[] = "createPETScMat";
@@ -355,8 +353,8 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
     return 0;
   }
 
-  ALE::def::Mesh *mesh = (ALE::def::Mesh *) PyCObject_AsVoidPtr(pyMesh);
-  size = mesh->getField("displacement")->getIndexDimension(0);
+  ALE::Two::Mesh *mesh = (ALE::Two::Mesh *) PyCObject_AsVoidPtr(pyMesh);
+  size = mesh->getField("displacement")->getSize(ALE::Two::Mesh::field_type::patch_type());
 
   if (MatCreate(comm, &A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
