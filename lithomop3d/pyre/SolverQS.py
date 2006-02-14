@@ -32,99 +32,61 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 
 
-from pyre.simulations.Solver import Solver as SolverBase
+from Solver import Solver as SolverBase
 
 
 class SolverQS(SolverBase):
-"""Quasi-static solver based on Pyre Solver class."""
+  """Quasi-static solver."""
 
-  class Inventory(SolverQS.Inventory):
-    """Inventory for SolverQS class."""
+  # INVENTORY
+  
+  class Inventory(SolverBase.Inventory):
+    """Python object for managing Solver facilities and properties."""
 
-    def initialize(self, app):
-        self._loopInfo.log("initializing solver '%s'" % self.name)
-        return
+    import pyre.inventory
 
+    # No inventory yet.
 
-    def launch(self, app):
-        self._loopInfo.log("launching solver '%s'" % self.name)
-        return
+  def launch(self, app):
+    """Launch solver."""
+    SolverBase.launch(self, app)
 
+    # Setup PETSc logging
+    self._logger.registerStages(['launch', 'newStep',
+                                 'advance', 'endTimestep'])
 
-    def newStep(self, t, step):
-        self.t = t
-        self.step = step
-        self._loopInfo.log(
-            "%s: step %d: starting with t = %s" % (self.name, self.step, self.t))
-        return
+    self._logger.registerEvents(['iterate'])
+    # Need to add more events, and make sure this method will work correctly.
+    # Also, I will probably eventually switch over to PETSc's nonlinear solver,
+    # which will replace iterate.
+    
+    self._logger.stagePush('launch')
 
+    # Setup the model infrastructure
+    self._initializeModel()
 
-    def applyBoundaryConditions(self):
-        self._loopInfo.log(
-            "%s: step %d: applying boundary conditions" % (self.name, self.step))
-        return
+    # Setup the solver state
+    self._initializeState()
 
+    self._logger.stagePop()
+    return
 
-    def stableTimestep(self, dt):
-        self._loopInfo.log(
-            "%s: step %d: stable timestep dt = %s" % (self.name, self.step, dt))
-        return dt
-
-
-    def advance(self, dt):
-        self._loopInfo.log(
-            "%s: step %d: advancing the solution by dt = %s" % (self.name, self.step, dt))
-        return
-
-
-    def publishState(self, directory):
-        self._monitorInfo.log(
-            "%s: step %d: publishing monitoring information at t = %s in '%s'" % 
-            (self.name, self.step, self.t, directory))
-        return
+  # Need to start adding in functions to replace my current fortran.
+  def newStep(self, t, step):
+    return
 
 
-    def plotFile(self, directory):
-        self._loopInfo.log(
-            "%s: step %d: visualization information at t = %s in '%s'" % 
-            (self.name, self.step, self.t, directory))
-        return
+  def __init__(self, name="solverqs"):
+    """Constructor."""
+    SolverBase.__init__(self, name)
 
+    from SolverQSState import SolverQSState
+    self.state = SolverQSState()
 
-    def checkpoint(self, filename):
-        self._loopInfo.log(
-            "%s: step %d: checkpoint at t = %s in '%s'" % (self.name, self.step, self.t, filename))
-        return
-
-
-    def endTimestep(self, t):
-        self._loopInfo.log(
-            "%s: step %d: end of timestep at t = %s" % (self.name, self.step, t))
-        return
-
-
-    def endSimulation(self, steps, t):
-        self._loopInfo.log(
-            "%s: end of timeloop: %d timesteps, t = %s" % (self.name, steps, t))
-        return
-
-
-    def __init__(self, name, facility=None):
-        if facility is None:
-            facility = "solver"
-            
-        Component.__init__(self, name, facility)
+    import journal
+    self._info = journal.info(name)
         
-        import journal
-        self._loopInfo = journal.debug("%s.timeloop" % name)
-        self._monitorInfo = journal.debug("%s.monitoring" % name)
-
-        from pyre.units.time import second
-        self.t = 0.0 * second
-
-        self.step = 0
-
-        return
+    return
 
 
 # version
