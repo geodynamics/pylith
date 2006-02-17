@@ -73,6 +73,14 @@ class SolverQS(SolverBase):
 
   # Need to start adding in functions to replace my current fortran.
   def newStep(self, t, step):
+    """Presently set up to zero state (and state increment) variables
+    at the beginning of a time step using PETSc VecScale routine."""
+    self._logger.stagePush('newStep')
+
+    import petscutil.petscutil as petscbindings
+    petscbindings.VecScale(
+
+    
     return
 
 
