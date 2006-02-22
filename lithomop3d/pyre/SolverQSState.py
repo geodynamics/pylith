@@ -59,43 +59,19 @@ class SolverQSState(Component):
                   'ptrBwinkx': None}
 
     # Create dictionary for displacement vector info.
-    self.dispvec = {'sizeDispVec' = 0,
-                    'ptrDispVec' = None,
-                    'sizeDprev' = 0,
-                    'ptrDprev' = None}
+    self.dispvec = {'sizeDispVec': 0,
+                    'ptrDispVec': None,
+                    'sizeDprev': 0,
+                    'ptrDprev': None}
 
-    # Create dictionary for split node info.
-    self.split = {'dim1Dfault': 0,
-                  'dim2Dfault': 0,
-                  'ptrDfault': None,
-                  'dim1Tfault': 0,
-                  'dim2Tfault': 0,
-                  'ptrTfault': None}
-
-    # Create dictionary for slippery node info.
-    self.slip = {'dim1Dx': 0,
-                 'dim2Dx': 0,
-                 'ptrDx': None,
-                 'dim1Deldx': 0,
-                 'dim2Deldx': 0,
-                 'ptrDeldx': None,
-                 'dim1Dxcur': 0,
-                 'dim2Dxcur': 0,
-                 'ptrDxcur': None}
-
-    # Create dictionary for state variables.
-    self.state = {'sizeState': 0,
-                  'ptrState': None,
-                  'sizeDstate': 0,
-                  'ptrDstate': None,
-                  'sizeState0': 0,
-                  'ptrState0': None}
-    # This is actually not very good. There should be a separate set of state
-    # variables for each element family (I can than include all of the dimensions
-    # rather than just the total size).  A very kludgy way around this would be
-    # to include all of the element family info in this dictionary using one or
-    # more lists.
-    # 
+    # Create dictionary for stiffness, rhs, and sol.
+    # I need to figure out how this should really work.  Matt is defining a single
+    # PETSc 'mesh' container that includes A (global stiffness), rhs (PETSc Vec), and
+    # sol (PETSc Vec).  It is quite likely that all of the vectors above will be
+    # gathered into a single 'solverState' container.
+    self.stiff = {'petscStiff': None,
+                  'petscRhs': None,
+                  'petscSol': None}
 
     return
         
