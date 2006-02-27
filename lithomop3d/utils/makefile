@@ -12,9 +12,9 @@ FFLAGC= -fno-silent -fno-ugly -fno-f77 -ff90 -fpedantic -Wall -fbackslash -v
 
 CFLAGC= 
 
-# opt   = -g
+opt   = -g
 
-opt   = -O3 -funroll-loops
+# opt   = -O3 -funroll-loops
 
 load  = -lcc_dynamic
 
@@ -55,6 +55,9 @@ lt2qt: lt2qt.o
 
 fixqt: fixqt.o
 	$(FCOMPL) $(opt) -o fixqt fixqt.o
+
+pylith2ucd: pylith2ucd.o
+	$(FCOMPL) $(opt) -o pylith2ucd pylith2ucd.o
 
 readnetgen: readnetgen.o
 	$(FCOMPL) $(opt) -o readnetgen readnetgen.o
