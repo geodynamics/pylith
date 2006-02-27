@@ -28,7 +28,6 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#include<petscmesh.h>
 #include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
@@ -332,128 +331,6 @@ PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
     << journal::endl;
 
   // return
-  Py_INCREF(Py_None);
-  return Py_None;
-}
-
-// Create a PETSc Mat
-char pylithomop3d_createPETScMat__doc__[] = "";
-char pylithomop3d_createPETScMat__name__[] = "createPETScMat";
-
-PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
-{
-  PyObject *pyMesh, *pyA, *pyRhs, *pySol;
-  MPI_Comm comm = PETSC_COMM_WORLD;
-  Mat      A;
-  Vec      rhs, sol;
-  PetscInt size;
-
-  int ok = PyArg_ParseTuple(args, "O:createPETScMat", &pyMesh);
-  if (!ok) {
-    return 0;
-  }
-
-  ALE::Two::Mesh *mesh = (ALE::Two::Mesh *) PyCObject_AsVoidPtr(pyMesh);
-  size = mesh->getField("displacement")->getSize(ALE::Two::Mesh::field_type::patch_type());
-
-  if (MatCreate(comm, &A)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
-    return 0;
-  }
-  if (MatSetSizes(A, size, size, PETSC_DETERMINE, PETSC_DETERMINE)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Mat");
-    return 0;
-  }
-  if (VecCreate(comm, &rhs)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Rhs");
-    return 0;
-  }
-  if (VecSetSizes(rhs, size, PETSC_DETERMINE)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Rhs");
-    return 0;
-  }
-  if (VecSetFromOptions(rhs)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not set options for PETSc Rhs");
-    return 0;
-  }
-  if (VecDuplicate(rhs, &sol)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Sol");
-    return 0;
-  }
-
-  PetscObjectContainer c;
-  PetscErrorCode       ierr;
-
-  ierr = PetscObjectContainerCreate(comm, &c);
-  ierr = PetscObjectContainerSetPointer(c, mesh);
-  ierr = PetscObjectCompose((PetscObject) A, "mesh", (PetscObject) c);
-  ierr = PetscObjectContainerDestroy(c);
-
-//   VecScatter injection;
-//   ierr = MeshComputeGlobalScatter(fieldBundle->getTopology(), fieldBundle, &injection);
-  ierr = PetscObjectContainerCreate(comm, &c);
-  ierr = PetscObjectContainerSetPointer(c, mesh);
-  ierr = PetscObjectCompose((PetscObject) rhs, "mesh", (PetscObject) c);
-  ierr = PetscObjectContainerDestroy(c);
-//   ierr = PetscObjectCompose((PetscObject) rhs, "injection", (PetscObject) injection);
-  ierr = PetscObjectContainerCreate(comm, &c);
-  ierr = PetscObjectContainerSetPointer(c, mesh);
-  ierr = PetscObjectCompose((PetscObject) sol, "mesh", (PetscObject) c);
-  ierr = PetscObjectContainerDestroy(c);
-//   ierr = PetscObjectCompose((PetscObject) sol, "injection", (PetscObject) injection);
-
-  journal::debug_t debug("lithomop3d");
-  debug
-    << journal::at(__HERE__)
-    << "Created PETSc Mat:" << size
-    << journal::endl;
-
-  // return Py_None;
-  pyA = PyCObject_FromVoidPtr(A, NULL);
-  pyRhs = PyCObject_FromVoidPtr(rhs, NULL);
-  pySol = PyCObject_FromVoidPtr(sol, NULL);
-  return Py_BuildValue("NNN", pyA, pyRhs, pySol);
-}
-
-// Destroy a PETSc Mat
-
-char pylithomop3d_destroyPETScMat__doc__[] = "";
-char pylithomop3d_destroyPETScMat__name__[] = "destroyPETScMat";
-
-PyObject * pylithomop3d_destroyPETScMat(PyObject *, PyObject *args)
-{
-  PyObject *pyA,*pyRhs, *pySol;
-  Mat A;
-  Vec rhs, sol;
-
-  int ok = PyArg_ParseTuple(args, "OOO:destroyPETScMat", &pyA, &pyRhs, &pySol);
-  if (!ok) {
-    return 0;
-  }
-
-  A = (Mat) PyCObject_AsVoidPtr(pyA);
-  if (MatDestroy(A)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not destroy PETSc Mat");
-    return 0;
-  }
-  rhs = (Vec) PyCObject_AsVoidPtr(pyRhs);
-  if (VecDestroy(rhs)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not destroy PETSc Rhs");
-    return 0;
-  }
-  sol = (Vec) PyCObject_AsVoidPtr(pySol);
-  if (VecDestroy(sol)) {
-    PyErr_SetString(PyExc_RuntimeError, "Could not destroy PETSc Sol");
-    return 0;
-  }
-
-  journal::debug_t debug("lithomop3d");
-  debug
-    << journal::at(__HERE__)
-    << "Destroyed PETSc Mat"
-    << journal::endl;
-
-  // return Py_None;
   Py_INCREF(Py_None);
   return Py_None;
 }
