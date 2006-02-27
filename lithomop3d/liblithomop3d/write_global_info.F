@@ -52,9 +52,9 @@ c     compiler supports access="append", position="append", or neither.
 c     If neither is supported an error is returned.
 c
 #if defined FORTRAN_ACCESS_APPEND
-        open(kw,file=ofile,status="new",access="append")
+        open(kw,file=ofile,status="replace",access="append")
 #elif defined FORTRAN_POSITION_APPEND
-        open(kw,file=ofile,status="new",position="append")
+        open(kw,file=ofile,status="replace",position="append")
 #else
 #error "Cannot determine method for appending to Fortran files!"
 #endif
@@ -64,9 +64,9 @@ c
       end if
       if(idsk.eq.ione) then
 #if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,status="new",access="append")
+        open(kp,file=pfile,status="replace",access="append")
 #elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,status="new",position="append")
+        open(kp,file=pfile,status="replace",position="append")
 #else
 #error "Cannot determine method for appending to Fortran files!"
 #endif
@@ -75,10 +75,10 @@ c
         close(kp)
       else if(idsk.eq.itwo) then
 #if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,status="new",access="append",
+        open(kp,file=pfile,status="replace",access="append",
      &   form="unformatted")
 #elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,status="new",position="append",
+        open(kp,file=pfile,status="replace",position="append",
      &   form="unformatted")
 #else
 #error "Cannot determine method for appending to Fortran files!"

@@ -131,7 +131,7 @@ c
 c
 c...  write mesh info
 c
-        open(kucd,file=filenm,status="new")
+        open(kucd,file=filenm,status="replace")
         write(kucd,"(7i7)") nnvals,(ival(i),i=1,nnvals)
         do i=1,nnvals
           write(kucd,"(a9)") dout(i)
@@ -149,7 +149,7 @@ c...  write split node displacements, if there are any
 c
         if(numfn.ne.0) then
           filenm=ucdroot(i1:i2)//".mesh.split.time."//cstep//".inp"
-          open(kucd,file=filenm,status="new")
+          open(kucd,file=filenm,status="replace")
           write(kucd,"(7i7)") nnvals,(ival(i),i=1,nnvals)
           do i=1,nnvals
             write(kucd,"(a9)") dout(i)
@@ -165,7 +165,7 @@ c...  write slippery node displacements, if there are any
 c
         if(numsn.ne.0) then
           filenm=ucdroot(i1:i2)//".mesh.slip.time."//cstep//".inp"
-          open(kucd,file=filenm,status="new")
+          open(kucd,file=filenm,status="replace")
           write(kucd,"(7i7)") nnvals,(ival(i),i=1,nnvals)
           do i=1,nnvals
             write(kucd,"(a9)") dout(i)
@@ -188,10 +188,10 @@ c     stream I/O, or neither.  If neither is supported, binary output
 c     is turned off.
 c
 #if defined FORTRAN_F77_IO
-        open(kucd,file=filenm,status="new",access="direct",recl=len,
+        open(kucd,file=filenm,status="replace",access="direct",recl=len,
      &   form="unformatted")
 #elif defined FORTRAN_STREAM_IO
-        open(kucd,file=filenm,status="new",access="stream",
+        open(kucd,file=filenm,status="replace",access="stream",
      &   form="unformatted")
 #else
 #warning "Binary UCD output not supported for this Fortran compiler!"
