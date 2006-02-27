@@ -37,6 +37,18 @@ extern char pylithomop3d_processMesh__doc__[];
 extern "C"
 PyObject * pylithomop3d_processMesh(PyObject *, PyObject *);
 
+// create a PETSc Mat
+extern char pylithomop3d_createPETScMat__name__[];
+extern char pylithomop3d_createPETScMat__doc__[];
+extern "C"
+PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *);
+
+// destroy a PETSc Mat
+extern char pylithomop3d_destroyPETScMat__name__[];
+extern char pylithomop3d_destroyPETScMat__doc__[];
+extern "C"
+PyObject * pylithomop3d_destroyPETScMat(PyObject *, PyObject *);
+
 // scan boundary condition file
 extern char pylithomop3d_scan_bc__name__[];
 extern char pylithomop3d_scan_bc__doc__[];
