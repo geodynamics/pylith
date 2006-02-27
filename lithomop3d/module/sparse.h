@@ -61,18 +61,6 @@ extern char pylithomop3d_localx__doc__[];
 extern "C"
 PyObject * pylithomop3d_localx(PyObject *, PyObject *);
 
-// create a PETSc Mat
-extern char pylithomop3d_createPETScMat__name__[];
-extern char pylithomop3d_createPETScMat__doc__[];
-extern "C"
-PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *);
-
-// destroy a PETSc Mat
-extern char pylithomop3d_destroyPETScMat__name__[];
-extern char pylithomop3d_destroyPETScMat__doc__[];
-extern "C"
-PyObject * pylithomop3d_destroyPETScMat(PyObject *, PyObject *);
-
 // create sparse matrix in modified sparse row format
 extern char pylithomop3d_makemsr__name__[];
 extern char pylithomop3d_makemsr__doc__[];
