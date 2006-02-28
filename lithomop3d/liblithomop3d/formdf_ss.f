@@ -116,6 +116,7 @@ c...  compute forces due to displacement BC and add to global vector
 c
           call fill(p,zero,nee)
           call dsymv("u",nee,one,s,nee,dld,ione,zero,p,ione)
+          write (6,*) "Element vector",ielg
           call addfor(bintern,p,lm(1,ielg),lmx(1,ielg),neq,nee)
  150      continue
         end do

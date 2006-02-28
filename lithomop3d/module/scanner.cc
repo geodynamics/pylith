@@ -257,7 +257,7 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
   ALE::Obj<ALE::Two::Mesh::field_type> field = mesh->getField("displacement");
   ALE::Obj<ALE::Two::Mesh::sieve_type::traits::depthSequence> vertices = mesh->getTopology()->depthStratum(0);
 
-  field->setPatch(mesh->getTopology()->base(), patch);
+  field->setPatch(mesh->getTopology()->leaves(), patch);
   field->setFiberDimensionByDepth(patch, 0, 3);
   for(ALE::Two::Mesh::sieve_type::traits::depthSequence::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
     int numConstraints = 0;

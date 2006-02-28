@@ -60,6 +60,7 @@ c
       do j=1,nee
         k=lm(j)
         l=abs(lmx(j))
+        write (6,*) "ind",k,p(j)
         sgn=sign(one,dble(lmx(j)))
         if(k.ne.izero) b(k)=b(k)+p(j)
         if(l.ne.izero) b(l)=b(l)+p(j)*sgn
