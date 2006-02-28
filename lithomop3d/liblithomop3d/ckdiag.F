@@ -66,7 +66,7 @@ c
 c
 cdebug      write(6,*) "Hello from ckdiag_f!"
 c
-cdebug      call MatView(A, PETSC_VIEWER_STDOUT_SELF, ierr)
+      call MatView(A, PETSC_VIEWER_STDOUT_WORLD, ierr)
       call MatGetSize(A, rows, cols, ierr)
       call MatGetLocalSize(A, localRows, localCols, ierr)
       call VecCreate(MPI_COMM_WORLD, diag, ierr)

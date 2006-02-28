@@ -138,6 +138,7 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Two:
   PetscErrorCode              ierr;
 
   PetscFunctionBegin;
+  boundaries->view("PyLith boundaries");
   ierr = PetscStrcpy(bcFilename, baseFilename);
   ierr = PetscStrcat(bcFilename, ".bc");
   f = fopen(bcFilename, "w");CHKERRQ(ierr);
@@ -210,8 +211,7 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
   ALE::Obj<ALE::Two::Mesh::foliation_type> boundaries = mesh->getBoundaries();
   ALE::Two::Mesh::field_type::patch_type patch;
   std::set<int> seen;
-  //FIX: Need to globalize
-  int numElements = mesh->getTopology()->heightStratum(0)->size();
+  int numElements = mesh->getBundle(mesh->getTopology()->depth())->getGlobalOffsets()[mesh->commSize()];
 
   boundaries->setTopology(mesh->getTopology());
   for(int c = 0; c < numBoundaryComponents; c++) {
@@ -273,6 +273,7 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
   }
   field->orderPatches();
   field->createGlobalOrder();
+  field->view("Displacement field");
   ALE::Obj<ALE::Two::Mesh::sieve_type::traits::heightSequence> elements = mesh->getTopology()->heightStratum(0);
   ALE::Obj<ALE::Two::Mesh::bundle_type> vertexBundle = mesh->getBundle(0);
   std::string orderName("element");
@@ -284,7 +285,7 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
 
     field->setPatch(orderName, cone, *e_iter);
     for(ALE::Two::Mesh::bundle_type::order_type::coneSequence::iterator c_iter = cone->begin(); c_iter != cone->end(); ++c_iter) {
-      field->setFiberDimension(orderName, *e_iter, *c_iter, 1);
+      field->setFiberDimension(orderName, *e_iter, *c_iter, field->getFiberDimension(patch, *c_iter));
     }
   }
   field->orderPatches(orderName);
@@ -312,7 +313,6 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
   MPI_Comm comm = PETSC_COMM_WORLD;
   Mat      A;
   Vec      rhs, sol;
-  PetscInt size;
 
   int ok = PyArg_ParseTuple(args, "O:createPETScMat", &pyMesh);
   if (!ok) {
@@ -320,7 +320,8 @@ PyObject * pylithomop3d_createPETScMat(PyObject *, PyObject *args)
   }
 
   ALE::Two::Mesh *mesh = (ALE::Two::Mesh *) PyCObject_AsVoidPtr(pyMesh);
-  size = mesh->getField("displacement")->getSize(ALE::Two::Mesh::field_type::patch_type());
+  const int *offsets = mesh->getField("displacement")->getGlobalOffsets();
+  int size = offsets[mesh->commRank()+1] - offsets[mesh->commRank()];
 
   if (MatCreate(comm, &A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
