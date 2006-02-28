@@ -71,9 +71,9 @@ c
       parameter(nnvals=6)
       integer ival(nnvals)
       data ival/1,1,1,1,1,1/
-      character dout(nnvals)*9
-      data dout/"X-Displ,m","Y-Displ,m","Z-Displ,m",
-     &          "X-Vel,m/s","Y-Vel,m/s","Z-Vel,m/s"/
+      character dout(nnvals)*8
+      data dout/"XDispl,m","YDispl,m","ZDispl,m",
+     &          "XVel,m/s","YVel,m/s","ZVel,m/s"/
 c
 c...  external functions
 c
@@ -99,8 +99,8 @@ c
 c
 c...  set up labels and byte-counting info for binary output
 c
-      nlabels="X-Displacement.Y-Displacement.Z-Displacement."//
-     &        "X-Velocity.Y-Velocity.Z-Velocity."
+      nlabels="XDisplacement.YDisplacement.ZDisplacement."//
+     &        "XVelocity.YVelocity.ZVelocity."
       nlabels(1024:1024)="0"
       nunits="meters.meters.meters."//
      &       "meters/second.meters/second.meters/second."
@@ -134,7 +134,7 @@ c
         open(kucd,file=filenm,status="replace")
         write(kucd,"(7i7)") nnvals,(ival(i),i=1,nnvals)
         do i=1,nnvals
-          write(kucd,"(a9)") dout(i)
+          write(kucd,"(a8)") dout(i)
         end do
 c
 c...  write nodal displacements
