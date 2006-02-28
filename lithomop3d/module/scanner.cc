@@ -239,6 +239,13 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
     }
   }
 
+  bool refineMesh = false;
+  if (refineMesh) {
+    double refinementLimit = 2.4e4*2.4e4*2.4e4*0.01*0.5;
+    bool   interpolate     = true;
+    mesh = ALE::Two::Generator::refine(mesh, refinementLimit, interpolate);
+  }
+
   ierr = PetscViewerCreate(comm, &viewer);
   ierr = PetscViewerSetType(viewer, PETSC_VIEWER_ASCII);
   ierr = PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_PYLITH_LOCAL);

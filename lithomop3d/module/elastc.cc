@@ -419,7 +419,9 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
 	   strlen(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
-    return 0;
+    //int *fail = NULL;
+    //int i = fail[0];
+    return NULL;
   }
   journal::debug_t debug("lithomop3d");
   debug
