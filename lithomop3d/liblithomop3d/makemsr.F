@@ -89,7 +89,7 @@ c
       nmin=nmin+ione
       nmax=nmax+ione
       if(neq.ne.izero) wavg=wavg/dble(neq)
-      call MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, ierr)
+cFIX  call MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, ierr)
       call MatSeqAIJSetPreallocation(A, 0, row_array(row_offset+1),
      &                               ierr)
       call ISRestoreIndices(rowSizes, row_array, row_offset, ierr)
