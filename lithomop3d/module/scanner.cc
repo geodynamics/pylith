@@ -203,7 +203,7 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
   ierr = MPI_Comm_rank(comm, &rank);
   sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
   mesh = ALE::Two::PyLithBuilder::createNew(comm, meshInputFile);
-  //ierr = MeshDistribute(mesh);
+  mesh->distribute();
   ierr = ReadBoundary_PyLith(meshInputFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
 
   typedef std::pair<ALE::Two::Mesh::field_type::patch_type,int> patch_type;
@@ -241,11 +241,9 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
 
   ierr = PetscViewerCreate(comm, &viewer);
   ierr = PetscViewerSetType(viewer, PETSC_VIEWER_ASCII);
-  //ierr = PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_PYLITH_LOCAL);
-  ierr = PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_PYLITH);
+  ierr = PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_PYLITH_LOCAL);
   ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ);
-  //ierr = PetscExceptionTry1(PetscViewerFileSetName(viewer, meshInputFile), PETSC_ERR_FILE_OPEN);
-  ierr = PetscExceptionTry1(PetscViewerFileSetName(viewer, meshOutputFile), PETSC_ERR_FILE_OPEN);
+  ierr = PetscExceptionTry1(PetscViewerFileSetName(viewer, meshInputFile), PETSC_ERR_FILE_OPEN);
   if (PetscExceptionValue(ierr)) {
     /* this means that a caller above me has also tryed this exception so I don't handle it here, pass it up */
   } else if (PetscExceptionCaught(ierr, PETSC_ERR_FILE_OPEN)) {
@@ -274,6 +272,7 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
     }
   }
   field->orderPatches();
+  field->createGlobalOrder();
   ALE::Obj<ALE::Two::Mesh::sieve_type::traits::heightSequence> elements = mesh->getTopology()->heightStratum(0);
   ALE::Obj<ALE::Two::Mesh::bundle_type> vertexBundle = mesh->getBundle(0);
   std::string orderName("element");
