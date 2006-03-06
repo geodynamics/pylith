@@ -83,7 +83,7 @@ PyObject * pylithomop3d_cmp_stiffsz(PyObject *, PyObject *args)
 	   	&numberVolumeElementNodes,
 	   	&errorcode,
 	   	errorstring,
-	   	strlen(errorstring));
+	   	sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -164,7 +164,7 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
 	   &totalNumberSlipperyNodes,
 	   &errorcode,
 	   errorstring,
-	   strlen(errorstring));
+	   sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;

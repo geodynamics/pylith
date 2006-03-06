@@ -68,10 +68,11 @@ extern "C"
 PyObject * pylithomop3d_read_hist(PyObject *, PyObject *);
 
 // read material history info
-extern char pylithomop3d_read_mathist__name__[];
-extern char pylithomop3d_read_mathist__doc__[];
-extern "C"
-PyObject * pylithomop3d_read_mathist(PyObject *, PyObject *);
+// these are not being used for now
+// extern char pylithomop3d_read_mathist__name__[];
+// extern char pylithomop3d_read_mathist__doc__[];
+// extern "C"
+// PyObject * pylithomop3d_read_mathist(PyObject *, PyObject *);
 
 // read prestresses
 // extern char pylithomop3d_read_prestr__name__[];
@@ -120,12 +121,6 @@ extern char pylithomop3d_read_wink__name__[];
 extern char pylithomop3d_read_wink__doc__[];
 extern "C"
 PyObject * pylithomop3d_read_wink(PyObject *, PyObject *);
-
-// read winkler force information for slippery nodes
-extern char pylithomop3d_read_winkx__name__[];
-extern char pylithomop3d_read_winkx__doc__[];
-extern "C"
-PyObject * pylithomop3d_read_winkx(PyObject *, PyObject *);
 
 #endif
 

@@ -28,49 +28,11 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#include <portinfo>
+#if !defined(pylithomop3d_lithomop3dmodule_h)
+#define pylithomop3d_lithomop3dmodule_h
 
-#include <Python.h>
+void pylithomop3d_init(const char *name);
 
-#include "lithomop3dmodule.h"
-#include "exceptions.h"
-#include "bindings.h"
-
-
-char pylithomop3d_module__doc__[] = "";
-
-void pylithomop3d_init(const char *name)
-{
-  // create the module and add the functions
-  PyObject * m = Py_InitModule4(
-				(char *)name, pylithomop3d_methods,
-				pylithomop3d_module__doc__, 0, PYTHON_API_VERSION);
-
-  // get its dictionary
-  PyObject * d = PyModule_GetDict(m);
-
-  // check for errors
-  if (PyErr_Occurred()) {
-    Py_FatalError("can't initialize module lithomop3d");
-  }
-
-  // install the module exceptions
-  pylithomop3d_runtimeError = PyErr_NewException("lithomop3d.runtime", 0, 0);
-  PyDict_SetItemString(d, "RuntimeException", pylithomop3d_runtimeError);
-
-  return;
-}
-
-// Initialization function for the module (*must* be called initlithomop3d)
-extern "C"
-void
-initlithomop3d()
-{
-  pylithomop3d_init("lithomop3d");
-  return;
-}
-
-// version
-// $Id: lithomop3dmodule.cc,v 1.2 2005/03/31 23:27:57 willic3 Exp $
+#endif
 
 // End of file

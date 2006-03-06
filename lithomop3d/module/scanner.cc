@@ -473,7 +473,7 @@ PyObject * pylithomop3d_scan_bc(PyObject *, PyObject *args)
 	    strlen(velocityUnits),
 	    strlen(forceUnits),
 	    strlen(bcInputFile),
-	    strlen(errorstring));
+	    sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -545,7 +545,7 @@ PyObject * pylithomop3d_scan_connect(PyObject *, PyObject *args)
 		 &errorcode,
 		 errorstring,
 		 strlen(connectivityInputFile),
-		 strlen(errorstring));
+		 sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -598,7 +598,7 @@ PyObject * pylithomop3d_scan_coords(PyObject *, PyObject *args)
 		errorstring,
 		strlen(coordinateUnits),
 		strlen(coordinateInputFile),
-		strlen(errorstring));
+		sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -648,7 +648,7 @@ PyObject * pylithomop3d_scan_diff(PyObject *, PyObject *args)
 	      &errorcode,
 	      errorstring,
 	      strlen(differentialForceInputFile),
-	      strlen(errorstring));
+	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -701,7 +701,7 @@ PyObject * pylithomop3d_scan_fuldat(PyObject *, PyObject *args)
 		&errorcode,
 		errorstring,
 		strlen(fullOutputInputFile),
-		strlen(errorstring));
+		sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -748,7 +748,7 @@ PyObject * pylithomop3d_scan_hist(PyObject *, PyObject *args)
 	      &errorcode,
 	      errorstring,
 	      strlen(loadHistoryInputFile),
-	      strlen(errorstring));
+	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -855,7 +855,7 @@ PyObject * pylithomop3d_scan_skew(PyObject *, PyObject *args)
 	      errorstring,
 	      strlen(rotationUnits),
 	      strlen(rotationInputFile),
-	      strlen(errorstring));
+	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -902,7 +902,7 @@ PyObject * pylithomop3d_scan_slip(PyObject *, PyObject *args)
 	      &errorcode,
 	      errorstring,
 	      strlen(slipperyNodeInputFile),
-	      strlen(errorstring));
+	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -949,7 +949,7 @@ PyObject * pylithomop3d_scan_split(PyObject *, PyObject *args)
 	       &errorcode,
 	       errorstring,
 	       strlen(splitNodeInputFile),
-	       strlen(errorstring));
+	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -1002,7 +1002,7 @@ PyObject * pylithomop3d_scan_timdat(PyObject *, PyObject *args)
 		errorstring,
 		strlen(timeUnits),
 		strlen(timeStepInputFile),
-		strlen(errorstring));
+		sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -1054,7 +1054,7 @@ PyObject * pylithomop3d_scan_timdat(PyObject *, PyObject *args)
 		  // errorstring,
 		  // strlen(tractionBcUnits),
 		  // strlen(tractionInputFile),
-		  // strlen(errorstring));
+		  // sizeof(errorstring));
     
   // if(0 != exceptionhandler(errorcode, errorstring)) {
     // return 0;
@@ -1103,7 +1103,7 @@ PyObject * pylithomop3d_scan_wink(PyObject *, PyObject *args)
 	      &errorcode,
 	      errorstring,
 	      strlen(winklerInputFile),
-	      strlen(errorstring));
+	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -1156,7 +1156,7 @@ PyObject * pylithomop3d_scan_winkx(PyObject *, PyObject *args)
 	       &errorcode,
 	       errorstring,
 	       strlen(slipperyWinklerInputFile),
-	       strlen(errorstring));
+	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;

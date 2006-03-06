@@ -220,7 +220,7 @@ PyObject * pylithomop3d_preshape(PyObject *, PyObject *args)
 	     &numberVolumeElementGaussPoints,
 	     &errorcode,
 	     errorstring,
-	     strlen(errorstring));
+	     sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;

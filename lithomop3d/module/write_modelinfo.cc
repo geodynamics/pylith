@@ -82,7 +82,7 @@ PyObject * pylithomop3d_write_bc(PyObject *, PyObject *args)
 	     &errorcode,
 	     errorstring,
 	     strlen(asciiOutputFile),
-	     strlen(errorstring));
+	     sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -167,7 +167,7 @@ PyObject * pylithomop3d_write_connect(PyObject *, PyObject *args)
 		  errorstring,
 		  strlen(asciiOutputFile),
 		  strlen(plotOutputFile),
-		  strlen(errorstring));
+		  sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -232,7 +232,7 @@ PyObject * pylithomop3d_write_coords(PyObject *, PyObject *args)
 		 errorstring,
 		 strlen(asciiOutputFile),
 		 strlen(plotOutputFile),
-		 strlen(errorstring));
+		 sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -301,7 +301,7 @@ PyObject * pylithomop3d_write_diff(PyObject *, PyObject *args)
 	       &errorcode,
 	       errorstring,
 	       strlen(asciiOutputFile),
-	       strlen(errorstring));
+	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -437,7 +437,7 @@ PyObject * pylithomop3d_write_fuldat(PyObject *, PyObject *args)
 		 errorstring,
 		 strlen(asciiOutputFile),
 		 strlen(plotOutputFile),
-		 strlen(errorstring));
+		 sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -559,7 +559,7 @@ PyObject * pylithomop3d_write_hist(PyObject *, PyObject *args)
 	       &errorcode,
 	       errorstring,
 	       strlen(asciiOutputFile),
-	       strlen(errorstring));
+	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -639,7 +639,7 @@ PyObject * pylithomop3d_write_props(PyObject *, PyObject *args)
 		errorstring,
 		strlen(asciiOutputFile),
 		strlen(plotOutputFile),
-		strlen(errorstring));
+		sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -700,7 +700,7 @@ PyObject * pylithomop3d_write_skew(PyObject *, PyObject *args)
 	       &errorcode,
 	       errorstring,
 	       strlen(asciiOutputFile),
-	       strlen(errorstring));
+	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -768,7 +768,7 @@ PyObject * pylithomop3d_write_slip(PyObject *, PyObject *args)
 	       errorstring,
 	       strlen(asciiOutputFile),
 	       strlen(plotOutputFile),
-	       strlen(errorstring));
+	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -888,7 +888,7 @@ PyObject * pylithomop3d_write_split(PyObject *, PyObject *args)
 		errorstring,
 		strlen(asciiOutputFile),
 		strlen(plotOutputFile),
-		strlen(errorstring));
+		sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -1000,7 +1000,7 @@ PyObject * pylithomop3d_write_stateout(PyObject *, PyObject *args)
 		   errorstring,
 		   strlen(asciiOutputFile),
 		   strlen(plotOutputFile),
-		   strlen(errorstring));
+		   sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -1183,7 +1183,7 @@ PyObject * pylithomop3d_write_timdat(PyObject *, PyObject *args)
 		 &errorcode,
 		 errorstring,
 		 strlen(asciiOutputFile),
-		 strlen(errorstring));
+		 sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -1325,7 +1325,7 @@ PyObject * pylithomop3d_write_wink(PyObject *, PyObject *args)
 	       &errorcode,
 	       errorstring,
 	       strlen(asciiOutputFile),
-	       strlen(errorstring));
+	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
@@ -1388,7 +1388,7 @@ PyObject * pylithomop3d_write_winkx(PyObject *, PyObject *args)
 		&errorcode,
 		errorstring,
 		strlen(asciiOutputFile),
-		strlen(errorstring));
+		sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;

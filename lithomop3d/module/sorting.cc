@@ -120,7 +120,7 @@ PyObject * pylithomop3d_sort_elements(PyObject *, PyObject *args)
 		  &propertySize,
 		  &errorcode,
 		  errorstring,
-		  strlen(errorstring));
+		  sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
