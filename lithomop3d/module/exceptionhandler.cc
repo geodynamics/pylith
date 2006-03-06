@@ -63,13 +63,22 @@ exceptionhandler(const int errorcode,
 
   const int maxsize = 4096;
   char errormsg[maxsize];
-  // copy at most 4095 chars (account for terminating '\0')
-  strncpy(errormsg, errorstring, maxsize-1);
+
+  if (errorcode == 0) {
+    return 0;
+  }
+
+  // copy string to 'errormsg', trim spaces, and null-terminate
+  char *dest = errormsg + maxsize;
+  const char *src = errorstring + maxsize;
+  while (dest > errormsg && (*--dest = *--src) == ' ')
+    ;
+  dest[1] = '\0';
+  while (dest > errormsg)
+    *--dest = *--src;
 
   switch(errorcode)
     {
-    case 0:
-      break;
     case 1:
       PyErr_SetString(PyExc_IOError, 
 		      safestrcat(errormsg,
