@@ -1,0 +1,127 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN">
+<book id="PyLithManual" lang="en">
+ 
+<bookinfo>
+<title>PyLith Manual</title>
+<authorgroup>
+<author>
+<firstname>Charles</firstname>
+<surname>Williams</surname>
+</author>
+<author>
+<firstname>Matthew</firstname>
+<othername>G.</othername>
+<surname>Knepley</surname>
+</author>
+<author>
+<firstname>Cassie</firstname>
+<surname>Ferguson</surname>
+</author>
+</authorgroup>
+<date>March, 2006</date>
+<releaseinfo>Release tag ???</releaseinfo>
+</bookinfo>
+ 
+<chapter id="Introduction">
+<title>Parallelization</title>
+
+<para>In parallelizing PyLith, a principal concern was to preserve the existing structure of the serial Fortran
+code. Active development of purely analytic features in PyLith, such as new material models or discretization schemes,
+depends on the familiarity of application scientists with the traditional Fortran programming paradigm. Global,
+topological operation should be strictly segregated from the existing code. In fact, with the exception of integrating
+PETSc for serial linear algebra and solver operations, PyLith can be run purely in serial without activating any of the
+parallel capabilities.</para>
+
+<para>In order to accomplish this separation, we use the PETSc <classname>Sieve</classname> structure to create a model of the
+serial PyLith mesh. This model is then partitioned and distributed to a set of processes. Each process receives a
+self-consistent mesh, meaning the pieces are overlapping. Each process then executes a serial PyLith step on that
+particular mesh piece. The PETSc linear algebra operations are overloaded, using the <classname>Sieve</classname>
+information, to produce a globally consistent field.</para>
+
+<para>First, we must preprocess the PyLith input mesh and return a submesh, which we accomplish by changing the root filename
+on each process.
+<programlisting>
+  lithomop3d.PetscInitialize()
+  self.inventory.scanner.inventory.fileRoot, mesh = lithomop3d.processMesh(self.inventory.scanner.inventory.fileRoot)
+</programlisting>
+We must also provide the mesh information to the routine which creates the linear algebra objects,
+<programlisting>
+  lm3dsetup.sparsesetup(mesh)
+</programlisting>
+which dispatches into the C++ interface
+<programlisting>
+  self.A, self.rhs, self.sol = lithomop3d.createPETScMat(mesh)
+</programlisting>
+</para>
+
+<para>We model the displacement field over the mesh using a fiber bundle. Each vertex is intially associated with three
+degrees of freedom, which are then restricted by the boundary conditions. After which we create local order, and then a
+unique global order which is used to construct PETSc vector scatters.
+<programlisting>
+  field->setPatch(mesh->getTopology()->leaves(), patch);
+  field->setFiberDimensionByDepth(patch, 0, 3);
+  for(ALE::Two::Mesh::sieve_type::traits::depthSequence::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
+    int numConstraints = 0;
+
+    for(int c = 0; c < numBoundaryComponents; c++) {
+      numConstraints += boundaries->getFiberDimension(patch_type(patch, c+1), *v_itor);
+    }
+
+    if (numConstraints > 0) {
+      field->setFiberDimension(patch, *v_itor, 3 - numConstraints);
+    }
+  }
+  field->orderPatches();
+  field->createGlobalOrder();
+</programlisting>
+We also create an alternative ordering which allows retrieval of field values on each element with the correct
+orientation. This order has previously been constructed based on the ``cell-tuple" method for a simpler bundle over
+vertices, and we are thus able to merely copy it.
+<programlisting>
+  ALE::Obj&lt;ALE::Two::Mesh::sieve_type::traits::heightSequence&gt; elements = mesh->getTopology()->heightStratum(0);
+  ALE::Obj&lt;ALE::Two::Mesh::bundle_type&gt; vertexBundle = mesh->getBundle(0);
+  std::string orderName("element");
+
+  for(ALE::Two::Mesh::sieve_type::traits::heightSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); e_iter++) {
+    // setFiberDimensionByDepth() does not work here since we only want it to apply to the patch cone
+    //   What we really need is the depthStratum relative to the patch
+    ALE::Obj&lt;ALE::Two::Mesh::bundle_type::order_type::coneSequence&gt; cone = vertexBundle->getPatch(orderName, *e_iter);
+
+    field->setPatch(orderName, cone, *e_iter);
+    for(ALE::Two::Mesh::bundle_type::order_type::coneSequence::iterator c_iter = cone->begin(); c_iter != cone->end(); ++c_iter) {
+      field->setFiberDimension(orderName, *e_iter, *c_iter, field->getFiberDimension(patch, *c_iter));
+    }
+  }
+  field->orderPatches(orderName);
+</programlisting>
+</para>
+
+<para>In addition to fields and operators, we must represent boundary conditions. We do this using a fiber bundle over the mesh
+which is foliated over spatial dimension, which in our interface means that patches are labeled by the pair (patch
+number, dimension). A particular set of boundaries values consists of a section of this bundle.</para>
+
+<para>We replace the usual <methodname>MatSetValues()</methodname> call with <methodname>assembleMatrix()</methodname>.
+We do not always require that vectors be managed through the PETSc interface, but can instead be treated as Fortran
+arrays which are subsequently wrapped by serial PETSc vectors, which are then assembled into a global vector for the
+solve using <methodname>assembleVectorComplete()</methodname>. In a similar fashion, the local vector may be extracted
+using the <methodname>restrictVector()</methodname> method.
+<programlisting>
+  call VecCreateSeqWithArray(MPI_COMM_SELF, neq, bresid, locRhs, ierr)
+  call assembleVectorComplete(rhs, locRhs, ADD_VALUES, ierr)
+  call VecDestroy(locRhs, ierr)
+  call VecView(rhs, PETSC_VIEWER_STDOUT_WORLD, ierr)
+  call KSPCreate(MPI_COMM_WORLD, ksp, ierr)
+  call KSPSetfromOptions(ksp, ierr)
+  call KSPSetOperators(ksp,A,A,DIFFERENT_NONZERO_PATTERN,ierr)
+  call KSPSolve(ksp, rhs, sol, ierr)
+  call KSPDestroy(ksp, ierr)
+  call VecView(sol, PETSC_VIEWER_STDOUT_WORLD, ierr)
+  call VecCreateSeqWithArray(MPI_COMM_SELF, neq, dispvec, locSol, ierr)
+  call restrictVector(sol, locSol, INSERT_VALUES, ierr)
+  call VecDestroy(locSol, ierr)
+</programlisting>
+</para>
+ 
+</chapter>
+
+</book>
