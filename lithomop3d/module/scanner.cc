@@ -157,7 +157,7 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Two:
     double values[3] = {0.0, 0.0, 0.0};
 
     for(int c = 0; c < 3; c++) {
-      patch_type p(patch, c+1);
+      ALE::Two::Mesh::foliation_type::patch_type p(patch, c+1);
 
       constraints[c] = boundaries->getFiberDimension(p, *v_itor);
       if (constraints[c]) {
@@ -215,7 +215,7 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
 
   boundaries->setTopology(mesh->getTopology());
   for(int c = 0; c < numBoundaryComponents; c++) {
-    boundaries->setPatch(mesh->getTopology()->leaves(), patch_type(patch, c+1));
+    boundaries->setPatch(mesh->getTopology()->leaves(), ALE::Two::Mesh::foliation_type::patch_type(patch, c+1));
   }
   // Reverse order allows newer conditions to override older, as required by PyLith
   for(int v = numBoundaryVertices-1; v >= 0; v--) {
@@ -224,7 +224,7 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
     if (seen.find(vertex.index) == seen.end()) {
       for(int c = 0; c < numBoundaryComponents; c++) {
         if (boundaryVertices[v*(numBoundaryComponents+1)+c+1]) {
-          boundaries->setFiberDimension(patch_type(patch, c+1), vertex, 1);
+          boundaries->setFiberDimension(ALE::Two::Mesh::foliation_type::patch_type(patch, c+1), vertex, 1);
         }
       }
       seen.insert(vertex.index);
@@ -235,7 +235,7 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
     ALE::Two::Mesh::point_type vertex(0, boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
 
     for(int c = 0; c < numBoundaryComponents; c++) {
-      boundaries->update(patch_type(patch, c+1), vertex, &boundaryValues[v*numBoundaryComponents+c]);
+      boundaries->update(ALE::Two::Mesh::foliation_type::patch_type(patch, c+1), vertex, &boundaryValues[v*numBoundaryComponents+c]);
     }
   }
 
@@ -270,7 +270,7 @@ PyObject * pylithomop3d_processMesh(PyObject *, PyObject *args)
     int numConstraints = 0;
 
     for(int c = 0; c < numBoundaryComponents; c++) {
-      numConstraints += boundaries->getFiberDimension(patch_type(patch, c+1), *v_itor);
+      numConstraints += boundaries->getFiberDimension(ALE::Two::Mesh::foliation_type::patch_type(patch, c+1), *v_itor);
     }
 
     if (numConstraints > 0) {
