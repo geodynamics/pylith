@@ -61,29 +61,43 @@ class ElemFamilySolid(ElemFamily):
     from MatIsoElastic import MatIsoElastic
     material = pyre.inventory.facility("material", factory=MatIsoElastic)
     material.meta['tip'] = "Material for a group of elements."
+
+    from MeshImporterTecton import MeshImporterTecton
+    meshimporter = pyre.inventory.facility("meshimporter", factory=MeshImporterTecton)
+    meshimporter.meta['tip'] = "Mesh importer facility for a group of elements"
     
     # PUBLIC METHODS //////////////////////////////////////////////////////////
 
+    def initialize(self, family, sizeFamily, elemType):
+      """Set up storage and define family."""
+
+      self._info.log("Initializing element family '%s'." \
+                     self.label)
+
+      
+
+      
+      
     def __init__(self, name="elemfamilysolid"):
       """Constructor."""
       Component.__init__(self, name, facility="elemfamilysolid")
 
       self.label = ""
-      self.elemType = None
+      self.elemType = 0
       self.quadratureOrder = ""
-      self.material = {'materialType': "",
-                       'numProps': 0,
-                       'numState': 0,
-                       'numState0': 0,
-                       'fptrMatPrt': None,
-                       'fptrElasMat': None,
-                       'fptrElasStrs': None,
-                       'fptrTdMatinit': None,
-                       'fptrTdStrs': None,
-                       'fptrTdStrsMat': None,
-                       'fptrTdPrestrMat': None,
-                       'fptrGetState': None,
-                       'fptrUpdateState': None}
+      self.elemInfoSolid = {'': None}
+      self.stateVars = {'numStateVars': 0,
+                        'numState0Vars': 0,
+                        'sizeStateVars': 0,
+                        'sizeState0Vars': 0,
+                        'ptrStateVars': None,
+                        'ptrState0Vars': None}
+      # Still not quite sure how this should work.  This setup assumes
+      # that I use the spatial database to put everything into a material
+      # property array.
+      self.matProps = {'dimProps': 0,
+                       'sizeProps': 0,
+                       'ptrProps': None}
       # Things that should be in ElemFamily:
       # ElemInfoSolid:  dimension and integration info
       # ElemFamilyState:stresses, strains, etc.
@@ -92,8 +106,6 @@ class ElemFamilySolid(ElemFamily):
       # Label:          descriptor for family
       # elemType:       string or integer description.
       # quadratureOrder:global for family
-      
-      self.elemFamily = None
 
       import journal
       self._info = journal.info(name)
@@ -104,8 +116,9 @@ class ElemFamilySolid(ElemFamily):
     def _configure(self):
       """Setup members using inventory."""
       self.label = self.inventory.label
-      self.integrator = self.inventory.integrator
+      self.quadratureOrder = self.inventory.quadratureOrder
       self.material = self.inventory.material
+      self.meshimporter = self.inventory.meshimporter
       return
 
 # version
