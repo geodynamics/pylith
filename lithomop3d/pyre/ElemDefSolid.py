@@ -48,17 +48,23 @@ class ElemDefSolid:
     self.ElemInfoSolid['numElemEquations'] = self.numDegreesFreedom * numElemNodes
     self.ElemInfoSolid['numElemCoords'] = self.numSpaceDims * numElemNodes
 
-    #Full integration order
+    # Full integration order
     if quadratureOrderInt == 1:
       numElemGaussPoints = self.elemFullGauss[elementType -1]
+      self.ElemInfoSolid['fptrBmatrix'] = lm3d.bmatrixn
+      self.ElemInfoSolid['fptrGetShape'] = lm3d.getshapn
 
-    #Reduced integration order
+    # Reduced integration order
     elif quadratureOrderInt == 2:
       numElemGaussPoints = self.elemReducedGauss[elementType -1]
+      self.ElemInfoSolid['fptrBmatrix'] = lm3d.bmatrixn
+      self.ElemInfoSolid['fptrGetShape'] = lm3d.getshapn
 
-    #Selective (B-bar) integration order
+    # Selective (B-bar) integration order
     elif quadratureOrderInt == 3:
       numElemGaussPoints = self.elemFullGauss[elementType -1]
+      self.ElemInfoSolid['fptrBmatrix'] = lm3d.bmatrixb
+      self.ElemInfoSolid['fptrGetShape'] = lm3d.getshapb
 
     self.ElemInfoSolid['numElemGaussPoints'] = numElemGaussPoints
 
@@ -110,29 +116,31 @@ class ElemDefSolid:
                             'numElemGaussPoints': 0,
                             'ptrShape': None,
                             'ptrShapej': None,
-                            'ptrGauss': None}
+                            'ptrGauss': None,
+                            'fptrBmatrix': None,
+                            'fptrGetShape': None}
 
-      self.elementNodes = [ 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                            8, 8, 8, 8, 8, 8, 8, 7, 6, 5, \
-                            4,20,20,20,20,20,20,20,20,20, \
-                            20,20,20,20,20,20,20,20,20,20, \
-                            20,20,20,20,20,20,20,20,18,15, \
-                            13,10]
-      self.elementFullGauss = [ 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
+      self.elemNodes = [ 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
+                         8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
+                         8, 8, 8, 8, 8, 8, 8, 7, 6, 5, \
+                         4,20,20,20,20,20,20,20,20,20, \
+                         20,20,20,20,20,20,20,20,20,20, \
+                         20,20,20,20,20,20,20,20,18,15, \
+                         13,10]
+      self.elemFullGauss = [ 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
+                             8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
+                             8, 8, 8, 8, 8, 8, 8, 8, 2, 5, \
+                             1,27,27,27,27,27,27,27,27,27, \
+                             27,27,27,27,27,27,27,27,27,27, \
+                             27,27,27,27,27,27,27,27,27, 9, \
+                             13, 4]
+      self.elemReducedGauss = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+                                1, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
                                 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                                8, 8, 8, 8, 8, 8, 8, 8, 2, 5, \
-                                1,27,27,27,27,27,27,27,27,27, \
-                                27,27,27,27,27,27,27,27,27,27, \
-                                27,27,27,27,27,27,27,27,27, 9, \
-                                13, 4]
-      self.elementReducedGauss = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-                                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-                                   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-                                   1, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                                   8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                                   8, 8, 8, 8, 8, 8, 8, 8, 8, 2, \
-                                   5, 1]
+                                8, 8, 8, 8, 8, 8, 8, 8, 8, 2, \
+                                5, 1]
       return
 
 # version
