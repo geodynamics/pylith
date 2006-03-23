@@ -44,29 +44,29 @@ class ElemDefSolid:
     print "Hello from ElemDefSolid.getdef!"
 
     numElemNodes = self.elemNodes[elemTypeInt - 1]
-    self.ElemInfoSolid['numElemNodes'] = numElemNodes
-    self.ElemInfoSolid['numElemEquations'] = self.numDegreesFreedom * numElemNodes
-    self.ElemInfoSolid['numElemCoords'] = self.numSpaceDims * numElemNodes
+    self.elemInfoSolid['numElemNodes'] = numElemNodes
+    self.elemInfoSolid['numElemEquations'] = self.numDegreesFreedom * numElemNodes
+    self.elemInfoSolid['numElemCoords'] = self.numSpaceDims * numElemNodes
 
     # Full integration order
     if quadratureOrderInt == 1:
       numElemGaussPoints = self.elemFullGauss[elementType -1]
-      self.ElemInfoSolid['fptrBmatrix'] = lm3d.bmatrixn
-      self.ElemInfoSolid['fptrGetShape'] = lm3d.getshapn
+      self.elemInfoSolid['fptrBmatrix'] = lm3d.bmatrixn
+      self.elemInfoSolid['fptrGetShape'] = lm3d.getshapn
 
     # Reduced integration order
     elif quadratureOrderInt == 2:
       numElemGaussPoints = self.elemReducedGauss[elementType -1]
-      self.ElemInfoSolid['fptrBmatrix'] = lm3d.bmatrixn
-      self.ElemInfoSolid['fptrGetShape'] = lm3d.getshapn
+      self.elemInfoSolid['fptrBmatrix'] = lm3d.bmatrixn
+      self.elemInfoSolid['fptrGetShape'] = lm3d.getshapn
 
     # Selective (B-bar) integration order
     elif quadratureOrderInt == 3:
       numElemGaussPoints = self.elemFullGauss[elementType -1]
-      self.ElemInfoSolid['fptrBmatrix'] = lm3d.bmatrixb
-      self.ElemInfoSolid['fptrGetShape'] = lm3d.getshapb
+      self.elemInfoSolid['fptrBmatrix'] = lm3d.bmatrixb
+      self.elemInfoSolid['fptrGetShape'] = lm3d.getshapb
 
-    self.ElemInfoSolid['numElemGaussPoints'] = numElemGaussPoints
+    self.elemInfoSolid['numElemGaussPoints'] = numElemGaussPoints
 
     ptrShape = lm3d.allocateDouble(
       (self.numSpaceDims+1)*
@@ -91,11 +91,11 @@ class ElemDefSolid:
       numElemNodes,
       numElemGaussPoints)
 
-    self.ElemInfoSolid['ptrShape'] = ptrShape
-    self.ElemInfoSolid['ptrShapej'] = ptrShapej
-    self.ElemInfoSolid['ptrGauss'] = ptrGauss
+    self.elemInfoSolid['ptrShape'] = ptrShape
+    self.elemInfoSolid['ptrShapej'] = ptrShapej
+    self.elemInfoSolid['ptrGauss'] = ptrGauss
         
-    return self.ElemInfoSolid
+    return self.elemInfoSolid
 
 
     def __init__(self):
@@ -110,7 +110,7 @@ class ElemDefSolid:
       self.numDegreesFreedom = 3
       self.numSpaceDims = 3
 
-      self.ElemInfoSolid = {'numElemNodes': 0,
+      self.elemInfoSolid = {'numElemNodes': 0,
                             'numElemEquations': 0,
                             'numElemCoords': 0,
                             'numElemGaussPoints': 0,
