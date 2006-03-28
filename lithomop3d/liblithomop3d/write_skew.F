@@ -74,17 +74,8 @@ c
 c
 c...  write skew BC to ascii output file, if desired
 c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports access="append", position="append", or neither.
-c     If neither is supported an error is returned.
-c
-#if defined FORTRAN_ACCESS_APPEND
-      open(kw,file=ofile,err=40,status="old",access="append")
-#elif defined FORTRAN_POSITION_APPEND
-      open(kw,file=ofile,err=40,status="old",position="append")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+      call open_append(kw,ofile,"old","",ierr,errstrng,"write_skew")
+      if(ierr.ne.izero) return
       write(kw,1000,err=50) iskopt,(label(i),i=1,nskdim)
       write(kw,1050,err=50)
       do i=1,numnp
@@ -92,21 +83,13 @@ c
         do j=1,nskdim
           if(skew(j,i).ne.zero) nonzed=.true.
         end do
-        if(nonzed) write(kw,2000,err=40) i,(skew(j,i),j=1,nskdim)
+        if(nonzed) write(kw,2000,err=50) i,(skew(j,i),j=1,nskdim)
       end do
       close(kw)
 c
 c...  normal return
 c
       return
-c
-c...  error opening output file
-c
-40    continue
-        ierr=2
-        errstrng="write_skew"
-        close(kw)
-        return
 c
 c...  error writing to output file
 c

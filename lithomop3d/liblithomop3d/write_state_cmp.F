@@ -40,6 +40,8 @@ c
 c
 c...  computation routine to update state variables within an element family
 c
+#include "binio.h"
+c
       include "implicit.inc"
 c
 c...  parameter definitions
@@ -159,20 +161,7 @@ cdebug            write(6,*) "sout:",(sout(idb),idb=1,3*nstatesmax)
      &       sout(2*nstatesmax+ione),ione)
             do j=1,nstatestot
               istate=istatoutc(j)
-c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports old-style f77 unformatted direct access,
-c     stream I/O, or neither.  If neither is supported, binary output
-c     is turned off.
-c
-#if defined FORTRAN_F77_IO
-              write(kucd,rec=ibyteg(j)) real(sout(istate))
-#elif defined FORTRAN_STREAM_IO
-              write(kucd,pos=ibyteg(j)) real(sout(istate))
-#else
-#warning "Binary UCD output not supported for the Fortran compiler!"
-#endif
-
+              write(kucd,BINARY_POS=ibyteg(j)) real(sout(istate))
               statemin(istate)=min(statemin(istate),sout(istate))
               statemax(istate)=max(statemax(istate),sout(istate))
               ibyteg(j)=ibyteg(j)+floatlen

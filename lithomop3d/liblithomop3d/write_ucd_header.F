@@ -34,6 +34,8 @@ c
 c...subroutine to write the header for a UCD file containing state
 c   variables
 c
+#include "binio.h"
+c
       include "implicit.inc"
 c
 c...  parameter definitions
@@ -95,23 +97,9 @@ c
         end do
         nlabels(1024:1024)="0"
         nunits(1024:1024)="0"
-c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports old-style f77 unformatted direct access,
-c     stream I/O, or neither.  If neither is supported, binary output
-c     is turned off.
-c
-#if defined FORTRAN_F77_IO
-        write(kucd,rec=ibyte) nlabels,nunits
+        write(kucd,BINARY_POS=ibyte) nlabels,nunits
         ibyte=ibyte+2048
-        write(kucd,rec=ibyte) nstatestot,(iout(i),i=1,nstatestot)
-#elif defined FORTRAN_STREAM_IO
-        write(kucd,pos=ibyte) nlabels,nunits
-        ibyte=ibyte+2048
-        write(kucd,pos=ibyte) nstatestot,(iout(i),i=1,nstatestot)
-#else
-#warning "Binary UCD output not supported for this Fortran compiler!"
-#endif
+        write(kucd,BINARY_POS=ibyte) nstatestot,(iout(i),i=1,nstatestot)
       end if
 c
       return

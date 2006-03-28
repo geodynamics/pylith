@@ -72,40 +72,19 @@ c
 c...  open output files and output number of materials
 c
       if(idout.gt.izero) then
-c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports access="append", position="append", or neither.
-c     If neither is supported an error is returned.
-c
-#if defined FORTRAN_ACCESS_APPEND
-        open(kw,file=ofile,err=10,status="old",access="append")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kw,file=ofile,err=10,status="old",position="append")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append(kw,ofile,"old","",ierr,errstrng,"write_props")
+        if(ierr.ne.izero) return
         write(kw,1000,err=20) numat
       end if
       if(idsk.eq.ione) then
-#if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,err=10,status="old",access="append")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,err=10,status="old",position="append")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append(kp,pfile,"old","",ierr,errstrng,"write_props")
+        if(ierr.ne.izero) return
         write(kp,"(i5)",err=20) numat
       end if
       if(idsk.eq.itwo) then
-#if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,err=10,status="old",access="append",
-     &   form="unformatted")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,err=10,status="old",position="append",
-     &   form="unformatted")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append(kp,pfile,"old","unformatted",
+     &                   ierr,errstrng,"write_props")
+        if(ierr.ne.izero) return
         write(kp,err=20) numat
       end if
 c
@@ -194,15 +173,6 @@ c
       if(idout.gt.izero) close(kw)
       if(idsk.gt.izero) close(kp)
       return
-c
-c...  error opening output file
-c
- 10   continue
-        ierr=2
-        errstrng="write_props"
-        if(idout.gt.izero) close(kw)
-        if(idsk.gt.izero) close(kp)
-        return
 c
 c...  error writing to output file
 c

@@ -72,27 +72,18 @@ c
 c
 c...  open output files
 c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports access="append", position="append", or neither.
-c     If neither is supported an error is returned.
-c
-#if defined FORTRAN_ACCESS_APPEND
-      if(idout.gt.izero) open(kw,file=ofile,err=50,status="old",
-     & access="append")
-      if(idsk.eq.ione) open(kp,file=pfile,err=50,status="old",
-     & access="append")
-      if(idsk.eq.itwo) open(kp,file=pfile,err=50,status="old",
-     & access="append",form="unformatted")
-#elif defined FORTRAN_POSITION_APPEND
-      if(idout.gt.izero) open(kw,file=ofile,err=50,status="old",
-     & position="append")
-      if(idsk.eq.ione) open(kp,file=pfile,err=50,status="old",
-     & position="append")
-      if(idsk.eq.itwo) open(kp,file=pfile,err=50,status="old",
-     & position="append",form="unformatted")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+      if(idout.gt.izero) then
+        call open_append(kw,ofile,"old","",ierr,errstrng,"write_slip")
+        if(ierr.ne.izero) return
+      end if
+      if(idsk.eq.ione) then
+        call open_append(kp,pfile,"old","",ierr,errstrng,"write_slip")
+        if(ierr.ne.izero) return
+      else if(idsk.eq.itwo) then
+        call open_append(kp,pfile,"old","unformatted",
+     &                   ierr,errstrng,"write_slip")
+        if(ierr.ne.izero) return
+      end if
 c
 c...  loop over slippery node entries, and output results if desired
 c
@@ -121,15 +112,6 @@ c
 c...  normal return
 c
       return
-c
-c...  error opening output file
-c
- 50   continue
-        ierr=2
-        errstrng="write_slip"
-        if(idout.gt.izero) close(kw)
-        if(idsk.gt.izero) close(kp)
-        return
 c
 c...  error writing to output file
 c

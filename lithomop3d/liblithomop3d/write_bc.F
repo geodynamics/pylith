@@ -79,17 +79,8 @@ c
 c
 c...  output BC to ascii file, if requested
 c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports access="append", position="append", or neither.
-c     If neither is supported an error is returned.
-c
-#if defined FORTRAN_ACCESS_APPEND
-      open(kw,file=ofile,status="old",access="append",err=10)
-#elif defined FORTRAN_POSITION_APPEND
-      open(kw,file=ofile,status="old",position="append",err=10)
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+      call open_append(kw,ofile,"old","",ierr,errstrng,"write_bc")
+      if(ierr.ne.izero) return
       write(kw,1000) (labeld(i),i=1,ndof)
       write(kw,2000)
       nlines=0
@@ -119,14 +110,6 @@ c
 c...  normal return
 c
       return
-c
-c...  error opening output file
-c
-10    continue
-        ierr=2
-        errstrng="write_bc"
-        close(kw)
-        return
 c
 c...  write error
 c

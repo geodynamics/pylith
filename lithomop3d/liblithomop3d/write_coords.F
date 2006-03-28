@@ -72,32 +72,17 @@ c
 c...  output coordinates to plot file, if requested
 c
       if(idsk.eq.1) then
-c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports access="append", position="append", or neither.
-c     If neither is supported an error is returned.
-c
-#if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,err=50,status="old",access="append")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,err=50,status="old",position="append")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append(kp,pfile,"old","",
+     &                   ierr,errstrng,"write_coords")
+        if(ierr.ne.izero) return
         do i=1,numnp
           write(kp,"(i7,3(1pe16.8))",err=60) i,(x(j,i),j=1,nsd)
         end do
         close(kp)
       else if(idsk.eq.2) then
-#if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,err=50,status="old",access="append",
-     &   form="unformatted")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,err=50,status="old",position="append",
-     &   form="unformatted")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append(kp,pfile,"old","unformatted",
+     &                   ierr,errstrng,"write_coords")
+        if(ierr.ne.izero) return
         write(kp,err=60) x
         close(kp)
       end if
@@ -105,13 +90,9 @@ c
 c...  output coordinates to human-readable file
 c
       if(idout.gt.izero) then
-#if defined FORTRAN_ACCESS_APPEND
-        open(kw,file=ofile,err=50,status="old",access="append")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kw,file=ofile,err=50,status="old",position="append")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append(kw,ofile,"old","",
+     &                   ierr,errstrng,"write_coords")
+        if(ierr.ne.izero) return
         do i=1,numnp
           if(i.eq.1.or.mod(i,npage).eq.0) write(kw,1000)
      &     (labelc(j),j=1,nsd)
@@ -123,15 +104,6 @@ c
 c...  normal return
 c
       return
-c
-c...  error opening output file
-c
- 50   continue
-        ierr=2
-        errstrng="write_coords"
-        if(idout.gt.izero) close(kw)
-        if(idsk.gt.izero) close(kp)
-        return
 c
 c...  write error
 c

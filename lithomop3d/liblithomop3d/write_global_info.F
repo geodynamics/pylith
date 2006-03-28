@@ -46,43 +46,19 @@ c
       character title*(*),ofile*(*),pfile*(*)
 c
       if(idout.gt.izero) then
-c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports access="append", position="append", or neither.
-c     If neither is supported an error is returned.
-c
-#if defined FORTRAN_ACCESS_APPEND
-        open(kw,file=ofile,status="replace",access="append")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kw,file=ofile,status="replace",position="append")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append_stop(kw,ofile,"replace","","write_global_info")
         write(kw,500)
         write(kw,1000) title,idout,idsk,ngem,numnp,nsd,ndof,icode,idebug
         close(kw)
       end if
       if(idsk.eq.ione) then
-#if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,status="replace",access="append")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,status="replace",position="append")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append_stop(kp,pfile,"replace","","write_global_info")
         write(kp,2000) title
         write(kp,3000) ngem,numnp,nsd,ndof,nstr
         close(kp)
       else if(idsk.eq.itwo) then
-#if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,status="replace",access="append",
-     &   form="unformatted")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,status="replace",position="append",
-     &   form="unformatted")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append_stop(kp,pfile,"replace","unformatted",
+     &                        "write_global_info")
         write(kp) title
         write(kp) ngem,numnp,nsd,ndof,nstr
         close(kp)

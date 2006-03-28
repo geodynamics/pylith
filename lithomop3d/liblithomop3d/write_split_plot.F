@@ -47,30 +47,13 @@ c
 c...  write results to plot file, if requested
 c
       if(idsk.eq.1) then
-c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports access="append", position="append", or neither.
-c     If neither is supported an error is returned.
-c
-#if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,status="old",access="append")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,status="old",position="append")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append_stop(kp,pfile,"old","",
+     &                        "write_split_plot")
         write(kp,"(i7)") numflt
         close(kp)
       else if(idsk.eq.2) then
-#if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,status="old",access="append",
-     &   form="unformatted")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,status="old",position="append",
-     &   form="unformatted")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append_stop(kp,pfile,"old","unformatted",
+     &                        "write_split_plot")
         write(kp) numflt
         if(numflt.ne.0) write(kp) (idftn(i),i=1,numflt)
         close(kp)

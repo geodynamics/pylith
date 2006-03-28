@@ -47,6 +47,8 @@ c     since it contains both node and element information.
 c     Either binary or ascii UCD files are written, depending on the
 c     value of the iucd parameter.
 c
+#include "binio.h"
+c
       include "implicit.inc"
 c
 c...  parameter definitions
@@ -88,10 +90,6 @@ c
       double precision vmin(6),vmax(6)
       character filenm*200,cstep*5
       character nlabels*1024,nunits*1024
-#if defined FORTRAN_F77_IO
-      integer len
-      len=ione
-#endif
 c
 cdebug      write(6,*) "Hello from write_ucd_node_vals!"
 c
@@ -181,21 +179,9 @@ c
 c...  binary UCD output
 c
       else if(iucd.eq.itwo) then
-c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports old-style f77 unformatted direct access,
-c     stream I/O, or neither.  If neither is supported, binary output
-c     is turned off.
-c
-#if defined FORTRAN_F77_IO
-        open(kucd,file=filenm,status="replace",access="direct",recl=len,
+        open(kucd,file=filenm,status="replace",
+     &   BINARY_OPEN_SPEC,
      &   form="unformatted")
-#elif defined FORTRAN_STREAM_IO
-        open(kucd,file=filenm,status="replace",access="stream",
-     &   form="unformatted")
-#else
-#warning "Binary UCD output not supported for this Fortran compiler!"
-#endif
 c
 c...  determin min/max of data values
 c
@@ -220,59 +206,29 @@ c
 c
 c...  write header info
 c
-#if defined FORTRAN_F77_IO
-        write(kucd,rec=ibyte) nlabels,nunits
+        write(kucd,BINARY_POS=ibyte) nlabels,nunits
         ibyte=ibyte+2048
-        write(kucd,rec=ibyte) nnvals,(ival(i),i=1,nnvals)
+        write(kucd,BINARY_POS=ibyte) nnvals,(ival(i),i=1,nnvals)
         ibyte=ibyte+intlen*(1+nnvals)
-        write(kucd,rec=ibyte) (real(vmin(i)),i=1,nnvals)
+        write(kucd,BINARY_POS=ibyte) (real(vmin(i)),i=1,nnvals)
         ibyte=ibyte+floatlen*nnvals
-        write(kucd,rec=ibyte) (real(vmax(i)),i=1,nnvals)
-#elif defined FORTRAN_STREAM_IO
-        write(kucd,pos=ibyte) nlabels,nunits
-        ibyte=ibyte+2048
-        write(kucd,pos=ibyte) nnvals,(ival(i),i=1,nnvals)
-        ibyte=ibyte+intlen*(1+nnvals)
-        write(kucd,pos=ibyte) (real(vmin(i)),i=1,nnvals)
-        ibyte=ibyte+floatlen*nnvals
-        write(kucd,pos=ibyte) (real(vmax(i)),i=1,nnvals)
-#else
-#warning "Binary UCD output not supported for this Fortran compiler!"
-#endif
+        write(kucd,BINARY_POS=ibyte) (real(vmax(i)),i=1,nnvals)
         ibyte=ibyte+floatlen*nnvals
 c
 c...  write node data
 c
         do j=1,ndof
-#if defined FORTRAN_F77_IO
-          write(kucd,rec=ibyte) (real(d(j,i)),i=1,numnp)
-#elif defined FORTRAN_STREAM_IO
-          write(kucd,pos=ibyte) (real(d(j,i)),i=1,numnp)
-#else
-#warning "Binary UCD output not supported for this Fortran compiler!"
-#endif
+          write(kucd,BINARY_POS=ibyte) (real(d(j,i)),i=1,numnp)
           ibyte=ibyte+numnp*floatlen
         end do
         do j=1,ndof
-#if defined FORTRAN_F77_IO
-          write(kucd,rec=ibyte) (real(rmult*deld(j,i)),i=1,numnp)
-#elif defined FORTRAN_STREAM_IO
-          write(kucd,pos=ibyte) (real(rmult*deld(j,i)),i=1,numnp)
-#else
-#warning "Binary UCD output not supported for this Fortran compiler!"
-#endif
+          write(kucd,BINARY_POS=ibyte) (real(rmult*deld(j,i)),i=1,numnp)
           ibyte=ibyte+numnp*floatlen
         end do
 c
 c...  write terminating values and close file
 c
-#if defined FORTRAN_F77_IO
-        write(kucd,rec=ibyte) (real(vmax(i)),i=1,nnvals)
-#elif defined FORTRAN_STREAM_IO
-        write(kucd,pos=ibyte) (real(vmax(i)),i=1,nnvals)
-#else
-#warning "Binary UCD output not supported with gfortran!"
-#endif
+        write(kucd,BINARY_POS=ibyte) (real(vmax(i)),i=1,nnvals)
         close(kucd)
 c
 c...  NOTE:  for now, binary UCD files are not written for split or
