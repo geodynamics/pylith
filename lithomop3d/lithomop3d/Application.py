@@ -43,7 +43,15 @@ class Application(BaseScript):
         import lithomop3d
         lithomop3d.PetscInitialize()
         self.inventory.scanner.inventory.fileRoot, mesh = lithomop3d.processMesh(self.inventory.scanner.inventory.fileRoot)
-        lm3dsetup.initialize(self.inventory.scanner)
+        try:
+            lm3dsetup.initialize(self.inventory.scanner)
+        except self.inventory.scanner.CanNotOpenInputOutputFilesError, error:
+            import sys
+            print >> sys.stderr
+            error.report(sys.stderr)
+            print >> sys.stderr
+            print >> sys.stderr, "%s: %s" % (error.__class__.__name__, error)
+            sys.exit(1)
         lm3dsetup.read()
         lm3dsetup.numberequations()
         lm3dsetup.sortmesh()
