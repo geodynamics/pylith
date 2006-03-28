@@ -70,17 +70,8 @@ c
 c
 c...  echo input to file
 c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports access="append", position="append", or neither.
-c     If neither is supported an error is returned.
-c
-#if defined FORTRAN_ACCESS_APPEND
-      open(kw,file=ofile,err=40,status="old",access="append")
-#elif defined FORTRAN_POSITION_APPEND
-      open(kw,file=ofile,err=40,status="old",position="append")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+      call open_append(kw,ofile,"old","",ierr,errstrng,"write_timdat")
+      if(ierr.ne.izero) return
       write(kw,1000,err=50)
       do i=1,nintg
           write(kw,2000,err=50) i,maxstp(i),delt(i),alfa(i),maxit(i),
@@ -105,14 +96,6 @@ c
 c...  normal return
 c
       return
-c
-c...  error opening output file
-c
- 40   continue
-        ierr=2
-        errstrng="write_timdat"
-        close(kw)
-        return
 c
 c...  error writing to output file
 c

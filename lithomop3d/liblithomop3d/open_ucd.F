@@ -32,6 +32,8 @@ c
 c
 c...  Routine to determine filename for UCD output and open the file.
 c
+#include "binio.h"
+c
       include "implicit.inc"
 c
 c...  parameter definitions
@@ -53,16 +55,6 @@ c...  local variables
 c
       integer i1,i2
       character filenm*200,cstep*5
-c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports old-style f77 unformatted direct access,
-c     stream I/O, or neither.  If neither is supported, binary output
-c     is turned off.
-c
-#if defined FORTRAN_F77_IO
-      integer len
-      len=ione
-#endif
 c
 cdebug      write(6,*) "Hello from open_ucd_f!"
 c
@@ -90,21 +82,9 @@ c
       if(iucd.eq.ione) then
         open(kucd,file=filenm,status="replace")
       else if(iucd.eq.itwo) then
-c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports old-style f77 unformatted direct access,
-c     stream I/O, or neither.  If neither is supported, binary output
-c     is turned off.
-c
-#if defined FORTRAN_F77_IO
-        open(kucd,file=filenm,status="replace",access="direct",recl=len,
+        open(kucd,file=filenm,status="replace",
+     &   BINARY_OPEN_SPEC,
      &   form="unformatted")
-#elif defined FORTRAN_STREAM_IO
-        open(kucd,file=filenm,status="replace",access="stream",
-     &   form="unformatted")
-#else
-#warning "Binary UCD output not supported for this Fortran compiler!"
-#endif
       end if
       return
       end

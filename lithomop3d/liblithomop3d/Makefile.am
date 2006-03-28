@@ -103,6 +103,7 @@ liblithomop3d_la_SOURCES = \
 	nchar.f \
 	nfind.f \
 	nnblnk.f \
+	open_append.F \
 	open_ucd.F \
 	plinhex.f \
 	plinpyr.f \
@@ -167,6 +168,7 @@ liblithomop3d_la_SOURCES = \
 	td_strs_cmp_ss.f \
 	td_strs_mat_cmp_ss.F \
 	transp.f \
+	try_binio.F \
 	unlock.f \
 	update_state_cmp.f \
 	update_state_drv.f \
@@ -198,6 +200,7 @@ liblithomop3d_la_SOURCES = \
 	write_ucd_node_vals.F \
 	write_wink.F \
 	write_winkx.F \
+	includes/binio.h \
 	includes/elas_matinit_ext.inc \
 	includes/elas_strs_ext.inc \
 	includes/elmlbl_def.inc \

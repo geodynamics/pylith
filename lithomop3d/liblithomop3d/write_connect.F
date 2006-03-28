@@ -74,18 +74,9 @@ c
 c...  output plot info, if desired
 c
       if(idsk.eq.ione) then
-c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports access="append", position="append", or neither.
-c     If neither is supported an error is returned.
-c
-#if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,err=40,status="old",access="append")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,err=40,status="old",position="append")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append(kp,pfile,"old","",
+     &                   ierr,errstrng,"write_connect")
+        if(ierr.ne.izero) return
         write(kp,1000,err=50) numelv,ietypev,nen,ngauss
         ielg=izero
         do ifam=1,nvfamilies
@@ -99,15 +90,9 @@ c
         end do
         close(kp)
       else if(idsk.eq.itwo) then
-#if defined FORTRAN_ACCESS_APPEND
-        open(kp,file=pfile,err=40,status="old",access="append",
-     &   form="unformatted")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kp,file=pfile,err=40,status="old",position="append",
-     &   form="unformatted")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append(kp,pfile,"old","unformatted",
+     &                   ierr,errstrng,"write_connect")
+        if(ierr.ne.izero) return
         write(kp,err=50) numelv,ietypev,nen,ngauss
         write(kp,err=50) ivfamily
         write(kp,err=50) iens
@@ -117,13 +102,9 @@ c
 c...  output ascii info, if desired
 c
       if(idout.gt.izero) then
-#if defined FORTRAN_ACCESS_APPEND
-        open(kw,file=ofile,status="old",access="append")
-#elif defined FORTRAN_POSITION_APPEND
-        open(kw,file=ofile,status="old",position="append")
-#else
-#error "Cannot determine method for appending to Fortran files!"
-#endif
+        call open_append(kw,ofile,"old","",
+     &                   ierr,errstrng,"write_connect")
+        if(ierr.ne.izero) return
         npage=50
         ielg=izero
         do ifam=1,nvfamilies
@@ -147,15 +128,6 @@ c
 c...  normal return
 c
       return
-c
-c...  error opening output file
-c
- 40   continue
-        ierr=2
-        errstrng="write_connect"
-        if(idout.gt.izero) close(kw)
-        if(idsk.gt.izero) close(kp)
-        return
 c
 c...  error writing to output file
 c

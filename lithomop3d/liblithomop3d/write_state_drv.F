@@ -41,6 +41,8 @@ c...  program to print state variables
 c     Note:  at present, it is assumed that the same istatout array
 c     is used for the elastic and time-dependent solutions.
 c
+#include "binio.h"
+c
       include "implicit.inc"
 c
 c...  parameter definitions
@@ -327,31 +329,13 @@ c
 c...  output min and max values and footer for binary UCD file
 c
       if(iucd.eq.2) then
-c
-c...  The current setup uses autoconf to determine whether the fortran
-c     compiler supports old-style f77 unformatted direct access,
-c     stream I/O, or neither.  If neither is supported, binary output
-c     is turned off.
-c
-#if defined FORTRAN_F77_IO
-        write(kucd,rec=ibyte) (real(statemin(istatoutc(i))),
+        write(kucd,BINARY_POS=ibyte) (real(statemin(istatoutc(i))),
      &   i=1,nstatestot)
         ibyte=ibyte+nstatestot*floatlen
-        write(kucd,rec=ibyte) (real(statemax(istatoutc(i))),
+        write(kucd,BINARY_POS=ibyte) (real(statemax(istatoutc(i))),
      &   i=1,nstatestot)
-        write(kucd,rec=ibyteg(nstatestot))
+        write(kucd,BINARY_POS=ibyteg(nstatestot))
      &   (real(statemax(istatoutc(i))),i=1,nstatestot)
-#elif defined FORTRAN_STREAM_IO
-        write(kucd,pos=ibyte) (real(statemin(istatoutc(i))),
-     &   i=1,nstatestot)
-        ibyte=ibyte+nstatestot*floatlen
-        write(kucd,pos=ibyte) (real(statemax(istatoutc(i))),
-     &   i=1,nstatestot)
-        write(kucd,pos=ibyteg(nstatestot))
-     &   (real(statemax(istatoutc(i))),i=1,nstatestot)
-#else
-#warning "Binary UCD output not supported with gfortran!"
-#endif
       end if
       if(iucd.gt.izero) close(kucd)
       return

@@ -28,31 +28,92 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_subiter(nprevdflag,kw,idout,ofile)
+      subroutine try_binio(u,ierr,errstrng)
 c
-c...subroutine to write parameters controlling the subiteration
-c   process
+c...  subroutine to try binary I/O to see if it works
+c
+#include "binio.h"
 c
       include "implicit.inc"
 c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+c
 c...  subroutine arguments
 c
-      integer nprevdflag,kw,idout
-      character ofile*(*)
+      integer u,ierr
+      character errstrng*(*)
 c
 c...  local variables
 c
-      if(idout.gt.0) then
-        call open_append_stop(kw,ofile,"old","","write_subiter")
-        write(kw,700) nprevdflag
-        close(kw)
+      integer intlen,floatlen,p
+      integer testint
+      real testfloat
+c
+      ierr=0
+c
+      intlen=0
+      floatlen=0
+      p=0
+      testint=42
+      testfloat=4.2
+c
+#if defined FORTRAN_NO_BINARY
+      ierr=400
+      goto 10
+#else
+c
+c...  open a scratch file
+c
+      open(u,status="scratch",
+     & BINARY_OPEN_SPEC,
+     & form="unformatted",err=402)
+c
+c...  write an integer and a float and measure their size
+c
+      write(u,BINARY_POS=1,BINARY_ERR(404)) testint
+      inquire(u,BINARY_INQ_POS=p)
+      intlen = p - 1
+      write(u,BINARY_POS=p,BINARY_ERR(404)) testfloat
+      inquire(u,BINARY_INQ_POS=p)
+      floatlen = p - intlen - 1
+      if(intlen.ne.ifour.or.floatlen.ne.ifour) then
+        ierr=405
+        goto 10
       end if
+c
+c...  read them back and verify that the values are the same
+c
+      testint=0
+      testfloat=0.0
+      read(u,BINARY_POS=1,BINARY_ERR(403)) testint
+      p = intlen + 1
+      read(u,BINARY_POS=p,BINARY_ERR(403)) testfloat
+      close(u)
+      if(testint.ne.42.or.testfloat.ne.4.2) then
+        ierr=406
+        goto 10
+      end if
+#endif
+c
+c...  normal return
 c
       return
 c
-700   format(///' l i n e a r   s o l u t i o n   ',
-     & 'i n f o r m a t i o n'//,5x,
-     & ' initial solution flag  . . . . . . . .(nprevdflag) =',i5,//,5x,
-     & '    eq.0,  use zero initial guess                    ',/,5x,
-     & '    eq.1,  use displacements from previous step      ')
+c...  error
+c
+ 402  ierr=402
+      goto 10
+ 403  ierr=403
+      goto 10
+ 404  ierr=404
+      goto 10
+c
+ 10   errstrng="try_binio"
+      close(u)
+      return
+c
       end
+c
+c End of file 
