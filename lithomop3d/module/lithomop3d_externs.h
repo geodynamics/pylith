@@ -78,6 +78,7 @@
 #define sort_elements_f FC_FUNC_(sort_elements, SORT_ELEMENTS)
 #define sort_slip_nodes_f FC_FUNC_(sort_slip_nodes, SORT_SLIP_NODES)
 #define sort_split_nodes_f FC_FUNC_(sort_split_nodes, SORT_SPLIT_NODES)
+#define try_binio_f FC_FUNC_(try_binio, TRY_BINIO)
 #define viscos_f FC_FUNC(viscos, VISCOS)
 #define write_bc_f FC_FUNC_(write_bc, WRITE_BC)
 #define write_connect_f FC_FUNC_(write_connect, WRITE_CONNECT)
@@ -807,6 +808,8 @@ extern "C" {
 		          int *,
 		          int *,
 		          int *);
+
+  void try_binio_f(int *, int *, char *, int);
 
   void viscos_f(Mat *,             // sparse
 		double *,          // force
