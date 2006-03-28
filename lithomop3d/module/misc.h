@@ -31,6 +31,12 @@
 #if !defined(pylithomop3d_misc_h)
 #define pylithomop3d_misc_h
 
+// try_binio
+extern char pylithomop3d_try_binio__name__[];
+extern char pylithomop3d_try_binio__doc__[];
+extern "C"
+PyObject * pylithomop3d_try_binio(PyObject *, PyObject *);
+
 // copyright
 extern char pylithomop3d_copyright__name__[];
 extern char pylithomop3d_copyright__doc__[];

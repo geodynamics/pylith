@@ -31,9 +31,8 @@
 #if !defined(pylithomop3d_exceptionhandler_h)
 #define pylithomop3d_exceptionhandler_h
 
-// exceptionhandler plus safe string concatenation
+// exceptionhandler
 
-extern char* safestrcat(char* dest, const char* src, const int destsize);
 extern int exceptionhandler(const int errorcode, const char* errorstring);
 
 #endif

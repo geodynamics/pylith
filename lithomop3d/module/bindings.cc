@@ -359,6 +359,9 @@ struct PyMethodDef pylithomop3d_methods[] = {
     {pylithomop3d_write_winkx__name__, pylithomop3d_write_winkx,
      METH_VARARGS, pylithomop3d_write_winkx__doc__},
 
+    // try binary I/O to see if it works
+    {pylithomop3d_try_binio__name__, pylithomop3d_try_binio,
+     METH_VARARGS, pylithomop3d_try_binio__doc__},
 
     // copyright note
     {pylithomop3d_copyright__name__, pylithomop3d_copyright,
