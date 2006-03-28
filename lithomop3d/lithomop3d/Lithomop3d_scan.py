@@ -30,6 +30,7 @@
 
 
 from pyre.components.Component import Component
+import os
 
 
 class Lithomop3d_scan(Component):
@@ -102,7 +103,6 @@ class Lithomop3d_scan(Component):
         import pyre.units
         import lithomop3d
         import string
-        import os
 
         uparser = pyre.units.parser()
         matinfo = Materials()
@@ -221,20 +221,30 @@ class Lithomop3d_scan(Component):
         self._numberSlipperyWinklerEntries = 0
         self._numberSlipperyWinklerForces = 0
 
+        self._summaryIOError = self.CanNotOpenInputOutputFilesError()
+
+        inputFile = self.inputFile
+        inputFileStream = self.inputFileStream
+        outputFile = self.outputFile
+        macroString = self.macroString
+
+        #                              open?   fatal?  label
+        optional = self.IOFileCategory(True,   0,      "optional")
+        unused   = self.IOFileCategory(False,  0,      "unused")
+        required = self.IOFileCategory(True,   1,       None)
+        
+        Inventory = Lithomop3d_scan.Inventory
 
         # First see if there is a keyword = value file, which may be used
         # to override parameters from __init__.
-        
-        if self.inventory.keywordEqualsValueFile == "None":
-            self._keywordEqualsValueFile = self.inventory.fileRoot + ".keyval"
-        else:
-            self._keywordEqualsValueFile = self.inventory.keywordEqualsValueFile
 
-        # print self._keywordEqualsValueFile
-        if os.path.isfile(self._keywordEqualsValueFile):
-            file=open(self._keywordEqualsValueFile, 'r')
+        self._keywordEqualsValueFile = inputFileStream(Inventory.keywordEqualsValueFile, optional)
+
+        # print self._keywordEqualsValueFile.name
+        if self._keywordEqualsValueFile:
+            stream = self._keywordEqualsValueFile
             while 1:
-                line = file.readline()
+                line = stream.readline()
                 if not line: break
                 keyvals = keyparse.parseline(line)
                 if keyvals[3]:
@@ -244,7 +254,7 @@ class Lithomop3d_scan(Component):
                         exec 'self.' + keyvals[0] + '=' + 'uparser.parse(str(keyvals[2]))'
 		    else:
 		        exec 'self.' + keyvals[0] + '=' + str(keyvals[2])
-            file.close()
+            stream.close()
 
         # Define information needed from other functions:
         f77FileInput = self.f77FileInput
@@ -254,106 +264,50 @@ class Lithomop3d_scan(Component):
         
         analysisType = self.inventory.analysisType
 
+        self._asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            required)
+        self._plotOutputFile              = outputFile(Inventory.plotOutputFile,              required)
+        self._coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
+        self._bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
+        self._winklerInputFile            = inputFile(Inventory.winklerInputFile,            optional)
+        self._rotationInputFile           = inputFile(Inventory.rotationInputFile,           optional)
+        self._timeStepInputFile           = inputFile(Inventory.timeStepInputFile,           required)
+        self._fullOutputInputFile         = inputFile(Inventory.fullOutputInputFile, analysisType == "fullSolution" and required or unused)
+        self._stateVariableInputFile      = inputFile(Inventory.stateVariableInputFile,      required)
+        self._loadHistoryInputFile        = inputFile(Inventory.loadHistoryInputFile,        optional)
+        self._materialPropertiesInputFile = inputFile(Inventory.materialPropertiesInputFile, required)
+        self._materialHistoryInputFile    = inputFile(Inventory.materialHistoryInputFile,    unused)
+        self._connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
+        self._prestressInputFile          = inputFile(Inventory.prestressInputFile,          unused)
+        self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           unused)
+        self._splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
+        self._slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       optional)
+        self._differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  optional)
+        self._slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    optional)
 
-        if self.inventory.asciiOutputFile == "None":
-            self._asciiOutputFile = self.inventory.fileRoot + ".ascii"
-        else:
-            self._asciiOutputFile = self.inventory.asciiOutputFile
+        # The call to glob() is somewhat crude -- basically, determine
+        # if any files might be in the way.
+        self._ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
+        from glob import glob
+        ucdFiles = ([self._ucdOutputRoot + ".mesh.inp",
+                     self._ucdOutputRoot + ".gmesh.inp",
+                     self._ucdOutputRoot + ".mesh.time.prest.inp",
+                     self._ucdOutputRoot + ".gmesh.time.prest.inp"]
+                    + glob(self._ucdOutputRoot + ".mesh.time.[0-9][0-9][0-9][0-9][0-9].inp")
+                    + glob(self._ucdOutputRoot + ".gmesh.time.[0-9][0-9][0-9][0-9][0-9].inp"))
+        trait = Inventory.ucdOutputRoot
+        for ucdFile in ucdFiles:
+            try:
+                stream = os.fdopen(os.open(ucdFile, os.O_WRONLY|os.O_CREAT|os.O_EXCL), "w")
+            except (OSError, IOError), error:
+                descriptor = self.inventory.getTraitDescriptor(trait.name)
+                self._summaryIOError.openFailed(trait, descriptor,self._ucdOutputRoot + ".*mesh*.inp", error, required)
+                break
+            else:
+                stream.close()
+                os.remove(ucdFile)
 
-        if self.inventory.plotOutputFile == "None":
-            self._plotOutputFile = self.inventory.fileRoot + ".plot"
-        else:
-            self._plotOutputFile = self.inventory.plotOutputFile
-
-        if self.inventory.ucdOutputRoot == "None":
-            self._ucdOutputRoot = self.inventory.fileRoot
-        else:
-            self._ucdOutputRoot = self.inventory.ucdOutputRoot
-
-        if self.inventory.coordinateInputFile == "None":
-            self._coordinateInputFile = self.inventory.fileRoot + ".coord"
-        else:
-            self._coordinateInputFile = self.inventory.coordinateInputFile
-
-        if self.inventory.bcInputFile == "None":
-            self._bcInputFile = self.inventory.fileRoot + ".bc"
-        else:
-            self._bcInputFile = self.inventory.bcInputFile
-
-        if self.inventory.winklerInputFile == "None":
-            self._winklerInputFile = self.inventory.fileRoot + ".wink"
-        else:
-            self._winklerInputFile = self.inventory.winklerInputFile
-
-        if self.inventory.rotationInputFile == "None":
-            self._rotationInputFile = self.inventory.fileRoot + ".skew"
-        else:
-            self._rotationInputFile = self.inventory.rotationInputFile
-
-        if self.inventory.timeStepInputFile == "None":
-            self._timeStepInputFile = self.inventory.fileRoot + ".time"
-        else:
-            self._timeStepInputFile = self.inventory.timeStepInputFile
-
-        if self.inventory.fullOutputInputFile == "None":
-            self._fullOutputInputFile = self.inventory.fileRoot + ".fuldat"
-        else:
-            self._fullOutputInputFile = self.inventory.fullOutputInputFile
-
-        if self.inventory.stateVariableInputFile == "None":
-            self._stateVariableInputFile = self.inventory.fileRoot + ".statevar"
-        else:
-            self._stateVariableInputFile = self.inventory.stateVariableInputFile
-
-        if self.inventory.loadHistoryInputFile == "None":
-            self._loadHistoryInputFile = self.inventory.fileRoot + ".hist"
-        else:
-            self._loadHistoryInputFile = self.inventory.loadHistoryInputFile
-
-        if self.inventory.materialPropertiesInputFile == "None":
-            self._materialPropertiesInputFile = self.inventory.fileRoot + ".prop"
-        else:
-            self._materialPropertiesInputFile = self.inventory.materialPropertiesInputFile
-
-        if self.inventory.materialHistoryInputFile == "None":
-            self._materialHistoryInputFile = self.inventory.fileRoot + ".mhist"
-        else:
-            self._materialHistoryInputFile = self.inventory.materialHistoryInputFile
-
-        if self.inventory.connectivityInputFile == "None":
-            self._connectivityInputFile = self.inventory.fileRoot + ".connect"
-        else:
-            self._connectivityInputFile = self.inventory.connectivityInputFile
-
-        if self.inventory.prestressInputFile == "None":
-            self._prestressInputFile = self.inventory.fileRoot + ".prestr"
-        else:
-            self._prestressInputFile = self.inventory.prestressInputFile
-
-        if self.inventory.tractionInputFile == "None":
-            self._tractionInputFile = self.inventory.fileRoot + ".tract"
-        else:
-            self._tractionInputFile = self.inventory.tractionInputFile
-
-        if self.inventory.splitNodeInputFile == "None":
-            self._splitNodeInputFile = self.inventory.fileRoot + ".split"
-        else:
-            self._splitNodeInputFile = self.inventory.splitNodeInputFile
-
-        if self.inventory.slipperyNodeInputFile == "None":
-            self._slipperyNodeInputFile = self.inventory.fileRoot + ".slip"
-        else:
-            self._slipperyNodeInputFile = self.inventory.slipperyNodeInputFile
-
-        if self.inventory.differentialForceInputFile == "None":
-            self._differentialForceInputFile = self.inventory.fileRoot + ".diff"
-        else:
-            self._differentialForceInputFile = self.inventory.differentialForceInputFile
-
-        if self.inventory.slipperyWinklerInputFile == "None":
-            self._slipperyWinklerInputFile = self.inventory.fileRoot + ".winkx"
-        else:
-            self._slipperyWinklerInputFile = self.inventory.slipperyWinklerInputFile
+        if self._summaryIOError.fatalIOErrors():
+            raise self._summaryIOError
 
         # This is a test version where the geometry type is automatically
         # specified by using Lithomop3d.  The geometry type is only used for
@@ -412,16 +366,13 @@ class Lithomop3d_scan(Component):
 
         # Parameters derived from values in the inventory or the
         # category 2 parameters above.
-        if analysisType == "dataCheck":
-            self._analysisTypeInt = 0
-        elif analysisType == "stiffnessFactor":
-            self._analysisTypeInt = 1
-        elif analysisType == "elasticSolution":
-            self._analysisTypeInt = 2
-        elif analysisType == "fullSolution":
-            self._analysisTypeInt = 3
-        else:
-            self._analysisTypeInt = 3
+        analysisTypeMap = {
+            "dataCheck":       0,
+            "stiffnessFactor": 1,
+            "elasticSolution": 2,
+            "fullSolution":    3,
+            }
+        self._analysisTypeInt = analysisTypeMap[analysisType]
 
         if prestressAutoCompute:
             self._prestressAutoComputeInt = 1
@@ -590,41 +541,147 @@ class Lithomop3d_scan(Component):
         return
 
 
+    class CanNotOpenInputOutputFilesError(Exception):
+        
+        def __init__(self):
+            self._ioErrors = {}
+            self._ioErrorProtos = {}
+            self._fatalIOErrors = 0
+        
+        def openFailed(self, trait, descriptor, value, error, category):
+            """Open failed for an I/O file property."""
+            errno = error[0]
+            if not self._ioErrors.has_key(errno):
+                self._ioErrors[errno] = {}
+                proto = IOError(error[0], error[1]) # omit filename
+                self._ioErrorProtos[errno] = proto
+            from copy import copy
+            descriptor = copy(descriptor)
+            descriptor.origValue = descriptor.value
+            descriptor.value = value
+            self._ioErrors[errno][trait.name] = (error, descriptor, category)
+            self._fatalIOErrors = self._fatalIOErrors + category.fatalPoints
+            return
+
+        def fatalIOErrors(self): return self._fatalIOErrors
+
+        def __str__(self): return "Errors opening input/output files!"
+    
+        def report(self, stream):
+            errnos = self._ioErrors.keys()
+            errnos.sort()
+            cw = [4, 4, 30, 15, 10, 10] # column widths
+            ch = ("", "", "property", "value", "from", "") # column headers
+            for errno in errnos:
+                propertyNames = self._ioErrors[errno].keys()
+                for name in propertyNames:
+                    error, descriptor, category = self._ioErrors[errno][name]
+                    valueLen = len(descriptor.value)
+                    if valueLen > cw[3]:
+                        cw[3] = valueLen
+            for errno in errnos:
+                print >> stream, "".ljust(cw[0]), self._ioErrorProtos[errno]
+                for column in xrange(0, len(ch)):
+                    print >> stream, ch[column].ljust(cw[column]),
+                print >> stream
+                for column in xrange(0, len(ch)):
+                    print >> stream, ("-" * len(ch[column])).ljust(cw[column]),
+                print >> stream
+                propertyNames = self._ioErrors[errno].keys()
+                propertyNames.sort()
+                for name in propertyNames:
+                    error, descriptor, category = self._ioErrors[errno][name]
+                    print >> stream, \
+                          "".ljust(cw[0]), \
+                          "".ljust(cw[1]), \
+                          name.ljust(cw[2]), \
+                          descriptor.value.ljust(cw[3]), \
+                          str(descriptor.locator).ljust(cw[4]), \
+                          (category.label and ("(%s)" % category.label).ljust(cw[5]) or "")
+                print >> stream
+            return
+
+    class IOFileCategory(object):
+        def __init__(self, tryOpen, fatalPoints, label):
+            self.tryOpen = tryOpen
+            self.fatalPoints = fatalPoints
+            self.label = label
+    
+    def macroString(self, trait):
+        from pyre.util import expandMacros
+        class InventoryAdapter(object):
+            def __init__(self, inventory):
+                self.inventory = inventory
+            def __getitem__(self, key):
+                return expandMacros(str(self.inventory.getTraitValue(key)), self)
+        descriptor = self.inventory.getTraitDescriptor(trait.name)
+        return expandMacros(descriptor.value, InventoryAdapter(self.inventory))
+
+    def ioFileStream(self, trait, flags, mode, category):
+        value = self.macroString(trait)
+        stream = None
+        if category.tryOpen:
+            try:
+                stream = os.fdopen(os.open(value, flags), mode)
+            except (OSError, IOError), error:
+                descriptor = self.inventory.getTraitDescriptor(trait.name)
+                self._summaryIOError.openFailed(trait, descriptor, value, error, category)
+        return value, stream
+
+    def inputFile(self, trait, category):
+        value, stream = self.ioFileStream(trait,os. O_RDONLY, "r", category)
+        if stream is not None:
+            stream.close()
+        return value
+    
+    def inputFileStream(self, trait, category): return self.ioFileStream(trait, os.O_RDONLY, "r", category)[1]
+    
+    def outputFile(self, trait, category):
+        value, stream = self.ioFileStream(trait, os.O_WRONLY|os.O_CREAT|os.O_EXCL, "w", category)
+        if stream is not None:
+            stream.close()
+            os.remove(value)
+        return value
+
+
     class Inventory(Component.Inventory):
 
         import pyre.inventory
-        import os
+        MacroString = pyre.inventory.str
+        OutputFile = pyre.inventory.str
+        InputFile = pyre.inventory.str
 
         title = pyre.inventory.str("title",
                                    default="Patchtest 1 for linear hex elements, full quadrature.")
-        fileRoot = pyre.inventory.str("fileRoot",
-                                      default=os.path.join("..","examples","linhex","patchtest","pt1"))
-        keywordEqualsValueFile = pyre.inventory.str("keywordEqualsValueFile",default="None")
-        asciiOutputFile = pyre.inventory.str("asciiOutputFile",default="None")
-        plotOutputFile = pyre.inventory.str("plotOutputFile",default="None")
-        ucdOutputRoot = pyre.inventory.str("ucdOutputRoot",default="None")
-        coordinateInputFile = pyre.inventory.str("coordinateInputFile",default="None")
-        bcInputFile = pyre.inventory.str("bcInputFile",default="None")
-        winklerInputFile = pyre.inventory.str("winklerInputFile",default="None")
-        rotationInputFile = pyre.inventory.str("rotationInputFile",default="None")
-        timeStepInputFile = pyre.inventory.str("timeStepInputFile",default="None")
-        fullOutputInputFile = pyre.inventory.str("fullOutputInputFile",default="None")
-        stateVariableInputFile = pyre.inventory.str("stateVariableInputFile",default="None")
-        loadHistoryInputFile = pyre.inventory.str("loadHistoryInputFile",default="None")
-        materialPropertiesInputFile = pyre.inventory.str("materialPropertiesInputFile",default="None")
-        materialHistoryInputFile = pyre.inventory.str("materialHistoryInputFile",default="None")
-        connectivityInputFile = pyre.inventory.str("connectivityInputFile",default="None")
-        prestressInputFile = pyre.inventory.str("prestressInputFile",default="None")
-        tractionInputFile = pyre.inventory.str("tractionInputFile",default="None")
-        splitNodeInputFile = pyre.inventory.str("splitNodeInputFile",default="None")
-        slipperyNodeInputFile = pyre.inventory.str("slipperyNodeInputFile",default="None")
-        differentialForceInputFile = pyre.inventory.str("differentialForceInputFile",default="None")
-        slipperyWinklerInputFile = pyre.inventory.str("slipperyWinklerInputFile",default="None")
+        fileRoot = pyre.inventory.str("fileRoot", default="pt1")
+        
+        keywordEqualsValueFile = InputFile("keywordEqualsValueFile",default="${fileRoot}.keyval")
+        asciiOutputFile = OutputFile("asciiOutputFile",default="${fileRoot}.ascii")
+        plotOutputFile = OutputFile("plotOutputFile",default="${fileRoot}.plot")
+        ucdOutputRoot = MacroString("ucdOutputRoot",default="${fileRoot}")
+        coordinateInputFile = InputFile("coordinateInputFile",default="${fileRoot}.coord")
+        bcInputFile = InputFile("bcInputFile",default="${fileRoot}.bc")
+        winklerInputFile = InputFile("winklerInputFile",default="${fileRoot}.wink")
+        rotationInputFile = InputFile("rotationInputFile",default="${fileRoot}.skew")
+        timeStepInputFile = InputFile("timeStepInputFile",default="${fileRoot}.time")
+        fullOutputInputFile = InputFile("fullOutputInputFile",default="${fileRoot}.fuldat")
+        stateVariableInputFile = InputFile("stateVariableInputFile",default="${fileRoot}.statevar")
+        loadHistoryInputFile = InputFile("loadHistoryInputFile",default="${fileRoot}.hist")
+        materialPropertiesInputFile = InputFile("materialPropertiesInputFile",default="${fileRoot}.prop")
+        materialHistoryInputFile = InputFile("materialHistoryInputFile",default="${fileRoot}.mhist")
+        connectivityInputFile = InputFile("connectivityInputFile",default="${fileRoot}.connect")
+        prestressInputFile = InputFile("prestressInputFile",default="${fileRoot}.prestr")
+        tractionInputFile = InputFile("tractionInputFile",default="${fileRoot}.tract")
+        splitNodeInputFile = InputFile("splitNodeInputFile",default="${fileRoot}.split")
+        slipperyNodeInputFile = InputFile("slipperyNodeInputFile",default="${fileRoot}.slip")
+        differentialForceInputFile = InputFile("differentialForceInputFile",default="${fileRoot}.diff")
+        slipperyWinklerInputFile = InputFile("slipperyWinklerInputFile",default="${fileRoot}.winkx")
+        
         asciiOutput = pyre.inventory.str("asciiOutput",default="echo")
         asciiOutput.validator = pyre.inventory.choice(["none","echo","full"])
         plotOutput = pyre.inventory.str("plotOutput",default="none")
         plotOutput.validator = pyre.inventory.choice(["none","ascii","binary"])
-        ucdOutput = pyre.inventory.str("ucdOutput",default="binary")
+        ucdOutput = pyre.inventory.str("ucdOutput",default=None)
         ucdOutput.validator = pyre.inventory.choice(["none","ascii","binary"])
         analysisType = pyre.inventory.str("analysisType",default="fullSolution")
         analysisType.validator = pyre.inventory.choice(["dataCheck","stiffnessFactor",

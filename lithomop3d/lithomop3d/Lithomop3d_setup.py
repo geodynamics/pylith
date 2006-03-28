@@ -122,14 +122,28 @@ class Lithomop3d_setup(Component):
             self.plotOutputInt = 1
         else:
             self.plotOutputInt = 2
-            
-        self.ucdOutputInt = 0
+
+        binIOError = None
+        import lithomop3d
+        try:
+            lithomop3d.try_binio(self.f77UcdOutput)
+        except RuntimeError, binIOError:
+            self.ucdOutputInt = 1
+        else:
+            self.ucdOutputInt = 2
         if lm3dscan.inventory.ucdOutput == "none":
             self.ucdOutputInt = 0
         elif lm3dscan.inventory.ucdOutput == "ascii":
             self.ucdOutputInt = 1
-        else:
-            self.ucdOutputInt = 2
+        elif lm3dscan.inventory.ucdOutput == "binary":
+            if binIOError is None:
+                self.ucdOutputInt = 2
+            else:
+                import journal
+                warning = journal.warning("lithomop3d")
+                warning.line("Forcing 'lm3dscan.ucdOutput' to 'ascii'.")
+                warning.line("Binary UCD output not supported for this Fortran compiler.")
+                warning.log(binIOError)
             
         self.debuggingOutputInt = 0
         if lm3dscan.inventory.debuggingOutput:
@@ -990,7 +1004,12 @@ class Lithomop3d_setup(Component):
         print "Hello from lm3dsetup.sparsesetup (begin)!"
         print "Setting up sparse matrix storage:"
         
-        # Initialize PETSc logging
+        # Initialize PETSc and set up logging
+        import os
+        wd = os.getcwd()
+        lithomop3d.PetscInitialize()
+        os.chdir(wd) # Work-around MPI_Init() changing our directory!
+        
         self.autoprestrStage, \
         self.elasticStage, \
         self.viscousStage, \
