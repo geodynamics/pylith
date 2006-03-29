@@ -1,13 +1,34 @@
 ## Process this file with automake to produce Makefile.in
 # $Id: Makefile.am,v 1.1 2005/08/24 22:45:51 leif Exp $
 
+noinst_LIBRARIES =
+lib_LTLIBRARIES =
+
+if COND_EMBEDDING
+    # static library
+    noinst_LIBRARIES += liblithomop3d.a
+else
+    # shared library (libtool)
+    lib_LTLIBRARIES += liblithomop3d.la
+endif
+
+# static library
+liblithomop3d_a_FFLAGS = $(AM_FFLAGS) # hack for automake
+liblithomop3d_a_SOURCES = $(sources)
+
+# shared library (libtool)
+liblithomop3d_la_SOURCES = $(sources)
+liblithomop3d_la_LDFLAGS =
+liblithomop3d_la_LIBADD = \
+	$(PETSC_LIB)
+
 F77 = $(FC)
-FFLAGS = $(FCFLAGS) \
+AM_FFLAGS = \
+	$(FCFLAGS) \
 	-I$(top_srcdir)/lithomop3d/liblithomop3d/includes \
 	$(PETSC_INCLUDE) \
 	$(MPIINCLUDES)
-lib_LTLIBRARIES = liblithomop3d.la
-liblithomop3d_la_SOURCES = \
+sources = \
 	addfor.f \
 	addpr.f \
 	addsn.f \
@@ -248,11 +269,5 @@ liblithomop3d_la_SOURCES = \
 	includes/td_strs_mat_ext.inc \
 	includes/title_dim.inc \
 	includes/update_ext.inc
-liblithomop3d_la_LDFLAGS =
-liblithomop3d_la_LIBADD = \
-	-L$(PETSC_LIB_DIR) \
-	$(PETSC_FORTRAN_LIB_BASIC) \
-	$(PETSC_LIB_BASIC) \
-	$(PETSC_EXTERNAL_LIB_BASIC)
 
 ## end of Makefile.am
