@@ -31,6 +31,8 @@
 #if !defined(lithomop3d_externs_h)
 #define lithomop3d_externs_h
 
+#include <stddef.h>
+
 #define assign_wink_f FC_FUNC_(assign_wink, ASSIGN_WINK)
 #define autoprestr_f FC_FUNC(autoprestr, AUTOPRESTR)
 #define cmp_stiffsz_f FC_FUNC_(cmp_stiffsz, CMP_STIFFSZ)
@@ -205,10 +207,10 @@ extern "C" {
 		    int *,
 		    int *,             // error codes
 		    char *,
-		    int,               // string lengths
-		    int,
-		    int,
-		    int);
+		    size_t,               // string lengths
+		    size_t,
+		    size_t,
+		    size_t);
 
   void cmp_stiffsz_f(int *,
 	             int *,
@@ -218,7 +220,7 @@ extern "C" {
 	             int *,
 	             int *,
 	             int *,
-	             char *,int);
+	             char *,size_t);
 
   void create_id_f(int *,
 		   int *,
@@ -321,10 +323,10 @@ extern "C" {
                 int *,
 		int *,             // error codes
 		char *,
-		int,               // string lengths
-		int,
-		int,
-		int);
+		size_t,               // string lengths
+		size_t,
+		size_t,
+		size_t);
 
   void id_split_f(int *,
 		  int *,
@@ -347,7 +349,7 @@ extern "C" {
 		int *,
 		int *,
 		char *,
-		int);
+		size_t);
 
   void local_f(int *,
 	       int *,
@@ -405,7 +407,7 @@ extern "C" {
 		  int *,
 		  int *,
 		  int *,
-		  char *,int);
+		  char *,size_t);
 
   void read_bc_f(double*,
 		 double*,
@@ -419,8 +421,8 @@ extern "C" {
 		 char *,
 		 int *,
 		 char *,
-		 int,
-		 int);
+		 size_t,
+		 size_t);
 
   void read_connect_f(int *,
 		      int *,
@@ -432,8 +434,8 @@ extern "C" {
 		      char *,
 		      int *,
 		      char *,
-		      int,
-		      int);
+		      size_t,
+		      size_t);
 
   void read_coords_f(double*,
 		     double*,
@@ -442,8 +444,8 @@ extern "C" {
 		     char *,
 		     int *,
 		     char *,
-		     int,
-		     int);
+		     size_t,
+		     size_t);
 
   void read_diff_f(double*,
 		   int *,
@@ -455,8 +457,8 @@ extern "C" {
 		   char *,
 		   int *,
 		   char *,
-		   int,
-		   int);
+		   size_t,
+		   size_t);
 
   void read_fuldat_f(int *,
 		     int *,
@@ -467,8 +469,8 @@ extern "C" {
 		     char *,
 		     int *,
 		     char *,
-		     int,
-		     int);
+		     size_t,
+		     size_t);
 
   void read_hist_f(double *,
 		   double *,
@@ -478,8 +480,8 @@ extern "C" {
 		   char *,
 		   int *,
 		   char *,
-		   int,
-		   int);
+		   size_t,
+		   size_t);
 
   // void read_mathist_f(int *,
 // 		      int *,
@@ -496,10 +498,10 @@ extern "C" {
 // 		      char *,
 // 		      int *,
 // 		      char *,
-// 		      int,
-// 		      int,
-// 		      int,
-// 		      int);
+// 		      size_t,
+// 		      size_t,
+// 		      size_t,
+// 		      size_t);
 
   // void read_prestr_f(double *,
 		     // double *,
@@ -516,8 +518,8 @@ extern "C" {
 		     // int *,
 		     // char *,
 		     // char *,
-		     // int,
-		     // int);
+		     // size_t,
+		     // size_t);
 
   void read_skew_f(double *,
 		   double *,
@@ -528,8 +530,8 @@ extern "C" {
 		   char *,
 		   int *,
 		   char *,
-		   int,
-		   int);
+		   size_t,
+		   size_t);
 
   void read_slip_f(int *,
 		   int *,
@@ -540,8 +542,8 @@ extern "C" {
 		   char *,
 		   int *,
 		   char *,
-		   int,
-		   int);
+		   size_t,
+		   size_t);
 
   void read_split_f(double *,
 		    int *,
@@ -553,8 +555,8 @@ extern "C" {
 		    char *,
 		    int *,
 		    char *,
-		    int,
-		    int);
+		    size_t,
+		    size_t);
 
   void read_stateout_f(int *,
 		       int *,
@@ -562,8 +564,8 @@ extern "C" {
 		       char *,
 		       int *,
 		       char *,
-		       int,
-		       int);
+		       size_t,
+		       size_t);
 
   void read_timdat_f(double *,
 		     double *,
@@ -583,8 +585,8 @@ extern "C" {
 		     char *,
 		     int *,
 		     char *,
-		     int,
-		     int);
+		     size_t,
+		     size_t);
 
   // void read_traction_f(double *,
 		       // double *,
@@ -601,8 +603,8 @@ extern "C" {
 		       // int *,
 		       // char *,
 		       // char *,
-		       // int,
-		       // int);
+		       // size_t,
+		       // size_t);
 
   void read_wink_f(double *,
 		   double *,
@@ -614,8 +616,8 @@ extern "C" {
 		   char *,
 		   int *,
 		   char *,
-		   int,
-		   int);
+		   size_t,
+		   size_t);
 
 //   void read_winkx_f(double *,
 // 		    double *,
@@ -631,9 +633,9 @@ extern "C" {
 // 		    char *,
 // 		    int *,
 // 		    char *,
-// 		    int,
-// 		    int,
-// 		    int);
+// 		    size_t,
+// 		    size_t,
+// 		    size_t);
 
   void scan_bc_f(int *,
 		 int *,
@@ -643,11 +645,11 @@ extern "C" {
 		 char *,
 		 int *,
 		 char *,
-		 int,
-		 int,
-		 int,
-		 int,
-		 int);
+		 size_t,
+		 size_t,
+		 size_t,
+		 size_t,
+		 size_t);
 
   void scan_connect_f(int *,
 		      int *,
@@ -662,8 +664,8 @@ extern "C" {
 		      char *,
 		      int *,
 		      char *,
-		      int,
-		      int);
+		      size_t,
+		      size_t);
 
   void scan_coords_f(int *,
 		     int *,
@@ -671,9 +673,9 @@ extern "C" {
 		     char *,
 		     int *,
 		     char *,
-		     int,
-		     int,
-		     int);
+		     size_t,
+		     size_t,
+		     size_t);
 
   void scan_diff_f(int *,
 		   int *,
@@ -681,8 +683,8 @@ extern "C" {
 		   char *,
 		   int *,
 		   char *,
-		   int,
-		   int);
+		   size_t,
+		   size_t);
 
   void scan_fuldat_f(int *,
 		     int *,
@@ -691,16 +693,16 @@ extern "C" {
 		     char *,
 		     int *,
 		     char *,
-		     int,
-		     int);
+		     size_t,
+		     size_t);
 
   void scan_hist_f(int *,
 		   int *,
 		   char *,
 		   int *,
 		   char *,
-		   int,
-		   int);
+		   size_t,
+		   size_t);
 
   // void scan_prestr_f(int *,
 		     // int *,
@@ -709,7 +711,7 @@ extern "C" {
 		     // int *,
 		     // int *,
 		     // int *,
-		     // char *,int);
+		     // char *,size_t);
 
   void scan_skew_f(int *,
 		   int *,
@@ -717,25 +719,25 @@ extern "C" {
 		   char *,
 		   int *,
 		   char *,
-		   int,
-		   int,
-		   int);
+		   size_t,
+		   size_t,
+		   size_t);
 
   void scan_slip_f(int *,
 		   int *,
 		   char *,
 		   int *,
 		   char *,
-		   int,
-		   int);
+		   size_t,
+		   size_t);
 
   void scan_split_f(int *,
 		    int *,
 		    char *,
 		    int *,
 		    char *,
-		    int,
-		    int);
+		    size_t,
+		    size_t);
 
   void scan_timdat_f(int *,
 		     int *,
@@ -744,9 +746,9 @@ extern "C" {
 		     char *,
 		     int *,
 		     char *,
-		     int,
-		     int,
-		     int);
+		     size_t,
+		     size_t,
+		     size_t);
 
   // void scan_traction_f(int *,
 		       // int *,
@@ -755,8 +757,8 @@ extern "C" {
 		       // int *,
 		       // char *,
 		       // char *,
-		       // int,
-		       // int);
+		       // size_t,
+		       // size_t);
 
   void scan_wink_f(int *,
 		   int *,
@@ -764,8 +766,8 @@ extern "C" {
 		   char *,
 		   int *,
 		   char *,
-		   int,
-		   int);
+		   size_t,
+		   size_t);
 
   void scan_winkx_f(int *,
 		    int *,
@@ -774,8 +776,8 @@ extern "C" {
 		    char *,
 		    int *,
 		    char *,
-		    int,
-		    int);
+		    size_t,
+		    size_t);
 
   void sort_elements_f(int *,
 		       int *,
@@ -797,7 +799,7 @@ extern "C" {
 		       int *,
 		       int *,
 		       char *,
-		       int);
+		       size_t);
 
   void sort_slip_nodes_f(int *,
 		         int *,
@@ -809,7 +811,7 @@ extern "C" {
 		          int *,
 		          int *);
 
-  void try_binio_f(int *, int *, char *, int);
+  void try_binio_f(int *, int *, char *, size_t);
 
   void viscos_f(Mat *,             // sparse
 		double *,          // force
@@ -901,10 +903,10 @@ extern "C" {
                 int *,
 		int *,             // error codes
 		char *,
-		int,               // string lengths
-		int,
-		int,
-		int);
+		size_t,               // string lengths
+		size_t,
+		size_t,
+		size_t);
 
   void write_bc_f(double *,
 		  int *,
@@ -914,8 +916,8 @@ extern "C" {
 		  char *,
 		  int *,
 		  char *,
-		  int,
-		  int);
+		  size_t,
+		  size_t);
 
   void write_connect_f(int *,
 		       int *,
@@ -933,9 +935,9 @@ extern "C" {
 		       char *,
 		       int *,
 		       char *,
-		       int,
-		       int,
-		       int);
+		       size_t,
+		       size_t,
+		       size_t);
 
   void write_coords_f(double *,
 		      int *,
@@ -947,9 +949,9 @@ extern "C" {
 		      char *,
 		      int *,
 		      char *,
-		      int,
-		      int,
-		      int);
+		      size_t,
+		      size_t,
+		      size_t);
 
   void write_diff_f(double *,
 		    int *,
@@ -962,8 +964,8 @@ extern "C" {
 		    char *,
 		    int *,
 		    char *,
-		    int,
-		    int);
+		    size_t,
+		    size_t);
 
   void write_element_info_f(int *,
 			    int *,
@@ -976,7 +978,7 @@ extern "C" {
 			    double *,
 			    int *,
 			    int *,
-			    char *,int);
+			    char *,size_t);
 
   void write_fuldat_f(int *,
 		      int *,
@@ -991,9 +993,9 @@ extern "C" {
 		      char *,
 		      int *,
 		      char *,
-		      int,
-		      int,
-		      int);
+		      size_t,
+		      size_t,
+		      size_t);
 
   void write_global_info_f(char *,
 			   int *,
@@ -1005,9 +1007,9 @@ extern "C" {
 			   int *,
 			   char *,
 			   char *,
-			   int,
-			   int,
-			   int);
+			   size_t,
+			   size_t,
+			   size_t);
 
   void write_hist_f(double *,
 		    double *,
@@ -1018,8 +1020,8 @@ extern "C" {
 		    char *,
 		    int *,
 		    char *,
-		    int,
-		    int);
+		    size_t,
+		    size_t);
 
   void write_props_f(double *,
 		     double *,
@@ -1035,9 +1037,9 @@ extern "C" {
 		     char *,
 		     int *,
 		     char *,
-		     int,
-		     int,
-		     int);
+		     size_t,
+		     size_t,
+		     size_t);
 
   void write_skew_f(double *,
 		    int *,
@@ -1048,8 +1050,8 @@ extern "C" {
 		    char *,
 		    int *,
 		    char *,
-		    int,
-		    int);
+		    size_t,
+		    size_t);
 
   void write_slip_f(int *,
 		    int *,
@@ -1062,9 +1064,9 @@ extern "C" {
 		    char *,
 		    int *,
 		    char *,
-		    int,
-		    int,
-		    int);
+		    size_t,
+		    size_t,
+		    size_t);
 
   void write_sparse_info_f(int *,
 			   int *,
@@ -1073,7 +1075,7 @@ extern "C" {
 			   double *,
 			   int *,
 			   int *,
-			   char *,int);
+			   char *,size_t);
 
   void write_split_f(double *,
 		     int *,
@@ -1086,15 +1088,15 @@ extern "C" {
 		     char *,
 		     int *,
 		     char *,
-		     int,
-		     int,
-		     int);
+		     size_t,
+		     size_t,
+		     size_t);
 
   void write_split_plot_f(int *,
 		          int *,
 		          int *,
 		          int *,
-			  char *,int);
+			  char *,size_t);
 
   void write_stateout_f(int *,
 		        int *,
@@ -1106,21 +1108,21 @@ extern "C" {
 			char *,
 			int *,
 			char *,
-			int,
-			int,
-			int);
+			size_t,
+			size_t,
+			size_t);
 
   void write_strscomp_f(double *,
 			double *,
 			double *,
 			int *,
 			int *,
-			char *,int);
+			char *,size_t);
 
   void write_subiter_f(int *,
 		       int *,
 		       int *,
-		       char *,int);
+		       char *,size_t);
 
   void write_timdat_f(double *,
 		      double *,
@@ -1140,8 +1142,8 @@ extern "C" {
 		      char *,
 		      int *,
 		      char *,
-		      int,
-		      int);
+		      size_t,
+		      size_t);
 
   void write_ucd_mesh_f(double *,
 		       	int *,
@@ -1157,7 +1159,7 @@ extern "C" {
 		       	int *,
 		       	int *,
 		       	int *,
-		       	char *,int);
+		       	char *,size_t);
 
   void write_wink_f(double *,
 		    int *,
@@ -1168,8 +1170,8 @@ extern "C" {
 		    char *,
 		    int *,
 		    char *,
-		    int,
-		    int);
+		    size_t,
+		    size_t);
 
   void write_winkx_f(double *,
 		     int *,
@@ -1180,8 +1182,8 @@ extern "C" {
 		     char *,
 		     int *,
 		     char *,
-		     int,
-		     int);
+		     size_t,
+		     size_t);
 }
 
 #endif // lithomop3d_externs_h
