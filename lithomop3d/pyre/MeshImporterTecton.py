@@ -43,6 +43,7 @@ class MeshImporterTecton(MeshImporter):
     coordFile = pyre.inventory.str("coordFile",default="")
     elemFile = pyre.inventory.str("elemFile",default="")
     f77FileInput = pyre.inventory.int("f77FileInput", default=10)
+    maxNumElemFamilies = pyre.inventory.int("maxNumElemFamilies", default=1024)
 
 
   def generate(self, fileRoot):
@@ -63,7 +64,7 @@ class MeshImporterTecton(MeshImporter):
     """Gets dimensions and nodal coordinates from Tecton-style input file."""
 
     import pyre.units
-    import lithomop3d
+    import lithomop3d as lm3d
 
     # Get input filename
     if self.inventory.coordFile == "":
@@ -73,7 +74,7 @@ class MeshImporterTecton(MeshImporter):
 
     f77FileInput = self.inventory.f77FileInput
     
-    numNodes, numDims, coordUnits = lithomop3d.scan_coords(
+    numNodes, numDims, coordUnits = lm3d.scan_coords(
       f77FileInput,
       coordInputFile)
 
@@ -81,16 +82,18 @@ class MeshImporterTecton(MeshImporter):
                      uparser.parse(string.strip(coordUnits))
     coordScaleFactor = coordScaleString.value
 
-    ptrCoords = lithomop3d.allocateDouble(numDims*numNodes)
+    ptrCoords = lm3d.allocateDouble(numDims*numNodes)
 
     nodes = { 'numNodes': numNodes,
               'dim': numDims,
               'ptrCoords': ptrCoords }
 
-    lithomop3d.read_coords(nodes,
-                           coordScaleFactor,
-                           f77FileInput,
-                           coordInputFile)
+    lm3d.read_coords(nodes['ptrCoords'],
+                     coordScaleFactor,
+                     nodes['numNodes'],
+                     nodes['dim'],
+                     f77FileInput,
+                     coordInputFile)
 
     return nodes
       
@@ -99,7 +102,7 @@ class MeshImporterTecton(MeshImporter):
     """Gets dimensions and element nodes from Tecton-style input file, and
     defines element families based on element group number."""
 
-    import lithomop3d
+    import lithomop3d as lm3d
 
     # Get input filename
     if self.inventory.elemFile == "":
@@ -108,23 +111,31 @@ class MeshImporterTecton(MeshImporter):
       elemInputFile = self.inventory.elemFile
 
     f77FileInput = self.inventory.f77FileInput
+    maxNumElemFamilies = self.inventory.maxNumElemFamilies
     
-
-    ptrNumNodesPerElemType = lithomop3d.intListToArray(mesh.numNodesPerElemType)
+    ptrNumNodesPerElemType = lm3d.intListToArray(mesh.numNodesPerElemType)
     numElemTypes = len(numNodesPerElemType)
-    maxNumElemFamilies = 1024
-    ptrTmpElemFamilySizes = lithomop3d.allocateInt(maxNumElemFamilies)
+    # I am changing the way this is done for now, under the assumption that we
+    # will be using f2py to generate bindings.  This will allow me to 'see'
+    # specified arrays as lists in python.
+    # ptrTmpElemFamilySizes = lithomop3d.allocateInt(maxNumElemFamilies)
+    tmpElemFamilySizes = [0]*maxNumElemFamilies
 
-    numElems, numNodesPerElem, elemType, numElemFamilies = lithomop3d.scan_connect(
+    # I need to check that I've included everything here, and I will also need
+    # to change the routine arguments and bindings.
+    numElems,
+    numNodesPerElem,
+    elemType,
+    numElemFamilies,
+    tmpElemFamilySizes = lm3d.scan_connect(
       ptrNumNodesPerElemType,
       numElemTypes,
-      ptrTmpElemFamilySizes,
       maxNumElemFamilies,
       f77FileInput,
       elemInputFile)
 
-    ptrConns = lithomop3d.allocateInt(numElems*numNodesPerElem)
-    ptrInitOrder = lithomop3d.allocateInt(numElems)
+    ptrConns = lm3d.allocateInt(numElems*numNodesPerElem)
+    ptrInitOrder = lm3d.allocateInt(numElems)
 
     elements = {'numElems': numElems,
                 'numNodesPerElem': numNodesPerElem,
@@ -137,6 +148,11 @@ class MeshImporterTecton(MeshImporter):
     elemFamily = {'numElemFamilies': numElemFamilies,
                   'ptrElemFamilySizes': ptrElemFamilySizes}
       
+    # Need to do a lot more fixing.
+    # New idea for how to deal with families:  Rather than sorting the elements
+    # (using the reorder routine).  Have a routine that just puts the elements in
+    # their family and keep a 1D array with the associated element number.
+    # All other 
     lithomop3d.read_connect(
       elements,
       elemFamily,
