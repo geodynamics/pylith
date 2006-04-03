@@ -80,7 +80,7 @@ class ElemFamilySolid(ElemFamily):
       
     def __init__(self, name="elemfamilysolid"):
       """Constructor."""
-      Component.__init__(self, name, facility="elemfamilysolid")
+      ElemFamily.__init__(self, name, facility="elemfamilysolid")
 
       self.label = ""
       self.elemType = 0
