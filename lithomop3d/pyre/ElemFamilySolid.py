@@ -46,7 +46,6 @@ class ElemFamilySolid(ElemFamily):
     """Python object for managing ElemFamilySolid facilities and properties."""
 
     import pyre.inventory
-    
 
     label = pyre.inventory.str("label", default="")
     label.meta['tip'] = "Label for element family solid."
@@ -62,17 +61,19 @@ class ElemFamilySolid(ElemFamily):
     material = pyre.inventory.facility("material", factory=MatIsoElastic)
     material.meta['tip'] = "Material for a group of elements."
 
-    from MeshImporterTecton import MeshImporterTecton
-    meshimporter = pyre.inventory.facility("meshimporter", factory=MeshImporterTecton)
-    meshimporter.meta['tip'] = "Mesh importer facility for a group of elements"
-    
     # PUBLIC METHODS //////////////////////////////////////////////////////////
 
-    def initialize(self, family, sizeFamily, elemType):
+    def initialize(self, elements, family):
       """Set up storage and define family."""
 
       self._info.log("Initializing element family '%s'." \
                      self.label)
+
+      # Get element family dimension and integration info.
+      from ElemDefSolid import ElemDefSolid
+      self.elemInfoSolid = ElemDefSolid.getdef(family["elemFamilyType"],
+                                               quadratureOrder)
+      
 
       
 
