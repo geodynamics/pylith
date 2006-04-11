@@ -120,7 +120,7 @@ class MeshImporterTecton(MeshImporter):
     # ptrTmpElemFamilySizes = lithomop3d.allocateInt(maxNumElemFamilies)
     tmpElemFamilySizes = [0]*maxNumElemFamilies
     tmpElemFamilyTypes = [0]*maxNumElemFamilies
-    tmpElemFamilyIds = [0]*maxNumElemFamilies
+    tmpElemFamilyMatIds = [0]*maxNumElemFamilies
 
     # I need to check that I've included everything here, and I will also need
     # to change the routine arguments and bindings.
@@ -128,7 +128,7 @@ class MeshImporterTecton(MeshImporter):
     numElemFamilies,
     tmpElemFamilySizes,
     tmpElemFamilyTypes,
-    tmpElemFamilyIds = lm3d.scan_connect(
+    tmpElemFamilyMatIds = lm3d.scan_connect(
       mesh.numNodesPerElemType,
       numElemTypes,
       maxNumElemFamilies,
@@ -143,17 +143,17 @@ class MeshImporterTecton(MeshImporter):
     count = 0
 
     for i in range(maxNumElemFamilies):
-      if tmpElemFamilySizes[i] != 0 and tmpElemFamilyTypes[i] != 0 and tmpElemFamilyIds[i] != 0:
+      if tmpElemFamilySizes[i] != 0 and tmpElemFamilyTypes[i] != 0 and tmpElemFamilyMatIds[i] != 0:
         elemFamilies.append({'elemFamilySize': tmpElemFamilySizes[i],
-                             'elemFamilytypes': tmpElemFamilyTypes[i],
-                             'elemFamilyIds': tmpElemFamilyIds[i]
-                             'elemFamilyNames': "family" + str(count)})
+                             'elemFamilyType': tmpElemFamilyTypes[i],
+                             'elemFamilyMatId': tmpElemFamilyMatIds[i]
+                             'elemFamilyName': "family" + str(count)})
         elemNodeArraySize += tmpElemFamilySizes[i]*mesh.numNodesPerElemType[tmpElemFamilyTypes[i]]
         count=count + 1
 
     tmpElemFamilySizes = None
     tmpElemFamilyTypes = None
-    tmpElemFamilyIds = None
+    tmpElemFamilyMatIds = None
 
     elemFamilyError = "ElemFamily Error"
     if len(elemFamilies) != numElemFamilies:
