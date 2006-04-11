@@ -136,20 +136,18 @@ class MeshImporterTecton(MeshImporter):
       elemInputFile)
 
     # Compact temporary element family arrays to get actual arrays, and
-    # determine size of element node array.
-    elemFamilySizes = []
-    elemFamilyTypes = []
-    elemFamilyIds = []
-    elemFamilyNames = []
+    # determine size of element node array.  Store information in a list of
+    # dictionaries.
+    elemFamilies = []
     elemNodeArraySize = 0
     count = 0
 
     for i in range(maxNumElemFamilies):
       if tmpElemFamilySizes[i] != 0 and tmpElemFamilyTypes[i] != 0 and tmpElemFamilyIds[i] != 0:
-        elemFamilySizes.append(tmpElemFamilySizes[i])
-        elemFamilyTypes.append(tmpElemFamilyTypes[i])
-        elemFamilyIds.append(tmpElemFamilyIds[i])
-        elemFamilyNames.append("family" + str(count))
+        elemFamilies.append({'elemFamilySize': tmpElemFamilySizes[i],
+                             'elemFamilytypes': tmpElemFamilyTypes[i],
+                             'elemFamilyIds': tmpElemFamilyIds[i]
+                             'elemFamilyNames': "family" + str(count)})
         elemNodeArraySize += tmpElemFamilySizes[i]*mesh.numNodesPerElemType[tmpElemFamilyTypes[i]]
         count=count + 1
 
@@ -158,7 +156,7 @@ class MeshImporterTecton(MeshImporter):
     tmpElemFamilyIds = None
 
     elemFamilyError = "ElemFamily Error"
-    if len(elemFamilySizes) != numElemFamilies:
+    if len(elemFamilies) != numElemFamilies:
       raise elemFamilyError, "Number of element families does not match input!"
 
     # Read the element node array.  The way things are set up now, I need to provide
@@ -179,21 +177,13 @@ class MeshImporterTecton(MeshImporter):
       f77FileInput,
       elemInputFile)
 
-    # Create elements dictionary
+    # Create elements dictionary.  This info is no longer needed after element
+    # families have been formed.
     elements = {'numElems': numElems,
                 'elemNodeArraySize': elemNodeArraySize,
                 'ptrElemNodeArray': ptrElemNodeArray,
                 'ptrElemTypes': ptrElemTypes,
                 'ptrElemIds': ptrElemIds}
-
-
-    # Create element families dictionary
-    elemFamilies = {'numElemFamilies': numElemFamilies,
-                    'elemFamilySizes': elemFamilySizes,
-                    'elemFamilyTypes': elemFamilyTypes,
-                    'elemFamilyIds': elemFamilyIds,
-                    'elemFamilyNames': elemFamilyNames}
-      
 
     return elements, elemFamilies
       
