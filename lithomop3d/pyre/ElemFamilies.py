@@ -42,23 +42,9 @@ class ElemFamilies(Component):
     """Puts elements into families and allocates necessary storage."""
     from ElemFamilySolid import ElemFamilySolid
 
-    # This could be much cleaner.  I'm not sure if dictionaries are the
-    # way to go for describing families.
-    numElemFamilies = elemFamilies["numElemFamilies"]
-    elemFamilySizes = elemFamilies["elemFamilySizes"]
-    elemFamilyTypes = elemFamilies["elemFamilyTypes"]
-    elemFamilyIds = elemFamilies["elemFamilyIds"]
-    elemFamilyNames = elemFamilies["elemFamilyNames"]
-    for i in range(numElemFamilies):
-      familyName = elemFamilyNames[i]
-      familySize = elemFamilySizes[i]
-      familyType = elemFamilyTypes[i]
-      familyId = elemFamilyIds[i]
-      elemFamily = ElemFamilySolid()
-      elemFamily.initialize(familyName,
-                            familySize,
-                            familyType,
-                            familyId)
+    # Loop over element families and initialize.
+    for family in elemFamilies:
+      elemFamily.initialize(elements, family)
   
 
 # version
