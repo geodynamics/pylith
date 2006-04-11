@@ -113,7 +113,6 @@ class MeshImporterTecton(MeshImporter):
     f77FileInput = self.inventory.f77FileInput
     maxNumElemFamilies = self.inventory.maxNumElemFamilies
     
-    ptrNumNodesPerElemType = lm3d.intListToArray(mesh.numNodesPerElemType)
     numElemTypes = len(mesh.numNodesPerElemType)
     # I am changing the way this is done for now, under the assumption that we
     # will be using f2py to generate bindings.  This will allow me to 'see'
@@ -130,7 +129,7 @@ class MeshImporterTecton(MeshImporter):
     tmpElemFamilySizes,
     tmpElemFamilyTypes,
     tmpElemFamilyIds = lm3d.scan_connect(
-      ptrNumNodesPerElemType,
+      mesh.numNodesPerElemType,
       numElemTypes,
       maxNumElemFamilies,
       f77FileInput,
@@ -141,14 +140,18 @@ class MeshImporterTecton(MeshImporter):
     elemFamilySizes = []
     elemFamilyTypes = []
     elemFamilyIds = []
+    elemFamilyNames = []
     elemNodeArraySize = 0
+    count = 0
 
     for i in range(maxNumElemFamilies):
       if tmpElemFamilySizes[i] != 0 and tmpElemFamilyTypes[i] != 0 and tmpElemFamilyIds[i] != 0:
         elemFamilySizes.append(tmpElemFamilySizes[i])
         elemFamilyTypes.append(tmpElemFamilyTypes[i])
         elemFamilyIds.append(tmpElemFamilyIds[i])
+        elemFamilyNames.append("family" + str(count))
         elemNodeArraySize += tmpElemFamilySizes[i]*mesh.numNodesPerElemType[tmpElemFamilyTypes[i]]
+        count=count + 1
 
     tmpElemFamilySizes = None
     tmpElemFamilyTypes = None
@@ -158,32 +161,39 @@ class MeshImporterTecton(MeshImporter):
     if len(elemFamilySizes) != numElemFamilies:
       raise elemFamilyError, "Number of element families does not match input!"
 
-    # Create elements dictionary
+    # Read the element node array.  The way things are set up now, I need to provide
+    # arrays to contain the material ID and element type for each element
+    # until the elements are sorted.
     ptrElemNodeArray = lm3d.allocateInt(elemNodeArraySize)
-    ptrElemInitOrder = lm3d.allocateInt(numElems)
+    ptrElemTypes = lm3d.allocateInt(numElems)
+    ptrElemIds = lm3d.allocateInt(numElems)
 
+    lithomop3d.read_connect(
+      ptrElemNodeArray,
+      ptrElemTypes,
+      ptrElemIds,
+      mesh.numNodesPerElemType,
+      elemNodeArraySize,
+      numElems,
+      numElemTypes,
+      f77FileInput,
+      elemInputFile)
+
+    # Create elements dictionary
     elements = {'numElems': numElems,
+                'elemNodeArraySize': elemNodeArraySize,
                 'ptrElemNodeArray': ptrElemNodeArray,
-                'ptrElemInitOrder': ptrElemInitOrder}
+                'ptrElemTypes': ptrElemTypes,
+                'ptrElemIds': ptrElemIds}
+
 
     # Create element families dictionary
     elemFamilies = {'numElemFamilies': numElemFamilies,
                     'elemFamilySizes': elemFamilySizes,
                     'elemFamilyTypes': elemFamilyTypes,
-                    'elemFamilyIds': elemFamilyIds}
+                    'elemFamilyIds': elemFamilyIds,
+                    'elemFamilyNames': elemFamilyNames}
       
-    # Need to do a lot more fixing.
-    # New idea for how to deal with families:  Rather than sorting the elements
-    # (using the reorder routine).  Have a routine that just puts the elements in
-    # their family and keep a 1D array with the associated element number.
-    # All other 
-    lithomop3d.read_connect(
-      elements,
-      elemFamily,
-      ptrTmpElemFamilySizes,
-      maxNumElemFamilies,
-      f77FileInput,
-      elemInputFile)
 
     return elements, elemFamilies
       
