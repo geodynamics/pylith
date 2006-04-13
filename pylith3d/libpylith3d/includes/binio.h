@@ -28,8 +28,8 @@
  *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
-#if !defined(lithomop3d_binio_h)
-#define lithomop3d_binio_h
+#if !defined(pylith3d_binio_h)
+#define pylith3d_binio_h
 
 
 /*
