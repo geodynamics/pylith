@@ -29,8 +29,8 @@
 #
 
 test: clean
-	lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=bm1a -lm3dscan.asciiOutput=full -lm3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9
-	# lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=bm1a -lm3dscan.asciiOutput=full -lm3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -start_in_debugger noxterm
+	pylith3dapp.py -typos=relaxed -pl3dscan.fileRoot=bm1a -pl3dscan.asciiOutput=full -pl3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9
+	# pylith3dapp.py -typos=relaxed -pl3dscan.fileRoot=bm1a -pl3dscan.asciiOutput=full -pl3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -start_in_debugger noxterm
 
 clean::
 	$(RM_F) bm1a.ascii bm1a.plot bm1a*.inp

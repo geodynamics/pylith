@@ -1,5 +1,5 @@
 #!/bin/sh
 
-lithomop3dapp.py -lm3dscan.fileRoot=quadtet/bm1a/bm1a
+pylith3dapp.py -pl3dscan.fileRoot=quadtet/bm1a/bm1a
 
 # end of file
