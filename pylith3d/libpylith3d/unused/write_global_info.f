@@ -69,7 +69,7 @@ c
  500  format(//,7x,
      x'******************************************************',/,7x,
      x'*                                                    *',/,7x,
-     x'*              LITHOMOP 0.71 OUTPUT                  *',/,7x,
+     x'*                PYLITH 0.72 OUTPUT                  *',/,7x,
      x'*                                                    *',/,7x,
      x'*        Copyright 2005 by Charles A. Williams.      *',/,7x,
      x'*          Rensselaer Polytechnic Institute.         *',/,7x,
