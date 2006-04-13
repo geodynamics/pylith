@@ -36,15 +36,15 @@
 
 #include "misc.h"
 #include "exceptionhandler.h"
-#include "lithomop3d_externs.h"
+#include "pylith3d_externs.h"
 
 
 // try_binio
 
-char pylithomop3d_try_binio__doc__[] = "";
-char pylithomop3d_try_binio__name__[] = "try_binio";
+char pypylith3d_try_binio__doc__[] = "";
+char pypylith3d_try_binio__name__[] = "try_binio";
 
-PyObject * pylithomop3d_try_binio(PyObject *, PyObject *args)
+PyObject * pypylith3d_try_binio(PyObject *, PyObject *args)
 {
   int unit;
 
@@ -75,16 +75,16 @@ PyObject * pylithomop3d_try_binio(PyObject *, PyObject *args)
 
 // copyright
 
-char pylithomop3d_copyright__doc__[] = "";
-char pylithomop3d_copyright__name__[] = "copyright";
+char pypylith3d_copyright__doc__[] = "";
+char pypylith3d_copyright__name__[] = "copyright";
 
-static char pylithomop3d_copyright_note[] = 
-    "lithomop3d python module: Copyright (c) 2005 Rensselaer Polytechnic Institute";
+static char pypylith3d_copyright_note[] = 
+    "pylith3d python module: Copyright (c) 2005 Rensselaer Polytechnic Institute";
 
 
-PyObject * pylithomop3d_copyright(PyObject *, PyObject *)
+PyObject * pypylith3d_copyright(PyObject *, PyObject *)
 {
-    return Py_BuildValue("s", pylithomop3d_copyright_note);
+    return Py_BuildValue("s", pypylith3d_copyright_note);
 }
     
 // version

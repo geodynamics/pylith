@@ -28,32 +28,32 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_numbering_h)
-#define pylithomop3d_numbering_h
+#if !defined(pypylith3d_numbering_h)
+#define pypylith3d_numbering_h
 
 // assign equation numbers for Winkler BC
-extern char pylithomop3d_assign_wink__name__[];
-extern char pylithomop3d_assign_wink__doc__[];
+extern char pypylith3d_assign_wink__name__[];
+extern char pypylith3d_assign_wink__doc__[];
 extern "C"
-PyObject * pylithomop3d_assign_wink(PyObject *, PyObject *);
+PyObject * pypylith3d_assign_wink(PyObject *, PyObject *);
 
 // create id array
-extern char pylithomop3d_create_id__name__[];
-extern char pylithomop3d_create_id__doc__[];
+extern char pypylith3d_create_id__name__[];
+extern char pypylith3d_create_id__doc__[];
 extern "C"
-PyObject * pylithomop3d_create_id(PyObject *, PyObject *);
+PyObject * pypylith3d_create_id(PyObject *, PyObject *);
 
 // form id array for split nodes
-extern char pylithomop3d_id_split__name__[];
-extern char pylithomop3d_id_split__doc__[];
+extern char pypylith3d_id_split__name__[];
+extern char pypylith3d_id_split__doc__[];
 extern "C"
-PyObject * pylithomop3d_id_split(PyObject *, PyObject *);
+PyObject * pypylith3d_id_split(PyObject *, PyObject *);
 
 // find closest fault neignbors for slippery nodes
-extern char pylithomop3d_nfind__name__[];
-extern char pylithomop3d_nfind__doc__[];
+extern char pypylith3d_nfind__name__[];
+extern char pypylith3d_nfind__doc__[];
 extern "C"
-PyObject * pylithomop3d_nfind(PyObject *, PyObject *);
+PyObject * pypylith3d_nfind(PyObject *, PyObject *);
 
 #endif
 

@@ -36,17 +36,17 @@
 
 #include "sparse.h"
 #include "exceptionhandler.h"
-#include "lithomop3d_externs.h"
+#include "pylith3d_externs.h"
 #include <stdio.h>
 #include <string.h>
 
 
 // Compute number of nonzero entries in stiffness matrix
 
-char pylithomop3d_cmp_stiffsz__doc__[] = "";
-char pylithomop3d_cmp_stiffsz__name__[] = "cmp_stiffsz";
+char pypylith3d_cmp_stiffsz__doc__[] = "";
+char pypylith3d_cmp_stiffsz__name__[] = "cmp_stiffsz";
 
-PyObject * pylithomop3d_cmp_stiffsz(PyObject *, PyObject *args)
+PyObject * pypylith3d_cmp_stiffsz(PyObject *, PyObject *args)
 {
   int numberGlobalEquations;
   PyObject* pyPointerToLm;
@@ -89,7 +89,7 @@ PyObject * pylithomop3d_cmp_stiffsz(PyObject *, PyObject *args)
     return 0;
   }
 		  
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "workingArraySize:" << workingArraySize
@@ -104,10 +104,10 @@ PyObject * pylithomop3d_cmp_stiffsz(PyObject *, PyObject *args)
 
 // Create linked list of nonzero row and column entries in the stiffness matrix
 
-char pylithomop3d_lnklst__doc__[] = "";
-char pylithomop3d_lnklst__name__[] = "lnklst";
+char pypylith3d_lnklst__doc__[] = "";
+char pypylith3d_lnklst__name__[] = "lnklst";
 
-PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
+PyObject * pypylith3d_lnklst(PyObject *, PyObject *args)
 {
   int numberGlobalEquations;
   PyObject* pyPointerToLm;
@@ -170,7 +170,7 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
     return 0;
   }
 		  
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "stiffnessMatrixSize:" << stiffnessMatrixSize
@@ -184,10 +184,10 @@ PyObject * pylithomop3d_lnklst(PyObject *, PyObject *args)
 
 // Localize id array for reference by element
 
-char pylithomop3d_local__doc__[] = "";
-char pylithomop3d_local__name__[] = "local";
+char pypylith3d_local__doc__[] = "";
+char pypylith3d_local__name__[] = "local";
 
-PyObject * pylithomop3d_local(PyObject *, PyObject *args)
+PyObject * pypylith3d_local(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToId;
   int numberNodes;
@@ -219,7 +219,7 @@ PyObject * pylithomop3d_local(PyObject *, PyObject *args)
 	  &numberVolumeElements,
 	  &numberVolumeElementNodes);
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberVolumeElements:" << numberVolumeElements
@@ -233,10 +233,10 @@ PyObject * pylithomop3d_local(PyObject *, PyObject *args)
 
 // Localize nfault array for reference by element
 
-char pylithomop3d_localf__doc__[] = "";
-char pylithomop3d_localf__name__[] = "localf";
+char pypylith3d_localf__doc__[] = "";
+char pypylith3d_localf__name__[] = "localf";
 
-PyObject * pylithomop3d_localf(PyObject *, PyObject *args)
+PyObject * pypylith3d_localf(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIens;
   PyObject* pyPointerToLmf;
@@ -268,7 +268,7 @@ PyObject * pylithomop3d_localf(PyObject *, PyObject *args)
 	   &numberSplitNodeEntries,
 	   &numberVolumeElementNodes);
 		  
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberSplitNodeEntries:" << numberSplitNodeEntries
@@ -282,10 +282,10 @@ PyObject * pylithomop3d_localf(PyObject *, PyObject *args)
 
 // Localize idx array for reference by element
 
-char pylithomop3d_localx__doc__[] = "";
-char pylithomop3d_localx__name__[] = "localx";
+char pypylith3d_localx__doc__[] = "";
+char pypylith3d_localx__name__[] = "localx";
 
-PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
+PyObject * pypylith3d_localx(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIdx;
   int numberNodes;
@@ -324,7 +324,7 @@ PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
 	   &numberSlipperyNodeEntries,
 	   &numberVolumeElementNodes);
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberVolumeElements:" << numberVolumeElements
@@ -337,10 +337,10 @@ PyObject * pylithomop3d_localx(PyObject *, PyObject *args)
 
 // Transform linked list into index array for modified sparse row format
 
-char pylithomop3d_makemsr__doc__[] = "";
-char pylithomop3d_makemsr__name__[] = "makemsr";
+char pypylith3d_makemsr__doc__[] = "";
+char pypylith3d_makemsr__name__[] = "makemsr";
 
-PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
+PyObject * pypylith3d_makemsr(PyObject *, PyObject *args)
 {
   PyObject* pyA;
   PyObject* pyPointerToIndx;
@@ -381,7 +381,7 @@ PyObject * pylithomop3d_makemsr(PyObject *, PyObject *args)
 	    &maximumNonzeroTermsPerRow,
 	    &averageNonzeroTermsPerRow);
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "workingArraySize:" << workingArraySize

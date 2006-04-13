@@ -36,17 +36,17 @@
 
 #include "parser.h"
 #include "exceptionhandler.h"
-#include "lithomop3d_externs.h"
+#include "pylith3d_externs.h"
 #include <stdio.h>
 #include <string.h>
 
 
 // Read boundary conditions
 
-char pylithomop3d_read_bc__doc__[] = "";
-char pylithomop3d_read_bc__name__[] = "read_bc";
+char pypylith3d_read_bc__doc__[] = "";
+char pypylith3d_read_bc__name__[] = "read_bc";
 
-PyObject * pylithomop3d_read_bc(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_bc(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToBond;
   double displacementScaleFactor;
@@ -99,7 +99,7 @@ PyObject * pylithomop3d_read_bc(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberBcEntries:" << numberBcEntries
@@ -113,10 +113,10 @@ PyObject * pylithomop3d_read_bc(PyObject *, PyObject *args)
 
 // Read connectivities
 
-char pylithomop3d_read_connect__doc__[] = "";
-char pylithomop3d_read_connect__name__[] = "read_connect";
+char pypylith3d_read_connect__doc__[] = "";
+char pypylith3d_read_connect__name__[] = "read_connect";
 
-PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_connect(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIen;
   PyObject* pyPointerToMat;
@@ -164,7 +164,7 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberVolumeElementFamilies:" << numberVolumeElementFamilies
@@ -178,10 +178,10 @@ PyObject * pylithomop3d_read_connect(PyObject *, PyObject *args)
 
 // Read coordinates
 
-char pylithomop3d_read_coords__doc__[] = "";
-char pylithomop3d_read_coords__name__[] = "read_coords";
+char pypylith3d_read_coords__doc__[] = "";
+char pypylith3d_read_coords__name__[] = "read_coords";
 
-PyObject * pylithomop3d_read_coords(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_coords(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToX;
   double coordinateScaleFactor;
@@ -219,7 +219,7 @@ PyObject * pylithomop3d_read_coords(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "coordinateScaleFactor:" << coordinateScaleFactor
@@ -233,10 +233,10 @@ PyObject * pylithomop3d_read_coords(PyObject *, PyObject *args)
 
 // Read differential forces
 
-char pylithomop3d_read_diff__doc__[] = "";
-char pylithomop3d_read_diff__name__[] = "read_diff";
+char pypylith3d_read_diff__doc__[] = "";
+char pypylith3d_read_diff__name__[] = "read_diff";
 
-PyObject * pylithomop3d_read_diff(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_diff(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToDiforc;
   PyObject* pyPointerToNslip;
@@ -285,7 +285,7 @@ PyObject * pylithomop3d_read_diff(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberDifferentialForceEntries:" << numberDifferentialForceEntries
@@ -299,10 +299,10 @@ PyObject * pylithomop3d_read_diff(PyObject *, PyObject *args)
 
 // Read time steps at which full output is desired
 
-char pylithomop3d_read_fuldat__doc__[] = "";
-char pylithomop3d_read_fuldat__name__[] = "read_fuldat";
+char pypylith3d_read_fuldat__doc__[] = "";
+char pypylith3d_read_fuldat__name__[] = "read_fuldat";
 
-PyObject * pylithomop3d_read_fuldat(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_fuldat(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIprint;
   int numberFullOutputs;
@@ -346,7 +346,7 @@ PyObject * pylithomop3d_read_fuldat(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberFullOutputs:" << numberFullOutputs
@@ -360,10 +360,10 @@ PyObject * pylithomop3d_read_fuldat(PyObject *, PyObject *args)
 
 // Read load histories
 
-char pylithomop3d_read_hist__doc__[] = "";
-char pylithomop3d_read_hist__name__[] = "read_hist";
+char pypylith3d_read_hist__doc__[] = "";
+char pypylith3d_read_hist__name__[] = "read_hist";
 
-PyObject * pylithomop3d_read_hist(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_hist(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToHistry;
   PyObject* pyPointerToTimes;
@@ -405,7 +405,7 @@ PyObject * pylithomop3d_read_hist(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberLoadHistories:" << numberLoadHistories
@@ -419,10 +419,10 @@ PyObject * pylithomop3d_read_hist(PyObject *, PyObject *args)
 
 // Read element prestresses
 
-// char pylithomop3d_read_prestr__doc__[] = "";
-// char pylithomop3d_read_prestr__name__[] = "read_prestr";
+// char pypylith3d_read_prestr__doc__[] = "";
+// char pypylith3d_read_prestr__name__[] = "read_prestr";
 
-// PyObject * pylithomop3d_read_prestr(PyObject *, PyObject *args)
+// PyObject * pypylith3d_read_prestr(PyObject *, PyObject *args)
 // {
   // PyObject* pyPointerToStn;
   // PyObject* pyPointerToSt0;
@@ -488,7 +488,7 @@ PyObject * pylithomop3d_read_hist(PyObject *, PyObject *args)
     // return 0;
   // }
 
-  // journal::debug_t debug("lithomop3d");
+  // journal::debug_t debug("pylith3d");
   // debug
     // << journal::at(__HERE__)
     // << "numberPrestressEntries:" << numberPrestressEntries
@@ -502,10 +502,10 @@ PyObject * pylithomop3d_read_hist(PyObject *, PyObject *args)
 
 // Read local coordinate rotations
 
-char pylithomop3d_read_skew__doc__[] = "";
-char pylithomop3d_read_skew__name__[] = "read_skew";
+char pypylith3d_read_skew__doc__[] = "";
+char pypylith3d_read_skew__name__[] = "read_skew";
 
-PyObject * pylithomop3d_read_skew(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_skew(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToSkew;
   double rotationScaleFactor;
@@ -549,7 +549,7 @@ PyObject * pylithomop3d_read_skew(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberRotationEntries:" << numberRotationEntries
@@ -563,10 +563,10 @@ PyObject * pylithomop3d_read_skew(PyObject *, PyObject *args)
 
 // Read slippery node entries
 
-char pylithomop3d_read_slip__doc__[] = "";
-char pylithomop3d_read_slip__name__[] = "read_slip";
+char pypylith3d_read_slip__doc__[] = "";
+char pypylith3d_read_slip__name__[] = "read_slip";
 
-PyObject * pylithomop3d_read_slip(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_slip(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToNslip;
   int numberSlipperyNodeEntries;
@@ -609,7 +609,7 @@ PyObject * pylithomop3d_read_slip(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "totalNumberSlipperyNodes:" << totalNumberSlipperyNodes
@@ -623,10 +623,10 @@ PyObject * pylithomop3d_read_slip(PyObject *, PyObject *args)
 
 // Read split node entries
 
-char pylithomop3d_read_split__doc__[] = "";
-char pylithomop3d_read_split__name__[] = "read_split";
+char pypylith3d_read_split__doc__[] = "";
+char pypylith3d_read_split__name__[] = "read_split";
 
-PyObject * pylithomop3d_read_split(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_split(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToFault;
   PyObject* pyPointerToNfault;
@@ -673,7 +673,7 @@ PyObject * pylithomop3d_read_split(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "totalNumberSplitNodes:" << totalNumberSplitNodes
@@ -687,10 +687,10 @@ PyObject * pylithomop3d_read_split(PyObject *, PyObject *args)
 
 // Read state output information
 
-char pylithomop3d_read_stateout__doc__[] = "";
-char pylithomop3d_read_stateout__name__[] = "read_stateout";
+char pypylith3d_read_stateout__doc__[] = "";
+char pypylith3d_read_stateout__name__[] = "read_stateout";
 
-PyObject * pylithomop3d_read_stateout(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_stateout(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIstatout;
   PyObject* pyPointerToNstatout;
@@ -726,7 +726,7 @@ PyObject * pylithomop3d_read_stateout(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "pointerToIstatout:" << pointerToIstatout
@@ -740,10 +740,10 @@ PyObject * pylithomop3d_read_stateout(PyObject *, PyObject *args)
 
 // Read time step data
 
-char pylithomop3d_read_timdat__doc__[] = "";
-char pylithomop3d_read_timdat__name__[] = "read_timdat";
+char pypylith3d_read_timdat__doc__[] = "";
+char pypylith3d_read_timdat__name__[] = "read_timdat";
 
-PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_timdat(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToDelt;
   PyObject* pyPointerToAlfa;
@@ -824,7 +824,7 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "totalNumberTimeSteps:" << totalNumberTimeSteps
@@ -838,10 +838,10 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
 
 // Read traction BC
 
-// char pylithomop3d_read_traction__doc__[] = "";
-// char pylithomop3d_read_traction__name__[] = "read_traction";
+// char pypylith3d_read_traction__doc__[] = "";
+// char pypylith3d_read_traction__name__[] = "read_traction";
 
-// PyObject * pylithomop3d_read_traction(PyObject *, PyObject *args)
+// PyObject * pypylith3d_read_traction(PyObject *, PyObject *args)
 // {
   // PyObject* pyPointerToPres;
   // PyObject* pyPointerToPdir;
@@ -909,7 +909,7 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
     // return 0;
   // }
 
-  // journal::debug_t debug("lithomop3d");
+  // journal::debug_t debug("pylith3d");
   // debug
     // << journal::at(__HERE__)
     // << "numberTractionBc:" << numberTractionBc
@@ -923,10 +923,10 @@ PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *args)
 
 // Read winkler BC
 
-char pylithomop3d_read_wink__doc__[] = "";
-char pylithomop3d_read_wink__name__[] = "read_wink";
+char pypylith3d_read_wink__doc__[] = "";
+char pypylith3d_read_wink__name__[] = "read_wink";
 
-PyObject * pylithomop3d_read_wink(PyObject *, PyObject *args)
+PyObject * pypylith3d_read_wink(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToWinkdef;
   PyObject* pyPointerToListArrayWscal;
@@ -976,7 +976,7 @@ PyObject * pylithomop3d_read_wink(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberWinklerForces:" << numberWinklerForces

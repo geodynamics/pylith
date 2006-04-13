@@ -28,10 +28,10 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_lithomop3dmodule_h)
-#define pylithomop3d_lithomop3dmodule_h
+#if !defined(pypylith3d_pylith3dmodule_h)
+#define pypylith3d_pylith3dmodule_h
 
-void pylithomop3d_init(const char *name);
+void pypylith3d_init(const char *name);
 
 #endif
 

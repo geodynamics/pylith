@@ -36,17 +36,17 @@
 
 #include "autoprestr.h"
 #include "exceptionhandler.h"
-#include "lithomop3d_externs.h"
+#include "pylith3d_externs.h"
 #include <stdio.h>
 #include <string.h>
 
 
 // Autocompute gravitational prestresses.
 
-char pylithomop3d_autoprestr__doc__[] = "";
-char pylithomop3d_autoprestr__name__[] = "autoprestr";
+char pypylith3d_autoprestr__doc__[] = "";
+char pypylith3d_autoprestr__name__[] = "autoprestr";
 
-PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
+PyObject * pypylith3d_autoprestr(PyObject *, PyObject *args)
 {
   PyObject* pyA;                             // Sparse matrix array
   PyObject* pyRhs;
@@ -420,7 +420,7 @@ PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *args)
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
   }
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "asciiOutputFile:" << asciiOutputFile

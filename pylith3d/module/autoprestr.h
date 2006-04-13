@@ -28,14 +28,14 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_autoprestr_h)
-#define pylithomop3d_autoprestr_h
+#if !defined(pypylith3d_autoprestr_h)
+#define pypylith3d_autoprestr_h
 
 // Compute gravitational prestresses.
-extern char pylithomop3d_autoprestr__name__[];
-extern char pylithomop3d_autoprestr__doc__[];
+extern char pypylith3d_autoprestr__name__[];
+extern char pypylith3d_autoprestr__doc__[];
 extern "C"
-PyObject * pylithomop3d_autoprestr(PyObject *, PyObject *);
+PyObject * pypylith3d_autoprestr(PyObject *, PyObject *);
 
 #endif
 

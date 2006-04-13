@@ -36,7 +36,7 @@
 
 #include "numbering.h"
 #include "exceptionhandler.h"
-#include "lithomop3d_externs.h"
+#include "pylith3d_externs.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -45,10 +45,10 @@
 // Assign equation numbers to Iwink and Iwinkx arrays, and compact
 // Wink and Winkx arrays to correspond to assigned BC.
 
-char pylithomop3d_assign_wink__doc__[] = "";
-char pylithomop3d_assign_wink__name__[] = "assign_wink";
+char pypylith3d_assign_wink__doc__[] = "";
+char pypylith3d_assign_wink__name__[] = "assign_wink";
 
-PyObject * pylithomop3d_assign_wink(PyObject *, PyObject *args)
+PyObject * pypylith3d_assign_wink(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToWinkdef;
   PyObject* pyPointerToWink;
@@ -92,7 +92,7 @@ PyObject * pylithomop3d_assign_wink(PyObject *, PyObject *args)
 		&numberWinklerForces,
 		&numberWinklerEntries);
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberWinklerForces:" << numberWinklerForces
@@ -106,10 +106,10 @@ PyObject * pylithomop3d_assign_wink(PyObject *, PyObject *args)
 
 // Create Id and Idx arrays, and determine the number of equations.
 
-char pylithomop3d_create_id__doc__[] = "";
-char pylithomop3d_create_id__name__[] = "create_id";
+char pypylith3d_create_id__doc__[] = "";
+char pypylith3d_create_id__name__[] = "create_id";
 
-PyObject * pylithomop3d_create_id(PyObject *, PyObject *args)
+PyObject * pypylith3d_create_id(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToId;
   PyObject* pyPointerToIdx;
@@ -151,7 +151,7 @@ PyObject * pylithomop3d_create_id(PyObject *, PyObject *args)
 	  &totalNumberSlipperyNodes,
 	  &numberGlobalEquations);
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberGlobalEquations:" << numberGlobalEquations
@@ -165,10 +165,10 @@ PyObject * pylithomop3d_create_id(PyObject *, PyObject *args)
 
 // Form id array for split nodes
 
-char pylithomop3d_id_split__doc__[] = "";
-char pylithomop3d_id_split__name__[] = "id_split";
+char pypylith3d_id_split__doc__[] = "";
+char pypylith3d_id_split__name__[] = "id_split";
 
-PyObject * pylithomop3d_id_split(PyObject *, PyObject *args)
+PyObject * pypylith3d_id_split(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToNfault;
   PyObject* pyPointerToIdftn;
@@ -196,7 +196,7 @@ PyObject * pylithomop3d_id_split(PyObject *, PyObject *args)
 	     &numberSplitNodeEntries,
 	     &totalNumberSplitNodes);
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberSplitNodeEntries:" << numberSplitNodeEntries
@@ -210,10 +210,10 @@ PyObject * pylithomop3d_id_split(PyObject *, PyObject *args)
 
 // Find closest fault neighbors for slippery nodes
 
-char pylithomop3d_nfind__doc__[] = "";
-char pylithomop3d_nfind__name__[] = "nfind";
+char pypylith3d_nfind__doc__[] = "";
+char pypylith3d_nfind__name__[] = "nfind";
 
-PyObject * pylithomop3d_nfind(PyObject *, PyObject *args)
+PyObject * pypylith3d_nfind(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToX;
   PyObject* pyPointerToXtmp;
@@ -265,7 +265,7 @@ PyObject * pylithomop3d_nfind(PyObject *, PyObject *args)
 	  &totalNumberSlipperyNodes,
 	  &numberNodes);
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "pointerToX:" << pointerToX

@@ -28,44 +28,44 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_sparse_h)
-#define pylithomop3d_sparse_h
+#if !defined(pypylith3d_sparse_h)
+#define pypylith3d_sparse_h
 
 // compute maximum number of nonzero entries in stiffness matrix
-extern char pylithomop3d_cmp_stiffsz__name__[];
-extern char pylithomop3d_cmp_stiffsz__doc__[];
+extern char pypylith3d_cmp_stiffsz__name__[];
+extern char pypylith3d_cmp_stiffsz__doc__[];
 extern "C"
-PyObject * pylithomop3d_cmp_stiffsz(PyObject *, PyObject *);
+PyObject * pypylith3d_cmp_stiffsz(PyObject *, PyObject *);
 
 // create linked list for sparse matrix
-extern char pylithomop3d_lnklst__name__[];
-extern char pylithomop3d_lnklst__doc__[];
+extern char pypylith3d_lnklst__name__[];
+extern char pypylith3d_lnklst__doc__[];
 extern "C"
-PyObject * pylithomop3d_lnklst(PyObject *, PyObject *);
+PyObject * pypylith3d_lnklst(PyObject *, PyObject *);
 
 // localize id array for reference by element
-extern char pylithomop3d_local__name__[];
-extern char pylithomop3d_local__doc__[];
+extern char pypylith3d_local__name__[];
+extern char pypylith3d_local__doc__[];
 extern "C"
-PyObject * pylithomop3d_local(PyObject *, PyObject *);
+PyObject * pypylith3d_local(PyObject *, PyObject *);
 
 // localize nfault array for reference by element
-extern char pylithomop3d_localf__name__[];
-extern char pylithomop3d_localf__doc__[];
+extern char pypylith3d_localf__name__[];
+extern char pypylith3d_localf__doc__[];
 extern "C"
-PyObject * pylithomop3d_localf(PyObject *, PyObject *);
+PyObject * pypylith3d_localf(PyObject *, PyObject *);
 
 // localize idx array for reference by element
-extern char pylithomop3d_localx__name__[];
-extern char pylithomop3d_localx__doc__[];
+extern char pypylith3d_localx__name__[];
+extern char pypylith3d_localx__doc__[];
 extern "C"
-PyObject * pylithomop3d_localx(PyObject *, PyObject *);
+PyObject * pypylith3d_localx(PyObject *, PyObject *);
 
 // create sparse matrix in modified sparse row format
-extern char pylithomop3d_makemsr__name__[];
-extern char pylithomop3d_makemsr__doc__[];
+extern char pypylith3d_makemsr__name__[];
+extern char pypylith3d_makemsr__doc__[];
 extern "C"
-PyObject * pylithomop3d_makemsr(PyObject *, PyObject *);
+PyObject * pypylith3d_makemsr(PyObject *, PyObject *);
 
 #endif
 

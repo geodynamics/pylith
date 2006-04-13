@@ -28,14 +28,14 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_viscos_h)
-#define pylithomop3d_viscos_h
+#if !defined(pypylith3d_viscos_h)
+#define pypylith3d_viscos_h
 
 // drive time-dependent solution
-extern char pylithomop3d_viscos__name__[];
-extern char pylithomop3d_viscos__doc__[];
+extern char pypylith3d_viscos__name__[];
+extern char pypylith3d_viscos__doc__[];
 extern "C"
-PyObject * pylithomop3d_viscos(PyObject *, PyObject *);
+PyObject * pypylith3d_viscos(PyObject *, PyObject *);
 
 #endif
 

@@ -28,36 +28,36 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_array_h)
-#define pylithomop3d_array_h
+#if !defined(pypylith3d_array_h)
+#define pypylith3d_array_h
 
 // allocateInt
-extern char pylithomop3d_allocateInt__doc__[];
-extern char pylithomop3d_allocateInt__name__[];
+extern char pypylith3d_allocateInt__doc__[];
+extern char pypylith3d_allocateInt__name__[];
 
 extern "C"
-PyObject * pylithomop3d_allocateInt(PyObject *, PyObject *);
+PyObject * pypylith3d_allocateInt(PyObject *, PyObject *);
 
 // allocateDouble
-extern char pylithomop3d_allocateDouble__doc__[];
-extern char pylithomop3d_allocateDouble__name__[];
+extern char pypylith3d_allocateDouble__doc__[];
+extern char pypylith3d_allocateDouble__name__[];
 
 extern "C"
-PyObject * pylithomop3d_allocateDouble(PyObject *, PyObject *);
+PyObject * pypylith3d_allocateDouble(PyObject *, PyObject *);
 
 // intListToArray
-extern char pylithomop3d_intListToArray__doc__[];
-extern char pylithomop3d_intListToArray__name__[];
+extern char pypylith3d_intListToArray__doc__[];
+extern char pypylith3d_intListToArray__name__[];
 
 extern "C"
-PyObject * pylithomop3d_intListToArray(PyObject *, PyObject *);
+PyObject * pypylith3d_intListToArray(PyObject *, PyObject *);
 
 // doubleListToArray
-extern char pylithomop3d_doubleListToArray__doc__[];
-extern char pylithomop3d_doubleListToArray__name__[];
+extern char pypylith3d_doubleListToArray__doc__[];
+extern char pypylith3d_doubleListToArray__name__[];
 
 extern "C"
-PyObject * pylithomop3d_doubleListToArray(PyObject *, PyObject *);
+PyObject * pypylith3d_doubleListToArray(PyObject *, PyObject *);
 
 // clear p
 void clearp(void *);

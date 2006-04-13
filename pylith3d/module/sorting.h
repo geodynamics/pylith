@@ -28,26 +28,26 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_sorting_h)
-#define pylithomop3d_sorting_h
+#if !defined(pypylith3d_sorting_h)
+#define pypylith3d_sorting_h
 
 // sort elements into element families
-extern char pylithomop3d_sort_elements__name__[];
-extern char pylithomop3d_sort_elements__doc__[];
+extern char pypylith3d_sort_elements__name__[];
+extern char pypylith3d_sort_elements__doc__[];
 extern "C"
-PyObject * pylithomop3d_sort_elements(PyObject *, PyObject *);
+PyObject * pypylith3d_sort_elements(PyObject *, PyObject *);
 
 // Sort slippery nodes according to reordered elements
-extern char pylithomop3d_sort_slip_nodes__name__[];
-extern char pylithomop3d_sort_slip_nodes__doc__[];
+extern char pypylith3d_sort_slip_nodes__name__[];
+extern char pypylith3d_sort_slip_nodes__doc__[];
 extern "C"
-PyObject * pylithomop3d_sort_slip_nodes(PyObject *, PyObject *);
+PyObject * pypylith3d_sort_slip_nodes(PyObject *, PyObject *);
 
 // Sort split nodes according to reordered elements
-extern char pylithomop3d_sort_split_nodes__name__[];
-extern char pylithomop3d_sort_split_nodes__doc__[];
+extern char pypylith3d_sort_split_nodes__name__[];
+extern char pypylith3d_sort_split_nodes__doc__[];
 extern "C"
-PyObject * pylithomop3d_sort_split_nodes(PyObject *, PyObject *);
+PyObject * pypylith3d_sort_split_nodes(PyObject *, PyObject *);
 
 #endif
 

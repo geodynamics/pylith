@@ -28,8 +28,8 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(lithomop3d_externs_h)
-#define lithomop3d_externs_h
+#if !defined(pylith3d_externs_h)
+#define pylith3d_externs_h
 
 #include <stddef.h>
 
@@ -1186,10 +1186,10 @@ extern "C" {
 		     size_t);
 }
 
-#endif // lithomop3d_externs_h
+#endif // pylith3d_externs_h
 
 
 // version
-// $Id: lithomop3d_externs.h,v 1.21 2005/06/24 20:17:43 willic3 Exp $
+// $Id: pylith3d_externs.h,v 1.21 2005/06/24 20:17:43 willic3 Exp $
 
 // End of file

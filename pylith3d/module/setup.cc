@@ -36,17 +36,17 @@
 
 #include "setup.h"
 #include "exceptionhandler.h"
-#include "lithomop3d_externs.h"
+#include "pylith3d_externs.h"
 #include <stdio.h>
 #include <string.h>
 
 
 // Initialize PETSc
 
-char pylithomop3d_petsc_initialize__doc__[] = "";
-char pylithomop3d_petsc_initialize__name__[] = "PetscInitialize";
+char pypylith3d_petsc_initialize__doc__[] = "";
+char pypylith3d_petsc_initialize__name__[] = "PetscInitialize";
 
-PyObject * pylithomop3d_petsc_initialize(PyObject *, PyObject *)
+PyObject * pypylith3d_petsc_initialize(PyObject *, PyObject *)
 {
   PyObject *sysMod = PyImport_ImportModule("sys");
   PyObject *argList = PyObject_GetAttrString(sysMod, "argv");
@@ -60,12 +60,12 @@ PyObject * pylithomop3d_petsc_initialize(PyObject *, PyObject *)
     argv[a] = (char *) malloc((strlen(arg)+1)* sizeof(char));
     strcpy(argv[a], arg);
   }
-  if (PetscInitialize(&argc, &argv, NULL, "Lithomop 3D")) {
+  if (PetscInitialize(&argc, &argv, NULL, "Pylith 3D")) {
     PyErr_SetString(PyExc_RuntimeError, "PETSc failed to initialize");
     return 0;
   }
     
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "Initializing PETSc"
@@ -85,17 +85,17 @@ PyObject * pylithomop3d_petsc_initialize(PyObject *, PyObject *)
 
 // Finalize PETSc
 
-char pylithomop3d_petsc_finalize__doc__[] = "";
-char pylithomop3d_petsc_finalize__name__[] = "PetscFinalize";
+char pypylith3d_petsc_finalize__doc__[] = "";
+char pypylith3d_petsc_finalize__name__[] = "PetscFinalize";
 
-PyObject * pylithomop3d_petsc_finalize(PyObject *, PyObject *)
+PyObject * pypylith3d_petsc_finalize(PyObject *, PyObject *)
 {
   if (PetscFinalize()) {
     PyErr_SetString(PyExc_RuntimeError, "PETSc failed to finalize");
     return 0;
   }
     
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "Finalizing PETSc"
@@ -108,10 +108,10 @@ PyObject * pylithomop3d_petsc_finalize(PyObject *, PyObject *)
 
 // Setup PETSc Logging
 
-char pylithomop3d_setup_petsc_logging__doc__[] = "";
-char pylithomop3d_setup_petsc_logging__name__[] = "setupPETScLogging";
+char pypylith3d_setup_petsc_logging__doc__[] = "";
+char pypylith3d_setup_petsc_logging__name__[] = "setupPETScLogging";
 
-PyObject * pylithomop3d_setup_petsc_logging(PyObject *, PyObject *)
+PyObject * pypylith3d_setup_petsc_logging(PyObject *, PyObject *)
 {
   PetscInt autoprestrStage, elasticStage, viscousStage;
   PetscEvent iterateEvent;
@@ -134,7 +134,7 @@ PyObject * pylithomop3d_setup_petsc_logging(PyObject *, PyObject *)
     return 0;
   }
     
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "Setup PETSc logging"
@@ -147,10 +147,10 @@ PyObject * pylithomop3d_setup_petsc_logging(PyObject *, PyObject *)
 
 // Initialize material model info
 
-char pylithomop3d_matmod_def__doc__[] = "";
-char pylithomop3d_matmod_def__name__[] = "matmod_def";
+char pypylith3d_matmod_def__doc__[] = "";
+char pypylith3d_matmod_def__name__[] = "matmod_def";
 
-PyObject * pylithomop3d_matmod_def(PyObject *, PyObject *args)
+PyObject * pypylith3d_matmod_def(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToMaterialModelInfo;
 
@@ -165,7 +165,7 @@ PyObject * pylithomop3d_matmod_def(PyObject *, PyObject *args)
 
   matmod_def_f(pointerToMaterialModelInfo);
     
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "pointerToMaterialModelInfo:" << pointerToMaterialModelInfo
@@ -178,10 +178,10 @@ PyObject * pylithomop3d_matmod_def(PyObject *, PyObject *args)
 
 // Precompute shape function info
 
-char pylithomop3d_preshape__doc__[] = "";
-char pylithomop3d_preshape__name__[] = "preshape";
+char pypylith3d_preshape__doc__[] = "";
+char pypylith3d_preshape__name__[] = "preshape";
 
-PyObject * pylithomop3d_preshape(PyObject *, PyObject *args)
+PyObject * pypylith3d_preshape(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToSh;
   PyObject* pyPointerToShj;
@@ -226,7 +226,7 @@ PyObject * pylithomop3d_preshape(PyObject *, PyObject *args)
     return 0;
   }
     
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "quadratureOrderInt:" << quadratureOrderInt

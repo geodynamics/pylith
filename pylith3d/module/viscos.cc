@@ -36,17 +36,17 @@
 
 #include "viscos.h"
 #include "exceptionhandler.h"
-#include "lithomop3d_externs.h"
+#include "pylith3d_externs.h"
 #include <stdio.h>
 #include <string.h>
 
 
 // Perform the time-dependent solution.
 
-char pylithomop3d_viscos__doc__[] = "";
-char pylithomop3d_viscos__name__[] = "viscos";
+char pypylith3d_viscos__doc__[] = "";
+char pypylith3d_viscos__name__[] = "viscos";
 
-PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
+PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 {
   PyObject* pyA;                              // Sparse matrix arrays
   PyObject* pyPointerToBextern;               // Force vectors
@@ -419,7 +419,7 @@ PyObject * pylithomop3d_viscos(PyObject *, PyObject *args)
   }
 
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "asciiOutputFile:" << asciiOutputFile
