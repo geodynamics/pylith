@@ -37,7 +37,7 @@ class ElementTypeDef:
                numberSpaceDimensions,
                numberDegreesFreedom):
 
-	import lithomop3d
+	import pylith3d
 
         print "Hello from ElementTypeDef.getdef!"
 
@@ -66,21 +66,21 @@ class ElementTypeDef:
                                 self.numberVolumeElementEquations,
                                 self.numberVolumeElementCoordinates]
 
-        self.pointerToSh = lithomop3d.allocateDouble(
+        self.pointerToSh = pylith3d.allocateDouble(
             (numberSpaceDimensions+1)*
             self.numberVolumeElementNodes*
             self.numberVolumeElementGaussPoints)
             
-        self.pointerToShj = lithomop3d.allocateDouble(
+        self.pointerToShj = pylith3d.allocateDouble(
             (numberSpaceDimensions+1)*
             self.numberVolumeElementNodes*
             self.numberVolumeElementGaussPoints)
             
-        self.pointerToGauss = lithomop3d.allocateDouble(
+        self.pointerToGauss = pylith3d.allocateDouble(
             (numberSpaceDimensions+1)*
             self.numberVolumeElementGaussPoints)
 
-        lithomop3d.preshape(
+        pylith3d.preshape(
             self.pointerToSh,
             self.pointerToShj,
             self.pointerToGauss,
