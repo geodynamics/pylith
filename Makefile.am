@@ -3,6 +3,6 @@
 
 ACLOCAL_AMFLAGS = -I ./m4
 
-SUBDIRS = lithomop3d
+SUBDIRS = pylith3d
 
 ## end of Makefile.am

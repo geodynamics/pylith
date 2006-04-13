@@ -30,16 +30,16 @@
 
 #include <Python.h>
 #include <stdio.h>
-#include "lithomop3dmodule.h"
+#include "pylith3dmodule.h"
 
-static void init_builtin_lithomop3d()
+static void init_builtin_pylith3d()
 {
-    pylithomop3d_init("builtin_lithomop3d");
+    pypylith3d_init("builtin_pylith3d");
     return;
 }
 
 struct _inittab inittab[] = {
-    { "builtin_lithomop3d", init_builtin_lithomop3d },
+    { "builtin_pylith3d", init_builtin_pylith3d },
     { 0, 0 }
 };
 
