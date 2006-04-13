@@ -35,13 +35,13 @@
 # main
 
 if __name__ == "__main__":
-    from lithomop3d.Application import Application
+    from pylith3d.Application import Application
 
     app = Application()
     app.main()
     
 
 # version
-__id__ = "$Id: lithomop3dapp.py,v 1.1 2004/04/14 21:26:20 willic3 Exp $"
+__id__ = "$Id: pylith3dapp.py,v 1.1 2004/04/14 21:26:20 willic3 Exp $"
 
 #  End of file 
