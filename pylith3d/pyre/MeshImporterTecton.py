@@ -34,7 +34,7 @@
 # Initial attempt at a module that gets a Mesh object from Tecton-style input files.
 
 class MeshImporterTecton(MeshImporter):
-  """Class for importing a mesh using Tecton-style (original LithoMop) input files."""
+  """Class for importing a mesh using Tecton-style (original PyLith) input files."""
 
   class Inventory(MeshImporter.Inventory):
 
@@ -49,7 +49,7 @@ class MeshImporterTecton(MeshImporter):
   def generate(self, fileRoot):
     """Get a finite element mesh."""
 
-    from lithomop3d.Mesh import Mesh
+    from pylith3d.Mesh import Mesh
     mesh = Mesh()
 
     # Get nodes
@@ -64,7 +64,7 @@ class MeshImporterTecton(MeshImporter):
     """Gets dimensions and nodal coordinates from Tecton-style input file."""
 
     import pyre.units
-    import lithomop3d as lm3d
+    import pylith3d as pl3d
 
     # Get input filename
     if self.inventory.coordFile == "":
@@ -74,7 +74,7 @@ class MeshImporterTecton(MeshImporter):
 
     f77FileInput = self.inventory.f77FileInput
     
-    numNodes, numDims, coordUnits = lm3d.scan_coords(
+    numNodes, numDims, coordUnits = pl3d.scan_coords(
       f77FileInput,
       coordInputFile)
 
@@ -82,13 +82,13 @@ class MeshImporterTecton(MeshImporter):
                      uparser.parse(string.strip(coordUnits))
     coordScaleFactor = coordScaleString.value
 
-    ptrCoords = lm3d.allocateDouble(numDims*numNodes)
+    ptrCoords = pl3d.allocateDouble(numDims*numNodes)
 
     nodes = { 'numNodes': numNodes,
               'dim': numDims,
               'ptrCoords': ptrCoords }
 
-    lm3d.read_coords(nodes['ptrCoords'],
+    pl3d.read_coords(nodes['ptrCoords'],
                      coordScaleFactor,
                      nodes['numNodes'],
                      nodes['dim'],
@@ -102,7 +102,7 @@ class MeshImporterTecton(MeshImporter):
     """Gets dimensions and element nodes from Tecton-style input file, and
     defines element families based on element group number."""
 
-    import lithomop3d as lm3d
+    import pylith3d as pl3d
 
     # Get input filename
     if self.inventory.elemFile == "":
@@ -117,7 +117,7 @@ class MeshImporterTecton(MeshImporter):
     # I am changing the way this is done for now, under the assumption that we
     # will be using f2py to generate bindings.  This will allow me to 'see'
     # specified arrays as lists in python.
-    # ptrTmpElemFamilySizes = lithomop3d.allocateInt(maxNumElemFamilies)
+    # ptrTmpElemFamilySizes = pylith3d.allocateInt(maxNumElemFamilies)
     tmpElemFamilySizes = [0]*maxNumElemFamilies
     tmpElemFamilyTypes = [0]*maxNumElemFamilies
     tmpElemFamilyMatIds = [0]*maxNumElemFamilies
@@ -128,7 +128,7 @@ class MeshImporterTecton(MeshImporter):
     numElemFamilies,
     tmpElemFamilySizes,
     tmpElemFamilyTypes,
-    tmpElemFamilyMatIds = lm3d.scan_connect(
+    tmpElemFamilyMatIds = pl3d.scan_connect(
       mesh.numNodesPerElemType,
       numElemTypes,
       maxNumElemFamilies,
@@ -162,11 +162,11 @@ class MeshImporterTecton(MeshImporter):
     # Read the element node array.  The way things are set up now, I need to provide
     # arrays to contain the material ID and element type for each element
     # until the elements are sorted.
-    ptrElemNodeArray = lm3d.allocateInt(elemNodeArraySize)
-    ptrElemTypes = lm3d.allocateInt(numElems)
-    ptrElemIds = lm3d.allocateInt(numElems)
+    ptrElemNodeArray = pl3d.allocateInt(elemNodeArraySize)
+    ptrElemTypes = pl3d.allocateInt(numElems)
+    ptrElemIds = pl3d.allocateInt(numElems)
 
-    lithomop3d.read_connect(
+    pylith3d.read_connect(
       ptrElemNodeArray,
       ptrElemTypes,
       ptrElemIds,

@@ -44,7 +44,7 @@ class MatIsoLinElastic(Material):
     """Constructor."""
     Material.__init__(self, name)
 
-    import lithomop3d as lm3d
+    import pylith3d as pl3d
 
     # Define dimensions and function pointers.
     # Note that density is also included as a property, even though all material
@@ -60,15 +60,15 @@ class MatIsoLinElastic(Material):
                           'numState0Vars': 6,
                           'state0VarNames': ["Stress0XX", "Stress0YY", "Stress0ZZ", \
                                             "Stress0XY", "Stress0YZ", "Stress0XZ"],
-                          'fptrMatPrt': lm3d.mat_prt_1,
-                          'fptrElasMat': lm3d.elas_mat_1,
-                          'fptrElasStrs': lm3d.elas_strs_1,
-                          'fptrTdMatinit': lm3d.td_matinit_1,
-                          'fptrTdStrs': lm3d.td_strs_1,
-                          'fptrTdStrsMat': lm3d.td_strs_mat_1,
-                          'fptrTdPrestrMat': lm3d.prestr_mat_1,
-                          'fptrGetState': lm3d.get_state_1,
-                          'fptrUpdateState': lm3d.update_state_1}
+                          'fptrMatPrt': pl3d.mat_prt_1,
+                          'fptrElasMat': pl3d.elas_mat_1,
+                          'fptrElasStrs': pl3d.elas_strs_1,
+                          'fptrTdMatinit': pl3d.td_matinit_1,
+                          'fptrTdStrs': pl3d.td_strs_1,
+                          'fptrTdStrsMat': pl3d.td_strs_mat_1,
+                          'fptrTdPrestrMat': pl3d.prestr_mat_1,
+                          'fptrGetState': pl3d.get_state_1,
+                          'fptrUpdateState': pl3d.update_state_1}
 
 # version
 __id__ = "$Id$"
