@@ -6,26 +6,26 @@ lib_LTLIBRARIES =
 
 if COND_EMBEDDING
     # static library
-    noinst_LIBRARIES += liblithomop3d.a
+    noinst_LIBRARIES += libpylith3d.a
 else
     # shared library (libtool)
-    lib_LTLIBRARIES += liblithomop3d.la
+    lib_LTLIBRARIES += libpylith3d.la
 endif
 
 # static library
-liblithomop3d_a_FFLAGS = $(AM_FFLAGS) # hack for automake
-liblithomop3d_a_SOURCES = $(sources)
+libpylith3d_a_FFLAGS = $(AM_FFLAGS) # hack for automake
+libpylith3d_a_SOURCES = $(sources)
 
 # shared library (libtool)
-liblithomop3d_la_SOURCES = $(sources)
-liblithomop3d_la_LDFLAGS =
-liblithomop3d_la_LIBADD = \
+libpylith3d_la_SOURCES = $(sources)
+libpylith3d_la_LDFLAGS =
+libpylith3d_la_LIBADD = \
 	$(PETSC_LIB)
 
 F77 = $(FC)
 AM_FFLAGS = \
 	$(FCFLAGS) \
-	-I$(top_srcdir)/lithomop3d/liblithomop3d/includes \
+	-I$(top_srcdir)/pylith3d/libpylith3d/includes \
 	$(PETSC_INCLUDE) \
 	$(MPIINCLUDES)
 sources = \
