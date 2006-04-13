@@ -10,16 +10,16 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-PROJECT = lithomop
-PACKAGE = lithomop
+PROJECT = pylith
+PACKAGE = pylith
 
 RECURSE_DIRS = \
-	lithomop3d \
+	pylith3d \
 
-# lithomop2d \
-# lithomopop \
-# lithomopax \
-# lithomopsph \
+# pylith2d \
+# pylithop \
+# pylithax \
+# pylithsph \
 
 #--------------------------------------------------------------------------
 #

@@ -11,13 +11,13 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-PROJECT = lithomop
-PACKAGE = lithomop3d
+PROJECT = pylith
+PACKAGE = pylith3d
 
 RECURSE_DIRS = \
-	liblithomop3d \
+	libpylith3d \
 	module \
-	lithomop3d \
+	pylith3d \
 	applications \
 	tests
 

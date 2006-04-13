@@ -5,7 +5,7 @@
 AC_PREREQ(2.59)
 AC_INIT([Lithomop3d], [0.7.1], [willic3@rpi.edu])
 AC_CONFIG_AUX_DIR([./aux-config])
-AC_CONFIG_SRCDIR([lithomop3d/applications/lithomop3dapp.py])
+AC_CONFIG_SRCDIR([pylith3d/applications/pylith3dapp.py])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign])
@@ -65,9 +65,9 @@ CIT_FC_STREAM_IO
 # Checks for library functions.
 
 AC_CONFIG_FILES([Makefile
-                 lithomop3d/Makefile
-                 lithomop3d/liblithomop3d/Makefile
-                 lithomop3d/module/Makefile])
+                 pylith3d/Makefile
+                 pylith3d/libpylith3d/Makefile
+                 pylith3d/module/Makefile])
 AC_OUTPUT
 
 dnl end of configure.ac
