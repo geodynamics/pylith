@@ -35,7 +35,7 @@
 # some memory allocation.  Additional code sections will call the main elastic
 # and time-dependent solution drivers, which are presently f77 subroutines.
 #
-# The code here should be executed after all initializations in Lithomop3d_scan.py
+# The code here should be executed after all initializations in Pylith3d_scan.py
 # have been performed, including reading of the keyword=value file.
 #
 
@@ -43,61 +43,61 @@
 from pyre.components.Component import Component
 
 
-class Lithomop3d_setup(Component):
+class Pylith3d_setup(Component):
 
     def initialize(self, scanner):
-        lm3dscan = scanner
-        lm3dscan.preinitialize()
+        pl3dscan = scanner
+        pl3dscan.preinitialize()
 
 	print ""
-        print "Hello from lm3dsetup.initialize (begin)!"
+        print "Hello from pl3dsetup.initialize (begin)!"
         print "Importing values from scanning phase:"
 
-        # Parameters needed from Lithomop3d_scan.py.
+        # Parameters needed from Pylith3d_scan.py.
         # These parameters, which may be modified in the run function, should all be
-        # available to Lithomop3d_run.py.  Inventory items are not altered here and
-        # may be accessed from Lithomop3d_scan.py.
+        # available to Pylith3d_run.py.  Inventory items are not altered here and
+        # may be accessed from Pylith3d_scan.py.
 
-        self.winklerScaleX = lm3dscan.winklerScaleX
-        self.winklerScaleY = lm3dscan.winklerScaleY
-        self.winklerScaleZ = lm3dscan.winklerScaleZ
+        self.winklerScaleX = pl3dscan.winklerScaleX
+        self.winklerScaleY = pl3dscan.winklerScaleY
+        self.winklerScaleZ = pl3dscan.winklerScaleZ
 
-        self.stressTolerance = lm3dscan.stressTolerance
-        self.minimumStrainPerturbation = lm3dscan.minimumStrainPerturbation
-        self.initialStrainPerturbation = lm3dscan.initialStrainPerturbation
+        self.stressTolerance = pl3dscan.stressTolerance
+        self.minimumStrainPerturbation = pl3dscan.minimumStrainPerturbation
+        self.initialStrainPerturbation = pl3dscan.initialStrainPerturbation
 
-        self.usePreviousDisplacementFlag = lm3dscan.usePreviousDisplacementFlag
+        self.usePreviousDisplacementFlag = pl3dscan.usePreviousDisplacementFlag
 
-        self.gravityX = lm3dscan.gravityX
-        self.gravityY = lm3dscan.gravityY
-        self.gravityZ = lm3dscan.gravityZ
+        self.gravityX = pl3dscan.gravityX
+        self.gravityY = pl3dscan.gravityY
+        self.gravityZ = pl3dscan.gravityZ
 
-        self.prestressAutoComputePoisson = lm3dscan.prestressAutoComputePoisson
-        self.prestressAutoComputeYoungs = lm3dscan.prestressAutoComputeYoungs
-        self.prestressScaleXx = lm3dscan.prestressScaleXx
-        self.prestressScaleYy = lm3dscan.prestressScaleYy
-        self.prestressScaleZz = lm3dscan.prestressScaleZz
-        self.prestressScaleXy = lm3dscan.prestressScaleXy
-        self.prestressScaleXz = lm3dscan.prestressScaleXz
-        self.prestressScaleYz = lm3dscan.prestressScaleYz
+        self.prestressAutoComputePoisson = pl3dscan.prestressAutoComputePoisson
+        self.prestressAutoComputeYoungs = pl3dscan.prestressAutoComputeYoungs
+        self.prestressScaleXx = pl3dscan.prestressScaleXx
+        self.prestressScaleYy = pl3dscan.prestressScaleYy
+        self.prestressScaleZz = pl3dscan.prestressScaleZz
+        self.prestressScaleXy = pl3dscan.prestressScaleXy
+        self.prestressScaleXz = pl3dscan.prestressScaleXz
+        self.prestressScaleYz = pl3dscan.prestressScaleYz
 
-        self.winklerSlipScaleX = lm3dscan.winklerSlipScaleX
-        self.winklerSlipScaleY = lm3dscan.winklerSlipScaleY
-        self.winklerSlipScaleZ = lm3dscan.winklerSlipScaleZ
+        self.winklerSlipScaleX = pl3dscan.winklerSlipScaleX
+        self.winklerSlipScaleY = pl3dscan.winklerSlipScaleY
+        self.winklerSlipScaleZ = pl3dscan.winklerSlipScaleZ
 
-        self.f77StandardInput = lm3dscan.f77StandardInput
-        self.f77StandardOutput = lm3dscan.f77StandardOutput
-        self.f77FileInput = lm3dscan.f77FileInput
-        self.f77AsciiOutput = lm3dscan.f77AsciiOutput
-        self.f77PlotOutput = lm3dscan.f77PlotOutput
-        self.f77UcdOutput = lm3dscan.f77UcdOutput
+        self.f77StandardInput = pl3dscan.f77StandardInput
+        self.f77StandardOutput = pl3dscan.f77StandardOutput
+        self.f77FileInput = pl3dscan.f77FileInput
+        self.f77AsciiOutput = pl3dscan.f77AsciiOutput
+        self.f77PlotOutput = pl3dscan.f77PlotOutput
+        self.f77UcdOutput = pl3dscan.f77UcdOutput
 
                                                                    
         # Initialize and define some integer parameters based on string
         # or logical parameters in python
 
         self.quadratureOrderInt = 0
-        if lm3dscan.quadratureOrder == "Full":
+        if pl3dscan.quadratureOrder == "Full":
             self.quadratureOrderInt = 1
         elif quadratureOrder == "Reduced":
             self.quadratureOrderInt = 2
@@ -107,151 +107,151 @@ class Lithomop3d_setup(Component):
             self.quadratureOrderInt = 1
 
         self.asciiOutputInt = 0
-        if lm3dscan.inventory.asciiOutput == "none":
+        if pl3dscan.inventory.asciiOutput == "none":
             self.asciiOutputInt = 0
-        elif lm3dscan.inventory.asciiOutput == "echo":
+        elif pl3dscan.inventory.asciiOutput == "echo":
             self.asciiOutputInt = 1
         else:
             self.asciiOutputInt = 2
             
         self.plotOutputInt = 0
-        if lm3dscan.inventory.plotOutput == "none":
+        if pl3dscan.inventory.plotOutput == "none":
             self.plotOutputInt = 0
-        elif lm3dscan.inventory.plotOutput == "ascii":
+        elif pl3dscan.inventory.plotOutput == "ascii":
             self.plotOutputInt = 1
         else:
             self.plotOutputInt = 2
             
         self.ucdOutputInt = 0
-        if lm3dscan.inventory.ucdOutput == True:
+        if pl3dscan.inventory.ucdOutput == True:
             self.ucdOutputInt = 1
             
         self.debuggingOutputInt = 0
-        if lm3dscan.inventory.debuggingOutput:
+        if pl3dscan.inventory.debuggingOutput:
             self.debuggingOutputInt = 1
         else:
             self.debuggingOutputInt = 0
 
         self.autoRotateSlipperyNodesInt = 0
-        if lm3dscan.inventory.autoRotateSlipperyNodes:
+        if pl3dscan.inventory.autoRotateSlipperyNodes:
             self.autoRotateSlipperyNodesInt = 2
         else:
             self.autoRotateSlipperyNodesInt = 1
 
         # Get some parameters from the inventory list.
-        self.title = lm3dscan.inventory.title
-        self.numberCycles = lm3dscan.inventory.numberCycles
+        self.title = pl3dscan.inventory.title
+        self.numberCycles = pl3dscan.inventory.numberCycles
 
-        # Category 2 parameters needed from lm3dscan._init.  These parameters are
+        # Category 2 parameters needed from pl3dscan._init.  These parameters are
         # not meant to be altered by the user.
         
 	# Approximate memory allocation info:
-	self.memorySize = lm3dscan._memorySize
-	self.intSize = lm3dscan._intSize
-	self.doubleSize = lm3dscan._doubleSize
+	self.memorySize = pl3dscan._memorySize
+	self.intSize = pl3dscan._intSize
+	self.doubleSize = pl3dscan._doubleSize
 
         # First get all filenames
-        self.asciiOutputFile = lm3dscan._asciiOutputFile
-        self.plotOutputFile = lm3dscan._plotOutputFile
-        self.ucdOutputRoot = lm3dscan._ucdOutputRoot
-        self.coordinateInputFile = lm3dscan._coordinateInputFile
-        self.bcInputFile = lm3dscan._bcInputFile
-        self.winklerInputFile = lm3dscan._winklerInputFile
-        self.rotationInputFile = lm3dscan._rotationInputFile
-        self.timeStepInputFile = lm3dscan._timeStepInputFile
-        self.fullOutputInputFile = lm3dscan._fullOutputInputFile
-        self.stateVariableInputFile = lm3dscan._stateVariableInputFile
-        self.loadHistoryInputFile = lm3dscan._loadHistoryInputFile
-        self.materialPropertiesInputFile = lm3dscan._materialPropertiesInputFile
-        self.materialHistoryInputFile = lm3dscan._materialHistoryInputFile
-        self.connectivityInputFile = lm3dscan._connectivityInputFile
-        self.prestressInputFile = lm3dscan._prestressInputFile
-        self.tractionInputFile = lm3dscan._tractionInputFile
-        self.splitNodeInputFile = lm3dscan._splitNodeInputFile
-        self.slipperyNodeInputFile = lm3dscan._slipperyNodeInputFile
-        self.differentialForceInputFile = lm3dscan._differentialForceInputFile
-        self.slipperyWinklerInputFile = lm3dscan._slipperyWinklerInputFile
+        self.asciiOutputFile = pl3dscan._asciiOutputFile
+        self.plotOutputFile = pl3dscan._plotOutputFile
+        self.ucdOutputRoot = pl3dscan._ucdOutputRoot
+        self.coordinateInputFile = pl3dscan._coordinateInputFile
+        self.bcInputFile = pl3dscan._bcInputFile
+        self.winklerInputFile = pl3dscan._winklerInputFile
+        self.rotationInputFile = pl3dscan._rotationInputFile
+        self.timeStepInputFile = pl3dscan._timeStepInputFile
+        self.fullOutputInputFile = pl3dscan._fullOutputInputFile
+        self.stateVariableInputFile = pl3dscan._stateVariableInputFile
+        self.loadHistoryInputFile = pl3dscan._loadHistoryInputFile
+        self.materialPropertiesInputFile = pl3dscan._materialPropertiesInputFile
+        self.materialHistoryInputFile = pl3dscan._materialHistoryInputFile
+        self.connectivityInputFile = pl3dscan._connectivityInputFile
+        self.prestressInputFile = pl3dscan._prestressInputFile
+        self.tractionInputFile = pl3dscan._tractionInputFile
+        self.splitNodeInputFile = pl3dscan._splitNodeInputFile
+        self.slipperyNodeInputFile = pl3dscan._slipperyNodeInputFile
+        self.differentialForceInputFile = pl3dscan._differentialForceInputFile
+        self.slipperyWinklerInputFile = pl3dscan._slipperyWinklerInputFile
 
         # Parameters that are invariant for this geometry type
-        self.geometryType = lm3dscan._geometryType
-        self.geometryTypeInt = lm3dscan._geometryTypeInt
-        self.numberSpaceDimensions = lm3dscan._numberSpaceDimensions
-        self.numberDegreesFreedom = lm3dscan._numberDegreesFreedom
-        self.stateVariableDimension = lm3dscan._stateVariableDimension
-        self.materialMatrixDimension = lm3dscan._materialMatrixDimension
-        self.numberSkewDimensions = lm3dscan._numberSkewDimensions
-        self.numberSlipDimensions = lm3dscan._numberSlipDimensions
-        self.numberSlipNeighbors = lm3dscan._numberSlipNeighbors
-        self.numberTractionDirections = lm3dscan._numberTractionDirections
-        self.listIddmat = lm3dscan._listIddmat
+        self.geometryType = pl3dscan._geometryType
+        self.geometryTypeInt = pl3dscan._geometryTypeInt
+        self.numberSpaceDimensions = pl3dscan._numberSpaceDimensions
+        self.numberDegreesFreedom = pl3dscan._numberDegreesFreedom
+        self.stateVariableDimension = pl3dscan._stateVariableDimension
+        self.materialMatrixDimension = pl3dscan._materialMatrixDimension
+        self.numberSkewDimensions = pl3dscan._numberSkewDimensions
+        self.numberSlipDimensions = pl3dscan._numberSlipDimensions
+        self.numberSlipNeighbors = pl3dscan._numberSlipNeighbors
+        self.numberTractionDirections = pl3dscan._numberTractionDirections
+        self.listIddmat = pl3dscan._listIddmat
 
         # Invariant parameters related to element type
-        self.maxElementEquations = lm3dscan._maxElementEquations
-        self.maxNumberVolumeElementFamilies = lm3dscan._maxNumberVolumeElementFamilies
-        self.pointerToListArrayNumberElementNodesBase = lm3dscan._pointerToListArrayNumberElementNodesBase
+        self.maxElementEquations = pl3dscan._maxElementEquations
+        self.maxNumberVolumeElementFamilies = pl3dscan._maxNumberVolumeElementFamilies
+        self.pointerToListArrayNumberElementNodesBase = pl3dscan._pointerToListArrayNumberElementNodesBase
 
         # Invariant parameters related to material model
-        self.maxMaterialModels = lm3dscan._maxMaterialModels
-        self.maxStateVariables = lm3dscan._maxStateVariables
-        self.maxState0Variables = lm3dscan._maxState0Variables
-        self.pointerToMaterialModelInfo = lm3dscan._pointerToMaterialModelInfo
+        self.maxMaterialModels = pl3dscan._maxMaterialModels
+        self.maxStateVariables = pl3dscan._maxStateVariables
+        self.maxState0Variables = pl3dscan._maxState0Variables
+        self.pointerToMaterialModelInfo = pl3dscan._pointerToMaterialModelInfo
 
         # Parameters derived from values in the inventory or the category 2 parameters.
-        self.analysisTypeInt = lm3dscan._analysisTypeInt
-        self.prestressAutoComputeInt = lm3dscan._prestressAutoComputeInt
-        self.prestressAutoChangeElasticPropsInt = lm3dscan._prestressAutoChangeElasticPropsInt
+        self.analysisTypeInt = pl3dscan._analysisTypeInt
+        self.prestressAutoComputeInt = pl3dscan._prestressAutoComputeInt
+        self.prestressAutoChangeElasticPropsInt = pl3dscan._prestressAutoChangeElasticPropsInt
 
         # Parameters derived from the number of entries in a file
-        self.numberNodes = lm3dscan._numberNodes
-        self.coordinateScaleFactor = lm3dscan._coordinateScaleFactor
+        self.numberNodes = pl3dscan._numberNodes
+        self.coordinateScaleFactor = pl3dscan._coordinateScaleFactor
 
-        self.numberBcEntries = lm3dscan._numberBcEntries
-        self.displacementScaleFactor = lm3dscan._displacementScaleFactor
-        self.velocityScaleFactor = lm3dscan._velocityScaleFactor
-        self.forceScaleFactor = lm3dscan._forceScaleFactor
+        self.numberBcEntries = pl3dscan._numberBcEntries
+        self.displacementScaleFactor = pl3dscan._displacementScaleFactor
+        self.velocityScaleFactor = pl3dscan._velocityScaleFactor
+        self.forceScaleFactor = pl3dscan._forceScaleFactor
 
-        self.numberWinklerEntries = lm3dscan._numberWinklerEntries
-        self.numberWinklerForces = lm3dscan._numberWinklerForces
+        self.numberWinklerEntries = pl3dscan._numberWinklerEntries
+        self.numberWinklerForces = pl3dscan._numberWinklerForces
 
-        self.numberRotationEntries = lm3dscan._numberRotationEntries
-        self.rotationScaleFactor = lm3dscan._rotationScaleFactor
+        self.numberRotationEntries = pl3dscan._numberRotationEntries
+        self.rotationScaleFactor = pl3dscan._rotationScaleFactor
 
-        self.numberTimeStepGroups = lm3dscan._numberTimeStepGroups
-        self.totalNumberTimeSteps = lm3dscan._totalNumberTimeSteps
-        self.timeScaleFactor = lm3dscan._timeScaleFactor
+        self.numberTimeStepGroups = pl3dscan._numberTimeStepGroups
+        self.totalNumberTimeSteps = pl3dscan._totalNumberTimeSteps
+        self.timeScaleFactor = pl3dscan._timeScaleFactor
 
-        self.numberFullOutputs = lm3dscan._numberFullOutputs
+        self.numberFullOutputs = pl3dscan._numberFullOutputs
 
-        self.numberLoadHistories = lm3dscan._numberLoadHistories
+        self.numberLoadHistories = pl3dscan._numberLoadHistories
 
-        self.numberMaterials = lm3dscan._numberMaterials
-        self.pointerToListArrayPropertyList = lm3dscan._pointerToListArrayPropertyList
+        self.numberMaterials = pl3dscan._numberMaterials
+        self.pointerToListArrayPropertyList = pl3dscan._pointerToListArrayPropertyList
 
-        self.numberVolumeElements = lm3dscan._numberVolumeElements
-        self.numberVolumeElementFamilies = lm3dscan._numberVolumeElementFamilies
-        self.volumeElementType = lm3dscan._volumeElementType
-        self.pointerToVolumeElementFamilyList = lm3dscan._pointerToVolumeElementFamilyList
+        self.numberVolumeElements = pl3dscan._numberVolumeElements
+        self.numberVolumeElementFamilies = pl3dscan._numberVolumeElementFamilies
+        self.volumeElementType = pl3dscan._volumeElementType
+        self.pointerToVolumeElementFamilyList = pl3dscan._pointerToVolumeElementFamilyList
 
-        self.numberPrestressEntries = lm3dscan._numberPrestressEntries
+        self.numberPrestressEntries = pl3dscan._numberPrestressEntries
 
-        self.numberTractionBc = lm3dscan._numberTractionBc
-        self.tractionBcScaleFactor = lm3dscan._tractionBcScaleFactor
+        self.numberTractionBc = pl3dscan._numberTractionBc
+        self.tractionBcScaleFactor = pl3dscan._tractionBcScaleFactor
 
-        self.numberSplitNodeEntries = lm3dscan._numberSplitNodeEntries
+        self.numberSplitNodeEntries = pl3dscan._numberSplitNodeEntries
 
-        self.numberSlipperyNodeEntries = lm3dscan._numberSlipperyNodeEntries
-        self.numberDifferentialForceEntries = lm3dscan._numberDifferentialForceEntries
-        self.numberSlipperyWinklerEntries = lm3dscan._numberSlipperyWinklerEntries
-        self.numberSlipperyWinklerForces = lm3dscan._numberSlipperyWinklerForces
+        self.numberSlipperyNodeEntries = pl3dscan._numberSlipperyNodeEntries
+        self.numberDifferentialForceEntries = pl3dscan._numberDifferentialForceEntries
+        self.numberSlipperyWinklerEntries = pl3dscan._numberSlipperyWinklerEntries
+        self.numberSlipperyWinklerForces = pl3dscan._numberSlipperyWinklerForces
 
 	print ""
-        print "Hello from lm3dsetup.initialize (end)!"
+        print "Hello from pl3dsetup.initialize (end)!"
 
         return
 
     def run(self):
         from ElementTypeDef import ElementTypeDef
-        import lithomop3d
+        import pylith3d
 
         # This function performs a lot of memory allocation, and also bundles several
         # scalar values into lists.  It is assumed that the scalar values contained in
@@ -260,11 +260,11 @@ class Lithomop3d_setup(Component):
         # global variables, however.
 
 	print ""
-        print "Hello from lm3dsetup.run (begin)!"
+        print "Hello from pl3dsetup.run (begin)!"
         print "Reading problem definition and allocating storage:"
 
-        lithomop3d.PetscInitialize()
-        self.autoprestrStage, self.elasticStage, self.viscousStage, self.iterateEvent = lithomop3d.setupPETScLogging()
+        pylith3d.PetscInitialize()
+        self.autoprestrStage, self.elasticStage, self.viscousStage, self.iterateEvent = pylith3d.setupPETScLogging()
 
         eltype=ElementTypeDef()
 
@@ -445,7 +445,7 @@ class Lithomop3d_setup(Component):
             self.winklerScaleX,
             self.winklerScaleY,
             self.winklerScaleZ]
-        self.pointerToListArrayWscal = lithomop3d.doubleListToArray(
+        self.pointerToListArrayWscal = pylith3d.doubleListToArray(
             self.listWscal)
 	self.memorySize += 3*self.doubleSize
 
@@ -453,7 +453,7 @@ class Lithomop3d_setup(Component):
             self.gravityX.value,
             self.gravityY.value,
             self.gravityZ.value]
-        self.pointerToListArrayGrav = lithomop3d.doubleListToArray(
+        self.pointerToListArrayGrav = pylith3d.doubleListToArray(
             self.listGrav)
 	self.memorySize += 3*self.doubleSize
 
@@ -464,7 +464,7 @@ class Lithomop3d_setup(Component):
             self.prestressScaleXy,
             self.prestressScaleXz,
             self.prestressScaleYz]
-        self.pointerToListArrayPrscal = lithomop3d.doubleListToArray(
+        self.pointerToListArrayPrscal = pylith3d.doubleListToArray(
             self.listPrscal)
 	self.memorySize += 6*self.doubleSize
                                   
@@ -472,13 +472,13 @@ class Lithomop3d_setup(Component):
             self.winklerSlipScaleX,
             self.winklerSlipScaleY,
             self.winklerSlipScaleZ]
-        self.pointerToListArrayWxscal = lithomop3d.doubleListToArray(
+        self.pointerToListArrayWxscal = pylith3d.doubleListToArray(
             self.listWxscal)
 	self.memorySize += 3*self.doubleSize
 
         # Write out global parameters
         
-        lithomop3d.write_global_info(
+        pylith3d.write_global_info(
             self.title,
             self.asciiOutputInt,
             self.plotOutputInt,
@@ -506,38 +506,38 @@ class Lithomop3d_setup(Component):
         self.numberVolumeElementGaussPoints = eltype.numberVolumeElementGaussPoints
         self.numberVolumeElementEquations = eltype.numberVolumeElementEquations
 	self.connectivitySize = self.numberVolumeElements*self.numberVolumeElementNodes
-        self.pointerToListArrayElementTypeInfo = lithomop3d.intListToArray(
+        self.pointerToListArrayElementTypeInfo = pylith3d.intListToArray(
             self.elementTypeInfo)
 	self.memorySize += 4*self.intSize
 
         # Node-based info (coordinates, displacement arrays, BC, and skew BC).
 
-        self.pointerToX = lithomop3d.allocateDouble(
+        self.pointerToX = pylith3d.allocateDouble(
             self.numberSpaceDimensions*self.numberNodes)
 	self.memorySize += self.numberSpaceDimensions* \
 	    self.numberNodes* \
 	    self.doubleSize
-        self.pointerToIbond = lithomop3d.allocateInt(
+        self.pointerToIbond = pylith3d.allocateInt(
             self.numberDegreesFreedom*self.numberNodes)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberNodes* \
 	    self.intSize
-        self.pointerToBond = lithomop3d.allocateDouble(
+        self.pointerToBond = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberNodes)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberNodes* \
 	    self.doubleSize
         # For now, try allocating everything whether it is used or not.
         #        if self.numberRotationEntries != 0 or self.autoRotateSlipperyNodes:
-        #            self.pointerToSkew = lithomop3d.allocateDouble(
+        #            self.pointerToSkew = pylith3d.allocateDouble(
         #                self.numberSkewDimensions*self.numberNodes)
-        self.pointerToSkew = lithomop3d.allocateDouble(
+        self.pointerToSkew = pylith3d.allocateDouble(
             self.numberSkewDimensions*self.numberNodes)
 	self.memorySize += self.numberSkewDimensions* \
 	    self.numberNodes* \
 	    self.doubleSize
 
-        lithomop3d.read_coords(
+        pylith3d.read_coords(
             self.pointerToX,
             self.coordinateScaleFactor,
             self.numberNodes,
@@ -550,7 +550,7 @@ class Lithomop3d_setup(Component):
             self.asciiOutputFile,
             self.plotOutputFile)
 
-        self.numberConcForces = lithomop3d.read_bc(
+        self.numberConcForces = pylith3d.read_bc(
             self.pointerToBond,
             self.displacementScaleFactor,
             self.velocityScaleFactor,
@@ -564,7 +564,7 @@ class Lithomop3d_setup(Component):
             self.bcInputFile,
             self.asciiOutputFile)
 
-        lithomop3d.read_skew(
+        pylith3d.read_skew(
             self.pointerToSkew,
             self.rotationScaleFactor,
             self.numberRotationEntries,
@@ -578,7 +578,7 @@ class Lithomop3d_setup(Component):
 
 
         # Output stress computation and subiteration parameters.
-        lithomop3d.write_strscomp(
+        pylith3d.write_strscomp(
             self.stressTolerance.value,
             self.minimumStrainPerturbation,
             self.initialStrainPerturbation,
@@ -586,61 +586,61 @@ class Lithomop3d_setup(Component):
             self.asciiOutputInt,
             self.asciiOutputFile)
         
-        lithomop3d.write_subiter(
+        pylith3d.write_subiter(
             self.usePreviousDisplacementFlag,
             self.f77AsciiOutput,
             self.asciiOutputInt,
             self.asciiOutputFile)
                              
         # Allocate and read time step, time output, and load history info.
-        self.pointerToHistry = lithomop3d.allocateDouble(
+        self.pointerToHistry = pylith3d.allocateDouble(
             (self.totalNumberTimeSteps+1)*self.numberLoadHistories)
 	self.memorySize += (self.totalNumberTimeSteps+1)* \
 	    self.numberLoadHistories* \
 	    self.doubleSize
-        self.pointerToMaxstp = lithomop3d.allocateInt(
+        self.pointerToMaxstp = pylith3d.allocateInt(
             self.numberTimeStepGroups)
 	self.memorySize += self.numberTimeStepGroups*self.intSize
-        self.pointerToDelt = lithomop3d.allocateDouble(
+        self.pointerToDelt = pylith3d.allocateDouble(
             self.numberTimeStepGroups)
 	self.memorySize += self.numberTimeStepGroups*self.doubleSize
-        self.pointerToAlfa = lithomop3d.allocateDouble(
+        self.pointerToAlfa = pylith3d.allocateDouble(
             self.numberTimeStepGroups)
 	self.memorySize += self.numberTimeStepGroups*self.doubleSize
-        self.pointerToMaxit = lithomop3d.allocateInt(
+        self.pointerToMaxit = pylith3d.allocateInt(
             self.numberTimeStepGroups)
 	self.memorySize += self.numberTimeStepGroups*self.intSize
-        self.pointerToNtdinit = lithomop3d.allocateInt(
+        self.pointerToNtdinit = pylith3d.allocateInt(
             self.numberTimeStepGroups)
 	self.memorySize += self.numberTimeStepGroups*self.intSize
-        self.pointerToLgdef = lithomop3d.allocateInt(
+        self.pointerToLgdef = pylith3d.allocateInt(
             self.numberTimeStepGroups)
 	self.memorySize += self.numberTimeStepGroups*self.intSize
-        self.pointerToUtol = lithomop3d.allocateDouble(
+        self.pointerToUtol = pylith3d.allocateDouble(
             self.numberTimeStepGroups)
 	self.memorySize += self.numberTimeStepGroups*self.doubleSize
-        self.pointerToFtol = lithomop3d.allocateDouble(
+        self.pointerToFtol = pylith3d.allocateDouble(
             self.numberTimeStepGroups)
 	self.memorySize += self.numberTimeStepGroups*self.doubleSize
-        self.pointerToEtol = lithomop3d.allocateDouble(
+        self.pointerToEtol = pylith3d.allocateDouble(
             self.numberTimeStepGroups)
 	self.memorySize += self.numberTimeStepGroups*self.doubleSize
-        self.pointerToItmax = lithomop3d.allocateInt(
+        self.pointerToItmax = pylith3d.allocateInt(
             self.numberTimeStepGroups)
 	self.memorySize += self.numberTimeStepGroups*self.intSize
-        self.pointerToIprint = lithomop3d.allocateInt(
+        self.pointerToIprint = pylith3d.allocateInt(
             self.numberFullOutputs)
 	self.memorySize += self.numberFullOutputs*self.intSize
-        self.pointerToTimes = lithomop3d.allocateDouble(
+        self.pointerToTimes = pylith3d.allocateDouble(
             self.totalNumberTimeSteps+1)
 	self.memorySize += (self.totalNumberTimeSteps+1)*self.doubleSize
-        self.pointerToIstatout = lithomop3d.allocateInt(
+        self.pointerToIstatout = pylith3d.allocateInt(
             3*self.maxStateVariables)
 	self.memorySize += 3*self.maxStateVariables*self.intSize
-        self.pointerToNstatout = lithomop3d.allocateInt(3)
+        self.pointerToNstatout = pylith3d.allocateInt(3)
 	self.memorySize += 3*self.intSize
 
-        lithomop3d.read_timdat(
+        pylith3d.read_timdat(
             self.pointerToDelt,
             self.pointerToAlfa,
             self.pointerToUtol,
@@ -661,7 +661,7 @@ class Lithomop3d_setup(Component):
             self.timeStepInputFile,
             self.asciiOutputFile)
 
-        lithomop3d.read_fuldat(
+        pylith3d.read_fuldat(
             self.pointerToIprint,
             self.numberFullOutputs,
             self.analysisTypeInt,
@@ -676,7 +676,7 @@ class Lithomop3d_setup(Component):
             self.asciiOutputFile,
             self.plotOutputFile)
 
-        lithomop3d.read_stateout(
+        pylith3d.read_stateout(
             self.pointerToIstatout,
             self.pointerToNstatout,
             self.f77FileInput,
@@ -688,7 +688,7 @@ class Lithomop3d_setup(Component):
             self.asciiOutputFile,
             self.plotOutputFile)
 
-        lithomop3d.read_hist(
+        pylith3d.read_hist(
             self.pointerToHistry,
             self.pointerToTimes,
             self.numberLoadHistories,
@@ -703,7 +703,7 @@ class Lithomop3d_setup(Component):
             
 
         # Allocate and read info on material properties, connectivities, and prestresses
-        lithomop3d.write_element_info(
+        pylith3d.write_element_info(
             self.numberVolumeElements,
             self.quadratureOrderInt,
             self.prestressAutoComputeInt,
@@ -714,33 +714,33 @@ class Lithomop3d_setup(Component):
             self.asciiOutputInt,
             self.asciiOutputFile)
 
-        self.pointerToIen = lithomop3d.allocateInt(
+        self.pointerToIen = pylith3d.allocateInt(
             self.numberVolumeElementNodes*self.numberVolumeElements)
 	self.memorySize += self.numberVolumeElementNodes* \
                            self.numberVolumeElements*self.intSize
-        self.pointerToIens = lithomop3d.allocateInt(
+        self.pointerToIens = pylith3d.allocateInt(
             self.numberVolumeElementNodes*self.numberVolumeElements)
 	self.memorySize += self.numberVolumeElementNodes* \
                            self.numberVolumeElements*self.intSize
-	self.pointerToMat = lithomop3d.allocateInt(
+	self.pointerToMat = pylith3d.allocateInt(
 	    self.numberVolumeElements)
         self.memorySize += self.numberVolumeElements*self.intSize
-        self.pointerToIvfamily = lithomop3d.allocateInt(
+        self.pointerToIvfamily = pylith3d.allocateInt(
             5*self.numberVolumeElementFamilies)
         self.memorySize += 5*self.numberVolumeElementFamilies*self.intSize
 
-        self.pointerToIvftmp = lithomop3d.allocateInt(
+        self.pointerToIvftmp = pylith3d.allocateInt(
             self.numberVolumeElementFamilies)
         self.memorySize += self.numberVolumeElementFamilies*self.intSize
 
-        self.pointerToIndxiel = lithomop3d.allocateInt(
+        self.pointerToIndxiel = pylith3d.allocateInt(
             self.numberVolumeElements)
 	self.memorySize += self.numberVolumeElements*self.intSize
 
         if self.numberPrestressEntries != 0 or self.prestressAutoComputeInt != 0:
             self.prestressFlag = 1
 
-        lithomop3d.read_connect(
+        pylith3d.read_connect(
             self.pointerToIen,
             self.pointerToMat,
             self.numberVolumeElementNodes,
@@ -750,7 +750,7 @@ class Lithomop3d_setup(Component):
             self.f77FileInput,
             self.connectivityInputFile)
 
-	self.elementSizeInfo = lithomop3d.sort_elements(
+	self.elementSizeInfo = pylith3d.sort_elements(
             self.pointerToIen,
             self.pointerToMat,
             self.pointerToMaterialModelInfo,
@@ -764,11 +764,11 @@ c********  finish fixing from here ************
         self.state0Size = self.elementSizeInfo[1]
         self.propertySize = self.elementSizeInfo[2]
 
-        self.pointerToMhist = lithomop3d.allocateInt(
+        self.pointerToMhist = pylith3d.allocateInt(
             self.propertySize)
 	self.memorySize += self.propertySize*self.intSize
 
-        lithomop3d.write_props(
+        pylith3d.write_props(
             self.pointerToListArrayPropertyList,
             self.pointerToListArrayGrav,
             self.pointerToIvfamily,
@@ -782,7 +782,7 @@ c********  finish fixing from here ************
             self.asciiOutputFile,
             self.plotOutputFile)
 
-        lithomop3d.read_mathist(
+        pylith3d.read_mathist(
             self.pointerToMhist,
             self.pointerToIvfamily,
             self.numberVolumeElementFamilies,
@@ -799,7 +799,7 @@ c********  finish fixing from here ************
 
         # write mesh info to UCD file, if requested
         if self.ucdOutputInt == 1:
-            lithomop3d.write_ucd_mesh(
+            pylith3d.write_ucd_mesh(
                 self.pointerToX,
                 self.numberNodes,
                 self.pointerToIen,
@@ -815,7 +815,7 @@ c********  finish fixing from here ************
                 self.f77UcdOutput,
                 self.ucdOutputRoot)
                 
-        # lithomop3d.read_prestr(
+        # pylith3d.read_prestr(
         #     self.pointerToStn,
         #     self.pointerToSt0,
         #     self.pointerToListArrayPrscal,
@@ -833,43 +833,43 @@ c********  finish fixing from here ************
 
 
         # Read traction, split node, and slippery node input files.
-        self.pointerToIelno = lithomop3d.allocateInt(
+        self.pointerToIelno = pylith3d.allocateInt(
             self.numberTractionBc)
-        self.pointerToIside = lithomop3d.allocateInt(
+        self.pointerToIside = pylith3d.allocateInt(
             self.numberTractionBc)
-        self.pointerToIhistry = lithomop3d.allocateInt(
+        self.pointerToIhistry = pylith3d.allocateInt(
             self.numberTractionBc)
 	#  Note that the following dimension is definitely wrong.
-        self.pointerToPres = lithomop3d.allocateDouble(
+        self.pointerToPres = pylith3d.allocateDouble(
             self.numberTractionBc)
-        self.pointerToPdir = lithomop3d.allocateDouble(
+        self.pointerToPdir = pylith3d.allocateDouble(
             self.numberTractionDirections*self.numberTractionBc)
-        self.pointerToNfault = lithomop3d.allocateInt(
+        self.pointerToNfault = pylith3d.allocateInt(
             3*self.numberSplitNodeEntries)
 	self.memorySize += 3*self.numberSplitNodeEntries*self.intSize
-        self.pointerToFault = lithomop3d.allocateDouble(
+        self.pointerToFault = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberSplitNodeEntries)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberSplitNodeEntries*self.doubleSize
-        self.pointerToNslip = lithomop3d.allocateInt(
+        self.pointerToNslip = pylith3d.allocateInt(
             self.numberSlipDimensions*self.numberSlipperyNodeEntries)
 	self.memorySize += self.numberSlipDimensions* \
 	    self.numberSlipperyNodeEntries*self.intSize
-        self.pointerToIdhist = lithomop3d.allocateInt(
+        self.pointerToIdhist = pylith3d.allocateInt(
             self.numberNodes)
 	self.memorySize += self.numberNodes*self.intSize
-        self.pointerToDiforc = lithomop3d.allocateDouble(
+        self.pointerToDiforc = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberNodes)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberNodes*self.doubleSize
         # For now, try allocating everything whether it is used or not.
         #        if self.numberDifferentialForceEntries != 0:
-        #            self.pointerToIdhist = lithomop3d.allocateInt(
+        #            self.pointerToIdhist = pylith3d.allocateInt(
         #                self.numberNodes)
-        #            self.pointerToDiforc = lithomop3d.allocateDouble(
+        #            self.pointerToDiforc = pylith3d.allocateDouble(
         #                self.numberDegreesFreedom*self.numberNodes)
 
-        # lithomop3d.read_traction(
+        # pylith3d.read_traction(
         #     self.pointerToPres,
         #     self.pointerToPdir,
         #     self.tractionBcScaleFactor,
@@ -885,7 +885,7 @@ c********  finish fixing from here ************
         #     self.tractionInputFile,
         #     self.asciiOutputFile)
 
-        self.totalNumberSplitNodes = lithomop3d.read_split(
+        self.totalNumberSplitNodes = pylith3d.read_split(
             self.pointerToFault,
             self.pointerToNfault,
             self.pointerToIndxiel,
@@ -901,7 +901,7 @@ c********  finish fixing from here ************
             self.asciiOutputFile,
             self.plotOutputFile)
 
-        self.totalNumberSlipperyNodes = lithomop3d.read_slip(
+        self.totalNumberSlipperyNodes = pylith3d.read_slip(
             self.pointerToNslip,
             self.pointerToIndxiel,
             self.numberSlipperyNodeEntries,
@@ -917,7 +917,7 @@ c********  finish fixing from here ************
             self.asciiOutputFile,
             self.plotOutputFile)
 
-        lithomop3d.read_diff(
+        pylith3d.read_diff(
             self.pointerToDiforc,
             self.pointerToNslip,
             self.pointerToIdhist,
@@ -938,11 +938,11 @@ c********  finish fixing from here ************
         # the routine itself to output split node info to a plot file.  It can probably be
         # eliminated in the near future.
         
-        self.pointerToIdftn = lithomop3d.allocateInt(
+        self.pointerToIdftn = pylith3d.allocateInt(
             self.totalNumberSplitNodes)
 	self.memorySize += self.totalNumberSplitNodes*self.intSize
 
-        lithomop3d.id_split(
+        pylith3d.id_split(
             self.pointerToNfault,
             self.pointerToIdftn,
             self.numberNodes,
@@ -958,20 +958,20 @@ c********  finish fixing from here ************
 	self.memorySize -= self.totalNumberSplitNodes*self.intSize
 
         # Determine global equations and store equation numbers in Id and Idx.
-        self.pointerToId = lithomop3d.allocateInt(
+        self.pointerToId = pylith3d.allocateInt(
             self.numberSpaceDimensions*self.numberNodes)
 	self.memorySize += self.numberSpaceDimensions* \
 	    self.numberNodes* \
 	    self.intSize
-        self.pointerToIdx = lithomop3d.allocateInt(
+        self.pointerToIdx = pylith3d.allocateInt(
             self.numberSpaceDimensions*self.numberNodes)
 	self.memorySize += self.numberSpaceDimensions* \
 	    self.numberNodes*self.intSize
-        self.pointerToIdslp = lithomop3d.allocateInt(
+        self.pointerToIdslp = pylith3d.allocateInt(
             self.numberNodes)
 	self.memorySize += self.numberNodes*self.intSize
 
-        self.numberGlobalEquations = lithomop3d.create_id(
+        self.numberGlobalEquations = pylith3d.create_id(
             self.pointerToId,
             self.pointerToIdx,
             self.pointerToIbond,
@@ -981,7 +981,7 @@ c********  finish fixing from here ************
             self.numberNodes,
             self.totalNumberSlipperyNodes)
 
-        self.pointerToIpslp = lithomop3d.allocateInt(
+        self.pointerToIpslp = pylith3d.allocateInt(
             self.numberSlipNeighbors*self.totalNumberSlipperyNodes)
         self.memorySize += self.numberSlipNeighbors* \
                            self.totalNumberSlipperyNodes*self.intSize
@@ -991,19 +991,19 @@ c********  finish fixing from here ************
         # neighboring nodes on the fault so that a best-fit plane can be determined at
         # each node.
         if self.totalNumberSlipperyNodes != 0 and self.autoRotateSlipperyNodesInt ==  2:
-            self.pointerToXtmp = lithomop3d.allocateDouble(
+            self.pointerToXtmp = pylith3d.allocateDouble(
                 self.totalNumberSlipperyNodes)
 	    self.memorySize += self.totalNumberSlipperyNodes*self.doubleSize
-            self.pointerToItmp = lithomop3d.allocateInt(
+            self.pointerToItmp = pylith3d.allocateInt(
                 self.totalNumberSlipperyNodes)
 	    self.memorySize += self.totalNumberSlipperyNodes*self.intSize
-            self.pointerToItmp1 = lithomop3d.allocateInt(
+            self.pointerToItmp1 = pylith3d.allocateInt(
                 self.totalNumberSlipperyNodes)
 	    self.memorySize += self.totalNumberSlipperyNodes*self.intSize
-            self.pointerToItmp2 = lithomop3d.allocateInt(
+            self.pointerToItmp2 = pylith3d.allocateInt(
                 self.totalNumberSlipperyNodes)
 	    self.memorySize += self.totalNumberSlipperyNodes*self.intSize
-            lithomop3d.nfind(
+            pylith3d.nfind(
                 self.pointerToX,
                 self.pointerToXtmp,
                 self.pointerToIdslp,
@@ -1028,20 +1028,20 @@ c********  finish fixing from here ************
         # Read Winkler forces and slippery Winkler forces.  Also, equation info
         # is stored in Iwink and Iwinkx.
         # All input is finished after this section.
-        self.pointerToIwink = lithomop3d.allocateInt(
+        self.pointerToIwink = pylith3d.allocateInt(
             2*self.numberWinklerForces)
 	self.memorySize += 2*self.numberWinklerForces*self.intSize
-        self.pointerToWink = lithomop3d.allocateDouble(
+        self.pointerToWink = pylith3d.allocateDouble(
             self.numberWinklerForces)
 	self.memorySize += self.numberWinklerForces*self.doubleSize
-        self.pointerToWinkx = lithomop3d.allocateDouble(
+        self.pointerToWinkx = pylith3d.allocateDouble(
             self.numberSlipperyWinklerForces)
 	self.memorySize += self.numberSlipperyWinklerForces*self.doubleSize
-        self.pointerToIwinkx = lithomop3d.allocateInt(
+        self.pointerToIwinkx = pylith3d.allocateInt(
             2*self.numberSlipperyWinklerForces)
 	self.memorySize += 2*self.numberSlipperyWinklerForces*self.intSize
 
-        lithomop3d.read_wink(
+        pylith3d.read_wink(
             self.pointerToWink,
             self.pointerToListArrayWscal,
             self.pointerToIwink,
@@ -1055,7 +1055,7 @@ c********  finish fixing from here ************
             self.winklerInputFile,
             self.asciiOutputFile)
 
-        lithomop3d.read_winkx(
+        pylith3d.read_winkx(
             self.pointerToWinkx,
             self.pointerToListArrayWxscal,
             self.pointerToIwinkx,
@@ -1072,23 +1072,23 @@ c********  finish fixing from here ************
             
         # Localize global equation numbers in element index arrays.
         
-        self.pointerToLm = lithomop3d.allocateInt(
+        self.pointerToLm = pylith3d.allocateInt(
             self.numberDegreesFreedom*self.connectivitySize)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.connectivitySize*self.intSize
-        self.pointerToLmx = lithomop3d.allocateInt(
+        self.pointerToLmx = pylith3d.allocateInt(
             self.numberDegreesFreedom*self.connectivitySize)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.connectivitySize*self.intSize
         # For now, try allocating everything whether it is used or not.
         #        if self.numberSplitNodeEntries != 0:
-        #            self.pointerToLmf = lithomop3d.allocateInt(
+        #            self.pointerToLmf = pylith3d.allocateInt(
         #                self.numberElementNodes*self.numberElements)
-        self.pointerToLmf = lithomop3d.allocateInt(
+        self.pointerToLmf = pylith3d.allocateInt(
             self.connectivitySize)
 	self.memorySize += self.connectivitySize*self.intSize
 
-        lithomop3d.local(
+        pylith3d.local(
             self.pointerToId,
             self.numberNodes,
             self.pointerToIen,
@@ -1096,7 +1096,7 @@ c********  finish fixing from here ************
             self.numberVolumeElements,
             self.numberVolumeElementNodes)
 
-        lithomop3d.localf(
+        pylith3d.localf(
             self.pointerToIen,
             self.pointerToLmf,
             self.numberVolumeElements,
@@ -1104,7 +1104,7 @@ c********  finish fixing from here ************
             self.numberSplitNodeEntries,
             self.numberVolumeElementNodes)
 
-        lithomop3d.localx(
+        pylith3d.localx(
             self.pointerToIdx,
             self.numberNodes,
             self.pointerToIen,
@@ -1119,7 +1119,7 @@ c********  finish fixing from here ************
 
         # Allocate and populate sparse matrix arrays.  Some of these are
         # temporary and are then deleted after use.
-        self.workingArraySize = lithomop3d.cmp_stiffsz(
+        self.workingArraySize = pylith3d.cmp_stiffsz(
             self.numberGlobalEquations,
             self.pointerToLm,
             self.pointerToLmx,
@@ -1128,17 +1128,17 @@ c********  finish fixing from here ************
             self.numberVolumeElementNodes)
 
 
-        self.pointerToIndx = lithomop3d.allocateInt(
+        self.pointerToIndx = pylith3d.allocateInt(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.intSize
-        self.pointerToLink = lithomop3d.allocateInt(
+        self.pointerToLink = pylith3d.allocateInt(
             self.workingArraySize)
 	self.memorySize += self.workingArraySize*self.intSize
-        self.pointerToNbrs = lithomop3d.allocateInt(
+        self.pointerToNbrs = pylith3d.allocateInt(
             self.workingArraySize)
 	self.memorySize += self.workingArraySize*self.intSize
 
-        self.stiffnessMatrixInfo = lithomop3d.lnklst(
+        self.stiffnessMatrixInfo = pylith3d.lnklst(
             self.numberGlobalEquations,
             self.pointerToLm,
             self.pointerToLmx,
@@ -1155,10 +1155,10 @@ c********  finish fixing from here ************
         self.stiffnessOffDiagonalSize = self.stiffnessMatrixInfo[1]
 	self.stiffnessTrueSize = self.stiffnessMatrixSize-1
 
-        self.A = lithomop3d.createPETScMat(self.numberGlobalEquations)
+        self.A = pylith3d.createPETScMat(self.numberGlobalEquations)
 	self.memorySize += self.stiffnessMatrixSize*self.intSize
 
-        self.stiffnessMatrixStats = lithomop3d.makemsr(
+        self.stiffnessMatrixStats = pylith3d.makemsr(
             self.A,
             self.pointerToIndx,
             self.pointerToLink,
@@ -1180,7 +1180,7 @@ c********  finish fixing from here ************
 
         # Output sparse matrix info
 
-        lithomop3d.write_sparse_info(
+        pylith3d.write_sparse_info(
             self.numberGlobalEquations,
             self.stiffnessMatrixSize,
             self.minimumNonzeroTermsPerRow,
@@ -1205,97 +1205,97 @@ c********  finish fixing from here ************
         if self.tractionFlag != 0 or self.gravityFlag != 0 or self.concForceFlag != 0:
             self.externFlag = 1
 
-        self.pointerToBextern = lithomop3d.allocateDouble(
+        self.pointerToBextern = pylith3d.allocateDouble(
             self.externFlag*self.numberGlobalEquations)
 	self.memorySize += self.externFlag*self.numberGlobalEquations*self.doubleSize
-        self.pointerToBtraction = lithomop3d.allocateDouble(
+        self.pointerToBtraction = pylith3d.allocateDouble(
             self.tractionFlag*self.numberGlobalEquations)
 	self.memorySize += self.tractionFlag*self.numberGlobalEquations*self.doubleSize
-        self.pointerToBgravity = lithomop3d.allocateDouble(
+        self.pointerToBgravity = pylith3d.allocateDouble(
             self.gravityFlag*self.numberGlobalEquations)
 	self.memorySize += self.gravityFlag*self.numberGlobalEquations*self.doubleSize
-        self.pointerToBconcForce = lithomop3d.allocateDouble(
+        self.pointerToBconcForce = pylith3d.allocateDouble(
             self.concForceFlag*self.numberGlobalEquations)
 	self.memorySize += self.concForceFlag*self.numberGlobalEquations*self.doubleSize
-        self.pointerToBintern = lithomop3d.allocateDouble(
+        self.pointerToBintern = pylith3d.allocateDouble(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.doubleSize
-        self.pointerToBresid = lithomop3d.allocateDouble(
+        self.pointerToBresid = pylith3d.allocateDouble(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.doubleSize
-        self.pointerToDispVec = lithomop3d.allocateDouble(
+        self.pointerToDispVec = pylith3d.allocateDouble(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.doubleSize
-        self.pointerToDprev = lithomop3d.allocateDouble(
+        self.pointerToDprev = pylith3d.allocateDouble(
             self.usePreviousDisplacementFlag*self.numberGlobalEquations)
 	self.memorySize += self.usePreviousDisplacementFlag*self.numberGlobalEquations*self.doubleSize
             
         # Displacement arrays
-        self.pointerToD = lithomop3d.allocateDouble(
+        self.pointerToD = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberNodes)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberNodes*self.doubleSize
-        self.pointerToDeld = lithomop3d.allocateDouble(
+        self.pointerToDeld = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberNodes)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberNodes*self.doubleSize
-        self.pointerToDcur = lithomop3d.allocateDouble(
+        self.pointerToDcur = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberNodes)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberNodes*self.doubleSize
 
         # Slippery node arrays
-        self.pointerToDx = lithomop3d.allocateDouble(
+        self.pointerToDx = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberNodes)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberNodes*self.doubleSize
-        self.pointerToDeldx = lithomop3d.allocateDouble(
+        self.pointerToDeldx = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberNodes)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberNodes*self.doubleSize
-        self.pointerToDxcur = lithomop3d.allocateDouble(
+        self.pointerToDxcur = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberNodes)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberNodes*self.doubleSize
 
         # Split node arrays
-        self.pointerToDfault = lithomop3d.allocateDouble(
+        self.pointerToDfault = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberSplitNodeEntries)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberSplitNodeEntries*self.doubleSize
-        self.pointerToTfault = lithomop3d.allocateDouble(
+        self.pointerToTfault = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberSplitNodeEntries)
 	self.memorySize += self.numberDegreesFreedom* \
 	    self.numberSplitNodeEntries*self.doubleSize
 
         # Local stiffness matrix arrays
-        self.pointerToS = lithomop3d.allocateDouble(
+        self.pointerToS = pylith3d.allocateDouble(
             self.maxElementEquations*self.maxElementEquations)
 	self.memorySize += self.maxElementEquations* \
 	    self.maxElementEquations*self.doubleSize
-        self.pointerToStemp = lithomop3d.allocateDouble(
+        self.pointerToStemp = pylith3d.allocateDouble(
             self.maxElementEquations*self.maxElementEquations)
 	self.memorySize += self.maxElementEquations* \
 	    self.maxElementEquations*self.doubleSize
 
         # Element arrays
-        self.pointerToState = lithomop3d.allocateDouble(
+        self.pointerToState = pylith3d.allocateDouble(
             self.stateSize)
 	self.memorySize += self.stateSize*self.doubleSize
-        self.pointerToDstate = lithomop3d.allocateDouble(
+        self.pointerToDstate = pylith3d.allocateDouble(
             self.stateSize)
 	self.memorySize += self.stateSize*self.doubleSize
-        self.pointerToDmat = lithomop3d.allocateDouble(
+        self.pointerToDmat = pylith3d.allocateDouble(
             self.materialMatrixDimension*
             self.numberVolumeElementGaussPoints*
             self.numberVolumeElements)
 	self.memorySize += self.materialMatrixDimension* \
 	    self.numberVolumeElementGaussPoints* \
             self.numberVolumeElements*self.doubleSize
-        self.pointerToListArrayIddmat = lithomop3d.intListToArray( 
+        self.pointerToListArrayIddmat = pylith3d.intListToArray( 
             self.listIddmat)
 	self.memorySize += 36*self.intSize
-        self.pointerToState0 = lithomop3d.allocateDouble(
+        self.pointerToState0 = pylith3d.allocateDouble(
             self.state0Size)
         self.memorySize += self.state0Size*self.doubleSize
 
@@ -1309,7 +1309,7 @@ c********  finish fixing from here ************
             self.concForceFlag,
             self.prestressFlag,
             self.usePreviousDisplacementFlag]
-        self.pointerToListArrayNforce = lithomop3d.intListToArray(
+        self.pointerToListArrayNforce = pylith3d.intListToArray(
             self.listNforce)
 	self.memorySize += 6*self.intSize
            
@@ -1317,7 +1317,7 @@ c********  finish fixing from here ************
         self.listNcodat = [
             self.analysisTypeInt,
             self.debuggingOutputInt]
-        self.pointerToListArrayNcodat = lithomop3d.intListToArray(
+        self.pointerToListArrayNcodat = pylith3d.intListToArray(
             self.listNcodat)
 	self.memorySize += 2*self.intSize
             
@@ -1335,7 +1335,7 @@ c********  finish fixing from here ************
             self.numberVolumeElementFamilies,
             self.numberDifferentialForceEntries,
             self.quadratureOrderInt]
-        self.pointerToListArrayNpar = lithomop3d.intListToArray(
+        self.pointerToListArrayNpar = pylith3d.intListToArray(
             self.listNpar)
 	self.memorySize += 12*self.intSize
 
@@ -1345,7 +1345,7 @@ c********  finish fixing from here ************
             self.asciiOutputInt,
             self.plotOutputInt,
             self.ucdOutputInt]
-        self.pointerToListArrayNprint = lithomop3d.intListToArray(
+        self.pointerToListArrayNprint = pylith3d.intListToArray(
             self.listNprint)
 	self.memorySize += 4*self.intSize
 
@@ -1362,7 +1362,7 @@ c********  finish fixing from here ************
             self.numberWinklerForces,
             self.numberSlipperyWinklerForces,
             self.autoRotateSlipperyNodesInt]
-        self.pointerToListArrayNsysdat = lithomop3d.intListToArray(
+        self.pointerToListArrayNsysdat = pylith3d.intListToArray(
             self.listNsysdat)
 	self.memorySize += 11*self.intSize
 
@@ -1374,7 +1374,7 @@ c********  finish fixing from here ************
             self.f77AsciiOutput,
             self.f77PlotOutput,
             self.f77UcdOutput]
-        self.pointerToListArrayNunits = lithomop3d.intListToArray(
+        self.pointerToListArrayNunits = pylith3d.intListToArray(
             self.listNunits)
 	self.memorySize += 6*self.intSize
 
@@ -1384,7 +1384,7 @@ c********  finish fixing from here ************
             self.numberTimeStepGroups,
             self.totalNumberTimeSteps,
             self.numberLoadHistories]
-        self.pointerToListArrayNvisdat = lithomop3d.intListToArray(
+        self.pointerToListArrayNvisdat = pylith3d.intListToArray(
             self.listNvisdat)
 	self.memorySize += 4*self.intSize
             
@@ -1393,7 +1393,7 @@ c********  finish fixing from here ************
             self.stressTolerance.value,
             self.minimumStrainPerturbation,
             self.initialStrainPerturbation]
-        self.pointerToListArrayRgiter = lithomop3d.doubleListToArray(
+        self.pointerToListArrayRgiter = pylith3d.doubleListToArray(
             self.listRgiter)
 	self.memorySize += 3*self.doubleSize
 
@@ -1405,7 +1405,7 @@ c********  finish fixing from here ************
             self.currentAlfaParameter,
             self.prestressAutoComputePoisson,
             self.prestressAutoComputeYoungs.value]
-        self.pointerToListArrayRtimdat = lithomop3d.doubleListToArray(
+        self.pointerToListArrayRtimdat = pylith3d.doubleListToArray(
             self.listRtimdat)
 	self.memorySize += 4*self.doubleSize
 
@@ -1420,7 +1420,7 @@ c********  finish fixing from here ************
             self.currentNumberReforms,
             self.currentNumberTotalPcgIterations,
             self.reformFlagInt]
-        self.pointerToListArrayNtimdat = lithomop3d.intListToArray(
+        self.pointerToListArrayNtimdat = pylith3d.intListToArray(
             self.listNtimdat)
         self.memorySize += 9*self.intSize
 
@@ -1436,15 +1436,15 @@ c********  finish fixing from here ************
         print "averageNonzeroTermsPerRow: %g" % self.averageNonzeroTermsPerRow
 	print ""
 	print ""
-        print "Hello from lm3dsetup.run (end)!"
+        print "Hello from pl3dsetup.run (end)!"
         return
 
 
     def __init__(self):
-        Component.__init__(self, "lm3dsetup", "setup")
+        Component.__init__(self, "pl3dsetup", "setup")
 
 	print ""
-        print "Hello from lm3dsetup.__init__!"
+        print "Hello from pl3dsetup.__init__!"
 
         return
 
