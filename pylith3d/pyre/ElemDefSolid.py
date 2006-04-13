@@ -4,9 +4,9 @@
 #
 #                              Charles A. Williams
 #                        Rensselaer Polytechnic Institute
-#                      (C) 2005  All Rights Reserved
+#                      (C) 2006  All Rights Reserved
 #
-#  Copyright 2005 Rensselaer Polytechnic Institute.
+#  Copyright 2006 Rensselaer Polytechnic Institute.
 #  All worldwide rights reserved.  A license to use, copy, modify and
 #  distribute this software for non-commercial research purposes only
 #  is hereby granted, provided that this copyright notice and
@@ -33,13 +33,13 @@
 # necessary right now.
 
 class ElemDefSolid:
-  """Definitions for solid elements used by lithomop3d."""
+  """Definitions for solid elements used by pylith3d."""
 
   def getdef(self, elemTypeInt, quadratureOrderInt):
       """Gets dimension and quadrature info, depending on the global
       quadrature order setting."""
 
-    import lithomop3d as lm3d
+    import pylith3d as pl3d
 
     print "Hello from ElemDefSolid.getdef!"
 
@@ -51,38 +51,38 @@ class ElemDefSolid:
     # Full integration order
     if quadratureOrderInt == 1:
       numElemGaussPoints = self.elemFullGauss[elementType -1]
-      self.elemInfoSolid['fptrBmatrix'] = lm3d.bmatrixn
-      self.elemInfoSolid['fptrGetShape'] = lm3d.getshapn
+      self.elemInfoSolid['fptrBmatrix'] = pl3d.bmatrixn
+      self.elemInfoSolid['fptrGetShape'] = pl3d.getshapn
 
     # Reduced integration order
     elif quadratureOrderInt == 2:
       numElemGaussPoints = self.elemReducedGauss[elementType -1]
-      self.elemInfoSolid['fptrBmatrix'] = lm3d.bmatrixn
-      self.elemInfoSolid['fptrGetShape'] = lm3d.getshapn
+      self.elemInfoSolid['fptrBmatrix'] = pl3d.bmatrixn
+      self.elemInfoSolid['fptrGetShape'] = pl3d.getshapn
 
     # Selective (B-bar) integration order
     elif quadratureOrderInt == 3:
       numElemGaussPoints = self.elemFullGauss[elementType -1]
-      self.elemInfoSolid['fptrBmatrix'] = lm3d.bmatrixb
-      self.elemInfoSolid['fptrGetShape'] = lm3d.getshapb
+      self.elemInfoSolid['fptrBmatrix'] = pl3d.bmatrixb
+      self.elemInfoSolid['fptrGetShape'] = pl3d.getshapb
 
     self.elemInfoSolid['numElemGaussPoints'] = numElemGaussPoints
 
-    ptrShape = lm3d.allocateDouble(
+    ptrShape = pl3d.allocateDouble(
       (self.numSpaceDims+1)*
       numElemNodes*
       numElemGaussPoints)
             
-    ptrShapej = lm3d.allocateDouble(
+    ptrShapej = pl3d.allocateDouble(
       (self.numSpaceDims+1)*
       numElemNodes*
       numElemGaussPoints)
             
-    ptrGauss = lm3d.allocateDouble(
+    ptrGauss = pl3d.allocateDouble(
       (self.numSpaceDims+1)*
       numElemGaussPoints)
 
-    lm3d.preshape(
+    pl3d.preshape(
       ptrShape,
       ptrShapej,
       ptrGauss,

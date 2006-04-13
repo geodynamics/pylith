@@ -39,7 +39,7 @@
 from pyre.simulations.SimpleSolver import SimpleSolver as SolverBase
 
 class Solver(SolverBase):
-  """Base class for lithomop simulation solver."""
+  """Base class for pylith simulation solver."""
 
   # INVENTORY
 

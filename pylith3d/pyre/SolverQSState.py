@@ -44,13 +44,13 @@ class SolverQSState(Component):
     """Function to initialize components of Solver State.
     Present version uses the petscutils package, and it is assumed that
     PETSc is already initialized."""
-    import lithomop3d
+    import pylith3d
     import petscutil.petscutil as petscbindings
 
     # At present, we are using Matt's function defined in scanner.cc.
     # It is unclear if we actually need separate vectors for rhs and sol,
     # but leave them in for now.
-    stiff, rhs, sol = lithomop3d.createPETScMat(mesh)
+    stiff, rhs, sol = pylith3d.createPETScMat(mesh)
 
     # Set up solver state flags based on BC and solution method.
     if bc.numTractionBc != 0:
@@ -163,10 +163,10 @@ class SolverQSState(Component):
   def tearDown(self):
     """Destroy solver state vecs and mats."""
 
-    import lithomop3d
+    import pylith3d
     import petscutil.petscutil as petscbindings
 
-    lithomop3d.destroyPETScMat(self.solverState['petscStiff'],
+    pylith3d.destroyPETScMat(self.solverState['petscStiff'],
                                self.solverState['petscRhs'], 
                                self.solverState['petscSol'])
     if self.solverStateFlags['externFlag'] != 0:

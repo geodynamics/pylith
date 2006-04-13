@@ -34,7 +34,7 @@
 
 from ElemFamily import ElemFamily
 
-import lithomop3d as lm3d
+import pylith3d as pl3d
 
 # ElemFamilySolid class
 class ElemFamilySolid(ElemFamily):
