@@ -36,17 +36,17 @@
 
 #include "sorting.h"
 #include "exceptionhandler.h"
-#include "lithomop3d_externs.h"
+#include "pylith3d_externs.h"
 #include <stdio.h>
 #include <string.h>
 
 
 // Sort elements into element families
 
-char pylithomop3d_sort_elements__doc__[] = "";
-char pylithomop3d_sort_elements__name__[] = "sort_elements";
+char pypylith3d_sort_elements__doc__[] = "";
+char pypylith3d_sort_elements__name__[] = "sort_elements";
 
-PyObject * pylithomop3d_sort_elements(PyObject *, PyObject *args)
+PyObject * pypylith3d_sort_elements(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIen;
   PyObject* pyPointerToMat;
@@ -126,7 +126,7 @@ PyObject * pylithomop3d_sort_elements(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "stateSize:" << stateSize
@@ -142,10 +142,10 @@ PyObject * pylithomop3d_sort_elements(PyObject *, PyObject *args)
 
 // Sort slippery nodes according to reordered elements
 
-char pylithomop3d_sort_slip_nodes__doc__[] = "";
-char pylithomop3d_sort_slip_nodes__name__[] = "sort_slip_nodes";
+char pypylith3d_sort_slip_nodes__doc__[] = "";
+char pypylith3d_sort_slip_nodes__name__[] = "sort_slip_nodes";
 
-PyObject * pylithomop3d_sort_slip_nodes(PyObject *, PyObject *args)
+PyObject * pypylith3d_sort_slip_nodes(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToNslip;
   PyObject* pyPointerToIndxiel;
@@ -170,7 +170,7 @@ PyObject * pylithomop3d_sort_slip_nodes(PyObject *, PyObject *args)
 		    &numberSlipperyNodeEntries,
 		    &numberVolumeElements);
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberSlipperyNodeEntries:" << numberSlipperyNodeEntries
@@ -185,10 +185,10 @@ PyObject * pylithomop3d_sort_slip_nodes(PyObject *, PyObject *args)
 
 // Sort split nodes according to reordered elements
 
-char pylithomop3d_sort_split_nodes__doc__[] = "";
-char pylithomop3d_sort_split_nodes__name__[] = "sort_split_nodes";
+char pypylith3d_sort_split_nodes__doc__[] = "";
+char pypylith3d_sort_split_nodes__name__[] = "sort_split_nodes";
 
-PyObject * pylithomop3d_sort_split_nodes(PyObject *, PyObject *args)
+PyObject * pypylith3d_sort_split_nodes(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToNfault;
   PyObject* pyPointerToIndxiel;
@@ -213,7 +213,7 @@ PyObject * pylithomop3d_sort_split_nodes(PyObject *, PyObject *args)
 		    &numberSplitNodeEntries,
 		    &numberVolumeElements);
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberSplitNodeEntries:" << numberSplitNodeEntries

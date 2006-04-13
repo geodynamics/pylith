@@ -28,38 +28,38 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_setup_h)
-#define pylithomop3d_setup_h
+#if !defined(pypylith3d_setup_h)
+#define pypylith3d_setup_h
 
 // Initialize PETSc
-extern char pylithomop3d_petsc_initialize__doc__[];
-extern char pylithomop3d_petsc_initialize__name__[];
+extern char pypylith3d_petsc_initialize__doc__[];
+extern char pypylith3d_petsc_initialize__name__[];
 extern "C"
-PyObject * pylithomop3d_petsc_initialize(PyObject *, PyObject *);
+PyObject * pypylith3d_petsc_initialize(PyObject *, PyObject *);
 
 // Finalize PETSc
-extern char pylithomop3d_petsc_finalize__doc__[];
-extern char pylithomop3d_petsc_finalize__name__[];
+extern char pypylith3d_petsc_finalize__doc__[];
+extern char pypylith3d_petsc_finalize__name__[];
 extern "C"
-PyObject * pylithomop3d_petsc_finalize(PyObject *, PyObject *);
+PyObject * pypylith3d_petsc_finalize(PyObject *, PyObject *);
 
 // Setup PETSc Logging
-extern char pylithomop3d_setup_petsc_logging__doc__[];
-extern char pylithomop3d_setup_petsc_logging__name__[];
+extern char pypylith3d_setup_petsc_logging__doc__[];
+extern char pypylith3d_setup_petsc_logging__name__[];
 extern "C"
-PyObject * pylithomop3d_setup_petsc_logging(PyObject *, PyObject *);
+PyObject * pypylith3d_setup_petsc_logging(PyObject *, PyObject *);
 
 // Initialize material model info
-extern char pylithomop3d_matmod_def__name__[];
-extern char pylithomop3d_matmod_def__doc__[];
+extern char pypylith3d_matmod_def__name__[];
+extern char pypylith3d_matmod_def__doc__[];
 extern "C"
-PyObject * pylithomop3d_matmod_def(PyObject *, PyObject *);
+PyObject * pypylith3d_matmod_def(PyObject *, PyObject *);
 
 // Precompute shape function info
-extern char pylithomop3d_preshape__name__[];
-extern char pylithomop3d_preshape__doc__[];
+extern char pypylith3d_preshape__name__[];
+extern char pypylith3d_preshape__doc__[];
 extern "C"
-PyObject * pylithomop3d_preshape(PyObject *, PyObject *);
+PyObject * pypylith3d_preshape(PyObject *, PyObject *);
 
 #endif
 

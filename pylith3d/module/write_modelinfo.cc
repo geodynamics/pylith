@@ -36,17 +36,17 @@
 
 #include "write_modelinfo.h"
 #include "exceptionhandler.h"
-#include "lithomop3d_externs.h"
+#include "pylith3d_externs.h"
 #include <stdio.h>
 #include <string.h>
 
 
 // Write boundary conditions
 
-char pylithomop3d_write_bc__doc__[] = "";
-char pylithomop3d_write_bc__name__[] = "write_bc";
+char pypylith3d_write_bc__doc__[] = "";
+char pypylith3d_write_bc__name__[] = "write_bc";
 
-PyObject * pylithomop3d_write_bc(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_bc(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToBond;
   PyObject* pyPointerToIbond;
@@ -88,7 +88,7 @@ PyObject * pylithomop3d_write_bc(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberNodes:" << numberNodes
@@ -102,10 +102,10 @@ PyObject * pylithomop3d_write_bc(PyObject *, PyObject *args)
 
 // Write connectivities
 
-char pylithomop3d_write_connect__doc__[] = "";
-char pylithomop3d_write_connect__name__[] = "write_connect";
+char pypylith3d_write_connect__doc__[] = "";
+char pypylith3d_write_connect__name__[] = "write_connect";
 
-PyObject * pylithomop3d_write_connect(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_connect(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIens;
   PyObject* pyPointerToIvfamily;
@@ -173,7 +173,7 @@ PyObject * pylithomop3d_write_connect(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberVolumeElements:" << numberVolumeElements
@@ -187,10 +187,10 @@ PyObject * pylithomop3d_write_connect(PyObject *, PyObject *args)
 
 // Write coordinates
 
-char pylithomop3d_write_coords__doc__[] = "";
-char pylithomop3d_write_coords__name__[] = "write_coords";
+char pypylith3d_write_coords__doc__[] = "";
+char pypylith3d_write_coords__name__[] = "write_coords";
 
-PyObject * pylithomop3d_write_coords(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_coords(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToX;
   int numberNodes;
@@ -238,7 +238,7 @@ PyObject * pylithomop3d_write_coords(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberNodes:" << numberNodes
@@ -252,10 +252,10 @@ PyObject * pylithomop3d_write_coords(PyObject *, PyObject *args)
 
 // Write differential forces
 
-char pylithomop3d_write_diff__doc__[] = "";
-char pylithomop3d_write_diff__name__[] = "write_diff";
+char pypylith3d_write_diff__doc__[] = "";
+char pypylith3d_write_diff__name__[] = "write_diff";
 
-PyObject * pylithomop3d_write_diff(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_diff(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToDiforc;
   PyObject* pyPointerToNslip;
@@ -307,7 +307,7 @@ PyObject * pylithomop3d_write_diff(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberDifferentialForceEntries:" << numberDifferentialForceEntries
@@ -320,10 +320,10 @@ PyObject * pylithomop3d_write_diff(PyObject *, PyObject *args)
 
 // Write out element info
 
-char pylithomop3d_write_element_info__doc__[] = "";
-char pylithomop3d_write_element_info__name__[] = "write_element_info";
+char pypylith3d_write_element_info__doc__[] = "";
+char pypylith3d_write_element_info__name__[] = "write_element_info";
 
-PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_element_info(PyObject *, PyObject *args)
 {
   int numberVolumeElements;
   int numberVolumeElementNodes;
@@ -369,7 +369,7 @@ PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
 		       &asciiOutputInt,
 		       asciiOutputFile,strlen(asciiOutputFile));
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberVolumeElements:" << numberVolumeElements
@@ -383,10 +383,10 @@ PyObject * pylithomop3d_write_element_info(PyObject *, PyObject *args)
 
 // Write time steps at which full output is desired
 
-char pylithomop3d_write_fuldat__doc__[] = "";
-char pylithomop3d_write_fuldat__name__[] = "write_fuldat";
+char pypylith3d_write_fuldat__doc__[] = "";
+char pypylith3d_write_fuldat__name__[] = "write_fuldat";
 
-PyObject * pylithomop3d_write_fuldat(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_fuldat(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIprint;
   int numberFullOutputs;
@@ -443,7 +443,7 @@ PyObject * pylithomop3d_write_fuldat(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberFullOutputs:" << numberFullOutputs
@@ -457,10 +457,10 @@ PyObject * pylithomop3d_write_fuldat(PyObject *, PyObject *args)
 
 // Write out global info
 
-char pylithomop3d_write_global_info__doc__[] = "";
-char pylithomop3d_write_global_info__name__[] = "write_global_info";
+char pypylith3d_write_global_info__doc__[] = "";
+char pypylith3d_write_global_info__name__[] = "write_global_info";
 
-PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_global_info(PyObject *, PyObject *args)
 {
   char* title;
   int asciiOutputInt;
@@ -503,7 +503,7 @@ PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *args)
 		      strlen(asciiOutputFile),
 		      strlen(plotOutputFile));
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "debuggingOutputInt:" << debuggingOutputInt
@@ -517,10 +517,10 @@ PyObject * pylithomop3d_write_global_info(PyObject *, PyObject *args)
 
 // Write load histories
 
-char pylithomop3d_write_hist__doc__[] = "";
-char pylithomop3d_write_hist__name__[] = "write_hist";
+char pypylith3d_write_hist__doc__[] = "";
+char pypylith3d_write_hist__name__[] = "write_hist";
 
-PyObject * pylithomop3d_write_hist(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_hist(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToHistry;
   PyObject* pyPointerToTimes;
@@ -565,7 +565,7 @@ PyObject * pylithomop3d_write_hist(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberLoadHistories:" << numberLoadHistories
@@ -579,10 +579,10 @@ PyObject * pylithomop3d_write_hist(PyObject *, PyObject *args)
 
 // Write out material property info
 
-char pylithomop3d_write_props__doc__[] = "";
-char pylithomop3d_write_props__name__[] = "write_props";
+char pypylith3d_write_props__doc__[] = "";
+char pypylith3d_write_props__name__[] = "write_props";
 
-PyObject * pylithomop3d_write_props(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_props(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToListArrayPropertyList;
   PyObject* pyPointerToListArrayGrav;
@@ -645,7 +645,7 @@ PyObject * pylithomop3d_write_props(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberVolumeElementFamilies:" << numberVolumeElementFamilies
@@ -659,10 +659,10 @@ PyObject * pylithomop3d_write_props(PyObject *, PyObject *args)
 
 // Write local coordinate rotations
 
-char pylithomop3d_write_skew__doc__[] = "";
-char pylithomop3d_write_skew__name__[] = "write_skew";
+char pypylith3d_write_skew__doc__[] = "";
+char pypylith3d_write_skew__name__[] = "write_skew";
 
-PyObject * pylithomop3d_write_skew(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_skew(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToSkew;
   int numberRotationEntries;
@@ -706,7 +706,7 @@ PyObject * pylithomop3d_write_skew(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberRotationEntries:" << numberRotationEntries
@@ -720,10 +720,10 @@ PyObject * pylithomop3d_write_skew(PyObject *, PyObject *args)
 
 // Write slippery node entries
 
-char pylithomop3d_write_slip__doc__[] = "";
-char pylithomop3d_write_slip__name__[] = "write_slip";
+char pypylith3d_write_slip__doc__[] = "";
+char pypylith3d_write_slip__name__[] = "write_slip";
 
-PyObject * pylithomop3d_write_slip(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_slip(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToNslip;
   int numberSlipperyNodeEntries;
@@ -774,7 +774,7 @@ PyObject * pylithomop3d_write_slip(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "totalNumberSlipperyNodes:" << totalNumberSlipperyNodes
@@ -788,10 +788,10 @@ PyObject * pylithomop3d_write_slip(PyObject *, PyObject *args)
 
 // Write out sparse matrix info
 
-char pylithomop3d_write_sparse_info__doc__[] = "";
-char pylithomop3d_write_sparse_info__name__[] = "write_sparse_info";
+char pypylith3d_write_sparse_info__doc__[] = "";
+char pypylith3d_write_sparse_info__name__[] = "write_sparse_info";
 
-PyObject * pylithomop3d_write_sparse_info(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_sparse_info(PyObject *, PyObject *args)
 {
   int numberGlobalEquations;
   int stiffnessMatrixSize;
@@ -825,7 +825,7 @@ PyObject * pylithomop3d_write_sparse_info(PyObject *, PyObject *args)
 		      &f77AsciiOutput,
 		      asciiOutputFile,strlen(asciiOutputFile));
 		  
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "minimumNonzeroTermsPerRow:" << minimumNonzeroTermsPerRow
@@ -839,10 +839,10 @@ PyObject * pylithomop3d_write_sparse_info(PyObject *, PyObject *args)
 
 // Write split node entries
 
-char pylithomop3d_write_split__doc__[] = "";
-char pylithomop3d_write_split__name__[] = "write_split";
+char pypylith3d_write_split__doc__[] = "";
+char pypylith3d_write_split__name__[] = "write_split";
 
-PyObject * pylithomop3d_write_split(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_split(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToFault;
   PyObject* pyPointerToNfault;
@@ -894,7 +894,7 @@ PyObject * pylithomop3d_write_split(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberSplitNodeEntries:" << numberSplitNodeEntries
@@ -908,10 +908,10 @@ PyObject * pylithomop3d_write_split(PyObject *, PyObject *args)
 
 // Write split node entries for plot output
 
-char pylithomop3d_write_split_plot__doc__[] = "";
-char pylithomop3d_write_split_plot__name__[] = "write_split_plot";
+char pypylith3d_write_split_plot__doc__[] = "";
+char pypylith3d_write_split_plot__name__[] = "write_split_plot";
 
-PyObject * pylithomop3d_write_split_plot(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_split_plot(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIdftn;
   int totalNumberSplitNodes;
@@ -940,7 +940,7 @@ PyObject * pylithomop3d_write_split_plot(PyObject *, PyObject *args)
 		     strlen(plotOutputFile));
     
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "totalNumberSplitNodes:" << totalNumberSplitNodes
@@ -954,10 +954,10 @@ PyObject * pylithomop3d_write_split_plot(PyObject *, PyObject *args)
 
 // Write state output information
 
-char pylithomop3d_write_stateout__doc__[] = "";
-char pylithomop3d_write_stateout__name__[] = "write_stateout";
+char pypylith3d_write_stateout__doc__[] = "";
+char pypylith3d_write_stateout__name__[] = "write_stateout";
 
-PyObject * pylithomop3d_write_stateout(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_stateout(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToIstatout;
   PyObject* pyPointerToNstatout;
@@ -1006,7 +1006,7 @@ PyObject * pylithomop3d_write_stateout(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "pointerToIstatout:" << pointerToIstatout
@@ -1020,10 +1020,10 @@ PyObject * pylithomop3d_write_stateout(PyObject *, PyObject *args)
 
 // Write out stress integration parameters
 
-char pylithomop3d_write_strscomp__doc__[] = "";
-char pylithomop3d_write_strscomp__name__[] = "write_strscomp";
+char pypylith3d_write_strscomp__doc__[] = "";
+char pypylith3d_write_strscomp__name__[] = "write_strscomp";
 
-PyObject * pylithomop3d_write_strscomp(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_strscomp(PyObject *, PyObject *args)
 {
   double stressTolerance;
   double minimumStrainPerturbation;
@@ -1051,7 +1051,7 @@ PyObject * pylithomop3d_write_strscomp(PyObject *, PyObject *args)
 		   &asciiOutputInt,
 		   asciiOutputFile,strlen(asciiOutputFile));
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "initialStrainPerturbation:" << initialStrainPerturbation
@@ -1065,10 +1065,10 @@ PyObject * pylithomop3d_write_strscomp(PyObject *, PyObject *args)
 
 // Write out subiteration convergence parameters
 
-char pylithomop3d_write_subiter__doc__[] = "";
-char pylithomop3d_write_subiter__name__[] = "write_subiter";
+char pypylith3d_write_subiter__doc__[] = "";
+char pypylith3d_write_subiter__name__[] = "write_subiter";
 
-PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_subiter(PyObject *, PyObject *args)
 {
   int usePreviousDisplacementFlag;
   int f77AsciiOutput;
@@ -1091,7 +1091,7 @@ PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *args)
 		  &asciiOutputInt,
 		  asciiOutputFile,strlen(asciiOutputFile));
 		  
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "usePreviousDisplacementFlag:" << usePreviousDisplacementFlag
@@ -1105,10 +1105,10 @@ PyObject * pylithomop3d_write_subiter(PyObject *, PyObject *args)
 
 // Write time step data
 
-char pylithomop3d_write_timdat__doc__[] = "";
-char pylithomop3d_write_timdat__name__[] = "write_timdat";
+char pypylith3d_write_timdat__doc__[] = "";
+char pypylith3d_write_timdat__name__[] = "write_timdat";
 
-PyObject * pylithomop3d_write_timdat(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_timdat(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToDelt;
   PyObject* pyPointerToAlfa;
@@ -1189,7 +1189,7 @@ PyObject * pylithomop3d_write_timdat(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "totalNumberTimeSteps:" << totalNumberTimeSteps
@@ -1203,10 +1203,10 @@ PyObject * pylithomop3d_write_timdat(PyObject *, PyObject *args)
 
 // Write mesh info to UCD file
 
-char pylithomop3d_write_ucd_mesh__doc__[] = "";
-char pylithomop3d_write_ucd_mesh__name__[] = "write_ucd_mesh";
+char pypylith3d_write_ucd_mesh__doc__[] = "";
+char pypylith3d_write_ucd_mesh__name__[] = "write_ucd_mesh";
 
-PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_ucd_mesh(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToX;
   int numberNodes;
@@ -1268,7 +1268,7 @@ PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *args)
 		   &ucdOutputInt,
 		   ucdOutputRoot,strlen(ucdOutputRoot));
 		  
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberVolumeElements:" << numberVolumeElements
@@ -1282,10 +1282,10 @@ PyObject * pylithomop3d_write_ucd_mesh(PyObject *, PyObject *args)
 
 // Write winkler BC
 
-char pylithomop3d_write_wink__doc__[] = "";
-char pylithomop3d_write_wink__name__[] = "write_wink";
+char pypylith3d_write_wink__doc__[] = "";
+char pypylith3d_write_wink__name__[] = "write_wink";
 
-PyObject * pylithomop3d_write_wink(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_wink(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToWinkdef;
   PyObject* pyPointerToIwinkdef;
@@ -1331,7 +1331,7 @@ PyObject * pylithomop3d_write_wink(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberWinklerEntries:" << numberWinklerEntries
@@ -1345,10 +1345,10 @@ PyObject * pylithomop3d_write_wink(PyObject *, PyObject *args)
 
 // Write slippery winkler BC
 
-char pylithomop3d_write_winkx__doc__[] = "";
-char pylithomop3d_write_winkx__name__[] = "write_winkx";
+char pypylith3d_write_winkx__doc__[] = "";
+char pypylith3d_write_winkx__name__[] = "write_winkx";
 
-PyObject * pylithomop3d_write_winkx(PyObject *, PyObject *args)
+PyObject * pypylith3d_write_winkx(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToWinkxdef;
   PyObject* pyPointerToIwinkxdef;
@@ -1394,7 +1394,7 @@ PyObject * pylithomop3d_write_winkx(PyObject *, PyObject *args)
     return 0;
   }
 
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "numberSlipperyWinklerEntries:" << numberSlipperyWinklerEntries

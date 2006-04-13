@@ -6,21 +6,21 @@ pkgpyexec_LTLIBRARIES =
 
 if COND_EMBEDDING
     # static library
-    noinst_LIBRARIES += liblithomop3dmodule.a
+    noinst_LIBRARIES += libpylith3dmodule.a
 else
     # extension module (libtool)
-    pkgpyexec_LTLIBRARIES += lithomop3dmodule.la
+    pkgpyexec_LTLIBRARIES += pylith3dmodule.la
 endif
 
 # static library
-liblithomop3dmodule_a_CXXFLAGS = $(AM_CXXFLAGS) # hack for automake
-liblithomop3dmodule_a_SOURCES = $(sources)
+libpylith3dmodule_a_CXXFLAGS = $(AM_CXXFLAGS) # hack for automake
+libpylith3dmodule_a_SOURCES = $(sources)
 
 # extension module (libtool)
-lithomop3dmodule_la_SOURCES = $(sources)
-lithomop3dmodule_la_LDFLAGS = -module
-lithomop3dmodule_la_LIBADD = \
-	$(top_builddir)/lithomop3d/liblithomop3d/liblithomop3d.la \
+pylith3dmodule_la_SOURCES = $(sources)
+pylith3dmodule_la_LDFLAGS = -module
+pylith3dmodule_la_LIBADD = \
+	$(top_builddir)/pylith3d/libpylith3d/libpylith3d.la \
 	-L$(PETSC_LIB_DIR) \
 	$(PETSC_FORTRAN_LIB_BASIC) \
 	$(PETSC_LIB_BASIC) \
@@ -44,9 +44,9 @@ sources = \
 	exceptionhandler.h \
 	exceptions.cc \
 	exceptions.h \
-	lithomop3dmodule.cc \
-	lithomop3dmodule.h \
-	lithomop3d_externs.h \
+	pylith3dmodule.cc \
+	pylith3dmodule.h \
+	pylith3d_externs.h \
 	misc.cc \
 	misc.h \
 	numbering.cc \

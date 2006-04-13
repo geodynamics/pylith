@@ -36,7 +36,7 @@
 
 #include "elastc.h"
 #include "exceptionhandler.h"
-#include "lithomop3d_externs.h"
+#include "pylith3d_externs.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -44,10 +44,10 @@
 
 // Perform the elastic solution.
 
-char pylithomop3d_elastc__doc__[] = "";
-char pylithomop3d_elastc__name__[] = "elastc";
+char pypylith3d_elastc__doc__[] = "";
+char pypylith3d_elastc__name__[] = "elastc";
 
-PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
+PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
 {
   PyObject* pyA;                              // Sparse matrix arrays
   PyObject* pyRhs;
@@ -423,7 +423,7 @@ PyObject * pylithomop3d_elastc(PyObject *, PyObject *args)
     //int i = fail[0];
     return NULL;
   }
-  journal::debug_t debug("lithomop3d");
+  journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
     << "asciiOutputFile:" << asciiOutputFile

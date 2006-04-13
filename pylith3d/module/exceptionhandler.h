@@ -28,8 +28,8 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_exceptionhandler_h)
-#define pylithomop3d_exceptionhandler_h
+#if !defined(pypylith3d_exceptionhandler_h)
+#define pypylith3d_exceptionhandler_h
 
 // exceptionhandler
 

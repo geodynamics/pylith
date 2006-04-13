@@ -28,14 +28,14 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_elastc_h)
-#define pylithomop3d_elastc_h
+#if !defined(pypylith3d_elastc_h)
+#define pypylith3d_elastc_h
 
 // drive elastic solution
-extern char pylithomop3d_elastc__name__[];
-extern char pylithomop3d_elastc__doc__[];
+extern char pypylith3d_elastc__name__[];
+extern char pypylith3d_elastc__doc__[];
 extern "C"
-PyObject * pylithomop3d_elastc(PyObject *, PyObject *);
+PyObject * pypylith3d_elastc(PyObject *, PyObject *);
 
 #endif
 

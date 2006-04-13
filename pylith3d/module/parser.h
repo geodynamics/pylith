@@ -28,99 +28,99 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_parser_h)
-#define pylithomop3d_parser_h
+#if !defined(pypylith3d_parser_h)
+#define pypylith3d_parser_h
 
 // read boundary conditions
-extern char pylithomop3d_read_bc__name__[];
-extern char pylithomop3d_read_bc__doc__[];
+extern char pypylith3d_read_bc__name__[];
+extern char pypylith3d_read_bc__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_bc(PyObject *, PyObject *);
+PyObject * pypylith3d_read_bc(PyObject *, PyObject *);
 
 // read connectivities
-extern char pylithomop3d_read_connect__name__[];
-extern char pylithomop3d_read_connect__doc__[];
+extern char pypylith3d_read_connect__name__[];
+extern char pypylith3d_read_connect__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_connect(PyObject *, PyObject *);
+PyObject * pypylith3d_read_connect(PyObject *, PyObject *);
 
 // read coordinates
-extern char pylithomop3d_read_coords__name__[];
-extern char pylithomop3d_read_coords__doc__[];
+extern char pypylith3d_read_coords__name__[];
+extern char pypylith3d_read_coords__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_coords(PyObject *, PyObject *);
+PyObject * pypylith3d_read_coords(PyObject *, PyObject *);
 
 // read differential forces
-extern char pylithomop3d_read_diff__name__[];
-extern char pylithomop3d_read_diff__doc__[];
+extern char pypylith3d_read_diff__name__[];
+extern char pypylith3d_read_diff__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_diff(PyObject *, PyObject *);
+PyObject * pypylith3d_read_diff(PyObject *, PyObject *);
 
 // read time steps at which full output is desired
-extern char pylithomop3d_read_fuldat__name__[];
-extern char pylithomop3d_read_fuldat__doc__[];
+extern char pypylith3d_read_fuldat__name__[];
+extern char pypylith3d_read_fuldat__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_fuldat(PyObject *, PyObject *);
+PyObject * pypylith3d_read_fuldat(PyObject *, PyObject *);
 
 // read time history info
-extern char pylithomop3d_read_hist__name__[];
-extern char pylithomop3d_read_hist__doc__[];
+extern char pypylith3d_read_hist__name__[];
+extern char pypylith3d_read_hist__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_hist(PyObject *, PyObject *);
+PyObject * pypylith3d_read_hist(PyObject *, PyObject *);
 
 // read material history info
 // these are not being used for now
-// extern char pylithomop3d_read_mathist__name__[];
-// extern char pylithomop3d_read_mathist__doc__[];
+// extern char pypylith3d_read_mathist__name__[];
+// extern char pypylith3d_read_mathist__doc__[];
 // extern "C"
-// PyObject * pylithomop3d_read_mathist(PyObject *, PyObject *);
+// PyObject * pypylith3d_read_mathist(PyObject *, PyObject *);
 
 // read prestresses
-// extern char pylithomop3d_read_prestr__name__[];
-// extern char pylithomop3d_read_prestr__doc__[];
+// extern char pypylith3d_read_prestr__name__[];
+// extern char pypylith3d_read_prestr__doc__[];
 // extern "C"
-// PyObject * pylithomop3d_read_prestr(PyObject *, PyObject *);
+// PyObject * pypylith3d_read_prestr(PyObject *, PyObject *);
 
 // read local coordinate rotations
-extern char pylithomop3d_read_skew__name__[];
-extern char pylithomop3d_read_skew__doc__[];
+extern char pypylith3d_read_skew__name__[];
+extern char pypylith3d_read_skew__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_skew(PyObject *, PyObject *);
+PyObject * pypylith3d_read_skew(PyObject *, PyObject *);
 
 // read slippery node definitions
-extern char pylithomop3d_read_slip__name__[];
-extern char pylithomop3d_read_slip__doc__[];
+extern char pypylith3d_read_slip__name__[];
+extern char pypylith3d_read_slip__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_slip(PyObject *, PyObject *);
+PyObject * pypylith3d_read_slip(PyObject *, PyObject *);
 
 // read split node definitions
-extern char pylithomop3d_read_split__name__[];
-extern char pylithomop3d_read_split__doc__[];
+extern char pypylith3d_read_split__name__[];
+extern char pypylith3d_read_split__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_split(PyObject *, PyObject *);
+PyObject * pypylith3d_read_split(PyObject *, PyObject *);
 
 // read state output information
-extern char pylithomop3d_read_stateout__name__[];
-extern char pylithomop3d_read_stateout__doc__[];
+extern char pypylith3d_read_stateout__name__[];
+extern char pypylith3d_read_stateout__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_stateout(PyObject *, PyObject *);
+PyObject * pypylith3d_read_stateout(PyObject *, PyObject *);
 
 // read time step group informations
-extern char pylithomop3d_read_timdat__name__[];
-extern char pylithomop3d_read_timdat__doc__[];
+extern char pypylith3d_read_timdat__name__[];
+extern char pypylith3d_read_timdat__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_timdat(PyObject *, PyObject *);
+PyObject * pypylith3d_read_timdat(PyObject *, PyObject *);
 
 // read traction boundary conditions
-// extern char pylithomop3d_read_traction__name__[];
-// extern char pylithomop3d_read_traction__doc__[];
+// extern char pypylith3d_read_traction__name__[];
+// extern char pypylith3d_read_traction__doc__[];
 // extern "C"
-// PyObject * pylithomop3d_read_traction(PyObject *, PyObject *);
+// PyObject * pypylith3d_read_traction(PyObject *, PyObject *);
 
 // read winkler force information
-extern char pylithomop3d_read_wink__name__[];
-extern char pylithomop3d_read_wink__doc__[];
+extern char pypylith3d_read_wink__name__[];
+extern char pypylith3d_read_wink__doc__[];
 extern "C"
-PyObject * pylithomop3d_read_wink(PyObject *, PyObject *);
+PyObject * pypylith3d_read_wink(PyObject *, PyObject *);
 
 #endif
 

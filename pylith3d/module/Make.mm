@@ -28,15 +28,15 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-PROJECT = lithomop3d
-PACKAGE = lithomop3dmodule
-MODULE = lithomop3d
+PROJECT = pylith3d
+PACKAGE = pylith3dmodule
+MODULE = pylith3d
 
 include std-pythonmodule.def
 include petsc/default.def
 # include local.def
 
-PROJ_CXX_SRCLIB = -ljournal -llithomop3d
+PROJ_CXX_SRCLIB = -ljournal -lpylith3d
 PROJ_LIBRARIES += $(LCXX_FORTRAN)
 
 PROJ_SRCS = \

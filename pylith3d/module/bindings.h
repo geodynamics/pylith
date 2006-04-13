@@ -28,12 +28,12 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_bindings_h)
-#define pylithomop3d_bindings_h
+#if !defined(pypylith3d_bindings_h)
+#define pypylith3d_bindings_h
 
 // the method table
 
-extern struct PyMethodDef pylithomop3d_methods[];
+extern struct PyMethodDef pypylith3d_methods[];
 
 #endif
 

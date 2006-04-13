@@ -28,12 +28,12 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pylithomop3d_exceptions_h)
-#define pylithomop3d_exceptions_h
+#if !defined(pypylith3d_exceptions_h)
+#define pypylith3d_exceptions_h
 
 // exceptions
 
-extern PyObject *pylithomop3d_runtimeError;
+extern PyObject *pypylith3d_runtimeError;
 
 #endif
 

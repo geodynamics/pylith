@@ -35,10 +35,10 @@
 
 
 // allocateInt
-char pylithomop3d_allocateInt__doc__[] = "";
-char pylithomop3d_allocateInt__name__[] = "allocateInt";
+char pypylith3d_allocateInt__doc__[] = "";
+char pypylith3d_allocateInt__name__[] = "allocateInt";
 
-PyObject * pylithomop3d_allocateInt(PyObject *, PyObject * args)
+PyObject * pypylith3d_allocateInt(PyObject *, PyObject * args)
 {
 
   int len;
@@ -69,10 +69,10 @@ PyObject * pylithomop3d_allocateInt(PyObject *, PyObject * args)
 
 
 // allocateDouble
-char pylithomop3d_allocateDouble__doc__[] = "";
-char pylithomop3d_allocateDouble__name__[] = "allocateDouble";
+char pypylith3d_allocateDouble__doc__[] = "";
+char pypylith3d_allocateDouble__name__[] = "allocateDouble";
 
-PyObject * pylithomop3d_allocateDouble(PyObject *, PyObject * args)
+PyObject * pypylith3d_allocateDouble(PyObject *, PyObject * args)
 {
 
   int len;
@@ -103,10 +103,10 @@ PyObject * pylithomop3d_allocateDouble(PyObject *, PyObject * args)
 
 
 // intListToArray
-char pylithomop3d_intListToArray__doc__[] = "";
-char pylithomop3d_intListToArray__name__[] = "intListToArray";
+char pypylith3d_intListToArray__doc__[] = "";
+char pypylith3d_intListToArray__name__[] = "intListToArray";
 
-PyObject * pylithomop3d_intListToArray(PyObject *, PyObject * args)
+PyObject * pypylith3d_intListToArray(PyObject *, PyObject * args)
 {
   PyObject *listobj;
   PyObject *listitem;
@@ -141,10 +141,10 @@ PyObject * pylithomop3d_intListToArray(PyObject *, PyObject * args)
 
 
 // doubleListToArray
-char pylithomop3d_doubleListToArray__doc__[] = "";
-char pylithomop3d_doubleListToArray__name__[] = "doubleListToArray";
+char pypylith3d_doubleListToArray__doc__[] = "";
+char pypylith3d_doubleListToArray__name__[] = "doubleListToArray";
 
-PyObject * pylithomop3d_doubleListToArray(PyObject *, PyObject * args)
+PyObject * pypylith3d_doubleListToArray(PyObject *, PyObject * args)
 {
   PyObject *listobj;
   PyObject *listitem;

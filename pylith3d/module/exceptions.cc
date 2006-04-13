@@ -31,7 +31,7 @@
 #include <portinfo>
 #include <Python.h>
 
-PyObject *pylithomop3d_runtimeError = 0;
+PyObject *pypylith3d_runtimeError = 0;
     
 // version
 // $Id: exceptions.cc,v 1.2 2005/03/31 23:27:57 willic3 Exp $
