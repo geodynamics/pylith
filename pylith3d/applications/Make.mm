@@ -29,7 +29,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-PROJECT = lithomop3d
+PROJECT = pylith3d
 PACKAGE = applications
 
 PROJ_CLEAN =
@@ -49,10 +49,10 @@ update: clean
 #
 
 EXPORT_BINS = \
-    lithomop3dapp.py
+    pylith3dapp.py
 
 export:: 
-	$(CP) lithomop3dapp.py $(EXPORT_ROOT)/bin/.
+	$(CP) pylith3dapp.py $(EXPORT_ROOT)/bin/.
 
 
 # version
