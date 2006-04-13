@@ -45,20 +45,20 @@ if __name__ == "__main__":
             sys.path.insert(1, dir)
 
     # if we are embedding, insert the extension module in the
-    # 'lithomop3d' package
+    # 'pylith3d' package
     try:
-        import builtin_lithomop3d
-        sys.modules['lithomop3d.lithomop3d'] = builtin_lithomop3d
+        import builtin_pylith3d
+        sys.modules['pylith3d.pylith3d'] = builtin_pylith3d
     except ImportError:
         pass
     
-    from lithomop3d.Application import Application
+    from pylith3d.Application import Application
 
     app = Application()
     app.run()
     
 
 # version
-__id__ = "$Id: lithomop3dapp.py,v 1.2 2005/03/11 02:30:46 willic3 Exp $"
+__id__ = "$Id: pylith3dapp.py,v 1.2 2005/03/11 02:30:46 willic3 Exp $"
 
 #  End of file 
