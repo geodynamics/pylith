@@ -12,7 +12,7 @@
 #
 
 test: clean
-	lithomop3dapp.py -lm3dscan.fileRoot=bm1a
+	pylith3dapp.py -pl3dscan.fileRoot=bm1a
 
 clean::
 	$(RM_F) bm1a.ascii bm1a.plot bm1a*.inp

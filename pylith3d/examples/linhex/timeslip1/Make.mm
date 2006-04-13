@@ -30,8 +30,8 @@
 #
 
 test: clean
-	lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=timeslip1 -lm3dscan.asciiOutput=full -lm3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-09
-	# lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=timeslip1 -lm3dscan.asciiOutput=full -lm3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-09 -mat_view -start_in_debugger
+	pylith3dapp.py -typos=relaxed -pl3dscan.fileRoot=timeslip1 -pl3dscan.asciiOutput=full -pl3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-09
+	# pylith3dapp.py -typos=relaxed -pl3dscan.fileRoot=timeslip1 -pl3dscan.asciiOutput=full -pl3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-09 -mat_view -start_in_debugger
 
 clean::
 	$(RM_F) timeslip1.ascii timeslip1.plot timeslip1*.inp

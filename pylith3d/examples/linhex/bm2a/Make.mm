@@ -12,7 +12,7 @@
 #
 
 test: clean
-	lithomop3dapp.py -lm3dscan.fileRoot=../bm1a/bm1a -lm3dscan.bcInputFile=bm2a.bc -lm3dscan.keywordEqualsValueFile=bm2a.keyval -lm3dscan.timeStepInputFile=bm2a.time -lm3dscan.asciiOutputFile=bm2a.ascii -lm3dscan.ucdOutputRoot=bm2a
+	pylith3dapp.py -pl3dscan.fileRoot=../bm1a/bm1a -pl3dscan.bcInputFile=bm2a.bc -pl3dscan.keywordEqualsValueFile=bm2a.keyval -pl3dscan.timeStepInputFile=bm2a.time -pl3dscan.asciiOutputFile=bm2a.ascii -pl3dscan.ucdOutputRoot=bm2a
 
 clean::
 	$(RM_F) bm2a.ascii bm2a.plot bm2a*.inp

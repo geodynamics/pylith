@@ -1,1 +1,1 @@
-time lithomop3dapp.py --lm3dscan.fileRoot=bm1/bm1 --lm3dscan.keywordEqualsValueFile=bm2/bm2.keyval --lm3dscan.bcInputFile=bm2/bm2.bc --lm3dscan.timeStepInputFile=bm2/bm2.time --lm3dscan.asciiOutputFile=bm2/bm2.ascii --lm3dscan.plotOutputFile=bm2/bm2.plot
+time pylith3dapp.py --pl3dscan.fileRoot=bm1/bm1 --pl3dscan.keywordEqualsValueFile=bm2/bm2.keyval --pl3dscan.bcInputFile=bm2/bm2.bc --pl3dscan.timeStepInputFile=bm2/bm2.time --pl3dscan.asciiOutputFile=bm2/bm2.ascii --pl3dscan.plotOutputFile=bm2/bm2.plot

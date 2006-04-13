@@ -26,7 +26,7 @@ XFAIL_TESTS = \
 	quadhex/bm1a/test.sh \
 	quadtet/bm1a/test.sh
 
-TESTS_ENVIRONMENT = PATH=$(top_builddir)/lithomop3d:$$PATH PYTHONPATH=$(top_srcdir)/lithomop3d:$$PYTHONPATH
+TESTS_ENVIRONMENT = PATH=$(top_builddir)/pylith3d:$$PATH PYTHONPATH=$(top_srcdir)/pylith3d:$$PYTHONPATH
 
 CLEANFILES = \
 	*/*/*.ascii \

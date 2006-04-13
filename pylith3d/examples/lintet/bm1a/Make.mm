@@ -12,9 +12,9 @@
 #
 
 test: clean
-	lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=bm1a -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9
+	pylith3dapp.py -typos=relaxed -pl3dscan.fileRoot=bm1a -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9
 
-	# lithomop3dapp.py -typos=relaxed -lm3dscan.fileRoot=bm1a -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9 -start_in_debugger
+	# pylith3dapp.py -typos=relaxed -pl3dscan.fileRoot=bm1a -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9 -start_in_debugger
 
 clean::
 	$(RM_F) bm1a.ascii bm1a.plot bm1a*.inp
