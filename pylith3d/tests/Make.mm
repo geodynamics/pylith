@@ -29,10 +29,10 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-PROJECT = lithomop3d
+PROJECT = pylith3d
 PACKAGE = tests
 
-PROJ_TESTS = lithomop3dapp.py
+PROJ_TESTS = pylith3dapp.py
 
 #--------------------------------------------------------------------------
 #
