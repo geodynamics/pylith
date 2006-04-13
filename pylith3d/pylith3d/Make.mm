@@ -11,8 +11,8 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-PROJECT = lithomop3d
-PACKAGE = lithomop3d
+PROJECT = pylith3d
+PACKAGE = pylith3d
 
 PROJ_TMPDIR = $(BLD_TMPDIR)/$(PROJECT)/$(PACKAGE)
 
@@ -41,9 +41,9 @@ EXPORT_PYTHON_MODULES = \
 	Application.py \
 	ElementTypeDef.py \
 	KeywordValueParse.py \
-	Lithomop3d_run.py \
-	Lithomop3d_scan.py \
-	Lithomop3d_setup.py \
+	Pylith3d_run.py \
+	Pylith3d_scan.py \
+	Pylith3d_setup.py \
 	Materials.py \
 	__init__.py
 

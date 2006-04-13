@@ -11,7 +11,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-from lithomop3d.MaterialModel.MaterialModel import MaterialModel
+from pylith3d.MaterialModel.MaterialModel import MaterialModel
 
 class IsotropicLinearMaxwellViscoelastic(MaterialModel):
 

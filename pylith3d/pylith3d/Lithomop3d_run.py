@@ -30,155 +30,155 @@
 # The function of this code is to call the elastic and time-dependent solution
 # drivers.  To do this, a number of previously-defined parameters need to be
 # bundled into lists.  This portion of the code requires access to all of the
-# information previously defined in Lithomop3d_scan.py and Lithomop3d_setup.py.
+# information previously defined in Pylith3d_scan.py and Pylith3d_setup.py.
 #
 
 
 from pyre.components.Component import Component
 
 
-class Lithomop3d_run(Component):
+class Pylith3d_run(Component):
 
     def initialize(self, scanner, setup):
 
-        lm3dscan = scanner
-        lm3dsetup = setup
+        pl3dscan = scanner
+        pl3dsetup = setup
 
         print ""
-        print "Hello from lm3drun.initialize (begin)!"
+        print "Hello from pl3drun.initialize (begin)!"
         print "Importing information from other modules:"
 
-        # The only parameters required from Lithomop3d_scan are those in the
-        # inventory.  All others have been imported into Lithomop3d_setup, and
+        # The only parameters required from Pylith3d_scan are those in the
+        # inventory.  All others have been imported into Pylith3d_setup, and
         # possibly modified there.  Get all required info from the inventory.
 
         # PETSc logging
-        self.autoprestrStage = lm3dsetup.autoprestrStage
-        self.elasticStage = lm3dsetup.elasticStage
-        self.viscousStage = lm3dsetup.viscousStage
-        self.iterateEvent = lm3dsetup.iterateEvent
-        self.A = lm3dsetup.A
-        self.rhs = lm3dsetup.rhs
-        self.sol = lm3dsetup.sol
+        self.autoprestrStage = pl3dsetup.autoprestrStage
+        self.elasticStage = pl3dsetup.elasticStage
+        self.viscousStage = pl3dsetup.viscousStage
+        self.iterateEvent = pl3dsetup.iterateEvent
+        self.A = pl3dsetup.A
+        self.rhs = pl3dsetup.rhs
+        self.sol = pl3dsetup.sol
         
-        self.analysisType = lm3dscan.inventory.analysisType
+        self.analysisType = pl3dscan.inventory.analysisType
 
-        # Import all necessary pointers, etc. from Lithomop3d_setup.
-        self.memorySize = lm3dsetup.memorySize
-        self.intSize = lm3dsetup.intSize
-        self.doubleSize = lm3dsetup.doubleSize
+        # Import all necessary pointers, etc. from Pylith3d_setup.
+        self.memorySize = pl3dsetup.memorySize
+        self.intSize = pl3dsetup.intSize
+        self.doubleSize = pl3dsetup.doubleSize
         
-        self.numberTimeStepGroups = lm3dsetup.numberTimeStepGroups
+        self.numberTimeStepGroups = pl3dsetup.numberTimeStepGroups
 
-        self.pointerToBextern = lm3dsetup.pointerToBextern
-        self.pointerToBtraction = lm3dsetup.pointerToBtraction
-        self.pointerToBgravity = lm3dsetup.pointerToBgravity
-        self.pointerToBconcForce = lm3dsetup.pointerToBconcForce
-        self.pointerToBintern = lm3dsetup.pointerToBintern
-        self.pointerToBresid = lm3dsetup.pointerToBresid
-        self.pointerToBwink = lm3dsetup.pointerToBwink
-        self.pointerToBwinkx = lm3dsetup.pointerToBwinkx
-        self.pointerToDispVec = lm3dsetup.pointerToDispVec
-        self.pointerToDprev = lm3dsetup.pointerToDprev
-        self.pointerToListArrayNforce = lm3dsetup.pointerToListArrayNforce
-        self.pointerToListArrayGrav = lm3dsetup.pointerToListArrayGrav
+        self.pointerToBextern = pl3dsetup.pointerToBextern
+        self.pointerToBtraction = pl3dsetup.pointerToBtraction
+        self.pointerToBgravity = pl3dsetup.pointerToBgravity
+        self.pointerToBconcForce = pl3dsetup.pointerToBconcForce
+        self.pointerToBintern = pl3dsetup.pointerToBintern
+        self.pointerToBresid = pl3dsetup.pointerToBresid
+        self.pointerToBwink = pl3dsetup.pointerToBwink
+        self.pointerToBwinkx = pl3dsetup.pointerToBwinkx
+        self.pointerToDispVec = pl3dsetup.pointerToDispVec
+        self.pointerToDprev = pl3dsetup.pointerToDprev
+        self.pointerToListArrayNforce = pl3dsetup.pointerToListArrayNforce
+        self.pointerToListArrayGrav = pl3dsetup.pointerToListArrayGrav
 
-        self.pointerToX = lm3dsetup.pointerToX
-        self.pointerToD = lm3dsetup.pointerToD
-        self.pointerToDeld = lm3dsetup.pointerToDeld
-        self.pointerToDcur = lm3dsetup.pointerToDcur
-        self.pointerToId = lm3dsetup.pointerToId
-        self.pointerToIwink = lm3dsetup.pointerToIwink
-        self.pointerToWink = lm3dsetup.pointerToWink
-        self.pointerToListArrayNsysdat = lm3dsetup.pointerToListArrayNsysdat
-        self.pointerToListArrayIddmat = lm3dsetup.pointerToListArrayIddmat
+        self.pointerToX = pl3dsetup.pointerToX
+        self.pointerToD = pl3dsetup.pointerToD
+        self.pointerToDeld = pl3dsetup.pointerToDeld
+        self.pointerToDcur = pl3dsetup.pointerToDcur
+        self.pointerToId = pl3dsetup.pointerToId
+        self.pointerToIwink = pl3dsetup.pointerToIwink
+        self.pointerToWink = pl3dsetup.pointerToWink
+        self.pointerToListArrayNsysdat = pl3dsetup.pointerToListArrayNsysdat
+        self.pointerToListArrayIddmat = pl3dsetup.pointerToListArrayIddmat
 
-        self.pointerToIbond = lm3dsetup.pointerToIbond
-        self.pointerToBond = lm3dsetup.pointerToBond
+        self.pointerToIbond = pl3dsetup.pointerToIbond
+        self.pointerToBond = pl3dsetup.pointerToBond
 
-        self.pointerToDx = lm3dsetup.pointerToDx
-        self.pointerToDeldx = lm3dsetup.pointerToDeldx
-        self.pointerToDxcur = lm3dsetup.pointerToDxcur
-        self.pointerToDiforc = lm3dsetup.pointerToDiforc
-        self.pointerToIdx = lm3dsetup.pointerToIdx
-        self.pointerToIwinkx = lm3dsetup.pointerToIwinkx
-        self.pointerToWinkx = lm3dsetup.pointerToWinkx
-        self.pointerToIdslp = lm3dsetup.pointerToIdslp
-        self.pointerToIpslp = lm3dsetup.pointerToIpslp
-        self.pointerToIdhist = lm3dsetup.pointerToIdhist
+        self.pointerToDx = pl3dsetup.pointerToDx
+        self.pointerToDeldx = pl3dsetup.pointerToDeldx
+        self.pointerToDxcur = pl3dsetup.pointerToDxcur
+        self.pointerToDiforc = pl3dsetup.pointerToDiforc
+        self.pointerToIdx = pl3dsetup.pointerToIdx
+        self.pointerToIwinkx = pl3dsetup.pointerToIwinkx
+        self.pointerToWinkx = pl3dsetup.pointerToWinkx
+        self.pointerToIdslp = pl3dsetup.pointerToIdslp
+        self.pointerToIpslp = pl3dsetup.pointerToIpslp
+        self.pointerToIdhist = pl3dsetup.pointerToIdhist
 
-        self.pointerToFault = lm3dsetup.pointerToFault
-        self.pointerToNfault = lm3dsetup.pointerToNfault
-        self.pointerToDfault = lm3dsetup.pointerToDfault
-        self.pointerToTfault = lm3dsetup.pointerToTfault
+        self.pointerToFault = pl3dsetup.pointerToFault
+        self.pointerToNfault = pl3dsetup.pointerToNfault
+        self.pointerToDfault = pl3dsetup.pointerToDfault
+        self.pointerToTfault = pl3dsetup.pointerToTfault
 
-        self.pointerToS = lm3dsetup.pointerToS
-        self.pointerToStemp = lm3dsetup.pointerToStemp
+        self.pointerToS = pl3dsetup.pointerToS
+        self.pointerToStemp = pl3dsetup.pointerToStemp
 
-        self.pointerToState = lm3dsetup.pointerToState
-        self.pointerToDstate = lm3dsetup.pointerToDstate
-        self.pointerToState0 = lm3dsetup.pointerToState0
-        self.pointerToDmat = lm3dsetup.pointerToDmat
-        self.pointerToIens = lm3dsetup.pointerToIens
-        self.pointerToLm = lm3dsetup.pointerToLm
-        self.pointerToLmx = lm3dsetup.pointerToLmx
-        self.pointerToLmf = lm3dsetup.pointerToLmf
-        self.pointerToIvfamily = lm3dsetup.pointerToIvfamily
-        self.pointerToListArrayNpar = lm3dsetup.pointerToListArrayNpar
+        self.pointerToState = pl3dsetup.pointerToState
+        self.pointerToDstate = pl3dsetup.pointerToDstate
+        self.pointerToState0 = pl3dsetup.pointerToState0
+        self.pointerToDmat = pl3dsetup.pointerToDmat
+        self.pointerToIens = pl3dsetup.pointerToIens
+        self.pointerToLm = pl3dsetup.pointerToLm
+        self.pointerToLmx = pl3dsetup.pointerToLmx
+        self.pointerToLmf = pl3dsetup.pointerToLmf
+        self.pointerToIvfamily = pl3dsetup.pointerToIvfamily
+        self.pointerToListArrayNpar = pl3dsetup.pointerToListArrayNpar
 
-        self.prestressAutoComputeInt = lm3dsetup.prestressAutoComputeInt
+        self.prestressAutoComputeInt = pl3dsetup.prestressAutoComputeInt
 
-        self.pointerToIelno = lm3dsetup.pointerToIelno
-        self.pointerToIside = lm3dsetup.pointerToIside
-        self.pointerToIhistry = lm3dsetup.pointerToIhistry
-        self.pointerToPres = lm3dsetup.pointerToPres
-        self.pointerToPdir = lm3dsetup.pointerToPdir
+        self.pointerToIelno = pl3dsetup.pointerToIelno
+        self.pointerToIside = pl3dsetup.pointerToIside
+        self.pointerToIhistry = pl3dsetup.pointerToIhistry
+        self.pointerToPres = pl3dsetup.pointerToPres
+        self.pointerToPdir = pl3dsetup.pointerToPdir
 
-        self.pointerToListArrayPropertyList = lm3dsetup.pointerToListArrayPropertyList
-        self.pointerToMaterialModelInfo = lm3dsetup.pointerToMaterialModelInfo
+        self.pointerToListArrayPropertyList = pl3dsetup.pointerToListArrayPropertyList
+        self.pointerToMaterialModelInfo = pl3dsetup.pointerToMaterialModelInfo
 
-        self.pointerToGauss = lm3dsetup.pointerToGauss
-        self.pointerToSh = lm3dsetup.pointerToSh
-        self.pointerToShj = lm3dsetup.pointerToShj
-        self.pointerToListArrayElementTypeInfo = lm3dsetup.pointerToListArrayElementTypeInfo
+        self.pointerToGauss = pl3dsetup.pointerToGauss
+        self.pointerToSh = pl3dsetup.pointerToSh
+        self.pointerToShj = pl3dsetup.pointerToShj
+        self.pointerToListArrayElementTypeInfo = pl3dsetup.pointerToListArrayElementTypeInfo
 
-        self.pointerToHistry = lm3dsetup.pointerToHistry
-        self.pointerToListArrayRtimdat = lm3dsetup.pointerToListArrayRtimdat
-        self.pointerToListArrayNtimdat = lm3dsetup.pointerToListArrayNtimdat
-        self.pointerToListArrayNvisdat = lm3dsetup.pointerToListArrayNvisdat
-        self.pointerToMaxstp = lm3dsetup.pointerToMaxstp
-        self.pointerToDelt = lm3dsetup.pointerToDelt
-        self.pointerToAlfa = lm3dsetup.pointerToAlfa
-        self.pointerToMaxit = lm3dsetup.pointerToMaxit
-        self.pointerToNtdinit = lm3dsetup.pointerToNtdinit
-        self.pointerToLgdef = lm3dsetup.pointerToLgdef
-        self.pointerToUtol = lm3dsetup.pointerToUtol
-        self.pointerToFtol = lm3dsetup.pointerToFtol
-        self.pointerToEtol = lm3dsetup.pointerToEtol
-        self.pointerToItmax = lm3dsetup.pointerToItmax
+        self.pointerToHistry = pl3dsetup.pointerToHistry
+        self.pointerToListArrayRtimdat = pl3dsetup.pointerToListArrayRtimdat
+        self.pointerToListArrayNtimdat = pl3dsetup.pointerToListArrayNtimdat
+        self.pointerToListArrayNvisdat = pl3dsetup.pointerToListArrayNvisdat
+        self.pointerToMaxstp = pl3dsetup.pointerToMaxstp
+        self.pointerToDelt = pl3dsetup.pointerToDelt
+        self.pointerToAlfa = pl3dsetup.pointerToAlfa
+        self.pointerToMaxit = pl3dsetup.pointerToMaxit
+        self.pointerToNtdinit = pl3dsetup.pointerToNtdinit
+        self.pointerToLgdef = pl3dsetup.pointerToLgdef
+        self.pointerToUtol = pl3dsetup.pointerToUtol
+        self.pointerToFtol = pl3dsetup.pointerToFtol
+        self.pointerToEtol = pl3dsetup.pointerToEtol
+        self.pointerToItmax = pl3dsetup.pointerToItmax
 
-        self.pointerToListArrayRgiter = lm3dsetup.pointerToListArrayRgiter
+        self.pointerToListArrayRgiter = pl3dsetup.pointerToListArrayRgiter
 
-        self.pointerToSkew = lm3dsetup.pointerToSkew
+        self.pointerToSkew = pl3dsetup.pointerToSkew
 
-        self.pointerToIprint = lm3dsetup.pointerToIprint
-        self.pointerToListArrayNcodat = lm3dsetup.pointerToListArrayNcodat
-        self.pointerToListArrayNunits = lm3dsetup.pointerToListArrayNunits
-        self.pointerToListArrayNprint = lm3dsetup.pointerToListArrayNprint
-        self.pointerToIstatout = lm3dsetup.pointerToIstatout
-        self.pointerToNstatout = lm3dsetup.pointerToNstatout
+        self.pointerToIprint = pl3dsetup.pointerToIprint
+        self.pointerToListArrayNcodat = pl3dsetup.pointerToListArrayNcodat
+        self.pointerToListArrayNunits = pl3dsetup.pointerToListArrayNunits
+        self.pointerToListArrayNprint = pl3dsetup.pointerToListArrayNprint
+        self.pointerToIstatout = pl3dsetup.pointerToIstatout
+        self.pointerToNstatout = pl3dsetup.pointerToNstatout
 
-        self.asciiOutputFile = lm3dsetup.asciiOutputFile
-        self.plotOutputFile = lm3dsetup.plotOutputFile
-        self.ucdOutputRoot = lm3dsetup.ucdOutputRoot
+        self.asciiOutputFile = pl3dsetup.asciiOutputFile
+        self.plotOutputFile = pl3dsetup.plotOutputFile
+        self.ucdOutputRoot = pl3dsetup.ucdOutputRoot
 
         print ""
-        print "Hello from lm3drun.initialize (end)!"
+        print "Hello from pl3drun.initialize (end)!"
 
         return
 
     def run(self):
-        import lithomop3d
+        import pylith3d
         
         # First define all of the lists that maintain variable values.  The
         # variables in these lists are altered during the running of the code
@@ -186,7 +186,7 @@ class Lithomop3d_run(Component):
         # They should not have been defined previously.
 
         print ""
-        print "Hello from lm3drun.run (begin)!"
+        print "Hello from pl3drun.run (begin)!"
         print "Beginning problem solution:"
 
         # Output approximate memory usage
@@ -195,12 +195,12 @@ class Lithomop3d_run(Component):
 
         print ""
         print "Approximate memory allocation for f77 arrays (MB): %g" % self.memorySizeMB
-        # print "Just before lithomop3d.autoprestr:"
+        # print "Just before pylith3d.autoprestr:"
 
         # Compute gravitational prestresses, if requested.
         if self.analysisType == "elasticSolution" or self.analysisType == "fullSolution":
             if self.prestressAutoComputeInt == 1:
-                lithomop3d.autoprestr(
+                pylith3d.autoprestr(
                     self.A,self.rhs,self.sol,
                     self.pointerToBextern,
                     self.pointerToBtraction,
@@ -291,7 +291,7 @@ class Lithomop3d_run(Component):
 
             # Perform elastic solution, if requested.
             
-            lithomop3d.elastc(
+            pylith3d.elastc(
                 self.A,self.rhs,self.sol,
                 self.pointerToBextern,
                 self.pointerToBtraction,
@@ -383,7 +383,7 @@ class Lithomop3d_run(Component):
         # Perform time-dependent solution, if requested.
 
         if self.analysisType == "fullSolution" and self.numberTimeStepGroups > 1:
-            lithomop3d.viscos(
+            pylith3d.viscos(
                 self.A,self.rhs,self.sol,
                 self.pointerToBextern,
                 self.pointerToBtraction,
@@ -472,23 +472,23 @@ class Lithomop3d_run(Component):
                 self.ucdOutputRoot,
                 self.viscousStage,
                 self.iterateEvent)
-        lithomop3d.destroyPETScMat(self.A,self.rhs,self.sol)
-        lithomop3d.PetscFinalize()
+        pylith3d.destroyPETScMat(self.A,self.rhs,self.sol)
+        pylith3d.PetscFinalize()
         print ""
-        print "Hello from lm3drun.run (end)!"
+        print "Hello from pl3drun.run (end)!"
         return
 
 
     def __init__(self):
-        Component.__init__(self, "lm3drun", "solver")
+        Component.__init__(self, "pl3drun", "solver")
 
         print ""
-        print "Hello from lm3drun.__init__!"
+        print "Hello from pl3drun.__init__!"
 
         return
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.17 2005/05/03 18:47:35 willic3 Exp $
+# $Id: Pylith3d_run.py,v 1.17 2005/05/03 18:47:35 willic3 Exp $
 
 # End of file 

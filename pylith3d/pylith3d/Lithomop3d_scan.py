@@ -33,18 +33,18 @@ from pyre.components.Component import Component
 import os
 
 
-class Lithomop3d_scan(Component):
+class Pylith3d_scan(Component):
 
 
     def __init__(self):
-        Component.__init__(self, "lm3dscan", "scanner")
+        Component.__init__(self, "pl3dscan", "scanner")
 
         from pyre.units.pressure import Pa
         from pyre.units.length import m
         from pyre.units.time import s
 
 	print ""
-        print "Hello from lm3dscan.__init__ (begin)!"
+        print "Hello from pl3dscan.__init__ (begin)!"
         print "Setting default keyword values:"
 
         # default values for extra input (category 2)
@@ -90,7 +90,7 @@ class Lithomop3d_scan(Component):
         self.f77UcdOutput = 13
 
 	print ""
-        print "Hello from lm3dscan.__init__ (end)!"
+        print "Hello from pl3dscan.__init__ (end)!"
         
         return
 
@@ -101,7 +101,7 @@ class Lithomop3d_scan(Component):
         from Materials import Materials
         from KeywordValueParse import KeywordValueParse
         import pyre.units
-        import lithomop3d
+        import pylith3d
         import string
 
         uparser = pyre.units.parser()
@@ -109,7 +109,7 @@ class Lithomop3d_scan(Component):
         keyparse = KeywordValueParse()
 
 	print ""
-        print "Hello from lm3dscan.preinitialize (begin)!"
+        print "Hello from pl3dscan.preinitialize (begin)!"
         print "Scanning ascii files to determine dimensions:"
 
         # Initialization of all parameters
@@ -233,7 +233,7 @@ class Lithomop3d_scan(Component):
         unused   = self.IOFileCategory(False,  0,      "unused")
         required = self.IOFileCategory(True,   1,       None)
         
-        Inventory = Lithomop3d_scan.Inventory
+        Inventory = Pylith3d_scan.Inventory
 
         # First see if there is a keyword = value file, which may be used
         # to override parameters from __init__.
@@ -310,7 +310,7 @@ class Lithomop3d_scan(Component):
             raise self._summaryIOError
 
         # This is a test version where the geometry type is automatically
-        # specified by using Lithomop3d.  The geometry type is only used for
+        # specified by using Pylith3d.  The geometry type is only used for
         # f77 routines and not in pyre. An integer value is also defined
         # for use in f77 routines.
         # Define some integer values that are derived from string variables.
@@ -349,7 +349,7 @@ class Lithomop3d_scan(Component):
         self._numberElementTypes = 62
         self._numberElementTypesBase = 10
         self._numberElementNodesBase = [8, 7, 6, 5, 4, 20, 18, 15, 13, 10]
-        self._pointerToListArrayNumberElementNodesBase = lithomop3d.intListToArray(
+        self._pointerToListArrayNumberElementNodesBase = pylith3d.intListToArray(
             self._numberElementNodesBase)
 	self._memorySize += self._numberElementTypesBase*self._intSize
 
@@ -357,11 +357,11 @@ class Lithomop3d_scan(Component):
         self._maxMaterialModels = 20
         self._maxStateVariables = 24
         self._maxState0Variables = 6
-        self._pointerToMaterialModelInfo = lithomop3d.allocateInt(
+        self._pointerToMaterialModelInfo = pylith3d.allocateInt(
             6*self._maxMaterialModels)
 	self._memorySize += 6*self._maxMaterialModels*self._intSize
 
-        lithomop3d.matmod_def(
+        pylith3d.matmod_def(
             self._pointerToMaterialModelInfo)
 
         # Parameters derived from values in the inventory or the
@@ -385,7 +385,7 @@ class Lithomop3d_scan(Component):
             self._prestressAutoChangeElasticPropsInt = 0
 
         # Parameters derived from the number of entries in a file.
-        self._numberNodes = lithomop3d.scan_coords(
+        self._numberNodes = pylith3d.scan_coords(
             f77FileInput,
             self._coordinateUnits,
             self._coordinateInputFile)
@@ -394,7 +394,7 @@ class Lithomop3d_scan(Component):
                                     uparser.parse(string.strip(self._coordinateUnits))
         self._coordinateScaleFactor = self._coordinateScaleString.value
 
-        self._numberBcEntries = lithomop3d.scan_bc(
+        self._numberBcEntries = pylith3d.scan_bc(
             f77FileInput,
             self._displacementUnits,
             self._velocityUnits,
@@ -411,13 +411,13 @@ class Lithomop3d_scan(Component):
                                uparser.parse(string.strip(self._forceUnits))
         self._forceScaleFactor = self._forceScaleString.value
 
-        self._winklerInfo = lithomop3d.scan_wink(
+        self._winklerInfo = pylith3d.scan_wink(
             f77FileInput,
             self._winklerInputFile)
         self._numberWinklerEntries = self._winklerInfo[0]
         self._numberWinklerForces = self._winklerInfo[1]
 
-        self._numberRotationEntries = lithomop3d.scan_skew(
+        self._numberRotationEntries = pylith3d.scan_skew(
             f77FileInput,
             self._rotationUnits,
             self._rotationInputFile)
@@ -427,7 +427,7 @@ class Lithomop3d_scan(Component):
                                       uparser.parse(string.strip(self._rotationUnits))
             self._rotationScaleFactor = self._rotationScaleString.value
 
-        self._timeStepInfo = lithomop3d.scan_timdat(
+        self._timeStepInfo = pylith3d.scan_timdat(
             f77FileInput,
             self._timeUnits,
             self._timeStepInputFile)
@@ -438,13 +438,13 @@ class Lithomop3d_scan(Component):
                               uparser.parse(string.strip(self._timeUnits))
         self._timeScaleFactor = self._timeScaleString.value
 
-        self._numberFullOutputs = lithomop3d.scan_fuldat(
+        self._numberFullOutputs = pylith3d.scan_fuldat(
             self._analysisTypeInt,
             self._totalNumberTimeSteps,
             f77FileInput,
             self._fullOutputInputFile)
 
-        self._numberLoadHistories = lithomop3d.scan_hist(
+        self._numberLoadHistories = pylith3d.scan_hist(
             f77FileInput,
             self._loadHistoryInputFile)
 
@@ -454,13 +454,13 @@ class Lithomop3d_scan(Component):
         self._propertyListIndex = matinfo.propertyIndex
         self._materialModel = matinfo.materialModel
         self._propertyListSize = len(self._propertyList)
-        self._pointerToListArrayPropertyList = lithomop3d.doubleListToArray(
+        self._pointerToListArrayPropertyList = pylith3d.doubleListToArray(
             self._propertyList)
         self._memorySize += self._propertyListSize*self._doubleSize
-        self._pointerToListArrayPropertyListIndex = lithomop3d.intListToArray(
+        self._pointerToListArrayPropertyListIndex = pylith3d.intListToArray(
             self._propertyListIndex)
         self._memorySize += self._numberMaterials*self._intSize
-        self._pointerToListArrayMaterialModel = lithomop3d.intListToArray(
+        self._pointerToListArrayMaterialModel = pylith3d.intListToArray(
             self._materialModel)
         self._memorySize += self._numberMaterials*self._intSize
 
@@ -471,11 +471,11 @@ class Lithomop3d_scan(Component):
         self._maxNumberVolumeElementFamilies = self._numberAllowedVolumeElementTypes* \
                                                self._numberMaterials
 
-        self._pointerToVolumeElementFamilyList = lithomop3d.allocateInt(
+        self._pointerToVolumeElementFamilyList = pylith3d.allocateInt(
             3*self._maxNumberVolumeElementFamilies)
         self._memorySize += 3*self._maxNumberVolumeElementFamilies*self._intSize
 
-        self._volumeElementDimens = lithomop3d.scan_connect(
+        self._volumeElementDimens = pylith3d.scan_connect(
             self._pointerToListArrayNumberElementNodesBase,
             self._pointerToMaterialModelInfo,
             self._pointerToListArrayMaterialModel,
@@ -493,7 +493,7 @@ class Lithomop3d_scan(Component):
         self._pointerToListArrayPropertyListIndex = None
         self._memorySize -= 2*self._numberMaterials*self._intSize
 
-        # self._numberPrestressEntries = lithomop3d.scan_prestr(
+        # self._numberPrestressEntries = pylith3d.scan_prestr(
         #     self._stateVariableDimension,
         #     self._numberPrestressGaussPoints,
         #     self._numberElements,
@@ -501,7 +501,7 @@ class Lithomop3d_scan(Component):
         #     f77FileInput,
         #     self._prestressInputFile)
 
-        # self._numberTractionBc = lithomop3d.scan_traction(
+        # self._numberTractionBc = pylith3d.scan_traction(
         #     self._numberElementNodes,
         #     self._numberTractionDirections,
         #     self._tractionBcUnits,
@@ -515,20 +515,20 @@ class Lithomop3d_scan(Component):
         #                                 self._tractionBcScaleString/pyre.units.SI.pascal
             self._tractionFlag = 1
 
-        self._numberSplitNodeEntries = lithomop3d.scan_split(
+        self._numberSplitNodeEntries = pylith3d.scan_split(
             f77FileInput,
             self._splitNodeInputFile)
 
-        self._numberSlipperyNodeEntries = lithomop3d.scan_slip(
+        self._numberSlipperyNodeEntries = pylith3d.scan_slip(
             f77FileInput,
             self._slipperyNodeInputFile)
 
-        self._numberDifferentialForceEntries = lithomop3d.scan_diff(
+        self._numberDifferentialForceEntries = pylith3d.scan_diff(
             self._numberSlipperyNodeEntries,
             f77FileInput,
             self._differentialForceInputFile)
 
-        self._slipperyWinklerInfo = lithomop3d.scan_winkx(
+        self._slipperyWinklerInfo = pylith3d.scan_winkx(
             self._numberSlipperyNodeEntries,
             f77FileInput,
             self._slipperyWinklerInputFile)
@@ -536,7 +536,7 @@ class Lithomop3d_scan(Component):
         self._numberSlipperyWinklerForces = self._slipperyWinklerInfo[1]
 
 	print ""
-        print "Hello from lm3dscan.preinitialize (end)!"
+        print "Hello from pl3dscan.preinitialize (end)!"
 
         return
 
@@ -692,6 +692,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.19 2005/06/24 20:22:03 willic3 Exp $
+# $Id: Pylith3d_scan.py,v 1.19 2005/06/24 20:22:03 willic3 Exp $
 
 # End of file 

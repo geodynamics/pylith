@@ -4,9 +4,9 @@
 #
 #                             Charles A. Williams
 #                       Rensselaer Polytechnic Institute
-#                        (C) 2004  All Rights Reserved
+#                        (C) 2006  All Rights Reserved
 #
-#  Copyright 2004 Rensselaer Polytechnic Institute.
+#  Copyright 2006 Rensselaer Polytechnic Institute.
 #  All worldwide rights reserved.  A license to use, copy, modify and
 #  distribute this software for non-commercial research purposes only
 #  is hereby granted, provided that this copyright notice and
@@ -30,7 +30,7 @@
 # 
 
 def copyright():
-    return "lithomop3d pyre module: Copyright (c) 2004 Rensselaer Polytechnic Institute";
+    return "pylith3d pyre module: Copyright (c) 2006 Rensselaer Polytechnic Institute";
 
 
 # version

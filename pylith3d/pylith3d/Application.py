@@ -39,12 +39,12 @@ class Application(BaseScript):
     def main(self, *args, **kwds):
 #        from time import clock as now
 #        start = now()
-        lm3dsetup = self.inventory.setup
-        import lithomop3d
-        lithomop3d.PetscInitialize()
-        self.inventory.scanner.inventory.fileRoot, mesh = lithomop3d.processMesh(self.inventory.scanner.inventory.fileRoot)
+        pl3dsetup = self.inventory.setup
+        import pylith3d
+        pylith3d.PetscInitialize()
+        self.inventory.scanner.inventory.fileRoot, mesh = pylith3d.processMesh(self.inventory.scanner.inventory.fileRoot)
         try:
-            lm3dsetup.initialize(self.inventory.scanner)
+            pl3dsetup.initialize(self.inventory.scanner)
         except self.inventory.scanner.CanNotOpenInputOutputFilesError, error:
             import sys
             print >> sys.stderr
@@ -52,22 +52,22 @@ class Application(BaseScript):
             print >> sys.stderr
             print >> sys.stderr, "%s: %s" % (error.__class__.__name__, error)
             sys.exit(1)
-        lm3dsetup.read()
-        lm3dsetup.numberequations()
-        lm3dsetup.sortmesh()
-        lm3dsetup.sparsesetup(mesh)
-        lm3dsetup.allocateremaining()
-        lm3dsetup.meshwrite()
-        lm3drun = self.inventory.solver
-        lm3drun.initialize(self.inventory.scanner, self.inventory.setup)
-        lm3drun.run()
+        pl3dsetup.read()
+        pl3dsetup.numberequations()
+        pl3dsetup.sortmesh()
+        pl3dsetup.sparsesetup(mesh)
+        pl3dsetup.allocateremaining()
+        pl3dsetup.meshwrite()
+        pl3drun = self.inventory.solver
+        pl3drun.initialize(self.inventory.scanner, self.inventory.setup)
+        pl3drun.run()
 #        finish = now()
 #        usertime = finish - start
 #        print "Total user time:  %g" % usertime
         return
 
 
-    def __init__(self, name="lithomop3d"):
+    def __init__(self, name="pylith3d"):
         BaseScript.__init__(self, name)
         return
 
@@ -75,13 +75,13 @@ class Application(BaseScript):
     class Inventory(BaseScript.Inventory):
 
         import pyre.inventory
-        from Lithomop3d_scan import Lithomop3d_scan
-        from Lithomop3d_setup import Lithomop3d_setup
-        from Lithomop3d_run import Lithomop3d_run
+        from Pylith3d_scan import Pylith3d_scan
+        from Pylith3d_setup import Pylith3d_setup
+        from Pylith3d_run import Pylith3d_run
 
-        scanner = pyre.inventory.facility("scanner", factory=Lithomop3d_scan)
-        setup = pyre.inventory.facility("setup", factory=Lithomop3d_setup)
-        solver = pyre.inventory.facility("solver", factory=Lithomop3d_run)
+        scanner = pyre.inventory.facility("scanner", factory=Pylith3d_scan)
+        setup = pyre.inventory.facility("setup", factory=Pylith3d_setup)
+        solver = pyre.inventory.facility("solver", factory=Pylith3d_run)
         # ksp_monitor = pyre.inventory.str("ksp_monitor",default="1")
         # ksp_view = pyre.inventory.str("ksp_view",default="1")
         # log_summary = pyre.inventory.str("log_summary",default="1")
