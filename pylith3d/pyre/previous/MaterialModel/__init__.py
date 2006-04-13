@@ -19,7 +19,7 @@ __all__ = ["MaterialModel",
 	   "IsotropicLinearMaxwellViscoelastic"]
 
 def copyright():
-    return "lithomop3d pyre module: Copyright (c) 1998-2003 California Institute of Technology";
+    return "pylith3d pyre module: Copyright (c) 1998-2003 California Institute of Technology";
 
 
 # version

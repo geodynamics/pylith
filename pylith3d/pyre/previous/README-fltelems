@@ -1,5 +1,5 @@
 I envision 3 different types of fault that will eventually be included
-in Lithomop, including 2 that are already present:
+in Pylith, including 2 that are already present:
 
 1.  Split node faults:  This is the finite element equivalent of a
 dislocation, and is probably the simplest of the 3 fault types.  It
@@ -19,7 +19,7 @@ neighbors on the fault.  A local coordinate rotation is then performed
 so that two coordinate axes lie in that plane, and two new differential
 degrees of freedom are added for movement in that plane.
 
-3.  Slide surfaces:  These do not exist yet in Lithomop.  They are
+3.  Slide surfaces:  These do not exist yet in Pylith.  They are
 based on the formulations used in the LLNL NIKE (and I think also in
 DYNA) codes.  This formulation, unlike the two previous formulations,
 does not require matching nodes on either side of the fault.  It is

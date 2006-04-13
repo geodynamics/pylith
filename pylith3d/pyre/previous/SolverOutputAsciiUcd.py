@@ -66,8 +66,8 @@ class SolverOutputAsciiUcd(SolverOutput):
     inventory = [
       props.bool("asciiOutput", default = False),
       props.bool("ucdOutput", default=True),
-      props.str("asciiOutputFile", default="lithomop_solver.ascii"),
-      props.str("ucdOutputFile", default="lithomop_solver.inp")
+      props.str("asciiOutputFile", default="pylith_solver.ascii"),
+      props.str("ucdOutputFile", default="pylith_solver.inp")
       ]
 
 # version

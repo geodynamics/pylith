@@ -4,7 +4,7 @@
     The solver could have an elastic facility and a viscous facility.
 2.  Fix elastc so it doesn't do any output itself.  Note:  output all the same
 things for both elastic and time-dependent (fix statevar).
-3.  Lithomop3d_run will disappear.  Instead, I'll have solver_elastc and
+3.  Pylith3d_run will disappear.  Instead, I'll have solver_elastc and
 solver_const.  
 
 First thing to do:  write Mesh.py and see if Brad thinks it makes sense.

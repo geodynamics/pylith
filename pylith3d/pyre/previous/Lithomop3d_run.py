@@ -31,147 +31,147 @@
 # The function of this code is to call the elastic and time-dependent solution
 # drivers.  To do this, a number of previously-defined parameters need to be
 # bundled into lists.  This portion of the code requires access to all of the
-# information previously defined in Lithomop3d_scan.py and Lithomop3d_setup.py.
+# information previously defined in Pylith3d_scan.py and Pylith3d_setup.py.
 #
 
 
 from pyre.components.Component import Component
 
 
-class Lithomop3d_run(Component):
+class Pylith3d_run(Component):
 
     def initialize(self, scanner, setup):
 
-        lm3dscan = scanner
-        lm3dsetup = setup
+        pl3dscan = scanner
+        pl3dsetup = setup
 
 	print ""
-        print "Hello from lm3drun.initialize (begin)!"
+        print "Hello from pl3drun.initialize (begin)!"
         print "Importing information from other modules:"
 
-        # The only parameters required from Lithomop3d_scan are those in the
-        # inventory.  All others have been imported into Lithomop3d_setup, and
+        # The only parameters required from Pylith3d_scan are those in the
+        # inventory.  All others have been imported into Pylith3d_setup, and
         # possibly modified there.  Get all required info from the inventory.
         
-        self.analysisType = lm3dscan.inventory.analysisType
+        self.analysisType = pl3dscan.inventory.analysisType
 
-        # Import all necessary pointers, etc. from Lithomop3d_setup.
-	self.memorySize = lm3dsetup.memorySize
-	self.intSize = lm3dsetup.intSize
-	self.doubleSize = lm3dsetup.doubleSize
+        # Import all necessary pointers, etc. from Pylith3d_setup.
+	self.memorySize = pl3dsetup.memorySize
+	self.intSize = pl3dsetup.intSize
+	self.doubleSize = pl3dsetup.doubleSize
         
-        self.numberTimeStepGroups = lm3dsetup.numberTimeStepGroups
+        self.numberTimeStepGroups = pl3dsetup.numberTimeStepGroups
 
-        self.pointerToAlnz = lm3dsetup.pointerToAlnz
-        self.pointerToPcg = lm3dsetup.pointerToPcg
-        self.pointerToZcg = lm3dsetup.pointerToZcg
-        self.pointerToJa = lm3dsetup.pointerToJa
+        self.pointerToAlnz = pl3dsetup.pointerToAlnz
+        self.pointerToPcg = pl3dsetup.pointerToPcg
+        self.pointerToZcg = pl3dsetup.pointerToZcg
+        self.pointerToJa = pl3dsetup.pointerToJa
 
-        self.pointerToB = lm3dsetup.pointerToB
-        self.pointerToBtot = lm3dsetup.pointerToBtot
-        self.pointerToBres = lm3dsetup.pointerToBres
-        self.pointerToPvec = lm3dsetup.pointerToPvec
-        self.pointerToGvec1 = lm3dsetup.pointerToGvec1
-        self.pointerToGvec2 = lm3dsetup.pointerToGvec2
-        self.pointerToListArrayGrav = lm3dsetup.pointerToListArrayGrav
+        self.pointerToB = pl3dsetup.pointerToB
+        self.pointerToBtot = pl3dsetup.pointerToBtot
+        self.pointerToBres = pl3dsetup.pointerToBres
+        self.pointerToPvec = pl3dsetup.pointerToPvec
+        self.pointerToGvec1 = pl3dsetup.pointerToGvec1
+        self.pointerToGvec2 = pl3dsetup.pointerToGvec2
+        self.pointerToListArrayGrav = pl3dsetup.pointerToListArrayGrav
 
-        self.pointerToX = lm3dsetup.pointerToX
-        self.pointerToD = lm3dsetup.pointerToD
-        self.pointerToDeld = lm3dsetup.pointerToDeld
-        self.pointerToDprev = lm3dsetup.pointerToDprev
-        self.pointerToDcur = lm3dsetup.pointerToDcur
-        self.pointerToId = lm3dsetup.pointerToId
-        self.pointerToIwink = lm3dsetup.pointerToIwink
-        self.pointerToWink = lm3dsetup.pointerToWink
-        self.pointerToListArrayNsysdat = lm3dsetup.pointerToListArrayNsysdat
+        self.pointerToX = pl3dsetup.pointerToX
+        self.pointerToD = pl3dsetup.pointerToD
+        self.pointerToDeld = pl3dsetup.pointerToDeld
+        self.pointerToDprev = pl3dsetup.pointerToDprev
+        self.pointerToDcur = pl3dsetup.pointerToDcur
+        self.pointerToId = pl3dsetup.pointerToId
+        self.pointerToIwink = pl3dsetup.pointerToIwink
+        self.pointerToWink = pl3dsetup.pointerToWink
+        self.pointerToListArrayNsysdat = pl3dsetup.pointerToListArrayNsysdat
 
-        self.pointerToIbond = lm3dsetup.pointerToIbond
-        self.pointerToBond = lm3dsetup.pointerToBond
+        self.pointerToIbond = pl3dsetup.pointerToIbond
+        self.pointerToBond = pl3dsetup.pointerToBond
 
-        self.pointerToDx = lm3dsetup.pointerToDx
-        self.pointerToDeldx = lm3dsetup.pointerToDeldx
-        self.pointerToDxcur = lm3dsetup.pointerToDxcur
-        self.pointerToDiforc = lm3dsetup.pointerToDiforc
-        self.pointerToIdx = lm3dsetup.pointerToIdx
-        self.pointerToIwinkx = lm3dsetup.pointerToIwinkx
-        self.pointerToWinkx = lm3dsetup.pointerToWinkx
-        self.pointerToIdslp = lm3dsetup.pointerToIdslp
-        self.pointerToIpslp = lm3dsetup.pointerToIpslp
-        self.pointerToIdhist = lm3dsetup.pointerToIdhist
+        self.pointerToDx = pl3dsetup.pointerToDx
+        self.pointerToDeldx = pl3dsetup.pointerToDeldx
+        self.pointerToDxcur = pl3dsetup.pointerToDxcur
+        self.pointerToDiforc = pl3dsetup.pointerToDiforc
+        self.pointerToIdx = pl3dsetup.pointerToIdx
+        self.pointerToIwinkx = pl3dsetup.pointerToIwinkx
+        self.pointerToWinkx = pl3dsetup.pointerToWinkx
+        self.pointerToIdslp = pl3dsetup.pointerToIdslp
+        self.pointerToIpslp = pl3dsetup.pointerToIpslp
+        self.pointerToIdhist = pl3dsetup.pointerToIdhist
 
-        self.pointerToFault = lm3dsetup.pointerToFault
-        self.pointerToNfault = lm3dsetup.pointerToNfault
-        self.pointerToDfault = lm3dsetup.pointerToDfault
-        self.pointerToTfault = lm3dsetup.pointerToTfault
+        self.pointerToFault = pl3dsetup.pointerToFault
+        self.pointerToNfault = pl3dsetup.pointerToNfault
+        self.pointerToDfault = pl3dsetup.pointerToDfault
+        self.pointerToTfault = pl3dsetup.pointerToTfault
 
-        self.pointerToS = lm3dsetup.pointerToS
-        self.pointerToStemp = lm3dsetup.pointerToStemp
+        self.pointerToS = pl3dsetup.pointerToS
+        self.pointerToStemp = pl3dsetup.pointerToStemp
 
-        self.pointerToState = lm3dsetup.pointerToState
-        self.pointerToDstate = lm3dsetup.pointerToDstate
-        self.pointerToDmat = lm3dsetup.pointerToDmat
-        self.pointerToIen = lm3dsetup.pointerToIen
-        self.pointerToLm = lm3dsetup.pointerToLm
-        self.pointerToLmx = lm3dsetup.pointerToLmx
-        self.pointerToLmf = lm3dsetup.pointerToLmf
-        self.pointerToInfiel = lm3dsetup.pointerToInfiel
-        self.pointerToListArrayIddmat = lm3dsetup.pointerToListArrayIddmat
-        self.pointerToListArrayNpar = lm3dsetup.pointerToListArrayNpar
+        self.pointerToState = pl3dsetup.pointerToState
+        self.pointerToDstate = pl3dsetup.pointerToDstate
+        self.pointerToDmat = pl3dsetup.pointerToDmat
+        self.pointerToIen = pl3dsetup.pointerToIen
+        self.pointerToLm = pl3dsetup.pointerToLm
+        self.pointerToLmx = pl3dsetup.pointerToLmx
+        self.pointerToLmf = pl3dsetup.pointerToLmf
+        self.pointerToInfiel = pl3dsetup.pointerToInfiel
+        self.pointerToListArrayIddmat = pl3dsetup.pointerToListArrayIddmat
+        self.pointerToListArrayNpar = pl3dsetup.pointerToListArrayNpar
 
-        self.pointerToIelno = lm3dsetup.pointerToIelno
-        self.pointerToIside = lm3dsetup.pointerToIside
-        self.pointerToIhistry = lm3dsetup.pointerToIhistry
-        self.pointerToPres = lm3dsetup.pointerToPres
-        self.pointerToPdir = lm3dsetup.pointerToPdir
+        self.pointerToIelno = pl3dsetup.pointerToIelno
+        self.pointerToIside = pl3dsetup.pointerToIside
+        self.pointerToIhistry = pl3dsetup.pointerToIhistry
+        self.pointerToPres = pl3dsetup.pointerToPres
+        self.pointerToPdir = pl3dsetup.pointerToPdir
 
-        self.pointerToListArrayPropertyList = lm3dsetup.pointerToListArrayPropertyList
-        self.pointerToMhist = lm3dsetup.pointerToMhist
-        self.pointerToMaterialInfo = lm3dsetup.pointerToMaterialInfo
-        self.pointerToMaterialModelInfo = lm3dsetup.pointerToMaterialModelInfo
-        self.pointerToMaterialModelStates = lm3dsetup.pointerToMaterialModelStates
+        self.pointerToListArrayPropertyList = pl3dsetup.pointerToListArrayPropertyList
+        self.pointerToMhist = pl3dsetup.pointerToMhist
+        self.pointerToMaterialInfo = pl3dsetup.pointerToMaterialInfo
+        self.pointerToMaterialModelInfo = pl3dsetup.pointerToMaterialModelInfo
+        self.pointerToMaterialModelStates = pl3dsetup.pointerToMaterialModelStates
 
-        self.pointerToGauss = lm3dsetup.pointerToGauss
-        self.pointerToSh = lm3dsetup.pointerToSh
-        self.pointerToShj = lm3dsetup.pointerToShj
-        self.pointerToElementTypeInfo = lm3dsetup.pointerToElementTypeInfo
+        self.pointerToGauss = pl3dsetup.pointerToGauss
+        self.pointerToSh = pl3dsetup.pointerToSh
+        self.pointerToShj = pl3dsetup.pointerToShj
+        self.pointerToElementTypeInfo = pl3dsetup.pointerToElementTypeInfo
 
-        self.pointerToHistry = lm3dsetup.pointerToHistry
-        self.pointerToListArrayRtimdat = lm3dsetup.pointerToListArrayRtimdat
-        self.pointerToListArrayNvisdat = lm3dsetup.pointerToListArrayNvisdat
-        self.pointerToMaxstp = lm3dsetup.pointerToMaxstp
-        self.pointerToDelt = lm3dsetup.pointerToDelt
-        self.pointerToAlfa = lm3dsetup.pointerToAlfa
-        self.pointerToMaxit = lm3dsetup.pointerToMaxit
-        self.pointerToNtdinit = lm3dsetup.pointerToNtdinit
-        self.pointerToLgdef = lm3dsetup.pointerToLgdef
-        self.pointerToUtol = lm3dsetup.pointerToUtol
-        self.pointerToFtol = lm3dsetup.pointerToFtol
-        self.pointerToEtol = lm3dsetup.pointerToEtol
-        self.pointerToItmax = lm3dsetup.pointerToItmax
+        self.pointerToHistry = pl3dsetup.pointerToHistry
+        self.pointerToListArrayRtimdat = pl3dsetup.pointerToListArrayRtimdat
+        self.pointerToListArrayNvisdat = pl3dsetup.pointerToListArrayNvisdat
+        self.pointerToMaxstp = pl3dsetup.pointerToMaxstp
+        self.pointerToDelt = pl3dsetup.pointerToDelt
+        self.pointerToAlfa = pl3dsetup.pointerToAlfa
+        self.pointerToMaxit = pl3dsetup.pointerToMaxit
+        self.pointerToNtdinit = pl3dsetup.pointerToNtdinit
+        self.pointerToLgdef = pl3dsetup.pointerToLgdef
+        self.pointerToUtol = pl3dsetup.pointerToUtol
+        self.pointerToFtol = pl3dsetup.pointerToFtol
+        self.pointerToEtol = pl3dsetup.pointerToEtol
+        self.pointerToItmax = pl3dsetup.pointerToItmax
 
-        self.pointerToListArrayRgiter = lm3dsetup.pointerToListArrayRgiter
-        self.pointerToListArrayRmin = lm3dsetup.pointerToListArrayRmin
-        self.pointerToListArrayRmult = lm3dsetup.pointerToListArrayRmult
-        self.pointerToListArrayNsiter = lm3dsetup.pointerToListArrayNsiter
+        self.pointerToListArrayRgiter = pl3dsetup.pointerToListArrayRgiter
+        self.pointerToListArrayRmin = pl3dsetup.pointerToListArrayRmin
+        self.pointerToListArrayRmult = pl3dsetup.pointerToListArrayRmult
+        self.pointerToListArrayNsiter = pl3dsetup.pointerToListArrayNsiter
 
-        self.pointerToSkew = lm3dsetup.pointerToSkew
+        self.pointerToSkew = pl3dsetup.pointerToSkew
 
-        self.pointerToIprint = lm3dsetup.pointerToIprint
-        self.pointerToListArrayNcodat = lm3dsetup.pointerToListArrayNcodat
-        self.pointerToListArrayNunits = lm3dsetup.pointerToListArrayNunits
-        self.pointerToListArrayNprint = lm3dsetup.pointerToListArrayNprint
-        self.pointerToIstatout = lm3dsetup.pointerToIstatout
+        self.pointerToIprint = pl3dsetup.pointerToIprint
+        self.pointerToListArrayNcodat = pl3dsetup.pointerToListArrayNcodat
+        self.pointerToListArrayNunits = pl3dsetup.pointerToListArrayNunits
+        self.pointerToListArrayNprint = pl3dsetup.pointerToListArrayNprint
+        self.pointerToIstatout = pl3dsetup.pointerToIstatout
 
-        self.asciiOutputFile = lm3dsetup.asciiOutputFile
-        self.plotOutputFile = lm3dsetup.plotOutputFile
+        self.asciiOutputFile = pl3dsetup.asciiOutputFile
+        self.plotOutputFile = pl3dsetup.plotOutputFile
 
 	print ""
-        print "Hello from lm3drun.initialize (end)!"
+        print "Hello from pl3drun.initialize (end)!"
 
         return
 
     def run(self):
-        import lithomop3d
+        import pylith3d
         
         # First define all of the lists that maintain variable values.  The
         # variables in these lists are altered during the running of the code
@@ -179,7 +179,7 @@ class Lithomop3d_run(Component):
         # They should not have been defined previously.
 
 	print ""
-        print "Hello from lm3drun.run (begin)!"
+        print "Hello from pl3drun.run (begin)!"
         print "Beginning problem solution:"
 
         # ntimdat array
@@ -203,7 +203,7 @@ class Lithomop3d_run(Component):
             self.currentNumberReforms,
             self.currentNumberTotalPcgIterations,
             self.reformFlagInt]
-        self.pointerToListArrayNtimdat = lithomop3d.intListToArray(
+        self.pointerToListArrayNtimdat = pylith3d.intListToArray(
             self.listNtimdat)
 	self.memorySize += 9*self.intSize
 
@@ -215,7 +215,7 @@ class Lithomop3d_run(Component):
             self.currentDisplacementNorm,
             self.currentForceNorm,
             self.currentEnergyNorm]
-        self.pointerToListArrayGcurr = lithomop3d.doubleListToArray(
+        self.pointerToListArrayGcurr = pylith3d.doubleListToArray(
             self.listGcurr)
 	self.memorySize += 3*self.doubleSize
 
@@ -227,7 +227,7 @@ class Lithomop3d_run(Component):
             self.initialDisplacementNorm,
             self.initialForceNorm,
             self.initialEnergyNorm]
-        self.pointerToListArrayGi = lithomop3d.doubleListToArray(
+        self.pointerToListArrayGi = pylith3d.doubleListToArray(
             self.listGi)
 	self.memorySize += 3*self.doubleSize
         
@@ -239,7 +239,7 @@ class Lithomop3d_run(Component):
             self.previousDisplacementNorm,
             self.previousForceNorm,
             self.previousEnergyNorm]
-        self.pointerToListArrayGprev = lithomop3d.doubleListToArray(
+        self.pointerToListArrayGprev = pylith3d.doubleListToArray(
             self.listGprev)
 	self.memorySize += 3*self.doubleSize
         
@@ -251,7 +251,7 @@ class Lithomop3d_run(Component):
             self.currentDisplacementTolerance,
             self.currentForceTolerance,
             self.currentEnergyTolerance]
-        self.pointerToListArrayGtol = lithomop3d.doubleListToArray(
+        self.pointerToListArrayGtol = pylith3d.doubleListToArray(
             self.listGtol)
 	self.memorySize += 3*self.doubleSize
 
@@ -261,12 +261,12 @@ class Lithomop3d_run(Component):
 
 	print ""
 	print "Approximate memory allocation for f77 arrays (MB): %g" % self.memorySizeMB
-	# print "Just before lithomop3d.elastc:"
+	# print "Just before pylith3d.elastc:"
 
         # Perform elastic solution, if requested.
 
         if self.analysisType == "elasticSolution" or self.analysisType == "fullSolution":
-            lithomop3d.elastc(
+            pylith3d.elastc(
                 self.pointerToAlnz,
                 self.pointerToPcg,
                 self.pointerToZcg,
@@ -362,7 +362,7 @@ class Lithomop3d_run(Component):
         # Perform time-dependent solution, if requested.
 
         if self.analysisType == "fullSolution" and self.numberTimeStepGroups > 1:
-            lithomop3d.viscos(
+            pylith3d.viscos(
                 self.pointerToAlnz,
                 self.pointerToPcg,
                 self.pointerToZcg,
@@ -457,20 +457,20 @@ class Lithomop3d_run(Component):
                 self.plotOutputFile)
                           
 	print ""
-        print "Hello from lm3drun.run (end)!"
+        print "Hello from pl3drun.run (end)!"
         return
 
 
     def __init__(self):
-        Component.__init__(self, "lm3drun", "solver")
+        Component.__init__(self, "pl3drun", "solver")
 
 	print ""
-        print "Hello from lm3drun.__init__!"
+        print "Hello from pl3drun.__init__!"
 
         return
 
 
 # version
-# $Id: Lithomop3d_run.py,v 1.1 2004/09/23 17:37:55 willic3 Exp $
+# $Id: Pylith3d_run.py,v 1.1 2004/09/23 17:37:55 willic3 Exp $
 
 # End of file 

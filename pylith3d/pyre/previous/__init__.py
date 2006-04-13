@@ -30,7 +30,7 @@
 # 
 
 def copyright():
-    return "lithomop3d pyre module: Copyright (c) 2004 Rensselaer Polytechnic Institute";
+    return "pylith3d pyre module: Copyright (c) 2004 Rensselaer Polytechnic Institute";
 
 
 # version

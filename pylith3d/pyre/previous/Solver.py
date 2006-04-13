@@ -33,7 +33,7 @@ from pyre.components.SimpleSolver import SimpleSolver
 
 import journal
 
-import lithomop3d as bindings
+import pylith3d as bindings
 
 # ----------------------------------------------------------------
 class Solver(SimpleSolver):
@@ -41,7 +41,7 @@ class Solver(SimpleSolver):
   def launch(self, application):
     SimpleSolver.launch(self, application)
 
-    # This part will look a lot like Lithomop3d_run.py.
+    # This part will look a lot like Pylith3d_run.py.
     # It will be much easier to bundle things into python objects and then
     # unbundle them in the bindings.
     bindings.solver_const(XXXXXXXXXX)

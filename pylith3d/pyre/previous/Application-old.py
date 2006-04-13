@@ -39,19 +39,19 @@ class Application(BaseApplication):
     def run(self, *args, **kwds):
 #        from time import clock as now
 #        start = now()
-        lm3dsetup = self.inventory.setup
-        lm3dsetup.initialize(self.inventory.scanner)
-        lm3dsetup.run()
-        lm3drun = self.inventory.solver
-        lm3drun.initialize(self.inventory.scanner, self.inventory.setup)
-        lm3drun.run()
+        pl3dsetup = self.inventory.setup
+        pl3dsetup.initialize(self.inventory.scanner)
+        pl3dsetup.run()
+        pl3drun = self.inventory.solver
+        pl3drun.initialize(self.inventory.scanner, self.inventory.setup)
+        pl3drun.run()
 #        finish = now()
 #        usertime = finish - start
 #        print "Total user time:  %g" % usertime
         return
 
 
-    def __init__(self, name="lithomop3d"):
+    def __init__(self, name="pylith3d"):
         BaseApplication.__init__(self, name)
         return
 
@@ -59,14 +59,14 @@ class Application(BaseApplication):
     class Inventory(BaseApplication.Inventory):
 
         import pyre.facilities
-        from Lithomop3d_scan import Lithomop3d_scan
-        from Lithomop3d_setup import Lithomop3d_setup
-        from Lithomop3d_run import Lithomop3d_run
+        from Pylith3d_scan import Pylith3d_scan
+        from Pylith3d_setup import Pylith3d_setup
+        from Pylith3d_run import Pylith3d_run
 
         inventory = [
-            pyre.facilities.facility("scanner", default=Lithomop3d_scan()),
-            pyre.facilities.facility("setup", default=Lithomop3d_setup()),
-            pyre.facilities.facility("solver", default=Lithomop3d_run())
+            pyre.facilities.facility("scanner", default=Pylith3d_scan()),
+            pyre.facilities.facility("setup", default=Pylith3d_setup()),
+            pyre.facilities.facility("solver", default=Pylith3d_run())
             ]
 
 

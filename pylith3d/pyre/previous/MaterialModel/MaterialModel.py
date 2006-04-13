@@ -12,7 +12,7 @@
 #
 
 
-from lithomop3d.KeywordValueParse import KeywordValueParse
+from pylith3d.KeywordValueParse import KeywordValueParse
 
 class MaterialModel:
 
