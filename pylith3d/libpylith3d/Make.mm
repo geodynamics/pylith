@@ -30,8 +30,8 @@
 
 include local.def
 
-PROJECT = lithomop3d
-PACKAGE = liblithomop3d
+PROJECT = pylith3d
+PACKAGE = libpylith3d
 
 PROJ_SAR = $(BLD_LIBDIR)/$(PACKAGE).$(EXT_SAR)
 PROJ_DLL = $(BLD_LIBDIR)/$(PACKAGE).$(EXT_SO)
