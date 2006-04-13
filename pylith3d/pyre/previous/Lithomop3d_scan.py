@@ -33,18 +33,18 @@
 from pyre.components.Component import Component
 
 
-class Lithomop3d_scan(Component):
+class Pylith3d_scan(Component):
 
 
     def __init__(self):
-        Component.__init__(self, "lm3dscan", "scanner")
+        Component.__init__(self, "pl3dscan", "scanner")
 
         from pyre.units.pressure import Pa
         from pyre.units.length import m
         from pyre.units.time import s
 
 	print ""
-        print "Hello from lm3dscan.__init__ (begin)!"
+        print "Hello from pl3dscan.__init__ (begin)!"
         print "Setting default keyword values:"
 
         # default values for extra input (category 2)
@@ -86,7 +86,7 @@ class Lithomop3d_scan(Component):
         self.f77PlotOutput = 12
 
 	print ""
-        print "Hello from lm3dscan.__init__ (end)!"
+        print "Hello from pl3dscan.__init__ (end)!"
         
         return
 
@@ -97,7 +97,7 @@ class Lithomop3d_scan(Component):
         from Materials import Materials
         from KeywordValueParse import KeywordValueParse
         import pyre.units
-        import lithomop3d
+        import pylith3d
         import string
         import os
 
@@ -106,7 +106,7 @@ class Lithomop3d_scan(Component):
         keyparse = KeywordValueParse()
 
 	print ""
-        print "Hello from lm3dscan._init (begin)!"
+        print "Hello from pl3dscan._init (begin)!"
         print "Scanning ascii files to determine dimensions:"
 
         # Initialization of all parameters
@@ -343,7 +343,7 @@ class Lithomop3d_scan(Component):
             self._slipperyWinklerInputFile = self.inventory.slipperyWinklerInputFile
 
         # This is a test version where the geometry type is automatically
-        # specified by using Lithomop3d.  The geometry type is only used for
+        # specified by using Pylith3d.  The geometry type is only used for
         # f77 routines and not in pyre. An integer value is also defined
         # for use in f77 routines.
         # Define some integer values that are derived from string variables.
@@ -382,13 +382,13 @@ class Lithomop3d_scan(Component):
         self._numberElementTypes = 62
         self._numberElementTypesBase = 10
         self._numberElementNodesBase = [8, 7, 6, 5, 4, 20, 18, 15, 13, 10]
-        self._pointerToListArrayNumberElementNodesBase = lithomop3d.intListToArray(
+        self._pointerToListArrayNumberElementNodesBase = pylith3d.intListToArray(
             self._numberElementNodesBase)
 	self._memorySize += self._numberElementTypesBase*self._intSize
-        self._pointerToElementTypeInfo = lithomop3d.allocateInt(
+        self._pointerToElementTypeInfo = pylith3d.allocateInt(
             4*self._numberElementTypes)
 	self._memorySize += 4*self._numberElementTypes*self._intSize
-        self._pointerToSh = lithomop3d.allocateDouble(
+        self._pointerToSh = pylith3d.allocateDouble(
             (self._numberSpaceDimensions+1)*
             self._maxElementNodes*
             self._maxGaussPoints*
@@ -398,7 +398,7 @@ class Lithomop3d_scan(Component):
             self._maxGaussPoints* \
             self._numberElementTypes* \
 	    self._doubleSize
-        self._pointerToShj = lithomop3d.allocateDouble(
+        self._pointerToShj = pylith3d.allocateDouble(
             (self._numberSpaceDimensions+1)*
             self._maxElementNodes*
             self._maxGaussPoints*
@@ -408,7 +408,7 @@ class Lithomop3d_scan(Component):
             self._maxGaussPoints* \
             self._numberElementTypes* \
 	    self._doubleSize
-        self._pointerToGauss = lithomop3d.allocateDouble(
+        self._pointerToGauss = pylith3d.allocateDouble(
             (self._numberSpaceDimensions+1)*
             self._maxGaussPoints*
             self._numberElementTypes)
@@ -420,14 +420,14 @@ class Lithomop3d_scan(Component):
         # Invariant parameters related to material model
         self._maxMaterialModels = 20
         self._maxStateVariables = 4
-        self._pointerToMaterialModelInfo = lithomop3d.allocateInt(
+        self._pointerToMaterialModelInfo = pylith3d.allocateInt(
             5*self._maxMaterialModels)
 	self._memorySize += 5*self._maxMaterialModels*self._intSize
-        self._pointerToMaterialModelStates = lithomop3d.allocateInt(
+        self._pointerToMaterialModelStates = pylith3d.allocateInt(
             self._maxStateVariables*self._maxMaterialModels)
 	self._memorySize += self._maxStateVariables* \
 	    self._maxMaterialModels*self._intSize
-        lithomop3d.matmod_def(
+        pylith3d.matmod_def(
             self._pointerToMaterialModelInfo,
             self._pointerToMaterialModelStates)
 
@@ -458,29 +458,29 @@ class Lithomop3d_scan(Component):
         else:
             self._quadratureOrderInt = 1
 
-        # print "Just before lithomop3d.preshape:"
-        lithomop3d.preshape(
+        # print "Just before pylith3d.preshape:"
+        pylith3d.preshape(
             self._pointerToSh,
             self._pointerToShj,
             self._pointerToGauss,
             self._pointerToElementTypeInfo,
             self._quadratureOrderInt)
-        # print "Just after lithomop3d.preshape:"
+        # print "Just after pylith3d.preshape:"
 
         # Parameters derived from the number of entries in a file.
         # try:
-        # print "Just before lithomop3d.scan_coords:"
-        self._numberNodes = lithomop3d.scan_coords(
+        # print "Just before pylith3d.scan_coords:"
+        self._numberNodes = pylith3d.scan_coords(
             f77FileInput,
             self._coordinateUnits,
             self._coordinateInputFile)
-        # print "Just after lithomop3d.scan_coords:"
+        # print "Just after pylith3d.scan_coords:"
 
         self._coordinateScaleString = \
                                     uparser.parse(string.strip(self._coordinateUnits))
         self._coordinateScaleFactor = self._coordinateScaleString.value
 
-        self._numberBcEntries = lithomop3d.scan_bc(
+        self._numberBcEntries = pylith3d.scan_bc(
             f77FileInput,
             self._displacementUnits,
             self._velocityUnits,
@@ -497,13 +497,13 @@ class Lithomop3d_scan(Component):
                                uparser.parse(string.strip(self._forceUnits))
         self._forceScaleFactor = self._forceScaleString.value
 
-        self._winklerInfo = lithomop3d.scan_wink(
+        self._winklerInfo = pylith3d.scan_wink(
             f77FileInput,
             self._winklerInputFile)
         self._numberWinklerEntries = self._winklerInfo[0]
         self._numberWinklerForces = self._winklerInfo[1]
 
-        self._numberRotationEntries = lithomop3d.scan_skew(
+        self._numberRotationEntries = pylith3d.scan_skew(
             f77FileInput,
             self._rotationUnits,
             self._rotationInputFile)
@@ -513,7 +513,7 @@ class Lithomop3d_scan(Component):
                                       uparser.parse(string.strip(self._rotationUnits))
             self._rotationScaleFactor = self._rotationScaleString.value
 
-        self._timeStepInfo = lithomop3d.scan_timdat(
+        self._timeStepInfo = pylith3d.scan_timdat(
             f77FileInput,
             self._timeUnits,
             self._timeStepInputFile)
@@ -524,13 +524,13 @@ class Lithomop3d_scan(Component):
                               uparser.parse(string.strip(self._timeUnits))
         self._timeScaleFactor = self._timeScaleString.value
 
-        self._numberFullOutputs = lithomop3d.scan_fuldat(
+        self._numberFullOutputs = pylith3d.scan_fuldat(
             self._analysisTypeInt,
             self._totalNumberTimeSteps,
             f77FileInput,
             self._fullOutputInputFile)
 
-        self._numberLoadHistories = lithomop3d.scan_hist(
+        self._numberLoadHistories = pylith3d.scan_hist(
             f77FileInput,
             self._loadHistoryInputFile)
 
@@ -542,20 +542,20 @@ class Lithomop3d_scan(Component):
         self._propertyListIndex = matinfo.propertyIndex
         self._materialModel = matinfo.materialModel
         self._propertyListSize = len(self._propertyList)
-        self._pointerToListArrayPropertyList = lithomop3d.doubleListToArray(
+        self._pointerToListArrayPropertyList = pylith3d.doubleListToArray(
             self._propertyList)
         self._memorySize += self._propertyListSize*self._doubleSize
-        self._pointerToListArrayPropertyListIndex = lithomop3d.intListToArray(
+        self._pointerToListArrayPropertyListIndex = pylith3d.intListToArray(
             self._propertyListIndex)
         self._memorySize += self._numberMaterials*self._intSize
-        self._pointerToListArrayMaterialModel = lithomop3d.intListToArray(
+        self._pointerToListArrayMaterialModel = pylith3d.intListToArray(
             self._materialModel)
         self._memorySize += self._numberMaterials*self._intSize
-        self._pointerToMaterialInfo = lithomop3d.allocateInt(
+        self._pointerToMaterialInfo = pylith3d.allocateInt(
             3*self._numberMaterials)
         self._memorySize += 3*self._numberMaterials*self._intSize
 
-        self._elementInfo = lithomop3d.scan_connect(
+        self._elementInfo = pylith3d.scan_connect(
             self._pointerToListArrayNumberElementNodesBase,
             self._pointerToMaterialInfo,
             self._pointerToMaterialModelInfo,
@@ -570,7 +570,7 @@ class Lithomop3d_scan(Component):
         self._pointerToListArrayPropertyListIndex = None
         self._memorySize -= 2*self._numberMaterials*self._intSize
 
-        # self._numberPrestressEntries = lithomop3d.scan_prestr(
+        # self._numberPrestressEntries = pylith3d.scan_prestr(
         #     self._stateVariableDimension,
         #     self._numberPrestressGaussPoints,
         #     self._numberElements,
@@ -578,7 +578,7 @@ class Lithomop3d_scan(Component):
         #     f77FileInput,
         #     self._prestressInputFile)
 
-        # self._numberTractionBc = lithomop3d.scan_traction(
+        # self._numberTractionBc = pylith3d.scan_traction(
         #     self._numberElementNodes,
         #     self._numberTractionDirections,
         #     self._tractionBcUnits,
@@ -591,20 +591,20 @@ class Lithomop3d_scan(Component):
         #     self._tractionBcScaleFactor = \
         #                                 self._tractionBcScaleString/pyre.units.SI.pascal
 
-        self._numberSplitNodeEntries = lithomop3d.scan_split(
+        self._numberSplitNodeEntries = pylith3d.scan_split(
             f77FileInput,
             self._splitNodeInputFile)
 
-        self._numberSlipperyNodeEntries = lithomop3d.scan_slip(
+        self._numberSlipperyNodeEntries = pylith3d.scan_slip(
             f77FileInput,
             self._slipperyNodeInputFile)
 
-        self._numberDifferentialForceEntries = lithomop3d.scan_diff(
+        self._numberDifferentialForceEntries = pylith3d.scan_diff(
             self._numberSlipperyNodeEntries,
             f77FileInput,
             self._differentialForceInputFile)
 
-        self._slipperyWinklerInfo = lithomop3d.scan_winkx(
+        self._slipperyWinklerInfo = pylith3d.scan_winkx(
             self._numberSlipperyNodeEntries,
             f77FileInput,
             self._slipperyWinklerInputFile)
@@ -616,10 +616,10 @@ class Lithomop3d_scan(Component):
         # except ValueError, error:
             # print "Situation:", error
         # except:
-            # print "Exception from Lithomop3d_scan!"
+            # print "Exception from Pylith3d_scan!"
                 
 	print ""
-        print "Hello from lm3dscan._init (end)!"
+        print "Hello from pl3dscan._init (end)!"
 
         return
 
@@ -739,7 +739,7 @@ class Lithomop3d_scan(Component):
                  "binary"])),
 
 # Eliminating this option for now, as the geometry type is automatically
-# specified by using Lithomop3d.
+# specified by using Pylith3d.
 #            pyre.properties.str(
 #                "geometryType", default="3D",
 #                validator=pyre.properties.choice(["axisymmetric",
@@ -774,6 +774,6 @@ class Lithomop3d_scan(Component):
 
 
 # version
-# $Id: Lithomop3d_scan.py,v 1.1 2004/09/23 17:37:55 willic3 Exp $
+# $Id: Pylith3d_scan.py,v 1.1 2004/09/23 17:37:55 willic3 Exp $
 
 # End of file 

@@ -51,13 +51,13 @@ class Application(BaseApplication):
     def initialize(self):
         self._progress.log("initializing application %s" % self.name)
         self.layout()
-        lm3dsetup = self.inventory.setup
-        lm3dsetup.initialize(self.inventory.scanner)
-        lm3dsetup.run()
-        lm3drun = self.inventory.solverold
-        lm3drun.initialize(self.inventory.scanner, self.inventory.setup)
+        pl3dsetup = self.inventory.setup
+        pl3dsetup.initialize(self.inventory.scanner)
+        pl3dsetup.run()
+        pl3drun = self.inventory.solverold
+        pl3drun.initialize(self.inventory.scanner, self.inventory.setup)
         # This needs to be changed to be part of Solver.
-        # lm3drun.run()
+        # pl3drun.run()
         return
 
     def launch(self):
@@ -86,7 +86,7 @@ class Application(BaseApplication):
         return
 
 
-    def __init__(self, name="lithomop3d"):
+    def __init__(self, name="pylith3d"):
         BaseApplication.__init__(self, name)
         self.solver = None
 
@@ -103,14 +103,14 @@ class Application(BaseApplication):
         from Controller import Controller
         from Solver import Solver
         from pyre.units.time import second
-        from Lithomop3d_scan import Lithomop3d_scan
-        from Lithomop3d_setup import Lithomop3d_setup
-        from Lithomop3d_run import Lithomop3d_run
+        from Pylith3d_scan import Pylith3d_scan
+        from Pylith3d_setup import Pylith3d_setup
+        from Pylith3d_run import Pylith3d_run
 
         inventory = [
-            pyre.facilities.facility("scanner", default=Lithomop3d_scan()),
-            pyre.facilities.facility("setup", default=Lithomop3d_setup()),
-            pyre.facilities.facility("solverold", default=Lithomop3d_run()),
+            pyre.facilities.facility("scanner", default=Pylith3d_scan()),
+            pyre.facilities.facility("setup", default=Pylith3d_setup()),
+            pyre.facilities.facility("solverold", default=Pylith3d_run()),
             pyre.facilities.facility("layout", default=LayoutManager()),
             pyre.facilities.controller(default=Controller()),
             pyre.facilities.solver("solver",default=Solver()),
