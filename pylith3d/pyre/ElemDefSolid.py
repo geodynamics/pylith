@@ -32,41 +32,41 @@
 # This could probably be set up as a Pyre component, but it doesn't seem
 # necessary right now.
 
-class ElemDefSolid:
-  """Definitions for solid elements used by pylith3d."""
+class ElemIntegrationSolid:
+  """Integration information for solid elements used by pylith3d."""
 
-  def getdef(self, elemTypeInt, quadratureOrderInt):
-      """Gets dimension and quadrature info, depending on the global
-      quadrature order setting."""
+  def getintegration(self, elemType, quadratureOrder):
+      """Gets dimension and quadrature info, depending on the element type
+      and the global quadrature order setting."""
 
     import pylith3d as pl3d
 
-    print "Hello from ElemDefSolid.getdef!"
+    print "Hello from ElemIntegrationSolid.getintegration!"
 
-    numElemNodes = self.elemNodes[elemTypeInt - 1]
-    self.elemInfoSolid['numElemNodes'] = numElemNodes
-    self.elemInfoSolid['numElemEquations'] = self.numDegreesFreedom * numElemNodes
-    self.elemInfoSolid['numElemCoords'] = self.numSpaceDims * numElemNodes
+    numElemNodes = self.elemNodes[elemType - 1]
+    self.elemIntegrationSolid['numElemNodes'] = numElemNodes
+    self.elemIntegrationSolid['numElemEquations'] = self.numDegreesFreedom * numElemNodes
+    self.elemIntegrationSolid['numElemCoords'] = self.numSpaceDims * numElemNodes
 
     # Full integration order
-    if quadratureOrderInt == 1:
+    if quadratureOrder == "Full":
       numElemGaussPoints = self.elemFullGauss[elementType -1]
-      self.elemInfoSolid['fptrBmatrix'] = pl3d.bmatrixn
-      self.elemInfoSolid['fptrGetShape'] = pl3d.getshapn
+      self.elemIntegrationSolid['fptrBmatrix'] = pl3d.bmatrixn
+      self.elemIntegrationSolid['fptrGetShape'] = pl3d.getshapn
 
     # Reduced integration order
-    elif quadratureOrderInt == 2:
+    elif quadratureOrder == "Reduced":
       numElemGaussPoints = self.elemReducedGauss[elementType -1]
-      self.elemInfoSolid['fptrBmatrix'] = pl3d.bmatrixn
-      self.elemInfoSolid['fptrGetShape'] = pl3d.getshapn
+      self.elemIntegrationSolid['fptrBmatrix'] = pl3d.bmatrixn
+      self.elemIntegrationSolid['fptrGetShape'] = pl3d.getshapn
 
     # Selective (B-bar) integration order
-    elif quadratureOrderInt == 3:
+    elif quadratureOrder == "Selective":
       numElemGaussPoints = self.elemFullGauss[elementType -1]
-      self.elemInfoSolid['fptrBmatrix'] = pl3d.bmatrixb
-      self.elemInfoSolid['fptrGetShape'] = pl3d.getshapb
+      self.elemIntegrationSolid['fptrBmatrix'] = pl3d.bmatrixb
+      self.elemIntegrationSolid['fptrGetShape'] = pl3d.getshapb
 
-    self.elemInfoSolid['numElemGaussPoints'] = numElemGaussPoints
+    self.elemIntegrationSolid['numElemGaussPoints'] = numElemGaussPoints
 
     ptrShape = pl3d.allocateDouble(
       (self.numSpaceDims+1)*
@@ -86,22 +86,22 @@ class ElemDefSolid:
       ptrShape,
       ptrShapej,
       ptrGauss,
-      quadratureOrderInt,
-      elemTypeInt,
+      quadratureOrder,
+      elemType,
       numElemNodes,
       numElemGaussPoints)
 
-    self.elemInfoSolid['ptrShape'] = ptrShape
-    self.elemInfoSolid['ptrShapej'] = ptrShapej
-    self.elemInfoSolid['ptrGauss'] = ptrGauss
+    self.elemIntegrationSolid['ptrShape'] = ptrShape
+    self.elemIntegrationSolid['ptrShapej'] = ptrShapej
+    self.elemIntegrationSolid['ptrGauss'] = ptrGauss
         
-    return self.elemInfoSolid
+    return self.elemIntegrationSolid
 
 
     def __init__(self):
       """Constructor."""
       print ""
-      print "Hello from ElemDefSolid.__init__!"
+      print "Hello from ElemIntegrationSolid.__init__!"
 
       # I am leaving these hard-wired for now, since solid elements will always
       # have 3 DOF and 3 spatial dimensions, but it might be better to leave
@@ -110,7 +110,7 @@ class ElemDefSolid:
       self.numDegreesFreedom = 3
       self.numSpaceDims = 3
 
-      self.elemInfoSolid = {'numElemNodes': 0,
+      self.elemIntegrationSolid = {'numElemNodes': 0,
                             'numElemEquations': 0,
                             'numElemCoords': 0,
                             'numElemGaussPoints': 0,
@@ -144,6 +144,6 @@ class ElemDefSolid:
       return
 
 # version
-# $Id: ElemDefSolid.py,v 1.2 2005/04/01 23:40:46 willic3 Exp $
+# $Id: ElemIntegrationSolid.py,v 1.2 2005/04/01 23:40:46 willic3 Exp $
 
 # End of file 
