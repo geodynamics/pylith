@@ -70,14 +70,29 @@ class ElemFamilySolid(ElemFamily):
                      self.label)
 
       # Get element family dimension and integration info.
-      from ElemDefSolid import ElemDefSolid
-      self.elemInfoSolid = ElemDefSolid.getdef(family["elemFamilyType"],
+      from ElemIntegrationSolid import ElemIntegrationSolid
+      self.elemIntegrationSolid = ElemIntegrationSolid.getintegration(family["elemFamilyType"],
                                                quadratureOrder)
       
-
+      # Transfer element node info from global elements into element family array.
+      pl3d.getfamily(elements['numElems'],
+                     elements['elemNodeArraySize'],
+                     elements['ptrElemNodeArray'],
+                     elements['ptrElemTypes'],
+                     elements['ptrElemIds'],
+                     family['elemFamilySize'],
+                     family['elemFamilyType'],
+                     family['elemFamilyMatId'],
+                     family['ptrElemFamilyNodes'],
+                     self.elemIntegrationSolid['numElemNodes'])
       
+      # Get material model for family, and initialize properties using spatial database.
+      #*******  Still need to figure out how to do this *********
 
-      
+      # Define function pointers for material-specific routines.
+
+      # Set up state variable storage for family, based on material type and integration info.
+
       
     def __init__(self, name="elemfamilysolid"):
       """Constructor."""
