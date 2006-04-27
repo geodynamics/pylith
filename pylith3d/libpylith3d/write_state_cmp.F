@@ -2,29 +2,27 @@ c -*- Fortran -*-
 c
 c ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
-c                             Charles A. Williams
-c                       Rensselaer Polytechnic Institute
-c                        (C) 2005  All Rights Reserved
+c  PyLith by Charles A. Williams
+c  Copyright (c) 2003-2006 Rensselaer Polytechnic Institute
 c
-c 
-c 	  All worldwide rights reserved.  A license to use, copy, modify and
-c         distribute this software for non-commercial research purposes only
-c         is hereby granted, provided that this copyright notice and
-c         accompanying disclaimer is not modified or removed from the software.
-c     
-c         DISCLAIMER:  The software is distributed "AS IS" without any express
-c         or implied warranty, including but not limited to, any implied
-c         warranties of merchantability or fitness for a particular purpose
-c         or any warranty of non-infringement of any current or pending patent
-c         rights.  The authors of the software make no representations about
-c         the suitability of this software for any particular purpose.  The
-c         entire risk as to the quality and performance of the software is with
-c         the user.  Should the software prove defective, the user assumes the
-c         cost of all necessary servicing, repair or correction.  In
-c         particular, neither Rensselaer Polytechnic Institute, nor the authors
-c         of the software are liable for any indirect, special, consequential,
-c         or incidental damages related to the software, to the maximum extent
-c         the law permits.
+c  Permission is hereby granted, free of charge, to any person obtaining
+c  a copy of this software and associated documentation files (the
+c  "Software"), to deal in the Software without restriction, including
+c  without limitation the rights to use, copy, modify, merge, publish,
+c  distribute, sublicense, and/or sell copies of the Software, and to
+c  permit persons to whom the Software is furnished to do so, subject to
+c  the following conditions:
+c
+c  The above copyright notice and this permission notice shall be
+c  included in all copies or substantial portions of the Software.
+c
+c  THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
+c  EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
+c  MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
+c  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+c  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+c  OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
+c  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 c
 c ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
