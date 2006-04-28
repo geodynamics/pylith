@@ -69,7 +69,9 @@ class ElemFamilySolid(ElemFamily):
       self.elemIntegrationSolid = ElemIntegrationSolid.getintegration(family["elemFamilyType"],
                                                quadratureOrder)
       
-      # Transfer element node info from global elements into element family array.
+      # Transfer element node info from global elements into element family array using
+      # FORTRAN routine.  The elements object is no longer needed after this has been done
+      # for all families.
       pl3d.getfamily(elements['numElems'],
                      elements['elemNodeArraySize'],
                      elements['ptrElemNodeArray'],
