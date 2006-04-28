@@ -33,23 +33,11 @@ class Mesh:
 
   def __init__(self):
     """Constructor."""
-    # Create dictionary for node info.
-    self.nodes = {'numNodes': 0,
-                  'dim': 0,
-                  'ptrCoords': None}
-
-    # Create dictionary for element info.
-    self.elements = {'numElems': 0,
-                     'numNodesPerElem': 0,
-                     'elemType': 0,
-                     'ptrConns': None,
-                     'ptrInitOrder': None}
-
-    # Create dictionary for element family info.
-    self.elemFamily = {'numElemFamilies': 0,
-                       'elemType': 0,
-                       'ptrElemFamilySizes': None,
-                       'ptrElemFamilyMatModel': None}
+    # Nodes and elements will be dictionaries, but elements are not needed once
+    # element families are formed.
+    self.nodes = None
+    self.elements = None
+    self.elemFamilies = None
 
     # List defining the number of nodes for each element type.
     # Maybe this should also be a dictionary, but for now it's easier
