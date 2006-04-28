@@ -143,10 +143,12 @@ class MeshImporterTecton(MeshImporter):
         elemFamilyNodesSize = tmpElemFamilySizes[i] * numNodesPerElem
         elemNodeArraySize += elemFamilyNodesSize
         ptrElemFamilyNodes = pl3d.allocateInt(elemFamilyNodesSize)
+        ptrElemFamilyElemNums = pl3d.allocateInt(tmpElemFamilyElemNums[i])
         elemFamilies.append({'elemFamilySize': tmpElemFamilySizes[i],
                              'elemFamilyType': tmpElemFamilyTypes[i],
                              'elemFamilyMatId': tmpElemFamilyMatIds[i],
                              'elemFamilyName': "family" + str(count),
+                             'ptrElemFamilyElemNums': ptrElemFamilyElemNums,
                              'ptrElemFamilyNodes': ptrElemFamilyNodes})
         count=count + 1
 
