@@ -204,7 +204,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   ierr = MPI_Comm_rank(comm, &rank);
   sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
   mesh = ALE::Two::PyLithBuilder::createNew(comm, meshInputFile);
-  mesh->distribute();
+  mesh = mesh->distribute();
   ierr = ReadBoundary_PyLith(meshInputFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
 
   typedef std::pair<ALE::Two::Mesh::field_type::patch_type,int> patch_type;
