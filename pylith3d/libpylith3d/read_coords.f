@@ -90,9 +90,9 @@ c...  read the coordinate entries
 c
       do i=1,numnp
         call pskip(kr)
-        read(kr,*,end=40,err=30) n,(x(j,i),j=1,nsd)
+        read(kr,*,end=40,err=30) n,(x(j,n),j=1,nsd)
         do j=1,nsd
-          x(j,i)=cscale*x(j,i)
+          x(j,n)=cscale*x(j,n)
         end do
       end do
       close(kr)
