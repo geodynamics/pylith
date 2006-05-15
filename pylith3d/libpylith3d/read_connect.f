@@ -79,8 +79,8 @@ c
       open(kr,file=ifile,status="old",err=20)
       call pskip(kr)
       do i=1,numelv
-        read(kr,*,end=30,err=30) n,ietypev,mat(i),infin,
-     &   (ien(j,i),j=1,nen)
+        read(kr,*,end=30,err=30) n,ietypev,mat(n),infin,
+     &   (ien(j,n),j=1,nen)
 c
 c...  check for illegal element type
 c
@@ -93,7 +93,7 @@ clater        call infcmp(ietypev,infiel(3,i),inf)
 c
 c...  check for illegal material type or material model
 c
-        if(mat(i).le.izero.or.mat(i).gt.nvfamilies) then
+        if(mat(n).le.izero.or.mat(n).gt.nvfamilies) then
           ierr=107
           errstrng="read_connect"
           return
