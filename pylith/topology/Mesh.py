@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/topology/Mesh.py
+## @file pylith/topology/Mesh.py
 ## @brief Python Mesh for finite-element topology information.
 
 from pyre.components.Component import Component

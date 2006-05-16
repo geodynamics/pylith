@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/problems/Dynamic.py
+## @file pylith/problems/Dynamic.py
 ## @brief Python Dynamic for dynamic crustal dynamics simulations.
 
 from Problem import Problem
