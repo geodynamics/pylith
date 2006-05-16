@@ -48,11 +48,13 @@ class Problem(Component):
     assembler.meta['tip'] = "Finite-element assembler."
 
     from pylith.feassemble.Field import Field
-    coordinates = pyre.inventory.facility("coordinates", factory=Field, args=["coordinates"])
+    coordinates = pyre.inventory.facility("coordinates", factory=Field,
+                                          args=["coordinates"])
     coordinates.meta['tip'] = "Field for coordinates of vertices associated" \
                               "with domain"
 
-    eqntype = pyre.inventory.facility("equation_type", factory=Field)
+    eqntype = pyre.inventory.facility("equation_type", factory=Field,
+                                      args=["eqntype"])
     eqntype.meta['tip'] = "Field defining different constitutive models."
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
