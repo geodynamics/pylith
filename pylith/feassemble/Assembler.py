@@ -10,22 +10,22 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/solver/SolverTSI.py
-## @brief Python implicit time stepping solver.
+## @file pyre/feassemble/Assembler.py
+## @brief Python finite-element assembler.
 
 from pyre.components.Component import Component
 
-# SolverTSI class
-class SolverTSI(Component):
-  """Python implicit time stepping solver."""
+# Assembler class
+class Assembler(Component):
+  """Python finite-element assembler."""
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Component.Inventory):
-    """Python object for managing SolverTSI facilities and properties."""
+    """Python object for managing Assembler facilities and properties."""
 
     ## @class Inventory
-    ## Python object for managing SolverTSI facilities and properties.
+    ## Python object for managing Assembler facilities and properties.
     ##
     ## \b Properties
     ## @li None
@@ -37,7 +37,7 @@ class SolverTSI(Component):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="solvertsi"):
+  def __init__(self, name="assembler"):
     """Constructor."""
     Component.__init__(self, name)
     return
@@ -48,7 +48,7 @@ class SolverTSI(Component):
   def _configure(self):
     """Set members based using inventory."""
     return
-
+  
 
 # version
 __id__ = "$Id$"
