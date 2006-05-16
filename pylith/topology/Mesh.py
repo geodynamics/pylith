@@ -51,7 +51,7 @@ class Mesh(Component):
 
   def __init__(self, name="mesh"):
     """Constructor."""
-    Component.__init__(self, name)
+    Component.__init__(self, name, facility="mesh")
     return
 
 
