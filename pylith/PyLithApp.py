@@ -53,7 +53,7 @@ class PyLithApp(Script):
 
     from pyre.units.time import second
     t = 0.0*second
-    while t.value < self.totalTime:
+    while t.value < self.totalTime.value:
       self.problem.prestep()
       dt = self.problem.stableTimeStep()
       self.problem.step(dt)

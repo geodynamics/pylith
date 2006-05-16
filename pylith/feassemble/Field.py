@@ -12,23 +12,25 @@
 
 ## @file pyre/feassemble/Field.py
 ## @brief Python PyLith field.
+import FIAT.shapes
+
+elementShapes = {'LINE':        FIAT.shapes.LINE,
+                 'TRIANGLE':    FIAT.shapes.TRIANGLE,
+                 'TETRAHEDRON': FIAT.shapes.TETRAHEDRON}
 
 from pyre.components.Component import Component
 
-def validateFamilyOrder(value):
-  raise NotImplementedError, "validateFamilyOrder() not implemented."
+def validateFamily(value):
+  try:
+    __import__('FIAT.'+str(value))
+  except ImportError:
+    raise ValueError, 'Invalid element family: '+str(value)
   return value
-
-
-def validateQuadratureOrder(value):
-  raise NotImplementedError, "validateQuadratureOrder() not implemented."
-  return value
-
 
 def validateShape(value):
-  raise NotImplementedError, "validateShape() not implemented."
-  return value
-
+  if not str(value).upper() in elementShapes:
+    raise ValueError, 'Invalid element shape: '+str(value)
+  return value.upper()
 
 # Field class
 class Field(Component):
@@ -53,15 +55,16 @@ class Field(Component):
 
     import pyre.inventory
 
-    family = pyre.inventory.str("family", default="lagrange")
+    family = pyre.inventory.str("family", default="Lagrange",
+                                validator=validateFamily)
     family.meta['tip'] = "Element family for field"
 
     familyOrder = pyre.inventory.int("family_order", default=1,
-                                     validator=validateFamilyOrder)
+                                     validator=pyre.inventory.greaterEqual(0))
     familyOrder.meta['tip'] = "Order of element family"
 
     quadratureOrder = pyre.inventory.int("quadrature_order", default=1,
-                                         validator=validateQuadratureOrder)
+                                         validator=pyre.inventory.greater(0))
     quadratureOrder.meta['tip'] = "Order for quadrature."
 
     shape = pyre.inventory.str("shape", default="tetrahedron",
@@ -72,6 +75,13 @@ class Field(Component):
 
   def initialize(self):
     """Setup basis fns and quadrature info."""
+    import FIAT.quadrature
+    from pylith.utils import importing
+
+    self._info.log('Creating the '+self.family+' element of order '+str(self.familyOrder))
+    self.element = getattr(importing.importModule('FIAT.'+self.family), self.family)(self.shape, self.familyOrder)
+    self.quadrature = FIAT.quadrature.make_quadrature_by_degree(self.shape, 2*self.element.n - 1)
+    self._info.log('Created quadrature of order '+str(self.quadrature.degree))
     return
 
 
@@ -90,7 +100,7 @@ class Field(Component):
     self.family = self.inventory.family
     self.familyOrder = self.inventory.familyOrder
     self.quadratureOrder = self.inventory.quadratureOrder
-    self.shape = self.inventory.shape
+    self.shape = elementShapes[self.inventory.shape]
     return
   
 

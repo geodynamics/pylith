@@ -16,6 +16,8 @@
 from pylith.PyLithApp import PyLithApp
 
 if __name__ == "__main__":
+  import journal
+  journal.info('coordinates').activate()
   app = PyLithApp()
   app.run()
 
