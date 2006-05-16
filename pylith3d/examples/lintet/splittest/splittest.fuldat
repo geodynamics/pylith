@@ -1,0 +1,5 @@
+# Time steps for which full output is desired for SCEC benchmark 5.
+#
+        10
+        50
+       100
