@@ -10,10 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/__init__.py
-## @brief Python top-level PyLith module initialization
+## @file pylith/solver/__init__.py
+## @brief Python Pylith solver module initialization
 
-all = ['PyLithApp']
+all = ['SolverTSI']
 
 # version
 __id__ = "$Id$"
