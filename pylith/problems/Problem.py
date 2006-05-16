@@ -59,10 +59,8 @@ class Problem(Component):
 
   def initialize(self):
     """Create domain, bounday conditions, fields, and setup time loop."""
-
     self.coordinates.initialize()
     self.eqntype.initialize()
-    
     return
 
 

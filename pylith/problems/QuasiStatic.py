@@ -43,7 +43,7 @@ class QuasiStatic(Problem):
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def initialize(self):
-    raise NotImplementedError, "QuasiStatic::initialize() not implemented."
+    Problem.initialize(self)
     return
 
 
@@ -77,6 +77,7 @@ class QuasiStatic(Problem):
 
   def _configure(self):
     """Set members based using inventory."""
+    Problem._configure(self)
     self.solver = self.inventory.solver
     return
 
