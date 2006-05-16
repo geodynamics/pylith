@@ -41,7 +41,7 @@ class PyLithApp(Script):
 
     from problems.QuasiStatic import QuasiStatic
     problem = pyre.inventory.facility("problem", factory=QuasiStatic)
-    problem.meta['tip'] = "Computational problem to solve.."
+    problem.meta['tip'] = "Computational problem to solve."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
