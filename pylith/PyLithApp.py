@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/PyLithApp.py
+## @file pylith/PyLithApp.py
 ## @brief Python PyLith application
 
 from pyre.applications.Script import Script
@@ -36,6 +36,7 @@ class PyLithApp(Script):
     import pyre.inventory
 
     from pyre.units.time import second
+    from pyre.inventory.valiators import GreaterEqual
     totalTime = pyre.inventory.dimensional("total_time", default=0.0*second,
                                            validator=GreaterEqual(0.0))
     totalTime.meta['tip'] = "Time duration for simulation."
