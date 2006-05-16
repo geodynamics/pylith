@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/problems/Problem.py
+## @file pylith/problems/Problem.py
 ## @brief Python abstract base class for crustal dynamics problems.
 
 from pyre.components.Component import Component
