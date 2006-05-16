@@ -33,6 +33,9 @@ class Problem(Component):
     ## \b Facilities
     ## @li \b mesh Finite-element topology.
     ## @li \b assembler Finite-element assembler.
+    ## @li \b coordinates Field for coordinates of vertices associated
+    ##        with domain
+    ## @li \b equation_type Field defining different constitutive models
 
     import pyre.inventory
 
@@ -44,11 +47,22 @@ class Problem(Component):
     assembler = pyre.inventory.facility("assembler", factory=Assembler)
     assembler.meta['tip'] = "Finite-element assembler."
 
+    from pylith.feassemble.Field import Field
+    coordinates = pyre.inventory.facility("coordinates", factory=Field)
+    coordinates.meta['tip'] = "Field for coordinates of vertices associated" \
+                              "with domain"
+
+    eqntype = pyre.inventory.facility("equation_type", factory=Field)
+    eqntype.meta['tip'] = "Field defining different constitutive models."
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def initialize(self):
     """Create domain, bounday conditions, fields, and setup time loop."""
+
+    self.coordinates.initialize()
+    self.eqntype.initialize()
+    
     return
 
 
@@ -91,6 +105,8 @@ class Problem(Component):
     """Set members based using inventory."""
     self.mesh = self.inventory.mesh
     self.assembler = self.inventory.assembler
+    self.coordinates = self.inventory.coordinates
+    self.eqntype = self.inventory.eqntype
     return
 
 # version
