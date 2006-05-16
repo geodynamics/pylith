@@ -91,6 +91,11 @@ class Dynamic(Problem):
     return
   
 
+  def _convergenceTest(self):
+    """Test for convergence."""
+    return
+
+  
 # version
 __id__ = "$Id$"
 

@@ -89,6 +89,11 @@ class QuasiStatic(Problem):
   def _calcJacobian(self):
     """Calculation Jacobian."""
     return
+
+
+  def _convergenceTest(self):
+    """Test for convergence."""
+    return
   
 
 # version
