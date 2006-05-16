@@ -40,7 +40,7 @@ class PyLithApp(Script):
                                   validator=pyre.inventory.greaterEqual(0.0))
     totalTime.meta['tip'] = "Time duration for simulation."
 
-    from problems.QuasiStatic import QuasiStatic
+    from pylith.problems.QuasiStatic import QuasiStatic
     problem = pyre.inventory.facility("problem", factory=QuasiStatic)
     problem.meta['tip'] = "Computational problem to solve."
 
