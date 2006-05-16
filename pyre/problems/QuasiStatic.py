@@ -73,7 +73,7 @@ class QuasiStatic(Problem):
     return
 
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+  # PRIVATE METHODS /////////////////////////////////////////////////////
 
   def _configure(self):
     """Set members based using inventory."""
