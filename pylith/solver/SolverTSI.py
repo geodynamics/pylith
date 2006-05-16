@@ -13,15 +13,15 @@
 ## @file pylith/solver/SolverTSI.py
 ## @brief Python implicit time stepping solver.
 
-from pyre.components.Component import Component
+from Solver import Solver
 
 # SolverTSI class
-class SolverTSI(Component):
+class SolverTSI(Solver):
   """Python implicit time stepping solver."""
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(Solver.Inventory):
     """Python object for managing SolverTSI facilities and properties."""
 
     ## @class Inventory
@@ -39,7 +39,7 @@ class SolverTSI(Component):
 
   def __init__(self, name="solvertsi"):
     """Constructor."""
-    Component.__init__(self, name)
+    Solver.__init__(self, name)
     return
 
 

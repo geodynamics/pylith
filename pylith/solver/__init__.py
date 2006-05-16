@@ -13,7 +13,7 @@
 ## @file pylith/solver/__init__.py
 ## @brief Python Pylith solver module initialization
 
-all = ['SolverTSI']
+all = ['Solver', 'SolverTSI']
 
 # version
 __id__ = "$Id$"

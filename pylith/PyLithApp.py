@@ -37,7 +37,7 @@ class PyLithApp(Script):
 
     from pyre.units.time import second
     totalTime = pyre.inventory.dimensional("total_time", default=0.0*second,
-                                  validator=pyre.inventory.greaterEqual(0.0))
+                                  validator=pyre.inventory.greaterEqual(0.0*second))
     totalTime.meta['tip'] = "Time duration for simulation."
 
     from pylith.problems.QuasiStatic import QuasiStatic
