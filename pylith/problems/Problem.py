@@ -48,7 +48,7 @@ class Problem(Component):
     assembler.meta['tip'] = "Finite-element assembler."
 
     from pylith.feassemble.Field import Field
-    coordinates = pyre.inventory.facility("coordinates", factory=Field)
+    coordinates = pyre.inventory.facility("coordinates", factory=Field, args=["coordinates"])
     coordinates.meta['tip'] = "Field for coordinates of vertices associated" \
                               "with domain"
 
