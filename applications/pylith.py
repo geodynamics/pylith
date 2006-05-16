@@ -13,7 +13,7 @@
 ## @file applications/pylith.py
 ## @brief Python PyLith application driver
 
-from pylith.problems.PyLithApp import PyLithApp
+from pylith.PyLithApp import PyLithApp
 
 if __name__ == "__main__":
   app = PyLithApp()
