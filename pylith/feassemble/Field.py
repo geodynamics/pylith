@@ -78,9 +78,12 @@ class Field(Component):
     import FIAT.quadrature
     from pylith.utils import importing
 
-    self._info.log('Creating the '+self.family+' element of order '+str(self.familyOrder))
-    self.element = getattr(importing.importModule('FIAT.'+self.family), self.family)(self.shape, self.familyOrder)
-    self.quadrature = FIAT.quadrature.make_quadrature_by_degree(self.shape, 2*self.element.n - 1)
+    self._info.log('Creating the '+self.family+' element of order ' +
+                   str(self.familyOrder))
+    self.element = getattr(importing.importModule('FIAT.'+self.family),
+                           self.family)(self.shape, self.familyOrder)
+    self.quadrature = FIAT.quadrature.make_quadrature_by_degree(self.shape,
+                                                        2*self.element.n - 1)
     self._info.log('Created quadrature of order '+str(self.quadrature.degree))
     return
 

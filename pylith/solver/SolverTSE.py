@@ -10,22 +10,22 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/solver/SolverTSI.py
-## @brief Python PyLith implicit time stepping solver.
+## @file pylith/solver/SolverTSE.py
+## @brief Python PyLith explicit time stepping solver.
 
 from Solver import Solver
 
-# SolverTSI class
-class SolverTSI(Solver):
-  """Python PyLith implicit time stepping solver."""
+# SolverTSE class
+class SolverTSE(Solver):
+  """Python PyLith explicit time stepping solver."""
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Solver.Inventory):
-    """Python object for managing SolverTSI facilities and properties."""
+    """Python object for managing SolverTSE facilities and properties."""
 
     ## @class Inventory
-    ## Python object for managing SolverTSI facilities and properties.
+    ## Python object for managing SolverTSE facilities and properties.
     ##
     ## \b Properties
     ## @li None
@@ -37,7 +37,7 @@ class SolverTSI(Solver):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="solvertsi"):
+  def __init__(self, name="solvertse"):
     """Constructor."""
     Solver.__init__(self, name)
     return
