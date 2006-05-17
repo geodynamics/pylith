@@ -10,10 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/feassemble/__init__.py
-## @brief Python PyLith finite-element assembler module initialization
+## @file pylith/__init__.py
+## @brief Python top-level PyLith module initialization
 
-all = ['Assembler', 'Integrator', 'IntegratorElasticity']
+all = ['PyLithApp']
 
 # version
 __id__ = "$Id$"
