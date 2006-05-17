@@ -21,7 +21,7 @@ class ElasticIsotropic(MaterialModel):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Problem.Inventory):
+  class Inventory(MaterialModel.Inventory):
     """Python object for managing ElasticIsotropic facilities and
     properties."""
 
@@ -38,15 +38,15 @@ class ElasticIsotropic(MaterialModel):
 
     import pyre.inventory
 
-    import pyre.units.pressure
+    from pyre.units.pressure import GPa
     muLame = pyre.inventory.dimensional("mu", default=3.0*GPa)
     muLame.meta['tip'] = "Lame's constant (shear modulus)."
 
-    muLambda = pyre.inventory.dimensional("lambda", default=3.0*GPa)
-    muLambda.meta['tip'] = "Lame's constant."
+    lambdaLame = pyre.inventory.dimensional("lambda", default=3.0*GPa)
+    lambdaLame.meta['tip'] = "Lame's constant."
 
-    import pyre.units.mass
-    import pyre.units.length
+    from pyre.units.mass import kg
+    from pyre.units.length import m
     density = pyre.inventory.dimensional("density", default=3000.0*kg/m**3)
     density.meta['tip'] = "Mass density."
     
