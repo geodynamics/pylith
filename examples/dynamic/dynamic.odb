@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+#
+# ======================================================================
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# {LicenseText}
+#
+# ======================================================================
+#
+
+# required factory
+def problem():
+  from pylith.problems.Dynamic import Dynamic
+  return Dynamic()
+
+# version
+__id__ = "$Id$"
+
+# End of file 
