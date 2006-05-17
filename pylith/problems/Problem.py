@@ -36,6 +36,7 @@ class Problem(Component):
     ## @li \b coordinates Field for coordinates of vertices associated
     ##        with domain
     ## @li \b equation_type Field defining different constitutive models
+    ## @li \b materials Materials in problem.
 
     import pyre.inventory
 
@@ -56,6 +57,10 @@ class Problem(Component):
     eqntype = pyre.inventory.facility("equation_type", factory=Field,
                                       args=["eqntype"])
     eqntype.meta['tip'] = "Field defining different constitutive models."
+
+    from pylith.materials.Homogeneous import Homogeneous
+    materials = pyre.inventory.facility("materials", factory=Homogeneous)
+    mesh.meta['tip'] = "Materials in problem."
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
