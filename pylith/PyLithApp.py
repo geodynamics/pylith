@@ -31,6 +31,7 @@ class PyLithApp(Script):
     ## @li totalTime Time duration for simulation
     ##
     ## \b Facilities
+    ## @li \b mesher Generates or imports the computational mesh.
     ## @li \b problem Computational problem to solve
 
     import pyre.inventory
@@ -42,7 +43,7 @@ class PyLithApp(Script):
 
     from pylith.topology.MeshGenerator import MeshGenerator
     mesher = pyre.inventory.facility("mesh_generator", factory=MeshGenerator)
-    mesher.meta['tip'] = "Generates the computational mesh."
+    mesher.meta['tip'] = "Generates or imports the computational mesh."
 
     from pylith.problems.QuasiStatic import QuasiStatic
     problem = pyre.inventory.facility("problem", factory=QuasiStatic)
