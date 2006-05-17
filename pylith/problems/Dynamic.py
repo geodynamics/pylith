@@ -32,6 +32,9 @@ class Dynamic(Problem):
     ##
     ## \b Facilities
     ## @li \b solver Algebraic solver.
+    ## @li \b disp_tpdt Displacement at time t+dt
+    ## @li \b disp_t Displacement at time t
+    ## @li \b disp_tmdt Displacement at time t-dt
 
     import pyre.inventory
 
@@ -39,11 +42,28 @@ class Dynamic(Problem):
     solver = pyre.inventory.facility("solver", factory=SolverTSE)
     solver.meta['tip'] = "Algebraic solver."
 
+    from pylith.feassemble.Field import Field
+    disptpdt = pyre.inventory.facility("disp_tpdt", factory=Field,
+                                       args=["disptpdt"])
+    disptpdt.meta['tip'] = "Displacement at time t+dt."
+
+    dispt = pyre.inventory.facility("disp_t", factory=Field,
+                                       args=["dispt"])
+    dispt.meta['tip'] = "Displacement at time t."
+
+    disptmdt = pyre.inventory.facility("disp_tmdt", factory=Field,
+                                       args=["disptmdt"])
+    disptmdt.meta['tip'] = "Displacement at time t-dt."
+    
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def initialize(self):
-    raise NotImplementedError, "Dynamic::initialize() not implemented."
+    Problem.initialize(self)
+    
+    self.disptpdt.initialize()
+    self.dispt.initialize()
+    self.disptmdt.initialize()
     return
 
 
@@ -77,7 +97,11 @@ class Dynamic(Problem):
 
   def _configure(self):
     """Set members based using inventory."""
+    Problem._configure(self)
     self.solver = self.inventory.solver
+    self.disptpdt = self.inventory.disptpdt
+    self.dispt = self.inventory.dispt
+    self.disptmdt = self.inventory.disptmdt
     return
 
 

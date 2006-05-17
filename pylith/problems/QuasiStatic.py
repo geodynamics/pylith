@@ -32,6 +32,8 @@ class QuasiStatic(Problem):
     ##
     ## \b Facilities
     ## @li \b solver Algebraic solver.
+    ## @li \b disp Displacement at time t
+    ## @li \b dispIncr Displacement increment at time t (t -> t+dt)
 
     import pyre.inventory
 
@@ -39,11 +41,20 @@ class QuasiStatic(Problem):
     solver = pyre.inventory.facility("solver", factory=SolverTSI)
     solver.meta['tip'] = "Algebraic solver."
 
+    from pylith.feassemble.Field import Field
+    disp = pyre.inventory.facility("disp", factory=Field,
+                                   args=["disp"])
+    disp.meta['tip'] = "Displacement at time t."
+
+    dispIncr = pyre.inventory.facility("disp_incr", factory=Field,
+                                       args=["dispincr"])
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def initialize(self):
     Problem.initialize(self)
+    self.disp.initialize()
+    self.dispIncr.initialize()
     return
 
 
@@ -79,6 +90,8 @@ class QuasiStatic(Problem):
     """Set members based using inventory."""
     Problem._configure(self)
     self.solver = self.inventory.solver
+    self.disp = self.inventory.disp
+    self.dispIncr = self.inventory.dispIncr
     return
 
   def _calcResidual(self):
