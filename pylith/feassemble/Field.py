@@ -85,6 +85,7 @@ class Field(Component):
     self.quadrature = FIAT.quadrature.make_quadrature_by_degree(self.shape,
                                                         2*self.element.n - 1)
     self._info.log('Created quadrature of order '+str(self.quadrature.degree))
+    self._evaluateBasis()
     return
 
 
@@ -94,13 +95,16 @@ class Field(Component):
     self.sieveField = None
     self.element = None
     self.quadrature = None
+    self.basis = None
+    self.basisder = None
     return
 
 
   # PRIVATE METHODS /////////////////////////////////////////////////////
 
   def _evaluateBasis(self):
-    '''Return Numeric arrays with the basis functions and their derivatives evalauted at the quadrature points
+    '''Return Numeric arrays with the basis functions and their
+    derivatives evalauted at the quadrature points
        - FIAT uses a reference element of (-1,-1):(1,-1):(-1,1)'''
     import Numeric
 
@@ -108,7 +112,8 @@ class Field(Component):
     basis = self.element.function_space()
     dim = FIAT.shapes.dimension(basis.base.shape)
     self.basis = Numeric.transpose(basis.tabulate(points))
-    self.basisDer = Numeric.transpose([basis.deriv_all(d).tabulate(points) for d in range(dim)])
+    self.basisDer = Numeric.transpose([basis.deriv_all(d).tabulate(points) \
+                                       for d in range(dim)])
     return
 
   def _configure(self):
