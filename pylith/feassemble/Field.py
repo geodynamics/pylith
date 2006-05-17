@@ -92,7 +92,8 @@ class Field(Component):
     """Constructor."""
     Component.__init__(self, name, facility="field")
     self.sieveField = None
-    self.basisInfo = None
+    self.element = None
+    self.quadrature = None
     return
 
 
