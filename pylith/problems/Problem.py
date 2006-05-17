@@ -71,7 +71,7 @@ class Problem(Component):
     return
 
 
-  def step(self):
+  def step(self, dt):
     """Advance to next time step."""
     return
 

@@ -67,7 +67,7 @@ class Dynamic(Problem):
     return
 
 
-  def step(self):
+  def step(self, dt):
     raise NotImplementedError, "Dynamic::step() not implemented."
     return
 

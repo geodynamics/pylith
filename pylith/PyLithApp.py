@@ -40,6 +40,10 @@ class PyLithApp(Script):
                           validator=pyre.inventory.greaterEqual(0.0*second))
     totalTime.meta['tip'] = "Time duration for simulation."
 
+    from pylith.topology.MeshGenerator import MeshGenerator
+    mesher = pyre.inventory.facility("mesh_generator", factory=MeshGenerator)
+    mesher.meta['tip'] = "Generates the computational mesh."
+
     from pylith.problems.QuasiStatic import QuasiStatic
     problem = pyre.inventory.facility("problem", factory=QuasiStatic)
     problem.meta['tip'] = "Computational problem to solve."
@@ -49,13 +53,15 @@ class PyLithApp(Script):
   def main(self):
     """Run the application."""
 
+    mesh = self.mesher.create()
+    self.problem.mesh = mesh.distribute()
     self.problem.initialize()
 
     from pyre.units.time import second
     t = 0.0*second
     while t.value < self.totalTime.value:
       self.problem.prestep()
-      dt = self.problem.stableTimeStep()
+      dt = self.problem.stableTimestep()
       self.problem.step(dt)
       self.poststep(t+dt)
       t += dt
@@ -66,6 +72,7 @@ class PyLithApp(Script):
     """Constructor."""
     Script.__init__(self, name)
     self.totalTime = None
+    self.mesher = None
     self.problem = None
     return
 
@@ -76,6 +83,7 @@ class PyLithApp(Script):
     """Setup members using inventory."""
     Script._configure(self)
     self.totalTime = self.inventory.totalTime
+    self.mesher = self.inventory.mesher
     self.problem = self.inventory.problem
     return
 
