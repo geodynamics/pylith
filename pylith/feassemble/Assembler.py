@@ -19,66 +19,38 @@ from pyre.components.Component import Component
 class Assembler(Component):
   """Python finite-element assembler."""
 
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(Component.Inventory):
-    """Python object for managing Assembler facilities and properties."""
-
-    ## @class Inventory
-    ## Python object for managing Assembler facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li None
-
-    import pyre.inventory
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  # INITIALIZE
+  # Set mesh, chart, integrator
+  
+  def assembleResidual(self, residual, state):
+    """Assemble residual for field."""
+    elements = self.mesh.restrict(self.chart)
+    for element in elements:
+      stateElem = self.mesh.restrict(element)
+      residual.update(element,
+                      self.integrator.integrateResidual(element, stateElem),
+                      ADD_VALUES)
+    return
+
+
+  def assembleJacobian(self, jacobian, state):
+    elements = self.mesh.restrict(self.chart)
+    for element in elements:
+      stateElem = self.mesh.restrict(element)
+      jacobian.updateOperator(field, element,
+                              self.integrator.integrateJacobian(element, stateElem),
+                              ADD_VALUES)
+    return
+
 
   def __init__(self, name="assembler"):
     """Constructor."""
     Component.__init__(self, name, facility="assembler")
-    return
-
-  def integrateResidual(self, e):
-    # This is v0, Jac, invJac, detJ
-    geometry = self.mesh.elementGeometry(e)
-    return self.integrateResidual(e, geometry)
-
-  def integrateJacobian(self, u, e):
-    # This is v0, Jac, invJac, detJ
-    geometry = self.mesh.elementGeometry(e)
-    return self.integrateJacobian(u, e, geometry)
-
-  def integrateJacobian(self, u, e, geometry):
-    '''Integrate the Jacobian weak form over an element e using the given quadrature'''
-    det = geometry[3]
-    Jinv = geometry[2]
-    # This is the inhomogeneous, anisotropic
-    for q, point, weight in zip(range(len(self.quadrature.weights)), self.quadrature.points, self.quadrature.weights):
-      u_q = 0.0
-      for j in len(self.elementJac):
-        u_q += u[j]*self.basis[q,j]
-      D_q = material.elasticityConstant(point, u_q)
-      for j in len(self.elementJac):
-        t_der[0] = Jinv[0]*self.basisDer[q,j,0] + Jinv[2]*self.basisDer[q,j,1]
-        t_der[1] = Jinv[1]*self.basisDer[q,j,0] + Jinv[3]*self.basisDer[q,j,1]
-        for k in len(self.elementJac[0]):
-          b_der[0] = Jinv[0]*self.basisDer[q,k,0] + Jinv[2]*self.basisDer[q,k,1]
-          b_der[1] = Jinv[1]*self.basisDer[q,k,0] + Jinv[3]*self.basisDer[q,k,1]
-          self.elementJac[j,k] += (t_der[0]*b_der[0] + t_der[1]*b_der[1])*D_q*weight*det
-    return self.elementJac
-
-  def assembleResidual(self, res):
-    for e in mesh.elements():
-      res.update(e, self.integrateResidual(e), ADD_VALUES)
-    return
-
-  def assembleJacobian(self, jac, u):
-    for e in mesh.elements():
-      jac.updateOperator(field, e, self.integrateJacobian(u.restrict(e), e), ADD_VALUES)
+    self.mesh = None
+    self.chart = None
+    self.integrator = None
     return
 
   # PRIVATE METHODS /////////////////////////////////////////////////////
