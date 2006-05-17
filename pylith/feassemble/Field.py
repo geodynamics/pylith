@@ -114,6 +114,8 @@ class Field(Component):
     self.basis = Numeric.transpose(basis.tabulate(points))
     self.basisDer = Numeric.transpose([basis.deriv_all(d).tabulate(points) \
                                        for d in range(dim)])
+    # We now assume that all simplices of the same dimension are equal
+    self.elementDof = [len(self.element.dual_basis().getNodeIDs(d)[0]) for d in range(dim)]
     return
 
   def _configure(self):

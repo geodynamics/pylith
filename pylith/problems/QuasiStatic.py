@@ -58,7 +58,7 @@ class QuasiStatic(Problem):
     return
 
 
-  def step(self):
+  def step(self, dt):
     raise NotImplementedError, "QuasiStatic::step() not implemented."
     return
 
@@ -69,8 +69,8 @@ class QuasiStatic(Problem):
 
 
   def stableTimestep(self):
-    raise NotImplementedError, "QuasiStatic::stableTimestep() not implemented."
-    return
+    #raise NotImplementedError, "QuasiStatic::stableTimestep() not implemented."
+    return 1.0
 
 
   def checkpoint(self):

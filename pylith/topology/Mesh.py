@@ -39,14 +39,9 @@ class Mesh(Component):
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def createMesh(self):
-    raise NotImplementedError, "Mesh::createMesh() not implemented."
-    return
-
-
   def distribute(self):
-    raise NotImplementedError, "Mesh::distribute() not implemented."
-    return
+    #raise NotImplementedError, "Mesh::distribute() not implemented."
+    return self
 
 
   def __init__(self, name="mesh"):
