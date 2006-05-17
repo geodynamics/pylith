@@ -99,6 +99,18 @@ class Field(Component):
 
   # PRIVATE METHODS /////////////////////////////////////////////////////
 
+  def _evaluateBasis(self):
+    '''Return Numeric arrays with the basis functions and their derivatives evalauted at the quadrature points
+       - FIAT uses a reference element of (-1,-1):(1,-1):(-1,1)'''
+    import Numeric
+
+    points = self.quadrature.get_points()
+    basis = self.element.function_space()
+    dim = FIAT.shapes.dimension(basis.base.shape)
+    self.basis = Numeric.transpose(basis.tabulate(points))
+    self.basisDer = Numeric.transpose([basis.deriv_all(d).tabulate(points) for d in range(dim)])
+    return
+
   def _configure(self):
     """Set members based using inventory."""
     self.family = self.inventory.family
