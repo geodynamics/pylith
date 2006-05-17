@@ -42,7 +42,7 @@ class Homogeneous(MaterialsBin):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="Homogeneous"):
+  def __init__(self, name="homogeneous"):
     """Constructor."""
     
     MaterialsBin.__init__(self, name)

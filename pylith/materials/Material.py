@@ -28,7 +28,8 @@ class Material(Component):
     ## Python object for managing Material facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li \b id Material identifier (from mesh generator)
+    ## @li \b name Name of material
     ##
     ## \b Facilities
     ## @li \b model Material model (constitutive equations)
@@ -36,12 +37,20 @@ class Material(Component):
 
     import pyre.inventory
 
+    id = pyre.inventory.int("id", default=0)
+    id.meta['tip'] = "Material identifier (from mesh generator)."
+
+    matname = pyre.inventory.str("name", default="")
+    matname.meta['tip'] = "Name of material."
+
     from MaterialModel import MaterialModel
-    model = pyre.inventory.facility("model", factory=MaterialModel)
+    model = pyre.inventory.facility("model", factory=MaterialModel,
+                                    args=["model"])
     model.meta['tip'] = "Material model (constitutive equations)."
 
     from spatialdata.spatialdb.SpatialDB import SpatialDB
-    db = pyre.inventory.facility("db", factory=SpatialDB)
+    db = pyre.inventory.facility("db", factory=SpatialDB,
+                                 args=["db"])
     db.meta['tip'] = "Database of material properties."
     
 
@@ -85,7 +94,8 @@ class Material(Component):
 
   def _configure(self):
     """Setup members using inventory."""
-
+    self.id = self.inventory.id
+    self.matname = self.inventory.matname
     self.model = self.inventory.model
     self.db = self.inventory.db
     return

@@ -34,6 +34,7 @@ class MaterialsBin(Component):
     """Constructor."""
     
     Component.__init__(self, name, facility="materialsbin")
+    self.materials = []
     return
 
 
