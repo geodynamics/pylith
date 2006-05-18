@@ -53,12 +53,6 @@ class Assembler(Component):
     self.integrator = None
     return
 
-  # PRIVATE METHODS /////////////////////////////////////////////////////
-
-  def _configure(self):
-    """Set members based using inventory."""
-    return
-  
 
 # version
 __id__ = "$Id$"
