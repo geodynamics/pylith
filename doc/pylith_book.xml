@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+                      "file:/Applications/oxygen/frameworks/docbook/dtd/docbookx.dtd">
+<book id="PyLithManual" lang="en">
+    <bookinfo>
+        <title>PyLith Manual</title>
+        <authorgroup>
+            <author>
+                <firstname>Charles</firstname>
+                <surname>Williams</surname>
+            </author>
+            <author>
+                <firstname>Matthew</firstname>
+                <othername>G.</othername>
+                <surname>Knepley</surname>
+            </author>
+            <author>
+                <firstname>Cassie</firstname>
+                <surname>Ferguson</surname>
+            </author>
+        </authorgroup>
+        <date>05.19.2006</date>
+        <copyright>
+            <year>2006</year>
+            <holder>Copyright holder ??</holder>
+        </copyright>
+    </bookinfo>
+    <part>
+        <title>Preface</title>
+        <preface>
+            <title>Preface</title>
+            <sect1>
+                <title>About This Document</title>
+                <para>This document is organized into three parts. Part I consists of traditional
+                    book front matter, including this preface. Part II begins with an introduction
+                    to PyLith and proceeds to the details of implementation. Part III provides
+                    appendices and references. </para>
+            </sect1>
+            <sect1>
+                <title>Who Will Use This Documentation</title>
+                <para>This documentation is aimed at scientists who prefer to use prepackaged and
+                    specialized analysis tools. Users are likely to be experienced computational
+                    earth scientists and have familiarity with basic scripting, software
+                    installation, and programming; but are not likely to be professional
+                    programmers. Of those, there are likely to be two classes of users: those who
+                    run models and those who modify the source code. </para>
+            </sect1>
+            <sect1>
+                <title>Citation</title>
+                <para>The Computational Infrastructure for Geodynamics (CIG) is making this source
+                    code available to you at no cost in hopes that the software will enhance your
+                    research in geophysics. A number of individuals have contributed a significant
+                    portion of their careers toward the development of this software. It is
+                    essential that you recognize these individuals in the normal scientific practice
+                    by citing the appropriate peer reviewed papers and making appropriate
+                    acknowledgements in talks and publications. Citation information ...</para>
+            </sect1>
+            <sect1>
+                <title>Support</title>
+                <para>Current PyLith development is supported by the Southern California Earthquake
+                    Center, the National Science Foundation, and the CIG. Current EqSim development
+                    is supported by internal U.S. Geological Survey funding. Pyre development is
+                    funded by the <ulink url="http://www.doe.gov/engine/content.do">Department of
+                        Energy's</ulink> Advanced Simulation and Computing program and the <ulink
+                        url="http://www.nsf.gov/">National Science Foundation's</ulink> Information
+                    Technology Research (ITR) program.</para>
+            </sect1>
+            <sect1>
+                <title>Request for Comments</title>
+                <para>Your suggestions and corrections can only improve this documentation. Please
+                    report any errors, inaccuracies, bugs, or typos to cassie (at)
+                geodynamics.org.</para>
+            </sect1>
+        </preface>
+    </part>
+    <part>
+        <title>Chapters</title>
+        <chapter>
+            <title>Overview</title>
+            <sect1>
+                <title>Introduction</title>
+                <para>PyLith is a multi-scale simulation software package for earthquake physics. It
+                    is portable, scalable software for simulation of crustal deformation across
+                    spatial scales ranging from meters to hundreds of kilometers and temporal scales
+                    ranging from milliseconds to hundreds of years.</para>
+            </sect1>
+            <sect1>
+                <title>About PyLith</title>
+                <para> The PyLith package is composed of EqSim and Lithomop (formerly known as
+                    Tecton) each of which underwent major reengineering to make use of the Pyre
+                    simulation framework and PETSc while progressing towards similar implementations
+                    of finite-element routines. </para>
+                <figure>
+                    <title>PyLith Heritage. PyLith evolved from Tecton, a code which solves for
+                        visco-elastic deformation, and EqSim, an earthquake dynamic rupture code. </title>
+                    <mediaobject id="pylithevolution">
+                        <imageobject role="fo">
+                            <imagedata fileref="images/pylith_evolution.eps" format="EPS"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+                <sect2>
+                    <title>About EqSim</title>
+                    <para>EqSim, written by Brad Aagaard at the USGS in 1999, solves the dynamic
+                        elasticity equations in a 3-D volume, primarily to model earthquake rupture
+                        dynamics. Later versions of the software (v 0.7) incorporate the Pyre build
+                        procedure and make use of the Pythia package.</para>
+                </sect2>
+                <sect2>
+                    <title>About Tecton</title>
+                    <para>Tecton, originally written by Charles Williams at Rensselaer Polytechnic
+                        Institute in 2003, simulates static and quasi-static lithospheric
+                        deformation, including postseismic deformation and strain accumulation. Need
+                        more information here ...</para>
+                </sect2>
+                <sect2>
+                    <title>About Lithomop</title>
+                    <para>Tecton was completely rewritten and renamed Lithomop (Lithospheric
+                        Modeling, with the final p representing Python/Pyre) in 2004. Lithomop is a
+                        finite element code for the solution of visco-elastic/plastic deformation
+                        designed for geophysical--essentially lithospheric lodeling--problems.
+                        Although much of the code is written in Fortran 77, Charles Williams
+                        reengineered the Lithomop to work with Pyre, a Python-based software
+                        framework.</para>
+                </sect2>
+                <sect2>
+                    <title>About Pyre</title>
+                    <para>Pyre is an object-oriented environment capable of specifying and launching
+                        numerical simulations on multiple platforms, including Beowulf class
+                        parallel computers and grid computing systems. Pyre allows the binding of
+                        multiple components such as solid and fluid models used in Earth science
+                        simulations, and different meshers. The Pyre framework enables the elegant
+                        setup, modification and launching of massively parallel three-dimensional
+                        solver applications. </para>
+                    <para> Pyre is a framework, a combination of software and design philosophy that
+                        promotes the reuse of code. In their canonical software design book,
+                            <citetitle>Design Patterns</citetitle>, Erich Gamma <emphasis>et
+                        al</emphasis>. condense the concept of a framework concept down to, "When
+                        you use a framework, you reuse the main body and write the code it calls."
+                        In the context of frameworks and object-oriented programming, Pyre can be
+                        thought of as a collection of classes and the way their instances interact.
+                        Programming applications based on Pyre will look similar to those written in
+                        any other object-oriented language. The Pyre framework contains a subset of
+                        parts that make up the overall framework. Each of those parts is designed to
+                        solve a specific problem. </para>
+                    <para>The framework approach to computation offers many advantages. It permits
+                        the exchange of codes and promotes the reuse of standardized software while
+                        preserving efficiency. Frameworks are also an efficient way to handle
+                        changes in computer architecture. They present programmers and scientists
+                        with a unified and well-defined task and allow for shared costs of the
+                        housekeeping aspects of software development. They provide greater
+                        institutional continuity to model development than piecemeal approaches.</para>
+                    <para> The Pyre framework incorporates features aimed at enabling the scientific
+                        non-expert to perform tasks easily without hindering the expert. Target
+                        features for end users allow complete and intuitive simulation
+                        specification, reasonable defaults, consistency checks of input, good
+                        diagnostics, easy access to remote facilities, and status monitoring. Target
+                        features for developers include easy access to user input, a shorter
+                        development cycle, and good debugging support. </para>
+                </sect2>
+                <sect2>
+                    <title>Pyre and PyLith</title>
+                    <para> The integration of the Pyre framework with PyLith adds several new
+                        capabilities to the PyLith, while easing the process of adding new features.
+                        Pyre provides a simulation framework that includes solver integration and
+                        coupling, uniform access to facilities, and integrated visualization. The
+                        framework offers a way to add new solvers to PyLith and to fine-tune PyLith
+                        simulations. The initial version of of PyLith is available as a dynamic
+                        shared library, callable via Python/Pyre function calls. A number of new
+                        element types have been added, including tetrahedral and transition
+                        elements, as well as quadratic versions of all elements. </para>
+                    <figure>
+                        <title>Pyre Architecture. The integration framework is a set of cooperating
+                            abstract services.</title>
+                        <mediaobject id="pyre_overview">
+                            <imageobject role="fo">
+                                <imagedata fileref="images/pyre_overview.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </figure>
+                    <para>The Pyre build procedure supports 16 compilers and 10 platforms, making
+                        PyLith portable and easy to build. It gathers user input with reasonable
+                        defaults, run consistency checks, and report errors/warnings with good
+                        diagnostics. Pyre standardizes the launching of parallel simulations and
+                        provides flexible tools for monitoring and debugging jobs </para>
+                    <para>Provide also provices extensibility via the binding of components to
+                        facilities at runtime. Users can provide their own components to obtain a
+                        custom implementation of functionality, such as a viscoelastoplastic
+                        constitutive relation. Facilities are defined in a Python object and provide
+                        an abstract definition of required functionality, such as a material
+                        constitutive relation. Components are a specific implementation of a
+                        facility, defined by a Python object. Functionality may involve Python/C++
+                        bindings and additional C/C++ and/or Fortran code.</para>
+                    <figure>
+                        <title>Pyre Binding. Pyre facilities provide extensibility.</title>
+                        <mediaobject id="pyrebinding">
+                            <imageobject role="fo">
+                                <imagedata fileref="images/pyre_binding.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </figure>
+                </sect2>
+            </sect1>
+            <sect1>
+                <title>History</title>
+                <para>PyLith was first conceived in 2005 when Charles Williams of the Rensselaer
+                    Polytechnic Institute and Brad Aagaard of the USGS decided to merge Williams'
+                    Lithomop, a finite element code for the solution of visco-elastic/plastic
+                    deformation, with Aagaard's EqSim, which solves the dynamic elasticity equations
+                    in a 3-D volume. CIG Chief Software Architect, Michael Aivazis, assisted with
+                    the integration of Pyre, and Matt Knepley, a CIG-supported software engineer
+                    from Argonne National Laboratory worked on the parallelization and incorporation
+                    of PETSc.</para>
+                <para>Although the new code was temporarily called Lithomop as well, the name was
+                    discarded in favor of the more popular PyLith. EqSim and Lithomp were donated to
+                    the CIG software repository in 2006. An early version of PyLith became available
+                    via CIG shortly thereafter.</para>
+            </sect1>
+        </chapter>
+        <chapter>
+            <title>PyLith Design and Theory</title>
+            <sect1>
+                <title>Introduction</title>
+                <para>In PyLith simulation software is separated into modules to encapsulate
+                    behavior and facilitate use across multiple applications. That way expert users
+                    can replace functionality of a wide variety of components without recompiling or
+                    polluting the main code. External packages reduce development time and enhance
+                    computational efficiency, for example, PyLith runs 2x faster by using the PETSc
+                    linear solver.</para>
+                <para>PyLith is based on several programming languages. High-level code is written
+                    in Python; this rich, expressive interpreted language with dynamic typing
+                    reduces development time. Low-level code is written in C, C++, Fortran 77, or
+                    Fortran 90 for fast execution. Bindings, written in C/C++, are used to allow
+                    low-level code, C/C++ or Fortran, to be called from high-level code, Python.</para>
+                <para>PyLith makes extensive use of external software. Pyre is a science neutral
+                    simulation framework being developed at Caltech. PETSc is used to perform
+                    operations on matrices and vectors in parallel. MPI is the Message Passing
+                    Interface which provides a standard interface for parallel-processing. PyUnit
+                    and CppUnit are libraries that aid in regression testing of the software. UML is
+                    the Unified Modeling Language which is used to diagram the layout of the source
+                    code. </para>
+                <figure>
+                    <title>PyLith Overview. PyLith coordinates several external packages based on
+                        multiple programming languages.</title>
+                    <mediaobject id="architecture.eps">
+                        <imageobject role="fo">
+                            <imagedata fileref="images/architecture.eps" format="EPS"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+            </sect1>
+            <sect1>
+                <title>Parallelization</title>
+                <para>In parallelizing PyLith, a principal concern was to preserve the existing
+                    structure of the serial Fortran code. Active development of purely analytic
+                    features in PyLith, such as new material models or discretization schemes,
+                    depends on the familiarity of application scientists with the traditional
+                    Fortran programming paradigm. Global, topological operation should be strictly
+                    segregated from the existing code. In fact, with the exception of integrating
+                    PETSc for serial linear algebra and solver operations, PyLith can be run purely
+                    in serial without activating any of the parallel capabilities.</para>
+                <para>In order to accomplish this separation, we use the PETSc
+                    <classname>Sieve</classname> structure to create a model of the serial PyLith
+                    mesh. This model is then partitioned and distributed to a set of processes. Each
+                    process receives a self-consistent mesh, meaning the pieces are overlapping.
+                    Each process then executes a serial PyLith step on that particular mesh piece.
+                    The PETSc linear algebra operations are overloaded, using the
+                    <classname>Sieve</classname> information, to produce a globally consistent
+                    field.</para>
+                <figure>
+                    <title>Sieve Role. Overview of workflow using sieve.</title>
+                    <mediaobject id="sieve.eps">
+                        <imageobject role="fo">
+                            <imagedata fileref="images/sieve.eps" format="EPS"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+                
+                <para>First, we must preprocess the PyLith input mesh and return a submesh, which we
+                    accomplish by changing the root filename on each
+                    process.<programlisting>
+lithomop3d.PetscInitialize()
+self.inventory.scanner.inventory.fileRoot, mesh = lithomop3d.processMesh(self.inventory.scanner.inventory.fileRoot)
+                    </programlisting>
+                    We must also provide the mesh information to the routine which creates the
+                    linear algebra
+                    objects,<programlisting>
+lm3dsetup.sparsesetup(mesh)
+                    </programlisting>
+                    which dispatches into the C++
+                    interface<programlisting>
+self.A, self.rhs, self.sol = lithomop3d.createPETScMat(mesh)
+                    </programlisting>
+                </para>
+                <para>We model the displacement field over the mesh using a fiber bundle. Each
+                    vertex is intially associated with three degrees of freedom, which are then
+                    restricted by the boundary conditions. After which we create local order, and
+                    then a unique global order which is used to construct PETSc vector scatters. <programlisting><![CDATA[
+field->setPatch(mesh->getTopology()->leaves(), patch);
+field->setFiberDimensionByDepth(patch, 0, 3);
+for(ALE::Two::Mesh::sieve_type::traits::depthSequence::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
+int numConstraints = 0;
+                        
+for(int c = 0; c < numBoundaryComponents; c++) {
+numConstraints += boundaries->getFiberDimension(patch_type(patch, c+1), *v_itor);
+}
+                        
+if (numConstraints > 0) {
+field->setFiberDimension(patch, *v_itor, 3 - numConstraints);
+}
+}
+field->orderPatches();
+field->createGlobalOrder();
+                        ]]></programlisting> We also create an alternative ordering which allows
+                    retrieval of field values on each element with the correct orientation. This
+                    order has previously been constructed based on the ``cell-tuple" method for a
+                    simpler bundle over vertices, and we are thus able to merely copy it. <programlisting><![CDATA[
+ALE::Obj&lt;ALE::Two::Mesh::sieve_type::traits::heightSequence&gt; elements = mesh->getTopology()->heightStratum(0);
+ALE::Obj&lt;ALE::Two::Mesh::bundle_type&gt; vertexBundle = mesh->getBundle(0);
+std::string orderName("element");
+                        
+for(ALE::Two::Mesh::sieve_type::traits::heightSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); e_iter++) {
+// setFiberDimensionByDepth() does not work here since we only want it to apply to the patch cone
+//   What we really need is the depthStratum relative to the patch
+ALE::Obj&lt;ALE::Two::Mesh::bundle_type::order_type::coneSequence&gt; cone = vertexBundle->getPatch(orderName, *e_iter);
+                        
+field->setPatch(orderName, cone, *e_iter);
+for(ALE::Two::Mesh::bundle_type::order_type::coneSequence::iterator c_iter = cone->begin(); c_iter != cone->end(); ++c_iter) {
+field->setFiberDimension(orderName, *e_iter, *c_iter, field->getFiberDimension(patch, *c_iter));
+}
+}
+field->orderPatches(orderName);
+                    ]]></programlisting>
+                </para>
+                <para>In addition to fields and operators, we must represent boundary conditions. We
+                    do this using a fiber bundle over the mesh which is foliated over spatial
+                    dimension, which in our interface means that patches are labeled by the pair
+                    (patch number, dimension). A particular set of boundaries values consists of a
+                    section of this bundle.</para>
+                <para>We replace the usual <methodname>MatSetValues()</methodname> call with
+                        <methodname>assembleMatrix()</methodname>. We do not always require that
+                    vectors be managed through the PETSc interface, but can instead be treated as
+                    Fortran arrays which are subsequently wrapped by serial PETSc vectors, which are
+                    then assembled into a global vector for the solve using
+                        <methodname>assembleVectorComplete()</methodname>. In a similar fashion, the
+                    local vector may be extracted using the
+                    <methodname>restrictVector()</methodname>
+                    method.<programlisting>
+call VecCreateSeqWithArray(MPI_COMM_SELF, neq, bresid, locRhs, ierr)
+call assembleVectorComplete(rhs, locRhs, ADD_VALUES, ierr)
+call VecDestroy(locRhs, ierr)
+call VecView(rhs, PETSC_VIEWER_STDOUT_WORLD, ierr)
+call KSPCreate(MPI_COMM_WORLD, ksp, ierr)
+call KSPSetfromOptions(ksp, ierr)
+call KSPSetOperators(ksp,A,A,DIFFERENT_NONZERO_PATTERN,ierr)
+call KSPSolve(ksp, rhs, sol, ierr)
+call KSPDestroy(ksp, ierr)
+call VecView(sol, PETSC_VIEWER_STDOUT_WORLD, ierr)
+call VecCreateSeqWithArray(MPI_COMM_SELF, neq, dispvec, locSol, ierr)
+call restrictVector(sol, locSol, INSERT_VALUES, ierr)
+call VecDestroy(locSol, ierr)
+                    </programlisting>
+                </para>
+            </sect1>
+        </chapter>
+        <chapter>
+            <title>Using PyLith</title>
+            <sect1>
+                <title>Installation</title>
+                <sect2>
+                    <title>Download</title>
+                    <para>Visit the <ulink url="http://www.geodynamics.org">CIG website</ulink>.
+                        Look for the "software" tab at the top of the page. Follow the links to the
+                        page where you can download the PyLith package.</para>
+                </sect2>
+                <sect2>
+                    <title>Install</title>
+                    <para>Click twice ... well, no.</para>
+                    <para/>
+                </sect2>
+                <sect2>
+                    <title>Test Installation</title>
+                </sect2>
+            </sect1>
+            <sect1>
+                <title>Using PyLith</title>
+                <sect2>
+                    <title>Input</title>
+                    <para/>
+                </sect2>
+                <sect2>
+                    <title>Test</title>
+                    <para/>
+                </sect2>
+                <sect2>
+                    <title>Example</title>
+                    <para/>
+                </sect2>
+            </sect1>
+        </chapter>
+        <chapter>
+            <title>Postprocessing and Graphics</title>
+            <sect1>
+                <title>Introduction</title>
+            </sect1>
+        </chapter>
+        <chapter>
+            <title>Cookbook</title>
+            <sect1>
+                <title>Introduction</title>
+                <para>These cookbook examples are meant to serve as a guide to some of the different
+                    types of problems PyLith can solve. </para>
+            </sect1>
+            <sect1>
+                <title>Cookbook 1: TITLE</title>
+                <para/>
+                <sect2>
+                    <title>Problem</title>
+                    <para/>
+                </sect2>
+                <sect2>
+                    <title>Solution</title>
+                    <para/>
+                </sect2>
+                <sect2>
+                    <title>Discussion</title>
+                    <para/>
+                </sect2>
+            </sect1>
+        </chapter>
+    </part>
+    <part>
+        <title>Appendices</title>
+        <appendix>
+            <title>Benchmarks and Parameters</title>
+        </appendix>
+    </part>
+</book>
