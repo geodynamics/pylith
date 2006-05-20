@@ -10,17 +10,12 @@
 # ----------------------------------------------------------------------
 #
 
-ACLOCAL_AMFLAGS = -I ./m4
+subpackage = utils
+include $(top_srcdir)/subpackage.am
 
-SUBDIRS = \
-	pylith \
-	libsrc
-
-#modulesrc
-
-if ENABLE_DOCUMENTATION
-  SUBDIRS += doc
-endif
+subpkgpyexec_PYTHON = \
+	importing.py \
+	__init__.py
 
 # version
 # $Id$

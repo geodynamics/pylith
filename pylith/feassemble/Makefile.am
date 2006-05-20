@@ -10,17 +10,15 @@
 # ----------------------------------------------------------------------
 #
 
-ACLOCAL_AMFLAGS = -I ./m4
+subpackage = feassemble
+include $(top_srcdir)/subpackage.am
 
-SUBDIRS = \
-	pylith \
-	libsrc
-
-#modulesrc
-
-if ENABLE_DOCUMENTATION
-  SUBDIRS += doc
-endif
+subpkgpyexec_PYTHON = \
+	Assembler.py \
+	Field.py \
+	Integrator.py \
+	IntegratorElasticity.py \
+	__init__.py
 
 # version
 # $Id$

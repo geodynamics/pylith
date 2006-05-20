@@ -10,17 +10,14 @@
 # ----------------------------------------------------------------------
 #
 
-ACLOCAL_AMFLAGS = -I ./m4
+subpackage = problems
+include $(top_srcdir)/subpackage.am
 
-SUBDIRS = \
-	pylith \
-	libsrc
-
-#modulesrc
-
-if ENABLE_DOCUMENTATION
-  SUBDIRS += doc
-endif
+subpkgpyexec_PYTHON = \
+	Dynamic.py \
+	Problem.py \
+	QuasiStatic.py \
+	__init__.py
 
 # version
 # $Id$

@@ -10,17 +10,16 @@
 # ----------------------------------------------------------------------
 #
 
-ACLOCAL_AMFLAGS = -I ./m4
+subpackage = materials
+include $(top_srcdir)/subpackage.am
 
-SUBDIRS = \
-	pylith \
-	libsrc
-
-#modulesrc
-
-if ENABLE_DOCUMENTATION
-  SUBDIRS += doc
-endif
+subpkgpyexec_PYTHON = \
+	ElasticIsotropic3D.py \
+	Homogeneous.py \
+	Material.py \
+	MaterialModel.py \
+	MaterialsBin.py \
+	__init__.py
 
 # version
 # $Id$

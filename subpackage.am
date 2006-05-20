@@ -1,0 +1,41 @@
+# -*- Makefile -*-
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+# define subpackage dirs
+subpkgsysconfdir = $(pkgsysconfdir)/$(subpackage)
+subpkgincludedir = $(pkgincludedir)/$(subpackage)
+subpkgpythondir = $(pkgpythondir)/$(subpackage)
+subpkgpyexecdir = $(pkgpyexecdir)/$(subpackage)
+subpkgdatadir = $(pkgdatadir)/$(subpackage)
+
+# 'export' the project headers by performing a mock install
+export_incdir = $(top_builddir)/include/$(PACKAGE)
+export-subpkgincludeHEADERS: $(subpkginclude_HEADERS)
+	$(MAKE) $(AM_MAKEFLAGS) pkgincludedir=$(export_incdir) install-subpkgincludeHEADERS
+	touch $@
+
+clean-subpkgincludeHEADERS:
+	$(MAKE) $(AM_MAKEFLAGS) pkgincludedir=$(export_incdir) uninstall-subpkgincludeHEADERS
+
+export-nobase_subpkgincludeHEADERS: $(nobase_subpkginclude_HEADERS)
+	$(MAKE) $(AM_MAKEFLAGS) pkgincludedir=$(export_incdir) install-nobase_subpkgincludeHEADERS
+	touch $@
+
+clean-nobase_subpkgincludeHEADERS:
+	$(MAKE) $(AM_MAKEFLAGS) pkgincludedir=$(export_incdir) uninstall-nobase_subpkgincludeHEADERS
+
+INCLUDES = -I$(top_builddir)/include
+
+# version
+# $Id$
+
+# End of file 

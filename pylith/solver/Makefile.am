@@ -10,17 +10,14 @@
 # ----------------------------------------------------------------------
 #
 
-ACLOCAL_AMFLAGS = -I ./m4
+subpackage = solver
+include $(top_srcdir)/subpackage.am
 
-SUBDIRS = \
-	pylith \
-	libsrc
-
-#modulesrc
-
-if ENABLE_DOCUMENTATION
-  SUBDIRS += doc
-endif
+subpkgpyexec_PYTHON = \
+	Solver.py \
+	SolverTSE.py \
+	SolverTSI.py \
+	__init__.py
 
 # version
 # $Id$
