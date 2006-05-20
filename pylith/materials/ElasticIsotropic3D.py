@@ -10,23 +10,23 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/materials/ElasticIsotropic.py
+## @file pylith/materials/ElasticIsotropic3D.py
 ## @brief Python object for isotropic linear elastic constitutive model.
 
 from MaterialModel import MaterialModel
 
-# ElasticIsotropic class
-class ElasticIsotropic(MaterialModel):
+# ElasticIsotropic3D class
+class ElasticIsotropic3D(MaterialModel):
   """Python object for isotropic linear elastic constitutive model."""
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(MaterialModel.Inventory):
-    """Python object for managing ElasticIsotropic facilities and
+    """Python object for managing ElasticIsotropic3D facilities and
     properties."""
 
     ## @class Inventory
-    ## Python object for managing ElasticIsotropic facilities and properties.
+    ## Python object for managing ElasticIsotropic3D facilities and properties.
     ##
     ## \b Properties
     ## @li \b mu Lame's constant (shear modulus)
@@ -58,7 +58,7 @@ class ElasticIsotropic(MaterialModel):
     values = size*[0]
     return values
 
-  def __init__(self, name="matsolidlinelast"):
+  def __init__(self, name="elasticisotropic3d"):
     """Constructor."""
     MaterialModel.__init__(self, name)
     return

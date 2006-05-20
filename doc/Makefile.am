@@ -10,18 +10,6 @@
 # ----------------------------------------------------------------------
 #
 
-ACLOCAL_AMFLAGS = -I ./m4
-
-SUBDIRS = \
-	pylith \
-	libsrc
-
-#modulesrc
-
-if ENABLE_DOCUMENTATION
-  SUBDIRS += doc
-endif
-
 # version
 # $Id$
 

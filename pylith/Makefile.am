@@ -10,17 +10,17 @@
 # ----------------------------------------------------------------------
 #
 
-ACLOCAL_AMFLAGS = -I ./m4
-
 SUBDIRS = \
-	pylith \
-	libsrc
+	feassemble \
+	materials \
+	problems \
+	solver \
+	topology \
+	utils
 
-#modulesrc
-
-if ENABLE_DOCUMENTATION
-  SUBDIRS += doc
-endif
+pkgpyexec_PYTHON = \
+	PyLithApp.py \
+	__init__.py
 
 # version
 # $Id$
