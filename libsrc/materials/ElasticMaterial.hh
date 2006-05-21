@@ -70,15 +70,6 @@ public :
    */
   void parametersDB(const spatialdata::spatialdb::SpatialDB* pDB);
 
-  /// Initialize material.
-  void initialize(void);
-
-  /// Open database.
-  void openDB(void);
-
-  /// Close database.
-  void closeDB(void);
-
   /** Get inertia at points.
    *
    * The values are returned through the parameters.

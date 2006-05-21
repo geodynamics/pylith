@@ -32,18 +32,15 @@ pylith::materials::ElasticMaterial::ElasticMaterial(void) :
 // Destructor.
 pylith::materials::ElasticMaterial::~ElasticMaterial(void)
 { // destructor
-  delete _pDB; _pDB = 0;
+  // Do not own database, so just set pointer to null.
+  _pDB = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::materials::ElasticMaterial::ElasticMaterial(const ElasticMaterial& m) :
-  _pDB(0)
+  _pDB(m._pDB)
 { // copy constructor
-#if 0
-  if (0 != m._pDB)
-    _pDB = _pDB->clone();
-#endif
 } // copy constructor
 
 // ----------------------------------------------------------------------
@@ -52,40 +49,8 @@ void
 pylith::materials::ElasticMaterial::parametersDB(
                             const spatialdata::spatialdb::SpatialDB* pDB)
 { // parametersDB
-  delete _pDB;
-#if 0
-  _pDB = (0 != pDB) ? pDB->clone : 0;
-#endif
+  _pDB = pDB;
 } // parametersDB
-
-// ----------------------------------------------------------------------
-// Initialize material.
-void
-pylith::materials::ElasticMaterial::initialize(void)
-{ // initialize
-#if 0
-  if (0 != _pDB)
-    _pDB->initialize();
-#endif
-} // initialize
-
-// ----------------------------------------------------------------------
-// Open database.
-void
-pylith::materials::ElasticMaterial::openDB(void)
-{ // openDB
-  if (0 != _pDB)
-    _pDB->open();
-} // openDB
-
-// ----------------------------------------------------------------------
-// Close database.
-void
-pylith::materials::ElasticMaterial::closeDB(void)
-{ // closeDB
-  if (0 != _pDB)
-    _pDB->close();
-} // closeDB
 
 // ----------------------------------------------------------------------
 // Get intertia at points.
