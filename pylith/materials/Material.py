@@ -32,7 +32,6 @@ class Material(Component):
     ## @li \b name Name of material
     ##
     ## \b Facilities
-    ## @li \b model Material model (constitutive equations)
     ## @li \b db Database of material property parameters
 
     import pyre.inventory
@@ -42,11 +41,6 @@ class Material(Component):
 
     matname = pyre.inventory.str("name", default="")
     matname.meta['tip'] = "Name of material."
-
-    from MaterialModel import MaterialModel
-    model = pyre.inventory.facility("model", factory=MaterialModel,
-                                    args=["model"])
-    model.meta['tip'] = "Material model (constitutive equations)."
 
     from spatialdata.spatialdb.SpatialDB import SpatialDB
     db = pyre.inventory.facility("db", factory=SpatialDB,
@@ -67,11 +61,9 @@ class Material(Component):
   def openDB(self):
     """Open material property database."""
 
-    valNames = self.model.queryVals
     self._info.line("Material '%s' opening property database." % self.name)
     self._info.log("  Setting up query for values: %s." % valNames)
     self.db.open()
-    self.db.queryVals(valNames)
     return
 
 
@@ -96,7 +88,6 @@ class Material(Component):
     """Setup members using inventory."""
     self.id = self.inventory.id
     self.matname = self.inventory.matname
-    self.model = self.inventory.model
     self.db = self.inventory.db
     return
 
