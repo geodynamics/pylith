@@ -127,6 +127,10 @@ struct PyMethodDef pypylith3d_methods[] = {
     {pypylith3d_destroyPETScMat__name__, pypylith3d_destroyPETScMat,
      METH_VARARGS, pypylith3d_destroyPETScMat__doc__},
 
+    // output PETSc Mesh and Fields
+    {pypylith3d_outputMesh__name__, pypylith3d_outputMesh,
+     METH_VARARGS, pypylith3d_outputMesh__doc__},
+
     // create sparse matrix in modified sparse row format
     {pypylith3d_makemsr__name__, pypylith3d_makemsr,
      METH_VARARGS, pypylith3d_makemsr__doc__},

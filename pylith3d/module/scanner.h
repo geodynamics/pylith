@@ -49,6 +49,12 @@ extern char pypylith3d_destroyPETScMat__doc__[];
 extern "C"
 PyObject * pypylith3d_destroyPETScMat(PyObject *, PyObject *);
 
+// output a PETSc Mesh and Fields
+extern char pypylith3d_outputMesh__name__[];
+extern char pypylith3d_outputMesh__doc__[];
+extern "C"
+PyObject * pypylith3d_outputMesh(PyObject *, PyObject *);
+
 // scan boundary condition file
 extern char pypylith3d_scan_bc__name__[];
 extern char pypylith3d_scan_bc__doc__[];
