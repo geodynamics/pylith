@@ -380,6 +380,8 @@ class Pylith3d_run(Component):
                 self.elasticStage,
                 self.iterateEvent)
 
+            pylith3d.outputMesh(self.fileRoot, self.mesh, self.sol)
+
         # Perform time-dependent solution, if requested.
 
         if self.analysisType == "fullSolution" and self.numberTimeStepGroups > 1:

@@ -127,14 +127,14 @@ PetscErrorCode ReadBoundary_PyLith(const char *baseFilename, PetscTruth useZeroB
 
 #undef __FUNCT__
 #define __FUNCT__ "WriteBoundary_PyLith"
-PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Two::Mesh> mesh)
+PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Mesh> mesh)
 {
   FILE                       *f;
   char                        bcFilename[2048];
-  typedef std::pair<ALE::Two::Mesh::field_type::patch_type,int> patch_type;
-  ALE::Obj<ALE::Two::Mesh::foliation_type> boundaries = mesh->getBoundaries();
-  ALE::Obj<ALE::Two::Mesh::bundle_type>    vertexBundle = mesh->getBundle(0);
-  ALE::Two::Mesh::field_type::patch_type patch;
+  typedef std::pair<ALE::Mesh::field_type::patch_type,int> patch_type;
+  ALE::Obj<ALE::Mesh::foliation_type> boundaries = mesh->getBoundaries();
+  ALE::Obj<ALE::Mesh::bundle_type>    vertexBundle = mesh->getBundle(0);
+  ALE::Mesh::field_type::patch_type patch;
   PetscErrorCode              ierr;
 
   PetscFunctionBegin;
@@ -150,14 +150,14 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Two:
   fprintf(f, "#\n");
   fprintf(f, "#  Node X BC Y BC Z BC   X Value          Y Value          Z Value\n");
   fprintf(f, "#\n");
-  ALE::Obj<ALE::Two::Mesh::sieve_type::traits::depthSequence> vertices = boundaries->getTopology()->depthStratum(0);
+  ALE::Obj<ALE::Mesh::sieve_type::traits::depthSequence> vertices = boundaries->getTopology()->depthStratum(0);
 
-  for(ALE::Two::Mesh::sieve_type::traits::depthSequence::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
+  for(ALE::Mesh::sieve_type::traits::depthSequence::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
     int    constraints[3];
     double values[3] = {0.0, 0.0, 0.0};
 
     for(int c = 0; c < 3; c++) {
-      ALE::Two::Mesh::foliation_type::patch_type p(patch, c+1);
+      ALE::Mesh::foliation_type::patch_type p(patch, c+1);
 
       constraints[c] = boundaries->getFiberDimension(p, *v_itor);
       if (constraints[c]) {
@@ -176,7 +176,7 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Two:
 
 // Process mesh
 
-PetscErrorCode MeshView_Sieve_Newer(ALE::Obj<ALE::Two::Mesh> mesh, PetscViewer viewer);
+PetscErrorCode MeshView_Sieve_Newer(ALE::Obj<ALE::Mesh> mesh, PetscViewer viewer);
 
 char pypylith3d_processMesh__doc__[] = "";
 char pypylith3d_processMesh__name__[] = "processMesh";
@@ -194,7 +194,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 
   MPI_Comm          comm = PETSC_COMM_WORLD;
   PetscMPIInt       rank;
-  ALE::Obj<ALE::Two::Mesh> mesh;
+  ALE::Obj<ALE::Mesh> mesh;
   PetscViewer       viewer;
   PetscInt         *boundaryVertices;
   PetscScalar      *boundaryValues;
@@ -203,28 +203,28 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 
   ierr = MPI_Comm_rank(comm, &rank);
   sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
-  mesh = ALE::Two::PyLithBuilder::createNew(comm, meshInputFile);
+  mesh = ALE::PyLithBuilder::createNew(comm, meshInputFile);
   mesh = mesh->distribute();
   ierr = ReadBoundary_PyLith(meshInputFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
 
-  typedef std::pair<ALE::Two::Mesh::field_type::patch_type,int> patch_type;
-  ALE::Obj<ALE::Two::Mesh::foliation_type> boundaries = mesh->getBoundaries();
-  ALE::Two::Mesh::field_type::patch_type patch;
+  typedef std::pair<ALE::Mesh::field_type::patch_type,int> patch_type;
+  ALE::Obj<ALE::Mesh::foliation_type> boundaries = mesh->getBoundaries();
+  ALE::Mesh::field_type::patch_type patch;
   std::set<int> seen;
   int numElements = mesh->getBundle(mesh->getTopology()->depth())->getGlobalOffsets()[mesh->commSize()];
 
   boundaries->setTopology(mesh->getTopology());
   for(int c = 0; c < numBoundaryComponents; c++) {
-    boundaries->setPatch(mesh->getTopology()->leaves(), ALE::Two::Mesh::foliation_type::patch_type(patch, c+1));
+    boundaries->setPatch(mesh->getTopology()->leaves(), ALE::Mesh::foliation_type::patch_type(patch, c+1));
   }
   // Reverse order allows newer conditions to override older, as required by PyLith
   for(int v = numBoundaryVertices-1; v >= 0; v--) {
-    ALE::Two::Mesh::point_type vertex(0, boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
+    ALE::Mesh::point_type vertex(0, boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
 
     if (seen.find(vertex.index) == seen.end()) {
       for(int c = 0; c < numBoundaryComponents; c++) {
         if (boundaryVertices[v*(numBoundaryComponents+1)+c+1]) {
-          boundaries->setFiberDimension(ALE::Two::Mesh::foliation_type::patch_type(patch, c+1), vertex, 1);
+          boundaries->setFiberDimension(ALE::Mesh::foliation_type::patch_type(patch, c+1), vertex, 1);
         }
       }
       seen.insert(vertex.index);
@@ -232,10 +232,10 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   }
   boundaries->orderPatches();
   for(int v = 0; v < numBoundaryVertices; v++) {
-    ALE::Two::Mesh::point_type vertex(0, boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
+    ALE::Mesh::point_type vertex(0, boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
 
     for(int c = 0; c < numBoundaryComponents; c++) {
-      boundaries->update(ALE::Two::Mesh::foliation_type::patch_type(patch, c+1), vertex, &boundaryValues[v*numBoundaryComponents+c]);
+      boundaries->update(ALE::Mesh::foliation_type::patch_type(patch, c+1), vertex, &boundaryValues[v*numBoundaryComponents+c]);
     }
   }
 
@@ -243,7 +243,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   if (refineMesh) {
     double refinementLimit = 2.4e4*2.4e4*2.4e4*0.01*0.5;
     bool   interpolate     = true;
-    mesh = ALE::Two::Generator::refine(mesh, refinementLimit, interpolate);
+    mesh = ALE::Generator::refine(mesh, refinementLimit, interpolate);
   }
 
   ierr = PetscViewerCreate(comm, &viewer);
@@ -261,16 +261,16 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 
   ierr = WriteBoundary_PyLith(meshOutputFile, mesh);
 
-  ALE::Obj<ALE::Two::Mesh::field_type> field = mesh->getField("displacement");
-  ALE::Obj<ALE::Two::Mesh::sieve_type::traits::depthSequence> vertices = mesh->getTopology()->depthStratum(0);
+  ALE::Obj<ALE::Mesh::field_type> field = mesh->getField("displacement");
+  ALE::Obj<ALE::Mesh::sieve_type::traits::depthSequence> vertices = mesh->getTopology()->depthStratum(0);
 
   field->setPatch(mesh->getTopology()->leaves(), patch);
   field->setFiberDimensionByDepth(patch, 0, 3);
-  for(ALE::Two::Mesh::sieve_type::traits::depthSequence::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
+  for(ALE::Mesh::sieve_type::traits::depthSequence::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
     int numConstraints = 0;
 
     for(int c = 0; c < numBoundaryComponents; c++) {
-      numConstraints += boundaries->getFiberDimension(ALE::Two::Mesh::foliation_type::patch_type(patch, c+1), *v_itor);
+      numConstraints += boundaries->getFiberDimension(ALE::Mesh::foliation_type::patch_type(patch, c+1), *v_itor);
     }
 
     if (numConstraints > 0) {
@@ -281,17 +281,17 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   field->orderPatches();
   field->createGlobalOrder();
   field->view("Displacement field");
-  ALE::Obj<ALE::Two::Mesh::sieve_type::traits::heightSequence> elements = mesh->getTopology()->heightStratum(0);
-  ALE::Obj<ALE::Two::Mesh::bundle_type> vertexBundle = mesh->getBundle(0);
+  ALE::Obj<ALE::Mesh::sieve_type::traits::heightSequence> elements = mesh->getTopology()->heightStratum(0);
+  ALE::Obj<ALE::Mesh::bundle_type> vertexBundle = mesh->getBundle(0);
   std::string orderName("element");
 
-  for(ALE::Two::Mesh::sieve_type::traits::heightSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); e_iter++) {
+  for(ALE::Mesh::sieve_type::traits::heightSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); e_iter++) {
     // setFiberDimensionByDepth() does not work here since we only want it to apply to the patch cone
     //   What we really need is the depthStratum relative to the patch
-    ALE::Obj<ALE::Two::Mesh::bundle_type::order_type::coneSequence> cone = vertexBundle->getPatch(orderName, *e_iter);
+    ALE::Obj<ALE::Mesh::bundle_type::order_type::coneSequence> cone = vertexBundle->getPatch(orderName, *e_iter);
 
     field->setPatch(orderName, cone, *e_iter);
-    for(ALE::Two::Mesh::bundle_type::order_type::coneSequence::iterator c_iter = cone->begin(); c_iter != cone->end(); ++c_iter) {
+    for(ALE::Mesh::bundle_type::order_type::coneSequence::iterator c_iter = cone->begin(); c_iter != cone->end(); ++c_iter) {
       field->setFiberDimension(orderName, *e_iter, *c_iter, field->getFiberDimension(patch, *c_iter));
     }
   }
@@ -326,7 +326,7 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
     return 0;
   }
 
-  ALE::Two::Mesh *mesh = (ALE::Two::Mesh *) PyCObject_AsVoidPtr(pyMesh);
+  ALE::Mesh *mesh = (ALE::Mesh *) PyCObject_AsVoidPtr(pyMesh);
   const int *offsets = mesh->getField("displacement")->getGlobalOffsets();
   int size = offsets[mesh->commRank()+1] - offsets[mesh->commRank()];
 
@@ -425,6 +425,100 @@ PyObject * pypylith3d_destroyPETScMat(PyObject *, PyObject *args)
   debug
     << journal::at(__HERE__)
     << "Destroyed PETSc Mat"
+    << journal::endl;
+
+  // return Py_None;
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+PetscErrorCode FieldView_Sieve(ALE::Obj<ALE::Mesh>, const std::string&, PetscViewer);
+
+char pypylith3d_outputMesh__doc__[] = "";
+char pypylith3d_outputMesh__name__[] = "outputMesh";
+
+PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
+{
+  PyObject *pyMesh, *pySol;
+  char     *meshBaseFile;
+
+  int ok = PyArg_ParseTuple(args, "sOO:outputMesh", &meshBaseFile, &pyMesh, &pySol);
+  if (!ok) {
+    return 0;
+  }
+
+  ALE::Mesh  *mesh = (ALE::Mesh *) PyCObject_AsVoidPtr(pyMesh);
+  Vec         sol  = (Vec)         PyCObject_AsVoidPtr(pySol);
+  std::string filename(meshBaseFile);
+  PetscViewer viewer;
+  Vec         partition;
+
+  ALE::Obj<ALE::Mesh> m(mesh);
+
+  // Injection Vec in to Field
+  ALE::Obj<ALE::Mesh::field_type> displacement = m->getField("displacement");
+  ALE::Mesh::field_type::patch_type patch;
+  Vec        l;
+  VecScatter injection;
+
+  VecCreateSeqWithArray(mesh->comm(), displacement->getSize(patch), displacement->restrict(patch), &l);
+  PetscObjectQuery((PetscObject) sol, "injection", (PetscObject *) &injection);
+  VecScatterBegin(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
+  VecScatterEnd(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
+  VecDestroy(l);
+
+  // Create complete field by adding BC
+  ALE::Obj<ALE::Mesh::field_type> full_displacement = m->getField("full_displacement");
+  ALE::Obj<ALE::Mesh::field_type::order_type::baseSequence> patches = displacement->getPatches();
+  ALE::Obj<ALE::Mesh::foliation_type> boundaries = m->getBoundaries();
+
+  for(ALE::Mesh::field_type::order_type::baseSequence::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
+    full_displacement->setPatch(displacement->getPatch(*p_iter), *p_iter);
+    full_displacement->setFiberDimensionByDepth(*p_iter, 0, 3);
+  }
+  full_displacement->orderPatches();
+  full_displacement->createGlobalOrder();
+  for(ALE::Mesh::field_type::order_type::baseSequence::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
+    ALE::Obj<ALE::Mesh::field_type::order_type::coneSequence> elements = full_displacement->getPatch(*p_iter);
+
+    for(ALE::Mesh::field_type::order_type::coneSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); ++e_iter) {
+      const double *array = displacement->restrict(*p_iter, *e_iter);
+      double        values[3];
+
+      for(int c = 0; c < 3; c++) {
+        ALE::Mesh::foliation_type::patch_type        bPatch(*p_iter, c+1);
+        const ALE::Mesh::foliation_type::index_type& idx = boundaries->getIndex(bPatch, *e_iter);
+
+        if (idx.index > 0) {
+          values[c] = boundaries->restrict(bPatch, *e_iter)[0];
+        } else {
+          values[c] = array[c];
+        }
+      }
+      full_displacement->update(*p_iter, *e_iter, values);
+    }
+  }
+
+  PetscViewerCreate(mesh->comm(), &viewer);
+  PetscViewerSetType(viewer, PETSC_VIEWER_ASCII);
+  PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_VTK);
+  filename += ".vtk";
+  PetscViewerFileSetName(viewer, filename.c_str());
+  MeshView_Sieve_Newer(m, viewer);
+  FieldView_Sieve(m, "full_displacement", viewer);
+  PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_VTK_CELL);
+  FieldView_Sieve(m, "material", viewer);
+  //FieldView_Sieve(partition, viewer);
+  PetscViewerPopFormat(viewer);
+  PetscViewerDestroy(viewer);
+
+  m.int_allocator.del(m.refCnt);
+  m.refCnt = NULL;
+
+  journal::debug_t debug("pylith3d");
+  debug
+    << journal::at(__HERE__)
+    << "Output PETSc Mesh and Solution"
     << journal::endl;
 
   // return Py_None;
