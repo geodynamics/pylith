@@ -121,7 +121,7 @@ using the <methodname>restrictVector()</methodname> method.
   call VecDestroy(locSol, ierr)
 </programlisting>
 </para>
- 
+
 </chapter>
 
 </book>

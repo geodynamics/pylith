@@ -484,6 +484,7 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
     for(ALE::Mesh::field_type::order_type::coneSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); ++e_iter) {
       const double *array = displacement->restrict(*p_iter, *e_iter);
       double        values[3];
+      int           v = 0;
 
       for(int c = 0; c < 3; c++) {
         ALE::Mesh::foliation_type::patch_type        bPatch(*p_iter, c+1);
@@ -492,7 +493,7 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
         if (idx.index > 0) {
           values[c] = boundaries->restrict(bPatch, *e_iter)[0];
         } else {
-          values[c] = array[c];
+          values[c] = array[v++];
         }
       }
       full_displacement->update(*p_iter, *e_iter, values);
