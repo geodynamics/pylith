@@ -60,6 +60,7 @@ class Application(BaseScript):
         pl3dsetup.meshwrite()
         pl3drun = self.inventory.solver
         pl3drun.fileRoot = self.inventory.scanner.inventory.fileRoot
+        pl3drun.pointerToIndxiel = pl3dsetup.pointerToIndxiel
         pl3drun.mesh = mesh
         pl3drun.initialize(self.inventory.scanner, self.inventory.setup)
         pl3drun.run()

@@ -36,7 +36,7 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,               ! elemfamily
      & nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,               ! elemfamily
-     & ielg,                                                            ! elemnt
+     & ielg,numelv,indxiel,                                             ! elemnt,orig element num
      & prop,nprop,elas_matinit,td_matinit,prestr_matinit,matchg,tminmax,! materl
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
@@ -72,7 +72,7 @@ c... the ielg variable below contains the global element number, while
 c    the local variable ielf contains the element number within a given
 c    family.
 c
-      integer ielg
+      integer ielg,numelv,indxiel(numelv)
       integer nprop,nen,ngauss,nee,numrot,ierr
       logical matchg
       integer iddmat(nstr,nstr)
@@ -138,8 +138,10 @@ cdebug          write(6,*) (dmat(idb,l,ielf),idb=1,nddmat)
      &   getshape,bmatrix,                                              ! bbar
      &   ierr,errstrng)                                                 ! errcod
         if(ierr.ne.izero) return
+        write(6,*) "elas_matinit_cmp_ss_f: numelv,ielgpetsc,ielgnewp",
+     &       numelv,ielgpetsc,indxiel(ielgpetsc+1)-1
         call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz,
-     &   ielgpetsc)
+     &   ielgpetsc,numelv,indxiel)
 c       New Sieve section
 cpetsc        numeq = 0
 cpetsc        do i=1,nee

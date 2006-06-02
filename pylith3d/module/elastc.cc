@@ -40,7 +40,7 @@
 #include <stdio.h>
 #include <string.h>
 
-
+#include <iostream>
 
 // Perform the elastic solution.
 
@@ -101,6 +101,7 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
   PyObject* pyPointerToLmf;
   PyObject* pyPointerToIvfamily;
   PyObject* pyPointerToListArrayNpar;
+  PyObject* pyPointerToIndxiel;
   PyObject* pyPointerToIelno;                 // Traction BC arrays
   PyObject* pyPointerToIside;
   PyObject* pyPointerToIhistry;
@@ -138,7 +139,7 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
   char* ucdOutputRoot;
   int elasticStage, iterateEvent;             // PETSc logging
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:elastc",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:elastc",
 			    &pyA,                              // Sparse matrix arrays
 			    &pyRhs,
 			    &pySol,
@@ -191,6 +192,7 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
 			    &pyPointerToLmf,
 			    &pyPointerToIvfamily,
 			    &pyPointerToListArrayNpar,
+                &pyPointerToIndxiel,
 			    &pyPointerToIelno,                 // Traction BC arrays
 			    &pyPointerToIside,
 			    &pyPointerToIhistry,
@@ -289,6 +291,7 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
   int*  pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
   int*  pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
   int*  pointerToListArrayNpar = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNpar);
+  int*  pointerToIndxiel = (int*) PyCObject_AsVoidPtr(pyPointerToIndxiel);
   int*  pointerToIelno = (int*) PyCObject_AsVoidPtr(pyPointerToIelno);
   int*  pointerToIside = (int*) PyCObject_AsVoidPtr(pyPointerToIside);
   int*  pointerToIhistry = (int*) PyCObject_AsVoidPtr(pyPointerToIhistry);
@@ -322,6 +325,7 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
   int*  pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
   int*  pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
 
+  std::cout << "pypylith3d_elastc: Indxiel[0] = " << pointerToIndxiel[0] << std::endl;
   elastc_f(&A,                                // Sparse matrix arrays
            &rhs,
 	   &sol,
@@ -374,6 +378,7 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
 	   pointerToLmf,
 	   pointerToIvfamily,
 	   pointerToListArrayNpar,
+	   pointerToIndxiel,
 	   pointerToIelno,                    // Traction BC arrays
 	   pointerToIside,
 	   pointerToIhistry,
