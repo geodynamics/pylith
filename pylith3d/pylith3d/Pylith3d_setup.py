@@ -1663,7 +1663,7 @@ class Pylith3d_setup(Component):
             self.asciiOutputFile,
             self.plotOutputFile)
 
-        self.pointerToIndxiel = None
+        #self.pointerToIndxiel = None
 	self.memorySize -= self.numberVolumeElements*self.intSize
 
         # Write material properties

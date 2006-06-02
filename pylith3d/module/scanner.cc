@@ -461,7 +461,7 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   Vec        l;
   VecScatter injection;
 
-  VecCreateSeqWithArray(mesh->comm(), displacement->getSize(patch), displacement->restrict(patch), &l);
+  VecCreateSeqWithArray(PETSC_COMM_SELF, displacement->getSize(patch), displacement->restrict(patch), &l);
   PetscObjectQuery((PetscObject) sol, "injection", (PetscObject *) &injection);
   VecScatterBegin(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
   VecScatterEnd(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);

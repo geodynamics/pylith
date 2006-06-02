@@ -342,6 +342,7 @@ class Pylith3d_run(Component):
                 self.pointerToLmf,
                 self.pointerToIvfamily,
                 self.pointerToListArrayNpar,
+                self.pointerToIndxiel,
                 self.pointerToIelno,
                 self.pointerToIside,
                 self.pointerToIhistry,
