@@ -100,6 +100,7 @@ PyObject * pypylith3d_autoprestr(PyObject *, PyObject *args)
   PyObject* pyPointerToLmf;
   PyObject* pyPointerToIvfamily;
   PyObject* pyPointerToListArrayNpar;
+  PyObject* pyPointerToIelindx;
   PyObject* pyPointerToIelno;                 // Traction BC arrays
   PyObject* pyPointerToIside;
   PyObject* pyPointerToIhistry;
@@ -137,7 +138,7 @@ PyObject * pypylith3d_autoprestr(PyObject *, PyObject *args)
   char* ucdOutputRoot;
   int autoprestrStage, iterateEvent;          // PETSc logging
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:autoprestr",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:autoprestr",
                             &pyA,                             // Sparse matrix arrays
                             &pyRhs,
                             &pySol,
@@ -190,6 +191,7 @@ PyObject * pypylith3d_autoprestr(PyObject *, PyObject *args)
                             &pyPointerToLmf,
                             &pyPointerToIvfamily,
                             &pyPointerToListArrayNpar,
+                            &pyPointerToIelindx,
                             &pyPointerToIelno,                 // Traction BC arrays
                             &pyPointerToIside,
                             &pyPointerToIhistry,
@@ -288,6 +290,7 @@ PyObject * pypylith3d_autoprestr(PyObject *, PyObject *args)
   int*  pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
   int*  pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
   int*  pointerToListArrayNpar = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNpar);
+  int*  pointerToIelindx = (int*) PyCObject_AsVoidPtr(pyPointerToIelindx);
   int*  pointerToIelno = (int*) PyCObject_AsVoidPtr(pyPointerToIelno);
   int*  pointerToIside = (int*) PyCObject_AsVoidPtr(pyPointerToIside);
   int*  pointerToIhistry = (int*) PyCObject_AsVoidPtr(pyPointerToIhistry);
@@ -373,6 +376,7 @@ PyObject * pypylith3d_autoprestr(PyObject *, PyObject *args)
                pointerToLmf,
                pointerToIvfamily,
                pointerToListArrayNpar,
+               pointerToIelindx,
                pointerToIelno,                    // Traction BC arrays
                pointerToIside,
                pointerToIhistry,
