@@ -37,7 +37,7 @@ c
      & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
      & fault,nfault,dfault,tfault,                                      ! split
      & s,stemp,                                                         ! stiff
-     & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,           ! elemnt
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,ielindx,   ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
      & prop,infmatmod,                                                  ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
@@ -84,7 +84,7 @@ c
       integer ibond(*)
       integer idx(*),iwinkx(*),idslp(*),ipslp(*),idhist(*)
       integer nfault(*)
-      integer ien(*),lm(*),lmx(*),lmf(*),ivfamily(*)
+      integer ien(*),lm(*),lmx(*),lmf(*),ivfamily(*),ielindx(*)
       integer ielno(*),iside(*),ihistry(*)
       integer infmatmod(*)
       integer infetype(4)
@@ -324,7 +324,7 @@ cdebug              write(6,*) "reform:",reform
      &           s,stemp,                                               ! stiff
      &           state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,      ! elemnt
      &           nvfamilies,numelv,nstatesz,nstatesz0,nprestrflag,      ! elemnt
-     &           ipstrs,ipauto,                                         ! elemnt
+     &           ipstrs,ipauto,ielindx,                                 ! elemnt
      &           prop,infmatmod,npropsz,tminmax,                        ! materl
      &           gauss,sh,shj,nen,ngauss,nee,                           ! eltype
      &           histry,rtimdat,ntimdat,rgiter,nhist,lastep,            ! timdat
@@ -375,6 +375,7 @@ c
      &         nfault,dfault,tfault,                                    ! fault
      &         s,stemp,                                                 ! stiff
      &         state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,   ! elemnt
+     &         ielindx,                                                 ! elemnt
      &         ielno,iside,ihistry,pres,pdir,                           ! tractn
      &         prop,infmatmod,tminmax,                                  ! materl
      &         gauss,sh,shj,nen,ngauss,nee,nec,                         ! eltype
@@ -403,7 +404,7 @@ cdebug              write(6,*) "reform:",reform
      &           s,stemp,                                               ! stiff
      &           state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,      ! elemnt
      &           nvfamilies,numelv,nstatesz,nstatesz0,nprestrflag,      ! elemnt
-     &           ipstrs,ipauto,                                         ! elemnt
+     &           ipstrs,ipauto,ielindx,                                 ! elemnt
      &           prop,infmatmod,npropsz,tminmax,                        ! materl
      &           gauss,sh,shj,nen,ngauss,nee,                           ! eltype
      &           histry,rtimdat,ntimdat,rgiter,nhist,lastep,            ! timdat
@@ -454,6 +455,7 @@ c
      &         nfault,dfault,tfault,                                    ! fault
      &         s,stemp,                                                 ! stiff
      &         state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,   ! elemnt
+     &         ielindx,                                                 ! elemnt
      &         ielno,iside,ihistry,pres,pdir,                           ! tractn
      &         prop,infmatmod,tminmax,                                  ! materl
      &         gauss,sh,shj,nen,ngauss,nee,nec,                         ! eltype
