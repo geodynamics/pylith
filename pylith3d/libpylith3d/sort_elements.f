@@ -29,8 +29,8 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine sort_elements(ien,mat,infmatmod,ivflist,ivfamily,iens,
-     & ivftmp,indxiel,nen,ngauss,maxvfamilies,nvfamilies,nprestrflag,
-     & numelv,numnp,nstatesz,nstatesz0,npropsz,ierr,errstrng)
+     & ivftmp,indxiel,ielindx,nen,ngauss,maxvfamilies,nvfamilies,
+     & nprestrflag,numelv,numnp,nstatesz,nstatesz0,npropsz,ierr,errstrng)
 c
 c      This routine sorts elements into element families and determines
 c      several sizes.
@@ -96,10 +96,12 @@ c                              the family.
 c        iens(nen,numelv): Sorted version of ien array.  The ien array
 c                          may be deleted after this routine has been
 c                          called.
-c        indxiel(numelv):  Array containing the original element
+c        indxiel(numelv):  Array containing the new element
 c                          numbering.  Once all operations have been
 c                          performed that require the original element
 c                          numbering, this array may be deleted.
+c        ielindx(numelv):  Array containing the original element
+c                          numbering.
 c
 c      Error codes:
 c          0:  No error
@@ -122,6 +124,7 @@ c
       integer ien(nen,numelv),mat(numelv),infmatmod(6,nmatmodmax)
       integer ivflist(3,maxvfamilies),ivfamily(5,nvfamilies)
       integer iens(nen,numelv),ivftmp(nvfamilies),indxiel(numelv)
+      integer ielindx(numelv)
       character errstrng*(*)
 c
 c...  local variables
@@ -199,8 +202,11 @@ c     array for that family
 c
         iloc=ivftmp(ifam)
         indxiel(i)=iloc
+        ielindx(iloc)=i
         call iquate(iens(1,iloc),ien(1,i),nen)
         ivftmp(ifam)=ivftmp(ifam)+ione
+cdebug        write(6,*) "i,indxiel,iens:",i,indxiel(i),
+cdebug     &   (iens(idb,iloc),idb=1,nen)
       end do
 c
       return
