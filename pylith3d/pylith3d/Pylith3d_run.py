@@ -201,8 +201,8 @@ class Pylith3d_run(Component):
         if self.analysisType == "elasticSolution" or self.analysisType == "fullSolution":
             if self.prestressAutoComputeInt == 1:
                 pylith3d.autoprestr(
-                    self.A,self.rhs,self.sol,
-                    self.pointerToBextern,
+                    self.A,self.rhs,self.sol,                      # sparse
+                    self.pointerToBextern,                         # force
                     self.pointerToBtraction,
                     self.pointerToBgravity,
                     self.pointerToBconcForce,
@@ -214,7 +214,7 @@ class Pylith3d_run(Component):
                     self.pointerToDprev,
                     self.pointerToListArrayNforce,
                     self.pointerToListArrayGrav,
-                    self.pointerToX,
+                    self.pointerToX,                               # global
                     self.pointerToD,
                     self.pointerToDeld,
                     self.pointerToDcur,
@@ -223,9 +223,9 @@ class Pylith3d_run(Component):
                     self.pointerToWink,
                     self.pointerToListArrayNsysdat,
                     self.pointerToListArrayIddmat,
-                    self.pointerToIbond,
+                    self.pointerToIbond,                           # BC
                     self.pointerToBond,
-                    self.pointerToDx,
+                    self.pointerToDx,                              # slip
                     self.pointerToDeldx,
                     self.pointerToDxcur,
                     self.pointerToDiforc,
@@ -235,13 +235,13 @@ class Pylith3d_run(Component):
                     self.pointerToIdslp,
                     self.pointerToIpslp,
                     self.pointerToIdhist,
-                    self.pointerToFault,
+                    self.pointerToFault,                           # split
                     self.pointerToNfault,
                     self.pointerToDfault,
                     self.pointerToTfault,
-                    self.pointerToS,
+                    self.pointerToS,                               # stiff
                     self.pointerToStemp,
-                    self.pointerToState,
+                    self.pointerToState,                           # element
                     self.pointerToDstate,
                     self.pointerToState0,
                     self.pointerToDmat,
@@ -251,18 +251,19 @@ class Pylith3d_run(Component):
                     self.pointerToLmf,
                     self.pointerToIvfamily,
                     self.pointerToListArrayNpar,
-                    self.pointerToIelno,
+                    self.pointerToIelindx,
+                    self.pointerToIelno,                           # traction
                     self.pointerToIside,
                     self.pointerToIhistry,
                     self.pointerToPres,
                     self.pointerToPdir,
-                    self.pointerToListArrayPropertyList,
+                    self.pointerToListArrayPropertyList,           # material
                     self.pointerToMaterialModelInfo,
-                    self.pointerToGauss,
+                    self.pointerToGauss,                           # eltype
                     self.pointerToSh,
                     self.pointerToShj,
                     self.pointerToListArrayElementTypeInfo,
-                    self.pointerToHistry,
+                    self.pointerToHistry,                          # timdat
                     self.pointerToListArrayRtimdat,
                     self.pointerToListArrayNtimdat,
                     self.pointerToListArrayNvisdat,
@@ -276,24 +277,24 @@ class Pylith3d_run(Component):
                     self.pointerToFtol,
                     self.pointerToEtol,
                     self.pointerToItmax,
-                    self.pointerToListArrayRgiter,
-                    self.pointerToSkew,
-                    self.pointerToListArrayNcodat,
+                    self.pointerToListArrayRgiter,                 # stresscmp
+                    self.pointerToSkew,                            # skew
+                    self.pointerToListArrayNcodat,                 # ioinfo
                     self.pointerToListArrayNunits,
                     self.pointerToListArrayNprint,
                     self.pointerToIstatout,
                     self.pointerToNstatout,
-                    self.asciiOutputFile,
+                    self.asciiOutputFile,                          # files
                     self.plotOutputFile,
                     self.ucdOutputRoot,
-                    self.autoprestrStage,
+                    self.autoprestrStage,                          # PETSc logging
                     self.iterateEvent)
 
             # Perform elastic solution, if requested.
             
             pylith3d.elastc(
-                self.A,self.rhs,self.sol,
-                self.pointerToBextern,
+                self.A,self.rhs,self.sol,                          # sparse
+                self.pointerToBextern,                             # force
                 self.pointerToBtraction,
                 self.pointerToBgravity,
                 self.pointerToBconcForce,
@@ -305,7 +306,7 @@ class Pylith3d_run(Component):
                 self.pointerToDprev,
                 self.pointerToListArrayNforce,
                 self.pointerToListArrayGrav,
-                self.pointerToX,
+                self.pointerToX,                                   # global
                 self.pointerToD,
                 self.pointerToDeld,
                 self.pointerToDcur,
@@ -314,9 +315,9 @@ class Pylith3d_run(Component):
                 self.pointerToWink,
                 self.pointerToListArrayNsysdat,
                 self.pointerToListArrayIddmat,
-                self.pointerToIbond,
+                self.pointerToIbond,                               # BC
                 self.pointerToBond,
-                self.pointerToDx,
+                self.pointerToDx,                                  # slip
                 self.pointerToDeldx,
                 self.pointerToDxcur,
                 self.pointerToDiforc,
@@ -326,13 +327,13 @@ class Pylith3d_run(Component):
                 self.pointerToIdslp,
                 self.pointerToIpslp,
                 self.pointerToIdhist,
-                self.pointerToFault,
+                self.pointerToFault,                               # fault
                 self.pointerToNfault,
                 self.pointerToDfault,
                 self.pointerToTfault,
-                self.pointerToS,
+                self.pointerToS,                                   # stiff
                 self.pointerToStemp,
-                self.pointerToState,
+                self.pointerToState,                               # element
                 self.pointerToDstate,
                 self.pointerToState0,
                 self.pointerToDmat,
@@ -342,19 +343,19 @@ class Pylith3d_run(Component):
                 self.pointerToLmf,
                 self.pointerToIvfamily,
                 self.pointerToListArrayNpar,
-                self.pointerToIndxiel,
-                self.pointerToIelno,
+                self.pointerToIelindx,
+                self.pointerToIelno,                               # traction
                 self.pointerToIside,
                 self.pointerToIhistry,
                 self.pointerToPres,
                 self.pointerToPdir,
-                self.pointerToListArrayPropertyList,
+                self.pointerToListArrayPropertyList,               # material
                 self.pointerToMaterialModelInfo,
-                self.pointerToGauss,
+                self.pointerToGauss,                               # eltype
                 self.pointerToSh,
                 self.pointerToShj,
                 self.pointerToListArrayElementTypeInfo,
-                self.pointerToHistry,
+                self.pointerToHistry,                              # timdat
                 self.pointerToListArrayRtimdat,
                 self.pointerToListArrayNtimdat,
                 self.pointerToListArrayNvisdat,
@@ -368,17 +369,17 @@ class Pylith3d_run(Component):
                 self.pointerToFtol,
                 self.pointerToEtol,
                 self.pointerToItmax,
-                self.pointerToListArrayRgiter,
-                self.pointerToSkew,
-                self.pointerToListArrayNcodat,
+                self.pointerToListArrayRgiter,                     # stresscmp
+                self.pointerToSkew,                                # skew
+                self.pointerToListArrayNcodat,                     # ioinfo
                 self.pointerToListArrayNunits,
                 self.pointerToListArrayNprint,
                 self.pointerToIstatout,
                 self.pointerToNstatout,
-                self.asciiOutputFile,
+                self.asciiOutputFile,                              # files
                 self.plotOutputFile,
                 self.ucdOutputRoot,
-                self.elasticStage,
+                self.elasticStage,                                 # PETSc logging
                 self.iterateEvent)
 
             pylith3d.outputMesh(self.fileRoot, self.mesh, self.sol)
@@ -387,8 +388,8 @@ class Pylith3d_run(Component):
 
         if self.analysisType == "fullSolution" and self.numberTimeStepGroups > 1:
             pylith3d.viscos(
-                self.A,self.rhs,self.sol,
-                self.pointerToBextern,
+                self.A,self.rhs,self.sol,                          # sparse
+                self.pointerToBextern,                             # force
                 self.pointerToBtraction,
                 self.pointerToBgravity,
                 self.pointerToBconcForce,
@@ -400,7 +401,7 @@ class Pylith3d_run(Component):
                 self.pointerToDprev,
                 self.pointerToListArrayNforce,
                 self.pointerToListArrayGrav,
-                self.pointerToX,
+                self.pointerToX,                                   # global
                 self.pointerToD,
                 self.pointerToDeld,
                 self.pointerToDcur,
@@ -409,9 +410,9 @@ class Pylith3d_run(Component):
                 self.pointerToWink,
                 self.pointerToListArrayNsysdat,
                 self.pointerToListArrayIddmat,
-                self.pointerToIbond,
+                self.pointerToIbond,                               # BC
                 self.pointerToBond,
-                self.pointerToDx,
+                self.pointerToDx,                                  # slip
                 self.pointerToDeldx,
                 self.pointerToDxcur,
                 self.pointerToDiforc,
@@ -421,13 +422,13 @@ class Pylith3d_run(Component):
                 self.pointerToIdslp,
                 self.pointerToIpslp,
                 self.pointerToIdhist,
-                self.pointerToFault,
+                self.pointerToFault,                               # fault
                 self.pointerToNfault,
                 self.pointerToDfault,
                 self.pointerToTfault,
-                self.pointerToS,
+                self.pointerToS,                                   # stiff
                 self.pointerToStemp,
-                self.pointerToState,
+                self.pointerToState,                               # element
                 self.pointerToDstate,
                 self.pointerToState0,
                 self.pointerToDmat,
@@ -437,18 +438,19 @@ class Pylith3d_run(Component):
                 self.pointerToLmf,
                 self.pointerToIvfamily,
                 self.pointerToListArrayNpar,
-                self.pointerToIelno,
+                self.pointerToIelindx,
+                self.pointerToIelno,                               # traction
                 self.pointerToIside,
                 self.pointerToIhistry,
                 self.pointerToPres,
                 self.pointerToPdir,
-                self.pointerToListArrayPropertyList,
+                self.pointerToListArrayPropertyList,               # material
                 self.pointerToMaterialModelInfo,
-                self.pointerToGauss,
+                self.pointerToGauss,                               # eltype
                 self.pointerToSh,
                 self.pointerToShj,
                 self.pointerToListArrayElementTypeInfo,
-                self.pointerToHistry,
+                self.pointerToHistry,                              # timdat
                 self.pointerToListArrayRtimdat,
                 self.pointerToListArrayNtimdat,
                 self.pointerToListArrayNvisdat,
@@ -462,18 +464,18 @@ class Pylith3d_run(Component):
                 self.pointerToFtol,
                 self.pointerToEtol,
                 self.pointerToItmax,
-                self.pointerToListArrayRgiter,
-                self.pointerToSkew,
-                self.pointerToIprint,
+                self.pointerToListArrayRgiter,                     # stresscmp
+                self.pointerToSkew,                                # skew
+                self.pointerToIprint,                              # ioinfo
                 self.pointerToListArrayNcodat,
                 self.pointerToListArrayNunits,
                 self.pointerToListArrayNprint,
                 self.pointerToIstatout,
                 self.pointerToNstatout,
-                self.asciiOutputFile,
+                self.asciiOutputFile,                              # files
                 self.plotOutputFile,
                 self.ucdOutputRoot,
-                self.viscousStage,
+                self.viscousStage,                                 # PETSc logging
                 self.iterateEvent)
         pylith3d.destroyPETScMat(self.A,self.rhs,self.sol)
         pylith3d.PetscFinalize()
