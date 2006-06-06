@@ -91,11 +91,13 @@ c
      &    nstr)
 c*        call dspmv("u",nstr,det(l),dmat(1,l),b,ione,zero,db,ione)
         call dgemm("t","n",nee,nee,nstr,one,b,nstr,db,nstr,one,s,nee)
-cdebug        write(6,*) "det:",det(l)
-cdebug        do idb=1,nee
-cdebug          write(6,*) "b:",(b(jdb,idb),jdb=1,nstr)
-cdebug        end do
-cdebug        write(6,*) "dmat:",(dmat(jdb,l),jdb=1,nddmat)
+cdebug        if(iel.eq.8) then
+cdebug          write(6,*) "det:",det(l)
+cdebug          do idb=1,nee
+cdebug            write(6,*) "b:",(b(jdb,idb),jdb=1,nstr)
+cdebug          end do
+cdebug          write(6,*) "dmat:",(dmat(jdb,l),jdb=1,nddmat)
+cdebug        end if
       end do
 cdebug      do idb=1,nee
 cdebug        write(6,*) "idb,s(idb,idb):",idb,s(idb,idb)
