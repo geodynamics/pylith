@@ -56,6 +56,7 @@ PyObject * pypylith3d_sort_elements(PyObject *, PyObject *args)
   PyObject* pyPointerToIens;
   PyObject* pyPointerToIvftmp;
   PyObject* pyPointerToIndxiel;
+  PyObject* pyPointerToIelindx;
   int numberVolumeElementNodes;
   int numberVolumeElementGaussPoints;
   int maxNumberVolumeElementFamilies;
@@ -64,7 +65,7 @@ PyObject * pypylith3d_sort_elements(PyObject *, PyObject *args)
   int numberVolumeElements;
   int numberNodes;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOiiiiiii:sort_elements",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOiiiiiii:sort_elements",
 			    &pyPointerToIen,
 			    &pyPointerToMat,
 			    &pyPointerToMaterialModelInfo,
@@ -73,6 +74,7 @@ PyObject * pypylith3d_sort_elements(PyObject *, PyObject *args)
 			    &pyPointerToIens,
 			    &pyPointerToIvftmp,
 			    &pyPointerToIndxiel,
+			    &pyPointerToIelindx,
 			    &numberVolumeElementNodes,
 			    &numberVolumeElementGaussPoints,
 			    &maxNumberVolumeElementFamilies,
@@ -96,6 +98,7 @@ PyObject * pypylith3d_sort_elements(PyObject *, PyObject *args)
   int* pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
   int* pointerToIvftmp = (int*) PyCObject_AsVoidPtr(pyPointerToIvftmp);
   int* pointerToIndxiel = (int*) PyCObject_AsVoidPtr(pyPointerToIndxiel);
+  int* pointerToIelindx = (int*) PyCObject_AsVoidPtr(pyPointerToIelindx);
   int stateSize = 0;
   int state0Size = 0;
   int propertySize = 0;
@@ -108,6 +111,7 @@ PyObject * pypylith3d_sort_elements(PyObject *, PyObject *args)
 		  pointerToIens,
 		  pointerToIvftmp,
 		  pointerToIndxiel,
+		  pointerToIelindx,
 		  &numberVolumeElementNodes,
 		  &numberVolumeElementGaussPoints,
 		  &maxNumberVolumeElementFamilies,
