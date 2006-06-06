@@ -799,6 +799,7 @@ extern "C" {
 		       int *,
 		       int *,
 		       int *,
+		       int *,
 		       char *,
 		       size_t);
 
