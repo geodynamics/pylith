@@ -921,8 +921,9 @@ class Pylith3d_setup(Component):
         self.propertySize = 0
 
         # Sort elements into families.  The sorted elements are contained
-        # in array Iens, and the index array for the original ordering is
-        # Indxiel.  The original element node array (Ien) and the associated
+        # in array Iens, and the index array for the new ordering is
+        # Indxiel.  The index array for the original ordering is Ielindx.
+        # The original element node array (Ien) and the associated
         # material type array (Mat) may be deallocated after sorting.
         self.pointerToIens = pylith3d.allocateInt(
             self.numberVolumeElementNodes*self.numberVolumeElements)
@@ -940,6 +941,10 @@ class Pylith3d_setup(Component):
             self.numberVolumeElements)
 	self.memorySize += self.numberVolumeElements*self.intSize
 
+        self.pointerToIelindx = pylith3d.allocateInt(
+            self.numberVolumeElements)
+	self.memorySize += self.numberVolumeElements*self.intSize
+
 	self.elementSizeInfo = pylith3d.sort_elements(
             self.pointerToIen,
             self.pointerToMat,
@@ -949,6 +954,7 @@ class Pylith3d_setup(Component):
             self.pointerToIens,
             self.pointerToIvftmp,
             self.pointerToIndxiel,
+            self.pointerToIelindx,
             self.numberVolumeElementNodes,
             self.numberVolumeElementGaussPoints,
             self.maxNumberVolumeElementFamilies,
@@ -1663,7 +1669,7 @@ class Pylith3d_setup(Component):
             self.asciiOutputFile,
             self.plotOutputFile)
 
-        #self.pointerToIndxiel = None
+        self.pointerToIndxiel = None
 	self.memorySize -= self.numberVolumeElements*self.intSize
 
         # Write material properties
