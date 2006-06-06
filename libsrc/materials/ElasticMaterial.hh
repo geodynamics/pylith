@@ -68,7 +68,7 @@ public :
    *
    * @param pDB Pointer to database.
    */
-  void parametersDB(const spatialdata::spatialdb::SpatialDB* pDB);
+  void parametersDB(spatialdata::spatialdb::SpatialDB* pDB);
 
   /** Get inertia at points.
    *

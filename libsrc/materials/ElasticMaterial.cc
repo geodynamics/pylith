@@ -14,7 +14,7 @@
 
 #include "ElasticMaterial.hh" // implementation of object methods
 
-#include "spatialdata/spatialdb/SpatialDB.h" // USES SpatialDB
+#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include <assert.h> // USES assert()
 
@@ -47,7 +47,7 @@ pylith::materials::ElasticMaterial::ElasticMaterial(const ElasticMaterial& m) :
 // Set database for material parameters.
 void
 pylith::materials::ElasticMaterial::parametersDB(
-                            const spatialdata::spatialdb::SpatialDB* pDB)
+                            spatialdata::spatialdb::SpatialDB* pDB)
 { // parametersDB
   _pDB = pDB;
 } // parametersDB
