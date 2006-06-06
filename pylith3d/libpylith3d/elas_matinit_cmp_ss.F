@@ -36,7 +36,7 @@ c
      & s,stemp,                                                         ! stiff
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,               ! elemfamily
      & nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,               ! elemfamily
-     & ielg,numelv,indxiel,                                             ! elemnt,orig element num
+     & ielg,numelv,ielindx,                                             ! elemnt,orig element num
      & prop,nprop,elas_matinit,td_matinit,prestr_matinit,matchg,tminmax,! materl
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
@@ -72,7 +72,7 @@ c... the ielg variable below contains the global element number, while
 c    the local variable ielf contains the element number within a given
 c    family.
 c
-      integer ielg,numelv,indxiel(numelv)
+      integer ielg,numelv,ielindx(numelv)
       integer nprop,nen,ngauss,nee,numrot,ierr
       logical matchg
       integer iddmat(nstr,nstr)
@@ -112,7 +112,7 @@ c
       include "ntimdat_def.inc"
       include "rgiter_def.inc"
 c
-cdebug      write(6,*) "Hello from elas_matinit_cmp_ss_f!"
+      write(6,*) "Hello from elas_matinit_cmp_ss_f!"
 c
       tminmax=big
 c
@@ -126,9 +126,12 @@ c
         do l=1,ngauss
           call elas_matinit(dmat(1,l,ielf),prop,iddmat,nprop,ierr,
      &     errstrng)
-cdebug          write(6,*) "ielf,ielg,l,dmat:",ielf,ielg,l
-cdebug          write(6,*) (dmat(idb,l,ielf),idb=1,nddmat)
+cdebug          if(ielg.eq.8) then
+cdebug            write(6,*) "ielf,ielg,l,dmat:",ielf,ielg,l
+cdebug            write(6,*) (dmat(idb,l,ielf),idb=1,nddmat)
+cdebug          end if
         end do
+        write(6,*) "ielg:",ielg
         call formes_ss(
      &   x,numnp,iddmat,                                                ! global
      &   s,stemp,                                                       ! stiff
@@ -139,9 +142,9 @@ cdebug          write(6,*) (dmat(idb,l,ielf),idb=1,nddmat)
      &   ierr,errstrng)                                                 ! errcod
         if(ierr.ne.izero) return
         write(6,*) "elas_matinit_cmp_ss_f: numelv,ielgpetsc,ielgnewp",
-     &       numelv,ielgpetsc,indxiel(ielgpetsc+1)-1
+     &       numelv,ielgpetsc,ielindx(ielgpetsc+1)-1
         call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz,
-     &   ielgpetsc,numelv,indxiel)
+     &   ielgpetsc,numelv,ielindx)
 c       New Sieve section
 cpetsc        numeq = 0
 cpetsc        do i=1,nee
