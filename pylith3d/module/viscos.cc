@@ -328,7 +328,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
   int*  pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
 
 
-  viscos_f(&A,                                // Sparse matrix arrays
+  viscos_f(&A,                            // 1: Sparse matrix arrays
 	   &rhs,
 	   &sol,
 	   pointerToBextern,                  // Force vectors
@@ -337,7 +337,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 	   pointerToBconcForce,
 	   pointerToBintern,
 	   pointerToBresid,
-	   pointerToBwink,
+	   pointerToBwink,                    // 10
 	   pointerToBwinkx,
 	   pointerToDispVec,
 	   pointerToDprev,
@@ -347,7 +347,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 	   pointerToD,
 	   pointerToDeld,
 	   pointerToDcur,
-	   pointerToId,
+	   pointerToId,                       // 20
 	   pointerToIwink,
 	   pointerToWink,
 	   pointerToListArrayNsysdat,
@@ -357,7 +357,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 	   pointerToDx,                       // Slippery node arrays
 	   pointerToDeldx,
 	   pointerToDxcur,
-	   pointerToDiforc,
+	   pointerToDiforc,                   // 30
 	   pointerToIdx,
 	   pointerToIwinkx,
 	   pointerToWinkx,
@@ -367,7 +367,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 	   pointerToFault,                    // Split node arrays
 	   pointerToNfault,
 	   pointerToDfault,
-	   pointerToTfault,
+	   pointerToTfault,                   // 40
 	   pointerToS,                        // Local stiffness matrix arrays
 	   pointerToStemp,
 	   pointerToState,                    // Element arrays
@@ -377,7 +377,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 	   pointerToIen,
 	   pointerToLm,
 	   pointerToLmx,
-	   pointerToLmf,
+	   pointerToLmf,                      // 50
 	   pointerToIvfamily,
 	   pointerToListArrayNpar,
 	   pointerToIelindx,
@@ -387,7 +387,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 	   pointerToPres,
 	   pointerToPdir,
 	   pointerToListArrayPropertyList,    // Material property arrays
-	   pointerToMaterialModelInfo,
+	   pointerToMaterialModelInfo,        // 60
 	   pointerToGauss,                    // Element type arrays
 	   pointerToSh,
 	   pointerToShj,
@@ -397,7 +397,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 	   pointerToListArrayNtimdat,
 	   pointerToListArrayNvisdat,
 	   pointerToMaxstp,
-	   pointerToDelt,
+	   pointerToDelt,                     // 70
 	   pointerToAlfa,
 	   pointerToMaxit,
 	   pointerToNtdinit,
@@ -407,7 +407,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 	   pointerToEtol,
 	   pointerToItmax,
 	   pointerToListArrayRgiter,          // Iterative solution information
-	   pointerToSkew,                     // Skew rotation information
+	   pointerToSkew,                     // 80: Skew rotation information
 	   pointerToIprint,                   // Input/output information
 	   pointerToListArrayNcodat,
 	   pointerToListArrayNunits,
@@ -417,8 +417,8 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 	   asciiOutputFile,                   // Output file names
 	   plotOutputFile,
 	   ucdOutputRoot,
-           &viscousStage,
-           &iterateEvent,
+	   &viscousStage,                     // 90: PETSC logging
+	   &iterateEvent,
 	   &errorcode,                        // Error codes
 	   errorstring,
 	   strlen(asciiOutputFile),           // String lengths

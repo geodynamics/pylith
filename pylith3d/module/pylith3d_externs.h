@@ -816,7 +816,7 @@ extern "C" {
 
   void try_binio_f(int *, int *, char *, size_t);
 
-  void viscos_f(Mat *,             // sparse
+  void viscos_f(Mat *,     // sparse
 		Vec *,
 		Vec *,
 		double *,          // force
@@ -825,7 +825,7 @@ extern "C" {
 		double *,
 		double *,
 		double *,
-		double *,
+		double *,          // 10
 		double *,
 		double *,
 		double *,
@@ -835,7 +835,7 @@ extern "C" {
 		double *,
 		double *,
 		double *,
-		int *,
+		int *,             // 20
 		int *,
 		double *,
 		int *,
@@ -845,7 +845,7 @@ extern "C" {
 		double *,          // slip
 		double *,
 		double *,
-		double *,
+		double *,          // 30
 		int *,
 		int *,
 		double *,
@@ -855,7 +855,7 @@ extern "C" {
 		double *,          // split
 		int *,
 		double *,
-		double *,
+        double *,          // 40
 		double *,          // stiff
 		double *,
 		double *,          // element
@@ -865,8 +865,7 @@ extern "C" {
 		int *,
 		int *,
 		int *,
-		int *,
-		int *,
+		int *,             // 50
 		int *,
 		int *,
 		int *,
@@ -876,7 +875,7 @@ extern "C" {
 		double *,
 		double *,
 		double *,          // material
-		int *,
+		int *,             // 60
 		double *,          // element type
 		double *,
 		double *,
@@ -886,7 +885,7 @@ extern "C" {
 		int *,
 		int *,
 		int *,
-		double *,
+		double *,          // 70
 		double *,
 		int *,
 		int *,
@@ -896,7 +895,7 @@ extern "C" {
 		double *,
 		int *,
 		double *,          // iterations
-		double *,          // skew
+		double *,          // 80: skew
 		int *,             // i/o info
 		int *,
 		int *,
@@ -906,11 +905,11 @@ extern "C" {
 		char *,            // files
 		char *,
 		char *,
-                int *,             // PETSC logging
-                int *,
+		int *,             // 90: PETSC logging
+		int *,
 		int *,             // error codes
 		char *,
-		size_t,               // string lengths
+		size_t,            // string lengths
 		size_t,
 		size_t,
 		size_t);
