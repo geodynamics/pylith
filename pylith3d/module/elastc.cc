@@ -192,7 +192,7 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
 			    &pyPointerToLmf,
 			    &pyPointerToIvfamily,
 			    &pyPointerToListArrayNpar,
-                            &pyPointerToIelindx,
+			    &pyPointerToIelindx,
 			    &pyPointerToIelno,                 // Traction BC arrays
 			    &pyPointerToIside,
 			    &pyPointerToIhistry,
@@ -325,7 +325,6 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
   int*  pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
   int*  pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
 
-  std::cout << "pypylith3d_elastc: Indxiel[0] = " << pointerToIndxiel[0] << std::endl;
   elastc_f(&A,                                // Sparse matrix arrays
            &rhs,
 	   &sol,

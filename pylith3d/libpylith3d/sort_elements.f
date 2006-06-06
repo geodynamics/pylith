@@ -30,7 +30,8 @@ c
 c
       subroutine sort_elements(ien,mat,infmatmod,ivflist,ivfamily,iens,
      & ivftmp,indxiel,ielindx,nen,ngauss,maxvfamilies,nvfamilies,
-     & nprestrflag,numelv,numnp,nstatesz,nstatesz0,npropsz,ierr,errstrng)
+     & nprestrflag,numelv,numnp,nstatesz,nstatesz0,npropsz,ierr,
+     & errstrng)
 c
 c      This routine sorts elements into element families and determines
 c      several sizes.
