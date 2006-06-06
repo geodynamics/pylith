@@ -35,7 +35,7 @@ c
      & tfault,numfn,                                                    ! fault
      & s,stemp,                                                         ! stiff
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies,     ! elemnt
-     & numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,indxiel,     ! elemnt
+     & numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,ielindx,     ! elemnt
      & prop,infmatmod,npropsz,tminmax,                                  ! materl
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & histry,rtimdat,ntimdat,rgiter,nhist,lastep,matinit_cmp,          ! timdat
@@ -73,7 +73,7 @@ c
       integer numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto
       integer npropsz,nen,ngauss,nee,nhist,lastep,numrot,ierr
       integer iwink(2,nwink),iddmat(nstr,nstr),iwinkx(2,nwinkx)
-      integer ien(nen,numelv),indxiel(numelv)
+      integer ien(nen,numelv),ielindx(numelv)
       integer lm(ndof*nen,numelv),lmx(ndof*nen,numelv),lmf(nen,numelv)
       integer ivfamily(5,nvfamilies)
       integer infmatmod(6,nmatmodmax)
@@ -147,7 +147,7 @@ c
         matchg=.false.
         call dcopy(nprop,prop(indprop),ione,ptmp,ione)
         write(6,*) "matinit_drv_f: numelv,ielg,ielgnew",
-     &       numelv,ielg,indxiel(ielg)
+     &       numelv,ielg,ielindx(ielg)
         if(matmodel.eq.1) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse
@@ -158,7 +158,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_1,td_matinit_1,prestr_mat_1,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -176,7 +176,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_2,td_matinit_2,prestr_mat_2,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -194,7 +194,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_3,td_matinit_3,prestr_mat_3,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -212,7 +212,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_4,td_matinit_4,prestr_mat_4,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -230,7 +230,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_5,td_matinit_5,prestr_mat_5,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -248,7 +248,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_6,td_matinit_6,prestr_mat_6,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -266,7 +266,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_7,td_matinit_7,prestr_mat_7,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -284,7 +284,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_8,td_matinit_8,prestr_mat_8,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -302,7 +302,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_9,td_matinit_9,prestr_mat_9,matchg,      ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -320,7 +320,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_10,td_matinit_10,prestr_mat_10,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -338,7 +338,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_11,td_matinit_11,prestr_mat_11,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -356,7 +356,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_12,td_matinit_12,prestr_mat_12,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -374,7 +374,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_13,td_matinit_13,prestr_mat_13,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -392,7 +392,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_14,td_matinit_14,prestr_mat_14,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -410,7 +410,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_15,td_matinit_15,prestr_mat_15,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -428,7 +428,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_16,td_matinit_16,prestr_mat_16,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -446,7 +446,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_17,td_matinit_17,prestr_mat_17,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -464,7 +464,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_18,td_matinit_18,prestr_mat_18,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -482,7 +482,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_19,td_matinit_19,prestr_mat_19,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
@@ -500,7 +500,7 @@ c
      &     state(indstate),dstate(indstate),state0(indstate0),          ! elemfamily
      &     dmat(1,ielg),ien(1,ielg),lm(1,ielg),lmx(1,ielg),lmf(1,ielg), ! elemfamily
      &     nelfamily,nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states, ! elemfamily
-     &     ielg,numelv,indxiel,                                         ! elemnt,orig element num
+     &     ielg,numelv,ielindx,                                         ! elemnt,orig element num
      &     ptmp,nprop,elas_mat_20,td_matinit_20,prestr_mat_20,matchg,   ! materl
      &     tminmax,                                                     ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
