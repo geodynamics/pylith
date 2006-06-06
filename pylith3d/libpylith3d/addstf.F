@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine addstf(A,s,stemp,lm,lmx,nee,numsn,nnz,ielgpetsc,
-     &     numelv,indxiel)
+     &     numelv,ielindx)
 c
 c...  subroutine to add local stiffness matrix to global matrix, where
 c     the global matrix is stored in modified sparse row (MSR) format.
@@ -57,7 +57,7 @@ c
       integer nee,numsn,nnz
       integer lm(nee),lmx(nee)
       double precision s(neemax*neemax),stemp(neemax*neemax)
-      integer ielgpetsc,numelv,indxiel(numelv),ielgnewp
+      integer ielgpetsc,numelv,ielindx(numelv),ielgnewp
 c
 c...  intrinsic functions
 c
@@ -100,7 +100,7 @@ c     New Sieve section
           k = k + 1
         end if
       end do
-      ielgnewp = indxiel(ielgpetsc + 1) - 1
+      ielgnewp = ielindx(ielgpetsc + 1) - 1
       write(6,*) "addstf_f: ielgpetsc --> ielgnewp",ielgpetsc,ielgnewp
       call assembleMatrix(A, ielgnewp, stemp, ADD_VALUES, ierr)
 cpetsc      call MatSetValues(A, nee, lmp, nee, lmp, s, ADD_VALUES, ierr)
