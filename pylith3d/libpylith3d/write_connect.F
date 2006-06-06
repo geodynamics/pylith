@@ -66,7 +66,7 @@ c
 c
 c...  local variables
 c
-      integer ielg,ifam,nelfamily,matmod,ielf,ielgprev,j,npage
+      integer ielg,ifam,nelfamily,matmod,ielf,ielgreord,j,npage
 cdebug      integer idb,jdb
 c
 cdebug      write(6,*) "Hello from write_connect_f!"
@@ -84,8 +84,8 @@ c
           matmod=ivfamily(2,ifam)
           do ielf=1,nelfamily
             ielg=ielg+ione
-            ielgprev=indxiel(ielg)
-            write(kp,1000) ielg,ielgprev,matmod,(iens(j,ielg),j=1,nen)
+            ielgreord=indxiel(ielg)
+            write(kp,1000) ielg,ielgreord,matmod,(iens(j,ielg),j=1,nen)
           end do
         end do
         close(kp)
@@ -112,12 +112,12 @@ c
           matmod=ivfamily(2,ifam)
           do ielf=1,nelfamily
             ielg=ielg+ione
-            ielgprev=indxiel(ielg)
+            ielgreord=indxiel(ielg)
             if(ielg.eq.ione.or.mod(ielg,npage).eq.izero) then
               write(kw,2000)(head(j),j,j=1,nen)
               write(kw,2500)
             end if
-            write(kw,3000) ielg,ielgprev,matmod,ietypev,ngauss,
+            write(kw,3000) ielg,ielgreord,matmod,ietypev,ngauss,
      &       (iens(j,ielg),j=1,nen)
           end do
         end do
@@ -141,8 +141,10 @@ c
 1000  format(30i7)
 2000  format(1x,///,
      x          ' e l e m e n t  d a t a ',//,5x,
-     x          ' element    element    material  ',20(a4,i2,4x))
-2500  format(5x,' reordered  initial     model    ',/)
+     x          ' element     element     material   element   gauss',
+     x          20(a4,i2,4x))
+2500  format(5x,' initial     reordered    model      type     points',
+     x          /)
 3000  format(6x,i7,25(5x,i7))
 4000  format(//)
 c
