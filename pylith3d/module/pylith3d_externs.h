@@ -168,6 +168,7 @@ extern "C" {
 		    int *,
 		    int *,
 		    int *,
+		    int *,
 		    int *,             // traction
 		    int *,
 		    int *,
@@ -816,6 +817,8 @@ extern "C" {
   void try_binio_f(int *, int *, char *, size_t);
 
   void viscos_f(Mat *,             // sparse
+		Vec *,
+		Vec *,
 		double *,          // force
 		double *,
 		double *,
@@ -859,6 +862,8 @@ extern "C" {
 		double *,
 		double *,
 		double *,
+		int *,
+		int *,
 		int *,
 		int *,
 		int *,
