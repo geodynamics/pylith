@@ -37,7 +37,7 @@ c
      & dx,deldx,dxcur,diforc,idx,iwinkx,winkx,idslp,ipslp,idhist,       ! slip
      & fault,nfault,dfault,tfault,                                      ! fault
      & s,stemp,                                                         ! stiff
-     & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,           ! elemnt
+     & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,ielindx,   ! elemnt
      & ielno,iside,ihistry,pres,pdir,                                   ! tractn
      & prop,infmatmod,                                                  ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
@@ -84,7 +84,7 @@ c
       integer ibond(*)
       integer idx(*),iwinkx(*),idslp(*),ipslp(*),idhist(*)
       integer nfault(*)
-      integer ien(*),lm(*),lmx(*),lmf(*),ivfamily(*)
+      integer ien(*),lm(*),lmx(*),lmf(*),ivfamily(*),ielindx(*)
       integer ielno(*),iside(*),ihistry(*)
       integer infmatmod(*)
       integer infetype(4)
@@ -254,7 +254,7 @@ cdebug        write(6,*) "Before matinit_drv (1):"
      &   tfault,numfn,                                                  ! fault
      &   s,stemp,                                                       ! stiff
      &   state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies,   ! elemnt
-     &   numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,           ! elemnt
+     &   numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,ielindx,   ! elemnt
      &   prop,infmatmod,npropsz,tminmax,                                ! materl
      &   gauss,sh,shj,nen,ngauss,nee,                                   ! eltype
      &   histry,rtimdat,ntimdat,rgiter,nhist,lastep,                    ! timdat
@@ -304,6 +304,7 @@ c
      &   nfault,dfault,tfault,                                          ! fault
      &   s,stemp,                                                       ! stiff
      &   state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,         ! elemnt
+     &   ielindx,                                                       ! elemnt
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
      &   prop,infmatmod,tminmax,                                        ! materl
      &   gauss,sh,shj,nen,ngauss,nee,nec,                               ! eltype
@@ -328,7 +329,7 @@ c
      &   tfault,numfn,                                                  ! fault
      &   s,stemp,                                                       ! stiff
      &   state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,nvfamilies,   ! elemnt
-     &   numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,           ! elemnt
+     &   numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,ielindx,   ! elemnt
      &   prop,infmatmod,npropsz,tminmax,                                ! materl
      &   gauss,sh,shj,nen,ngauss,nee,                                   ! eltype
      &   histry,rtimdat,ntimdat,rgiter,nhist,lastep,                    ! timdat
@@ -378,6 +379,7 @@ c
      &   nfault,dfault,tfault,                                          ! fault
      &   s,stemp,                                                       ! stiff
      &   state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,         ! elemnt
+     &   ielindx,                                                       ! elemnt
      &   ielno,iside,ihistry,pres,pdir,                                 ! tractn
      &   prop,infmatmod,tminmax,                                        ! materl
      &   gauss,sh,shj,nen,ngauss,nee,nec,                               ! eltype
