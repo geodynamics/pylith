@@ -49,6 +49,8 @@ char pypylith3d_viscos__name__[] = "viscos";
 PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 {
   PyObject* pyA;                              // Sparse matrix arrays
+  PyObject* pyRhs;
+  PyObject* pySol;
   PyObject* pyPointerToBextern;               // Force vectors
   PyObject* pyPointerToBtraction;
   PyObject* pyPointerToBgravity;
@@ -98,6 +100,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
   PyObject* pyPointerToLmf;
   PyObject* pyPointerToIvfamily;
   PyObject* pyPointerToListArrayNpar;
+  PyObject* pyPointerToIelindx;
   PyObject* pyPointerToIelno;                 // Traction BC arrays
   PyObject* pyPointerToIside;
   PyObject* pyPointerToIhistry;
@@ -137,8 +140,10 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
   int viscousStage;
   int iterateEvent;
 
-  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:viscos",
+  int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:viscos",
 			    &pyA,                              // Sparse matrix arrays
+			    &pyRhs,
+			    &pySol,
 			    &pyPointerToBextern,               // Force vectors
 			    &pyPointerToBtraction,
 			    &pyPointerToBgravity,
@@ -188,6 +193,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 			    &pyPointerToLmf,
 			    &pyPointerToIvfamily,
 			    &pyPointerToListArrayNpar,
+			    &pyPointerToIelindx,
 			    &pyPointerToIelno,                 // Traction BC arrays
 			    &pyPointerToIside,
 			    &pyPointerToIhistry,
@@ -235,6 +241,8 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
   const int maxsize = 4096;
   char errorstring[maxsize];
   Mat      A = (Mat) PyCObject_AsVoidPtr(pyA);
+  Vec      rhs = (Vec) PyCObject_AsVoidPtr(pyRhs);
+  Vec      sol = (Vec) PyCObject_AsVoidPtr(pySol);
   double*  pointerToBextern = (double*) PyCObject_AsVoidPtr(pyPointerToBextern);
   double*  pointerToBtraction = (double*) PyCObject_AsVoidPtr(pyPointerToBtraction);
   double*  pointerToBgravity = (double*) PyCObject_AsVoidPtr(pyPointerToBgravity);
@@ -284,6 +292,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
   int*  pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
   int*  pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
   int*  pointerToListArrayNpar = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNpar);
+  int*  pointerToIelindx = (int*) PyCObject_AsVoidPtr(pyPointerToIelindx);
   int*  pointerToIelno = (int*) PyCObject_AsVoidPtr(pyPointerToIelno);
   int*  pointerToIside = (int*) PyCObject_AsVoidPtr(pyPointerToIside);
   int*  pointerToIhistry = (int*) PyCObject_AsVoidPtr(pyPointerToIhistry);
@@ -320,6 +329,8 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 
 
   viscos_f(&A,                                // Sparse matrix arrays
+	   &rhs,
+	   &sol,
 	   pointerToBextern,                  // Force vectors
 	   pointerToBtraction,
 	   pointerToBgravity,
@@ -369,6 +380,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 	   pointerToLmf,
 	   pointerToIvfamily,
 	   pointerToListArrayNpar,
+	   pointerToIelindx,
 	   pointerToIelno,                    // Traction BC arrays
 	   pointerToIside,
 	   pointerToIhistry,
