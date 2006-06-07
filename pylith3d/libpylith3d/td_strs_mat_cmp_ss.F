@@ -36,7 +36,8 @@ c
      & tfault,numfn,                                                    ! fault
      & s,stemp,                                                         ! stiff
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,nelfamily,               ! elemfamily
-     & nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,ielg,          ! elemfamily
+     & nstate,nstate0,nprestrflag,ipstrs,ipauto,n0states,               ! elemfamily
+     & ielg,numelv,ielindx,                                             ! elordering
      & prop,nprop,elas_strs_mat,td_strs_mat,matchg,tminmax,             ! materl
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
      & rtimdat,ntimdat,rgiter,                                          ! timdat
@@ -68,8 +69,9 @@ c
 c
 c...  subroutine arguments
 c
+      integer ielg,numelv,ielindx(numelv)
       integer nnz,neq,numnp,numslp,numsn,numfn,nelfamily,nstate,nstate0
-      integer nprestrflag,ipstrs,ipauto,n0states,ielg,nprop
+      integer nprestrflag,ipstrs,ipauto,n0states,nprop
       integer nen,ngauss,nee,numrot,ierr
       integer iddmat(nstr,nstr)
       integer ien(nen,nelfamily),lm(nee,nelfamily),lmx(nee,nelfamily)
@@ -113,7 +115,7 @@ c
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-cdebug      write(6,*) "Hello from td_strs_mat_cmp_ss_f!"
+      write(6,*) "Hello from td_strs_mat_cmp_ss_f!"
 c
       incstate0=izero
       indstate0=ione
@@ -176,7 +178,7 @@ c
      &   ierr,errstrng)                                                 ! errcod
         if(ierr.ne.izero) return
         call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz,
-     &   ielgpetsc)
+     &   ielgpetsc,numelv,ielindx)
         ielg=ielg+ione
         ielgpetsc=ielgpetsc+ione
       end do
