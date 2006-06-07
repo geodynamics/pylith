@@ -192,7 +192,7 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
 			    &pyPointerToLmf,
 			    &pyPointerToIvfamily,
 			    &pyPointerToListArrayNpar,
-			    &pyPointerToIelindx,
+                            &pyPointerToIelindx,
 			    &pyPointerToIelno,                 // Traction BC arrays
 			    &pyPointerToIside,
 			    &pyPointerToIhistry,
