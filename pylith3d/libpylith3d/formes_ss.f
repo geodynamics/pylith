@@ -66,6 +66,7 @@ c
 c...  local variables
 c
       double precision xl(60)
+cdebug      integer idb
 c
 cdebug      write(6,*) "Hello from formes_ss_f!"
 c
@@ -74,6 +75,10 @@ c
 c...  localize coordinates
 c
       call lcoord(x,xl,ien,nen,numnp)
+cdebug      if(iel.eq.8) then
+cdebug        write(6,*) "ien:",(ien(idb),idb=1,nen)
+cdebug        write(6,*) "xl:",(xl(idb),idb=1,12)
+cdebug      end if
 c
 c...  construct local stiffness matrix, symmetrize it, and rotate for
 c     skew boundary conditions
