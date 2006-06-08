@@ -71,18 +71,24 @@ c...  local variables
 c
       integer j,n,ietype,ietypel,imat,infin
       integer ien(20)
+      integer idb
 c
-cdebug      write(6,*) "Hello from scan_connect_f!"
+      write(6,*) "Hello from scan_connect_f!"
 c
 c...  open input file
 c
-cdebug      write(6,*) "maxvfamilies:",maxvfamilies
+      write(6,*) "maxvfamilies:",maxvfamilies
       ierr=izero
       numelv=izero
       ietypev=izero
-      nvfamilies=izero
+ctest      nvfamilies=izero
+      nvfamilies=maxvfamilies
       call ifill(ivflist,izero,ithree*maxvfamilies)
       open(kr,file=cfile,status="old",err=20)
+      do j=1,nvfamilies
+        ivflist(2,j)=j
+        ivflist(3,j)=infmat(j)
+      end do
 c
 c... scan the file, counting the number of entries for each type of
 c    material (element family).
@@ -111,7 +117,8 @@ c
           return
         end if
 c
-        if(imat.le.izero.or.imat.gt.numat) then
+ctest        if(imat.le.izero.or.imat.gt.numat) then
+        if(imat.le.izero) then
           ierr=107
           errstrng="scan_connect"
           return
@@ -121,6 +128,8 @@ c
         ivflist(2,imat)=imat
         ivflist(3,imat)=infmat(imat)
         numelv=numelv+ione
+        write(6,"(a30)") cfile
+        write(6,*) "n,imat,ivflist:",n,imat,(ivflist(idb,imat),idb=1,3)
 c
         go to 40
 c
@@ -132,11 +141,11 @@ c
 c...  determine the number of element families
 c
         do j=1,maxvfamilies
-cdebug          write(6,*) "j,ivflist(1,j),ivflist(2,j):"
-cdebug          write(6,*) j,ivflist(1,j),ivflist(2,j)
-          if(ivflist(1,j).ne.izero) nvfamilies=nvfamilies+1
+          write(6,*) "j,ivflist(1,j),ivflist(2,j):"
+          write(6,*) j,ivflist(1,j),ivflist(2,j)
+ctest          if(ivflist(1,j).ne.izero) nvfamilies=nvfamilies+1
         end do
-cdebug        write(6,*) "nvfamilies:",nvfamilies
+        write(6,*) "nvfamilies:",nvfamilies
         return
 c
 c...  error opening file
