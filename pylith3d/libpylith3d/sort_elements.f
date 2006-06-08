@@ -138,9 +138,9 @@ c...  local variables
 c
       integer ifam,incstate0,nstate0max,nelfamily,j,matmod,nstate
       integer nstate0,nprop,i,iloc
-cdebug      integer idb,jdb
+      integer idb,jdb
 c
-cdebug      write(6,*) "Hello from read_connect_f!"
+      write(6,*) "Hello from sort_elements_f!"
       call ifill(iens,izero,nen*numelv)
       call ifill(ivfamily,izero,5*nvfamilies)
       ifam=izero
@@ -155,8 +155,8 @@ cdebug      write(6,*) "Hello from read_connect_f!"
 c
 c...  set up element family information array (ivfamily)
 c
-      do j=1,maxvfamilies
-        if(ivflist(1,j).ne.izero) then
+      do j=1,nvfamilies
+ctest        if(ivflist(1,j).ne.izero) then
           ifam=ifam+ione
           if(ifam.eq.ione) then
             ivftmp(ifam)=ione
@@ -177,7 +177,8 @@ c
           nstatesz=nstatesz+nstate*ngauss*nelfamily
           nstatesz0=nstatesz0+incstate0*nstate0*ngauss*nelfamily
           npropsz=npropsz+nprop
-        end if
+          write(6,*) "ivfamily:",(ivfamily(idb,ifam),idb=1,5)
+ctest        end if
       end do
 c
 c...  set size of state0 array if there are no prestresses
@@ -206,8 +207,8 @@ c
         ielindx(iloc)=i
         call iquate(iens(1,iloc),ien(1,i),nen)
         ivftmp(ifam)=ivftmp(ifam)+ione
-cdebug        write(6,*) "i,indxiel,iens:",i,indxiel(i),
-cdebug     &   (iens(idb,iloc),idb=1,nen)
+        write(6,*) "i,indxiel,iens:",i,indxiel(i),
+     &   (iens(idb,iloc),idb=1,nen)
       end do
 c
       return
