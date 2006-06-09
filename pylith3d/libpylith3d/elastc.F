@@ -257,8 +257,6 @@ c
       if(lgdefp.eq.izero.and.intord.ne.ithree) then
 cdebug        write(6,*) "Before matinit_drv (1):"
         write(kto,650)
-        write(6,*) "elastc_f: numelv,ielg,ielgnew",
-     &       numelv,1,ielindx(1)
         call matinit_drv(
      &   A,nnz,neq,                                                     ! sparse
      &   x,d,iwink,wink,numnp,nwink,iddmat,                             ! global

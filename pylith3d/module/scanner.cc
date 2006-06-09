@@ -138,7 +138,9 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Mesh
   PetscErrorCode              ierr;
 
   PetscFunctionBegin;
-  boundaries->view("PyLith boundaries");
+  if (mesh->debug) {
+    boundaries->view("PyLith boundaries");
+  }
   ierr = PetscStrcpy(bcFilename, baseFilename);
   ierr = PetscStrcat(bcFilename, ".bc");
   f = fopen(bcFilename, "w");CHKERRQ(ierr);
@@ -274,13 +276,17 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
     }
 
     if (numConstraints > 0) {
-      std::cout << "Setting dimension of " << *v_itor << " to " << 3 - numConstraints << std::endl;
+      if (mesh->debug) {
+        std::cout << "Setting dimension of " << *v_itor << " to " << 3 - numConstraints << std::endl;
+      }
       field->setFiberDimension(patch, *v_itor, 3 - numConstraints);
     }
   }
   field->orderPatches();
   field->createGlobalOrder();
-  field->view("Displacement field");
+  if (mesh->debug) {
+    field->view("Displacement field");
+  }
   ALE::Obj<ALE::Mesh::sieve_type::traits::heightSequence> elements = mesh->getTopology()->heightStratum(0);
   ALE::Obj<ALE::Mesh::bundle_type> vertexBundle = mesh->getBundle(0);
   std::string orderName("element");

@@ -146,8 +146,6 @@ c
         imat=ifam
         matchg=.false.
         call dcopy(nprop,prop(indprop),ione,ptmp,ione)
-        write(6,*) "matinit_drv_f: numelv,ielg,ielgnew",
-     &       numelv,ielg,ielindx(ielg)
         if(matmodel.eq.1) then
           call matinit_cmp(
      &     A,nnz,neq,                                                   ! sparse

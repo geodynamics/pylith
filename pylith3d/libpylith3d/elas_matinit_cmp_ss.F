@@ -131,7 +131,6 @@ cdebug            write(6,*) "ielf,ielg,l,dmat:",ielf,ielg,l
 cdebug            write(6,*) (dmat(idb,l,ielf),idb=1,nddmat)
 cdebug          end if
         end do
-        write(6,*) "ielg:",ielg
         call formes_ss(
      &   x,numnp,iddmat,                                                ! global
      &   s,stemp,                                                       ! stiff
@@ -141,8 +140,6 @@ cdebug          end if
      &   getshape,bmatrix,                                              ! bbar
      &   ierr,errstrng)                                                 ! errcod
         if(ierr.ne.izero) return
-        write(6,*) "elas_matinit_cmp_ss_f: numelv,ielgpetsc,ielgnewp",
-     &       numelv,ielgpetsc,ielindx(ielgpetsc+1)-1
         call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz,
      &   ielgpetsc,numelv,ielindx)
 c       New Sieve section

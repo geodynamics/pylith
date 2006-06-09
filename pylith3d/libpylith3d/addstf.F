@@ -101,7 +101,6 @@ c     New Sieve section
         end if
       end do
       ielgnewp = ielindx(ielgpetsc + 1) - 1
-      write(6,*) "addstf_f: ielgpetsc --> ielgnewp",ielgpetsc,ielgnewp
       call assembleMatrix(A, ielgnewp, stemp, ADD_VALUES, ierr)
 cpetsc      call MatSetValues(A, nee, lmp, nee, lmp, s, ADD_VALUES, ierr)
 cpetsc      if(slip) then
