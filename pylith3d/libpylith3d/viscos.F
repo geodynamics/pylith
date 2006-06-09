@@ -204,7 +204,7 @@ cdebug          write(6,*) "Before const:"
      &     ftol,etol,itmax,nintg,i,naxstp,nfirst,rtimdat,deltp,alfap,
      &     ntimdat,nstep,maxitp,ntdinitp,lgdefp,itmaxp,gtol)
 cdebug          write(6,*) "After const:"
-cdebug          write(6,*) nintg,i,naxstp,nfirst,deltp,alfap,maxitp,maxitcp,
+cdebug          write(6,*) nintg,i,naxstp,nfirst,deltp,alfap,maxitp,
 cdebug     &     lgdefp,itmaxp,(gtol(idb),idb=1,3)
           ltim=.true.
 c
