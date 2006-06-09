@@ -86,9 +86,9 @@ cdebug        end if
       end if
       call daxpy(neq,alpha,bintern,ione,bresid,ione)
 cdebug      write(6,*) "bintern:"
-cdebug      write(6,*) (bintern(idb),idb=1,200)
+cdebug      write(6,*) (bintern(idb),idb=1,neq)
 cdebug      write(6,*) "bresid:"
-cdebug      write(6,*) (bresid(idb),idb=1,200)
+cdebug      write(6,*) (bresid(idb),idb=1,neq)
       return
       end
 c
