@@ -105,7 +105,7 @@ c
 c
 c...  local variables
 c
-      integer ielf,incstate0,indstate0,l,ielgpetsc
+      integer ielf,incstate0,indstate0,l
       double precision tmax
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 c
@@ -123,8 +123,6 @@ c
         incstate0=ione
         indstate0=izero
       end if
-c     PETSc correction
-      ielgpetsc=ielg - 1
 c
 c...  loop over elements in a family
 c
@@ -178,9 +176,8 @@ c
      &   ierr,errstrng)                                                 ! errcod
         if(ierr.ne.izero) return
         call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz,
-     &   ielgpetsc,numelv,ielindx)
+     &   ielg,numelv,ielindx)
         ielg=ielg+ione
-        ielgpetsc=ielgpetsc+ione
       end do
       return
       end

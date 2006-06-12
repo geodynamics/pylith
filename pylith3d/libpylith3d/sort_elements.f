@@ -207,8 +207,8 @@ c
         ielindx(iloc)=i
         call iquate(iens(1,iloc),ien(1,i),nen)
         ivftmp(ifam)=ivftmp(ifam)+ione
-        write(6,*) "i,indxiel,iens:",i,indxiel(i),
-     &   (iens(idb,iloc),idb=1,nen)
+cdebug  write(6,*) "i,indxiel,iens:",i,indxiel(i),
+cdebug&   (iens(idb,iloc),idb=1,nen)
       end do
 c
       return
