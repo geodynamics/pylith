@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<chapter id="tutorialbm5">
+  <title>Tutorial Using SCEC Benchmark 5</title>
+
+  <sect1>
+    <title>Overview</title>
+    <para>
+      This tutorial walks the user through the steps necessary to
+      construct, run, and view the results of a benchmark problem
+      (SCEC Bemchmark 5). This problem examines the viscoelatic
+      (Maxwell) relaxation of stress from a single, finite, dip-slip
+      earthquake in 3-D without body forces. 
+    </para>
+  </sect1>
+
+  <sect2>
+    <title>Problem Description</title>
+    <para>
+      The model domain is 24 km by 24 km by 24 km (0 km <= x <= 24 km;
+      0 km >= y <= 24 km; -24 km <= z <= 0). The model domain is
+      composed to two materials. One material occupies the top-half of
+      the domain -12 km <= z <= 0km while the other occupies the lower
+      half, -24km <= z < 12 km. Both materials are Poisson solids with
+      Lame's constants (mu and lambda) equal to 30 GPa with Maxwell
+      viscoelastic properties. The top layer has a viscosity of
+      10^{25} Pa-s (and is essentially elastic) while the bottom layer
+      has a viscosity of 10^{18} Pa-s.
+    </para>
+    <para>
+      The reverse fault dips at an angle 45 degrees. The top of the
+      fault sits at x = 4 km with the bottom of the fault at x =
+      20km. The fault surface is confined to the region 0 km <= y <=
+      16 km and -16 km <= z <= 0 km. The slip distribution is 1.0 m of
+      uniform thrust motion for -12 km <= z with a linear taper to 0
+      at z =- 16 km.
+    </para>
+    <para>
+      The boundary conditions on the lateral and bottom edges of the
+      mesh are the displacements from the analytical elastic
+      solution. These displacements are held fixed through time.
+    </para>
+
+    <para>
+      INSERT FIGURE HERE
+    </para>
+
+  </sect2>
+  <sect2>
+    <title>Prerequisites</title>
+    <para>
+      You should have already installed PyLith-0.8. In this tutorial
+      we assume that you are using NetGen
+      (http://www.hpfem.jku.at/netgen/) to generate the mesh and
+      ParaView (http://www.paraview.org) to view simulation
+      results. You may use other packages, but some adaption (not
+      covered here) will be necessary.
+    </para>
+
+  <sect1>
+    <title>Stage 1: Download</title>
+    <para>
+    </para>
+
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          Download the tutorial tarball
+          (http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/lithomopinstallation/downloads/unworked_benchmarks.tar.gz)
+          and unpack it in a location of your choosing. You may also
+          wish to download the worked example tarball
+          (http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/lithomopinstallation/downloads/worked_benchmarks.tar.gz)
+          to compare your results or start at an intermediate
+step. 
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Once you have unpacked the tarball, you will have an
+          "unworked_benchmarks" directory.  Go to the "utils"
+          sub-directory and edit the makefile as appropriate (it is
+          presently setup for g77). You will need to make the
+          following executables in order to generate the inputs files
+          for PyLith-0.8 from NetGen output.
+        </para>
+      </listitem>
+    </orderedlist>
+
+    <para>
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Stage 2: Setup</title>
+    <para>
+    </para>
+  </sect1>
+</chapter>
