@@ -129,7 +129,7 @@ c
         ivflist(3,imat)=infmat(imat)
         numelv=numelv+ione
         write(6,"(a30)") cfile
-        write(6,*) "n,imat,ivflist:",n,imat,(ivflist(idb,imat),idb=1,3)
+cdebug  write(6,*) "n,imat,ivflist:",n,imat,(ivflist(idb,imat),idb=1,3)
 c
         go to 40
 c

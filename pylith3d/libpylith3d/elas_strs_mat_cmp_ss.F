@@ -109,7 +109,7 @@ c
 c
 c...  local variables
 c
-      integer ielf,incstate0,indstate0,l,ielgpetsc
+      integer ielf,incstate0,indstate0,l
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 c
 cdebug      integer idb,jdb
@@ -128,8 +128,6 @@ c
         incstate0=ione
         indstate0=izero
       end if
-c     PETSc correction
-      ielgpetsc=ielg - 1
 c
 c...  loop over elements in a material group
 c
@@ -181,7 +179,7 @@ c
      &   ierr,errstrng)                                                 ! errcod
         if(ierr.ne.izero) return
         call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz,
-     &   ielgpetsc,numelv,ielindx)
+     &   ielg,numelv,ielindx)
 c       New Sieve section
 cpetsc        numeq = 0
 cpetsc        do i=1,nee
@@ -200,10 +198,9 @@ cpetsc            end do
 cpetsc            k = k + 1
 cpetsc          end if
 cpetsc        end do
-cpetsc        call assembleMatrix(A, ielgpetsc, stemp, ADD_VALUES, ierr)
+cpetsc        call assembleMatrix(A, ielg, stemp, ADD_VALUES, ierr)
 c
         ielg=ielg+ione
-        ielgpetsc=ielgpetsc+ione
       end do
 c
       return

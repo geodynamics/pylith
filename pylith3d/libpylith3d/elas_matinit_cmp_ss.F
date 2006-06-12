@@ -102,7 +102,7 @@ c
 c
 c...  local variables
 c
-      integer ielf,l,ielgpetsc
+      integer ielf,l
 c
 cdebug      integer idb
 c
@@ -118,9 +118,6 @@ c
 c
 c...  loop over elements in a family and add element stiffness to global
 c     stiffness.
-c
-c     PETSc correction
-      ielgpetsc=ielg - 1
 c
       do ielf=1,nelfamily
         do l=1,ngauss
@@ -141,7 +138,7 @@ cdebug          end if
      &   ierr,errstrng)                                                 ! errcod
         if(ierr.ne.izero) return
         call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz,
-     &   ielgpetsc,numelv,ielindx)
+     &   ielg,numelv,ielindx)
 c       New Sieve section
 cpetsc        numeq = 0
 cpetsc        do i=1,nee
@@ -160,10 +157,9 @@ cpetsc            end do
 cpetsc            k = k + 1
 cpetsc          end if
 cpetsc        end do
-cpetsc        call assembleMatrix(A, ielgpetsc, stemp, ADD_VALUES, ierr)
+cpetsc        call assembleMatrix(A, ielg, stemp, ADD_VALUES, ierr)
 c
         ielg=ielg+ione
-        ielgpetsc=ielgpetsc+ione
       end do
 c
 c     PETSc correction

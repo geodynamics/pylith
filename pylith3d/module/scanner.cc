@@ -194,6 +194,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
     return 0;
   }
 
+  journal::debug_t  debug("pylith3d");
   MPI_Comm          comm = PETSC_COMM_WORLD;
   PetscMPIInt       rank;
   ALE::Obj<ALE::Mesh> mesh;
@@ -206,7 +207,9 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   ierr = MPI_Comm_rank(comm, &rank);
   sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
   mesh = ALE::PyLithBuilder::createNew(comm, meshInputFile);
+  debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << meshInputFile << journal::endl;
   mesh = mesh->distribute();
+  debug << journal::at(__HERE__) << "[" << rank << "]Distributed PETSc Mesh"  << journal::endl;
   ierr = ReadBoundary_PyLith(meshInputFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
 
   typedef std::pair<ALE::Mesh::field_type::patch_type,int> patch_type;
@@ -240,6 +243,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
       boundaries->update(ALE::Mesh::foliation_type::patch_type(patch, c+1), vertex, &boundaryValues[v*numBoundaryComponents+c]);
     }
   }
+  debug << journal::at(__HERE__) << "[" << rank << "]Created boundary conditions"  << journal::endl;
 
   bool refineMesh = false;
   if (refineMesh) {
@@ -260,8 +264,10 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   } 
   ierr = MeshView_Sieve_Newer(mesh, viewer);
   ierr = PetscViewerDestroy(viewer);
+  debug << journal::at(__HERE__) << "[" << rank << "]Output new PyLith mesh into: " << meshOutputFile << journal::endl;
 
   ierr = WriteBoundary_PyLith(meshOutputFile, mesh);
+  debug << journal::at(__HERE__) << "[" << rank << "]Wrote PyLith boundary conditions"  << journal::endl;
 
   ALE::Obj<ALE::Mesh::field_type> field = mesh->getField("displacement");
   ALE::Obj<ALE::Mesh::sieve_type::traits::depthSequence> vertices = mesh->getTopology()->depthStratum(0);
@@ -277,7 +283,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 
     if (numConstraints > 0) {
       if (mesh->debug) {
-        std::cout << "Setting dimension of " << *v_itor << " to " << 3 - numConstraints << std::endl;
+        std::cout << "[" << rank << "]Setting dimension of " << *v_itor << " to " << 3 - numConstraints << std::endl;
       }
       field->setFiberDimension(patch, *v_itor, 3 - numConstraints);
     }
@@ -302,12 +308,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
     }
   }
   field->orderPatches(orderName);
-
-  journal::debug_t debug("pylith3d");
-  debug
-    << journal::at(__HERE__)
-    << "Output new mesh into: " << meshOutputFile
-    << journal::endl;
+  debug << journal::at(__HERE__) << "[" << rank << "]Created displacement Field"  << journal::endl;
 
   // return
   PyObject *pyMesh = PyCObject_FromVoidPtr(mesh.ptr(), NULL);

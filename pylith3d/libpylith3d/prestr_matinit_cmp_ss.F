@@ -98,7 +98,7 @@ c
 c
 c...  local variables
 c
-      integer ielf,l,ielgpetsc
+      integer ielf,l
 c
 c...  included variable definitions
 c
@@ -109,8 +109,6 @@ c
 cdebug      write(6,*) "Hello from prestr_matinit_cmp_ss_f!"
 c
       tminmax=big
-c     PETSc corection
-      ielgpetsc=ielg - 1
 c
 c...  loop over elements in a family and add element stiffness to global
 c     stiffness.
@@ -133,7 +131,7 @@ c
         if(ierr.ne.izero) return
 c
         call addstf(A,s,stemp,lm(1,ielf),lmx(1,ielf),nee,numsn,nnz,
-     &   ielgpetsc)
+     &   ielg)
 c       New Sieve section
 cpetsc        numeq = 0
 cpetsc        do i=1,nee
@@ -152,10 +150,9 @@ cpetsc            end do
 cpetsc            k = k + 1
 cpetsc          end if
 cpetsc        end do
-cpetsc        call assembleMatrix(A, ielgpetsc, stemp, ADD_VALUES, ierr)
+cpetsc        call assembleMatrix(A, ielg, stemp, ADD_VALUES, ierr)
 c
         ielg=ielg+ione
-        ielgpetsc=ielgpetsc+ione
       end do
 c
       return
