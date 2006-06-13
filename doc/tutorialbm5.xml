@@ -18,23 +18,24 @@
   <sect2>
     <title>Problem Description</title>
     <para>
-      The model domain is 24 km by 24 km by 24 km (0 km <= x <= 24 km;
-      0 km >= y <= 24 km; -24 km <= z <= 0). The model domain is
+      The model domain is 24 km by 24 km by 24 km (0 km &le; x &le; 24 km;
+      0 km &le; y &le; 24 km; -24 km &le; z &le; 0). The model domain is
       composed to two materials. One material occupies the top-half of
-      the domain -12 km <= z <= 0km while the other occupies the lower
-      half, -24km <= z < 12 km. Both materials are Poisson solids with
+      the domain -12 km &le; z &le; 0km while the other occupies the lower
+      half, -24km &le; z &lt; 12 km. Both materials are Poisson solids with
       Lame's constants (mu and lambda) equal to 30 GPa with Maxwell
       viscoelastic properties. The top layer has a viscosity of
-      10^{25} Pa-s (and is essentially elastic) while the bottom layer
-      has a viscosity of 10^{18} Pa-s.
+      10<superscript>25</superscript> Pa-s (and is essentially
+      elastic) while the bottom layer has a viscosity of
+      10<superscript>18</superscript> Pa-s.
     </para>
     <para>
       The reverse fault dips at an angle 45 degrees. The top of the
       fault sits at x = 4 km with the bottom of the fault at x =
-      20km. The fault surface is confined to the region 0 km <= y <=
-      16 km and -16 km <= z <= 0 km. The slip distribution is 1.0 m of
-      uniform thrust motion for -12 km <= z with a linear taper to 0
-      at z =- 16 km.
+      20 km. The fault surface is confined to the region 0 km &le; y &le;
+      16 km and -16 km &le; z &le; 0 km. The slip distribution is 1.0 m of
+      uniform thrust motion for -12 km &le; z with a linear taper to 0
+      at z = -16 km.
     </para>
     <para>
       The boundary conditions on the lateral and bottom edges of the
@@ -51,12 +52,14 @@
     <title>Prerequisites</title>
     <para>
       You should have already installed PyLith-0.8. In this tutorial
-      we assume that you are using NetGen
-      (http://www.hpfem.jku.at/netgen/) to generate the mesh and
-      ParaView (http://www.paraview.org) to view simulation
-      results. You may use other packages, but some adaption (not
-      covered here) will be necessary.
+      we assume that you are using <ulink
+      url="http://www.hpfem.jku.at/netgen/">NetGen</ulink> to generate
+      the mesh and <ulink url="http://www.paraview.org">
+      ParaView</ulink> to view simulation results. You may use other
+      packages, but some adaption from what is described here will
+      be necessary.
     </para>
+  </sect2>
 
   <sect1>
     <title>Stage 1: Download</title>
@@ -66,13 +69,13 @@
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Download the tutorial tarball
-          (http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/lithomopinstallation/downloads/unworked_benchmarks.tar.gz)
-          and unpack it in a location of your choosing. You may also
-          wish to download the worked example tarball
-          (http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/lithomopinstallation/downloads/worked_benchmarks.tar.gz)
-          to compare your results or start at an intermediate
-step. 
+          Download the <ulink
+          url="http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/lithomopinstallation/downloads/unworked_benchmarks.tar.gz">tutorial
+          tarball</ulink> and unpack it in a location of your
+          choosing. You may also wish to download the <ulink
+          url="http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/lithomopinstallation/downloads/worked_benchmarks.tar.gz">worked
+          example tarball</ulink> to compare your results or start at
+          an intermediate step.
         </para>
       </listitem>
       <listitem>
@@ -84,7 +87,44 @@ step.
           following executables in order to generate the inputs files
           for PyLith-0.8 from NetGen output.
         </para>
+	<variablelist>
+	  <varlistentry>
+	    <term>readnetgen</term>
+	    <listitem>
+	      <para>
+                A fortran program to read NetGen neutral format and
+                create several of the input files needed by
+                PyLith-0.8.
+              </para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>faultcalc</term>
+	    <listitem>
+	      <para>
+                A fortran program to compute spit node displacements
+                using equations of second degree over specified
+                regions.
+              </para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>scalecoord</term>
+	    <listitem>
+	      <para>
+                A very simple fortran program to scale nodal coordinates.
+              </para>
+	    </listitem>
+	  </varlistentry>
       </listitem>
+      <listitem>
+	<para>
+  	  Once you have built these utilities, move them to a location
+  	  in your PATH or update your PATH to include the directory
+  	  that contains them.
+        </para>
+      </listitem>
+
     </orderedlist>
 
     <para>
