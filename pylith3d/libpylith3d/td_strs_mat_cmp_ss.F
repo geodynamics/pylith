@@ -115,7 +115,7 @@ c
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-      write(6,*) "Hello from td_strs_mat_cmp_ss_f!"
+cdebug      write(6,*) "Hello from td_strs_mat_cmp_ss_f!"
 c
       incstate0=izero
       indstate0=ione

@@ -71,13 +71,13 @@ c...  local variables
 c
       integer j,n,ietype,ietypel,imat,infin
       integer ien(20)
-      integer idb
+cdebug      integer idb
 c
-      write(6,*) "Hello from scan_connect_f!"
+cdebug      write(6,*) "Hello from scan_connect_f!"
 c
 c...  open input file
 c
-      write(6,*) "maxvfamilies:",maxvfamilies
+cdebug      write(6,*) "maxvfamilies:",maxvfamilies
       ierr=izero
       numelv=izero
       ietypev=izero
@@ -128,7 +128,7 @@ c
         ivflist(2,imat)=imat
         ivflist(3,imat)=infmat(imat)
         numelv=numelv+ione
-        write(6,"(a30)") cfile
+cdebug        write(6,"(a30)") cfile
 cdebug  write(6,*) "n,imat,ivflist:",n,imat,(ivflist(idb,imat),idb=1,3)
 c
         go to 40
@@ -141,11 +141,11 @@ c
 c...  determine the number of element families
 c
         do j=1,maxvfamilies
-          write(6,*) "j,ivflist(1,j),ivflist(2,j):"
-          write(6,*) j,ivflist(1,j),ivflist(2,j)
+cdebug          write(6,*) "j,ivflist(1,j),ivflist(2,j):"
+cdebug          write(6,*) j,ivflist(1,j),ivflist(2,j)
 ctest          if(ivflist(1,j).ne.izero) nvfamilies=nvfamilies+1
         end do
-        write(6,*) "nvfamilies:",nvfamilies
+cdebug        write(6,*) "nvfamilies:",nvfamilies
         return
 c
 c...  error opening file

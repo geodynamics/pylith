@@ -138,9 +138,9 @@ c...  local variables
 c
       integer ifam,incstate0,nstate0max,nelfamily,j,matmod,nstate
       integer nstate0,nprop,i,iloc
-      integer idb,jdb
+cdebug      integer idb,jdb
 c
-      write(6,*) "Hello from sort_elements_f!"
+cdebug      write(6,*) "Hello from sort_elements_f!"
       call ifill(iens,izero,nen*numelv)
       call ifill(ivfamily,izero,5*nvfamilies)
       ifam=izero
@@ -177,7 +177,7 @@ ctest        if(ivflist(1,j).ne.izero) then
           nstatesz=nstatesz+nstate*ngauss*nelfamily
           nstatesz0=nstatesz0+incstate0*nstate0*ngauss*nelfamily
           npropsz=npropsz+nprop
-          write(6,*) "ivfamily:",(ivfamily(idb,ifam),idb=1,5)
+cdebug          write(6,*) "ivfamily:",(ivfamily(idb,ifam),idb=1,5)
 ctest        end if
       end do
 c
