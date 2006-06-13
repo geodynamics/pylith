@@ -112,7 +112,7 @@ c
       include "ntimdat_def.inc"
       include "rgiter_def.inc"
 c
-      write(6,*) "Hello from elas_matinit_cmp_ss_f!"
+cdebug      write(6,*) "Hello from elas_matinit_cmp_ss_f!"
 c
       tminmax=big
 c
