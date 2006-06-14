@@ -100,9 +100,9 @@ class Pylith3d_setup(Component):
         self.quadratureOrderInt = 0
         if pl3dscan.quadratureOrder == "Full":
             self.quadratureOrderInt = 1
-        elif quadratureOrder == "Reduced":
+        elif pl3dscan.quadratureOrder == "Reduced":
             self.quadratureOrderInt = 2
-        elif quadratureOrder == "Selective":
+        elif pl3dscan.quadratureOrder == "Selective":
             self.quadratureOrderInt = 3
         else:
             self.quadratureOrderInt = 1
