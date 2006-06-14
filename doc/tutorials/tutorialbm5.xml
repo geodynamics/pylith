@@ -1,73 +1,79 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
-<chapter id="tutorialbm5">
+<section id="tutorialbm5">
   <title>Tutorial Using SCEC Benchmark 5</title>
 
-  <sect1>
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
     <title>Overview</title>
     <para>
-      This tutorial walks the user through the steps necessary to
+      In this tutorial, ew will walk through the steps necessary to
       construct, run, and view the results of a benchmark problem
       (SCEC Bemchmark 5). This problem examines the viscoelatic
       (Maxwell) relaxation of stress from a single, finite, dip-slip
       earthquake in 3-D without body forces. 
     </para>
-  </sect1>
 
-  <sect2>
-    <title>Problem Description</title>
-    <para>
-      The model domain is a cube with edges 24 km long (0 km &le; x
-      &le; 24 km; 0 km &le; y &le; 24 km; -24 km &le; z &le; 0) and is
-      composed of two materials. One material occupies the top-half of
-      the domain -12 km &le; z &le; 0km while the other occupies the
-      lower half, -24km &le; z &lt; 12 km. Both materials are Poisson
-      solids with Lame's constants (mu and lambda) equal to 30 GPa
-      with Maxwell viscoelastic properties. The top layer has a
-      viscosity of 10<superscript>25</superscript> Pa-s (and is
-      essentially elastic) while the bottom layer has a viscosity of
-      10<superscript>18</superscript> Pa-s.
-    </para>
-    <para>
-      The reverse fault dips at an angle 45 degrees. The top of the
-      fault sits at x = 4 km with the bottom of the fault at x =
-      20 km. The fault surface is confined to the region 0 km &le; y &le;
-      16 km and -16 km &le; z &le; 0 km. The slip distribution is 1.0 m of
-      uniform thrust motion for -12 km &le; z with a linear taper to 0
-      at z = -16 km.
-    </para>
-    <para>
-      The boundary conditions on the lateral and bottom edges of the
-      mesh are the displacements from the analytical elastic
-      solution. These displacements are held fixed through time.
-    </para>
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Problem Description</title>
+      <para>
+        The model domain is a cube with edges 24 km long (0 km &le; x
+        &le; 24 km; 0 km &le; y &le; 24 km; -24 km &le; z &le; 0) and
+        is composed of two materials. One material occupies the
+        top-half of the domain -12 km &le; z &le; 0 km while the other
+        occupies the lower half, -24 km &le; z &lt; 12 km. Both
+        materials are Poisson solids with Lame's constants (&mgr; and
+        &lgr;) equal to 30 GPa with Maxwell viscoelastic
+        properties. The top layer has a viscosity of
+        10<superscript>25</superscript> Pa-s (and is essentially
+        elastic) while the bottom layer has a viscosity of
+        10<superscript>18</superscript> Pa-s.
+      </para>
+      <para>
+        The reverse fault dips at an angle 45 degrees. The top of the
+        fault sits at x = 4 km with the bottom of the fault at x = 20
+        km. The fault surface is confined to the region 0 km &le; y
+        &le; 16 km and -16 km &le; z &le; 0 km. The slip distribution
+        is 1.0 m of uniform thrust motion for -12 km &le; z with a
+        linear taper to 0 at z = -16 km.
+      </para>
+      <para>
+        The boundary conditions on the lateral and bottom edges of the
+        mesh are the displacements from the analytical elastic
+        solution. These displacements are held fixed through time.
+      </para>
 
-    <para>
-      INSERT FIGURE HERE
-    </para>
+      <para>
+        INSERT FIGURE HERE
+      </para>
+    </section>
 
-  </sect2>
-  <sect2>
-    <title>Prerequisites</title>
-    <para>
-      You should have already installed PyLith-0.8. In this tutorial
-      we assume that you are using <ulink
-      url="http://www.hpfem.jku.at/netgen/">NetGen</ulink> to generate
-      the mesh and <ulink url="http://www.paraview.org">
-      ParaView</ulink> to view simulation results. You may use other
-      packages, but some adaption from what is described here will
-      be necessary.
-    </para>
-  </sect2>
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Prerequisites</title>
+      <para>
+        You should have already installed PyLith. In this tutorial we
+        assume that you are using <ulink
+        url="http://www.hpfem.jku.at/netgen/">
+        <application>NetGen</application></ulink> to generate the mesh
+        and <ulink url="http://www.paraview.org"> ParaView</ulink> to
+        view simulation results. You may use other packages, but some
+        adaption from what is described here will be necessary.
+      </para>
+    </section>
+  </section>
 
-  <sect1>
-    <title>Stage 1: Download and setup</title>
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Download and setup</title>
     <para>
-      Download the tutorial and setup the utilities used to transform
-      NetGen output into PyLith-0.8 input.
+      We will start by downloading the tutorial tarball and then build
+      two utilities used to transform
+      <application>NetGen</application> output into PyLith input.
     </para>
-
+    
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
@@ -76,32 +82,34 @@
           tarball</ulink> and unpack it in a location of your
           choosing. You may also wish to download the <ulink
           url="http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/lithomopinstallation/downloads/worked_benchmarks.tar.gz">worked
-          example tarball</ulink> to compare your results or start at
-          an intermediate step.
+          example tarball</ulink> in order to compare your results or
+          start at an intermediate step.
         </para>
       </listitem>
       <listitem>
 	<para>
           Once you have unpacked the tarball, you will have an
-          "unworked_benchmarks" directory.  Go to the "utils"
-          sub-directory and edit the makefile as appropriate (it is
+          <filename>unworked_benchmarks</filename> directory.  Go to
+          the <filename>utils</filename> sub-directory and edit the
+          <filename>makefile</filename> as appropriate (it is
           presently setup for g77). You will need to make the
           following executables in order to generate the inputs files
-          for PyLith-0.8 from NetGen output.
+          for PyLith from <application>NetGen</application> output.
         </para>
 	<variablelist>
 	  <varlistentry>
-	    <term>readnetgen</term>
+	    <term><command>readnetgen</command></term>
 	    <listitem>
 	      <para>
-                A fortran program to read NetGen neutral format and
+                A fortran program to read
+                <application>NetGen</application> neutral format and
                 create several of the input files needed by
-                PyLith-0.8.
+                PyLith.
               </para>
 	    </listitem>
 	  </varlistentry>
 	  <varlistentry>
-	    <term>faultcalc</term>
+	    <term><command>faultcalc</command></term>
 	    <listitem>
 	      <para>
                 A fortran program to compute spit node displacements
@@ -110,31 +118,25 @@
               </para>
 	    </listitem>
 	  </varlistentry>
-	  <varlistentry>
-	    <term>scalecoord</term>
-	    <listitem>
-	      <para>
-                A very simple fortran program to scale nodal coordinates.
-              </para>
-	    </listitem>
-	  </varlistentry>
 	</variablelist>
       </listitem>
       <listitem>
 	<para>
   	  Once you have built these utilities, move them to a location
-  	  in your PATH or update your PATH to include the directory
-  	  that contains them.
+  	  in your <envar>PATH</envar> or update your
+  	  <envar>PATH</envar> to include the directory that contains
+  	  them.
         </para>
       </listitem>
     </orderedlist>
-  </sect1>
+  </section>
 
-  <sect1>
-    <title>Stage 2: Create simulation input files</title>
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Create simulation input files</title>
     <para>
-      Generate the finite-element mesh and setup the input files for
-      the mesh and boundary conditions.
+      In this step we will generate the finite-element mesh and setup
+      the input files for the mesh and boundary conditions.
     </para>
     
     <orderedlist numeration="arabic">
@@ -142,16 +144,303 @@
 	<para>
           All of the mesh generation tasks will be performed in the
           "meshgen" directory. The meshgen directory contains a file
-          "bm5.geo", which is an input file for NetGen. Examine this
-          file to see how the geometry is defined. Notice that thee
-          different planes have been flagged with different boundary
-          condition codes. These will be used to associate boundary
-          conditions with surfaces and element faces and nodes.
+          "bm5.geo", which is an input file for
+          <application>NetGen</application>. Examine this file to see
+          how the geometry is defined. Notice that thee different
+          planes have been flagged with different boundary condition
+          codes. These will be used to associate boundary conditions
+          with surfaces and element faces and nodes.
         </para>
+        <orderedlist numeration="loweralpha">
+          <listitem>
+	    <para>
+              Startup <application>NetGen</application> by running
+              <command>ng</command>.
+            </para>
+	  </listitem>
+          <listitem>
+	    <para>
+              Select
+              <menuchoice><guimenu>File</guimenu><guimenuitem>Load
+              Geometry</guimenuitem></menuchoice> and select
+              <filename>bm5.geo</filename>.
+            </para>
+	  </listitem>
+          <listitem>
+	    <para>
+              Click on <guibutton>Generate Mesh</guibutton>.
+            </para>
+	  </listitem>
+          <listitem>
+	    <para>
+              Export the mesh to a file named
+              <filename>bm5.netgen</filename>, making sure the export
+              filetype is "Neutral format".
+            </para>
+	  </listitem>
+          <listitem>
+	    <para>
+              You can now exit <application>NetGen</application>.
+            </para>
+	  </listitem>
+	</orderedlist>
+      </listitem>
+
+      <listitem>
+	<para>
+          You are now ready to process the
+          <application>NetGen</application> output into input for
+          PyLith.
+        </para>
+        <orderedlist>
+          <listitem>
+            <para>
+              Move to the <filename>bm5/meshgen</filename> directory
+              and run <command>readnetgen</command>.
+            </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+              It will ask for a root filename, enter
+              <filename>bm5</filename>. This will create a number of
+              files that are used by PyLith.
+            </para>
+	  </listitem>
+	</orderedlist>
+      </listitem>
+
+      <listitem>
         <para>
-          Start ...
+          The boundary conditions on the fault for this benchmark are
+          somewhat complex. The utility program
+          <command>faultcalc</command> may be used to create split
+          node boundary conditions over specified regions, using
+          functions based on second degree polynomials. The
+          <command>readnetgen</command> program has already produced
+          the main input for <command>faultcalc</command> &mdash;
+          spit node definitions in <filename>bm5.1.fbc</filename> and
+          nodal coodinates in <filename>bm5.coord</filename>. A file
+          containing the correponding coefficients,
+          <filename>bm5-fault.par</filename> was included in the
+          examples tarball. You can then execute the command
+          <command>faultcalc p=bm5-fault.par n=bm5.coord i=bm5.1.fbc
+          o=bm5.split</command>. This will give you the
+          <filename>bm5.split</filename> file that may be used
+          directly with PyLith.
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
+          The external boundary conditions require computing the
+          displacements for the analytical elastic solution at each
+          finite element node on the external boundaries. The examples
+          tarball contains a file <filename>bm5.aux</filename> with
+          these displacements already computed for you for the mesh
+          produced by the <filename>bm5.geo</filename> geometry.
+        </para>
+	<warning>
+          <para>
+            If you make any changes to <filename>bm5.geo</filename> or
+            change the geometry within
+            <application>NetGen</application>, the boundary condition
+            file <filename>bm5.aux</filename> will no longer be
+            correct and you will have to generate one yourself.
+          </para>
+	</warning>
+      </listitem>
+    </orderedlist>
+  </section>
+
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Run the simulation on one processor</title>
+    <para>
+      In this step we will setup a directory to hold the simulation
+      input and output and then run the simulation on a single
+      processor.
+    </para>
+    
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          Create a directory where you want to run the simulation,
+          e.g., <filename>run</filename>. Move the following files
+          into the directory: <filename>bm5.bc</filename>,
+          <filename>bm5.connect</filename>,
+          <filename>bm5.coord</filename>, and
+          <filename>bm5.split</filename>. See <xref
+          linkend="runpylith" /> and <xref linkend="fileformats" />
+          for explanations of what these files contain and the syntax
+          they use.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          We still need a few more files to run the simulation. These
+          files contain parameters related to the material properties
+          and simulation output and are included in the examples
+          tarball. Copy the following files from the
+          <filename>file_templates</filename> directory:
+          <filename>bm5.fuldat</filename>,
+          <filename>bm5.keyval</filename>,
+          <filename>bm5.prop</filename>,
+          <filename>bm5.statevar</filename>,
+          <filename>bm5.time</filename>, and
+          <filename>bm5.time</filename>.
+        </para>
+	<para>
+          In the <filename>bm5.fuldat</filename>, we have specified
+          that we want full output at time steps 10, 50, and 100. We
+          define six materials with both elastic and viscoelastic
+          behavior in <filename>bm5.prop</filename>. In
+          <filename>bm5.statevar</filename> we choose to include total
+          stress, total strain, incremental stress, and incremental
+          strain in the output. As defined in
+          <filename>bm5.time</filename>, the simulation will have 100
+          time steps of 0.1 year each.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Run the simulation by executing <command>runbm5.sh 1</command>.
+        </para>
+	<tip>
+          <para>
+            All of the input is echoed in the file
+            <filename>bm5.ascii</filename>. You can check to make sure
+            your input is digested correctly by examining this
+            file. For large problems, this file can be quite
+            large. You can suppress creation of this file using the
+            command line argument
+            <option>-lm3dscan.asciiOutput=none</option> flag. On the
+            other hand, for debugging purposes in small problems, you
+            may wish to output everything, including the computed
+            results, in this file using
+            <option>-lm3dscan.asciiOutput=full</option>.
+          </para>
+        </tip>
+      </listitem>
+    </orderedlist>
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Visualize the results</title>
+    <para>
+      Now it is time to visualize the results of the simulation. By
+      default, PyLith writes simulation output using
+      <application>AVS</application> <acronym>UCD</acronym>
+      files. These can also be read by several other visualization
+      tools, e.g., <application>ParaView</application>,
+      <application>Iris Explorer</application>, and
+      <application>AVS</application>. We will use the open-source
+      application <application>ParaView</application> to visualize the
+      results.
+    </para>
+    
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          PyLith does not write complete <acronym>UCD</acronym>
+          files. So the first step is to combine the mesh topology
+          information with the output at a given time step into a
+          complete <acronym>UCD</acronym> file. For example, use
+          <command>cat</command> to merge the nodal coordinates file
+          (<filename>bm5.mesh.inp</filename>) and the nodal
+          displacements at time step 10 file
+          (<filename>bm5.mesh.time.00010.inp</filename>) into
+          <filename>bm5.mesh.t00010.inp</filename>, <command>cat
+          bm5.mesh.inp bm5.mesh.time.00010.inp
+          bm5.mesh.t00010.inp</command>.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          State <application>ParaView</application> by executing
+          <command>paraview</command>.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Select ...
         </para>
       </listitem>
     </orderedlist>
-  </sect1>
-</chapter>
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Run the simulation on two processors</title>
+    <para>
+      In this step we will setup a directory to hold the simulation
+      input and output and then run the simulation as two processes.
+    </para>
+
+    <para>
+      EDIT THIS
+    </para>
+    
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          Create a directory where you want to run the simulation,
+          e.g., <filename>run</filename>. Move the following files
+          into the directory: <filename>bm5.bc</filename>,
+          <filename>bm5.connect</filename>,
+          <filename>bm5.coord</filename>, and
+          <filename>bm5.split</filename>.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          We still need a few more files to run the simulation. These
+          files contain parameters related to the material properties
+          and simulation output and are included in the examples
+          tarball. Copy the following files from the
+          <filename>file_templates</filename> directory:
+          <filename>bm5.fuldat</filename>,
+          <filename>bm5.keyval</filename>,
+          <filename>bm5.prop</filename>,
+          <filename>bm5.statevar</filename>,
+          <filename>bm5.time</filename>, and
+          <filename>bm5.time</filename>, and
+          <filename>runbm5.sh</filename>.
+        </para>
+	<para>
+          In the <filename>bm5.fuldat</filename>, we have specified
+          that we want full output at time steps 10, 50, and 100. We
+          define six materials with both elastic and viscoelastic
+          behavior in <filename>bm5.prop</filename>. In
+          <filename>bm5.statevar</filename> we choose to include total
+          stress, total strain, incremental stress, and incremental
+          strain in the output. As defined in
+          <filename>bm5.time</filename>, the simulation will have 100
+          time steps of 0.1 year each.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Run the simulation by executing <command>runbm5.sh 2</command>.
+        </para>
+	<tip>
+          <para>
+            All of the input is echoed in the file
+            <filename>bm5.ascii</filename>. You can check to make sure
+            your input is digested correctly by examining this
+            file. For large problems, this file can be quite
+            large. You can suppress creation of this file using the
+            command line argument
+            <option>-lm3dscan.asciiOutput=none</option> flag. On the
+            other hand, for debugging purposes in small problems, you
+            may wish to output everything, including the computed
+            results, in this file using
+            <option>-lm3dscan.asciiOutput=full</option>.
+          </para>
+        </tip>
+      </listitem>
+    </orderedlist>
+  </section>
+
+</section>
