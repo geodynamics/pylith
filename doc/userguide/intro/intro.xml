@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<chapter id="introduction">
+  <title>Introduction</title>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>History</title>
+    <para>
+      ADD STUFF HERE
+    </para>
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Governing Equations</title>
+    <para>
+      ADD STUFF HERE
+    </para>
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Software Components</title>
+    <para>
+      ADD STUFF HERE
+    </para>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>PyLith</title>
+      <para>
+        ADD STUFF HERE
+      </para>
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>PETSc</title>
+      <para>
+        ADD STUFF HERE
+      </para>
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Pyre</title>
+      <para>
+        ADD STUFF HERE
+      </para>
+    </section>
+
+  </section>
+</chapter>

@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<chapter id="runpylith">
+  <title>Running PyLith</title>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Input Files</title>
+    <para>
+      PyLith gets its input from a variety of files. Most of these are
+      associated with different kinds of boundary conditions. As a
+      result only six are required.
+    </para>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Required Input Files</title>
+      <para>
+        The required input files define the finite-element mesh,
+        boundary conditions, time step information, output of state
+        variables, and material properties.
+      </para>
+      <variablelist>
+	<varlistentry>
+	  <term><filename>xx.coord</filename></term>
+	  <listitem>
+	    <para>
+              Coordinates of finite-element vertices.
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><filename>xx.connect</filename></term>
+	  <listitem>
+	    <para>
+              Topology of finite-element mesh.
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><filename>xx.bc</filename></term>
+	  <listitem>
+	    <para>
+              Specifies boundary conditions at nodes on external boundaries.
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><filename>xx.time</filename></term>
+	  <listitem>
+	    <para>
+              Specifies for which time steps full output is desired.
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><filename>xx.statevar</filename></term>
+	  <listitem>
+	    <para>
+              Specifies which state variables are to be output for the
+              elastic and (time-dependent) viscoelastic solution.
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><filename>xx.prop</filename></term>
+	  <listitem>
+	    <para>
+              Specifies properties for each material.
+            </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Optional Input Files</title>
+      <para>
+        CHECK WITH CHARLES ON WHAT IS IMPLEMENTED
+      </para>
+      <variablelist>
+	<varlistentry>
+	  <term><filename>xx.split</filename></term>
+	  <listitem>
+	    <para>
+              Dislocation boundary condition information (implemented
+              using split nodes).
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><filename>xx.keyval</filename></term>
+	  <listitem>
+	    <para>
+              ??
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><filename>xx.fuldat</filename></term>
+	  <listitem>
+	    <para>
+              Specify at which time steps full output is requested.
+            </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
+
+  </section>
+
+</chapter>
