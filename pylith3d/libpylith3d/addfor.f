@@ -63,6 +63,7 @@ c
         sgn=sign(one,dble(lmx(j)))
         if(k.ne.izero) b(k)=b(k)+p(j)
         if(l.ne.izero) b(l)=b(l)+p(j)*sgn
+cdebug        write(6,*) "j,k,p(j),b(k):",j,k,p(j),b(k)
       end do
       return
       end
