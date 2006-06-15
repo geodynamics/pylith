@@ -87,6 +87,7 @@ cdebug      integer idb
       double precision tmp(3),acc(3)
       logical debug,div(3)
 c
+      call flush(6)
 cdebug      write(6,*) "Hello from residu_f!"
 c
       tmp(3)=zero
@@ -97,7 +98,12 @@ c
      &  ierr)
       call VecCreateSeqWithArray(MPI_COMM_SELF, neq, dispvec, locSol,
      &  ierr)
-      call assembleVectorComplete(rhs, locRhs, INSERT_VALUES, ierr)
+      call VecZeroEntries(rhs, ierr)
+      call assembleVectorComplete(rhs, locRhs, ADD_VALUES, ierr)
+cdebug      write(6,*) "Initial bresid:",(bresid(idb),idb=1,neq)
+cdebug      write(6,*) "Initial RHS:"
+cdebug      call flush(6)
+cdebug      call VecView(rhs, PETSC_VIEWER_STDOUT_WORLD, ierr)
       call VecNorm(rhs, NORM_2, ftmp, ierr)
 cpetsc      ftmp=dnrm2(neq,bresid,ione)
       do i=1,neq
@@ -110,10 +116,16 @@ cpetsc      ftmp=dnrm2(neq,bresid,ione)
         call dcopy(neq,bextern,ione,bresid,ione)
       end if
       call daxpy(neq,alpha,bintern,ione,bresid,ione)
-      call assembleVectorComplete(sol, locSol, INSERT_VALUES, ierr)
+      call VecZeroEntries(sol, ierr)
+      call assembleVectorComplete(sol, locSol, ADD_VALUES, ierr)
       call VecNorm(sol, NORM_2, tmp(1), ierr)
 cpetsc tmp(1)=dnrm2(neq,dispvec,ione)
-      call assembleVectorComplete(rhs, locRhs, INSERT_VALUES, ierr)
+      call VecZeroEntries(rhs, ierr)
+      call assembleVectorComplete(rhs, locRhs, ADD_VALUES, ierr)
+cdebug      write(6,*) "Final bresid:",(bresid(idb),idb=1,neq)
+cdebug      write(6,*) "Final RHS:"
+cdebug      call flush(6)
+cdebug      call VecView(rhs, PETSC_VIEWER_STDOUT_WORLD, ierr)
       call VecNorm(rhs, NORM_2, tmp(2), ierr)
 cpetsc      tmp(2)=dnrm2(neq,bresid,ione)
       tmp(3)=sqrt(tmp(3))
