@@ -8,11 +8,9 @@
   <section>
     <title>About This Document</title>
     <para>
-      This document is organized into three parts. Part I consists
-      of traditional book front matter, including this preface. Part
-      II begins with an introduction to PyLith and proceeds to the
-      details of implementation. Part III provides appendices and
-      references.
+      This document is organized into two parts. Part I begins with an
+      introduction to PyLith and discusses how to run the
+      software. Part II provides appendices and references.
     </para>
   </section>
 
@@ -53,9 +51,8 @@
     <para>
       Current PyLith development is supported by the Southern
       California Earthquake Center, the National Science Foundation,
-      and the CIG. Current EqSim development is supported by
-      internal U.S. Geological Survey funding. Pyre development is
-      funded by the <ulink
+      the CIG, and internal U.S. Geological Survey
+      funding. Pyre development is funded by the <ulink
       url="http://www.doe.gov/engine/content.do">Department of
       Energy's</ulink> Advanced Simulation and Computing program and
       the <ulink url="http://www.nsf.gov/">National Science

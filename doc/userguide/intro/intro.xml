@@ -6,9 +6,34 @@
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section>
+    <title>Overview</title>
+    <para>
+      PyLith is a multi-scale simulation software package for
+      earthquake physics. It is portable, scalable software for
+      simulation of crustal deformation across spatial scales ranging
+      from meters to hundreds of kilometers and temporal scales
+      ranging from milliseconds to thousands of years.
+    </para>
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
     <title>History</title>
     <para>
-      ADD STUFF HERE
+      This first version of PyLith is a direct descendant of Lithomop
+      and marks the first version that runs in parallel. Lithomop was
+      the product of major reengineering of Tecton, a finite-element
+      code for simulating static and quasi-static crustal
+      deformation. The major new features present in Lithomop included
+      dynamic memory allocation and the use of the Pyre simulation
+      framework and PETSc solvers.
+    </para>
+    <para>
+      PyLith is currently being rewritten from scratch to create a
+      much more modular, powerful simulation package. This new code
+      will include earthquake dynamics (both rupture propagation and
+      seismic wave propagation). A beta release is expected in late
+      2006.
     </para>
   </section>
 
@@ -30,7 +55,55 @@
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
       <title>PyLith</title>
+
       <para>
+        In PyLith simulation software is separated into modules to
+        encapsulate behavior and facilitate use across multiple
+        applications. That way expert users can replace functionality
+        of a wide variety of components without recompiling or
+        polluting the main code. External packages reduce development
+        time and enhance computational efficiency, for example, PyLith
+        runs 2x faster by using the PETSc linear solver.
+      </para>
+      <para>
+        PyLith is based on several programming languages. High-level
+        code is written in Python; this rich, expressive interpreted
+        language with dynamic typing reduces development
+        time. Low-level code is written in Fortran 77 for fast
+        execution. Bindings, written in C/C++, are used to allow the
+        low-level code (Fortran 77)to be called from high-level code
+        (Python).
+      </para>
+      <para>
+        PyLith makes extensive use of external software. Pyre is a
+        science neutral simulation framework being developed at
+        Caltech. PETSc is used to perform operations on matrices and
+        vectors in parallel. MPI is the Message Passing Interface
+        which provides a standard interface for
+        parallel-processing. PyUnit and CppUnit are libraries that aid
+        in regression testing of the software. UML is the Unified
+        Modeling Language which is used to diagram the layout of the
+        source code.
+      </para>
+
+      <figure>
+	<title>
+          PyLith Overview. PyLith coordinates several external
+          packages based on multiple programming languages.
+        </title>
+<!--
+	<mediaobject id="architecture.eps">
+	  <imageobject>
+	    <imagedata fileref="images/architecture.eps" format="EPS"/>
+	  </imageobject>
+	</mediaobject>
+-->
+      </figure>
+
+
+      <para>
+
+
         ADD STUFF HERE
       </para>
     </section>
@@ -46,10 +119,99 @@
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
       <title>Pyre</title>
-      <para>
-        ADD STUFF HERE
-      </para>
-    </section>
 
+      <para>
+        Pyre is an object-oriented environment capable of specifying
+        and launching numerical simulations on multiple platforms,
+        including Beowulf class parallel computers and grid computing
+        systems. Pyre allows the binding of multiple components such
+        as solid and fluid models used in Earth science simulations,
+        and different meshers. The Pyre framework enables the elegant
+        setup, modification and launching of massively parallel
+        three-dimensional solver applications.
+      </para>
+      <para>
+        Pyre is a framework, a combination of software and design
+        philosophy that promotes the reuse of code. In their canonical
+        software design book, <citetitle>Design Patterns</citetitle>,
+        Erich Gamma <emphasis>et al</emphasis>. condense the concept
+        of a framework concept down to, "When you use a framework, you
+        reuse the main body and write the code it calls."  In the
+        context of frameworks and object-oriented programming, Pyre
+        can be thought of as a collection of classes and the way their
+        instances interact.  Programming applications based on Pyre
+        will look similar to those written in any other
+        object-oriented language. The Pyre framework contains a subset
+        of parts that make up the overall framework. Each of those
+        parts is designed to solve a specific problem.
+      </para>
+      <para>
+        The framework approach to computation offers many
+        advantages. It permits the exchange of codes and promotes the
+        reuse of standardized software while preserving
+        efficiency. Frameworks are also an efficient way to handle
+        changes in computer architecture. They present programmers and
+        scientists with a unified and well-defined task and allow for
+        shared costs of the housekeeping aspects of software
+        development. They provide greater institutional continuity to
+        model development than piecemeal approaches.
+      </para>
+      <para>
+        The Pyre framework incorporates features aimed at enabling the
+        scientific non-expert to perform tasks easily without
+        hindering the expert. Target features for end users allow
+        complete and intuitive simulation specification, reasonable
+        defaults, consistency checks of input, good diagnostics, easy
+        access to remote facilities, and status monitoring. Target
+        features for developers include easy access to user input, a
+        shorter development cycle, and good debugging support.
+      </para>
+
+      <figure>
+	<title>
+          Pyre Architecture. The integration framework is a set of
+          cooperating abstract services.
+        </title>
+<!--
+	<mediaobject id="pyre_overview">
+	  <imageobject>
+	    <imagedata fileref="figs/pyre_overview.eps" format="EPS"/>
+	  </imageobject>
+	</mediaobject>
+-->
+      </figure>
+
+    </section>
   </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>PyLith Design</title>
+
+    <para>
+      In transforming Lithomop, a serial code, into PyLith, a parallel
+      code, a principal concern was to preserve the existing structure
+      of the serial Fortran code. Active development of purely
+      analytic features in PyLith, such as new material models or
+      discretization schemes, depends on the familiarity of
+      application scientists with the traditional Fortran programming
+      paradigm. Global, topological operation should be strictly
+      segregated from the existing code. In fact, with the exception
+      of integrating PETSc for serial linear algebra and solver
+      operations, PyLith can be run purely in serial without
+      activating any of the parallel capabilities.
+    </para>
+    <para>
+      In order to accomplish this separation, we use the PETSc
+      <classname>Sieve</classname> structure to create a model of the
+      serial PyLith mesh. This model is then partitioned and
+      distributed to a set of processes. Each process receives a
+      self-consistent mesh, meaning the pieces are overlapping.  Each
+      process then executes a serial PyLith step on that particular
+      mesh piece.  The PETSc linear algebra operations are overloaded,
+      using the <classname>Sieve</classname> information, to produce a
+      globally consistent field.
+    </para>
+  </section>
+
 </chapter>
