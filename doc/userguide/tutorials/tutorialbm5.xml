@@ -112,14 +112,47 @@
         </para>
       </listitem>
     </orderedlist>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Tutor</title>
+      <para>
+        The <filename>workarea</filename> directory contains a shell
+        script <filename>tutor.sh</filename>. This script can (1)
+        check to make sure the files necessary for a given step in the
+        tutorial exist in the <filename>workarea</filename> directory,
+        (2) retrieve any missing files from the
+        <filename>archive</filename> directory that are needed for a
+        given step, or (3) prepare the work area for a given step by
+        removing old files that would otherwise be overwritten. Run
+        <command>tutor.sh</command> without any arguments for more
+        information. We will use this script at the beginning of each
+        step to retrieve files as necessary from the archive.
+      </para>
+      <tip>
+	<para>
+          You may want to run <command>tutor.py</command> in the
+          <filename>workarea</filename> directory now to clear out all
+          old tutorial files.
+        </para>
+      </tip>
+      <tip>
+	<para>
+          If you accidentally delete the <filename>tutor.py</filename>
+          script, you can retrieve a fresh copy from the tutorials
+          tarball by extracting just this file.
+        </para>
+      </tip>
+    </section>
+
   </section>
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section>
     <title>Build helper utilities</title>
     <para>
-      We need to build two simple Fortran utility programs that we
-      will use in later steps.
+      Before we can begin work in earnest, we need to build two simple
+      Fortran utility programs that we will use in later steps.
     </para>
     
     <orderedlist numeration="arabic">
@@ -156,8 +189,8 @@
 	    <term><command>faultcalc</command></term>
 	    <listitem>
 	      <para>
-                A fortran program to compute spit node displacements
-                using equations of second degree over specified
+                A fortran program to compute split node displacements
+                using second order polynomials over specified
                 regions.
               </para>
 	    </listitem>
@@ -183,30 +216,25 @@
       In this step we will generate the finite-element mesh for the
       benchmark problem using <application>NetGen</application>.
     </para>
-    <tip>
-      <para>
-        If you skip this step, you will need to copy the file
-        <filename>bm5.netgen</filename> from the
-        <filename>archive</filename> directory into the
-        <filename>workarea</filename> directory.
-      </para>
-    </tip>
 
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
           Return to the <filename>scecbm5/workarea</filename>
-          directory.
+          directory. Run <command>tutor.py</command> for step "mesh"
+          with mode "retrieve" to fetch the geometry file for
+          <application>NetGen</application>. You may also want to run
+          <command>tutor.sh</command> for thie step with mode "clean"
+          to clean out old files.
         </para>
       </listitem>
       <listitem>
 	<para>
-          Copy the <filename>bm5.geo</filename> file from the
-          <filename>archive</filename> directory. Examine this file to
-          see how the geometry for the problem is defined. Notice that
-          the different planes have been flagged with different
-          boundary condition codes. These will be used to associate
-          boundary conditions with surfaces and element nodes.
+          Examine the <filename>bm5.geo</filename> file to see how the
+          geometry for the problem is defined. Notice that the
+          different planes have been flagged with different boundary
+          condition codes. These will be used to associate boundary
+          conditions with surfaces and element nodes.
         </para>
       </listitem>
       <listitem>
@@ -244,30 +272,25 @@
           
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section>
-    <title>Create simulation input files</title>
+    <title>Setup simulation input files</title>
     <para>
       In this step we will setup the PyLith input files for the mesh
       and boundary conditions.
     </para>
-    <tip>
-      <para>
-        If you skip this step, you will need to copy the following
-        files to the <filename>workarea</filename> directory from the
-        <filename>archive</filename> directory: ADD FILES HERE.
-      </para>
-    </tip>
     
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Run the utility program <command>readnetgen</command>.
+          Run <command>tutor.py</command> for step "setup" with mode
+          "retrieve" to fetch files from the archive.
         </para>
       </listitem>
       <listitem>
 	<para>
-           It will ask for a root filename, enter
-           <filename>bm5</filename>. This will generate a number of
-           files that are used by PyLith.
+          Run the utility program <command>readnetgen</command> to
+          process the <application>NetGen</application> output file
+          into PyLith compatible input files. It will ask for a root filename,
+           enter <filename>bm5</filename>.
          </para>
       </listitem>
       <listitem>
@@ -280,13 +303,10 @@
           program has already produced the main input for
           <command>faultcalc</command> &mdash; split node definitions
           in <filename>bm5.1.fbc</filename> and nodal coodinates in
-          <filename>bm5.coord</filename>. Copy the file
-          <filename>bm5-fault.par</filename> from the
-          <filename>archive</filename> directory to the
-          <filename>workarea</filename> directory. This file contains
-          the polynomial coefficients for this benchmark
-          problem. Execute the command <command>faultcalc
-          p=bm5-fault.par n=bm5.coord i=bm5.1.fbc
+          <filename>bm5.coord</filename>. The file
+          <filename>bm5-fault.par</filename> contains the polynomial
+          coefficients for this benchmark problem. Execute the command
+          <command>faultcalc p=bm5-fault.par n=bm5.coord i=bm5.1.fbc
           o=bm5.split</command>. This will give you the
           <filename>bm5.split</filename> file that PyLith needs as
           input.
@@ -294,14 +314,14 @@
       </listitem>
       <listitem>
         <para>
-          The external boundary conditions require computing the
-          displacements for the analytical elastic solution at each
-          finite element node on the external boundaries. The file
+          The external boundary conditions for this benchmark are also
+          complicated and require computing the displacements for the
+          analytical elastic solution at each finite element node on
+          the external boundaries. The file
           <filename>bm5.aux</filename> contains these displacements
-          already computed for you for the mesh produced by the
-          <filename>bm5.geo</filename> geometry. Copy this file from
-          the <filename>archive</filename> directory to the
-          <filename>workarea</filename> directory.
+          already computed for you for the mesh produced from the
+          <filename>bm5.geo</filename> geometry. NEED TO CONVERT
+          bm5.aux INTO bm5.bc??
         </para>
 	<warning>
           <para>
@@ -327,18 +347,11 @@
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          We still need a few more files to run the simulation. These
-          files contain parameters related to the material properties
-          and simulation output and are included in the examples
-          tarball. Copy the following files from the
-          <filename>archive</filename> directory:
-          <filename>bm5.fuldat</filename>,
-          <filename>bm5.keyval</filename>,
-          <filename>bm5.prop</filename>,
-          <filename>bm5.statevar</filename>,
-          <filename>bm5.time</filename>, and
-          <filename>runbm5.sh</filename>.
+          Run <command>tutor.py</command> for step "run1" with mode
+          "retreive" to fetch some parameter files from the archive.
         </para>
+      </listitem>
+      <listitem>
 	<para>
           In the <filename>bm5.fuldat</filename>, we have specified
           that we want full output at time steps 10, 50, and 100. We
@@ -353,7 +366,8 @@
       </listitem>
       <listitem>
         <para>
-          Run the simulation by executing <command>runbm5.sh 1</command>.
+          Run the simulation by executing <command>runbm5.sh
+          1</command>, where the 1 refers to the number of processors.
         </para>
 	<tip>
           <para>
@@ -376,7 +390,7 @@
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section>
-    <title>Visualize the results</title>
+    <title>Visualize the single processor run</title>
     <para>
       Now it is time to visualize the results of the simulation. By
       default, PyLith writes simulation output using
@@ -390,6 +404,13 @@
     </para>
     
     <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          If necessary, run <command>tutor.py</command> for step
+          "viz1" with mode "retreive" to fetch the simulation output
+          from the archive.
+        </para>
+      </listitem>
       <listitem>
 	<para>
           PyLith does not write complete <acronym>UCD</acronym>
@@ -407,13 +428,13 @@
       </listitem>
       <listitem>
 	<para>
-          State <application>ParaView</application> by executing
+          Start <application>ParaView</application> by executing
           <command>paraview</command>.
         </para>
       </listitem>
       <listitem>
 	<para>
-          Select ...
+          ADD STUFF HERE
         </para>
       </listitem>
     </orderedlist>
@@ -423,73 +444,67 @@
   <section>
     <title>Run the simulation on two processors</title>
     <para>
-      In this step we will setup a directory to hold the simulation
-      input and output and then run the simulation as two processes.
-    </para>
-
-    <para>
-      EDIT THIS
+      In this step we will run the simulation on two processors.
     </para>
     
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Create a directory where you want to run the simulation,
-          e.g., <filename>run</filename>. Move the following files
-          into the directory: <filename>bm5.bc</filename>,
-          <filename>bm5.connect</filename>,
-          <filename>bm5.coord</filename>, and
-          <filename>bm5.split</filename>.
+          Run <command>tutor.py</command> for step "run2" with mode
+          "retreive" to make sure all parameter files are available.
         </para>
       </listitem>
       <listitem>
 	<para>
-          We still need a few more files to run the simulation. These
-          files contain parameters related to the material properties
-          and simulation output and are included in the examples
-          tarball. Copy the following files from the
-          <filename>file_templates</filename> directory:
-          <filename>bm5.fuldat</filename>,
-          <filename>bm5.keyval</filename>,
-          <filename>bm5.prop</filename>,
-          <filename>bm5.statevar</filename>,
-          <filename>bm5.time</filename>, and
-          <filename>bm5.time</filename>, and
-          <filename>runbm5.sh</filename>.
-        </para>
-	<para>
-          In the <filename>bm5.fuldat</filename>, we have specified
-          that we want full output at time steps 10, 50, and 100. We
-          define six materials with both elastic and viscoelastic
-          behavior in <filename>bm5.prop</filename>. In
-          <filename>bm5.statevar</filename> we choose to include total
-          stress, total strain, incremental stress, and incremental
-          strain in the output. As defined in
-          <filename>bm5.time</filename>, the simulation will have 100
-          time steps of 0.1 year each.
+          The parameter files are the same as those in the single
+          processor run. The <command>runbm5</command> script will
+          automatically take care of duplicating these files so that
+          there is one for each processor.
         </para>
       </listitem>
       <listitem>
         <para>
-          Run the simulation by executing <command>runbm5.sh 2</command>.
+          Run the simulation by executing <command>runbm5.sh
+          2</command>, where the 2 refers to the number of processors.
         </para>
-	<tip>
-          <para>
-            All of the input is echoed in the file
-            <filename>bm5.ascii</filename>. You can check to make sure
-            your input is digested correctly by examining this
-            file. For large problems, this file can be quite
-            large. You can suppress creation of this file using the
-            command line argument
-            <option>-lm3dscan.asciiOutput=none</option> flag. On the
-            other hand, for debugging purposes in small problems, you
-            may wish to output everything, including the computed
-            results, in this file using
-            <option>-lm3dscan.asciiOutput=full</option>.
-          </para>
-        </tip>
       </listitem>
     </orderedlist>
   </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Visualize the two processor run</title>
+    <para>
+      Now we will visualize the output from the two processor run
+      using <application>ParaView</application>.
+    </para>
+    
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          If necessary, run <command>tutor.py</command> for step
+          "viz2" with mode "retreive" to fetch the simulation output
+          from the archive.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          ADD STUFF HERE
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Start <application>ParaView</application> by executing
+          <command>paraview</command>.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          ADD STUFF HERE
+        </para>
+      </listitem>
+    </orderedlist>
+  </section>
+
 
 </section>
