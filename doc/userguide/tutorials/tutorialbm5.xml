@@ -8,7 +8,7 @@
   <section>
     <title>Overview</title>
     <para>
-      In this tutorial, ew will walk through the steps necessary to
+      In this tutorial, we will walk through the steps necessary to
       construct, run, and view the results of a benchmark problem
       (SCEC Bemchmark 5). This problem examines the viscoelatic
       (Maxwell) relaxation of stress from a single, finite, dip-slip
@@ -22,7 +22,7 @@
         The model domain is a cube with edges 24 km long (0 km &le; x
         &le; 24 km; 0 km &le; y &le; 24 km; -24 km &le; z &le; 0) and
         is composed of two materials. One material occupies the
-        top-half of the domain -12 km &le; z &le; 0 km while the other
+        top-half of the domain, -12 km &le; z &le; 0 km, while the other
         occupies the lower half, -24 km &le; z &lt; 12 km. Both
         materials are Poisson solids with Lame's constants (&mgr; and
         &lgr;) equal to 30 GPa with Maxwell viscoelastic
@@ -45,56 +45,100 @@
         solution. These displacements are held fixed through time.
       </para>
 
-      <para>
-        INSERT FIGURE HERE
-      </para>
+      <figure>
+	<title>Geometry of model domain for SCEC benchmark 5.</title>
+	<para>
+          INSERT GRAPHIC HERE
+        </para>
+	<!--
+	<mediaobject id="bm5_geometry">
+          <imageobject>
+	    <imagedata fileref="figs/geometry" format="PNG" />
+	  </imageobject>
+	</mediaobject>
+	  -->
+      </figure>
     </section>
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
       <title>Prerequisites</title>
       <para>
-        You should have already installed PyLith. In this tutorial we
-        assume that you are using <ulink
+        You should have already installed PyLith following the
+        instructions in <xref linkend="install" />. In order to work
+        through the full tutorial, in addition to
+        <application>PyLith</application> you will need <ulink
         url="http://www.hpfem.jku.at/netgen/">
         <application>NetGen</application></ulink> to generate the mesh
         and <ulink url="http://www.paraview.org"> ParaView</ulink> to
         view simulation results. You may use other packages, but some
-        adaption from what is described here will be necessary.
+        adaption from what is described here will be
+        necessary. Alternatively, you can just complete a subset of
+        the steps using files provided (as described below), skipping
+        the steps for which you do not have the proper software
+        pacakges installed.
       </para>
     </section>
   </section>
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section>
-    <title>Download and setup</title>
+    <title>Download and unpack</title>
     <para>
-      We will start by downloading the tutorial tarball and then build
-      two utilities used to transform
-      <application>NetGen</application> output into PyLith input.
+      We will start by downloading the tutorial tarball and unpacking
+      it.
+    </para>
+
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          Download the <ulink
+          url="REPLACE WITH UPDATED URL">tutorial
+          tarball</ulink> and unpack it in a location of your
+          choosing.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Go to the <filename>tutorials/scecbm5</filename> directory. The
+          <filename>archive</filename> directory contains all of the
+          input and output files associated with this tutorial. These
+          are included for your reference. At each step, you can check
+          to make sure your input and output agree with these
+          files. Additionally, you can use these files to start at an
+          intermediate step.  The <filename>scecbm5</filename>
+          directory also contains a <filename>workarea</filename>
+          sub-directory, which we will use as our working directory.
+        </para>
+      </listitem>
+    </orderedlist>
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Build helper utilities</title>
+    <para>
+      We need to build two simple Fortran utility programs that we
+      will use in later steps.
     </para>
     
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Download the <ulink
-          url="http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/lithomopinstallation/downloads/unworked_benchmarks.tar.gz">tutorial
-          tarball</ulink> and unpack it in a location of your
-          choosing. You may also wish to download the <ulink
-          url="http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/lithomopinstallation/downloads/worked_benchmarks.tar.gz">worked
-          example tarball</ulink> in order to compare your results or
-          start at an intermediate step.
+          Return to the top-level <filename>tutorials</filename>
+          directory and go to the <filename>utils</filename>
+          sub-directory.
         </para>
       </listitem>
       <listitem>
 	<para>
-          Once you have unpacked the tarball, you will have an
-          <filename>unworked_benchmarks</filename> directory.  Go to
-          the <filename>utils</filename> sub-directory and edit the
-          <filename>makefile</filename> as appropriate (it is
-          presently setup for g77). You will need to make the
-          following executables in order to generate the inputs files
-          for PyLith from <application>NetGen</application> output.
+          Edit the <filename>Makefile</filename> as appropriate (it is
+          presently setup for g77).
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Run <command>make</command> to build the two utilities.
         </para>
 	<variablelist>
 	  <varlistentry>
@@ -124,120 +168,140 @@
 	<para>
   	  Once you have built these utilities, move them to a location
   	  in your <envar>PATH</envar> or update your
-  	  <envar>PATH</envar> to include the directory that contains
-  	  them.
+  	  <envar>PATH</envar> to include the
+  	  <filename>utils</filename> directory.
         </para>
       </listitem>
     </orderedlist>
+
   </section>
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section>
+    <title>Generate the mesh</title>
+    <para>
+      In this step we will generate the finite-element mesh for the
+      benchmark problem using <application>NetGen</application>.
+    </para>
+    <tip>
+      <para>
+        If you skip this step, you will need to copy the file
+        <filename>bm5.netgen</filename> from the
+        <filename>archive</filename> directory into the
+        <filename>workarea</filename> directory.
+      </para>
+    </tip>
+
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          Return to the <filename>scecbm5/workarea</filename>
+          directory.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Copy the <filename>bm5.geo</filename> file from the
+          <filename>archive</filename> directory. Examine this file to
+          see how the geometry for the problem is defined. Notice that
+          the different planes have been flagged with different
+          boundary condition codes. These will be used to associate
+          boundary conditions with surfaces and element nodes.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Startup <application>NetGen</application> by running
+          <command>ng</command>.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Select <menuchoice><guimenu>File</guimenu><guimenuitem>Load
+          Geometry</guimenuitem></menuchoice> and select
+          <filename>bm5.geo</filename>.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Click on <guibutton>Generate Mesh</guibutton>.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Export the mesh to a file named
+          <filename>bm5.netgen</filename>, making sure the export
+          filetype is "Neutral format".
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          You can now exit <application>NetGen</application>.
+        </para>
+      </listitem>
+    </orderedlist>
+  </section>
+          
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
     <title>Create simulation input files</title>
     <para>
-      In this step we will generate the finite-element mesh and setup
-      the input files for the mesh and boundary conditions.
+      In this step we will setup the PyLith input files for the mesh
+      and boundary conditions.
     </para>
+    <tip>
+      <para>
+        If you skip this step, you will need to copy the following
+        files to the <filename>workarea</filename> directory from the
+        <filename>archive</filename> directory: ADD FILES HERE.
+      </para>
+    </tip>
     
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          All of the mesh generation tasks will be performed in the
-          "meshgen" directory. The meshgen directory contains a file
-          "bm5.geo", which is an input file for
-          <application>NetGen</application>. Examine this file to see
-          how the geometry is defined. Notice that thee different
-          planes have been flagged with different boundary condition
-          codes. These will be used to associate boundary conditions
-          with surfaces and element faces and nodes.
+          Run the utility program <command>readnetgen</command>.
         </para>
-        <orderedlist numeration="loweralpha">
-          <listitem>
-	    <para>
-              Startup <application>NetGen</application> by running
-              <command>ng</command>.
-            </para>
-	  </listitem>
-          <listitem>
-	    <para>
-              Select
-              <menuchoice><guimenu>File</guimenu><guimenuitem>Load
-              Geometry</guimenuitem></menuchoice> and select
-              <filename>bm5.geo</filename>.
-            </para>
-	  </listitem>
-          <listitem>
-	    <para>
-              Click on <guibutton>Generate Mesh</guibutton>.
-            </para>
-	  </listitem>
-          <listitem>
-	    <para>
-              Export the mesh to a file named
-              <filename>bm5.netgen</filename>, making sure the export
-              filetype is "Neutral format".
-            </para>
-	  </listitem>
-          <listitem>
-	    <para>
-              You can now exit <application>NetGen</application>.
-            </para>
-	  </listitem>
-	</orderedlist>
       </listitem>
-
       <listitem>
 	<para>
-          You are now ready to process the
-          <application>NetGen</application> output into input for
-          PyLith.
-        </para>
-        <orderedlist>
-          <listitem>
-            <para>
-              Move to the <filename>bm5/meshgen</filename> directory
-              and run <command>readnetgen</command>.
-            </para>
-	  </listitem>
-	  <listitem>
-	    <para>
-              It will ask for a root filename, enter
-              <filename>bm5</filename>. This will create a number of
-              files that are used by PyLith.
-            </para>
-	  </listitem>
-	</orderedlist>
+           It will ask for a root filename, enter
+           <filename>bm5</filename>. This will generate a number of
+           files that are used by PyLith.
+         </para>
       </listitem>
-
       <listitem>
         <para>
           The boundary conditions on the fault for this benchmark are
           somewhat complex. The utility program
-          <command>faultcalc</command> may be used to create split
-          node boundary conditions over specified regions, using
-          functions based on second degree polynomials. The
-          <command>readnetgen</command> program has already produced
-          the main input for <command>faultcalc</command> &mdash;
-          spit node definitions in <filename>bm5.1.fbc</filename> and
-          nodal coodinates in <filename>bm5.coord</filename>. A file
-          containing the correponding coefficients,
-          <filename>bm5-fault.par</filename> was included in the
-          examples tarball. You can then execute the command
-          <command>faultcalc p=bm5-fault.par n=bm5.coord i=bm5.1.fbc
+          <command>faultcalc</command> creates split node boundary
+          conditions over specified regions, using functions based on
+          second degree polynomials. The <command>readnetgen</command>
+          program has already produced the main input for
+          <command>faultcalc</command> &mdash; split node definitions
+          in <filename>bm5.1.fbc</filename> and nodal coodinates in
+          <filename>bm5.coord</filename>. Copy the file
+          <filename>bm5-fault.par</filename> from the
+          <filename>archive</filename> directory to the
+          <filename>workarea</filename> directory. This file contains
+          the polynomial coefficients for this benchmark
+          problem. Execute the command <command>faultcalc
+          p=bm5-fault.par n=bm5.coord i=bm5.1.fbc
           o=bm5.split</command>. This will give you the
-          <filename>bm5.split</filename> file that may be used
-          directly with PyLith.
+          <filename>bm5.split</filename> file that PyLith needs as
+          input.
         </para>
       </listitem>
-
       <listitem>
         <para>
           The external boundary conditions require computing the
           displacements for the analytical elastic solution at each
-          finite element node on the external boundaries. The examples
-          tarball contains a file <filename>bm5.aux</filename> with
-          these displacements already computed for you for the mesh
-          produced by the <filename>bm5.geo</filename> geometry.
+          finite element node on the external boundaries. The file
+          <filename>bm5.aux</filename> contains these displacements
+          already computed for you for the mesh produced by the
+          <filename>bm5.geo</filename> geometry. Copy this file from
+          the <filename>archive</filename> directory to the
+          <filename>workarea</filename> directory.
         </para>
 	<warning>
           <para>
@@ -257,38 +321,23 @@
   <section>
     <title>Run the simulation on one processor</title>
     <para>
-      In this step we will setup a directory to hold the simulation
-      input and output and then run the simulation on a single
-      processor.
+      In this step we will run the simulation on a single processor.
     </para>
     
     <orderedlist numeration="arabic">
-      <listitem>
-	<para>
-          Create a directory where you want to run the simulation,
-          e.g., <filename>run</filename>. Move the following files
-          into the directory: <filename>bm5.bc</filename>,
-          <filename>bm5.connect</filename>,
-          <filename>bm5.coord</filename>, and
-          <filename>bm5.split</filename>. See <xref
-          linkend="runpylith" /> and <xref linkend="fileformats" />
-          for explanations of what these files contain and the syntax
-          they use.
-        </para>
-      </listitem>
       <listitem>
 	<para>
           We still need a few more files to run the simulation. These
           files contain parameters related to the material properties
           and simulation output and are included in the examples
           tarball. Copy the following files from the
-          <filename>file_templates</filename> directory:
+          <filename>archive</filename> directory:
           <filename>bm5.fuldat</filename>,
           <filename>bm5.keyval</filename>,
           <filename>bm5.prop</filename>,
           <filename>bm5.statevar</filename>,
           <filename>bm5.time</filename>, and
-          <filename>bm5.time</filename>.
+          <filename>runbm5.sh</filename>.
         </para>
 	<para>
           In the <filename>bm5.fuldat</filename>, we have specified
@@ -314,11 +363,11 @@
             file. For large problems, this file can be quite
             large. You can suppress creation of this file using the
             command line argument
-            <option>-lm3dscan.asciiOutput=none</option> flag. On the
+            <option>-pl3dscan.asciiOutput=none</option> flag. On the
             other hand, for debugging purposes in small problems, you
             may wish to output everything, including the computed
             results, in this file using
-            <option>-lm3dscan.asciiOutput=full</option>.
+            <option>-pl3dscan.asciiOutput=full</option>.
           </para>
         </tip>
       </listitem>

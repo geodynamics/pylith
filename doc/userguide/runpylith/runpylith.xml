@@ -50,7 +50,7 @@
 	  <term><filename>xx.time</filename></term>
 	  <listitem>
 	    <para>
-              Specifies for which time steps full output is desired.
+              Specifies at time stepping information.
             </para>
 	  </listitem>
 	</varlistentry>
@@ -78,18 +78,9 @@
     <section>
       <title>Optional Input Files</title>
       <para>
-        CHECK WITH CHARLES ON WHAT IS IMPLEMENTED
+        ADD STUFF HERE
       </para>
       <variablelist>
-	<varlistentry>
-	  <term><filename>xx.split</filename></term>
-	  <listitem>
-	    <para>
-              Dislocation boundary condition information (implemented
-              using split nodes).
-            </para>
-	  </listitem>
-	</varlistentry>
 	<varlistentry>
 	  <term><filename>xx.keyval</filename></term>
 	  <listitem>
@@ -103,6 +94,43 @@
 	  <listitem>
 	    <para>
               Specify at which time steps full output is requested.
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><filename>xx.split</filename></term>
+	  <listitem>
+	    <para>
+              Dislocation boundary condition information (implemented
+              using split nodes).
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><filename>xx.skew</filename></term>
+	  <listitem>
+	    <para>
+              Local coordinate rotation information for boundary
+              conditions. CHARLES - IS THIS CORRECT??
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><filename>xx.wink</filename></term>
+	  <listitem>
+	    <para>
+              Winkler sprint element boundary condition
+              information. Not yet tested.
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><filename>xx.hist</filename></term>
+	  <listitem>
+	    <para>
+              Time history boundary conditions. Not yet tested?? 
+              CHARLES - IS THIS FOR DISLOCATION BC OR EXTERNAL
+              BOUNDARY CONDITIONS??
             </para>
 	  </listitem>
 	</varlistentry>
