@@ -3,7 +3,7 @@
 # $Id: configure.ac,v 1.1 2005/08/24 22:45:51 leif Exp $
 
 AC_PREREQ(2.59)
-AC_INIT([Lithomop3d], [0.7.1], [willic3@rpi.edu])
+AC_INIT([PyLith3D], [0.8.0], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_SRCDIR([pylith3d/applications/pylith3dapp.py])
 AC_CONFIG_HEADER([portinfo])
@@ -15,7 +15,7 @@ AC_ARG_VAR(PYTHON, [Python interpreter])
 AC_ARG_VAR(PYTHONPATH, [Python module search path])
 AC_ARG_WITH([embedding],
     [AC_HELP_STRING([--with-embedding],
-        [embed Python with Lithomop in a single executable @<:@default=yes@:>@])],
+        [embed Python with PyLith in a single executable @<:@default=yes@:>@])],
     [want_embedding="$withval"],
     [want_embedding=yes])
 AM_CONDITIONAL([COND_EMBEDDING], [test "$want_embedding" = yes])
