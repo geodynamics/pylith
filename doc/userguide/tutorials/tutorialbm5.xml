@@ -10,7 +10,7 @@
     <para>
       In this tutorial, we will walk through the steps necessary to
       construct, run, and view the results of a benchmark problem
-      (SCEC Bemchmark 5). This problem examines the viscoelatic
+      (SCEC Benchmark 5). This problem examines the viscoelastic
       (Maxwell) relaxation of stress from a single, finite, dip-slip
       earthquake in 3-D without body forces. 
     </para>
@@ -25,7 +25,7 @@
         top-half of the domain, -12 km &le; z &le; 0 km, while the other
         occupies the lower half, -24 km &le; z &lt; 12 km. Both
         materials are Poisson solids with Lame's constants (&mgr; and
-        &lgr;) equal to 30 GPa with Maxwell viscoelastic
+        &lgr;) equal to 30 GPa and Maxwell viscoelastic
         properties. The top layer has a viscosity of
         10<superscript>25</superscript> Pa-s (and is essentially
         elastic) while the bottom layer has a viscosity of
@@ -74,9 +74,9 @@
         view simulation results. You may use other packages, but some
         adaption from what is described here will be
         necessary. Alternatively, you can just complete a subset of
-        the steps using files provided (as described below), skipping
-        the steps for which you do not have the proper software
-        pacakges installed.
+        the tutorial using files provided (as described below),
+        skipping the steps for which you do not have the proper
+        software packages installed.
       </para>
     </section>
   </section>
@@ -100,15 +100,14 @@
       </listitem>
       <listitem>
 	<para>
-          Go to the <filename>tutorials/scecbm5</filename> directory. The
-          <filename>archive</filename> directory contains all of the
-          input and output files associated with this tutorial. These
-          are included for your reference. At each step, you can check
-          to make sure your input and output agree with these
-          files. Additionally, you can use these files to start at an
-          intermediate step.  The <filename>scecbm5</filename>
-          directory also contains a <filename>workarea</filename>
-          sub-directory, which we will use as our working directory.
+          Go to the <filename>tutorials/scecbm5</filename>
+          directory. The <filename>archive</filename> directory
+          contains all of the input and output files associated with
+          this tutorial. We will copy input files from this directory
+          into the <filename>workarea</filename> directory. At each
+          step, you can check to make sure your input and output agree
+          with these files. These files also allow you to start at an
+          intermediate step as described in the next section.
         </para>
       </listitem>
     </orderedlist>
@@ -117,11 +116,11 @@
     <section>
       <title>Tutor</title>
       <para>
-        The <filename>workarea</filename> directory contains a shell
-        script <filename>tutor.sh</filename>. This script can (1)
+        Copy the <filename>tutor.sh</filename> script from the
+        <filename>archive</filename> directory into the
+        <filename>workarea</filename> directory. This script can (1)
         check to make sure the files necessary for a given step in the
-        tutorial exist in the <filename>workarea</filename> directory,
-        (2) retrieve any missing files from the
+        tutorial exist, (2) retrieve any missing files from the
         <filename>archive</filename> directory that are needed for a
         given step, or (3) prepare the work area for a given step by
         removing old files that would otherwise be overwritten. Run
@@ -131,81 +130,12 @@
       </para>
       <tip>
 	<para>
-          You may want to run <command>tutor.py</command> in the
-          <filename>workarea</filename> directory now to clear out all
-          old tutorial files.
-        </para>
-      </tip>
-      <tip>
-	<para>
-          If you accidentally delete the <filename>tutor.py</filename>
-          script, you can retrieve a fresh copy from the tutorials
-          tarball by extracting just this file.
+          If you have run this tutorial previously, you may want to
+          run <command>tutor.sh</command> in mode "clean" with step
+          "all" to clear out all old tutorial files.
         </para>
       </tip>
     </section>
-
-  </section>
-
-  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-  <section>
-    <title>Build helper utilities</title>
-    <para>
-      Before we can begin work in earnest, we need to build two simple
-      Fortran utility programs that we will use in later steps.
-    </para>
-    
-    <orderedlist numeration="arabic">
-      <listitem>
-	<para>
-          Return to the top-level <filename>tutorials</filename>
-          directory and go to the <filename>utils</filename>
-          sub-directory.
-        </para>
-      </listitem>
-      <listitem>
-	<para>
-          Edit the <filename>Makefile</filename> as appropriate (it is
-          presently setup for g77).
-        </para>
-      </listitem>
-      <listitem>
-	<para>
-          Run <command>make</command> to build the two utilities.
-        </para>
-	<variablelist>
-	  <varlistentry>
-	    <term><command>readnetgen</command></term>
-	    <listitem>
-	      <para>
-                A fortran program to read
-                <application>NetGen</application> neutral format and
-                create several of the input files needed by
-                PyLith.
-              </para>
-	    </listitem>
-	  </varlistentry>
-	  <varlistentry>
-	    <term><command>faultcalc</command></term>
-	    <listitem>
-	      <para>
-                A fortran program to compute split node displacements
-                using second order polynomials over specified
-                regions.
-              </para>
-	    </listitem>
-	  </varlistentry>
-	</variablelist>
-      </listitem>
-      <listitem>
-	<para>
-  	  Once you have built these utilities, move them to a location
-  	  in your <envar>PATH</envar> or update your
-  	  <envar>PATH</envar> to include the
-  	  <filename>utils</filename> directory.
-        </para>
-      </listitem>
-    </orderedlist>
 
   </section>
 
@@ -224,7 +154,7 @@
           directory. Run <command>tutor.py</command> for step "mesh"
           with mode "retrieve" to fetch the geometry file for
           <application>NetGen</application>. You may also want to run
-          <command>tutor.sh</command> for thie step with mode "clean"
+          <command>tutor.sh</command> for this step with mode "clean"
           to clean out old files.
         </para>
       </listitem>
@@ -239,7 +169,7 @@
       </listitem>
       <listitem>
 	<para>
-          Startup <application>NetGen</application> by running
+          Start up <application>NetGen</application> by running
           <command>ng</command>.
         </para>
       </listitem>
@@ -287,6 +217,64 @@
       </listitem>
       <listitem>
 	<para>
+          First, we need to build two simple Fortran utilities that we
+          will use to generate PyLith input files from the
+          <application>NetGen</application> output.
+        </para>
+        <orderedlist numeration="lowerroman">
+	  <listitem>
+	    <para>
+              Return to the top-level <filename>tutorials</filename>
+              directory and go to the <filename>utils</filename>
+              sub-directory.
+            </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+              Edit the <filename>Makefile</filename> as appropriate
+              (it is presently setup for g77).
+            </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+              Run <command>make</command> to build the two utilities:
+            </para>
+	    <variablelist>
+	      <varlistentry>
+		<term><command>readnetgen</command></term>
+		<listitem>
+		  <para>
+                    A Fortran program to read
+                    <application>NetGen</application> neutral format
+                    and create several of the input files needed by
+                    PyLith.
+                  </para>
+		</listitem>
+	      </varlistentry>
+	      <varlistentry>
+		<term><command>faultcalc</command></term>
+		<listitem>
+		  <para>
+                    A Fortran program to compute split node
+                    displacements using second order polynomials over
+                    specified regions.
+                  </para>
+		</listitem>
+	      </varlistentry>
+	    </variablelist>
+	  </listitem>
+	  <listitem>
+	    <para>
+              Once you have built these utilities, move them to a
+              location in your <envar>PATH</envar> or update your
+              <envar>PATH</envar> to include the
+              <filename>utils</filename> directory.
+            </para>
+	  </listitem>
+	</orderedlist>
+      </listitem>
+      <listitem>
+	<para>
           Run the utility program <command>readnetgen</command> to
           process the <application>NetGen</application> output file
           into PyLith compatible input files. It will ask for a root filename,
@@ -302,7 +290,7 @@
           second degree polynomials. The <command>readnetgen</command>
           program has already produced the main input for
           <command>faultcalc</command> &mdash; split node definitions
-          in <filename>bm5.1.fbc</filename> and nodal coodinates in
+          in <filename>bm5.1.fbc</filename> and nodal coordinates in
           <filename>bm5.coord</filename>. The file
           <filename>bm5-fault.par</filename> contains the polynomial
           coefficients for this benchmark problem. Execute the command
@@ -318,17 +306,16 @@
           complicated and require computing the displacements for the
           analytical elastic solution at each finite element node on
           the external boundaries. The file
-          <filename>bm5.aux</filename> contains these displacements
+          <filename>bm5.bc</filename> contains these displacements
           already computed for you for the mesh produced from the
-          <filename>bm5.geo</filename> geometry. NEED TO CONVERT
-          bm5.aux INTO bm5.bc??
+          <filename>bm5.geo</filename> geometry.
         </para>
 	<warning>
           <para>
             If you make any changes to <filename>bm5.geo</filename> or
             change the geometry within
             <application>NetGen</application>, the boundary condition
-            file <filename>bm5.aux</filename> will no longer be
+            file <filename>bm5.bc</filename> will no longer be
             correct and you will have to generate one yourself.
           </para>
 	</warning>
@@ -347,8 +334,8 @@
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Run <command>tutor.py</command> for step "run1" with mode
-          "retreive" to fetch some parameter files from the archive.
+          Run <command>tutor.sh</command> for step "run1" with mode
+          "retrieve" to fetch some parameter files from the archive.
         </para>
       </listitem>
       <listitem>
@@ -396,18 +383,17 @@
       default, PyLith writes simulation output using
       <application>AVS</application> <acronym>UCD</acronym>
       files. These can also be read by several other visualization
-      tools, e.g., <application>ParaView</application>,
-      <application>Iris Explorer</application>, and
-      <application>AVS</application>. We will use the open-source
-      application <application>ParaView</application> to visualize the
-      results.
+      tools besides <application>AVS</application>, e.g.,
+      <application>ParaView</application> and <application>Iris
+      Explorer</application>. We will use the open-source application
+      <application>ParaView</application> to visualize the results.
     </para>
     
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          If necessary, run <command>tutor.py</command> for step
-          "viz1" with mode "retreive" to fetch the simulation output
+          If necessary, run <command>tutor.sh</command> for step
+          "viz1" with mode "retrieve" to fetch the simulation output
           from the archive.
         </para>
       </listitem>
@@ -422,7 +408,7 @@
           displacements at time step 10 file
           (<filename>bm5.mesh.time.00010.inp</filename>) into
           <filename>bm5.mesh.t00010.inp</filename>, <command>cat
-          bm5.mesh.inp bm5.mesh.time.00010.inp
+          bm5.mesh.inp bm5.mesh.time.00010.inp >
           bm5.mesh.t00010.inp</command>.
         </para>
       </listitem>
@@ -434,7 +420,41 @@
       </listitem>
       <listitem>
 	<para>
-          ADD STUFF HERE
+          Load the <acronym>UCD</acronym> file that you just created
+          by selecting
+          <menuchoice><guimenu>File</guimenu><guimenuitem>Open
+          Data</guimenuitem></menuchoice>. Select the file in the
+          dialog box and the click the <guibutton>Open</guibutton>
+          button. Click the <guibutton>Accept</guibutton> button. You
+          should see a color rendering of the x displacements. You can
+          use the mouse to rotate, translate, and zoom.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          In the <guibutton>Display</guibutton> tab, you can change
+          several options, such as including a color bar, coloring a
+          different component, interpolating colors, and changing the
+          color map.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Let's show the displacements as vectors. Click on the
+          calculator icon, and add the three displacement components
+          together. Enter "XDispl*iHat+YDispl*jHat+ZDispl*kHat" in the
+          <guilabel>Calculator</guilabel> box. Note the variable names
+          are available by clicking on the
+          <guibutton>scalars</guibutton> button and the
+          <guibutton>iHat</guibutton>, <guibutton>jHat</guibutton>,
+          <guibutton>kHat</guibutton> buttons are on the right side of
+          the top row. Click on the <guibutton>Accept</guibutton>
+          button. To show the dataset as vectors, click on the
+          <guibutton>glyph</guibutton> button (looks like several
+          dots) in the toolbar. After clicking the
+          <guibutton>Accept</guibutton> button, you should have a
+          vector plot. You can turn on/off other datasets by clicking
+          on the eye icon to the left of the dataset name.
         </para>
       </listitem>
     </orderedlist>
@@ -450,8 +470,8 @@
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Run <command>tutor.py</command> for step "run2" with mode
-          "retreive" to make sure all parameter files are available.
+          Run <command>tutor.sh</command> for step "run2" with mode
+          "retrieve" to make sure all parameter files are available.
         </para>
       </listitem>
       <listitem>
@@ -482,20 +502,9 @@
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          If necessary, run <command>tutor.py</command> for step
-          "viz2" with mode "retreive" to fetch the simulation output
+          If necessary, run <command>tutor.sh</command> for step
+          "viz2" with mode "retrieve" to fetch the simulation output
           from the archive.
-        </para>
-      </listitem>
-      <listitem>
-	<para>
-          ADD STUFF HERE
-        </para>
-      </listitem>
-      <listitem>
-	<para>
-          Start <application>ParaView</application> by executing
-          <command>paraview</command>.
         </para>
       </listitem>
       <listitem>

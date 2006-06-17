@@ -80,31 +80,7 @@
         Caltech. PETSc is used to perform operations on matrices and
         vectors in parallel. MPI is the Message Passing Interface
         which provides a standard interface for
-        parallel-processing. PyUnit and CppUnit are libraries that aid
-        in regression testing of the software. UML is the Unified
-        Modeling Language which is used to diagram the layout of the
-        source code.
-      </para>
-
-      <figure>
-	<title>
-          PyLith Overview. PyLith coordinates several external
-          packages based on multiple programming languages.
-        </title>
-<!--
-	<mediaobject id="architecture.eps">
-	  <imageobject>
-	    <imagedata fileref="images/architecture.eps" format="EPS"/>
-	  </imageobject>
-	</mediaobject>
--->
-      </figure>
-
-
-      <para>
-
-
-        ADD STUFF HERE
+        parallel-processing.
       </para>
     </section>
 
@@ -172,13 +148,14 @@
           Pyre Architecture. The integration framework is a set of
           cooperating abstract services.
         </title>
-<!--
 	<mediaobject id="pyre_overview">
-	  <imageobject>
+	  <imageobject role="fo">
 	    <imagedata fileref="figs/pyre_overview.eps" format="EPS"/>
 	  </imageobject>
+	  <imageobject role="xhtml,html">
+	    <imagedata fileref="figs/pyre_overview.png" format="PNG"/>
+	  </imageobject>
 	</mediaobject>
--->
       </figure>
 
     </section>
