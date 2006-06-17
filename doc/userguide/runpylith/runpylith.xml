@@ -6,11 +6,53 @@
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section>
+    <title>Supported Finite Elements</title>
+    <para>
+      PyLith currently only supports the 4-node linear tetrahedral
+      element. The node ordering must follow the convention shown in
+      <xref linkend="fig_tet4" />.
+      CHARLES- IS THIS CORRECT??
+    </para>
+
+    <figure id="fig_tet4">
+      <title>Linear tetrahedral finite element.</title>
+      <mediaobject>
+	<imageobject role="fo">
+	  <imagedata fileref="figs/tet4.eps" format="EPS" />
+	</imageobject>
+	<imageobject role="xhtml,html">
+	  <imagedata fileref="figs/tet4.png" format="PNG" />
+	</imageobject>
+      </mediaobject>
+    </figure>
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
     <title>Input Files</title>
     <para>
       PyLith gets its input from a variety of files. Most of these are
       associated with different kinds of boundary conditions. As a
-      result only six are required.
+      result only six are required. The remaining files are only used
+      when the associated boundary condition is used.
+    </para>
+    <para>
+      The first step in the simulation process involves partitioning
+      the mesh among the processors. In this phase, PyLith reads in
+      the entire mesh and then writes out processor specific pieces
+      with one file for each processor. The filenames for these
+      processors follow the convention
+      <filename>xx.PROC.ext</filename> where <filename>PROC</filename>
+      refers to the processor number and the original filename was
+      <filename>xx.ext</filename>. This procedure is applied to files
+      with the following extensions: <filename>coord</filename>,
+      <filename>connect</filename>, <filename>split</filename>,
+      <filename>bc</filename>. The other files provide information
+      common to all processors. As a result, the user must create
+      copies of each one for each of the processors with filenames
+      following the same form <filename>xx.PROC.ext</filename>. This
+      is most easily done using a shell script that starts a
+      simulation.
     </para>
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -18,8 +60,8 @@
       <title>Required Input Files</title>
       <para>
         The required input files define the finite-element mesh,
-        boundary conditions, time step information, output of state
-        variables, and material properties.
+        boundary conditions, time step information, output, and
+        material properties.
       </para>
       <variablelist>
 	<varlistentry>
@@ -42,7 +84,7 @@
 	  <term><filename>xx.bc</filename></term>
 	  <listitem>
 	    <para>
-              Specifies boundary conditions at nodes on external boundaries.
+              Boundary conditions at nodes on external boundaries.
             </para>
 	  </listitem>
 	</varlistentry>
@@ -50,7 +92,7 @@
 	  <term><filename>xx.time</filename></term>
 	  <listitem>
 	    <para>
-              Specifies at time stepping information.
+              Time stepping information.
             </para>
 	  </listitem>
 	</varlistentry>
@@ -58,8 +100,8 @@
 	  <term><filename>xx.statevar</filename></term>
 	  <listitem>
 	    <para>
-              Specifies which state variables are to be output for the
-              elastic and (time-dependent) viscoelastic solution.
+              State variables to be output for the elastic and
+              (time-dependent) viscoelastic solution.
             </para>
 	  </listitem>
 	</varlistentry>
@@ -67,7 +109,7 @@
 	  <term><filename>xx.prop</filename></term>
 	  <listitem>
 	    <para>
-              Specifies properties for each material.
+              Properties for each material.
             </para>
 	  </listitem>
 	</varlistentry>
@@ -78,22 +120,16 @@
     <section>
       <title>Optional Input Files</title>
       <para>
-        ADD STUFF HERE
+        The optional input files are only included when the associated
+        boundary conditions are specified in the boundary condition
+        file, <filename>xx.bc</filename>.
       </para>
       <variablelist>
-	<varlistentry>
-	  <term><filename>xx.keyval</filename></term>
-	  <listitem>
-	    <para>
-              ??
-            </para>
-	  </listitem>
-	</varlistentry>
 	<varlistentry>
 	  <term><filename>xx.fuldat</filename></term>
 	  <listitem>
 	    <para>
-              Specify at which time steps full output is requested.
+              Time steps for which full output is requested.
             </para>
 	  </listitem>
 	</varlistentry>
@@ -116,6 +152,15 @@
 	  </listitem>
 	</varlistentry>
 	<varlistentry>
+	  <term><filename>xx.keyval</filename></term>
+	  <listitem>
+	    <para>
+              Simple parameter settings for various boundary
+              conditions. CHARLES- ARE THESE EVER USED IN PYLITH?
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
 	  <term><filename>xx.wink</filename></term>
 	  <listitem>
 	    <para>
@@ -129,8 +174,8 @@
 	  <listitem>
 	    <para>
               Time history boundary conditions. Not yet tested?? 
-              CHARLES - IS THIS FOR DISLOCATION BC OR EXTERNAL
-              BOUNDARY CONDITIONS??
+              CHARLES - IS THIS FOR DISLOCATION BOUNDARY CONDITIONS OR
+              EXTERNAL BOUNDARY CONDITIONS??
             </para>
 	  </listitem>
 	</varlistentry>
@@ -141,10 +186,46 @@
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section>
-    <title>Command-line Arugments</title>
+    <title>Command-line Arguments</title>
     <para>
-      ADD STUFF HERE
+      PyLith's command-line arguments fall into two categories: Pyre
+      properties and facilities, and PETSc settings.
     </para>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Properties and Facilities</title>
+      <para>
+        PyLith gathers many simulation parameters and settings using
+        Pyre properties and facilities. Properties correspond to
+        simple settings in the form of strings, integers, and real
+        numbers. Facilities corresponds to software modules. Both
+        facilities and properties have default values provided, so you
+        only need to set values when you want to deviate from the
+        default behavior. Unless you write a module that extends
+        PyLith's functionality, you will never need to change any of
+        the facilities from the defaults.
+      </para>
+      <para>
+        In the current version of PyLith, all of the properties are
+        associated with the "scanner" component. You can get a list of
+        all of these properties by running PyLith with the
+        "--scanner.help-properties" command-line argument.
+      </para>
+      <para>
+        CHARLES- ADD DOCUMENTATION FOR EACH OF THE SCANNER PROPERTIES
+        BY ADDING A LINES IN THE INVENTORY OF THE FORM
+        property.meta['tip']="yada yada yada."
+      </para>
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>PETSc Settings</title>
+      <para>
+        ADD STUFF HERE
+      </para>
+    </section>
 
   </section>
 
