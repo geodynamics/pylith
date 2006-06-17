@@ -4,4 +4,11 @@
 <chapter id="fileformats">
   <title>File Formats</title>
 
+  <para>
+    CHARLES- DO ALL FILES PERMIT COMMENT LINES? IS THE COMMENT
+    CHARACTER '#'?
+  </para>
+
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="coord.xml" />
 </chapter>
