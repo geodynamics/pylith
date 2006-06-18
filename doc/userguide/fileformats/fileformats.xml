@@ -5,10 +5,13 @@
   <title>File Formats</title>
 
   <para>
-    CHARLES- DO ALL FILES PERMIT COMMENT LINES? IS THE COMMENT
-    CHARACTER '#'?
+    CHARLES- DO ALL FILES PERMIT COMMENT LINES?
   </para>
 
   <xi:include
     xmlns:xi="http://www.w3.org/2001/XInclude" href="coord.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="connect.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="bc.xml" />
 </chapter>
