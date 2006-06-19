@@ -130,6 +130,15 @@
       </para>
       <tip>
 	<para>
+          When retrieving files from the archive,
+          <command>tutor.sh</command> will not overwrite files that
+          already exist in <filename>workarea</filename>. This means
+          that if you mangle files in the working area, you should
+          remove them and let the tutor retrieve clean copies.
+        </para>
+      </tip>
+      <tip>
+	<para>
           If you have run this tutorial previously, you may want to
           run <command>tutor.sh</command> in mode "clean" with step
           "all" to clear out all old tutorial files.
@@ -277,8 +286,15 @@
 	<para>
           Run the utility program <command>readnetgen</command> to
           process the <application>NetGen</application> output file
-          into PyLith compatible input files. It will ask for a root filename,
-           enter <filename>bm5</filename>.
+          into PyLith compatible input files. It will ask for a root
+          filename, enter <filename>bm5</filename>. This utilitiy will
+          generate the following files:
+          <filename>bm5.w01.wink</filename>,
+          <filename>bm5.coord</filename>,
+          <filename>bm5.connect</filename>,
+          <filename>bm5.bc</filename>,
+          <filename>bm5.1.fcoord</filename>,
+          <filename>bm5.1.fbc</filename>.
          </para>
       </listitem>
       <listitem>
@@ -305,10 +321,13 @@
           The external boundary conditions for this benchmark are also
           complicated and require computing the displacements for the
           analytical elastic solution at each finite element node on
-          the external boundaries. The file
-          <filename>bm5.bc</filename> contains these displacements
-          already computed for you for the mesh produced from the
-          <filename>bm5.geo</filename> geometry.
+          the external boundaries. The file specifying these boundary
+          conditions, <filename>bm5.bc</filename>, was produced with
+          <command>readnetgen</command> using the
+          <filename>bm5.aux</filename> file (which contains
+          precomputed displacements for the external boundaries for
+          the mesh produced from the <filename>bm5.geo</filename>
+          geometry).
         </para>
 	<warning>
           <para>
