@@ -158,10 +158,6 @@ cdebug      write(6,*) "Hello from viscos_f!"
 c
       call PetscLogStagePush(viscousStage, ierr)
 c
-      nen=infetype(1)
-      ngauss=infetype(2)
-      nee=infetype(3)
-      nec=infetype(4)
       if(idout.gt.ione) then
         call open_append(kw,ofile,"old","",ierr,errstrng,"viscos")
         if(ierr.ne.izero) return
@@ -181,6 +177,10 @@ c
 c
 c...  loop over complete cycles
 c
+      nen=infetype(1)
+      ngauss=infetype(2)
+      nee=infetype(3)
+      nec=infetype(4)
       reform=.false.
       if(ireform.eq.ione) reform=.true.
       indexx=ione

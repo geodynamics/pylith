@@ -151,6 +151,7 @@ class Pylith3d_scan(Component):
         # Parameters derived from values in the inventory or the
         # category 2 parameters above.
         self._analysisTypeInt = 0
+        self._pythonTimestep = 0
         self._prestressAutoComputeInt = 0
         self._prestressAutoChangeElasticPropsInt = 0
         self._pointerToSh = None
@@ -263,6 +264,7 @@ class Pylith3d_scan(Component):
         quadratureOrder = self.quadratureOrder
         
         analysisType = self.inventory.analysisType
+        pythonTimestep = self.inventory.pythonTimestep
 
         self._asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            required)
         self._plotOutputFile              = outputFile(Inventory.plotOutputFile,              required)
@@ -686,6 +688,7 @@ class Pylith3d_scan(Component):
         analysisType = pyre.inventory.str("analysisType",default="fullSolution")
         analysisType.validator = pyre.inventory.choice(["dataCheck","stiffnessFactor",
                                                         "elasticSolution","fullSolution"])
+        pythonTimestep = pyre.inventory.bool("pythonTimestep",default=False)
         debuggingOutput = pyre.inventory.bool("debuggingOutput",default=False)
         autoRotateSlipperyNodes = pyre.inventory.bool("autoRotateSlipperyNodes",default=True)
         numberCycles = pyre.inventory.int("numberCycles",default=1)

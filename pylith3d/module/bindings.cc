@@ -91,6 +91,22 @@ struct PyMethodDef pypylith3d_methods[] = {
     {pypylith3d_doubleListToArray__name__, pypylith3d_doubleListToArray,
      METH_VARARGS, pypylith3d_doubleListToArray__doc__},
 
+    // Retrieve an integer list member
+    {pypylith3d_intListRef__name__, pypylith3d_intListRef,
+     METH_VARARGS, pypylith3d_intListRef__doc__},
+
+    // Retrieve a double list member
+    {pypylith3d_doubleListRef__name__, pypylith3d_doubleListRef,
+     METH_VARARGS, pypylith3d_doubleListRef__doc__},
+
+    // Set an integer list member
+    {pypylith3d_intListSet__name__, pypylith3d_intListSet,
+     METH_VARARGS, pypylith3d_intListSet__doc__},
+
+    // Set a double list member
+    {pypylith3d_doubleListSet__name__, pypylith3d_doubleListSet,
+     METH_VARARGS, pypylith3d_doubleListSet__doc__},
+
     // drive elastic solution
     {pypylith3d_elastc__name__, pypylith3d_elastc,
      METH_VARARGS, pypylith3d_elastc__doc__},
@@ -278,6 +294,18 @@ struct PyMethodDef pypylith3d_methods[] = {
     // drive time-dependent solution
     {pypylith3d_viscos__name__, pypylith3d_viscos,
      METH_VARARGS, pypylith3d_viscos__doc__},
+
+    // setup time-dependent solution
+    {pypylith3d_viscos_setup__name__, pypylith3d_viscos_setup,
+     METH_VARARGS, pypylith3d_viscos_setup__doc__},
+
+    // drive time-dependent solution
+    {pypylith3d_viscos_step__name__, pypylith3d_viscos_step,
+     METH_VARARGS, pypylith3d_viscos_step__doc__},
+
+    // cleanup time-dependent solution
+    {pypylith3d_viscos_cleanup__name__, pypylith3d_viscos_cleanup,
+     METH_VARARGS, pypylith3d_viscos_cleanup__doc__},
 
     // write out BC
     {pypylith3d_write_bc__name__, pypylith3d_write_bc,

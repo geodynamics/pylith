@@ -37,6 +37,24 @@ extern char pypylith3d_viscos__doc__[];
 extern "C"
 PyObject * pypylith3d_viscos(PyObject *, PyObject *);
 
+// setup time-dependent solution
+extern char pypylith3d_viscos_setup__name__[];
+extern char pypylith3d_viscos_setup__doc__[];
+extern "C"
+PyObject * pypylith3d_viscos_setup(PyObject *, PyObject *);
+
+// drive time-dependent solution
+extern char pypylith3d_viscos_step__name__[];
+extern char pypylith3d_viscos_step__doc__[];
+extern "C"
+PyObject * pypylith3d_viscos_step(PyObject *, PyObject *);
+
+// cleanup time-dependent solution
+extern char pypylith3d_viscos_cleanup__name__[];
+extern char pypylith3d_viscos_cleanup__doc__[];
+extern "C"
+PyObject * pypylith3d_viscos_cleanup(PyObject *, PyObject *);
+
 #endif
 
 // version
