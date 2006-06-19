@@ -82,6 +82,9 @@
 #define sort_split_nodes_f FC_FUNC_(sort_split_nodes, SORT_SPLIT_NODES)
 #define try_binio_f FC_FUNC_(try_binio, TRY_BINIO)
 #define viscos_f FC_FUNC(viscos, VISCOS)
+#define viscos_setup_f FC_FUNC_(viscos_setup, VISCOS_SETUP)
+#define viscos_step_f FC_FUNC_(viscos_step, VISCOS_STEP)
+#define viscos_cleanup_f FC_FUNC_(viscos_cleanup, VISCOS_CLEANUP)
 #define write_bc_f FC_FUNC_(write_bc, WRITE_BC)
 #define write_connect_f FC_FUNC_(write_connect, WRITE_CONNECT)
 #define write_coords_f FC_FUNC_(write_coords, WRITE_COORDS)
@@ -913,6 +916,134 @@ extern "C" {
 		size_t,
 		size_t,
 		size_t);
+
+  void viscos_setup_f(int *,
+                      int *,
+                      char *,
+                      char *,
+                      int *,
+                      int *,
+                      char *,
+                      size_t,
+                      size_t,
+                      size_t);
+
+  void viscos_step_f(Mat *,             // sparse
+		Vec *,
+		Vec *,
+		double *,          // force
+		double *,
+		double *,
+		double *,
+		double *,
+		double *,
+		double *,          // 10
+		double *,
+		double *,
+		double *,
+		int *,
+		double *,
+		double *,          // global
+		double *,
+		double *,
+		double *,
+		int *,             // 20
+		int *,
+		double *,
+		int *,
+		int *,
+		int *,             // bc
+		double *,
+		double *,          // slip
+		double *,
+		double *,
+		double *,          // 30
+		int *,
+		int *,
+		double *,
+		int *,
+		int *,
+		int *,
+		double *,          // split
+		int *,
+		double *,
+                double *,          // 40
+		double *,          // stiff
+		double *,
+		double *,          // element
+		double *,
+		double *,
+		double *,
+		int *,
+		int *,
+		int *,
+		int *,             // 50
+		int *,
+		int *,
+		int *,
+		int *,             // traction
+		int *,
+		int *,
+		double *,
+		double *,
+		double *,          // material
+		int *,             // 60
+		double *,          // element type
+		double *,
+		double *,
+		int *,
+		double *,          // time data
+		double *,
+		int *,
+		int *,
+		int *,
+		double *,          // 70
+		double *,
+		int *,
+		int *,
+		int *,
+		double *,
+		double *,
+		double *,
+		int *,
+		double *,          // iterations
+		double *,          // 80: skew
+		int *,             // i/o info
+		int *,
+		int *,
+		int *,
+		int *,
+		int *,
+		char *,            // files
+		char *,
+		char *,
+        int *,             // 90: PETSC logging
+        int *,
+                     int *,
+                     int *,
+                     int *,
+                     int *,
+                     int *,
+                     int *,
+                     int *,
+                     int *,
+                     int *,
+                     double *,
+                     double *,
+                     int *,
+                     double *,
+		int *,             // error codes
+		char *,
+                size_t,            // string lengths
+		size_t,
+		size_t,
+		size_t);
+
+  void viscos_cleanup_f(int *,
+                        int *,
+                        int *,
+                        char *,
+                        size_t);
 
   void write_bc_f(double *,
 		  int *,

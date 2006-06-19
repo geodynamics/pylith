@@ -194,6 +194,9 @@ sources = \
 	update_state_cmp.f \
 	update_state_drv.f \
 	viscos.F \
+	viscos_setup.F \
+	viscos_step.F \
+	viscos_cleanup.F \
 	winklf.f \
 	winklr.F \
 	write_bc.F \

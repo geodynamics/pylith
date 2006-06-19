@@ -177,6 +177,91 @@ PyObject * pypylith3d_doubleListToArray(PyObject *, PyObject * args)
 
 }
 
+// Retrieve an integer list member
+char pypylith3d_intListRef__doc__[] = "";
+char pypylith3d_intListRef__name__[] = "intListRef";
+
+PyObject * pypylith3d_intListRef(PyObject *, PyObject * args)
+{
+  PyObject *pyArray;
+  int       member;
+
+  int ok = PyArg_ParseTuple(args, "Oi:intListRef", &pyArray, &member);
+  if (!ok) {
+    return 0;
+  }
+
+  int      *array = (int *) PyCObject_AsVoidPtr(pyArray);
+  PyObject *val   = PyInt_FromLong(array[member]);
+
+  // return
+  return val;
+}
+
+// Retrieve a double list member
+char pypylith3d_doubleListRef__doc__[] = "";
+char pypylith3d_doubleListRef__name__[] = "doubleListRef";
+
+PyObject * pypylith3d_doubleListRef(PyObject *, PyObject * args)
+{
+  PyObject *pyArray;
+  int       member;
+
+  int ok = PyArg_ParseTuple(args, "Oi:intListRef", &pyArray, &member);
+  if (!ok) {
+    return 0;
+  }
+
+  double   *array = (double *) PyCObject_AsVoidPtr(pyArray);
+  PyObject *val   = PyFloat_FromDouble(array[member]);
+
+  // return
+  return val;
+}
+
+// Set an integer list member
+char pypylith3d_intListSet__doc__[] = "";
+char pypylith3d_intListSet__name__[] = "intListSet";
+
+PyObject * pypylith3d_intListSet(PyObject *, PyObject * args)
+{
+  PyObject *pyArray;
+  int       member;
+  int       value;
+
+  int ok = PyArg_ParseTuple(args, "Oii:intListSet", &pyArray, &member, &value);
+  if (!ok) {
+    return 0;
+  }
+
+  int *array = (int *) PyCObject_AsVoidPtr(pyArray);
+  array[member] = value;
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+// Set a double list member
+char pypylith3d_doubleListSet__doc__[] = "";
+char pypylith3d_doubleListSet__name__[] = "doubleListSet";
+
+PyObject * pypylith3d_doubleListSet(PyObject *, PyObject * args)
+{
+  PyObject *pyArray;
+  int       member;
+  double    value;
+
+  int ok = PyArg_ParseTuple(args, "Oid:doubleListSet", &pyArray, &member, &value);
+  if (!ok) {
+    return 0;
+  }
+
+  double *array = (double *) PyCObject_AsVoidPtr(pyArray);
+  array[member] = value;
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
 
 // clearp 
 // deconstructor

@@ -59,6 +59,34 @@ extern char pypylith3d_doubleListToArray__name__[];
 extern "C"
 PyObject * pypylith3d_doubleListToArray(PyObject *, PyObject *);
 
+// Retrieve an integer list member
+extern char pypylith3d_intListRef__doc__[];
+char extern pypylith3d_intListRef__name__[];
+
+extern "C"
+PyObject * pypylith3d_intListRef(PyObject *, PyObject *);
+
+// Retrieve an double list member
+extern char pypylith3d_doubleListRef__doc__[];
+extern char pypylith3d_doubleListRef__name__[];
+
+extern "C"
+PyObject * pypylith3d_doubleListRef(PyObject *, PyObject * );
+
+// Set an integer list member
+extern char pypylith3d_intListSet__doc__[];
+char extern pypylith3d_intListSet__name__[];
+
+extern "C"
+PyObject * pypylith3d_intListSet(PyObject *, PyObject *);
+
+// Set an double list member
+extern char pypylith3d_doubleListSet__doc__[];
+extern char pypylith3d_doubleListSet__name__[];
+
+extern "C"
+PyObject * pypylith3d_doubleListSet(PyObject *, PyObject * );
+
 // clear p
 void clearp(void *);
 
