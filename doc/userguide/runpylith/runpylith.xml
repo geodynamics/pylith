@@ -149,7 +149,7 @@
 	  <listitem>
 	    <para>
               Local coordinate rotation information for boundary
-              conditions. CHARLES - IS THIS CORRECT??
+              conditions.
             </para>
 	  </listitem>
 	</varlistentry>
@@ -158,7 +158,7 @@
 	  <listitem>
 	    <para>
               Simple parameter settings for various boundary
-              conditions. CHARLES- ARE THESE EVER USED IN PYLITH?
+              conditions.
             </para>
 	  </listitem>
 	</varlistentry>
@@ -190,7 +190,7 @@
   <section>
     <title>Command-line Arguments</title>
     <para>
-      Command-line arugments associated with running PyLith fall into
+      Command-line arguments associated with running PyLith fall into
       three categories: MPI settings, Pyre properties and facilities,
       and PETSc settings.
     </para>
@@ -198,9 +198,23 @@
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
       <title>MPI Settings</title>
+
+      <warning>
+	<para>
+          This section applies only to PyLith compiled using the MPICH
+          implementation of the Message Passing Interface (MPI).
+        </para>
+      </warning>
+
       <para>
-        
+        The MPI settings define how many processors are used and other
+        parallel processing parameters. The number of processors is
+        specified using <option>-np NPROCS</option>, where
+        <literal>NPROCS</literal> corresponds to the number of
+        processors.
       </para>
+
+
     </section>
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
