@@ -160,7 +160,7 @@
       <listitem>
 	<para>
           Return to the <filename>scecbm5/workarea</filename>
-          directory. Run <command>tutor.py</command> for step "mesh"
+          directory. Run <command>tutor.sh</command> for step "mesh"
           with mode "retrieve" to fetch the geometry file for
           <application>NetGen</application>. You may also want to run
           <command>tutor.sh</command> for this step with mode "clean"
@@ -220,7 +220,7 @@
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Run <command>tutor.py</command> for step "setup" with mode
+          Run <command>tutor.sh</command> for step "setup" with mode
           "retrieve" to fetch files from the archive.
         </para>
       </listitem>
@@ -310,8 +310,8 @@
           <filename>bm5.coord</filename>. The file
           <filename>bm5-fault.par</filename> contains the polynomial
           coefficients for this benchmark problem. Execute the command
-          <command>faultcalc p=bm5-fault.par n=bm5.coord i=bm5.1.fbc
-          o=bm5.split</command>. This will give you the
+          <userinput>faultcalc p=bm5-fault.par n=bm5.coord i=bm5.1.fbc
+          o=bm5.split</userinput>. This will give you the
           <filename>bm5.split</filename> file that PyLith needs as
           input.
         </para>
@@ -372,8 +372,8 @@
       </listitem>
       <listitem>
         <para>
-          Run the simulation by executing <command>runbm5.sh
-          1</command>, where the 1 refers to the number of processors.
+          Run the simulation by executing <userinput>runbm5.sh
+          1</userinput>, where the 1 refers to the number of processors.
         </para>
 	<tip>
           <para>
@@ -383,11 +383,11 @@
             file. For large problems, this file can be quite
             large. You can suppress creation of this file using the
             command line argument
-            <option>-pl3dscan.asciiOutput=none</option> flag. On the
+            <option>--scanner.asciiOutput=none</option> flag. On the
             other hand, for debugging purposes in small problems, you
             may wish to output everything, including the computed
             results, in this file using
-            <option>-pl3dscan.asciiOutput=full</option>.
+            <option>--scanner.asciiOutput=full</option>.
           </para>
         </tip>
       </listitem>
@@ -426,9 +426,9 @@
           (<filename>bm5_1.0.mesh.inp</filename>) and the nodal
           displacements at time step 10 file
           (<filename>bm5_1.0.mesh.time.00010.inp</filename>) into
-          <filename>bm5_1.0.mesh.t00010.inp</filename>, <command>cat
+          <filename>bm5_1.0.mesh.t00010.inp</filename>, <userinput>cat
           bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp >
-          bm5_1.0.mesh.t00010.inp</command>.
+          bm5_1.0.mesh.t00010.inp</userinput>.
         </para>
       </listitem>
       <listitem>
@@ -545,11 +545,11 @@
           (<filename>bm5_1.0.mesh.inp</filename>) and the nodal
           displacements at time step 10 file
           (<filename>bm5_1.0.mesh.time.00010.inp</filename>) into
-          <filename>bm5_1.0.mesh.t00010.inp</filename>, <command>cat
+          <filename>bm5_1.0.mesh.t00010.inp</filename>, <userinput>cat
           bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp >
-          bm5_1.0.mesh.t00010.inp</command>. Repeat this for processor
-          1, <command>cat bm5_1.1.mesh.inp bm5_1.1.mesh.time.00010.inp
-          > bm5_1.1.mesh.t00010.inp</command>.
+          bm5_1.0.mesh.t00010.inp</userinput>. Repeat this for processor
+          1, <userinput>cat bm5_1.1.mesh.inp bm5_1.1.mesh.time.00010.inp
+          > bm5_1.1.mesh.t00010.inp</userinput>.
         </para>
       </listitem>
       <listitem>

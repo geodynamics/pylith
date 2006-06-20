@@ -190,9 +190,18 @@
   <section>
     <title>Command-line Arguments</title>
     <para>
-      PyLith's command-line arguments fall into two categories: Pyre
-      properties and facilities, and PETSc settings.
+      Command-line arugments associated with running PyLith fall into
+      three categories: MPI settings, Pyre properties and facilities,
+      and PETSc settings.
     </para>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>MPI Settings</title>
+      <para>
+        
+      </para>
+    </section>
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
@@ -211,26 +220,99 @@
       <para>
         In the current version of PyLith, all of the properties are
         associated with the "scanner" component. You can get a list of
-        all of these properties by running PyLith with the
-        "--scanner.help-properties" command-line argument.
+        all of these properties along with a description of what they
+        do by running PyLith with the
+        <option>--scanner.help-properties</option> command-line
+        argument.
       </para>
-      <para>
-        ADD SOME EXAMPLES HERE
-      </para>
-      <para>
-        CHARLES- ADD DOCUMENTATION FOR EACH OF THE SCANNER PROPERTIES
-        BY ADDING A LINES IN THE INVENTORY OF THE FORM
-        property.meta['tip']="yada yada yada."
-      </para>
+
+      <example id="example_pylith_properties">
+	<title>Setting scanner properties from the command line.</title>
+	<screen>
+          <cmdsynopsis>
+	    <command>mpirun</command>
+	    <arg choice="plain">-np <replaceable>1</replaceable></arg> 
+	    <arg choice="plain">pylith3dapp.py</arg>
+	    <arg>--scanner.help-properties</arg><sbr/>
+	    <arg>--scanner.asciiOutput=<replaceable>none</replaceable></arg>
+	    <arg>--scanner.title=<replaceable>"My simulation"</replaceable></arg>
+	  </cmdsynopsis>
+        </screen>
+      </example>
+       
     </section>
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
       <title>PETSc Settings</title>
       <para>
-        ADD STUFF HERE
+        PyLith relies on PETSc for the linear algebra
+        computations. Many of PETSc options can be set using
+        command-line arguments. The ones of primary interest in the
+        case of PyLith are shown in <xref
+	  linkend="table_petsc_options" />.
       </para>
+      
+      <table id="table_petsc_options">
+	<title>Useful command-line arguments for setting PETSc options.</title>
+
+	<tgroup cols="2" align="left">
+	  <thead>
+	    <row>
+	      <entry>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry><cmdsynopsis>
+		  <arg choice="plain">-log_summary</arg>
+		</cmdsynopsis></entry>
+	      <entry>Print logging objects and events.</entry>
+	    </row>
+	    <row>
+	      <entry><cmdsynopsis>
+		  <arg choice="plain">-sub_pc_type
+                  <replaceable>ilu</replaceable></arg>
+		</cmdsynopsis></entry>
+	      <entry>Set preconditioner to incomplete factorization. See
+                PETSc documentation for a list of all preconditioners.</entry>
+	    </row>
+	    <row>
+	      <entry><cmdsynopsis>
+		  <arg choice="plain">-ksp_monitor</arg>
+		</cmdsynopsis></entry>
+	      <entry>Dump preconditioned residual norm to stdout.</entry>
+	    </row>
+	    <row>
+	      <entry><cmdsynopsis>
+		  <arg choice="plain">-ksp_view</arg>
+		</cmdsynopsis></entry>
+	      <entry>Print linear solver parameters.</entry>
+	    </row>
+	    <row>
+	      <entry><cmdsynopsis>
+		  <arg choice="plain">-ksp_rtol
+		  <replaceable>1.0e-09</replaceable></arg>
+		</cmdsynopsis></entry>
+	      <entry>Relative decrease in residual norm</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+
     </section>
+
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Setting Pyre properties using pml files</title>
+    <para>
+      PyLith's Pyre properties can also be set using
+      <filename>pml</filename> files. These are <acronym>XML</acronym>
+      files that follow a special Pyre schema. ADD STUFF HERE
+    </para>
 
   </section>
 
