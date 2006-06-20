@@ -93,21 +93,24 @@
       <listitem>
 	<para>
           Download the <ulink
-          url="REPLACE WITH UPDATED URL">tutorial
+          url="http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8_tutorials.tgz">tutorial
           tarball</ulink> and unpack it in a location of your
           choosing.
         </para>
       </listitem>
       <listitem>
 	<para>
-          Go to the <filename>tutorials/scecbm5</filename>
-          directory. The <filename>archive</filename> directory
-          contains all of the input and output files associated with
-          this tutorial. We will copy input files from this directory
-          into the <filename>workarea</filename> directory. At each
-          step, you can check to make sure your input and output agree
-          with these files. These files also allow you to start at an
-          intermediate step as described in the next section.
+          Go to the <filename
+          class="directory">tutorials/scecbm5</filename>
+          directory. The <filename
+          class="directory">archive</filename> directory contains all
+          of the input and output files associated with this
+          tutorial. We will copy input files from this directory into
+          the <filename class="directory">workarea</filename>
+          directory. At each step, you can check to make sure your
+          input and output agree with these files. These files also
+          allow you to start at an intermediate step as described in
+          the next section.
         </para>
       </listitem>
     </orderedlist>
@@ -117,24 +120,27 @@
       <title>Tutor</title>
       <para>
         Copy the <filename>tutor.sh</filename> script from the
-        <filename>archive</filename> directory into the
-        <filename>workarea</filename> directory. This script can (1)
-        check to make sure the files necessary for a given step in the
-        tutorial exist, (2) retrieve any missing files from the
-        <filename>archive</filename> directory that are needed for a
-        given step, or (3) prepare the work area for a given step by
-        removing old files that would otherwise be overwritten. Run
-        <command>tutor.sh</command> without any arguments for more
-        information. We will use this script at the beginning of each
-        step to retrieve files as necessary from the archive.
+        <filename class="directory">archive</filename> directory into
+        the <filename class="directory">workarea</filename>
+        directory. This script can (1) check to make sure the files
+        necessary for a given step in the tutorial exist, (2) retrieve
+        any missing files from the <filename
+        class="directory">archive</filename> directory that are needed
+        for a given step, or (3) prepare the work area for a given
+        step by removing old files that would otherwise be
+        overwritten. Run <command>tutor.sh</command> without any
+        arguments for more information. We will use this script at the
+        beginning of each step to retrieve files as necessary from the
+        archive.
       </para>
       <tip>
 	<para>
           When retrieving files from the archive,
           <command>tutor.sh</command> will not overwrite files that
-          already exist in <filename>workarea</filename>. This means
-          that if you mangle files in the working area, you should
-          remove them and let the tutor retrieve clean copies.
+          already exist in <filename
+          class="directory">workarea</filename>. This means that if
+          you mangle files in the working area, you should remove them
+          and let the tutor retrieve clean copies.
         </para>
       </tip>
       <tip>
@@ -159,7 +165,7 @@
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Return to the <filename>scecbm5/workarea</filename>
+          Return to the <filename class="directory">scecbm5/workarea</filename>
           directory. Run <command>tutor.sh</command> for step "mesh"
           with mode "retrieve" to fetch the geometry file for
           <application>NetGen</application>. You may also want to run
@@ -233,8 +239,9 @@
         <orderedlist numeration="lowerroman">
 	  <listitem>
 	    <para>
-              Return to the top-level <filename>tutorials</filename>
-              directory and go to the <filename>utils</filename>
+              Return to the top-level <filename
+              class="directory">tutorials</filename> directory and go
+              to the <filename class="directory">utils</filename>
               sub-directory.
             </para>
 	  </listitem>
@@ -277,7 +284,7 @@
               Once you have built these utilities, move them to a
               location in your <envar>PATH</envar> or update your
               <envar>PATH</envar> to include the
-              <filename>utils</filename> directory.
+              <filename class="directory">utils</filename> directory.
             </para>
 	  </listitem>
 	</orderedlist>
