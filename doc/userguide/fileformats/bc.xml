@@ -16,15 +16,15 @@
 #
 # Comment lines begin with '#'
 #
-# First, specify units of coordinates for each type of boundary conditon.
-# All three are required even if they are not all used.
+# First, specify units of coordinates for each type of boundary
+# conditon.  All three are required even if they are not all used.
 #
 displacement_units = m
 velocity_units = m/s
 force_units = newton
 #
 #
-# Boundary conditions applied to vertices. You must specify a flag and 
+# Boundary conditions applied to vertices. You must specify a flag and
 # value for each degree of freedom, even if some are free.
 #
 # Columns:
@@ -39,8 +39,8 @@ force_units = newton
 #   (5) Boundary condition value for x DOF
 #   (6) Boundary condition value for y DOF
 #   (7) Boundary condition value for z DOF
- 1  0  1  0  0.0000e+00  0.0000e+00  0.0000e+00
- 3  0  1  0  0.0000e+00  0.0000e+00  0.0000e+00
+1   0  1  0  0.0000e+00  0.0000e+00  0.0000e+00
+3   0  1  0  0.0000e+00  0.0000e+00  0.0000e+00
 12  0  1  0  0.0000e+00  0.0000e+00  0.0000e+00
 ...
     </screen>
