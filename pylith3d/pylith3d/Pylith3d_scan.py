@@ -266,8 +266,8 @@ class Pylith3d_scan(Component):
         analysisType = self.inventory.analysisType
         pythonTimestep = self.inventory.pythonTimestep
 
-        self._asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            required)
-        self._plotOutputFile              = outputFile(Inventory.plotOutputFile,              required)
+        self._asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
+        self._plotOutputFile              = outputFile(Inventory.plotOutputFile,              optional)
         self._coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
         self._bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
         self._winklerInputFile            = inputFile(Inventory.winklerInputFile,            optional)
@@ -282,9 +282,10 @@ class Pylith3d_scan(Component):
         self._prestressInputFile          = inputFile(Inventory.prestressInputFile,          unused)
         self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           unused)
         self._splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
-        self._slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       optional)
-        self._differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  optional)
-        self._slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    optional)
+        # Slippery nodes are not yet implemented in PyLith-0.8.
+        self._slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       unused)
+        self._differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  unused)
+        self._slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    unused)
 
         # The call to glob() is somewhat crude -- basically, determine
         # if any files might be in the way.
@@ -653,45 +654,114 @@ class Pylith3d_scan(Component):
         OutputFile = pyre.inventory.str
         InputFile = pyre.inventory.str
 
+        # Title
         title = pyre.inventory.str("title",
-                                   default="Patchtest 1 for linear hex elements, full quadrature.")
+                                   default="PyLith-0.8 Simulation")
+        title.meta['tip'] = "Title for this simulation"
+
+        # Basename for all files (may be overridden by specific filename entries).
         fileRoot = pyre.inventory.str("fileRoot", default="pt1")
+        fileRoot.meta['tip'] = "Root pathname for simulation (all filenames derive from this)."
         
-        keywordEqualsValueFile = InputFile("keywordEqualsValueFile",default="${fileRoot}.keyval")
+        # Output filenames (all are optional).
         asciiOutputFile = OutputFile("asciiOutputFile",default="${fileRoot}.ascii")
+        asciiOutputFile.meta['tip'] = "Pathname for ascii output file (overrides default from fileRoot)."
+
         plotOutputFile = OutputFile("plotOutputFile",default="${fileRoot}.plot")
+        plotOutputFile.meta['tip'] = "Pathname for plot output file (overrides default from fileRoot)."
+
         ucdOutputRoot = MacroString("ucdOutputRoot",default="${fileRoot}")
+        ucdOutputRoot.meta['tip'] = "Base name for UCD output files (overrides default from fileRoot)."
+
+        # Required input files.
         coordinateInputFile = InputFile("coordinateInputFile",default="${fileRoot}.coord")
+        coordinateInputFile.meta['tip'] = "Pathname for coordinate input file (overrides default from fileRoot)."
+
         bcInputFile = InputFile("bcInputFile",default="${fileRoot}.bc")
-        winklerInputFile = InputFile("winklerInputFile",default="${fileRoot}.wink")
-        rotationInputFile = InputFile("rotationInputFile",default="${fileRoot}.skew")
+        bcInputFile.meta['tip'] = "Pathname for boundary condition input file (overrides default from fileRoot)."
+
         timeStepInputFile = InputFile("timeStepInputFile",default="${fileRoot}.time")
-        fullOutputInputFile = InputFile("fullOutputInputFile",default="${fileRoot}.fuldat")
+        timeStepInputFile.meta['tip'] = "Pathname for time step definitions input file (overrides default from fileRoot)."
+
         stateVariableInputFile = InputFile("stateVariableInputFile",default="${fileRoot}.statevar")
-        loadHistoryInputFile = InputFile("loadHistoryInputFile",default="${fileRoot}.hist")
+        stateVariableInputFile.meta['tip'] = "Pathname for file defining which state variables to output (overrides default from fileRoot)."
+
         materialPropertiesInputFile = InputFile("materialPropertiesInputFile",default="${fileRoot}.prop")
-        materialHistoryInputFile = InputFile("materialHistoryInputFile",default="${fileRoot}.mhist")
+        materialPropertiesInputFile.meta['tip'] = "Pathname for file defining material properties (overrides default from fileRoot)."
+
         connectivityInputFile = InputFile("connectivityInputFile",default="${fileRoot}.connect")
-        prestressInputFile = InputFile("prestressInputFile",default="${fileRoot}.prestr")
-        tractionInputFile = InputFile("tractionInputFile",default="${fileRoot}.tract")
+        connectivityInputFile.meta['tip'] = "Pathname for connectivity input file (overrides default from fileRoot)."
+
+        # This file is only required for time-dependent problems.
+        fullOutputInputFile = InputFile("fullOutputInputFile",default="${fileRoot}.fuldat")
+        fullOutputInputFile.meta['tip'] = "Pathname for file defining when to provide output (overrides default from fileRoot)."
+
+        # Optional input files.
+        keywordEqualsValueFile = InputFile("keywordEqualsValueFile",default="${fileRoot}.keyval")
+        keywordEqualsValueFile.meta['tip'] = "Pathname for keyword = value file (overrides default from fileRoot)."
+
+        winklerInputFile = InputFile("winklerInputFile",default="${fileRoot}.wink")
+        winklerInputFile.meta['tip'] = "Pathname for Winkler force input file (overrides default from fileRoot)."
+
+        rotationInputFile = InputFile("rotationInputFile",default="${fileRoot}.skew")
+        rotationInputFile.meta['tip'] = "Pathname for skew rotations input file (overrides default from fileRoot)."
+
+        loadHistoryInputFile = InputFile("loadHistoryInputFile",default="${fileRoot}.hist")
+        loadHistoryInputFile.meta['tip'] = "Pathname for file defining load histories (overrides default from fileRoot)."
+
         splitNodeInputFile = InputFile("splitNodeInputFile",default="${fileRoot}.split")
+        splitNodeInputFile.meta['tip'] = "Pathname for split node input file (overrides default from fileRoot)."
+
+        # Unused input files.
+        materialHistoryInputFile = InputFile("materialHistoryInputFile",default="${fileRoot}.mhist")
+        materialHistoryInputFile.meta['tip'] = "Pathname for file defining material histories (overrides default from fileRoot -- presently unused)."
+
+        prestressInputFile = InputFile("prestressInputFile",default="${fileRoot}.prestr")
+        prestressInputFile.meta['tip'] = "Pathname for prestress input file (overrides default from fileRoot -- presently unused)."
+
+        tractionInputFile = InputFile("tractionInputFile",default="${fileRoot}.tract")
+        tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from fileRoot -- presently unused)."
+
         slipperyNodeInputFile = InputFile("slipperyNodeInputFile",default="${fileRoot}.slip")
+        slipperyNodeInputFile.meta['tip'] = "Pathname for slippery node input file (overrides default from fileRoot -- presently unused)."
+
         differentialForceInputFile = InputFile("differentialForceInputFile",default="${fileRoot}.diff")
+        differentialForceInputFile.meta['tip'] = "Pathname for file defining slippery node differential forces (overrides default from fileRoot -- presently unused)."
+
         slipperyWinklerInputFile = InputFile("slipperyWinklerInputFile",default="${fileRoot}.winkx")
-        
+        slipperyWinklerInputFile.meta['tip'] = "Pathname for file defining slippery node Winkler forces (overrides default from fileRoot -- presently unused)."
+
+        # Output option flags.
         asciiOutput = pyre.inventory.str("asciiOutput",default="echo")
         asciiOutput.validator = pyre.inventory.choice(["none","echo","full"])
+        asciiOutput.meta['tip'] = "Type of ascii output desired (none, echo, full)."
+
         plotOutput = pyre.inventory.str("plotOutput",default="none")
         plotOutput.validator = pyre.inventory.choice(["none","ascii","binary"])
+        plotOutput.meta['tip'] = "Type of plot output desired (none, ascii, binary)."
+
         ucdOutput = pyre.inventory.str("ucdOutput",default=None)
         ucdOutput.validator = pyre.inventory.choice(["none","ascii","binary"])
+        ucdOutput.meta['tip'] = "Type of UCD output desired (none, ascii, binary)."
+
+        # Additional option flags.
         analysisType = pyre.inventory.str("analysisType",default="fullSolution")
         analysisType.validator = pyre.inventory.choice(["dataCheck","stiffnessFactor",
                                                         "elasticSolution","fullSolution"])
+        analysisType.meta['tip'] = "Type of analysis (dataCheck, stiffnessFactor, elasticSolution, fullSolution)."
+
         pythonTimestep = pyre.inventory.bool("pythonTimestep",default=False)
+        pythonTimestep.meta['tip'] = "Whether to use python timestepping loop (enables VTK output for time-dependent solution)."
+
         debuggingOutput = pyre.inventory.bool("debuggingOutput",default=False)
-        autoRotateSlipperyNodes = pyre.inventory.bool("autoRotateSlipperyNodes",default=True)
+        debuggingOutput.meta['tip'] = "Whether to produce debugging output."
+
         numberCycles = pyre.inventory.int("numberCycles",default=1)
+        numberCycles.meta['tip'] = "Number of cycles of the given timestep definitions to perform (default=1)."
+
+        # Unused option flags.
+        autoRotateSlipperyNodes = pyre.inventory.bool("autoRotateSlipperyNodes",default=True)
+        autoRotateSlipperyNodes.meta['tip'] = "Whether to performa automatic rotation for slippery nodes (presently unused)."
 
 
 # version
