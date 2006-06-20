@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
-<chapter id="introduction">
+<chapter id="chapter_introduction">
   <title>Introduction</title>
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -148,7 +148,7 @@
           Pyre Architecture. The integration framework is a set of
           cooperating abstract services.
         </title>
-	<mediaobject id="pyre_overview">
+	<mediaobject id="figure_pyre_overview">
 	  <imageobject role="fo">
 	    <imagedata fileref="figs/pyre_overview.eps" format="EPS"/>
 	  </imageobject>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
-<chapter id="runpylith">
+<chapter id="chapter_runpylith">
   <title>Running PyLith</title>
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -34,7 +34,9 @@
       PyLith gets its input from a variety of files. Most of these are
       associated with different kinds of boundary conditions. As a
       result only six are required. The remaining files are only used
-      when the associated boundary condition is used.
+      when the associated boundary condition is used. See <xref
+      linkend="chapter_fileformats" /> for a detailed discussion of
+      the file formats.
     </para>
     <para>
       The first step in the simulation process involves partitioning
@@ -211,6 +213,9 @@
         associated with the "scanner" component. You can get a list of
         all of these properties by running PyLith with the
         "--scanner.help-properties" command-line argument.
+      </para>
+      <para>
+        ADD SOME EXAMPLES HERE
       </para>
       <para>
         CHARLES- ADD DOCUMENTATION FOR EACH OF THE SCANNER PROPERTIES
