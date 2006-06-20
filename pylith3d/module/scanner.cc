@@ -479,12 +479,15 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   ALE::Obj<ALE::Mesh::field_type::order_type::baseSequence> patches = displacement->getPatches();
   ALE::Obj<ALE::Mesh::foliation_type> boundaries = m->getBoundaries();
 
-  for(ALE::Mesh::field_type::order_type::baseSequence::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
-    full_displacement->setPatch(displacement->getPatch(*p_iter), *p_iter);
-    full_displacement->setFiberDimensionByDepth(*p_iter, 0, 3);
+  // This is wrong if the domain changes
+  if (!full_displacement->getGlobalOrder()) {
+    for(ALE::Mesh::field_type::order_type::baseSequence::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
+      full_displacement->setPatch(displacement->getPatch(*p_iter), *p_iter);
+      full_displacement->setFiberDimensionByDepth(*p_iter, 0, 3);
+    }
+    full_displacement->orderPatches();
+    full_displacement->createGlobalOrder();
   }
-  full_displacement->orderPatches();
-  full_displacement->createGlobalOrder();
   for(ALE::Mesh::field_type::order_type::baseSequence::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
     ALE::Obj<ALE::Mesh::field_type::order_type::coneSequence> elements = full_displacement->getPatch(*p_iter);
 
