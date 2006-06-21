@@ -502,7 +502,7 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
         const ALE::Mesh::foliation_type::index_type& idx = boundaries->getIndex(bPatch, *e_iter);
 
         if (idx.index > 0) {
-          values[c] = boundaries->restrict(bPatch, *e_iter)[0];
+          values[c] = 0.0;
         } else if (dim > 0) {
           values[c] = array[v++];
         }
@@ -510,7 +510,25 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
       if (v != dim) {
         std::cout << "ERROR: Invalid size " << v << " used for " << *e_iter << " with index " << displacement->getIndex(*p_iter, *e_iter) << std::endl;
       }
-      full_displacement->update(*p_iter, *e_iter, values);
+      full_displacement->updateAdd(*p_iter, *e_iter, values);
+    }
+  }
+  ALE::Obj<ALE::Mesh::foliation_type::order_type::baseSequence> bdPatches = boundaries->getPatches();
+
+  for(ALE::Mesh::foliation_type::order_type::baseSequence::iterator p_iter = bdPatches->begin(); p_iter != bdPatches->end(); ++p_iter) {
+    ALE::Obj<ALE::Mesh::foliation_type::order_type::coneSequence> elements = boundaries->getPatch(*p_iter);
+
+    for(ALE::Mesh::foliation_type::order_type::coneSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); ++e_iter) {
+      const double *array = full_displacement->restrict((*p_iter).first, *e_iter);
+      double        values[3];
+
+      if (boundaries->getIndex(*p_iter, *e_iter).index > 0) {
+        for(int c = 0; c < 3; c++) {
+          values[c] = array[c];
+        }
+        values[(*p_iter).second-1] = boundaries->restrict(*p_iter, *e_iter)[0];
+        full_displacement->update((*p_iter).first, *e_iter, values);
+      }
     }
   }
 

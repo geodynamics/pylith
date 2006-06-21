@@ -338,7 +338,7 @@ c
 c
 c...compute the out-of-balance forces and convergence criteria
 c
-        call residu(rhs,sol,bextern,bintern,bresid,dispvec,
+        call residu(rhs,bextern,bintern,bresid,dispvec,
      &   gtol,gi,gprev,gcurr,
      &   id,idx,neq,nextflag,numnp,iter,itmaxp,idebug,idout,kto,kw,
      &   converge)

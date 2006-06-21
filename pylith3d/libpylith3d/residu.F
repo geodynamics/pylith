@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine residu(rhs,sol,bextern,bintern,bresid,dispvec,gtol,gi,
+      subroutine residu(rhs,bextern,bintern,bresid,dispvec,gtol,gi,
      & gprev,
      & gcurr,id,idx,neq,nextflag,numnp,iter,itmaxp,idebug,idout,kto,kw,
      & converge)
@@ -44,7 +44,7 @@ c
 c
 c     PETSc objects
 c
-      Vec rhs, sol
+      Vec rhs
       Vec locRhs, locSol
       PetscErrorCode ierr
 c
@@ -116,9 +116,9 @@ cpetsc      ftmp=dnrm2(neq,bresid,ione)
         call dcopy(neq,bextern,ione,bresid,ione)
       end if
       call daxpy(neq,alpha,bintern,ione,bresid,ione)
-      call VecZeroEntries(sol, ierr)
-      call assembleVectorComplete(sol, locSol, ADD_VALUES, ierr)
-      call VecNorm(sol, NORM_2, tmp(1), ierr)
+      call VecZeroEntries(rhs, ierr)
+      call assembleVectorComplete(rhs, locSol, ADD_VALUES, ierr)
+      call VecNorm(rhs, NORM_2, tmp(1), ierr)
 cpetsc tmp(1)=dnrm2(neq,dispvec,ione)
       call VecZeroEntries(rhs, ierr)
       call assembleVectorComplete(rhs, locRhs, ADD_VALUES, ierr)
