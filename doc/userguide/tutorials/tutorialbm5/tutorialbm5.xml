@@ -45,18 +45,16 @@
         solution. These displacements are held fixed through time.
       </para>
 
-      <figure>
+      <figure id="figure_bm5_geometry">
 	<title>Geometry of model domain for SCEC benchmark 5.</title>
-	<para>
-          INSERT GRAPHIC HERE
-        </para>
-	<!--
-	<mediaobject id="bm5_geometry">
-          <imageobject>
-	    <imagedata fileref="figs/geometry" format="PNG" />
+	<mediaobject>
+          <imageobject role="fo">
+	    <imagedata fileref="figs/geometry.eps" format="EPS" />
+	  </imageobject>
+          <imageobject role="xhtml,html">
+	    <imagedata fileref="figs/geometry.png" format="PNG" />
 	  </imageobject>
 	</mediaobject>
-	  -->
       </figure>
     </section>
 
