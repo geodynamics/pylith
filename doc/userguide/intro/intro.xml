@@ -143,12 +143,12 @@
         shorter development cycle, and good debugging support.
       </para>
 
-      <figure>
+      <figure id="figure_pyre_overview">
 	<title>
           Pyre Architecture. The integration framework is a set of
           cooperating abstract services.
         </title>
-	<mediaobject id="figure_pyre_overview">
+	<mediaobject>
 	  <imageobject role="fo">
 	    <imagedata fileref="figs/pyre_overview.eps" format="EPS"/>
 	  </imageobject>
