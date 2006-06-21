@@ -5,5 +5,5 @@
   <title>Tutorials</title>
 
   <xi:include
-    xmlns:xi="http://www.w3.org/2001/XInclude" href="tutorialbm5.xml" />
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="tutorialbm5/tutorialbm5.xml" />
 </chapter>
