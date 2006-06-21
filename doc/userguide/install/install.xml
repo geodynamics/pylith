@@ -15,25 +15,203 @@
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section>
     <title>Getting Help</title>
-    <para>
-      ADD STUFF HERE
-    </para>
-  </section>
 
-  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-  <section>
-    <title>System Requirements</title>
     <para>
       ADD STUFF HERE
     </para>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Requesting help</title>
+
+      <para>
+        Send email to cig-short@geodynamics.org. ADD STUFF HERE
+      </para>
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Reporting errors</title>
+
+      <para>
+        Submit bug reports using Roundup. ADD STUFF HERE
+http://www.geodynamics.org/roundup/issues/
+      </para>
+    </section>
+
   </section>
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section>
     <title>Installation</title>
     <para>
-      ADD STUFF HERE
+      Binary executables are available for three of the most widely
+      used platforms: 32-bit Linux, OSX (Darwin), and Windows. If your
+      platform is not compatible with any of these, you can build the
+      software from the source code.
     </para>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Linux</title>
+
+      <para>
+        Running the Linux binary version of PyLith requires a 32-bit
+        compatible machine with GLIBC 2.2 or later.
+      </para>
+
+      <orderedlist>
+	<listitem>
+	  <para>
+            Download the <ulink
+            url="http://crust.geodynamics.org/~leif/shipping/">tarball</ulink>.
+          </para>
+	</listitem>
+	<listitem>
+	  <para>
+            Unpack the tarball (i.e., <command>tar -zxvf
+            pylith-0.8-linux-x86.tar.gz</command>) in a suitable
+            location.
+          </para>
+	</listitem>
+	<listitem>
+	  <para>
+            Add <filename
+            class="directory">pylith-0.8-linux-x86/bin</filename> to
+            your <envar>PATH</envar>. You will likely want to add
+            something like
+            <literal>PATH=${PATH}:replace_with_absolute_path/pylith-0.8-linux-x86/bin</literal>
+            to your <filename>.bashrc</filename> file (if you are
+            using bash as your shell) or the equivalent to your
+            <filename>.cshrc</filename> file (if you are using tcsh as
+            your shell).
+          </para>
+	</listitem>
+      </orderedlist>
+
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>OSX (Darwin)</title>
+
+      <para>
+        ADD STUFF HERE
+      </para>
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Windows</title>
+
+      <para>
+        This Windows binary version of PyLith should be compatible
+        with Windows NT, Windows 2000, and Windows XP.
+      </para>
+
+      <orderedlist>
+	<listitem>
+	  <para>
+            Download the <ulink
+            url="http://crust.geodynamics.org/~leif/shipping/">installer</ulink>.
+          </para>
+	</listitem>
+	<listitem>
+	  <para>
+            Double click on the <filename>setup.exe</filename> file
+            you just downloaded and follow the instructions for
+            installing.
+          </para>
+	</listitem>
+	<listitem>
+	  <para>
+            ADD HOW TO RUN
+          </para>
+	</listitem>
+      </orderedlist>
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Building the source code</title>
+
+      <para>
+        Building PyLith from the source code is not a trivial task
+        because PyLith depends on several other packages. In general,
+        each package must be compiled from source using binary compatible
+        compilers.
+      </para>
+
+      <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++ -->
+      <section>
+	<title>System Requirements</title>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>Unix flavored operating system</para>
+	  </listitem>
+	  <listitem>
+	    <para>Fortran, C, and C++ compilers</para>
+	  </listitem>
+	  <listitem>
+	    <para>Python (2.3 or later)</para>
+	  </listitem>
+	</itemizedlist>
+      </section>
+
+      <para>
+        The software must be built starting from the bottom of the
+        dependency list and working upwards. The steps below describe
+        the recommended way to build PyLith and the external packages
+        on which it depends. Some of the dependencies can be satisfied
+        using precompiled binaries (e.g., RedHat and Fink
+        packages). When choosing whether to use a precompiled binary
+        package to satisfy any of the dependencies remember that all
+        of the compilers and settings used in building the code must
+        be compatible.
+      </para>
+
+      <orderedlist>
+	<listitem>
+	  <para>
+            Build PETSc and MPI.
+          </para>
+	  <orderedlist numeration="lowerroman">
+	    <listitem>
+	      <para>
+                ADD STUFF HERE
+              </para>
+	    </listitem>
+	  </orderedlist>
+	</listitem>
+	<listitem>
+	  <para>
+            Build Pythia.
+          </para>
+	  <orderedlist numeration="lowerroman">
+	    <listitem>
+	      <para>
+                ADD STUFF HERE
+              </para>
+	    </listitem>
+	  </orderedlist>
+	</listitem>
+	<listitem>
+	  <para>
+            Build PyLith.
+          </para>
+	  <orderedlist numeration="lowerroman">
+	    <listitem>
+	      <para>
+                ADD STUFF HERE
+              </para>
+	    </listitem>
+	  </orderedlist>
+	</listitem>
+      </orderedlist>
+
+    </section>
+
   </section>
 
 </chapter>

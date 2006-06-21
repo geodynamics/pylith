@@ -10,8 +10,9 @@
     <para>
       PyLith currently only supports the 4-node linear tetrahedral
       element. The node ordering must follow the convention shown in
-      <xref linkend="fig_tet4" />.
-      CHARLES- IS THIS CORRECT??
+      <xref linkend="fig_tet4" />. Support for the 8-node linear
+      hexahedral element will be included in PyLith version 0.8.1,
+      expected to be released in July 2006.
     </para>
 
     <figure id="fig_tet4">
@@ -35,7 +36,7 @@
       associated with different kinds of boundary conditions. As a
       result only six are required. The remaining files are only used
       when the associated boundary condition is used. See <xref
-      linkend="chapter_fileformats" /> for a detailed discussion of
+      linkend="appendix_fileformats" /> for a detailed discussion of
       the file formats.
     </para>
     <para>
@@ -54,7 +55,9 @@
       copies of each one for each of the processors with filenames
       following the same form <filename>xx.PROC.ext</filename>. This
       is most easily done using a shell script that starts a
-      simulation.
+      simulation. See <filename>runbm5.sh</filename> in <xref
+      linkend="tutorial_scecbm5" /> for an illustration of how to do
+      this.
     </para>
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -325,7 +328,10 @@
     <para>
       PyLith's Pyre properties can also be set using
       <filename>pml</filename> files. These are <acronym>XML</acronym>
-      files that follow a special Pyre schema. ADD STUFF HERE
+      files that follow a special Pyre XML schema.
+    </para>
+    <para>
+      ADD STUFF HERE
     </para>
 
   </section>
