@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
-<section id="section_tutorial_scecbm5">
+<section id="tutorial_scecbm5">
   <title>Tutorial Using SCEC Benchmark 5</title>
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -572,7 +572,9 @@
           dialog box and the click the <guibutton>Open</guibutton>
           button. Click the <guibutton>Accept</guibutton> button. You
           can now visualize the datasets just like you did for the
-          single processor case.
+          single processor case. By making the datasets from the
+          different processors all visible you can examine the
+          aggregate output.
         </para>
       </listitem>
     </orderedlist>
