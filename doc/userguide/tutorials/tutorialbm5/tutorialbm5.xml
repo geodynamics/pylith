@@ -404,11 +404,12 @@
     <title>Visualize the single processor run</title>
     <para>
       Now it is time to visualize the results of the simulation. By
-      default, PyLith writes simulation output using
+      default, PyLith writes simulation output using <ulink
+      url="http://help.avs.com/Express/doc/help/reference/dvmac/UCD_Form.htm">
       <application>AVS</application> <acronym>UCD</acronym>
-      files. These can also be read by several other visualization
-      tools besides <application>AVS</application>, e.g.,
-      <application>ParaView</application> and <application>Iris
+      files</ulink>. These can also be read by several other
+      visualization tools besides <application>AVS</application>,
+      e.g., <application>ParaView</application> and <application>Iris
       Explorer</application>. We will use the open-source application
       <application>ParaView</application> to visualize the results.
     </para>

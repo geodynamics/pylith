@@ -4,11 +4,20 @@
 <chapter id="appendix_fileformats">
   <title>File Formats</title>
 
-  <para>
-    CHARLES- DO ALL FILES PERMIT COMMENT LINES?
-  </para>
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Input Files</title>
 
-  <!-- REQUIRED INPUT FILES -->
+    <para>
+      PyLith gathers its input from several different types of
+      files. All of these area ASCII files and can include comment
+      lines that begin with '#'. Note that the placement of comments
+      is restricted to certain locations in some files (see the
+      discussion of each file format for more information).
+    </para>
+  </section>
+
+  <!-- REQUIRED INPUT FILES ++++++++++++++++++++++++++++++++++++++ -->
   <xi:include
     xmlns:xi="http://www.w3.org/2001/XInclude" href="coord.xml" />
   <xi:include
@@ -18,15 +27,21 @@
   <xi:include
     xmlns:xi="http://www.w3.org/2001/XInclude" href="time.xml" />
   <xi:include
-    xmlns:xi="http://www.w3.org/2001/XInclude" href="statevar.xml" />
-  <xi:include
     xmlns:xi="http://www.w3.org/2001/XInclude" href="prop.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="statevar.xml" />
 
-  <!-- OPTIONAL INPUT FILES -->
+  <!-- OPTIONAL INPUT FILES ++++++++++++++++++++++++++++++++++++++ -->
   <xi:include
     xmlns:xi="http://www.w3.org/2001/XInclude" href="split.xml" />
   <xi:include
     xmlns:xi="http://www.w3.org/2001/XInclude" href="fuldat.xml" />
   <xi:include
     xmlns:xi="http://www.w3.org/2001/XInclude" href="skew.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="keyval.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="hist.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="wink.xml" />
 </chapter>
