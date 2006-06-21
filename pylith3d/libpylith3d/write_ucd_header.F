@@ -57,11 +57,18 @@ c
       character stress*6,strain*4,strate*9
       data stress,strain,strate/"Pascal","None","1/seconds"/
 c
+c...  external functions
+c
+      integer nchar
+      external nchar
+c
 c...  local variables
 c
       integer i,ibyte,indl,indu
+      integer il
       integer iout(3*nstatesmax)
       character nlabels*1024,nunits*1024
+      character slabel*100
 c
 c...  included variable definitions
 c
@@ -75,7 +82,15 @@ c
         write(kucd,"(100i5)") nstatestot,(iout(i),i=1,nstatestot)
 c
         do i=1,nstatestot
-          write(kucd,"(a11)") labels(istatoutc(i))
+          il=nchar(labels(istatoutc(i)))
+          if(istatoutc(i).le.nstatesmax) then
+            slabel=labels(istatoutc(i))(1:il)//","//stress
+          else if(istatoutc(i).le.2*nstatesmax) then
+            slabel=labels(istatoutc(i))(1:il)//","//strain
+          else if(istatoutc(i).le.3*nstatesmax) then
+            slabel=labels(istatoutc(i))(1:il)//","//strate
+          end if
+          write(kucd,"(a100)") slabel
         end do
       else if(iucd.eq.itwo) then
         indl=ione
