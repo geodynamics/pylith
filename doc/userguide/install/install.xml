@@ -8,7 +8,13 @@
   <section>
     <title>Introduction</title>
     <para>
-      ADD STUFF HERE
+      Installation of PyLith on a desktop or laptop machine is, in
+      most cases, very easy. Binary packages have been created for the
+      most common platforms, including Linux, OSX, and
+      Windows. Installation on machines that are not compatible with
+      any of these operating systems requires building the software
+      from the source code, which can be difficult for inexperienced
+      users.
     </para>
   </section>
 
@@ -17,7 +23,8 @@
     <title>Getting Help</title>
 
     <para>
-      ADD STUFF HERE
+      Help is available via the CIG Short-Term Crustal Dynamics
+      Mailing List and CIG's issue tracking system.
     </para>
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -25,17 +32,31 @@
       <title>Requesting help</title>
 
       <para>
-        Send email to cig-short@geodynamics.org. ADD STUFF HERE
+        The CIG Short-Term Crustal Dynamics Mailing List,
+        <email>cig-short@geodynamics.org</email>, is a mailing list
+        dedicated to CIG issues associated with short-term crustal
+        dynamics, including the use of PyLith. You can subscribe to
+        the mailing list and view messages at the <ulink
+        url="http://www.geodynamics.org">CIG website</ulink>.
       </para>
     </section>
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
-      <title>Reporting errors</title>
+      <title>Reporting bugs and errors</title>
 
       <para>
-        Submit bug reports using Roundup. ADD STUFF HERE
-http://www.geodynamics.org/roundup/issues/
+        CIG uses the <application>Roundup</application> for bug
+        tracking. If you find a bug in PyLith, please submit a bug
+        report to the <ulink
+        url="http://www.geodynamics.org/roundup">CIG
+        <application>Roundup</application> system</ulink>. Of course,
+        it is helpful to first check to see if someone else has
+        already submitted a report related to the issue; one of the
+        CIG developers may have already posted a solution to the
+        problem. You can reply to a current issue by clicking on the
+        issue title. To submit a new issue, click on <guibutton>Create
+        New</guibutton> under <guimenu>Issues</guimenu>.
       </para>
     </section>
 
@@ -138,8 +159,8 @@ http://www.geodynamics.org/roundup/issues/
       <para>
         Building PyLith from the source code is not a trivial task
         because PyLith depends on several other packages. In general,
-        each package must be compiled from source using binary compatible
-        compilers.
+        each package must be compiled from source using compilers for
+        each language that are compatible with one another.
       </para>
 
       <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++ -->

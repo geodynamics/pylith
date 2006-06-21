@@ -43,21 +43,27 @@
       The first step in the simulation process involves partitioning
       the mesh among the processors. In this phase, PyLith reads in
       the entire mesh and then writes out processor specific pieces
-      with one file for each processor. The filenames for these
-      processors follow the convention
-      <filename>xx.PROC.ext</filename> where <filename>PROC</filename>
-      refers to the processor number and the original filename was
-      <filename>xx.ext</filename>. This procedure is applied to files
-      with the following extensions: <filename>coord</filename>,
-      <filename>connect</filename>, <filename>split</filename>,
-      <filename>bc</filename>. The other files provide information
-      common to all processors. As a result, the user must create
-      copies of each one for each of the processors with filenames
-      following the same form <filename>xx.PROC.ext</filename>. This
-      is most easily done using a shell script that starts a
-      simulation. See <filename>runbm5.sh</filename> in <xref
-      linkend="tutorial_scecbm5" /> for an illustration of how to do
-      this.
+      with one file for each processor. The filenames for these follow
+      the convention <filename>xx.PROC.ext</filename> where
+      <filename>PROC</filename> refers to the processor number and the
+      original filename was <filename>xx.ext</filename>. This
+      procedure is applied to files with the following extensions:
+      <filename>coord</filename>, <filename>connect</filename>,
+      <filename>split</filename>, <filename>bc</filename>. 
+    </para>
+    <para>
+      The other files provide information common to all processors. As
+      a result, the user must create copies of each one for each of
+      the processors with filenames. By default PyLith expects the
+      names of these files to follow the same form
+      <filename>xx.PROC.ext</filename>. Setting up this naming scheme
+      is most easily done using symbolic links or copying files to
+      local directories on each machine using a shell script that
+      starts a simulation. See <filename>runbm5.sh</filename> in <xref
+      linkend="tutorial_scecbm5" /> for a simple example. You can also
+      choose your own filename template by setting the appropriate
+      command-line argument. See <xref
+      linkend="section_commandline_arguments" /> for more information.
     </para>
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -125,9 +131,11 @@
     <section>
       <title>Optional Input Files</title>
       <para>
-        The optional input files are only included when the associated
-        boundary conditions are specified in the boundary condition
-        file, <filename>xx.bc</filename>.
+        The optional input files are only read when they exist in the
+        directory containing the rest of the input files. Explicit
+        filenames (with alternate locations) can be specified using
+        command-line arguments as discussed in <xref
+        linkend="section_commandline_arguments" />.
       </para>
       <variablelist>
 	<varlistentry>
@@ -170,7 +178,7 @@
 	  <listitem>
 	    <para>
               Winkler sprint element boundary condition
-              information. Not yet tested.
+              information. <emphasis>Not yest tested.</emphasis>
             </para>
 	  </listitem>
 	</varlistentry>
@@ -178,9 +186,8 @@
 	  <term><filename>xx.hist</filename></term>
 	  <listitem>
 	    <para>
-              Time history boundary conditions. Not yet tested?? 
-              CHARLES - IS THIS FOR DISLOCATION BOUNDARY CONDITIONS OR
-              EXTERNAL BOUNDARY CONDITIONS??
+              Time history split node and Winkler boundary
+              conditions. <emphasis>Not yest tested.</emphasis>
             </para>
 	  </listitem>
 	</varlistentry>
@@ -190,7 +197,7 @@
   </section>
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-  <section>
+  <section id="section_commandline_arguments">
     <title>Command-line Arguments</title>
     <para>
       Command-line arguments associated with running PyLith fall into
