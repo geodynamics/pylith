@@ -98,7 +98,7 @@
           choosing.
         </para>
 	<screen>
-<prompt>bash$ </prompt>tar -zxvf pylith-0.8_tutorials.tgz
+<prompt>bash$ </prompt><userinput>tar -zxvf pylith-0.8_tutorials.tgz</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -117,7 +117,7 @@
           in the next section.
         </para>
 	<screen>
-<prompt>bash$ </prompt>cd tutorials/scecbm5
+<prompt>bash$ </prompt><userinput>cd tutorials/scecbm5</userinput>
         </screen>
 	
       </listitem>
@@ -160,9 +160,9 @@
         </para>
       </tip>
       <screen>
-<prompt>bash$ </prompt>cd workarea
-<prompt>bash$ </prompt>cp ../archive/tutor.sh .
-<prompt>bash$ </prompt>./tutor.sh clean all
+<prompt>bash$ </prompt><userinput>cd workarea</userinput>
+<prompt>bash$ </prompt><userinput>cp ../archive/tutor.sh .</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.sh clean all</userinput>
       </screen>
     </section>
 
@@ -187,8 +187,8 @@
           to clean out old files.
         </para>
       <screen>
-<prompt>bash$ </prompt>./tutor.sh retrieve mesh
-<prompt>bash$ </prompt>./tutor.sh clean mesh
+<prompt>bash$ </prompt><userinput>./tutor.sh retrieve mesh</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.sh clean mesh</userinput>
       </screen>
       </listitem>
       <listitem>
@@ -206,7 +206,7 @@
           <command>ng</command>.
         </para>
 	<screen>
-<prompt>bash$ </prompt>ng
+<prompt>bash$ </prompt><userinput>ng</userinput>
       </screen>
       </listitem>
       <listitem>
@@ -251,7 +251,7 @@
           "retrieve" to fetch files from the archive.
         </para>
       <screen>
-<prompt>bash$ </prompt>./tutor.sh retrieve setup
+<prompt>bash$ </prompt><userinput>./tutor.sh retrieve setup</userinput>
       </screen>
       </listitem>
       <listitem>
@@ -269,7 +269,7 @@
               sub-directory.
             </para>
 	    <screen>
-<prompt>bash$ </prompt>cd ../../utils
+<prompt>bash$ </prompt><userinput>cd ../../utils</userinput>
             </screen>
 	  </listitem>
 	  <listitem>
@@ -306,7 +306,7 @@
 	      </varlistentry>
 	    </variablelist>
 	    <screen>
-<prompt>bash$ </prompt>make
+<prompt>bash$ </prompt><userinput>make</userinput>
             </screen>
 	    <tip>
 	    <para>
@@ -317,6 +317,15 @@
               class="directory">utils</filename> directory.
             </para>
 	    </tip>
+	  </listitem>
+	  <listitem>
+	    <para>
+              Return to the <filename
+              class="directory">workarea</filename> directory.
+            </para>
+	    <screen>
+<prompt>bash$ </prompt><userinput>cd ../scecbm5/workarea</userinput>
+            </screen>
 	  </listitem>
 	</orderedlist>
       </listitem>
@@ -335,10 +344,10 @@
           <filename>bm5.1.fbc</filename>.
          </para>
 	<screen>
-<prompt>bash$ </prompt>../../utils/readnetgen
-<prompt>ADD CORRECT PROMPT HERE</prompt>
-<prompt></prompt>
-<prompt></prompt>bm5
+<prompt>bash$ </prompt><userinput>../../utils/readnetgen</userinput>
+<prompt> Enter root name for all files.  Both input and</prompt>
+<prompt> output files will all have this prefix:</prompt>
+<userinput>bm5</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -352,14 +361,14 @@
           <command>faultcalc</command> &mdash; split node definitions
           in <filename>bm5.1.fbc</filename> and nodal coordinates in
           <filename>bm5.coord</filename>. The file
-          <filename>bm5-fault.par</filename> contains the polynomial
+          <filename>bm5.fault.par</filename> contains the polynomial
           coefficients for this benchmark problem. Run
           <command>faultcalc</command>to get the
           <filename>bm5.split</filename> file that PyLith needs as
           input.
         </para>
 	<screen>
-<prompt>bash$ </prompt>../../utils/faultcalc p=bm5-fault.par n=bm5.coord i=bm5.1.fbc o=bm5.split
+<prompt>bash$ </prompt><userinput>../../utils/faultcalc p=bm5.fault.par n=bm5.coord i=bm5.1.fbc o=bm5.split</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -403,7 +412,7 @@
           "retrieve" to fetch some parameter files from the archive.
         </para>
 	<screen>
-<prompt>bash$ </prompt>./tutor.sh retrieve run1
+<prompt>bash$ </prompt><userinput>./tutor.sh retrieve run1</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -440,7 +449,7 @@
           </para>
         </tip>
 	<screen>
-<prompt>bash$ </prompt>./runbm5.sh 1
+<prompt>bash$ </prompt><userinput>./runbm5.sh 1</userinput>
         </screen>
       </listitem>
     </orderedlist>
@@ -469,7 +478,7 @@
           from the archive.
         </para>
 	<screen>
-<prompt>bash$ </prompt>./tutor.sh retrieve viz1
+<prompt>bash$ </prompt><userinput>./tutor.sh retrieve viz1</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -485,7 +494,7 @@
           <filename>bm5_1.0.mesh.t00010.inp</filename>.
         </para>
 	<screen>
-<prompt>bash$ </prompt>cat bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp > bm5_1.0.mesh.t00010.inp
+<prompt>bash$ </prompt><userinput>cat bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp > bm5_1.0.mesh.t00010.inp</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -494,7 +503,7 @@
           <command>paraview</command>.
         </para>
 	<screen>
-<prompt>bash$ </prompt>paraview
+<prompt>bash$ </prompt><userinput>paraview</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -558,7 +567,7 @@
           "retrieve" to make sure all parameter files are available.
         </para>
 	<screen>
-<prompt>bash$ </prompt>./tutor.sh retrieve run2
+<prompt>bash$ </prompt><userinput>./tutor.sh retrieve run2</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -575,7 +584,7 @@
           2</command>, where the 2 refers to the number of processors.
         </para>
 	<screen>
-<prompt>bash$ </prompt>./runbm5.sh 2
+<prompt>bash$ </prompt><userinput>./runbm5.sh 2</userinput>
         </screen>
       </listitem>
     </orderedlist>
@@ -601,7 +610,7 @@
           from the archive.
         </para>
 	<screen>
-<prompt>bash$ </prompt>./tutor.sh retrieve viz2
+<prompt>bash$ </prompt><userinput>./tutor.sh retrieve viz2</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -615,8 +624,10 @@
           processor.
         </para>
 	<screen>
-<prompt>bash$ </prompt>cat bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp > bm5_1.0.mesh.t00010.inp
-<prompt>bash$ </prompt>cat bm5_1.1.mesh.inp bm5_1.1.mesh.time.00010.inp > bm5_1.1.mesh.t00010.inp
+<prompt>bash$ </prompt><userinput>cat bm5_2.0.mesh.inp bm5_2.0.mesh.time.00010.inp
+> bm5_2.0.mesh.t00010.inp</userinput>
+<prompt>bash$ </prompt><userinput>cat bm5_2.1.mesh.inp bm5_2.1.mesh.time.00010.inp
+> bm5_2.1.mesh.t00010.inp</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -625,7 +636,7 @@
           <command>paraview</command>.
         </para>
 	<screen>
-<prompt>bash$ </prompt>paraview
+<prompt>bash$ </prompt><userinput>paraview</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -637,9 +648,17 @@
           dialog box and the click the <guibutton>Open</guibutton>
           button. Click the <guibutton>Accept</guibutton> button. You
           can now visualize the datasets just like you did for the
-          single processor case. By making the datasets from the
-          different processors all visible you can examine the
-          aggregate output.
+          single processor case.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          You can merge the datasets from the different processors by
+          selecting
+          <menuchoice><guimenu>Filter</guimenu><guimenuitem>Append</guimenuitem></menuchoice>. Doing
+          so will allow you to operate on the data from all of the
+          processors simultaneously instead of having to repeat any
+          processing for every processor.
         </para>
       </listitem>
     </orderedlist>

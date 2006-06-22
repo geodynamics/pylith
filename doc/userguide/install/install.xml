@@ -94,7 +94,7 @@
             location.
           </para>
           <screen>
-<prompt>bash$ </prompt>tar -zxvf pylith-0.8-linux-x86.tar.gz
+<prompt>bash$ </prompt><userinput>tar -zxvf pylith-0.8-linux-x86.tar.gz</userinput>
           </screen>
 	</listitem>
 	<listitem>
