@@ -454,7 +454,7 @@
       default, PyLith writes simulation output using <ulink
       url="http://help.avs.com/Express/doc/help/reference/dvmac/UCD_Form.htm">
       <application>AVS</application> <acronym>UCD</acronym>
-      files</ulink>. These can also be read by several other
+      files</ulink>. These can be read by several other
       visualization tools besides <application>AVS</application>,
       e.g., <application>ParaView</application> and <application>Iris
       Explorer</application>. We will use the open-source application
