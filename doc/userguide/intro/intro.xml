@@ -88,7 +88,32 @@
     <section>
       <title>PETSc</title>
       <para>
-        ADD STUFF HERE
+        <ulink
+        href="http://www-unix.mcs.anl.gov/petsc/petsc-as/">PETSc</ulink>,
+        the Portable, Extensible Toolkit for Scientific computation,
+        provides a suite of routines for parallel, numerical solution
+        of partial differential equations for linear and nonlinear
+        systems with large, sparse systems of equations. PETSc
+        includes solvers that implement a variety of Newton and Krylov
+        subspace methods. It can also interface with many external
+        packages, including BlockSolve95, ESSL, Matlab, ParMeTis,
+        PVODE, and SPAI, thereby providing additional solvers and
+        interfaces.
+      </para>
+
+      <para>
+        PETSc includes interfaces for Fortran, C, and C++ for nearly
+        all of the routines and PETSc can be installed on most Unix
+        systems. PETSc can be built with user supplied highly
+        optimized linear algebra routines (e.g., ATLAS and commercial
+        versions of BLAS/LAPACK), thereby improving application
+        performance. Users can use PETSc parallel matrices, vectors,
+        and other data structures for most parallel operations,
+        eliminating the need for explicit calls to Message Passing
+        Interface (MPI) routines. Many settings and options can be
+        controlled with PETSc specific command line arguments,
+        including selection of preconditions, solvers, and generation
+        of performance logs.
       </para>
     </section>
 
