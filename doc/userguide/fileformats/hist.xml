@@ -22,7 +22,7 @@
 #
 # Line 1, column 1: The number of points in the time history
 # Line 1, column 2: The value assigned to every point by default
-#                   (overrided by values in time history)
+#                   (overridden by values in time history)
 # Line 2+, column 1: Time (in seconds) for a given load value
 # Line 2+, column 2: Load value at given time
 #
