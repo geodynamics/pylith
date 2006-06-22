@@ -132,7 +132,7 @@
       <title>Optional Input Files</title>
       <para>
         The optional input files are only read when a file exists
-        matching the name of an input file PyLith expects to reaad.
+        matching the name of an input file PyLith expects to read.
         Note that explicit filenames for each of the files can be
         specified using command-line arguments as discussed in <xref
         linkend="section_commandline_arguments" />.
@@ -168,8 +168,7 @@
 	  <term><filename>xx.keyval</filename></term>
 	  <listitem>
 	    <para>
-              Simple parameter settings for various boundary
-              conditions.
+              File for changing default parameters.
             </para>
 	  </listitem>
 	</varlistentry>
@@ -311,11 +310,24 @@
 	    </row>
 	    <row>
 	      <entry><cmdsynopsis>
+		  <arg choice="plain">-pc_type
+                  <replaceable>bjacobi</replaceable></arg>
+		</cmdsynopsis></entry>
+		<entry>
+	          Set preconditioner type to block Jacobi. See PETSc
+		  documentation for a list of all preconditioner types.
+	        </entry>
+	    </row>
+	    <row>
+	      <entry><cmdsynopsis>
 		  <arg choice="plain">-sub_pc_type
                   <replaceable>ilu</replaceable></arg>
 		</cmdsynopsis></entry>
-	      <entry>Set preconditioner to incomplete factorization. See
-                PETSc documentation for a list of all preconditioners.</entry>
+		<entry>
+		  Set preconditioner to incomplete factorization for
+		  each block. See PETSc documentation for a list of all
+		  preconditioners.
+	        </entry>
 	    </row>
 	    <row>
 	      <entry><cmdsynopsis>
