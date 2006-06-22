@@ -32,7 +32,7 @@
         10<superscript>18</superscript> Pa-s.
       </para>
       <para>
-        The reverse fault dips at an angle 45 degrees. The top of the
+        The reverse fault dips at an angle of 45 degrees. The top of the
         fault sits at x = 4 km with the bottom of the fault at x = 20
         km. The fault surface is confined to the region 0 km &le; y
         &le; 16 km and -16 km &le; z &le; 0 km. The slip distribution
@@ -363,7 +363,7 @@
           <filename>bm5.coord</filename>. The file
           <filename>bm5.fault.par</filename> contains the polynomial
           coefficients for this benchmark problem. Run
-          <command>faultcalc</command>to get the
+          <command>faultcalc</command> to get the
           <filename>bm5.split</filename> file that PyLith needs as
           input.
         </para>
@@ -391,6 +391,10 @@
             <application>NetGen</application>, the boundary condition
             file <filename>bm5.bc</filename> will no longer be
             correct and you will have to generate one yourself.
+	    Note that it is also possible that a different version
+	    of <application>NetGen</application> may provide a slightly
+	    different mesh, which would also be incompatible with the
+	    provided boundary conditions.
           </para>
 	</warning>
       </listitem>
