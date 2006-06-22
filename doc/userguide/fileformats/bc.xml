@@ -5,14 +5,14 @@
   <title>xx.bc</title>
 
   <para>
-    The <filename>xx.bc</filename> file specifies the nodal boundary
-    conditions (displacements, velocity, and forces).
+    The <filename>xx.bc</filename> file specifies the displacements,
+    velocity, and/or forces applied to vertices on the boundaries.
   </para>
 
   <figure>
     <title>Format of <filename>xx.bc</filename> files</title>
     <screen>
-# File containing nodal boundary conditions.
+# File containing boundary conditions at vertices.
 #
 # Comment lines begin with '#'
 #

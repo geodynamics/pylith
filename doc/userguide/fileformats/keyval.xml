@@ -73,10 +73,10 @@
     <para>
       Gravitational prestresses can be computed automatically. In such
       cases, the elastic properties in the prestress calculation can
-      be set to uniform values independent of any of the material
-      models. When gravity is being used and prestresses are not
-      computed automatically, each prestress component can be scaled
-      independently.
+      be set to uniform values independent of the parameters for any
+      of the material models. When gravity is being used and
+      prestresses are not computed automatically, each prestress
+      component can be scaled independently.
     </para>
   </section>
 
