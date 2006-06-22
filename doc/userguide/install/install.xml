@@ -128,8 +128,10 @@ PATH=${PATH}:<replaceable>replace_with_absolute_path</replaceable>/pylith-0.8-li
       <title>Mac OSX</title>
 
       <para>
-        The OSX binary version requires the Macintosh PowerPC
-        architecture with OSX version 10.2 or later.
+        The OSX binary version was built to run on the Macintosh
+        PowerPC architecture with OSX version 10.2 or later. The
+        binary will run on the Macintosh Intel architecture, but only
+        in emulation mode (i.e., rather slowly).
       </para>
 
       <orderedlist>
