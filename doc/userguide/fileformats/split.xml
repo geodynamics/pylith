@@ -17,7 +17,6 @@
 #
 # Comment lines begin with '#'
 #
-
 # Displacements are specified for each vertex on the fault for each
 # element containing the vertex. The displacements on each side of the
 # fault or dike should have opposite signs. The displacements

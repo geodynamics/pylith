@@ -34,7 +34,7 @@
     <para>
       PyLith gets its input from a variety of files. Most of these are
       associated with different kinds of boundary conditions. As a
-      result only six are required. The remaining files are only used
+      result only six files are required. The remaining files are only used
       when the associated boundary condition is used. See <xref
       linkend="appendix_fileformats" /> for a detailed discussion of
       the file formats.
@@ -45,17 +45,17 @@
       the entire mesh and then writes out processor specific pieces
       with one file for each processor. The filenames for these follow
       the convention <filename>xx.PROC.ext</filename> where
-      <filename>PROC</filename> refers to the processor number and the
-      original filename was <filename>xx.ext</filename>. This
+      <filename>PROC</filename> refers to the processor number and
+      <filename>xx.ext</filename> was the original filename. This
       procedure is applied to files with the following extensions:
       <filename>coord</filename>, <filename>connect</filename>,
-      <filename>split</filename>, <filename>bc</filename>. 
+      <filename>split</filename>, and <filename>bc</filename>.
     </para>
     <para>
-      The other files provide information common to all processors. As
-      a result, the user must create copies of each one for each of
-      the processors with filenames. By default PyLith expects the
-      names of these files to follow the same form
+      The remaining files provide information common to all
+      processors. As a result, the user must create copies of each one
+      for each of the processors. By default PyLith expects the names
+      of these files to follow the same form,
       <filename>xx.PROC.ext</filename>. Setting up this naming scheme
       is most easily done using symbolic links or copying files to
       local directories on each machine using a shell script that
@@ -87,7 +87,7 @@
 	  <term><filename>xx.connect</filename></term>
 	  <listitem>
 	    <para>
-              Topology of finite-element mesh.
+              Topology and material information for the finite-element mesh.
             </para>
 	  </listitem>
 	</varlistentry>
@@ -95,7 +95,7 @@
 	  <term><filename>xx.bc</filename></term>
 	  <listitem>
 	    <para>
-              Boundary conditions at nodes on external boundaries.
+              Boundary conditions at vertices on external boundaries.
             </para>
 	  </listitem>
 	</varlistentry>
@@ -131,10 +131,10 @@
     <section>
       <title>Optional Input Files</title>
       <para>
-        The optional input files are only read when they exist in the
-        directory containing the rest of the input files. Explicit
-        filenames (with alternate locations) can be specified using
-        command-line arguments as discussed in <xref
+        The optional input files are only read when a file exists
+        matching the name of an input file PyLith expects to reaad.
+        Note that explicit filenames for each of the files can be
+        specified using command-line arguments as discussed in <xref
         linkend="section_commandline_arguments" />.
       </para>
       <variablelist>
@@ -177,8 +177,8 @@
 	  <term><filename>xx.wink</filename></term>
 	  <listitem>
 	    <para>
-              Winkler sprint element boundary condition
-              information. <emphasis>Not yest tested.</emphasis>
+              Winkler spring element boundary condition
+              information. <emphasis>Not yet tested.</emphasis>
             </para>
 	  </listitem>
 	</varlistentry>
@@ -186,8 +186,9 @@
 	  <term><filename>xx.hist</filename></term>
 	  <listitem>
 	    <para>
-              Time history split node and Winkler boundary
-              conditions. <emphasis>Not yest tested.</emphasis>
+              Time histories for split node and Winkler boundary
+              conditions (if necessary). <emphasis>Not yet
+              tested.</emphasis>
             </para>
 	  </listitem>
 	</varlistentry>
@@ -199,12 +200,26 @@
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section id="section_commandline_arguments">
     <title>Command-line Arguments</title>
+
     <para>
-      Command-line arguments associated with running PyLith fall into
-      three categories: MPI settings, Pyre properties and facilities,
-      and PETSc settings.
+      In general, PyLith's command-line arguments fall into three
+      categories: MPI settings, Pyre properties and facilities, and
+      PETSc settings.
     </para>
 
+    <para>
+      If using the MPICH implementation of the Message Passing
+      Interface (MPI), as is done for the CIG distributed binaries,
+      the synopsis for running PyLith is:
+    </para>
+    <cmdsynopsis>
+      <command>mpirun</command>
+      <arg choice="req">-np <replaceable>NPROCS</replaceable></arg>
+      pylith3dapp.py
+      <arg choice="opt"><replaceable>PyLith settings</replaceable></arg>
+      <arg choice="opt"><replaceable>PETSc settings</replaceable></arg>
+    </cmdsynopsis>
+    
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
       <title>MPI Settings</title>
@@ -243,9 +258,9 @@
       </para>
       <para>
         In the current version of PyLith, all of the properties are
-        associated with the "scanner" component. You can get a list of
-        all of these properties along with a description of what they
-        do by running PyLith with the
+        associated with the <literal>scanner</literal> component. You
+        can get a list of all of these properties along with a
+        description of what they do by running PyLith with the
         <option>--scanner.help-properties</option> command-line
         argument.
       </para>
@@ -257,9 +272,9 @@
 	    <command>mpirun</command>
 	    <arg choice="plain">-np <replaceable>1</replaceable></arg> 
 	    <arg choice="plain">pylith3dapp.py</arg>
-	    <arg>--scanner.help-properties</arg><sbr/>
-	    <arg>--scanner.asciiOutput=<replaceable>none</replaceable></arg>
-	    <arg>--scanner.title=<replaceable>"My simulation"</replaceable></arg>
+	    <arg choice="plain">--scanner.help-properties</arg><sbr/>
+	    <arg choice="plain">--scanner.asciiOutput=<replaceable>none</replaceable></arg>
+	    <arg choice="plain">--scanner.title=<replaceable>"My simulation"</replaceable></arg>
 	  </cmdsynopsis>
         </screen>
       </example>
@@ -304,9 +319,13 @@
 	    </row>
 	    <row>
 	      <entry><cmdsynopsis>
-		  <arg choice="plain">-ksp_monitor</arg>
+		  <arg choice="plain">-ksp_monitor <replaceable>stdout</replaceable></arg>
 		</cmdsynopsis></entry>
-	      <entry>Dump preconditioned residual norm to stdout.</entry>
+	      <entry>
+                Dump preconditioned residual norm to stdout. If only
+                <option>-ksp_monitor</option> is given, the default is
+                to use stdout.
+              </entry>
 	    </row>
 	    <row>
 	      <entry><cmdsynopsis>
@@ -319,7 +338,7 @@
 		  <arg choice="plain">-ksp_rtol
 		  <replaceable>1.0e-09</replaceable></arg>
 		</cmdsynopsis></entry>
-	      <entry>Relative decrease in residual norm</entry>
+	      <entry>Tolerance for relative decrease in residual norm</entry>
 	    </row>
 	  </tbody>
 	</tgroup>

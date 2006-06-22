@@ -51,9 +51,9 @@
         report to the <ulink
         url="http://www.geodynamics.org/roundup">CIG
         <application>Roundup</application> system</ulink>. Of course,
-        it is helpful to first check to see if someone else has
-        already submitted a report related to the issue; one of the
-        CIG developers may have already posted a solution to the
+        it is helpful to first check to see if someone else already
+        submitted a report related to the issue; one of the CIG
+        developers may have already posted a solution to the
         problem. You can reply to a current issue by clicking on the
         issue title. To submit a new issue, click on <guibutton>Create
         New</guibutton> under <guimenu>Issues</guimenu>.
@@ -90,10 +90,12 @@
 	</listitem>
 	<listitem>
 	  <para>
-            Unpack the tarball (i.e., <command>tar -zxvf
-            pylith-0.8-linux-x86.tar.gz</command>) in a suitable
+            Unpack the tarball in a suitable
             location.
           </para>
+          <screen>
+<prompt>bash$ </prompt>tar -zxvf pylith-0.8-linux-x86.tar.gz
+          </screen>
 	</listitem>
 	<listitem>
 	  <para>
@@ -101,7 +103,9 @@
             class="directory">pylith-0.8-linux-x86/bin</filename> to
             your <envar>PATH</envar>. You will likely want to add
             something like
-            <literal>PATH=${PATH}:replace_with_absolute_path/pylith-0.8-linux-x86/bin</literal>
+	  <screen>
+PATH=${PATH}:<replaceable>replace_with_absolute_path</replaceable>/pylith-0.8-linux-x86/bin
+          </screen>
             to your <filename>.bashrc</filename> file (if you are
             using bash as your shell) or the equivalent to your
             <filename>.cshrc</filename> file (if you are using tcsh as
@@ -154,7 +158,7 @@
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
-      <title>Building the source code</title>
+      <title>Building from source</title>
 
       <para>
         Building PyLith from the source code is not a trivial task
@@ -186,10 +190,10 @@
         the recommended way to build PyLith and the external packages
         on which it depends. Some of the dependencies can be satisfied
         using precompiled binaries (e.g., RedHat and Fink
-        packages). When choosing whether to use a precompiled binary
-        package to satisfy any of the dependencies remember that all
-        of the compilers and settings used in building the code must
-        be compatible.
+        packages). When considering whether to use a precompiled
+        binary package to satisfy any of the dependencies, remember
+        that all of the compilers and settings used in building the
+        code must be compatible.
       </para>
 
       <orderedlist>

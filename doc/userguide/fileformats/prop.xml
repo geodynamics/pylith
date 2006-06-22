@@ -26,8 +26,8 @@
 #
 # The material type and material property values are specified using a
 # "keyword = value" syntax. The keywords for the different material
-# types are given below. The units for values with dimensions should
-# follow the value as shown in the examples below.
+# types are given below. Units for each of the values with dimensions
+# must follow the value as illustrated in the examples below.
 #
 # Materials and keywords:
 #   Isotropic linear elastic

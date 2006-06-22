@@ -1,8 +1,8 @@
 %!PS-Adobe-2.0 EPSF-2.0
 %%Title: geometry.fig
 %%Creator: fig2dev Version 3.2 Patchlevel 4
-%%CreationDate: Wed Jun 21 08:15:43 2006
-%%For: brad@arling (Brad Aagaard)
+%%CreationDate: Wed Jun 21 20:08:00 2006
+%%For: brad@Brads-Computer.local (Brad Aagaard)
 %%BoundingBox: 0 0 270 277
 %%Magnification: 1.0000
 %%EndComments
@@ -246,8 +246,11 @@ n 6300 3900 m 4500 2700 l
 % here ends figure;
 % 
 % here starts figure with depth 50
-% Arc
+% Polyline
 7.500 slw
+n 4200 1950 m 2700 2625 l
+ 3900 5025 l gs col4 s gr 
+% Arc
 gs  clippath
 2956 3169 m 2997 3213 l 3082 3131 l 2997 3172 l 3041 3088 l cp
 3152 2867 m 3092 2864 l 3088 2981 l 3122 2893 l 3148 2984 l cp
@@ -270,10 +273,6 @@ n 2400 2400 m 4200 3600 l 6300 2700 l 4500 1500 l
 % Polyline
 n 2400 2400 m 2400 4800 l 4200 6000 l 4200 3600 l
  cp gs col0 s gr 
-% Polyline
-7.500 slw
-n 4200 1950 m 2700 2625 l
- 3900 5025 l gs col4 s gr 
 /Helvetica-iso ff 180.00 scf sf
 3088 3221 m
 gs 1 -1 sc (45\260) col1 sh gr
@@ -287,17 +286,11 @@ n 2400 3600 m 4200 4800 l
 % here ends figure;
 % 
 % here starts figure with depth 42
+/Helvetica-iso ff 180.00 scf sf
+2625 2550 m
+gs 1 -1 sc (x) col1 sh gr
 % Polyline
 7.500 slw
-gs  clippath
-2430 2010 m 2370 2010 l 2370 2127 l 2400 2037 l 2430 2127 l cp
-eoclip
-n 2400 2400 m
- 2400 2025 l gs col1 s gr gr
-
-% arrowhead
-n 2430 2127 m 2400 2037 l 2370 2127 l 2430 2127 l  cp gs col1 1.00 shd ef gr  col1 s
-% Polyline
 gs  clippath
 2620 2583 m 2654 2533 l 2556 2468 l 2615 2543 l 2523 2518 l cp
 2726 2270 m 2700 2216 l 2595 2269 l 2689 2256 l 2621 2323 l cp
@@ -309,20 +302,41 @@ n 2700 2250 m 2400 2400 l
 n 2621 2323 m 2689 2256 l 2595 2269 l 2621 2323 l  cp gs col1 1.00 shd ef gr  col1 s
 % arrowhead
 n 2523 2518 m 2615 2543 l 2556 2468 l 2523 2518 l  cp gs col1 1.00 shd ef gr  col1 s
+% Polyline
+gs  clippath
+2430 2010 m 2370 2010 l 2370 2127 l 2400 2037 l 2430 2127 l cp
+eoclip
+n 2400 2400 m
+ 2400 2025 l gs col1 s gr gr
+
+% arrowhead
+n 2430 2127 m 2400 2037 l 2370 2127 l 2430 2127 l  cp gs col1 1.00 shd ef gr  col1 s
 /Helvetica-iso ff 180.00 scf sf
 2400 1950 m
 gs 1 -1 sc (z) col1 sh gr
 /Helvetica-iso ff 180.00 scf sf
 2625 2175 m
 gs 1 -1 sc (y) col1 sh gr
-/Helvetica-iso ff 180.00 scf sf
-2625 2550 m
-gs 1 -1 sc (x) col1 sh gr
 % here ends figure;
 % 
 % here starts figure with depth 40
 % Polyline
 7.500 slw
+gs  clippath
+6403 5203 m 6374 5134 l 6237 5192 l 6363 5180 l 6267 5261 l cp
+4246 6046 m 4275 6115 l 4412 6057 l 4287 6070 l 4382 5988 l cp
+eoclip
+n 4275 6075 m
+ 6375 5175 l gs col1 s gr gr
+
+% arrowhead
+n 4382 5988 m 4287 6070 l 4412 6057 l 4382 5988 l  cp gs col1 1.00 shd ef gr  col1 s
+% arrowhead
+n 6267 5261 m 6363 5180 l 6237 5192 l 6267 5261 l  cp gs col1 1.00 shd ef gr  col1 s
+/Helvetica-iso ff 180.00 scf sf
+3975 5400 m
+gs 1 -1 sc  327.0 rot (4 km) dup sw pop 2 div neg 0 rm  col1 sh gr
+% Polyline
 gs  clippath
 4194 5358 m 4230 5310 l 4109 5219 l 4187 5315 l 4073 5267 l cp
 3906 5067 m 3870 5115 l 3991 5206 l 3913 5110 l 4027 5158 l cp
@@ -334,6 +348,24 @@ n 3900 5100 m
 n 4027 5158 m 3913 5110 l 3991 5206 l 4027 5158 l  cp gs col1 1.00 shd ef gr  col1 s
 % arrowhead
 n 4073 5267 m 4187 5315 l 4109 5219 l 4073 5267 l  cp gs col1 1.00 shd ef gr  col1 s
+/Helvetica-iso ff 180.00 scf sf
+2250 4200 m
+gs 1 -1 sc  90.0 rot (12 km) dup sw pop 2 div neg 0 rm  col1 sh gr
+/Helvetica-iso ff 180.00 scf sf
+3600 2175 m
+gs 1 -1 sc  22.0 rot (16 km) dup sw pop 2 div neg 0 rm  col1 sh gr
+/Helvetica-iso ff 180.00 scf sf
+5434 5798 m
+gs 1 -1 sc  22.0 rot (24 km) dup sw pop 2 div neg 0 rm  col1 sh gr
+/Helvetica-iso ff 180.00 scf sf
+6600 3900 m
+gs 1 -1 sc  90.0 rot (24 km) dup sw pop 2 div neg 0 rm  col1 sh gr
+/Helvetica-iso ff 180.00 scf sf
+4258 1851 m
+gs 1 -1 sc  327.0 rot (4 km) dup sw pop 2 div neg 0 rm  col1 sh gr
+/Helvetica-iso ff 180.00 scf sf
+3000 5550 m
+gs 1 -1 sc  327.0 rot (24 km) dup sw pop 2 div neg 0 rm  col1 sh gr
 % Polyline
 gs  clippath
 2333 4835 m 2291 4897 l 2415 4979 l 2336 4882 l 2456 4917 l cp
@@ -394,39 +426,6 @@ n 6375 5100 m
 n 6337 4967 m 6375 5087 l 6412 4967 l 6337 4967 l  cp gs col1 1.00 shd ef gr  col1 s
 % arrowhead
 n 6412 2833 m 6375 2713 l 6337 2833 l 6412 2833 l  cp gs col1 1.00 shd ef gr  col1 s
-% Polyline
-gs  clippath
-6403 5203 m 6374 5134 l 6237 5192 l 6363 5180 l 6267 5261 l cp
-4246 6046 m 4275 6115 l 4412 6057 l 4287 6070 l 4382 5988 l cp
-eoclip
-n 4275 6075 m
- 6375 5175 l gs col1 s gr gr
-
-% arrowhead
-n 4382 5988 m 4287 6070 l 4412 6057 l 4382 5988 l  cp gs col1 1.00 shd ef gr  col1 s
-% arrowhead
-n 6267 5261 m 6363 5180 l 6237 5192 l 6267 5261 l  cp gs col1 1.00 shd ef gr  col1 s
-/Helvetica-iso ff 180.00 scf sf
-3975 5400 m
-gs 1 -1 sc  327.0 rot (4 km) dup sw pop 2 div neg 0 rm  col1 sh gr
-/Helvetica-iso ff 180.00 scf sf
-3000 5550 m
-gs 1 -1 sc  327.0 rot (24 km) dup sw pop 2 div neg 0 rm  col1 sh gr
-/Helvetica-iso ff 180.00 scf sf
-2250 4200 m
-gs 1 -1 sc  90.0 rot (12 km) dup sw pop 2 div neg 0 rm  col1 sh gr
-/Helvetica-iso ff 180.00 scf sf
-3600 2175 m
-gs 1 -1 sc  22.0 rot (20 km) dup sw pop 2 div neg 0 rm  col1 sh gr
-/Helvetica-iso ff 180.00 scf sf
-5434 5798 m
-gs 1 -1 sc  22.0 rot (24 km) dup sw pop 2 div neg 0 rm  col1 sh gr
-/Helvetica-iso ff 180.00 scf sf
-6600 3900 m
-gs 1 -1 sc  90.0 rot (24 km) dup sw pop 2 div neg 0 rm  col1 sh gr
-/Helvetica-iso ff 180.00 scf sf
-4258 1851 m
-gs 1 -1 sc  327.0 rot (4 km) dup sw pop 2 div neg 0 rm  col1 sh gr
 % here ends figure;
 $F2psEnd
 rs

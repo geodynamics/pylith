@@ -40,13 +40,15 @@
         linear taper to 0 at z = -16 km.
       </para>
       <para>
-        The boundary conditions on the lateral and bottom edges of the
-        mesh are the displacements from the analytical elastic
-        solution. These displacements are held fixed through time.
+        The plane y=0 is a plane of symmetry, so the y-DOF
+        displacements on this face are zero. The boundary conditions
+        on the other lateral faces and bottom of the mesh are the
+        displacements from the analytical elastic solution. These
+        displacements are held fixed through time.
       </para>
 
       <figure id="figure_bm5_geometry">
-	<title>Geometry of model domain for SCEC benchmark 5.</title>
+	<title>Geometry of model domain for SCEC Benchmark 5.</title>
 	<mediaobject>
           <imageobject role="fo">
 	    <imagedata fileref="figs/geometry.eps" format="EPS" />
@@ -95,6 +97,9 @@
           tarball</ulink> and unpack it in a location of your
           choosing.
         </para>
+	<screen>
+<prompt>bash$ </prompt>tar -zxvf pylith-0.8_tutorials.tgz
+        </screen>
       </listitem>
       <listitem>
 	<para>
@@ -106,10 +111,15 @@
           tutorial. We will copy input files from this directory into
           the <filename class="directory">workarea</filename>
           directory. At each step, you can check to make sure your
-          input and output agree with these files. These files also
-          allow you to start at an intermediate step as described in
-          the next section.
+          input and output agree with the files in the <filename
+          class="directory">archive</filename> directory. These files
+          also allow you to start at an intermediate step as described
+          in the next section.
         </para>
+	<screen>
+<prompt>bash$ </prompt>cd tutorials/scecbm5
+        </screen>
+	
       </listitem>
     </orderedlist>
 
@@ -133,12 +143,13 @@
       </para>
       <tip>
 	<para>
-          When retrieving files from the archive,
+          When retrieving files from the <filename
+          classname="directory">archive</filename> directory,
           <command>tutor.sh</command> will not overwrite files that
-          already exist in <filename
-          class="directory">workarea</filename>. This means that if
-          you mangle files in the working area, you should remove them
-          and let the tutor retrieve clean copies.
+          already exist in the <filename
+          class="directory">workarea</filename> directory. This means
+          that if you mangle files in the working area, you should
+          remove them and let the tutor retrieve clean copies.
         </para>
       </tip>
       <tip>
@@ -148,6 +159,11 @@
           "all" to clear out all old tutorial files.
         </para>
       </tip>
+      <screen>
+<prompt>bash$ </prompt>cd workarea
+<prompt>bash$ </prompt>cp ../archive/tutor.sh .
+<prompt>bash$ </prompt>./tutor.sh clean all
+      </screen>
     </section>
 
   </section>
@@ -163,13 +179,17 @@
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Return to the <filename class="directory">scecbm5/workarea</filename>
-          directory. Run <command>tutor.sh</command> for step "mesh"
+          In the <filename class="directory">scecbm5/workarea</filename>
+          directory, run <command>tutor.sh</command> for step "mesh"
           with mode "retrieve" to fetch the geometry file for
           <application>NetGen</application>. You may also want to run
           <command>tutor.sh</command> for this step with mode "clean"
           to clean out old files.
         </para>
+      <screen>
+<prompt>bash$ </prompt>./tutor.sh retrieve mesh
+<prompt>bash$ </prompt>./tutor.sh clean mesh
+      </screen>
       </listitem>
       <listitem>
 	<para>
@@ -185,6 +205,9 @@
           Start up <application>NetGen</application> by running
           <command>ng</command>.
         </para>
+	<screen>
+<prompt>bash$ </prompt>ng
+      </screen>
       </listitem>
       <listitem>
 	<para>
@@ -227,6 +250,9 @@
           Run <command>tutor.sh</command> for step "setup" with mode
           "retrieve" to fetch files from the archive.
         </para>
+      <screen>
+<prompt>bash$ </prompt>./tutor.sh retrieve setup
+      </screen>
       </listitem>
       <listitem>
 	<para>
@@ -242,6 +268,9 @@
               to the <filename class="directory">utils</filename>
               sub-directory.
             </para>
+	    <screen>
+<prompt>bash$ </prompt>cd ../../utils
+            </screen>
 	  </listitem>
 	  <listitem>
 	    <para>
@@ -276,14 +305,18 @@
 		</listitem>
 	      </varlistentry>
 	    </variablelist>
-	  </listitem>
-	  <listitem>
+	    <screen>
+<prompt>bash$ </prompt>make
+            </screen>
+	    <tip>
 	    <para>
-              Once you have built these utilities, move them to a
-              location in your <envar>PATH</envar> or update your
-              <envar>PATH</envar> to include the
-              <filename class="directory">utils</filename> directory.
+              If you plan to use <application>NetGen</application> to
+              generate meshes, you may want to copy these utilities to
+              a location in your <envar>PATH</envar> or update your
+              <envar>PATH</envar> to include the <filename
+              class="directory">utils</filename> directory.
             </para>
+	    </tip>
 	  </listitem>
 	</orderedlist>
       </listitem>
@@ -301,6 +334,12 @@
           <filename>bm5.1.fcoord</filename>,
           <filename>bm5.1.fbc</filename>.
          </para>
+	<screen>
+<prompt>bash$ </prompt>../../utils/readnetgen
+<prompt>ADD CORRECT PROMPT HERE</prompt>
+<prompt></prompt>
+<prompt></prompt>bm5
+        </screen>
       </listitem>
       <listitem>
         <para>
@@ -314,12 +353,14 @@
           in <filename>bm5.1.fbc</filename> and nodal coordinates in
           <filename>bm5.coord</filename>. The file
           <filename>bm5-fault.par</filename> contains the polynomial
-          coefficients for this benchmark problem. Execute the command
-          <userinput>faultcalc p=bm5-fault.par n=bm5.coord i=bm5.1.fbc
-          o=bm5.split</userinput>. This will give you the
+          coefficients for this benchmark problem. Run
+          <command>faultcalc</command>to get the
           <filename>bm5.split</filename> file that PyLith needs as
           input.
         </para>
+	<screen>
+<prompt>bash$ </prompt>../../utils/faultcalc p=bm5-fault.par n=bm5.coord i=bm5.1.fbc o=bm5.split
+        </screen>
       </listitem>
       <listitem>
         <para>
@@ -361,10 +402,13 @@
           Run <command>tutor.sh</command> for step "run1" with mode
           "retrieve" to fetch some parameter files from the archive.
         </para>
+	<screen>
+<prompt>bash$ </prompt>./tutor.sh retrieve run1
+        </screen>
       </listitem>
       <listitem>
 	<para>
-          In the <filename>bm5.fuldat</filename>, we have specified
+          In <filename>bm5.fuldat</filename>, we have specified
           that we want full output at time steps 10, 50, and 100. We
           define six materials with both elastic and viscoelastic
           behavior in <filename>bm5.prop</filename>. In
@@ -395,6 +439,9 @@
             <option>--scanner.asciiOutput=full</option>.
           </para>
         </tip>
+	<screen>
+<prompt>bash$ </prompt>./runbm5.sh 1
+        </screen>
       </listitem>
     </orderedlist>
   </section>
@@ -421,6 +468,9 @@
           "viz1" with mode "retrieve" to fetch the simulation output
           from the archive.
         </para>
+	<screen>
+<prompt>bash$ </prompt>./tutor.sh retrieve viz1
+        </screen>
       </listitem>
       <listitem>
 	<para>
@@ -432,16 +482,20 @@
           (<filename>bm5_1.0.mesh.inp</filename>) and the nodal
           displacements at time step 10 file
           (<filename>bm5_1.0.mesh.time.00010.inp</filename>) into
-          <filename>bm5_1.0.mesh.t00010.inp</filename>, <userinput>cat
-          bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp >
-          bm5_1.0.mesh.t00010.inp</userinput>.
+          <filename>bm5_1.0.mesh.t00010.inp</filename>.
         </para>
+	<screen>
+<prompt>bash$ </prompt>cat bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp > bm5_1.0.mesh.t00010.inp
+        </screen>
       </listitem>
       <listitem>
 	<para>
           Start <application>ParaView</application> by executing
           <command>paraview</command>.
         </para>
+	<screen>
+<prompt>bash$ </prompt>paraview
+        </screen>
       </listitem>
       <listitem>
 	<para>
@@ -503,6 +557,9 @@
           Run <command>tutor.sh</command> for step "run2" with mode
           "retrieve" to make sure all parameter files are available.
         </para>
+	<screen>
+<prompt>bash$ </prompt>./tutor.sh retrieve run2
+        </screen>
       </listitem>
       <listitem>
 	<para>
@@ -517,6 +574,9 @@
           Run the simulation by executing <command>runbm5.sh
           2</command>, where the 2 refers to the number of processors.
         </para>
+	<screen>
+<prompt>bash$ </prompt>./runbm5.sh 2
+        </screen>
       </listitem>
     </orderedlist>
   </section>
@@ -527,9 +587,9 @@
 
     <para>
       PyLith does not currently support parallel output, so each
-      PyLith processor writes its <acronym>UCD</acronym> output to a
+      processor writes its <acronym>UCD</acronym> output to a
       different file. This means that you need to form complete
-      <acronym>UCD</acronym> files for each processor and then load in
+      <acronym>UCD</acronym> files for each processor and then load
       each one into <application>ParaView</application>. 
     </para>
     
@@ -540,29 +600,33 @@
           "viz2" with mode "retrieve" to fetch the simulation output
           from the archive.
         </para>
+	<screen>
+<prompt>bash$ </prompt>./tutor.sh retrieve viz2
+        </screen>
       </listitem>
       <listitem>
 	<para>
           As in the case of the single processor run, the first step
           is to combine the mesh topology information with the output
           at a given time step into a complete <acronym>UCD</acronym>
-          file. For example, use <command>cat</command> to merge the
-          nodal coordinates file
-          (<filename>bm5_1.0.mesh.inp</filename>) and the nodal
-          displacements at time step 10 file
-          (<filename>bm5_1.0.mesh.time.00010.inp</filename>) into
-          <filename>bm5_1.0.mesh.t00010.inp</filename>, <userinput>cat
-          bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp >
-          bm5_1.0.mesh.t00010.inp</userinput>. Repeat this for processor
-          1, <userinput>cat bm5_1.1.mesh.inp bm5_1.1.mesh.time.00010.inp
-          > bm5_1.1.mesh.t00010.inp</userinput>.
+          file. Because PyLith writes the output from each processor
+          into a different file, we must run <command>cat</command>
+          twice to create <acronym>UCD</acronym> files for each
+          processor.
         </para>
+	<screen>
+<prompt>bash$ </prompt>cat bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp > bm5_1.0.mesh.t00010.inp
+<prompt>bash$ </prompt>cat bm5_1.1.mesh.inp bm5_1.1.mesh.time.00010.inp > bm5_1.1.mesh.t00010.inp
+        </screen>
       </listitem>
       <listitem>
 	<para>
           Start <application>ParaView</application> by executing
           <command>paraview</command>.
         </para>
+	<screen>
+<prompt>bash$ </prompt>paraview
+        </screen>
       </listitem>
       <listitem>
 	<para>

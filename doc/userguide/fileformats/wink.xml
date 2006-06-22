@@ -20,7 +20,8 @@
 # Flags for the degrees of freedom can have the following values:
 #    0 = no Winkler force
 #    1 = Winkler force applied at all times
-#   -n = Winkler force applied according to loead history n
+#   -n = Winkler force applied according to load history n
+#        (requires xx.hist file)
 #
 # Columns:
 #  (1) Vertex number
