@@ -67,7 +67,7 @@
     <title>Installation</title>
     <para>
       Binary executables are available for three of the most widely
-      used platforms: 32-bit Linux, OSX (Darwin), and Windows. If your
+      used platforms: 32-bit Linux, Mac OSX, and Windows. If your
       platform is not compatible with any of these, you can build the
       software from the source code.
     </para>
@@ -112,18 +112,62 @@ PATH=${PATH}:<replaceable>replace_with_absolute_path</replaceable>/pylith-0.8-li
             your shell).
           </para>
 	</listitem>
+	<listitem>
+	  <para>
+            To uninstall PyLith, simply remove the <filename
+            classname="directory">pylith-0.8-linux-x86</filename>
+            directory and all of its sub-directories.
+          </para>
+	</listitem>
       </orderedlist>
 
     </section>
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
-      <title>OSX (Darwin)</title>
+      <title>Mac OSX</title>
 
       <para>
-        ADD STUFF HERE
+        The OSX binary version requires the Macintosh PowerPC
+        architecture with OSX version 10.2 or later.
       </para>
+
+      <orderedlist>
+	<listitem>
+	  <para>
+            Download the <ulink
+            url="http://crust.geodynamics.org/~leif/shipping/">disk image</ulink>.
+          </para>
+	</listitem>
+	<listitem>
+	  <para>
+            Double click on the disk image to mount the disk.
+          </para>
+	</listitem>
+	<listitem>
+	  <para>
+            Double click on the disk and copy the <filename
+            classname="directory">PyLith</filename> folder to a
+            suiteable location.
+          </para>
+	</listitem>
+	<listitem>
+	  <para>
+            To run PyLith, double click on the PyLith icon provided in the
+            <filename classname="directory">PyLith</filename> folder.
+          </para>
+	</listitem>
+	<listitem>
+	  <para>
+            To uninstall PyLith, simply drag the <filename
+            classname="directory">PyLith</filename> folder to the
+            trash.
+          </para>
+	</listitem>
+      </orderedlist>
+
     </section>
+
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
@@ -153,6 +197,13 @@ PATH=${PATH}:<replaceable>replace_with_absolute_path</replaceable>/pylith-0.8-li
             ADD HOW TO RUN
           </para>
 	</listitem>
+	<listitem>
+	  <para>
+            To uninstall PyLith, simply select
+            <menuchoice><guimenu>Start</guimenu><guimenuitem>Programs</guimenuitem><guimenuitem>PyLith</guimenuitem><guimenuitem>Uninstall
+            PyLith</guimenuitem> </menuchoice>.
+          </para>
+	</listitem>
       </orderedlist>
     </section>
 
@@ -164,7 +215,11 @@ PATH=${PATH}:<replaceable>replace_with_absolute_path</replaceable>/pylith-0.8-li
         Building PyLith from the source code is not a trivial task
         because PyLith depends on several other packages. In general,
         each package must be compiled from source using compilers for
-        each language that are compatible with one another.
+        each language that are compatible with one another. The stable
+        version of the PyLith source code is available from the <ulink
+        url="http://www.geodynamics.org:8080/cig/software/Repository/">Geodynamics
+        subversion repository</ulink> under <filename
+        classname="directory">cig/short/3D/PyLith/branches/pylith-0.8</filename>.
       </para>
 
       <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++ -->
