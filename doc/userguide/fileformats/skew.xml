@@ -12,8 +12,13 @@
   </para>
 
   <para>
-    CHARLES- WHEN ARE THESE USED? DO THEY APPLY TO ALL BC ASSOCIATED
-    WITH ALL OF THE NODES LISTED??
+    The applied coordinate rotations apply to all boundary conditions
+    associated with the nodes listed in the file. These are useful,
+    for example, if it is desired to apply boundary conditions in a
+    direction normal or tangential to a side of the mesh when the
+    side does not align with the global coordinate directions.
+    Similarly, skew conditions could be used when specifying slip on a
+    fault that lies at an angle to the global coordinates.
   </para>
 
     <figure>

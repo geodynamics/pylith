@@ -49,7 +49,8 @@ time_units = year
 #       &lt;0 Indicates that reformation should occur only for the first
 #          step in each time step group.
 #       =0 Indicates that reformation should never occur.
-#   (7) Large deformation solution flag
+#   (7) Large deformation solution flag (only Linear strain is
+#       presently available).
 #       0 = Linear strain 
 #       1 = Large strain but use only linear contribution to the
 #           stiffness matrix (sometimes results in better convergence)

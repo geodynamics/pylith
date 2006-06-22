@@ -6,7 +6,7 @@
 
   <para>
     The <filename>xx.keyval</filename> file specifies some simple
-    parameters settings.
+    parameter settings.
   </para>
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -16,11 +16,7 @@
     <para>
       Scaling factors can be applied to Windkler forces, permitting a
       quick and easy way to change the density or gravitational
-      acceleration when Winkler forces are used to simulate
-      gravity. Scaling factors for differential Winkler forces are
-      applied across a slippery node interface. These factors provide
-      a simple way of scaling the forces so that the fault remains
-      sufficiently locked.
+      acceleration when Winkler forces are used to simulate gravity.
     </para>
   </section>
 
@@ -44,7 +40,9 @@
 	  <listitem>
 	    <para>
               Quadrature order that is one order less than full
-              quadrature.
+	      quadrature. Note that for linear tetrahedra full and
+	      reduced quadrature are equivalent (single integration
+	      point).
             </para>
 	    <warning>
 	      <para>Use with caution as reduced quadrature can lead to
@@ -53,7 +51,7 @@
 	  </listitem>
 	</varlistentry>
 	<varlistentry>
-	  <term><literal>Reduced</literal></term>
+	  <term><literal>Selective</literal></term>
 	  <listitem>
 	    <para>
               Uses Hughes' b-bar formulation to perform reduced
@@ -76,7 +74,8 @@
       be set to uniform values independent of the parameters for any
       of the material models. When gravity is being used and
       prestresses are not computed automatically, each prestress
-      component can be scaled independently.
+      component can be scaled independently. Reading prestresses from
+      files is presently disabled.
     </para>
   </section>
 
@@ -107,6 +106,7 @@ initialStrainPerturbation = 1.0e-1
 #
 # Specify whether to use the solution from the previous time step as
 # the starting guess for the elastic solution in the current time step.
+# This feature has not been tested.
 #
 usePreviousDisplacementFlag = 0
 </screen>
@@ -138,7 +138,8 @@ prestressScaleXy = 1.0
 prestressScaleXz = 1.0
 prestressScaleYz = 1.0
 #
-# Unit numbers used in Fortran code.
+# Unit numbers used in Fortran code.  These defaults should work for
+# most Unix systems, but may be altered if necessary.
 #
 f77StandardInput = 5
 f77StandardOutput = 6

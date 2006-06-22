@@ -7,7 +7,8 @@
   <para>
     The <filename>xx.fuldat</filename> file lists the time step
     numbers at which full output is desired. The elastic solution
-    (time step 0) is always included in the output.
+    (time step 0) is always included in the output. This file is
+    required for time-dependent problems.
   </para>
 
     <figure>
