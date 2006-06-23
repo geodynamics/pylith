@@ -1,7 +1,465 @@
 <?xml version="1.0"?>
-<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
 <section id="section_maxwell_linear">
-  <title>Maxwell Linear Viscoelastic Material</title>
-
+    <title>Effective Stress Function Formulation for a Maxwell Linear Viscoelastic Material</title>
+    <para>
+        <emphasis>Determination of stresses:</emphasis>
+    </para>
+    <para>The element stresses are:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq1">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq1.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(1)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>where <phrase role="symbol">&#949;</phrase> is the total strain and 
+        <inlinemediaobject id="ml-inlineeq1"> <imageobject role="fo"> <imagedata fileref="figs/ml-inlineeq1.eps" format="EPS"/> </imageobject> </inlinemediaobject> is the initial stress. In terms of the deviatoric
+        stress,</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq2">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq2.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(2)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>where</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq3">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq3.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(3)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>and the mean stress and strain are given by:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq4">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq4.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(4)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>Equation (2) may also be written:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq5">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq4.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(5)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>where</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq6">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq6.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(6)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>The creep strain increment is approximated as:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq7">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq7.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(7)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>where, using the <phrase role="symbol">&alpha;</phrase>-method of time integration:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq8">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq8.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(8)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>and</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq9">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq9.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(9)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>where</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq10">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq10.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(10)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>and</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq11">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq11.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(11)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>For a linear Maxwell viscoelastic material:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq12">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq12.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(12)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>Therefore,</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq13">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq13.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(13)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>Subsituting (8), (12), and (13) into (5), we obtain:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq14">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq14.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(14)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>Solving for  <inlinemediaobject id="ml-inlineeq2"> <imageobject role="fo"> <imagedata fileref="figs/ml-inlineeq2.eps" format="EPS"/> </imageobject> </inlinemediaobject>,</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq15">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq15.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(15)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>In this case, it is possible to solve directly for the deviatoric stresses, and the
+        effective stress function approach is not needed. To obtain the total stress, we simply use:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq16">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq16.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(16)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>
+        <emphasis>Tangent stress-strain relation:</emphasis>
+    </para>
+    <para>It is now necessary to provide a relationship for the viscoelastic tangent material
+        matrix. If we use vectors composed of the stresses and tensor strains, this relationship is: </para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq17">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq17.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(17)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>In terms of the vectors, we have:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq18">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq18.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(18)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>Therefore,</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq19">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq19.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(19)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>Using the chain rule,</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq20">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq20.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(20)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>From (6), we obtain</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq21">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq21.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(21)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>and from (3):</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq22">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq22.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(22)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>Finally, from (15), we have:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq23">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq23.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(23)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>From (19), the final material matrix relating stress and tensor strain is:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq24">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq24.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(24)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>Note that the coefficient of the second matrix approaches
+            <emphasis>E</emphasis>/3(1+<phrase role="symbol">&nu;</phrase>) as <phrase
+            role="symbol">&eta;</phrase> goes to infinity. Since finite element computations
+        typically use engineering strain measures, the matrix that is actually used is:</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq25">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq25.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(25)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>To check the results, we make sure that the regular elastic constitutive matrix is
+        obtained for selected terms in the case where <phrase role="symbol">&eta;</phrase> goes
+        to infinity.</para>
+    <informaltable frame="none">
+        <tgroup cols="2" colsep="0" align="center" rowsep="0">
+            <tbody>
+                <row>
+                    <entry align="left">
+                        <mediaobject id="eq26">
+                            <imageobject role="fo">
+                                <imagedata fileref="figs/ml-eq26.eps" format="EPS"/>
+                            </imageobject>
+                        </mediaobject>
+                    </entry>
+                    <entry valign="middle" align="right">(26)</entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </informaltable>
+    <para>This is consistent with the regular elasticity matrix, and equation (25) should thus be
+        used when forming the stiffness matrix.</para>
 </section>
