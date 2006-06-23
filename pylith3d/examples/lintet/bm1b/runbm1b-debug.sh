@@ -49,7 +49,7 @@ for ext in $dupext; do
 done
 
 echo "Running PyLith..."
-cmd="mpiexec -np $nprocs pylith3dapp.py $pyreflags $pylithflags $petscflags"
+cmd="mpirun -np $nprocs pylith3dapp.py $pyreflags $pylithflags $petscflags"
 
 echo $cmd
 eval $cmd
