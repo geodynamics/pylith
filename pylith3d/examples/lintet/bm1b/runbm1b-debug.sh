@@ -6,7 +6,7 @@
 # ======================================================================
 
 if [ $# != 1 ]; then
-  echo "usage: runbm1b.sh NPROCS"
+  echo "usage: runbm1b-debug.sh NPROCS"
   exit 1
 fi
 nprocs=$1
