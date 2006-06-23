@@ -1,12 +1,12 @@
 #!/bin/bash
 # ======================================================================
 #
-# Shell script to run PyLith in tutorial using SCEC benchmark 5.
+# Shell script to run PyLith using SCEC benchmark 1 (medium resolution).
 #
 # ======================================================================
 
 if [ $# != 1 ]; then
-  echo "usage: runbm1a.sh NPROCS"
+  echo "usage: runbm1a-debug.sh NPROCS"
   exit 1
 fi
 nprocs=$1
