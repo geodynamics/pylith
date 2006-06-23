@@ -77,6 +77,7 @@ c...  local variables
 c
       integer i,ielg
       double precision p(60),dl(60)
+cdebug      integer idb
 c
 cdebug      write(6,*) "Hello from formf_ss_f!"
 c
@@ -103,6 +104,7 @@ c
 	call dsymv("u",nee,one,s,nee,dl,ione,zero,p,ione)
         call addfor(bintern,p,lm(1,ielg),lmx(1,ielg),neq,nee)
       end do
+cdebug      write(6,*) "bintern:",(bintern(idb),idb=1,neq)
       return
       end
 c
