@@ -1,7 +1,7 @@
 #!/bin/bash
 # ======================================================================
 #
-# Shell script to run PyLith in tutorial using SCEC benchmark 5.
+# Shell script to run PyLith using SCEC benchmark 1 (low resolution).
 #
 # ======================================================================
 
