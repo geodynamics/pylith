@@ -2,28 +2,28 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-#                             Charles A. Williams
-#                       Rensselaer Polytechnic Institute
-#                        (C) 2005  All Rights Reserved
+#  PyLith by Charles A. Williams, Brad Aagaard, and Matt Knepley
 #
-#  All worldwide rights reserved.  A license to use, copy, modify and
-#  distribute this software for non-commercial research purposes only
-#  is hereby granted, provided that this copyright notice and
-#  accompanying disclaimer is not modified or removed from the software.
+#  Copyright (c) 2004-2006 Rensselaer Polytechnic Institute
 #
-#  DISCLAIMER:  The software is distributed "AS IS" without any express
-#  or implied warranty, including but not limited to, any implied
-#  warranties of merchantability or fitness for a particular purpose
-#  or any warranty of non-infringement of any current or pending patent
-#  rights.  The authors of the software make no representations about
-#  the suitability of this software for any particular purpose.  The
-#  entire risk as to the quality and performance of the software is with
-#  the user.  Should the software prove defective, the user assumes the
-#  cost of all necessary servicing, repair or correction.  In
-#  particular, neither Rensselaer Polytechnic Institute, nor the authors
-#  of the software are liable for any indirect, special, consequential,
-#  or incidental damages related to the software, to the maximum extent
-#  the law permits.
+#  Permission is hereby granted, free of charge, to any person obtaining
+#  a copy of this software and associated documentation files (the
+#  "Software"), to deal in the Software without restriction, including
+#  without limitation the rights to use, copy, modify, merge, publish,
+#  distribute, sublicense, and/or sell copies of the Software, and to
+#  permit persons to whom the Software is furnished to do so, subject to
+#  the following conditions:
+#
+#  The above copyright notice and this permission notice shall be
+#  included in all copies or substantial portions of the Software.
+#
+#  THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
+#  EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
+#  MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
+#  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+#  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+#  OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
+#  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
