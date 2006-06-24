@@ -1,0 +1,6533 @@
+2006-06-23 22:45  cassie
+
+	* [r3874] updated cover for manual
+
+2006-06-23 22:06  cassie
+
+	* [r3873] added equation eps's for effective stress function for a
+	  maxwell linear viscoelastic material
+
+2006-06-23 22:03  cassie
+
+	* [r3872] added equation eps's for intro
+
+2006-06-23 21:58  cassie
+
+	* [r3871] updated manual with equations
+
+2006-06-23 15:54  willic3
+
+	* [r3869] Forgot to add this shell script earlier.
+
+2006-06-23 15:53  willic3
+
+	* [r3868] Changed mpiexec to mpirun. People without mpirun will
+	  need to fix things with a symbolic link.
+
+2006-06-23 15:52  willic3
+
+	* [r3867] Added shell scripts to run example problem.
+
+2006-06-23 15:47  willic3
+
+	* [r3866] Alternative BC for testing.
+
+2006-06-23 15:36  willic3
+
+	* [r3865] Debugging codes for unscrambling orderings.
+
+2006-06-23 15:32  willic3
+
+	* [r3864] Added shell scripts to run example.
+
+2006-06-23 15:09  willic3
+
+	* [r3863] Fixed error message.
+
+2006-06-23 15:07  willic3
+
+	* [r3862] Fixed error message.
+
+2006-06-23 15:06  willic3
+
+	* [r3861] Added shell scripts to run test problems.
+
+2006-06-23 15:01  willic3
+
+	* [r3860] Removed files that can be replaced by symlinks from a
+	  shell script.
+
+2006-06-23 14:54  willic3
+
+	* [r3859] Fixed titles.
+
+2006-06-23 14:53  willic3
+
+	* [r3858] Added shell scripts to run the test problem based on
+	  Brad's script.
+
+2006-06-23 14:29  willic3
+
+	* [r3857] Put in simple shell scripts to run the problem based on
+	  Brad's script. We probably still need to put in something like a
+	  'make clean'.
+
+2006-06-23 13:50  willic3
+
+	* [r3856] Commented out some new debugging statements.
+
+2006-06-22 19:47  baagaard
+
+	* [r3854] User guide. Added note about Intel Macs.
+
+2006-06-22 18:56  willic3
+
+	* [r3853] Minor changes to manual.
+
+2006-06-22 18:25  willic3
+
+	* [r3852] A few slight changes.
+
+2006-06-22 18:04  willic3
+
+	* [r3851] Put in a few minor changes.
+
+2006-06-22 17:38  baagaard
+
+	* [r3850] User guide. Added license text provided by Charles.
+	  Fixed some more typos in tutorial.
+
+2006-06-22 16:52  baagaard
+
+	* [r3849] User guide. Updated installation instructions.
+
+2006-06-22 04:27  baagaard
+
+	* [r3848] User guide. Cleaned up text. Added explicit indication
+	  of commands in tutorial.
+
+2006-06-22 04:12  baagaard
+
+	* [r3847] User guide. Cleaned up text. Added explicit indication
+	  of commands in tutorial.
+
+2006-06-22 00:30  baagaard
+
+	* [r3846] User guide. Added PETSc blurb.
+
+2006-06-22 00:05  baagaard
+
+	* [r3845] Added placeholder for software license.
+
+2006-06-21 23:58  baagaard
+
+	* [r3844] User guide. Worked more on getting help and running
+	  PyLith.
+
+2006-06-21 23:12  baagaard
+
+	* [r3843] User guide. Added documentation for final types of input
+	  files.
+
+2006-06-21 21:30  baagaard
+
+	* [r3842] User guide. Started filling in installation
+	  instructions. Worked more on running PyLith and tutorial.
+
+2006-06-21 15:36  baagaard
+
+	* [r3833] User guide. Fixed figure for bm5 geometry.
+
+2006-06-21 14:45  baagaard
+
+	* [r3832] User guide. Fixed path to tutorialbm5.xml.
+
+2006-06-21 04:48  baagaard
+
+	* [r3831] User guide. Added figure of geometry for bm5.
+
+2006-06-21 02:10  willic3
+
+	* [r3830] I left off the units in the field descriptions, which
+	  caused ParaView to barf. This has been fixed. It should already
+	  be correct for binary UCD output.
+
+2006-06-21 01:42  knepley
+
+	* [r3829] Fixed assembly of full_displacements from increments
+	  Fixed residu() to not overwrite the solution
+
+2006-06-21 00:34  baagaard
+
+	* [r3828] More on user guide. Changed layout of tutorial files to
+	  make it easier to load figures.
+
+2006-06-20 23:54  baagaard
+
+	* [r3827] More work on user guide. Added comments on MPI settings.
+	  Worked on tutorial.
+
+2006-06-20 22:03  baagaard
+
+	* [r3826] Worked on documentation of command-line arguments.
+
+2006-06-20 19:04  knepley
+
+	* [r3825] Fixed problem with viscos VTK output
+
+2006-06-20 17:57  knepley
+
+	* [r3824] Fixed stupid memory error in VTK outupt
+
+2006-06-20 16:01  baagaard
+
+	* [r3823] Fixed viz2 step in tutorial.
+
+2006-06-20 15:44  willic3
+
+	* [r3822] Added documentation to inventory, and altered the status
+	  of some files.
+
+2006-06-20 00:07  baagaard
+
+	* [r3821] Added documentation for more of the file formats.
+	  Cleaned up id tags in documentation.
+
+2006-06-19 20:10  knepley
+
+	* [r3819] Added Fortran files
+
+2006-06-19 19:06  knepley
+
+	* [r3818] Added a Python section which runs a timeloop
+
+2006-06-19 18:48  baagaard
+
+	* [r3817] Fixed setup step of tutorial.
+
+2006-06-18 03:44  baagaard
+
+	* [r3814] Added bc and connect file formats.
+
+2006-06-17 23:18  baagaard
+
+	* [r3813] Started work on file formats for user guide.
+
+2006-06-17 00:58  baagaard
+
+	* [r3811] Worked on tutorial and running PyLith sections.
+
+2006-06-16 15:42  baagaard
+
+	* [r3808] Incorporated more stuff from Cassie's previous version.
+	  Added layout for appendix with material models.
+
+2006-06-16 03:58  baagaard
+
+	* [r3807] Added use of tutor.sh in tutorial to simplify getting
+	  files from archive.
+
+2006-06-16 00:54  baagaard
+
+	* [r3806] Worked on tutorial for SCEC benchmark 5.
+
+2006-06-16 00:52  baagaard
+
+	* [r3805] Fixed bug where package was still called Lithomop3D.
+	  This caused the module to be put in the wrong directory.
+
+2006-06-15 17:13  willic3
+
+	* [r3804] Commented out a debugging line.
+	* [r3803] It appears that the fix for getting the correct residual
+	  vector in parallel is to first zero the entries, then use
+	  ADD_VALUES with assembleVectorComplete. This fix in these
+	  routines now appears to give the correct solution for bm1b in
+	  both serial and parallel runs for the elastic and time-dependent
+	  solutions.
+
+2006-06-14 23:49  baagaard
+
+	* [r3802] Moved makefile to userguide dir.
+
+2006-06-14 23:48  baagaard
+
+	* [r3801] Setup layout of source for userguide.
+
+2006-06-14 23:45  baagaard
+
+	* [r3800] Worked on user guide.
+
+2006-06-14 15:51  willic3
+
+	* [r3797] Fixed a silly error where quadratureOrder was written as
+	  a global variable rather than as pl3dscan.quadratureOrder.
+
+2006-06-14 00:05  baagaard
+
+	* [r3795] Started working on stage 2 stuff.
+
+2006-06-13 23:16  baagaard
+
+	* [r3794] Added more info.
+	* [r3793] Created tutorials dir.
+
+2006-06-13 14:08  willic3
+
+	* [r3792] Commented out debugging statements.
+
+2006-06-12 23:43  knepley
+
+	* [r3791] Fixing performance bugs with Sieve
+
+2006-06-12 21:03  baagaard
+
+	* [r3789] Started working on tutorial using SCEC benchmark 5.
+
+2006-06-09 17:40  knepley
+
+	* [r3783] Turned off diagnostic printing
+
+2006-06-09 15:40  willic3
+
+	* [r3782] Merged in debugging changes, which are now commented out.
+
+2006-06-09 15:38  willic3
+
+	* [r3781] Merged in debugging changes, which are now commented out.
+
+2006-06-08 20:14  willic3
+
+	* [r3779] Attempted fix for element sorting problem when one
+	  process gets less than the total number of element families.
+
+2006-06-07 19:45  willic3
+
+	* [r3777] Updated this routine to use ielindx array and some other
+	  fixes.
+
+2006-06-07 15:10  willic3
+
+	* [r3776] Resolved conflicts between Matt's changes and mine.
+
+2006-06-07 15:07  willic3
+
+	* [r3775] Resolved conflicts between Matt's changes and mine.
+
+2006-06-07 01:45  willic3
+
+	* [r3774] Commented out some debugging stuff.
+
+2006-06-06 23:16  knepley
+
+	* [r3773] Fixed compile errors
+
+2006-06-06 21:49  willic3
+
+	* [r3772] Fixed coordinate units to be km.
+
+2006-06-06 21:47  willic3
+
+	* [r3771] Updated bindings to use Ielindx array.
+
+2006-06-06 21:45  willic3
+
+	* [r3770] Temporarily commented out some debugging stuff.
+
+2006-06-06 21:42  willic3
+
+	* [r3769] Fixed output of original an reordered element numbers
+	  and fixed formatting.
+
+2006-06-06 21:41  willic3
+
+	* [r3768] Updated routine to use Ielindx array rather than Indxiel.
+
+2006-06-06 21:40  willic3
+
+	* [r3767] Updated routine to use Ielindx array rather than Indxiel.
+
+2006-06-06 21:39  willic3
+
+	* [r3766] Updated routine to use Ielindx array rather than Indxiel.
+
+2006-06-06 21:37  willic3
+
+	* [r3765] Updated routine to use ielindx array rather than indxiel.
+	* [r3764] Updated routine to use Ielindx array rather than Indxiel.
+
+2006-06-06 21:36  willic3
+
+	* [r3763] Updated routine to use Ielindx array rather than Indxiel.
+
+2006-06-06 21:33  willic3
+
+	* [r3762] Updated bindings for use of Ielindx array as well as
+	  updating some other stuff. The bindings will need to be
+	  double-checked.
+	* [r3761] Updated bindings to use Ielindx array as well as fixing
+	  some older stuff that had not been updated. This will need to be
+	  checked.
+
+2006-06-06 21:22  willic3
+
+	* [r3760] Updated bindings to use Ielindx array.
+
+2006-06-06 21:07  willic3
+
+	* [r3759] Updated routine calls for ielindx array and added some
+	  documentation.
+
+2006-06-06 20:55  willic3
+
+	* [r3758] Updated routine to use ielindx array.
+
+2006-06-06 20:37  willic3
+
+	* [r3757] Updated to use ielindx array rather than indxiel.
+
+2006-06-06 20:36  willic3
+
+	* [r3756] Updated to use ielindx array rather than indxiel.
+
+2006-06-06 20:33  willic3
+
+	* [r3755] Updated to use ielindx array rather than indxiel.
+
+2006-06-06 19:04  willic3
+
+	* [r3754] Replaced Indxiel with Ielindx.
+
+2006-06-06 19:01  willic3
+
+	* [r3753] Updated call to sort_elements to also contain new index
+	  array Ielindx.
+
+2006-06-06 18:57  willic3
+
+	* [r3752] Updated bindings for new index array Ielindx.
+
+2006-06-06 18:55  willic3
+
+	* [r3751] Updated bindings for sort_elements to include new index
+	  array Ielindx.
+
+2006-06-06 18:54  willic3
+
+	* [r3750] Added new index array to original element numbering.
+
+2006-06-06 16:05  willic3
+
+	* [r3748] Example problem with 2 materials.
+
+2006-06-02 01:50  knepley
+
+	* [r3740] I now use the original element number indxiel(elem) in
+	  the call to assembleMatrix() - This means I have to preserve the
+	  indxiel array
+
+2006-06-01 03:41  knepley
+
+	* [r3739] Fixed injection of boundary values in visualization
+
+2006-05-29 19:02  knepley
+
+	* [r3732] Added method and support for viewing fields in VTK
+
+2006-05-16 05:10  willic3
+
+	* [r3587] Added simple split node test, splitting a block in half.
+	  This should be correct, but hasn't been tested.
+
+2006-05-15 23:32  willic3
+
+	* [r3585] Changed things so elements are referenced by number
+	  rather than order in a file.
+
+2006-05-15 23:23  willic3
+
+	* [r3584] Changed code so that coordinates are indexed by node
+	  number rather than order in the file.
+
+2006-05-14 22:08  knepley
+
+	* [r3580] Need to reassign mesh with the distributed mesh
+
+2006-04-27 18:14  knepley
+
+	* [r3436] Moved to correct filenames Path to application corrected
+
+2006-04-14 18:19  willic3
+
+	* [r2779] Added new pylith-0.8 branch, which we will now use as
+	  our 'stable' branch.
+
+2006-04-13 20:16  willic3
+
+	* [r2772] More name changes.
+
+2006-04-13 20:15  willic3
+
+	* [r2771] More name changes.
+
+2006-04-13 20:13  willic3
+
+	* [r2770] More name changes.
+
+2006-04-13 20:11  willic3
+
+	* [r2769] More name changes.
+
+2006-04-13 20:10  willic3
+
+	* [r2768] More name changes.
+
+2006-04-13 20:00  willic3
+
+	* [r2767] More name changes.
+
+2006-04-13 19:55  willic3
+
+	* [r2766] More name changes.
+
+2006-04-13 19:54  willic3
+
+	* [r2765] More name changes.
+
+2006-04-13 19:52  willic3
+
+	* [r2764] More name changes.
+
+2006-04-13 19:42  willic3
+
+	* [r2763] More name changes.
+
+2006-04-13 19:41  willic3
+
+	* [r2762] More name changes.
+
+2006-04-13 19:21  willic3
+
+	* [r2761] More name changes.
+
+2006-04-13 19:08  willic3
+
+	* [r2760] More name changes.
+
+2006-04-13 19:02  willic3
+
+	* [r2759] More name changes.
+
+2006-04-13 18:34  willic3
+
+	* [r2758] More name changes.
+
+2006-04-13 18:30  willic3
+
+	* [r2757] More name changes.
+
+2006-04-13 18:21  willic3
+
+	* [r2756] Changing names from lithomop to pylith.
+
+2006-04-13 18:14  willic3
+
+	* [r2755] Moved top-level lithomop3d directory to pylith3d. This
+	  is probably an inefficient way of doing it.
+
+2006-04-12 22:54  leif
+
+	* [r2752] Moved lithomop-sieve -> PyLith/trunk.
+
+2006-04-11 19:32  willic3
+
+	* [r2736] Changed some names.
+
+2006-04-11 19:30  willic3
+
+	* [r2735] Updated code for other altered components.
+
+2006-04-11 19:29  willic3
+
+	* [r2734] Simplified looping by making elemFamilies a list of
+	  dictionaries.
+
+2006-04-11 18:55  willic3
+
+	* [r2729] Simplified things by making elemFamilies a list of
+	  dictionaries.
+
+2006-04-11 15:42  willic3
+
+	* [r2723] Beginnings of an ElemFamilies class. This will
+	  essentially provide a bunch of functions for looping over
+	  families. The present implementation that uses a dictionary to
+	  store the elemFamilies info seems a bit clumsy.
+
+2006-04-11 15:07  willic3
+
+	* [r2722] Updated the way elements and element families are dealt
+	  with. At present, the elements dictionary contains dimension
+	  info as well as the element nodes array and arrays containing
+	  the element type and material ID for each element. These arrays
+	  are only needed until the elements are placed into families.
+
+2006-04-10 20:48  willic3
+
+	* [r2719] More fixing. Code is still incomplete. At present, it
+	  returns an elements dictionary and an elementFamilies
+	  dictionary. Still need to figure out where to put stuff for
+	  sorting elements into families.
+
+2006-04-07 15:41  willic3
+
+	* [r2685] Attempted to merge in Leif's changes from trunk for
+	  building the examples. These will need to be checked to make
+	  sure I haven't mixed up or left out any files.
+
+2006-04-03 19:47  willic3
+
+	* [r2667] Did a hand-merge of Leif's changes from trunk. This will
+	  need to be tested.
+
+2006-04-03 14:56  willic3
+
+	* [r2662] Checked in some incomplete changes just to get them in
+	  before Leif switches the repository.
+
+2006-04-03 14:55  willic3
+
+	* [r2661] Checked in some incomplete changes just to get them in
+	  before Lief switches the repository.
+
+2006-03-29 19:41  leif
+
+	* [r2657] Merged walter's r2653 from trunk: changed externals from
+	  svn:// to http://.
+
+2006-03-29 16:44  willic3
+
+	* [r2656] Merged in Leif's character string fixes from trunk.
+
+2006-03-29 15:03  willic3
+
+	* [r2655] Finished incomplete merge from trunk.
+
+2006-03-28 16:22  willic3
+
+	* [r2649] Merged in Leif's changes from trunk.
+
+2006-03-28 16:18  willic3
+
+	* [r2648] Merged in Leif's changes from trunk.
+
+2006-03-28 16:17  willic3
+
+	* [r2647] Merged in Leif's changes from trunk.
+
+2006-03-28 16:16  willic3
+
+	* [r2646] Merged in Leif's changes from trunk.
+
+2006-03-28 15:47  willic3
+
+	* [r2645] Merged in Leif's changes from trunk.
+
+2006-03-28 15:28  willic3
+
+	* [r2644] Merged in Leif's changes from trunk. These will need to
+	  be tested.
+
+2006-03-23 22:45  willic3
+
+	* [r2641] Put meshimporter into the inventory, so the element
+	  family can get info from it. Started (but didn't finish) an
+	  initialize function. Moved all the material stuff out of
+	  __init__. Added elemInfoSolid (empty dictionary) and stateVars
+	  to __init__. Put in a matProps dictionary into __init__. This
+	  still needs a lot of work (and a lot more functions).
+
+2006-03-23 22:25  willic3
+
+	* [r2640] Added elemType to elemFamily dictionary, even though at
+	  present all elements in the mesh must have the same element
+	  type. Also added a pointer to the element family material model,
+	  which for Tecton-style input will be deduced from an integer ID
+	  in the connectivity file.
+
+2006-03-23 21:35  willic3
+
+	* [r2639] Fixed capitalization.
+
+2006-03-23 21:17  willic3
+
+	* [r2638] Added function pointers for bmatrix and getshape that
+	  are dependent on whether b-bar integration is being used.
+
+2006-03-23 21:04  willic3
+
+	* [r2637] What I have for a Material class so far.
+
+2006-03-23 19:28  willic3
+
+	* [r2636] Initial version of a class for an isotropic linear
+	  elastic material, derived from class Material. There are no
+	  additional functions other than __init__, where all dimensions a
+	  function pointers are assigned.
+
+2006-03-22 17:08  willic3
+
+	* [r2635] Rough outline of ElemFamilySolid class, with lots of
+	  missing pieces. I need to finsh putting in the objects for the
+	  family, and define all the necessary operations.
+
+2006-03-20 17:15  willic3
+
+	* [r2634] Initial version of a class (really just one function)
+	  that defines properties for a given element type. This includes
+	  number of nodes per element (and related info) as well as
+	  integration information. The results are returned in a
+	  dictionary.
+
+2006-03-17 21:04  willic3
+
+	* [r2633] Beginnings of an ElemFamily class. Some of the stuff
+	  that I originally had in there needs to go in an ElemFamilySolid
+	  class. I also need to determine which default functions should
+	  be required. Presumably, the things that might inherit from this
+	  class are: 1. ElemFamilySolid: This is top priority, and
+	  includes all solid elements. 2. ElemFamilySurface: This is
+	  moderate priority, and is needed primarily for traction BC. 3.
+	  ElemFamilyFault: This probably won't happen for a while
+	  (possibly never if we change our minds again about how to
+	  implement faults). Also, this may be subdivided into kinematic
+	  and dynamic categories.
+
+2006-03-14 23:02  willic3
+
+	* [r2632] Added some more stuff to SolverQSState, assuming
+	  everything is done using PETSc. The code presently uses Matt's
+	  functions for creating and destroying the main stiffness matrix
+	  and 2 vectors, contained in scanner.cc.
+
+2006-03-12 01:19  knepley
+
+	* [r2631] Fixed CoSifter interface
+
+2006-03-11 21:25  knepley
+
+	* [r2630] Added some PyLith documentation
+
+2006-03-06 20:26  willic3
+
+	* [r2629] Merged in Leif's bindings fixes, as well as his revised
+	  exception handler. Also included his changes in
+	  lithomop3dmodule.cc, even though I have not yet included his
+	  build system changes.
+
+2006-02-28 22:14  knepley
+
+	* [r2628] Added refinement code to scanner
+
+2006-02-28 13:29  knepley
+
+	* [r2627] Small fix
+
+2006-02-28 11:53  willic3
+
+	* [r2626] Changed UCD output labels.
+
+2006-02-28 09:17  knepley
+
+	* [r2625] Lots of debugging Fixed Petsc init
+
+2006-02-28 06:19  willic3
+
+	* [r2624] Fixed mangled input files.
+
+2006-02-28 00:40  knepley
+
+	* [r2623] More PETSc changes
+
+2006-02-27 20:53  willic3
+
+	* [r2622] Created quick and dirty code to convert PyLith format to
+	  UCD.
+
+2006-02-27 17:30  willic3
+
+	* [r2621] Changed behavior so existing output files are
+	  overwritten.
+
+2006-02-27 06:44  knepley
+
+	* [r2620] Fixed declarations
+
+2006-02-27 06:13  knepley
+
+	* [r2619] New Mesh interface from PETSc
+
+2006-02-22 19:07  willic3
+
+	* [r2616] Minor changes to SolverState definition. The stuff
+	  related to faults and element families has been removed. The
+	  solver state now only contains force and displacement vectors,
+	  along with stiffness matrix stuff. Still to be determined is how
+	  this should really be organized. The present 'stiff' object
+	  actually includes 3 PETSc objects (matrix and 2 vectors). It
+	  would probably be better to have a single solverState container
+	  with all force and displacement vectors, along with the
+	  stiffness matrix. It seems likely they should also all be PETSc
+	  Vecs or Mats.
+
+2006-02-17 22:24  willic3
+
+	* [r2613] Very minor updates -- I may actually use a different
+	  method of dealing with vectors, etc., than the PETSc bindings
+	  Brad is using.
+
+2006-02-17 22:23  willic3
+
+	* [r2612] Very rough initial stab at solver state definition.
+	  There is a problem because state variables should actually
+	  belong to element families.
+
+2006-02-14 22:21  willic3
+
+	* [r2601] Initial sketch of quasi-static solver, which is
+	  presently missing most functions it will need.
+
+2006-02-14 20:28  willic3
+
+	* [r2599] Initial version of a Solver base class that is based
+	  entirely on Brad Aagaard's EqSim version. Some of the functions
+	  may not be necessary for my case, and this relies on the
+	  petscutil package, which is not yet checked in to svn (and may
+	  not be updated for the current version of PETSc).
+
+2006-02-14 19:25  willic3
+
+	* [r2598] Moved obsolete directory to 'previous'.
+
+2006-02-14 19:22  willic3
+
+	* [r2597] Removed directory containing duplicate/obsolete files.
+
+2006-02-14 16:59  willic3
+
+	* [r2596] Removed temporary file.
+
+2006-02-14 16:57  willic3
+
+	* [r2595] Committing files that were not previously committed.
+
+2006-02-14 16:54  willic3
+
+	* [r2594] Moved current working versions of files to 'pyre'
+	  directory. That way, these will not conflict with current
+	  functioning code in 'lithomop3d' directory.
+
+2006-02-14 16:50  willic3
+
+	* [r2593] These old files have all been moved to the 'previous'
+	  directory.
+
+2006-02-14 16:48  willic3
+
+	* [r2592] Moved current working versions of files to 'pyre'
+	  directory. That way, these will not conflict with current
+	  functioning code in 'lithomop3d' directory.
+
+2006-02-14 16:44  willic3
+
+	* [r2591] Initial versions of Solver and SimulationController.
+
+2006-02-14 16:42  willic3
+
+	* [r2590] These old files have all been moved to the 'previous'
+	  directory.
+	* [r2589] These old files have all been moved to the 'previous'
+	  directory.
+
+2006-02-14 16:34  willic3
+
+	* [r2588] Created a directory to hold stuff that was previously in
+	  pyre. The revised pyre directory will only hold the current
+	  versions of files.
+
+2006-02-06 01:15  knepley
+
+	* [r2587] Moved to new Sieve interface
+
+2006-02-02 22:11  willic3
+
+	* [r2579] Changed a few items in the mesh object dictionaries to
+	  correspond to what is now in MeshImporterTecton.py. Some names
+	  were changed to be more clear, and the elemFamily dictionary was
+	  made much simpler (just number of families and an array
+	  containing the number of elements in each family). The material
+	  stuff was removed from the mesh object. We still need to figure
+	  out how to associate material info with element group number.
+
+2006-02-02 22:08  willic3
+
+	* [r2578] Merged in most of Brad's suggested changes, and finished
+	  _getElems function. For now, I avoided the dilemma of needing to
+	  know the number of element families before initially scanning
+	  the file by locally defining a maximum possible number. If this
+	  is exceeded, and error is returned. The number of element
+	  families is now equal to the number of different group numbers
+	  encountered in the input file. A little new logic will be
+	  required to pack the overdimensioned array containing the number
+	  of elements in each family into the properly-dimensioned array.
+	  This will be done in routine read_connect.
+
+2006-02-01 23:07  willic3
+
+	* [r2577] Slight update to mesh importing: Default fileRoot is
+	  passed in as an argument, and specific filenames can be
+	  overridden by the package inventory. Still need to figure out
+	  how to get most of the material stuff out of here. A comment
+	  section has been added mentioning possible options.
+
+2006-01-31 19:47  willic3
+
+	* [r2572] Removed almost everything so that the generic
+	  MeshImporter is very basic.
+
+2006-01-31 19:46  willic3
+
+	* [r2571] Put in a list to define the number of nodes per element
+	  type. This really isn't part of the mesh object and probably
+	  shouldn't go here.
+
+2006-01-31 19:45  willic3
+
+	* [r2570] More updates for mesh importing. Code still isn't
+	  finished and some parts are incorrect.
+
+2006-01-31 17:16  willic3
+
+	* [r2567] Updated, but still incomplete, version of code to get
+	  mesh object using Tecton-style input.
+
+2006-01-30 22:02  willic3
+
+	* [r2562] More work on format-specific code to import a mesh. The
+	  code is still incomplete and I should make sure I initialize all
+	  variables.
+
+2006-01-30 22:01  willic3
+
+	* [r2561] Trivial change to update runtime info output. This
+	  module will need to be extensively modified (or abandoned) to
+	  account for change in the rest of the top-level code.
+
+2006-01-30 21:30  willic3
+
+	* [r2559] Removed some stuff so this makes more sense, after
+	  e-mail from Brad. There is virtually nothing in here now.
+
+2006-01-28 02:36  willic3
+
+	* [r2558] Initial (unfinished) ingredients for a mesh object and
+	  facilities for importing it.
+
+2006-01-11 18:13  knepley
+
+	* [r2556] Fixed argument to createPETScMat() Upgraded scanner and
+	  sparse to new Mesh Added Sieve path to Makefile.am Fixed typo in
+	  iterate
+
+2005-12-15 21:42  willic3
+
+	* [r2534] Replaced sieve sections with a call to modified addstf
+	  for routines that already had sieve, and added modified call for
+	  those that didn't already have it. Calling routines include a
+	  C-style index for element number (ielgpetsc) that is passed to
+	  addstf. The addstf routine accepts the lmx array (for slippery
+	  nodes) but does not yet do anything with it. Additional logic
+	  will be needed in addstf to deal with the extra degrees of
+	  freedom and the routine in scanner.cc will need to be modified
+	  to increase the fiber bundle size.
+
+2005-12-15 20:13  willic3
+
+	* [r2532] Updated routine to use Sieve, similarly to
+	  elas_matinit_cmp_ss.F.
+
+2005-12-15 20:05  willic3
+
+	* [r2530] Updated routine to use Sieve, similarly to
+	  elas_matinit_cmp_ss.F.
+
+2005-12-15 20:03  willic3
+
+	* [r2529] Added new ielgpetsc variable to hold petsc-specific
+	  element number (C-style). This will allow the regular ielg
+	  variable to be used normally in other routines.
+
+2005-12-14 22:47  willic3
+
+	* [r2522] Updated routine to be consistent with sieve version of
+	  elastc. Arguments passed in as well as arguments passed to
+	  iterate have been updated.
+
+2005-12-14 22:46  willic3
+
+	* [r2521] Removed (possibly temporarily) rhs argument to gload_drv.
+
+2005-12-14 22:45  willic3
+
+	* [r2520] Removed unused variables.
+
+2005-12-14 22:44  willic3
+
+	* [r2519] Removed unused variables.
+
+2005-12-14 21:27  willic3
+
+	* [r2518] Fixed arguments and compiler definitions to work with
+	  mpif90 based on g95. Note that this is completely non-portable.
+	  This file is used as follows: Cat together all fortran files
+	  into a single file (test.F). Use the makefile to create test.o.
+	  This will catch most errors including argument list mismatches.
+
+2005-12-14 21:23  willic3
+
+	* [r2517] Removed unused format statement.
+
+2005-12-14 21:19  willic3
+
+	* [r2516] Changed all real*8 type definitions to double precision
+	  for consistency.
+
+2005-12-14 20:59  willic3
+
+	* [r2515] Added pylithomop3d_processMesh.
+
+2005-12-13 22:19  willic3
+
+	* [r2514] File has now been added to replace residu.f.
+
+2005-12-13 22:18  willic3
+
+	* [r2513] I need to get used to svn. I should have done an 'svn
+	  move' originally. This file has been replaced by residu.F.
+
+2005-12-13 22:12  willic3
+
+	* [r2512] Fixed file list, since residu.F has been moved from
+	  residu.f (needs preprocessing).
+
+2005-12-13 22:02  willic3
+
+	* [r2511] Initial attempt to merge Matt's Sieve-related changes
+	  with the rest of Lithomop. There are probably a few more things
+	  to fix.
+
+2005-12-13 19:20  willic3
+
+	* [r2510] Initial svn copy of lithomop trunk to new lithomop-sieve
+	  branch.
+
+2005-12-01 16:43  willic3
+
+	* [r2508] Added $(FCLIBS) to list for lithomop3dmodule_la_LIBADD.
+	  Without this, I was getting missing g95 symbols on Mac OS X.
+	  This will need to be tested on other platforms.
+
+2005-11-21 20:59  willic3
+
+	* [r2503] This file has been moved to 'makefile.test' to avoid
+	  conflicts with the new build procedure.
+
+2005-11-16 22:02  willic3
+
+	* [r2499] Changed the version number of LithoMop from 1.0.0 to
+	  0.7.1, since I think we're still not ready for a 1.0 release.
+
+2005-10-21 14:02  willic3
+
+	* [r2465] New directory to hold code change summary information.
+
+2005-10-21 14:00  willic3
+
+	* [r2464] Moved all files describing code history to info
+	  directory. It might make more sense to rename 'info' to
+	  'history'.
+
+2005-10-21 13:59  willic3
+
+	* [r2463] Moved all files describing code history to info
+	  directory. It might make more sense to rename 'info' to
+	  'history'.
+
+2005-10-11 07:10  willic3
+
+	* [r2410] Moved makefile for compilation tests to makefile.test,
+	  so it does not conflict with Makefile produced by the new build
+	  procedure.
+
+2005-10-09 03:12  leif
+
+	* [r2405] Ignore files generated by Autoconf/Automake/Libtool.
+
+2005-10-09 01:10  willic3
+
+	* [r2404] All files that require specific fortran features have
+	  been modified to use information provided by the new autoconf
+	  build procedure.
+
+2005-10-09 01:08  willic3
+
+	* [r2403] Removed lithomop3d/future files from python make
+	  targets, since they are not being used.
+
+2005-10-09 01:05  willic3
+
+	* [r2402] Modified configure.ac to perform tests based on fortran
+	  capabilities, rather than type/name. Note that it still may be
+	  necessary to use AC_RUN_IFELSE rather than AC_COMPILE_IFELSE to
+	  truly check some capabilities, although this will then mess up
+	  cross-compiling.
+
+2005-09-30 21:07  leif
+
+	* [r2386] Set the language to C++ for MPI tests, which are now
+	  sensitive to that sort of thing.
+
+2005-09-30 18:04  leif
+
+	* [r2384] Added files for the GNU Build System.
+
+2005-08-06 03:17  willic3
+
+	* [r1448] Modified *.F files to treat i/o differently for
+	  different compilers. Modified Make.mm to replace previous *.f
+	  files with *.F files. Modified local.def to add
+	  FORTRAN_COMPILER_TYPE (either FORTRAN_TYPE_F77 or
+	  FORTRAN_TYPE_F95) and FORTRAN_COMPILER_NAME (presently only need
+	  to test for FORTRAN_NAME_GFORTRAN) to PROJ_F77_DEFINES. These
+	  must presently be set as environmental variables in the user's
+	  environment. There is probably already a config value that
+	  defines this information, but I haven't found it yet.
+
+2005-08-23 02:34  unknown_user
+
+	* [r1447] [vcp] delete of edited revision with dead state
+
+2005-08-06 03:04  willic3
+
+	* [r1446] These obsolete files have been moved to 'unused'.
+
+2005-08-06 02:58  willic3
+
+	* [r1445] All of the *.f routines above have been replaced by *.F
+	  routines that now need preprocessing. All of the *.F routines
+	  have been modified to account for changes in the handling of i/o
+	  between f77 and f95. There are 2 main factors that need to be
+	  considered: 1. For f95, the access="append" argument is no
+	  longer accepted in the open statement. This has been replaced by
+	  the position="append" argument. 2. The previous method of doing
+	  direct access, unformatted (binary) file writing is no longer
+	  available in f95. However, it turns out that g95 supports stream
+	  i/o, which provides very similar functionality. The gfortran
+	  compiler does not support this, and at present it is assumed
+	  that any f95 compiler other than gfortran will support it. Those
+	  using gfortran receive a warning message when compiling, and
+	  binary UCD output is turned off.
+
+2005-07-09 04:32  willic3
+
+	* [r1444] Added PROJ_DLL stuff, in hopes of making things work for
+	  cygwin.
+
+2005-06-30 22:26  willic3
+
+	* [r1443] Quick and dirty routine to add extra nodes on either
+	  side of a fault. I'm not sure if this has been tested or not.
+
+2005-06-30 22:24  willic3
+
+	* [r1442] Dummies as placeholders for future mesh output routines.
+
+2005-06-25 03:26  willic3
+
+	* [r1441] Removed obsolete petsc_solver argument from command
+	  line. Explicitly specify binary UCD output using the
+	  lm3dscan.ucdOutput variable (even though binary is now the
+	  default).
+
+2005-06-25 03:22  willic3
+
+	* [r1440] Changed ucdOutput inventory variable from a boolean to a
+	  choice with possible values of ("none", "ascii", "binary") with
+	  a default value of "binary". Changed usage and definition of the
+	  integer equivalent in Lithomop3d_setup.py, and added the integer
+	  equivalent to the argument list for write_ucd_mesh_f.
+
+2005-06-25 03:17  willic3
+
+	* [r1439] Updated bindings to pass iucd parameter to
+	  write_ucd_mesh_f.
+
+2005-06-25 03:13  willic3
+
+	* [r1438] Added new section for writing binary UCD nodal values
+	  and computing nodal min/max values.
+
+2005-06-25 03:12  willic3
+
+	* [r1437] Added entire new section for writing binary UCD mesh
+	  info.
+
+2005-06-25 03:11  willic3
+
+	* [r1436] Added new sections to write header info for binary UCD
+	  files.
+
+2005-06-25 03:10  willic3
+
+	* [r1435] Updated argument lists to computation routines and added
+	  new sections for writing binary UCD file info. Fixed previous
+	  bug where UCD files were not being closed after use.
+
+2005-06-25 03:09  willic3
+
+	* [r1434] Added new sections for writing binary UCD files and
+	  computing min/max values for state variables.
+
+2005-06-25 03:08  willic3
+
+	* [r1433] Added new option for opening a binary file using direct
+	  access.
+
+2005-06-25 03:06  willic3
+
+	* [r1432] Fixed calls to write_ucd_node_vals for updated usage of
+	  iucd parameter.
+
+2005-06-20 23:59  willic3
+
+	* [r1431] Initial version of a list of important changes from
+	  June, 2004 to June, 2005.
+
+2005-06-18 03:39  willic3
+
+	* [r1430] The numbered logs are raw information using cvs log with
+	  a date filter. The changes log is an overview of the changes
+	  compiled into a single file. This information needs to be
+	  further distilled into a summary log that summarizes important
+	  changes over date ranges. These logs are for my own information
+	  as well as references when summarizing lithomop progress.
+
+2005-06-09 04:49  willic3
+
+	* [r1429] Fixed ascii output to reflect the fact that displayed
+	  rotation angles are in radians rather than degrees.
+
+2005-06-09 04:48  willic3
+
+	* [r1428] Fixed stupid logic error when deciding to perform a
+	  local coordinate rotation (used an and when I should have used
+	  an or).
+
+2005-06-08 02:39  willic3
+
+	* [r1427] Altered all bindings that use MPI in any way (including
+	  those that use PETSc). There is a conflict between names defined
+	  by mpi.h and those defined in stdio.h. One way to resolve the
+	  conflict is to make sure that mpi.h is always included before
+	  stdio.h. All of the C++ codes that initially referenced petsc
+	  include files have been altered so that the petsc files are the
+	  first ones included. Also, petsc includes have been removed from
+	  lithomop3d_externs.h, since this resulted in additional
+	  problems. Instead, any files that were getting their petsc
+	  definitions from this file now include the petsc definitions
+	  individually.
+
+2005-06-08 02:32  willic3
+
+	* [r1426] Removed 'include petsc/default.def' and put this in
+	  local.def. In local.def, remove $(MATH_LIBS) from
+	  PROJ_LCXX_FLAGS and replaced it with $(EXTERNAL_LIBS). The lack
+	  of EXTERNAL_LIBS was what was causing all the Mac build
+	  problems, since it turns out that EXTERNAL_LIBS is not used by
+	  default when building a library (although EXTERNAL_LIBPATH is).
+	  By including this, now all PETSc/MPI stuff is linked when
+	  building the library. If this link does not occur, the common
+	  blocks defined by PETSc and mpich2 are flagged as 'defined'
+	  rather than 'undefined', which will results in a
+	  multiply-defined symbol error when creating the module (at least
+	  on the Mac).
+
+2005-05-13 22:16  willic3
+
+	* [r1425] Fixed point numbering when writing state variables to
+	  UCD file. The number should correspond to the Gauss point number
+	  rather than the element number.
+
+2005-05-13 20:45  willic3
+
+	* [r1424] Fixed UCD output so that filenames for different cycles
+	  don't conflict with each other. This is done by using the total
+	  number of steps as the name basis rather than the number of
+	  steps within the curren cycle.
+
+2005-05-12 04:07  willic3
+
+	* [r1423] Moved element type logic out of do loop. Fixed header
+	  information to be consistent with nodal output values.
+
+2005-05-06 04:31  willic3
+
+	* [r1422] Problem to test usage of time-varying Winkler elements
+	  for locking and unlocking a fault.
+
+2005-05-06 04:17  willic3
+
+	* [r1421] Fixed problem where stiffness matrix was not being
+	  zeroed before being reformed. Also, winkler coefficients were
+	  not being added to the diagonals, so this was also fixed.
+
+2005-05-06 04:15  willic3
+
+	* [r1420] Fixed problem where stiffness matrix was not being
+	  zeroed before being reformed (using MatZeroEntries).
+
+2005-05-06 03:42  willic3
+
+	* [r1419] Replaced incorrect usage of dcur with deld when
+	  computing nodal loads equivalent to kinematic BC.
+
+2005-05-06 03:37  willic3
+
+	* [r1418] Removed usage of petscdeveloper.h.
+
+2005-08-23 02:31  unknown_user
+
+	* [r1417] [vcp] delete of edited revision with dead state
+
+2005-05-06 03:36  willic3
+
+	* [r1416] This include file is no longer necessary, as the release
+	  of a new PETSc version has made it obsolete. Also, PETSc now
+	  includes a tag that duplicates this functionality.
+
+2005-05-06 03:00  willic3
+
+	* [r1415] Simplified logic for determining which version of PETSc
+	  is being used. It is now assumed that anyone using a developer
+	  version will be using version 2.3 or later, so it is not
+	  necessary to use the PETSC_VERSION_RELEASE tag.
+
+2005-05-05 01:44  willic3
+
+	* [r1414] Revised fix for multiple PETSc versions. I have
+	  simplified the logic. The supported versions are: 2.2.x
+	  (developer or non-developer) 2.3.x (any) Any other version will
+	  bomb. I have only tested this with PETSc 2.3.0.
+
+2005-05-04 01:48  willic3
+
+	* [r1413] Updated bindings for usage of Bwink and Bwinkx.
+
+2005-05-04 01:47  willic3
+
+	* [r1412] Added usage of Bwink and Bwinkx, as well as adding
+	  corresponding entries to force flags array.
+
+2005-05-04 01:44  willic3
+
+	* [r1411] Created new routine to zero winkler forces when a fault
+	  is unlocked. This routine may still be unnecessary, as there is
+	  still a problem with Winkler forces.
+
+2005-05-04 01:42  willic3
+
+	* [r1410] Added nwinkflag and nwinkxflag.
+	* [r1409] Fixed header output for ascii files.
+
+2005-05-04 01:41  willic3
+
+	* [r1408] Altered winklf to increment bwink (or bwinkx) while
+	  updating bintern.
+
+2005-05-04 01:40  willic3
+
+	* [r1407] Added usage of bwink and bwinkx. Changed calls to winklf.
+
+2005-05-04 01:39  willic3
+
+	* [r1406] Added usage of bwink and bwinkx. Altered methods for
+	  updating internal force vector in viscos.F. There are still
+	  problems with Winkler forces that need to be resolved.
+
+2005-05-04 01:38  willic3
+
+	* [r1405] Added unlock.f to the build list.
+
+2005-05-03 03:45  willic3
+
+	* [r1404] This is an attempt to fix the problems introduced by the
+	  presence of a new PETSc version (2.3.0). In the near future, I
+	  plan to end support for all previous versions of PETSc, as the
+	  nested list of ifs and ifdefs is getting too long to keep track
+	  of. This is a tentative fix, and may need to be changed after I
+	  have a guinea pig try it out (I don't have version 2.3.0
+	  installed yet on my machine).
+
+2005-04-22 06:22  willic3
+
+	* [r1403] Got rid of input_misc.h and replaced it with
+	  write_modelinfo.h. Fixed commas that should have been semicolons.
+
+2005-04-22 06:21  willic3
+
+	* [r1402] Moved local, localf, and localx into this section.
+
+2005-04-22 06:20  willic3
+
+	* [r1401] Fixed problem where I had left off the _nodes portion of
+	  the routine names for sort_slip and sort_split.
+
+2005-04-22 06:19  willic3
+
+	* [r1400] Fixed problem where I had not finished updating array
+	  names for new read_wink routine.
+
+2005-04-22 06:17  willic3
+
+	* [r1399] Added assign_wink and removed local, localf, and localx,
+	  which now belong in sparse.
+
+2005-04-22 06:16  willic3
+
+	* [r1398] Added sorting.h to list of includes.
+
+2005-04-22 06:15  willic3
+
+	* [r1397] Fixed problem where time step variables were being
+	  initialized in the wrong place. Deleted stray line that didn't
+	  belong. Fixed typo for calling write_split.
+
+2005-04-22 06:13  willic3
+
+	* [r1396] Fixed typo in build list.
+
+2005-04-21 08:34  willic3
+
+	* [r1395] Added in missing usage of dprev array.
+
+2005-04-21 08:33  willic3
+
+	* [r1394] Commented out debugging statements.
+
+2005-04-21 08:09  willic3
+
+	* [r1393] Changed all necessary references to point to sorted
+	  element node array rather than original array. Removed
+	  unnecessary arguments from write_slip and write_split.
+
+2005-04-21 08:07  willic3
+
+	* [r1392] Removed arguments that weren't needed.
+
+2005-04-21 08:05  willic3
+
+	* [r1391] Added new sorting routines.
+
+2005-04-21 08:00  willic3
+
+	* [r1390] Added new output routines.
+
+2005-04-21 07:59  willic3
+
+	* [r1389] Fixed argument types to correspond to updated argument
+	  lists.
+
+2005-08-23 02:30  unknown_user
+
+	* [r1388] [vcp] delete of edited revision with dead state
+
+2005-04-21 07:32  willic3
+
+	* [r1387] All of the routines that were previously in these files
+	  are now in write_meshinfo.cc and .h, along with the new output
+	  routines.
+
+2005-04-21 07:09  willic3
+
+	* [r1386] Altered bindings to reflect usage of sorted element
+	  nodes array.
+
+2005-04-21 07:07  willic3
+
+	* [r1385] Removed extra close brace.
+
+2005-04-21 07:04  willic3
+
+	* [r1384] Added new function calls.
+
+2005-04-21 06:46  willic3
+
+	* [r1383] Fixed code so we are now using sorted element node array
+	  (Iens rather than Ien). Removed usage of Mhist material history
+	  array.
+
+2005-04-21 06:08  willic3
+
+	* [r1382] Added new sets of bindings (sorting and
+	  write_modelinfo), and removed input_misc.
+
+2005-04-21 06:06  willic3
+
+	* [r1381] Modified bindings to no longer use Mhist (material
+	  history) array.
+
+2005-04-21 06:03  willic3
+
+	* [r1380] Created new bindings for all output routines. This
+	  includes routines that existed previously plus new routines.
+
+2005-04-21 03:40  willic3
+
+	* [r1379] Moved in equation localization routines from
+	  numbering.cc and modified bindings for new argument lists.
+
+2005-04-21 02:00  willic3
+
+	* [r1378] These routines are no longer needed.
+
+2005-04-21 01:59  willic3
+
+	* [r1377] Removed obsolete routines from build list and added all
+	  the new routines.
+
+2005-04-20 07:52  willic3
+
+	* [r1376] Revised bindings for new argument lists. Also, routines
+	  that localize equation numbers have been removed. They will be
+	  moved to sparse.cc.
+
+2005-04-20 07:29  willic3
+
+	* [r1375] Revised all bindings for new routine calls and removed
+	  bindings for read_mathist and read_winkx, which are no longer
+	  needed.
+
+2005-08-23 02:30  unknown_user
+
+	* [r1374] [vcp] delete of edited revision with dead state
+
+2005-04-20 07:25  willic3
+
+	* [r1373] Moved this routine to 'unused'. Since formats are the
+	  same for regular Winkler and slippery node Winkler forces, the
+	  same routine may be used to read them both.
+
+2005-08-23 02:30  unknown_user
+
+	* [r1372] [vcp] delete of edited revision with dead state
+
+2005-04-20 07:11  willic3
+
+	* [r1371] I have removed material histories for now.
+
+2005-08-23 02:30  unknown_user
+
+	* [r1370] [vcp] delete of edited revision with dead state
+
+2005-04-20 07:10  willic3
+
+	* [r1369] I have eliminated material histories for now. They will
+	  become obsolete once we are using a spatial database.
+
+2005-04-16 07:48  willic3
+
+	* [r1368] Cosmetic changes.
+
+2005-04-16 07:47  willic3
+
+	* [r1367] Fixed some improper closing of files.
+	* [r1366] Updated output text and fixed some improper closing of
+	  files.
+
+2005-04-16 07:46  willic3
+
+	* [r1365] Added some new parameters to be output, corresponding to
+	  the way elements are presently handled (no mixing of element
+	  types). This may be revised later.
+
+2005-04-16 07:45  willic3
+
+	* [r1364] Changed how Winkler forces are handled. Definitions are
+	  now read into temporary arrays, and the actual required arrays
+	  (which require global equation numbers) are determined later in
+	  subroutine assign_wink.
+
+2005-04-16 07:43  willic3
+
+	* [r1363] Cosmetic changes.
+
+2005-04-16 07:40  willic3
+
+	* [r1362] All of these routines have been modified to no longer
+	  use material histories.
+
+2005-04-16 07:39  willic3
+
+	* [r1361] Cosmetic changes.
+
+2005-04-16 07:38  willic3
+
+	* [r1360] All of these routines have been modified to no longer
+	  use material histories. Once the spatial database is being used,
+	  material histories will become obsolete.
+
+2005-04-16 07:35  willic3
+
+	* [r1359] New routine to take winkler definitions and replace them
+	  with values that are needed by the code. It was necessary to
+	  break out this functionality from the original read_wink routine
+	  so that equation numbers were not required in an input section.
+
+2005-04-16 07:33  willic3
+
+	* [r1358] Cosmetic changes.
+	* [r1357] New routine to replace element numbers with reordered
+	  numbers.
+
+2005-04-16 07:31  willic3
+
+	* [r1356] Added all of these new output routines. Previously,
+	  input and output were performed in the same routine in many
+	  cases.
+
+2005-04-16 07:28  willic3
+
+	* [r1355] Added and deleted arguments to several functions to
+	  conform to revised interface.
+
+2005-04-15 07:26  willic3
+
+	* [r1354] Deallocated some additional temporary arrays.
+
+2005-04-15 07:18  willic3
+
+	* [r1353] Altered main function to call different functions for
+	  the revised setup section. Note that both of these codes need
+	  testing, some new f77 routines still need to be written, and the
+	  bindings need to be updated.
+
+2005-04-15 07:16  willic3
+
+	* [r1352] Initial revised version of setup section. Things are now
+	  divided into several functions: initialize: Get necessary values
+	  from scanner read: Read all information and populate
+	  corresponding arrays numberequations: Set up global equation
+	  numbers based on BC and slippery nodes sortmesh: Sort elements
+	  into element families. Additional sorting is done for things
+	  that were specified in terms of the original element ordering.
+	  sparsesetup: Set up local to global element id arrays and set up
+	  sparse matrix structure. allocateremaining:Allocate all
+	  additional arrays that are needed for computations. meshwrite:
+	  Outputs parameters and mesh description to ascii, plot, and/or
+	  UCD files.
+
+2005-04-14 08:01  willic3
+
+	* [r1351] The write_ucd_node_vals routine has been modified to
+	  output slippery and split node displacements, and the calls in
+	  autoprestr, elastc, and viscos have been modified accordingly.
+
+2005-04-14 07:59  willic3
+
+	* [r1350] All of these routines have been modified so that they
+	  only perform input, and all sections in which they perform
+	  output, equation reordering, etc., have been removed. These
+	  functions will be performed by separate routines.
+
+2005-04-14 07:57  willic3
+
+	* [r1349] Cosmetic changes.
+
+2005-04-14 07:56  willic3
+
+	* [r1348] Removed all output sections from this routine.
+
+2005-04-14 07:55  willic3
+
+	* [r1347] Removed input unit and file information that was no
+	  longer necessary.
+
+2005-04-14 07:48  willic3
+
+	* [r1346] Initial version of a simple routine that sorts split
+	  node entries according to the new element ordering.
+
+2005-04-14 05:04  willic3
+
+	* [r1345] Added this file as a kludgy fix to let the code know
+	  whether the user is using the developer's version of PETSc or
+	  not. If so, the tag PETSC_DEVELOPER_VERSION needs to be set to 1.
+
+2005-04-14 05:02  willic3
+
+	* [r1344] Messed around some more with fixing things to work with
+	  developer's and non-developer's versions of PETSc. The current
+	  fix requires the user to set the value PETSC_DEVELOPER_VERSION
+	  to 1 if the developer's version is being used. This is done in
+	  petscdeveloper.h. If this ends up being a long-term solution, it
+	  will need to be documented. It is hoped that with the new
+	  release of PETSc, this fix will be unnecessary. We will simply
+	  support only the most current version.
+
+2005-04-13 07:37  willic3
+
+	* [r1343] Left out usage of the infin array for now, as infinite
+	  elements are presently broken anyway.
+
+2005-04-13 07:23  willic3
+
+	* [r1342] Initial version of a routine to sort elements into
+	  families. The routine is somewhat inefficient with memory, as it
+	  requires an additional element node array to hold the sorted
+	  results (rather than attempting an in-place sort). The original
+	  array may be deleted after use, however. The routine also
+	  determines several global dimensions and creates an element
+	  family info array as well as an index array containing the
+	  original element numbering.
+
+2005-04-13 06:17  willic3
+
+	* [r1341] Stripped out all output, element renumbering, and
+	  indexing. This will all be handled by separate routines.
+
+2005-04-13 05:33  willic3
+
+	* [r1340] Stripped out everything but input. Output of BC info (if
+	  requested) will be handled by a separate routine.
+
+2005-04-11 01:10  willic3
+
+	* [r1339] Fixed problem where slippery node output always produced
+	  nonzero slip weights.
+
+2005-04-09 02:21  willic3
+
+	* [r1336] Updated example files to current version of the code.
+
+2005-04-09 02:10  willic3
+
+	* [r1334] Additional revisions after testing example.
+
+2005-04-09 01:29  willic3
+
+	* [r1332] Updated these input files for current code version.
+
+2005-04-09 01:20  willic3
+
+	* [r1331] Simple test problem using slippery nodes.
+
+2005-04-09 00:38  willic3
+
+	* [r1330] Moved the definition of pointerToIpslp out of an if
+	  block. This array is passed to several driver routines even when
+	  it is not used. Having it defined inside the if block cause an
+	  error message at the end of code execution.
+
+2005-04-08 07:47  willic3
+
+	* [r1329] Added '-ksp_rtol 1e-9' to the command line arguments.
+	  This dramatically improves the accuracy for slippery node tests,
+	  and likely will help for the other test problems. I need to
+	  change all of the Make.mm files for example problems to be
+	  similar to these, and also need to modify all input files for
+	  current formats.
+
+2005-04-08 07:41  willic3
+
+	* [r1328] Cosmetic changes.
+
+2005-04-08 07:40  willic3
+
+	* [r1327] Changed routine so all indexing is done with local
+	  arrays that are altered to work with PETSc. Fixed problem where
+	  absolute value of lmx array (suitably altered) was needed for
+	  MatSetValues rather than the actual array. Fixed problem where
+	  row and column index arrays appeared to be swapped in
+	  MatSetValues in cases involving slippery nodes.
+
+2005-04-08 07:37  willic3
+
+	* [r1326] Fixed stupid bug where I was not indexing the ien array
+	  when sending it to addsn.
+
+2005-04-08 07:33  willic3
+
+	* [r1325] Retained commented-out debugging statements.
+	* [r1324] Retained commented-out debugging statement that uses
+	  PETSc MatView routine.
+
+2005-04-08 07:31  willic3
+
+	* [r1323] Cosmetic changes and retained commented-out debugging
+	  statements.
+
+2005-04-08 07:30  willic3
+
+	* [r1322] Changed definition of alpha parameter from a parameter
+	  statement to a data statement since it is being passed as an
+	  argument.
+
+2005-04-06 06:14  willic3
+
+	* [r1321] Added input files to run SCEC BM5. This serves as a test
+	  of split nodes.
+
+2005-04-06 06:07  willic3
+
+	* [r1320] Modified calls to read_connect, read_split, and
+	  read_slip to create and use element indexing array. It is then
+	  destroyed after use.
+
+2005-04-06 06:04  willic3
+
+	* [r1319] Fixed major bug where I wasn't indexing state variable
+	  and other arrays before passing them to computational routines.
+
+2005-04-06 06:03  willic3
+
+	* [r1318] Cosmetic changes.
+
+2005-04-06 06:02  willic3
+
+	* [r1317] Removed usage of ielg element counter, which isn't
+	  needed.
+
+2005-04-06 06:01  willic3
+
+	* [r1316] Cosmetic changes.
+
+2005-04-06 06:00  willic3
+
+	* [r1315] Fixed improper indexing of itmp array.
+	* [r1314] Cosmetic changes.
+
+2005-04-06 05:56  willic3
+
+	* [r1313] Updated call to addstf to pass stemp array.
+
+2005-04-06 05:54  willic3
+
+	* [r1312] Updated call to addstf to pass stemp array.
+
+2005-04-06 05:52  willic3
+
+	* [r1311] Modified this routine for cases where there are slippery
+	  nodes: Added new index array that is the absolute value of the
+	  slippery node index array. According to the MatSetValues
+	  documentation, negative indices are skipped, which would mean
+	  entries from the negative side of the fault would never get
+	  added. This should fix that problem. Changed setup of routine so
+	  that portion related to slippery nodes is never executed if
+	  element contains no slippery nodes. Changed routine for
+	  efficiency. Rather than switching stiffness matrix signs back
+	  and forth, I use two arrays, and never change the entries of the
+	  local stiffness array. Instead, the properly-signed values are
+	  transferred into the stemp array, and this is used instead. To
+	  do this, I now pass in the stemp array from all calling
+	  routines. This routine needs to be tested.
+
+2005-04-06 05:39  willic3
+
+	* [r1310] Modified these routines to account for the fact that
+	  split and slippery nodes are specified using the original
+	  element ordering rather than the revised ordering that occurs
+	  after they are sorted into families. Routine read_connect
+	  creates the index array to do this, and both read_slip and
+	  read_split have been modified to use it. After use, the index
+	  array may be destroyed.
+
+2005-04-06 05:36  willic3
+
+	* [r1309] Updated bindings for read_connect, read_split, and
+	  read_slip to use element index array. This accounts for the fact
+	  that split and slippery nodes are specified using the original
+	  element numbering rather than the numbering that occurs after
+	  elements are sorted into families.
+
+2005-04-05 22:47  willic3
+
+	* [r1308] Fixed conditional compilation to key on
+	  PETSC_VERSION_PATCH. Only version 2.2.1 is supported, and it is
+	  assumed that all versions less than version patch 42 do not
+	  include MatSetSizes. This needs to be tested with different
+	  patch versions.
+
+2005-04-03 11:56  willic3
+
+	* [r1307] Added conditional compilation depending on whether
+	  MatSetSizes is defined.
+
+2005-04-03 06:11  willic3
+
+	* [r1306] Cosmetic change.
+
+2005-04-02 07:59  willic3
+
+	* [r1305] Updated these to account for new and deleted parameters,
+	  and new method of specifying state variable output.
+
+2005-04-02 07:58  willic3
+
+	* [r1304] Added commented-out line for PETSc debugging when
+	  desired. This is presently not working.
+
+2005-04-02 07:56  willic3
+
+	* [r1303] Fixed bindings for createPETScMat to account for new
+	  PETSc calling conventions. Matrix size is now set separately
+	  using MatSetSizes.
+
+2005-04-02 07:54  willic3
+
+	* [r1302] Fixed bindings for scan_connect.
+	* [r1301] Updated bindings to use Dprev vector. Also fixed
+	  definitions in lithomop3d_externs.h to account for changed call
+	  to scan_connect.
+
+2005-04-02 07:50  willic3
+
+	* [r1300] Added ElementTypeDef.py to EXPORT_PYTHON_MODULES.
+
+2005-04-02 07:49  willic3
+
+	* [r1299] Added autoprestrStage. Put back in the Dprev vector.
+	  Added back in connectivitySize which is now a function of
+	  numberElementNodes and numberVolumeElements. Put in definition
+	  of reformFlagInt. Fixed usage of ElementTypeDef class. Fixed
+	  output of subiteration parameters. Fixed some typos. Removed
+	  unused lists.
+
+2005-04-02 07:45  willic3
+
+	* [r1298] Added or re-added some parameters that were needed.
+	  Increased dimension of VolumeElementFamilyList to allow tracking
+	  of material model, and then made the corresponding changes in
+	  the call to scan_connect.
+
+2005-04-02 07:42  willic3
+
+	* [r1297] Added autoprestrStage to PETSc stages, and added usage
+	  of Dprev vector when a nonzero initial guess is desired.
+
+2005-04-02 07:40  willic3
+
+	* [r1296] Modified all parameter names to explicitly include
+	  'Volume' name, to indicate element type.
+
+2005-04-02 07:37  willic3
+
+	* [r1295] Put this routine back in, since it is needed to compute
+	  element stiffness matrix.
+
+2005-04-02 07:36  willic3
+
+	* [r1294] Commented out debugging statements.
+
+2005-04-02 07:35  willic3
+
+	* [r1293] Build list was modified to include getmat.f, which is
+	  needed to compute the local stiffness matrix.
+
+2005-04-02 07:34  willic3
+
+	* [r1292] All of these routines were modified to pass along the
+	  iddmat index array, which is needed by routine stiff_ss.
+
+2005-04-02 07:31  willic3
+
+	* [r1291] Fixed incredibly stupid problem where I had substituted
+	  a BLAS matrix-vector operation for a matrix-matrix operation.
+	  Since it appears that BLAS does not have a routine to multiply a
+	  packed symmetric matrix by another matrix, it was also necessary
+	  to use the iddmat index array, which I had previously deleted.
+	  This also made it necessary to use the getmat routine, which
+	  transfers the packed array to a full-size array. Note that these
+	  problems can all be avoided once I get rid of the global dmat
+	  array. Once this is no longer stored globally there will be no
+	  need to use a packed array.
+
+2005-04-02 07:26  willic3
+
+	* [r1290] Commented out debugging statements.
+
+2005-04-02 07:25  willic3
+
+	* [r1289] Commented out debugging statements.
+
+2005-04-02 07:24  willic3
+
+	* [r1288] Fixed problem where ivfamily entry corresponded to
+	  material type rather than material model. Fixed this by adding
+	  an extra column to ivflist array created in scan_connect to
+	  track material model. Routine read_connect was then modified to
+	  use this information.
+
+2005-04-02 07:18  willic3
+
+	* [r1287] Fixed routines so iddmat index matrix is now being
+	  passed to formes_ss. Fixed problem in td_matinit_cmp_ss where
+	  global element number was not being updated.
+
+2005-04-02 07:16  willic3
+
+	* [r1286] Cosmetic changes.
+
+2005-04-02 07:14  willic3
+
+	* [r1285] Fixed stupid problem in update_state_drv where I was
+	  attempting to loop over nelfamily rather than nvfamilies. Fixed
+	  stupid problem in update_state_cmp where I was not indexing the
+	  state variable arrays.
+
+2005-04-02 07:12  willic3
+
+	* [r1284] Commented out debugging statements. Fixed tracking of
+	  global element number.
+
+2005-04-02 07:10  willic3
+
+	* [r1283] Updated all dummy material routines to match the layout
+	  of mat_1.
+
+2005-04-02 07:07  willic3
+
+	* [r1282] Numerous changes and additions to these routines, which
+	  had not been modified previously to use new indexing methods.
+	  Fixed engineering strain problem. Fixed argument lists and
+	  indexing for new methods. Stress computation routines are now
+	  responsible for populating scur Gauss-point-level array.
+	  Completely revised time-dependent stress computation and fixed
+	  stupid indexing error. Added get_state and update_state routines.
+
+2005-04-02 07:01  willic3
+
+	* [r1281] Several fixes to these routines after debugging: Fixed
+	  error codes not being sent to write_state_drv. Fixed problem
+	  where iddmat was not being sent to routines that compute the
+	  element stiffness matrix. Attempted to solve problem when
+	  nonzero initial guess is used for linear solution, by
+	  reimplementing usage of the dprev vector. Note that this still
+	  does not seem to work correctly, at least for SCEC BM1.
+
+2005-04-02 06:55  willic3
+
+	* [r1280] Very low resolution version of SCEC BM1 that is good for
+	  debugging.
+
+2005-04-01 07:28  willic3
+
+	* [r1279] Deleted first line from license text.
+
+2005-04-01 07:27  willic3
+
+	* [r1278] Updated all bindings for new calls and argument lists.
+	  The PETSc calls in sparse.cc are still incorrect and need to be
+	  fixed.
+
+2005-03-31 03:46  willic3
+
+	* [r1277] Removed unused variables.
+
+2005-03-31 03:43  willic3
+
+	* [r1276] This routine presently only outputs the flag determining
+	  the initial guess for the linear solution. All other additional
+	  information that was output previously is now handled by PETSc.
+
+2005-03-31 03:34  willic3
+
+	* [r1275] Fixed line that was too long.
+
+2005-03-31 03:26  willic3
+
+	* [r1274] These obsolete include files have been moved to 'unused'.
+
+2005-03-30 12:51  willic3
+
+	* [r1273] These obsolete routines have been moved to 'unused'.
+
+2005-08-23 02:25  unknown_user
+
+	* [r1272] [vcp] delete of edited revision with dead state
+
+2005-03-30 12:50  willic3
+
+	* [r1271] These routines have been moved to 'unused' as they have
+	  been replaced by PETSc routines.
+
+2005-03-30 12:49  willic3
+
+	* [r1270] Added new routines to build list and removed those that
+	  are no longer needed.
+
+2005-03-30 09:56  willic3
+
+	* [r1269] Extensive modifications of all python drivers to make
+	  things consistent with new layout of f77 code using element
+	  families, etc. Also, an attempt has been made to make a cleaner
+	  separation between the functions of the different codes.
+	  Lithomop3d_scan.py now is devoted almost exclusively to getting
+	  the dimensions of the problem, with a few auxiliary tasks.
+	  Lithomop3d_setup.py does most of the work, including allocating
+	  memory, populating arrays, and setting up the sparse matrix
+	  system. Lithomop3d_run.py now simply uses the structures created
+	  by Lithomop3d_setup.py and then calls the f77 driver routines.
+
+2005-03-30 09:51  willic3
+
+	* [r1268] Removed many unnecessary parameters and include
+	  statements.
+
+2005-03-30 05:43  willic3
+
+	* [r1267] Removed usage of obsolete include files.
+
+2005-08-23 02:24  unknown_user
+
+	* [r1266] [vcp] delete of edited revision with dead state
+
+2005-03-30 03:17  willic3
+
+	* [r1265] These have all been moved to 'unused'. The r-dimension
+	  statements are no longer needed for the linear solver, and the
+	  w-dimension statements were only needed in routines read_wink
+	  and read_winkx (and weren't being used).
+
+2005-08-23 02:24  unknown_user
+
+	* [r1264] [vcp] delete of edited revision with dead state
+
+2005-03-30 02:55  willic3
+
+	* [r1263] Removed these dimension and definition files. They refer
+	  to linear solution parameters that are now handled by PETSc.
+
+2005-08-23 02:24  unknown_user
+
+	* [r1262] [vcp] delete of edited revision with dead state
+
+2005-03-30 02:26  willic3
+
+	* [r1261] Removed these dimension include files, which are only
+	  needed locally in routine iterate and routines called by it.
+
+2005-03-29 09:32  willic3
+
+	* [r1260] Removed bwork array, which is no longer needed.
+
+2005-03-29 09:30  willic3
+
+	* [r1259] Removed bwork array, which is no longer needed.
+
+2005-03-29 09:28  willic3
+
+	* [r1258] Removed bwork array, which is no longer needed.
+
+2005-03-29 07:52  willic3
+
+	* [r1257] Removed usage of ismatmod array. This is no longer
+	  needed because all state-variable-related functions are now
+	  performed by a material-model-level routine.
+
+2005-03-29 03:53  willic3
+
+	* [r1256] Completely updated routine to use element families
+	  (presently defined by their material type). The routine now
+	  returns: ivfamily: Integer array defining family properties.
+	  ien: Global element nodes array. nstatesz: Size of global state
+	  variable array. nstatesz0: Size of global initial state variable
+	  array. npropsz: Size of global material properties array.
+
+2005-03-29 03:50  willic3
+
+	* [r1255] Updated routine to count the number of element families,
+	  and added a second entry to ivflist that tells what material
+	  type is associated with the family.
+
+2005-03-26 09:05  willic3
+
+	* [r1254] Initial revised version of connectivity scanning
+	  routine. The routine presently returns the number of volume
+	  elements, the global volume element type, and the number of
+	  volume element families. The routine also returns a list that
+	  contains the number of elements in each family.
+
+2005-03-26 08:50  willic3
+
+	* [r1253] Updated this routine to use element families rather than
+	  material types. This routine will become obsolete once I start
+	  using a spatial database. In that case, a different database
+	  will be specified for each time at which a change is desired,
+	  and a global time history will determine when to recheck the
+	  database.
+
+2005-03-26 08:41  willic3
+
+	* [r1252] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present.
+
+2005-03-26 07:34  willic3
+
+	* [r1251] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present. Removed dprev array,
+	  which is no longer needed. The displacement increments are now
+	  copied directly from deld into dispvec at the end of a time step.
+
+2005-03-26 07:32  willic3
+
+	* [r1250] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present. Removed dprev array,
+	  which is no longer needed. The displacement increments are now
+	  copied directly from deld into dispvec at the end of a time
+	  step. Added call at the end of the solution to accomplish this
+	  by calling idisp.
+
+2005-03-26 07:31  willic3
+
+	* [r1249] Removed dprev array, which is no longer needed. The
+	  displacement increments are now copied directly from deld into
+	  dispvec at the end of a time step. Added call at the end of the
+	  solution to accomplish this by calling idisp.
+
+2005-03-26 07:29  willic3
+
+	* [r1248] Removed dprev array, which is no longer needed. The
+	  displacement increments are now copied directly from deld into
+	  dispvec at the end of a time step.
+
+2005-03-26 07:27  willic3
+
+	* [r1247] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present.
+
+2005-03-26 07:07  willic3
+
+	* [r1246] This obsolete routine has been moved to 'unused'.
+
+2005-08-23 02:24  unknown_user
+
+	* [r1245] [vcp] delete of edited revision with dead state
+
+2005-03-26 07:06  willic3
+
+	* [r1244] This obsolete routine has been replaced by
+	  update_state_drv and update_state_cmp, which rely on
+	  material-model-specific routines to update the state variables.
+	  This approach is more flexible, allowing arbitrary sets of state
+	  variables.
+
+2005-03-26 07:04  willic3
+
+	* [r1243] Revised linked list code to only allow one element type
+	  at a time. This simplifies bookkeeping, but is less flexible.
+
+2005-03-26 06:52  willic3
+
+	* [r1242] The output routines have been replaced with new
+	  versions. The lnklst routine is being replaced by a version that
+	  only allows one element type at a time (similar to the original
+	  version).
+
+2005-08-23 02:24  unknown_user
+
+	* [r1241] [vcp] delete of edited revision with dead state
+
+2005-03-26 06:50  willic3
+
+	* [r1240] These obsolete routines have been moved to 'unused'.
+	  They are superceded by the new routines write_state_drv.f and
+	  write_state_cmp.f.
+
+2005-03-26 06:32  willic3
+
+	* [r1239] Created a routine to transfer displacement array into
+	  displacement vector. This is to provide an initial guess for the
+	  displacement vector when requested.
+
+2005-03-26 05:57  willic3
+
+	* [r1238] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present.
+
+2005-03-26 04:34  willic3
+
+	* [r1237] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present.
+
+2005-03-25 09:36  willic3
+
+	* [r1236] Eliminated parameters that are no longer needed
+	  (ndmatsz, nconsz, and nstates0) and added nvfamilies. Also
+	  changed numelt to numelv.
+
+2005-03-25 09:30  willic3
+
+	* [r1235] Set maximum number of state variables to 24, rather than
+	  4. The previous method assumed that state variables always
+	  occurred in sets of 6.
+
+2005-03-25 09:19  willic3
+
+	* [r1234] Removed debugging comments.
+
+2005-03-25 07:38  willic3
+
+	* [r1233] Removed debugging comments. In the near future, this
+	  routine will no longer need the lm and lmx arrays, and will not
+	  have to do the slippery node bookkeeping.
+
+2005-03-24 10:08  willic3
+
+	* [r1232] Fixed bug in formation of material matrix. I had
+	  forgotten that I was using engineering strain. I need to
+	  determine whethe it is better this way or if I should switch
+	  over to tensor strain. If not, I will also need to make these
+	  same changes to mat_5.f. Also added new get_state_1 routine to
+	  transfer state variables into a local array.
+
+2005-03-24 07:30  willic3
+
+	* [r1231] Initial version of driver routine to write selected
+	  state variables to output files (ascii, plot, UCD).
+
+2005-03-24 03:58  willic3
+
+	* [r1230] Simple routine to name and open a UCD output file.
+
+2005-03-24 02:39  willic3
+
+	* [r1229] Include file containing external routine names for
+	  routines that populate a given array with state variables.
+
+2005-03-24 02:30  willic3
+
+	* [r1228] Simple routine to write the UCD header for state
+	  variable output.
+
+2005-03-24 02:23  willic3
+
+	* [r1227] Initial version of routine to write selected state
+	  variables to output files (ascii, plot, UCD).
+
+2005-03-24 01:16  willic3
+
+	* [r1226] Labels have been extended and modified to indicate
+	  whether they represent total, incremental, or rate values.
+
+2005-03-24 01:14  willic3
+
+	* [r1225] Additional change to make use of new label definitions.
+
+2005-03-24 00:55  willic3
+
+	* [r1224] Revised method of specifying which state variables to
+	  output. User now specifies 3 lines of state variables
+	  corresponding to total, incremental, and rate values. There is
+	  also now a new array (nstatout) that stores the number of each
+	  type to output.
+
+2005-03-23 10:51  willic3
+
+	* [r1223] Added update_state_1 routine to update state variables,
+	  and fixed call to dcopy in td_strs_1 so dstate (current stress
+	  estimate) is copied into scur rather than state (estimate for
+	  previous time step).
+
+2005-03-23 10:47  willic3
+
+	* [r1222] Incomplete version of driver routine to output state
+	  variables, looping over element families. This routine will
+	  replace both write_state and write_ucd_gauss_vals. I still need
+	  to determine if there is a need to output values at element
+	  centroids purely for visualization.
+
+2005-03-23 10:44  willic3
+
+	* [r1221] Incomplete version of routine to write selected state
+	  variables to output files (ascii, binary, UCD). The routine
+	  relies on a material-model-specific routine to populate a
+	  working array with state variables.
+
+2005-03-23 09:51  willic3
+
+	* [r1220] I had not sent the proper array info to the computation
+	  routine. I needed to fix things in this routine so the arrays
+	  corresponding to the first element in a family were used.
+
+2005-03-23 07:52  willic3
+
+	* [r1219] Updated routine to read output options for each state
+	  variable individually. Also, ascii output now gives state
+	  variable name rather than an integer.
+
+2005-03-23 07:27  willic3
+
+	* [r1218] Added include file with external names for routines that
+	  update state variables.
+
+2005-03-23 07:25  willic3
+
+	* [r1217] Updated dimensions of labels character array.
+
+2005-03-23 07:24  willic3
+
+	* [r1216] Updated state variable labels to reflect new output
+	  options.
+
+2005-03-23 06:23  willic3
+
+	* [r1215] This new routine is called by the update_state driver
+	  routine, and its only purpose is to receive the proper function
+	  pointer for the element family and then loop over the elements
+	  in that family (and the gauss points within each element),
+	  calling the proper function to update the state variables.
+	* [r1214] This new routine is the driver routine to update state
+	  variables at the end of a time step, and replaces the previous
+	  update_state routine. This routine loops over element families
+	  and calls a computation routine that in turn relies on an
+	  updating routine that is specific for each material model.
+
+2005-03-23 03:59  willic3
+
+	* [r1213] Temporarily fixed this so that material types correspond
+	  to element families. This will need to be modified in the future.
+
+2005-03-23 03:51  willic3
+
+	* [r1212] Updated routine to give number of volume elements. This
+	  will need to be updated to include other element types as they
+	  are implemented.
+
+2005-03-23 03:46  willic3
+
+	* [r1211] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present.
+
+2005-03-23 03:18  willic3
+
+	* [r1210] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present.
+
+2005-03-22 12:45  willic3
+
+	* [r1209] Updated all of these routines to be consistent with
+	  their calls from routine preshape. Changes include: All element
+	  dimension info is passed in rather than being computed.
+	  Dimensions are changed to match each element rather than having
+	  max possible dimensions. Only array sh is computed. The shj
+	  array is computed in preshape.
+
+2005-03-22 10:26  willic3
+
+	* [r1208] New python class to define characteristics for a given
+	  element type and integration order. The ElementTypeDef class
+	  provides: numberElementNodes numberElementGaussPoints
+	  numberElementEquations numberElementCoordinates Shape function
+	  array (includes derivatives) Shape function array used for
+	  Jacobians Gauss point array (coordinates and weights)
+
+2005-03-22 10:22  willic3
+
+	* [r1207] Revised version of preshape routine that now returns a
+	  set of gauss points and shape functions for a given element type
+	  rather than computing these for all possible element types.
+	  Infinite element options have been commented out for now, since
+	  they are broken, and the current setup also doesn't allow use of
+	  more than one element type at a time. This will need to be
+	  revised in the near future.
+
+2005-03-22 07:19  willic3
+
+	* [r1206] Updated routine to reflect revised method of tracking
+	  state variables.
+
+2005-03-22 07:05  willic3
+
+	* [r1205] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present.
+
+2005-03-22 06:35  willic3
+
+	* [r1204] Modified equation localization routines to account for
+	  only one element type being used at a time. Note that all of the
+	  element arrays that provide equation numbers will become
+	  obsolete once the new methods of doing kinematic BC are
+	  implemented. This means that these routines will no longer be
+	  needed.
+
+2005-03-22 06:13  willic3
+
+	* [r1203] Updated body force routines for using element families,
+	  leading to reduced indexing. At present, everything is set up so
+	  that an element family simply consists of a single material
+	  type, and it is no longer possible to mix elements. This means
+	  that there are no longer any arrays with final dimension
+	  netypes, and strides through all elements in a family are
+	  constant. It will probably not be too hard to add back in the
+	  option of mixing element types, but it is not a priority at
+	  present.
+
+2005-03-22 06:11  willic3
+
+	* [r1202] Updated calls to stress computation routines so argument
+	  lists match. Index for element-level arrays now uses global
+	  element number, and called routines are now responsible for
+	  updating this number.
+
+2005-03-22 04:11  willic3
+
+	* [r1201] Fixed dimension of ivfamily.
+
+2005-03-22 03:48  willic3
+
+	* [r1200] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present. Note that this
+	  routine is still not sufficiently general, as it assumes that
+	  the initial state variables are always stresses.
+
+2005-03-22 03:31  willic3
+
+	* [r1199] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present. Note that this
+	  routine will become obsolete once the new method of dealing with
+	  kinematic BC is implemented.
+
+2005-03-22 03:30  willic3
+
+	* [r1198] Removed definition of matmodel, which isn't needed in
+	  this routine.
+
+2005-03-22 03:12  willic3
+
+	* [r1197] Updated this routine for using element families, leading
+	  to reduced indexing. At present, everything is set up so that an
+	  element family simply consists of a single material type, and it
+	  is no longer possible to mix elements. This means that there are
+	  no longer any arrays with final dimension netypes, and strides
+	  through all elements in a family are constant. It will probably
+	  not be too hard to add back in the option of mixing element
+	  types, but it is not a priority at present. Note that this
+	  routine will become obsolete once the new method of dealing with
+	  kinematic BC is implemented.
+
+2005-03-19 09:57  willic3
+
+	* [r1196] Incomplete modified versions of scanning and setup
+	  routines for lithomop, as an initial attempt at modifying how
+	  indexing is done, as well as trying to do a better job of
+	  separating different tasks. These codes need much more
+	  modification, and need to be consistent with f77 routines and
+	  with each other.
+
+2005-03-19 09:53  willic3
+
+	* [r1195] Incomplete new version of routine to scan element node
+	  list. This needs to be made consistent with the python calls,
+	  and I should probably only define dimensions in this routine, as
+	  opposed to populating any arrays.
+
+2005-03-19 09:49  willic3
+
+	* [r1194] Updated all these routines for using element families,
+	  leading to reduced indexing. At present, everything is set up so
+	  that an element family simply consists of a single material
+	  type, and it is no longer possible to mix elements. This means
+	  that there are no longer any arrays with final dimension
+	  netypes, and strides through all elements in a family are
+	  constant. It will probably not be too hard to add back in the
+	  option of mixing element types, but it is not a priority at
+	  present.
+
+2005-03-19 09:43  willic3
+
+	* [r1193] Added PETSc and MPI include paths for makefile used to
+	  check routine internal consistency.
+
+2005-03-19 06:59  willic3
+
+	* [r1192] This obsolete routine has been moved to the 'unused'
+	  directory.
+
+2005-08-23 02:23  unknown_user
+
+	* [r1191] [vcp] delete of edited revision with dead state
+
+2005-03-19 06:58  willic3
+
+	* [r1190] Removed this routine, which was used to create a full
+	  array from a compacted version of a symmetric array. For
+	  multiplications using this type of array, the BLAS routine dspmv
+	  may be used.
+
+2005-03-18 02:39  willic3
+
+	* [r1189] Set p = NULL in the deconstructor, as advised by Brad.
+	  This is just an additional precaution to make sure the pointer
+	  doesn't point to anything once it is deallocated.
+
+2005-03-18 02:38  willic3
+
+	* [r1188] This version now has some commented out debugging
+	  statements.
+
+2005-03-12 10:05  willic3
+
+	* [r1187] This routine has been altered to separate input from
+	  equation numbering. This means that the call to read_bc has been
+	  altered, the call to adjid has been removed, and all numbering
+	  is now done in new routine create_id. Also, the call to
+	  read_wink has been moved below that to create_id, since the
+	  equation numbers are needed here.
+
+2005-03-12 10:03  willic3
+
+	* [r1186] Bindings have been updated to reflect the removal of
+	  adjid, the addition of create_id, and the alteration of read_bc.
+	  Also, all index-related routines have been broken out into a new
+	  set of bindings (numbering.cc and numbering.h) and removed from
+	  input_misc.
+
+2005-03-12 09:59  willic3
+
+	* [r1185] All portions of read_bc related to creating global
+	  equation numbers have been removed and moved into create_id.f.
+	  The create_id routine also adds the extra equations created by
+	  slippery nodes.
+
+2005-03-12 09:57  willic3
+
+	* [r1184] Removed adjid.f from the build list and added
+	  create_id.f.
+
+2005-08-23 02:23  unknown_user
+
+	* [r1183] [vcp] delete of edited revision with dead state
+
+2005-03-12 09:57  willic3
+
+	* [r1182] This routine has been removed and its functionality is
+	  now included in create_id.
+
+2005-03-12 07:55  willic3
+
+	* [r1181] Added deallocation function to TODO list.
+
+2005-03-12 05:59  willic3
+
+	* [r1180] Updated TODO list, primarily high-priority items to aid
+	  use of PETSc.
+
+2005-08-23 02:23  unknown_user
+
+	* [r1179] [vcp] delete of edited revision with dead state
+
+2005-03-11 12:07  knepley
+
+	* [r1178] Removed alnz and ja everywhere Added the .F files I
+	  forgot to add before
+
+2005-08-23 02:22  unknown_user
+
+	* [r1177] [vcp] delete of edited revision with dead state
+
+2005-03-11 11:20  knepley
+
+	* [r1176] Now put values directly in the PETSc matrix
+
+2005-03-11 10:51  willic3
+
+	* [r1175] Added -typos=relaxed so command-line arguments do not
+	  need to be in inventory.
+
+2005-03-11 10:40  willic3
+
+	* [r1174] Added a new F77EXTERNS option that fixed a Mac-specific
+	  problem with f77 name mangling. This was done because of
+	  incompatibilities with PETSC/MPICH, and to make things work
+	  correctly, the following files were also changed:
+	  config/compiler/gcc-3.x-Darwin/config_f77.h: added
+	  F77EXTERNS_SOMETIMES_EXTRATRAILINGBAR
+	  config/compiler/gcc-3.x-Darwin/f77.def: removed
+	  -fno-second-underscore from COMPILER_F77_FLAGS
+
+2005-03-11 10:30  willic3
+
+	* [r1173] Changes app.main() to app.run().
+
+2005-03-11 10:17  willic3
+
+	* [r1172] Added call to lm3dscan.preinitialize.
+
+2005-03-11 10:16  willic3
+
+	* [r1171] Updated inventory for pythia-0.8 and also changed name
+	  of _init function to preinitialize, which conflicted with new
+	  pyre.
+
+2005-03-11 10:15  willic3
+
+	* [r1170] Updated for pythia-0.8, and commented out petsc-specific
+	  inventory.
+
+2005-03-10 09:10  knepley
+
+	* [r1169] Now allocate PETSc matrix separately Allocate PETSc
+	  storage when ja() is made - Use an option to flag new nonzeros
+
+2005-03-10 01:46  knepley
+
+	* [r1168] Made PETSc tag
+
+2005-03-09 08:43  willic3
+
+	* [r1167] Revised (but incomplete and somewhat out-of-date) UML
+	  diagram describing an element family.
+
+2005-03-08 11:04  knepley
+
+	* [r1166] Added PETSc preallocation
+
+2005-08-23 02:20  unknown_user
+
+	* [r1165] [vcp] delete of edited revision with dead state
+
+2005-03-08 10:14  knepley
+
+	* [r1164] Moved some files to .F for preprocessing Added some
+	  PETSc options to lithomop3d application Added PETSc
+	  initialize/finalize Added PETSc logging to the setup and run
+	  phases
+
+2005-03-01 04:48  willic3
+
+	* [r1163] Tentative template for a f77 include file that defines
+	  the global dimensions for element family interpolation. Note
+	  that I am not yet convinced that this method of defining a
+	  separate interpolation family for each possible interpolation
+	  order is really the way to go.
+
+2005-03-01 04:46  willic3
+
+	* [r1162] Tentative template for a f77 include file that defines
+	  the array values for element family interpolation. Note that I
+	  am not yet convinced that this method of defining a separate
+	  interpolation family for each possible interpolation order is
+	  really the way to go.
+
+2005-03-01 03:44  willic3
+
+	* [r1161] New top-level TODO list.
+
+2005-02-24 08:56  willic3
+
+	* [r1159] Files needed to run a number of tests for implementation
+	  of initial stresses.
+
+2005-02-24 08:52  willic3
+
+	* [r1157] Files to run a number of tests for initial stress
+	  implementation.
+
+2005-02-24 08:41  willic3
+
+	* [r1155] Updated all bindings to reflect revised argument lists
+	  for both python calls and f77 subroutine definitions.
+
+2005-02-24 08:38  willic3
+
+	* [r1153] Numerous changes related to the elimination of the
+	  bprestress array and the usage of the state0 array. Several
+	  parameter and argument lists have been altered, new arrays have
+	  been created, and the autoprestr function is now fully
+	  implemented.
+
+2005-02-24 08:32  willic3
+
+	* [r1151] Updated parameter list to include tpois and tyoungs, and
+	  eliminated usage of autofac scaling factor for autoprestress
+	  Young's modulus.
+
+2005-02-24 08:30  willic3
+
+	* [r1149] Updated parameter list to include ipauto, nstatesz0, and
+	  nstate0.
+
+2005-02-24 08:26  willic3
+
+	* [r1147] Increased leading dimension of infiel array to 7 to
+	  account for indexing of state0 array.
+
+2005-02-24 08:25  willic3
+
+	* [r1145] Increased leading dimension of infiel array to 7 to
+	  account for indexing of state0 array.
+
+2005-02-24 08:24  willic3
+
+	* [r1143] Updated routine to output new information on automatic
+	  computation of initial stresses.
+
+2005-02-24 08:23  willic3
+
+	* [r1141] Added usage of state0 and associated variables, and
+	  eliminated usage of bprestress array. Fixed bug that caused
+	  stiffness matrix to be reformed too frequently.
+
+2005-02-24 08:22  willic3
+
+	* [r1139] Increased leading dimension of infiel array to 7 to
+	  account for indexing of state0 array.
+
+2005-02-24 08:21  willic3
+
+	* [r1137] Numerous changes to reflect usage of state0 array and
+	  related variables.
+
+2005-02-24 08:20  willic3
+
+	* [r1135] Numerous changes to reflect usage of state0 array and
+	  related variables.
+
+2005-02-24 08:19  willic3
+
+	* [r1133] Numerous changes to reflect usage of state0 array and
+	  related variables.
+
+2005-02-24 08:17  willic3
+
+	* [r1131] Modified routine to compute total number of Gauss
+	  points, and the size and indices for the state0 array.
+
+2005-02-24 08:16  willic3
+
+	* [r1129] Numerous changes to reflect usage of state0 array and
+	  related variables.
+
+2005-02-24 08:15  willic3
+
+	* [r1127] Numerous changes to reflect usage of state0 and
+	  associated variables.
+
+2005-02-24 08:14  willic3
+
+	* [r1125] Numerous changes to use and compute initial stresses to
+	  be stored in state0 array. Updating of elastic and
+	  time-dependent stresses has been changed to reflect initial
+	  stresses, and the prestress computation routine has been altered
+	  to make use of user-specified initial values for Poisson's ratio
+	  and Young's modulus, if desired. A new formulation, based on an
+	  effective stress function formulation, has been employed for
+	  stress computation and tangent stress-strain matrix computation.
+	  The stress computation takes initial stresses into account.
+
+2005-02-24 08:07  willic3
+
+	* [r1123] Numerous changes to use and compute initial stresses to
+	  be stored in state0 array. Updating of elastic and
+	  time-dependent stresses has been changed to reflect initial
+	  stresses, and the prestress computation routine has been altered
+	  to make use of user-specified initial values for Poisson's ratio
+	  and Young's modulus, if desired.
+
+2005-02-24 08:03  willic3
+
+	* [r1121] Increased leading dimension of infiel array to 7 to
+	  account for indexing of state0 array.
+
+2005-02-24 08:02  willic3
+
+	* [r1119] Numerous changes to account for usage of state0 array
+	  and elimination of bprestress array.
+
+2005-02-24 08:00  willic3
+
+	* [r1117] Increased leading dimension of infiel array to 7 to
+	  account for indexing of state0 array.
+	* [r1115] Fixed dimensioning of error string. More debugging may
+	  still be needed on the return of error strings.
+
+2005-02-24 07:58  willic3
+
+	* [r1113] Increased leading dimension of infiel array to 7 to
+	  account for indexing of state0 array.
+
+2005-02-24 07:57  willic3
+
+	* [r1111] Increased leading dimension of infiel array to 7 to
+	  account for indexing of state0 array.
+
+2005-02-24 07:56  willic3
+
+	* [r1109] Added usage of state0 and associated variables, and
+	  eliminated usage of bprestress array.
+
+2005-02-24 07:54  willic3
+
+	* [r1107] Added usage of state0 array.
+
+2005-02-24 07:53  willic3
+
+	* [r1105] Eliminated bprestress array and now use state0 array for
+	  initial stresses.
+
+2005-02-24 07:52  willic3
+
+	* [r1103] Increased leading dimension of infiel array to 7, to
+	  account for new indexing of state0 array.
+
+2005-02-24 07:50  willic3
+
+	* [r1101] Eliminated usage of bprestress array, as initial stress
+	  information is now carried in the state0 array.
+	* [r1099] Numerous changes involving elimination of bprestress
+	  array and use of state0 array to hold initial stresses. Fixed
+	  argument lists and added call to get_initial_stress.
+
+2005-02-24 07:48  willic3
+
+	* [r1097] Modified makefile to include get_initial_stress routine.
+
+2005-02-24 07:47  willic3
+
+	* [r1095] Initial version of a routine to copy initial stresses
+	  from the state array into the initial stress array after
+	  automatic precomputation.
+
+2005-02-03 04:26  willic3
+
+	* [r1093] Rough idea of what is needed to describe a volume
+	  element interpolation family. This needs to be tidied up, and
+	  the equivalent information for other interpolation families
+	  needs to be defined.
+
+2005-02-02 07:38  willic3
+
+	* [r1092] Put in conditions to create tractionFlag.
+
+2005-01-26 23:35  willic3
+
+	* [r1091] Fixed incorrect argument list to include prestress
+	  external routines.
+
+2005-01-20 04:38  willic3
+
+	* [r1090] Altered routine to pass iprestress flag to
+	  write_ucd_node_vals and write_ucd_gauss_vals.
+
+2005-01-20 04:37  willic3
+
+	* [r1089] Altered routine to pass iprestress flag to
+	  write_ucd_node_vals and write_ucd_gauss_vals.
+
+2005-01-20 04:35  willic3
+
+	* [r1088] Altered routine to pass iprestress flag to
+	  write_ucd_node_vals and write_ucd_gauss_vals.
+
+2005-01-20 04:34  willic3
+
+	* [r1087] Altered routine to output a special file name for
+	  prestress computation. This may later be eliminated as a
+	  debugging feature.
+
+2005-01-20 04:28  willic3
+
+	* [r1085] Altered routine to output a special file name for
+	  prestress computation. This may later be eliminated as a
+	  debugging feature.
+
+2005-01-20 04:08  willic3
+
+	* [r1084] Modified Make.mm to work with new std-fortran.def file
+	  and unmodified std-builds.def file. Creating the shared object
+	  (f77 objects plus BLAS) is much simpler, as almost everything is
+	  now added via PROJ_LCXX_FLAGS.
+
+2005-01-20 04:06  willic3
+
+	* [r1082] Updated local.def for new std-fortran.def. Modified
+	  std-builds.def is no longer needed. This version works, but is
+	  not necessarily correct. The main question at present is where
+	  MATH_LIBS should be added. At present, they are appended to
+	  PROJ_LCXX_FLAGS (along with LCXX_FORTRAN).
+
+2005-01-19 06:26  willic3
+
+	* [r1080] Added autoprestr to build list.
+
+2005-01-19 04:43  willic3
+
+	* [r1079] Added definition for autoprestr_f.
+
+2005-01-19 04:35  willic3
+
+	* [r1078] Updated routine to use iprestress parameter.
+
+2005-01-19 04:32  willic3
+
+	* [r1077] Updated routine to use iprestress parameter.
+
+2005-01-19 04:29  willic3
+
+	* [r1076] Added usage of iprestress parameter.
+
+2005-01-19 04:09  willic3
+
+	* [r1074] Bindings for autoprestr routine.
+
+2005-01-19 04:07  willic3
+
+	* [r1073] Bindings for autoprestr routine.
+
+2005-01-19 04:01  willic3
+
+	* [r1071] Added autoprestr to bindings.
+
+2005-01-19 03:40  willic3
+
+	* [r1069] Added prestress material matrix computation routine.
+
+2005-01-19 03:39  willic3
+
+	* [r1067] Added prestress material matrix computation routine.
+
+2005-01-19 03:37  willic3
+
+	* [r1065] Added prestress material matrix computation routine.
+
+2005-01-19 03:35  willic3
+
+	* [r1063] Added prestress material matrix computation routine.
+
+2005-01-19 03:32  willic3
+
+	* [r1062] Added missing parameter definitions and removed unused
+	  variables.
+
+2005-01-19 03:30  willic3
+
+	* [r1061] Added new routine to compute material matrix for
+	  prestress computation.
+
+2005-01-19 01:55  willic3
+
+	* [r1060] Added usage of iprestress variable, which is set to 1
+	  when computing prestresses. Simplified criterion for updating
+	  stress/body force BC. Removed commented-out code that is no
+	  longer needed.
+
+2005-01-19 01:51  willic3
+
+	* [r1059] Reverted to calls to elas_strs_mat_cmp_xx, since a
+	  separate computation routine for prestresses isn't needed
+	  (elastic material matrix remains unchanged once initialized).
+	  Once large deformation is put back in, I may need to rethink
+	  this.
+
+2005-01-18 06:14  willic3
+
+	* [r1058] Material matrix initialization computation routine for
+	  auto-computation of prestresses.
+
+2005-01-18 06:05  willic3
+
+	* [r1057] Updated driver routine to pass through the names of the
+	  external prestress auto-computation routines.
+
+2005-01-18 05:29  willic3
+
+	* [r1055] New header that lists external routine names to
+	  initialize the material matrix for prestress computation.
+
+2005-01-18 05:23  willic3
+
+	* [r1054] New driver routine to autocompute gravitational
+	  prestresses. This will soon be replaced with a python equivalent.
+
+2005-01-18 05:20  willic3
+
+	* [r1052] Updated include path for test makefile to reflect
+	  current environmental variables.
+
+2005-01-18 04:43  willic3
+
+	* [r1051] Changed definition of factor used to autocompute
+	  prestresses.
+
+2005-01-18 04:42  willic3
+
+	* [r1050] Changed definition of factor used to autocompute
+	  prestresses.
+
+2005-01-07 04:10  willic3
+
+	* [r1049] Fixed duplicate assignment of Bwork vector.
+
+2005-01-07 03:54  willic3
+
+	* [r1048] Corrected initial pointer for Dprev and moved it to the
+	  PCG/sparse section, even though it is likely to become obsolete
+	  soon.
+
+2005-01-07 03:44  willic3
+
+	* [r1046] Altered keyword = value files to surround all strings
+	  with quotes.
+
+2005-01-07 03:43  willic3
+
+	* [r1044] Altered keyword = value files to surround all strings
+	  with quotes.
+
+2005-01-07 00:48  willic3
+
+	* [r1042] Altered keyword = value file to surround all strings
+	  with quotes.
+
+2005-01-07 00:46  willic3
+
+	* [r1040] Input and make files for simple test of gravity (SCEC BM
+	  2).
+
+2005-01-07 00:38  willic3
+
+	* [r1038] Altered keyword = value file to surround all strings
+	  with quotes.
+
+2005-01-07 00:35  willic3
+
+	* [r1036] Altered keyword = value file to surround all strings
+	  with quotes.
+
+2005-01-07 00:33  willic3
+
+	* [r1034] Input and make files for simple test of gravity (SCEC BM
+	  2).
+
+2005-01-07 00:26  willic3
+
+	* [r1033] Added new argument to read_bc_f (numberConcForces).
+
+2005-01-07 00:25  willic3
+
+	* [r1032] Updated arguments lists for new force and PCG vectors,
+	  as well as new flag lists and argument for read_bc.
+
+2005-01-07 00:23  willic3
+
+	* [r1031] Updated bindings for new force and PCG solution vectors.
+
+2005-01-07 00:17  willic3
+
+	* [r1030] Updated bindings for new force and PCG vectors.
+
+2005-01-07 00:06  willic3
+
+	* [r1028] Created an information file to explain the setup of
+	  force and solution vectors in the revised version of the code,
+	  in anticipation of replacing subroutine pcginv (and related
+	  routines) with PETSc routine(s).
+
+2005-01-06 10:04  willic3
+
+	* [r1026] Updated routine for new parsing method.
+
+2005-01-06 09:58  willic3
+
+	* [r1025] Updated routine for new force and PCG vectors and to
+	  handle new parsing method.
+
+2005-01-06 09:51  willic3
+
+	* [r1024] Updated routine for new force and PCG vectors, including
+	  Nforce list.
+
+2005-01-06 09:45  willic3
+
+	* [r1022] Updated routine to return both dimensional and
+	  non-dimensional values.
+
+2005-01-06 09:40  willic3
+
+	* [r1021] Altered keyword = value parsing to pass along
+	  dimensional quantities rather than their values.
+
+2005-08-23 02:15  unknown_user
+
+	* [r1020] [vcp] delete of edited revision with dead state
+
+2005-01-06 09:23  willic3
+
+	* [r1019] These obsolete routines have been moved to 'unused'.
+
+2005-01-06 09:22  willic3
+
+	* [r1017] Moved obsolete routines to 'unused'.
+
+2005-01-06 09:21  willic3
+
+	* [r1015] New includes to define force flags.
+
+2005-01-06 09:19  willic3
+
+	* [r1013] Updated routine for new force vectors. Routine is much
+	  simpler since only the concentrated force vector is needed to
+	  represent nodal loads.
+
+2005-01-06 09:15  willic3
+
+	* [r1011] Altered routine to return an argument with the number of
+	  concentrated force entries.
+
+2005-01-06 06:48  willic3
+
+	* [r1009] Updated routine for new force vectors. Routine is much
+	  simpler since only the concentrated force vector is needed to
+	  represent nodal loads.
+
+2005-01-06 06:46  willic3
+
+	* [r1008] Updated routine for new force vectors. Split node
+	  displacement contributions are explicitly included in the
+	  internal force vector (at the beginning of a step).
+
+2005-01-06 06:44  willic3
+
+	* [r1007] Updated routine for new force vectors. The old confusing
+	  way of updating the load vector for large deformation problems
+	  is no longer necessary.
+
+2005-01-06 06:37  willic3
+
+	* [r1006] Updated routine for new force vectors.
+
+2005-01-06 06:35  willic3
+
+	* [r1004] Altered routine so forces are added to the internal
+	  force vector. This changes the sign of the forces.
+
+2005-01-06 06:33  willic3
+
+	* [r1002] Updated routine to use new force vectors.
+
+2005-01-06 06:32  willic3
+
+	* [r1001] Updated routine to use new force and PCG vectors.
+	  Altered some initialization of vectors at the beginning of a
+	  step. Nodal loads are added to the concentrated force vector
+	  rather than the global load vector, making it easier to separate
+	  out contributions. Winkler forces are no longer recomputed
+	  (routine unlock) when a spring is locked or unlocked, since the
+	  new method of putting these forces into the internal force
+	  vector should make this unnecessary (this has not yet been
+	  tested).
+
+2005-01-06 06:26  willic3
+
+	* [r999] Updated routine to use new force and PCG vectors. Current
+	  method of dealing with reused solution vector is incorrect, but
+	  this routine will soon be replaced by a PETSc routine anyway.
+
+2005-01-06 06:23  willic3
+
+	* [r998] New routine that completely reforms external force vector
+	  at each iteration, then computes residual.
+
+2005-01-06 06:22  willic3
+
+	* [r997] Altered routine to use new force and PCG solution
+	  vectors. Fixed incorrect solution option to use previous PCG
+	  solution as initial guess. Other changes: bsum is now used
+	  instead of bdiff. Winkler forces are now added to internal force
+	  vector. External force vector is completely reformed during each
+	  iteration. Internal force vector uses stresses from previous
+	  step for first iteration, augmented by forces from kinematic BC.
+	  For additional iterations, internal force vector corresponds to
+	  current stresses.
+
+2005-01-06 06:13  willic3
+
+	* [r996] Changed routine and calls for new force vectors and PCG
+	  solution vectors.
+
+2005-01-06 06:10  willic3
+
+	* [r995] Updated routine for new force vectors. Altered and
+	  commented out debugging statements.
+
+2005-01-06 06:08  willic3
+
+	* [r994] Added build option for testing configuration. Deleted
+	  bdiff.f source and replaced it with new bsum.f routine. Deleted
+	  unlock.f from sources since it is not needed with the new method
+	  of handling Winkler forces.
+
+2004-11-02 04:42  willic3
+
+	* [r992] Fixed incorrect version number to correspond to new
+	  version scheme.
+
+2004-11-02 00:21  willic3
+
+	* [r990] Partial initial UML class diagram for new lithomop
+	  structure.
+
+2004-10-22 02:48  willic3
+
+	* [r988] Image of what a simple 2-node split-node element might
+	  look like for the case of a split fault.
+
+2004-10-14 03:08  willic3
+
+	* [r986] Some ideas on implementing a split-node element.
+
+2004-10-11 22:50  willic3
+
+	* [r984] Very rough template for creation of a Mesh object. At
+	  present, this just contains some __init__ definitions.
+
+2004-10-08 22:45  willic3
+
+	* [r982] Initial description of proposed mesh object, along with a
+	  description of how elements are presently implemented in f77.
+
+2004-09-27 22:57  willic3
+
+	* [r980] Pasted in a bunch of recent e-mails to myself. This list
+	  will need to be thoroughly edited in the near future.
+
+2004-09-24 00:39  willic3
+
+	* [r978] Initial versions of code to use SimulationController.
+
+2004-09-24 00:38  willic3
+
+	* [r976] Initial versions of codes to use SimulationController.
+
+2004-09-24 00:37  willic3
+
+	* [r974] Initial versions of files to use SimulationController.
+
+2004-09-01 02:14  willic3
+
+	* [r973] Fixed stupid indexing problem with connectivity array.
+
+2004-09-01 02:13  willic3
+
+	* [r972] Commented out debugging statements.
+
+2004-09-01 01:58  willic3
+
+	* [r971] Fixed dimension of istatout array.
+
+2004-08-29 22:51  willic3
+
+	* [r969] Removed debugging statements.
+
+2004-08-27 23:25  willic3
+
+	* [r968] Added computation of Winkler BC based on assumed density
+	  and g for simulation of gravity along specified surfaces.
+
+2004-08-27 08:29  willic3
+
+	* [r967] Revised code to use boundary condition codes to define
+	  boundaries rather than mesh extrema.
+
+2004-08-27 01:48  willic3
+
+	* [r966] Changed cell types written to UCD file to conform to AVS
+	  definitions, as far as possible (wricks do not correspond to any
+	  AVS cell type). Quadratic element cell types are no longer
+	  preceded by a 'q'. Output order of cell vertices has been
+	  scrambled to correspond to AVS documentation, including midside
+	  nodes. At present, it is unknown whether AVS (or other codes
+	  that read UCD format) will automatically recognize midside nodes.
+
+2004-08-27 01:10  willic3
+
+	* [r965] Added neemax*neemax to total for iwork to prevent
+	  erroneous 'not enough memory' message.
+
+2004-08-26 04:00  willic3
+
+	* [r963] Added new lt2qt utility.
+	* [r961] New utility to generate a quadratic tet mesh from a
+	  linear tet mesh by inserting new nodes.
+
+2004-08-26 03:58  willic3
+
+	* [r959] The old files related to the potentially bad mesh have
+	  been retained to see what the problem might be. First guess is
+	  duplicate nodes.
+
+2004-08-26 03:57  willic3
+
+	* [r957] These files have been generated using the new lt2qt
+	  utility to create a quadratic tetrahedral mesh from the linear
+	  tetrahedral mesh in examples/lintet/bm1a. It appears that the
+	  problems with the quadratic tets may have been due to a bad mesh
+	  rather than a problem with the code. The new mesh gives results
+	  consistent with those of the other element types.
+
+2004-08-26 00:04  willic3
+
+	* [r955] Updated state variable output definitions.
+
+2004-08-26 00:03  willic3
+
+	* [r953] Updated files for new state variable setup and to remove
+	  UCD files before a run.
+
+2004-08-26 00:02  willic3
+
+	* [r951] Updated state variable output definitions.
+
+2004-08-26 00:01  willic3
+
+	* [r949] Updated files for new state variable setup and to remove
+	  UCD files before a run.
+
+2004-08-25 23:59  willic3
+
+	* [r947] Updated state variable output definitions.
+
+2004-08-25 23:58  willic3
+
+	* [r945] Updated files for new state variable setup and to remove
+	  UCD files before a run.
+
+2004-08-25 23:56  willic3
+
+	* [r944] Added Make.mm for SCEC BM 1 at 1 km resolution.
+
+2004-08-25 23:52  willic3
+
+	* [r943] Removed additional line used to define state variable
+	  output for time-dependent solution. The same information is now
+	  used for both elastic and time-dependent solutions.
+
+2004-08-25 23:47  willic3
+
+	* [r941] Removed additional line used to define state variable
+	  output for time-dependent solution. The same information is now
+	  used for both elastic and time-dependent solutions.
+
+2004-08-25 08:58  willic3
+
+	* [r939] Removed additional line used to define state variable
+	  output for time-dependent solution. The same information is now
+	  used for both elastic and time-dependent solutions.
+
+2004-08-25 08:57  willic3
+
+	* [r937] Updated 'clean' action to remove UCD files.
+
+2004-08-25 08:55  willic3
+
+	* [r936] Changed routine to use new plot output options and set
+	  appropriate integer variable. Updated routine for UCD output,
+	  including setting integer variable, usage of write_ucd_mesh
+	  routine, and passing appropriate variables. Updated routine to
+	  use cmp_stiffsz routine, rather than the simple estimate of
+	  working array size used previously. Included more information
+	  about sparse matrix sent to stdout.
+
+2004-08-25 08:50  willic3
+
+	* [r935] Added to variables and inventory for usage of UCD files.
+	  Updated routine for new plot output options (including none).
+	  Changed default ascii output option to 'echo'.
+
+2004-08-25 08:47  willic3
+
+	* [r934] Updated routine to use ucdOutputRoot.
+
+2004-08-25 08:41  willic3
+
+	* [r933] Added entries for cmp_stiffsz and write_ucd_mesh, and
+	  updated entries for elastc and viscos.
+
+2004-08-25 08:37  willic3
+
+	* [r931] Added bindings for cmp_stiffsz and fixed bindings for
+	  lnklst.
+
+2004-08-25 08:35  willic3
+
+	* [r929] Added bindings for write_ucd_mesh.
+
+2004-08-25 08:34  willic3
+
+	* [r928] Updated bindings to include ucdOutputRoot (string).
+
+2004-08-25 08:33  willic3
+
+	* [r927] Added entries for cmp_stiffsz and write_ucd_mesh.
+
+2004-08-25 08:31  willic3
+
+	* [r925] Added kucd to units list.
+
+2004-08-25 08:29  willic3
+
+	* [r924] Updated routines to use kucd and ucdroot variables.
+
+2004-08-25 08:22  willic3
+
+	* [r923] Updated routine to use ucdroot and kucd variables and
+	  fixed indexing of stmp array.
+
+2004-08-25 08:14  willic3
+
+	* [r921] Updated routine to use new idsk options (including no
+	  plot output).
+
+2004-08-25 08:12  willic3
+
+	* [r919] Updated routines to use new idsk options (including no
+	  plot output).
+
+2004-08-25 07:59  willic3
+
+	* [r918] Updated routines to use new UCD output routines, and also
+	  updated to use new idsk options.
+
+2004-08-25 07:06  willic3
+
+	* [r917] Added entries for the new routine to estimate the
+	  stiffness matrix size, as well as 3 routines used for writing
+	  AVS ACD output.
+
+2004-08-25 07:05  willic3
+
+	* [r916] Quick and dirty routine to compute maximum number of
+	  nonzero entries in the stiffness matrix. The routine does not
+	  take into account multiple elements that access the same
+	  entries, and therefore generally overestimates the value, which
+	  is used as the size of two integer working arrays used to
+	  generate the stiffness matrix structure.
+
+2004-08-25 01:36  willic3
+
+	* [r914] Added 'iucd' to list of print parameters.
+
+2004-08-25 01:30  willic3
+
+	* [r913] This is a renamed version of write_ucdmesh.f. The routine
+	  has also been updated for the new usage of the idsk parameter (0
+	  = no output, 1 = ascii output, and 2 = binary output).
+
+2005-08-23 02:13  unknown_user
+
+	* [r912] [vcp] delete of edited revision with dead state
+
+2004-08-25 01:28  willic3
+
+	* [r911] This routine has been renamed 'write_ucd_mesh' to be more
+	  consistent with other routine names.
+
+2004-08-24 23:48  willic3
+
+	* [r910] Fixed dimension of istatout array.
+
+2004-08-24 23:45  willic3
+
+	* [r909] Eliminated last dimension of istatout array that
+	  specified different state variable output options for the
+	  elastic and time-dependent solutions. Now the same variables are
+	  output for both solutions. This will probably avoid problems
+	  with postprocessors that will likely expect the same format of
+	  output for each time step.
+
+2004-08-24 23:37  willic3
+
+	* [r908] Initial version of routine to write state variables to
+	  UCD file at each time step.
+
+2004-08-24 02:47  willic3
+
+	* [r907] Initial version of routine to write nodal displacements
+	  to a UCD- formatted file. Routine should use a variable such as
+	  idispout to determine which nodal values to output, and it
+	  should probably have the ability to output element (cell-based)
+	  data.
+
+2004-08-24 01:48  willic3
+
+	* [r906] Initial version of a routine to write UCD mesh
+	  information, primarily motivated by the needs of the SCEC
+	  modeling group. This routine creates two files: 1. A regular UCD
+	  file containing header, coordinates, and connectivities. This
+	  file is written before the solution is computed, so there are no
+	  displacements or element values, although the header indicates
+	  that there should be 3 nodal values per node. The nodal values
+	  (displacements) are written to a separate file for each time
+	  step by the routine write_ucd_node_vals. 3. Another UCD file
+	  that outputs only the coordinates of the mesh Gauss points,
+	  treating them as if they were nodes. No connectivities are
+	  written. The header indicates the number of values to be written
+	  per "node", which is determined by the entries in istatout. The
+	  actual values (stresses/strains) are written to a separate file
+	  for each time step by the routines write_ucd_gauss_vals.
+
+2005-08-23 02:13  unknown_user
+
+	* [r905] [vcp] delete of edited revision with dead state
+
+2004-08-24 01:14  willic3
+
+	* [r904] This file has been removed, since its only purpose was to
+	  define math libraries, which are not needed at the module level.
+
+2004-08-19 04:07  willic3
+
+	* [r903] Commented out statement to include local.def, since math
+	  libraries do not need to be linked at the module level.
+
+2004-08-19 04:05  willic3
+
+	* [r902] Added PROJ_LIBRARIES to linked libraries.
+	* [r901] Added MATH_LIBS to PROJ_LIBRARIES so BLAS/LAPACK are
+	  linked to f77 library.
+
+2004-08-17 11:15  willic3
+
+	* [r900] Created makefiles to clean directory of output files and
+	  run SCEC BM 1.
+
+2004-08-17 10:27  willic3
+
+	* [r899] Modified make to include libg2c.
+
+2004-08-17 10:26  willic3
+
+	* [r898] Modified file so that libg2c is linked.
+
+2004-08-17 00:35  willic3
+
+	* [r897] Added make statements for readnetgen.
+
+2004-08-17 00:34  willic3
+
+	* [r896] Utility code similar to readucd to translate netgen
+	  neutral format to lithomop format.
+
+2004-08-17 00:33  willic3
+
+	* [r894] Fixed split node output format.
+
+2004-08-14 22:37  willic3
+
+	* [r893] Fixed problem where unused arrays for traction BC (not
+	  yet implemented) were causing an error message at the end of
+	  program execution. Arrays are now allocated with dimensions of
+	  zero (numberTractionBc), which solves the problem.
+
+2004-08-13 23:42  willic3
+
+	* [r891] Fixed precomputation of shape functions for quadratic
+	  'wrick'.
+
+2004-08-13 09:36  willic3
+
+	* [r889] Ugly fix to force lithomop3dapp.py to be copied to
+	  $EXPORT_ROOT/bin, rather than creating a symbolic link.
+
+2004-08-13 06:38  willic3
+
+	* [r887] Increased maximum size of error string.
+
+2004-08-13 06:34  willic3
+
+	* [r885] Some simple standalone utilities to go along with the
+	  lithomop package. Note: ucd3d has not been update for lithomop.
+	  It was written for the old standalone version of TECTON and will
+	  need to be updated.
+
+2004-08-13 06:31  willic3
+
+	* [r883] Added files and scripts to run patch tests for quadratic
+	  tets. Note: There is still a problem with the quadratic tets.
+
+2004-08-13 06:30  willic3
+
+	* [r881] Added files for SCEC BM 1 at 1 km resolution using
+	  quadratic tets. Note: There is still a bug with the quadratic
+	  tets -- the code runs, but the solution is wrong.
+
+2004-08-13 06:04  willic3
+
+	* [r879] Added files and scripts to perform patch tests for
+	  quadratic hexes.
+
+2004-08-13 06:03  willic3
+
+	* [r877] Added files to describe SCEC BM 1 at 1 km resolution
+	  using quadratic hexahedral elements.
+
+2004-08-13 05:53  willic3
+
+	* [r875] Temporarily fixed these routines to not show up as bugs.
+	  Neither routine is operational yet.
+
+2004-08-13 05:31  willic3
+
+	* [r874] Removed files that were originally brought over from
+	  pycrust. They are not updated for lithomop and have been
+	  superceded by files for different element types.
+
+2004-08-13 05:24  willic3
+
+	* [r873] Removed initial files that were brought over from
+	  pycrust. They are not up-to-date with lithomop.
+
+2004-08-13 05:22  willic3
+
+	* [r871] Files and scripts to run patch tests for linear tets.
+
+2004-08-13 05:20  willic3
+
+	* [r869] Files needed to run SCEC BM 1 at 2 km resolution using
+	  linear tets.
+
+2004-08-13 04:55  willic3
+
+	* [r867] Added files needed to run SCEC BM 1 at 2 km resolution.
+
+2004-08-13 04:54  willic3
+
+	* [r865] Added files needed to run SCEC BM 1 at 1 km resolution.
+
+2004-08-13 04:45  willic3
+
+	* [r863] Added scripts to run all patch tests for a variety of
+	  conditions.
+
+2004-08-13 04:44  willic3
+
+	* [r861] Updated statevar and time files. Added keyword=value
+	  files corresponding to selective (bbar) and reduced integration.
+	  Added material properties file for nearly-incompressible case.
+	  Added boundary conditions for all patch tests.
+
+2004-08-13 04:09  willic3
+
+	* [r859] Brief description of example and a note that the files
+	  have not been updated for use with lithomop.
+
+2004-08-13 03:58  willic3
+
+	* [r857] Brief description and a note that these files have not
+	  been updaed to work with lithomop.
+
+2004-08-13 03:51  willic3
+
+	* [r856] Added write statements to indicate when stiffness matrix
+	  is being reformed.
+
+2004-08-13 03:50  willic3
+
+	* [r855] Added code to correctly update nrftot.
+
+2004-08-13 03:49  willic3
+
+	* [r853] Added experimental code to simulate a stack trace when an
+	  error condition is generated in a called routine. This needs
+	  more work, probably at the module level.
+
+2004-08-13 03:47  willic3
+
+	* [r852] Added code to properly update nrftot variable (total
+	  number of stiffness reformations).
+
+2004-08-13 03:46  willic3
+
+	* [r851] Set up material matrix initialization in td_matinit_5 the
+	  same way as for td_matinit_1. Also, removed the conditional call
+	  to td_matinit_5 (for now) from td_strs_mat_5. The material
+	  matrix is always recomputed if td_strs_mat_5 is called, although
+	  it probably is not necessary.
+
+2004-08-13 03:43  willic3
+
+	* [r850] Material matrix is now zeroed at the Gauss point level
+	  rather than a higher level for time-dependent matrix formation.
+	  This allows some material models to keep the same matrix if it
+	  is known to remain constant.
+
+2004-08-13 03:39  willic3
+
+	* [r849] Added write statement to indicate when stiffness matrix
+	  is being reformed.
+	* [r848] Added write statements to indicate when stiffness matrix
+	  is being reformed.
+
+2004-08-13 00:11  willic3
+
+	* [r846] Improved formatting of runtime print statements.
+
+2004-08-12 23:53  willic3
+
+	* [r844] Fixed copyright to return correct name 'lithomop3d'
+	  rather than 'testpy' name used for testing.
+
+2004-08-12 23:52  willic3
+
+	* [r843] Fixed incorrect name used in import statement (lithomop3d
+	  rather than testpy).
+
+2004-08-12 23:50  willic3
+
+	* [r841] Export statement has been changed from
+	  export-python-modules to export-package-python-modules.
+
+2004-08-12 23:49  willic3
+
+	* [r839] The materialModel is now 5 rather than 4, to save slots
+	  for additional elastic models.
+
+2004-08-12 23:47  willic3
+
+	* [r837] Changed variable name from numberMaterialProperties to
+	  numberProperties to correspond to name of global variable.
+	  Commented out debugging statements.
+
+2004-08-12 23:44  willic3
+
+	* [r836] Moved import of MaterialModel outside of class
+	  definition. Debugging statements have been commented out.
+
+2004-08-12 23:40  willic3
+
+	* [r835] Primary changes include tracking f77 memory usage and
+	  outputting an approximate value in MB.
+
+2004-08-12 23:32  willic3
+
+	* [r834] Significant modifications, some as a result of debugging
+	  and some due to refinement and additions of features. Major
+	  changes: Removed unnecessary imports. Added tracking of f77
+	  memory usage. Removed (at least temporarily) try/except blocks
+	  so that all exceptions are caught by top-level python. Sent
+	  integer quadrature order parameter to write_element_info for
+	  output. Numerous commented-out debugging statements. Now use
+	  integer parameter to determine auto rotation of slippery nodes.
+	  Increased (greatly) the size of the sparse matrix working array
+	  due to difficulties encountered with quadratic hexes.
+
+2004-08-12 23:04  willic3
+
+	* [r833] Significant modifications since previous version. Some
+	  are a result of debugging, some are refinement or additions of
+	  features. Major changes: Changed methods of importing
+	  module/packages. Added parameters to track f77 memory usage.
+	  Made sure all integer parameters set in f77 routines are now
+	  returned in lists. Fixed implementation of keyword=value
+	  parsing. Fixed some problems where I was missing the leading
+	  underscore for some variables. Removed (at least temporarily)
+	  try/except block so all exceptions are now caught by top-level
+	  python. Added and made use of some new variables related to
+	  material properties and connectivities. Fixed calls to winkler
+	  scanning routines so all integer parameters are returned in a
+	  list.
+
+2004-08-12 22:18  willic3
+
+	* [r832] Added code to handle cases where the value might be a
+	  string rather than a numeric or boolean value.
+
+2004-08-12 22:12  willic3
+
+	* [r831] Routine now contains commented-out debugging statements.
+	  Routine makemsr now uses workingArraySize as the value to use
+	  for journal.
+
+2004-08-12 22:08  willic3
+
+	* [r829] Fixed scan_wink and scan_winkx to return all results in a
+	  list using Py_BuildValue.
+
+2004-08-12 22:01  willic3
+
+	* [r827] These files used for testing and editing purposes have
+	  been moved to 'unused' to keep them out of the way.
+
+2004-08-12 21:41  willic3
+
+	* [r825] These drivers to test the lnklst and makemsr routines
+	  have been moved to 'unused'.
+
+2004-08-12 21:40  willic3
+
+	* [r823] This version of the lnklst routine has been moved to
+	  'unused' for reference.
+
+2004-08-12 21:39  willic3
+
+	* [r821] These versions of the pquadtet routine have been moved
+	  into 'testdir' for evaluation and reference.
+
+2004-08-12 09:36  willic3
+
+	* [r820] Fixed line where state was being output rather than
+	  dstate.
+
+2004-08-12 09:34  willic3
+
+	* [r819] Updated argument lists for current subroutine versions.
+	  Routine now contains commented-out debugging statements.
+
+2004-08-12 09:33  willic3
+
+	* [r818] Fixed updating of state variables and consolidated
+	  updates into fewer calls to daxpy.
+
+2004-08-12 09:31  willic3
+
+	* [r817] Modified routine to accept nstate and rgiter and pass
+	  those along with rtimdat and ntimdat to the
+	  material-model-specific material matrix initialization routine.
+	  Routine now contains commented-out debugging statements.
+
+2004-08-12 09:27  willic3
+
+	* [r815] Routine now contains commented-out debugging statements.
+
+2004-08-12 09:26  willic3
+
+	* [r813] Updated subroutine argument lists for current versions.
+	  Routine now contains commented-out debugging statements.
+
+2004-08-12 09:25  willic3
+
+	* [r811] Routine now contains commented-out debugging statements.
+
+2004-08-12 09:24  willic3
+
+	* [r810] Fixed problem where dmat index was being incorrectly set
+	  for elements with imatvar=0. Routine now contains commented-out
+	  debugging statements.
+
+2004-08-12 09:22  willic3
+
+	* [r809] Checking in this version of presurql, even though it is
+	  not presently functional. It is now a placeholder for a more
+	  generic routine for computation of traction BC.
+
+2004-08-12 09:19  willic3
+
+	* [r807] Checking in this version of pquadtet, although there
+	  still appear to be some problems with quadratic tets. Reordered
+	  local coordinates to be consistent with right-handed tet.
+	  Reordered midside node shape functions to be consistent with web
+	  resource. Each function and its local coordinate derivatives are
+	  defined separately rather than within a loop.
+
+2004-08-12 09:14  willic3
+
+	* [r805] Removed old commented-out code that was incorrectly
+	  computing shape function info.
+
+2004-08-12 09:12  willic3
+
+	* [r803] Routine now contains commented-out debugging statements.
+
+2004-08-12 09:11  willic3
+
+	* [r801] Fixed incorrect ordering of local coordinates. Ordering
+	  is now consistent with right-hand-rule tets (dependent
+	  coordinate is listed first).
+
+2004-08-12 09:09  willic3
+
+	* [r799] Routine now contains commented-out debugging statements.
+
+2004-08-12 09:08  willic3
+
+	* [r797] Fixed problem where dummy materials were accidentally
+	  being registered as defined materials.
+
+2004-08-12 09:07  willic3
+
+	* [r796] Modified argument lists for inclusion of rgiter and
+	  nstate. Commented out line where dmat was improperly being
+	  cleared (it should only be cleared at the beginning of the
+	  elastic solution and is now cleared in elastc). Routine now
+	  contains commented-out debugging statements.
+
+2004-08-12 09:03  willic3
+
+	* [r794] Routine now contains commented-out debugging statements.
+	* [r793] Added type and definition statements to td_matinit_1 for
+	  rtimdat, rgiter, and ntimdat.
+
+2004-08-12 09:01  willic3
+
+	* [r792] Completely revised (appears to be correct) time-dependent
+	  stress computation. Improved ascii output for material property
+	  info. Routine now contains commented-out debugging statements.
+
+2004-08-12 08:59  willic3
+
+	* [r791] Improved ascii output of material property info. Added
+	  type and definition statements to td_matinit_1 for rtimdat,
+	  rgiter, and ntimdat.
+
+2004-08-12 08:54  willic3
+
+	* [r789] Fixed incorrect computation of the minimum nonzero terms
+	  per row. Routine now contains commented-out debugging statements.
+
+2004-08-12 08:51  willic3
+
+	* [r787] Routine now contains commented-out debugging statements.
+
+2004-08-12 08:50  willic3
+
+	* [r786] Fixed indexing problems for lm array. Fixed problem where
+	  working array storage could be exceeded without detection.
+	  Routine now contains commented-out debugging statements.
+
+2004-08-12 08:39  willic3
+
+	* [r784] Updated subroutine argument lists. Routine now contains
+	  commented-out debugging statements.
+
+2004-08-12 08:34  willic3
+
+	* [r782] Updated subroutine argument lists for consistency with
+	  current routines. Routine now contains commented-out debugging
+	  statements.
+
+2004-08-12 08:29  willic3
+
+	* [r780] Routine now contains commented-out debugging statements.
+
+2004-08-12 08:28  willic3
+
+	* [r779] Altered call to dgemm (matrix-matrix multiply) to reflect
+	  a consistent method for computing the jacobian. Coordinate
+	  matrix is now the first operand. Routine now contains
+	  commented-out debugging statements.
+
+2004-08-12 08:25  willic3
+
+	* [r777] Altered explicit matrix inversion to be consistent with
+	  my method for computing the jacobian. Routine now contains
+	  commented-out debugging statements.
+
+2004-08-12 08:22  willic3
+
+	* [r775] Routine now contains commented-out debugging statements.
+
+2004-08-12 08:21  willic3
+
+	* [r774] Updated arguments lists for matinit_drv. Routine now
+	  contains commented-out debugging statements.
+
+2004-08-12 08:17  willic3
+
+	* [r773] Added nstate and rgiter to the argument list, which are
+	  both needed for consistency with td_matinit_cmp_ss. Fixed
+	  indexing of dmat array. Routine now contains commented-out
+	  debugging statements.
+
+2004-08-12 08:12  willic3
+
+	* [r771] Routine now contains commented-out debugging statements.
+
+2004-08-12 08:05  willic3
+
+	* [r769] Routine now has commented-out debugging statements.
+
+2004-08-12 08:03  willic3
+
+	* [r767] Updated all argument lists to conform to current
+	  subroutine lists.
+
+2004-08-03 04:42  willic3
+
+	* [r766] Updated argument list for write_element_info.
+
+2004-08-03 04:41  willic3
+
+	* [r765] Updated argument lists for write_element_info.
+
+2004-08-03 04:39  willic3
+
+	* [r763] Added applications directory to build list, and put in a
+	  distclean option.
+
+2004-08-03 04:38  willic3
+
+	* [r761] Added a simple application and a Make.mm to create an
+	  exported lithomop3dapp.py.
+
+2004-08-03 04:35  willic3
+
+	* [r760] Fixed indexing of state matrix and fixed output options
+	  for either a rate or an increment.
+
+2004-08-03 04:33  willic3
+
+	* [r759] Altered output to include new parameters and to be
+	  consistent with elements with different numbers of nodes.
+
+2004-08-03 04:32  willic3
+
+	* [r758] Fixed indexing of state matrix.
+
+2004-08-03 04:30  willic3
+
+	* [r757] Fixed indexing of ee, scur, material matrix, and state
+	  matrix.
+
+2004-08-03 04:29  willic3
+
+	* [r756] Fixed indexing of material and state matrices.
+
+2004-08-03 04:28  willic3
+
+	* [r755] Routine now contains commented out debugging statements.
+
+2004-08-03 04:27  willic3
+
+	* [r754] Fixed routine name used for debugging output.
+	* [r753] Removed some unnecessary logic from a conditional
+	  statement. Old logic was only pertinent when the same routine
+	  was used for different geometries.
+
+2004-08-03 04:25  willic3
+
+	* [r752] Fixed indexing problems, the way the infiel array is
+	  computed, and a typo in the write statement for ascii output.
+	  Routine now contains commented out debugging statements.
+
+2004-08-03 04:22  willic3
+
+	* [r751] Routine now contains commented out debugging statements.
+
+2004-08-03 04:21  willic3
+
+	* [r750] Completely revised computation of shape functions, which
+	  was being done incorrectly before. Routine now contains
+	  commented out debugging statements.
+
+2004-08-03 04:20  willic3
+
+	* [r749] Completely revised computation of shape functions, which
+	  was being done incorrectly before. Routine now contains
+	  commented out debugging statements.
+
+2004-08-03 04:18  willic3
+
+	* [r748] Routine now contains commented out debugging statements.
+
+2004-08-03 04:17  willic3
+
+	* [r747] Added arguments to td_matinit to be consistent across
+	  material models.
+
+2004-08-03 04:14  willic3
+
+	* [r746] Routine now contains commented out debugging statements.
+
+2004-08-03 04:13  willic3
+
+	* [r745] Properly initialized b, pcg, and zcg vectors. The ireform
+	  flag is now initially set to zero, so the material matrix is not
+	  reformed during the iterative solution unless specifically
+	  requested (this should only occur for large deformation).
+
+2004-08-03 04:11  willic3
+
+	* [r744] Fixed indexing of ee, scur, material matrix, and state
+	  matrix.
+
+2004-08-03 04:10  willic3
+
+	* [r743] Fixed indexing of ee, scur, material matrix, and state
+	  matrix. Routine now contains commented out debugging statements.
+
+2004-08-03 04:08  willic3
+
+	* [r742] Fixed indexing of material matrix.
+
+2004-08-03 04:07  willic3
+
+	* [r740] Finished properly commenting out debugging statements in
+	  addstf. Routine eforce now contains commented out debugging
+	  statements.
+
+2004-08-03 04:02  willic3
+
+	* [r738] Routines now contain commented-out debugging statements.
+
+2004-08-03 04:01  willic3
+
+	* [r737] Removed export-headers.
+
+2004-08-03 03:36  willic3
+
+	* [r736] Initial version of material model routines for Maxwell
+	  linear viscoelastic material model. This version does not use
+	  the effective stress formulation since it is not needed, and the
+	  alpha method of time integration is used.
+
+2004-08-03 03:34  willic3
+
+	* [r735] Updated output, and added some arguments to td_matinit to
+	  be consistent with other material models.
+
+2004-07-22 22:53  willic3
+
+	* [r734] Updated time information file to use ntdinit parameter
+	  rather than maxitc parameter.
+
+2004-07-22 07:54  willic3
+
+	* [r733] Added import of 'os', so that I can use
+	  system-independent methods of specifying pathnames.
+
+2004-07-22 07:51  willic3
+
+	* [r732] Added new dummy material models to Make.mm.
+
+2004-07-22 07:48  willic3
+
+	* [r731] Dummy subroutines for undefined material model 20.
+
+2004-07-22 07:47  willic3
+
+	* [r730] Dummy subroutines for undefined material model 19.
+
+2004-07-22 07:46  willic3
+
+	* [r729] Dummy subroutines for undefined material model 18.
+
+2004-07-22 07:45  willic3
+
+	* [r728] Dummy subroutines for undefined material model 17.
+
+2004-07-22 07:44  willic3
+
+	* [r727] Dummy subroutines for undefined material model 16.
+
+2004-07-22 07:43  willic3
+
+	* [r726] Dummy subroutines for undefined material 15.
+
+2004-07-22 07:41  willic3
+
+	* [r725] Dummy subroutines for undefined material model 14.
+
+2004-07-22 07:40  willic3
+
+	* [r724] Dummy subroutines for undefined material model 13.
+
+2004-07-22 07:39  willic3
+
+	* [r723] Dummy subroutines for undefined material model 12.
+
+2004-07-22 07:38  willic3
+
+	* [r722] Dummy subroutines for undefined material model 11.
+
+2004-07-22 07:36  willic3
+
+	* [r721] Dummy subroutines for undefined material model 10.
+
+2004-07-22 07:31  willic3
+
+	* [r720] Dummy subroutines for undefined material 9.
+
+2004-07-22 07:30  willic3
+
+	* [r719] Dummy subroutines for undefined material 8.
+
+2004-07-22 07:29  willic3
+
+	* [r718] Dummy subroutines for undefined material model 7.
+
+2004-07-22 07:28  willic3
+
+	* [r717] Dummy subroutines for undefined material model 6.
+
+2004-07-22 07:26  willic3
+
+	* [r716] Dummy subroutines for undefined material model 5.
+
+2004-07-22 07:25  willic3
+
+	* [r715] Dummy subroutines for undefined material model 4.
+
+2004-07-22 07:24  willic3
+
+	* [r714] Dummy subroutines for undefined material model 3.
+
+2004-07-22 07:19  willic3
+
+	* [r713] Dummy subroutines for undefined material model 2.
+
+2004-07-22 04:44  willic3
+
+	* [r712] State variable output file used for patchtest example
+	  problem for linear hex elements.
+
+2004-07-22 04:29  willic3
+
+	* [r710] Connectivity information for patchtest example problem
+	  for linear hex elements.
+
+2004-07-22 04:08  willic3
+
+	* [r708] Material properties used for patchtest example problem
+	  for linear hex elements.
+
+2004-07-22 04:04  willic3
+
+	* [r707] Time information used for patchtest example problem for
+	  linear hex elements.
+
+2004-07-22 04:01  willic3
+
+	* [r706] Keyword=value set for patchtest example problem 1 for
+	  linear hex elements.
+
+2004-07-22 03:57  willic3
+
+	* [r704] BC used for patchtest example problem 1 for linear hex
+	  elements.
+
+2004-07-22 03:53  willic3
+
+	* [r702] Coordinates used for patchtest example problem for linear
+	  hex elements.
+
+2004-07-22 03:19  willic3
+
+	* [r701] Eliminated use of ibbar array and removed it from the
+	  Ntimdat list.
+
+2004-07-22 03:16  willic3
+
+	* [r700] Added quadratureOrderInt to Npar list.
+
+2004-07-22 03:10  willic3
+
+	* [r699] Eliminated usage of ibbar array.
+
+2004-07-22 03:09  willic3
+
+	* [r698] Eliminated usage of ibbar array.
+
+2004-07-22 03:03  willic3
+
+	* [r697] Eliminated usage of ibbar array from bindings.
+
+2004-07-22 03:02  willic3
+
+	* [r696] Fixed number of items in PyArg_ParseTuple.
+
+2004-07-22 02:57  willic3
+
+	* [r695] Updated bindings to eliminate usage of ibbar array.
+
+2004-07-22 02:49  willic3
+
+	* [r693] Eliminated usage of ibbar.
+
+2004-07-22 02:46  willic3
+
+	* [r692] Updated routine to use tminmax parameter.
+
+2004-07-22 02:44  willic3
+
+	* [r691] Updated argument lists to driver routines.
+
+2004-07-22 02:38  willic3
+
+	* [r690] Updated routine to replace use of ibbar with intord, and
+	  to use tminmax parameter.
+
+2004-07-22 02:23  willic3
+
+	* [r689] Updated routine to accept iddmat array.
+
+2004-07-22 02:18  willic3
+
+	* [r688] Updated argument lists for all subroutines to be
+	  consistent with higher-level calls, and put in more error code
+	  usage.
+
+2004-07-22 02:14  willic3
+
+	* [r687] Updated routine to pass and use error codes and strings
+	  for material-specific elastic stress computation routine.
+
+2004-07-22 02:08  willic3
+
+	* [r686] Updated routine to use iddmat array.
+
+2004-07-22 02:01  willic3
+
+	* [r685] Updated routine to use and pass matchg and tminmax
+	  parameters.
+
+2004-07-22 01:45  willic3
+
+	* [r684] Altered routine to accept matchg and tminmax parameters.
+
+2004-07-22 01:26  willic3
+
+	* [r683] Updated routine to accept tminmax parameter. Since this
+	  is the elastic solution, the parameter remains unchanged.
+
+2004-07-22 01:23  willic3
+
+	* [r682] Updated routine to use and return tminmax parameter, and
+	  fixed argument lists sent to stress/material matrix computation
+	  routine.
+
+2004-07-22 01:21  willic3
+
+	* [r681] Updated routine to use and return tminmax parameter and
+	  fixed call to material-specific routine for computing
+	  time-dependent stress and material matrix.
+
+2004-07-21 23:22  willic3
+
+	* [r680] Fixed incorrect name for external routine call.
+
+2004-07-21 22:43  willic3
+
+	* [r679] Adjusted indices in ntimdat to account for removal of
+	  ibbarp.
+
+2004-07-21 22:39  willic3
+
+	* [r678] Shifted array indices when printing out ntimdat info to
+	  account for removal of ibbarp.
+
+2004-07-21 22:38  willic3
+
+	* [r677] Updated routine to control b-bar behavior with intord
+	  scalar rather than ibbar array, and adjusted arrays accordingly.
+
+2004-07-21 22:29  willic3
+
+	* [r675] Readjusted array definitions to account for removal of
+	  ibbar.
+
+2004-07-21 22:25  willic3
+
+	* [r673] Removed ibbarp parameter, which has been superceded by
+	  global quadrature parameter.
+
+2004-07-21 22:24  willic3
+
+	* [r671] Removed ibbarp parameter, which has been superceded by
+	  global quadrature order parameter.
+
+2004-07-21 22:23  willic3
+
+	* [r670] Included global integration order parameter.
+
+2004-07-21 22:22  willic3
+
+	* [r669] Included global quadrature order parameter.
+
+2004-07-21 21:58  willic3
+
+	* [r668] Fixed missing close parentheses.
+
+2004-07-21 21:55  willic3
+
+	* [r667] Change default fileRoot (example directory path), and
+	  used os.path.join() rather than explicitly using unix pathnames.
+
+2004-07-21 04:31  willic3
+
+	* [r666] Fixed incorrect naming of 'pointerToIprint' variable.
+
+2004-07-21 04:30  willic3
+
+	* [r665] Fixed incorrect argument list for read_skew.
+
+2004-07-21 04:29  willic3
+
+	* [r663] Added missing semicolons.
+
+2004-07-21 04:23  willic3
+
+	* [r662] Added missing comma in argument list.
+
+2004-07-21 03:49  willic3
+
+	* [r661] Created Make.mm for lithomop3d/MaterialModel directory.
+	* [r659] Updated Make.mm from top-level pyre directory.
+
+2004-07-21 03:29  willic3
+
+	* [r658] Updated Make.mm for new sources.
+
+2004-07-21 03:26  willic3
+
+	* [r657] Updated externals definitions for new, deleted, and
+	  altered subroutines.
+
+2004-07-21 03:22  willic3
+
+	* [r656] Fixed arguments that needed to be passed as pointers.
+
+2004-07-21 03:11  willic3
+
+	* [r655] Fixed out-of-order argument list.
+
+2004-07-21 02:57  willic3
+
+	* [r654] Added missing string length.
+
+2004-07-20 23:32  willic3
+
+	* [r652] Updated error list to be consistent with
+	  exceptionhandler.cc.
+
+2004-07-20 23:28  willic3
+
+	* [r651] Updated bindings for time-dependent solution for new,
+	  deleted, and modified arrays, as well as new error code methods.
+
+2004-07-20 23:10  willic3
+
+	* [r650] Updated bindings for elastic solution for new, deleted,
+	  and modified arrays, as well as new error code methods.
+
+2004-07-20 21:57  willic3
+
+	* [r649] Updated methods table for new and unused routines.
+
+2004-07-20 07:44  willic3
+
+	* [r647] Updated header file for parser.cc bindings.
+
+2004-07-20 07:32  willic3
+
+	* [r646] Updated header for input_misc.cc bindings.
+
+2004-07-20 04:41  willic3
+
+	* [r645] Fixed incorrect spelling of read_stateout.
+
+2004-07-20 04:40  willic3
+
+	* [r644] New bindings for file parsing routines.
+
+2004-07-20 04:38  willic3
+
+	* [r643] New bindings for sparse matrix routines.
+
+2004-07-20 04:26  willic3
+
+	* [r642] New bindings for miscellaneous input routines.
+
+2004-07-20 02:10  willic3
+
+	* [r640] Header for setup.cc.
+
+2004-07-20 02:07  willic3
+
+	* [r638] Bindings for material model initialization and shape
+	  function precomputation.
+
+2004-07-20 01:42  willic3
+
+	* [r636] Updated header for scanner.cc.
+
+2004-07-20 01:40  willic3
+
+	* [r635] New set of bindings for file scanning routines. Note:
+	  bindings for tractions and prestresses have been commented out
+	  for now.
+
+2004-07-17 04:22  willic3
+
+	* [r634] Modified routine to return element number in the error
+	  string rather than as the error code.
+
+2004-07-17 04:17  willic3
+
+	* [r633] Header file for exceptionhandler.
+
+2004-07-17 04:11  willic3
+
+	* [r632] Initial version of code to generate python exceptions
+	  from f77 error codes and error strings.
+
+2004-07-17 03:43  willic3
+
+	* [r631] Complete rewrite of pyre run routine, updated for all new
+	  storage methods, parameters, and subroutine calls.
+
+2004-07-17 02:26  willic3
+
+	* [r630] Complete rewrite of pyre setup routine, updated for all
+	  new storage methods, parameters, and subroutine calls.
+
+2004-07-17 01:21  willic3
+
+	* [r629] Updated inventory and file list to include file
+	  describing which state variables to output.
+
+2004-07-17 01:06  willic3
+
+	* [r628] Modified code to return an error if an attempt is made to
+	  use an undefined history.
+
+2004-07-16 23:02  willic3
+
+	* [r627] Updated routine for new indexing scheme, allowing
+	  variable numbers of nodes (and equations) per element.
+
+2004-07-16 04:30  willic3
+
+	* [r626] Added definition of self._maxElementEquations.
+
+2004-07-16 03:22  willic3
+
+	* [r625] Updated routine to output gravitational acceleration.
+
+2004-07-16 02:53  willic3
+
+	* [r624] Removed obsolete parameters.
+
+2004-07-15 23:53  willic3
+
+	* [r623] Deallocated index arrays after they were no longer needed.
+
+2004-07-15 04:17  willic3
+
+	* [r622] Initial versions of files needed to define material
+	  models for pyre.
+
+2004-07-15 04:15  willic3
+
+	* [r620] Test version of a material properties definition file.
+	  This will eventually need to be moved to a directory under
+	  'examples'.
+
+2004-07-15 04:12  willic3
+
+	* [r618] Partial list of correspondences between f77 and python
+	  variables referenced in Lithomop3d_scan.py.
+
+2004-07-15 04:11  willic3
+
+	* [r617] Complete re-write of pyre scanning routine, updated for
+	  all new storage methods, parameters, and subroutine calls.
+
+2004-07-15 03:47  willic3
+
+	* [r615] This obsolete file has been moved to 'unused'.
+
+2005-08-23 02:07  unknown_user
+
+	* [r614] [vcp] delete of edited revision with dead state
+
+2004-07-15 03:46  willic3
+
+	* [r613] This include file is no longer being used, as all file
+	  definitions, etc. are now handled in the python driver.
+
+2004-07-14 03:20  willic3
+
+	* [r612] Removed testacc.f from list of sources, since it isn't
+	  part of the project.
+
+2004-07-14 03:16  willic3
+
+	* [r610] Simple command to contatenate together a subset of the
+	  source files to make sure they form a coherent library.
+
+2004-07-14 03:02  willic3
+
+	* [r608] This routine is not part of the project and has been
+	  moved to 'unused'.
+	* [r607] Moved old test program to 'unused'.
+
+2004-07-14 02:59  willic3
+
+	* [r606] Updated Make.mm with new project sources.
+
+2004-07-14 02:55  willic3
+
+	* [r605] Updated list of error codes.
+
+2004-07-14 02:54  willic3
+
+	* [r604] Routine to read material property histories.
+
+2004-07-14 02:23  willic3
+
+	* [r603] Routine to read state variable output options.
+
+2004-07-14 00:40  willic3
+
+	* [r602] Removed some unused variables and cleaned up code a bit.
+
+2004-07-14 00:39  willic3
+
+	* [r601] Initial version of new time-dependent driver routine.
+
+2004-07-13 23:40  willic3
+
+	* [r600] Updated routine for new usage of error codes and strings.
+
+2004-07-13 23:26  willic3
+
+	* [r599] Included missing external routine definitions.
+
+2004-07-13 23:25  willic3
+
+	* [r597] List of material-model-specific routines for writing
+	  material properties.
+
+2004-07-13 23:12  willic3
+
+	* [r596] Updated routine to use nstep (step number) to determine
+	  which set of state variable indices to choose from for state
+	  variable output.
+
+2004-07-13 23:11  willic3
+
+	* [r595] Fixed routine so that nstep is passed to routine
+	  'write_state'. This allows 'write_state' to determine which set
+	  of state variables to choose from depending on whether the
+	  elastic or time-dependent solution is being used.
+
+2004-07-13 21:49  willic3
+
+	* [r594] Updated TODO list with most recent reminders. List still
+	  needs to be edited to cross off things that have been done.
+
+2005-08-23 02:06  unknown_user
+
+	* [r593] [vcp] delete of edited revision with dead state
+
+2004-07-13 04:44  willic3
+
+	* [r592] These obsolete routines have been moved to 'unused'.
+
+2005-08-23 02:06  unknown_user
+
+	* [r591] [vcp] delete of edited revision with dead state
+
+2004-07-13 04:39  willic3
+
+	* [r590] Obsolete file that was never actually used. Its
+	  functionality has been taken over by stress_drv and the
+	  associated computation routines.
+
+2004-07-13 04:33  willic3
+
+	* [r589] Updated routine to also compute logical (represented as
+	  integer) array ismatmod, which indicates whether a particular
+	  state variable is used in a given material model.
+
+2004-07-13 04:25  willic3
+
+	* [r587] This routine has been temporarily moved to 'unused'.
+
+2005-08-23 02:06  unknown_user
+
+	* [r586] [vcp] delete of edited revision with dead state
+
+2004-07-13 04:25  willic3
+
+	* [r585] This routine has been temporarily moved to 'unused'. A
+	  more general version is needed that will allow root bracketing
+	  for any material model that uses the 'effective stress function'
+	  formulation.
+
+2004-07-13 04:22  willic3
+
+	* [r584] Additional updating of routine for new usage of parameter
+	  statements.
+
+2004-07-13 04:18  willic3
+
+	* [r583] Updated routine for new usage of parameter statements,
+	  and to take into account the fact that elements can have
+	  different numbers of nodes.
+
+2004-07-13 04:12  willic3
+
+	* [r581] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 04:09  willic3
+
+	* [r580] Updated routine for new usage of parameter statements.
+
+2004-07-13 04:07  willic3
+
+	* [r579] Minor change to increase usage of predefined parameters.
+
+2004-07-13 04:04  willic3
+
+	* [r578] Updated routine for new usage of parameter statements.
+
+2004-07-13 03:58  willic3
+
+	* [r576] These obsolete routines have been moved to 'unused'.
+
+2005-08-23 02:06  unknown_user
+
+	* [r575] [vcp] delete of edited revision with dead state
+
+2004-07-13 03:57  willic3
+
+	* [r574] These routines have been moved to 'unused'. The
+	  functionality of both will eventually be taken over by stress
+	  driver plus computation routines. At present, only small strain
+	  problems are available.
+
+2005-08-23 02:06  unknown_user
+
+	* [r573] [vcp] delete of edited revision with dead state
+
+2004-07-13 03:54  willic3
+
+	* [r572] This routine has been replaced by the updated routine
+	  stiffld.f, which allows computation of nonlinear stiffness
+	  contribution for any element type.
+
+2004-07-13 03:52  willic3
+
+	* [r571] Initial revised version of routine to compute nonlinear
+	  portion of stiffness matrix, allowing usage of any element type.
+
+2004-07-13 03:30  willic3
+
+	* [r570] Updated routine for new usage of parameter statements.
+
+2004-07-13 03:25  willic3
+
+	* [r568] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 03:23  willic3
+
+	* [r566] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 03:21  willic3
+
+	* [r564] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 03:18  willic3
+
+	* [r562] This routine has been temporarily moved to 'unused'.
+
+2005-08-23 02:06  unknown_user
+
+	* [r561] [vcp] delete of edited revision with dead state
+
+2004-07-13 03:18  willic3
+
+	* [r560] Temporarily moved this routine to 'unused', since
+	  traction BC have not yet been implemented in the new version of
+	  the code.
+
+2004-07-13 03:16  willic3
+
+	* [r559] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 03:12  willic3
+
+	* [r557] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 03:10  willic3
+
+	* [r555] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 03:08  willic3
+
+	* [r553] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 03:04  willic3
+
+	* [r551] This obsolete routine has been moved to 'unused'.
+
+2005-08-23 02:06  unknown_user
+
+	* [r550] [vcp] delete of edited revision with dead state
+
+2004-07-13 03:03  willic3
+
+	* [r549] The functionality of this routine has been taken over by
+	  python routines.
+
+2004-07-13 03:02  willic3
+
+	* [r547] This file has temporarily been moved to 'unused'.
+
+2005-08-23 02:06  unknown_user
+
+	* [r546] [vcp] delete of edited revision with dead state
+
+2004-07-13 03:01  willic3
+
+	* [r545] Temporarily moved this routine to 'unused', since present
+	  version of the code does not yet make use of prestresses.
+
+2004-07-13 03:00  willic3
+
+	* [r543] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 02:58  willic3
+
+	* [r541] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 02:47  willic3
+
+	* [r539] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 02:44  willic3
+
+	* [r537] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 02:39  willic3
+
+	* [r536] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 02:35  willic3
+
+	* [r534] This routine has been temporarily moved to the 'unused'
+	  directory.
+
+2005-08-23 02:06  unknown_user
+
+	* [r533] [vcp] delete of edited revision with dead state
+
+2004-07-13 02:34  willic3
+
+	* [r532] This routine has been temporarily moved to 'unused',
+	  since it has not been updated for the new method of defining
+	  material models. A more generic routine for finding the zeroes
+	  of a function needs to be set up that can be used by any
+	  material model using the 'effective stress function' formulation.
+
+2004-07-13 02:29  willic3
+
+	* [r530] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 02:23  willic3
+
+	* [r528] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 02:14  willic3
+
+	* [r526] This file, which has not been updated for multiple
+	  element types, has been temporarily moved to 'unused'.
+
+2005-08-23 02:06  unknown_user
+
+	* [r525] [vcp] delete of edited revision with dead state
+
+2004-07-13 02:13  willic3
+
+	* [r524] Temporarily moved this file to 'unused'. Traction BC have
+	  not yet been updated for multiple element types. When they are,
+	  a different input method will be required.
+
+2004-07-13 02:11  willic3
+
+	* [r523] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 02:01  willic3
+
+	* [r522] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 01:51  willic3
+
+	* [r521] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 01:37  willic3
+
+	* [r519] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 01:17  willic3
+
+	* [r517] These routines, which are either obsolete or not
+	  presently used, have been moved to 'unused'.
+
+2005-08-23 02:06  unknown_user
+
+	* [r516] [vcp] delete of edited revision with dead state
+
+2004-07-13 01:16  willic3
+
+	* [r515] This routine has been replaced by a python equivalent for
+	  input, and by a driver routine plus material-model-specific
+	  routines for output.
+
+2005-08-23 02:06  unknown_user
+
+	* [r514] [vcp] delete of edited revision with dead state
+
+2004-07-13 01:15  willic3
+
+	* [r513] This file has (at least temporarily) been moved to
+	  'unused'. The present version of the code does not yet make use
+	  of prestresses, and when they are implemented, a different
+	  method is envisioned that will not require storage of the
+	  prestress components.
+
+2004-07-13 01:10  willic3
+
+	* [r511] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-13 00:55  willic3
+
+	* [r510] Created driver routine to output material properties to
+	  ascii and plot output files.
+
+2004-07-13 00:53  willic3
+
+	* [r509] Updated output routine to let the driver take care of
+	  opening and closing output files.
+
+2004-07-12 21:35  willic3
+
+	* [r508] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-12 21:34  willic3
+
+	* [r506] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-10 03:55  willic3
+
+	* [r505] Committing initial version of error codes list. This is
+	  constantly growing so it will probably be updated frequently.
+
+2004-07-10 03:50  willic3
+
+	* [r504] Initial version of routine to compute global element
+	  types from primitive element type plus infinite element
+	  information. Error checking should be included to insure a user
+	  does not specify an infinite element for an invalid type.
+
+2004-07-10 03:22  willic3
+
+	* [r503] Completely revised routine that reads connectivities,
+	  material types, element types, and infinite element info, then
+	  sets all element index arrays and outputs results to plot and
+	  ascii files.
+
+2004-07-10 00:01  willic3
+
+	* [r501] Completely revised routine for new indexing methods.
+	  Routine now returns the total number of elements, the
+	  connectivity size, and completely sets the infmat (material
+	  info) array, using some information determined by the python
+	  material property input routines.
+
+2004-07-09 23:25  willic3
+
+	* [r499] Added netypesi to list of parameters (number of primitive
+	  element types, excluding infinite element permutations).
+
+2004-07-09 22:29  willic3
+
+	* [r498] Fixed improper index on infmatmod.
+
+2004-07-09 22:25  willic3
+
+	* [r497] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 08:38  willic3
+
+	* [r496] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 08:33  willic3
+
+	* [r495] Updated for separation of material type and material
+	  model information.
+
+2004-07-09 08:29  willic3
+
+	* [r494] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 08:20  willic3
+
+	* [r493] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 08:16  willic3
+
+	* [r492] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 04:43  willic3
+
+	* [r491] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 04:40  willic3
+
+	* [r490] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 04:38  willic3
+
+	* [r489] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 04:25  willic3
+
+	* [r488] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 04:24  willic3
+
+	* [r487] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 04:15  willic3
+
+	* [r486] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 04:09  willic3
+
+	* [r485] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 04:01  willic3
+
+	* [r484] Updated routine for separation of material type and
+	  material model information.
+
+2004-07-09 03:32  willic3
+
+	* [r483] Updated routine for separation of information between
+	  material type and material model.
+	* [r482] Updated routine for separation of information between
+	  material type and material model.
+
+2004-07-09 03:00  willic3
+
+	* [r481] Temporary routine to define general parameters for all
+	  material models. Eventually, this info should probably be
+	  defined either in the python initialization routines or accessed
+	  through the f77 material model definitions.
+
+2004-07-08 09:07  willic3
+
+	* [r480] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-08 03:52  willic3
+
+	* [r479] Updated routine for new usage of parameter statements,
+	  and to use standard error codes and strings.
+
+2004-07-08 03:43  willic3
+
+	* [r477] Fixed problem with multiple variable declaration.
+
+2004-07-08 03:34  willic3
+
+	* [r475] Updated routine for new usage of parameter statements.
+
+2004-07-08 03:32  willic3
+
+	* [r473] This obsolete routine has been moved to 'unused'.
+
+2005-08-23 02:06  unknown_user
+
+	* [r472] [vcp] delete of edited revision with dead state
+
+2004-07-08 03:31  willic3
+
+	* [r471] This routine has been replaced by the 'write_state'
+	  routine that can output specified state variables for different
+	  element types.
+
+2004-07-08 03:29  willic3
+
+	* [r470] Updated routine for new usage of parameter statements.
+
+2004-07-08 03:27  willic3
+
+	* [r469] Updated routine for new usage of parameter statements.
+
+2004-07-08 03:25  willic3
+
+	* [r468] Updated routine for new usage of parameter statements.
+
+2004-07-08 03:21  willic3
+
+	* [r467] Updated routine to handle new argument lists to all
+	  precomputation routines, to handle new usage of parameter
+	  statements, and different organization of element type info.
+
+2004-07-08 02:56  willic3
+
+	* [r465] Updated shape function precomputation routine for
+	  quadratic wedge for new usage of parameter statements,
+	  additional information generated, and new element type
+	  information array. Also put in extra parentheses to squelch
+	  compiler warnings.
+
+2004-07-08 02:53  willic3
+
+	* [r464] Updated shape function precomputation routine for
+	  quadratic tet elements for new usage of parameter statements,
+	  additional information generated, and new element type
+	  information array. Also put in extra parentheses to squelch
+	  compiler warnings.
+
+2004-07-08 02:48  willic3
+
+	* [r462] Updated shape function precomputation routine for
+	  quadratic pyramids for new usage of parameter statements,
+	  additional information generated, and new element type
+	  information array. Also put in extra parentheses to squelch
+	  compiler warnings.
+
+2004-07-08 02:40  willic3
+
+	* [r461] Updated routine for additional information generated and
+	  new element type information array.
+
+2004-07-08 02:36  willic3
+
+	* [r460] Updated routine for new usage of parameter statements.
+
+2004-07-08 02:34  willic3
+
+	* [r458] Updated shape function precomputation routine for linear
+	  wedge elements for new usage of parameter statements, additional
+	  information generated, and new element type information array.
+
+2004-07-08 02:28  willic3
+
+	* [r457] Updated shape function precomputation routine for linear
+	  tet elements for new usage of parameter statements, additional
+	  information generated, and new element type information array.
+
+2004-07-08 02:26  willic3
+
+	* [r455] Added missing definitions for nec and nee for linear
+	  pyramid element.
+
+2004-07-08 02:22  willic3
+
+	* [r454] Updated shape function precomputation routine for linear
+	  tet elements for new usage of parameter statements, additional
+	  information generated, and new element type information array.
+
+2004-07-08 02:17  willic3
+
+	* [r452] Updated shape function precomputation routine for linear
+	  hex elements for new usage of parameter statements, additional
+	  information generated, and new element type information array.
+
+2004-07-08 02:04  willic3
+
+	* [r450] Updated routine for new usage of parameter statements.
+
+2004-07-08 02:03  willic3
+
+	* [r448] Updated routine for new usage of parameter statements.
+
+2004-07-08 01:59  willic3
+
+	* [r446] Updated routine for new usage of parameter statements.
+
+2004-07-08 01:57  willic3
+
+	* [r445] Updated routine for new usage of parameter statements.
+
+2004-07-08 01:55  willic3
+
+	* [r444] Updated routine for usage of standard error codes.
+
+2004-07-08 01:38  willic3
+
+	* [r443] Updated routine for new usage of parameter statements.
+
+2004-07-08 01:36  willic3
+
+	* [r442] New version of routine to localize global slippery node
+	  equation numbers in element arrays, using new indexing scheme.
+
+2004-07-08 01:27  willic3
+
+	* [r441] New version of routine to localize split node info in
+	  element array, updated for new indexing scheme.
+
+2004-07-08 01:14  willic3
+
+	* [r440] New version of routine to localize global equation
+	  information in element arrays. This version uses new indexing
+	  scheme that allows different element types to be combined.
+
+2004-07-08 00:57  willic3
+
+	* [r439] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-08 00:52  willic3
+
+	* [r438] Updated routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-08 00:45  willic3
+
+	* [r437] Update routine for new usage of parameter statements,
+	  error codes, and error strings.
+
+2004-07-08 00:38  willic3
+
+	* [r436] Updated routine for new usage of parameter statements and
+	  made use of some predefined parameters.
+
+2004-07-08 00:35  willic3
+
+	* [r434] Updated routine for new usage of parameter statements.
+
+2004-07-07 22:55  willic3
+
+	* [r433] Updated routine for new usage of parameter statements.
+
+2004-07-07 22:54  willic3
+
+	* [r432] Updated routine for new usage of parameter statements,
+	  eliminated 2 arguments that should not be necessary, and took
+	  out section that handled the special case of 2.5D problems.
+
+2004-07-07 22:46  willic3
+
+	* [r430] Updated routine for new usage of parameter statements.
+
+2004-07-07 22:44  willic3
+
+	* [r428] These obsolete material property routines have been moved
+	  to 'unused'.
+
+2005-08-23 02:05  unknown_user
+
+	* [r427] [vcp] delete of edited revision with dead state
+
+2004-07-07 22:43  willic3
+
+	* [r426] These material property routines have been replaced (or
+	  are being replaced) by routines specific to different material
+	  models, as well as driver and computation routines.
+
+2004-07-07 22:34  willic3
+
+	* [r425] Updated routine for new usage of parameter statements.
+
+2004-07-07 22:31  willic3
+
+	* [r424] Updated routine for new usage of parameter statements.
+
+2004-07-07 22:29  willic3
+
+	* [r422] Moved obsolete routine to 'unused'.
+
+2005-08-23 02:05  unknown_user
+
+	* [r421] [vcp] delete of edited revision with dead state
+
+2004-07-07 21:23  willic3
+
+	* [r420] Old infinite element routine has been replaced by
+	  routines specific to linear and quadratic hex elements.
+
+2004-07-07 21:22  willic3
+
+	* [r418] Older version of elastic solution driver has been moved
+	  to 'unused'.
+
+2004-07-07 21:20  willic3
+
+	* [r416] Updated routine for new usage of parameter statements.
+
+2004-07-07 21:17  willic3
+
+	* [r414] Updated routine for new usage of parameter statements.
+
+2004-07-07 03:33  willic3
+
+	* [r412] Updated to use standard error codes and return an error
+	  string.
+
+2004-07-07 03:18  willic3
+
+	* [r410] Updated for consistent error code.
+
+2004-07-07 03:12  willic3
+
+	* [r408] Updated for more complete usage of predefined parameter
+	  definitions.
+
+2004-07-07 03:10  willic3
+
+	* [r407] Updated for more complete use of predefined parameter
+	  definitions.
+
+2004-07-07 03:07  willic3
+
+	* [r406] Placeholder for quadratic infinite element shape function
+	  generation. This is not yet correct, as I haven't finished
+	  working out the equations for quadratic infinite elements. It
+	  may actually be easier to generate the entire set of shape
+	  functions for each case, using a routine based on pquadhex.
+
+2004-07-07 02:20  willic3
+
+	* [r404] This version of the routine has been replaced by a
+	  cleaner implementation.
+
+2004-07-07 02:19  willic3
+
+	* [r402] This version of the shape function precomputaion routine
+	  has been replaced.
+
+2005-08-23 02:05  unknown_user
+
+	* [r401] [vcp] delete of edited revision with dead state
+
+2004-07-07 02:18  willic3
+
+	* [r400] Moved original version of shape function precomputation
+	  routine to 'unused', as it has been replaced by a more modular
+	  version.
+
+2004-07-07 02:14  willic3
+
+	* [r399] New version of routine to generate shape functions for
+	  quadratic hexes. This is a cleaner (and probably better)
+	  implementation that assumes the elements always have 20 nodes,
+	  rather than the previous variable-nodes formulation. The routine
+	  has also been updated for current usage of parameter statements.
+
+2004-07-06 22:30  willic3
+
+	* [r398] Added parentheses to expression to avoid compiler
+	  complaint.
+
+2004-07-06 22:28  willic3
+
+	* [r397] Fixed routine for linear hex elements. It was incorrectly
+	  set up for quadratic hexes.
+
+2004-07-06 21:17  willic3
+
+	* [r396] New infinite element routine specifically for linear hex
+	  elements.
+
+2004-07-06 03:37  willic3
+
+	* [r395] Initial version of iterative solution driver
+	  incorporating all new methods. It is likely that this driver
+	  will eventually be replaced with a petsc driver.
+
+2004-07-06 03:21  willic3
+
+	* [r393] Fixed argument list when calling routine 'getmat'.
+
+2004-07-06 03:18  willic3
+
+	* [r392] Updated routine for new usage of parameter statements.
+
+2004-07-06 03:15  willic3
+
+	* [r391] Updated routine for new usage of parameter statements and
+	  fixed multiple definitions of 'detinv' variable.
+
+2004-07-06 03:12  willic3
+
+	* [r389] Updated routine for new usage of parameter statements.
+
+2004-07-06 03:04  willic3
+
+	* [r388] Finished updating routine for new usage of parameter
+	  statements and for usage of error string.
+
+2004-07-06 03:01  willic3
+
+	* [r386] Finished updating routine for new usage of parameter
+	  statements and for usage of error string.
+
+2004-07-06 02:56  willic3
+
+	* [r385] Shortened returned error string.
+
+2004-07-06 02:55  willic3
+
+	* [r383] Fixed typo in argument list.
+
+2004-07-06 02:51  willic3
+
+	* [r382] Fixed typing of 'ngauss' variable.
+
+2004-07-06 02:47  willic3
+
+	* [r380] Updated routine for new usage of parameter statements.
+
+2004-07-06 02:46  willic3
+
+	* [r378] Updated routine for new usage of parameter statements.
+
+2004-07-06 02:42  willic3
+
+	* [r376] Updated routine for new usage of parameter statements.
+
+2004-07-06 02:40  willic3
+
+	* [r375] Added errstrng to argument list and set the string if
+	  error is detected.
+
+2004-07-06 02:37  willic3
+
+	* [r373] Fixed argument list for call to formrt.
+
+2004-07-06 01:57  willic3
+
+	* [r371] Moved this unneeded include file to 'unused'.
+
+2005-08-23 02:05  unknown_user
+
+	* [r370] [vcp] delete of edited revision with dead state
+
+2004-07-06 01:56  willic3
+
+	* [r369] This included type/dimension statement is not really
+	  necessary. This array, as well as iddmat (and several others)
+	  can always be dimensioned in terms of a geometry-specific
+	  parameter (ndof in this case).
+
+2004-07-06 01:45  willic3
+
+	* [r367] Moved this unneeded include file to 'unused'.
+
+2005-08-23 02:05  unknown_user
+
+	* [r366] [vcp] delete of edited revision with dead state
+
+2004-07-06 01:45  willic3
+
+	* [r365] This type/dimension statement isn't really needed in an
+	  include file.
+
+2004-07-06 01:35  willic3
+
+	* [r363] Obsolete include files have been moved to 'unused'.
+
+2005-08-23 02:05  unknown_user
+
+	* [r362] [vcp] delete of edited revision with dead state
+
+2004-07-06 01:35  willic3
+
+	* [r361] These include files have not been used for some time.
+
+2004-07-06 01:32  willic3
+
+	* [r359] Updated dimension and type statements to reflect new and
+	  excluded parameters.
+
+2004-07-06 01:31  willic3
+
+	* [r357] Updated parameter definitions to reflect new and excluded
+	  parameters.
+
+2004-07-06 01:28  willic3
+
+	* [r356] Updated dimension and type statements for new and
+	  excluded parameters.
+
+2004-07-06 01:26  willic3
+
+	* [r355] Updated included integer values to reflect new solution
+	  and storage methods.
+
+2004-07-06 01:17  willic3
+
+	* [r353] These unneeded routines have been moved to 'unused'.
+
+2005-08-23 02:05  unknown_user
+
+	* [r352] [vcp] delete of edited revision with dead state
+
+2004-07-06 01:16  willic3
+
+	* [r351] These external routine definitions proved unnecessary for
+	  the elastic case.
+
+2004-07-06 00:45  willic3
+
+	* [r349] These obsolete files have been moved to 'unused'.
+
+2005-08-23 02:05  unknown_user
+
+	* [r348] [vcp] delete of edited revision with dead state
+
+2004-07-06 00:44  willic3
+
+	* [r347] These logical variables are no longer used, other than
+	  the 'reform' variable, which can be stored as a scalar.
+
+2004-07-03 03:44  willic3
+
+	* [r346] Updated routine for new usage of parameter statements.
+
+2004-07-03 03:17  willic3
+
+	* [r344] These obsolete include files have been moved to 'unused'.
+
+2005-08-23 02:05  unknown_user
+
+	* [r343] [vcp] delete of edited revision with dead state
+
+2004-07-03 03:16  willic3
+
+	* [r342] These material property labels are not needed with the
+	  new methods of defining materials.
+
+2004-07-03 02:54  willic3
+
+	* [r341] Initial version of routine to update state variables
+	  after iteration convergence.
+
+2004-07-03 02:14  willic3
+
+	* [r340] Corrected time-dependent stress computation to use total
+	  strain rather than strain increment.
+
+2004-07-03 01:42  willic3
+
+	* [r338] These routines have all been replaced.
+
+2004-07-03 01:40  willic3
+
+	* [r337] Increased indexing efficiency and updated routine for
+	  proper use of state and dstate.
+
+2004-07-03 01:36  willic3
+
+	* [r336] Increased indexing efficiency and updated routine for
+	  proper use of state and dstate.
+
+2004-07-03 01:29  willic3
+
+	* [r335] Updated routines for proper use of state and dstate.
+
+2004-07-03 01:07  willic3
+
+	* [r334] Finished changing routine from elastic stress driver
+	  routine to a generic routine.
+
+2004-07-03 00:57  willic3
+
+	* [r333] Increased indexing efficiency and fixed routine to use
+	  dstate rather than state for stress computations.
+
+2004-07-03 00:44  willic3
+
+	* [r332] Increased indexing efficiency and fixed routine to use
+	  dstate rather than state for stress computations. The variables
+	  in state should only be updated after iteration convergence.
+
+2004-07-02 04:03  willic3
+
+	* [r331] Updated routine for new usage of parameter statements.
+
+2004-07-02 04:00  willic3
+
+	* [r329] Updated routine for new usage of parameter statements.
+
+2004-07-02 03:57  willic3
+
+	* [r328] Updated routine for new usage of parameter statements.
+
+2004-07-02 03:20  willic3
+
+	* [r326] This routine has been replaced by separate driver and
+	  computational routines and has been moved to the 'unused'
+	  directory.
+
+2005-08-23 02:04  unknown_user
+
+	* [r325] [vcp] delete of edited revision with dead state
+
+2004-07-02 03:20  willic3
+
+	* [r324] This routine has been replaced by separate driver and
+	  computational routines.
+
+2004-07-02 03:18  willic3
+
+	* [r323] Initial version of new computational routine for
+	  gravitational loading for small strain problems.
+
+2004-07-02 03:17  willic3
+
+	* [r322] Initial version of new driver routine for gravitational
+	  loading.
+
+2004-07-02 02:59  willic3
+
+	* [r320] Updated routine for new usage of parameter statements.
+
+2004-07-02 02:49  willic3
+
+	* [r319] Fixed argument list to getjac.
+
+2004-07-02 02:48  willic3
+
+	* [r318] Updated routine for new usage of parameter statements,
+	  put in errstrng argument and set the errstrng value for error
+	  conditions, and fixed incorrect dimention of shj.
+
+2004-07-02 02:36  willic3
+
+	* [r317] Updated routine arguments, fixed routine for new use of
+	  parameter statements, updated call to get to include errstrng
+	  argument, and fixed indexing of jacobian.
+
+2004-07-02 00:32  willic3
+
+	* [r316] Added tminmax argument.
+
+2004-07-02 00:19  willic3
+
+	* [r315] Included tminmax argument, which is used by the
+	  time-dependent version of this routine.
+
+2004-07-01 23:51  willic3
+
+	* [r314] Checked in my current very long todo list. This list
+	  contains some obsolete info as well as some things that have
+	  already been done. I need to edit the list and eliminate many
+	  items.
+
+2004-06-26 04:41  willic3
+
+	* [r312] These routines have been replaced.
+
+2004-06-26 04:40  willic3
+
+	* [r311] Added routines to compute stress and update material
+	  matrix for time dependent problems and for only computing
+	  stress. Simplified some routines by calling elastic routines
+	  already defined, and included error codes.
+
+2004-06-26 04:37  willic3
+
+	* [r310] Initial version of code to initialize material and
+	  stiffness matrices at the beginning of a time step for small
+	  strain problems.
+
+2004-06-26 02:40  willic3
+
+	* [r309] Fixed routine to accept error info from
+	  material-model-specific codes.
+
+2005-08-23 02:04  unknown_user
+
+	* [r308] [vcp] delete of edited revision with dead state
+
+2004-06-25 22:59  willic3
+
+	* [r307] This subroutine has been moved to the 'unused' directory.
+	  It has been replaced by the more general matinit_drv.f routine.
+
+2005-08-23 02:04  unknown_user
+
+	* [r306] [vcp] delete of edited revision with dead state
+
+2004-06-25 22:57  willic3
+
+	* [r305] This routine has been moved to the 'unused' directory,
+	  and has been replaced by the routine elas_matinit_cmp_ss.f.
+
+2004-06-25 22:54  willic3
+
+	* [r304] Added iddmat material matrix index array, which is needed
+	  when updating material matrices.
+
+2004-06-25 22:51  willic3
+
+	* [r303] Initial version of routine to compute stress and strain
+	  for time dependent solution, and update global load vector,
+	  material and stiffness matrices for small strain problems.
+
+2004-06-25 22:37  willic3
+
+	* [r302] Fixed subroutine name.
+
+2004-06-25 22:34  willic3
+
+	* [r301] Initial version of routine to perform elastic stress
+	  computation, add equivalent nodal loads to global load vector,
+	  and update stiffness matrix for elastic solution in small strain
+	  problems.
+
+2004-06-25 04:46  willic3
+
+	* [r300] Added missing time step information.
+
+2004-06-25 04:45  willic3
+
+	* [r299] Initial version of routine to drive stress
+	  computation/material and stiffness matrix reform.
+
+2004-06-25 04:36  willic3
+
+	* [r297] Routine to define external names needed by
+	  stress_mat_drv. Remember to change names accordingly in material
+	  model routines.
+
+2004-06-25 04:33  willic3
+
+	* [r296] Include file to define external routine names called by
+	  stress_mat_drv. It is assumed that the material matrix will
+	  always be predefined, so the names are the same as those
+	  required by stress_drv.
+
+2004-06-25 03:09  willic3
+
+	* [r295] Added missing time step information.
+
+2004-06-25 03:06  willic3
+
+	* [r294] Initial version of routine to perform time-dependent
+	  stress computations for small strain problems.
+
+2005-08-23 02:04  unknown_user
+
+	* [r293] [vcp] delete of edited revision with dead state
+
+2004-06-24 23:42  willic3
+
+	* [r292] This routine has been replaced by the more generic
+	  stress_drv routine.
+
+2004-06-24 23:40  willic3
+
+	* [r291] Updated routine to handle additional arguments (not used
+	  in this routine) that will also be passed to time-dependent and
+	  large deformation computation routines.
+
+2004-06-24 04:05  willic3
+
+	* [r290] Initial version of stress computation driver routine.
+	  Information controlling elastic/time-dependent, large
+	  deformation, etc. is passed in.
+
+2004-06-24 03:56  willic3
+
+	* [r288] Include file defining external stress computation
+	  routines for time-dependent solution. These are passed by
+	  stress_drv.
+
+2004-06-24 03:52  willic3
+
+	* [r287] Updated the routine to reflect a modified method of
+	  determining when stiffness/material matrices should be reformed.
+	  This is still not complete. Some of the parameters are redundant
+	  or unnecessary, but I should wait until after adaptive time
+	  stepping has been implemented to finish modifying the routine.
+
+2004-06-24 03:47  willic3
+
+	* [r286] Fixed for consistency with ntimdat_def.inc.
+	* [r285] Fixed name of ntdinit to ntdinitp to represent scalar
+	  value.
+
+2004-06-24 03:43  willic3
+
+	* [r284] Updated to be consistent with ntimdat_def.inc.
+
+2004-06-24 03:42  willic3
+
+	* [r283] Eliminated parameters that are no longer needed and added
+	  ntdinit parameter that specifies reformation of material and
+	  stiffness matrices at the beginning of a time step.
+
+2004-06-24 02:19  willic3
+
+	* [r282] Computational routine to compute elastic material
+	  matrices and update the stiffness matrix at the beginning of the
+	  elastic solution (small strain case). The appropriate material
+	  model routine name is passed in.
+
+2004-06-24 02:16  willic3
+
+	* [r281] Driver routine to initialize material matrices and
+	  stiffness matrix at the beginning of the elastic solution and at
+	  the beginning of each time step. The appropriate computational
+	  routine name is passed in.
+
+2004-06-24 01:54  willic3
+
+	* [r279] External routine names for material matrix initialization
+	  at the beginning of the elastic solution.
+
+2004-06-24 01:49  willic3
+
+	* [r277] External routine names for material matrix initialization
+	  at the beginning of a time step.
+
+2004-06-24 01:37  willic3
+
+	* [r276] Fixed incorrect dimensions for lm and lmx arrays.
+
+2004-06-22 04:03  willic3
+
+	* [r275] Updated routine for new usage of parameter statements and
+	  error codes.
+
+2004-06-22 03:59  willic3
+
+	* [r273] These routines are not presently used.
+
+2005-08-23 02:04  unknown_user
+
+	* [r272] [vcp] delete of edited revision with dead state
+
+2004-06-22 03:58  willic3
+
+	* [r271] These routines are not presently used. formf has been
+	  replaced by routine formf_ss (for small strain case). The
+	  effective stress functions will need to be generalized for use
+	  by specific material model routines.
+
+2004-06-22 03:55  willic3
+
+	* [r270] Updated routine for new usage of parameter statements and
+	  error codes.
+
+2004-06-22 03:50  willic3
+
+	* [r269] Update routine for new usage of parameter statements and
+	  error codes.
+
+2004-06-22 03:34  willic3
+
+	* [r268] Updated routine for new usage of parameter statements and
+	  error codes.
+
+2004-06-22 03:24  willic3
+
+	* [r267] Updated routine for new usage of parameter statements and
+	  for use of error codes and strings.
+
+2004-06-22 03:14  willic3
+
+	* [r266] Updated routine to use error codes and strings (for the
+	  case where a user specifies an undefined material).
+
+2004-06-22 03:11  willic3
+
+	* [r265] Updated routine for error codes and strings.
+
+2004-06-22 03:08  willic3
+
+	* [r264] Put in missing error code initialization.
+
+2004-06-22 03:07  willic3
+
+	* [r263] Updated routine to use error codes and strings rather
+	  than write statements.
+
+2004-06-22 02:58  willic3
+
+	* [r262] Updated routine to return error code and corresponding
+	  string.
+
+2004-06-22 02:53  willic3
+
+	* [r260] Updated routine to use error string variable.
+
+2004-06-22 02:49  willic3
+
+	* [r259] Updated routine for new usage of parameter statements.
+	  Added support for error string variable to define routine from
+	  which an error was generated.
+
+2004-06-22 02:09  willic3
+
+	* [r257] Updated routine for new usage of parameter statements.
+
+2004-06-18 22:32  willic3
+
+	* [r256] Update routine for new usage of parameter statements.
+
+2004-06-18 22:29  willic3
+
+	* [r255] Updated routine for new usage of parameter statements and
+	  fixed return on error.
+
+2004-06-18 22:25  willic3
+
+	* [r253] Update routine for new usage of parameter statements.
+
+2004-06-18 22:22  willic3
+
+	* [r252] Updated routine for new usage of parameter statements.
+
+2004-06-18 22:18  willic3
+
+	* [r251] Adjusted routine for new usage of parameter statements.
+	  This routine and the accompanying back-substitution routine
+	  should be replaced with lapack routines (SPOFA and SPOSL?).
+
+2004-06-18 22:14  willic3
+
+	* [r250] Updated this routine and adjusted it to deal with
+	  different element types.
+
+2005-08-23 02:04  unknown_user
+
+	* [r249] [vcp] delete of edited revision with dead state
+
+2004-06-18 22:07  willic3
+
+	* [r248] This routine has been renamed and updated.
+
+2004-06-18 22:04  willic3
+
+	* [r247] Adjusted routine for new usage of parameter statements.
+
+2004-06-18 22:03  willic3
+
+	* [r246] Adjusted routine for new usage of parameter statements.
+
+2004-06-18 22:00  willic3
+
+	* [r245] Adjusted routine for new usage of parameter statements.
+
+2004-06-18 21:58  willic3
+
+	* [r244] Adjusted routine for new usage of parameter statements.
+
+2004-06-18 21:55  willic3
+
+	* [r242] Adjusted routine for new usage of parameter statements.
+
+2004-06-18 21:52  willic3
+
+	* [r240] Adjusted routine for new usage of parameter statements.
+
+2004-06-18 21:50  willic3
+
+	* [r239] Adjusted routine for new usage of parameter statements.
+
+2004-06-18 21:49  willic3
+
+	* [r238] Adjusted routine for new usage of parameter statements.
+
+2004-06-18 21:45  willic3
+
+	* [r237] Adjusted for new strategy of using parameters.
+
+2004-06-18 21:44  willic3
+
+	* [r235] These files have been replaced by a single file.
+
+2005-08-23 02:04  unknown_user
+
+	* [r234] [vcp] delete of edited revision with dead state
+
+2004-06-18 21:43  willic3
+
+	* [r233] These have been replaced by the single ndimens.inc
+	  parameter definition include statement.
+
+2004-06-18 21:40  willic3
+
+	* [r232] Removed obsolete i/o routines and used parameters from
+	  include statements rather than passing them in.
+
+2004-06-18 21:26  willic3
+
+	* [r231] Initial version of new routine to output all stress and
+	  strain information for all gauss points.
+
+2004-06-18 21:25  willic3
+
+	* [r229] Fixed incorrectly-formatted parameter statement.
+
+2004-06-18 21:08  willic3
+
+	* [r228] All geometry-specific parameters are now defined in this
+	  included parameter statement.
+
+2004-06-18 20:46  willic3
+
+	* [r227] Added netypes to the parameters defined for element type.
+
+2004-06-18 20:38  willic3
+
+	* [r225] Include file to define the maximum number of material
+	  models and state variables.
+
+2004-06-18 03:42  willic3
+
+	* [r224] Fixed incorrect indexing of state variable.
+
+2004-06-18 02:05  willic3
+
+	* [r223] Removed unnecessary i/o parameters and returned error
+	  code for out-of-range material model.
+
+2004-06-18 01:52  willic3
+
+	* [r222] Removed unnecessary i/o parameters. Also stripped
+	  debugging code for now.
+
+2004-06-18 01:44  willic3
+
+	* [r221] Removed unnecessary i/o parameters.
+
+2004-06-18 01:10  willic3
+
+	* [r220] Fixed variable representing element number to be
+	  consistent with other routines.
+
+2004-06-18 01:09  willic3
+
+	* [r219] Fixed variable representing element number to be
+	  consistent with other routines.
+
+2004-06-18 01:06  willic3
+
+	* [r218] Fixed incorrect returned error code.
+
+2004-06-17 04:14  willic3
+
+	* [r217] New routine to compute forces due to split nodes for
+	  small strain problems and add them to global load vector.
+
+2004-06-17 03:24  willic3
+
+	* [r216] Removed unnecessary i/o information.
+
+2004-06-17 03:23  willic3
+
+	* [r215] Removed unnecessary i/o information.
+
+2004-06-17 03:21  willic3
+
+	* [r214] Removed unnecessary i/o information.
+
+2005-08-23 02:03  unknown_user
+
+	* [r213] [vcp] delete of edited revision with dead state
+
+2004-06-17 00:00  willic3
+
+	* [r212] These routines have all been replaced by renamed routines.
+
+2004-06-16 23:57  willic3
+
+	* [r211] Fixed routine name, added dimension parameters from
+	  include statement, fixed multiple type declarations, and changed
+	  variable name corresponding to current element number.
+
+2004-06-16 23:53  willic3
+
+	* [r210] Routine to compute small strain elastic stresses and add
+	  equivalent nodal loads to global load vector. B-bar information
+	  is passed in, as well as the appropriate material library
+	  routine for computation of elastic stresses.
+
+2004-06-16 23:51  willic3
+
+	* [r209] Driver routine for computation of small strain elastic
+	  stresses. B-bar routine names are passed in and are sent to
+	  elas_strs_cmp_ss, along with the appropriate material library
+	  routine for elastic stress computation.
+
+2004-06-16 23:11  willic3
+
+	* [r208] Driver routine to obtain elastic material matrix.
+	  Material histories are used, and the appropriate routine name is
+	  passed to elas_mat_cmp. The number of allowed material models is
+	  presently set to 20, but this can easily be changed. Eventually,
+	  this routine should be replaced by a python/C++ routine that can
+	  dynamically create and pass the appropriate routine name.
+
+2004-06-16 23:07  willic3
+
+	* [r207] Routine to compute the elastic material matrix for all
+	  Gauss points in an element. The appropriate material routine
+	  name to use is passed in as an external routine name.
+
+2004-06-16 22:44  willic3
+
+	* [r206] Forgot type statement for mhist array.
+
+2004-06-16 22:43  willic3
+
+	* [r205] Routine that handles new method of doing material
+	  histories. Also, first routine to start using standardized error
+	  codes.
+
+2005-08-23 02:03  unknown_user
+
+	* [r204] [vcp] delete of edited revision with dead state
+
+2004-06-16 04:31  willic3
+
+	* [r203] These include files have been renamed and their contents
+	  altered to reflect new naming scheme.
+
+2004-06-16 04:29  willic3
+
+	* [r201] New version of include file that defines external routine
+	  names called from elas_strs_drv.
+
+2004-06-16 04:24  willic3
+
+	* [r200] New version of include file defining external routine
+	  names for computation of elastic material matrix.
+
+2005-08-23 02:03  unknown_user
+
+	* [r199] [vcp] delete of edited revision with dead state
+
+2004-06-16 04:07  willic3
+
+	* [r198] File name has been changed to mat_1.f
+
+2004-06-16 04:06  willic3
+
+	* [r197] New version of routines for material type 1 (isotropic
+	  linear elastic). The main file and all subroutines contained in
+	  the file have had their names changed to be less confusing (more
+	  use of underscores).
+
+2004-06-16 03:03  willic3
+
+	* [r195] These routines have been replaced by a new set of
+	  routines.
+
+2005-08-23 02:03  unknown_user
+
+	* [r194] [vcp] delete of edited revision with dead state
+
+2004-06-16 03:02  willic3
+
+	* [r193] These routines are no longer used and have been moved to
+	  the 'unused' directory. The routines formdf, formes, and stiffql
+	  have been replaced by routines specific to small strain (large
+	  strain routines will be added later). The routine shapql has
+	  been replaced by a number of routines that now handle multiple
+	  element types. The replacement routines include a large number
+	  of precomputation routines for different element types, as well
+	  as the routines getshapb, getshapn, getjac, and getder, which
+	  compute geometry-dependent quantities during calculations.
+
+2004-06-16 02:52  willic3
+
+	* [r192] Initial version of new routine to compute forces due to
+	  applied displacement/velocity boundary conditions. This version
+	  loops over element material groups, handles all element types,
+	  and is specific to small strain problems. External routine names
+	  are passed in to specify b-bar behavior.
+
+2004-06-16 02:47  willic3
+
+	* [r191] Clarified use of included dimension parameters.
+
+2004-06-16 02:46  willic3
+
+	* [r190] Deleted unused variable and clarified use of included
+	  dimension parameters.
+
+2004-06-16 02:44  willic3
+
+	* [r189] Fixed several typos in matrix inversion section.
+
+2004-06-16 02:43  willic3
+
+	* [r188] Added missing dimension parameters and fixed typo in call
+	  to daxpy.
+
+2004-06-16 02:41  willic3
+
+	* [r187] Initial version of new routine to localize coordinates,
+	  compute the stiffness matrix, and rotate it if necessary. This
+	  routine is specific for small strain problems.
+
+2004-06-16 01:37  willic3
+
+	* [r186] Added iddmat to argument list (it was needed), fixed
+	  definition of ngaussdim, and corrected spelling of 'vol' when
+	  passed as argument to getshape.
+
+2004-06-16 01:18  willic3
+
+	* [r185] Added neemax to list of parameters.
+
+2004-06-16 00:22  willic3
+
+	* [r184] Initial version of updated stiffness matrix computation
+	  routine that handles all element types for the small strain case.
+
+2005-08-23 02:02  unknown_user
+
+	* [r183] [vcp] delete of edited revision with dead state
+
+2004-06-15 04:41  willic3
+
+	* [r182] This file has been renamed to bdeld_ss. The '_ss' suffix
+	  will be used for all small-strain-specific routines.
+
+2004-06-15 04:40  willic3
+
+	* [r181] Changed name of this routine for less-confusing naming
+	  conventions. Fixed error where sh was being passed as a
+	  parameter rather than shd.
+
+2004-05-26 00:39  willic3
+
+	* [r180] Consolidation and reorganization of variable group
+	  information.
+
+2004-05-26 00:38  willic3
+
+	* [r179] Fixed argument list for modified elasmatcmp.
+
+2004-05-25 22:34  willic3
+
+	* [r178] Consolidation and reorganization of variable group
+	  information.
+
+2004-05-25 04:03  willic3
+
+	* [r177] Fixed some typos and undefined variables.
+
+2004-05-25 04:01  willic3
+
+	* [r175] Initial versions of driver and computation routines for
+	  computation of elastic material matrices and for computation of
+	  small strain elastic stresses. Also, a license blurb and a
+	  makefile for testing individual routines.
+
+2005-08-23 02:02  unknown_user
+
+	* [r174] [vcp] delete of edited revision with dead state
+
+2004-05-25 03:18  willic3
+
+	* [r173] Removed these files, which will be replaced by files
+	  using a different naming scheme.
+
+2004-05-25 03:06  willic3
+
+	* [r171] Added default value for 'big'.
+
+2004-05-25 03:04  willic3
+
+	* [r170] Include files defining external material property
+	  routines.
+
+2004-05-21 04:13  willic3
+
+	* [r169] Fixed routine elasstrs1 to take localized total strain as
+	  input and transfer it to the state variable.
+
+2004-05-21 04:08  willic3
+
+	* [r168] Initial version of driver routine for small strain
+	  elastic computations. This rouinte selects the material group
+	  and passes the appropriate subroutine names to the computation
+	  routine.
+
+2004-05-21 04:07  willic3
+
+	* [r167] Initial version of routine to compute small strain
+	  elastic stresses and strains for a given material group.
+
+2004-05-19 23:41  willic3
+
+	* [r166] Initial version of subroutines to describe material type
+	  1 (isotropic linear elastic). This includes i/o routines as well
+	  as routines to compute the material matrix and stress. This
+	  should serve as a template for other material models.
+
+2004-05-14 04:37  willic3
+
+	* [r165] Initial version of top-level routine for reading material
+	  properties.
+
+2004-05-14 04:35  willic3
+
+	* [r164] Initial version of routine to do keyword = value parsing.
+
+2004-04-15 04:26  willic3
+
+	* [r162] Tests for project.
+
+2004-04-15 04:24  willic3
+
+	* [r160] Bindings for project.
+
+2004-04-15 04:22  willic3
+
+	* [r158] Python drivers for project.
+
+2004-04-15 04:21  willic3
+
+	* [r156] Two additional files for lithomop3d library.
+
+2004-04-15 04:18  willic3
+
+	* [r154] All f77, make, and include files for project.
+
+2004-04-15 04:15  willic3
+
+	* [r153] Data files for simple example problem and patch tests.
+
+2004-04-15 04:13  willic3
+
+	* [r151] Data files for SCEC benchmarks 1 and 2.
+
+2004-04-15 04:11  willic3
+
+	* [r149] Command file for running SCEC benchmark 2.
+
+2004-04-15 04:09  willic3
+
+	* [r148] Top-level makefile for lithomop3d.
+
+2004-04-15 04:07  willic3
+
+	* [r146] Created new name for PyCrust project since the name
+	  'PyCrust' is already taken. The new names are: lithomod:
+	  Standalone version of the code (nonexistent so far). lithomop:
+	  Pyre version of the code (this project). lithomop3d, etc.:
+	  Versions of the code for different geometries.
+
+2005-08-23 01:57  boo
+
+	* [r145] [vcp] select <> as trunk
+
+2005-08-23 01:56  VCP
+
+	* [r144] VCP: initializing layout
+
