@@ -4,6 +4,13 @@ Please report bugs at <http://geodynamics.org/roundup>.
 Send questions to cig-short@geodynamics.org.
 
 
+Version 0.8.0
+
+* This first version of PyLith is a direct descendant of Lithomop and
+  marks the first version that runs in parallel.  The code now uses
+  the PETSc Sieve package.
+
+
 Version 0.7.2
 
 * Lithomop3d now uses the GNU Build System (Autoconf, Automake, and

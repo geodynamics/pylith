@@ -30,8 +30,27 @@ In addition, PyLith v0.8.0 requires the following software packages:
   fact, PETSc's `configure.py' can automatically download and install
   MPICH for you (`--download-mpich=yes').
 
-* PETSc version 2.3, available from the MCS web site at Argonne
-  National Laboratory:
+* The development version of PETSc, which you can download using
+  Mercurial:
+
+    hg clone http://mercurial.mcs.anl.gov/petsc/petsc-dev
+    cd petsc-dev/python
+    hg clone http://mercurial.mcs.anl.gov/petsc/BuildSystem
+
+  As of this writing, the latest source code revision is r8951.
+  Mercurial may be obtained here:
+
+    <http://www.selenic.com/mercurial/>
+
+  PETSc must be configured with the Sieve package (--with-sieve=1).
+  This, in turn, requires that it be built with a C++ compiler
+  (--with-clanguage=C++) and that you have Boost headers installed:
+
+    <http://www.boost.org/>
+
+  Use '--with-boost-dir=' to specify the full path to Boost's parent
+  directory.  For more information about installing PETSc, see the MCS
+  web site at Argonne National Laboratory:
 
     <http://www-unix.mcs.anl.gov/petsc/petsc-2>
 
@@ -48,8 +67,9 @@ In addition, PyLith v0.8.0 requires the following software packages:
 
 Note that releases of both PETSc and Pythia are generally not
 backwards-compatible with prior versions.  Therefore, you must install
-PETSc v2.3 and Pythia v0.8 specifically; future versions of PETSc and
-Pythia would not be expected to work with PyLith v0.8.0.
+PETSc r8951 (or perhaps the equivalent final release) and Pythia v0.8
+specifically; future versions of PETSc and Pythia would not be
+expected to work with PyLith v0.8.0.
 
 Installing PyLith
 =================
@@ -75,33 +95,6 @@ handful of short examples.
 More information about `configure' and the build system may be found
 under "Generic GNU Installation Instructions", below.
 
-Installation Example
-====================
-
-The following example assumes you already have the required language
-tools installed.
-
-    mkdir $HOME/cig
-    cd $HOME/cig
-    gunzip -c petsc-lite-2.3.1.tar.gz | tar xf -
-    cd petsc-2.3.1-p12
-    export PETSC_DIR=`pwd`
-    ./config/configure.py --download-mpich=1 --with-sieve=true --with-clanguage=C++
-    make all
-    export PATH=$PETSC_DIR/externalpackages/mpich2-1.0.3/linux-gnu-c-real-debug/bin:$PATH
-    cd ..
-    gunzip -c pythia-0.8.tar.gz | tar xf -
-    cd pythia-0.8
-    ./configure --prefix=$HOME/cig
-    make
-    make install
-    cd ..
-    gunzip -c pylith3d-0.8.0.tar.gz | tar xf -
-    cd pylith3d-0.8.0
-    ./configure --prefix=$HOME/cig PYTHONPATH=$HOME/cig/lib/python2.3/site-packages
-    make
-    make install
-
 Notes
 =====
 
@@ -119,15 +112,8 @@ standard Python interpreter -- give PyLith's `configure' the
 `--without-embedding' option.  However, this is not guaranteed to work
 properly unless you installed MPI as a shared library.
 
-PyLith v0.8.0 was tested with the following systems and
-configurations:
-
-OS           CPU      FC              CC         CXX        PYTHON  MPI              PETSc            notes
------------  -------  --------------  ---------  ---------  ------  ---------------  ---------------  -----
-linux-gnu    i686     g77-3.3.5       gcc-3.3.5  g++-3.3.5  2.3.5   mpich-1.2.6      petsc-2.3.0
-linux-gnu    i686     gfortran-4.0.2  gcc-4.0.2  g++-4.0.2  2.3.5   mpich2-1.0.2p1   petsc-2.3.0
-linux-gnu    i686     g77-3.3.5       gcc-4.0.2  g++-4.0.2  2.3.5   mpich-1.2.6 (*)  petsc-2.3.1-p12  (*) MPICH built with gcc-2.95.3
-linux-gnu    x86_64   ifort-9.0       gcc-3.2.3  g++-3.2.3  2.4.1   mpichgm-1.2.6    petsc-2.3.1-p7
+PyLith v0.8.0 was tested on Linux (x86), Mac OS X (PowerPC), and
+Windows NT/2000/XP (Cygwin 1.5.19-4).
 
 Generic GNU Installation Instructions
 *************************************
