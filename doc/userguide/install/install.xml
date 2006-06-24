@@ -196,13 +196,18 @@ PATH=${PATH}:<replaceable>replace_with_absolute_path</replaceable>/pylith-0.8-li
 	</listitem>
 	<listitem>
 	  <para>
-            ADD HOW TO RUN
+            To run PyLith, double click on the PyLith icon on the
+            desktop or select
+            <menuchoice><guimenu>Start</guimenu><guimenuitem>All
+            Programs</guimenuitem><guimenuitem>PyLith</guimenuitem><guimenuitem>PyLith</guimenuitem>
+            </menuchoice>
           </para>
 	</listitem>
 	<listitem>
 	  <para>
             To uninstall PyLith, simply select
-            <menuchoice><guimenu>Start</guimenu><guimenuitem>Programs</guimenuitem><guimenuitem>PyLith</guimenuitem><guimenuitem>Uninstall
+            <menuchoice><guimenu>Start</guimenu><guimenuitem>All
+            Programs</guimenuitem><guimenuitem>PyLith</guimenuitem><guimenuitem>Uninstall
             PyLith</guimenuitem> </menuchoice>.
           </para>
 	</listitem>

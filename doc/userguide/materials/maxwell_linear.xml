@@ -12,7 +12,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq1">
+                        <mediaobject id="maxwell_linear_eq1">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq1.eps" format="EPS"/>
                             </imageobject>
@@ -31,7 +31,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq2">
+                        <mediaobject id="maxwell_linear_eq2">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq2.eps" format="EPS"/>
                             </imageobject>
@@ -48,7 +48,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq3">
+                        <mediaobject id="maxwell_linear_eq3">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq3.eps" format="EPS"/>
                             </imageobject>
@@ -65,7 +65,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq4">
+                        <mediaobject id="maxwell_linear_eq4">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq4.eps" format="EPS"/>
                             </imageobject>
@@ -82,7 +82,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq5">
+                        <mediaobject id="maxwell_linear_eq5">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq4.eps" format="EPS"/>
                             </imageobject>
@@ -99,7 +99,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq6">
+                        <mediaobject id="maxwell_linear_eq6">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq6.eps" format="EPS"/>
                             </imageobject>
@@ -116,7 +116,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq7">
+                        <mediaobject id="maxwell_linear_eq7">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq7.eps" format="EPS"/>
                             </imageobject>
@@ -133,7 +133,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq8">
+                        <mediaobject id="maxwell_linear_eq8">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq8.eps" format="EPS"/>
                             </imageobject>
@@ -150,7 +150,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq9">
+                        <mediaobject id="maxwell_linear_eq9">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq9.eps" format="EPS"/>
                             </imageobject>
@@ -167,7 +167,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq10">
+                        <mediaobject id="maxwell_linear_eq10">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq10.eps" format="EPS"/>
                             </imageobject>
@@ -184,7 +184,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq11">
+                        <mediaobject id="maxwell_linear_eq11">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq11.eps" format="EPS"/>
                             </imageobject>
@@ -201,7 +201,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq12">
+                        <mediaobject id="maxwell_linear_eq12">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq12.eps" format="EPS"/>
                             </imageobject>
@@ -218,7 +218,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq13">
+                        <mediaobject id="maxwell_linear_eq13">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq13.eps" format="EPS"/>
                             </imageobject>
@@ -235,7 +235,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq14">
+                        <mediaobject id="maxwell_linear_eq14">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq14.eps" format="EPS"/>
                             </imageobject>
@@ -252,7 +252,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq15">
+                        <mediaobject id="maxwell_linear_eq15">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq15.eps" format="EPS"/>
                             </imageobject>
@@ -270,7 +270,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq16">
+                        <mediaobject id="maxwell_linear_eq16">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq16.eps" format="EPS"/>
                             </imageobject>
@@ -291,7 +291,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq17">
+                        <mediaobject id="maxwell_linear_eq17">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq17.eps" format="EPS"/>
                             </imageobject>
@@ -308,7 +308,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq18">
+                        <mediaobject id="maxwell_linear_eq18">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq18.eps" format="EPS"/>
                             </imageobject>
@@ -325,7 +325,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq19">
+                        <mediaobject id="maxwell_linear_eq19">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq19.eps" format="EPS"/>
                             </imageobject>
@@ -342,7 +342,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq20">
+                        <mediaobject id="maxwell_linear_eq20">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq20.eps" format="EPS"/>
                             </imageobject>
@@ -359,7 +359,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq21">
+                        <mediaobject id="maxwell_linear_eq21">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq21.eps" format="EPS"/>
                             </imageobject>
@@ -376,7 +376,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq22">
+                        <mediaobject id="maxwell_linear_eq22">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq22.eps" format="EPS"/>
                             </imageobject>
@@ -393,7 +393,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq23">
+                        <mediaobject id="maxwell_linear_eq23">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq23.eps" format="EPS"/>
                             </imageobject>
@@ -410,7 +410,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq24">
+                        <mediaobject id="maxwell_linear_eq24">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq24.eps" format="EPS"/>
                             </imageobject>
@@ -430,7 +430,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq25">
+                        <mediaobject id="maxwell_linear_eq25">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq25.eps" format="EPS"/>
                             </imageobject>
@@ -449,7 +449,7 @@
             <tbody>
                 <row>
                     <entry align="left">
-                        <mediaobject id="eq26">
+                        <mediaobject id="maxwell_linear_eq26">
                             <imageobject role="fo">
                                 <imagedata fileref="figs/ml-eq26.eps" format="EPS"/>
                             </imageobject>

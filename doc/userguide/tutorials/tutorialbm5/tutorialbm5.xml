@@ -519,8 +519,25 @@
           dialog box and the click the <guibutton>Open</guibutton>
           button. Click the <guibutton>Accept</guibutton> button. You
           should see a color rendering of the x displacements. You can
-          use the mouse to rotate, translate, and zoom.
+          use the mouse to rotate, translate, and zoom. Your image
+          should look similar to the one in <xref
+          linkend="figure_bm5_xdisp_t10" />.
         </para>
+	
+	<figure id="figure_bm5_xdisp_t10">
+	  <title>ParaView rendering of displacement in x-direction at
+	  time step 10 (10 yrs after imposed dislocation) for SCEC
+	  Benchmark 5.</title>
+	  <mediaobject>
+	    <imageobject role="fo">
+	      <imagedata fileref="figs/xdisp_t10.eps" format="EPS" />
+	    </imageobject>
+	    <imageobject role="xhtml,html">
+	      <imagedata fileref="figs/xdisp_t10.png" format="PNG" />
+	    </imageobject>
+	  </mediaobject>
+	</figure>
+
       </listitem>
       <listitem>
 	<para>
@@ -546,8 +563,28 @@
           dots) in the toolbar. After clicking the
           <guibutton>Accept</guibutton> button, you should have a
           vector plot. You can turn on/off other datasets by clicking
-          on the eye icon to the left of the dataset name.
+          on the eye icon to the left of the dataset name. If you
+          color the surfaces using the x-displacements field while
+          also making the displacement vectors visible (colored using
+          <literal>property</literal>), you should see an image
+          similar to the one in <xref
+          linkend="figure_bm5_xdisp_vec_t10" />.
         </para>
+
+	<figure id="figure_bm5_xdisp_vec_t10">
+	  <title>ParaView rendering of displacement in x-direction and
+	  displacement vectors at time step 10 (10 yrs after imposed
+	  dislocation) for SCEC Benchmark 5.</title>
+	  <mediaobject>
+	    <imageobject role="fo">
+	      <imagedata fileref="figs/xdisp_vec_t10.eps" format="EPS" />
+	    </imageobject>
+	    <imageobject role="xhtml,html">
+	      <imagedata fileref="figs/xdisp_vec_t10.png" format="PNG" />
+	    </imageobject>
+	  </mediaobject>
+	</figure>
+
       </listitem>
     </orderedlist>
   </section>
