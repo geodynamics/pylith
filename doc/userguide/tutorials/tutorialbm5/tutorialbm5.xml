@@ -368,7 +368,8 @@
           input.
         </para>
 	<screen>
-<prompt>bash$ </prompt><userinput>../../utils/faultcalc p=bm5.fault.par n=bm5.coord i=bm5.1.fbc o=bm5.split</userinput>
+<prompt>bash$ </prompt><userinput>../../utils/faultcalc p=bm5.fault.par n=bm5.coord \
+i=bm5.1.fbc o=bm5.split</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -498,7 +499,8 @@
           <filename>bm5_1.0.mesh.t00010.inp</filename>.
         </para>
 	<screen>
-<prompt>bash$ </prompt><userinput>cat bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp > bm5_1.0.mesh.t00010.inp</userinput>
+<prompt>bash$ </prompt><userinput>cat bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp \
+> bm5_1.0.mesh.t00010.inp</userinput>
         </screen>
       </listitem>
       <listitem>
