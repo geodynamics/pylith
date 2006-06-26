@@ -114,6 +114,22 @@ PATH=${PATH}:<replaceable>replace_with_absolute_path</replaceable>/pylith-0.8-li
 	</listitem>
 	<listitem>
 	  <para>
+            Add <filename
+            class="directory">pylith-0.8-linux-x86/lib</filename> to
+            your <envar>LD_LIBRARY_PATH</envar>. You will likely want to add
+            something like
+	  <screen>
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:<replaceable>replace_with_</replaceable>
+<replaceable>absolute_path</replaceable>/pylith-0.8-linux-x86/lib
+          </screen>
+            to your <filename>.bashrc</filename> file (if you are
+            using bash as your shell) or the equivalent to your
+            <filename>.cshrc</filename> file (if you are using tcsh as
+            your shell).
+          </para>
+	</listitem>
+	<listitem>
+	  <para>
             To uninstall PyLith, simply remove the <filename
             classname="directory">pylith-0.8-linux-x86</filename>
             directory and all of its sub-directories.
