@@ -187,8 +187,9 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 {
   char *meshInputFile;
   char  meshOutputFile[2048];
+  int   interpolateMesh;
 
-  int ok = PyArg_ParseTuple(args, "s:processMesh", &meshInputFile);
+  int ok = PyArg_ParseTuple(args, "si:processMesh", &meshInputFile, &interpolateMesh);
 
   if (!ok) {
     return 0;
@@ -206,7 +207,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 
   ierr = MPI_Comm_rank(comm, &rank);
   sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
-  mesh = ALE::PyLithBuilder::createNew(comm, meshInputFile);
+  mesh = ALE::PyLithBuilder::createNew(comm, meshInputFile, (bool) interpolateMesh);
   debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << meshInputFile << journal::endl;
   mesh = mesh->distribute();
   debug << journal::at(__HERE__) << "[" << rank << "]Distributed PETSc Mesh"  << journal::endl;

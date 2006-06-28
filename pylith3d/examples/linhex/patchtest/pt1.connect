@@ -3,7 +3,6 @@
 # This file defines the element type, material type, and infinite
 # element info as well as the connectivity.
 # The entries are as follows:
-
 #   iel    = element number.
 #   ietype = element type from the following list:
 #            1 = linear hexahedron (8 nodes)
