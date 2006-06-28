@@ -41,7 +41,7 @@ class Application(BaseScript):
         pl3dsetup = self.inventory.setup
         import pylith3d
         pylith3d.PetscInitialize()
-        self.inventory.scanner.inventory.fileRoot, mesh = pylith3d.processMesh(self.inventory.scanner.inventory.fileRoot)
+        self.inventory.scanner.inventory.fileRoot, mesh = pylith3d.processMesh(self.inventory.scanner.inventory.fileRoot, self.inventory.scanner.inventory.interpolateMesh)
         try:
             pl3dsetup.initialize(self.inventory.scanner)
         except self.inventory.scanner.CanNotOpenInputOutputFilesError, error:

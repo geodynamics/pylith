@@ -759,6 +759,9 @@ class Pylith3d_scan(Component):
         numberCycles = pyre.inventory.int("numberCycles",default=1)
         numberCycles.meta['tip'] = "Number of cycles of the given timestep definitions to perform (default=1)."
 
+        interpolateMesh = pyre.inventory.bool("interpolateMesh",default=False)
+        interpolateMesh.meta['tip'] = "Create intermediate mesh entities, such as edges and faces."
+
         # Unused option flags.
         autoRotateSlipperyNodes = pyre.inventory.bool("autoRotateSlipperyNodes",default=True)
         autoRotateSlipperyNodes.meta['tip'] = "Whether to performa automatic rotation for slippery nodes (presently unused)."
