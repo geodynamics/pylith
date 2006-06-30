@@ -8,19 +8,19 @@
 #  location for the BLAS and LAPACK libraries (LINALG variable).
 #
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-FFLAGC= -fno-silent -fno-ugly -fno-f77 -ff90 -fpedantic -Wall -fbackslash -v
+FFLAGC= -Wall -fbackslash -v
 
 CFLAGC= 
 
-opt   = -g
+# opt   = -g
 
-# opt   = -O3 -funroll-loops
+opt   = -O3 -funroll-loops
 
-load  = -lcc_dynamic
+# load  = -lcc_dynamic
 
 # load  =
 
-FCOMPL= g77
+FCOMPL= g95
 
 CCOMPL= gcc
 
