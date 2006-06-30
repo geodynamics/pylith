@@ -14,8 +14,8 @@ c...  parameters
 c
       integer nsd,maxnodes,maxelmts,nen,maxnbrs,maxflts,maxfnodes
       integer maxbnds,maxmatf,maxwsets,ietyp,inf
-      parameter(nsd=3,maxnodes=500000,maxelmts=500000,nen=4,
-     & maxnbrs=100,maxflts=6,maxfnodes=100000,maxbnds=30,maxmatf=5,
+      parameter(nsd=3,maxnodes=10000000,maxelmts=10000000,nen=4,
+     & maxnbrs=100,maxflts=6,maxfnodes=1000000,maxbnds=30,maxmatf=5,
      & maxwsets=2,ietyp=5,inf=0)
       integer kti,kto,kr,kw
       parameter(kti=5,kto=6,kr=10,kw=11)
