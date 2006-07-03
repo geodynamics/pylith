@@ -59,8 +59,8 @@
       <filename>xx.PROC.ext</filename>. Setting up this naming scheme
       is most easily done using symbolic links or copying files to
       local directories on each machine using a shell script that
-      starts a simulation. See <filename>runbm5.sh</filename> in <xref
-      linkend="tutorial_scecbm5" /> for a simple example. You can also
+      starts a simulation. See <filename>runbm.py</filename> in <xref
+      linkend="tutorial_reversenog" /> for a simple example. You can also
       choose your own filename template by setting the appropriate
       command-line argument. See <xref
       linkend="section_commandline_arguments" /> for more information.
