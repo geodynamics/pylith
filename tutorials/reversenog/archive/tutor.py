@@ -197,7 +197,4 @@ if __name__ == "__main__":
     tutor(options.step, options.mode)
 
 
-# version
-__id__ = "$Id$"
-
 # End of file 
