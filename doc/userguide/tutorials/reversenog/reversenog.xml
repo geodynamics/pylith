@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
-<section id="tutorial_scecbm5">
-  <title>Tutorial Using SCEC Benchmark 5</title>
+<section id="tutorial_reversenog">
+  <title>Tutorial Using Reverse-Slip Without Gravity Benchmark</title>
 
   <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <section>
@@ -10,9 +10,9 @@
     <para>
       In this tutorial, we will walk through the steps necessary to
       construct, run, and view the results of a benchmark problem
-      (SCEC Benchmark 5). This problem examines the viscoelastic
-      (Maxwell) relaxation of stress from a single, finite, dip-slip
-      earthquake in 3-D without body forces. 
+      involving reverse slip on a dipping fault. This problem examines
+      the viscoelastic (Maxwell) relaxation of stress from a single,
+      finite, reverse-slip earthquake in 3-D without body forces.
     </para>
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -47,8 +47,8 @@
         displacements are held fixed through time.
       </para>
 
-      <figure id="figure_bm5_geometry">
-	<title>Geometry of model domain for SCEC Benchmark 5.</title>
+      <figure id="figure_bmrsnog_geometry">
+	<title>Geometry of model domain for reverse-slip benchmark.</title>
 	<mediaobject>
           <imageobject role="fo">
 	    <imagedata fileref="figs/geometry.eps" format="EPS" />
@@ -69,7 +69,7 @@
         through the full tutorial, in addition to
         <application>PyLith</application> you will need <ulink
         url="http://www.hpfem.jku.at/netgen/">
-        <application>NetGen</application></ulink> to generate the mesh
+        <application>NETGEN</application></ulink> to generate the mesh
         and <ulink url="http://www.paraview.org"> ParaView</ulink> to
         view simulation results. You may use other packages, but some
         adaption from what is described here will be
@@ -78,6 +78,31 @@
         skipping the steps for which you do not have the proper
         software packages installed.
       </para>
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Workflow</title>
+
+      <para>
+        The complete workflow used to create the input files for this
+        tutorial is shown in <xref linkend="figure_bmrsnog_workflow"
+        />. Because some of the steps involve commercial software
+        (e.g., Matlab), we will skip those steps in this tutorial.
+      </para>
+
+      <figure id="figure_bmrsnog_workflow">
+	<title>Workflow for setting up input files for benchmark with reverse
+	slip and no gravity.</title>
+	<mediaobject>
+          <imageobject role="fo">
+	    <imagedata fileref="figs/workflow.eps" format="EPS" />
+	  </imageobject>
+          <imageobject role="xhtml,html">
+	    <imagedata fileref="figs/workflow.png" format="PNG" />
+	  </imageobject>
+	</mediaobject>
+      </figure>
     </section>
   </section>
 
@@ -104,7 +129,7 @@
       <listitem>
 	<para>
           Go to the <filename
-          class="directory">tutorials/scecbm5</filename>
+          class="directory">tutorials/reversenog</filename>
           directory. The <filename
           class="directory">archive</filename> directory contains all
           of the input and output files associated with this
@@ -117,7 +142,7 @@
           in the next section.
         </para>
 	<screen>
-<prompt>bash$ </prompt><userinput>cd tutorials/scecbm5</userinput>
+<prompt>bash$ </prompt><userinput>cd tutorials/reversenog</userinput>
         </screen>
 	
       </listitem>
@@ -127,7 +152,7 @@
     <section>
       <title>Tutor</title>
       <para>
-        Copy the <filename>tutor.sh</filename> script from the
+        Copy the <filename>tutor.py</filename> script from the
         <filename class="directory">archive</filename> directory into
         the <filename class="directory">workarea</filename>
         directory. This script can (1) check to make sure the files
@@ -136,16 +161,16 @@
         class="directory">archive</filename> directory that are needed
         for a given step, or (3) prepare the work area for a given
         step by removing old files that would otherwise be
-        overwritten. Run <command>tutor.sh</command> without any
-        arguments for more information. We will use this script at the
-        beginning of each step to retrieve files as necessary from the
-        archive.
+        overwritten. Run <command>tutor.py</command> with the
+        <option>-h</option> option for more information. We will use
+        this script at the beginning of each step to retrieve files as
+        necessary from the archive.
       </para>
       <tip>
 	<para>
           When retrieving files from the <filename
           classname="directory">archive</filename> directory,
-          <command>tutor.sh</command> will not overwrite files that
+          <command>tutor.py</command> will not overwrite files that
           already exist in the <filename
           class="directory">workarea</filename> directory. This means
           that if you mangle files in the working area, you should
@@ -155,14 +180,14 @@
       <tip>
 	<para>
           If you have run this tutorial previously, you may want to
-          run <command>tutor.sh</command> in mode "clean" with step
+          run <command>tutor.py</command> in mode "clean" with step
           "all" to clear out all old tutorial files.
         </para>
       </tip>
       <screen>
 <prompt>bash$ </prompt><userinput>cd workarea</userinput>
-<prompt>bash$ </prompt><userinput>cp ../archive/tutor.sh .</userinput>
-<prompt>bash$ </prompt><userinput>./tutor.sh clean all</userinput>
+<prompt>bash$ </prompt><userinput>cp ../archive/tutor.py .</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.py -m clean -s all</userinput>
       </screen>
     </section>
 
@@ -173,27 +198,27 @@
     <title>Generate the mesh</title>
     <para>
       In this step we will generate the finite-element mesh for the
-      benchmark problem using <application>NetGen</application>.
+      benchmark problem using <application>NETGEN</application>.
     </para>
 
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          In the <filename class="directory">scecbm5/workarea</filename>
-          directory, run <command>tutor.sh</command> for step "mesh"
+          In the <filename class="directory">reversenog/workarea</filename>
+          directory, run <command>tutor.py</command> for step "mesh"
           with mode "retrieve" to fetch the geometry file for
-          <application>NetGen</application>. You may also want to run
-          <command>tutor.sh</command> for this step with mode "clean"
+          <application>NETGEN</application>. You may also want to run
+          <command>tutor.py</command> for this step with mode "clean"
           to clean out old files.
         </para>
       <screen>
-<prompt>bash$ </prompt><userinput>./tutor.sh retrieve mesh</userinput>
-<prompt>bash$ </prompt><userinput>./tutor.sh clean mesh</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s mesh</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.py -m clean -s mesh</userinput>
       </screen>
       </listitem>
       <listitem>
 	<para>
-          Examine the <filename>bm5.geo</filename> file to see how the
+          Examine the <filename>bmrsnog.geo</filename> file to see how the
           geometry for the problem is defined. Notice that the
           different planes have been flagged with different boundary
           condition codes. These will be used to associate boundary
@@ -202,7 +227,7 @@
       </listitem>
       <listitem>
 	<para>
-          Start up <application>NetGen</application> by running
+          Start up <application>NETGEN</application> by running
           <command>ng</command>.
         </para>
 	<screen>
@@ -213,7 +238,7 @@
 	<para>
           Select <menuchoice><guimenu>File</guimenu><guimenuitem>Load
           Geometry</guimenuitem></menuchoice> and select
-          <filename>bm5.geo</filename>.
+          <filename>bmrsnog.geo</filename>.
         </para>
       </listitem>
       <listitem>
@@ -224,13 +249,13 @@
       <listitem>
 	<para>
           Export the mesh to a file named
-          <filename>bm5.netgen</filename>, making sure the export
+          <filename>bmrsnog.netgen</filename>, making sure the export
           filetype is "Neutral format".
         </para>
       </listitem>
       <listitem>
 	<para>
-          You can now exit <application>NetGen</application>.
+          You can now exit <application>NETGEN</application>.
         </para>
       </listitem>
     </orderedlist>
@@ -247,18 +272,18 @@
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Run <command>tutor.sh</command> for step "setup" with mode
+          Run <command>tutor.py</command> for step "setup" with mode
           "retrieve" to fetch files from the archive.
         </para>
       <screen>
-<prompt>bash$ </prompt><userinput>./tutor.sh retrieve setup</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s setup</userinput>
       </screen>
       </listitem>
       <listitem>
 	<para>
           First, we need to build two simple Fortran utilities that we
           will use to generate PyLith input files from the
-          <application>NetGen</application> output.
+          <application>NETGEN</application> output.
         </para>
         <orderedlist numeration="lowerroman">
 	  <listitem>
@@ -288,7 +313,7 @@
 		<listitem>
 		  <para>
                     A Fortran program to read
-                    <application>NetGen</application> neutral format
+                    <application>NETGEN</application> neutral format
                     and create several of the input files needed by
                     PyLith.
                   </para>
@@ -310,7 +335,7 @@
             </screen>
 	    <tip>
 	    <para>
-              If you plan to use <application>NetGen</application> to
+              If you plan to use <application>NETGEN</application> to
               generate meshes, you may want to copy these utilities to
               a location in your <envar>PATH</envar> or update your
               <envar>PATH</envar> to include the <filename
@@ -324,7 +349,7 @@
               class="directory">workarea</filename> directory.
             </para>
 	    <screen>
-<prompt>bash$ </prompt><userinput>cd ../scecbm5/workarea</userinput>
+<prompt>bash$ </prompt><userinput>cd ../reversenog/workarea</userinput>
             </screen>
 	  </listitem>
 	</orderedlist>
@@ -332,22 +357,22 @@
       <listitem>
 	<para>
           Run the utility program <command>readnetgen</command> to
-          process the <application>NetGen</application> output file
+          process the <application>NETGEN</application> output file
           into PyLith compatible input files. It will ask for a root
-          filename, enter <filename>bm5</filename>. This utilitiy will
+          filename, enter <filename>bmrsnog</filename>. This utilitiy will
           generate the following files:
-          <filename>bm5.w01.wink</filename>,
-          <filename>bm5.coord</filename>,
-          <filename>bm5.connect</filename>,
-          <filename>bm5.bc</filename>,
-          <filename>bm5.1.fcoord</filename>,
-          <filename>bm5.1.fbc</filename>.
+          <filename>bmrsnog.w01.wink</filename>,
+          <filename>bmrsnog.coord</filename>,
+          <filename>bmrsnog.connect</filename>,
+          <filename>bmrsnog.bc</filename>,
+          <filename>bmrsnog.1.fcoord</filename>,
+          <filename>bmrsnog.1.fbc</filename>.
          </para>
 	<screen>
 <prompt>bash$ </prompt><userinput>../../utils/readnetgen</userinput>
 <prompt> Enter root name for all files.  Both input and</prompt>
 <prompt> output files will all have this prefix:</prompt>
-<userinput>bm5</userinput>
+<userinput>bmrsnog</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -359,17 +384,17 @@
           second degree polynomials. The <command>readnetgen</command>
           program has already produced the main input for
           <command>faultcalc</command> &mdash; split node definitions
-          in <filename>bm5.1.fbc</filename> and nodal coordinates in
-          <filename>bm5.coord</filename>. The file
-          <filename>bm5.fault.par</filename> contains the polynomial
+          in <filename>bmrsnog.1.fbc</filename> and nodal coordinates in
+          <filename>bmrsnog.coord</filename>. The file
+          <filename>bmrsnog.fault.par</filename> contains the polynomial
           coefficients for this benchmark problem. Run
           <command>faultcalc</command> to get the
-          <filename>bm5.split</filename> file that PyLith needs as
+          <filename>bmrsnog.split</filename> file that PyLith needs as
           input.
         </para>
 	<screen>
-<prompt>bash$ </prompt><userinput>../../utils/faultcalc p=bm5.fault.par n=bm5.coord \
-i=bm5.1.fbc o=bm5.split</userinput>
+<prompt>bash$ </prompt><userinput>../../utils/faultcalc p=bmrsnog.fault.par n=bmrsnog.coord \
+i=bmrsnog.1.fbc o=bmrsnog.split</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -378,22 +403,22 @@ i=bm5.1.fbc o=bm5.split</userinput>
           complicated and require computing the displacements for the
           analytical elastic solution at each finite element node on
           the external boundaries. The file specifying these boundary
-          conditions, <filename>bm5.bc</filename>, was produced with
+          conditions, <filename>bmrsnog.bc</filename>, was produced with
           <command>readnetgen</command> using the
-          <filename>bm5.aux</filename> file (which contains
+          <filename>bmrsnog.aux</filename> file (which contains
           precomputed displacements for the external boundaries for
-          the mesh produced from the <filename>bm5.geo</filename>
+          the mesh produced from the <filename>bmrsnog.geo</filename>
           geometry).
         </para>
 	<warning>
           <para>
-            If you make any changes to <filename>bm5.geo</filename> or
+            If you make any changes to <filename>bmrsnog.geo</filename> or
             change the geometry within
-            <application>NetGen</application>, the boundary condition
-            file <filename>bm5.bc</filename> will no longer be
+            <application>NETGEN</application>, the boundary condition
+            file <filename>bmrsnog.bc</filename> will no longer be
             correct and you will have to generate one yourself.
 	    Note that it is also possible that a different version
-	    of <application>NetGen</application> may provide a slightly
+	    of <application>NETGEN</application> may provide a slightly
 	    different mesh, which would also be incompatible with the
 	    provided boundary conditions.
           </para>
@@ -413,35 +438,35 @@ i=bm5.1.fbc o=bm5.split</userinput>
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Run <command>tutor.sh</command> for step "run1" with mode
+          Run <command>tutor.py</command> for step "run1" with mode
           "retrieve" to fetch some parameter files from the archive.
         </para>
 	<screen>
-<prompt>bash$ </prompt><userinput>./tutor.sh retrieve run1</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s run1</userinput>
         </screen>
       </listitem>
       <listitem>
 	<para>
-          In <filename>bm5.fuldat</filename>, we have specified
+          In <filename>bmrsnog.fuldat</filename>, we have specified
           that we want full output at time steps 10, 50, and 100. We
           define six materials with both elastic and viscoelastic
-          behavior in <filename>bm5.prop</filename>. In
-          <filename>bm5.statevar</filename> we choose to include total
+          behavior in <filename>bmrsnog.prop</filename>. In
+          <filename>bmrsnog.statevar</filename> we choose to include total
           stress, total strain, incremental stress, and incremental
           strain in the output. As defined in
-          <filename>bm5.time</filename>, the simulation will have 100
+          <filename>bmrsnog.time</filename>, the simulation will have 100
           time steps of 0.1 year each.
         </para>
       </listitem>
       <listitem>
         <para>
-          Run the simulation by executing <userinput>runbm5.sh
-          1</userinput>, where the 1 refers to the number of processors.
+          Run the simulation by executing <userinput>runbm.py
+          -n 1</userinput>, where the 1 refers to the number of processors.
         </para>
 	<tip>
           <para>
             All of the input is echoed in the file
-            <filename>bm5.ascii</filename>. You can check to make sure
+            <filename>bmrsnog.ascii</filename>. You can check to make sure
             your input is digested correctly by examining this
             file. For large problems, this file can be quite
             large. You can suppress creation of this file using the
@@ -454,7 +479,7 @@ i=bm5.1.fbc o=bm5.split</userinput>
           </para>
         </tip>
 	<screen>
-<prompt>bash$ </prompt><userinput>./runbm5.sh 1</userinput>
+<prompt>bash$ </prompt><userinput>./runbm.py -n 1</userinput>
         </screen>
       </listitem>
     </orderedlist>
@@ -478,12 +503,12 @@ i=bm5.1.fbc o=bm5.split</userinput>
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          If necessary, run <command>tutor.sh</command> for step
+          If necessary, run <command>tutor.py</command> for step
           "viz1" with mode "retrieve" to fetch the simulation output
           from the archive.
         </para>
 	<screen>
-<prompt>bash$ </prompt><userinput>./tutor.sh retrieve viz1</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s viz1</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -493,14 +518,14 @@ i=bm5.1.fbc o=bm5.split</userinput>
           information with the output at a given time step into a
           complete <acronym>UCD</acronym> file. For example, use
           <command>cat</command> to merge the nodal coordinates file
-          (<filename>bm5_1.0.mesh.inp</filename>) and the nodal
+          (<filename>bmrsnog_1.0.mesh.inp</filename>) and the nodal
           displacements at time step 10 file
-          (<filename>bm5_1.0.mesh.time.00010.inp</filename>) into
-          <filename>bm5_1.0.mesh.t00010.inp</filename>.
+          (<filename>bmrsnog_1.0.mesh.time.00010.inp</filename>) into
+          <filename>bmrsnog_1.0.mesh.t00010.inp</filename>.
         </para>
 	<screen>
-<prompt>bash$ </prompt><userinput>cat bm5_1.0.mesh.inp bm5_1.0.mesh.time.00010.inp \
-> bm5_1.0.mesh.t00010.inp</userinput>
+<prompt>bash$ </prompt><userinput>cat bmrsnog_1.0.mesh.inp bmrsnog_1.0.mesh.time.00010.inp \
+> bmrsnog_1.0.mesh.t00010.inp</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -523,13 +548,13 @@ i=bm5.1.fbc o=bm5.split</userinput>
           should see a color rendering of the x displacements. You can
           use the mouse to rotate, translate, and zoom. Your image
           should look similar to the one in <xref
-          linkend="figure_bm5_xdisp_t10" />.
+          linkend="figure_bmrsnog_xdisp_t10" />.
         </para>
 	
-	<figure id="figure_bm5_xdisp_t10">
+	<figure id="figure_bmrsnog_xdisp_t10">
 	  <title>ParaView rendering of displacement in x-direction at
-	  time step 10 (10 yrs after imposed dislocation) for SCEC
-	  Benchmark 5.</title>
+	  time step 10 (10 yrs after imposed dislocation) for the
+	  reverse slip without gravity benchmark.</title>
 	  <mediaobject>
 	    <imageobject role="fo">
 	      <imagedata fileref="figs/xdisp_t10.eps" format="EPS" />
@@ -570,13 +595,14 @@ i=bm5.1.fbc o=bm5.split</userinput>
           also making the displacement vectors visible (colored using
           <literal>property</literal>), you should see an image
           similar to the one in <xref
-          linkend="figure_bm5_xdisp_vec_t10" />.
+          linkend="figure_bmrsnog_xdisp_vec_t10" />.
         </para>
 
-	<figure id="figure_bm5_xdisp_vec_t10">
+	<figure id="figure_bmrsnog_xdisp_vec_t10">
 	  <title>ParaView rendering of displacement in x-direction and
 	  displacement vectors at time step 10 (10 yrs after imposed
-	  dislocation) for SCEC Benchmark 5.</title>
+	  dislocation) for the reverse slip without gravity
+	  benchmark.</title>
 	  <mediaobject>
 	    <imageobject role="fo">
 	      <imagedata fileref="figs/xdisp_vec_t10.eps" format="EPS" />
@@ -606,28 +632,28 @@ i=bm5.1.fbc o=bm5.split</userinput>
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          Run <command>tutor.sh</command> for step "run2" with mode
+          Run <command>tutor.py</command> for step "run2" with mode
           "retrieve" to make sure all parameter files are available.
         </para>
 	<screen>
-<prompt>bash$ </prompt><userinput>./tutor.sh retrieve run2</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s run2</userinput>
         </screen>
       </listitem>
       <listitem>
 	<para>
           The parameter files are the same as those in the single
-          processor run. The <command>runbm5</command> script will
+          processor run. The <command>runbm</command> script will
           automatically take care of duplicating these files so that
           there is one for each processor.
         </para>
       </listitem>
       <listitem>
         <para>
-          Run the simulation by executing <command>runbm5.sh
-          2</command>, where the 2 refers to the number of processors.
+          Run the simulation by executing <command>runbm.py
+          -n 2</command>, where the 2 refers to the number of processors.
         </para>
 	<screen>
-<prompt>bash$ </prompt><userinput>./runbm5.sh 2</userinput>
+<prompt>bash$ </prompt><userinput>./runbm.py -n 2</userinput>
         </screen>
       </listitem>
     </orderedlist>
@@ -648,12 +674,12 @@ i=bm5.1.fbc o=bm5.split</userinput>
     <orderedlist numeration="arabic">
       <listitem>
 	<para>
-          If necessary, run <command>tutor.sh</command> for step
+          If necessary, run <command>tutor.py</command> for step
           "viz2" with mode "retrieve" to fetch the simulation output
           from the archive.
         </para>
 	<screen>
-<prompt>bash$ </prompt><userinput>./tutor.sh retrieve viz2</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s viz2</userinput>
         </screen>
       </listitem>
       <listitem>
@@ -667,10 +693,10 @@ i=bm5.1.fbc o=bm5.split</userinput>
           processor.
         </para>
 	<screen>
-<prompt>bash$ </prompt><userinput>cat bm5_2.0.mesh.inp bm5_2.0.mesh.time.00010.inp
-> bm5_2.0.mesh.t00010.inp</userinput>
-<prompt>bash$ </prompt><userinput>cat bm5_2.1.mesh.inp bm5_2.1.mesh.time.00010.inp
-> bm5_2.1.mesh.t00010.inp</userinput>
+<prompt>bash$ </prompt><userinput>cat bmrsnog_2.0.mesh.inp bmrsnog_2.0.mesh.time.00010.inp
+> bmrsnog_2.0.mesh.t00010.inp</userinput>
+<prompt>bash$ </prompt><userinput>cat bmrsnog_2.1.mesh.inp bmrsnog_2.1.mesh.time.00010.inp
+> bmrsnog_2.1.mesh.t00010.inp</userinput>
         </screen>
       </listitem>
       <listitem>

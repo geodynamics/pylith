@@ -1,5 +1,5 @@
-#XSLSTYLESHEET_DIR=/usr/share/sgml/docbook/xsl-stylesheets
-XSLSTYLESHEET_DIR=/sw/share/xml/xsl/docbook-xsl
+XSLSTYLESHEET_DIR=/usr/share/sgml/docbook/xsl-stylesheets
+#XSLSTYLESHEET_DIR=/sw/share/xml/xsl/docbook-xsl
 
 pylith_userguide.pdf pdf: pylith_userguide.fo
 	fop $< pylith_userguide.pdf
