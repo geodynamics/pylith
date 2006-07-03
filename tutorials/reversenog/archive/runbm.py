@@ -41,6 +41,7 @@ def setupInput(nprocs):
         print "  %s -> %s... already exists" % (dest, src)
   return
 
+
 # ----------------------------------------------------------------------
 def run(nprocs):
   print "Running PyLith..."
@@ -60,6 +61,7 @@ def run(nprocs):
   os.system(cmd)
   return
 
+
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
   from optparse import OptionParser
@@ -78,5 +80,6 @@ if __name__ == "__main__":
 
   setupInput(nprocs)
   run(nprocs)
+
 
 # End of file

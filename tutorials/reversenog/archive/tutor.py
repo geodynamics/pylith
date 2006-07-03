@@ -52,7 +52,7 @@ def getStepFiles(step):
     fragments = [ [root], [".coord", ".connect", ".split", ".bc",
                            ".fuldat", ".prop", ".statevar", ".time"] ]
     files['input'] += assembleStrings(fragments)
-    files['input'] += ["runbm5.sh"]
+    files['input'] += ["runbm.py"]
 
     root1 = root + "_1"
     fragments = [ [root1], [".coord", ".connect", ".split", ".bc"] ]
@@ -83,7 +83,7 @@ def getStepFiles(step):
     fragments = [ [root], [".coord", ".connect", ".split", ".bc",
                            ".fuldat", ".prop", ".statevar", ".time"] ]
     files['input'] += assembleStrings(fragments)
-    files['input'] += ["runbm5.sh"]
+    files['input'] += ["runbm.py"]
 
     root1 = root + "_2"
     fragments = [ [root1], [".coord", ".connect", ".split", ".bc"] ]
