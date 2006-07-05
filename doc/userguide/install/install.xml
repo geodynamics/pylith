@@ -354,7 +354,7 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:<replaceable>replace_with_</replaceabl
 	    <para>Subversion</para>
 	  </listitem>
 	  <listitem>
-	    <para>Mercurial (0.90 or later)</para>
+	    <para>Mercurial (0.9 or later)</para>
 	  </listitem>
 	</itemizedlist>
 
