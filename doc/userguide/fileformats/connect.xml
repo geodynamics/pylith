@@ -22,10 +22,9 @@
 # Columns:
 #   (1) Element number
 #   (2) Element type
-#        1 = Linear hexahedron (8 vertices) [NOT IMPLEMENTED]
+#        1 = Linear hexahedron (8 vertices)
 #        2 = Linear hexahedron with 1 set of collapsed vertices
-#            (7 vertices)
-#            [NOT IMPLEMENTED]
+#            (7 vertices) [NOT IMPLEMENTED]
 #        3 = Linear hexahedron with 2 sets of collapsed vertices
 #           (6 vertices) [NOT IMPLEMENTED]
 #        4 = Linear hexahedron with 4 vertices collapsed to a point
