@@ -385,12 +385,25 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:<replaceable>replace_with_</replaceabl
             and MPI.
           </para>
 	  <para>
-            If you have an MPI implementation installed, you can use
-            it or let PETSc download and install one for you. If you
-            have an architecture optimized version of BLAS/LAPACK
-            (e.g., veclib on a Mac or ATLAS on a PC), you should use those
-            instead of asking PETSc to download and build one for you.
+            If you have an architecture optimized version of
+            BLAS/LAPACK you should use those instead of asking PETSc
+            to download and build one for you. In some cases, PETSc
+            will find known optimized implementations of BLAS/LAPACK
+            (e.g., vecLib on Mac OSX).
           </para>
+	  <para>
+            If you have an MPI implementation installed, you can use
+            it or let PETSc download and install one for you.
+          </para>
+	  <tip>
+	    <para>
+              If you run into problems configuring or building PETSc,
+              send <emphasis>both</emphasis>
+              <filename>configure.log</filename> and
+              <filename>make_<replaceable>PETSC_ARCH</replaceable></filename>
+              to <email>petsc-maint@mcs.anl.gov</email>.
+            </para>
+	  </tip>
 	  <orderedlist numeration="lowerroman">
 	    <listitem>
 	      <para>
@@ -506,6 +519,17 @@ BuildSystem</userinput>
 	  <para>
             Build Pythia.
           </para>
+	  <tip>
+	    <para>
+              If you run into problems configuring or building Pythia,
+              send <emphasis>both</emphasis> the
+              <filename>config.log</filename> and
+              <filename>make.log</filename> files to
+              <email>cig-short@geodynamics.org</email>. To create the
+              <filename>make.log</filename> file, run make via
+              <command>make &gt;&amp; make.log</command>.
+            </para>
+	  </tip>
 	  <orderedlist numeration="lowerroman">
 	    <listitem>
 	      <para>
@@ -554,6 +578,17 @@ BuildSystem</userinput>
 	  <para>
             Build PyLith.
           </para>
+	  <tip>
+	    <para>
+              If you run into problems configuring or building PyLith,
+              send <emphasis>both</emphasis> the
+              <filename>config.log</filename> and
+              <filename>make.log</filename> files to
+              <email>cig-short@geodynamics.org</email>. To create the
+              <filename>make.log</filename> file, run make via
+              <command>make &gt;&amp; make.log</command>.
+            </para>
+	  </tip>
 	  <orderedlist numeration="lowerroman">
 	    <listitem>
 	      <para>
