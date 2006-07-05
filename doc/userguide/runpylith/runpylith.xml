@@ -8,11 +8,10 @@
   <section>
     <title>Supported Finite Elements</title>
     <para>
-      PyLith currently only supports the 4-node linear tetrahedral
-      element. The node ordering must follow the convention shown in
-      <xref linkend="fig_tet4" />. Support for the 8-node linear
-      hexahedral element will be included in PyLith version 0.8.1,
-      expected to be released in July 2006.
+      PyLith currently only supports the 4-node linear tetrahedral and
+      8-node linear hexahedral elements. The node ordering must follow
+      the convention shown in <xref linkend="fig_tet4" /> and <xref
+      linkend="fig_hex8" />.
     </para>
 
     <figure id="fig_tet4">
@@ -23,6 +22,18 @@
 	</imageobject>
 	<imageobject role="xhtml,html">
 	  <imagedata fileref="figs/tet4.png" format="PNG" />
+	</imageobject>
+      </mediaobject>
+    </figure>
+
+    <figure id="fig_hex8">
+      <title>Linear hexahedral finite element.</title>
+      <mediaobject>
+	<imageobject role="fo">
+	  <imagedata fileref="figs/hex8.eps" format="EPS" />
+	</imageobject>
+	<imageobject role="xhtml,html">
+	  <imagedata fileref="figs/hex8.png" format="PNG" />
 	</imageobject>
       </mediaobject>
     </figure>

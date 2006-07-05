@@ -232,7 +232,7 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:<replaceable>replace_with_</replaceabl
 
     <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section>
-      <title>Building from source</title>
+      <title>Building using source tarball</title>
 
       <para>
         Building PyLith from the source code is not a trivial task
@@ -308,6 +308,296 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:<replaceable>replace_with_</replaceabl
 	      <para>
                 ADD STUFF HERE
               </para>
+	    </listitem>
+	  </orderedlist>
+	</listitem>
+      </orderedlist>
+
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Building using source repositories</title>
+
+      <warning>
+	<para>
+          Building PyLith using the source repositories is recommended
+          only for expert users who are willing to work with a moving
+          target and rebuild on a frequent basis. The installation
+          instructions cover the basic steps and assume the user has
+          experience building and installing software.
+        </para>
+      </warning>
+
+      <para>
+        The PyLith-0.8 source code is available from the <ulink
+        url="http://www.geodynamics.org:8080/cig/software/Repository/">Geodynamics
+        subversion repository</ulink> under <filename
+        classname="directory">cig/short/3D/PyLith/branches/pylith-0.8</filename>.
+      </para>
+
+      <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++ -->
+      <section>
+	<title>System Requirements</title>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>Unix flavored operating system</para>
+	  </listitem>
+	  <listitem>
+	    <para>Fortran, C, and C++ compilers</para>
+	  </listitem>
+	  <listitem>
+	    <para>Python (2.3 or later)</para>
+	  </listitem>
+	  <listitem>
+	    <para>Subversion</para>
+	  </listitem>
+	  <listitem>
+	    <para>Mercurial (0.90 or later)</para>
+	  </listitem>
+	</itemizedlist>
+
+	<tip>
+	  <para>
+            Many flavors of Unix have Subversion packages. In most
+            cases you do not need anything but the basic subversion
+            package. You will likely have to build Mercurial from
+            source, but this is a very easy task that takes only a
+            couple of minutes.
+          </para>
+	</tip>
+
+      </section>
+
+      <para>
+        The software must be built starting from the bottom of the
+        dependency list and working upwards. The steps below describe
+        the recommended way to build PyLith and the external packages
+        on which it depends.
+      </para>
+
+      <orderedlist>
+	<listitem>
+	  <para>
+            Build <ulink
+            url="http://www-unix.mcs.anl.gov/petsc/petsc-as/developers/index.html">PETSc (developers version)</ulink>
+            and MPI.
+          </para>
+	  <para>
+            If you have an MPI implementation installed, you can use
+            it or let PETSc download and install one for you. If you
+            have an architecture optimized version of BLAS/LAPACK
+            (e.g., veclib on a Mac or ATLAS on a PC), you should use those
+            instead of asking PETSc to download and build one for you.
+          </para>
+	  <orderedlist numeration="lowerroman">
+	    <listitem>
+	      <para>
+                Pull the source code from ANL and place the source
+                tree in a suitable location. The steps below will
+                create a <filename
+                class="directory">petsc-dev</filename> sub-directory
+                in the current directory.
+              </para>
+	      <screen>
+<prompt>bash$ </prompt><userinput>hg clone http://mercurial.mcs.anl.gov/petsc/petsc-dev</userinput>
+<prompt>bash$ </prompt><userinput>cd petsc-dev/python</userinput>
+<prompt>bash$ </prompt><userinput>hg clone http://mercurial.mcs.anl.gov/petsc/BuildSystem \
+BuildSystem</userinput>
+              </screen>
+	    </listitem>
+	    <listitem>
+	      <para>
+                Set the <envar>PETSC_DIR</envar> and
+                <envar>PETSC_ARCH</envar> environment
+                variables. <envar>PETSC_DIR</envar> corresponds to
+                the top-level directory in the PETSc source tree and
+                <envar>PETSC_ARCH</envar> is a tag for this
+                configuration of PETSc (e.g., linux_gcc-4.0_debug,
+                darwin_gcc-3.4_opt, etc). You will want to set these
+                environment variables in your
+                <filename>.bashrc</filename>,
+                <filename>.cshrc</filename>, or similar file.
+              </para>
+	      <screen>
+<prompt>bash$ </prompt><userinput>export PETSC_DIR=<replaceable>replace_with_absolute_path</replaceable>/petsc-dev</userinput>
+<prompt>bash$ </prompt><userinput>export PETSC_ARCH=<replaceable>replace_with_PETSc_arch_tag</replaceable></userinput>
+              </screen>
+	    </listitem>
+	    <listitem>
+	      <para>
+                Configure PETSc.
+              </para>
+	      <para>
+                Run <command>config/configure.py</command> with the
+                appropriate arguments to configure PETSc for your
+                computer. Run <command>config/configure.py
+                --help</command> to see the long list of possible
+                options. Building PETSc for use with PyLith requires
+                the following arguments:
+              </para>
+	      <screen>
+<option>--with-clanguage=c++</option>
+<option>--with-c-support</option>
+<option>--with-shared=1</option>
+<option>--with-boost=1</option>
+<option>--download-boost=1</option>
+<option>--with-sieve=1</option>
+              </screen>
+	      <para>
+                Be sure to include flags indicating where MPI and
+                BLAS/LAPACK are if you want to use a preinstalled
+                implementation. If not, be sure to tell PETSc to
+                download those packages. If you do not want build
+                PETSc using the gnu compilers, be sure to let PETSc
+                know which compilers you want to use instead.
+              </para>
+	      <para>
+                After several minutes, the configure script should
+                finish and display the PETSc settings. Check to make
+                sure these match your expectations before continuing.
+              </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+                Build PETSc.
+              </para>
+	      <screen>
+<prompt>bash$ </prompt><userinput>make</userinput>
+              </screen>
+	    </listitem>
+	    <listitem>
+	      <para>
+                Test PETSc installation.
+              </para>
+	      <para>
+                One of the tests will attempt to display some X
+                windows. If X windows is not available from the shell
+                in which you run <command>make test</command>, then
+                that test will fail.
+              </para>
+	      <screen>
+<prompt>bash$ </prompt><userinput>make test</userinput>
+              </screen>
+	    </listitem>
+	    <listitem>
+	      <para>
+                In the future, you will likely want to update the
+                PETSc source tree to include bug fixes, new features
+                etc.
+              </para>
+              <para>
+                To update PETSc (use to <command>hg update
+                -v</command> to see what files are being updated):
+              </para>
+	      <screen>
+<prompt>bash$ </prompt><userinput>cd petsc-dev</userinput>
+<prompt>bash$ </prompt><userinput>hg pull</userinput>
+<prompt>bash$ </prompt><userinput>hg update</userinput>
+<prompt>bash$ </prompt><userinput>cd python/BuildSystem</userinput>
+<prompt>bash$ </prompt><userinput>hg pull</userinput>
+<prompt>bash$ </prompt><userinput>hg update</userinput>
+              </screen>
+	    </listitem>
+	  </orderedlist>
+	</listitem>
+	<listitem>
+	  <para>
+            Build Pythia.
+          </para>
+	  <orderedlist numeration="lowerroman">
+	    <listitem>
+	      <para>
+                Pull the source code from CIG and place the source
+                tree in a suitable location. The steps below will
+                create a <filename
+                class="directory">pythia-0.8</filename> sub-directory
+                in the current directory.
+              </para>
+	      <screen>
+<prompt>bash$ </prompt><userinput>svn co svn://geodynamics.org/cig/vendor/pythia [cont.]
+/v0.8/pythia-0.8</userinput>
+              </screen>
+	    </listitem>
+	    <listitem>
+	      <para>
+                Configure Pythia.
+              </para>
+	      <para>
+                Run <command>configure</command> with the appropriate
+                arguments. Run <command>configure --help</command> to
+                see a list of possible options. You may want to
+                specify compilers and/or an install location.
+              </para>
+	      <screen>
+<prompt>bash$ </prompt><userinput>cd pythia-0.8</userinput>
+<prompt>bash$ </prompt><userinput>autoreconf -i</userinput>
+<prompt>bash$ </prompt><userinput>./configure</userinput>
+              </screen>
+	    </listitem>
+	    <listitem>
+	      <para>
+                Build Pythia.
+              </para>
+	      <para>
+                Run <command>make</command> and <command>make install</command>.
+              </para>
+	      <screen>
+<prompt>bash$ </prompt><userinput>make</userinput>
+<prompt>bash$ </prompt><userinput>make install</userinput>
+              </screen>
+	    </listitem>
+	  </orderedlist>
+	</listitem>
+	<listitem>
+	  <para>
+            Build PyLith.
+          </para>
+	  <orderedlist numeration="lowerroman">
+	    <listitem>
+	      <para>
+                Pull the source code from CIG and place the source
+                tree in a suitable location. The steps below will
+                create a <filename
+                class="directory">pylith-0.8</filename> sub-directory
+                in the current directory.
+              </para>
+	      <screen>
+<prompt>bash$ </prompt><userinput>svn co svn://geodynamics.org/cig/short/3D/PyLith [cont.]
+/branches/pylith-0.8</userinput>
+              </screen>
+	    </listitem>
+	    <listitem>
+	      <para>
+                Configure PyLith.
+              </para>
+	      <para>
+                Run <command>configure</command> with the appropriate
+                arguments. Run <command>configure --help</command> to
+                see a list of possible options. You may want to
+                specify compilers and/or an install location. If you
+                installed pythia-0.8 in a non-system location, you
+                will need to set <envar>CPPFLAGS</envar> and
+                <envar>LDFLAGS</envar> appropriately.
+              </para>
+	      <screen>
+<prompt>bash$ </prompt><userinput>cd pylith-0.8</userinput>
+<prompt>bash$ </prompt><userinput>autoreconf -i</userinput>
+<prompt>bash$ </prompt><userinput>./configure</userinput>
+              </screen>
+	    </listitem>
+	    <listitem>
+	      <para>
+                Build PyLith.
+              </para>
+	      <para>
+                Run <command>make</command> and <command>make install</command>.
+              </para>
+	      <screen>
+<prompt>bash$ </prompt><userinput>make</userinput>
+<prompt>bash$ </prompt><userinput>make install</userinput>
+              </screen>
 	    </listitem>
 	  </orderedlist>
 	</listitem>
