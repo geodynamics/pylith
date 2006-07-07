@@ -93,6 +93,10 @@ c
 c...  read error
 c
  30   continue
+c
+c...  handle case of an empty file (no EOF)
+c
+        if(numfn.eq.izero) return
         ierr=3
         errstrng="scan_split"
         close(kr)

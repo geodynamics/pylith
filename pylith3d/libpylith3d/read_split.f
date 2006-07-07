@@ -96,8 +96,8 @@ c
           end do
  40       continue
         end do
+        close(kr)
       end if
-      close(kr)
 c
 c...  normal return
 c
