@@ -12,10 +12,10 @@ c
 c
 c...  parameters
 c
-      integer nsd,maxnodes,maxelmts,nen,maxnbrs,maxflts,maxfnodes
+      integer nsd,ndof,maxnodes,maxelmts,nen,maxnbrs,maxflts,maxfnodes
       integer maxbnds,maxmatf,maxwsets,ietyp,inf
-      parameter(nsd=3,maxnodes=10000000,maxelmts=10000000,nen=4,
-     & maxnbrs=100,maxflts=6,maxfnodes=1000000,maxbnds=30,maxmatf=5,
+      parameter(nsd=3,ndof=3,maxnodes=1000000,maxelmts=5000000,nen=4,
+     & maxnbrs=100,maxflts=6,maxfnodes=100000,maxbnds=30,maxmatf=5,
      & maxwsets=2,ietyp=5,inf=0)
       integer kti,kto,kr,kw
       parameter(kti=5,kto=6,kr=10,kw=11)
@@ -26,9 +26,7 @@ c...  local constants
 c
       integer icflip(4)
       data icflip/1,3,2,4/
-      integer kwb,kwc,kww,kwfb(maxflts),kwfc(maxflts)
-      data kwb/12/
-      data kwc/13/
+      integer kww,kwfb(maxflts),kwfc(maxflts)
       data kww/12/
       data kwfb/12,13,14,15,16,17/
       data kwfc/18,19,20,21,22,23/
@@ -40,8 +38,8 @@ c
 c...  parameters read from parameter file
 c
       integer nbc,iconopt,nwsets
-      integer ibcode(maxbnds),ibc(nsd,maxbnds),isn(nsd),iwcode(maxwsets)
-      integer iwdir(maxwsets),modew(maxwsets)
+      integer ibcode(maxbnds),ibc(nsd,maxbnds),iac(maxbnds),isn(nsd)
+      integer iwcode(maxwsets),iwdir(maxwsets),modew(maxwsets)
       integer iftype(maxflts),nmatf(2,maxflts),ifmat(2,maxflts,maxmatf)
       double precision bc(nsd,maxbnds),fsplit(nsd,2,maxflts)
       double precision rhow(maxwsets),gw(maxwsets),cscale
@@ -49,7 +47,7 @@ c
 c...  filenames
 c
       character fileroot*200,pfile*200,ifile*200,nfile*200,cfile*200
-      character bcfile*200,bccfile*200,wbcfile*200
+      character bcfile*200,wbcfile*200,afile*200
       character fbcfile*200,fbccfile*200
 c
 c...  parameters and variables read from netgen file
@@ -57,6 +55,11 @@ c
       integer numnp,numel,numflt,nbcfac,ibcflt,ibcfac
       integer ien(nen,maxelmts),mat(maxelmts),ibcvert(3)
       double precision x(nsd,maxnodes)
+c
+c...  values read from auxiliary file
+c
+      double precision bca(ndof,maxnodes)
+      double precision xa,ya,za
 c
 c...  external routines
 c
@@ -67,29 +70,33 @@ c
 c...  local variables
 c
       double precision det,sgn,xl(nsd,nen),xtmp(nsd),wout(3)
-      double precision wink(maxnodes,maxwsets),area
+      double precision wink(maxnodes,maxwsets),area,bct(3)
       integer iadjf(maxflts*maxfnodes,maxnbrs),inodef(maxflts*maxfnodes)
       integer ientmp(nen),nelsf(maxflts*maxfnodes),ifltnode(maxnodes)
-      integer ifhist(maxflts),idir(nsd),ibcnode(maxnodes,maxbnds)
+      integer ifhist(maxflts),idir(nsd),ibcnode(maxnodes)
       integer iwbcnode(maxnodes,maxwsets),iwout(3)
-      integer i,j,k,l,jj,i1,i2,j1,j2,nenl,nsdl,nfltnodes,kk
-      integer iel,nflip
-      character cstring*15,cbound(maxbnds)*3,cwink(maxwsets)*3,cfnum*2
-      data cstring/"coord_units = m"/
-      data cbound/
-     & "b01","b02","b03","b04","b05","b06","b07","b08","b09","b10",
-     & "b11","b12","b13","b14","b15","b16","b17","b18","b19","b20",
-     & "b21","b22","b23","b24","b25","b26","b27","b28","b29","b30"/
+      integer i,j,k,l,jj,i1,i2,j1,j2,nenl,nsdl,ndofl,nfltnodes,kk
+      integer iel,nflip,ibct
+      character cstring*14,cwink(maxwsets)*3,cfnum*2
+      character dstring*21,vstring*17,fstring*14
+      data cstring/"coord_units = "/
+      data dstring/"displacement_units = "/
+      data vstring/"velocity_units = "/
+      data fstring/"force_units = "/
       data cwink/"w01","w02"/
+      character cunits*20,dunits*20,vunits*20,funits*20,stout*50
+      logical aux
 c
+      aux=.false.
       nenl=nen
       nsdl=nsd
+      ndofl=ndof
       write(kto,*) "Enter root name for all files.  Both input and"
       write(kto,*) "output files will all have this prefix:"
       read(kti,"(a200)") fileroot
       i1=nnblnk(fileroot)
       i2=nchar(fileroot)
-      call ifill(ibcnode,izero,maxnodes*maxbnds)
+      call ifill(ibcnode,izero,maxnodes)
       call ifill(iwbcnode,izero,maxnodes*maxwsets)
       call fill(wink,zero,maxnodes*maxwsets)
 c
@@ -98,11 +105,13 @@ c
       pfile=fileroot(i1:i2)//".par"
       open(file=pfile,unit=kr,status="old")
 c
-c...  coordinate scaling factor
+c...  coordinate scaling factor and units
 c
       call pskip(kr)
       read(kr,*) cscale,(idir(i),i=1,nsd)
       if(cscale.eq.0.0d0) cscale=1.0d0
+      call pskip(kr)
+      read(kr,*) cunits
 c
 c...  bc info
 c
@@ -110,8 +119,17 @@ c
       read(kr,*) nbc
       do i=1,nbc
         call pskip(kr)
-        read(kr,*) ibcode(i),(ibc(j,i),bc(j,i),j=1,nsd)
+        read(kr,*) ibcode(i),(ibc(j,ibcode(i)),bc(j,ibcode(i)),j=1,nsd),
+     &   iac(ibcode(i))
+        if(iac(ibcode(i)).ne.0) aux=.true.
       end do
+      call pskip(kr)
+      read(kr,*) dunits
+      call pskip(kr)
+      read(kr,*) vunits
+      call pskip(kr)
+      read(kr,*) funits
+c
 c...  connectivity order option
 c
       call pskip(kr)
@@ -146,7 +164,8 @@ c
       open(file=ifile,unit=kr,status="old")
       nfile=fileroot(i1:i2)//".coord"
       open(file=nfile,unit=kw,status="new")
-      write(kw,"(a15)") cstring
+      stout=cstring//cunits
+      write(kw,"(a50)") stout
       read(kr,*) numnp
       do i=1,numnp
         ifltnode(i)=0
@@ -212,7 +231,7 @@ c
           do j=1,nbc
             if(ibcfac.eq.ibcode(j)) then
               do k=1,3
-                ibcnode(ibcvert(k),j)=ibcfac
+                ibcnode(ibcvert(k))=ibcfac
               end do
             end if
           end do
@@ -238,23 +257,44 @@ c
         end if
       end do
 c
+c...  if auxiliary file is being used, read BC from it
+c
+      if(aux) then
+        afile=fileroot(i1:i2)//".aux"
+        open(file=afile,unit=kr,status="old")
+        do i=1,numnp
+          read(kr,*) xa,ya,za,(bca(j,i),j=1,ndofl)
+        end do
+        close(kr)
+      end if
+c
 c...  output BC and BC coordinates
 c
-      do i=1,nbc
-        bcfile=fileroot(i1:i2)//"."//cbound(i)//".bc"
-        bccfile=fileroot(i1:i2)//"."//cbound(i)//".coord"
-        open(file=bcfile,unit=kwb,status="new")
-        open(file=bccfile,unit=kwc,status="new")
-        do j=1,numnp
-          if(ibcnode(j,i).ne.izero) then
-            write(kwb,"(i7,3(2x,i3),3(2x,1pe15.8))") j,
-     &       (ibc(k,i),k=1,nsd),(bc(k,i),k=1,nsd)
-            write(kwc,"(i7,3(2x,1pe15.8))") j,(x(k,j),k=1,nsd)
+      bcfile=fileroot(i1:i2)//".bc"
+      open(file=bcfile,unit=kw,status="new")
+      stout=dstring//dunits
+      write(kw,"(a50)") stout
+      stout=vstring//vunits
+      write(kw,"(a50)") stout
+      stout=fstring//funits
+      write(kw,"(a50)") stout
+      do i=1,numnp
+        ibct=ibcnode(i)
+        if(ibct.ne.0) then
+          if(iac(ibct).eq.0) then
+            do j=1,3
+              bct(j)=bc(j,ibct)
+            end do
+          else
+            do j=1,3
+              bct(j)=bca(j,i)
+            end do
           end if
-        end do
-        close(kwb)
-        close(kwc)
+          write(kw,"(i7,3(2x,i3),3(2x,1pe15.8))") i,
+     &     (ibc(k,ibct),k=1,nsd),(bct(k),k=1,nsd)
+        end if
       end do
+      close(kw)
 c
 c...  output Winkler BC
 c
