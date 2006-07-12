@@ -1,0 +1,92 @@
+#
+#   Parameter file for use with program faultcalc.
+#
+# **********************************************************************
+#
+#   Global information:
+#
+#     nsurf = the number of surfaces for which to compute split node
+#             displacements
+#     eps   = epsilon value to determine whether displacements are zero.
+#             If so, the node is not included as a split node.
+#
+#   nsurf    eps
+#-----------------------------------------------------------------------
+     4       1.0d-10
+#-----------------------------------------------------------------------
+#
+#   For each surface, enter the following information:
+#
+#     smin(j) = minimum (x,y,z) coordinate values defining the surface
+#     smax(j) = maximum (x,y,z) coordinate values defining the surface
+#     scoef(j,k) = coefficient values defining slip for each direction
+#                  These coefficients define a general equation of
+#                  second degree.  The slip for each coordinate
+#                  direction is computed as:
+#
+#          s(x,y,z) = s1*x^2 + 2*s2*x*y + s3*y^2 + 2*s4*x*z
+#                   + 2*s5*y*z + s6*z^2 + 2*s7*x + 2*s8*y
+#                   + 2*s9*z +s10
+#
+#-----------------------------------------------------------------------
+        4.0d0        16.0d0
+        0.0d0        12.0d0
+      -16.0d0       0.0d0
+#  (x,y,z) extents for fault portion with uniform slip
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+     0.3535d0         0.0d0      0.3535d0
+#  Coefficients for uniform slip
+        4.0d0        16.0d0
+       12.0d0        16.0d0
+      -16.0d0         0.0d0
+#  (x,y,z) extents for fault portion with linear y-taper
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+ -0.0441875d0         0.0d0  -0.0441875d0
+        0.0d0         0.0d0         0.0d0
+      1.414d0         0.0d0       1.414d0
+#  Coefficients for fault portion with linear y-taper
+       16.0d0        20.0d0
+        0.0d0        12.0d0
+      -16.0d0         0.0d0
+#  (x,y,z) extents for fault portion with linear x-taper
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+ -0.0441875d0         0.0d0  -0.0441875d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+     1.7675d0         0.0d0      1.7675d0
+#  Coefficients for fault portion with linear x-taper
+       16.0d0        20.0d0
+       12.0d0        16.0d0
+      -16.0d0         0.0d0
+#  (x,y,z) extents for fault portion with bilinear xy-taper
+        0.0d0         0.0d0         0.0d0
+ 0.011046875d0        0.0d0   0.011046875d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+        0.0d0         0.0d0         0.0d0
+   -0.17675d0         0.0d0    -0.17675d0
+ -0.2209375d0         0.0d0  -0.2209375d0
+        0.0d0         0.0d0         0.0d0
+       7.07d0         0.0d0        7.07d0
+#  Coefficients for fault portion with bilinear xy-taper
+#-----------------------------------------------------------------------

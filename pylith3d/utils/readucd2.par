@@ -1,0 +1,164 @@
+#
+#   Parameter file for use with program readucd.
+#
+# **********************************************************************
+#
+#   Coordinate parameters:
+#
+#    cscale  = coordinate scaling factor.
+#    ix      = coordinate number corresponding to x.
+#    iy      = coordinate number corresponding to y.
+#    iz      = coordinate number corresponding to z.
+#
+#    The integer parameters may be used to transpose coordinates if a
+#    different coordinate system is desired.
+#
+#   cscale   ix   iy   iz
+#-----------------------------------------------------------------------
+    1.0d0     1    2    3
+#-----------------------------------------------------------------------
+#
+#  Coordinate units:
+#
+#    Give a string specifying the units used after scaling.
+#
+#-----------------------------------------------------------------------
+  'km'
+#-----------------------------------------------------------------------
+#
+#
+# **********************************************************************
+#
+#   Boundary condition information:
+#    This information is used to determine the boundaries on which BC
+#    will be applied, as well as the default BC.
+#
+#    nbc    = number of boundary condition surfaces.  Note that
+#             each surface must be marked with a unique BC #.
+#    ibfield= field number from which BC codes are read.  This must be
+#             a node-based field (attribute) in the UCD file.
+#
+#    nbc    ibfield
+#-----------------------------------------------------------------------
+      5       5
+#-----------------------------------------------------------------------
+#
+#   BC numbers and corresponding boundary conditions to be applied to
+#   each boundary:
+#    This input will consist of nbc lines, one for each  mesh boundary.
+#    The order is the same as for the mesh limits above.
+#
+#    Each line will contain:
+#    ibcode ibcx  bcx  ibcy  bcy  ibcz  bcz  acode
+#
+#    where ibcode is the boundary condition code for a given surface,
+#    each ibc value is the integer boundary condition code
+#    (same as those for lithomop or tecton), and bc is the corresponding
+#    boundary condition value.
+#    The iauxcode value determines whether the actual BC value is read
+#    from an auxiliary file or not.  A value of zero indicates that
+#    the specified bc value is the one to use.  A value of one indicates
+#    that the value is to come from the auxiliary file.
+#
+# ibcode ibcx(i) bcx(i) ibcy(i)  bcy(i) ibcz(i) bcz(i) acode(i), i=1,nbc
+#-----------------------------------------------------------------------
+     1    0        0.0d0     1         0.0d0     0         0.0d0  0
+     2    1     -999.0d0     1      -999.0d0     1      -999.0d0  1
+     3    1     -999.0d0     1      -999.0d0     1      -999.0d0  1
+     4    1     -999.0d0     1      -999.0d0     1      -999.0d0  1
+     5    1     -999.0d0     1      -999.0d0     1      -999.0d0  1
+# The numbering above corresponds to front, back, left, right, and
+# bottom in the UCD file.
+#-----------------------------------------------------------------------
+#
+#  Units used for boundary conditions:
+#    You must specify the units to be used for displacement, velocity,
+#    and force boundary conditions.
+#
+#-----------------------------------------------------------------------
+'m'
+# displacement_units
+'m/s'
+# velocity_units
+'newton'
+# force_units
+#-----------------------------------------------------------------------
+#
+#   Connectivity order option:
+#    This determines how the tetrahedral element connectivities are
+#    ordered/determined.
+#
+#    iconopt:  1 = assume connectivities are already in the proper
+#                  order (fastest, but frequently incorrect).
+#              2 = assume connectivities are in the wrong order.  In
+#                  this case, the positions of nodes 2 and 3 are
+#                  reversed.
+#              3 = assume that the connectivities are in any order.  In
+#                  this case, the element jacobian is first computed
+#                  using the original order.  If a negative value is
+#                  obtained, the positions of nodes 2 and 3 are
+#                  reversed.  This is probably the safest option.
+#
+#    iconopt
+#-----------------------------------------------------------------------
+        3
+#-----------------------------------------------------------------------
+#
+#   Fault parameters:
+#    
+#    numflt  = number of faults in the model
+#    iffield= field number from which fault info is determined.  This
+#             must be a node-based field (attribute) in the UCD file.
+#
+#    numflt  iffield
+#-----------------------------------------------------------------------
+       1        6
+#-----------------------------------------------------------------------
+#
+#   Fault specification:
+#    Whether a node lies on a fault is determined by the attribute
+#    information above.  The fault to which a node belongs (if any) is
+#    determined by the value of the iffield entry for each node.
+#    The fault to which an element belongs and the side (+ or -) is
+#    determined by the entry in ifefield as described below.  Each
+#    fault has its element info determined by a separate element-based
+#    field.  A zero entry in this field indicates the element is not
+#    attached to a fault, a -1 indicates the element is on the negative
+#    side of the fault, and a +1 indicates the element is on the
+#    positive side of the fault.
+#    For each fault, there are 3 lines of information:
+#
+#    iftype(i), ifhist(i), ifcode(i), ifefield(i)
+#    fsplit(j,1,i),j=1,nsd
+#    fsplit(j,2,i),j=1,nsd
+#
+#    The parameters are:
+#
+#    iftype(i)       = fault type (1=split node, 2=slippery node)
+#    ifhist(i)       = load history associated with the fault
+#                      (same type of specification as tecton/lithomop)
+#    ifcode(i)       = the nodal code value corresponding to this fault,
+#                      read from iffield above.  Nodes with iffield
+#                      values corresponding to this value are on the
+#                      fault.
+#    ifefield(i)     = the element field value corresponding to this
+#                      fault.
+#    fsplit(j,1,i)   = splitting parameter for each degree of freedom
+#                      on side 1 of the fault.  If the fault is a split
+#                      node fault, this corresponds to an actual
+#                      dislocation value applied to this side of the
+#                      fault.  If the fault is a slippery node fault,
+#                      the sign and magnitude are used to determine the
+#                      integer slip parameter (0 = no slip, -1 = slip
+#                      in negative local coordinate direction, 1 = slip
+#                      in positive local coordinate direction).
+#    fsplit(j,2,i)   = same as fsplit(j,1,i) for side 2 of the fault.
+#
+#    iftype(i), ifhist(i), ifcode(i), ifefield(i)
+#    fsplit(j,1,i),j=1,nsd
+#    fsplit(j,2,i),j=1,nsd
+#-----------------------------------------------------------------------
+        1          0        1        1
+    0.3535d0    0.0d0    -0.3535d0
+   -0.3535d0    0.0d0     0.3535d0
+#-----------------------------------------------------------------------
