@@ -65,8 +65,23 @@ readnetgen: readnetgen.o
 readucd: readucd.o
 	$(FCOMPL) $(opt) -o readucd readucd.o
 
+readucd2: readucd2.o
+	$(FCOMPL) $(opt) -o readucd2 readucd2.o
+
 tetcmp: tetcmp.o
 	$(FCOMPL) $(opt) -o tetcmp tetcmp.o
+
+faultcalc: faultcalc.o
+	$(FCOMPL) $(opt) -o faultcalc faultcalc.o
+
+faultcalc2: faultcalc2.o
+	$(FCOMPL) $(opt) -o faultcalc2 faultcalc2.o
+
+scalecoord: scalecoord.o
+	$(FCOMPL) $(opt) -o scalecoord scalecoord.o
+
+scaleucd: scaleucd.o
+	$(FCOMPL) $(opt) -o scaleucd scaleucd.o
 
 clean:
 	/bin/rm -f *.o
