@@ -227,7 +227,7 @@ c
           if(iattr.eq.ifcode(j)) then
             nfnodes(j)=nfnodes(j)+1
             nfltnodes=nfltnodes+1
-            ifnodes(j,nfnodes(j))=i
+            ifnodes(j,nfnodes(j))=n
           end if
         end do
       end do
@@ -317,8 +317,8 @@ c
 c
 c...  First loop over faulted elements, then nodes attached to each element.
 c
-          do j=1,nfelems(1,i)
-            elem=ifelems(1,i,j)
+          do j=1,nfelems(kk,i)
+            elem=ifelems(kk,i,j)
             do l=1,nen
               do k=1,nfnodes(i)
                 node=ifnodes(i,k)
