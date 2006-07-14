@@ -71,7 +71,7 @@ c
       nmin=10000
       nmax=izero
       wavg=dble(neq)
-      call MatSetFromOptions(A, ierr)
+c     call MatSetFromOptions(A, ierr)
       call IsCreateStride(MPI_COMM_SELF, neq, 1, 1, rowSizes, ierr)
       call ISGetIndices(rowSizes, row_array, row_offset, ierr)
       do i=1,neq
@@ -89,9 +89,9 @@ c
       nmin=nmin+ione
       nmax=nmax+ione
       if(neq.ne.izero) wavg=wavg/dble(neq)
-cFIX  call MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, ierr)
-      call MatSeqAIJSetPreallocation(A, 0, row_array(row_offset+1),
-     &                               ierr)
+c     call MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, ierr)
+c     call MatSeqAIJSetPreallocation(A, 0, row_array(row_offset+1),
+c    &                               ierr)
       call ISRestoreIndices(rowSizes, row_array, row_offset, ierr)
       call ISDestroy(rowSizes, ierr)
       return
