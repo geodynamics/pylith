@@ -273,7 +273,7 @@ class Pylith3d_run(Component):
 
     def interpolatePoints(self, points):
         import pylith3d
-        return pylith3d.(self.mesh, self.sol, points)
+        return pylith3d.interpolatePoints(self.mesh, self.sol, points)
 
     def run(self):
         import pylith3d
