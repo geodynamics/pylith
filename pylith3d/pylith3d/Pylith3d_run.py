@@ -178,6 +178,103 @@ class Pylith3d_run(Component):
 
         return
 
+    def solveElastic(self):
+        import pylith3d
+        pylith3d.elastc(
+            self.A,self.rhs,self.sol,                          # sparse
+            self.pointerToBextern,                             # force
+            self.pointerToBtraction,
+            self.pointerToBgravity,
+            self.pointerToBconcForce,
+            self.pointerToBintern,
+            self.pointerToBresid,
+            self.pointerToBwink,
+            self.pointerToBwinkx,
+            self.pointerToDispVec,
+            self.pointerToDprev,
+            self.pointerToListArrayNforce,
+            self.pointerToListArrayGrav,
+            self.pointerToX,                                   # global
+            self.pointerToD,
+            self.pointerToDeld,
+            self.pointerToDcur,
+            self.pointerToId,
+            self.pointerToIwink,
+            self.pointerToWink,
+            self.pointerToListArrayNsysdat,
+            self.pointerToListArrayIddmat,
+            self.pointerToIbond,                               # BC
+            self.pointerToBond,
+            self.pointerToDx,                                  # slip
+            self.pointerToDeldx,
+            self.pointerToDxcur,
+            self.pointerToDiforc,
+            self.pointerToIdx,
+            self.pointerToIwinkx,
+            self.pointerToWinkx,
+            self.pointerToIdslp,
+            self.pointerToIpslp,
+            self.pointerToIdhist,
+            self.pointerToFault,                               # fault
+            self.pointerToNfault,
+            self.pointerToDfault,
+            self.pointerToTfault,
+            self.pointerToS,                                   # stiff
+            self.pointerToStemp,
+            self.pointerToState,                               # element
+            self.pointerToDstate,
+            self.pointerToState0,
+            self.pointerToDmat,
+            self.pointerToIens,
+            self.pointerToLm,
+            self.pointerToLmx,
+            self.pointerToLmf,
+            self.pointerToIvfamily,
+            self.pointerToListArrayNpar,
+            self.pointerToIelindx,
+            self.pointerToIelno,                               # traction
+            self.pointerToIside,
+            self.pointerToIhistry,
+            self.pointerToPres,
+            self.pointerToPdir,
+            self.pointerToListArrayPropertyList,               # material
+            self.pointerToMaterialModelInfo,
+            self.pointerToGauss,                               # eltype
+            self.pointerToSh,
+            self.pointerToShj,
+            self.pointerToListArrayElementTypeInfo,
+            self.pointerToHistry,                              # timdat
+            self.pointerToListArrayRtimdat,
+            self.pointerToListArrayNtimdat,
+            self.pointerToListArrayNvisdat,
+            self.pointerToMaxstp,
+            self.pointerToDelt,
+            self.pointerToAlfa,
+            self.pointerToMaxit,
+            self.pointerToNtdinit,
+            self.pointerToLgdef,
+            self.pointerToUtol,
+            self.pointerToFtol,
+            self.pointerToEtol,
+            self.pointerToItmax,
+            self.pointerToListArrayRgiter,                     # stresscmp
+            self.pointerToSkew,                                # skew
+            self.pointerToListArrayNcodat,                     # ioinfo
+            self.pointerToListArrayNunits,
+            self.pointerToListArrayNprint,
+            self.pointerToIstatout,
+            self.pointerToNstatout,
+            self.asciiOutputFile,                              # files
+            self.plotOutputFile,
+            self.ucdOutputRoot,
+            self.elasticStage,                                 # PETSc logging
+            self.iterateEvent)
+        return
+
+    def interpolatePoints(self, points):
+        import pylith3d
+        return pylith3d.(self.mesh, self.sol, points)
+
     def run(self):
         import pylith3d
         
@@ -292,97 +389,7 @@ class Pylith3d_run(Component):
                     self.iterateEvent)
 
             # Perform elastic solution, if requested.
-            
-            pylith3d.elastc(
-                self.A,self.rhs,self.sol,                          # sparse
-                self.pointerToBextern,                             # force
-                self.pointerToBtraction,
-                self.pointerToBgravity,
-                self.pointerToBconcForce,
-                self.pointerToBintern,
-                self.pointerToBresid,
-                self.pointerToBwink,
-                self.pointerToBwinkx,
-                self.pointerToDispVec,
-                self.pointerToDprev,
-                self.pointerToListArrayNforce,
-                self.pointerToListArrayGrav,
-                self.pointerToX,                                   # global
-                self.pointerToD,
-                self.pointerToDeld,
-                self.pointerToDcur,
-                self.pointerToId,
-                self.pointerToIwink,
-                self.pointerToWink,
-                self.pointerToListArrayNsysdat,
-                self.pointerToListArrayIddmat,
-                self.pointerToIbond,                               # BC
-                self.pointerToBond,
-                self.pointerToDx,                                  # slip
-                self.pointerToDeldx,
-                self.pointerToDxcur,
-                self.pointerToDiforc,
-                self.pointerToIdx,
-                self.pointerToIwinkx,
-                self.pointerToWinkx,
-                self.pointerToIdslp,
-                self.pointerToIpslp,
-                self.pointerToIdhist,
-                self.pointerToFault,                               # fault
-                self.pointerToNfault,
-                self.pointerToDfault,
-                self.pointerToTfault,
-                self.pointerToS,                                   # stiff
-                self.pointerToStemp,
-                self.pointerToState,                               # element
-                self.pointerToDstate,
-                self.pointerToState0,
-                self.pointerToDmat,
-                self.pointerToIens,
-                self.pointerToLm,
-                self.pointerToLmx,
-                self.pointerToLmf,
-                self.pointerToIvfamily,
-                self.pointerToListArrayNpar,
-                self.pointerToIelindx,
-                self.pointerToIelno,                               # traction
-                self.pointerToIside,
-                self.pointerToIhistry,
-                self.pointerToPres,
-                self.pointerToPdir,
-                self.pointerToListArrayPropertyList,               # material
-                self.pointerToMaterialModelInfo,
-                self.pointerToGauss,                               # eltype
-                self.pointerToSh,
-                self.pointerToShj,
-                self.pointerToListArrayElementTypeInfo,
-                self.pointerToHistry,                              # timdat
-                self.pointerToListArrayRtimdat,
-                self.pointerToListArrayNtimdat,
-                self.pointerToListArrayNvisdat,
-                self.pointerToMaxstp,
-                self.pointerToDelt,
-                self.pointerToAlfa,
-                self.pointerToMaxit,
-                self.pointerToNtdinit,
-                self.pointerToLgdef,
-                self.pointerToUtol,
-                self.pointerToFtol,
-                self.pointerToEtol,
-                self.pointerToItmax,
-                self.pointerToListArrayRgiter,                     # stresscmp
-                self.pointerToSkew,                                # skew
-                self.pointerToListArrayNcodat,                     # ioinfo
-                self.pointerToListArrayNunits,
-                self.pointerToListArrayNprint,
-                self.pointerToIstatout,
-                self.pointerToNstatout,
-                self.asciiOutputFile,                              # files
-                self.plotOutputFile,
-                self.ucdOutputRoot,
-                self.elasticStage,                                 # PETSc logging
-                self.iterateEvent)
-
+            self.solveElastic()
             pylith3d.outputMesh(self.fileRoot, self.mesh, self.sol)
 
         # Perform time-dependent solution, if requested.

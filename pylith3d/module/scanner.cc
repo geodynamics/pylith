@@ -313,7 +313,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 
   // return
   PyObject *pyMesh = PyCObject_FromVoidPtr(mesh.ptr(), NULL);
-  mesh.int_allocator.del(mesh.refCnt);
+  mesh.int_allocator->del(mesh.refCnt);
   mesh.refCnt = NULL;
   return Py_BuildValue("sN", meshOutputFile, pyMesh);
 }
@@ -383,6 +383,9 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
   ierr = PetscObjectCompose((PetscObject) sol, "mesh", (PetscObject) c);
   ierr = PetscObjectContainerDestroy(c);
   ierr = PetscObjectCompose((PetscObject) sol, "injection", (PetscObject) injection);
+
+  ierr = MatSetFromOptions(A);
+  ierr = preallocateMatrix(A, mesh, mesh->getField("displacement"));
 
   journal::debug_t debug("pylith3d");
   debug
@@ -546,7 +549,7 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   PetscViewerPopFormat(viewer);
   PetscViewerDestroy(viewer);
 
-  m.int_allocator.del(m.refCnt);
+  m.int_allocator->del(m.refCnt);
   m.refCnt = NULL;
 
   journal::debug_t debug("pylith3d");
@@ -558,6 +561,112 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   // return Py_None;
   Py_INCREF(Py_None);
   return Py_None;
+}
+
+char pypylith3d_interpolatePoints__doc__[] = "";
+char pypylith3d_interpolatePoints__name__[] = "interpolatePoints";
+
+PyObject * pypylith3d_interpolatePoints(PyObject *, PyObject *args)
+{
+  PyObject *pyMesh, *pySol, *pyPoints,*pyValues;
+
+  int ok = PyArg_ParseTuple(args, "OOO:outputMesh", &pyMesh, &pySol, &pyPoints);
+  if (!ok) {
+    return 0;
+  }
+
+  ALE::Mesh  *mesh = (ALE::Mesh *) PyCObject_AsVoidPtr(pyMesh);
+  Vec         sol  = (Vec)         PyCObject_AsVoidPtr(pySol);
+  double     *points;
+
+  // Convert Numeric matrix to C array
+
+  ALE::Obj<ALE::Mesh> m(mesh);
+
+  // Injection Vec in to Field
+  ALE::Obj<ALE::Mesh::field_type> displacement = m->getField("displacement");
+  ALE::Mesh::field_type::patch_type patch;
+  Vec        l;
+  VecScatter injection;
+
+  VecCreateSeqWithArray(PETSC_COMM_SELF, displacement->getSize(patch), displacement->restrict(patch), &l);
+  PetscObjectQuery((PetscObject) sol, "injection", (PetscObject *) &injection);
+  VecScatterBegin(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
+  VecScatterEnd(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
+  VecDestroy(l);
+
+  // Create complete field by adding BC
+  ALE::Obj<ALE::Mesh::field_type> full_displacement = m->getField("full_displacement");
+  ALE::Obj<ALE::Mesh::field_type::order_type::baseSequence> patches = displacement->getPatches();
+  ALE::Obj<ALE::Mesh::foliation_type> boundaries = m->getBoundaries();
+
+  // This is wrong if the domain changes
+  if (!full_displacement->getGlobalOrder()) {
+    for(ALE::Mesh::field_type::order_type::baseSequence::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
+      full_displacement->setPatch(displacement->getPatch(*p_iter), *p_iter);
+      full_displacement->setFiberDimensionByDepth(*p_iter, 0, 3);
+    }
+    full_displacement->orderPatches();
+    full_displacement->createGlobalOrder();
+  }
+  for(ALE::Mesh::field_type::order_type::baseSequence::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
+    ALE::Obj<ALE::Mesh::field_type::order_type::coneSequence> elements = full_displacement->getPatch(*p_iter);
+
+    for(ALE::Mesh::field_type::order_type::coneSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); ++e_iter) {
+      const int     dim   = displacement->getIndex(*p_iter, *e_iter).index;
+      const double *array = displacement->restrict(*p_iter, *e_iter);
+      int           v     = 0;
+      double        values[3];
+
+      for(int c = 0; c < 3; c++) {
+        ALE::Mesh::foliation_type::patch_type        bPatch(*p_iter, c+1);
+        const ALE::Mesh::foliation_type::index_type& idx = boundaries->getIndex(bPatch, *e_iter);
+
+        if (idx.index > 0) {
+          values[c] = 0.0;
+        } else if (dim > 0) {
+          values[c] = array[v++];
+        }
+      }
+      if (v != dim) {
+        std::cout << "ERROR: Invalid size " << v << " used for " << *e_iter << " with index " << displacement->getIndex(*p_iter, *e_iter) << std::endl;
+      }
+      full_displacement->updateAdd(*p_iter, *e_iter, values);
+    }
+  }
+  ALE::Obj<ALE::Mesh::foliation_type::order_type::baseSequence> bdPatches = boundaries->getPatches();
+
+  for(ALE::Mesh::foliation_type::order_type::baseSequence::iterator p_iter = bdPatches->begin(); p_iter != bdPatches->end(); ++p_iter) {
+    ALE::Obj<ALE::Mesh::foliation_type::order_type::coneSequence> elements = boundaries->getPatch(*p_iter);
+
+    for(ALE::Mesh::foliation_type::order_type::coneSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); ++e_iter) {
+      const double *array = full_displacement->restrict((*p_iter).first, *e_iter);
+      double        values[3];
+
+      if (boundaries->getIndex(*p_iter, *e_iter).index > 0) {
+        for(int c = 0; c < 3; c++) {
+          values[c] = array[c];
+        }
+        values[(*p_iter).second-1] = boundaries->restrict(*p_iter, *e_iter)[0];
+        full_displacement->update((*p_iter).first, *e_iter, values);
+      }
+    }
+  }
+
+  //interpolatePoints(m, full_displacement, points, values);
+
+  // Convert C array to Numeric matrix
+
+  m.int_allocator->del(m.refCnt);
+  m.refCnt = NULL;
+
+  journal::debug_t debug("pylith3d");
+  debug
+    << journal::at(__HERE__)
+    << "Interpolated points"
+    << journal::endl;
+
+  return Py_BuildValue("N", pyValues);
 }
 
 // Scan boundary conditions
