@@ -29,6 +29,7 @@
 // 
 
 #include <petscmesh.h>
+#include <src/dm/mesh/meshpylith.h>
 #include <petscmat.h>
 #include <portinfo>
 #include "journal/debug.h"
@@ -129,13 +130,11 @@ PetscErrorCode ReadBoundary_PyLith(const char *baseFilename, PetscTruth useZeroB
 #define __FUNCT__ "WriteBoundary_PyLith"
 PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Mesh> mesh)
 {
-  FILE                       *f;
-  char                        bcFilename[2048];
-  typedef std::pair<ALE::Mesh::field_type::patch_type,int> patch_type;
-  ALE::Obj<ALE::Mesh::foliation_type> boundaries = mesh->getBoundaries();
-  ALE::Obj<ALE::Mesh::bundle_type>    vertexBundle = mesh->getBundle(0);
-  ALE::Mesh::field_type::patch_type patch;
-  PetscErrorCode              ierr;
+  const ALE::Obj<ALE::Mesh::foliated_section_type>& boundaries = mesh->getBoundariesNew();
+  ALE::Mesh::foliated_section_type::patch_type      patch = 0;
+  FILE          *f;
+  char           bcFilename[2048];
+  PetscErrorCode ierr;
 
   PetscFunctionBegin;
   if (mesh->debug) {
@@ -152,23 +151,22 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Mesh
   fprintf(f, "#\n");
   fprintf(f, "#  Node X BC Y BC Z BC   X Value          Y Value          Z Value\n");
   fprintf(f, "#\n");
-  ALE::Obj<ALE::Mesh::sieve_type::traits::depthSequence> vertices = boundaries->getTopology()->depthStratum(0);
+  ALE::Obj<ALE::Mesh::topology_type::label_sequence> vertices = boundaries->getAtlas()->getTopology()->depthStratum(patch, 0);
+  int numElements = boundaries->getAtlas()->getTopology()->heightStratum(patch, 0)->size();
 
-  for(ALE::Mesh::sieve_type::traits::depthSequence::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
-    int    constraints[3];
+  for(ALE::Mesh::topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter) {
+    int    constraints[3] = {0, 0, 0};
     double values[3] = {0.0, 0.0, 0.0};
+    int    size = boundaries->getAtlas()->getFiberDimension(patch, *v_iter);
+    const ALE::Mesh::foliated_section_type::value_type *array = boundaries->restrict(patch, *v_iter);
 
-    for(int c = 0; c < 3; c++) {
-      ALE::Mesh::foliation_type::patch_type p(patch, c+1);
-
-      constraints[c] = boundaries->getFiberDimension(p, *v_itor);
-      if (constraints[c]) {
-        values[c] = boundaries->restrict(p, *v_itor)[0];
-      }
+    for(int c = 0; c < size; c++) {
+      constraints[array[c].first] = 1;
+      values[array[c].first]      = array[c].second;
     }
 
     if (constraints[0] || constraints[1] || constraints[2]) {
-      fprintf(f, "%7d %4d %4d %4d % 16.8E % 16.8E % 16.8E\n", vertexBundle->getIndex(patch, *v_itor).prefix+1,
+      fprintf(f, "%7d %4d %4d %4d % 16.8E % 16.8E % 16.8E\n", (*v_iter).index+1-numElements,
               constraints[0], constraints[1], constraints[2], values[0], values[1], values[2]);
     }
   }
@@ -189,16 +187,20 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   char  meshOutputFile[2048];
   int   interpolateMesh;
 
-  int ok = PyArg_ParseTuple(args, "si:processMesh", &meshInputFile, &interpolateMesh);
+  int ok = PyArg_ParseTuple(args, (char *) "si:processMesh", &meshInputFile, &interpolateMesh);
 
   if (!ok) {
     return 0;
   }
 
+  using ALE::Obj;
+  typedef ALE::PyLith::Builder::section_type section_type;
+  typedef section_type::atlas_type           atlas_type;
+  typedef atlas_type::topology_type          topology_type;
   journal::debug_t  debug("pylith3d");
   MPI_Comm          comm = PETSC_COMM_WORLD;
   PetscMPIInt       rank;
-  ALE::Obj<ALE::Mesh> mesh;
+  Obj<ALE::Mesh>    mesh;
   PetscViewer       viewer;
   PetscInt         *boundaryVertices;
   PetscScalar      *boundaryValues;
@@ -207,42 +209,46 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 
   ierr = MPI_Comm_rank(comm, &rank);
   sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
-  mesh = ALE::PyLithBuilder::createNew(comm, meshInputFile, (bool) interpolateMesh);
+  mesh = ALE::PyLith::Builder::readMesh(comm, 3, meshInputFile, false, (bool) interpolateMesh, 0);
   debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << meshInputFile << journal::endl;
-  mesh = mesh->distribute();
-  debug << journal::at(__HERE__) << "[" << rank << "]Distributed PETSc Mesh"  << journal::endl;
+  //mesh = mesh->distribute();
+  //debug << journal::at(__HERE__) << "[" << rank << "]Distributed PETSc Mesh"  << journal::endl;
   ierr = ReadBoundary_PyLith(meshInputFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
 
-  typedef std::pair<ALE::Mesh::field_type::patch_type,int> patch_type;
-  ALE::Obj<ALE::Mesh::foliation_type> boundaries = mesh->getBoundaries();
-  ALE::Mesh::field_type::patch_type patch;
+  const Obj<ALE::Mesh::foliated_section_type>& boundaries = mesh->getBoundariesNew();
+  ALE::Mesh::foliated_section_type::patch_type patch      = 0;
   std::set<int> seen;
-  int numElements = mesh->getBundle(mesh->getTopology()->depth())->getGlobalOffsets()[mesh->commSize()];
+  //int numElements = mesh->getBundle(mesh->getTopology()->depth())->getGlobalOffsets()[mesh->commSize()];
+  int numElements = mesh->getSection("coordinates")->getAtlas()->getTopology()->heightStratum(0, 0)->size();
 
-  boundaries->setTopology(mesh->getTopology());
-  for(int c = 0; c < numBoundaryComponents; c++) {
-    boundaries->setPatch(mesh->getTopology()->leaves(), ALE::Mesh::foliation_type::patch_type(patch, c+1));
-  }
+  boundaries->getAtlas()->setTopology(mesh->getTopologyNew());
   // Reverse order allows newer conditions to override older, as required by PyLith
   for(int v = numBoundaryVertices-1; v >= 0; v--) {
     ALE::Mesh::point_type vertex(0, boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
+    int size = 0;
 
     if (seen.find(vertex.index) == seen.end()) {
       for(int c = 0; c < numBoundaryComponents; c++) {
-        if (boundaryVertices[v*(numBoundaryComponents+1)+c+1]) {
-          boundaries->setFiberDimension(ALE::Mesh::foliation_type::patch_type(patch, c+1), vertex, 1);
-        }
+        size += boundaryVertices[v*(numBoundaryComponents+1)+c+1];
       }
+      boundaries->getAtlas()->setFiberDimension(patch, vertex, size);
       seen.insert(vertex.index);
     }
   }
-  boundaries->orderPatches();
+  boundaries->getAtlas()->orderPatches();
+  boundaries->allocate();
   for(int v = 0; v < numBoundaryVertices; v++) {
     ALE::Mesh::point_type vertex(0, boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
+    ALE::Mesh::foliated_section_type::value_type values[3];
 
-    for(int c = 0; c < numBoundaryComponents; c++) {
-      boundaries->update(ALE::Mesh::foliation_type::patch_type(patch, c+1), vertex, &boundaryValues[v*numBoundaryComponents+c]);
+    for(int c = 0, i = 0; c < numBoundaryComponents; c++) {
+      if (boundaryVertices[v*(numBoundaryComponents+1)+c+1]) {
+        values[i].first  = c;
+        values[i].second = boundaryValues[v*numBoundaryComponents+c];
+        i++;
+      }
     }
+    boundaries->update(patch, vertex, values);
   }
   debug << journal::at(__HERE__) << "[" << rank << "]Created boundary conditions"  << journal::endl;
 
@@ -270,52 +276,33 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   ierr = WriteBoundary_PyLith(meshOutputFile, mesh);
   debug << journal::at(__HERE__) << "[" << rank << "]Wrote PyLith boundary conditions"  << journal::endl;
 
-  ALE::Obj<ALE::Mesh::field_type> field = mesh->getField("displacement");
-  ALE::Obj<ALE::Mesh::sieve_type::traits::depthSequence> vertices = mesh->getTopology()->depthStratum(0);
+  Obj<section_type>      section = mesh->getSection("displacement");
+  const Obj<atlas_type>& atlas   = section->getAtlas();
+  const Obj<topology_type::label_sequence>& vertices = atlas->getTopology()->depthStratum(0, 0);
 
-  field->setPatch(mesh->getTopology()->leaves(), patch);
-  field->setFiberDimensionByDepth(patch, 0, 3);
-  for(ALE::Mesh::sieve_type::traits::depthSequence::iterator v_itor = vertices->begin(); v_itor != vertices->end(); v_itor++) {
-    int numConstraints = 0;
-
-    for(int c = 0; c < numBoundaryComponents; c++) {
-      numConstraints += boundaries->getFiberDimension(ALE::Mesh::foliation_type::patch_type(patch, c+1), *v_itor);
-    }
+  atlas->setFiberDimensionByDepth(0, 0, 3);
+  for(topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter) {
+    int numConstraints = boundaries->getAtlas()->getFiberDimension(patch, *v_iter);
 
     if (numConstraints > 0) {
       if (mesh->debug) {
-        std::cout << "[" << rank << "]Setting dimension of " << *v_itor << " to " << 3 - numConstraints << std::endl;
+        std::cout << "[" << rank << "]Setting dimension of " << *v_iter << " to " << 3 - numConstraints << std::endl;
       }
-      field->setFiberDimension(patch, *v_itor, 3 - numConstraints);
+      atlas->setFiberDimension(0, *v_iter, 3 - numConstraints);
     }
   }
-  field->orderPatches();
-  field->createGlobalOrder();
+  atlas->orderPatches();
+  section->allocate();
   if (mesh->debug) {
-    field->view("Displacement field");
+    section->view("Displacement field");
   }
-  ALE::Obj<ALE::Mesh::sieve_type::traits::heightSequence> elements = mesh->getTopology()->heightStratum(0);
-  ALE::Obj<ALE::Mesh::bundle_type> vertexBundle = mesh->getBundle(0);
-  std::string orderName("element");
-
-  for(ALE::Mesh::sieve_type::traits::heightSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); e_iter++) {
-    // setFiberDimensionByDepth() does not work here since we only want it to apply to the patch cone
-    //   What we really need is the depthStratum relative to the patch
-    ALE::Obj<ALE::Mesh::bundle_type::order_type::coneSequence> cone = vertexBundle->getPatch(orderName, *e_iter);
-
-    field->setPatch(orderName, cone, *e_iter);
-    for(ALE::Mesh::bundle_type::order_type::coneSequence::iterator c_iter = cone->begin(); c_iter != cone->end(); ++c_iter) {
-      field->setFiberDimension(orderName, *e_iter, *c_iter, field->getFiberDimension(patch, *c_iter));
-    }
-  }
-  field->orderPatches(orderName);
   debug << journal::at(__HERE__) << "[" << rank << "]Created displacement Field"  << journal::endl;
 
   // return
   PyObject *pyMesh = PyCObject_FromVoidPtr(mesh.ptr(), NULL);
   mesh.int_allocator->del(mesh.refCnt);
   mesh.refCnt = NULL;
-  return Py_BuildValue("sN", meshOutputFile, pyMesh);
+  return Py_BuildValue((char *) "sN", meshOutputFile, pyMesh);
 }
 
 // Create a PETSc Mat
@@ -329,14 +316,15 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
   Mat      A;
   Vec      rhs, sol;
 
-  int ok = PyArg_ParseTuple(args, "O:createPETScMat", &pyMesh);
+  int ok = PyArg_ParseTuple(args, (char *) "O:createPETScMat", &pyMesh);
   if (!ok) {
     return 0;
   }
 
   ALE::Mesh *mesh = (ALE::Mesh *) PyCObject_AsVoidPtr(pyMesh);
-  const int *offsets = mesh->getField("displacement")->getGlobalOffsets();
-  int size = offsets[mesh->commRank()+1] - offsets[mesh->commRank()];
+  //const int *offsets = mesh->getField("displacement")->getGlobalOffsets();
+  //int size = offsets[mesh->commRank()+1] - offsets[mesh->commRank()];
+  int size = mesh->getSection("displacement")->getAtlas()->size(0);
 
   if (MatCreate(comm, &A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
@@ -371,8 +359,8 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
   ierr = PetscObjectCompose((PetscObject) A, "mesh", (PetscObject) c);
   ierr = PetscObjectContainerDestroy(c);
 
-  VecScatter injection;
-  ierr = MeshGetGlobalScatter(mesh, "displacement", rhs, &injection);
+  VecScatter injection = NULL;
+  //FIX: ierr = MeshGetGlobalScatter(mesh, "displacement", rhs, &injection);
   ierr = PetscObjectContainerCreate(comm, &c);
   ierr = PetscObjectContainerSetPointer(c, mesh);
   ierr = PetscObjectCompose((PetscObject) rhs, "mesh", (PetscObject) c);
@@ -385,7 +373,7 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
   ierr = PetscObjectCompose((PetscObject) sol, "injection", (PetscObject) injection);
 
   ierr = MatSetFromOptions(A);
-  ierr = preallocateMatrix(A, mesh, mesh->getField("displacement"));
+  //ierr = preallocateMatrix(A, mesh, mesh->getField("displacement"));
 
   journal::debug_t debug("pylith3d");
   debug
@@ -397,7 +385,7 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
   pyA = PyCObject_FromVoidPtr(A, NULL);
   pyRhs = PyCObject_FromVoidPtr(rhs, NULL);
   pySol = PyCObject_FromVoidPtr(sol, NULL);
-  return Py_BuildValue("NNN", pyA, pyRhs, pySol);
+  return Py_BuildValue((char *) "NNN", pyA, pyRhs, pySol);
 }
 
 // Destroy a PETSc Mat
@@ -411,7 +399,7 @@ PyObject * pypylith3d_destroyPETScMat(PyObject *, PyObject *args)
   Mat A;
   Vec rhs, sol;
 
-  int ok = PyArg_ParseTuple(args, "OOO:destroyPETScMat", &pyA, &pyRhs, &pySol);
+  int ok = PyArg_ParseTuple(args, (char *) "OOO:destroyPETScMat", &pyA, &pyRhs, &pySol);
   if (!ok) {
     return 0;
   }
@@ -453,7 +441,7 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   PyObject *pyMesh, *pySol;
   char     *meshBaseFile;
 
-  int ok = PyArg_ParseTuple(args, "sOO:outputMesh", &meshBaseFile, &pyMesh, &pySol);
+  int ok = PyArg_ParseTuple(args, (char *) "sOO:outputMesh", &meshBaseFile, &pyMesh, &pySol);
   if (!ok) {
     return 0;
   }
@@ -467,72 +455,62 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   ALE::Obj<ALE::Mesh> m(mesh);
 
   // Injection Vec in to Field
-  ALE::Obj<ALE::Mesh::field_type> displacement = m->getField("displacement");
-  ALE::Mesh::field_type::patch_type patch;
+  ALE::Obj<ALE::Mesh::section_type>   displacement = m->getSection("displacement");
+  ALE::Mesh::section_type::patch_type patch        = 0;
   Vec        l;
   VecScatter injection;
 
-  VecCreateSeqWithArray(PETSC_COMM_SELF, displacement->getSize(patch), displacement->restrict(patch), &l);
+  VecCreateSeqWithArray(PETSC_COMM_SELF, displacement->getAtlas()->size(patch), displacement->restrict(patch), &l);
   PetscObjectQuery((PetscObject) sol, "injection", (PetscObject *) &injection);
-  VecScatterBegin(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
-  VecScatterEnd(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
+  if (injection) {
+    VecScatterBegin(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
+    VecScatterEnd(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
+  } else {
+    VecCopy(sol, l);
+  }
   VecDestroy(l);
 
   // Create complete field by adding BC
-  ALE::Obj<ALE::Mesh::field_type> full_displacement = m->getField("full_displacement");
-  ALE::Obj<ALE::Mesh::field_type::order_type::baseSequence> patches = displacement->getPatches();
-  ALE::Obj<ALE::Mesh::foliation_type> boundaries = m->getBoundaries();
+  ALE::Obj<ALE::Mesh::section_type>                     full_displacement = m->getSection("full_displacement");
+  const ALE::Obj<ALE::Mesh::foliated_section_type>&     boundaries = m->getBoundariesNew();
+  const ALE::Obj<ALE::Mesh::topology_type::sheaf_type>& patches = m->getTopologyNew()->getPatches();
 
   // This is wrong if the domain changes
-  if (!full_displacement->getGlobalOrder()) {
-    for(ALE::Mesh::field_type::order_type::baseSequence::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
-      full_displacement->setPatch(displacement->getPatch(*p_iter), *p_iter);
-      full_displacement->setFiberDimensionByDepth(*p_iter, 0, 3);
+  if (!full_displacement->getAtlas()->size(0)) {
+    for(ALE::Mesh::topology_type::sheaf_type::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
+      full_displacement->getAtlas()->setFiberDimensionByDepth(p_iter->first, 0, 3);
     }
-    full_displacement->orderPatches();
-    full_displacement->createGlobalOrder();
+    full_displacement->getAtlas()->orderPatches();
+    full_displacement->allocate();
   }
-  for(ALE::Mesh::field_type::order_type::baseSequence::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
-    ALE::Obj<ALE::Mesh::field_type::order_type::coneSequence> elements = full_displacement->getPatch(*p_iter);
+  for(ALE::Mesh::topology_type::sheaf_type::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
+    const ALE::Obj<ALE::Mesh::topology_type::label_sequence>& vertices = m->getTopologyNew()->depthStratum(p_iter->first, 0);
 
-    for(ALE::Mesh::field_type::order_type::coneSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); ++e_iter) {
-      const int     dim   = displacement->getIndex(*p_iter, *e_iter).index;
-      const double *array = displacement->restrict(*p_iter, *e_iter);
-      int           v     = 0;
-      double        values[3];
+    for(ALE::Mesh::topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter) {
+      const int numConst = boundaries->getAtlas()->size(p_iter->first, *v_iter);
+      const ALE::Mesh::foliated_section_type::value_type *constVal = boundaries->restrict(p_iter->first, *v_iter);
+      const int dim      = displacement->getAtlas()->size(p_iter->first, *v_iter);
+      const ALE::Mesh::section_type::value_type *array = displacement->restrict(p_iter->first, *v_iter);
+      int        v       = 0;
+      double     values[3];
 
       for(int c = 0; c < 3; c++) {
-        ALE::Mesh::foliation_type::patch_type        bPatch(*p_iter, c+1);
-        const ALE::Mesh::foliation_type::index_type& idx = boundaries->getIndex(bPatch, *e_iter);
+        int i;
 
-        if (idx.index > 0) {
-          values[c] = 0.0;
-        } else if (dim > 0) {
+        for(i = 0; i < numConst; i++) {
+          if (constVal[i].first == c) {
+            values[c] = constVal[i].second;
+            break;
+          }
+        }
+        if (i == numConst) {
           values[c] = array[v++];
         }
       }
       if (v != dim) {
-        std::cout << "ERROR: Invalid size " << v << " used for " << *e_iter << " with index " << displacement->getIndex(*p_iter, *e_iter) << std::endl;
+        std::cout << "ERROR: Invalid size " << v << " used for " << *v_iter << " with index " << displacement->getAtlas()->getIndex(p_iter->first, *v_iter) << std::endl;
       }
-      full_displacement->updateAdd(*p_iter, *e_iter, values);
-    }
-  }
-  ALE::Obj<ALE::Mesh::foliation_type::order_type::baseSequence> bdPatches = boundaries->getPatches();
-
-  for(ALE::Mesh::foliation_type::order_type::baseSequence::iterator p_iter = bdPatches->begin(); p_iter != bdPatches->end(); ++p_iter) {
-    ALE::Obj<ALE::Mesh::foliation_type::order_type::coneSequence> elements = boundaries->getPatch(*p_iter);
-
-    for(ALE::Mesh::foliation_type::order_type::coneSequence::iterator e_iter = elements->begin(); e_iter != elements->end(); ++e_iter) {
-      const double *array = full_displacement->restrict((*p_iter).first, *e_iter);
-      double        values[3];
-
-      if (boundaries->getIndex(*p_iter, *e_iter).index > 0) {
-        for(int c = 0; c < 3; c++) {
-          values[c] = array[c];
-        }
-        values[(*p_iter).second-1] = boundaries->restrict(*p_iter, *e_iter)[0];
-        full_displacement->update((*p_iter).first, *e_iter, values);
-      }
+      full_displacement->updateAdd(p_iter->first, *v_iter, values);
     }
   }
 
@@ -570,7 +548,7 @@ PyObject * pypylith3d_interpolatePoints(PyObject *, PyObject *args)
 {
   PyObject *pyMesh, *pySol, *pyPoints,*pyValues;
 
-  int ok = PyArg_ParseTuple(args, "OOO:outputMesh", &pyMesh, &pySol, &pyPoints);
+  int ok = PyArg_ParseTuple(args, (char *) "OOO:outputMesh", &pyMesh, &pySol, &pyPoints);
   if (!ok) {
     return 0;
   }
@@ -666,7 +644,7 @@ PyObject * pypylith3d_interpolatePoints(PyObject *, PyObject *args)
     << "Interpolated points"
     << journal::endl;
 
-  return Py_BuildValue("N", pyValues);
+  return Py_BuildValue((char *) "N", pyValues);
 }
 
 // Scan boundary conditions
@@ -682,7 +660,7 @@ PyObject * pypylith3d_scan_bc(PyObject *, PyObject *args)
   char* forceUnits;
   char* bcInputFile;
 
-  int ok = PyArg_ParseTuple(args, "issss:scan_bc",
+  int ok = PyArg_ParseTuple(args, (char *) "issss:scan_bc",
 			    &f77FileInput,
 			    &displacementUnits,
 			    &velocityUnits,
@@ -723,7 +701,7 @@ PyObject * pypylith3d_scan_bc(PyObject *, PyObject *args)
     << journal::endl;
 
   // return
-  return Py_BuildValue("i", numberBcEntries);
+  return Py_BuildValue((char *) "i", numberBcEntries);
 }
 
 
@@ -743,7 +721,7 @@ PyObject * pypylith3d_scan_connect(PyObject *, PyObject *args)
   int f77FileInput;
   char* connectivityInputFile;
 
-  int ok = PyArg_ParseTuple(args, "OOOOiiis:scan_connect",
+  int ok = PyArg_ParseTuple(args, (char *) "OOOOiiis:scan_connect",
 			    &pyPointerToListArrayNumberElementNodesBase,
 			    &pyPointerToMaterialModelInfo,
                             &pyPointerToListArrayMaterialModel,
@@ -796,7 +774,7 @@ PyObject * pypylith3d_scan_connect(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("iii", numberVolumeElements,
+  return Py_BuildValue((char *) "iii", numberVolumeElements,
 		       numberVolumeElementFamilies,
 		       volumeElementType);
 }
@@ -813,7 +791,7 @@ PyObject * pypylith3d_scan_coords(PyObject *, PyObject *args)
   char *coordinateUnits;
   char *coordinateInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iss:scan_coords",
+  int ok = PyArg_ParseTuple(args, (char *) "iss:scan_coords",
 			    &f77FileInput,
 			    &coordinateUnits,
 			    &coordinateInputFile);
@@ -849,7 +827,7 @@ PyObject * pypylith3d_scan_coords(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i", numberNodes);
+  return Py_BuildValue((char *) "i", numberNodes);
 }
 
 
@@ -864,7 +842,7 @@ PyObject * pypylith3d_scan_diff(PyObject *, PyObject *args)
   int f77FileInput;
   char* differentialForceInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iis:scan_diff",
+  int ok = PyArg_ParseTuple(args, (char *) "iis:scan_diff",
 			    &numberSlipperyNodeEntries,
 			    &f77FileInput,
 			    &differentialForceInputFile);
@@ -899,7 +877,7 @@ PyObject * pypylith3d_scan_diff(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i",numberDifferentialForceEntries);
+  return Py_BuildValue((char *) "i", numberDifferentialForceEntries);
 }
 
 
@@ -915,7 +893,7 @@ PyObject * pypylith3d_scan_fuldat(PyObject *, PyObject *args)
   int f77FileInput;
   char* fullOutputInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iiis:scan_fuldat",
+  int ok = PyArg_ParseTuple(args, (char *) "iiis:scan_fuldat",
 			    &analysisTypeInt,
 			    &totalNumberTimeSteps,
 			    &f77FileInput,
@@ -952,7 +930,7 @@ PyObject * pypylith3d_scan_fuldat(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i",numberFullOutputs);
+  return Py_BuildValue((char *) "i", numberFullOutputs);
 }
 
 
@@ -966,7 +944,7 @@ PyObject * pypylith3d_scan_hist(PyObject *, PyObject *args)
   int f77FileInput;
   char* loadHistoryInputFile;
 
-  int ok = PyArg_ParseTuple(args, "is:scan_hist",
+  int ok = PyArg_ParseTuple(args, (char *) "is:scan_hist",
 			    &f77FileInput,
 			    &loadHistoryInputFile);
 
@@ -999,7 +977,7 @@ PyObject * pypylith3d_scan_hist(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i",numberLoadHistories);
+  return Py_BuildValue((char *) "i", numberLoadHistories);
 }
 
 
@@ -1070,7 +1048,7 @@ PyObject * pypylith3d_scan_skew(PyObject *, PyObject *args)
   char* rotationUnits;
   char* rotationInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iss:scan_skew",
+  int ok = PyArg_ParseTuple(args, (char *) "iss:scan_skew",
 			    &f77FileInput,
 			    &rotationUnits,
 			    &rotationInputFile);
@@ -1106,7 +1084,7 @@ PyObject * pypylith3d_scan_skew(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i",numberRotationEntries);
+  return Py_BuildValue((char *) "i", numberRotationEntries);
 }
 
 
@@ -1120,7 +1098,7 @@ PyObject * pypylith3d_scan_slip(PyObject *, PyObject *args)
   int f77FileInput;
   char* slipperyNodeInputFile;
 
-  int ok = PyArg_ParseTuple(args, "is:scan_slip",
+  int ok = PyArg_ParseTuple(args, (char *) "is:scan_slip",
 			    &f77FileInput,
 			    &slipperyNodeInputFile);
 
@@ -1153,7 +1131,7 @@ PyObject * pypylith3d_scan_slip(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i",numberSlipperyNodeEntries);
+  return Py_BuildValue((char *) "i", numberSlipperyNodeEntries);
 }
 
 
@@ -1167,7 +1145,7 @@ PyObject * pypylith3d_scan_split(PyObject *, PyObject *args)
   int f77FileInput;
   char* splitNodeInputFile;
 
-  int ok = PyArg_ParseTuple(args, "is:scan_split",
+  int ok = PyArg_ParseTuple(args, (char *) "is:scan_split",
 			    &f77FileInput,
 			    &splitNodeInputFile);
 
@@ -1200,7 +1178,7 @@ PyObject * pypylith3d_scan_split(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i",numberSplitNodeEntries);
+  return Py_BuildValue((char *) "i", numberSplitNodeEntries);
 }
 
 
@@ -1215,7 +1193,7 @@ PyObject * pypylith3d_scan_timdat(PyObject *, PyObject *args)
   char* timeUnits;
   char* timeStepInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iss:scan_timdat",
+  int ok = PyArg_ParseTuple(args, (char *) "iss:scan_timdat",
 			    &f77FileInput,
 			    &timeUnits,
 			    &timeStepInputFile);
@@ -1253,7 +1231,7 @@ PyObject * pypylith3d_scan_timdat(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("ii",numberTimeStepGroups,
+  return Py_BuildValue((char *) "ii", numberTimeStepGroups,
 		       totalNumberTimeSteps);
 }
 
@@ -1319,7 +1297,7 @@ PyObject * pypylith3d_scan_wink(PyObject *, PyObject *args)
   int f77FileInput;
   char* winklerInputFile;
 
-  int ok = PyArg_ParseTuple(args, "is:scan_wink",
+  int ok = PyArg_ParseTuple(args, (char *) "is:scan_wink",
 			    &f77FileInput,
 			    &winklerInputFile);
 
@@ -1354,7 +1332,7 @@ PyObject * pypylith3d_scan_wink(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("ii",numberWinklerEntries,
+  return Py_BuildValue((char *) "ii", numberWinklerEntries,
 	               numberWinklerForces);
 }
 
@@ -1370,7 +1348,7 @@ PyObject * pypylith3d_scan_winkx(PyObject *, PyObject *args)
   int f77FileInput;
   char* slipperyWinklerInputFile;
 
-  int ok = PyArg_ParseTuple(args, "iis:scan_winkx",
+  int ok = PyArg_ParseTuple(args, (char *) "iis:scan_winkx",
 			    &numberSlipperyNodeEntries,
 			    &f77FileInput,
 			    &slipperyWinklerInputFile);
@@ -1407,7 +1385,7 @@ PyObject * pypylith3d_scan_winkx(PyObject *, PyObject *args)
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("ii",numberSlipperyWinklerEntries,
+  return Py_BuildValue((char *) "ii", numberSlipperyWinklerEntries,
 		       numberSlipperyWinklerForces);
 }
     
