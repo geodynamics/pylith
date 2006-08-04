@@ -176,7 +176,7 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Mesh
 
 // Process mesh
 
-PetscErrorCode MeshView_Sieve_Newer(ALE::Obj<ALE::Mesh> mesh, PetscViewer viewer);
+PetscErrorCode MeshView_Sieve(ALE::Obj<ALE::Mesh> mesh, PetscViewer viewer);
 
 char pypylith3d_processMesh__doc__[] = "";
 char pypylith3d_processMesh__name__[] = "processMesh";
@@ -269,7 +269,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   } else if (PetscExceptionCaught(ierr, PETSC_ERR_FILE_OPEN)) {
     ierr = 0;
   } 
-  ierr = MeshView_Sieve_Newer(mesh, viewer);
+  ierr = MeshView_Sieve(mesh, viewer);
   ierr = PetscViewerDestroy(viewer);
   debug << journal::at(__HERE__) << "[" << rank << "]Output new PyLith mesh into: " << meshOutputFile << journal::endl;
 
@@ -519,7 +519,7 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_VTK);
   filename += ".vtk";
   PetscViewerFileSetName(viewer, filename.c_str());
-  MeshView_Sieve_Newer(m, viewer);
+  MeshView_Sieve(m, viewer);
   FieldView_Sieve(m, "full_displacement", viewer);
   PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_VTK_CELL);
   FieldView_Sieve(m, "material", viewer);
