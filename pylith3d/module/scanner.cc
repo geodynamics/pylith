@@ -166,7 +166,7 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Mesh
     }
 
     if (constraints[0] || constraints[1] || constraints[2]) {
-      fprintf(f, "%7d %4d %4d %4d % 16.8E % 16.8E % 16.8E\n", (*v_iter).index+1-numElements,
+      fprintf(f, "%7d %4d %4d %4d % 16.8E % 16.8E % 16.8E\n", *v_iter+1-numElements,
               constraints[0], constraints[1], constraints[2], values[0], values[1], values[2]);
     }
   }
@@ -224,21 +224,21 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   boundaries->getAtlas()->setTopology(mesh->getTopologyNew());
   // Reverse order allows newer conditions to override older, as required by PyLith
   for(int v = numBoundaryVertices-1; v >= 0; v--) {
-    ALE::Mesh::point_type vertex(0, boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
+    ALE::Mesh::point_type vertex(boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
     int size = 0;
 
-    if (seen.find(vertex.index) == seen.end()) {
+    if (seen.find(vertex) == seen.end()) {
       for(int c = 0; c < numBoundaryComponents; c++) {
         size += boundaryVertices[v*(numBoundaryComponents+1)+c+1];
       }
       boundaries->getAtlas()->setFiberDimension(patch, vertex, size);
-      seen.insert(vertex.index);
+      seen.insert(vertex);
     }
   }
   boundaries->getAtlas()->orderPatches();
   boundaries->allocate();
   for(int v = 0; v < numBoundaryVertices; v++) {
-    ALE::Mesh::point_type vertex(0, boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
+    ALE::Mesh::point_type vertex(boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
     ALE::Mesh::foliated_section_type::value_type values[3];
 
     for(int c = 0, i = 0; c < numBoundaryComponents; c++) {
