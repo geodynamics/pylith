@@ -28,6 +28,7 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include <Distribution.hh>
 #include <petscmesh.h>
 #include <src/dm/mesh/meshpylith.h>
 #include <petscmat.h>
@@ -131,6 +132,7 @@ PetscErrorCode ReadBoundary_PyLith(const char *baseFilename, PetscTruth useZeroB
 PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Mesh> mesh)
 {
   const ALE::Obj<ALE::Mesh::foliated_section_type>& boundaries = mesh->getBoundariesNew();
+  const ALE::Obj<ALE::Mesh::numbering_type>&        vNumbering = mesh->getLocalNumbering(0);
   ALE::Mesh::foliated_section_type::patch_type      patch = 0;
   FILE          *f;
   char           bcFilename[2048];
@@ -152,7 +154,6 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Mesh
   fprintf(f, "#  Node X BC Y BC Z BC   X Value          Y Value          Z Value\n");
   fprintf(f, "#\n");
   ALE::Obj<ALE::Mesh::topology_type::label_sequence> vertices = boundaries->getAtlas()->getTopology()->depthStratum(patch, 0);
-  int numElements = boundaries->getAtlas()->getTopology()->heightStratum(patch, 0)->size();
 
   for(ALE::Mesh::topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter) {
     int    constraints[3] = {0, 0, 0};
@@ -166,7 +167,7 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Mesh
     }
 
     if (constraints[0] || constraints[1] || constraints[2]) {
-      fprintf(f, "%7d %4d %4d %4d % 16.8E % 16.8E % 16.8E\n", *v_iter+1-numElements,
+      fprintf(f, "%7d %4d %4d %4d % 16.8E % 16.8E % 16.8E\n", vNumbering->getIndex(*v_iter)+1,
               constraints[0], constraints[1], constraints[2], values[0], values[1], values[2]);
     }
   }
@@ -209,17 +210,17 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 
   ierr = MPI_Comm_rank(comm, &rank);
   sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
-  mesh = ALE::PyLith::Builder::readMesh(comm, 3, meshInputFile, false, (bool) interpolateMesh, 0);
+  mesh = ALE::PyLith::Builder::readMesh(comm, 3, meshInputFile, false, (bool) interpolateMesh, 1);
+  int numElements = mesh->getTopologyNew()->heightStratum(0, 0)->size();
+  ierr = MPI_Bcast(&numElements, 1, MPI_INT, 0, comm);
   debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << meshInputFile << journal::endl;
-  //mesh = mesh->distribute();
-  //debug << journal::at(__HERE__) << "[" << rank << "]Distributed PETSc Mesh"  << journal::endl;
+  mesh = ALE::New::Distribution<ALE::Mesh::topology_type>::distributeMesh(mesh);
+  debug << journal::at(__HERE__) << "[" << rank << "]Distributed PETSc Mesh"  << journal::endl;
   ierr = ReadBoundary_PyLith(meshInputFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
 
   const Obj<ALE::Mesh::foliated_section_type>& boundaries = mesh->getBoundariesNew();
   ALE::Mesh::foliated_section_type::patch_type patch      = 0;
   std::set<int> seen;
-  //int numElements = mesh->getBundle(mesh->getTopology()->depth())->getGlobalOffsets()[mesh->commSize()];
-  int numElements = mesh->getSection("coordinates")->getAtlas()->getTopology()->heightStratum(0, 0)->size();
 
   boundaries->getAtlas()->setTopology(mesh->getTopologyNew());
   // Reverse order allows newer conditions to override older, as required by PyLith
@@ -252,12 +253,14 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   }
   debug << journal::at(__HERE__) << "[" << rank << "]Created boundary conditions"  << journal::endl;
 
+#if 0
   bool refineMesh = false;
   if (refineMesh) {
     double refinementLimit = 2.4e4*2.4e4*2.4e4*0.01*0.5;
     bool   interpolate     = true;
     mesh = ALE::Generator::refine(mesh, refinementLimit, interpolate);
   }
+#endif
 
   ierr = PetscViewerCreate(comm, &viewer);
   ierr = PetscViewerSetType(viewer, PETSC_VIEWER_ASCII);
@@ -298,6 +301,8 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   }
   debug << journal::at(__HERE__) << "[" << rank << "]Created displacement Field"  << journal::endl;
 
+  mesh->getLocalNumbering(mesh->getTopologyNew()->depth())->constructInverseOrder();
+
   // return
   PyObject *pyMesh = PyCObject_FromVoidPtr(mesh.ptr(), NULL);
   mesh.int_allocator->del(mesh.refCnt);
@@ -322,15 +327,16 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
   }
 
   ALE::Mesh *mesh = (ALE::Mesh *) PyCObject_AsVoidPtr(pyMesh);
-  //const int *offsets = mesh->getField("displacement")->getGlobalOffsets();
-  //int size = offsets[mesh->commRank()+1] - offsets[mesh->commRank()];
-  int size = mesh->getSection("displacement")->getAtlas()->size(0);
+  typedef ALE::New::Numbering<ALE::Mesh::topology_type> numbering_type;
+  ALE::Obj<numbering_type> offsets = mesh->getGlobalOrder("displacement");
+  int localSize = offsets->getLocalSize();
+  int globalSize = offsets->getGlobalSize();
 
   if (MatCreate(comm, &A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
     return 0;
   }
-  if (MatSetSizes(A, size, size, PETSC_DETERMINE, PETSC_DETERMINE)) {
+  if (MatSetSizes(A, localSize, localSize, globalSize, globalSize)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Mat");
     return 0;
   }
@@ -338,7 +344,7 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Rhs");
     return 0;
   }
-  if (VecSetSizes(rhs, size, PETSC_DETERMINE)) {
+  if (VecSetSizes(rhs, localSize, globalSize)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Rhs");
     return 0;
   }
@@ -360,7 +366,7 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
   ierr = PetscObjectContainerDestroy(c);
 
   VecScatter injection = NULL;
-  //FIX: ierr = MeshGetGlobalScatter(mesh, "displacement", rhs, &injection);
+  ierr = MeshGetGlobalScatter(mesh, "displacement", rhs, &injection);
   ierr = PetscObjectContainerCreate(comm, &c);
   ierr = PetscObjectContainerSetPointer(c, mesh);
   ierr = PetscObjectCompose((PetscObject) rhs, "mesh", (PetscObject) c);
@@ -378,7 +384,7 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "Created PETSc Mat:" << size
+    << "Created PETSc Mat: " << localSize << " " << globalSize
     << journal::endl;
 
   // return Py_None;
@@ -450,7 +456,7 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   Vec         sol  = (Vec)         PyCObject_AsVoidPtr(pySol);
   std::string filename(meshBaseFile);
   PetscViewer viewer;
-  Vec         partition;
+  //Vec         partition;
 
   ALE::Obj<ALE::Mesh> m(mesh);
 
@@ -522,7 +528,9 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   MeshView_Sieve(m, viewer);
   FieldView_Sieve(m, "full_displacement", viewer);
   PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_VTK_CELL);
-  FieldView_Sieve(m, "material", viewer);
+  if (m->hasSection("material")) {
+    FieldView_Sieve(m, "material", viewer);
+  }
   //FieldView_Sieve(partition, viewer);
   PetscViewerPopFormat(viewer);
   PetscViewerDestroy(viewer);
@@ -555,24 +563,25 @@ PyObject * pypylith3d_interpolatePoints(PyObject *, PyObject *args)
 
   ALE::Mesh  *mesh = (ALE::Mesh *) PyCObject_AsVoidPtr(pyMesh);
   Vec         sol  = (Vec)         PyCObject_AsVoidPtr(pySol);
-  double     *points;
+  //double     *points;
 
   // Convert Numeric matrix to C array
 
   ALE::Obj<ALE::Mesh> m(mesh);
 
   // Injection Vec in to Field
-  ALE::Obj<ALE::Mesh::field_type> displacement = m->getField("displacement");
-  ALE::Mesh::field_type::patch_type patch;
+  ALE::Obj<ALE::Mesh::section_type> displacement = m->getSection("displacement");
+  ALE::Mesh::section_type::patch_type patch;
   Vec        l;
   VecScatter injection;
 
-  VecCreateSeqWithArray(PETSC_COMM_SELF, displacement->getSize(patch), displacement->restrict(patch), &l);
+  VecCreateSeqWithArray(PETSC_COMM_SELF, displacement->getAtlas()->size(patch), displacement->restrict(patch), &l);
   PetscObjectQuery((PetscObject) sol, "injection", (PetscObject *) &injection);
   VecScatterBegin(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
   VecScatterEnd(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
   VecDestroy(l);
 
+#if 0
   // Create complete field by adding BC
   ALE::Obj<ALE::Mesh::field_type> full_displacement = m->getField("full_displacement");
   ALE::Obj<ALE::Mesh::field_type::order_type::baseSequence> patches = displacement->getPatches();
@@ -630,7 +639,7 @@ PyObject * pypylith3d_interpolatePoints(PyObject *, PyObject *args)
       }
     }
   }
-
+#endif
   //interpolatePoints(m, full_displacement, points, values);
 
   // Convert C array to Numeric matrix
