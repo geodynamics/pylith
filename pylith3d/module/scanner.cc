@@ -177,7 +177,7 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Mesh
 
 // Process mesh
 
-PetscErrorCode MeshView_Sieve(ALE::Obj<ALE::Mesh> mesh, PetscViewer viewer);
+PetscErrorCode MeshView_Sieve(const ALE::Obj<ALE::Mesh>& mesh, PetscViewer viewer);
 
 char pypylith3d_processMesh__doc__[] = "";
 char pypylith3d_processMesh__name__[] = "processMesh";
@@ -206,11 +206,12 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   PetscInt         *boundaryVertices;
   PetscScalar      *boundaryValues;
   PetscInt          numBoundaryVertices, numBoundaryComponents;
+  int               debugFlag = 0;
   PetscErrorCode    ierr;
 
   ierr = MPI_Comm_rank(comm, &rank);
   sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
-  mesh = ALE::PyLith::Builder::readMesh(comm, 3, meshInputFile, false, (bool) interpolateMesh, 1);
+  mesh = ALE::PyLith::Builder::readMesh(comm, 3, meshInputFile, false, (bool) interpolateMesh, debugFlag);
   int numElements = mesh->getTopologyNew()->heightStratum(0, 0)->size();
   ierr = MPI_Bcast(&numElements, 1, MPI_INT, 0, comm);
   debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << meshInputFile << journal::endl;
