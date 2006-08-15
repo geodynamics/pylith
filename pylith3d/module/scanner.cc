@@ -438,7 +438,7 @@ PyObject * pypylith3d_destroyPETScMat(PyObject *, PyObject *args)
   return Py_None;
 }
 
-PetscErrorCode FieldView_Sieve(ALE::Obj<ALE::Mesh>, const std::string&, PetscViewer);
+PetscErrorCode FieldView_Sieve(const ALE::Obj<ALE::Mesh>&, const std::string&, PetscViewer);
 
 char pypylith3d_outputMesh__doc__[] = "";
 char pypylith3d_outputMesh__name__[] = "outputMesh";
