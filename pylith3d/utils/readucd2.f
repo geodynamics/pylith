@@ -39,7 +39,8 @@ c...  parameters read from parameter file
 c
       integer nbc,iconopt,numflt,ibfield
       integer ibcode(maxbnds),ibc(nsd,maxbnds),iac(maxbnds),isn(nsd)
-      integer iftype(maxflts),iffield,ifcode(maxflts),ifefield(maxflts)
+      integer iftype(maxflts),iffield(maxflts),ifcode(maxflts)
+      integer ifefield(maxflts),ifnorm(3)
       double precision bc(nsd,maxbnds),fsplit(nsd,2,maxflts)
       double precision cscale
       character cunits*20,dunits*20,vunits*20,funits*20
@@ -55,6 +56,7 @@ c
       integer numnp,numel,nnattr,neattr,nmattr
       integer ien(nen,maxelmts),mat(maxelmts)
       double precision x(nsd,maxnodes),attrn(maxnattr),attre(maxeattr)
+      double precision fnorm(nsd,maxnodes)
 c
 c...  values read from auxiliary file
 c
@@ -86,9 +88,10 @@ c
       data vstring/"velocity_units = "/
       data fstring/"force_units = "/
       character stout*50
-      logical aux
+      logical aux,getnorm
 c
       aux=.false.
+      getnorm=.false.
       nenl=nen
       nsdl=nsd
       ndofl=ndof
@@ -97,6 +100,7 @@ c
       read(kti,"(a200)") fileroot
       i1=nnblnk(fileroot)
       i2=nchar(fileroot)
+      call fill(fnorm,zero,3*maxnodes)
       call ifill(ibcnode,izero,maxnodes)
       call ifill(nfnodes,izero,maxflts)
       call ifill(nfelems,izero,2*maxflts)
@@ -139,10 +143,12 @@ c
 c...  fault definitions
 c
       call pskip(kr)
-      read(kr,*) numflt,iffield
+      read(kr,*) numflt,(ifnorm(i),i=1,3)
+      if(ifnorm(1).gt.0.and.ifnorm(2).gt.0.and.ifnorm(3).gt.0)
+     & getnorm=.true.
       do i=1,numflt
         call pskip(kr)
-        read(kr,*) iftype(i),ifhist(i),ifcode(i),ifefield(i)
+        read(kr,*) iftype(i),ifhist(i),ifcode(i),iffield(i),ifefield(i)
         call pskip(kr)
         read(kr,*) (fsplit(j,1,i),j=1,nsd)
         call pskip(kr)
@@ -208,7 +214,8 @@ c
       close(kw)
 c
 c...  read nodal attributes to determine which nodes are associated
-c     with each fault and boundary condition code.
+c     with each fault and boundary condition code.  Get node normals
+c     if they are available.
 c
       read(kr,*) nf,(itmp(i),i=1,nf)
       do i=1,nf
@@ -217,13 +224,18 @@ c
       nfltnodes=0
       do i=1,numnp
         read(kr,*) n,(attrn(j),j=1,nnattr)
+        if(getnorm) then
+          fnorm(1,i)=attrn(ifnorm(1))
+          fnorm(2,i)=attrn(ifnorm(2))
+          fnorm(3,i)=attrn(ifnorm(3))
+        end if
         iattr=nint(attrn(ibfield))
         do j=1,nbc
           if(iattr.eq.ibcode(j)) ibcnode(i)=iattr
         end do
 c
-        iattr=nint(attrn(iffield))
         do j=1,numflt
+          iattr=nint(attrn(iffield(j)))
           if(iattr.eq.ifcode(j)) then
             nfnodes(j)=nfnodes(j)+1
             nfltnodes=nfltnodes+1
@@ -231,6 +243,7 @@ c
           end if
         end do
       end do
+      write(kto,*) (nfnodes(j),j=1,numflt)
 c
 c...  read element attributes to determine which elements are adjacent
 c     to each fault
@@ -252,6 +265,8 @@ c
           end if
         end do
       end do
+      write(kto,*) (nfelems(1,j),j=1,numflt)
+      write(kto,*) (nfelems(2,j),j=1,numflt)
       close(kr)
 c
 c...  if auxiliary file is being used, read BC from it
@@ -330,8 +345,9 @@ c
                     write(kwfb(i),"(2i7,3i4)") elem,node,
      &               (isn(jj),jj=1,nsd)
                   end if
-                  write(kwfc(i),"(3i7,3(2x,1pe15.8))") 
-     &             elem,node,kk,(x(jj,node),jj=1,nsd)
+                  write(kwfc(i),"(3i7,6(2x,1pe15.8))") 
+     &             elem,node,kk,(x(jj,node),jj=1,nsd),
+     &             (fnorm(jj,node),jj=1,nsd)
                 end if
               end do
             end do
@@ -345,6 +361,21 @@ c
       write(kto,700) nflip
 700   format("Number of connectivities flipped:  ",i7)
       stop
+      end
+c
+c
+      subroutine fill(arr,val,nlen)
+c
+c...  subroutine to fill a double precision array with a given value
+c
+      implicit none
+      integer nlen
+      double precision val,arr(nlen)
+      integer i
+      do i=1,nlen
+        arr(i)=val
+      end do
+      return
       end
 c
 c
