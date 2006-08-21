@@ -106,21 +106,22 @@
 #
 #   Fault parameters:
 #    
-#    numflt  = number of faults in the model
-#    iffield= field number from which fault info is determined.  This
-#             must be a node-based field (attribute) in the UCD file.
+#    numflt     = number of faults in the model
+#    ifnorm(3)  = nodal attributes from which fault normals are read.
+#                 If values of zero are given, fault normals are not
+#                 read.
 #
-#    numflt  iffield
+#    numflt  ifnorm(i),i=1,3
 #-----------------------------------------------------------------------
-       1        6
+       1        0    0    0
 #-----------------------------------------------------------------------
 #
 #   Fault specification:
-#    Whether a node lies on a fault is determined by the attribute
-#    information above.  The fault to which a node belongs (if any) is
-#    determined by the value of the iffield entry for each node.
-#    The fault to which an element belongs and the side (+ or -) is
-#    determined by the entry in ifefield as described below.  Each
+#    Whether a node lies on a fault is determined by the iffield
+#    attribute described below.  The fault(s) to which a node belongs
+#    (if any) is determined by the value of the iffield entries for each
+#    node.  The fault to which an element belongs and the side (+ or -)
+#    is determined by the entry in ifefield as described below.  Each
 #    fault has its element info determined by a separate element-based
 #    field.  A zero entry in this field indicates the element is not
 #    attached to a fault, a -1 indicates the element is on the negative
@@ -128,7 +129,7 @@
 #    positive side of the fault.
 #    For each fault, there are 3 lines of information:
 #
-#    iftype(i), ifhist(i), ifcode(i), ifefield(i)
+#    iftype(i), ifhist(i), ifcode(i), iffield(i), ifefield(i)
 #    fsplit(j,1,i),j=1,nsd
 #    fsplit(j,2,i),j=1,nsd
 #
@@ -138,11 +139,11 @@
 #    ifhist(i)       = load history associated with the fault
 #                      (same type of specification as tecton/lithomop)
 #    ifcode(i)       = the nodal code value corresponding to this fault,
-#                      read from iffield above.  Nodes with iffield
+#                      read from field iffield.  Nodes with iffield
 #                      values corresponding to this value are on the
 #                      fault.
-#    ifefield(i)     = the element field value corresponding to this
-#                      fault.
+#    iffield(i)      = node field number corresponding to this fault.
+#    ifefield(i)     = element field number corresponding to this fault.
 #    fsplit(j,1,i)   = splitting parameter for each degree of freedom
 #                      on side 1 of the fault.  If the fault is a split
 #                      node fault, this corresponds to an actual
@@ -154,11 +155,11 @@
 #                      in positive local coordinate direction).
 #    fsplit(j,2,i)   = same as fsplit(j,1,i) for side 2 of the fault.
 #
-#    iftype(i), ifhist(i), ifcode(i), ifefield(i)
+#    iftype(i), ifhist(i), ifcode(i), iffield(i), ifefield(i)
 #    fsplit(j,1,i),j=1,nsd
 #    fsplit(j,2,i),j=1,nsd
 #-----------------------------------------------------------------------
-        1          0        1        1
+        1          0        1        6      1
    -0.3535d0    0.0d0     0.3535d0
     0.3535d0    0.0d0    -0.3535d0
 #-----------------------------------------------------------------------

@@ -56,6 +56,9 @@ lt2qt: lt2qt.o
 fixqt: fixqt.o
 	$(FCOMPL) $(opt) -o fixqt fixqt.o
 
+makeucd: makeucd.o
+	$(FCOMPL) $(opt) -o makeucd makeucd.o ${LINALG}
+
 pylith2ucd: pylith2ucd.o
 	$(FCOMPL) $(opt) -o pylith2ucd pylith2ucd.o
 
