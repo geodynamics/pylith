@@ -1,0 +1,48 @@
+\subsection{xx.connect}
+
+The \filename{xx.connect} file contains the finite-element mesh
+topology and material type information, including the element type,
+material type, and the lists of vertices for each element.
+
+\begin{figure}
+  \begin{center}
+\begin{verbatim}
+# File containing finite-element mesh topology and material type
+# information.
+#
+# Comment lines begin with '#'
+#
+# Columns:
+#   (1) Element number
+#   (2) Element type
+#        1 = Linear hexahedron (8 vertices)
+#        2 = Linear hexahedron with 1 set of collapsed vertices
+#            (7 vertices) [NOT IMPLEMENTED]
+#        3 = Linear hexahedron with 2 sets of collapsed vertices
+#           (6 vertices) [NOT IMPLEMENTED]
+#        4 = Linear hexahedron with 4 vertices collapsed to a point
+#            (5 vertices) [NOT IMPLEMENTED]
+#        5 = Linear tetrahedron (4 vertices)
+#        6 = Quadratix hexahedron (20 vertices) [NOT IMPLEMENTED]
+#        7 = Quadratic hexahedron with 3 vertices along one edge 
+#            collapsed to a point (18 vertices) [NOT IMPLEMENTED]
+#        8 = Quadratic hexahedron with 3 sets of collapsed vertices
+#            (15 vertices) [NOT IMPLEMENTED]
+#        9 = Quadratic hexahedron with 9 vertices collapsed to a point
+#            (13 vertices) [NOT IMPLEMENTED]
+#       10 = Quadratic tetrahedron (10 vertices)  [NOT IMPLEMENTED]
+#   (3) Material type, numbered consecutively beginning with '1'
+#   (4) Infinite element flag, required but not currently implemented
+#        0 = only valid value
+#   (5)+ Vertices in the element, identified by vertex number
+#
+# Note: No comments are allowed within the mesh information.
+#
+1  5  1  0  2911  2865  2886  2864
+2  5  2  0   843  3999  4029  3926
+3  5  1  0   684  8975  2346  6219
+\end{verbatim}
+    \ldots
+    \caption{Format of \filename{xx.connect} files.}
+  \end{center}
+\end{figure}  
