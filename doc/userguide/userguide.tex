@@ -1,8 +1,11 @@
 % -*- TeX -*-
-\documentclass{report}
+\documentclass{book}
 \usepackage{amsmath}
 \usepackage{graphicx}
-
+\usepackage{alltt}
+%\usepackage{url}
+\usepackage{hyperref}
+\usepackage{moreverb}
 
 \input{docdefs.tex}
 
@@ -16,20 +19,22 @@
   Cassie Ferguson\\
   Sue Kientz}
 \date{\today}
-  
+%\titlepage{pylith_cover}
+ 
 \maketitle
 
-\part{Preface}
+\frontmatter
 
 \input{preface.tex}
 
-\part{PyLith}
+\mainmatter
 
 \input{intro/intro.tex}
 \input{install/install.tex}
+\input{runpylith/runpylith.tex}
 \input{tutorials/tutorials.tex}
 
-\part{Appendices}
+\appendix
 \input{fileformats/fileformats.tex}
 \input{materials/materials.tex}
 \input{license.tex}

@@ -1,17 +1,3 @@
-\subsection{xx.time}
-
-The \filename{xx.time} file specifies the time stepping parameters for
-the simulation.
-
-\begin{warning}
-  The convergence criteria depend on the type of solution and material
-  models. The time step for a linear elastic problem is much different
-  than that for a nonlinear or time-dependent problem.
-\end{warning}
-
-\begin{figure}
-  \begin{center}
-\begin{verbatim}
 # File containing time stepping parameters.
 #
 # Comment lines begin with '#'
@@ -54,8 +40,3 @@ time_units = year
 #
   0   1  0.0  5.0e-01 1001   4  0  1.0e+00  1.0e+0  1.0e+00 1
   1 100  0.1  5.0e-01 1001  -1  0  1.0e+00  1.0e+0  1.0e+00 1
-\end{verbatim}
-    \ldots
-    \caption{Format of \filename{xx.time} files.}
-  \end{center}
-\end{figure}

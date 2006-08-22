@@ -1,34 +1,30 @@
 % Miscellaneous
-\newcommand{\email}[1]{\tt #1}
-
+\newcommand{\email}[1]{{\tt #1}}
 
 \newenvironment{warning}{Warning\par}{}
 \newenvironment{tip}{Hint\par}{}
 
 % GUI markup
-\newcommand{\guibutton}[1]{\fbox #1}
-\newcommand{\guimenu}[1]{\bf #1}
-\newcommand{\guimenuitem}[1]{\bf #1}
+\newcommand{\guibutton}[1]{{\bf\tt #1}}
+\newcommand{\guimenu}[1]{{\bf #1}}
+\newcommand{\guimenuitem}[1]{{\bf #1}}
 \newcommand{\guiselect}{$\rightarrow$}
 
-\newcommand{\prompt}[1]{\tt\bf #1}
-\newcommand{\userinput}[1]{\tt #1}
-\newenvironment{screen}{}{}
+\newcommand{\prompt}[1]{{\tt #1}}
+\newcommand{\userinput}[1]{{\tt #1}}
+\newenvironment{screen}{\begin{alltt}}{\end{alltt}}
 
 % Source code markup
-\newcommand{\application}[1]{\bf #1}
-\newcommand{\directory}[1]{\tt #1}
-\newcommand{\filename}[1]{\tt #1}
-\newcommand{\envvar}[1]{\tt #1}
-\newcommand{\replaceable}[1]{\it #1}
-\newcommand{\command}[1]{\tt #1}
-\newcommand{\option}[1]{\it\tt #1}
+\newcommand{\application}[1]{{\bf #1}}
+\newcommand{\directory}[1]{{\tt #1}}
+\newcommand{\filename}[1]{{\tt #1}}
+\newcommand{\envvar}[1]{{\tt #1}}
+\newcommand{\replaceable}[1]{{\it #1}}
+\newcommand{\command}[1]{{\tt #1}}
+\newcommand{\option}[1]{{\it\tt #1}}
 
-\newcommand{\classname}[1]{\em #1}
-
-% temporary, should use hyperref
-\newcommand{\link}[2]{#1 ({\tt #2})}
+\newcommand{\classname}[1]{{\em #1}}
 
 % shortcuts
-\newcommand{\shellprompt}{\prompt{bash\$~}}
+\newcommand{\shellprompt}{\prompt{bash\$\ }}
 
