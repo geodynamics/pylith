@@ -49,8 +49,7 @@ is shown in figure~\ref{fig:splittest:workflow}.
 We will start by downloading the tutorial tarball and unpacking it.
 
 \begin{enumerate}
-\item Download the \link{tutorial
-    tarball}{http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8\_tutorials.tgz}
+\item Download the \href{http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8\_tutorials.tgz}{tutorial tarball}
   and unpack it in a location of your choosing.
 
   \begin{screen}
@@ -159,8 +158,8 @@ boundary conditions.
 
   \begin{screen}
     \shellprompt\userinput{../../utils/readnetgen}
-    \prompt{~Enter root name for all files.  Both input and}\\
-    \prompt{~output files will all have this prefix:}\\
+    \prompt{\ Enter root name for all files.  Both input and}
+    \prompt{\ output files will all have this prefix:}
     \userinput{splittest}
   \end{screen}
   
@@ -235,8 +234,8 @@ In this step we will run the simulation on a single processor.
 \subsection{Visualize the single processor run}
 
 Now it is time to visualize the results of the simulation. By default,
-PyLith writes simulation output using \link{\application{AVS} UCD
-  files}{http://help.avs.com/Express/doc/help/reference/dvmac/UCD\_Form.htm}.
+PyLith writes simulation output using \href{http://help.avs.com/Express/doc/help/reference/dvmac/UCD\_Form.htm}{\application{AVS} UCD
+  files}.
 These can be read by several other visualization tools besides
 \application{AVS}, e.g., \application{ParaView} and \application{Iris
   Explorer}. We will use the open-source application
@@ -259,8 +258,8 @@ These can be read by several other visualization tools besides
   \filename{splittest\_1.0.mesh.t00010.inp}.
 
   \begin{screen}
-    \shellprompt\userinput{cat splittest\_1.0.mesh.inp splittest\_1.0.mesh.time.00010.inp \ \\
-> splittest\_1.0.mesh.t00010.inp}
+    \shellprompt\userinput{cat splittest\_1.0.mesh.inp splittest\_1.0.mesh.time.00010.inp \(\backslash\)}
+    \userinput{> splittest\_1.0.mesh.t00010.inp}
 \end{screen}
 
 \item Start \application{ParaView} by executing \command{paraview}.
@@ -292,7 +291,10 @@ These can be read by several other visualization tools besides
   interpolating colors, and changing the color map.
 \item Let's show the displacements as vectors. Click on the calculator
   icon, and add the three displacement components together. Enter
-  "XDispl*iHat+YDispl*jHat+ZDispl*kHat" in the \\guimenuitem{Calculator}
+  \begin{screen}
+  XDispl*iHat + YDispl*jHat + ZDispl*kHat
+  \end{screen}
+  in the \guimenuitem{Calculator}
   box. Note the variable names are available by clicking on the
   \guibutton{scalars} button and the \guibutton{iHat},
   \guibutton{jHat}, \guibutton{kHat} buttons are on the right side of
@@ -369,10 +371,10 @@ form complete UCD files for each processor and then load each one into
   twice to create UCD files for each processor.
 
   \begin{screen}
-    \shellprompt\userinput{cat splittest\_2.0.mesh.inp splittest\_2.0.mesh.time.00010.inp \\
-      > splittest\_2.0.mesh.t00010.inp} \\
-    \shellprompt\userinput{cat splittest\_2.1.mesh.inp splittest\_2.1.mesh.time.00010.inp \\
-      > splittest\_2.1.mesh.t00010.inp}
+    \shellprompt\userinput{cat splittest\_2.0.mesh.inp splittest\_2.0.mesh.time.00010.inp \(\backslash\)}
+      \userinput{> splittest\_2.0.mesh.t00010.inp}
+    \shellprompt\userinput{cat splittest\_2.1.mesh.inp splittest\_2.1.mesh.time.00010.inp \(\backslash\)}
+      \userinput{> splittest\_2.1.mesh.t00010.inp}
   \end{screen}
 
 \item Start \application{ParaView} by executing \command{paraview}.

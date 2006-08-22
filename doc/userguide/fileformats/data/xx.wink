@@ -1,11 +1,3 @@
-\subsection{xx.wink}
-
-The \filename{xx.wink} file specifies Winkler elements, which may be
-used as spring foundations in the simulation of gravity.
-
-\begin{figure}
-  \begin{center}
-\begin{verbatim}
 # File containing Winkler elements.
 #
 # Comment lines begin with '#'
@@ -27,8 +19,3 @@ used as spring foundations in the simulation of gravity.
 #
 14  0 -1  0  0.0e+00  1.0e+25  0.0e+00
 18  0  1  0  1.0e+20  0.0e+00  0.0e+00
-\end{verbatim}
-    \ldots
-    \caption{Format of \filename{xx.wink} files.}
-  \end{center}
-\end{figure}

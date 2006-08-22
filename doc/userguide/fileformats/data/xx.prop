@@ -1,16 +1,3 @@
-\subsection{xx.prop}
-
-The \filename{xx.prop} file specifies the properties for each material
-model in the problem.
-
-\begin{warning}
-  The materials must be listed in order according to the material
-  number assigned to the elements in \filename{xx.connect}.
-\end{warning}
-
-\begin{figure}
-  \begin{center}
-\begin{verbatim}
 # File containing material properties.
 #
 # Comment lines begin with '#'
@@ -55,8 +42,3 @@ youngsModulus   = 7.5e10*Pa
 poissonsRatio   = 0.25
 viscosity       = 1.0e+18*Pa*s
 endMaterial     = True
-\end{verbatim}
-    \ldots
-    \caption{Format of \filename{xx.prop} files.}
-  \end{center}
-\end{figure}

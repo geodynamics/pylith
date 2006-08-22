@@ -1,11 +1,3 @@
-\subsection{xx.statevar}
-
-The \filename{xx.statevar} file specifies which state variables are to
-be included in the output of the elastic and time dependent solutions.
-
-\begin{figure}
-  \begin{center}
-\begin{verbatim}
 # File specifying which state variables to output.
 #
 # Comment lines begin with '#'
@@ -29,7 +21,3 @@ be included in the output of the elastic and time dependent solutions.
     12   1   2   3   4   5   6   7   8   9  10  11  12
     12   1   2   3   4   5   6   7   8   9  10  11  12
     0
-\end{verbatim}
-    \caption{Format of \filename{xx.statevar} files.}
-  \end{center}
-\end{figure}

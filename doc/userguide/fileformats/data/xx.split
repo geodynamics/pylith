@@ -1,12 +1,3 @@
-\subsection{xx.split}
-
-The \filename{xx.split} file specifies the split node information for
-modeling dislocations. Dislocations may be used in simulating slip on
-faults as well as dike intrusions.
-
-\begin{figure}
-  \begin{center}
-\begin{verbatim}
 # File containing time stepping parameters.
 #
 # Comment lines begin with '#'
@@ -32,8 +23,3 @@ faults as well as dike intrusions.
  14887   36    0   0.353500000 0.00000000  -0.353500000
  14896   36    0  -0.353500000 0.00000000   0.353500000
  14981   36    0  -0.353500000 0.00000000   0.353500000
-\end{verbatim}
-    \ldots
-    \caption{Format of \filename{xx.split} files.}
-  \end{center}
-\end{figure}

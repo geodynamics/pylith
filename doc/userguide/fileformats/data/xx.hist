@@ -1,11 +1,3 @@
-\subsection{xx.hist}
-
-The \filename{xx.hist} files provide time histories for use in
-boundary conditions.
-
-\begin{figure}
-  \begin{center}
-\begin{verbatim}
 # File specifying time variation of boundary conditions.
 #
 # Comment lines begin with '#'
@@ -23,7 +15,3 @@ boundary conditions.
       2    1.0
 2.84014e+08 0.1
 3.15576e+08 0.5
-\end{verbatim}
-    \caption{Format of \filename{xx.hist} files.}
-  \end{center}
-\end{figure}

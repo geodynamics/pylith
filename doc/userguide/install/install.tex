@@ -20,18 +20,18 @@ The CIG Short-Term Crustal Dynamics Mailing List,
 \email{cig-short@geodynamics.org}, is a mailing list dedicated to CIG
 issues associated with short-term crustal dynamics, including the use
 of PyLith. You can subscribe to the mailing list and view messages at
-the \link{CIG website}{http://www.geodynamics.org}.
+the \href{http://www.geodynamics.org}{CIG website}.
 
 \subsection{Reporting bugs and errors}
 
 CIG uses the \application{Roundup} for bug tracking. If you find a bug
-in PyLith, please submit a bug report to the \link{CIG
-\application{Roundup} system}{http://www.geodynamics.org/roundup}. Of
-course, it is helpful to first check to see if someone else already
-submitted a report related to the issue; one of the CIG developers may
-have already posted a solution to the problem. You can reply to a
-current issue by clicking on the issue title. To submit a new issue,
-click on \guibutton{Create New} under \guimenu{Issues}.
+in PyLith, please submit a bug report to the
+\href{http://www.geodynamics.org/roundup}{CIG \application{Roundup}
+  system}. Of course, it is helpful to first check to see if someone
+else already submitted a report related to the issue; one of the CIG
+developers may have already posted a solution to the problem. You can
+reply to a current issue by clicking on the issue title. To submit a
+new issue, click on \guibutton{Create New} under \guimenu{Issues}.
 
 \section{Installation}
 
@@ -46,10 +46,10 @@ Running the Linux binary version of PyLith requires a 32-bit
 compatible machine with GLIBC 2.2 or later.
 
 \begin{enumerate}
-\item Download the \link{tarball}{http://crust.geodynamics.org/~leif/shipping/}
+\item Download the \href{http://crust.geodynamics.org/~leif/shipping/}{tarball}
 \item Unpack the tarball in a suitable location.
   \begin{screen}
-    \prompt{bash~}\userinput{tar -zxvf pylith-0.8-linux-x86.tar.gz}
+    \shellprompt\userinput{tar -zxvf pylith-0.8-linux-x86.tar.gz}
   \end{screen}
 \item Add \directory{pylith-0.8-linux-x86/bin} to your \envvar{PATH}.
   You will likely want to add something like
@@ -66,7 +66,7 @@ compatible machine with GLIBC 2.2 or later.
     \replaceable{absolute\_path}/pylith-0.8-linux-x86/lib
   \end{screen}
   to your \filename{.bashrc} file (if you are using bash as your
-  shell) or the equivalent to your \filename{.cshrc</filename} file
+  shell) or the equivalent to your \filename{.cshrc} file
   (if you are using tcsh as your shell).
 \item To uninstall PyLith, simply remove the \directory{pylith-0.8-linux-x86}
   directory and all of its sub-directories.
@@ -80,7 +80,7 @@ the Macintosh Intel architecture, but only in emulation mode (i.e.,
 rather slowly).
 
 \begin{enumerate}
-\item Download the \link{disk image}{http://crust.geodynamics.org/~leif/shipping/}.
+\item Download the \href{http://crust.geodynamics.org/~leif/shipping/}{disk image}.
 \item Double click on the disk image to mount the disk.
 \item Double click on the disk and copy the \directory{PyLith} folder
   to a suiteable location.
@@ -96,7 +96,7 @@ Windows NT, Windows 2000, and Windows XP.
 
 \begin{enumerate}
 \item Download theq
-  \link{installer}{http://crust.geodynamics.org/~leif/shipping/}.
+  \href{http://crust.geodynamics.org/~leif/shipping/}{installer}.
 \item Double click on the \filename{setup.exe} file you just
   downloaded and follow the instructions for installing.
 \item To run PyLith, double click on the PyLith icon on the desktop or
@@ -113,9 +113,10 @@ Building PyLith from the source code is not a trivial task because
 PyLith depends on several other packages. In general, each package
 must be compiled from source using compilers for each language that
 are compatible with one another. The stable version of the PyLith
-source code is available from the \link{Geodynamics subversion
-  repository}{http://www.geodynamics.org:8080/cig/software/Repository/}
-\directory{cig/short/3D/PyLith/branches/pylith-0.8}.
+source code is available from the
+\directory{cig/software/Repository/cig/short/3D/PyLith/branches/pylith-0.8}
+of the \href{http://www.geodynamics.org:8080/}{Geodynamics subversion
+  repository}.
 
 \subsection{System Requirements}
 
@@ -160,10 +161,10 @@ code must be compatible.
   experience building and installing software.
 \end{warning}
 
-The PyLith-0.8 source code is available from the \link{Geodynamics
+The PyLith-0.8 source code is available from the \href{http://www.geodynamics.org:8080/cig/software/Repository}
+\directory{cig/short/3D/PyLith/branches/pylith-0.8}{Geodynamics
   subversion
-  repository}{http://www.geodynamics.org:8080/cig/software/Repository}
-\directory{cig/short/3D/PyLith/branches/pylith-0.8}.
+  repository}.
 
 \subsection{System Requirements}
 
@@ -190,9 +191,9 @@ list and working upwards. The steps below describe the recommended way
 to build PyLith and the external packages on which it depends.
 
 \begin{enumerate}
-\item Build \link{PETSc (developers
-    version)}{http://www-unix.mcs.anl.gov/petsc/petsc-as/developers/index.html}
-  and MPI.
+\item Build
+  \href{http://www-unix.mcs.anl.gov/petsc/petsc-as/developers/index.html}{PETSc
+    (developers version)} and MPI.
   
   If you have an architecture optimized version of BLAS/LAPACK you
   should use those instead of asking PETSc to download and build one
@@ -217,8 +218,7 @@ to build PyLith and the external packages on which it depends.
     \begin{screen}
       \shellprompt\userinput{hg clone http://mercurial.mcs.anl.gov/petsc/petsc-dev}
       \shellprompt\userinput{cd petsc-dev/python}
-      \shellprompt\userinput{hg clone http://mercurial.mcs.anl.gov/petsc/BuildSystem \
-        BuildSystem}
+      \shellprompt\userinput{hg clone http://mercurial.mcs.anl.gov/petsc/BuildSystem BuildSystem}
     \end{screen}
     
   \item Set the \envvar{PETSC\_DIR} and \envvar{PETSC\_ARCH} environment
