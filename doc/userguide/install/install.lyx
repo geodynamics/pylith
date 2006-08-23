@@ -1,0 +1,1044 @@
+#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\language english
+\inputencoding latin1
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\end_header
+
+\begin_body
+
+\begin_layout Chapter
+Installation and Getting Help
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Installation of PyLith on a desktop or laptop machine is, in most cases,
+ very easy.
+ Binary packages have been created for the most common platforms, including
+ Linux, OSX, and Windows.
+ Installation on machines that are not compatible with any of these operating
+ systems requires building the software from the source code, which can
+ be difficult for inexperienced users.
+\end_layout
+
+\begin_layout Section
+Getting Help
+\end_layout
+
+\begin_layout Standard
+Help is available via the CIG Short-Term Crustal Dynamics Mailing List and
+ CIG's issue tracking system.
+\end_layout
+
+\begin_layout Subsection
+Requesting help
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset LatexCommand \url[CIG Short-Term Crustal Dynamics Mailing List]{<cig-short@geodynamics.org>}
+
+\end_inset
+
+ is dedicated to CIG issues associated with short-term crustal dynamics,
+ including the use of PyLith.
+ You can subscribe to the mailing list and view messages at 
+\begin_inset LatexCommand \htmlurl[CIG Mailing Lists]{<http://www.geodynamics.org/mail/lists/>}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Reporting bugs and errors
+\end_layout
+
+\begin_layout Standard
+CIG uses 
+\family typewriter
+Roundup
+\family default
+ for bug tracking.
+ If you find a bug in PyLith, please submit a bug report to the 
+\begin_inset LatexCommand \htmlurl[CIG Roundup System]{<http://www.geodynamics.org/roundup/>}
+
+\end_inset
+
+.
+ Of course, it is helpful to first check to see if someone else already
+ submitted a report related to the issue; one of the CIG developers may
+ have already posted a solution to the problem.
+ You can reply to a current issue by clicking on the issue title.
+ To submit a new issue, click 
+\family sans
+Create New
+\family default
+ under 
+\family sans
+Issues
+\family default
+.
+\end_layout
+
+\begin_layout Section
+Installation
+\end_layout
+
+\begin_layout Standard
+Binary executables are available for three of the most widely used platforms:
+ 32-bit Linux, Mac OS X, and Windows.
+ If your platform is not compatible with any of these, you can build the
+ software from the source code.
+\end_layout
+
+\begin_layout Subsection
+Linux
+\end_layout
+
+\begin_layout Standard
+Running the Linux binary version of PyLith requires a 32-bit compatible
+ machine with GLIBC 2.2 or later.
+\end_layout
+
+\begin_layout Enumerate
+\noindent
+Download the 
+\family typewriter
+\size footnotesize
+
+\begin_inset LatexCommand \htmlurl[tarball]{<http://crust.geodynamics.org/~leif/shipping/>}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+\noindent
+2.
+ Unpack the tarball in a suitable location
+\newline
+
+\newline
+
+\family typewriter
+\color black
+tar -zxvf pylith-0.8-linux-x86.tar.gz
+\end_layout
+
+\begin_layout Enumerate
+Add 
+\family typewriter
+pylith-0.8-linux-x86/bin
+\family default
+ to your 
+\family typewriter
+PATH
+\family default
+.
+ You will likely want to add something like
+\newline
+
+\newline
+
+\family typewriter
+PATH=${PATH}:
+\emph on
+replace_with_absolute_path
+\emph default
+/pylith-0.8-linux-x86/bin
+\family default
+
+\newline
+
+\newline
+to your 
+\family typewriter
+.bashrc 
+\family default
+file (if you are using bash as your shell) or the equivalent to your 
+\family typewriter
+.cshrc
+\family default
+ file (if you are using tcsh as your shell).
+ 
+\end_layout
+
+\begin_layout Enumerate
+\noindent
+Add 
+\family typewriter
+pylith-0.8-linux-x86/lib
+\family default
+ to your 
+\family typewriter
+LD_LIBRARY_PATH
+\family default
+.
+ You will likely want to add something like 
+\size footnotesize
+
+\newline
+
+\newline
+
+\family typewriter
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:
+\emph on
+replace_with_absolute_path
+\emph default
+/pylith-0.8-linux-x86/lib
+\family default
+\size default
+
+\newline
+
+\newline
+to your 
+\family typewriter
+.bashrc
+\family default
+ file (if you are using bash as your shell) or the equivalent to your 
+\family typewriter
+.cshrc
+\family default
+ file (if you are using tcsh as your shell).
+ 
+\end_layout
+
+\begin_layout Enumerate
+\noindent
+To uninstall PyLith, simply remove the 
+\family typewriter
+pylith-0.8-linux-x86
+\family default
+ directory and all of its sub-directories.
+ 
+\end_layout
+
+\begin_layout Subsection
+Mac OS X
+\end_layout
+
+\begin_layout Standard
+The OS X binary version was built to run on the Macintosh PowerPC architecture
+ with OS X version 10.2 or later.
+ The binary will run on the Macintosh Intel architecture, but only in emulation
+ mode (i.e., rather slowly).
+\end_layout
+
+\begin_layout Enumerate
+Download the 
+\begin_inset LatexCommand \htmlurl[disk image]{<http://crust.geodynamics.org/~leif/shipping/>}
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Double click on the disk image to mount the disk.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Double click on the disk and copy the 
+\family typewriter
+PyLith
+\family default
+ folder to a suiteable location.
+ 
+\end_layout
+
+\begin_layout Enumerate
+To run PyLith, double click on the PyLith icon provided in the 
+\family typewriter
+PyLith
+\family default
+ folder.
+ 
+\end_layout
+
+\begin_layout Enumerate
+To uninstall PyLith, simply drag the 
+\family typewriter
+PyLith
+\family default
+ folder to the trash.
+ 
+\end_layout
+
+\begin_layout Subsection
+Windows
+\end_layout
+
+\begin_layout Standard
+This Windows binary version of PyLith should be compatible with Windows
+ NT, Windows 2000, and Windows XP.
+\end_layout
+
+\begin_layout Enumerate
+Download the 
+\begin_inset LatexCommand \htmlurl[installer]{<http://crust.geodynamics.org/~leif/shipping/>}
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Double click on the setup.exe file you just downloaded and follow the instruction
+s for installing.
+ 
+\end_layout
+
+\begin_layout Enumerate
+To run PyLith, double click on the PyLith icon on the desktop or select
+ 
+\family sans
+Start 
+\begin_inset Formula $\triangleright$
+\end_inset
+
+ All\InsetSpace ~
+Programs 
+\begin_inset Formula $\triangleright$
+\end_inset
+
+ PyLith 
+\begin_inset Formula $\triangleright$
+\end_inset
+
+ PyLith
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+To uninstall PyLith, simply select 
+\family sans
+Start 
+\begin_inset Formula $\triangleright$
+\end_inset
+
+ All\InsetSpace ~
+Programs 
+\begin_inset Formula $\triangleright$
+\end_inset
+
+ PyLith 
+\begin_inset Formula $\triangleright$
+\end_inset
+
+ Uninstall\InsetSpace ~
+PyLith
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Section
+Building using source tarball
+\end_layout
+
+\begin_layout Standard
+Building PyLith from the source code is not a trivial task because PyLith
+ depends on several other packages.
+ In general, each package must be compiled from source using compilers for
+ each language that are compatible with one another.
+ The stable version of the PyLith source code is available at
+\newline
+
+\family typewriter
+
+\newline
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+cig/software/Repository/cig/short/3D/PyLith/branches/pylith-0.8
+\family default
+
+\newline
+
+\newline
+in the 
+\begin_inset LatexCommand \htmlurl[Geodynamics Subversion Repository]{<http://www.geodynamics.org/cig/software/Repository/>}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+System Requirements
+\end_layout
+
+\begin_layout Itemize
+Unix flavored operating system.
+ 
+\end_layout
+
+\begin_layout Itemize
+Fortran, C, and C++ compilers.
+ 
+\end_layout
+
+\begin_layout Itemize
+Python (2.3 or later) 
+\end_layout
+
+\begin_layout Standard
+The software must be built starting from the bottom of the dependency list
+ and working upwards.
+ The steps below describe the recommended way to build PyLith and the external
+ packages on which it depends.
+ Some of the dependencies can be satisfied using precompiled binaries (e.g.,
+ RedHat and Fink packages).
+ When considering whether to use a precompiled binary package to satisfy
+ any of the dependencies, remember that all of the compilers and settings
+ used in building the code must be compatible.
+\end_layout
+
+\begin_layout Enumerate
+Build PETSc and MPI.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+ADD STUFF HERE (LINK TO PETSC SITE? GET MATT'S THOUGHTS ON HOW MUCH DETAIL
+ TO PUT HERE) 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Build Pythia.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+ADD STUFF HERE 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Build PyLith.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+ADD STUFF HERE 
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Building using source repositories
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\series default
+\color default
+ Building PyLith using the source repositories is recommended only for expert
+ users who are willing to work with a moving target and rebuild on a frequent
+ basis.
+ The installation instructions cover the basic steps and assume the user
+ has experience building and installing software.
+ 
+\end_layout
+
+\begin_layout Standard
+The PyLith source code is available at
+\newline
+
+\newline
+
+\family typewriter
+cig/software/Repository/cig/short/3D/PyLith/branches/pylith-0.8
+\family default
+
+\newline
+
+\newline
+
+\family typewriter
+in
+\family default
+ the 
+\begin_inset LatexCommand \htmlurl[Geodynamics Subversion Repository]{<http://www.geodynamics.org/cig/software/Repository/>}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+System Requirements
+\end_layout
+
+\begin_layout Itemize
+Unix flavored operating system 
+\end_layout
+
+\begin_layout Itemize
+Fortran, C, and C++ compilers 
+\end_layout
+
+\begin_layout Itemize
+Python (2.3 or later) 
+\end_layout
+
+\begin_layout Itemize
+Subversion 
+\end_layout
+
+\begin_layout Itemize
+Mercurial (0.9 or later) 
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+TIP: 
+\series default
+Many flavors of Unix have Subversion packages.
+ In most cases you do not need anything but the basic subversion package.
+ You will likely have to build Mercurial from source, but this is a very
+ easy task that takes only a couple of minutes.
+ 
+\end_layout
+
+\begin_layout Subsection
+Building the packages
+\end_layout
+
+\begin_layout Standard
+The software must be built starting from the bottom of the dependency list
+ and working upwards.
+ The steps below describe the recommended way to build PyLith and the external
+ packages on which it depends.
+\end_layout
+
+\begin_layout Enumerate
+Build 
+\begin_inset LatexCommand \htmlurl[PETSc (developers version)]{<http://www-unix.mcs.anl.gov/petsc/petsc-as/developers/>}
+
+\end_inset
+
+ and MPI.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+If you have an architecture optimized version of BLAS/LAPACK you should
+ use those instead of asking PETSc to download and build one for you.
+ In some cases, PETSc will find known optimized implementations of BLAS/LAPACK
+ (e.g., vecLib on Mac OSX).
+\end_layout
+
+\begin_layout Standard
+If you have an MPI implementation installed, you can use it or let PETSc
+ download and install one for you.
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+TIP: 
+\series default
+If you run into problems configuring or building PETSc, send 
+\emph on
+both
+\family typewriter
+\emph default
+ configure.log
+\family default
+ and 
+\family typewriter
+make_
+\emph on
+PETSC_ARCH
+\family default
+\emph default
+ to 
+\begin_inset LatexCommand \url[petsc-maint@mcs.anl.gov]{<petsc-maint@mcs.anl.gov>}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Pull the source code from ANL and place the source tree in a suitable location.
+ The steps below will create a 
+\family typewriter
+petsc-dev
+\family default
+ sub-directory in the current directory.
+\newline
+
+\newline
+
+\family typewriter
+$ hg clone http://mercurial.mcs.anl.gov/petsc/petsc-dev
+\newline
+$ cd petsc-dev/python
+\newline
+$
+ hg clone http://mercurial.mcs.anl.gov/petsc/BuildSystem BuildSystem
+\family default
+
+\newline
+
+\end_layout
+
+\begin_layout Enumerate
+Set the 
+\family typewriter
+\emph on
+PETSC_DIR
+\family default
+\emph default
+ and 
+\family typewriter
+\emph on
+PETSC_ARCH
+\family default
+\emph default
+ environment variables.
+ 
+\family typewriter
+\emph on
+PETSC_DIR
+\family default
+\emph default
+ corresponds to the top-level directory in the PETSc source tree and 
+\family typewriter
+\emph on
+PETSC_ARCH
+\family default
+\emph default
+ is a tag for this configuration of PETSc (e.g., linux_gcc-4.0_debug, darwin_gcc-3.4
+_opt, etc).
+ You will want to set these environment variables in your 
+\family typewriter
+.bashrc
+\family default
+, 
+\family typewriter
+.cshrc
+\family default
+, or similar file.
+\newline
+
+\newline
+
+\family typewriter
+$ export PETSC_DIR=
+\emph on
+replace_with_absolute_path
+\emph default
+/petsc-dev
+\newline
+$ export PETSC_ARCH=
+\emph on
+replace_with_PETSc_arch_tag
+\end_layout
+
+\begin_layout Enumerate
+Configure PETSc.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Run config/configure.py with the appropriate arguments to configure PETSc
+ for your computer.
+ Run config/configure.py --help to see the long list of possible options.
+ Building PETSc for use with PyLith requires the following arguments:
+\newline
+
+\newline
+
+\family typewriter
+--with-clanguage=c++
+\newline
+--with-c-support
+\newline
+--with-shared=1
+\newline
+--with-boost=1
+\newline
+--download-boos
+t=1
+\newline
+--with-sieve=1
+\end_layout
+
+\begin_layout Standard
+Be sure to include flags indicating where MPI and BLAS/LAPACK are if you
+ want to use a preinstalled implementation.
+ If not, be sure to tell PETSc to download those packages.
+ If you do not want build PETSc using the gnu compilers, be sure to let
+ PETSc know which compilers you want to use instead.
+\end_layout
+
+\begin_layout Standard
+After several minutes, the configure script should finish and display the
+ PETSc settings.
+ Check to make sure these match your expectations before continuing.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Build PETSc.
+ 
+\newline
+
+\newline
+
+\family typewriter
+$ make
+\end_layout
+
+\begin_layout Enumerate
+Test PETSc installation.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+One of the tests will attempt to display some X windows.
+ If X windows is not available from the shell in which you run 
+\family typewriter
+make test
+\family default
+, then that test will fail.
+\newline
+
+\newline
+
+\family typewriter
+$ make test
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+In the future, you will likely want to update the PETSc source tree to include
+ bug fixes, new features etc.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+To update PETSc (use 
+\family typewriter
+hg update -v
+\family default
+ to see what files are being updated):
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+$ cd petsc-dev
+\newline
+$ hg pull
+\newline
+$ hg update
+\newline
+$ cd python/BuildSystem
+\newline
+$ hg pull
+\newline
+$ hg update
+ 
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Enumerate
+Build Pythia.
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+
+\series bold
+TIP:
+\series default
+ If you run into problems configuring or building Pythia, send both the
+ 
+\family typewriter
+config.log
+\family default
+ and 
+\family typewriter
+make.log
+\family default
+ files to the 
+\begin_inset LatexCommand \url[CIG Short-Term Crustal Dynamics Mailing List]{<cig-short@geodynamics.org>}
+
+\end_inset
+
+.
+ To create the 
+\family typewriter
+make.log
+\family default
+ file, run 
+\family typewriter
+make
+\family default
+ via 
+\family typewriter
+make 
+\begin_inset Formula $>$
+\end_inset
+
+ make.log
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Pull the source code from CIG and place the source tree in a suitable location.
+ The steps below will create a 
+\family typewriter
+pythia-0.8
+\family default
+ sub-directory in the current directory.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\family typewriter
+$ svn co svn://geodynamics.org/cig/vendor/pythia/v0.8/pythia-0.8
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Configure Pythia.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Run 
+\family typewriter
+configure
+\family default
+ with the appropriate arguments.
+ Run 
+\family typewriter
+configure --help
+\family default
+ to see a list of possible options.
+ You may want to specify compilers and/or an install location.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+$ cd pythia-0.8 
+\newline
+$ autoreconf -i
+\newline
+$ ./configure
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Build Pythia.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Run 
+\family typewriter
+make
+\family default
+ and 
+\family typewriter
+make install
+\newline
+
+\newline
+$ make
+\newline
+$ make install
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Enumerate
+Build PyLith.
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+
+\series bold
+TIP:
+\series default
+ If you run into problems configuring or building PyLith, send both the
+ 
+\family typewriter
+config.log
+\family default
+ and 
+\family typewriter
+make.log
+\family default
+ files to the 
+\begin_inset LatexCommand \url[CIG Short-Term Crustal Dynamics Mailing List]{<cig-short@geodynamics.org>}
+
+\end_inset
+
+.
+ To create the 
+\family typewriter
+make.log
+\family default
+ file, run 
+\family typewriter
+make
+\family default
+ via 
+\family typewriter
+make 
+\begin_inset Formula $>$
+\end_inset
+
+ make.log
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Pull the source code from CIG and place the source tree in a suitable location.
+ The steps below will create a 
+\family typewriter
+pylith-0.8
+\family default
+ sub-directory in the current directory.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\family typewriter
+$ svn co svn://geodynamics.org/cig/short/3D/PyLith/branches/pylith-0.8
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Configure PyLith.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Run 
+\family typewriter
+configure
+\family default
+ with the appropriate arguments.
+ Run 
+\family typewriter
+configure --help
+\family default
+ to see a list of possible options.
+ You may want to specify compilers and/or an install location.
+ If you installed pythia-0.8 in a non-system location, you will need to set
+ 
+\family typewriter
+\noun on
+CPPFLAGS
+\family default
+\noun default
+ and 
+\family typewriter
+LDFLAGS
+\family default
+ appropriately.
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+$ cd pylith-0.8
+\newline
+$ autoreconf -i
+\newline
+$ ./configure
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Build PyLith.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Run 
+\family typewriter
+make
+\family default
+ and 
+\family typewriter
+make install
+\newline
+
+\newline
+$ make
+\newline
+$ make install
+\end_layout
+
+\end_body
+\end_document
