@@ -1,4 +1,4 @@
-# Boundary conditions for split block problem.
+# Boundary conditions for split cube problem.
 #
 displacement_units = m
 velocity_units = m/s

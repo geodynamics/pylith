@@ -67,17 +67,17 @@ def getStepFiles(step):
     fragments = [ [root1], [".0"],
                   [".gmesh", ".mesh", ".mesh.split"],
                   ["", \
-                   ".time.00000", ".time.00010", ".time.00050", ".time.00100"],
+                   ".time.00000"],
                   [".inp"] ]
     files['output'] += assembleStrings(fragments)
   elif "viz1" == step:
     root1 = root + "_1"
     fragments = [ [root1], [".0"],
-                  [".mesh", ".mesh.time.00010"], [".inp"] ]
+                  [".mesh", ".mesh.time.00000"], [".inp"] ]
     files['input'] += assembleStrings(fragments)
 
     fragments = [ [root1], [".0"],
-                  ["t00010"], [".inp"] ]
+                  ["t00000"], [".inp"] ]
     files['output'] += assembleStrings(fragments)
   elif "run2" == step:
     fragments = [ [root], [".coord", ".connect", ".split", ".bc",
@@ -98,17 +98,17 @@ def getStepFiles(step):
     fragments = [ [root1], [".0", ".1"],
                   [".gmesh", ".mesh", ".mesh.split"],
                   ["", \
-                   ".time.00000", ".time.00010", ".time.00050", ".time.00100"],
+                   ".time.00000"],
                   [".inp"] ]
     files['output'] += assembleStrings(fragments)
   elif "viz2" == step:
     root1 = root + "_2"
     fragments = [ [root1], [".0", ".1"],
-                  [".mesh", ".mesh.time.00010"], [".inp"] ]
+                  [".mesh", ".mesh.time.00000"], [".inp"] ]
     files['input'] += assembleStrings(fragments)
 
     fragments = [ [root1], [".0", ".1"],
-                  [".t00010"], [".inp"] ]
+                  [".t00000"], [".inp"] ]
     files['output'] += assembleStrings(fragments)
     print files
   else:
