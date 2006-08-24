@@ -71,7 +71,9 @@ PetscErrorCode ReadBoundary_PyLith(const char *baseFilename, PetscTruth useZeroB
   f = fopen(bcFilename, "r");CHKERRQ(ierr);
   IgnoreComments_PyLith(buf, 2048, f);
   /* Ignore displacement units */
-  fgets(buf, 2048, f);
+  /* Don't need this one since IgnoreComments reads until "failure".
+   * fgets(buf, 2048, f);
+   */
   /* Ignore velocity units */
   fgets(buf, 2048, f);
   /* Ignore force units */
