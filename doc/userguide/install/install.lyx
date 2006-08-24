@@ -1,4 +1,4 @@
-#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -416,7 +416,21 @@ Unix flavored operating system.
 \end_layout
 
 \begin_layout Itemize
-Fortran, C, and C++ compilers.
+Fortran, C, and C++ compilers
+\begin_inset Foot
+status open
+
+\begin_layout Standard
+The gcc-4.1 compiler contains a documented bug that results in erroneous
+ compiler errors when building PETSc and PyLith.
+ As a result, the gcc-4.1 compiler cannot be used to build PyLith.
+ This compiler bug is not present in gcc-4.0 and is reported not to be present
+ in gcc-4.2.
+\end_layout
+
+\end_inset
+
+.
  
 \end_layout
 
@@ -480,7 +494,7 @@ Building using source repositories
 \color red
 Warning:
 \series default
-\color default
+\color none
  Building PyLith using the source repositories is recommended only for expert
  users who are willing to work with a moving target and rebuild on a frequent
  basis.
