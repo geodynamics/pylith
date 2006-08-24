@@ -48,7 +48,7 @@
 PetscErrorCode IgnoreComments_PyLith(char *buf, PetscInt bufSize, FILE *f)
 {
   PetscFunctionBegin;
-  while((fgets(buf, bufSize, f) != NULL) && (buf[0] == '#')) {}
+  while((fgets(buf, bufSize, f) != NULL) && ((buf[0] == '#') || (buf[0] == '\0'))) {}
   PetscFunctionReturn(0);
 }
 
