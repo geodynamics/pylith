@@ -67,7 +67,8 @@ CIT_FC_STREAM_IO
 AC_CONFIG_FILES([Makefile
                  pylith3d/Makefile
                  pylith3d/libpylith3d/Makefile
-                 pylith3d/module/Makefile])
+                 pylith3d/module/Makefile
+		 pylith3d/utils/Makefile])
 AC_OUTPUT
 
 dnl end of configure.ac
