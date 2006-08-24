@@ -283,17 +283,20 @@ besides \application{AVS}, e.g., \application{ParaView} and
   \guimenu{File}\guiselect\guimenuitem{Open Data}. Select the file in
   the dialog box and the click the \guibutton{Open} button. Click the
   \guibutton{Accept} button. You should see a color rendering of the x
-  displacements. You can use the mouse to rotate, translate, and zoom.
-  Your image should look similar to the one in
-  figure~\ref{fig::splitcube:xdisp:t0}.
+  displacements. Because the x displacements are negligible, change
+  the rendering to the y displacements by selecting the
+  \guibutton{Display} tab and then \guimenuitem{Point XDispl} in the
+  Color panel and changing it to \guimenuitem{Point YDispl}. You can
+  use the mouse to rotate, translate, and zoom.  Your image should
+  look similar to the one in figure~\ref{fig::splitcube:ydisp:t0}.
         
   \begin{figure}[htbp]
     \begin{center}
-      %\includegraphics{figs/xdisp_0}
-      \caption{ParaView rendering of displacement in x-direction at
+      \includegraphics{figs/ydisp_t0.eps}
+      \caption{ParaView rendering of displacement in y-direction at
         time step 0 (elastic solution to the imposed dislocation) for
         the simple strike-slip example.}
-      \label{fig:splitcube:xdisp:00}
+      \label{fig:splitcube:ydisp:t0}
     \end{center}
   \end{figure}
   
@@ -316,15 +319,15 @@ besides \application{AVS}, e.g., \application{ParaView} and
   eye icon to the left of the dataset name. If you color the surfaces
   using the x-displacements field while also making the displacement
   vectors visible (colored using property), you should see an image
-  similar to the one in figure~\ref{fig:splitcube:xdisp:vec:t0}.
+  similar to the one in figure~\ref{fig:splitcube:ydisp:vec:t0}.
 
   \begin{figure}[htbp]
     \begin{center}
-      %\includegraphics{figs/splitcube_xdisp_vec_t0}
-      \caption{ParaView rendering of displacement in x-direction and
+      \includegraphics{figs/ydisp_vec_t0}
+      \caption{ParaView rendering of displacement in y-direction and
         displacement vectors at time step 0 (elastic solution to the
         imposed dislocation) for the simple strike-slip example.}
-      \label{fig:splitcube:xdisp:vec:t0}
+      \label{fig:splitcube:ydisp:vec:t0}
     \end{center}
   \end{figure}      
 
