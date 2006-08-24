@@ -144,8 +144,8 @@ def tutor(step, mode):
       if filename in dirFiles:
         print "  %s...already present" % filename
       else:
-        shutil.copyfile("../archive/%s" % filename,
-                        "./%s" % filename)
+        shutil.copy("../archive/%s" % filename,
+                    "./%s" % filename)
         print "  %s...retrieved from archive" % filename
   else:
     raise ValueError("Unrecognized mode: %s" % mode)
