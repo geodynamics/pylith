@@ -60,7 +60,7 @@ blockrot: blockrot.o
 	$(FCOMPL) $(opt) -o blockrot blockrot.o
 
 makeucd: makeucd.o
-	$(FCOMPL) $(opt) -o makeucd makeucd.o ${LINALG}
+	$(FCOMPL) $(opt) -o makeucd makeucd.o
 
 pylith2ucd: pylith2ucd.o
 	$(FCOMPL) $(opt) -o pylith2ucd pylith2ucd.o
