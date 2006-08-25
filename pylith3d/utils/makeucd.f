@@ -224,6 +224,31 @@ c
       end
 c
 c
+      subroutine abtrans(a,b,c,nra,nca,nrb,lda,ldb,ldc)
+c
+c...subroutine to multiply the matrix a by b-transpose.  Results
+c   are stored in matrix c.
+c
+      implicit none
+      integer nra,nca,nrb,lda,ldb,ldc
+      double precision a(lda,nca),b(ldb,nca),c(ldc,nrb)
+c
+      integer i,j,k
+      double precision sum
+c
+      do i=1,nra
+        do j=1,nrb
+          sum=0.0d0
+          do k=1,nca
+            sum=sum+a(i,k)*b(j,k)
+          end do
+          c(i,j)=sum
+        end do
+      end do
+      return
+      end
+c
+c
       subroutine centout(
      & numel,ngauss,
      & velemt,neattr,nteattr,
@@ -445,7 +470,8 @@ c
 c
 c...calculate jacobian matrix for (x,y,z) to (r,s,t) transformation
 c
-      call dgemm("n","t",nsd,nsd,nen,1.0d0,x,nsd,shj,nsd+1,0.0d0,xs,nsd)
+cblas      call dgemm("n","t",nsd,nsd,nen,1.0d0,x,nsd,shj,nsd+1,0.0d0,xs,nsd)
+      call abtrans(x,shj,xs,nsd,nen,nsd,nsd,nsd+1,nsd)
 c
 c...form determinant of jacobian matrix and check for error condition
 c
