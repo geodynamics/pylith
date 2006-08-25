@@ -30,10 +30,10 @@
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
-\leftmargin 1in
-\topmargin 1in
-\rightmargin 1in
-\bottommargin 1in
+\leftmargin 0.7in
+\topmargin 0.7in
+\rightmargin 0.7in
+\bottommargin 0.7in
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -49,16 +49,19 @@
 \begin_body
 
 \begin_layout Standard
-\begin_inset ERT
-status collapsed
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
 
 \begin_layout Standard
+\begin_inset Graphics
+	filename pylith_cover.pdf
+	width 75page%
 
-% For reference only.
- Will be replaced with graphic cover.
-\end_layout
+\end_inset
 
-\begin_layout Standard
 
 \end_layout
 
@@ -105,30 +108,26 @@ status collapsed
 
 \begin_layout Standard
 
-%
-\backslash
-titlepage{pylith_cover}
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
 
 \backslash
 frontmatter
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FloatList figure
 
 \end_inset
 
