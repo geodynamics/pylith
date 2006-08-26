@@ -1,0 +1,785 @@
+#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\language english
+\inputencoding latin1
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 2in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\end_header
+
+\begin_body
+
+\begin_layout Chapter
+Running PyLith
+\end_layout
+
+\begin_layout Section
+Supported Finite Elements
+\end_layout
+
+\begin_layout Standard
+PyLith currently only supports the 4-node linear tetrahedral and 8-node
+ linear hexahedral elements.
+ The node ordering must follow the convention shown in figures\InsetSpace ~
+
+\begin_inset LatexCommand \ref{fig:tet4}
+
+\end_inset
+
+ and\InsetSpace ~
+
+\begin_inset LatexCommand \ref{fig:hex8}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement htbp
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/tet4.eps
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Caption
+Linear tetrahedral finite element.
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \label{fig:tet4}
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement htbp
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/hex8.eps
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Caption
+Linear hexahedral finite element.
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \label{fig:hex8}
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Input Files
+\end_layout
+
+\begin_layout Standard
+PyLith gets its input from a variety of files.
+ Most of these are associated with different kinds of boundary conditions.
+ As a result only six files are required.
+ The remaining files are only used when the associated boundary condition
+ is used.
+ See Appendix\InsetSpace ~
+
+\begin_inset LatexCommand \ref{app:file:formats}
+
+\end_inset
+
+ for a detailed discussion of the file formats.
+\end_layout
+
+\begin_layout Standard
+The first step in the simulation process involves partitioning the mesh
+ among the processors.
+ In this phase, PyLith reads in the entire mesh and then writes out processor
+ specific pieces with one file for each processor.
+ The filenames for these follow the convention 
+\family typewriter
+xx.PROC.ext
+\family default
+ where 
+\family typewriter
+PROC
+\family default
+ refers to the processor number and 
+\family typewriter
+xx.ext
+\family default
+ was the original filename.
+ This procedure is applied to files with the following extensions:
+\family typewriter
+ coord, connect, split, 
+\family default
+and 
+\family typewriter
+bc
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The remaining files provide information common to all processors.
+ As a result, the user must create copies of each one for each of the processors.
+ By default PyLith expects the names of these files to follow the same form,
+ 
+\family typewriter
+xx.PROC.ext
+\family default
+.
+ Setting up this naming scheme is most easily done using symbolic links
+ or copying files to local directories on each machine using a shell script
+ that starts a simulation.
+ See 
+\family typewriter
+runbm.py
+\family default
+ in section\InsetSpace ~
+
+\begin_inset LatexCommand \ref{sec:tutorial:reversenog}
+
+\end_inset
+
+ for a simple example.
+ You can also choose your own filename template by setting the appropriate
+ command-line argument.
+ See \InsetSpace ~
+
+\begin_inset LatexCommand \ref{sec:commandline:args}
+
+\end_inset
+
+ for more information.
+\end_layout
+
+\begin_layout Subsection
+Required Input Files
+\end_layout
+
+\begin_layout Standard
+The required input files define the finite-element mesh, boundary conditions,
+ time step information, output, and material properties.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+xx.coord
+\family default
+ Coordinates of finite-element vertices.
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+xx.connect
+\family default
+ Topology and material information for the finite-element mesh.
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+xx.bc
+\family default
+ Boundary conditions at vertices on external boundaries.
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+xx.time 
+\family default
+Time stepping information.
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+xx.statevar
+\family default
+ State variables to be output for the elastic and (time-dependent) viscoelastic
+ solution.
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+xx.prop
+\family default
+ Properties for each material.
+ 
+\end_layout
+
+\begin_layout Subsection
+Optional Input Files
+\end_layout
+
+\begin_layout Standard
+The optional input files are only read when a file exists matching the name
+ of an input file PyLith expects to read.
+ Note that explicit filenames for each of the files can be specified using
+ command-line arguments as discussed in section\InsetSpace ~
+
+\begin_inset LatexCommand \ref{sec:commandline:args}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+\color black
+xx.fuldat 
+\family default
+\color default
+Time steps for which full output is requested.
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+\color black
+xx.split
+\family default
+\color default
+ Dislocation boundary condition information (implemented using split nodes).
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+\color black
+xx.skew
+\family default
+\color default
+ Local coordinate rotation information for boundary conditions.
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+\color black
+xx.keyval
+\family default
+\color default
+ File for changing default parameters.
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+\color black
+xx.wink
+\family default
+\color default
+ Winkler spring element boundary condition information.
+ 
+\emph on
+ Not yet tested.
+
+\emph default
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+\color black
+xx.hist
+\family default
+\color default
+ Time histories for split node and Winkler boundary conditions (if necessary).
+  
+\emph on
+Not yet tested.
+
+\emph default
+ 
+\end_layout
+
+\begin_layout Section
+Command-line Arguments
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \label{sec:commandline:args}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In general, PyLith's command-line arguments fall into three categories:
+ MPI settings, Pyre properties and facilities, and PETSc settings.
+\end_layout
+
+\begin_layout Standard
+If using the MPICH implementation of the Message Passing Interface (MPI),
+ as is done for the CIG distributed binaries, the synopsis for running PyLith
+ is 
+\newline
+
+\newline
+
+\family typewriter
+ $ mpirun {-np 
+\emph on
+NPROCS
+\emph default
+} pylith3dapp.py 
+\emph on
+[PyLith settings]
+\emph default
+ 
+\emph on
+[PETSc settings]
+\end_layout
+
+\begin_layout Subsection
+MPI Settings
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\series default
+\color default
+ This section applies only to PyLith compiled using the MPICH implementation
+ of the Message Passing Interface (MPI).
+ 
+\end_layout
+
+\begin_layout Standard
+The MPI settings define how many processors are used and other parallel
+ processing parameters.
+ The number of processors is specified using 
+\family typewriter
+\color black
+-np NPROCS
+\family default
+\color default
+, where 
+\family typewriter
+\color black
+NPROCS
+\family default
+\color default
+ corresponds to the number of processors.
+\end_layout
+
+\begin_layout Subsection
+Properties and Facilities
+\end_layout
+
+\begin_layout Standard
+PyLith gathers many simulation parameters and settings using Pyre properties
+ and facilities.
+ Properties correspond to simple settings in the form of strings, integers,
+ and real numbers.
+ Facilities corresponds to software modules.
+ Both facilities and properties have default values provided, so you only
+ need to set values when you want to deviate from the default behavior.
+ Unless you write a module that extends PyLith's functionality, you will
+ never need to change any of the facilities from the defaults.
+\end_layout
+
+\begin_layout Standard
+In the current version of PyLith, all of the properties are associated with
+ the scanner component.
+ You can get a list of all of these properties along with a description
+ of what they do by running PyLith with the 
+\family typewriter
+\color black
+--scanner.help-properties
+\family default
+\color default
+ command-line argument.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align left
+
+\family typewriter
+\color black
+$ mpirun\InsetSpace ~
+\InsetSpace ~
+ -np 
+\emph on
+1
+\emph default
+ \InsetSpace ~
+\InsetSpace ~
+pylith3dapp.py --scanner.help-properties --scanner.asciiOutput=
+\emph on
+none
+\emph default
+ --scanner.title=
+\emph on
+"My simulation"
+\emph default
+ 
+\end_layout
+
+\begin_layout Caption
+Setting scanner properties from the command line.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+PETSc Settings
+\end_layout
+
+\begin_layout Standard
+PyLith relies on PETSc for the linear algebra computations.
+ Many of PETSc options can be set using command-line arguments.
+ The ones of primary interest in the case of PyLith are shown in table\InsetSpace ~
+
+\begin_inset LatexCommand \ref{tab:Useful-command-line-arguments}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement htbp
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="2">
+<features>
+<column alignment="left" valignment="top" width="1.75in">
+<column alignment="left" valignment="top" width="4in">
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Argument 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Description 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+\color black
+-log_summary 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Print logging objects and events 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+\color black
+-pc_type 
+\emph on
+bjacobi
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Set preconditioner type to block Jacobi.
+ See PETSc documentation for a list of all preconditioner types.
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+\color black
+-sub_pc_type 
+\emph on
+ilu
+\emph default
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Set preconditioner to incomplete factorization for each block.
+ See PETSc documentation for a list of all preconditioners.
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+\color black
+-ksp_monitor 
+\emph on
+stdout
+\emph default
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Dump preconditioned residual norm to stdout.
+ If only 
+\family typewriter
+\color black
+-ksp_monitor
+\family default
+\color default
+ is given, the default is to use stdout.
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+\color black
+-ksp_view
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Print linear solver parameters.
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+\color black
+-ksp_rtol 
+\emph on
+1.0e-09
+\emph default
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Tolerance for relative decrease in residual norm 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{tab:Useful-command-line-arguments}
+
+\end_inset
+
+Useful command-line arguments for setting PETSc options.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Setting Pyre properties using pml files
+\end_layout
+
+\begin_layout Standard
+PyLith's Pyre properties can also be set using 
+\family typewriter
+\color black
+pml
+\family default
+\color default
+ files.
+ These are XML files that follow a special Pyre XML schema.
+\end_layout
+
+\begin_layout Standard
+ADD STUFF HERE 
+\end_layout
+
+\end_body
+\end_document
