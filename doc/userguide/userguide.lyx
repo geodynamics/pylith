@@ -1,4 +1,4 @@
-#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -63,38 +63,6 @@ status open
 \end_inset
 
 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Title
-PyLith User Manual
-\end_layout
-
-\begin_layout Author
-Charles Williams
-\newline
- Matthew Knepley
-\newline
- Brad Aagaard
-\newline
- Cassie Ferguson
-\newline
- Sue Kientz
-\end_layout
-
-\begin_layout Date
-\begin_inset ERT
-status collapsed
-
-\begin_layout Standard
-
-
-\backslash
-today
 \end_layout
 
 \end_inset
