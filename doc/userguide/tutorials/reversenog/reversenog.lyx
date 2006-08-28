@@ -49,7 +49,7 @@ In this tutorial, we will walk through the steps necessary to construct,
  run, and view the results of a benchmark problem involving reverse slip
  on a dipping fault.
  This problem examines the viscoelastic (Maxwell) relaxation of stress from
- a single, finite, reverse-slip earthquake in 3-D without body forces.
+ a single, finite, reverse-slip earthquake in 3D without body forces.
 \end_layout
 
 \begin_layout Subsection
@@ -248,7 +248,7 @@ We will start by downloading the tutorial tarball and unpacking it.
 
 \begin_layout Enumerate
 Download the 
-\begin_inset LatexCommand \htmlurl[tutorial tarball]{<http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8_tutorials.tgz>}
+\begin_inset LatexCommand \htmlurl[tutorial tarball]{http://www.geodynamics.org/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8_tutorials.tgz}
 
 \end_inset
 
@@ -641,7 +641,7 @@ geometry).
 \color red
 Warning:
 \series default
-\color default
+\color none
  If you make any changes to 
 \family typewriter
 bmrsnog.geo
@@ -763,7 +763,7 @@ Visualize the single processor run
 \begin_layout Standard
 Now it is time to visualize the results of the simulation.
  By default, PyLith writes simulation output using 
-\begin_inset LatexCommand \htmlurl[AVS UCD files]{<href{http://help.avs.com/Express/doc/help/reference/dvmac/UCD_Form.htm>}}
+\begin_inset LatexCommand \htmlurl[AVS UCD files]{http://help.avs.com/Express/doc/help/reference/dvmac/UCD_Form.htm}
 
 \end_inset
 
@@ -882,11 +882,12 @@ Accept
  You can use the mouse to rotate, translate, and zoom.
  Your image should look similar to the one in figure\InsetSpace ~
 
-\begin_inset LatexCommand \ref{fig::bmrsnog:xdisp:t10}
+\begin_inset LatexCommand \ref{fig:ParaView-rendering-of}
 
 \end_inset
 
 .
+ 
 \end_layout
 
 \begin_deeper
@@ -912,16 +913,12 @@ status open
 \end_layout
 
 \begin_layout Caption
-ParaView rendering of displacement in x-direction at time step 10 (10 yrs
- after imposed dislocation) for the reverse slip without gravity benchmark.
-\end_layout
-
-\begin_layout Standard
-\begin_inset LatexCommand \label{fig:bmrsnog:xdisp:t10}
+\begin_inset LatexCommand \label{fig:ParaView-rendering-of}
 
 \end_inset
 
- 
+ParaView rendering of displacement in x-direction at time step 10 (10 yrs
+ after imposed dislocation) for the reverse slip without gravity benchmark.
 \end_layout
 
 \end_inset
@@ -957,7 +954,7 @@ Calculator
 \family sans
 scalars
 \family default
- button and the 
+ button, and the 
 \family sans
 iHat
 \family default
@@ -991,7 +988,7 @@ Accept
  the displacement vectors visible (colored using property), you should see
  an image similar to the one in figure\InsetSpace ~
 
-\begin_inset LatexCommand \ref{fig:bmrsnog:xdisp:vec:t10}
+\begin_inset LatexCommand \ref{fig:ParaView-rendering-of2}
 
 \end_inset
 
@@ -1021,17 +1018,13 @@ status open
 \end_layout
 
 \begin_layout Caption
-ParaView rendering of displacement in x-direction and displacement vectors
- at time step 10 (10 yrs after imposed dislocation) for the reverse slip
- without gravity benchmark.
-\end_layout
-
-\begin_layout Standard
-\begin_inset LatexCommand \label{fig:bmrsnog:xdisp:vec:t10}
+\begin_inset LatexCommand \label{fig:ParaView-rendering-of2}
 
 \end_inset
 
- 
+ParaView rendering of displacement in x-direction and displacement vectors
+ at time step 10 (10 yrs after imposed dislocation) for the reverse slip
+ without gravity benchmark.
 \end_layout
 
 \end_inset

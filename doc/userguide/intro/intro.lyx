@@ -62,8 +62,12 @@ This first version of PyLith is a direct descendant of Lithomop and marks
  code for simulating static and quasi-static crustal deformation.
  The major new features present in Lithomop included dynamic memory allocation
  and the use of the Pyre simulation framework and PETSc solvers.
- </para> <para> PyLith is currently being rewritten from scratch to create
- a much more modular, powerful simulation package.
+ 
+\end_layout
+
+\begin_layout Standard
+PyLith is currently being rewritten from scratch to create a much more modular,
+ powerful simulation package.
  This new code will include earthquake dynamics (both rupture propagation
  and seismic wave propagation).
  A beta release is expected in late 2006.
@@ -275,7 +279,7 @@ PETSc
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \htmlurl[PETSc]{<http://www-unix.mcs.anl.gov/petsc/petsc-as/>}
+\begin_inset LatexCommand \htmlurl[PETSc]{http://www-unix.mcs.anl.gov/petsc/petsc-as/}
 
 \end_inset
 

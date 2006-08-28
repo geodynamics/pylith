@@ -67,14 +67,14 @@ Before you begin any of the tutorials, you will need to install PyLith following
 \color black
 PyLith
 \family default
-\color default
+\color none
  you will need 
-\begin_inset LatexCommand \htmlurl[NETGEN]{<http://www.hpfem.jku.at/netgen/>}
+\begin_inset LatexCommand \htmlurl[NETGEN]{http://www.hpfem.jku.at/netgen/}
 
 \end_inset
 
  to generate the mesh and 
-\begin_inset LatexCommand \htmlurl[ParaView]{<http://www.paraview.org>}
+\begin_inset LatexCommand \htmlurl[ParaView]{http://www.paraview.org}
 
 \end_inset
 
@@ -103,7 +103,7 @@ Each tutorial includes a simple Python script,
 \color black
 tutor.py
 \family default
-\color default
+\color none
 , to help with miscellaneous tasks, such as copying provided files into
  a working directory.
  This script can (1) check to make sure the files necessary for a given
@@ -116,13 +116,13 @@ tutor.py
 \color black
 tutor.py
 \family default
-\color default
+\color none
  with the 
 \family typewriter
 \color black
 -h
 \family default
-\color default
+\color none
  option for more information.
  We will use this script at the beginning of each step of the tutorials
  to retrieve files as necessary from the tutorial archive directory.
@@ -138,7 +138,7 @@ TIP:
 \color black
 tutor.py
 \family default
-\color default
+\color none
  will not overwrite files that already exist in the workarea directory.
  This means that if you mangle files in the working area, you should remove
  them and let the tutor retrieve clean copies.

@@ -76,7 +76,7 @@ The
  is dedicated to CIG issues associated with short-term crustal dynamics,
  including the use of PyLith.
  You can subscribe to the mailing list and view messages at 
-\begin_inset LatexCommand \htmlurl[CIG Mailing Lists]{<http://www.geodynamics.org/mail/lists/>}
+\begin_inset LatexCommand \htmlurl[CIG Mailing Lists]{http://www.geodynamics.org/cig/lists/}
 
 \end_inset
 
@@ -94,7 +94,7 @@ Roundup
 \family default
  for bug tracking.
  If you find a bug in PyLith, please submit a bug report to the 
-\begin_inset LatexCommand \htmlurl[CIG Roundup System]{<http://www.geodynamics.org/roundup/>}
+\begin_inset LatexCommand \htmlurl[CIG Roundup System]{http://www.geodynamics.org/roundup/}
 
 \end_inset
 
@@ -140,7 +140,7 @@ Download the
 \family typewriter
 \size footnotesize
 
-\begin_inset LatexCommand \htmlurl[tarball]{<http://crust.geodynamics.org/~leif/shipping/>}
+\begin_inset LatexCommand \htmlurl[tarball]{http://www.geodynamics.org:8080/cig/software/packages/pylith/pylith-0.8-linux-x86.tar.gz}
 
 \end_inset
 
@@ -263,7 +263,7 @@ The OS X binary version was built to run on the Macintosh PowerPC architecture
 
 \begin_layout Enumerate
 Download the 
-\begin_inset LatexCommand \htmlurl[disk image]{<http://crust.geodynamics.org/~leif/shipping/>}
+\begin_inset LatexCommand \htmlurl[disk image]{http://www.geodynamics.org:8080/cig/software/packages/pylith/PyLith-0.8p1.dmg}
 
 \end_inset
 
@@ -314,7 +314,7 @@ This Windows binary version of PyLith should be compatible with Windows
 
 \begin_layout Enumerate
 Download the 
-\begin_inset LatexCommand \htmlurl[installer]{<http://crust.geodynamics.org/~leif/shipping/>}
+\begin_inset LatexCommand \htmlurl[installer]{http://www.geodynamics.org:8080/cig/software/packages/pylith/setup.exe}
 
 \end_inset
 
@@ -399,7 +399,7 @@ cig/software/Repository/cig/short/3D/PyLith/branches/pylith-0.8
 
 \newline
 in the 
-\begin_inset LatexCommand \htmlurl[Geodynamics Subversion Repository]{<http://www.geodynamics.org/cig/software/Repository/>}
+\begin_inset LatexCommand \htmlurl[Geodynamics Subversion Repository]{http://www.geodynamics.org/cig/software/Repository/}
 
 \end_inset
 
@@ -480,7 +480,7 @@ Building using source repositories
 \color red
 Warning:
 \series default
-\color default
+\color none
  Building PyLith using the source repositories is recommended only for expert
  users who are willing to work with a moving target and rebuild on a frequent
  basis.
@@ -507,7 +507,7 @@ cig/software/Repository/cig/short/3D/PyLith/branches/pylith-0.8
 in
 \family default
  the 
-\begin_inset LatexCommand \htmlurl[Geodynamics Subversion Repository]{<http://www.geodynamics.org/cig/software/Repository/>}
+\begin_inset LatexCommand \htmlurl[Geodynamics Subversion Repository]{http://www.geodynamics.org/cig/software/Repository/}
 
 \end_inset
 
@@ -563,7 +563,7 @@ The software must be built starting from the bottom of the dependency list
 
 \begin_layout Enumerate
 Build 
-\begin_inset LatexCommand \htmlurl[PETSc (developers version)]{<http://www-unix.mcs.anl.gov/petsc/petsc-as/developers/>}
+\begin_inset LatexCommand \htmlurl[PETSc (developers version)]{http://www-unix.mcs.anl.gov/petsc/petsc-as/developers/}
 
 \end_inset
 
