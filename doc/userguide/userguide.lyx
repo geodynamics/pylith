@@ -1,22 +1,10 @@
-#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
-% -*- TeX -*-
-
-
-
-\usepackage{alltt}
-
-%\usepackage{url}
 \usepackage{hyperref}
-
-\usepackage{moreverb}
-
-
-\input{docdefs.tex}
 \end_preamble
 \language english
 \inputencoding latin1
@@ -30,10 +18,10 @@
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
-\leftmargin 0.7in
-\topmargin 0.7in
-\rightmargin 0.7in
-\bottommargin 0.7in
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -41,7 +29,7 @@
 \quotes_language english
 \papercolumns 1
 \papersides 2
-\paperpagestyle default
+\paperpagestyle plain
 \tracking_changes false
 \output_changes false
 \end_header
@@ -62,6 +50,26 @@ status open
 
 \end_inset
 
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+thispagestyle{empty}
+\end_layout
+
+\begin_layout Standard
 
 \end_layout
 

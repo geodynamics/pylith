@@ -201,7 +201,7 @@ We will start by downloading the tutorial tarball and unpacking it.
 
 \begin_layout Enumerate
 Download the 
-\begin_inset LatexCommand \htmlurl[tutorial tarball]{<http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8_tutorials.tgz>}
+\begin_inset LatexCommand \htmlurl[tutorial tarball]{http://www.geodynamics.org/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8_tutorials.tgz}
 
 \end_inset
 
@@ -220,14 +220,14 @@ Go to the
 \color black
 tutorials/splitcube
 \family default
-\color default
+\color none
  directory.
  The 
 \family typewriter
 \color black
 archive
 \family default
-\color default
+\color none
  directory contains all of the input and output files associated with this
  tutorial.
  We will copy input files from this directory into the 
@@ -235,7 +235,7 @@ archive
 \color black
 workarea
 \family default
-\color default
+\color none
  directory.
  At each step, you can check to make sure your input and output agree with
  the files in the 
@@ -243,7 +243,7 @@ workarea
 \color black
 archive
 \family default
-\color default
+\color none
  directory.
  These files also allow you to start at an intermediate step as described
  in the next section.
@@ -265,19 +265,19 @@ Copy the
 \color black
 tutor.py
 \family default
-\color default
+\color none
  script from the 
 \family typewriter
 \color black
 archive
 \family default
-\color default
+\color none
  directory into the 
 \family typewriter
 \color black
 workarea
 \family default
-\color default
+\color none
  directory.
 \end_layout
 
@@ -291,7 +291,7 @@ TIP:
 \color black
 tutor.py
 \family default
-\color default
+\color none
  in mode "clean" with step "all" to clear out all old tutorial files.
  
 \end_layout
@@ -319,7 +319,7 @@ In this step we will generate the finite-element mesh for the benchmark
 \color black
 NETGEN
 \family default
-\color default
+\color none
 .
 \end_layout
 
@@ -329,26 +329,26 @@ In the
 \color black
 splitcube/workarea
 \family default
-\color default
+\color none
  directory, run 
 \family typewriter
 \color black
 tutor.py
 \family default
-\color default
+\color none
  for step "mesh" with mode "retrieve" to fetch the geometry file for 
 \family typewriter
 \color black
 NETGEN
 \family default
-\color default
+\color none
 .
  You may also want to run 
 \family typewriter
 \color black
 tutor.py
 \family default
-\color default
+\color none
  for this step with mode "clean" to clean out old files.
 \end_layout
 
@@ -368,7 +368,7 @@ Examine the
 \color black
 splitcube.geo
 \family default
-\color default
+\color none
  file to see how the geometry for the problem is defined.
  Notice that the fault plane has been flagged with a boundary condition
  code.
@@ -387,13 +387,13 @@ Start up
 \color black
 NETGEN
 \family default
-\color default
+\color none
  by running 
 \family typewriter
 \color black
 ng
 \family default
-\color default
+\color none
 .
 \end_layout
 
@@ -413,13 +413,13 @@ Select
 
  Load Geometry 
 \family default
-\color default
+\color none
 and select 
 \family typewriter
 \color black
 splitcube.geo
 \family default
-\color default
+\color none
 .
  
 \end_layout
@@ -430,7 +430,7 @@ Click on
 \color black
 Generate Mesh
 \family default
-\color default
+\color none
 .
  
 \end_layout
@@ -441,7 +441,7 @@ Export the mesh to a file named
 \color black
 splitcube.netgen
 \family default
-\color default
+\color none
 , making sure the export filetype is "Neutral format".
  
 \end_layout
@@ -578,7 +578,7 @@ splitcube.split
 \color red
 Warning:
 \series default
-\color default
+\color none
  If you make any changes to 
 \family typewriter
 splitcube.geo
@@ -629,7 +629,7 @@ $ cp ../archive/splitcube.bc .
 \color red
 Warning:
 \series default
-\color default
+\color none
  If you make any changes to 
 \family typewriter
 splitcube.geo
@@ -752,7 +752,7 @@ Visualize the single processor run
 \begin_layout Standard
 Now it is time to visualize the results of the simulation.
  By default, PyLith writes simulation output using 
-\begin_inset LatexCommand \htmlurl[AVS UCD files]{<http://help.avs.com/Express/doc/help/reference/dvmac/UCD_Form.htm>}
+\begin_inset LatexCommand \htmlurl[AVS UCD files]{http://help.avs.com/Express/doc/help/reference/dvmac/UCD_Form.htm}
 
 \end_inset
 
@@ -857,7 +857,7 @@ File
 \end_inset
 
  
-\color default
+\color none
 Open Data
 \family default
 .
@@ -889,7 +889,7 @@ Point YDispl
  You can use the mouse to rotate, translate, and zoom.
  Your image should look similar to the one in figure\InsetSpace ~
 
-\begin_inset LatexCommand \ref{fig::splitcube:ydisp:t0}
+\begin_inset LatexCommand \ref{fig:splitcube:ydisp:t0}
 
 \end_inset
 
@@ -1196,7 +1196,7 @@ Load the UCD files that you just created by selecting
 \end_inset
 
  
-\color default
+\color none
 Open Data.
 
 \family default
@@ -1225,7 +1225,7 @@ You can merge the datasets from the different processors by selecting
 \end_inset
 
  
-\color default
+\color none
 Append
 \family default
 .
