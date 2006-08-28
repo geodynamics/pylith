@@ -942,9 +942,10 @@ char pypylith3d_viscos_cleanup__name__[] = "viscos_cleanup";
 PyObject * pypylith3d_viscos_cleanup(PyObject *, PyObject *args)
 {
   PyObject* pyPointerToListArrayNtimdat;
+  PyObject* pyPointerToListArrayNprint;
   PyObject* pyPointerToListArrayNunits;
 
-  int ok = PyArg_ParseTuple(args, "OO:viscos_cleanup",&pyPointerToListArrayNtimdat,&pyPointerToListArrayNunits);
+  int ok = PyArg_ParseTuple(args, "OOO:viscos_cleanup",&pyPointerToListArrayNtimdat, &pyPointerToListArrayNprint, &pyPointerToListArrayNunits);
 
   if (!ok) {
     return 0;
@@ -954,9 +955,11 @@ PyObject * pypylith3d_viscos_cleanup(PyObject *, PyObject *args)
   const int maxsize = 4096;
   char errorstring[maxsize];
   int *pointerToListArrayNtimdat = (int *) PyCObject_AsVoidPtr(pyPointerToListArrayNtimdat);
+  int *pointerToListArrayNprint = (int *) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
   int *pointerToListArrayNunits  = (int *) PyCObject_AsVoidPtr(pyPointerToListArrayNunits);
 
   viscos_cleanup_f(pointerToListArrayNtimdat,
+                   pointerToListArrayNprint,
                    pointerToListArrayNunits,
                    &errorcode,                        // Error codes
                    errorstring,

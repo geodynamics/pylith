@@ -1042,6 +1042,7 @@ extern "C" {
   void viscos_cleanup_f(int *,
                         int *,
                         int *,
+                        int *,
                         char *,
                         size_t);
 
