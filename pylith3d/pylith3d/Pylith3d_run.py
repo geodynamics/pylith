@@ -558,7 +558,7 @@ class Pylith3d_run(Component):
                 print " Total number of equilibrium iterations        =",pylith3d.intListRef(self.pointerToListArrayNtimdat, 5)
                 print " Total number of stiffness matrix reformations =",pylith3d.intListRef(self.pointerToListArrayNtimdat, 6)
                 print " Total number of displacement subiterations    =",pylith3d.intListRef(self.pointerToListArrayNtimdat, 7)
-                pylith3d.viscos_cleanup(self.pointerToListArrayNtimdat, self.pointerToListArrayNunits)
+                pylith3d.viscos_cleanup(self.pointerToListArrayNtimdat, self.pointerToListArrayNprint, self.pointerToListArrayNunits)
             else:
                 pylith3d.viscos(
                     self.A,self.rhs,self.sol,                          # sparse

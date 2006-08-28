@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine viscos_cleanup(
-     & ntimdat,nunits,                                                  ! timdat
+     & ntimdat,nprint,nunits,                                           ! timdat
      & ierr,errstrng)                                                   ! errcode
 c
 c     PETSC includes
@@ -49,11 +49,13 @@ c
 c...  included dimension and type statements
 c
       include "ntimdat_dim.inc"
+      include "nprint_dim.inc"
       include "nunits_dim.inc"
 c
 c...  included variable definitions
 c
       include "ntimdat_def.inc"
+      include "nprint_def.inc"
       include "nunits_def.inc"
 c
 c...  close units
