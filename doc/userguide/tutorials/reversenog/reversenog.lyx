@@ -1,4 +1,4 @@
-#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -109,12 +109,12 @@ The model domain is a cube with edges 24 km long (0 km
 
 ) equal to 30 GPa and Maxwell viscoelastic properties.
  The top layer has a viscosity of 
-\begin_inset Formula $10^{2}5$
+\begin_inset Formula $10^{25}$
 \end_inset
 
  Pa-s (and is essentially elastic) while the bottom layer has a viscosity
  of 
-\begin_inset Formula $10^{1}8$
+\begin_inset Formula $10^{18}$
 \end_inset
 
  Pa-s.
@@ -145,11 +145,15 @@ The reverse fault dips at an angle of 45 degrees.
 \begin_inset Formula $\leq$
 \end_inset
 
- z with a linear taper to 0 at z = -16 km.
+ z and y 
+\begin_inset Formula $\leq$
+\end_inset
+
+12 km with a linear taper to 0 at z = -16 km and y = 16 km.
 \end_layout
 
 \begin_layout Standard
-The plane y=0 is a plane of symmetry, so the y-DOF displacements on this
+The plane y = 0 is a plane of symmetry, so the y-DOF displacements on this
  face are zero.
  The boundary conditions on the other lateral faces and bottom of the mesh
  are the displacements from the analytical elastic solution.
