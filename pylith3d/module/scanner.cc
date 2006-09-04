@@ -155,12 +155,12 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, ALE::Obj<ALE::Mesh
   fprintf(f, "#\n");
   fprintf(f, "#  Node X BC Y BC Z BC   X Value          Y Value          Z Value\n");
   fprintf(f, "#\n");
-  ALE::Obj<ALE::Mesh::topology_type::label_sequence> vertices = boundaries->getAtlas()->getTopology()->depthStratum(patch, 0);
+  ALE::Obj<ALE::Mesh::topology_type::label_sequence> vertices = boundaries->getTopology()->depthStratum(patch, 0);
 
   for(ALE::Mesh::topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter) {
     int    constraints[3] = {0, 0, 0};
     double values[3] = {0.0, 0.0, 0.0};
-    int    size = boundaries->getAtlas()->getFiberDimension(patch, *v_iter);
+    int    size = boundaries->getFiberDimension(patch, *v_iter);
     const ALE::Mesh::foliated_section_type::value_type *array = boundaries->restrict(patch, *v_iter);
 
     for(int c = 0; c < size; c++) {
@@ -217,7 +217,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   int numElements = mesh->getTopologyNew()->heightStratum(0, 0)->size();
   ierr = MPI_Bcast(&numElements, 1, MPI_INT, 0, comm);
   debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << meshInputFile << journal::endl;
-  mesh = ALE::New::Distribution<ALE::Mesh::topology_type>::distributeMesh(mesh);
+  mesh = ALE::New::Distribution<ALE::Mesh::topology_type>::redistributeMesh(mesh);
   debug << journal::at(__HERE__) << "[" << rank << "]Distributed PETSc Mesh"  << journal::endl;
   ierr = ReadBoundary_PyLith(meshInputFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
 
@@ -225,7 +225,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   ALE::Mesh::foliated_section_type::patch_type patch      = 0;
   std::set<int> seen;
 
-  boundaries->getAtlas()->setTopology(mesh->getTopologyNew());
+  boundaries->setTopology(mesh->getTopologyNew());
   // Reverse order allows newer conditions to override older, as required by PyLith
   for(int v = numBoundaryVertices-1; v >= 0; v--) {
     ALE::Mesh::point_type vertex(boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
@@ -330,8 +330,7 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
   }
 
   ALE::Mesh *mesh = (ALE::Mesh *) PyCObject_AsVoidPtr(pyMesh);
-  typedef ALE::New::Numbering<ALE::Mesh::topology_type> numbering_type;
-  ALE::Obj<numbering_type> offsets = mesh->getGlobalOrder("displacement");
+  ALE::Obj<ALE::Mesh::order_type> offsets = mesh->getGlobalOrder("displacement");
   int localSize = offsets->getLocalSize();
   int globalSize = offsets->getGlobalSize();
 
@@ -517,7 +516,7 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
         }
       }
       if (v != dim) {
-        std::cout << "ERROR: Invalid size " << v << " used for " << *v_iter << " with index " << displacement->getAtlas()->getIndex(p_iter->first, *v_iter) << std::endl;
+        std::cout << "ERROR: Invalid size " << v << " used for " << *v_iter << " with index " << displacement->getIndex(p_iter->first, *v_iter) << std::endl;
       }
       full_displacement->updateAdd(p_iter->first, *v_iter, values);
     }
