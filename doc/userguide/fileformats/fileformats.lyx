@@ -37,6 +37,10 @@
 \begin_body
 
 \begin_layout Chapter
+\begin_inset LatexCommand \label{cha:File-Formats}
+
+\end_inset
+
 File Formats
 \end_layout
 
@@ -66,7 +70,7 @@ The
 \color black
 xx.coord
 \family default
-\color default
+\color none
  file contains the coordinates of all of the vertices in the finite-element
  mesh.
 \end_layout
@@ -176,7 +180,7 @@ Format of
 \color black
 xx.coord
 \family default
-\color default
+\color none
  files.
 \end_layout
 
@@ -199,7 +203,7 @@ The
 \color black
 xx.connect
 \family default
-\color default
+\color none
  file contains the finite-element mesh topology and material type information,
  including the element type, material type, and the lists of vertices for
  each element.
@@ -354,7 +358,7 @@ Format of
 \color black
 xx.connect
 \family default
-\color default
+\color none
  files.
 \end_layout
 
@@ -377,7 +381,7 @@ The
 \color black
 xx.bc
 \family default
-\color default
+\color none
  file specifies the displacements, velocity, and/or forces applied to vertices
  on the boundaries.
 \end_layout
@@ -534,7 +538,7 @@ Format of
 \color black
 xx.bc
 \family default
-\color default
+\color none
  files.
 \end_layout
 
@@ -557,7 +561,7 @@ The
 \color black
 xx.time
 \family default
-\color default
+\color none
  file specifies the time stepping parameters for the simulation.
 \end_layout
 
@@ -567,7 +571,7 @@ xx.time
 \color red
 Warning: 
 \series default
-\color default
+\color none
 The convergence criteria depend on the type of solution and material models.
  The time step for a linear elastic problem is much different than that
  for a nonlinear or time-dependent problem.
@@ -759,7 +763,7 @@ Format of
 \color black
 xx.time
 \family default
-\color default
+\color none
  files.
 \end_layout
 
@@ -789,7 +793,7 @@ xx.prop
 \color red
 Warning:
 \series default
-\color default
+\color none
  The materials must be listed in order according to the material number
  assigned to the elements in 
 \family typewriter
@@ -1511,7 +1515,7 @@ Reduced Quadrature order that is one order less than full quadrature.
 \color red
 Warning: 
 \series default
-\color default
+\color none
 Use with caution as reduced quadrature can lead to numerical instabilities.
  
 \end_layout
@@ -1798,7 +1802,7 @@ Format of
 \color black
 xx.keyval
 \family default
-\color default
+\color none
  files.
 \end_layout
 

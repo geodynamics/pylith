@@ -48,7 +48,7 @@ Overview
 PyLith is a multi-scale simulation software package for earthquake physics.
  It is portable, scalable software for simulation of crustal deformation
  across spatial scales ranging from meters to hundreds of kilometers and
- temporal scales ranging from milliseconds to thousands of years
+ temporal scales ranging from milliseconds to thousands of years.
 \end_layout
 
 \begin_layout Section
@@ -139,7 +139,7 @@ subject to the natural boundary conditions
 \noindent
 and the essential boundary conditions 
 \begin_inset Formula \begin{equation}
-u_{i}=u_{i}^{S_{u}}\, on\, S_{u}.\label{eq:3}\end{equation}
+u_{i}=u_{i}^{S_{u}}\,\mathrm{on}\, S_{u}.\label{eq:3}\end{equation}
 
 \end_inset
 
@@ -212,7 +212,7 @@ ion of the strain tensor into elastic and inelastic parts, and use an integrated
 \begin_inset Formula $t+\Delta t$
 \end_inset
 
-, he stresses are therefore computed from the total elastic strain: 
+, the stresses are therefore computed from the total elastic strain: 
 \end_layout
 
 \begin_layout Standard
@@ -233,7 +233,7 @@ where
  In our actual computations, we use a formulation that decomposes the stresses
  into the deviatoric and volumetric parts, using ideas based on the "effective
  stress function" 
-\begin_inset LatexCommand \cite{Kojic:Bathe:1987}
+\begin_inset LatexCommand \cite{key-2}
 
 \end_inset
 
@@ -297,9 +297,9 @@ PETSc
 \begin_layout Standard
 PETSc includes interfaces for Fortran, C, and C++ for nearly all of the
  routines, and PETSc can be installed on most Unix systems.
- PETSc can be built with user supplied highly optimized linear algebra routines
- (e.g., ATLAS and commercial versions of BLAS/LAPACK), thereby improving applicati
-on performance.
+ PETSc can be built with user-supplied, highly optimized linear algebra
+ routines (e.g., ATLAS and commercial versions of BLAS/LAPACK), thereby improving
+ application performance.
  Users can use PETSc parallel matrices, vectors, and other data structures
  for most parallel operations, eliminating the need for explicit calls to
  Message Passing Interface (MPI) routines.

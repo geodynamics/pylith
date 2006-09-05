@@ -150,7 +150,7 @@ PyLith gets its input from a variety of files.
  is used.
  See Appendix\InsetSpace ~
 
-\begin_inset LatexCommand \ref{app:file:formats}
+\begin_inset LatexCommand \ref{cha:File-Formats}
 
 \end_inset
 
@@ -174,7 +174,7 @@ PROC
 \family typewriter
 xx.ext
 \family default
- was the original filename.
+ is the original filename.
  This procedure is applied to files with the following extensions:
 \family typewriter
  coord, connect, split, 
@@ -204,14 +204,14 @@ runbm.py
 \family default
  in section\InsetSpace ~
 
-\begin_inset LatexCommand \ref{sec:tutorial:reversenog}
+\begin_inset LatexCommand \ref{sec:Tutorial-Using-Reverse-Slip}
 
 \end_inset
 
  for a simple example.
  You can also choose your own filename template by setting the appropriate
  command-line argument.
- See \InsetSpace ~
+ See section\InsetSpace ~
 
 \begin_inset LatexCommand \ref{sec:commandline:args}
 
@@ -226,7 +226,7 @@ Required Input Files
 
 \begin_layout Standard
 The required input files define the finite-element mesh, boundary conditions,
- time step information, output, and material properties.
+ time-step information, output, and material properties.
 \end_layout
 
 \begin_layout Description
@@ -307,7 +307,7 @@ The optional input files are only read when a file exists matching the name
 \color black
 xx.fuldat 
 \family default
-\color default
+\color none
 Time steps for which full output is requested.
  
 \end_layout
@@ -318,7 +318,7 @@ Time steps for which full output is requested.
 \color black
 xx.split
 \family default
-\color default
+\color none
  Dislocation boundary condition information (implemented using split nodes).
  
 \end_layout
@@ -329,7 +329,7 @@ xx.split
 \color black
 xx.skew
 \family default
-\color default
+\color none
  Local coordinate rotation information for boundary conditions.
  
 \end_layout
@@ -340,7 +340,7 @@ xx.skew
 \color black
 xx.keyval
 \family default
-\color default
+\color none
  File for changing default parameters.
  
 \end_layout
@@ -351,7 +351,7 @@ xx.keyval
 \color black
 xx.wink
 \family default
-\color default
+\color none
  Winkler spring element boundary condition information.
  
 \emph on
@@ -367,7 +367,7 @@ xx.wink
 \color black
 xx.hist
 \family default
-\color default
+\color none
  Time histories for split node and Winkler boundary conditions (if necessary).
   
 \emph on
@@ -426,7 +426,7 @@ MPI Settings
 \color red
 Warning:
 \series default
-\color default
+\color none
  This section applies only to PyLith compiled using the MPICH implementation
  of the Message Passing Interface (MPI).
  
@@ -440,13 +440,13 @@ The MPI settings define how many processors are used and other parallel
 \color black
 -np NPROCS
 \family default
-\color default
+\color none
 , where 
 \family typewriter
 \color black
 NPROCS
 \family default
-\color default
+\color none
  corresponds to the number of processors.
 \end_layout
 
@@ -459,7 +459,7 @@ PyLith gathers many simulation parameters and settings using Pyre properties
  and facilities.
  Properties correspond to simple settings in the form of strings, integers,
  and real numbers.
- Facilities corresponds to software modules.
+ Facilities correspond to software modules.
  Both facilities and properties have default values provided, so you only
  need to set values when you want to deviate from the default behavior.
  Unless you write a module that extends PyLith's functionality, you will
@@ -475,7 +475,7 @@ In the current version of PyLith, all of the properties are associated with
 \color black
 --scanner.help-properties
 \family default
-\color default
+\color none
  command-line argument.
 \end_layout
 
@@ -525,7 +525,7 @@ PETSc Settings
 
 \begin_layout Standard
 PyLith relies on PETSc for the linear algebra computations.
- Many of PETSc options can be set using command-line arguments.
+ Many PETSc options can be set using command-line arguments.
  The ones of primary interest in the case of PyLith are shown in table\InsetSpace ~
 
 \begin_inset LatexCommand \ref{tab:Useful-command-line-arguments}
@@ -683,7 +683,7 @@ Dump preconditioned residual norm to stdout.
 \color black
 -ksp_monitor
 \family default
-\color default
+\color none
  is given, the default is to use stdout.
  
 \end_layout
@@ -772,7 +772,7 @@ PyLith's Pyre properties can also be set using
 \color black
 pml
 \family default
-\color default
+\color none
  files.
  These are XML files that follow a special Pyre XML schema.
 \end_layout

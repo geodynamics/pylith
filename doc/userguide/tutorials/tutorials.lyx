@@ -55,9 +55,9 @@ Prerequisites
 
 \begin_layout Standard
 Before you begin any of the tutorials, you will need to install PyLith following
- the instructions in section\InsetSpace ~
+ the instructions in chapter\InsetSpace ~
 
-\begin_inset LatexCommand \ref{sec:install}
+\begin_inset LatexCommand \ref{cha:Installation-and-Getting}
 
 \end_inset
 
