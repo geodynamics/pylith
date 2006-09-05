@@ -1,4 +1,4 @@
-#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -463,11 +463,11 @@ NETGEN
 \end_layout
 
 \begin_layout Subsection
-Setup simulation input files
+Set up simulation input files
 \end_layout
 
 \begin_layout Standard
-In this step we will setup the PyLith input files for the mesh and boundary
+In this step we will set up the PyLith input files for the mesh and boundary
  conditions.
 \end_layout
 
@@ -872,7 +872,7 @@ File
  Open Data
 \family default
 .
- Select the file in the dialog box and the click the 
+ Select the file in the dialog box and then click the 
 \family sans
 Open
 \family default
@@ -1186,7 +1186,7 @@ File
  Open Data
 \family default
 .
- Select the file in the dialog box and the click the 
+ Select the file in the dialog box and then click the 
 \family sans
 Open
 \family default
