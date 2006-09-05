@@ -284,7 +284,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   const Obj<section_type>&                  section  = mesh->getSection("displacement");
   const Obj<topology_type::label_sequence>& vertices = section->getTopology()->depthStratum(0, 0);
 
-  section->setDebug(1);
+  //section->setDebug(1);
   section->setFiberDimensionByDepth(0, 0, 3);
   for(topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter) {
     int numConstraints = boundaries->getFiberDimension(patch, *v_iter);
