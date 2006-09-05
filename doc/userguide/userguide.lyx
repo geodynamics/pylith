@@ -200,5 +200,22 @@ preview false
 
 \end_layout
 
+\begin_layout Bibliography
+
+\bibitem {key-2}
+Kojic, M.
+ and K.-J.
+ Bathe (1987), The 'Effective Stress-Function' Algorithm for Thermo-Elasto-Plast
+icity and Creep, 
+\emph on
+Int.
+ J.
+ Num.
+ Meth.
+ Eng.
+\emph default
+, 24, 1509-1532.
+\end_layout
+
 \end_body
 \end_document

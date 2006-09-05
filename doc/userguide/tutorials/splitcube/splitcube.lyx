@@ -57,11 +57,31 @@ Problem Description
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+raggedbottom
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 The model domain is a cube with edges 1 km long (0 km 
 \begin_inset Formula $\leq$
 \end_inset
 
- x 
+ 
+\begin_inset Formula $x$
+\end_inset
+
+ 
 \begin_inset Formula $\leq$
 \end_inset
 
@@ -97,7 +117,11 @@ The model domain is a cube with edges 1 km long (0 km
 \begin_layout Standard
 The strike-slip fault dips at an angle of 90 degrees.
  The slip distribution is 1.0 m of uniform left-lateral motion.
- The face of the cube on the plane x=0 is held fixed.
+ The face of the cube on the plane 
+\begin_inset Formula $x$
+\end_inset
+
+=0 is held fixed.
  The other lateral faces and top and bottom of the mesh are traction-free.
  The solution to this problem is zero stresses and strains with no displacements
  for the region 
@@ -175,7 +199,7 @@ status open
 
 \begin_layout Caption
 Workflow for setting up input files for example with simple strike-slip
- faylt.
+ fault.
 \end_layout
 
 \begin_layout Standard
@@ -358,7 +382,7 @@ $ ./tutor.py -m retrieve -s mesh
 \end_layout
 
 \begin_layout LyX-Code
-$./tutor.py -m clean -s mesh
+$ ./tutor.py -m clean -s mesh
 \end_layout
 
 \end_deeper
@@ -374,8 +398,11 @@ splitcube.geo
  code.
  This will be used to associate boundary conditions with the fault surface
  and the associated nodes.
- We have not flagged the face on the plane x=0 because we generate this
- boundary condition by hand.
+ We have not flagged the face on the plane 
+\begin_inset Formula $x$
+\end_inset
+
+=0 because we generate this boundary condition by hand.
  We also do not have to flag the other faces because they are traction-free,
  which is a natural boundary condition in the finite-element formulation.
  
@@ -556,7 +583,7 @@ $
 \begin_layout LyX-Code
 
 \series bold
-splitcube
+$ splitcube
 \end_layout
 
 \end_deeper
@@ -745,6 +772,22 @@ $ ./runbm.py -n 1
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+raggedbottom
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Visualize the single processor run
 \end_layout
@@ -861,7 +904,7 @@ File
 Open Data
 \family default
 .
- Select the file in the dialog box and the click the 
+ Select the file in the dialog box and then click the 
 \family sans
 Open
 \family default
@@ -964,7 +1007,7 @@ Calculator
 \family sans
 scalars
 \family default
- button and the 
+ button, and the 
 \family sans
 iHat
 \family default
@@ -1053,7 +1096,7 @@ Run the simulation on two processors
 
 \begin_layout Standard
 In this step we will run the simulation on two processors.
- Even if your machine only has one processor, a "multprocessor" job will
+ Even if your machine only has one processor, a "multiprocessor" job will
  run as multiple processes on the single processor.
  In such cases, the job will run slower than the single processor run, but
  the two processes will behave independently as if they are on different
@@ -1200,7 +1243,7 @@ Load the UCD files that you just created by selecting
 Open Data.
 
 \family default
- Select the file in the dialog box and the click the 
+ Select the file in the dialog box and then click the 
 \family sans
 Open
 \family default

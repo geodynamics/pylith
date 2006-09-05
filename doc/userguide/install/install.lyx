@@ -37,6 +37,10 @@
 \begin_body
 
 \begin_layout Chapter
+\begin_inset LatexCommand \label{cha:Installation-and-Getting}
+
+\end_inset
+
 Installation and Getting Help
 \end_layout
 
@@ -48,7 +52,7 @@ Introduction
 Installation of PyLith on a desktop or laptop machine is, in most cases,
  very easy.
  Binary packages have been created for the most common platforms, including
- Linux, OSX, and Windows.
+ Linux, Mac OS X, and Windows.
  Installation on machines that are not compatible with any of these operating
  systems requires building the software from the source code, which can
  be difficult for inexperienced users.
@@ -149,15 +153,14 @@ Download the
 
 \begin_layout Enumerate
 \noindent
-2.
- Unpack the tarball in a suitable location
+Unpack the tarball in a suitable location
 \newline
 
 \newline
 
 \family typewriter
 \color black
-tar -zxvf pylith-0.8-linux-x86.tar.gz
+$ tar -zxvf pylith-0.8-linux-x86.tar.gz
 \end_layout
 
 \begin_layout Enumerate
@@ -281,12 +284,12 @@ Double click on the disk and copy the
 \family typewriter
 PyLith
 \family default
- folder to a suiteable location.
+ folder to a suitable location.
  
 \end_layout
 
 \begin_layout Enumerate
-To run PyLith, double click on the PyLith icon provided in the 
+To run PyLith, double click on the PyLith icon found in the 
 \family typewriter
 PyLith
 \family default
@@ -299,7 +302,7 @@ To uninstall PyLith, simply drag the
 \family typewriter
 PyLith
 \family default
- folder to the trash.
+ folder to the Trash.
  
 \end_layout
 
@@ -329,7 +332,7 @@ s for installing.
 \end_layout
 
 \begin_layout Enumerate
-To run PyLith, double click on the PyLith icon on the desktop or select
+To run PyLith, double click on the PyLith icon on the Desktop or select
  
 \family sans
 Start 
@@ -375,7 +378,7 @@ PyLith
 \end_layout
 
 \begin_layout Section
-Building using source tarball
+Building Using Source Tarball
 \end_layout
 
 \begin_layout Standard
@@ -471,7 +474,7 @@ ADD STUFF HERE
 
 \end_deeper
 \begin_layout Section
-Building using source repositories
+Building Using Source Repositories
 \end_layout
 
 \begin_layout Quote
@@ -575,7 +578,7 @@ Build
 If you have an architecture optimized version of BLAS/LAPACK you should
  use those instead of asking PETSc to download and build one for you.
  In some cases, PETSc will find known optimized implementations of BLAS/LAPACK
- (e.g., vecLib on Mac OSX).
+ (e.g., vecLib on Mac OS X).
 \end_layout
 
 \begin_layout Standard
@@ -603,7 +606,7 @@ PETSC_ARCH
 \family default
 \emph default
  to 
-\begin_inset LatexCommand \url[petsc-maint@mcs.anl.gov]{<petsc-maint@mcs.anl.gov>}
+\begin_inset LatexCommand \url{<petsc-maint@mcs.anl.gov>}
 
 \end_inset
 
@@ -660,8 +663,11 @@ PETSC_DIR
 PETSC_ARCH
 \family default
 \emph default
- is a tag for this configuration of PETSc (e.g., linux_gcc-4.0_debug, darwin_gcc-3.4
-_opt, etc).
+ is a tag for this configuration of PETSc (e.g., 
+\family typewriter
+linux_gcc-4.0_debug, darwin_gcc-3.4_opt
+\family default
+, etc).
  You will want to set these environment variables in your 
 \family typewriter
 .bashrc
@@ -693,9 +699,16 @@ Configure PETSc.
 
 \begin_deeper
 \begin_layout Standard
-Run config/configure.py with the appropriate arguments to configure PETSc
- for your computer.
- Run config/configure.py --help to see the long list of possible options.
+Run 
+\family typewriter
+config/configure.py
+\family default
+ with the appropriate arguments to configure PETSc for your computer.
+ Run 
+\family typewriter
+config/configure.py --help
+\family default
+ to see the long list of possible options.
  Building PETSc for use with PyLith requires the following arguments:
 \newline
 
@@ -720,7 +733,7 @@ t=1
 Be sure to include flags indicating where MPI and BLAS/LAPACK are if you
  want to use a preinstalled implementation.
  If not, be sure to tell PETSc to download those packages.
- If you do not want build PETSc using the gnu compilers, be sure to let
+ If you do not want yo build PETSc using the gnu compilers, be sure to let
  PETSc know which compilers you want to use instead.
 \end_layout
 
@@ -769,7 +782,7 @@ $ make test
 \end_deeper
 \begin_layout Enumerate
 In the future, you will likely want to update the PETSc source tree to include
- bug fixes, new features etc.
+ bug fixes, new features, etc.
 \end_layout
 
 \begin_deeper
@@ -810,8 +823,11 @@ Build Pythia.
 \series bold
 TIP:
 \series default
- If you run into problems configuring or building Pythia, send both the
- 
+ If you run into problems configuring or building Pythia, send 
+\emph on
+both
+\emph default
+ the 
 \family typewriter
 config.log
 \family default
