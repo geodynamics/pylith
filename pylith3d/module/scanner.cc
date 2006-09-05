@@ -235,11 +235,10 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
       for(int c = 0; c < numBoundaryComponents; c++) {
         size += boundaryVertices[v*(numBoundaryComponents+1)+c+1];
       }
-      boundaries->getAtlas()->setFiberDimension(patch, vertex, size);
+      boundaries->setFiberDimension(patch, vertex, size);
       seen.insert(vertex);
     }
   }
-  boundaries->getAtlas()->orderPatches();
   boundaries->allocate();
   for(int v = 0; v < numBoundaryVertices; v++) {
     ALE::Mesh::point_type vertex(boundaryVertices[v*(numBoundaryComponents+1)] + numElements);
@@ -282,22 +281,21 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   ierr = WriteBoundary_PyLith(meshOutputFile, mesh);
   debug << journal::at(__HERE__) << "[" << rank << "]Wrote PyLith boundary conditions"  << journal::endl;
 
-  Obj<section_type>      section = mesh->getSection("displacement");
-  const Obj<atlas_type>& atlas   = section->getAtlas();
-  const Obj<topology_type::label_sequence>& vertices = atlas->getTopology()->depthStratum(0, 0);
+  const Obj<section_type>&                  section  = mesh->getSection("displacement");
+  const Obj<topology_type::label_sequence>& vertices = section->getTopology()->depthStratum(0, 0);
 
-  atlas->setFiberDimensionByDepth(0, 0, 3);
+  section->setDebug(1);
+  section->setFiberDimensionByDepth(0, 0, 3);
   for(topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter) {
-    int numConstraints = boundaries->getAtlas()->getFiberDimension(patch, *v_iter);
+    int numConstraints = boundaries->getFiberDimension(patch, *v_iter);
 
     if (numConstraints > 0) {
       if (mesh->debug) {
         std::cout << "[" << rank << "]Setting dimension of " << *v_iter << " to " << 3 - numConstraints << std::endl;
       }
-      atlas->setFiberDimension(0, *v_iter, 3 - numConstraints);
+      section->setFiberDimension(0, *v_iter, 3 - numConstraints);
     }
   }
-  atlas->orderPatches();
   section->allocate();
   if (mesh->debug) {
     section->view("Displacement field");
@@ -468,7 +466,7 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   Vec        l;
   VecScatter injection;
 
-  VecCreateSeqWithArray(PETSC_COMM_SELF, displacement->getAtlas()->size(patch), displacement->restrict(patch), &l);
+  VecCreateSeqWithArray(PETSC_COMM_SELF, displacement->size(patch), displacement->restrict(patch), &l);
   PetscObjectQuery((PetscObject) sol, "injection", (PetscObject *) &injection);
   if (injection) {
     VecScatterBegin(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
@@ -484,20 +482,19 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   const ALE::Obj<ALE::Mesh::topology_type::sheaf_type>& patches = m->getTopologyNew()->getPatches();
 
   // This is wrong if the domain changes
-  if (!full_displacement->getAtlas()->size(0)) {
+  if (!full_displacement->hasPatch(0)) {
     for(ALE::Mesh::topology_type::sheaf_type::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
-      full_displacement->getAtlas()->setFiberDimensionByDepth(p_iter->first, 0, 3);
+      full_displacement->setFiberDimensionByDepth(p_iter->first, 0, 3);
     }
-    full_displacement->getAtlas()->orderPatches();
     full_displacement->allocate();
   }
   for(ALE::Mesh::topology_type::sheaf_type::iterator p_iter = patches->begin(); p_iter != patches->end(); ++p_iter) {
     const ALE::Obj<ALE::Mesh::topology_type::label_sequence>& vertices = m->getTopologyNew()->depthStratum(p_iter->first, 0);
 
     for(ALE::Mesh::topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter) {
-      const int numConst = boundaries->getAtlas()->size(p_iter->first, *v_iter);
+      const int numConst = boundaries->size(p_iter->first, *v_iter);
       const ALE::Mesh::foliated_section_type::value_type *constVal = boundaries->restrict(p_iter->first, *v_iter);
-      const int dim      = displacement->getAtlas()->size(p_iter->first, *v_iter);
+      const int dim      = displacement->size(p_iter->first, *v_iter);
       const ALE::Mesh::section_type::value_type *array = displacement->restrict(p_iter->first, *v_iter);
       int        v       = 0;
       double     values[3];
@@ -577,7 +574,7 @@ PyObject * pypylith3d_interpolatePoints(PyObject *, PyObject *args)
   Vec        l;
   VecScatter injection;
 
-  VecCreateSeqWithArray(PETSC_COMM_SELF, displacement->getAtlas()->size(patch), displacement->restrict(patch), &l);
+  VecCreateSeqWithArray(PETSC_COMM_SELF, displacement->size(patch), displacement->restrict(patch), &l);
   PetscObjectQuery((PetscObject) sol, "injection", (PetscObject *) &injection);
   VecScatterBegin(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
   VecScatterEnd(sol, l, INSERT_VALUES, SCATTER_REVERSE, injection);
