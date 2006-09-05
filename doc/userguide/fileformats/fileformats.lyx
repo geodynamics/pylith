@@ -50,8 +50,8 @@ Input Files
 
 \begin_layout Standard
 PyLith gathers its input from several different types of files.
- All of these area ASCII files and can include comment lines that begin
- with '#'.
+ All of these are ASCII files and can include comment lines that begin with
+ '#'.
  Note that the placement of comments is restricted to certain locations
  in some files (see the discussion of each file format for more information).
 \end_layout
@@ -59,7 +59,6 @@ PyLith gathers its input from several different types of files.
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 \color black
 xx.coord
 \end_layout
@@ -192,7 +191,6 @@ xx.coord
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 \color black
 xx.connect
 \end_layout
@@ -370,7 +368,6 @@ xx.connect
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 \color black
 xx.bc
 \end_layout
@@ -490,7 +487,7 @@ force_units = newton
 
 \begin_layout LyX-Code
 #       flag.
-  If used, the the final digit refers to the condition
+  If used, the final digit refers to the condition
 \end_layout
 
 \begin_layout LyX-Code
@@ -550,7 +547,6 @@ xx.bc
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 \color black
 xx.time
 \end_layout
@@ -683,7 +679,11 @@ time_units = year
 \end_layout
 
 \begin_layout LyX-Code
-#       &lt;0 Indicates that reformation should occur only for the first
+#       
+\begin_inset Formula $\ll$
+\end_inset
+
+0 Indicates that reformation should occur only for the first
 \end_layout
 
 \begin_layout LyX-Code
@@ -775,7 +775,6 @@ xx.time
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 xx.prop
 \end_layout
 
@@ -1004,7 +1003,6 @@ xx.prop
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 xx.statevar
 \end_layout
 
@@ -1087,11 +1085,27 @@ xx.statevar
 \end_layout
 
 \begin_layout LyX-Code
-#   (1) Number of state variables to output (0 &le; value &le; 24)
+#   (1) Number of state variables to output (0 
+\begin_inset Formula $\leq$
+\end_inset
+
+ value 
+\begin_inset Formula $\leq$
+\end_inset
+
+ 24)
 \end_layout
 
 \begin_layout LyX-Code
-#   (2)+ State variable number to output (1 &le; value &le; 24)
+#   (2)+ State variable number to output (1 
+\begin_inset Formula $\leq$
+\end_inset
+
+ value 
+\begin_inset Formula $\leq$
+\end_inset
+
+ 24)
 \end_layout
 
 \begin_layout LyX-Code
@@ -1133,7 +1147,6 @@ xx.statevar
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 xx.split
 \end_layout
 
@@ -1272,7 +1285,6 @@ xx.split
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 xx.fuldat
 \end_layout
 
@@ -1357,7 +1369,6 @@ xx.fuldat
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 \color black
 xx.skew
 \end_layout
@@ -1469,7 +1480,6 @@ xx.skew
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 \color black
 xx.keyval
 \end_layout
@@ -1814,7 +1824,6 @@ xx.keyval
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 \color black
 xx.hist
 \end_layout
@@ -1920,7 +1929,6 @@ xx.hist
 \begin_layout Subsection
 
 \family typewriter
-\size normal
 xx.wink
 \end_layout
 
