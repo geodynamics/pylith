@@ -12,9 +12,9 @@ FFLAGC= -Wall -fbackslash -v
 
 CFLAGC= 
 
-# opt   = -g
+opt   = -g
 
-opt   = -O3 -funroll-loops
+# opt   = -O3 -funroll-loops
 
 # load  = -lcc_dynamic
 
@@ -58,6 +58,9 @@ fixqt: fixqt.o
 
 blockrot: blockrot.o
 	$(FCOMPL) $(opt) -o blockrot blockrot.o
+
+blockrot2: blockrot2.o
+	$(FCOMPL) $(opt) -o blockrot2 blockrot2.o
 
 makeucd: makeucd.o
 	$(FCOMPL) $(opt) -o makeucd makeucd.o

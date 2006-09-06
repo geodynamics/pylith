@@ -1,0 +1,63 @@
+#
+#   Parameter file for use with program blockrot2.
+#
+# **********************************************************************
+#
+#   Global information:
+#
+#    nblocks = number of blocks for this problem.
+#    nfaults = number of faults for this problem.
+#    cscale  = coordinate scaling factor for information from UCD file.
+#    dipcut  = cutoff dip value (degrees) to determine whether dip-slip
+#              movement will occur.  Points with local dip less than
+#              this value will have dip-slip movement.
+#
+#   nblocks    nfaults    cscale    dipcut
+#-----------------------------------------------------------------------
+       3          3        1.0d3     75.0d0
+#-----------------------------------------------------------------------
+#
+#   Rotation pole info:
+#
+#     For each block, enter the following info:
+#       polex(i) = X-coordinate defining rotation pole location.
+#       poley(i) = Y-coordinate defining rotation pole location.
+#       poler(i) = Rotation amount in degrees CCW.
+#
+#     Pole locations are with respect to a user-defined reference frame.
+#     Note that pole locations should be given in mks units (meters),
+#     and that the cscale value above should also yield units of meters
+#     when applied to the UCD file containing nodal coordinates.
+#
+#  polex(i)    poley(i)    poler(i),  i=1,nblocks
+#-----------------------------------------------------------------------
+   -1.0d6       1.0d6       0.5d0
+    1.0d6      -1.0d6       0.5d0
+    0.0d0       0.0d0       0.0d0
+# poles above should yield approximately equal amounts of strike-slip
+# and dip-slip movement on the fault between blocks 1 and 2.  Block 3
+# is chosen as the reference frame and so has no movement.
+#-----------------------------------------------------------------------
+#
+#   Fault ranking info:
+#
+#     Faults must be ranked so that we know what to do with faults lying
+#     on multiple faults.  Faults are defined by block pairs.  To make
+#     things easier, the lowest-numbered block should always be listed
+#     first.  If a node is found that lies on an unlisted fault, an
+#     error will be returned and the program will terminate.  For each
+#     fault, give the following information:
+#
+#       block1(i) = Lower-numbered block number bounding the fault.
+#       block2(i) = Higher-numbered block number bounding the fault.
+#       history(i)= Load history to be associated with the fault.
+#
+#    block1(i)    block2(i)    history(i), i=1,nfaults
+#-----------------------------------------------------------------------
+        1            3            0
+        2            3            0
+        1            2            0
+# This gives priority to the faults with the surrounding material
+# (block 3), and lowest priority to the fault between blocks 1 and 2,
+# which is truncated at either end by faults associated with block 3.
+#-----------------------------------------------------------------------
