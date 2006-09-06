@@ -1,6 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
 bin_PROGRAMS = \
+	blockrot \
+	blockrot2 \
 	faultcalc \
 	faultcalc2 \
 	makeucd \
@@ -11,6 +13,8 @@ bin_PROGRAMS = \
 	scaleucd
 
 
+blockrot_SOURCES = blockrot.f
+blockrot2_SOURCES = blockrot2.f
 faultcalc_SOURCES = faultcalc.f
 faultcalc2_SOURCES = faultcalc2.f
 makeucd_SOURCES = makeucd.f
