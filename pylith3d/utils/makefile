@@ -62,6 +62,9 @@ blockrot: blockrot.o
 blockrot2: blockrot2.o
 	$(FCOMPL) $(opt) -o blockrot2 blockrot2.o
 
+blockrot3: blockrot3.o
+	$(FCOMPL) $(opt) -o blockrot3 blockrot3.o
+
 makeucd: makeucd.o
 	$(FCOMPL) $(opt) -o makeucd makeucd.o
 
