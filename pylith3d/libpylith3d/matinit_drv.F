@@ -526,6 +526,10 @@ c...  check stiffness matrix for zero or negative diagonals
 c
       call MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY, ierr)
       call MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY, ierr)
+      if (ierr.ne.0) then
+        errstrng="matinit_drv"
+        return
+      end if
       call ckdiag(A,ierr,errstrng)
       return
       end
