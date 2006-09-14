@@ -10,21 +10,21 @@
 // ======================================================================
 //
 
-#if !defined(meshioascii_hh)
+#if !defined(pylith_meshio_meshioascii_hh)
 #error "MeshIOAscii.icc must be included only from MeshIOAscii.icc"
 #else
 
 // Set filename for ASCII file.
 inline
 void
-MeshIOAscii::filename(const char* name) {
+pylith::meshio::MeshIOAscii::filename(const char* name) {
   _filename = name;
 }
 
 // Get filename of ASCII file.
 inline
 const char* 
-MeshIOAscii::filename(void) const {
+pylith::meshio::MeshIOAscii::filename(void) const {
   return _filename.c_str();
 }
 

@@ -10,8 +10,8 @@
 // ======================================================================
 //
 
-#if !defined(meshioascii_hh)
-#define meshioascii_hh
+#if !defined(pylith_meshio_meshioascii_hh)
+#define pylith_meshio_meshioascii_hh
 
 #include <iosfwd> // USES std::istream, std::ostream
 #include <string> // HASA std::string
@@ -19,9 +19,16 @@
 namespace ALE {
   template<typename T> class Obj;
   class PetscMesh;
-}
+} // ALE
 
-class MeshIOAscii
+namespace pylith {
+  namespace meshio {
+    class MeshIO;
+    class MeshIOAscii;
+  } // meshio
+} // pylith
+
+class pylith::meshIO::MeshIOAscii : public pylith::meshIO::MeshIO
 { // MeshIOAscii
   
 // PUBLIC METHODS -------------------------------------------------------
@@ -49,7 +56,7 @@ public :
    *
    * @param pMesh Pointer to PETSc mesh object
    */
-  void read(ALE::Obj<ALE::PetscMesh>* pMesh) const;
+  void read(ALE::Obj<ALE::PetscMesh>* pMesh);
 
   /** Write mesh to file.
    *
@@ -127,7 +134,7 @@ private :
 
 #include "MeshIOAscii.icc" // inline methods
 
-#endif // meshioascii_hh
+#endif // pylith_meshio_meshioascii_hh
 
 // version
 // $Id$

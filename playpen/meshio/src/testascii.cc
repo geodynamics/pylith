@@ -10,6 +10,7 @@
 // ======================================================================
 //
 
+#include "MeshIO.hh"
 #include "MeshIOAscii.hh"
 
 #include "petsc.h" // USES PetscInitialize(), PetscFinalize()
