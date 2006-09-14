@@ -762,6 +762,10 @@ class Pylith3d_scan(Component):
         interpolateMesh = pyre.inventory.bool("interpolateMesh",default=False)
         interpolateMesh.meta['tip'] = "Create intermediate mesh entities, such as edges and faces."
 
+        partitioner = pyre.inventory.str("partitioner",default="chaco")
+        partitioner.validator = pyre.inventory.choice(["chaco","parmetis"])
+        partitioner.meta['tip'] = "Partitioner (chaco, parmetis)."
+
         # Unused option flags.
         autoRotateSlipperyNodes = pyre.inventory.bool("autoRotateSlipperyNodes",default=True)
         autoRotateSlipperyNodes.meta['tip'] = "Whether to performa automatic rotation for slippery nodes (presently unused)."
