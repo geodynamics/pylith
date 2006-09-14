@@ -10,6 +10,7 @@
 // ======================================================================
 //
 
+#include "MeshIO.hh" // MeshIOAscii ISA MeshIO
 #include "MeshIOAscii.hh" // implementation of class methods
 
 #include "PetscMesh.hh"
@@ -22,21 +23,21 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-MeshIOAscii::MeshIOAscii(void) :
+pylith::meshio::MeshIOAscii::MeshIOAscii(void) :
   _filename("")
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-MeshIOAscii::~MeshIOAscii(void)
+pylith::meshio::MeshIOAscii::~MeshIOAscii(void)
 { // destructor
 } // destructor
 
 // ----------------------------------------------------------------------
 // Unpickle mesh
 void
-MeshIOAscii::read(ALE::Obj<ALE::PetscMesh>* pMesh) const
+pylith::meshio::MeshIOAscii::read(ALE::Obj<ALE::PetscMesh>* pMesh)
 { // read
   assert(0 != pMesh);
 
@@ -77,6 +78,14 @@ MeshIOAscii::read(ALE::Obj<ALE::PetscMesh>* pMesh) const
       filein.ignore(maxIgnore, '=');
       filein >> meshDim;
       readDim = true;
+    } else if (0 == strcasecmp(token.c_str(), "use-index-zero")) {
+      filein.ignore(maxIgnore, '=');
+      std::string flag = "";
+      filein >> flag;
+      if (0 == strcasecmp(flag.c_str(), "true"))
+	useIndexZero(true);
+      else
+	useIndexZero(false);
     } else if (0 == strcasecmp(token.c_str(), "vertices")) {
       filein.ignore(maxIgnore, '{');
       _readVertices(filein, &coordinates, &numVertices, &numDims);
@@ -131,7 +140,7 @@ MeshIOAscii::read(ALE::Obj<ALE::PetscMesh>* pMesh) const
 // ----------------------------------------------------------------------
 // Write mesh to file.
 void
-MeshIOAscii::write(const ALE::Obj<ALE::PetscMesh>& mesh) const
+pylith::meshio::MeshIOAscii::write(const ALE::Obj<ALE::PetscMesh>& mesh) const
 { // write
   std::ofstream fileout(_filename.c_str());
   if (!fileout.is_open() || !fileout.good()) {
@@ -145,13 +154,14 @@ MeshIOAscii::write(const ALE::Obj<ALE::PetscMesh>& mesh) const
 
   fileout
     << "mesh = {\n"
-    << "  dimension = " << dimension << "\n";
+    << "  dimension = " << dimension << "\n"
+    << "  use-index-zero = " << (useIndexZero() ? "true" : "false") << "\n";
 
   _writeVertices(fileout, mesh);
   _writeElements(fileout, mesh);
 
-  // Loop over charts
-  //_writeChart(fileout, mesh);
+  // LOOP OVER CHARTS
+  // _writeChart(fileout, mesh, nameIter->c_str());
 
   fileout << "}\n";
   fileout.close();
@@ -160,10 +170,10 @@ MeshIOAscii::write(const ALE::Obj<ALE::PetscMesh>& mesh) const
 // ----------------------------------------------------------------------
 // Read mesh vertices.
 void
-MeshIOAscii::_readVertices(std::istream& filein,
-			   double** pCoordinates,
-			   int* pNumVertices, 
-			   int* pNumDims) const
+pylith::meshio::MeshIOAscii::_readVertices(std::istream& filein,
+					   double** pCoordinates,
+					   int* pNumVertices, 
+					   int* pNumDims) const
 { // _readVertices
   double* coordinates = 0;
   int numDims = 0;
@@ -214,8 +224,8 @@ MeshIOAscii::_readVertices(std::istream& filein,
 // ----------------------------------------------------------------------
 // Write mesh vertices.
 void
-MeshIOAscii::_writeVertices(std::ostream& fileout,
-			    const ALE::Obj<ALE::PetscMesh>& mesh) const
+pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout,
+			       const ALE::Obj<ALE::PetscMesh>& mesh) const
 { // _writeVertices
   ALE::Obj<ALE::PetscMesh::field_type> coords_field = mesh->getCoordinates();
   ALE::Obj<ALE::PetscMesh::bundle_type> vertexBundle = mesh->getBundle(0);
@@ -251,10 +261,10 @@ MeshIOAscii::_writeVertices(std::ostream& fileout,
 // ----------------------------------------------------------------------
 // Read mesh elements.
 void
-MeshIOAscii::_readElements(std::istream& filein,
-			   int** pElements,
-			   int* pNumElements, 
-			   int* pNumCorners) const
+pylith::meshio::MeshIOAscii::_readElements(std::istream& filein,
+					   int** pElements,
+					   int* pNumElements, 
+					   int* pNumCorners) const
 { // _readElements
   int* elements = 0;
   int numElements = 0;
@@ -284,6 +294,13 @@ MeshIOAscii::_readElements(std::istream& filein,
       assert(0 != elements);
       for (int i=0; i < size; ++i)
 	filein >> elements[i];
+      if (!useIndexZero()) {
+	// if files begins with index 1, then decrement to index 0
+	// for compatibility with Sieve
+	for (int i=0; i < size; ++i)
+	  --elements[i];
+      } // if
+      
       filein.ignore(maxIgnore, '}');
     } else {
       std::ostringstream msg;
@@ -306,8 +323,8 @@ MeshIOAscii::_readElements(std::istream& filein,
 // ----------------------------------------------------------------------
 // Write mesh elements.
 void
-MeshIOAscii::_writeElements(std::ostream& fileout,
-			    const ALE::Obj<ALE::PetscMesh>& mesh) const
+pylith::meshio::MeshIOAscii::_writeElements(std::ostream& fileout,
+				  const ALE::Obj<ALE::PetscMesh>& mesh) const
 { // _writeElements
   ALE::Obj<ALE::PetscMesh::sieve_type> topology = mesh->getTopology();
   ALE::Obj<ALE::PetscMesh::sieve_type::traits::heightSequence> elements = 
@@ -330,6 +347,7 @@ MeshIOAscii::_writeElements(std::ostream& fileout,
     << "    num-corners = " << numCorners << "\n"
     << "    simplices = {\n";
 
+  const int offset = (useIndexZero()) ? 0 : 1;
   for(ALE::PetscMesh::sieve_type::traits::heightSequence::iterator e_itor = 
 	elements->begin(); 
       e_itor != elements->end();
@@ -342,7 +360,9 @@ MeshIOAscii::_writeElements(std::ostream& fileout,
 	  cone->begin(); 
 	c_itor != cone->end(); 
 	++c_itor)
-      fileout << std::setw(8) << vertexBundle->getIndex(patch, *c_itor).prefix;
+      fileout
+	<< std::setw(8)
+	<< offset + vertexBundle->getIndex(patch, *c_itor).prefix;
     fileout << "\n";
   } // for
   fileout
@@ -353,8 +373,8 @@ MeshIOAscii::_writeElements(std::ostream& fileout,
 // ----------------------------------------------------------------------
 // Read mesh charts.
 void
-MeshIOAscii::_readChart(std::istream& filein,
-			 ALE::Obj<ALE::PetscMesh>* pMesh) const
+pylith::meshio::MeshIOAscii::_readChart(std::istream& filein,
+					ALE::Obj<ALE::PetscMesh>* pMesh) const
 { // _readChart
   std::string name = ""; // Name of chart
   int dimension = 0; // Topology dimension associated with chart
@@ -397,16 +417,37 @@ MeshIOAscii::_readChart(std::istream& filein,
   if (!filein.good())
     throw std::runtime_error("I/O error while parsing chart settings.");
 
-  // ADD STUFF HERE
+#if 0
+  assert(0 != pMesh);
+  ALE::Obj<ALE::PetscMesh::field_type> chartField = (*pMesh)->getField(name);
+  const int meshDim = (*pMesh)->getDimension();
+  ALE::Obj<std::list<ALE::PetscMesh::point_type> > patchPoints = 
+    std::list<ALE::PetscMesh::point_type>();
+  ALE::PetscMesh::field_type::patch_type patch;
+
+  patchPoints->clear();
+  if (meshDim == dimension) {
+    for (int i=0; i < count; ++i)
+      patchPoints->push_back(ALE::PetscMesh::point_type(0, indices[i]));
+    chartField->setPatch(patchPoints, patch);
+  } else if (0 == dimension) {
+  } // if
+  chartField->setFiberDimensionByHeight(patch, 0, 1);
+  chartField->orderPatches();
+  const double zero = 0;
+  for (int i=0; i < count; ++i)
+    chartField->update(patch, ALE::PetscMesh::point_type(0, i), &zero);
+#endif
 } // _readChart
 
 // ----------------------------------------------------------------------
 // Write mesh chart.
 void
-MeshIOAscii::_writeChart(std::ostream& fileout,
-			 const ALE::Obj<ALE::PetscMesh>& mesh,
-			 const char* name) const
+pylith::meshio::MeshIOAscii::_writeChart(std::ostream& fileout,
+					 const ALE::Obj<ALE::PetscMesh>& mesh,
+					 const char* name) const
 { // _writeChart
+  //_writeChart(fileout, mesh);
   // ADD STUFF HERE
   int count = 0; // TEMPORARY
   int dimension = 0; // TEMPORARY
