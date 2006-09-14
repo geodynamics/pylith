@@ -13,18 +13,15 @@
 #if !defined(pylith_meshio_meshio_hh)
 #define pylith_meshio_meshio_hh
 
-namespace ALE {
-  template<typename T> class Obj;
-  class PetscMesh;
-}
+#include <Mesh.hh> // PETSc Mesh
 
 namespace pylith {
-  namespace meshio {
+  namespace meshIO {
     class MeshIO;
   } // meshio
 } // pylith
 
-class pylith::meshio::MeshIO
+class pylith::meshIO::MeshIO
 { // MeshIO
   
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
@@ -40,13 +37,13 @@ public :
    *
    * @param pMesh Pointer to PETSc mesh object
    */
-  virtual void read(ALE::Obj<ALE::PetscMesh>* pMesh) = 0;
+  virtual void read(ALE::Obj<ALE::Mesh>& pMesh) = 0;
 
   /** Write mesh to file.
    *
    * @param mesh PETSc mesh object
    */
-  virtual void write(const ALE::Obj<ALE::PetscMesh>& mesh) const = 0;
+  virtual void write(const ALE::Obj<ALE::Mesh>& mesh) const = 0;
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
