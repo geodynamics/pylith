@@ -23,21 +23,26 @@ main(int argc,
   PetscErrorCode err;
 
   PetscInitialize(&argc, &argv, 0, 0);
-  
-  if (3 != argc) {
-    std::cerr << "usage: testascii MESHIN MESHOUT" << std::endl;
+
+  if (argc < 3) {
+    std::cerr << "usage: testascii MESHIN MESHOUT [options]" << std::endl;
     return -1;
   } // if
 
-  ALE::Obj<ALE::Mesh> mesh;
+  try {
+    ALE::Obj<ALE::Mesh> mesh;
 
-  pylith::meshIO::MeshIOAscii iohandler;
-  iohandler.filename(argv[1]);
-  iohandler.read(mesh);
+    pylith::meshIO::MeshIOAscii iohandler;
+    iohandler.filename(argv[1]);
+    iohandler.read(mesh);
 
-  iohandler.filename(argv[2]);
-  iohandler.write(mesh);
-
+    iohandler.filename(argv[2]);
+    iohandler.write(mesh);
+  } catch(ALE::Exception e) {
+    int rank;
+    MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+    std::cout <<"["<<rank<<"]: " << e << std::endl;
+  }
   err = PetscFinalize(); CHKERRQ(err);
   
   return err;

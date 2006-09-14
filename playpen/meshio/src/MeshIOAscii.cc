@@ -79,9 +79,9 @@ pylith::meshIO::MeshIOAscii::read(Obj<Mesh>& mesh)
       std::string flag = "";
       filein >> flag;
       if (0 == strcasecmp(flag.c_str(), "true"))
-	useIndexZero(true);
+        useIndexZero(true);
       else
-	useIndexZero(false);
+        useIndexZero(false);
     } else if (0 == strcasecmp(token.c_str(), "vertices")) {
       filein.ignore(maxIgnore, '{');
       _readVertices(filein, &coordinates, &numVertices, &numDims);
@@ -314,11 +314,13 @@ void
 pylith::meshIO::MeshIOAscii::_writeCells(std::ostream& fileout,
 				  const Obj<Mesh>& mesh) const
 { // _writeCells
-  const Obj<topology_type>&       topology   = mesh->getTopologyNew();
-  const topology_type::patch_type patch      = 0;
-  const Obj<sieve_type>&          sieve      = topology->getPatch(patch);
+  const Obj<topology_type>&        topology   = mesh->getTopologyNew();
+  const topology_type::patch_type  patch      = 0;
+  const Obj<sieve_type>&           sieve      = topology->getPatch(patch);
   const Obj<Mesh::topology_type::label_sequence>& cells = topology->heightStratum(patch, 0);
-  const int                       numCorners = sieve->nCone(*cells->begin(), topology->depth())->size();
+  const Obj<Mesh::numbering_type>& vNumbering = mesh->getLocalNumbering(0);
+  const int                        numCorners = sieve->nCone(*cells->begin(), topology->depth())->size();
+  sieve->view("Sieve");
 
   fileout
     << "  cells = {\n"
@@ -332,7 +334,7 @@ pylith::meshIO::MeshIOAscii::_writeCells(std::ostream& fileout,
     const Obj<sieve_type::traits::coneSequence>& cone = sieve->cone(*e_iter);
 
     for(sieve_type::traits::coneSequence::iterator c_iter = cone->begin(); c_iter != cone->end(); ++c_iter) {
-      fileout << std::setw(8) << *c_iter + offset;
+      fileout << std::setw(8) << vNumbering->getIndex(*c_iter) + offset;
     }
     fileout << "\n";
   } // for
