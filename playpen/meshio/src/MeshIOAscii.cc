@@ -35,7 +35,7 @@ pylith::meshIO::MeshIOAscii::~MeshIOAscii(void)
 // ----------------------------------------------------------------------
 // Unpickle mesh
 void
-pylith::meshIO::MeshIOAscii::read(Obj<Mesh>& mesh)
+pylith::meshIO::MeshIOAscii::read(Obj<Mesh>& mesh, const bool interpolate)
 { // read
   int meshDim = 0;
   int numDims = 0;
@@ -106,7 +106,6 @@ pylith::meshIO::MeshIOAscii::read(Obj<Mesh>& mesh)
       // Can now build topology
       mesh = Mesh(PETSC_COMM_WORLD, meshDim);
       mesh->debug = true;
-      bool interpolate = false;
 
       // allow mesh to have different dimension than coordinates
       Obj<sieve_type>    sieve    = new sieve_type(mesh->comm(), mesh->debug);

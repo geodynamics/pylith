@@ -37,7 +37,7 @@ public :
    *
    * @param pMesh Pointer to PETSc mesh object
    */
-  virtual void read(ALE::Obj<ALE::Mesh>& pMesh) = 0;
+  virtual void read(ALE::Obj<ALE::Mesh>& pMesh, const bool interpolate) = 0;
 
   /** Write mesh to file.
    *
