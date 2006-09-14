@@ -189,7 +189,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   char *meshInputFile;
   char  meshOutputFile[2048];
   int   interpolateMesh;
-  char partitioner;
+  char* partitioner;
 
   int ok = PyArg_ParseTuple(args, (char *) "sis:processMesh", &meshInputFile, &interpolateMesh, &partitioner);
 
