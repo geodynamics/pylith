@@ -57,7 +57,7 @@ public :
    *
    * @param pMesh Pointer to PETSc mesh object
    */
-  void read(Obj<Mesh>& mesh);
+  void read(Obj<Mesh>& mesh, const bool interpolate = false);
 
   /** Write mesh to file.
    *
