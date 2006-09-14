@@ -32,16 +32,16 @@ main(int argc,
   try {
     ALE::Obj<ALE::Mesh> mesh;
 
-    pylith::meshIO::MeshIOAscii iohandler;
+    pylith::meshio::MeshIOAscii iohandler;
     iohandler.filename(argv[1]);
     iohandler.read(mesh);
 
     iohandler.filename(argv[2]);
     iohandler.write(mesh);
-  } catch(ALE::Exception e) {
+  } catch(const ALE::Exception& err) {
     int rank;
     MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-    std::cout <<"["<<rank<<"]: " << e << std::endl;
+    std::cout << "[" << rank << "]: " << err << std::endl;
   }
   err = PetscFinalize(); CHKERRQ(err);
   

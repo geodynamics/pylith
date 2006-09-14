@@ -17,14 +17,14 @@
 // Get flag indicating whether indices start at 0 (True) or 1 (False).
 inline
 bool
-pylith::meshIO::MeshIO::useIndexZero(void) const {
+pylith::meshio::MeshIO::useIndexZero(void) const {
   return _useIndexZero;
 }
 
 // Set flag indicating whether indices start at 0 (True) or 1 (False).
 inline
 void
-pylith::meshIO::MeshIO::useIndexZero(const bool flag) {
+pylith::meshio::MeshIO::useIndexZero(const bool flag) {
   _useIndexZero = flag;
 }
 

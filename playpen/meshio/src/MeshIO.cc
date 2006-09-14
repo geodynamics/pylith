@@ -14,14 +14,14 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshIO::MeshIO::MeshIO(void) :
+pylith::meshio::MeshIO::MeshIO(void) :
   _useIndexZero(true)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshIO::MeshIO::~MeshIO(void)
+pylith::meshio::MeshIO::~MeshIO(void)
 { // destructor
 } // destructor
   

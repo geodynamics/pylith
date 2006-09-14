@@ -100,14 +100,10 @@ fi
 # ----------------------------------------------------------------------
 AC_CONFIG_FILES([Makefile
                  pylith/Makefile
-                 pylith/feassemble/Makefile
-                 pylith/materials/Makefile
-                 pylith/problems/Makefile
-                 pylith/solver/Makefile
-                 pylith/topology/Makefile
-                 pylith/utils/Makefile
                  libsrc/Makefile
                  libsrc/materials/Makefile
+                 modulesrc/Makefile
+                 modulesrc/meshio/Makefile
                  doc/Makefile])
 AC_OUTPUT
 

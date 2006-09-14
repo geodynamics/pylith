@@ -1,4 +1,4 @@
-# -*- Makefile -*-
+#!/usr/bin/env python
 #
 # ----------------------------------------------------------------------
 #
@@ -10,16 +10,12 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = solver
-include $(top_srcdir)/subpackage.am
+## @file pylith/meshio___init__.py
+## @brief Python meshio PyLith module initialization
 
-subpkgpyexec_PYTHON = \
-	Solver.py \
-	SolverTSE.py \
-	SolverTSI.py \
-	__init__.py
+all = ['MeshIO']
 
 # version
-# $Id$
+__id__ = "$Id$"
 
-# End of file 
+# End of file

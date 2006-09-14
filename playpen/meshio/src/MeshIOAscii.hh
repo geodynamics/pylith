@@ -20,12 +20,12 @@
 using ALE::Obj;
 
 namespace pylith {
-  namespace meshIO {
+  namespace meshio {
     class MeshIOAscii;
   } // meshio
 } // pylith
 
-class pylith::meshIO::MeshIOAscii : public pylith::meshIO::MeshIO
+class pylith::meshio::MeshIOAscii : public pylith::meshio::MeshIO
 { // MeshIOAscii
 // PUBLIC TYPEDEFS -------------------------------------------------------
 public :
@@ -56,8 +56,10 @@ public :
   /** Read mesh from file.
    *
    * @param pMesh Pointer to PETSc mesh object
+   * @param interpolate Flag indicating whether to build intermediate topology
    */
-  void read(Obj<Mesh>& mesh, const bool interpolate = false);
+  void read(Obj<Mesh>& mesh, 
+	    const bool interpolate =false);
 
   /** Write mesh to file.
    *
@@ -96,9 +98,9 @@ private :
    * @param pNumCorners Pointer to number of corners in each element
    */
   void _readCells(std::istream& filein,
-		     int** pCells,
-		     int* pNumCells, 
-		     int* pNumCorners) const;
+		  int** pCells,
+		  int* pNumCells, 
+		  int* pNumCorners) const;
   
   /** Write mesh cells.
    *
@@ -106,23 +108,23 @@ private :
    * @param mesh PETSc mesh
    */
   void _writeCells(std::ostream& fileout,
-		      const Obj<Mesh>& mesh) const;
+		   const Obj<Mesh>& mesh) const;
 
-  /** Read mesh chart.
+  /** Read mesh group.
    *
    * @param filein Output stream
    * @param pMesh Pointer to PETSc mesh
    */
-  void _readChart(std::istream& filein,
+  void _readGroup(std::istream& filein,
 		  const Obj<Mesh>& pMesh) const;
 
-  /** Write mesh chart.
+  /** Write mesh group.
    *
    * @param fileout Output stream
    * @param mesh PETSc mesh
-   * @param name Name of chart
+   * @param name Name of group
    */
-  void _writeChart(std::ostream& fileout,
+  void _writeGroup(std::ostream& fileout,
 		   const Obj<Mesh>& mesh,
 		   const char* name) const;
 

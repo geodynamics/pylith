@@ -16,12 +16,12 @@
 #include <Mesh.hh> // PETSc Mesh
 
 namespace pylith {
-  namespace meshIO {
+  namespace meshio {
     class MeshIO;
   } // meshio
 } // pylith
 
-class pylith::meshIO::MeshIO
+class pylith::meshio::MeshIO
 { // MeshIO
   
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
