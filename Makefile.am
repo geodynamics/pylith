@@ -14,7 +14,8 @@ ACLOCAL_AMFLAGS = -I ./m4
 
 SUBDIRS = \
 	pylith \
-	libsrc
+	libsrc \
+	modulesrc
 
 #modulesrc
 

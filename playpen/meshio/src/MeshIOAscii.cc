@@ -21,21 +21,22 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::meshIO::MeshIOAscii::MeshIOAscii(void) :
+pylith::meshio::MeshIOAscii::MeshIOAscii(void) :
   _filename("")
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshIO::MeshIOAscii::~MeshIOAscii(void)
+pylith::meshio::MeshIOAscii::~MeshIOAscii(void)
 { // destructor
 } // destructor
 
 // ----------------------------------------------------------------------
 // Unpickle mesh
 void
-pylith::meshIO::MeshIOAscii::read(Obj<Mesh>& mesh, const bool interpolate)
+pylith::meshio::MeshIOAscii::read(Obj<Mesh>& mesh, 
+				  const bool interpolate)
 { // read
   int meshDim = 0;
   int numDims = 0;
@@ -90,12 +91,12 @@ pylith::meshIO::MeshIOAscii::read(Obj<Mesh>& mesh, const bool interpolate)
       filein.ignore(maxIgnore, '{');
       _readCells(filein, &cells, &numCells, &numCorners);
       readCells = true;
-    } else if (0 == strcasecmp(token.c_str(), "chart")) {
+    } else if (0 == strcasecmp(token.c_str(), "group")) {
       if (!builtTopology)
 	throw std::runtime_error("Both 'vertices' and 'cells' must "
-				 "precede any charts in mesh file.");
+				 "precede any groups in mesh file.");
       filein.ignore(maxIgnore, '{');
-      _readChart(filein, mesh);
+      _readGroup(filein, mesh);
     } else {
       std::ostringstream msg;
       msg << "Could not parse '" << token << "' into a mesh setting.";
@@ -130,7 +131,7 @@ pylith::meshIO::MeshIOAscii::read(Obj<Mesh>& mesh, const bool interpolate)
 // ----------------------------------------------------------------------
 // Write mesh to file.
 void
-pylith::meshIO::MeshIOAscii::write(const Obj<Mesh>& mesh) const
+pylith::meshio::MeshIOAscii::write(const Obj<Mesh>& mesh) const
 { // write
   std::ofstream fileout(_filename.c_str());
   if (!fileout.is_open() || !fileout.good()) {
@@ -150,8 +151,8 @@ pylith::meshIO::MeshIOAscii::write(const Obj<Mesh>& mesh) const
   _writeVertices(fileout, mesh);
   _writeCells(fileout, mesh);
 
-  // LOOP OVER CHARTS
-  // _writeChart(fileout, mesh, nameIter->c_str());
+  // LOOP OVER GROUPS
+  // _writeGroup(fileout, mesh, nameIter->c_str());
 
   fileout << "}\n";
   fileout.close();
@@ -160,7 +161,7 @@ pylith::meshIO::MeshIOAscii::write(const Obj<Mesh>& mesh) const
 // ----------------------------------------------------------------------
 // Read mesh vertices.
 void
-pylith::meshIO::MeshIOAscii::_readVertices(std::istream& filein,
+pylith::meshio::MeshIOAscii::_readVertices(std::istream& filein,
 					   double** pCoordinates,
 					   int* pNumVertices, 
 					   int* pNumDims) const
@@ -214,7 +215,7 @@ pylith::meshIO::MeshIOAscii::_readVertices(std::istream& filein,
 // ----------------------------------------------------------------------
 // Write mesh vertices.
 void
-pylith::meshIO::MeshIOAscii::_writeVertices(std::ostream& fileout,
+pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout,
 			       const Obj<Mesh>& mesh) const
 { // _writeVertices
   const Obj<Mesh::section_type>&       coords_field = mesh->getSection("coordinates");
@@ -248,7 +249,7 @@ pylith::meshIO::MeshIOAscii::_writeVertices(std::ostream& fileout,
 // ----------------------------------------------------------------------
 // Read mesh cells.
 void
-pylith::meshIO::MeshIOAscii::_readCells(std::istream& filein,
+pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
 					   int** pCells,
 					   int* pNumCells, 
 					   int* pNumCorners) const
@@ -310,7 +311,7 @@ pylith::meshIO::MeshIOAscii::_readCells(std::istream& filein,
 // ----------------------------------------------------------------------
 // Write mesh cells.
 void
-pylith::meshIO::MeshIOAscii::_writeCells(std::ostream& fileout,
+pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout,
 				  const Obj<Mesh>& mesh) const
 { // _writeCells
   const Obj<topology_type>&        topology   = mesh->getTopologyNew();
@@ -342,15 +343,15 @@ pylith::meshIO::MeshIOAscii::_writeCells(std::ostream& fileout,
 } // _writeCells
 
 // ----------------------------------------------------------------------
-// Read mesh charts.
+// Read mesh group.
 void
-pylith::meshIO::MeshIOAscii::_readChart(std::istream& filein,
+pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
 					const Obj<Mesh>& mesh) const
-{ // _readChart
-  std::string name = ""; // Name of chart
-  int dimension = 0; // Topology dimension associated with chart
-  int count = 0; // Number of entities in chart
-  int* indices = 0; // Indices of entities in chart
+{ // _readGroup
+  std::string name = ""; // Name of group
+  int dimension = 0; // Topology dimension associated with group
+  int count = 0; // Number of entities in group
+  int* indices = 0; // Indices of entities in group
 
   std::string token;
   const int maxIgnore = 1024;
@@ -380,17 +381,17 @@ pylith::meshIO::MeshIOAscii::_readChart(std::istream& filein,
       filein.ignore(maxIgnore, '}');
     } else {
       std::ostringstream msg;
-      msg << "Could not parse '" << token << "' into a chart setting.";
+      msg << "Could not parse '" << token << "' into a group setting.";
       throw std::runtime_error(msg.str());
     } // else
     filein >> token;
   } // while
   if (!filein.good())
-    throw std::runtime_error("I/O error while parsing chart settings.");
+    throw std::runtime_error("I/O error while parsing group settings.");
 
 #if 0
   assert(!mesh.isNull());
-  Obj<Mesh::field_type> chartField = mesh->getField(name);
+  Obj<Mesh::field_type> groupField = mesh->getField(name);
   const int meshDim = mesh->getDimension();
   Obj<std::list<Mesh::point_type> > patchPoints = 
     std::list<Mesh::point_type>();
@@ -400,31 +401,31 @@ pylith::meshIO::MeshIOAscii::_readChart(std::istream& filein,
   if (meshDim == dimension) {
     for (int i=0; i < count; ++i)
       patchPoints->push_back(Mesh::point_type(0, indices[i]));
-    chartField->setPatch(patchPoints, patch);
+    groupField->setPatch(patchPoints, patch);
   } else if (0 == dimension) {
   } // if
-  chartField->setFiberDimensionByHeight(patch, 0, 1);
-  chartField->orderPatches();
+  groupField->setFiberDimensionByHeight(patch, 0, 1);
+  groupField->orderPatches();
   const double zero = 0;
   for (int i=0; i < count; ++i)
-    chartField->update(patch, Mesh::point_type(0, i), &zero);
+    groupField->update(patch, Mesh::point_type(0, i), &zero);
 #endif
-} // _readChart
+} // _readGroup
 
 // ----------------------------------------------------------------------
-// Write mesh chart.
+// Write mesh group.
 void
-pylith::meshIO::MeshIOAscii::_writeChart(std::ostream& fileout,
+pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
 					 const Obj<Mesh>& mesh,
 					 const char* name) const
-{ // _writeChart
-  //_writeChart(fileout, mesh);
+{ // _writeGroup
+  //_writeGroup(fileout, mesh);
   // ADD STUFF HERE
   int count = 0; // TEMPORARY
   int dimension = 0; // TEMPORARY
 
   fileout
-    << "  chart = {\n"
+    << "  group = {\n"
     << "    name = " << name << "\n"
     << "    dimension = " << dimension << "\n"
     << "    count = " << count << "\n"
@@ -433,6 +434,6 @@ pylith::meshIO::MeshIOAscii::_writeChart(std::ostream& fileout,
   fileout
     << "    }\n"
     << "  }\n";
-} // _writeChart
+} // _writeGroup
   
 // End of file 

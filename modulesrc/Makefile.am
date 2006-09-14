@@ -10,15 +10,8 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = feassemble
-include $(top_srcdir)/subpackage.am
-
-subpkgpyexec_PYTHON = \
-	Assembler.py \
-	Field.py \
-	Integrator.py \
-	IntegratorElasticity.py \
-	__init__.py
+SUBDIRS = \
+	meshio
 
 # version
 # $Id$
