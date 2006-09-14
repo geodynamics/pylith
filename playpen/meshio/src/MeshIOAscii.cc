@@ -320,7 +320,6 @@ pylith::meshIO::MeshIOAscii::_writeCells(std::ostream& fileout,
   const Obj<Mesh::topology_type::label_sequence>& cells = topology->heightStratum(patch, 0);
   const Obj<Mesh::numbering_type>& vNumbering = mesh->getLocalNumbering(0);
   const int                        numCorners = sieve->nCone(*cells->begin(), topology->depth())->size();
-  sieve->view("Sieve");
 
   fileout
     << "  cells = {\n"
