@@ -9,7 +9,7 @@ mesh = {
        0.0  1.0
     }
   }
-  elements = {
+  cells = {
     num-corners = 3
     count = 1
     simplices = {

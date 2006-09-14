@@ -15,22 +15,23 @@
 
 #include <iosfwd> // USES std::istream, std::ostream
 #include <string> // HASA std::string
+#include <MeshIO.hh>
 
-namespace ALE {
-  template<typename T> class Obj;
-  class PetscMesh;
-} // ALE
+using ALE::Obj;
 
 namespace pylith {
-  namespace meshio {
-    class MeshIO;
+  namespace meshIO {
     class MeshIOAscii;
   } // meshio
 } // pylith
 
 class pylith::meshIO::MeshIOAscii : public pylith::meshIO::MeshIO
 { // MeshIOAscii
-  
+// PUBLIC TYPEDEFS -------------------------------------------------------
+public :
+  typedef ALE::Mesh                Mesh;
+  typedef ALE::Mesh::sieve_type    sieve_type;
+  typedef ALE::Mesh::topology_type topology_type;
 // PUBLIC METHODS -------------------------------------------------------
 public :
 
@@ -56,13 +57,13 @@ public :
    *
    * @param pMesh Pointer to PETSc mesh object
    */
-  void read(ALE::Obj<ALE::PetscMesh>* pMesh);
+  void read(Obj<Mesh>& mesh);
 
   /** Write mesh to file.
    *
    * @param mesh PETSc mesh object
    */
-  void write(const ALE::Obj<ALE::PetscMesh>& mesh) const;
+  void write(const Obj<Mesh>& mesh) const;
 
 // PRIVATE METHODS ------------------------------------------------------
 private :
@@ -85,27 +86,27 @@ private :
    * @param mesh PETSc mesh
    */
   void _writeVertices(std::ostream& fileout,
-		      const ALE::Obj<ALE::PetscMesh>& mesh) const;
+		      const Obj<Mesh>& mesh) const;
   
-  /** Read mesh elements.
+  /** Read mesh cells.
    *
    * @param filein Input stream
-   * @param pElements Pointer to array of elements (vertices in each element)
-   * @param pNumElements Pointer to number of elements
+   * @param pCells Pointer to array of cells (vertices in each element)
+   * @param pNumCells Pointer to number of cells
    * @param pNumCorners Pointer to number of corners in each element
    */
-  void _readElements(std::istream& filein,
-		     int** pElements,
-		     int* pNumElements, 
+  void _readCells(std::istream& filein,
+		     int** pCells,
+		     int* pNumCells, 
 		     int* pNumCorners) const;
   
-  /** Write mesh elements.
+  /** Write mesh cells.
    *
    * @param fileout Output stream
    * @param mesh PETSc mesh
    */
-  void _writeElements(std::ostream& fileout,
-		      const ALE::Obj<ALE::PetscMesh>& mesh) const;
+  void _writeCells(std::ostream& fileout,
+		      const Obj<Mesh>& mesh) const;
 
   /** Read mesh chart.
    *
@@ -113,7 +114,7 @@ private :
    * @param pMesh Pointer to PETSc mesh
    */
   void _readChart(std::istream& filein,
-		  ALE::Obj<ALE::PetscMesh>* pMesh) const;
+		  const Obj<Mesh>& pMesh) const;
 
   /** Write mesh chart.
    *
@@ -122,7 +123,7 @@ private :
    * @param name Name of chart
    */
   void _writeChart(std::ostream& fileout,
-		   const ALE::Obj<ALE::PetscMesh>& mesh,
+		   const Obj<Mesh>& mesh,
 		   const char* name) const;
 
 // PRIVATE MEMBERS ------------------------------------------------------

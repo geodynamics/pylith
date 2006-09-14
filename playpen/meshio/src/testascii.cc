@@ -13,9 +13,6 @@
 #include "MeshIO.hh"
 #include "MeshIOAscii.hh"
 
-#include "petsc.h" // USES PetscInitialize(), PetscFinalize()
-#include "PetscMesh.hh" // USES PetscMesh
-
 #include <iostream> // USES std::cerr
 
 // ----------------------------------------------------------------------
@@ -32,11 +29,11 @@ main(int argc,
     return -1;
   } // if
 
-  ALE::Obj<ALE::PetscMesh> mesh;
+  ALE::Obj<ALE::Mesh> mesh;
 
-  MeshIOAscii iohandler;
+  pylith::meshIO::MeshIOAscii iohandler;
   iohandler.filename(argv[1]);
-  iohandler.read(&mesh);
+  iohandler.read(mesh);
 
   iohandler.filename(argv[2]);
   iohandler.write(mesh);
