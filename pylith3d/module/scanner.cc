@@ -189,8 +189,9 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   char *meshInputFile;
   char  meshOutputFile[2048];
   int   interpolateMesh;
+  char partitioner;
 
-  int ok = PyArg_ParseTuple(args, (char *) "si:processMesh", &meshInputFile, &interpolateMesh);
+  int ok = PyArg_ParseTuple(args, (char *) "sis:processMesh", &meshInputFile, &interpolateMesh, &partitioner);
 
   if (!ok) {
     return 0;
@@ -217,7 +218,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   int numElements = mesh->getTopologyNew()->heightStratum(0, 0)->size();
   ierr = MPI_Bcast(&numElements, 1, MPI_INT, 0, comm);
   debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << meshInputFile << journal::endl;
-  mesh = ALE::New::Distribution<ALE::Mesh::topology_type>::redistributeMesh(mesh);
+  mesh = ALE::New::Distribution<ALE::Mesh::topology_type>::redistributeMesh(mesh, (char) partitioner);
   debug << journal::at(__HERE__) << "[" << rank << "]Distributed PETSc Mesh"  << journal::endl;
   ierr = ReadBoundary_PyLith(meshInputFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
 
