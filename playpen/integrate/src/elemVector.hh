@@ -70,7 +70,8 @@ namespace pylith {
       };
     public:
       void computeElementGeometry(const Obj<section_type>&, const point_type&, value_type [], value_type [], value_type [], value_type&);
-      void integrateFunction(const Obj<section_type>&, const Obj<section_type>&, value_type (*)(value_type []));
+      void fillSection(const Obj<section_type>&, const Obj<section_type>&, value_type (*)(const value_type []));
+      void integrateFunction(const Obj<section_type>&, const Obj<section_type>&, value_type (*)(const value_type []));
       void integrateLaplacianAction(const Obj<section_type>&, const Obj<section_type>&, const Obj<section_type>&);
     };
   }
