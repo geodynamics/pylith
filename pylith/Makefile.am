@@ -23,6 +23,9 @@ nobase_pkgpyexec_PYTHON = \
 	materials/Homogeneous.py \
 	materials/Material.py \
 	materials/MaterialsBin.py \
+	meshio/MeshIO.py \
+	meshio/MeshIOAscii.py \
+	meshio/__init__.py \
 	problems/__init__.py \
 	problems/Dynamic.py \
 	problems/Problem.py \
@@ -34,6 +37,7 @@ nobase_pkgpyexec_PYTHON = \
 	topology/__init__.py \
 	topology/Mesh.py \
 	topology/MeshGenerator.py \
+	topology/MeshImporter.py \
 	utils/__init__.py \
 	utils/importing.py
 
