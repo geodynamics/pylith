@@ -17,9 +17,19 @@
 #include "Integration.hh"
 
 // ----------------------------------------------------------------------
-ALE::Mesh::section_type::value_type foo(const ALE::Mesh::section_type::value_type coords[])
+ALE::Mesh::section_type::value_type zeroF(const ALE::Mesh::section_type::value_type coords[])
+{
+  return 0.0;
+}
+
+ALE::Mesh::section_type::value_type constantF(const ALE::Mesh::section_type::value_type coords[])
 {
   return 1.0;
+}
+
+ALE::Mesh::section_type::value_type linearF(const ALE::Mesh::section_type::value_type coords[])
+{
+  return coords[0];
 }
 
 int
@@ -55,11 +65,17 @@ main(int argc,
     X->allocate();
     F->setFiberDimensionByDepth(patch, 0, 1);
     F->allocate();
-    integrator.integrateFunction(X, coords, foo);
-    X->view("Weak form of foo");
-    integrator.fillSection(X, coords, foo);
+    integrator.integrateFunction(X, coords, constantF);
+    X->view("Weak form of a constant");
+    integrator.fillSection(X, coords, constantF);
     integrator.integrateLaplacianAction(X, F, coords);
-    F->view("Weak form of \Delta foo");
+    F->view("Weak form of \Delta constant");
+    integrator.fillSection(X, coords, zeroF);
+    integrator.integrateFunction(X, coords, linearF);
+    X->view("Weak form of a linear");
+    integrator.fillSection(X, coords, linearF);
+    integrator.integrateLaplacianAction(X, F, coords);
+    F->view("Weak form of \Delta linear");
   } catch(ALE::Exception e) {
     int rank;
     MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
