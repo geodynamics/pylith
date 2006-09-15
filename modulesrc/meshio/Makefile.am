@@ -25,7 +25,7 @@ nodist_meshiomodule_la_SOURCES = \
 meshiomodule_la_LIBADD = \
 	$(top_builddir)/libsrc/meshio/libpylithmeshio.la
 
-INCLUDES += -I$(PYTHON_INCDIR)
+INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 meshio.pyx meshio_embed.cpp  meshio_embed.h: meshio.pyxe
 	cp $< . && pyrexembed.py meshio.pyxe && rm -f meshio.pyxe
