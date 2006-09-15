@@ -90,8 +90,7 @@ cdef class MeshIO:
     """Wrap pointer to C++ object in PyCObject."""
     # create shim for destructor
     #embed{ void MeshIO_destructor(void* pObj)
-    spatialdata::geocoords::MeshIO* pMesh =
-      (spatialdata::geocoords::MeshIO*) pObj;
+    pylith::meshio::MeshIO* pMesh = (pylith::meshio::MeshIO*) pObj;
     delete pMesh;
     #}embed
     return PyCObject_FromVoidPtr(self.thisptr, MeshIO_destructor)
