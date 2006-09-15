@@ -26,7 +26,7 @@ class MeshIOAscii(MeshIO):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(MeshIO.Inventory):
     """Python object for managing MeshIOAscii facilities and properties."""
 
     ## @class Inventory
@@ -50,7 +50,7 @@ class MeshIOAscii(MeshIO):
     """Constructor."""
     MeshIO.__init__(self, name)
     import pylith.meshio.meshio as bindings
-    self.cppHandler = bindings.MeshIOAscii()
+    self.cppHandle = bindings.MeshIOAscii()
     return
 
 
@@ -58,8 +58,9 @@ class MeshIOAscii(MeshIO):
 
   def _configure(self):
     """Set members based using inventory."""
-    MeshIO.configure(self)
+    MeshIO._configure(self)
     self.filename = self.inventory.filename
+    self.cppHandle.filename = self.filename
     return
 
 
