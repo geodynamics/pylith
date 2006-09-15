@@ -22,6 +22,8 @@ class MeshIO(Component):
   Python abstract base class for finite-element mesh I/O.
   """
 
+  # INVENTORY //////////////////////////////////////////////////////////
+
   class Inventory(Component.Inventory):
     """Python object for managing MeshIO facilities and properties."""
 
@@ -79,6 +81,7 @@ class MeshIO(Component):
 
   def _configure(self):
     """Set members based using inventory."""
+    Component._configure(self)
     self.interpolate = self.inventory.interpolate
     return
 
