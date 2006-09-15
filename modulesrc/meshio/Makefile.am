@@ -23,7 +23,7 @@ nodist_meshiomodule_la_SOURCES = \
 	meshio.c meshio_embed.cpp meshio_embed.h
 
 meshiomodule_la_LIBADD = \
-	$(top_builddir)/libsrc/meshio/libpylithmeshio.la
+	$(top_builddir)/libsrc/meshio/libpylithmeshio.la $(PETSC_LIB)
 
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 

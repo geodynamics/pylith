@@ -87,8 +87,8 @@ class ElasticIsotropic3D(Material):
   def _configure(self):
     """Set members using inventory."""
     self.useDB = self.inventory.useDB
-    self.muLame = self.inventory.muLame
-    self.lambdaLame = self.inventory.lambdaLame
+    self.muLame = self.inventory.density*self.inventory.vs*self.inventory.vs
+    self.lambdaLame = self.inventory.density*self.inventory.vp*self.inventory.vp - 2.0*self.muLame
     self.density = self.inventory.density
     return
 

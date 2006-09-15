@@ -35,8 +35,8 @@ class Homogeneous(MaterialsBin):
 
     import pyre.inventory
 
-    from ElasticIsotropic import ElasticIsotropic
-    material = pyre.inventory.facility("material", factory=ElasticIsotropic)
+    from ElasticIsotropic3D import ElasticIsotropic3D
+    material = pyre.inventory.facility("material", factory=ElasticIsotropic3D)
     material.meta['tip'] = "Material in problem."
 
 
