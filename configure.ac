@@ -124,12 +124,13 @@ fi
 
 # ----------------------------------------------------------------------
 AC_CONFIG_FILES([Makefile
-                 pylith/Makefile
-                 libsrc/Makefile
-                 libsrc/meshio/Makefile
-                 modulesrc/Makefile
-                 modulesrc/meshio/Makefile
-                 doc/Makefile])
+		pylith/Makefile
+                libsrc/Makefile
+                libsrc/meshio/Makefile
+                modulesrc/Makefile
+                modulesrc/meshio/Makefile
+		applications/Makefile
+                doc/Makefile])
 
 #                 libsrc/materials/Makefile
 
