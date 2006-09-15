@@ -85,6 +85,31 @@ if test "$enable_testing" = "yes" ; then
   ])
 fi
 
+# PROJ4
+AC_CHECK_LIB(proj, pj_init_plus, [
+  AC_CHECK_HEADER([proj_api.h], [], [
+    AC_MSG_ERROR([Proj4 header not found; try CPPFLAGS="-I<Proj4 include dir>"])
+  ])
+],[
+  AC_MSG_ERROR([Proj4 library not found; try LDFLAGS="-L<Proj4 lib dir>"])
+])
+
+# SPATIALDATA
+AC_LANG(C++)
+AC_CHECK_HEADER([spatialdata/spatialdb/SpatialDB.hh], [], [
+  AC_MSG_ERROR([SpatialDB header not found; try CPPFLAGS="-I<Spatialdata include dir>"])
+])
+AC_MSG_CHECKING([for spatialdb::SimpleDB in -lspatialdata])
+AC_REQUIRE_CPP
+AC_COMPILE_IFELSE(
+  [AC_LANG_PROGRAM([[#include <spatialdata/spatialdb/SpatialDB.hh>]
+                    [#include <spatialdata/spatialdb/SimpleDB.hh>]],
+                   [[spatialdata::spatialdb::SimpleDB db;]])],
+  [AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)
+   AC_MSG_ERROR([Spatialdata library not found; try LDFLAGS="-L<Spatialdata lib dir>"])
+])
+
 # DOXYGEN
 AM_CONDITIONAL([ENABLE_DOCUMENTATION], [test "$enable_documentation" = yes])
 if test "$enable_documentation" = "yes" ; then
@@ -101,10 +126,13 @@ fi
 AC_CONFIG_FILES([Makefile
                  pylith/Makefile
                  libsrc/Makefile
-                 libsrc/materials/Makefile
+                 libsrc/meshio/Makefile
                  modulesrc/Makefile
                  modulesrc/meshio/Makefile
                  doc/Makefile])
+
+#                 libsrc/materials/Makefile
+
 AC_OUTPUT
 
 dnl end of configure.ac
