@@ -1,1 +1,0 @@
-pylith3dapp.py --pl3dscan.fileRoot="../examples/patchtest/pt" --pl3dscan.keywordEqualsValueFile="../examples/patchtest/pt-2pt.keyval" --pl3dscan.bcInputFile="../examples/patchtest/pt-test1.bc" --pl3dscan.timeStepInputFile="../examples/patchtest/pt-nobbar.time" --pl3dscan.asciiOutputFile="../examples/patchtest/pt-test1-1pt-nobbar.ascii"
