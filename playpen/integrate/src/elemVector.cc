@@ -45,7 +45,20 @@ void pylith::feassemble::Integrator::computeElementGeometry(const Obj<section_ty
   }
 };
 
-void pylith::feassemble::Integrator::integrateFunction(const Obj<section_type>& field, const Obj<section_type>& coordinates, value_type (*f)(value_type []))
+void pylith::feassemble::Integrator::fillSection(const Obj<section_type>& field, const Obj<section_type>& coordinates, value_type (*f)(const value_type []))
+{
+  const topology_type::patch_type patch = 0;
+  const section_type::chart_type& chart = field->getPatch(patch);
+
+  for(section_type::chart_type::iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+    const section_type::value_type *coords = coordinates->restrict(patch, *c_iter);
+    const section_type::value_type  value  = f(coords);
+
+    field->updatePoint(patch, *c_iter, &value);
+  }
+};
+
+void pylith::feassemble::Integrator::integrateFunction(const Obj<section_type>& field, const Obj<section_type>& coordinates, value_type (*f)(const value_type []))
 {
   const topology_type::patch_type               patch    = 0;
   const Obj<topology_type>&                     topology = field->getTopology();
@@ -56,6 +69,14 @@ void pylith::feassemble::Integrator::integrateFunction(const Obj<section_type>& 
   for(topology_type::label_sequence::iterator e_iter = elements->begin(); e_iter != end; ++e_iter) {
     computeElementGeometry(coordinates, *e_iter, _v0, _Jac, PETSC_NULL, detJ);
     // Element integral
+    for(int d = 0; d < _dim; d++) {
+      std::cout << "v0["<<d<<"]: "<<_v0[d]<<std::endl;
+    }
+    for(int d = 0; d < _dim; d++) {
+      for(int e = 0; e < _dim; e++) {
+        std::cout << "Jac["<<d<<", "<<e<<"]: " << _Jac[d*_dim+e] << std::endl;
+      }
+    }
     PetscMemzero(_elemVector, NUM_BASIS_FUNCTIONS*sizeof(value_type));
     for(int q = 0; q < NUM_QUADRATURE_POINTS; q++) {
       value_type xi  = _points[q*2+0] + 1.0;

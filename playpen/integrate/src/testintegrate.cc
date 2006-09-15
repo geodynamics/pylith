@@ -17,7 +17,7 @@
 #include "Integration.hh"
 
 // ----------------------------------------------------------------------
-ALE::Mesh::section_type::value_type foo(ALE::Mesh::section_type::value_type coords[])
+ALE::Mesh::section_type::value_type foo(const ALE::Mesh::section_type::value_type coords[])
 {
   return 1.0;
 }
@@ -43,19 +43,22 @@ main(int argc,
     iohandler.read(mesh, false);
 
     const ALE::Mesh::topology_type::patch_type patch = 0;
+    const Obj<ALE::Mesh::section_type>& coords = mesh->getSection("coordinates");
     const Obj<ALE::Mesh::section_type>& X = mesh->getSection("X");
     const Obj<ALE::Mesh::section_type>& F = mesh->getSection("F");
     pylith::feassemble::Integrator      integrator(mesh->getDimension(),
                                                    NUM_QUADRATURE_POINTS, points, weights,
                                                    NUM_BASIS_FUNCTIONS, Basis, BasisDerivatives);
 
+    coords->view("Coordinates");
     X->setFiberDimensionByDepth(patch, 0, 1);
     X->allocate();
     F->setFiberDimensionByDepth(patch, 0, 1);
     F->allocate();
-    integrator.integrateFunction(X, mesh->getSection("coordinates"), foo);
+    integrator.integrateFunction(X, coords, foo);
     X->view("Weak form of foo");
-    integrator.integrateLaplacianAction(X, F, mesh->getSection("coordinates"));
+    integrator.fillSection(X, coords, foo);
+    integrator.integrateLaplacianAction(X, F, coords);
     F->view("Weak form of \Delta foo");
   } catch(ALE::Exception e) {
     int rank;
@@ -70,4 +73,4 @@ main(int argc,
 // version
 // $Id$
 
-// End of file 
+// End of file
