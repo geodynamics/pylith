@@ -1,0 +1,21 @@
+# Traction BC for a simple test.
+# Tensile traction in x-direction applied to face at x=1000.
+#
+# Format is as follows:
+#  node1, node2, node3, (node4), x-tract, y-tract, z-tract
+#
+# The nodes represent each vertex of the element face to which tractions
+# are to be applied, and must be ordered CCW when looking at the face
+# (right-hand rule).  Faces will have 3 nodes for tetrahedral meshes
+# and 4 nodes for hexahedral meshes.  The traction components are simply
+# the x, y, and z-components of the applied stress vector in the global
+# coordinate system.
+traction_units = "Pa"
+#
+#
+  16  18  15   -1.0    0.0   0.0
+   2  21  18   -1.0    0.0   0.0
+  21  23  18   -1.0    0.0   0.0
+  21  20  23   -1.0    0.0   0.0
+  18  23  15   -1.0    0.0   0.0
+  15  23  14   -1.0    0.0   0.0
