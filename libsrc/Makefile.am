@@ -11,7 +11,9 @@
 #
 
 SUBDIRS = \
-	materials
+	meshio
+
+# materials
 
 # version
 # $Id$
