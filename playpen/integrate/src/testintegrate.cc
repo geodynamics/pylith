@@ -10,14 +10,14 @@
 // ======================================================================
 //
 
-#include "MeshIOAscii.hh"
+#include "pylith/meshio/MeshIOAscii.hh"
 #include "elemVector.hh"
 #include <iostream> // USES std::cerr
 
 #include "Integration.hh"
 
 // ----------------------------------------------------------------------
-ALE::Mesh::section_type::value_type f(ALE::Mesh::section_type::value_type coords[])
+ALE::Mesh::section_type::value_type foo(ALE::Mesh::section_type::value_type coords[])
 {
   return 1.0;
 }
@@ -38,20 +38,25 @@ main(int argc,
   try {
     ALE::Obj<ALE::Mesh> mesh;
 
-    pylith::meshIO::MeshIOAscii iohandler;
+    pylith::meshio::MeshIOAscii iohandler;
     iohandler.filename(argv[1]);
     iohandler.read(mesh, false);
 
     const ALE::Mesh::topology_type::patch_type patch = 0;
-    const Obj<ALE::Mesh::section_type>& field = mesh->getSection("field");
+    const Obj<ALE::Mesh::section_type>& X = mesh->getSection("X");
+    const Obj<ALE::Mesh::section_type>& F = mesh->getSection("F");
     pylith::feassemble::Integrator      integrator(mesh->getDimension(),
                                                    NUM_QUADRATURE_POINTS, points, weights,
-                                                   NUM_BASIS_FUNCTIONS, Basis);
+                                                   NUM_BASIS_FUNCTIONS, Basis, BasisDerivatives);
 
-    field->setFiberDimensionByDepth(patch, 0, 1);
-    field->allocate();
-    integrator.integrateFunction(field, mesh->getSection("coordinates"), f);
-    field->view("Weak form of f");
+    X->setFiberDimensionByDepth(patch, 0, 1);
+    X->allocate();
+    F->setFiberDimensionByDepth(patch, 0, 1);
+    F->allocate();
+    integrator.integrateFunction(X, mesh->getSection("coordinates"), foo);
+    X->view("Weak form of foo");
+    integrator.integrateLaplacianAction(X, F, mesh->getSection("coordinates"));
+    F->view("Weak form of \Delta foo");
   } catch(ALE::Exception e) {
     int rank;
     MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
