@@ -15,7 +15,7 @@
 
 #include <iosfwd> // USES std::istream, std::ostream
 #include <string> // HASA std::string
-#include <MeshIO.hh>
+#include "MeshIO.hh"
 
 using ALE::Obj;
 

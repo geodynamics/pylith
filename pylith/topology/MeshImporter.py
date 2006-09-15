@@ -16,7 +16,7 @@
 from MeshGenerator import MeshGenerator
 
 # MeshImporter class
-class MeshImporter(Component):
+class MeshImporter(MeshGenerator):
   """
   Python implementation of importing a mesh.
   """
