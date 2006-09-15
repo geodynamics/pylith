@@ -41,8 +41,8 @@ class PyLithApp(Script):
                           validator=pyre.inventory.greaterEqual(0.0*second))
     totalTime.meta['tip'] = "Time duration for simulation."
 
-    from pylith.topology.MeshGenerator import MeshGenerator
-    mesher = pyre.inventory.facility("mesh_generator", factory=MeshGenerator)
+    from pylith.topology.MeshImporter import MeshImporter
+    mesher = pyre.inventory.facility("mesh_generator", factory=MeshImporter)
     mesher.meta['tip'] = "Generates or imports the computational mesh."
 
     from pylith.problems.QuasiStatic import QuasiStatic

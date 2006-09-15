@@ -22,10 +22,8 @@ class MeshGenerator(Component):
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def create(self):
-    #raise NotImplementedError, "MeshGenerator::create() not implemented."
-    from Mesh import Mesh
-    mesh = Mesh()
-    return mesh
+    raise NotImplementedError, "MeshGenerator::create() not implemented."
+    return
 
 
   def __init__(self, name="meshgenerator"):
