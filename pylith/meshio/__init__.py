@@ -13,7 +13,8 @@
 ## @file pylith/meshio___init__.py
 ## @brief Python meshio PyLith module initialization
 
-all = ['MeshIO']
+all = ['MeshIO',
+       'MeshIOAscii']
 
 # version
 __id__ = "$Id$"
