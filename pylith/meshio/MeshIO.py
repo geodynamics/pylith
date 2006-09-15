@@ -14,8 +14,6 @@
 
 ## @brief Python abstract base class for finite-element mesh I/O.
 
-import FIAT.shapes
-
 from pyre.components.Component import Component
 
 # MeshIO class
@@ -61,7 +59,10 @@ class MeshIO(Component):
 
     @returns Sieve mesh object containing finite-element mesh
     """
-    return self.cppHandle.read(self.interpolate)
+    from pylith.topology.Mesh import Mesh
+    mesh = Mesh()
+    mesh.handle = self.cppHandle.read(self.interpolate)
+    return 
 
 
   def write(self, mesh):
@@ -70,7 +71,7 @@ class MeshIO(Component):
 
     @param mesh Sieve mesh object containing finite-element mesh
     """
-    self.cppHandle.write(mesh)
+    self.cppHandle.write(mesh.handle)
     return
 
 

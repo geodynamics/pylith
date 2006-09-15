@@ -15,12 +15,10 @@
 ## @brief Python object for reading/writing finite-element mesh from
 ## simple ASCII file.
 
-import FIAT.shapes
+from MeshIO import MeshIO
 
-from pyre.components.Component import Component
-
-# MeshIO class
-class MeshIO(Component):
+# MeshIOAscii class
+class MeshIOAscii(Component):
   """
   Python object for reading/writing finite-element mesh from simple
   ASCII file.
@@ -30,7 +28,7 @@ class MeshIO(Component):
 
   def __init__(self, name="meshio"):
     """Constructor."""
-    Component.__init__(self, name, facility="meshio")
+    MeshIO.__init__(self, name, facility="meshio")
     import pylith.meshio.meshio as bindings
     self.cppHandler = bindings.MeshIOAscii()
     return
