@@ -70,3 +70,38 @@ void pylith::feassemble::Integrator::integrateFunction(const Obj<section_type>& 
     field->updateAdd(patch, *e_iter, _elemVector);
   }
 };
+
+void pylith::feassemble::Integrator::integrateLaplacianAction(const Obj<section_type>& X, const Obj<section_type>& F, const Obj<section_type>& coordinates)
+{
+  const topology_type::patch_type               patch    = 0;
+  const Obj<topology_type>&                     topology = X->getTopology();
+  const Obj<topology_type::label_sequence>&     elements = topology->heightStratum(patch, 0);
+  const topology_type::label_sequence::iterator end      = elements->end();
+  value_type detJ;
+
+  for(topology_type::label_sequence::iterator e_iter = elements->begin(); e_iter != end; ++e_iter) {
+    computeElementGeometry(coordinates, *e_iter, _v0, _Jac, _invJac, detJ);
+    // Element integral
+    PetscMemzero(_elemVector, NUM_BASIS_FUNCTIONS*sizeof(value_type));
+    PetscMemzero(_elemMatrix, NUM_BASIS_FUNCTIONS*NUM_BASIS_FUNCTIONS*sizeof(value_type));
+    for(int q = 0; q < NUM_QUADRATURE_POINTS; q++) {
+      for(int i = 0; i < NUM_BASIS_FUNCTIONS; i++) {
+        _testWork[0] = _invJac[0]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*2+0] + _invJac[2]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*2+1];
+        _testWork[1] = _invJac[1]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*2+0] + _invJac[3]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*2+1];
+        for(int j = 0; j < NUM_BASIS_FUNCTIONS; j++) {
+          _basisWork[0] = _invJac[0]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*2+0] + _invJac[2]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*2+1];
+          _basisWork[1] = _invJac[1]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*2+0] + _invJac[3]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*2+1];
+          _elemMatrix[i*NUM_BASIS_FUNCTIONS+j] += (_testWork[0]*_basisWork[0] + _testWork[1]*_basisWork[1])*_weights[q]*detJ;
+        }
+      }
+    }
+    // Assembly
+    const value_type *xWork = X->restrict(patch, *e_iter);
+    for(int i = 0; i < NUM_BASIS_FUNCTIONS; i++) {
+      for(int j = 0; j < NUM_BASIS_FUNCTIONS; j++) {
+        _elemVector[i] += _elemMatrix[i*NUM_BASIS_FUNCTIONS+j]*xWork[j];
+      }
+    }
+    F->updateAdd(patch, *e_iter, _elemVector);
+  }
+};
