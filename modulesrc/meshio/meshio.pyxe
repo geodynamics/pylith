@@ -59,7 +59,7 @@ cdef class MeshIO:
       topology elements.
     """
     # create shim for method 'read'
-    #embed{ void MeshIO_read(void* pObj, void** ppMeshObj, bool interpolate)
+    #embed{ void MeshIO_read(void* pObj, void** ppMeshObj, int interpolate)
     ALE::Obj<ALE::Mesh>* pMesh = new ALE::Obj<ALE::Mesh>;
     ((pylith::meshio::MeshIO*) pObj)->read(*pMesh, interpolate);
     *ppMeshObj = (void*) pMesh;
@@ -67,7 +67,7 @@ cdef class MeshIO:
 
     cdef void* pMeshObj
     pMeshObj = NULL
-    MeshIO_interpolate(self.thisptr, &pMeshObj, interpolate)
+    MeshIO_read(self.thisptr, &pMeshObj, interpolate)
     return PyCObject_FromVoidPtr(pMeshObj, ALEMesh_destructor)
 
 
@@ -80,6 +80,7 @@ cdef class MeshIO:
     ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
     ((pylith::meshio::MeshIO*) pObj)->write(*pMesh);
     #}embed
+    cdef void* pMeshObj
     pMeshObj = <void*> PyCObject_AsVoidPtr(mesh)
     MeshIO_write(self.thisptr, pMeshObj)
     return
