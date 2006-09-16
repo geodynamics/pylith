@@ -10,41 +10,41 @@
 // ======================================================================
 //
 
-#if !defined(pylith_feassemble_elemgeometry1d_hh)
-#define pylith_feassemble_elemgeometry1d_hh
+#if !defined(pylith_feassemble_quadrature1d_hh)
+#define pylith_feassemble_quadrature1d_hh
 
-#include "ElemGeometry.hh"
+#include "Quadrature.hh"
 
 namespace pylith {
   namespace feassemble {
-    class ElemGeometry1D;
+    class Quadrature1D;
   } // feassemble
 } // pylith
 
-class pylith::feassemble::ElemGeometry1D
-{ // ElemGeometry1D
+class pylith::feassemble::Quadrature1D
+{ // Quadrature1D
   
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  ElemGeometry1D(void);
+  Quadrature1D(void);
 
   /// Destructor
-  ~ElemGeometry1D(void);
+  ~Quadrature1D(void);
 
   /** Compute geometry of element object.
    *
    */
-  void compute(const Obj<section_type>& coordinates,
-	       const point_type& cell,
+  void compute(const ALE::Obj<ALE::Mesh::section_type>& coordinates,
+	       const ALE::Mesh::point_type& cell,
 	       value_type* pV,
 	       value_type* pJacobian,
 	       valye_type* pJacobianInv,
 	       value_type* pJacobianDet);
 
-}; // ElemGeometry1D
+}; // Quadrature1D
 
-#endif // pylith_feassemble_elemgeometry1d_hh
+#endif // pylith_feassemble_quadrature1d_hh
 
 // End of file 
