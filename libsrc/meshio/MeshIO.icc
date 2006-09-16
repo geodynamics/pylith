@@ -11,7 +11,7 @@
 //
 
 #if !defined(pylith_meshio_meshio_hh)
-#error "MeshIO.icc must be included only from MeshIO.icc"
+#error "MeshIO.icc must be included only from MeshIO.hh"
 #else
 
 // Get flag indicating whether indices start at 0 (True) or 1 (False).
