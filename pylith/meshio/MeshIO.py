@@ -28,7 +28,7 @@ class MeshIO(Component):
     """Python object for managing MeshIO facilities and properties."""
 
     ## @class Inventory
-    ## Python object for managing Field facilities and properties.
+    ## Python object for managing MeshIO facilities and properties.
     ##
     ## \b Properties
     ## @li \b interpolate Build intermediate mesh topology elements
