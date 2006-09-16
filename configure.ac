@@ -126,6 +126,7 @@ fi
 AC_CONFIG_FILES([Makefile
 		pylith/Makefile
                 libsrc/Makefile
+                libsrc/feassemble/Makefile
                 libsrc/meshio/Makefile
                 modulesrc/Makefile
                 modulesrc/meshio/Makefile
