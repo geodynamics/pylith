@@ -12,6 +12,8 @@
 
 #include "Quadrature.hh" // implementation of class methods
 
+#include <stdexcept> // USES std::runtime_error
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::Quadrature::Quadrature(void) :
@@ -28,6 +30,10 @@ pylith::feassemble::Quadrature::Quadrature(void) :
 // Destructor
 pylith::feassemble::Quadrature::~Quadrature(void)
 { // destructor
+  delete[] _pBasisFns; _pBasisFns = 0;
+  delete[] _pBasisFnsDeriv; _pBasisFnsDeriv = 0;
+  delete[] _pQuadPts; _pQuadPts = 0;
+  delete[] _pQuadWts; _pQuadWts = 0;
 } // destructor
   
 // ----------------------------------------------------------------------
@@ -53,18 +59,26 @@ pylith::feassemble::Quadrature::initialize(const double* pBasisFns,
   int size = numCorners * numQuadPts;
   delete[] _pBasisFns;
   _pBasisFns = (size > 0) ? new double[size] : 0;
+  for (int i=0; i < size; ++i)
+    _pBasisFns[i] = pBasisFns[i];
 
   size = numCorners * numQuadPts * numDims;
   delete[] _pBasisFnsDeriv;
   _pBasisFnsDeriv = (size > 0) ? new double[size] : 0;
+  for (int i=0; i < size; ++i)
+    _pBasisFnsDeriv[i] = pBasisFnsDeriv[i];
 
   size = numQuadPts * numDims;
   delete[] _pQuadPts;
   _pQuadPts = (size > 0) ? new double[size] : 0;
+  for (int i=0; i < size; ++i)
+    _pQuadPts[i] = pQuadPts[i];
 
   size = numQuadPts;
   delete[] _pQuadWts;
   _pQuadWts = (size > 0) ? new double[size] : 0;
+  for (int i=0; i < size; ++i)
+    _pQuadWts[i] = pQuadWts[i];
 
   _numDims = numDims;
   _numCorners = numCorners;
