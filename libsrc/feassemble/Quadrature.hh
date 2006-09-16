@@ -135,13 +135,19 @@ protected :
    *
    * @returns Array of basis functions evaluated at quadrature points.
    */
-  const double* basisFnsDeric(void) const;
+  const double* basisFnsDeriv(void) const;
 
-  /** Get basis functions evaluated at quadrature points.
+  /** Get coordinates of quadrature points.
    *
-   * @returns Array of basis functions evaluated at quadrature points.
+   * @returns Array of coordinates
    */
-  const double* basisFns(void) const;
+  const double* quadPts(void) const;
+
+  /** Get weights of quadrature points.
+   *
+   * @returns Array of weights
+   */
+  const double* quadWts(void) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -186,6 +192,8 @@ private :
   int _numQuadPts; ///< Number of quadrature points
 
 }; // Quadrature
+
+#include "Quadrature.icc" // inline methods
 
 #endif // pylith_feassemble_quadrature_hh
 
