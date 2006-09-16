@@ -22,6 +22,8 @@
 #if !defined(pylith_feassemble_quadrature_hh)
 #define pylith_feassemble_quadrature_hh
 
+#include <Mesh.hh>
+
 namespace pylith {
   namespace feassemble {
     class Quadrature;
@@ -42,13 +44,24 @@ public :
 
   /** Compute geometric quantities for a cell.
    *
+   * @param coordinates Section containing vertex coordinates
+   * @param cell Finite-element cell
+   * @param pV Array of ???
+   * @param pJacobian Jacobian evaluated at quadrature points
+   *   size = numDims*numDims*numQuadPts
+   *   index = iQuadPt*numDims*numDims + iJacobian
+   * @param pJacobianInv Inverse Jacobian evaluated at quadrature points
+   *   quadrature pts
+   *   size = numDims*numDims*numQuadPts
+   *   index = iQuadPt*numDims*numDims + iJacobian
+   * @param jacobianDet Determinant of Jacobian
    */
-  virtual void compute(const Obj<section_type>& coordinates,
-		       const point_type& cell,
+  virtual void compute(const ALE::Obj<ALE::Mesh::section_type>& coordinates,
+		       const ALE::Mesh::point_type& cell,
 		       double* pV,
 		       double* pJacobian,
 		       double* pJacobianInv,
-		       double* pJacobianDet) = 0;
+		       double& jacobianDet) = 0;
 
   /** Set basis functions and their derivatives and coordinates and
    *  weights of the quadrature points.
@@ -78,6 +91,57 @@ public :
 		  const int numDims,
 		  const int numCorners,
 		  const int numQuadPts);
+
+  /** Set tolerance for minimum allowable Jacobian.
+   *
+   * @param tolerance Minimum allowable value for Jacobian
+   */
+  void jacobianTolerance(const double tolerance);
+
+  /** Set tolerance for minimum allowable Jacobian.
+   *
+   * @param tolerance Minimum allowable value for Jacobian
+   */
+  double jacobianTolerance(void);
+
+  /** Get number of dimensions.
+   *
+   * @returns Number of dimensions
+   */
+  int numDims(void) const;
+
+  /** Get number of vertices in a cell.
+   *
+   * @returns Number of vertices in a cell
+   */
+  int numCorners(void) const;
+
+  /** Get number of quadrature points.
+   *
+   * @param returns Number of quadrature points
+   */
+  int numQuadPts(void) const;
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
+
+  /** Get basis functions evaluated at quadrature points.
+   *
+   * @returns Array of basis functions evaluated at quadrature points.
+   */
+  const double* basisFns(void) const;
+
+  /** Get derivatives of basis functions evaluated at quadrature points.
+   *
+   * @returns Array of basis functions evaluated at quadrature points.
+   */
+  const double* basisFnsDeric(void) const;
+
+  /** Get basis functions evaluated at quadrature points.
+   *
+   * @returns Array of basis functions evaluated at quadrature points.
+   */
+  const double* basisFns(void) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
