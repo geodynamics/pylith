@@ -7,9 +7,6 @@ System Requirements
 PyLith should work on any UN*X system.  It requires the following
 language tools:
 
-* A Fortran compiler.  Both older Fortran-77 and modern Fortran-9x
-  compilers will work.
-
 * A C compiler.
 
 * A C++ compiler.
@@ -19,7 +16,7 @@ language tools:
 If you are using a modern UN*X system, there is a good chance that all
 of the above tools are already installed.
 
-In addition, PyLith v0.8.0 requires the following software packages:
+In addition, PyLith v1.0 requires the following software packages:
 
 * An MPI library.  Both PETSc and Pythia (detailed below)
   should be configured to use MPI.  A popular choice is MPICH:
