@@ -10,14 +10,23 @@
 // ======================================================================
 //
 
-// @file pylith/feassemble/Quadrature.hh
-
-// @brief Abstract base class for integrating over finite-elements
-// using quadratures.
-//
-// This object holds the basis functions and their derivatives
-// evaluated at the quadrature points, and the coordinates and weights
-// of the quadrature points.
+/**
+ * @file pylith/feassemble/Quadrature.hh
+ *
+ * @brief Abstract base class for integrating over finite-elements
+ * using quadrature.
+ *
+ * This object contains the basis functions and their derivatives
+ * evaluated at the quadrature points of the reference element, and
+ * the coordinates and weights of the quadrature points. Given a cell
+ * this object will compute the cell's Jacobian, the determinant of
+ * the Jacobian, the inverse of the Jacobian, and the coordinates in
+ * the domain of the cell's quadrature points. The Jacobian and its
+ * inverse are computed at the quadrature points.
+ *
+ * The memory for the Jacobian and its associated information are
+ * managed locally.
+ */
 
 #if !defined(pylith_feassemble_quadrature_hh)
 #define pylith_feassemble_quadrature_hh
@@ -32,65 +41,64 @@ namespace pylith {
 
 class pylith::feassemble::Quadrature
 { // Quadrature
-  
-// PUBLIC MEMBERS ///////////////////////////////////////////////////////
+  friend class TestQuadrature; // unit testing
+
+// PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
   Quadrature(void);
 
   /// Destructor
-  virtual ~Quadrature(void);
+  virtual
+  ~Quadrature(void);
 
-  /** Compute geometric quantities for a cell.
-   *
-   * @param coordinates Section containing vertex coordinates
-   * @param cell Finite-element cell
-   * @param pV Array of ???
-   * @param pJacobian Jacobian evaluated at quadrature points
-   *   size = numDims*numDims*numQuadPts
-   *   index = iQuadPt*numDims*numDims + iJacobian
-   * @param pJacobianInv Inverse Jacobian evaluated at quadrature points
-   *   quadrature pts
-   *   size = numDims*numDims*numQuadPts
-   *   index = iQuadPt*numDims*numDims + iJacobian
-   * @param jacobianDet Determinant of Jacobian
-   */
-  virtual void compute(const ALE::Obj<ALE::Mesh::section_type>& coordinates,
-		       const ALE::Mesh::point_type& cell,
-		       double* pV,
-		       double* pJacobian,
-		       double* pJacobianInv,
-		       double& jacobianDet) = 0;
+  /// Create a copy of this object.
+  virtual
+  Quadrature* clone(void) const = 0;
 
-  /** Set basis functions and their derivatives and coordinates and
+  /** Set basis functions and their derivatives, and coordinates and
    *  weights of the quadrature points.
    *
-   * @param pBasisFns Array of basis functions evaluated at quadrature pts
-   *   index = iVertex*numDims + iDimension
+   * @param basis Array of basis functions evaluated at quadrature pts
+   *   N0Qp0, N0Qp1, ...
+   *   N1Qp0, N1Qp1, ...
+   *   ...
+   *   size = numCorners * numQuadPts
+   *   index = iBasis*numQuadPts + iQuadPt
    *
-   * @param pBasisFnsDeriv Array of basis function derivaties evaluated 
+   * @param basisDeriv Array of basis function derivaties evaluated 
    *   at quadrature pts
-   *   index = iVertex*numDims + iDimension??
+   *   N0xQp0, N0yQp0, N0zQp0, N0xQp1, N0yQp1, N0zQp1, ... 
+   *   N1xQp0, N1yQp0, N1zQp0, N1xQp1, N1yQp1, N1zQp1, ...
+   *   ...
+   * size = numCorners * numQuadPts * spaceDim
+   * index = iVertex*numQuadPts*spaceDim + iQuadPt*spaceDim + iDim
    *
-   * @param pQuadPts Array of coordinates of quadrature points in 
-   *   reference element
-   *   index = iQuadPt*numDims + iDimension
+   * @param quadPts Array of coordinates of quadrature points in 
+   *   reference cell
+   *   Qp0x, Qp0y, Qp0z
+   *   Qp1x, Qp1y, Qp1z
+   *   size = numQuadPts * numDims
+   *   index = iQuadPts*numDims + iDim
    *
-   * @param pQuadWts Array of weights of quadrature points
+   * @param quadWts Array of weights of quadrature points
+   *   WtQp0, WtQp1, ...
    *   index = iQuadPt
    *
-   * @param numDims Number of dimensions
+   * @param cellDim Number of dimensions in reference cell
    * @param numCorners Number of vertices in a cell
    * @param numQuadPts Number of quadrature points
+   * @param spaceDim Number of dimensions in coordinates of cell vertices
    */
-  void initialize(const double* pBasisFns,
-		  const double* pBasisFnsDeriv,
-		  const double* pQuadPts,
-		  const double* pQuadWts,
-		  const int numDims,
+  void initialize(const double* basis,
+		  const double* basisDeriv,
+		  const double* quadPtsRef,
+		  const double* quadWts,
+		  const int cellDim,
 		  const int numCorners,
-		  const int numQuadPts);
+		  const int numQuadPts,
+		  const int spaceDim);
 
   /** Set tolerance for minimum allowable Jacobian.
    *
@@ -98,98 +106,125 @@ public :
    */
   void jacobianTolerance(const double tolerance);
 
-  /** Set tolerance for minimum allowable Jacobian.
+  /** Get tolerance for minimum allowable Jacobian.
    *
-   * @param tolerance Minimum allowable value for Jacobian
+   * @returns Minimum allowable value for Jacobian
    */
   double jacobianTolerance(void);
 
-  /** Get number of dimensions.
-   *
-   * @returns Number of dimensions
-   */
-  int numDims(void) const;
+// PROTECTED METHODS ////////////////////////////////////////////////////
+protected :
 
-  /** Get number of vertices in a cell.
+  /** Copy constructor.
    *
-   * @returns Number of vertices in a cell
+   * @param q Quadrature to copy
    */
-  int numCorners(void) const;
+  Quadrature(const Quadrature& q);
 
-  /** Get number of quadrature points.
+  /** Compute geometric quantities for a cell.
    *
-   * @param returns Number of quadrature points
+   * @param coordinates Section containing vertex coordinates
+   * @param cell Finite-element cell
    */
-  int numQuadPts(void) const;
+  virtual 
+  void _computeGeometry(const ALE::Obj<ALE::Mesh::section_type>& coordinates,
+			const ALE::Mesh::point_type& cell) = 0;
+
+// PRIVATE METHODS //////////////////////////////////////////////////////
+private :
+
+  const Quadrature& operator=(const Quadrature&); ///< Not implemented
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  /** Get basis functions evaluated at quadrature points.
-   *
-   * @returns Array of basis functions evaluated at quadrature points.
-   */
-  const double* basisFns(void) const;
-
-  /** Get derivatives of basis functions evaluated at quadrature points.
-   *
-   * @returns Array of basis functions evaluated at quadrature points.
-   */
-  const double* basisFnsDeriv(void) const;
-
-  /** Get coordinates of quadrature points.
-   *
-   * @returns Array of coordinates
-   */
-  const double* quadPts(void) const;
-
-  /** Get weights of quadrature points.
-   *
-   * @returns Array of weights
-   */
-  const double* quadWts(void) const;
-
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
-
-  double _jacobianTol; ///< Tolernace for small Jacobian determinant
+  double _jacobianTol; ///< Tolerance for minium allowable Jacobian determinant
   
   /** Array of basis functions evaluated at the quadrature points.
    *
-   * N1Qp1, N1Qp2, ...
-   * N2Qp1, N2Qp2, ...
+   * N0Qp0, N0Qp1, ...
+   * N1Qp0, N1Qp1, ...
    *
    * size = numCorners * numQuadPts
    * index = iBasis*numQuadPts + iQuadPt
    */
-  double* _pBasisFns; ///< Array of basis fns evaluated at quad pts
+  double* _basis; ///< Array of basis fns evaluated at quad pts
 
   /** Array of basis functions evaluated at the quadrature points.
    *
-   * N1xQp1, N1yQp1, N1zQp1, N1xQp2, N1yQp2, N1zQp2, ... 
-   * N2xQp1, N2yQp1, N2zQp1, N2xQp2, N2yQp2, N2zQp2, ...
+   * N0xQp0, N0yQp0, N0zQp0, N0xQp1, N0yQp1, N0zQp1, ... 
+   * N1xQp0, N1yQp0, N1zQp0, N1xQp1, N1yQp1, N1zQp1, ...
    *
-   * size = numCorners * numQuadPts * numDeriv
-   * index = iBasis*numQuadPts*numDeriv + iQuadPt*numDeriv + iDeriv
+   * size = numCorners * numQuadPts * spaceDim
+   * index = iVertex*numQuadPts*spaceDim + iQuadPt*spaceDim + iDim
    */
-  double* _pBasisFnsDeriv;
+  double* _basisDeriv;
 
-  /** Array of coordinates of quadrature points.
+  /** Array of coordinates of quadrature points in reference cell.
    *
-   * size = numQuadPts * numDims
-   * index = iQuadPts*numDims + iDim
+   * Reference coordinates: (p,q,r)
+   *
+   * Qp0p, Qp0q, Qp0r
+   * Qp1p, Qp1q, Qp1r
+   *
+   * size = numQuadPts * cellDim
+   * index = iQuadPts*cellDim + iDim
    */
-  double* _pQuadPts; ///< Array of coordinates of quadrature points
+  double* _quadPtsRef;
+
+  /** Array of coordinates of quadrature points in cell (NOT reference cell).
+   *
+   * Qp0x, Qp0y, Qp0z
+   * Qp1x, Qp1y, Qp1z
+   *
+   * size = numQuadPts * spaceDim
+   * index = iQuadPts*spaceDim + iDim
+   */
+  double* _quadPts;
 
   /** Array of weights of quadrature points.
    *
-   * WtQp1, WtQp2, ...
+   * WtQp0, WtQp1, ...
+   * size = numQuadPts
+   * index = iQuadPt
    */
-  double* _pQuadWts; ///< Array of weights of quadrature points
+  double* _quadWts;
 
-  int _numDims; ///< Number of dimensions
+  /** Array of Jacobian evaluated at quadrature points.
+   *
+   * Qp0J00, Qp0J01, Qp0J02, ...
+   * Qp1J00, Qp1J01, Qp1J02, ...
+   * ...
+   *
+   * size = numQuadPts*cellDim*spaceDim
+   * index = iQuadPt*cellDim*spaceDim + iRow*spaceDim + iCol
+   */
+  double* _jacobian;
+
+  /** Array of Jacobian inverses evaluated at quadrature points.
+   *
+   * Qp0Jinv00, Qp0Jinv01, Qp0Jinv02, ...
+   * Qp1Jinv00, Qp1Jinv01, Qp1Jinv02, ...
+   * ...
+   *
+   * size = numQuadPts*spaceDim*cellDim
+   * index = iQuadPt*spaceDim*cellDim + iRow*cellDim + iCol
+   */
+  double* _jacobianInv;
+
+  /** Array of determinant of Jacobian evaluated at quadrature points.
+   *
+   * JdetQp0, JdetQp1, ...
+   *
+   * size = numQuadPts
+   * index = iQuadPt
+   */
+  double* _jacobianDet;
+
+  int _cellDim; ///< Number of dimensions in reference cell
   int _numCorners; ///< Number of vertices in cell
   int _numQuadPts; ///< Number of quadrature points
+  int _spaceDim; ///< Number of dimensions in coordinates of cell vertices
 
 }; // Quadrature
 

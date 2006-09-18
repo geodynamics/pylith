@@ -10,6 +10,12 @@
 // ======================================================================
 //
 
+/**
+ * @file pylith/feassemble/Quadrature1D.hh
+ *
+ * @brief Quadrature for 1-D finite-elements.
+ */
+
 #if !defined(pylith_feassemble_quadrature1d_hh)
 #define pylith_feassemble_quadrature1d_hh
 
@@ -18,12 +24,14 @@
 namespace pylith {
   namespace feassemble {
     class Quadrature1D;
+    class TestQuadrature1D;
   } // feassemble
 } // pylith
 
-class pylith::feassemble::Quadrature1D
+class pylith::feassemble::Quadrature1D : public Quadrature
 { // Quadrature1D
-  
+  friend class TestQuadrature1D; // unit testing
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -31,19 +39,37 @@ public :
   Quadrature1D(void);
 
   /// Destructor
-  ~Quadrature1D(void);
+  virtual ~Quadrature1D(void);
 
-  /** Compute geometry of element object.
+  /// Create a copy of this object.
+  virtual
+  Quadrature* clone(void) const;
+
+// PROTECTED METHODS ////////////////////////////////////////////////////
+protected :
+
+  /** Copy constructor.
    *
+   * @param q Quadrature to copy
    */
-  void compute(const ALE::Obj<ALE::Mesh::section_type>& coordinates,
-	       const ALE::Mesh::point_type& cell,
-	       value_type* pV,
-	       value_type* pJacobian,
-	       valye_type* pJacobianInv,
-	       value_type* pJacobianDet);
+  Quadrature1D(const Quadrature1D& q);
+
+  /** Compute geometric quantities for a cell.
+   *
+   * @param coordinates Section containing vertex coordinates
+   * @param cell Finite-element cell
+   */
+  void _computeGeometry(const ALE::Obj<ALE::Mesh::section_type>& coordinates,
+			const ALE::Mesh::point_type& cell);
+
+// PRIVATE METHODS //////////////////////////////////////////////////////
+private :
+
+  const Quadrature& operator=(const Quadrature&); ///< Not implemented
 
 }; // Quadrature1D
+
+#include "Quadrature1D.icc" // inline methods
 
 #endif // pylith_feassemble_quadrature1d_hh
 

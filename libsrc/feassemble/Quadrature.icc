@@ -14,28 +14,18 @@
 #error "Quadrature.icc must be included only from Quadrature.hh"
 #else
 
-// Get basis functions evaluated at quadrature points.
-const double*
-pylith::feassemble::Quadrature::basisFns(void) const {
-  return _pBasisFns;
+// Get tolerance for minimum allowable Jacobian.
+inline
+double
+pylith::feassemble::Quadrature::jacobianTolerance(void) {
+  return _jacobianTol;
 }
 
-// Get derivatives of basis functions evaluated at quadrature points.
-const double*
-pylith::feassemble::Quadrature::basisFnsDeriv(void) const {
-  return _pBasisFnsDeriv;
-}
-
-// Get coordinates of quadrature points.
-const double*
-pylith::feassemble::Quadrature::quadPts(void) const {
-  return _pQuadPts;
-}
-
-// Get weights of quadrature points.
-const double*
-pylith::feassemble::Quadrature::quadWts(void) const {
-  return _pQuadWts;
+// Set tolerance for minimum allowable Jacobian.
+inline
+void
+pylith::feassemble::Quadrature::jacobianTolerance(const double tolerance) {
+  _jacobianTol = tolerance;
 }
 
 #endif

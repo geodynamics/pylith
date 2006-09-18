@@ -13,26 +13,26 @@
 subpackage = feassemble
 include $(top_srcdir)/subpackage.am
 
-lib_LTLIBRARIES = libpylithfeassemble.la
+TESTS = testfeassemble
 
-libpylithfeassemble_la_SOURCES = \
-	Quadrature.cc \
-	Quadrature1D.cc
+check_PROGRAMS = testfeassemble
 
-subpkginclude_HEADERS = \
-	Quadrature.hh \
-	Quadrature.icc \
-	Quadrature1D.hh \
-	Quadrature1D.icc
+testfeassemble_SOURCES = \
+	TestQuadrature.cc \
+	TestQuadrature1D.cc \
+	test_feassemble.cc
 
-noinst_HEADERS =
+noinst_HEADERS = \
+	TestQuadrature.hh \
+	TestQuadrature1D.hh
+
+testfeassemble_LDFLAGS = $(PETSC_LIB)
 
 INCLUDES += $(PETSC_INCLUDE)
 
-# export
-clean-local: clean-subpkgincludeHEADERS
-BUILT_SOURCES = export-subpkgincludeHEADERS
-CLEANFILES = export-subpkgincludeHEADERS
+testfeassemble_LDADD = \
+	-lcppunit -ldl \
+	$(top_builddir)/libsrc/feassemble/libpylithfeassemble.la
 
 # version
 # $Id$
