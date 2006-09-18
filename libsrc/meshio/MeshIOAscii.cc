@@ -10,7 +10,8 @@
 // ======================================================================
 //
 
-#include "MeshIO.hh" // MeshIOAscii ISA MeshIO
+#include <portinfo>
+
 #include "MeshIOAscii.hh" // implementation of class methods
 
 #include <fstream> // USES std::ifstream, std::ofstream

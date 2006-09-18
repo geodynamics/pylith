@@ -10,23 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-ACLOCAL_AMFLAGS = -I ./m4
-
 SUBDIRS = \
-	libsrc \
-	modulesrc \
-	pylith \
-	applications
-
-if ENABLE_TESTING
-  SUBDIRS += unittests
-endif
-
-if ENABLE_DOCUMENTATION
-  SUBDIRS += doc
-endif
-
-# version
-# $Id$
+	libtests
 
 # End of file 
