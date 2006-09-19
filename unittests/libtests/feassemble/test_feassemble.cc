@@ -10,6 +10,8 @@
 // ----------------------------------------------------------------------
 //
 
+#include "petsc.h"
+
 #include <cppunit/extensions/TestFactoryRegistry.h>
 
 #include <cppunit/BriefTestProgressListener.h>
@@ -23,6 +25,10 @@ int
 main(int argc,
      char* argv[])
 { // main
+  // Initialize PETSc
+  PetscErrorCode err = PetscInitialize(&argc, &argv, PETSC_NULL, PETSC_NULL);
+  CHKERRQ(err);
+
   // Create event manager and test controller
   CppUnit::TestResult controller;
 
@@ -42,6 +48,10 @@ main(int argc,
   // Print tests
   CppUnit::TextOutputter outputter(&result, std::cerr);
   outputter.write();
+
+  // Finalize PETSc
+  err = PetscFinalize();
+  CHKERRQ(err);
 
   return (result.wasSuccessful() ? 0 : 1);
 } // main

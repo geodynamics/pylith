@@ -26,40 +26,68 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature );
 void
 pylith::feassemble::TestQuadrature::testClone(void)
 { // testClone
-  Quadrature1D qOrig;
-  
+  // Semi-random values manually set to check cloning
   const double jacobianTol = 1.0;
-
   const int cellDim = 1;
   const int numCorners = 2;
   const int numQuadPts = 1;
   const int spaceDim = 1;
-  const double basis[] = { 0.5, 0.5 };
-  const double basisDeriv[] = { -1.0, 1.0 };
-  const double quadPtsRef[] = { 0.5 };
-  const double quadWts[] = { 1.0 };
+  const double basis[] = { 0.2, 0.4 };
+  const double basisDeriv[] = { 0.8, 1.6 };
+  const double quadPtsRef[] = { 3.2 };
+  const double quadWts[] = { 6.4 };
+  const double quadPts[] = { 12.8 };
+  const double jacobian[] = { 2.56 };
+  const double jacobianInv[] = { 5.12 };
+  const double jacobianDet[] = { 10.24 };
 
-  // Semi-random values manually set to check cloning
-  const double quadPts[] = { 2.0 };
-  const double jacobian[] = { 4.0 };
-  const double jacobianInv[] = { 0.25 };
-  const double jacobianDet[] = { 5.0 };
+  // Set values
+  Quadrature1D qOrig;
+  qOrig._jacobianTol = jacobianTol;
+  qOrig._cellDim = cellDim;
+  qOrig._numCorners = numCorners;
+  qOrig._numQuadPts = numQuadPts;
+  qOrig._spaceDim = spaceDim;
 
-  qOrig.jacobianTolerance(jacobianTol);
-  qOrig.initialize(basis, basisDeriv, quadPtsRef, quadWts,
-		   cellDim, numCorners, numQuadPts, spaceDim);
-  int size = 1;
-  memcpy(qOrig._quadPts, quadPts, size*sizeof(double));
-  memcpy(qOrig._jacobian, jacobian, size*sizeof(double));
-  memcpy(qOrig._jacobianInv, jacobianInv, size*sizeof(double));
-  memcpy(qOrig._jacobianDet, jacobianDet, size*sizeof(double));
+  int size = 2;
+  qOrig._basis = (size > 0) ? new double[size] : 0;
+  memcpy(qOrig._basis, basis, size*sizeof(double));
   
+  size = 2;
+  qOrig._basisDeriv = (size > 0) ? new double[size] : 0;
+  memcpy(qOrig._basisDeriv, basisDeriv, size*sizeof(double));
+
+  size = 1;
+  qOrig._quadPtsRef = (size > 0) ? new double[size] : 0;
+  memcpy(qOrig._quadPtsRef, quadPtsRef, size*sizeof(double));
+
+  size = 1;
+  qOrig._quadWts = (size > 0) ? new double[size] : 0;
+  memcpy(qOrig._quadWts, quadWts, size*sizeof(double));
+
+  size = 1;
+  qOrig._quadPts = (size > 0) ? new double[size] : 0;
+  memcpy(qOrig._quadPts, quadPts, size*sizeof(double));
+
+  size = 1;
+  qOrig._jacobian = (size > 0) ? new double[size] : 0;
+  memcpy(qOrig._jacobian, jacobian, size*sizeof(double));
+
+  size = 1;
+  qOrig._jacobianInv = (size > 0) ? new double[size] : 0;
+  memcpy(qOrig._jacobianInv, jacobianInv, size*sizeof(double));
+
+  size = 1;
+  qOrig._jacobianDet = (size > 0) ? new double[size] : 0;
+  memcpy(qOrig._jacobianDet, jacobianDet, size*sizeof(double));
+
+  // Clone
   const Quadrature* qCopy = qOrig.clone();
+
+  // Check clone
   CPPUNIT_ASSERT(0 != qCopy);
 
-  // Make sure values match those passed
   CPPUNIT_ASSERT_EQUAL(jacobianTol, qCopy->_jacobianTol);
-
   CPPUNIT_ASSERT_EQUAL(cellDim, qCopy->_cellDim);
   CPPUNIT_ASSERT_EQUAL(numCorners, qCopy->_numCorners);
   CPPUNIT_ASSERT_EQUAL(numQuadPts, qCopy->_numQuadPts);
@@ -117,7 +145,6 @@ pylith::feassemble::TestQuadrature::testJacobianTol(void)
 void
 pylith::feassemble::TestQuadrature::testInitialize(void)
 { // initialize
-  Quadrature1D q;
   
   const int cellDim = 1;
   const int numCorners = 2;
@@ -129,6 +156,7 @@ pylith::feassemble::TestQuadrature::testInitialize(void)
   const double quadWts[] = { 1.0 };
   const double jacobianTol = 1.0;
 
+  Quadrature1D q;
   q.initialize(basis, basisDeriv, quadPtsRef, quadWts,
 	       cellDim, numCorners, numQuadPts, spaceDim);
   

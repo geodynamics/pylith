@@ -46,7 +46,6 @@ pylith::feassemble::Quadrature1D::_computeGeometry(
 { // _computeGeometry
   assert(1 == _cellDim);
   assert(1 == _spaceDim);
-  assert(0 != cell);
   assert(0 != _basisDeriv);
   assert(0 != _quadPtsRef);
   assert(0 != _quadPts);
