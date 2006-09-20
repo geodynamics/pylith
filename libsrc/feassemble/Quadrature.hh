@@ -61,26 +61,26 @@ public :
    *  weights of the quadrature points.
    *
    * @param basis Array of basis functions evaluated at quadrature pts
-   *   N0Qp0, N0Qp1, ...
-   *   N1Qp0, N1Qp1, ...
+   *   N0Qp0, N1Qp0, ...
+   *   N0Qp1, N1Qp1, ...
    *   ...
-   *   size = numCorners * numQuadPts
-   *   index = iBasis*numQuadPts + iQuadPt
+   *   size = numQuadPts * numCorners
+   *   index = iQuadPt*numCorners + iBasis
    *
    * @param basisDeriv Array of basis function derivaties evaluated 
    *   at quadrature pts
-   *   N0xQp0, N0yQp0, N0zQp0, N0xQp1, N0yQp1, N0zQp1, ... 
-   *   N1xQp0, N1yQp0, N1zQp0, N1xQp1, N1yQp1, N1zQp1, ...
+   *   N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
+   *   N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
    *   ...
-   * size = numCorners * numQuadPts * spaceDim
-   * index = iVertex*numQuadPts*spaceDim + iQuadPt*spaceDim + iDim
+   *   size = numCorners * numQuadPts * spaceDim
+   *   index = iQuadPt*numCorners*spaceDim + iBasis*spaceDim + iDim
    *
    * @param quadPts Array of coordinates of quadrature points in 
    *   reference cell
    *   Qp0x, Qp0y, Qp0z
    *   Qp1x, Qp1y, Qp1z
    *   size = numQuadPts * numDims
-   *   index = iQuadPts*numDims + iDim
+   *   index = iQuadPt*numDims + iDim
    *
    * @param quadWts Array of weights of quadrature points
    *   WtQp0, WtQp1, ...
@@ -142,21 +142,21 @@ protected :
   
   /** Array of basis functions evaluated at the quadrature points.
    *
-   * N0Qp0, N0Qp1, ...
-   * N1Qp0, N1Qp1, ...
+   * N0Qp0, N1Qp0, ...
+   * N0Qp1, N1Qp1, ...
    *
-   * size = numCorners * numQuadPts
-   * index = iBasis*numQuadPts + iQuadPt
+   * size = numQuadPts * numCorners
+   * index = iQuadPt*numCorners + iBasis
    */
   double* _basis; ///< Array of basis fns evaluated at quad pts
 
   /** Array of basis functions evaluated at the quadrature points.
    *
-   * N0xQp0, N0yQp0, N0zQp0, N0xQp1, N0yQp1, N0zQp1, ... 
-   * N1xQp0, N1yQp0, N1zQp0, N1xQp1, N1yQp1, N1zQp1, ...
+   * N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
+   * N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
    *
-   * size = numCorners * numQuadPts * spaceDim
-   * index = iVertex*numQuadPts*spaceDim + iQuadPt*spaceDim + iDim
+   * size = numQuadPts * numCorners * spaceDim
+   * index = iQuadPt*numCorners*spaceDim + iBasis*spaceDim + iDim
    */
   double* _basisDeriv;
 
