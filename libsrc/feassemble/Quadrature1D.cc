@@ -67,21 +67,22 @@ pylith::feassemble::Quadrature1D::_computeGeometry(
     _quadPts[iQuadPt] = 0.0;
     for (int iVertex=0; iVertex < _numCorners; ++iVertex)
       _quadPts[iQuadPt] += 
-	_basis[iVertex*_numQuadPts+iQuadPt]*vertCoords[iVertex];
+	_basis[iQuadPt*_numCorners+iVertex]*vertCoords[iVertex];
 
     // Compute Jacobian at quadrature point
     // J = dx/dp = sum[i=1,n] (dNi/dp * xi)
     _jacobian[iQuadPt] = 0.0;
     for (int iVertex=0; iVertex < _numCorners; ++iVertex)
       _jacobian[iQuadPt] += 
-	_basisDeriv[iVertex*_numQuadPts+iQuadPt] * vertCoords[iVertex];
+	_basisDeriv[iQuadPt*_numCorners+iVertex] * vertCoords[iVertex];
 
     // Compute determinant of Jacobian at quadrature point
     // |J| = j00
     const double det = _jacobian[iQuadPt];
     if (det < _jacobianTol) {
       std::ostringstream msg;
-      msg << "Determinant of Jacobian is below minimum permissible value!\n";
+      msg << "Determinant of Jacobian (" << det << ") is below minimum\n"
+	  << "permissible value (" << _jacobianTol << ")!\n";
       throw std::runtime_error(msg.str());
     } // for
     _jacobianDet[iQuadPt] = _jacobian[iQuadPt];
