@@ -16,7 +16,7 @@ bin_PROGRAMS = \
 
 blockrot_SOURCES = blockrot.f
 blockrot2_SOURCES = blockrot2.f
-blockrot2_SOURCES = blockrot3.f
+blockrot3_SOURCES = blockrot3.f
 faultcalc_SOURCES = faultcalc.f
 faultcalc2_SOURCES = faultcalc2.f
 makeucd_SOURCES = makeucd.f
