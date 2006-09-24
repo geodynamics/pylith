@@ -39,7 +39,8 @@ nobase_pkgpyexec_PYTHON = \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
 	utils/__init__.py \
-	utils/importing.py
+	utils/importing.py \
+	utils/CppData.py
 
 # version
 # $Id$

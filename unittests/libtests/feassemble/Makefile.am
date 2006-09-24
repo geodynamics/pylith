@@ -20,11 +20,17 @@ check_PROGRAMS = testfeassemble
 testfeassemble_SOURCES = \
 	TestQuadrature.cc \
 	TestQuadrature1D.cc \
-	test_feassemble.cc
+	test_feassemble.cc \
+	data/QuadratureData.cc \
+	data/QuadratureData1DLinear.cc \
+	data/QuadratureData1DQuadratic.cc
 
 noinst_HEADERS = \
 	TestQuadrature.hh \
 	TestQuadrature1D.hh
+	data/QuadratureData.hh \
+	data/QuadratureData1DLinear.hh \
+	data/QuadratureData1DQuadratic.hh
 
 testfeassemble_LDFLAGS = $(PETSC_LIB)
 

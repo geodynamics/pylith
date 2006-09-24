@@ -15,6 +15,7 @@
 #include "TestQuadrature.hh" // Implementation of class methods
 
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "data/QuadratureData.hh" // USES QuadratureData
 
 #include <sstream> // USES std::stringstream
 
@@ -151,9 +152,9 @@ pylith::feassemble::TestQuadrature::testInitialize(void)
   const int numQuadPts = 1;
   const int spaceDim = 1;
   const double basis[] = { 0.5, 0.5 };
-  const double basisDeriv[] = { -1.0, 1.0 };
-  const double quadPtsRef[] = { 0.5 };
-  const double quadWts[] = { 1.0 };
+  const double basisDeriv[] = { -0.5, 0.5 };
+  const double quadPtsRef[] = { 0.0 };
+  const double quadWts[] = { 2.0 };
   const double jacobianTol = 1.0;
 
   Quadrature1D q;
@@ -187,5 +188,100 @@ pylith::feassemble::TestQuadrature::testInitialize(void)
   CPPUNIT_ASSERT(0 != q._jacobianDet);
   CPPUNIT_ASSERT(0 != q._quadPts);
 } // initialize
+
+// ----------------------------------------------------------------------
+// Test initialize() & computeGeometry()
+void
+pylith::feassemble::TestQuadrature::_testComputeGeometry(
+					    Quadrature* pQuad,
+					    const QuadratureData& data) const
+{ // testComputeGeometry
+  const int cellDim = data.cellDim;
+  const int numCorners = data.numCorners;
+  const int numQuadPts = data.numQuadPts;
+  const int spaceDim = data.spaceDim;
+  const double* basis = data.basis;
+  const double* basisDeriv = data.basisDeriv;
+  const double* quadPtsRef = data.quadPtsRef;
+  const double* quadWts = data.quadWts;
+
+  const int numVertices = data.numVertices;
+  const int numCells = data.numCells;
+  const double* vertCoords = data.vertices;
+  const int* cells = data.cells;
+  const double* quadPts = data.quadPts;
+  const double* jacobian = data.jacobian;
+  const double* jacobianInv = data.jacobianInv;
+  const double* jacobianDet = data.jacobianDet;
+
+  const double jacobianTol = 1.0e-06;
+
+  CPPUNIT_ASSERT(0 != basis);
+  CPPUNIT_ASSERT(0 != basisDeriv);
+  CPPUNIT_ASSERT(0 != quadPtsRef);
+  CPPUNIT_ASSERT(0 != quadWts);
+  CPPUNIT_ASSERT(0 != vertCoords);
+  CPPUNIT_ASSERT(0 != cells);
+  CPPUNIT_ASSERT(0 != quadPts);
+  CPPUNIT_ASSERT(0 != jacobian);
+  CPPUNIT_ASSERT(0 != jacobianInv);
+  CPPUNIT_ASSERT(0 != jacobianDet);
+
+  pQuad->jacobianTolerance(jacobianTol);
+  pQuad->initialize(basis, basisDeriv, quadPtsRef, quadWts,
+		    cellDim, numCorners, numQuadPts, spaceDim);
+
+  // Create mesh with test cell
+  typedef ALE::Sieve<int, int, int> sieve_type;
+  typedef ALE::New::Topology<int, sieve_type> topology_type;
+  typedef ALE::New::Section<topology_type, double> section_type;
+  ALE::Obj<ALE::Mesh> mesh = ALE::Mesh(PETSC_COMM_WORLD, cellDim);
+  ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
+  ALE::Obj<topology_type> topology = new topology_type(mesh->comm());
+
+  const bool interpolate = false;
+  ALE::New::SieveBuilder<sieve_type>::buildTopology(sieve, cellDim, numCells,
+		     (int*) cells, numVertices, interpolate, numCorners);
+  sieve->stratify();
+  topology->setPatch(0, sieve);
+  topology->stratify();
+  mesh->setTopologyNew(topology);
+  ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
+		    mesh->getSection("coordinates"), spaceDim, vertCoords);
+  
+  // Check values from _computeGeometry()
+  const ALE::Mesh::topology_type::patch_type patch = 0;
+  const ALE::Obj<topology_type::label_sequence>& elements = 
+    topology->heightStratum(patch, 0);
+  const topology_type::label_sequence::iterator e_iter = elements->begin(); 
+  const ALE::Obj<ALE::Mesh::section_type>& coordinates = 
+    mesh->getSection("coordinates");
+  pQuad->_computeGeometry(coordinates, *e_iter);
+
+  CPPUNIT_ASSERT(1 == numCells);
+
+  const double tolerance = 1.0e-06;
+  int size = numQuadPts * spaceDim;
+  CPPUNIT_ASSERT(0 != pQuad->_quadPts);
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(quadPts[i], pQuad->_quadPts[i], tolerance);
+
+  size = numQuadPts * cellDim * spaceDim;
+  CPPUNIT_ASSERT(0 != pQuad->_jacobian);
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobian[i], pQuad->_jacobian[i], tolerance);
+
+  size = numQuadPts * spaceDim * cellDim;
+  CPPUNIT_ASSERT(0 != pQuad->_jacobianInv);
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianInv[i], pQuad->_jacobianInv[i], 
+				 tolerance);
+
+  size = numQuadPts;
+  CPPUNIT_ASSERT(0 != pQuad->_jacobianDet);
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianDet[i], pQuad->_jacobianDet[i], 
+				 tolerance);
+} // testQuadratic
 
 // End of file 

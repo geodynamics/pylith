@@ -26,7 +26,9 @@
 /// Namespace for spatialdata package
 namespace pylith {
   namespace feassemble {
+    class Quadrature;
     class TestQuadrature;
+    class QuadratureData;
   } // feassemble
 } // pylith
 
@@ -39,6 +41,7 @@ class pylith::feassemble::TestQuadrature : public CppUnit::TestFixture
   CPPUNIT_TEST( testClone );
   CPPUNIT_TEST( testJacobianTol );
   CPPUNIT_TEST( testInitialize );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -52,6 +55,17 @@ public :
 
   /// Test initialize()
   void testInitialize(void);
+
+  // PROTECTED METHODS //////////////////////////////////////////////////
+protected :
+
+  /** Test initialize() & computeGeometry()
+   *
+   * @param pQuad Pointer to quadrature
+   * @param data Data for testing quadrature
+   */
+  void _testComputeGeometry(Quadrature* pQuad,
+			    const QuadratureData& data) const;
 
 }; // class TestQuadrature
 
