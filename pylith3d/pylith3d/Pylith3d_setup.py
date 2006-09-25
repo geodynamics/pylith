@@ -201,7 +201,6 @@ class Pylith3d_setup(Component):
         self.numberSkewDimensions = pl3dscan._numberSkewDimensions
         self.numberSlipDimensions = pl3dscan._numberSlipDimensions
         self.numberSlipNeighbors = pl3dscan._numberSlipNeighbors
-        self.numberTractionDirections = pl3dscan._numberTractionDirections
         self.listIddmat = pl3dscan._listIddmat
 
         # Invariant parameters related to element type
@@ -349,12 +348,16 @@ class Pylith3d_setup(Component):
         self.numberVolumeElementEquations = 0
 	self.connectivitySize = 0
 
+        # Surface element type information
+        self.elementTypeInfo2d = [0, 0, 0, 0]
+        self.pointerToListArrayNtraction = None
+        self.pointerToSh2d = None
+        self.pointerToGauss2d = None
+        self.numberSurfaceElementNodes = 0
+
         # Traction BC
-        self.pointerToIelno = None
-        self.pointerToIside = None
-        self.pointerToIhistry = None
-        self.pointerToPres = None
-        self.pointerToPdir = None
+        self.pointerToTractionverts = None
+        self.pointerToTractionvals = None
 
         # Time histories
         self.pointerToHistry = None
@@ -418,7 +421,7 @@ class Pylith3d_setup(Component):
             self.listWxscal)
 	self.memorySize += 3*self.doubleSize
 
-        # Set up global integration for volume elements.
+        # Set up global integration info.
         eltype.getdef(
             self.volumeElementType,
             self.quadratureOrderInt,
@@ -426,16 +429,22 @@ class Pylith3d_setup(Component):
             self.numberDegreesFreedom)
 
         self.elementTypeInfo = eltype.elementTypeInfo
+        self.elementTypeInfo2d = eltype.elementTypeInfo2d
         self.pointerToSh = eltype.pointerToSh
+        self.pointerToSh2d = eltype.pointerToSh2d
         self.pointerToShj = eltype.pointerToShj
         self.pointerToGauss = eltype.pointerToGauss
+        self.pointerToGauss2d = eltype.pointerToGauss2d
         self.numberVolumeElementNodes = eltype.numberVolumeElementNodes
         self.numberVolumeElementGaussPoints = eltype.numberVolumeElementGaussPoints
         self.numberVolumeElementEquations = eltype.numberVolumeElementEquations
+        self.numberSurfaceElementNodes = eltype.numberSurfaceElementNodes
 	self.connectivitySize = self.numberVolumeElements*self.numberVolumeElementNodes
         self.pointerToListArrayElementTypeInfo = pylith3d.intListToArray(
             self.elementTypeInfo)
-	self.memorySize += 4*self.intSize
+        self.pointerToListArrayNtraction = pylith3d.intListToArray(
+            self.elementTypeInfo2d)
+	self.memorySize += 8*self.intSize
 
         # Node-based info (coordinates, displacement arrays, BC, and skew BC).
         self.pointerToX = pylith3d.allocateDouble(
@@ -612,34 +621,21 @@ class Pylith3d_setup(Component):
         #     self.prestressInputFile,
         #     self.asciiOutputFile)
 
-        # Read traction BC (unimplemented for now).
-        self.pointerToIelno = pylith3d.allocateInt(
-            self.numberTractionBc)
-        self.pointerToIside = pylith3d.allocateInt(
-            self.numberTractionBc)
-        self.pointerToIhistry = pylith3d.allocateInt(
-            self.numberTractionBc)
-	#  Note that the following dimension is definitely wrong.
-        self.pointerToPres = pylith3d.allocateDouble(
-            self.numberTractionBc)
-        self.pointerToPdir = pylith3d.allocateDouble(
-            self.numberTractionDirections*self.numberTractionBc)
+        # Read traction BC
+        self.pointerToTractionverts = pylith3d.allocateInt(
+            self.numberSurfaceElementNodes*self.numberTractionBc)
+        self.pointerToTractionvals = pylith3d.allocateDouble(
+            self.numberDegreesFreedom*self.numberTractionBc)
 
-        # pylith3d.read_traction(
-        #     self.pointerToPres,
-        #     self.pointerToPdir,
-        #     self.tractionBcScaleFactor,
-        #     self.pointerToIelno,
-        #     self.pointerToIside,
-        #     self.pointerToIhistry,
-        #     self.numberTractionBc,
-        #     self.numberElementNodes,
-        #     self.numberTractionDirections,
-        #     self.f77FileInput,
-        #     self.f77AsciiOutput,
-        #     self.asciiOutputInt,
-        #     self.tractionInputFile,
-        #     self.asciiOutputFile)
+        pylith3d.read_traction(
+            self.pointerToTractionverts,
+            self.pointerToTractionvals,
+            self.tractionBcScaleFactor,
+            self.numberTractionBc,
+            self.numberSurfaceElementNodes,
+            self.numberDegreesFreedom,
+            self.f77FileInput,
+            self.tractionInputFile)
 
         # Read split node info
         self.pointerToNfault = pylith3d.allocateInt(
@@ -976,9 +972,6 @@ class Pylith3d_setup(Component):
         self.memorySize -= 3*self.maxNumberVolumeElementFamilies*self.intSize
         self.pointerToIvftmp = None
         self.memorySize -= self.numberVolumeElementFamilies*self.intSize
-
-        # Sort traction BC (unimplemented at present).
-
 
         # Sort split node entries.
         pylith3d.sort_split_nodes(
@@ -1706,6 +1699,20 @@ class Pylith3d_setup(Component):
                 self.ucdOutputInt,
                 self.ucdOutputRoot)
 
+        # Write traction info
+        pylith3d.write_traction(
+            self.pointerToTractionverts,
+            self.pointerToTractionvals,
+            self.numberTractionBc,
+            self.numberSurfaceElementNodes,
+            self.numberDegreesFreedom,
+            self.f77AsciiOutput,
+            self.f77PlotOutput,
+            self.asciiOutputInt,
+            self.plotOutputInt,
+            self.asciiOutputFile,
+            self.plotOutputFile)
+    
         # Write split node info
         pylith3d.write_split(
             self.pointerToFault,
