@@ -133,7 +133,6 @@ class Pylith3d_scan(Component):
         self._numberSkewDimensions = 0
         self._numberSlipDimensions = 0
         self._numberSlipNeighbors = 0
-        self._numberTractionDirections = 0
         self._listIddmat = [0]
 
         # Invariant parameters related to element type
@@ -157,6 +156,8 @@ class Pylith3d_scan(Component):
         self._pointerToSh = None
         self._pointerToShj = None
         self._pointerToGauss = None
+        self._pointerToSh2d = None
+        self._pointerToGauss2d = None
 
         # Parameters derived from the number of entries in a file
 
@@ -280,7 +281,7 @@ class Pylith3d_scan(Component):
         self._materialHistoryInputFile    = inputFile(Inventory.materialHistoryInputFile,    unused)
         self._connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
         self._prestressInputFile          = inputFile(Inventory.prestressInputFile,          unused)
-        self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           unused)
+        self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
         self._splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
         # Slippery nodes are not yet implemented in PyLith-0.8.
         self._slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       unused)
@@ -328,7 +329,6 @@ class Pylith3d_scan(Component):
         self._numberSkewDimensions = 2
         self._numberSlipDimensions = 5
         self._numberSlipNeighbors = 4
-        self._numberTractionDirections = 2
         # self._listIddmat = [
         #     1, 2, 3, 4, 5, 6,
         #     2, 7, 8, 9,10,11,
@@ -355,6 +355,14 @@ class Pylith3d_scan(Component):
         self._pointerToListArrayNumberElementNodesBase = pylith3d.intListToArray(
             self._numberElementNodesBase)
 	self._memorySize += self._numberElementTypesBase*self._intSize
+        self._maxElementNodes2d = 20
+        self._maxGaussPoints2d = 4
+        self._numberElementTypes2d = 2
+        self._numberElementTypesBase2d = 2
+        self._numberElementNodesBase = [4, 3]
+        self._pointerToListArrayNumberElementNodesBase2d = pylith3d.intListToArray(
+            self._numberElementNodesBase2d)
+	self._memorySize += self._numberElementTypesBase2d*self._intSize
 
         # Invariant parameters related to material model
         self._maxMaterialModels = 20
@@ -504,18 +512,18 @@ class Pylith3d_scan(Component):
         #     f77FileInput,
         #     self._prestressInputFile)
 
-        # self._numberTractionBc = pylith3d.scan_traction(
-        #     self._numberElementNodes,
-        #     self._numberTractionDirections,
-        #     self._tractionBcUnits,
-        #     f77FileInput,
-        #     self._tractionInputFile)
+        self._numberTractionBc = pylith3d.scan_traction(
+            self._numberElementNodes2d,
+            self._numberSpaceDimensions,
+            self._tractionBcUnits,
+            f77FileInput,
+            self._tractionInputFile)
 
         if self._numberTractionBc != 0:
-        #     self._tractionBcScaleString = \
-        #                                 1.0*uparser.parse(string.strip(self._tractionBcUnits))
-        #     self._tractionBcScaleFactor = \
-        #                                 self._tractionBcScaleString/pyre.units.SI.pascal
+            self._tractionBcScaleString = \
+                                        1.0*uparser.parse(string.strip(self._tractionBcUnits))
+            self._tractionBcScaleFactor = \
+                                        self._tractionBcScaleString/pyre.units.SI.pascal
             self._tractionFlag = 1
 
         self._numberSplitNodeEntries = pylith3d.scan_split(
@@ -720,7 +728,7 @@ class Pylith3d_scan(Component):
         prestressInputFile.meta['tip'] = "Pathname for prestress input file (overrides default from fileRoot -- presently unused)."
 
         tractionInputFile = InputFile("tractionInputFile",default="${fileRoot}.tract")
-        tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from fileRoot -- presently unused)."
+        tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from fileRoot)."
 
         slipperyNodeInputFile = InputFile("slipperyNodeInputFile",default="${fileRoot}.slip")
         slipperyNodeInputFile.meta['tip'] = "Pathname for slippery node input file (overrides default from fileRoot -- presently unused)."
