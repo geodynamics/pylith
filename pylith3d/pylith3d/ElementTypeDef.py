@@ -87,7 +87,7 @@ class ElementTypeDef:
             self.numberVolumeElementGaussPoints)
 
         self.pointerToSh2d = pylith3d.allocateDouble(
-            (numberSpaceDimensions+1)*
+            numberSpaceDimensions*
             self.numberSurfaceElementNodes*
             self.numberSurfaceElementGaussPoints)
             
@@ -101,7 +101,7 @@ class ElementTypeDef:
             self.numberVolumeElementGaussPoints)
             
         self.pointerToGauss2d = pylith3d.allocateDouble(
-            (numberSpaceDimensions+1)*
+            numberSpaceDimensions*
             self.numberSurfaceElementGaussPoints)
 
         pylith3d.preshape(
