@@ -88,7 +88,7 @@ c
       end if
 c
       do l=1,nsgauss
-        do i=1,nen
+        do i=1,nsnodes
           rr=one+r(i)*gauss(1,l)
           ss=one+s(i)*gauss(2,l)
           sh(3,i,l)=fourth*rr*ss
