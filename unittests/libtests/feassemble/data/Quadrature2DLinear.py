@@ -10,10 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/Quadrature1DQuadratic.py
+## @file unittests/libtests/feassemble/data/Quadrature2DLinear.py
 
 ## @brief Python application for generating C++ data files for testing
-## C++ Quadrature1D object w/quadratic basis functions.
+## C++ Quadrature2D object w/linear basis functions.
 
 from QuadratureApp import QuadratureApp
 
@@ -21,57 +21,64 @@ import numpy
 
 # ----------------------------------------------------------------------
 def N0(p):
-  return -0.5*p*(1.0-p)
+  return 1.0-p[0]-p[1]
 
 def N0p(p):
-  return -0.5*(1.0-p) + 0.5*p
+  return -1.0
+
+def N0q(p):
+  return -1.0
 
 def N1(p):
-  return (1.0-p**2)
+  return p[0]
 
 def N1p(p):
-  return -2.0*p
+  return 1.0
+
+def N1q(p):
+  return 0.0
 
 def N2(p):
-  return 0.5*p*(1.0+p)
+  return p[1]
 
 def N2p(p):
-  return +0.5*(1.0+p) + 0.5*p
+  return 0.0
+
+def N2q(p):
+  return 1.0
 
 # ----------------------------------------------------------------------
 
-# Quadrature1DQuadratic class
-class Quadrature1DQuadratic(QuadratureApp):
+# Quadrature2DLinear class
+class Quadrature2DLinear(QuadratureApp):
   """
   Python application for generating C++ data files for testing C++
-  Quadrature1D object w/quadratic basis functions.
+  Quadrature2D object w/linear basis functions.
   """
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="quadrature1dquadratic"):
+  
+  def __init__(self, name="quadrature1dlinear"):
     """
     Constructor.
     """
     QuadratureApp.__init__(self, name)
     
     self.numVertices = 3
-    self.spaceDim = 1
+    self.spaceDim = 2
     self.numCells = 1
-    self.cellDim = 1
+    self.cellDim = 2
     self.numCorners = 3
-    self.numQuadPts = 2
+    self.numQuadPts = 1
     
-    self.quadPtsRef = numpy.array( [[-1.0/3**0.5],
-                                    [+1.0/3**0.5]],
-                                   dtype=numpy.Float64)
-    self.quadWts = numpy.array([1.0, 1.0], dtype=numpy.Float64)
-    self.vertices = numpy.array( [[-0.25], [0.875], [2.0]],
-                                 dtype=numpy.Float64)
+    self.quadPtsRef = numpy.array( [[1.0/3.0, 1.0/3.0]], dtype=numpy.Float64)
+    self.quadWts = numpy.array([0.5], dtype=numpy.Float64)
+    self.vertices = numpy.array( [[0.2, -0.4],
+                                  [0.3, 0.5],
+                                  [-1.0, -0.2]], dtype=numpy.Float64)
     self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.Int32)
-    
     return
-
+  
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
   
@@ -93,8 +100,9 @@ class Quadrature1DQuadratic(QuadratureApp):
       self.basis[iQuad] = basis.reshape( (self.numCorners,) )
 
       # Derivatives of basis functions at quadrature points
-      deriv = numpy.array([[N0p(q)], [N1p(q)], [N2p(q)]],
-                          dtype=numpy.Float64)      
+      deriv = numpy.array([[N0p(q), N0q(q)],
+                           [N1p(q), N1q(q)],
+                           [N2p(q), N2q(q)]], dtype=numpy.Float64)      
       self.basisDeriv[iQuad] = deriv.reshape((self.numCorners, self.cellDim))
 
       iQuad += 1
@@ -104,7 +112,7 @@ class Quadrature1DQuadratic(QuadratureApp):
 # MAIN /////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
 
-  app = Quadrature1DQuadratic()
+  app = Quadrature2DLinear()
   app.run()
 
 

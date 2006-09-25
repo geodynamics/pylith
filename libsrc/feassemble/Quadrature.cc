@@ -194,4 +194,27 @@ pylith::feassemble::Quadrature::initialize(const double* basis,
   delete[] _quadPts; _quadPts = (size > 0) ? new double[size] : 0;
 } // initialize
 
+// ----------------------------------------------------------------------
+// Set entries in geometry arrays to zero.
+void
+pylith::feassemble::Quadrature::_resetGeometry(void)
+{ // _resetGeometry
+  // Zero out Jacobian and its inverse
+  int size = _numQuadPts*_cellDim*_spaceDim;
+  for (int i=0; i < size; ++i)
+    _jacobian[i] = 0.0;
+  for (int i=0; i < size; ++i)
+    _jacobianInv[i] = 0.0;
+
+  // Zero out Jacobian determinant
+  size = _numQuadPts;
+  for (int i=0; i < size; ++i)
+    _jacobianDet[i] = 0.0;
+
+  // Zero out quad pts
+  size = _numQuadPts*_spaceDim;
+  for (int i=0; i < size; ++i)
+    _quadPts[i] = 0.0;
+} // _resetGeometry
+
 // End of file 

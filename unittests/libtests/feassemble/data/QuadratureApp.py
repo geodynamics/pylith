@@ -17,6 +17,8 @@
 
 from pyre.applications.Script import Script
 
+import numpy
+
 # QuadratureApp class
 class QuadratureApp(Script):
   """
@@ -78,7 +80,8 @@ class QuadratureApp(Script):
     """
     Run the application.
     """
-    self._calculate()
+    self._calculateBasis()
+    self._calculateJacobian()
     self._initData()
     self.data.write(self.name)
     return
@@ -94,6 +97,47 @@ class QuadratureApp(Script):
     self.data = self.inventory.data
     return
 
+
+  def _calculateJacobian(self):
+    """
+    Calculate jacobian, its determinant, and its inverse at quadrature
+    pts plus coordinates of quadrature points in the cell.
+    """
+    self.jacobian = numpy.zeros( (self.numQuadPts,
+                                  self.cellDim, self.spaceDim),
+                                 dtype=numpy.Float64)
+    self.jacobianInv = numpy.zeros( (self.numQuadPts,
+                                     self.spaceDim, self.cellDim),
+                                    dtype=numpy.Float64)
+    self.jacobianDet = numpy.zeros( (self.numQuadPts,),
+                                    dtype=numpy.Float64)
+    
+    iQuad = 0
+    for q in self.quadPtsRef:
+      # Jacobian at quadrature points
+      deriv = self.basisDeriv[iQuad]
+      jacobian = numpy.dot(deriv.transpose(), self.vertices)
+      self.jacobian[iQuad] = jacobian
+
+      # Determinant of Jacobian and Jacobian inverse at quadrature points
+      if self.spaceDim == self.cellDim:
+        self.jacobianDet[iQuad] = numpy.linalg.det(jacobian)
+        self.jacobianInv[iQuad] = numpy.linalg.inv(jacobian)
+      else:
+        det = numpy.linalg.det(numpy.dot(jacobian, jacobian.transpose()))**0.5
+        self.jacobianDet[iQuad] = det
+
+        if 1 == self.cellDim:
+          self.jacobianInv[iQuad] = 1.0 / jacobian
+        elif 2 == self.cellDim:
+          error
+    
+      iQuad += 1
+
+    # Quadrature points in cell
+    self.quadPts = numpy.dot(self.basis, self.vertices)
+    return
+      
 
   def _initData(self):
     self.data.addScalar(vtype="int", name="_numVertices",

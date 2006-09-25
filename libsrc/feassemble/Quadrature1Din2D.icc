@@ -1,0 +1,26 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_feassemble_quadrature1din2d_hh)
+#error "Quadrature1Din2D.icc must be included only from Quadrature1Din2D.hh"
+#else
+
+// Create a copy of this object.
+inline
+pylith::feassemble::Quadrature*
+pylith::feassemble::Quadrature1Din2D::clone(void) const {
+  return new Quadrature1Din2D(*this);
+} // clone
+
+#endif
+
+// End of file
