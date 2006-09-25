@@ -46,8 +46,8 @@ c       nsnodes                 = number of nodes per element face
 c       nsgauss                 = number of element face gauss points
 c
 c     Output:
-c       sh(nsd+1,nsnodes,nsgauss)   = shape functions and their derivatives
-c       gauss(nsd+1,nsgauss)        = Gauss point coordinates and weights
+c       sh(nsd,nsnodes,nsgauss)   = shape functions and their derivatives
+c       gauss(nsd,nsgauss)        = Gauss point coordinates and weights
 c
       include "implicit.inc"
 c
@@ -60,8 +60,8 @@ c
 c...  subroutine arguments
 c
       integer intord,ietype,nsnodes,nsgauss,ierr
-      double precision sh(nsd+1,nsnodes,nsgauss)
-      double precision gauss(nsd+1,nsgauss)
+      double precision sh(nsd,nsnodes,nsgauss)
+      double precision gauss(nsd,nsgauss)
       character*(*) errstrng
 c
 c...  local constants
@@ -77,7 +77,6 @@ c
 c...  local variables
 c
       integer i,l,k,n,ind,nshsize,ngssize
-      double precision shtmp(2160)
       double precision rr,ss,drr,dss
       integer io(3)
 c
@@ -86,14 +85,13 @@ c
 c...  definitions
 c
       ierr=izero
-      ngssize=(nsd+1)*nsgauss
+      ngssize=nsd*nsgauss
       nshsize=ngssize*nsnodes
 c
 c...  initialize arrays
 c
       call fill(gauss,zero,ngssize)
       call fill(sh,zero,nshsize)
-      call fill(shtmp,zero,2160)
 c
 c... First type:  linear hex
 c
