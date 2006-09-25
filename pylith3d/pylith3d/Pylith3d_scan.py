@@ -355,7 +355,7 @@ class Pylith3d_scan(Component):
         self._pointerToListArrayNumberElementNodesBase = pylith3d.intListToArray(
             self._numberElementNodesBase)
 	self._memorySize += self._numberElementTypesBase*self._intSize
-        self._maxElementNodes2d = 20
+        self._maxElementNodes2d = 4
         self._maxGaussPoints2d = 4
         self._numberElementTypes2d = 2
         self._numberElementTypesBase2d = 2
@@ -521,9 +521,8 @@ class Pylith3d_scan(Component):
 
         if self._numberTractionBc != 0:
             self._tractionBcScaleString = \
-                                        1.0*uparser.parse(string.strip(self._tractionBcUnits))
-            self._tractionBcScaleFactor = \
-                                        self._tractionBcScaleString/pyre.units.SI.pascal
+                                        uparser.parse(string.strip(self._tractionBcUnits))
+            self._tractionBcScaleFactor = self._tractionBcScaleString.value
             self._tractionFlag = 1
 
         self._numberSplitNodeEntries = pylith3d.scan_split(
