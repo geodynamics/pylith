@@ -24,13 +24,13 @@ def N0(p):
   return 0.5*(1.0-p)
 
 def N0p(p):
-  return -0.5 * numpy.ones(p.shape)
+  return -0.5
 
 def N1(p):
   return 0.5*(1.0+p)
 
 def N1p(p):
-  return +0.5 * numpy.ones(p.shape)
+  return +0.5
 
 # ----------------------------------------------------------------------
 
@@ -65,37 +65,30 @@ class Quadrature1DLinear(QuadratureApp):
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
   
-  def _calculate(self):
+  def _calculateBasis(self):
     """
-    Calculate basis functions, derivatives, and Jacobian information
-    at quadrature points.
+    Calculate basis functions and their derivatives at quadrature points.
     """
 
-    # Basis functions at quadrature points
-    n0 = N0(self.quadPtsRef)
-    n1 = N1(self.quadPtsRef)
-    basis = numpy.array([n0, n1]).transpose()
-    self.basis = basis.reshape( (self.numQuadPts, self.numVertices) )
+    self.basis = numpy.zeros( (self.numQuadPts, self.numCorners),
+                              dtype=numpy.Float64)
+    self.basisDeriv = numpy.zeros( (self.numQuadPts,
+                                    self.numCorners, self.cellDim),
+                                   dtype=numpy.Float64)
 
-    # Derivatives of basis functions at quadrature points
-    n0p = N0p(self.quadPtsRef)
-    n1p = N1p(self.quadPtsRef)
-    deriv = numpy.array([n0p, n1p]).transpose()
-    self.basisDeriv = deriv.reshape( (self.numQuadPts, self.numVertices) )
+    iQuad = 0
+    for q in self.quadPtsRef:
+      # Basis functions at quadrature points
+      basis = numpy.array([N0(q), N1(q)], dtype=numpy.Float64)
+      self.basis[iQuad,:] = basis.reshape( (self.numCorners,) )
 
-    # Jacobian at quadrature points
-    self.jacobian = numpy.dot(self.basisDeriv, self.vertices)
+      # Derivatives of basis functions at quadrature points
+      deriv = numpy.array([[N0p(q)], [N1p(q)]], dtype=numpy.Float64)      
+      self.basisDeriv[iQuad,:] = deriv.reshape((self.numCorners, self.cellDim))
 
-    # Determinant of Jacobian at quadrature points
-    self.jacobianDet = self.jacobian
-
-    # Inverse of Jacobian at quadrature points
-    self.jacobianInv = 1.0 / self.jacobian
-
-    # Quadrature points in cell
-    self.quadPts = numpy.dot(self.basis, self.vertices)
+      iQuad += 1
     return
-      
+    
 
 # MAIN /////////////////////////////////////////////////////////////////
 if __name__ == "__main__":

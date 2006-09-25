@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-#include "Quadrature1D.hh" // implementation of class methods
+#include "Quadrature1Din2D.hh" // implementation of class methods
 
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -20,19 +20,19 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::Quadrature1D::Quadrature1D(void)
+pylith::feassemble::Quadrature1Din2D::Quadrature1Din2D(void)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::Quadrature1D::~Quadrature1D(void)
+pylith::feassemble::Quadrature1Din2D::~Quadrature1Din2D(void)
 { // destructor
 } // destructor
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::feassemble::Quadrature1D::Quadrature1D(const Quadrature1D& q) :
+pylith::feassemble::Quadrature1Din2D::Quadrature1Din2D(const Quadrature1Din2D& q) :
   Quadrature(q)
 { // copy constructor
 } // copy constructor
@@ -40,12 +40,12 @@ pylith::feassemble::Quadrature1D::Quadrature1D(const Quadrature1D& q) :
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell.
 void
-pylith::feassemble::Quadrature1D::_computeGeometry(
+pylith::feassemble::Quadrature1Din2D::_computeGeometry(
 		       const ALE::Obj<ALE::Mesh::section_type>& coordinates,
 		       const ALE::Mesh::point_type& cell)
 { // _computeGeometry
   assert(1 == _cellDim);
-  assert(1 == _spaceDim);
+  assert(2 == _spaceDim);
   assert(0 != _basisDeriv);
   assert(0 != _quadPtsRef);
   assert(0 != _quadPts);
@@ -63,33 +63,52 @@ pylith::feassemble::Quadrature1D::_computeGeometry(
 
   // Loop over quadrature points
   for (int iQuadPt=0; iQuadPt < _numQuadPts; ++iQuadPt) {
-
+    
     // Compute coordinates of quadrature point in cell
     // x = sum[i=0,n-1] (Ni * xi)
-    for (int iVertex=0; iVertex < _numCorners; ++iVertex)
-      _quadPts[iQuadPt] += 
-	_basis[iQuadPt*_numCorners+iVertex]*vertCoords[iVertex];
-
+    // y = sum[i=0,n-1] (Ni * yi)
+    for (int iVertex=0, iB=iQuadPt*_numCorners;
+	 iVertex < _numCorners;
+	 ++iVertex) {
+      const double basis = _basis[iB+iVertex];
+      for (int iDim=0, iQ=iQuadPt*_spaceDim, iV=iVertex*_spaceDim;
+	   iDim < _spaceDim;
+	   ++iDim)
+	_quadPts[iQ+iDim] +=  basis * vertCoords[iV+iDim];
+    } // for
+    
     // Compute Jacobian at quadrature point
-    // J = dx/dp = sum[i=0,n-1] (dNi/dp * xi)
-    for (int iVertex=0; iVertex < _numCorners; ++iVertex)
-      _jacobian[iQuadPt] += 
-	_basisDeriv[iQuadPt*_numCorners+iVertex] * vertCoords[iVertex];
+    // J = [dx/dp dy/dp]
+    // dx/dp = sum[i=0,n-1] (dNi/dp * xi)
+    // dy/dp = sum[i=0,n-1] (dNi/dp * yi)
+    for (int iVertex=0, iB=iQuadPt*_numCorners;
+	 iVertex < _numCorners;
+	 ++iVertex) {
+      const double deriv = _basisDeriv[iB+iVertex];
+      for (int iDim=0, iJ=iQuadPt*_spaceDim, iV=iVertex*_spaceDim;
+	   iDim < _spaceDim;
+	   ++iDim)
+	_jacobian[iJ+iDim] += deriv * vertCoords[iV+iDim];
+    } // for
 
     // Compute determinant of Jacobian at quadrature point
-    // |J| = j00
-    const double det = _jacobian[iQuadPt];
+    // |J| = sqrt(J transpose(J))
+    double det = 0.0;
+    for (int iDim=0, iJ=iQuadPt*_spaceDim; iDim < _spaceDim; ++iDim)
+      det += _jacobian[iJ+iDim]*_jacobian[iJ+iDim];
+    det = sqrt(det);
     if (det < _jacobianTol) {
       std::ostringstream msg;
       msg << "Determinant of Jacobian (" << det << ") is below minimum\n"
 	  << "permissible value (" << _jacobianTol << ")!\n";
       throw std::runtime_error(msg.str());
     } // for
-    _jacobianDet[iQuadPt] = _jacobian[iQuadPt];
+    _jacobianDet[iQuadPt] = det;
 
     // Compute inverse of Jacobian at quadrature point
-    // Jinv = 1/j00
-    _jacobianInv[iQuadPt] = 1.0/_jacobianDet[iQuadPt];
+    // Jinv = 1.0/[J]
+    for (int iDim=0, iJ=iQuadPt*_spaceDim; iDim < _spaceDim; ++iDim)
+      _jacobianInv[iJ+iDim] = 1.0/_jacobian[iJ+iDim];
   } // for
 } // _computeGeometry
 

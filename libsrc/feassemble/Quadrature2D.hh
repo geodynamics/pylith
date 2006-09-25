@@ -11,35 +11,35 @@
 //
 
 /**
- * @file pylith/feassemble/Quadrature1D.hh
+ * @file pylith/feassemble/Quadrature2D.hh
  *
- * @brief Quadrature for 1-D finite-elements.
+ * @brief Quadrature for 2-D finite-elements in 2-D space.
  */
 
-#if !defined(pylith_feassemble_quadrature1d_hh)
-#define pylith_feassemble_quadrature1d_hh
+#if !defined(pylith_feassemble_quadrature2d_hh)
+#define pylith_feassemble_quadrature2d_hh
 
 #include "Quadrature.hh"
 
 namespace pylith {
   namespace feassemble {
-    class Quadrature1D;
-    class TestQuadrature1D;
+    class Quadrature2D;
+    class TestQuadrature2D;
   } // feassemble
 } // pylith
 
-class pylith::feassemble::Quadrature1D : public Quadrature
+class pylith::feassemble::Quadrature2D : public Quadrature
 { // Quadrature1D
-  friend class TestQuadrature1D; // unit testing
+  friend class TestQuadrature2D; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  Quadrature1D(void);
+  Quadrature2D(void);
 
   /// Destructor
-  virtual ~Quadrature1D(void);
+  virtual ~Quadrature2D(void);
 
   /// Create a copy of this object.
   virtual
@@ -52,7 +52,7 @@ protected :
    *
    * @param q Quadrature to copy
    */
-  Quadrature1D(const Quadrature1D& q);
+  Quadrature2D(const Quadrature2D& q);
 
   /** Compute geometric quantities for a cell.
    *
@@ -65,12 +65,12 @@ protected :
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
-  const Quadrature1D& operator=(const Quadrature1D&); ///< Not implemented
+  const Quadrature2D& operator=(const Quadrature2D&); ///< Not implemented
 
-}; // Quadrature1D
+}; // Quadrature2D
 
-#include "Quadrature1D.icc" // inline methods
+#include "Quadrature2D.icc" // inline methods
 
-#endif // pylith_feassemble_quadrature1d_hh
+#endif // pylith_feassemble_quadrature2d_hh
 
 // End of file 

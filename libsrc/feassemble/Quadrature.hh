@@ -130,6 +130,9 @@ protected :
   void _computeGeometry(const ALE::Obj<ALE::Mesh::section_type>& coordinates,
 			const ALE::Mesh::point_type& cell) = 0;
 
+  /// Set entries in geometry arrays to zero.
+  void _resetGeometry(void);
+
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
