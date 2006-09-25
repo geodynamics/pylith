@@ -129,11 +129,11 @@ class Pylith3d_run(Component):
 
         self.prestressAutoComputeInt = pl3dsetup.prestressAutoComputeInt
 
-        self.pointerToIelno = pl3dsetup.pointerToIelno
-        self.pointerToIside = pl3dsetup.pointerToIside
-        self.pointerToIhistry = pl3dsetup.pointerToIhistry
-        self.pointerToPres = pl3dsetup.pointerToPres
-        self.pointerToPdir = pl3dsetup.pointerToPdir
+        self.pointerToTractionverts = pl3dsetup.pointerToTractionverts
+        self.pointerToTractionvals = pl3dsetup.pointerToTractionvals
+        self.pointerToGauss2d = pl3dsetup.pointerToGauss2d
+        self.pointerToSh2d = pl3dsetup.pointerToSh2d
+        self.pointerToListArrayElementTypeInfo2d = pl3dsetup.pointerToListArrayElementTypeInfo2d
 
         self.pointerToListArrayPropertyList = pl3dsetup.pointerToListArrayPropertyList
         self.pointerToMaterialModelInfo = pl3dsetup.pointerToMaterialModelInfo
@@ -232,11 +232,11 @@ class Pylith3d_run(Component):
             self.pointerToIvfamily,
             self.pointerToListArrayNpar,
             self.pointerToIelindx,
-            self.pointerToIelno,                               # traction
-            self.pointerToIside,
-            self.pointerToIhistry,
-            self.pointerToPres,
-            self.pointerToPdir,
+            self.pointerToTractionverts,                       # traction
+            self.pointerToTractionvals,
+            self.pointerToGauss2d,
+            self.pointerToSh2d,
+            self.pointerToListArrayElementTypeInfo2d,
             self.pointerToListArrayPropertyList,               # material
             self.pointerToMaterialModelInfo,
             self.pointerToGauss,                               # eltype
@@ -350,11 +350,11 @@ class Pylith3d_run(Component):
                     self.pointerToIvfamily,
                     self.pointerToListArrayNpar,
                     self.pointerToIelindx,
-                    self.pointerToIelno,                           # traction
-                    self.pointerToIside,
-                    self.pointerToIhistry,
-                    self.pointerToPres,
-                    self.pointerToPdir,
+                    self.pointerToTractionverts,                   # traction
+                    self.pointerToTractionvals,
+                    self.pointerToGauss2d,
+                    self.pointerToSh2d,
+                    self.pointerToListArrayElementTypeInfo2d,
                     self.pointerToListArrayPropertyList,           # material
                     self.pointerToMaterialModelInfo,
                     self.pointerToGauss,                           # eltype
@@ -499,11 +499,11 @@ class Pylith3d_run(Component):
                                 self.pointerToIvfamily,
                                 self.pointerToListArrayNpar,
                                 self.pointerToIelindx,
-                                self.pointerToIelno,                               # traction
-                                self.pointerToIside,
-                                self.pointerToIhistry,
-                                self.pointerToPres,
-                                self.pointerToPdir,
+                                self.pointerToTractionverts,                       # traction
+                                self.pointerToTractionvals,
+                                self.pointerToGauss2d,
+                                self.pointerToSh2d,
+                                self.pointerToListArrayElementTypeInfo2d,
                                 self.pointerToListArrayPropertyList,               # material
                                 self.pointerToMaterialModelInfo,
                                 self.pointerToGauss,                               # eltype
@@ -612,11 +612,11 @@ class Pylith3d_run(Component):
                     self.pointerToIvfamily,
                     self.pointerToListArrayNpar,
                     self.pointerToIelindx,
-                    self.pointerToIelno,                               # traction
-                    self.pointerToIside,
-                    self.pointerToIhistry,
-                    self.pointerToPres,
-                    self.pointerToPdir,
+                    self.pointerToTractionverts,                       # traction
+                    self.pointerToTractionvals,
+                    self.pointerToGauss2d,
+                    self.pointerToSh2d,
+                    self.pointerToListArrayElementTypeInfo2d,
                     self.pointerToListArrayPropertyList,               # material
                     self.pointerToMaterialModelInfo,
                     self.pointerToGauss,                               # eltype
