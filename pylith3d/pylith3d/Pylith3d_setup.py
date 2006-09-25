@@ -350,7 +350,7 @@ class Pylith3d_setup(Component):
 
         # Surface element type information
         self.elementTypeInfo2d = [0, 0, 0, 0]
-        self.pointerToListArrayNtraction = None
+        self.pointerToListArrayElementTypeInfo2d = None
         self.pointerToSh2d = None
         self.pointerToGauss2d = None
         self.numberSurfaceElementNodes = 0
@@ -442,7 +442,7 @@ class Pylith3d_setup(Component):
 	self.connectivitySize = self.numberVolumeElements*self.numberVolumeElementNodes
         self.pointerToListArrayElementTypeInfo = pylith3d.intListToArray(
             self.elementTypeInfo)
-        self.pointerToListArrayNtraction = pylith3d.intListToArray(
+        self.pointerToListArrayElementTypeInfo2d = pylith3d.intListToArray(
             self.elementTypeInfo2d)
 	self.memorySize += 8*self.intSize
 
