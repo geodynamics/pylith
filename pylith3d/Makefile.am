@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 # $Id: Makefile.am 2370 2005-09-09 19:49:10Z leif $
 
-SUBDIRS = libpylith3d module
+SUBDIRS = libpylith3d module utils
 
 bin_PROGRAMS = 
 if COND_EMBEDDING
