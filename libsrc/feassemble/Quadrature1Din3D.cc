@@ -15,8 +15,6 @@
 #include "Quadrature1Din3D.hh" // implementation of class methods
 
 #include <assert.h> // USES assert()
-#include <stdexcept> // USES std::runtime_error
-#include <sstream> // USES std::ostringstream
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -59,7 +57,8 @@ pylith::feassemble::Quadrature1Din3D::_computeGeometry(
   const ALE::Mesh::topology_type::patch_type patch  = 0;
   const ALE::Mesh::section_type::value_type* vertCoords = 
     coordinates->restrict(patch, cell);
-  //assert(3 == coordinates.GetFiberDimension(patch, *vertices->begin()));
+  assert(3 == coordinates.GetFiberDimensionByDepth(patch,
+						   *vertices->begin(), 0));
 
   // Loop over quadrature points
   for (int iQuadPt=0; iQuadPt < _numQuadPts; ++iQuadPt) {
@@ -99,12 +98,7 @@ pylith::feassemble::Quadrature1Din3D::_computeGeometry(
     for (int iDim=0, iJ=iQuadPt*_spaceDim; iDim < _spaceDim; ++iDim)
       det += _jacobian[iJ+iDim]*_jacobian[iJ+iDim];
     det = sqrt(det);
-    if (det < _jacobianTol) {
-      std::ostringstream msg;
-      msg << "Determinant of Jacobian (" << det << ") is below minimum\n"
-	  << "permissible value (" << _jacobianTol << ")!\n";
-      throw std::runtime_error(msg.str());
-    } // for
+    _checkJacobianDet(det);
     _jacobianDet[iQuadPt] = det;
 
     // Compute inverse of Jacobian at quadrature point

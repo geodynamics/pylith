@@ -11,6 +11,7 @@
 #
 
 SUBDIRS = \
+	feassemble \
 	meshio
 
 # version
