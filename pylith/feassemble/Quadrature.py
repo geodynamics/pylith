@@ -10,16 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/feassemble/Qudrature.py
+## @file pylith/feassemble/Qudrature.py
 
 ## @brief Python abstract base class for integrating over
 ## finite-elements using quadrature.
-
-# TODO
-#
-# Use FIAT to create numpy arrays containing basis functions and their
-# derivatives evaludated at the quadrature points and the coordinates
-# and weights of the quadrature points in the reference cell.
 
 # DESIGN QUESTION
 #
@@ -53,12 +47,16 @@ class Quadrature(Component):
     ## @li \b jacobian_tolerance Minimum allowable determinant of Jacobian.
     ##
     ## \b Facilities
-    ## @li None
+    ## @li \b cell Reference cell with basis functions and quadrature rules
 
     import pyre.inventory
 
     jacobianTol = pyre.inventory.float("jacobian_tolerance", default=1.0e-06)
     jacobianTol.meta['tip'] = "Minimum allowable determinant of Jacobian."
+
+    from CellFIAT import CellFIAT
+    cell = pyre.inventory.facility("cell", factory=CellFIAT)
+    cell.meta['tip'] = "Reference cell with basis fns and quadrature rules."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -77,6 +75,8 @@ class Quadrature(Component):
     """
     Initialize C++ quadrature object.
     """
+    self.cell.initialize()
+    
     # Set minimum allowable determinant of Jacobian
     #self.cppHandle.jacobianTol = self.jacobianTol
 
@@ -93,6 +93,7 @@ class Quadrature(Component):
     """
     Component._configure(self)
     self.jacobianTol = self.inventory.jacobianTol
+    self.cell = self.inventory.cell
     return
 
 
