@@ -15,19 +15,9 @@
 ## @brief Python abstract base class for integrating over
 ## finite-elements using quadrature.
 
-# DESIGN QUESTION
-#
-# The dimension of the space associated with the coordinates of
-# the vertices is specific to the quadrature object. However, the
-# quadrature points/weights and basis functions are associated with
-# the reference cell not the actual cell.
-#
-# Where should the dimension of the space associated with the
-# coordinates of the vertices be specified? I don't think the user
-# will specify it, so that means it won't be in the inventory.
-
 from pyre.components.Component import Component
 
+# ----------------------------------------------------------------------
 # Quadrature class
 class Quadrature(Component):
   """
@@ -44,18 +34,18 @@ class Quadrature(Component):
     ## Python object for managing Quadrature facilities and properties.
     ##
     ## \b Properties
-    ## @li \b jacobian_tolerance Minimum allowable determinant of Jacobian.
+    ## @li \b min_jacobian Minimum allowable determinant of Jacobian.
     ##
     ## \b Facilities
     ## @li \b cell Reference cell with basis functions and quadrature rules
 
     import pyre.inventory
 
-    jacobianTol = pyre.inventory.float("jacobian_tolerance", default=1.0e-06)
-    jacobianTol.meta['tip'] = "Minimum allowable determinant of Jacobian."
+    minJacobian = pyre.inventory.float("min_jacobian", default=1.0e-06)
+    minJacobian.meta['tip'] = "Minimum allowable determinant of Jacobian."
 
-    from CellFIAT import CellFIAT
-    cell = pyre.inventory.facility("cell", factory=CellFIAT)
+    from FIATSimplex import FIATSimplex
+    cell = pyre.inventory.facility("cell", factory=FIATSimplex)
     cell.meta['tip'] = "Reference cell with basis fns and quadrature rules."
 
 
@@ -66,22 +56,23 @@ class Quadrature(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="quadrature")
-    #import pylith.feassemble.feassemble as bindings
-    #self.cppHandle = bindings.Quadrature()
-    self.spaceDim = 3
+    self.cppHandle = None
+    self.spaceDim = None
     return
 
   def initialize(self):
     """
     Initialize C++ quadrature object.
     """
-    self.cell.initialize()
-    
-    # Set minimum allowable determinant of Jacobian
-    #self.cppHandle.jacobianTol = self.jacobianTol
+    self.cppHandle.minJacobian = self.minJacobian
 
-    # Get basis functions, quadrature points
-    #self.cppHandle.initialize(LOTS OF ARGS)
+    c = self.cell
+    c.initialize()
+    self.cppHandle.initialize(c.basis, c.basisDeriv,
+                              c.quadrature.get_points(),
+                              c.quadrature.get_weights(),
+                              c.cellDim, c.numCorners, c.numQuadPts,
+                              self.spaceDim)
     return
 
 
@@ -92,12 +83,85 @@ class Quadrature(Component):
     Set members based using inventory.
     """
     Component._configure(self)
-    self.jacobianTol = self.inventory.jacobianTol
+    self.minJacobian = self.inventory.minJacobian
     self.cell = self.inventory.cell
     return
 
 
-# version
-__id__ = "$Id$"
+# ----------------------------------------------------------------------
+# Quadrature1D class
+class Quadrature1D(Quadrature):
+  """
+  Python object for integrating over 1-D finite-elements in a 1-D
+  domain using quadrature.
+  """
+
+  def __init__(self, name="quadrature1d"):
+    """
+    Constructor.
+    """
+    Quadrature.__init(self, name)
+    import pylith.feassemble.feassemble as bindings
+    self.cppHandle = bindings.Quadrature1D()
+    self.spaceDim = 1
+    return
+
+
+# ----------------------------------------------------------------------
+# Quadrature1Din2D class
+class Quadrature1Din2D(Quadrature):
+  """
+  Python object for integrating over 1-D finite-elements in a 2-D
+  domain using quadrature.
+  """
+
+  def __init__(self, name="quadrature1din2d"):
+    """
+    Constructor.
+    """
+    Quadrature.__init(self, name)
+    import pylith.feassemble.feassemble as bindings
+    self.cppHandle = bindings.Quadrature1Din2D()
+    self.spaceDim = 2
+    return
+
+
+# ----------------------------------------------------------------------
+# Quadrature1Din3D class
+class Quadrature1Din3D(Quadrature):
+  """
+  Python object for integrating over 1-D finite-elements in a 3-D
+  domain using quadrature.
+  """
+
+  def __init__(self, name="quadrature1din3d"):
+    """
+    Constructor.
+    """
+    Quadrature.__init(self, name)
+    import pylith.feassemble.feassemble as bindings
+    self.cppHandle = bindings.Quadrature1Din3D()
+    self.spaceDim = 3
+    return
+
+
+# ----------------------------------------------------------------------
+# Quadrature2D class
+class Quadrature2D(Quadrature):
+  """
+  Python object for integrating over 2-D finite-elements in a 2-D
+  domain using quadrature.
+  """
+
+  def __init__(self, name="quadrature2d"):
+    """
+    Constructor.
+    """
+    Quadrature.__init(self, name)
+    import pylith.feassemble.feassemble as bindings
+    self.cppHandle = bindings.Quadrature@D()
+    self.spaceDim = 2
+    return
+
 
 # End of file 

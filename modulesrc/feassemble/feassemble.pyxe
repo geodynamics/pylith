@@ -1,0 +1,210 @@
+#!/usr/bin/env python
+#
+# ======================================================================
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# {LicenseText}
+#
+# ======================================================================
+#
+
+#header{
+#include "pylith/feassemble/Quadrature.hh"
+#include "pylith/feassemble/Quadrature1D.hh"
+#include "pylith/feassemble/Quadrature1Din2D.hh"
+#include "pylith/feassemble/Quadrature1Din3D.hh"
+#include "pylith/feassemble/Quadrature2D.hh"
+#}header
+
+# ----------------------------------------------------------------------
+cdef extern from "Python.h":
+  object PyCObject_FromVoidPtr(void*, void (*destruct)(void*))
+  void* PyCObject_AsVoidPtr(object)
+
+cdef void* ptrFromHandle(obj):
+  """Extract pointer from PyCObject."""
+  return PyCObject_AsVoidPtr(obj.handle)
+
+cdef extern from "stdlib.h":
+    ctypedef unsigned long size_t
+    void* malloc(size_t size)
+    void free(void* mem)
+
+# ----------------------------------------------------------------------
+cdef class Quadrature:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_feassemble_Quadrature"
+    return
+
+
+  def initialize(self, basis, basisDeriv, quadPts, quadWts,
+                 cellDim, numCorners, numQuadPts, spaceDim):
+    """
+    Set basis functions and their derivatives, and coordinates and
+    weights of quadrature points.
+
+    @param basis Basis functions evaluated at the quadrature points
+    @param basisDeriv Basis function derivatives evaluated at quad pts
+    @param quadPts Coordinates of quadrature points in reference cell
+    @param quadWts Weights of quadrature points
+    @param cellDim Dimension of reference cell
+    @param numCorners Number of vertices in reference cell
+    @param numQuadPts Number of quadrature points
+    @param spaceDim Number of dimensions associated with cell vertices
+    """
+    # create shim for method 'initialize'
+    #embed{ void Quadrature_initialize(void* pObj, double* basis, double* basisDeriv, double* quadPts, double* quadWts, int cellDim, int numCorners, int numQuadPts, int spaceDim)
+    ((pylith::feassemble::Quadrature*) pObj)->initialize(basis, basisDeriv,
+                                                         quadPts, quadWts,
+                                                         cellDim, numCorners,
+                                                         numQuadPts, spaceDim);
+    #}embed
+
+    import spatialdata.utils.simplearray
+    basis = spatialdata.utils.simplearray.objAsSimpleArray(basis)
+    if not basis.isCompatible(nd=2, simpletype="double",
+                              contiguous=True, notswapped=True):
+      raise TypeError, \
+            "Argument 'basis' must be a contiguous, 2-D array " \
+            "of type double."
+    basis = spatialdata.utils.simplearray.objAsSimpleArray(basisDeriv)
+    if not basisDeriv.isCompatible(nd=3, simpletype="double",
+                                   contiguous=True, notswapped=True):
+      raise TypeError, \
+            "Argument 'basisDeriv' must be a contiguous, 3-D array " \
+            "of type double."
+    quadPts = spatialdata.utils.simplearray.objAsSimpleArray(quadPts)
+    if not quadPts.isCompatible(nd=2, simpletype="double",
+                                contiguous=True, notswapped=True):
+      raise TypeError, \
+            "Argument 'quadPts' must be a contiguous, 2-D array " \
+            "of type double."
+    quadWts = spatialdata.utils.simplearray.objAsSimpleArray(quadWts)
+    if not quadWts.isCompatible(nd=1, simpletype="double",
+                                contiguous=True, notswapped=True):
+      raise TypeError, \
+            "Argument 'quadWts' must be a contiguous, 2-D array " \
+            "of type double."
+
+    cdef double* basisCpp
+    cdef double* basisDerivCpp
+    cdef double* quadPtsCpp
+    cdef double* quadWtsCpp
+    basisCpp = <double*> PyCObject_AsVoidPtr(basis.data)
+    basisDerivCpp = <double*> PyCObject_AsVoidPtr(basisDeriv.data)
+    quadPtsCpp = <double*> PyCObject_AsVoidPtr(quadPts.data)
+    quadWtsCpp = <double*> PyCObject_AsVoidPtr(quadWts.data)
+
+    Quadrature_initialize(self.thisptr, basisCpp, basisDerivCpp,
+                          quadPtsCpp, quadWtsCpp,
+                          cellDim, numCorners,
+                          numQuadPts, spaceDim)
+    return
+
+
+  def _createHandle(self):
+    """Wrap pointer to C++ object in PyCObject."""
+    # create shim for destructor
+    #embed{ void Quadrature_destructor(void* pObj)
+    pylith::feassemble::Quadrature* pQ =
+      (pylith::feassemble::Quadrature*) pObj;
+    delete pQ;
+    #}embed
+    return PyCObject_FromVoidPtr(self.thisptr, Quadrature_destructor)
+
+
+  property minJacobian:
+    def __set__(self, min):
+      """Set minimum allowable Jacobian."""
+      # create shim for method 'minJacobian'
+      #embed{ void Quadrature_minJacobian_set(void* pObj, double min)
+      ((pylith::feassemble::Quadrature*) pObj)->minJacobian(min);
+      #}embed
+      Quadrature_minJacobian_set(self.thisptr, min)
+
+    def __get__(self):
+      """Get minimum allowable Jacobian."""
+      # create shim for method 'minJacobian'
+      #embed{ double Quadrature_minJacobian_get(void* pObj)
+      return ((pylith::feassemble::Quadrature*) pObj)->minJacobian();
+      #}embed
+      return Quadrature_minJacobian_get(self.thisptr)
+
+
+# ----------------------------------------------------------------------
+cdef class Quadrature1D(Quadrature):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* Quadrature1D_constructor()
+    return (void*)(new pylith::feassemble::Quadrature1D);
+    #}embed
+
+    Quadrature.__init__(self)
+    self.thisptr = Quadrature1D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class Quadrature1Din2D(Quadrature):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* Quadrature1Din2D_constructor()
+    return (void*)(new pylith::feassemble::Quadrature1Din2D);
+    #}embed
+
+    Quadrature.__init__(self)
+    self.thisptr = Quadrature1Din2D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class Quadrature1Din3D(Quadrature):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* Quadrature1Din3D_constructor()
+    return (void*)(new pylith::feassemble::Quadrature1Din3D);
+    #}embed
+
+    Quadrature.__init__(self)
+    self.thisptr = Quadrature1Din3D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class Quadrature2D(Quadrature):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* Quadrature2D_constructor()
+    return (void*)(new pylith::feassemble::Quadrature2D);
+    #}embed
+
+    Quadrature.__init__(self)
+    self.thisptr = Quadrature2D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# End of file 

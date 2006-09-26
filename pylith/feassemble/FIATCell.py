@@ -47,12 +47,19 @@ class FIATCell(ReferenceCell):
     self.basis = numpy.array(basisFns.tabulate(quadpts)).transpose()
 
     # Evaluate derivatives of basis functions at quadrature points
-    # ADD STUFF HERE
+    import FIAT.shapes
+    dim = FIAT.shapes.dimension(basisFns.base.shape)
+    self.basisDeriv = numpy.array([basisFns.deriv_all(d).tabulate(quadpts) \
+                                   for d in range(dim)]).squeeze().transpose()
+
+    self.cellDim = dim
+    self.numCorners
+    self.numQuadPts = len(quadrature.get_weights())
 
     self._info.line("Basis:")
     self._info.line(self.basis)
-    #print "Basis derivatives:"
-    #print self.basisDeriv
+    self._info.line("Basis derivatives:")
+    self._info.line(self.basisDeriv)
     self._info.line("Quad pts:")
     self._info.line(quadrature.get_points())
     self._info.line("Quad wts:")

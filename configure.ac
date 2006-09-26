@@ -129,6 +129,7 @@ AC_CONFIG_FILES([Makefile
                 libsrc/feassemble/Makefile
                 libsrc/meshio/Makefile
                 modulesrc/Makefile
+                modulesrc/feassemble/Makefile
                 modulesrc/meshio/Makefile
 		applications/Makefile
 		unittests/Makefile

@@ -72,8 +72,8 @@ public :
    *   N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
    *   N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
    *   ...
-   *   size = numCorners * numQuadPts * spaceDim
-   *   index = iQuadPt*numCorners*spaceDim + iBasis*spaceDim + iDim
+   *   size = numCorners * numQuadPts * cellDim
+   *   index = iQuadPt*numCorners*cellDim + iBasis*cellDim + iDim
    *
    * @param quadPts Array of coordinates of quadrature points in 
    *   reference cell
@@ -100,17 +100,17 @@ public :
 		  const int numQuadPts,
 		  const int spaceDim);
 
-  /** Set tolerance for minimum allowable Jacobian.
+  /** Set minimum allowable determinant of Jacobian.
    *
    * @param tolerance Minimum allowable value for Jacobian
    */
-  void jacobianTolerance(const double tolerance);
+  void minJacobian(const double min);
 
-  /** Get tolerance for minimum allowable Jacobian.
+  /** Get minimum allowable determinant of Jacobian.
    *
    * @returns Minimum allowable value for Jacobian
    */
-  double jacobianTolerance(void);
+  double minJacobian(void);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -133,6 +133,9 @@ protected :
   /// Set entries in geometry arrays to zero.
   void _resetGeometry(void);
 
+  /// Check determinant of Jacobian against minimum allowable value
+  void _checkJacobianDet(const double det) const;
+
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
@@ -141,7 +144,7 @@ private :
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
-  double _jacobianTol; ///< Tolerance for minium allowable Jacobian determinant
+  double _minJacobian; ///< Minium allowable Jacobian determinant
   
   /** Array of basis functions evaluated at the quadrature points.
    *
@@ -158,8 +161,8 @@ protected :
    * N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
    * N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
    *
-   * size = numQuadPts * numCorners * spaceDim
-   * index = iQuadPt*numCorners*spaceDim + iBasis*spaceDim + iDim
+   * size = numQuadPts * numCorners * cellDim
+   * index = iQuadPt*numCorners*cellDim + iBasis*cellDim + iDim
    */
   double* _basisDeriv;
 

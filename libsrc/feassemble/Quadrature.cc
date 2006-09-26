@@ -217,4 +217,17 @@ pylith::feassemble::Quadrature::_resetGeometry(void)
     _quadPts[i] = 0.0;
 } // _resetGeometry
 
+// ----------------------------------------------------------------------
+// Check determinant of Jacobian against minimum allowable value
+void
+pylith::feassemble::Quadrature::_checkJacobianDet(const double det) const
+{ // _checkJacobianDet
+  if (det < _minJacobian) {
+    std::ostringstream msg;
+    msg << "Determinant of Jacobian (" << det << ") is below minimum\n"
+	<< "permissible value (" << _minJacobian << ")!\n";
+    throw std::runtime_error(msg.str());
+  } // if
+} // _checkJacobianDet
+
 // End of file 

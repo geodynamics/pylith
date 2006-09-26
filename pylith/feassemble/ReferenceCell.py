@@ -34,6 +34,9 @@ class ReferenceCell(Component):
     self.basis = None
     self.basisDeriv = None
     self.quadrature = None
+    self.cellDim = None
+    self.numCorners = None
+    self.numQuadPts = None
     return
 
   def initialize(self):
