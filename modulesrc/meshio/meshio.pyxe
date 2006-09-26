@@ -96,6 +96,22 @@ cdef class MeshIO:
     return PyCObject_FromVoidPtr(self.thisptr, MeshIO_destructor)
 
 
+# ----------------------------------------------------------------------
+cdef class MeshIOAscii(MeshIO):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* MeshIOAscii_constructor()
+    return (void*)(new pylith::meshio::MeshIOAscii);
+    #}embed
+
+    MeshIO.__init__(self)
+    self.thisptr = MeshIOAscii_constructor()
+    self.handle = self._createHandle()
+    return
+
+
   property filename:
     def __set__(self, name):
       """Set filename."""
@@ -112,22 +128,6 @@ cdef class MeshIO:
       return (char*) ((pylith::meshio::MeshIOAscii*) pObj)->filename();
       #}embed
       return MeshIOAscii_filename_get(self.thisptr)
-
-
-# ----------------------------------------------------------------------
-cdef class MeshIOAscii(MeshIO):
-
-  def __init__(self):
-    """Constructor."""
-    # create shim for constructor
-    #embed{ void* MeshIOAscii_constructor()
-    return (void*)(new pylith::meshio::MeshIOAscii);
-    #}embed
-
-    MeshIO.__init__(self)
-    self.thisptr = MeshIOAscii_constructor()
-    self.handle = self._createHandle()
-    return
 
 
 # End of file 
