@@ -18,6 +18,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/Field.py \
 	feassemble/Integrator.py \
 	feassemble/IntegratorElasticity.py \
+	feassemble/Quadrature.py \
 	materials/__init__.py \
 	materials/ElasticIsotropic3D.py \
 	materials/Homogeneous.py \
