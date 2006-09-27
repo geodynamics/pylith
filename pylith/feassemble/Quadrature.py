@@ -68,9 +68,7 @@ class Quadrature(Component):
 
     c = self.cell
     c.initialize()
-    self.cppHandle.initialize(c.basis, c.basisDeriv,
-                              c.quadrature.get_points(),
-                              c.quadrature.get_weights(),
+    self.cppHandle.initialize(c.basis, c.basisDeriv, c.quadPts, c.quadWts,
                               c.cellDim, c.numCorners, c.numQuadPts,
                               self.spaceDim)
     return

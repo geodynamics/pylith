@@ -31,13 +31,17 @@ class ReferenceCell(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="referencecell")
-    self.basis = None
-    self.basisDeriv = None
-    self.quadrature = None
-    self.cellDim = None
-    self.numCorners = None
-    self.numQuadPts = None
+
+    self.basis = None # numpy array w/basis fns at quad pts
+    self.basisDeriv = None # numpy array w/basis fn derivs at quad pts
+    self.quadPts = None # numpy array w/coordinates of quad pts
+    self.quadWts = None # numpy array w/wts of quad pts
+
+    self.cellDim = None # dimension of reference cell
+    self.numCorners = None # number of vertices in reference cell
+    self.numQuadPts = None # number of quadrature points
     return
+
 
   def initialize(self):
     """
