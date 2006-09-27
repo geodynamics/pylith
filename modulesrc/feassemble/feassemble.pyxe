@@ -73,30 +73,53 @@ cdef class Quadrature:
     #}embed
 
     import spatialdata.utils.simplearray
+
+    # basis
     basis = spatialdata.utils.simplearray.objAsSimpleArray(basis)
     if not basis.isCompatible(nd=2, simpletype="double",
                               contiguous=True, notswapped=True):
       raise TypeError, \
             "Argument 'basis' must be a contiguous, 2-D array " \
             "of type double."
-    basis = spatialdata.utils.simplearray.objAsSimpleArray(basisDeriv)
+    if numQuadPts != basis.shape[0] or numCorners != basis.shape[1]:
+      raise TypeError, \
+            "Shape of argument 'basis' must be (numQuadPts, numCorners)."
+
+    # basisDeriv
+    basisDeriv = spatialdata.utils.simplearray.objAsSimpleArray(basisDeriv)
     if not basisDeriv.isCompatible(nd=3, simpletype="double",
                                    contiguous=True, notswapped=True):
       raise TypeError, \
             "Argument 'basisDeriv' must be a contiguous, 3-D array " \
             "of type double."
+    if numQuadPts != basisDeriv.shape[0] or \
+           numCorners != basisDeriv.shape[1] or \
+           cellDim != basisDeriv[2]:
+      raise TypeError, \
+            "Shape of argument 'basisDeriv' must be (numQuadPts, " \
+            "numCorners, cellDim)."
+
+    # quadPts
     quadPts = spatialdata.utils.simplearray.objAsSimpleArray(quadPts)
     if not quadPts.isCompatible(nd=2, simpletype="double",
                                 contiguous=True, notswapped=True):
       raise TypeError, \
             "Argument 'quadPts' must be a contiguous, 2-D array " \
             "of type double."
+    if numQuadPts != quadPts.shape[0] or cellDim != quadPts.shape[1]:
+      raise TypeError, \
+            "Shape of argument 'quadPts' must be (numQuadPts, cellDim)."
+
+    # quadWts
     quadWts = spatialdata.utils.simplearray.objAsSimpleArray(quadWts)
     if not quadWts.isCompatible(nd=1, simpletype="double",
                                 contiguous=True, notswapped=True):
       raise TypeError, \
-            "Argument 'quadWts' must be a contiguous, 2-D array " \
+            "Argument 'quadWts' must be a contiguous, 1-D array " \
             "of type double."
+    if numQuadPts != quadWts.shape[0]:
+      raise TypeError, \
+            "Shape of argument 'quadWts' must be (numQuadPts)."
 
     cdef double* basisCpp
     cdef double* basisDerivCpp

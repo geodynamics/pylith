@@ -52,8 +52,11 @@ class FIATCell(ReferenceCell):
     self.basisDeriv = numpy.array([basisFns.deriv_all(d).tabulate(quadpts) \
                                    for d in range(dim)]).squeeze().transpose()
 
+    self.quadPts = numpy.array(quadrature.get_points())
+    self.quadWts = numpy.array(quadrature.get_weights())
+
     self.cellDim = dim
-    self.numCorners
+    self.numCorners = self.basis.shape[1]
     self.numQuadPts = len(quadrature.get_weights())
 
     self._info.line("Basis:")
