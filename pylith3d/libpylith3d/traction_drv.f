@@ -46,7 +46,6 @@ c
 c...  parameter definitions
 c
       include "ndimens.inc"
-      include "nshape.inc"
       include "nconsts.inc"
       include "rconsts.inc"
 c
@@ -79,12 +78,12 @@ c...loop over traction bc
 c
       do i=1,numtractions
         call traction_cmp(
-     &   btraction,ntractflag,neq,                                      ! force
+     &   btraction,neq,                                                 ! force
      &   x,d,id,numnp,                                                  ! global
      &   dx,numslp,                                                     ! slip
      &   tfault,numfn,                                                  ! split
-     &   gauss2d,sh2d,nsnodes,nsgauss,traction_cmp,                     ! eltype
-     &   tractionverts(1,i),tractionvals(1,i),                          ! traction
+     &   gauss2d,sh2d,nsnodes,nsgauss,                                  ! eltype
+     &   tractionverts(1,i),tractionvals(1,i),i,                        ! traction
      &   skew,numrot,                                                   ! skew
      &   ierr,errstrng)                                                 ! errcode
       end do
