@@ -838,87 +838,64 @@ PyObject * pypylith3d_read_timdat(PyObject *, PyObject *args)
 
 // Read traction BC
 
-// char pypylith3d_read_traction__doc__[] = "";
-// char pypylith3d_read_traction__name__[] = "read_traction";
+char pypylith3d_read_tractions__doc__[] = "";
+char pypylith3d_read_tractions__name__[] = "read_tractions";
 
-// PyObject * pypylith3d_read_traction(PyObject *, PyObject *args)
-// {
-  // PyObject* pyPointerToPres;
-  // PyObject* pyPointerToPdir;
-  // double tractionBcScaleFactor;
-  // PyObject* pyPointerToIelno;
-  // PyObject* pyPointerToIside;
-  // PyObject* pyPointerToIhistry;
-  // int numberTractionBc;
-  // int numberElementNodes;
-  // int numberTractionDirections;
-  // int f77FileInput;
-  // int f77AsciiOutput;
-  // int asciiOutputInt;
-  // char* tractionInputFile;
-  // char* asciiOutputFile;
+PyObject * pypylith3d_read_tractions(PyObject *, PyObject *args)
+{
+  PyObject* pyPointerToTractionverts;
+  PyObject* pyPointerToTractionvals;
+  double tractionScaleFactor;
+  int numberTractionBc;
+  int numberSurfaceElementNodes;
+  int f77FileInput;
+  char* tractionInputFile;
 
-  // int ok = PyArg_ParseTuple(args, "OOdOOOiiiiiiss:read_traction",
-			    // &pyPointerToPres,
-			    // &pyPointerToPdir,
-			    // &tractionBcScaleFactor,
-			    // &pyPointerToIelno,
-			    // &pyPointerToIside,
-			    // &pyPointerToIhistry,
-			    // &numberTractionBc,
-			    // &numberElementNodes,
-			    // &numberTractionDirections,
-			    // &f77FileInput,
-			    // &f77AsciiOutput,
-			    // &asciiOutputInt,
-			    // &tractionInputFile,
-			    // &asciiOutputFile);
+  int ok = PyArg_ParseTuple(args, "OOdiiis:read_tractions",
+			    &pyPointerToTractionverts,
+			    &pyPointerToTractionvals,
+			    &tractionScaleFactor,
+			    &numberTractionBc,
+			    &numberSurfaceElementNodes,
+			    &f77FileInput,
+			    &tractionInputFile);
 
-  // if (!ok) {
-    // return 0;
-  // }
+  if (!ok) {
+    return 0;
+  }
 
-  // int errorcode = 0;
-  // const int maxsize = 4096;
-  // char errorstring[maxsize];
-  // double* pointerToPres = (double*) PyCObject_AsVoidPtr(pyPointerToPres);
-  // double* pointerToPdir = (double*) PyCObject_AsVoidPtr(pyPointerToPdir);
-  // int* pointerToIelno = (int*) PyCObject_AsVoidPtr(pyPointerToIelno);
-  // int* pointerToIside = (int*) PyCObject_AsVoidPtr(pyPointerToIside);
-  // int* pointerToIhistry = (int*) PyCObject_AsVoidPtr(pyPointerToIhistry);
+  int errorcode = 0;
+  const int maxsize = 4096;
+  char errorstring[maxsize];
+  int* pointerToTractionverts = (int*) PyCObject_AsVoidPtr(pyPointerToTractionverts);
+  double* pointerToTractionvals = (double*) PyCObject_AsVoidPtr(pyPointerToTractionvals);
 
-  // read_traction_f(pointerToPres,
-		  // pointerToPdir,
-		  // &tractionBcScaleFactor,
-		  // pointerToIelno,
-		  // pointerToIside,
-		  // pointerToIhistry,
-		  // &numberTractionBc,
-		  // &numberElementNodes,
-		  // &numberTractionDirections,
-		  // &f77FileInput,
-		  // &f77AsciiOutput,
-		  // &asciiOutputInt,
-		  // &errorcode,
-		  // tractionInputFile,
-		  // asciiOutputFile,
-		  // strlen(tractionInputFile),
-		  // strlen(asciiOutputFile));
+  read_tractions_f(pointerToTractionverts,
+		   pointerToTractionvals,
+		   &tractionScaleFactor,
+		   &numberTractionBc,
+		   &numberSurfaceElementNodes,
+		   &f77FileInput,
+		   tractionInputFile,
+		   &errorcode,
+		   errorstring,
+		   strlen(tractionInputFile),
+		   sizeof(errorstring));
     
-// if(0 != exceptionhandler(errorcode, errorstring)) {
-    // return 0;
-  // }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
-  // journal::debug_t debug("pylith3d");
-  // debug
-    // << journal::at(__HERE__)
-    // << "numberTractionBc:" << numberTractionBc
-    // << journal::endl;
+  journal::debug_t debug("pylith3d");
+  debug
+    << journal::at(__HERE__)
+    << "tractionScaleFactor:" << tractionScaleFactor
+    << journal::endl;
 
   // return
-  // Py_INCREF(Py_None);
-  // return Py_None;
-// }
+  Py_INCREF(Py_None);
+  return Py_None;
+}
 
 
 // Read winkler BC
