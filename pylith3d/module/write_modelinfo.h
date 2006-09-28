@@ -139,6 +139,12 @@ extern char pypylith3d_write_timdat__doc__[];
 extern "C"
 PyObject * pypylith3d_write_timdat(PyObject *, PyObject *);
 
+// write traction BC
+extern char pypylith3d_write_tractions__name__[];
+extern char pypylith3d_write_tractions__doc__[];
+extern "C"
+PyObject * pypylith3d_write_tractions(PyObject *, PyObject *);
+
 // write mesh info to UCD file
 extern char pypylith3d_write_ucd_mesh__name__[];
 extern char pypylith3d_write_ucd_mesh__doc__[];

@@ -122,10 +122,10 @@ extern "C"
 PyObject * pypylith3d_scan_timdat(PyObject *, PyObject *);
 
 // scan traction boundary conditions file
-// extern char pypylith3d_scan_traction__name__[];
-// extern char pypylith3d_scan_traction__doc__[];
-// extern "C"
-// PyObject * pypylith3d_scan_traction(PyObject *, PyObject *);
+extern char pypylith3d_scan_tractions__name__[];
+extern char pypylith3d_scan_tractions__doc__[];
+extern "C"
+PyObject * pypylith3d_scan_tractions(PyObject *, PyObject *);
 
 // scan winkler forces info file
 extern char pypylith3d_scan_wink__name__[];

@@ -61,6 +61,12 @@ extern char pypylith3d_preshape__doc__[];
 extern "C"
 PyObject * pypylith3d_preshape(PyObject *, PyObject *);
 
+// Precompute shape function info for element faces
+extern char pypylith3d_preshape2d__name__[];
+extern char pypylith3d_preshape2d__doc__[];
+extern "C"
+PyObject * pypylith3d_preshape2d(PyObject *, PyObject *);
+
 #endif
 
 // version

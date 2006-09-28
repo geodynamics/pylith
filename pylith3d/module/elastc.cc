@@ -102,11 +102,11 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
   PyObject* pyPointerToIvfamily;
   PyObject* pyPointerToListArrayNpar;
   PyObject* pyPointerToIelindx;
-  PyObject* pyPointerToIelno;                 // Traction BC arrays
-  PyObject* pyPointerToIside;
-  PyObject* pyPointerToIhistry;
-  PyObject* pyPointerToPres;
-  PyObject* pyPointerToPdir;
+  PyObject* pyPointerToTractionverts;         // Traction BC arrays
+  PyObject* pyPointerToTractionvals;
+  PyObject* pyPointerToGauss2d;
+  PyObject* pyPointerToSh2d;
+  PyObject* pyPointerToListArrayElementTypeInfo2d;
   PyObject* pyPointerToListArrayPropertyList; // Material property arrays
   PyObject* pyPointerToMaterialModelInfo;
   PyObject* pyPointerToGauss;                 // Element type arrays
@@ -193,11 +193,11 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
 			    &pyPointerToIvfamily,
 			    &pyPointerToListArrayNpar,
                             &pyPointerToIelindx,
-			    &pyPointerToIelno,                 // Traction BC arrays
-			    &pyPointerToIside,
-			    &pyPointerToIhistry,
-			    &pyPointerToPres,
-			    &pyPointerToPdir,
+                            &pyPointerToTractionverts,         // Traction BC arrays
+                            &pyPointerToTractionvals,
+                            &pyPointerToGauss2d,
+                            &pyPointerToSh2d,
+                            &pyPointerToListArrayElementTypeInfo2d,
 			    &pyPointerToListArrayPropertyList, // Material property arrays
 			    &pyPointerToMaterialModelInfo,
 			    &pyPointerToGauss,                 // Element type arrays
@@ -292,11 +292,11 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
   int*  pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
   int*  pointerToListArrayNpar = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNpar);
   int*  pointerToIelindx = (int*) PyCObject_AsVoidPtr(pyPointerToIelindx);
-  int*  pointerToIelno = (int*) PyCObject_AsVoidPtr(pyPointerToIelno);
-  int*  pointerToIside = (int*) PyCObject_AsVoidPtr(pyPointerToIside);
-  int*  pointerToIhistry = (int*) PyCObject_AsVoidPtr(pyPointerToIhistry);
-  double*  pointerToPres = (double*) PyCObject_AsVoidPtr(pyPointerToPres);
-  double*  pointerToPdir = (double*) PyCObject_AsVoidPtr(pyPointerToPdir);
+  int*  pointerToTractionverts = (int*) PyCObject_AsVoidPtr(pyPointerToTractionverts);
+  double*  pointerToTractionvals = (double*) PyCObject_AsVoidPtr(pyPointerToTractionvals);
+  double*  pointerToGauss2d = (double*) PyCObject_AsVoidPtr(pyPointerToGauss2d);
+  double*  pointerToSh2d = (double*) PyCObject_AsVoidPtr(pyPointerToSh2d);
+  int*  pointerToListArrayElementTypeInfo2d = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayElementTypeInfo2d);
   double*  pointerToListArrayPropertyList = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyList);
   int*  pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
   double*  pointerToGauss = (double*) PyCObject_AsVoidPtr(pyPointerToGauss);
@@ -378,11 +378,11 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
 	   pointerToIvfamily,
 	   pointerToListArrayNpar,
 	   pointerToIelindx,
-	   pointerToIelno,                    // Traction BC arrays
-	   pointerToIside,
-	   pointerToIhistry,
-	   pointerToPres,
-	   pointerToPdir,
+	   pointerToTractionverts,            // Traction BC arrays
+	   pointerToTractionvals,
+	   pointerToGauss2d,
+	   pointerToSh2d,
+	   pointerToListArrayElementTypeInfo2d,
 	   pointerToListArrayPropertyList,    // Material property arrays
 	   pointerToMaterialModelInfo,
 	   pointerToGauss,                    // Element type arrays
