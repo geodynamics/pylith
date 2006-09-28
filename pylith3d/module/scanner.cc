@@ -789,7 +789,7 @@ PyObject * pypylith3d_scan_connect(PyObject *, PyObject *args)
 }
 
 
-// Read coordinates
+// Scan coordinates
 
 char pypylith3d_scan_coords__doc__[] = "";
 char pypylith3d_scan_coords__name__[] = "scan_coords";
@@ -831,7 +831,7 @@ PyObject * pypylith3d_scan_coords(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberSpaceDimensions:" << numberNodes
+    << "numberNodes:" << numberNodes
     << journal::endl;
 
   // return
@@ -840,7 +840,7 @@ PyObject * pypylith3d_scan_coords(PyObject *, PyObject *args)
 }
 
 
-// Read differential forces
+// Scan differential forces
 
 char pypylith3d_scan_diff__doc__[] = "";
 char pypylith3d_scan_diff__name__[] = "scan_diff";
@@ -890,7 +890,7 @@ PyObject * pypylith3d_scan_diff(PyObject *, PyObject *args)
 }
 
 
-// Read time steps at which full output is desired
+// Scan time steps at which full output is desired
 
 char pypylith3d_scan_fuldat__doc__[] = "";
 char pypylith3d_scan_fuldat__name__[] = "scan_fuldat";
@@ -943,7 +943,7 @@ PyObject * pypylith3d_scan_fuldat(PyObject *, PyObject *args)
 }
 
 
-// Read load histories
+// Scan load histories
 
 char pypylith3d_scan_hist__doc__[] = "";
 char pypylith3d_scan_hist__name__[] = "scan_hist";
@@ -990,7 +990,7 @@ PyObject * pypylith3d_scan_hist(PyObject *, PyObject *args)
 }
 
 
-// Read element prestresses
+// Scan element prestresses
 
   // char pypylith3d_scan_prestr__doc__[] = "";
   // char pypylith3d_scan_prestr__name__[] = "scan_prestr";
@@ -1046,7 +1046,7 @@ PyObject * pypylith3d_scan_hist(PyObject *, PyObject *args)
   // }
 
 
-// Read local coordinate rotations
+// Scan local coordinate rotations
 
 char pypylith3d_scan_skew__doc__[] = "";
 char pypylith3d_scan_skew__name__[] = "scan_skew";
@@ -1097,7 +1097,7 @@ PyObject * pypylith3d_scan_skew(PyObject *, PyObject *args)
 }
 
 
-// Read slippery node entries
+// Scan slippery node entries
 
 char pypylith3d_scan_slip__doc__[] = "";
 char pypylith3d_scan_slip__name__[] = "scan_slip";
@@ -1144,7 +1144,7 @@ PyObject * pypylith3d_scan_slip(PyObject *, PyObject *args)
 }
 
 
-// Read split node entries
+// Scan split node entries
 
 char pypylith3d_scan_split__doc__[] = "";
 char pypylith3d_scan_split__name__[] = "scan_split";
@@ -1191,7 +1191,7 @@ PyObject * pypylith3d_scan_split(PyObject *, PyObject *args)
 }
 
 
-// Read time step data
+// Scan time step data
 
 char pypylith3d_scan_timdat__doc__[] = "";
 char pypylith3d_scan_timdat__name__[] = "scan_timdat";
@@ -1245,56 +1245,62 @@ PyObject * pypylith3d_scan_timdat(PyObject *, PyObject *args)
 }
 
 
-// Read traction BC
 
-// char pypylith3d_scan_traction__doc__[] = "";
-// char pypylith3d_scan_traction__name__[] = "scan_traction";
+// Scan traction BC
 
-// PyObject * pypylith3d_scan_traction(PyObject *, PyObject *args)
-// {
-  // char* tractionBcUnits;
-  // int f77FileInput;
-  // char* tractionInputFile;
+char pypylith3d_scan_tractions__doc__[] = "";
+char pypylith3d_scan_tractions__name__[] = "scan_tractions";
 
-  // int ok = PyArg_ParseTuple(args, "sis:scan_traction",
-			    // &tractionBcUnits,
-			    // &f77FileInput,
-			    // &tractionInputFile);
+PyObject * pypylith3d_scan_tractions(PyObject *, PyObject *args)
+{
+  int maxElementNodes2d;
+  int numberDegreesFreedom;
+  int f77FileInput;
+  char *tractionUnits;
+  char *tractionInputFile;
 
-  // if (!ok) {
-    // return 0;
-  // }
+  int ok = PyArg_ParseTuple(args, (char *) "iiiss:scan_tractions",
+                            &maxElementNodes2d,
+                            &numberDegreesFreedom,
+			    &f77FileInput,
+			    &tractionUnits,
+			    &tractionInputFile);
 
-  // int errorcode = 0;
-  // const int maxsize = 4096;
-  // char errorstring[maxsize];
-  // int numberTractionBc = 0;
+  if (!ok) {
+    return 0;
+  }
 
-  // scan_traction_f(&numberTractionBc,
-		  // &f77FileInput,
-		  // tractionBcUnits,
-		  // tractionInputFile,
-		  // &errorcode,
-		  // errorstring,
-		  // strlen(tractionBcUnits),
-		  // strlen(tractionInputFile),
-		  // sizeof(errorstring));
+  int errorcode = 0;
+  const int maxsize = 4096;
+  char errorstring[maxsize];
+  int numberTractionBc = 0;
+
+  scan_tractions_f(&numberTractionBc,
+		   &maxElementNodes2d,
+		   &numberDegreesFreedom,
+		   &f77FileInput,
+		   tractionUnits,
+		   tractionInputFile,
+		   &errorcode,
+		   errorstring,
+		   strlen(tractionUnits),
+		   strlen(tractionInputFile),
+		   sizeof(errorstring));
     
-  // if(0 != exceptionhandler(errorcode, errorstring)) {
-    // return 0;
-  // }
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
 
-  // journal::debug_t debug("pylith3d");
-  // debug
-    // << journal::at(__HERE__)
-    // << "numberTractionBc:" << numberTractionBc
-    // << journal::endl;
+  journal::debug_t debug("pylith3d");
+  debug
+    << journal::at(__HERE__)
+    << "numberTractionBc:" << numberTractionBc
+    << journal::endl;
 
   // return
-  // Py_INCREF(Py_None);
-  // return Py_BuildValue("i",numberTractionBc);
-// }
-
+  Py_INCREF(Py_None);
+  return Py_BuildValue((char *) "i", numberTractionBc);
+}
 
 // Read winkler BC
 
