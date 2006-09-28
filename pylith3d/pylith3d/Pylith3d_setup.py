@@ -627,13 +627,12 @@ class Pylith3d_setup(Component):
         self.pointerToTractionvals = pylith3d.allocateDouble(
             self.numberDegreesFreedom*self.numberTractionBc)
 
-        pylith3d.read_traction(
+        pylith3d.read_tractions(
             self.pointerToTractionverts,
             self.pointerToTractionvals,
             self.tractionBcScaleFactor,
             self.numberTractionBc,
             self.numberSurfaceElementNodes,
-            self.numberDegreesFreedom,
             self.f77FileInput,
             self.tractionInputFile)
 
@@ -903,7 +902,7 @@ class Pylith3d_setup(Component):
 
 	print ""
         print "Hello from pl3dsetup.sortmesh (begin)!"
-        print "Renumbering elements, traction BC, split nodes, and slippery nodes:"
+        print "Renumbering elements, split nodes, and slippery nodes:"
 
         # Initialize variables that are defined in this function.
 
