@@ -1699,18 +1699,14 @@ class Pylith3d_setup(Component):
                 self.ucdOutputRoot)
 
         # Write traction info
-        pylith3d.write_traction(
+        pylith3d.write_tractions(
             self.pointerToTractionverts,
             self.pointerToTractionvals,
             self.numberTractionBc,
             self.numberSurfaceElementNodes,
-            self.numberDegreesFreedom,
             self.f77AsciiOutput,
-            self.f77PlotOutput,
             self.asciiOutputInt,
-            self.plotOutputInt,
-            self.asciiOutputFile,
-            self.plotOutputFile)
+            self.asciiOutputFile)
     
         # Write split node info
         pylith3d.write_split(
