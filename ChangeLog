@@ -1,3 +1,447 @@
+2006-09-28 19:12  leif
+
+	* [r4650] Tagged PyLith v0.8.1.
+
+2006-09-22 15:50  willic3
+
+	* [r4588] Fixed dependency for blockrot3.
+
+2006-09-15 03:54  willic3
+
+	* [r4552] Simple test for traction boundary conditions.
+
+2006-09-14 17:48  willic3
+
+	* [r4531] Another attempt at fixing string.
+
+2006-09-14 17:41  willic3
+
+	* [r4530] Fixed string problem.
+
+2006-09-14 17:36  willic3
+
+	* [r4529] Added options to get partitioner from command-line.
+	* [r4528] Added in options for getting partitioner from
+	  command-line.
+
+2006-09-12 15:38  knepley
+
+	* [r4517] Error checking for MatAssembly
+
+2006-09-10 03:05  willic3
+
+	* [r4507] Added additional blockrot code that works with present
+	  auxiliary fault file. Once we settle on formats, these codes
+	  will be merged. Added entries to makefiles.
+
+2006-09-06 21:30  willic3
+
+	* [r4486] Added initial version of blockrot2 program, which still
+	  needs to be tested and possibly debugged. This code takes UCD
+	  and auxiliary fault info from LaGriT, as well as a parameter
+	  file, and creates split node input from block rotation info.
+	  Also added sample parameter file and entries in Makefile.am and
+	  makefile.
+
+2006-09-06 00:40  baagaard
+
+	* [r4478] Tutorial. Made tutor.py executable.
+
+2006-09-06 00:25  baagaard
+
+	* [r4477] User guide. Fixed typo in xx.time comment. <<0 should be
+	  <0.
+
+2006-09-05 19:40  sue
+
+	* [r4472] fixed typos found in readthru
+
+2006-09-05 19:17  sue
+
+	* [r4471] fixed typos found in readthru
+
+2006-09-05 18:54  sue
+
+	* [r4470] fixed typos found in readthru
+
+2006-09-05 13:38  knepley
+
+	* [r4469] Looks like parallel bm1b is working
+
+2006-09-05 03:24  knepley
+
+	* [r4468] Now bm1b works in serial for me
+
+2006-09-04 22:19  knepley
+
+	* [r4467] Now comiling with new Sieve
+
+2006-08-29 16:37  baagaard
+
+	* [r4447] User guide. Fixed typos related to description of fault
+	  geometry for reversenog benchmark. Fixed corresponding figure of
+	  geometry.
+
+2006-08-28 20:18  sue
+
+	* [r4441] fixed URLs to enable hotlink, suppressed pg no on title
+	  page, changed url to pylith binaries from leif shipping per
+	  Walter, other small errors fixed
+
+2006-08-28 16:15  baagaard
+
+	* [r4440] Removed latex title stuff which is now replaced by cover
+	  page.
+
+2006-08-28 01:11  willic3
+
+	* [r4439] Altered routine, bindings and calls to include missing
+	  array (nprint).
+
+2006-08-26 22:39  sue
+
+	* [r4438] added edited lyx files
+
+2006-08-25 22:57  sue
+
+	* [r4435] added lyx file and all files edited
+
+2006-08-25 21:44  leif
+
+	* [r4433] Bumped version number.
+
+2006-08-25 18:41  willic3
+
+	* [r4432] Replaced BLAS call in makeucd.f with call to an included
+	  subroutine. Makefile has been modified so that BLAS is no longer
+	  linked.
+
+2006-08-24 23:27  baagaard
+
+	* [r4428] Tutorial files. Moved figures to archive (where they
+	  belong) from workarea.
+
+2006-08-24 23:26  baagaard
+
+	* [r4427] Tutorial files. Added sample Paraview figs.
+
+2006-08-24 23:17  baagaard
+
+	* [r4426] User guide. Added figures of output. Fixed text of
+	  splitcube visualizations to use y-disp (only meaningful
+	  component.
+
+2006-08-24 22:29  baagaard
+
+	* [r4425] Switched from copyfile() to copy() to preserve
+	  permissions on executable scripts.
+
+2006-08-24 22:23  sue
+
+	* [r4424] added lyx file
+
+2006-08-24 22:22  sue
+
+	* [r4423] added lyx file
+
+2006-08-24 22:10  baagaard
+
+	* [r4422] Fixed bug in ReadBounary_PyLith where units were ignored
+	  incorrectly. The line with displacement units is read as the
+	  last thing in IgnoreComments_PyLith (which causes it to stop).
+	  Fix is to remove line reading displacement units.
+
+2006-08-24 21:27  baagaard
+
+	* [r4421] Fixed bug in scanner wherein iIgnoreComments_PyLith
+	  didn't terminate on encountering '\0'. This brings the ignore
+	  comments functionality in line with what is in meshpylith.c in
+	  PETSc.
+
+2006-08-24 20:56  baagaard
+
+	* [r4420] Created utils/Makefile.am. Updated configure.ac
+	  accordingly.
+
+2006-08-24 18:35  baagaard
+
+	* [r4413] User guide. Added not on compiler bug in gcc-4.1.
+
+2006-08-24 15:10  willic3
+
+	* [r4412] Added new blockrot.f code to compute split node
+	  displacements corresponding to given block rotations, using the
+	  UCD output from LaGriT, and updated the makefile to include the
+	  new code. Increased the dimensions on makeucd.f to handle some
+	  of the bigger meshes.
+
+2006-08-23 23:27  baagaard
+
+	* [r4409] User guide. Brought splitcube up to date. Added figures
+	  for splitcube tutorial.
+
+2006-08-23 23:19  sue
+
+	* [r4407] added lyx files
+	* [r4406] added lyx files
+
+2006-08-23 23:18  sue
+
+	* [r4405] added lyx files
+
+2006-08-23 19:39  baagaard
+
+	* [r4403] Updated to split cube problem. Fixed units in .par file.
+
+2006-08-23 03:34  baagaard
+
+	* [r4402] Added files for splitsube tutorial.
+
+2006-08-22 21:44  baagaard
+
+	* [r4401] Changed name of splittest to splitcube.
+
+2006-08-22 21:42  baagaard
+
+	* [r4400] Continued docbook to LaTeX conversion. Cleaned up
+	  fileformats.
+
+2006-08-22 15:30  baagaard
+
+	* [r4398] First stab at converting docbook files to LaTeX.
+
+2006-08-21 14:49  willic3
+
+	* [r4393] Changed readucd2.par to conform to new version of
+	  readucd2 code. Added makeucd utility to makefile.
+
+2006-08-18 21:34  knepley
+
+	* [r4392] Activated matrix preallocation in serial - This will
+	  break parallel code right now
+
+2006-08-18 21:13  willic3
+
+	* [r4391] Changed the way I deal with faults, which was wrong
+	  before. At present, the UCD file needs to contain one nodal
+	  attribute and one element attribute per fault, to allow for
+	  nodes and elements that lie on more than one fault. This still
+	  does not solve the problem when a node/element pair lie on more
+	  than one fault, which can not be handled with split or slippery
+	  nodes anyway. The problem of duplicate entries will have to be
+	  dealt with somehow in postprocessing. Also added in options for
+	  reading fault normals if they are available. The accompanying
+	  parameter file needs to be updated.
+
+2006-08-15 21:59  knepley
+
+	* [r4299] Fixed prototype
+
+2006-08-12 20:45  knepley
+
+	* [r4277] Now split nodes seem to work
+
+2006-08-12 15:42  knepley
+
+	* [r4276] Looks like its working in parallel now
+
+2006-08-04 22:14  knepley
+
+	* [r4229] Fix mesh viewer name
+
+2006-08-04 20:51  willic3
+
+	* [r4227] Initial version of code to turn UCD pieces from
+	  LithoMop/PyLith into complete UCD files. All behavior is
+	  controlled by command-line arguments including options for
+	  interpolating state variables to nodes and averaging Gauss point
+	  values to element centroids. The code definitely needs more
+	  testing. So far, it produces a valid UCD file and the results
+	  look reasonable, but no quantitative testing has been done.
+	  Likely future enhancements include the ability to deal with
+	  binary UCD files.
+
+2006-08-04 19:18  knepley
+
+	* [r4226] Fixed ALE::Point refrences to Sieve points
+
+2006-08-03 19:39  willic3
+
+	* [r4219] Initial (unfinished) version of code to create complete
+	  UCD files out of pieces created by LithoMop and PyLith. Includes
+	  options to interpolate stresses to nodes and average stresses to
+	  Gauss points. Current limitations: Only works for linear hexes
+	  and tets. Only works for ASCII UCD format. Somewhat primitive
+	  stress interpolation algorithm.
+
+2006-08-01 16:48  knepley
+
+	* [r4187] Changes which allow serial running with new Sieve fields
+
+2006-07-20 14:33  willic3
+
+	* [r4039] Dimension parameters have been changed to deal with the
+	  high resolution benchmarks.
+
+2006-07-18 21:55  cassie
+
+	* [r4025] just testing
+
+2006-07-14 17:47  knepley
+
+	* [r4019] Small fix
+
+2006-07-14 17:20  knepley
+
+	* [r4018] Updates for new Sieve stuff
+
+2006-07-13 15:22  willic3
+
+	* [r4015] Updated file to reflect actual values used for BM5.
+
+2006-07-13 02:23  willic3
+
+	* [r4014] Fixed stupid indexing error.
+
+2006-07-12 21:51  willic3
+
+	* [r4013] Added utilities and sample parameter files, as well as a
+	  README containing brief code descriptions. The scaling codes are
+	  simple and appear to work OK. The readucd2 code has been tested
+	  on a single example (BM5 created with LaGriT) and appears to
+	  work OK, but more testing is probably needed. I still need to
+	  make this whole directory part of the GNU build procedure and
+	  install the executables.
+
+2006-07-11 19:02  willic3
+
+	* [r4004] Added new version of faultcalc that uses essentially no
+	  memory. This code should be at least as efficient as the
+	  previous version, and relies only on the presence of the .fbc
+	  and .fcoord files created by readucd or readnetgen, as well as a
+	  parameter file.
+
+2006-07-11 17:50  willic3
+
+	* [r4003] Two utility codes that were previously available only
+	  with the tutorial have been added to the repository.
+
+2006-07-11 17:49  willic3
+
+	* [r4002] Update code to more recent version that includes
+	  features such as getting BC directly from an auxiliary values
+	  file.
+
+2006-07-07 14:48  willic3
+
+	* [r3980] Kludgy fix for the case where Sieve produces an empty
+	  split node file. In this case the file does not contain an EOF
+	  and an error would ordinarily be returned.
+
+2006-07-05 23:40  baagaard
+
+	* [r3921] User guide. Fixed mercurial version number.
+
+2006-07-05 23:19  baagaard
+
+	* [r3920] User guide. Fixed orientation of hex8 element. Added
+	  more notes on building developer version.
+
+2006-07-05 18:14  baagaard
+
+	* [r3917] User guide. Added instructions for building developers
+	  version. Added info on support for hex element.
+
+2006-07-03 23:18  baagaard
+
+	* [r3915] User guide, tutorial. Added workflow diagram for how
+	  input files are created.
+
+2006-07-03 21:02  baagaard
+
+	* [r3914] User guide. Changed name of tutorial.
+
+2006-07-03 21:01  baagaard
+
+	* [r3913] User guide. Changed name of tutorial.
+
+2006-07-03 20:43  baagaard
+
+	* [r3912] Tutorial. Updated tutor to use Python runbm.
+
+2006-07-03 20:36  baagaard
+
+	* [r3911] Tutorial. Converted runbm5 from bash script to Python
+	  script. Changed name to runbm. This removes dependency on bash
+	  shell for running a job.
+
+2006-07-03 19:38  baagaard
+
+	* [r3910] Tutorial. Finished converting tutor shell script to
+	  Python. This removed reliance on bash shell for tutor.
+
+2006-07-03 16:24  baagaard
+
+	* [r3909] Created tutorials subdir with input files (don't include
+	  sim output). reversenog is the old bm5.
+
+2006-06-30 21:52  baagaard
+
+	* [r3907] User guide. Fixed fault dimensions in tutorialbm5.
+
+2006-06-30 17:13  willic3
+
+	* [r3906] Increased max dimensions for readnetgen and changed some
+	  makefile options. Need to create a Makefile.am for these codes
+	  and make all utilities part of the GNU build procedure.
+
+2006-06-28 17:58  willic3
+
+	* [r3905] Removed blank line that makes parser blow up.
+
+2006-06-28 16:59  willic3
+
+	* [r3904] Added fuldat file and simple shell script to run pt1.
+
+2006-06-28 16:57  willic3
+
+	* [r3903] Added simple split node test for hexes.
+
+2006-06-28 14:13  knepley
+
+	* [r3902] Turned off mesh interpolation by default - Now
+	  controlled by -scanner.interpolateMesh Fixed patchtest to run
+	  with new stuff
+
+2006-06-26 21:27  baagaard
+
+	* [r3892] User guide. Added ps target for makefile. Fixed install
+	  instructions for linux (LD_LIBRARY_PATH). Fixed long lines in
+	  tutorial.
+
+2006-06-24 23:25  baagaard
+
+	* [r3882] User guide. Added figures illustrating output for bm5
+	  tutorial. Added how to run on Windows.
+
+2006-06-24 00:35  leif
+
+	* [r3879] Updated license headers to MIT license using my
+	  'licencetool' Perl script.
+
+2006-06-24 00:31  leif
+
+	* [r3878] Minor tweak to 'configure': Pythia's MPI packages are
+	  not actually required.
+
+2006-06-24 00:20  leif
+
+	* [r3877] Added boilerplate GNU-style text info files: AUTHORS,
+	  INSTALL, ChangeLog, COPYING, NEWS, README. "ChangeLog" generated
+	  with svn2cl (http://ch.tudelft.nl/~arthur/svn2cl/) using the
+	  following command: svn log --xml | xsltproc --stringparam
+	  include-rev yes ~/install/svn2cl-0.3/svn2cl.xsl - > ChangeLog
+
 2006-06-23 22:45  cassie
 
 	* [r3874] updated cover for manual
