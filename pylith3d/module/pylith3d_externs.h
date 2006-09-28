@@ -60,7 +60,7 @@
 #define read_split_f FC_FUNC_(read_split, READ_SPLIT)
 #define read_stateout_f FC_FUNC_(read_stateout, READ_STATEOUT)
 #define read_timdat_f FC_FUNC_(read_timdat, READ_TIMDAT)
-// #define read_traction_f FC_FUNC_(read_traction, READ_TRACTION)
+#define read_tractions_f FC_FUNC_(read_tractions, READ_TRACTIONS)
 #define read_wink_f FC_FUNC_(read_wink, READ_WINK)
 // #define read_winkx_f FC_FUNC_(read_winkx, READ_WINKX)
 #define scan_bc_f FC_FUNC_(scan_bc, SCAN_BC)
@@ -74,7 +74,7 @@
 #define scan_slip_f FC_FUNC_(scan_slip, SCAN_SLIP)
 #define scan_split_f FC_FUNC_(scan_split, SCAN_SPLIT)
 #define scan_timdat_f FC_FUNC_(scan_timdat, SCAN_TIMDAT)
-// #define scan_traction_f FC_FUNC_(scan_traction, SCAN_TRACTION)
+#define scan_tractions_f FC_FUNC_(scan_tractions, SCAN_TRACTIONS)
 #define scan_wink_f FC_FUNC_(scan_wink, SCAN_WINK)
 #define scan_winkx_f FC_FUNC_(scan_winkx, SCAN_WINKX)
 #define sort_elements_f FC_FUNC_(sort_elements, SORT_ELEMENTS)
@@ -173,10 +173,10 @@ extern "C" {
 		    int *,
 		    int *,
 		    int *,             // traction
-		    int *,
-		    int *,
 		    double *,
 		    double *,
+		    double *,
+		    int *,
 		    double *,          // material
 		    int *,
 		    double *,          // element type
@@ -290,10 +290,10 @@ extern "C" {
 		int *,
 		int *,
 		int *,             // traction
-		int *,
-		int *,
 		double *,
 		double *,
+		double *,
+		int *,
 		double *,          // material
 		int *,
 		double *,          // element type
@@ -413,6 +413,15 @@ extern "C" {
 		  int *,
 		  int *,
 		  char *,size_t);
+
+  void preshape2d_f(double *,
+		    double *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    int *,
+		    char *,size_t);
 
   void read_bc_f(double*,
 		 double*,
@@ -593,23 +602,17 @@ extern "C" {
 		     size_t,
 		     size_t);
 
-  // void read_traction_f(double *,
-		       // double *,
-		       // double *,
-		       // int *,
-		       // int *,
-		       // int *,
-		       // int *,
-		       // int *,
-		       // int *,
-		       // int *,
-		       // int *,
-		       // int *,
-		       // int *,
-		       // char *,
-		       // char *,
-		       // size_t,
-		       // size_t);
+  void read_tractions_f(int *,
+			double *,
+		        double *,
+		        int *,
+		        int *,
+		        int *,
+		        char *,
+		        int *,
+		        char *,
+		        size_t,
+		        size_t);
 
   void read_wink_f(double *,
 		   double *,
@@ -755,15 +758,16 @@ extern "C" {
 		     size_t,
 		     size_t);
 
-  // void scan_traction_f(int *,
-		       // int *,
-		       // int *,
-		       // int *,
-		       // int *,
-		       // char *,
-		       // char *,
-		       // size_t,
-		       // size_t);
+  void scan_tractions_f(int *,
+		        int *,
+		        int *,
+		        char *,
+		        char *,
+		        int *,
+		        char *,
+		        size_t,
+		        size_t,
+		        size_t);
 
   void scan_wink_f(int *,
 		   int *,
@@ -873,10 +877,10 @@ extern "C" {
 		int *,
 		int *,
 		int *,             // traction
-		int *,
-		int *,
 		double *,
 		double *,
+		double *,
+		int *,
 		double *,          // material
 		int *,             // 60
 		double *,          // element type
@@ -982,10 +986,10 @@ extern "C" {
 		int *,
 		int *,
 		int *,             // traction
-		int *,
-		int *,
 		double *,
 		double *,
+		double *,
+		int *,
 		double *,          // material
 		int *,             // 60
 		double *,          // element type
@@ -1261,6 +1265,18 @@ extern "C" {
 		       int *,
 		       int *,
 		       char *,size_t);
+
+  void write_tractions_f(int *,
+			 double *,
+			 int *,
+			 int *,
+			 int *,
+			 int *,
+			 char *,
+			 int *,
+			 char *,
+			 size_t,
+			 size_t);
 
   void write_timdat_f(double *,
 		      double *,

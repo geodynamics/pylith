@@ -1201,6 +1201,68 @@ PyObject * pypylith3d_write_timdat(PyObject *, PyObject *args)
 }
 
 
+// Write traction BC
+
+char pypylith3d_write_tractions__doc__[] = "";
+char pypylith3d_write_tractions__name__[] = "write_tractions";
+
+PyObject * pypylith3d_write_tractions(PyObject *, PyObject *args)
+{
+  PyObject* pyPointerToTractionverts;
+  PyObject* pyPointerToTractionvals;
+  int numberTractionBc;
+  int numberSurfaceElementNodes;
+  int f77AsciiOutput;
+  int asciiOutputInt;
+  char* asciiOutputFile;
+
+  int ok = PyArg_ParseTuple(args, "OOiiiis:write_tractions",
+			    &pyPointerToTractionverts,
+			    &pyPointerToTractionvals,
+			    &numberTractionBc,
+			    &numberSurfaceElementNodes,
+			    &f77AsciiOutput,
+			    &asciiOutputInt,
+			    &asciiOutputFile);
+
+  if (!ok) {
+    return 0;
+  }
+
+  int errorcode = 0;
+  const int maxsize = 4096;
+  char errorstring[maxsize];
+  int* pointerToTractionverts = (int*) PyCObject_AsVoidPtr(pyPointerToTractionverts);
+  double* pointerToTractionvals = (double*) PyCObject_AsVoidPtr(pyPointerToTractionvals);
+
+  write_tractions_f(pointerToTractionverts,
+		    pointerToTractionvals,
+		    &numberTractionBc,
+		    &numberSurfaceElementNodes,
+		    &f77AsciiOutput,
+		    &asciiOutputInt,
+		    asciiOutputFile,
+		    &errorcode,
+		    errorstring,
+		    strlen(asciiOutputFile),
+		    sizeof(errorstring));
+    
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
+
+  journal::debug_t debug("pylith3d");
+  debug
+    << journal::at(__HERE__)
+    << "numberTractionBc:" << numberTractionBc
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+
 // Write mesh info to UCD file
 
 char pypylith3d_write_ucd_mesh__doc__[] = "";

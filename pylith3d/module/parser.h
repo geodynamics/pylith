@@ -111,10 +111,10 @@ extern "C"
 PyObject * pypylith3d_read_timdat(PyObject *, PyObject *);
 
 // read traction boundary conditions
-// extern char pypylith3d_read_traction__name__[];
-// extern char pypylith3d_read_traction__doc__[];
-// extern "C"
-// PyObject * pypylith3d_read_traction(PyObject *, PyObject *);
+extern char pypylith3d_read_tractions__name__[];
+extern char pypylith3d_read_tractions__doc__[];
+extern "C"
+PyObject * pypylith3d_read_tractions(PyObject *, PyObject *);
 
 // read winkler force information
 extern char pypylith3d_read_wink__name__[];
