@@ -39,7 +39,7 @@ class pylith::feassemble::TestQuadrature : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestQuadrature );
   CPPUNIT_TEST( testClone );
-  CPPUNIT_TEST( testJacobianTol );
+  CPPUNIT_TEST( testMinJacobian );
   CPPUNIT_TEST( testInitialize );
 
   CPPUNIT_TEST_SUITE_END();
@@ -50,8 +50,8 @@ public :
   /// Test clone()
   void testClone(void);
 
-  /// Test jacobianTolerance()
-  void testJacobianTol(void);
+  /// Test minJacobian()
+  void testMinJacobian(void);
 
   /// Test initialize()
   void testInitialize(void);

@@ -28,7 +28,7 @@ void
 pylith::feassemble::TestQuadrature::testClone(void)
 { // testClone
   // Semi-random values manually set to check cloning
-  const double jacobianTol = 1.0;
+  const double minJacobian = 1.0;
   const int cellDim = 1;
   const int numCorners = 2;
   const int numQuadPts = 1;
@@ -44,7 +44,7 @@ pylith::feassemble::TestQuadrature::testClone(void)
 
   // Set values
   Quadrature1D qOrig;
-  qOrig._jacobianTol = jacobianTol;
+  qOrig._minJacobian = minJacobian;
   qOrig._cellDim = cellDim;
   qOrig._numCorners = numCorners;
   qOrig._numQuadPts = numQuadPts;
@@ -88,7 +88,7 @@ pylith::feassemble::TestQuadrature::testClone(void)
   // Check clone
   CPPUNIT_ASSERT(0 != qCopy);
 
-  CPPUNIT_ASSERT_EQUAL(jacobianTol, qCopy->_jacobianTol);
+  CPPUNIT_ASSERT_EQUAL(minJacobian, qCopy->_minJacobian);
   CPPUNIT_ASSERT_EQUAL(cellDim, qCopy->_cellDim);
   CPPUNIT_ASSERT_EQUAL(numCorners, qCopy->_numCorners);
   CPPUNIT_ASSERT_EQUAL(numQuadPts, qCopy->_numQuadPts);
@@ -131,15 +131,15 @@ pylith::feassemble::TestQuadrature::testClone(void)
 } // testCopy
 
 // ----------------------------------------------------------------------
-// Test jacobianTolerance()
+// Test minJacobian()
 void
-pylith::feassemble::TestQuadrature::testJacobianTol(void)
-{ // testJacobianTol
+pylith::feassemble::TestQuadrature::testMinJacobian(void)
+{ // testMinJacobian
   Quadrature1D q;
-  const double tolerance = 1.0;
-  q.jacobianTolerance(tolerance);
-  CPPUNIT_ASSERT_EQUAL(tolerance, q._jacobianTol);
-} // testJacobianTol
+  const double min = 1.0;
+  q.minJacobian(min);
+  CPPUNIT_ASSERT_EQUAL(min, q._minJacobian);
+} // testMinJacobian
 
 // ----------------------------------------------------------------------
 // Test initialize()
@@ -155,7 +155,7 @@ pylith::feassemble::TestQuadrature::testInitialize(void)
   const double basisDeriv[] = { -0.5, 0.5 };
   const double quadPtsRef[] = { 0.0 };
   const double quadWts[] = { 2.0 };
-  const double jacobianTol = 1.0;
+  const double minJacobian = 1.0;
 
   Quadrature1D q;
   q.initialize(basis, basisDeriv, quadPtsRef, quadWts,
@@ -214,7 +214,7 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(
   const double* jacobianInv = data.jacobianInv;
   const double* jacobianDet = data.jacobianDet;
 
-  const double jacobianTol = 1.0e-06;
+  const double minJacobian = 1.0e-06;
 
   CPPUNIT_ASSERT(0 != basis);
   CPPUNIT_ASSERT(0 != basisDeriv);
@@ -227,7 +227,7 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(
   CPPUNIT_ASSERT(0 != jacobianInv);
   CPPUNIT_ASSERT(0 != jacobianDet);
 
-  pQuad->jacobianTolerance(jacobianTol);
+  pQuad->minJacobian(minJacobian);
   pQuad->initialize(basis, basisDeriv, quadPtsRef, quadWts,
 		    cellDim, numCorners, numQuadPts, spaceDim);
 
