@@ -1254,14 +1254,12 @@ char pypylith3d_scan_tractions__name__[] = "scan_tractions";
 PyObject * pypylith3d_scan_tractions(PyObject *, PyObject *args)
 {
   int maxElementNodes2d;
-  int numberDegreesFreedom;
   int f77FileInput;
   char *tractionUnits;
   char *tractionInputFile;
 
-  int ok = PyArg_ParseTuple(args, (char *) "iiiss:scan_tractions",
+  int ok = PyArg_ParseTuple(args, (char *) "iiss:scan_tractions",
                             &maxElementNodes2d,
-                            &numberDegreesFreedom,
 			    &f77FileInput,
 			    &tractionUnits,
 			    &tractionInputFile);
@@ -1277,7 +1275,6 @@ PyObject * pypylith3d_scan_tractions(PyObject *, PyObject *args)
 
   scan_tractions_f(&numberTractionBc,
 		   &maxElementNodes2d,
-		   &numberDegreesFreedom,
 		   &f77FileInput,
 		   tractionUnits,
 		   tractionInputFile,
