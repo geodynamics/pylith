@@ -236,6 +236,62 @@ PyObject * pypylith3d_preshape(PyObject *, PyObject *args)
   Py_INCREF(Py_None);
   return Py_None;
 }
+
+// Precompute shape function info for element faces
+
+char pypylith3d_preshape2d__doc__[] = "";
+char pypylith3d_preshape2d__name__[] = "preshape2d";
+
+PyObject * pypylith3d_preshape2d(PyObject *, PyObject *args)
+{
+  PyObject* pyPointerToSh2d;
+  PyObject* pyPointerToGauss2d;
+  int quadratureOrderInt;
+  int elementType;
+  int numberSurfaceElementNodes;
+  int numberSurfaceElementGaussPoints;
+
+  int ok = PyArg_ParseTuple(args, "OOiiii:preshape2d",
+			    &pyPointerToSh2d,
+			    &pyPointerToGauss2d,
+			    &quadratureOrderInt,
+			    &elementType,
+			    &numberSurfaceElementNodes,
+			    &numberSurfaceElementGaussPoints);
+
+  if (!ok) {
+    return 0;
+  }
+
+  double* pointerToSh2d = (double*) PyCObject_AsVoidPtr(pyPointerToSh2d);
+  double* pointerToGauss2d = (double*) PyCObject_AsVoidPtr(pyPointerToGauss2d);
+  int errorcode = 0;
+  const int maxsize = 4096;
+  char errorstring[maxsize];
+
+  preshape2d_f(pointerToSh2d,
+	       pointerToGauss2d,
+	       &quadratureOrderInt,
+	       &elementType,
+	       &numberSurfaceElementNodes,
+	       &numberSurfaceElementGaussPoints,
+	       &errorcode,
+	       errorstring,
+	       sizeof(errorstring));
+
+  if(0 != exceptionhandler(errorcode, errorstring)) {
+    return 0;
+  }
+    
+  journal::debug_t debug("pylith3d");
+  debug
+    << journal::at(__HERE__)
+    << "quadratureOrderInt:" << quadratureOrderInt
+    << journal::endl;
+
+  // return
+  Py_INCREF(Py_None);
+  return Py_None;
     
 // version
 // $Id: setup.cc,v 1.4 2005/06/07 19:39:11 willic3 Exp $
