@@ -37,7 +37,7 @@ c...  associate local names with array elements
 c
       numelv=npar(1)
       numat=npar(2)
-      numpr=npar(3)
+      numtractions=npar(3)
       numslp=npar(4)
       numfn=npar(5)
       ipstrs=npar(6)

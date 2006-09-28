@@ -39,8 +39,8 @@ c
 c
 c...  scalar parameters associated with arrays
 c
-      integer numelv,numat,numpr,numslp,numfn,ipstrs,ipauto,nstatesz,
-     & nstatesz0,nvfamilies,numdif,intord
+      integer numelv,numat,numtractions,numslp,numfn,ipstrs,ipauto,
+     & nstatesz,nstatesz0,nvfamilies,numdif,intord
 c
 c version
 c $Id: npar_dim.inc,v 1.5 2005/03/25 01:36:54 willic3 Exp $
