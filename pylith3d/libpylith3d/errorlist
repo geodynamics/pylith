@@ -1,0 +1,31 @@
+#  Temporary (soon-to-be-revised) list of error codes so far.
+#  These need to be divided into different exception categories.
+#
+#  Tentative categories:
+#  1-99:	I/O errors
+#  100-199:	Invalid values
+#  200-299:	Arithmetic errors
+#  negative:	Invalid jacobian
+#  300-399:	Memory errors
+#
+#  ierr		Error
+     1		Error opening file for reading.
+     2		Error opening file for writing.
+     3		Error reading from file.
+     4		Error writing to file.
+     5		Invalid or missing units specification.
+   100		Attempt to use undefined history.
+   101		Attempt to use undefined material model.
+   102		Invalid number of state variables.
+   103		Zero or negative diagonal in stiffness matrix.
+   104		BC assigned for nonexistent node.
+   105		Wrong number of nodes read.
+   106		Invalid element type specified.
+   107		Invalid material type specified.
+   108		Undefined node used in connectivity.
+   109		Differential force applied to non-slippery node.
+   110          Matrix not positive-definite.
+   111		Load history times are out of order.
+   112		Not enough points to define a plane for slippery nodes.
+   113		Zero or negative jacobian for element.
+   300		Insufficient memory assigned.

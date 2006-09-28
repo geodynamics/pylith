@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<section id="file_coord">
+  <title>xx.coord</title>
+
+  <para>
+    The <filename>xx.coord</filename> file contains the coordinates of
+    all of the vertices in the finite-element mesh.
+  </para>
+
+  <figure>
+    <title>Format of <filename>xx.coord</filename> files</title>
+    <screen>
+# File containing vertices of the finite-element mesh.
+#
+# Comment lines begin with '#'
+#
+# First, specify units of coordinates.
+#
+coord_unit = km
+#
+#
+# Now specify the coordinates of each vertex.
+#
+# Columns:
+#   (1) Vertex number
+#   (2) X coordinate
+#   (3) Y coordinate
+#   (4) Z coordinate
+#
+# Note: No comments are allowed within the list of vertex coordinates
+#
+1  0.000000e+00  0.000000e+00  0.000000e+00
+2  1.000000e+00  0.000000e+00  0.000000e+00
+3  0.000000e+00  2.000000e+00  0.000000e+00
+4  1.000000e+00  2.000000e+00  3.000000e+00
+...
+    </screen>
+  </figure>
+
+</section>

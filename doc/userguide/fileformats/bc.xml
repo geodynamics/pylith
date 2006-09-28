@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<section id="file_bc">
+  <title>xx.bc</title>
+
+  <para>
+    The <filename>xx.bc</filename> file specifies the displacements,
+    velocity, and/or forces applied to vertices on the boundaries.
+  </para>
+
+  <figure>
+    <title>Format of <filename>xx.bc</filename> files</title>
+    <screen>
+# File containing boundary conditions at vertices.
+#
+# Comment lines begin with '#'
+#
+# First, specify units of coordinates for each type of boundary
+# conditon.  All three are required even if they are not all used.
+#
+displacement_units = m
+velocity_units = m/s
+force_units = newton
+#
+#
+# Boundary conditions applied to vertices. You must specify a flag and
+# value for each degree of freedom, even if some are free.
+#
+# Columns:
+#   (1) Vertex number
+#   (2) Boundary condition flag for x DOF
+#   (3) Boundary condition flag for y DOF
+#   (4) Boundary condition flag for z DOF
+#       0 = Free
+#       1 = Fixed displacement
+#       2 = Constant velocity
+#       3 = Constant force
+#       A 2 or more digit code may be used for the boundary condition
+#       flag.  If used, the the final digit refers to the condition
+#       type as defined above, while the beginning digit(s) refer to
+#       the time history to be used.
+#   (5) Boundary condition value for x DOF
+#   (6) Boundary condition value for y DOF
+#   (7) Boundary condition value for z DOF
+1   0  1  0  0.0000e+00  0.0000e+00  0.0000e+00
+3   0  1  0  0.0000e+00  0.0000e+00  0.0000e+00
+12  0  1  0  0.0000e+00  0.0000e+00  0.0000e+00
+...
+    </screen>
+  </figure>
+
+</section>

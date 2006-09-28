@@ -2,8 +2,9 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-#  PyLith by Charles A. Williams
-#  Copyright (c) 2003-2006 Rensselaer Polytechnic Institute
+#  PyLith by Charles A. Williams, Brad Aagaard, and Matt Knepley
+#
+#  Copyright (c) 2004-2006 Rensselaer Polytechnic Institute
 #
 #  Permission is hereby granted, free of charge, to any person obtaining
 #  a copy of this software and associated documentation files (the

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<section id="file_skew">
+  <title>xx.skew</title>
+
+  <para>
+    The <filename>xx.skew</filename> file specifies local coordinate
+    systems for nodes. The local coordinate system is specified using
+    two Euler angles that rotate the local coordinate system to the
+    global coordinate system.
+  </para>
+
+  <para>
+    The applied coordinate rotations apply to all boundary conditions
+    associated with the nodes listed in the file. These are useful,
+    for example, if it is desired to apply boundary conditions in a
+    direction normal or tangential to a side of the mesh when the
+    side does not align with the global coordinate directions.
+    Similarly, skew conditions could be used when specifying slip on a
+    fault that lies at an angle to the global coordinates.
+  </para>
+
+    <figure>
+    <title>Format of <filename>xx.time</filename> files</title>
+    <screen>
+# File containing local nodal coordinates.
+#
+# Comment lines begin with '#'
+#
+# First, specify units for rotations.
+#
+rotation_units = degree
+#
+#
+# Columns:
+#   (1) Node number
+#   (2) Euler angle for rotation in the x-y plane
+#   (3) Euler angle for rotation in the x-z plane
+#
+68    12.3   4.2
+132  -12.3  -4.2
+...
+    </screen>
+  </figure>
+
+</section>

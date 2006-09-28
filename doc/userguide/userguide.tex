@@ -1,0 +1,44 @@
+% -*- TeX -*-
+\documentclass{book}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{alltt}
+%\usepackage{url}
+\usepackage{hyperref}
+\usepackage{moreverb}
+
+\input{docdefs.tex}
+
+\begin{document}
+
+% For reference only. Will be replaced with graphic cover.
+\title{PyLith User Manual}
+\author{Charles Williams\\
+  Matthew Knepley\\
+  Brad Aagaard\\
+  Cassie Ferguson\\
+  Sue Kientz}
+\date{\today}
+%\titlepage{pylith_cover}
+ 
+\maketitle
+
+\frontmatter
+
+\input{preface.tex}
+
+\mainmatter
+
+\input{intro/intro.tex}
+\input{install/install.tex}
+\input{runpylith/runpylith.tex}
+\input{tutorials/tutorials.tex}
+
+\appendix
+\input{fileformats/fileformats.tex}
+\input{materials/materials.tex}
+\input{license.tex}
+
+\end{document}
+
+% End of file

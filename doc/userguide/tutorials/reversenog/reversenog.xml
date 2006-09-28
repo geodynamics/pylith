@@ -1,0 +1,737 @@
+<?xml version="1.0"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<section id="tutorial_reversenog">
+  <title>Tutorial Using Reverse-Slip Without Gravity Benchmark</title>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Overview</title>
+    <para>
+      In this tutorial, we will walk through the steps necessary to
+      construct, run, and view the results of a benchmark problem
+      involving reverse slip on a dipping fault. This problem examines
+      the viscoelastic (Maxwell) relaxation of stress from a single,
+      finite, reverse-slip earthquake in 3-D without body forces.
+    </para>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Problem Description</title>
+      <para>
+        The model domain is a cube with edges 24 km long (0 km &le; x
+        &le; 24 km; 0 km &le; y &le; 24 km; -24 km &le; z &le; 0) and
+        is composed of two materials. One material occupies the
+        top-half of the domain, -12 km &le; z &le; 0 km, while the other
+        occupies the lower half, -24 km &le; z &lt; 12 km. Both
+        materials are Poisson solids with Lame's constants (&mgr; and
+        &lgr;) equal to 30 GPa and Maxwell viscoelastic
+        properties. The top layer has a viscosity of
+        10<superscript>25</superscript> Pa-s (and is essentially
+        elastic) while the bottom layer has a viscosity of
+        10<superscript>18</superscript> Pa-s.
+      </para>
+      <para>
+        The reverse fault dips at an angle of 45 degrees. The top of the
+        fault sits at x = 4 km with the bottom of the fault at x = 20
+        km. The fault surface is confined to the region 0 km &le; y
+        &le; 16 km and -16 km &le; z &le; 0 km. The slip distribution
+        is 1.0 m of uniform thrust motion for -12 km &le; z with a
+        linear taper to 0 at z = -16 km.
+      </para>
+      <para>
+        The plane y=0 is a plane of symmetry, so the y-DOF
+        displacements on this face are zero. The boundary conditions
+        on the other lateral faces and bottom of the mesh are the
+        displacements from the analytical elastic solution. These
+        displacements are held fixed through time.
+      </para>
+
+      <figure id="figure_bmrsnog_geometry">
+	<title>Geometry of model domain for reverse-slip benchmark.</title>
+	<mediaobject>
+          <imageobject role="fo">
+	    <imagedata fileref="figs/geometry.eps" format="EPS" />
+	  </imageobject>
+          <imageobject role="xhtml,html">
+	    <imagedata fileref="figs/geometry.png" format="PNG" />
+	  </imageobject>
+	</mediaobject>
+      </figure>
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Prerequisites</title>
+      <para>
+        You should have already installed PyLith following the
+        instructions in <xref linkend="install" />. In order to work
+        through the full tutorial, in addition to
+        <application>PyLith</application> you will need <ulink
+        url="http://www.hpfem.jku.at/netgen/">
+        <application>NETGEN</application></ulink> to generate the mesh
+        and <ulink url="http://www.paraview.org"> ParaView</ulink> to
+        view simulation results. You may use other packages, but some
+        adaption from what is described here will be
+        necessary. Alternatively, you can just complete a subset of
+        the tutorial using files provided (as described below),
+        skipping the steps for which you do not have the proper
+        software packages installed.
+      </para>
+    </section>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Workflow</title>
+
+      <para>
+        The complete workflow used to create the input files for this
+        tutorial is shown in <xref linkend="figure_bmrsnog_workflow"
+        />. Because some of the steps involve commercial software
+        (e.g., Matlab), we will skip those steps in this tutorial.
+      </para>
+
+      <figure id="figure_bmrsnog_workflow">
+	<title>Workflow for setting up input files for benchmark with reverse
+	slip and no gravity.</title>
+	<mediaobject>
+          <imageobject role="fo">
+	    <imagedata fileref="figs/workflow.eps" format="EPS" />
+	  </imageobject>
+          <imageobject role="xhtml,html">
+	    <imagedata fileref="figs/workflow.png" format="PNG" />
+	  </imageobject>
+	</mediaobject>
+      </figure>
+    </section>
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Download and unpack</title>
+    <para>
+      We will start by downloading the tutorial tarball and unpacking
+      it.
+    </para>
+
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          Download the <ulink
+          url="http://www.geodynamics.org:8080/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8_tutorials.tgz">tutorial
+          tarball</ulink> and unpack it in a location of your
+          choosing.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>tar -zxvf pylith-0.8_tutorials.tgz</userinput>
+        </screen>
+      </listitem>
+      <listitem>
+	<para>
+          Go to the <filename
+          class="directory">tutorials/reversenog</filename>
+          directory. The <filename
+          class="directory">archive</filename> directory contains all
+          of the input and output files associated with this
+          tutorial. We will copy input files from this directory into
+          the <filename class="directory">workarea</filename>
+          directory. At each step, you can check to make sure your
+          input and output agree with the files in the <filename
+          class="directory">archive</filename> directory. These files
+          also allow you to start at an intermediate step as described
+          in the next section.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>cd tutorials/reversenog</userinput>
+        </screen>
+	
+      </listitem>
+    </orderedlist>
+
+    <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <section>
+      <title>Tutor</title>
+      <para>
+        Copy the <filename>tutor.py</filename> script from the
+        <filename class="directory">archive</filename> directory into
+        the <filename class="directory">workarea</filename>
+        directory. This script can (1) check to make sure the files
+        necessary for a given step in the tutorial exist, (2) retrieve
+        any missing files from the <filename
+        class="directory">archive</filename> directory that are needed
+        for a given step, or (3) prepare the work area for a given
+        step by removing old files that would otherwise be
+        overwritten. Run <command>tutor.py</command> with the
+        <option>-h</option> option for more information. We will use
+        this script at the beginning of each step to retrieve files as
+        necessary from the archive.
+      </para>
+      <tip>
+	<para>
+          When retrieving files from the <filename
+          classname="directory">archive</filename> directory,
+          <command>tutor.py</command> will not overwrite files that
+          already exist in the <filename
+          class="directory">workarea</filename> directory. This means
+          that if you mangle files in the working area, you should
+          remove them and let the tutor retrieve clean copies.
+        </para>
+      </tip>
+      <tip>
+	<para>
+          If you have run this tutorial previously, you may want to
+          run <command>tutor.py</command> in mode "clean" with step
+          "all" to clear out all old tutorial files.
+        </para>
+      </tip>
+      <screen>
+<prompt>bash$ </prompt><userinput>cd workarea</userinput>
+<prompt>bash$ </prompt><userinput>cp ../archive/tutor.py .</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.py -m clean -s all</userinput>
+      </screen>
+    </section>
+
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Generate the mesh</title>
+    <para>
+      In this step we will generate the finite-element mesh for the
+      benchmark problem using <application>NETGEN</application>.
+    </para>
+
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          In the <filename class="directory">reversenog/workarea</filename>
+          directory, run <command>tutor.py</command> for step "mesh"
+          with mode "retrieve" to fetch the geometry file for
+          <application>NETGEN</application>. You may also want to run
+          <command>tutor.py</command> for this step with mode "clean"
+          to clean out old files.
+        </para>
+      <screen>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s mesh</userinput>
+<prompt>bash$ </prompt><userinput>./tutor.py -m clean -s mesh</userinput>
+      </screen>
+      </listitem>
+      <listitem>
+	<para>
+          Examine the <filename>bmrsnog.geo</filename> file to see how the
+          geometry for the problem is defined. Notice that the
+          different planes have been flagged with different boundary
+          condition codes. These will be used to associate boundary
+          conditions with surfaces and element nodes.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Start up <application>NETGEN</application> by running
+          <command>ng</command>.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>ng</userinput>
+      </screen>
+      </listitem>
+      <listitem>
+	<para>
+          Select <menuchoice><guimenu>File</guimenu><guimenuitem>Load
+          Geometry</guimenuitem></menuchoice> and select
+          <filename>bmrsnog.geo</filename>.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Click on <guibutton>Generate Mesh</guibutton>.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          Export the mesh to a file named
+          <filename>bmrsnog.netgen</filename>, making sure the export
+          filetype is "Neutral format".
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          You can now exit <application>NETGEN</application>.
+        </para>
+      </listitem>
+    </orderedlist>
+  </section>
+          
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Setup simulation input files</title>
+    <para>
+      In this step we will setup the PyLith input files for the mesh
+      and boundary conditions.
+    </para>
+    
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          Run <command>tutor.py</command> for step "setup" with mode
+          "retrieve" to fetch files from the archive.
+        </para>
+      <screen>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s setup</userinput>
+      </screen>
+      </listitem>
+      <listitem>
+	<para>
+          First, we need to build two simple Fortran utilities that we
+          will use to generate PyLith input files from the
+          <application>NETGEN</application> output.
+        </para>
+        <orderedlist numeration="lowerroman">
+	  <listitem>
+	    <para>
+              Return to the top-level <filename
+              class="directory">tutorials</filename> directory and go
+              to the <filename class="directory">utils</filename>
+              sub-directory.
+            </para>
+	    <screen>
+<prompt>bash$ </prompt><userinput>cd ../../utils</userinput>
+            </screen>
+	  </listitem>
+	  <listitem>
+	    <para>
+              Edit the <filename>Makefile</filename> as appropriate
+              (it is presently setup for g77).
+            </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+              Run <command>make</command> to build the two utilities:
+            </para>
+	    <variablelist>
+	      <varlistentry>
+		<term><command>readnetgen</command></term>
+		<listitem>
+		  <para>
+                    A Fortran program to read
+                    <application>NETGEN</application> neutral format
+                    and create several of the input files needed by
+                    PyLith.
+                  </para>
+		</listitem>
+	      </varlistentry>
+	      <varlistentry>
+		<term><command>faultcalc</command></term>
+		<listitem>
+		  <para>
+                    A Fortran program to compute split node
+                    displacements using second order polynomials over
+                    specified regions.
+                  </para>
+		</listitem>
+	      </varlistentry>
+	    </variablelist>
+	    <screen>
+<prompt>bash$ </prompt><userinput>make</userinput>
+            </screen>
+	    <tip>
+	    <para>
+              If you plan to use <application>NETGEN</application> to
+              generate meshes, you may want to copy these utilities to
+              a location in your <envar>PATH</envar> or update your
+              <envar>PATH</envar> to include the <filename
+              class="directory">utils</filename> directory.
+            </para>
+	    </tip>
+	  </listitem>
+	  <listitem>
+	    <para>
+              Return to the <filename
+              class="directory">workarea</filename> directory.
+            </para>
+	    <screen>
+<prompt>bash$ </prompt><userinput>cd ../reversenog/workarea</userinput>
+            </screen>
+	  </listitem>
+	</orderedlist>
+      </listitem>
+      <listitem>
+	<para>
+          Run the utility program <command>readnetgen</command> to
+          process the <application>NETGEN</application> output file
+          into PyLith compatible input files. It will ask for a root
+          filename, enter <filename>bmrsnog</filename>. This utilitiy will
+          generate the following files:
+          <filename>bmrsnog.w01.wink</filename>,
+          <filename>bmrsnog.coord</filename>,
+          <filename>bmrsnog.connect</filename>,
+          <filename>bmrsnog.bc</filename>,
+          <filename>bmrsnog.1.fcoord</filename>,
+          <filename>bmrsnog.1.fbc</filename>.
+         </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>../../utils/readnetgen</userinput>
+<prompt> Enter root name for all files.  Both input and</prompt>
+<prompt> output files will all have this prefix:</prompt>
+<userinput>bmrsnog</userinput>
+        </screen>
+      </listitem>
+      <listitem>
+        <para>
+          The boundary conditions on the fault for this benchmark are
+          somewhat complex. The utility program
+          <command>faultcalc</command> creates split node boundary
+          conditions over specified regions, using functions based on
+          second degree polynomials. The <command>readnetgen</command>
+          program has already produced the main input for
+          <command>faultcalc</command> &mdash; split node definitions
+          in <filename>bmrsnog.1.fbc</filename> and nodal coordinates in
+          <filename>bmrsnog.coord</filename>. The file
+          <filename>bmrsnog.fault.par</filename> contains the polynomial
+          coefficients for this benchmark problem. Run
+          <command>faultcalc</command> to get the
+          <filename>bmrsnog.split</filename> file that PyLith needs as
+          input.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>../../utils/faultcalc p=bmrsnog.fault.par n=bmrsnog.coord \
+i=bmrsnog.1.fbc o=bmrsnog.split</userinput>
+        </screen>
+      </listitem>
+      <listitem>
+        <para>
+          The external boundary conditions for this benchmark are also
+          complicated and require computing the displacements for the
+          analytical elastic solution at each finite element node on
+          the external boundaries. The file specifying these boundary
+          conditions, <filename>bmrsnog.bc</filename>, was produced with
+          <command>readnetgen</command> using the
+          <filename>bmrsnog.aux</filename> file (which contains
+          precomputed displacements for the external boundaries for
+          the mesh produced from the <filename>bmrsnog.geo</filename>
+          geometry).
+        </para>
+	<warning>
+          <para>
+            If you make any changes to <filename>bmrsnog.geo</filename> or
+            change the geometry within
+            <application>NETGEN</application>, the boundary condition
+            file <filename>bmrsnog.bc</filename> will no longer be
+            correct and you will have to generate one yourself.
+	    Note that it is also possible that a different version
+	    of <application>NETGEN</application> may provide a slightly
+	    different mesh, which would also be incompatible with the
+	    provided boundary conditions.
+          </para>
+	</warning>
+      </listitem>
+    </orderedlist>
+  </section>
+
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Run the simulation on one processor</title>
+    <para>
+      In this step we will run the simulation on a single processor.
+    </para>
+    
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          Run <command>tutor.py</command> for step "run1" with mode
+          "retrieve" to fetch some parameter files from the archive.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s run1</userinput>
+        </screen>
+      </listitem>
+      <listitem>
+	<para>
+          In <filename>bmrsnog.fuldat</filename>, we have specified
+          that we want full output at time steps 10, 50, and 100. We
+          define six materials with both elastic and viscoelastic
+          behavior in <filename>bmrsnog.prop</filename>. In
+          <filename>bmrsnog.statevar</filename> we choose to include total
+          stress, total strain, incremental stress, and incremental
+          strain in the output. As defined in
+          <filename>bmrsnog.time</filename>, the simulation will have 100
+          time steps of 0.1 year each.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Run the simulation by executing <userinput>runbm.py
+          -n 1</userinput>, where the 1 refers to the number of processors.
+        </para>
+	<tip>
+          <para>
+            All of the input is echoed in the file
+            <filename>bmrsnog.ascii</filename>. You can check to make sure
+            your input is digested correctly by examining this
+            file. For large problems, this file can be quite
+            large. You can suppress creation of this file using the
+            command line argument
+            <option>--scanner.asciiOutput=none</option> flag. On the
+            other hand, for debugging purposes in small problems, you
+            may wish to output everything, including the computed
+            results, in this file using
+            <option>--scanner.asciiOutput=full</option>.
+          </para>
+        </tip>
+	<screen>
+<prompt>bash$ </prompt><userinput>./runbm.py -n 1</userinput>
+        </screen>
+      </listitem>
+    </orderedlist>
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Visualize the single processor run</title>
+    <para>
+      Now it is time to visualize the results of the simulation. By
+      default, PyLith writes simulation output using <ulink
+      url="http://help.avs.com/Express/doc/help/reference/dvmac/UCD_Form.htm">
+      <application>AVS</application> <acronym>UCD</acronym>
+      files</ulink>. These can be read by several other
+      visualization tools besides <application>AVS</application>,
+      e.g., <application>ParaView</application> and <application>Iris
+      Explorer</application>. We will use the open-source application
+      <application>ParaView</application> to visualize the results.
+    </para>
+    
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          If necessary, run <command>tutor.py</command> for step
+          "viz1" with mode "retrieve" to fetch the simulation output
+          from the archive.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s viz1</userinput>
+        </screen>
+      </listitem>
+      <listitem>
+	<para>
+          PyLith does not write complete <acronym>UCD</acronym>
+          files. So the first step is to combine the mesh topology
+          information with the output at a given time step into a
+          complete <acronym>UCD</acronym> file. For example, use
+          <command>cat</command> to merge the nodal coordinates file
+          (<filename>bmrsnog_1.0.mesh.inp</filename>) and the nodal
+          displacements at time step 10 file
+          (<filename>bmrsnog_1.0.mesh.time.00010.inp</filename>) into
+          <filename>bmrsnog_1.0.mesh.t00010.inp</filename>.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>cat bmrsnog_1.0.mesh.inp bmrsnog_1.0.mesh.time.00010.inp \
+> bmrsnog_1.0.mesh.t00010.inp</userinput>
+        </screen>
+      </listitem>
+      <listitem>
+	<para>
+          Start <application>ParaView</application> by executing
+          <command>paraview</command>.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>paraview</userinput>
+        </screen>
+      </listitem>
+      <listitem>
+	<para>
+          Load the <acronym>UCD</acronym> file that you just created
+          by selecting
+          <menuchoice><guimenu>File</guimenu><guimenuitem>Open
+          Data</guimenuitem></menuchoice>. Select the file in the
+          dialog box and the click the <guibutton>Open</guibutton>
+          button. Click the <guibutton>Accept</guibutton> button. You
+          should see a color rendering of the x displacements. You can
+          use the mouse to rotate, translate, and zoom. Your image
+          should look similar to the one in <xref
+          linkend="figure_bmrsnog_xdisp_t10" />.
+        </para>
+	
+	<figure id="figure_bmrsnog_xdisp_t10">
+	  <title>ParaView rendering of displacement in x-direction at
+	  time step 10 (10 yrs after imposed dislocation) for the
+	  reverse slip without gravity benchmark.</title>
+	  <mediaobject>
+	    <imageobject role="fo">
+	      <imagedata fileref="figs/xdisp_t10.eps" format="EPS" />
+	    </imageobject>
+	    <imageobject role="xhtml,html">
+	      <imagedata fileref="figs/xdisp_t10.png" format="PNG" />
+	    </imageobject>
+	  </mediaobject>
+	</figure>
+
+      </listitem>
+      <listitem>
+	<para>
+          In the <guibutton>Display</guibutton> tab, you can change
+          several options, such as including a color bar, coloring a
+          different component, interpolating colors, and changing the
+          color map.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Let's show the displacements as vectors. Click on the
+          calculator icon, and add the three displacement components
+          together. Enter "XDispl*iHat+YDispl*jHat+ZDispl*kHat" in the
+          <guilabel>Calculator</guilabel> box. Note the variable names
+          are available by clicking on the
+          <guibutton>scalars</guibutton> button and the
+          <guibutton>iHat</guibutton>, <guibutton>jHat</guibutton>,
+          <guibutton>kHat</guibutton> buttons are on the right side of
+          the top row. Click on the <guibutton>Accept</guibutton>
+          button. To show the dataset as vectors, click on the
+          <guibutton>glyph</guibutton> button (looks like several
+          dots) in the toolbar. After clicking the
+          <guibutton>Accept</guibutton> button, you should have a
+          vector plot. You can turn on/off other datasets by clicking
+          on the eye icon to the left of the dataset name. If you
+          color the surfaces using the x-displacements field while
+          also making the displacement vectors visible (colored using
+          <literal>property</literal>), you should see an image
+          similar to the one in <xref
+          linkend="figure_bmrsnog_xdisp_vec_t10" />.
+        </para>
+
+	<figure id="figure_bmrsnog_xdisp_vec_t10">
+	  <title>ParaView rendering of displacement in x-direction and
+	  displacement vectors at time step 10 (10 yrs after imposed
+	  dislocation) for the reverse slip without gravity
+	  benchmark.</title>
+	  <mediaobject>
+	    <imageobject role="fo">
+	      <imagedata fileref="figs/xdisp_vec_t10.eps" format="EPS" />
+	    </imageobject>
+	    <imageobject role="xhtml,html">
+	      <imagedata fileref="figs/xdisp_vec_t10.png" format="PNG" />
+	    </imageobject>
+	  </mediaobject>
+	</figure>
+
+      </listitem>
+    </orderedlist>
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Run the simulation on two processors</title>
+    <para>
+      In this step we will run the simulation on two processors. Even
+      if your machine only has one processor, a "multprocessor" job
+      will run as multiple processes on the single processor. In such
+      cases, the job will run slightly slower than the single
+      processor run, but the two processes will behave independently
+      as if they are on different processors.
+    </para>
+    
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          Run <command>tutor.py</command> for step "run2" with mode
+          "retrieve" to make sure all parameter files are available.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s run2</userinput>
+        </screen>
+      </listitem>
+      <listitem>
+	<para>
+          The parameter files are the same as those in the single
+          processor run. The <command>runbm</command> script will
+          automatically take care of duplicating these files so that
+          there is one for each processor.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Run the simulation by executing <command>runbm.py
+          -n 2</command>, where the 2 refers to the number of processors.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>./runbm.py -n 2</userinput>
+        </screen>
+      </listitem>
+    </orderedlist>
+  </section>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Visualize the two processor run</title>
+
+    <para>
+      PyLith does not currently support parallel output, so each
+      processor writes its <acronym>UCD</acronym> output to a
+      different file. This means that you need to form complete
+      <acronym>UCD</acronym> files for each processor and then load
+      each one into <application>ParaView</application>. 
+    </para>
+    
+    <orderedlist numeration="arabic">
+      <listitem>
+	<para>
+          If necessary, run <command>tutor.py</command> for step
+          "viz2" with mode "retrieve" to fetch the simulation output
+          from the archive.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>./tutor.py -m retrieve -s viz2</userinput>
+        </screen>
+      </listitem>
+      <listitem>
+	<para>
+          As in the case of the single processor run, the first step
+          is to combine the mesh topology information with the output
+          at a given time step into a complete <acronym>UCD</acronym>
+          file. Because PyLith writes the output from each processor
+          into a different file, we must run <command>cat</command>
+          twice to create <acronym>UCD</acronym> files for each
+          processor.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>cat bmrsnog_2.0.mesh.inp bmrsnog_2.0.mesh.time.00010.inp
+> bmrsnog_2.0.mesh.t00010.inp</userinput>
+<prompt>bash$ </prompt><userinput>cat bmrsnog_2.1.mesh.inp bmrsnog_2.1.mesh.time.00010.inp
+> bmrsnog_2.1.mesh.t00010.inp</userinput>
+        </screen>
+      </listitem>
+      <listitem>
+	<para>
+          Start <application>ParaView</application> by executing
+          <command>paraview</command>.
+        </para>
+	<screen>
+<prompt>bash$ </prompt><userinput>paraview</userinput>
+        </screen>
+      </listitem>
+      <listitem>
+	<para>
+          Load the <acronym>UCD</acronym> files that you just created
+          by selecting
+          <menuchoice><guimenu>File</guimenu><guimenuitem>Open
+          Data</guimenuitem></menuchoice>. Select the file in the
+          dialog box and the click the <guibutton>Open</guibutton>
+          button. Click the <guibutton>Accept</guibutton> button. You
+          can now visualize the datasets just like you did for the
+          single processor case.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          You can merge the datasets from the different processors by
+          selecting
+          <menuchoice><guimenu>Filter</guimenu><guimenuitem>Append</guimenuitem></menuchoice>. Doing
+          so will allow you to operate on the data from all of the
+          processors simultaneously instead of having to repeat any
+          processing for every processor.
+        </para>
+      </listitem>
+    </orderedlist>
+  </section>
+
+
+</section>

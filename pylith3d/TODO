@@ -1,0 +1,659 @@
+This list contains the recent list of e-mails I have sent myself about
+things that are needed as well as general ideas:
+
+From: willic3@rpi.edu
+Subject: To Do
+Date: March 31, 2004 5:43:35 PM EST
+To: willic3@rpi.edu
+
+Need to figure out general method for computing stresses.  Right now,
+the cases appear to be:
+
+1.  Small strain (only material nonlinearity).
+2.  Large deformation/small strain.
+3.  Large strain.
+
+It seems possible that I might be able to use my present method (ULH)
+for both 2. and 3., but I should look in the book to see if this is
+appropriate.  A multiplicative decomposition of the
+elastic/viscous/plastic deformation gradient is probably more robust.
+Also, my current method doesn't take into account changes in density
+as the material deforms.  This needs to be fixed.
+
+See if it is possible to use the same material description for each
+case (Cauchy stress/logarithmic strain?).  If so, then for each
+material type I will need the following.
+1.  Routine to compute elastic material matrix.
+2.  Routine to compute time-dependent material matrix.
+3.  Routine to compute stress given present strains/deformation
+    gradient and stresses from previous iteration.
+4.  Input/output and memory allocation/pointer setting routines.
+
+I will need pointers for stress/strain arrays.
+
+
+
+From: 	  willic3@rpi.edu
+Subject:  To Do
+Date: 	April 1, 2004 5:49:34 PM EST
+To: 	  willic3@rpi.edu
+
+Figure out all contributions to b and btot, and separate the
+contributions into different vectors.  These will probably be renamed:
+
+btot:  Total applied force
+	1.  Applied nodal loads (bforc).  I think this should also
+            include differential forces.
+	2.  Applied body forces (bgrav)
+	3.  Applied traction BC (btrac)
+	4.  Initial stresses (bpstrs) -- this is negative.  Check how
+            this works with current implementation.
+
+bstrs:  Internal stress vector.
+	1.  Actual internal stresses (bistrs)
+	2.  Loads equivalent to applied displacements (bdisp)
+
+See if there are any other contributions, and figure out how to
+implement this most efficiently.
+
+Also, I shouldn't be using separate routines to do the stress
+integration and material matrix calculation.  These should be done in
+the same routine except for the elastic solution.  This also means the
+stiffness matrix should never be reformed at the beginning of an
+iteration (except for the elastic solution).  Instead, it can be
+formed at the end of any selected iteration.  The one exception might
+be the first time step, in which case viscous approximations might be
+used.
+
+
+
+From: 	 willic3@rpi.edu
+Subject: To Do
+Date: 	May 17, 2004 5:34:57 PM EDT
+To: 	 willic3@rpi.edu
+
+For state variables, I should be able to assume the length is always
+6, since only stress/strain components are stored for each step.  The
+remainder of the deformation tensor is recomputed at each step, but
+does not need to be stored.  For the elastic case, the solution should
+be very simple.  See what is needed for linear viscoelastic case.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: To Do
+Date: 	May 17, 2004 5:48:28 PM EDT
+To: 	  willic3@rpi.edu
+
+Idea for how to deal with density changes when there are material
+histories:
+
+On second thought, this might not work, but at each step let rho0 be
+the currently-assigned density.
+
+Never mind, the user should probably specify whether:
+1.  Assigned densities correspond to absolute densities at the present
+    time step.  The density at a given time is independent of the
+    volume of the body.
+2.  Assigned densities correspond to the initial volume of the body.
+    This means that even if a time history is given for density, the
+    value will change as the element volume changes.
+
+Should there be a 3rd option?  In this case, the first change of a
+density would be absolute, but subsequent values would change with the
+element volume.  In this case, it would be necessary to save the
+determinant of the deformation gradient for the 'reference' volume.
+As an alternative, maybe absolute values would only apply at
+inflection points in the load history curve, and each of these points
+would also reset the reference volume.
+
+Out of curiosity, is the determinant of the strain tensor the same as
+that of the deformation gradient?  Check this out.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	May 18, 2004 2:53:17 PM EDT
+To: 	  willic3@rpi.edu
+
+Before writing out any property info, need to write out number of
+properties used.  Also, need routine to print out gravity info and
+anything else that may have been done previously in read_prop.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	May 18, 2004 5:16:29 PM EDT
+To: 	  willic3@rpi.edu
+
+In routine that does material histories, return a flag indicating
+whether a property has changed.  This flag will be passed to each
+time-dependent material routine.  In some cases, the routine can
+simply return if the flag has not been set.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	May 21, 2004 3:46:35 PM EDT
+To: 	  willic3@rpi.edu
+
+All info in ntimdat needs to be changed to reflect new method of doing
+material types.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	May 21, 2004 5:08:36 PM EDT
+To: 	  willic3@rpi.edu
+
+I need to re-think how to deal with having only one material matrix
+for an entire group.  If there are elements with different numbers of
+gauss points, some elements may not have the appropriate number of
+entries.
+The solutions appear to be:
+1.  Do away with this method and assign a separate material matrix to
+    each gauss point.
+2.  At the beginning, assign a dimension of ngaussmax to the material
+    matrix for a group with no material property variations.  Now that
+    I think about it, this actually sounds more reasonable, and
+    shouldn't really require any changes to lower-level code.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	May 24, 2004 8:55:19 PM EDT
+To: 	  willic3@rpi.edu
+Reply-To: 	  willic3@rpi.edu
+
+Start fixing elastc and iterate, starting with input arguments.
+Figure out new organizational scheme for arguments, possibly depending
+on how info arrays are dimensioned.
+Along with this, maybe I need new integer arrays to hold new dimensions
+(ngaussmax, nenmax, etc.).
+Fix calls to formmat, elasstrsdrv, etc.
+I probably need new infinite element routines for quadratic elements.
+Try to set things up with minimal capabilities for now.  This means:
+1.  No prestresses.
+2.  Only elastic for now.
+3.  Don't worry about pressures BC, split/slippery nodes for other
+element types, etc.
+4.  Only small strain.
+
+Once I have things working for the simplest case, I can start adding
+other stuff. However, I should try using different element types and
+possibly mixed element types for a very simple test problem.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 1, 2004 8:40:02 PM EDT
+To: 	  willic3@rpi.edu
+Reply-To: 	  willic3@rpi.edu
+
+Idea for FE code:
+
+Use index arrays for many of the nodal and element arrays.  This
+should reduce the dimensions for these arrays and should make things
+more efficient.
+
+Displacement/velocity BC (make these separate arrays?)
+Force BC ??
+Skew BC
+Prestresses??
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 2, 2004 10:48:43 AM EDT
+To: 	  willic3@rpi.edu
+
+Idea for BC in FE code:
+
+Use ID array for storing BC info, as is done for DLEARN.  There will
+be one difference, since it doesn't appear that DLEARN uses load
+histories for BC.  In that case, after reading BC, the options are:
+
+id = +num -> num is the global equation number
+id = -xx1 ->  xx is load history #, 1 indicates displacement BC
+id = -xx2 -> xx is load history #, 2 indicates velocity BC
+
+If things are done in this way, there still needs to be a separate
+integer and double array to give the vector of applied forces.
+Actually, look at DLEARN some more to see how they do it.
+
+
+
+6/14/04:
+
+1.  Currently working on formdfss.f.  For now, I am leaving the
+routine essentially as-is, but for the future, a more efficient
+method for computing forces due to displacement BC should be found.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 14, 2004 5:38:26 PM EDT
+To: 	  willic3@rpi.edu
+
+Make sure I'm taking account of the case where the last dimension of
+dmat for an element may not be ngauss.  In some cases I will need
+another parameter (ngaussdim) that will be different from ngauss.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 16, 2004 3:37:42 PM EDT
+To: 	  willic3@rpi.edu
+
+Idea for prestresses:
+
+For the elastic solution, try setting Young's modulus to extremely
+high value and Poisson's ration to 0.499?  This might give the proper
+prestresses to use for the rest of the calculations.  Also check into
+options of just using grav load vector as prestress vector.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 16, 2004 3:58:41 PM EDT
+To: 	  willic3@rpi.edu
+
+For force vectors, maybe have at least one that represents internal
+forces (bint) and another that represents external forces (bext).
+Additional vectors will be needed for specific loads.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 16, 2004 5:31:41 PM EDT
+To: 	  willic3@rpi.edu
+
+Remember to finish fixing all routines that had extraneous i/o info
+(idout, etc.).
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 17, 2004 5:19:16 PM EDT
+To: 	  willic3@rpi.edu
+
+In section where I specify output, use the following format for state
+output:
+
+2 lines, one for elastic solution and the other for time-dependent.
+Each line has 8 entries.  The first 4 entries correspond to total
+stress, total strain, total viscous strain, total plastic strain, and
+they can have values of either zero or 1.  The next 4 entries
+correspond to increments or rates.  A 1 indicates a rate and a 2
+indicates an increment.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 18, 2004 9:55:59 AM EDT
+To: 	  willic3@rpi.edu
+
+The variable npdim (currently set to 4) is no longer valid for mixed
+element types.  I need to re-think how this is used.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 18, 2004 10:18:22 AM EDT
+To: 	  willic3@rpi.edu
+
+Need to define dummy material routines for all material models that
+will return error codes for undefined materials.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 18, 2004 10:30:06 AM EDT
+To: 	  willic3@rpi.edu
+
+New idea for error codes:
+
+For every routine that uses ierr, also use errstrng, which will be set
+to the name of the routine if ierr is set to a nonzero value.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 18, 2004 10:47:23 AM EDT
+To: 	  willic3@rpi.edu
+
+For now, comment out usage of addpr.  This needs to be fixed so that
+shape functions are defined for element faces of the various element
+types.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 23, 2004 5:07:17 PM EDT
+To: 	  willic3@rpi.edu
+
+Pick up by editing elas_strs_... routine to be consistent with
+stress_cmp, then create an equivalent routine for time-dependent
+problems.  Then create similar routines (plus driver routine) for case
+where material matrix/stiffness matrix is to be reformed.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	June 25, 2004 5:43:58 PM EDT
+To: 	  willic3@rpi.edu
+
+Need to double-check all driver and computation routines for
+consistency.
+
+Things to look for: use of tmax, error codes, use of state, dstate,
+and ee.  Make sure everything is consistent.
+
+Next thing to do?  Create material routines for linear viscoelastic.
+This should be a fairly simple extension of material model 1.  Once
+these two material models are defined, focus on getting everything
+else working.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	July 1, 2004 5:39:43 PM EDT
+To: 	  willic3@rpi.edu
+
+Need to fix usage of scur.  I should be using dstate instead.  I think
+that in the elastic solution, I should work exclusively with dstate to
+represent the current stress state.  Once convergence has occurred in
+iterate, this value is copied into state, which represents the state
+at the end of the previous step.  In the time-dependent solution,
+dstate should be used during iterations, while state serves as a
+reference.  It is updated at the end of iterations, as well as
+possibly the other state variables.  I will need a new routine to
+update all these variables, looping over material groups.
+
+After fixing this, continue fixing iterate routine.  For now, don't
+mess too much with how BC are handled.  Once I have iterate and its
+arguments settled, fix things in elastc and fix the arguments in
+elastc.  Once this is done, go through all routines to check for
+consistency and to make sure I'm using current methods for parameter
+statements and error codes.  Possibly update error codes, but don't
+spend too much time on this.
+
+Then start working on new bindings, and fix the python drivers.  I
+think there may be some missing i/o routines -- double-check this.
+
+First problems to try: patchtest?  Try this for all element types.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	July 2, 2004 4:43:17 PM EDT
+To: 	  willic3@rpi.edu
+
+Keep working on iterate -- mainly, I need to fix and organize the
+arguments sent to it.  Related to this, try reorganizing the info
+arrays to correspond to the different argument groups.  This may not
+be efficient in some cases, but see if it's worthwhile.  Otherwise,
+edit the include files to eliminate unused variables and put in the
+new ones.
+
+Once iterate compiles OK, fix the arguments for elastc.  Then start
+doing the bindings and python code to drive the elastic solution so I
+can set up a simple test problem.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	July 7, 2004 5:44:25 PM EDT
+To: 	  willic3@rpi.edu
+
+Pick up at connectivity input routines.  Both of these (read and scan)
+should be updated to use new info arrangement.  Some of the variables
+can also be put in the include file.
+
+In the meantime, I can finish updating the other routines.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	July 8, 2004 5:46:44 PM EDT
+To: 	  willic3@rpi.edu
+
+Continue fixing routines for separation of material type and material
+model information.  The top-level routines (elastc and iterate) should
+be OK.  Make sure all of the driver and computation routines are OK
+and consistent, and make sure dimensions of infmat are correct
+everywhere (use grep).  Then continue on with fixing of
+connectivity/material property routines.
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	July 12, 2004 3:53:27 PM EDT
+To: 	  willic3@rpi.edu
+
+Need to put in python or f77 routine to compute
+ismatmod(nstatesmax,nmatmodmax) matrix.  The quickest way to do this
+would be to do it in matmod_def.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 2, 2004 4:22:13 PM EDT
+To: 	  willic3@rpi.edu
+
+New idea that would probably be more efficient:
+
+For routines that loop over Gauss points, pass in the entire state
+array for the element, rather than a temporary array.  In the
+routines, the array would be dimensioned as:
+state(nstr,nstate,ngauss), and looping could be performed
+appropriately.  Temporary arrays would then not be necessary.
+Double-check whether this can be implemented efficiently (e.g.,
+problems with indexing in BLAS) before trying it.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 4, 2004 5:48:36 PM EDT
+To: 	  willic3@rpi.edu
+
+Something still seems messed up for viscous solution -- probably in
+td_strs_5.  I need to do a thorough comparison of the variables from
+there with those from original code and see how this relates with my
+solution.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 5, 2004 10:45:52 PM EDT
+To: 	  willic3@rpi.edu
+Reply-To: 	  willic3@rpi.edu
+
+Things to try:
+
+Just use the mesh provided by netgen.  Make my own single tet mesh to
+see how it compares to tetgen -- maybe try this in lithomop.  See if
+there is a problem with having negative coordinates?  There shouldn't
+be, but this should be checked.  Output x, xs, and sh from getjac
+routine -- make sure x is correct.
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 7, 2004 9:29:45 PM EDT
+To: 	  willic3@rpi.edu
+Reply-To: 	  willic3@rpi.edu
+
+Try running quadratic hex version of BM1.  See if there is some
+fundamental problem with the way I'm dealing with quadratic elements.
+I need to set up new BC for what I have so far.
+
+Go through quadratic tet stuff one more time if hexes work -- probably
+change things back to the way they were, and double-check everything
+one more time.
+
+If I can't get them working, start putting together my presentation
+and look into doing BM 5 with hexes and/or linear tets.  Get all of
+that finished before messing with quadratic tets again.
+
+Other things to think about:
+
+Why do I have to manually remove module from build directory?  What is
+the pyre error message at the end of every run -- how to get rid of
+it?  Quick and dirty output format useful for plotting.  Input
+preprocessors?
+
+
+
+
+From: 	  willic3@rpi.edu
+	Subject: 	To Do
+	Date: 	August 9, 2004 9:50:53 PM EDT
+	To: 	  willic3@rpi.edu
+	Reply-To: 	  willic3@rpi.edu
+
+Last try for quadratic tets: try simple version of bm1 (already
+started as bm1b). Trace through all logic for shape function stuff --
+see what is different for quadratic tets.  Also try single-point
+integration again, and if it works, compare results to linear tets.
+Set up problem for BM 5.  Start putting together presentation.  E-mail
+Michael about possible meeting.  Register for SCEC meeting.  Try
+organizing office -- find receipts from Compgeo meeting to do expense
+report while in Los Alamos.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 10, 2004 10:35:03 PM EDT
+To: 	  willic3@rpi.edu
+Reply-To: 	  willic3@rpi.edu
+
+Update utility codes from laptop, as well as mesh info for bm5.
+Priorities:
+
+1.  Start putting talk together.
+2.  Finish putting together BM5 test from Carl's mesh.
+3.  Start cleaning up and checking in code and test problems.
+4.  Alternative solution of BM5 using tetgen or netgen?
+5.  Start thinking about front-ends and back-ends for code (output UCD
+or OpenDX format?).
+6.  Keep trying to fix quadratic tets.
+7.  Start putting together paperwork and other items needed for trip.
+8.  Clean and sort office.
+
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 11, 2004 10:40:35 PM EDT
+To: 	  willic3@rpi.edu
+
+Look at previous to do list.
+Finish getting everything checked into repository.
+Build optimized version of code and set up comparisons for BM 1.
+Create directories and files to be used for tutorials -- write down
+necessary steps to get things set up.
+
+Lower priority: Look into visualization options, try meshing BM5 with
+netgen.
+
+Get together figures and presentation pieces and start putting that
+together.
+
+Make sure everything ends up updated on my laptop.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 23, 2004 3:20:30 PM EDT
+To: 	  willic3@rpi.edu
+
+For output values, I should use the arrays idispout and istatout to
+determine which nodal and Gauss point values are output.  There should
+just be a single array for all time steps.  They can both be read with
+a renamed/modified version of the read_statout routine.  These arrays
+will be used with printd, prints, and the ucd output routines.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 24, 2004 7:27:57 PM EDT
+To: 	  willic3@rpi.edu
+
+Make sure computed Gauss point coordinates are correct.
+If so, download Carl's latest BM descriptions and set up at least one
+problem.
+E-mail output results to Carl (can use results I already have for BM
+1) to make sure format is OK.
+Fix everything in example directories to correspond to new setup.
+Create input files for BM5-7.
+Will need to write utility code to compute Winkler BC for BM6.
+
+Once this is done and test problems work, send a mass e-mail informing
+everyone of the changes and telling them how to update and get the
+benchmark input files.
+
+Continue debugging code, especially quadratic tets.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	August 26, 2004 5:55:10 PM EDT
+To: 	  willic3@rpi.edu
+
+Finish fixing readnetgen code, and try fixing readucd in the same way.
+Try to do quick and dirty code to compute Winkler BC for tets.
+
+Abstracts for SCEC and AGU -- see if Mark or others want to be on AGU
+abstract.
+
+Come up with at least one mesh from beginning to end and put it on
+geoframework web site.  I'll need to get BC from Noah.
+
+
+
+
+From: 	  willic3@rpi.edu
+Subject: 	To Do
+Date: 	September 13, 2004 9:31:06 PM EDT
+To: 	  willic3@rpi.edu
+Reply-To: 	  willic3@rpi.edu
+
+Finish setting up quadratic tet meshes.
+
+I can get fault coordinates using Kaleidagraph, but I still need to
+get all elements attached to each node.  As one option, I may be able
+to modify lt2qt so that it uses fault (and maybe boundary) info and
+transfers this info to the quadratic mesh.  Alternatively, I can just
+compute an adjacency array and output that info.
+
+
+
+

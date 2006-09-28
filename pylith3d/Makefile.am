@@ -1,0 +1,357 @@
+## Process this file with automake to produce Makefile.in
+# $Id: Makefile.am 2370 2005-09-09 19:49:10Z leif $
+
+SUBDIRS = libpylith3d module
+
+bin_PROGRAMS = 
+if COND_EMBEDDING
+    bin_PROGRAMS += pypylith3d
+    INTERPRETER = $(bindir)/pypylith3d
+else
+    INTERPRETER = $(PYTHON)
+endif
+
+# pylith3d
+nobase_pyexec_PYTHON = \
+	pylith3d/Application.py \
+	pylith3d/ElementTypeDef.py \
+	pylith3d/__init__.py \
+	pylith3d/KeywordValueParse.py \
+	pylith3d/Pylith3d_run.py \
+	pylith3d/Pylith3d_scan.py \
+	pylith3d/Pylith3d_setup.py \
+	pylith3d/MaterialModel/__init__.py \
+	pylith3d/MaterialModel/IsotropicLinearElastic.py \
+	pylith3d/MaterialModel/IsotropicLinearMaxwellViscoelastic.py \
+	pylith3d/MaterialModel/MaterialModel.py \
+	pylith3d/Materials.py
+
+# pypylith3d (libpylith3d + pylith3dmodule + embedded Python interpreter)
+INCLUDES = -I$(top_srcdir)/pylith3d/module -I$(PYTHON_INCDIR)
+pypylith3d_SOURCES = pypylith3d.cc
+pypylith3d_LDADD = \
+	$(top_builddir)/pylith3d/module/libpylith3dmodule.a \
+	$(top_builddir)/pylith3d/libpylith3d/libpylith3d.a
+pypylith3d$(EXEEXT): $(pypylith3d_OBJECTS) $(pypylith3d_DEPENDENCIES) 
+	@rm -f pypylith3d$(EXEEXT)
+	$(CXXLINK) $(PYTHON_LDFLAGS) $(PYTHON_LINKFORSHARED) \
+		$(pypylith3d_LDFLAGS) $(pypylith3d_OBJECTS) $(pypylith3d_LDADD) \
+		$(PYTHON_BLDLIBRARY) \
+		$(PETSC_FORTRAN_LIB) $(PETSC_LIB) \
+		$(MPILIBS) \
+		$(FCLIBS) \
+		-ljournal \
+		$(PYTHON_LIBS) $(PYTHON_MODLIBS) $(PYTHON_SYSLIBS) \
+		$(LIBS) \
+		$(PYTHON_LDLAST)
+
+# applications
+nodist_bin_SCRIPTS = pylith3dapp.py
+do_subst = sed \
+	-e 's|[@]INTERPRETER[@]|$(INTERPRETER)|g' \
+	-e 's|[@]PYTHONPATH[@]|$(PYTHONPATH)|g'
+pylith3dapp.py: $(srcdir)/applications/pylith3dapp.py
+	$(do_subst) < $(srcdir)/applications/pylith3dapp.py > $@ || (rm -f $@ && exit 1)
+CLEANFILES = $(nodist_bin_SCRIPTS)
+EXTRA_DIST = applications/pylith3dapp.py
+
+# examples
+EXTRA_DIST += \
+	examples/bm1/bm1.bc \
+	examples/bm1/bm1.connect \
+	examples/bm1/bm1.coord \
+	examples/bm1/bm1.fuldat \
+	examples/bm1/bm1.hist \
+	examples/bm1/bm1.keyval \
+	examples/bm1/bm1.prop \
+	examples/bm1/bm1.time \
+	examples/bm1/README \
+	examples/bm2/bm2.bc \
+	examples/bm2/bm2.keyval \
+	examples/bm2/bm2.time \
+	examples/bm2.com \
+	examples/bm2/README \
+	examples/linhex/bm1a/bm1a.bc \
+	examples/linhex/bm1a/bm1a.connect \
+	examples/linhex/bm1a/bm1a.coord \
+	examples/linhex/bm1a/bm1a.fuldat \
+	examples/linhex/bm1a/bm1a.hist \
+	examples/linhex/bm1a/bm1a.keyval \
+	examples/linhex/bm1a/bm1a.prop \
+	examples/linhex/bm1a/bm1a.statevar \
+	examples/linhex/bm1a/bm1a.time \
+	examples/linhex/bm1/bm1.bc \
+	examples/linhex/bm1/bm1.connect \
+	examples/linhex/bm1/bm1.coord \
+	examples/linhex/bm1/bm1.fuldat \
+	examples/linhex/bm1/bm1.hist \
+	examples/linhex/bm1/bm1.keyval \
+	examples/linhex/bm1/bm1.prop \
+	examples/linhex/bm1/bm1.statevar \
+	examples/linhex/bm1/bm1.time \
+	examples/linhex/bm2a/bm2a.bc \
+	examples/linhex/bm2a/bm2a.keyval \
+	examples/linhex/bm2a/bm2a.time \
+	examples/linhex/patchtest/pt10.bc \
+	examples/linhex/patchtest/pt11.bc \
+	examples/linhex/patchtest/pt12.bc \
+	examples/linhex/patchtest/pt1a.bc \
+	examples/linhex/patchtest/pt1.bc \
+	examples/linhex/patchtest/pt1.connect \
+	examples/linhex/patchtest/pt1.coord \
+	examples/linhex/patchtest/pt1.keyval \
+	examples/linhex/patchtest/pt1.prop \
+	examples/linhex/patchtest/pt1.statevar \
+	examples/linhex/patchtest/pt1.time \
+	examples/linhex/patchtest/pt2.bc \
+	examples/linhex/patchtest/pt3.bc \
+	examples/linhex/patchtest/pt4.bc \
+	examples/linhex/patchtest/pt5.bc \
+	examples/linhex/patchtest/pt6.bc \
+	examples/linhex/patchtest/pt7.bc \
+	examples/linhex/patchtest/pt8.bc \
+	examples/linhex/patchtest/pt9.bc \
+	examples/linhex/patchtest/pt-bbar.keyval \
+	examples/linhex/patchtest/pt-incomp.prop \
+	examples/linhex/patchtest/pt-red.keyval \
+	examples/linhex/patchtest/runtests-bbar-comp.com \
+	examples/linhex/patchtest/runtests-bbar-incomp.com \
+	examples/linhex/patchtest/runtests-full-comp.com \
+	examples/linhex/patchtest/runtests-full-incomp.com \
+	examples/linhex/patchtest/runtests-red-comp.com \
+	examples/linhex/patchtest/runtests-red-incomp.com \
+	examples/linhex/ps1/elas-test10/ps1.keyval \
+	examples/linhex/ps1/elas-test10/ps1.prop \
+	examples/linhex/ps1/elas-test10/ps1.time \
+	examples/linhex/ps1/elas-test11/ps1.keyval \
+	examples/linhex/ps1/elas-test11/ps1.prop \
+	examples/linhex/ps1/elas-test11/ps1.time \
+	examples/linhex/ps1/elas-test12/ps1.keyval \
+	examples/linhex/ps1/elas-test12/ps1.prop \
+	examples/linhex/ps1/elas-test12/ps1.time \
+	examples/linhex/ps1/elas-test1/ps1.keyval \
+	examples/linhex/ps1/elas-test1/ps1.prop \
+	examples/linhex/ps1/elas-test1/ps1.time \
+	examples/linhex/ps1/elas-test2/ps1.keyval \
+	examples/linhex/ps1/elas-test2/ps1.prop \
+	examples/linhex/ps1/elas-test2/ps1.time \
+	examples/linhex/ps1/elas-test3/ps1.keyval \
+	examples/linhex/ps1/elas-test3/ps1.prop \
+	examples/linhex/ps1/elas-test3/ps1.time \
+	examples/linhex/ps1/elas-test4/ps1.keyval \
+	examples/linhex/ps1/elas-test4/ps1.prop \
+	examples/linhex/ps1/elas-test4/ps1.time \
+	examples/linhex/ps1/elas-test5/ps1.keyval \
+	examples/linhex/ps1/elas-test5/ps1.prop \
+	examples/linhex/ps1/elas-test5/ps1.time \
+	examples/linhex/ps1/elas-test6/ps1.keyval \
+	examples/linhex/ps1/elas-test6/ps1.prop \
+	examples/linhex/ps1/elas-test6/ps1.time \
+	examples/linhex/ps1/elas-test7/ps1.keyval \
+	examples/linhex/ps1/elas-test7/ps1.prop \
+	examples/linhex/ps1/elas-test7/ps1.time \
+	examples/linhex/ps1/elas-test8/ps1.keyval \
+	examples/linhex/ps1/elas-test8/ps1.prop \
+	examples/linhex/ps1/elas-test8/ps1.time \
+	examples/linhex/ps1/elas-test9/ps1.keyval \
+	examples/linhex/ps1/elas-test9/ps1.prop \
+	examples/linhex/ps1/elas-test9/ps1.time \
+	examples/linhex/ps1/ps1.bc \
+	examples/linhex/ps1/ps1.connect \
+	examples/linhex/ps1/ps1.coord \
+	examples/linhex/ps1/ps1.fuldat \
+	examples/linhex/ps1/ps1.statevar \
+	examples/linhex/ps1/README \
+	examples/linhex/ps1/README.elas-tests \
+	examples/linhex/ps1/README.vis-tests \
+	examples/linhex/ps1/vis-test10/ps1.keyval \
+	examples/linhex/ps1/vis-test10/ps1.prop \
+	examples/linhex/ps1/vis-test10/ps1.time \
+	examples/linhex/ps1/vis-test11/ps1.keyval \
+	examples/linhex/ps1/vis-test11/ps1.prop \
+	examples/linhex/ps1/vis-test11/ps1.time \
+	examples/linhex/ps1/vis-test12/ps1.keyval \
+	examples/linhex/ps1/vis-test12/ps1.prop \
+	examples/linhex/ps1/vis-test12/ps1.time \
+	examples/linhex/ps1/vis-test1/ps1.keyval \
+	examples/linhex/ps1/vis-test1/ps1.prop \
+	examples/linhex/ps1/vis-test1/ps1.time \
+	examples/linhex/ps1/vis-test2/ps1.keyval \
+	examples/linhex/ps1/vis-test2/ps1.prop \
+	examples/linhex/ps1/vis-test2/ps1.time \
+	examples/linhex/ps1/vis-test3/ps1.keyval \
+	examples/linhex/ps1/vis-test3/ps1.prop \
+	examples/linhex/ps1/vis-test3/ps1.time \
+	examples/linhex/ps1/vis-test4/ps1.keyval \
+	examples/linhex/ps1/vis-test4/ps1.prop \
+	examples/linhex/ps1/vis-test4/ps1.time \
+	examples/linhex/ps1/vis-test5/ps1.keyval \
+	examples/linhex/ps1/vis-test5/ps1.prop \
+	examples/linhex/ps1/vis-test5/ps1.time \
+	examples/linhex/ps1/vis-test6/ps1.keyval \
+	examples/linhex/ps1/vis-test6/ps1.prop \
+	examples/linhex/ps1/vis-test6/ps1.time \
+	examples/linhex/ps1/vis-test7/ps1.keyval \
+	examples/linhex/ps1/vis-test7/ps1.prop \
+	examples/linhex/ps1/vis-test7/ps1.time \
+	examples/linhex/ps1/vis-test8/ps1.keyval \
+	examples/linhex/ps1/vis-test8/ps1.prop \
+	examples/linhex/ps1/vis-test8/ps1.time \
+	examples/linhex/ps1/vis-test9/ps1.keyval \
+	examples/linhex/ps1/vis-test9/ps1.prop \
+	examples/linhex/ps1/vis-test9/ps1.time \
+	examples/linhex/slip1/slip1.bc \
+	examples/linhex/slip1/slip1.connect \
+	examples/linhex/slip1/slip1.coord \
+	examples/linhex/slip1/slip1.fuldat \
+	examples/linhex/slip1/slip1.keyval \
+	examples/linhex/slip1/slip1.prop \
+	examples/linhex/slip1/slip1.slip \
+	examples/linhex/slip1/slip1.statevar \
+	examples/linhex/slip1/slip1.time \
+	examples/linhex/slip1/slip1.winkx \
+	examples/linhex/timeslip1/timeslip1.bc \
+	examples/linhex/timeslip1/timeslip1.connect \
+	examples/linhex/timeslip1/timeslip1.coord \
+	examples/linhex/timeslip1/timeslip1.fuldat \
+	examples/linhex/timeslip1/timeslip1.hist \
+	examples/linhex/timeslip1/timeslip1.keyval \
+	examples/linhex/timeslip1/timeslip1.prop \
+	examples/linhex/timeslip1/timeslip1.slip \
+	examples/linhex/timeslip1/timeslip1.statevar \
+	examples/linhex/timeslip1/timeslip1.time \
+	examples/linhex/timeslip1/timeslip1.winkx \
+	examples/lintet/bm1a/bm1a.bc \
+	examples/lintet/bm1a/bm1a.connect \
+	examples/lintet/bm1a/bm1a.coord \
+	examples/lintet/bm1a/bm1a.fuldat \
+	examples/lintet/bm1a/bm1a.hist \
+	examples/lintet/bm1a/bm1a.keyval \
+	examples/lintet/bm1a/bm1a.prop \
+	examples/lintet/bm1a/bm1a.statevar \
+	examples/lintet/bm1a/bm1a.time \
+	examples/lintet/bm1b/bm1b.bc \
+	examples/lintet/bm1b/bm1b.connect \
+	examples/lintet/bm1b/bm1b.coord \
+	examples/lintet/bm1b/bm1b.fuldat \
+	examples/lintet/bm1b/bm1b.hist \
+	examples/lintet/bm1b/bm1b.keyval \
+	examples/lintet/bm1b/bm1b.prop \
+	examples/lintet/bm1b/bm1b.statevar \
+	examples/lintet/bm1b/bm1b.time \
+	examples/lintet/bm2a/bm2a.bc \
+	examples/lintet/bm2a/bm2a.keyval \
+	examples/lintet/bm2a/bm2a.time \
+	examples/lintet/bm5/bm5.bc \
+	examples/lintet/bm5/bm5.connect \
+	examples/lintet/bm5/bm5.coord \
+	examples/lintet/bm5/bm5.fuldat \
+	examples/lintet/bm5/bm5.keyval \
+	examples/lintet/bm5/bm5.prop \
+	examples/lintet/bm5/bm5.split \
+	examples/lintet/bm5/bm5.statevar \
+	examples/lintet/bm5/bm5.time \
+	examples/lintet/patchtest/pt10.bc \
+	examples/lintet/patchtest/pt11.bc \
+	examples/lintet/patchtest/pt12.bc \
+	examples/lintet/patchtest/pt1.bc \
+	examples/lintet/patchtest/pt1.connect \
+	examples/lintet/patchtest/pt1.coord \
+	examples/lintet/patchtest/pt1.keyval \
+	examples/lintet/patchtest/pt1.prop \
+	examples/lintet/patchtest/pt1.statevar \
+	examples/lintet/patchtest/pt1.time \
+	examples/lintet/patchtest/pt2.bc \
+	examples/lintet/patchtest/pt3.bc \
+	examples/lintet/patchtest/pt4.bc \
+	examples/lintet/patchtest/pt5.bc \
+	examples/lintet/patchtest/pt6.bc \
+	examples/lintet/patchtest/pt7.bc \
+	examples/lintet/patchtest/pt8.bc \
+	examples/lintet/patchtest/pt9.bc \
+	examples/lintet/patchtest/pt-bbar.keyval \
+	examples/lintet/patchtest/pt-incomp.prop \
+	examples/lintet/patchtest/pt-red.keyval \
+	examples/lintet/patchtest/runtests-bbar-comp.com \
+	examples/lintet/patchtest/runtests-bbar-incomp.com \
+	examples/lintet/patchtest/runtests-full-comp.com \
+	examples/lintet/patchtest/runtests-full-incomp.com \
+	examples/lintet/patchtest/runtests-red-comp.com \
+	examples/lintet/patchtest/runtests-red-incomp.com \
+	examples/quadhex/bm1a/bm1a.bc \
+	examples/quadhex/bm1a/bm1a.connect \
+	examples/quadhex/bm1a/bm1a.coord \
+	examples/quadhex/bm1a/bm1a.fuldat \
+	examples/quadhex/bm1a/bm1a.hist \
+	examples/quadhex/bm1a/bm1a.keyval \
+	examples/quadhex/bm1a/bm1a.prop \
+	examples/quadhex/bm1a/bm1a.statevar \
+	examples/quadhex/bm1a/bm1a.time \
+	examples/quadhex/patchtest/pt10.bc \
+	examples/quadhex/patchtest/pt11.bc \
+	examples/quadhex/patchtest/pt12.bc \
+	examples/quadhex/patchtest/pt1.bc \
+	examples/quadhex/patchtest/pt1.connect \
+	examples/quadhex/patchtest/pt1.coord \
+	examples/quadhex/patchtest/pt1.keyval \
+	examples/quadhex/patchtest/pt1.prop \
+	examples/quadhex/patchtest/pt1.statevar \
+	examples/quadhex/patchtest/pt1.time \
+	examples/quadhex/patchtest/pt2.bc \
+	examples/quadhex/patchtest/pt3.bc \
+	examples/quadhex/patchtest/pt4.bc \
+	examples/quadhex/patchtest/pt5.bc \
+	examples/quadhex/patchtest/pt6.bc \
+	examples/quadhex/patchtest/pt7.bc \
+	examples/quadhex/patchtest/pt8.bc \
+	examples/quadhex/patchtest/pt9.bc \
+	examples/quadhex/patchtest/pt-bbar.keyval \
+	examples/quadhex/patchtest/pt-incomp.prop \
+	examples/quadhex/patchtest/pt-red.keyval \
+	examples/quadhex/patchtest/runtests-bbar-comp.com \
+	examples/quadhex/patchtest/runtests-bbar-incomp.com \
+	examples/quadhex/patchtest/runtests-full-comp.com \
+	examples/quadhex/patchtest/runtests-full-incomp.com \
+	examples/quadhex/patchtest/runtests-red-comp.com \
+	examples/quadhex/patchtest/runtests-red-incomp.com \
+	examples/quadtet/bm1a/bm1a.bc \
+	examples/quadtet/bm1a/bm1a.connect \
+	examples/quadtet/bm1a/bm1a.coord \
+	examples/quadtet/bm1a/bm1a.fuldat \
+	examples/quadtet/bm1a/bm1a.hist \
+	examples/quadtet/bm1a/bm1a.keyval \
+	examples/quadtet/bm1a/bm1a-old.bc \
+	examples/quadtet/bm1a/bm1a-old.connect \
+	examples/quadtet/bm1a/bm1a-old.coord \
+	examples/quadtet/bm1a/bm1a.prop \
+	examples/quadtet/bm1a/bm1a.statevar \
+	examples/quadtet/bm1a/bm1a.time \
+	examples/quadtet/patchtest/pt10.bc \
+	examples/quadtet/patchtest/pt11.bc \
+	examples/quadtet/patchtest/pt12.bc \
+	examples/quadtet/patchtest/pt1.bc \
+	examples/quadtet/patchtest/pt1.connect \
+	examples/quadtet/patchtest/pt1.coord \
+	examples/quadtet/patchtest/pt1.keyval \
+	examples/quadtet/patchtest/pt1.prop \
+	examples/quadtet/patchtest/pt1.statevar \
+	examples/quadtet/patchtest/pt1.time \
+	examples/quadtet/patchtest/pt2.bc \
+	examples/quadtet/patchtest/pt3.bc \
+	examples/quadtet/patchtest/pt4.bc \
+	examples/quadtet/patchtest/pt5.bc \
+	examples/quadtet/patchtest/pt6.bc \
+	examples/quadtet/patchtest/pt7.bc \
+	examples/quadtet/patchtest/pt8.bc \
+	examples/quadtet/patchtest/pt9.bc \
+	examples/quadtet/patchtest/pt-bbar.keyval \
+	examples/quadtet/patchtest/pt-incomp.prop \
+	examples/quadtet/patchtest/pt-red.keyval \
+	examples/quadtet/patchtest/runtests-bbar-comp.com \
+	examples/quadtet/patchtest/runtests-bbar-incomp.com \
+	examples/quadtet/patchtest/runtests-full-comp.com \
+	examples/quadtet/patchtest/runtests-full-incomp.com \
+	examples/quadtet/patchtest/runtests-red-comp.com \
+	examples/quadtet/patchtest/runtests-red-incomp.com
+
+## end of Makefile.am

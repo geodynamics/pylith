@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<section id="file_prop">
+  <title>xx.prop</title>
+
+  <para>
+    The <filename>xx.prop</filename> file specifies the properties for
+    each material model in the problem.
+  </para>
+
+  <warning>
+    <para>
+      The materials must be listed in order according to the material
+      number assigned to the elements in
+      <filename>xx.connect</filename>.
+    </para>
+  </warning>
+
+  <figure>
+    <title>Format of <filename>xx.prop</filename> files</title>
+    <screen>
+# File containing material properties.
+#
+# Comment lines begin with '#'
+#
+# The material type and material property values are specified using a
+# "keyword = value" syntax. The keywords for the different material
+# types are given below. Units for each of the values with dimensions
+# must follow the value as illustrated in the examples below.
+#
+# Materials and keywords:
+#   Isotropic linear elastic
+#     materialType ='IsotropicLinearElastic'
+#     density
+#     youngsModulus
+#     poissonsRatio
+#     endMaterial ='True' (flag indicating end of material)
+#   Isotropic linear maxwell viscoelastic
+#     materialType ='IsotropicLinearMaxwellViscoelastic'
+#     density
+#     youngsModulus
+#     poissonsRatio
+#     viscosity
+#     endMaterial ='True' (flag indicating end of material)
+#
+# Material number 1
+materialType = 'IsotropicLinearMaxwellViscoelastic'
+density         = 3000.0*kg/m**3
+youngsModulus   = 7.5e10*Pa
+poissonsRatio   = 0.25
+viscosity       = 1.0e+18*Pa*s
+endMaterial	= True
+# Material number 2
+materialType = 'IsotropicLinearElastic'
+density         = 3000.0*kg/m**3
+youngsModulus   = 7.5e10*Pa
+poissonsRatio   = 0.25
+endMaterial	= True
+# Material number 3
+materialType = 'IsotropicLinearMaxwellViscoelastic'
+density         = 3000.0*kg/m**3
+youngsModulus   = 7.5e10*Pa
+poissonsRatio   = 0.25
+viscosity       = 1.0e+18*Pa*s
+endMaterial	= True
+...
+    </screen>
+  </figure>
+
+</section>

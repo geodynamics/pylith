@@ -1,0 +1,381 @@
+\chapter{Installation and Getting Help}
+
+\section{Introduction}
+
+Installation of PyLith on a desktop or laptop machine is, in most
+cases, very easy. Binary packages have been created for the most
+common platforms, including Linux, OSX, and Windows. Installation on
+machines that are not compatible with any of these operating systems
+requires building the software from the source code, which can be
+difficult for inexperienced users.
+
+\section{Getting Help}
+
+Help is available via the CIG Short-Term Crustal Dynamics Mailing List
+and CIG's issue tracking system.
+
+\subsection{Requesting help}
+
+The CIG Short-Term Crustal Dynamics Mailing List,
+\email{cig-short@geodynamics.org}, is a mailing list dedicated to CIG
+issues associated with short-term crustal dynamics, including the use
+of PyLith. You can subscribe to the mailing list and view messages at
+the \href{http://www.geodynamics.org}{CIG website}.
+
+\subsection{Reporting bugs and errors}
+
+CIG uses the \application{Roundup} for bug tracking. If you find a bug
+in PyLith, please submit a bug report to the
+\href{http://www.geodynamics.org/roundup}{CIG \application{Roundup}
+  system}. Of course, it is helpful to first check to see if someone
+else already submitted a report related to the issue; one of the CIG
+developers may have already posted a solution to the problem. You can
+reply to a current issue by clicking on the issue title. To submit a
+new issue, click on \guibutton{Create New} under \guimenu{Issues}.
+
+\section{Installation}
+
+Binary executables are available for three of the most widely used
+platforms: 32-bit Linux, Mac OSX, and Windows. If your platform is not
+compatible with any of these, you can build the software from the
+source code.
+
+\subsection{Linux}
+
+Running the Linux binary version of PyLith requires a 32-bit
+compatible machine with GLIBC 2.2 or later.
+
+\begin{enumerate}
+\item Download the \href{http://crust.geodynamics.org/~leif/shipping/}{tarball}
+\item Unpack the tarball in a suitable location.
+  \begin{screen}
+    \shellprompt\userinput{tar -zxvf pylith-0.8-linux-x86.tar.gz}
+  \end{screen}
+\item Add \directory{pylith-0.8-linux-x86/bin} to your \envvar{PATH}.
+  You will likely want to add something like
+  \begin{screen}
+    PATH=\$\{PATH\}:\replaceable{replace\_with\_absolute\_path}/pylith-0.8-linux-x86/bin
+  \end{screen}
+  to your \filename{.bashrc} file (if you are using bash as your shell)
+  or the equivalent to your \filename{.cshrc} file (if you are using
+  tcsh as your shell).
+\item Add \directory{pylith-0.8-linux-x86/lib}to your
+  \envvar{LD\_LIBRARY\_PATH}. You will likely want to add something like
+  \begin{screen}
+    export LD\_LIBRARY\_PATH=\$\{LD\_LIBRARY\_PATH\}:\replaceable{replace\_with\_}
+    \replaceable{absolute\_path}/pylith-0.8-linux-x86/lib
+  \end{screen}
+  to your \filename{.bashrc} file (if you are using bash as your
+  shell) or the equivalent to your \filename{.cshrc} file
+  (if you are using tcsh as your shell).
+\item To uninstall PyLith, simply remove the \directory{pylith-0.8-linux-x86}
+  directory and all of its sub-directories.
+\end{enumerate}
+
+\subsection{Mac OSX}
+
+The OSX binary version was built to run on the Macintosh PowerPC
+architecture with OSX version 10.2 or later. The binary will run on
+the Macintosh Intel architecture, but only in emulation mode (i.e.,
+rather slowly).
+
+\begin{enumerate}
+\item Download the \href{http://crust.geodynamics.org/~leif/shipping/}{disk image}.
+\item Double click on the disk image to mount the disk.
+\item Double click on the disk and copy the \directory{PyLith} folder
+  to a suiteable location.
+\item To run PyLith, double click on the PyLith icon provided in the \directory{PyLith} folder.
+\item To uninstall PyLith, simply drag the \directory{PyLith} folder
+  to the trash.
+\end{enumerate}
+
+\subsection{Windows}
+
+This Windows binary version of PyLith should be compatible with
+Windows NT, Windows 2000, and Windows XP.
+
+\begin{enumerate}
+\item Download theq
+  \href{http://crust.geodynamics.org/~leif/shipping/}{installer}.
+\item Double click on the \filename{setup.exe} file you just
+  downloaded and follow the instructions for installing.
+\item To run PyLith, double click on the PyLith icon on the desktop or
+  select
+  \guimenu{Start}\guiselect\guimenuitem{All~Programs}\guiselect\guimenuitem{PyLith}\guiselect\guimenuitem{PyLith}.
+\item To uninstall PyLith, simply select
+  \guimenu{Start}\guiselect\guimenuitem{All
+    Programs}\guiselect\guimenuitem{PyLith}\guiselect\guimenuitem{Uninstall~PyLith}.
+\end{enumerate}
+
+\section{Building using source tarball}
+
+Building PyLith from the source code is not a trivial task because
+PyLith depends on several other packages. In general, each package
+must be compiled from source using compilers for each language that
+are compatible with one another. The stable version of the PyLith
+source code is available from the
+\directory{cig/software/Repository/cig/short/3D/PyLith/branches/pylith-0.8}
+of the \href{http://www.geodynamics.org:8080/}{Geodynamics subversion
+  repository}.
+
+\subsection{System Requirements}
+
+\begin{itemize}
+\item Unix flavored operating system.
+\item Fortran, C, and C++ compilers.
+\item Python (2.3 or later)
+\end{itemize}
+
+The software must be built starting from the bottom of the dependency
+list and working upwards. The steps below describe the recommended way
+to build PyLith and the external packages on which it depends. Some of
+the dependencies can be satisfied using precompiled binaries (e.g.,
+RedHat and Fink packages). When considering whether to use a
+precompiled binary package to satisfy any of the dependencies,
+remember that all of the compilers and settings used in building the
+code must be compatible.
+
+\begin{enumerate}
+\item Build PETSc and MPI.
+  \begin{enumerate}
+  \item ADD STUFF HERE (LINK TO PETSC SITE? GET MATT'S THOUGHTS ON HOW
+    MUCH DETAIL TO PUT HERE)
+  \end{enumerate}
+\item Build Pythia.
+  \begin{enumerate}
+  \item ADD STUFF HERE
+  \end{enumerate}
+\item Build PyLith.
+  \begin{enumerate}
+  \item ADD STUFF HERE
+  \end{enumerate}
+\end{enumerate}
+
+\section{Building using source repositories}
+
+\begin{warning}
+  Building PyLith using the source repositories is recommended
+  only for expert users who are willing to work with a moving
+  target and rebuild on a frequent basis. The installation
+  instructions cover the basic steps and assume the user has
+  experience building and installing software.
+\end{warning}
+
+The PyLith-0.8 source code is available from the \href{http://www.geodynamics.org:8080/cig/software/Repository}
+\directory{cig/short/3D/PyLith/branches/pylith-0.8}{Geodynamics
+  subversion
+  repository}.
+
+\subsection{System Requirements}
+
+\begin{itemize}
+\item Unix flavored operating system
+\item Fortran, C, and C++ compilers
+\item Python (2.3 or later)
+\item Subversion
+\item Mercurial (0.9 or later)
+\end{itemize}
+
+\begin{tip}
+  Many flavors of Unix have Subversion packages. In most
+  cases you do not need anything but the basic subversion
+  package. You will likely have to build Mercurial from
+  source, but this is a very easy task that takes only a
+  couple of minutes.
+\end{tip}
+
+\subsection{Building the packages}
+
+The software must be built starting from the bottom of the dependency
+list and working upwards. The steps below describe the recommended way
+to build PyLith and the external packages on which it depends.
+
+\begin{enumerate}
+\item Build
+  \href{http://www-unix.mcs.anl.gov/petsc/petsc-as/developers/index.html}{PETSc
+    (developers version)} and MPI.
+  
+  If you have an architecture optimized version of BLAS/LAPACK you
+  should use those instead of asking PETSc to download and build one
+  for you. In some cases, PETSc will find known optimized
+  implementations of BLAS/LAPACK (e.g., vecLib on Mac OSX).
+  
+  If you have an MPI implementation installed, you can use it or let
+  PETSc download and install one for you.
+
+  \begin{tip}
+    If you run into problems configuring or building PETSc, send {\em
+      both} \filename{configure.log} and
+    \filename{make\_\replaceable{PETSC\_ARCH}} to
+    \email{petsc-maint@mcs.anl.gov}.
+  \end{tip}
+
+  \begin{enumerate}
+  \item Pull the source code from ANL and place the source tree in a
+    suitable location. The steps below will create a
+    \directory{petsc-dev} sub-directory in the current directory.
+
+    \begin{screen}
+      \shellprompt\userinput{hg clone http://mercurial.mcs.anl.gov/petsc/petsc-dev}
+      \shellprompt\userinput{cd petsc-dev/python}
+      \shellprompt\userinput{hg clone http://mercurial.mcs.anl.gov/petsc/BuildSystem BuildSystem}
+    \end{screen}
+    
+  \item Set the \envvar{PETSC\_DIR} and \envvar{PETSC\_ARCH} environment
+    variables. \envvar{PETSC\_DIR} corresponds to the top-level
+    directory in the PETSc source tree and \envvar{PETSC\_ARCH} is a tag
+    for this configuration of PETSc (e.g., linux\_gcc-4.0\_debug,
+    darwin\_gcc-3.4\_opt, etc). You will want to set these environment
+    variables in your \filename{.bashrc}, \filename{.cshrc}, or
+    similar file.
+
+    \begin{screen}
+      \shellprompt\userinput{export PETSC\_DIR=\replaceable{replace\_with\_absolute\_path}/petsc-dev}
+      \shellprompt\userinput{export PETSC\_ARCH=\replaceable{replace\_with\_PETSc\_arch\_tag}}
+    \end{screen}
+  \item Configure PETSc.
+    
+    Run \command{config/configure.py} with the appropriate arguments
+    to configure PETSc for your computer. Run
+    \command{config/configure.py --help} to see the long list of
+    possible options. Building PETSc for use with PyLith requires the
+    following arguments:
+
+    \begin{screen}
+      \option{--with-clanguage=c++}
+      \option{--with-c-support}
+      \option{--with-shared=1}
+      \option{--with-boost=1}
+      \option{--download-boost=1}
+      \option{--with-sieve=1}
+    \end{screen}
+    
+    Be sure to include flags indicating where MPI and
+    BLAS/LAPACK are if you want to use a preinstalled
+    implementation. If not, be sure to tell PETSc to
+    download those packages. If you do not want build
+    PETSc using the gnu compilers, be sure to let PETSc
+    know which compilers you want to use instead.
+
+    After several minutes, the configure script should
+    finish and display the PETSc settings. Check to make
+    sure these match your expectations before continuing.
+
+  \item Build PETSc.
+    \begin{screen}
+      \shellprompt\userinput{make}
+    \end{screen}
+  \item Test PETSc installation.
+    
+    One of the tests will attempt to display some X windows. If X
+    windows is not available from the shell in which you run
+    \command{make test}, then that test will fail.
+
+    \begin{screen}
+      \shellprompt\userinput{make test}
+    \end{screen}
+    
+  \item In the future, you will likely want to update the PETSc source
+    tree to include bug fixes, new features etc.
+    
+    To update PETSc (use to \command{hg update -v} to see what files
+    are being updated):
+
+    \begin{screen}
+      \shellprompt\userinput{cd petsc-dev}
+      \shellprompt\userinput{hg pull}
+      \shellprompt\userinput{hg update}
+      \shellprompt\userinput{cd python/BuildSystem}
+      \shellprompt\userinput{hg pull}
+      \shellprompt\userinput{hg update}
+    \end{screen}
+  \end{enumerate}
+
+\item Build Pythia.
+
+  \begin{tip}
+    If you run into problems configuring or building Pythia, send
+    {\em both} the \filename{config.log} and
+    \filename{make.log} files to
+    \email{cig-short@geodynamics.org}. To create the
+    \filename{make.log} file, run make via \command{make $>$ make.log}.
+  \end{tip}
+
+  \begin{enumerate}
+  \item Pull the source code from CIG and place the source tree in a
+    suitable location. The steps below will create a
+    \directory{pythia-0.8} sub-directory in the current directory.
+
+    \begin{screen}
+      \shellprompt\userinput{svn co svn://geodynamics.org/cig/vendor/pythia [cont.]\\
+        /v0.8/pythia-0.8}
+    \end{screen}
+    
+  \item Configure Pythia.
+    
+    Run \command{configure} with the appropriate arguments.
+    Run \command{configure --help} to see a list of possible
+    options. You may want to specify compilers and/or an install
+    location.
+
+    \begin{screen}
+      \shellprompt\userinput{cd pythia-0.8}
+      \shellprompt\userinput{autoreconf -i}
+      \shellprompt\userinput{./configure}
+    \end{screen}
+
+  \item Build Pythia.
+
+    Run \command{make} and \command{make install}.
+
+    \begin{screen}
+      \shellprompt\userinput{make}
+      \shellprompt\userinput{make install}
+    \end{screen}
+    
+  \end{enumerate}
+
+\item Build PyLith.
+
+  \begin{tip}
+    If you run into problems configuring or building PyLith, send
+    {\em both} the \filename{config.log} and
+    \filename{make.log} files to
+    \email{cig-short@geodynamics.org}. To create the
+    \filename{make.log} file, run make via \command{make $>$ make.log}.
+  \end{tip}
+
+  \begin{enumerate}
+  \item Pull the source code from CIG and place the source tree in a
+    suitable location. The steps below will create a
+    \directory{pylith-0.8} sub-directory in the current directory.
+
+    \begin{screen}
+      \shellprompt\userinput{svn co svn://geodynamics.org/cig/short/3D/PyLith [cont.]\\
+        /branches/pylith-0.8}
+    \end{screen}
+
+  \item Configure PyLith.
+    
+    Run \command{configure} with the appropriate arguments. Run
+    \command{configure --help} to see a list of possible options. You
+    may want to specify compilers and/or an install location. If you
+    installed pythia-0.8 in a non-system location, you will need to
+    set \envvar{CPPFLAGS} and \envvar{LDFLAGS} appropriately.
+
+    \begin{screen}
+      \shellprompt\userinput{cd pylith-0.8}
+      \shellprompt\userinput{autoreconf -i}
+      \shellprompt\userinput{./configure}
+    \end{screen}
+    
+  \item Build PyLith.
+
+    Run \command{make} and \command{make install}.
+
+    \begin{screen}
+      \shellprompt\userinput{make}
+      \shellprompt\userinput{make install}
+    \end{screen}
+  \end{enumerate}
+\end{enumerate}

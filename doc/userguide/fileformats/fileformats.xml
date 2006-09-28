@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<chapter id="appendix_fileformats">
+  <title>File Formats</title>
+
+  <!-- SECTION +++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <section>
+    <title>Input Files</title>
+
+    <para>
+      PyLith gathers its input from several different types of
+      files. All of these area ASCII files and can include comment
+      lines that begin with '#'. Note that the placement of comments
+      is restricted to certain locations in some files (see the
+      discussion of each file format for more information).
+    </para>
+  </section>
+
+  <!-- REQUIRED INPUT FILES ++++++++++++++++++++++++++++++++++++++ -->
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="coord.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="connect.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="bc.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="time.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="prop.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="statevar.xml" />
+
+  <!-- OPTIONAL INPUT FILES ++++++++++++++++++++++++++++++++++++++ -->
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="split.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="fuldat.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="skew.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="keyval.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="hist.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="wink.xml" />
+</chapter>

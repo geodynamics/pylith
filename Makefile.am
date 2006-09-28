@@ -1,32 +1,8 @@
-# -*- Makefile -*-
-#
-# ----------------------------------------------------------------------
-#
-#                           Brad T. Aagaard
-#                        U.S. Geological Survey
-#
-# <LicenseText>
-#
-# ----------------------------------------------------------------------
-#
+## Process this file with automake to produce Makefile.in
+# $Id: Makefile.am 2370 2005-09-09 19:49:10Z leif $
 
 ACLOCAL_AMFLAGS = -I ./m4
 
-SUBDIRS = \
-	libsrc \
-	modulesrc \
-	pylith \
-	applications
+SUBDIRS = pylith3d
 
-if ENABLE_TESTING
-  SUBDIRS += unittests
-endif
-
-if ENABLE_DOCUMENTATION
-  SUBDIRS += doc
-endif
-
-# version
-# $Id$
-
-# End of file 
+## end of Makefile.am

@@ -1,0 +1,191 @@
+#
+#   Parameter file for use with program readucd.
+#
+# **********************************************************************
+#
+#   Coordinate parameters:
+#
+#    cscale  = coordinate scaling factor.
+#    ix      = coordinate number corresponding to x.
+#    iy      = coordinate number corresponding to y.
+#    iz      = coordinate number corresponding to z.
+#
+#    The integer parameters may be used to transpose coordinates if a
+#    different coordinate system is desired.
+#
+#   cscale   ix   iy   iz
+#-----------------------------------------------------------------------
+    1.0d0    1    2    3
+#-----------------------------------------------------------------------
+#
+#   Coordinate units:
+#
+#    Give a string specifying the units used after scaling.
+#
+#-----------------------------------------------------------------------
+  'km'
+#-----------------------------------------------------------------------
+#
+#
+# **********************************************************************
+#
+#   Boundary condition information:
+#    This information is used to determine the boundaries on which BC
+#    will be applied, as well as the default BC.
+#    Note:  The boundaries will be determined after the mesh
+#           coordinates have been scaled and permuted.
+#
+#    nbc    = number of boundary condition surfaces.  Note that
+#             each surface must be marked with a unique BC #.
+#
+#    nbc
+#-----------------------------------------------------------------------
+      0
+#-----------------------------------------------------------------------
+#
+#   BC numbers and corresponding boundary conditions to be applied to
+#   each boundary:
+#    This input will consist of nbc lines, one for each  mesh boundary.
+#    The order is the same as for the mesh limits above.
+#
+#    Each line will contain:
+#    ibcode ibcx  bcx  ibcy  bcy  ibcz  bcz
+#
+#    where ibcode is the boundary condition code for a given surface,
+#    each ibc value is the integer boundary condition code
+#    (same as those for lithomop or tecton), and bc is the corresponding
+#    boundary condition value.
+#
+#  ibcode ibcx(i)  bcx(i)  ibcy(i)   bcy(i)  ibcz(i)  bcz(i), i=1,nbc
+#-----------------------------------------------------------------------
+#     1    1     -999.0d0     1      -999.0d0     1      -999.0d0
+#     2    1     -999.0d0     1      -999.0d0     1      -999.0d0
+#     3    0        0.0d0     1         0.0d0     0         0.0d0
+#     4    1     -999.0d0     1      -999.0d0     1      -999.0d0
+#     5    1     -999.0d0     1      -999.0d0     1      -999.0d0
+#-----------------------------------------------------------------------
+#
+#  Units used for boundary conditions:
+#    You must specify the units to be used for displacement, velocity,
+#    and force boundary conditions.
+#
+#-----------------------------------------------------------------------
+'m'
+# displacement_units
+'m/s'
+# velocity_units
+'newton'
+# force_units
+#-----------------------------------------------------------------------
+#
+#   Connectivity order option:
+#    This determines how the tetrahedral element connectivities are
+#    ordered/determined.
+#
+#    iconopt:  1 = assume connectivities are already in the proper
+#                  order (fastest, but frequently incorrect).
+#              2 = assume connectivities are in the wrong order.  In
+#                  this case, the positions of nodes 2 and 3 are
+#                  reversed.
+#              3 = assume that the connectivities are in any order.  In
+#                  this case, the element jacobian is first computed
+#                  using the original order.  If a negative value is
+#                  obtained, the positions of nodes 2 and 3 are
+#                  reversed.  This is probably the safest option.
+#
+#    iconopt
+#-----------------------------------------------------------------------
+        3
+#-----------------------------------------------------------------------
+#
+#   Fault parameters:
+#    
+#    numflt  = number of faults in the model
+#    ibcflt = boundary condition code used to specify whether a node
+#              lies on a fault
+#
+#    numflt  ibcflt
+#-----------------------------------------------------------------------
+       1        1
+#-----------------------------------------------------------------------
+#
+#   Fault specification:
+#    Whether a node lies on a fault is determined by the attribute
+#    information above.  The fault to which a node belongs and the
+#    side of the fault on which an element lies is determined by
+#    material type.  Thus, the two sides of a fault must always have
+#    different material types, and if there is more than one fault,
+#    a different material must lie along each side of a fault
+#    boundary.  For each fault, there are 3 lines of information:
+#
+#    iftype(i), ifhist(i), nmatf(1,i), nmatf(2,i)
+#    fsplit(j,1,i),j=1,nsd, ifmat(1,i,j),j=1,nmatf(1,i)
+#    fsplit(j,2,i),j=1,nsd, ifmat(2,i,j),j=1,nmatf(2,i)
+#
+#    The parameters are:
+#
+#    iftype(i)       = fault type (1=split node, 2=slippery node)
+#    ifhist(i)       = load history associated with the fault
+#                      (same type of specification as tecton/lithomop)
+#    nmatf(1,i)      = number of materials lying on side 1 of the fault
+#    nmatf(2,i)      = number of materials lying on side 2 of the fault
+#    fsplit(j,1,i)   = splitting parameter for each degree of freedom
+#                      on side 1 of the fault.  If the fault is a split
+#                      node fault, this corresponds to an actual
+#                      dislocation value applied to this side of the
+#                      fault.  If the fault is a slippery node fault,
+#                      the sign and magnitude are used to determine the
+#                      integer slip parameter (0 = no slip, -1 = slip
+#                      in negative local coordinate direction, 1 = slip
+#                      in positive local coordinate direction).
+#    ifmat(1,i,j)    = the list of material numbers lying on side 1 of
+#                      the fault.
+#    fsplit(j,2,i)   = same as fsplit(j,1,i) for side 2 of the fault.
+#    ifmat(2,i,j)    = same as ifmat(1,i,j) for side 2 of the fault.
+#
+#    iftype(i), ifhist(i), nmatf(1,i), nmatf(2,i)
+#    fsplit(j,1,i),j=1,nsd, ifmat(1,i,j),j=1,nmatf(1,i)
+#    fsplit(j,2,i),j=1,nsd, ifmat(2,i,j),j=1,nmatf(2,i),i=1,numflt
+#-----------------------------------------------------------------------
+        1          0        1        1
+      0.0d0     0.5d0      0.0d0      1
+      0.0d0    -0.5d0      0.0d0      2
+#-----------------------------------------------------------------------
+#
+#   Winkler resoring force info:
+#    In the present implementation, it is assumed that the Winkler BC
+#    are being used to simulate gravity, although it would be easy to
+#    adapt the BC to other uses.  The user must first specify the
+#    number of Winkler sets.  If this number is zero, no additional
+#    input is required.
+#
+#    nwsets   = number of Winkler restoring force sets.
+#
+#    nwsets
+#-----------------------------------------------------------------------
+       0
+#-----------------------------------------------------------------------
+#
+#   Info describing each Winkler restoring force set.  It is assumed
+#   that Winkler BC for each set are applied in a single direction.
+#   Enter one line for each Winkler BC set.
+#
+#    The parameters are:
+#
+#    iwcode(i)   = The boundary condition code used to define this set.
+#    iwdir(i)    = The direction in which the force is to be applied.
+#                  1 = X
+#                  2 = Y
+#                  3 = Z
+#    modew(i)    = Application mode code.
+#                  0 = No restoring force (it would make no sense to
+#                      use this option).
+#                  1 = Forces applied at all times.
+#                 -n = Forces applied according to load history n.
+#    rhow(i)     = Assumed density contrast.
+#    gw(i)       = Assumed graviational acceleration.
+#
+#   iwcode(i)   iwdir(i)    modew(i)    rhow(i)    gw(i), i=1,nwsets
+#-----------------------------------------------------------------------
+      6           3          1          3000.0     10.0
+#-----------------------------------------------------------------------

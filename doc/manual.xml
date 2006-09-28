@@ -2,7 +2,7 @@
 <book id="PyLithManual" lang="en">
  
 <bookinfo>
-<title>PyLith Manual</title>
+<title>PyLith Manual (Draft)</title>
 <authorgroup>
 <author>
 <firstname>Charles</firstname>
@@ -121,7 +121,7 @@ using the <methodname>restrictVector()</methodname> method.
   call VecDestroy(locSol, ierr)
 </programlisting>
 </para>
- 
+
 </chapter>
 
 </book>

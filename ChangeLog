@@ -1,32 +1,466 @@
-2006-04-25 15:45  willic3
+2006-06-23 22:45  cassie
 
-	* [r2810] Minor change that broke an assignment into two parts
-	  rather than 1.
+	* [r3874] updated cover for manual
 
-2006-04-25 15:43  willic3
+2006-06-23 22:06  cassie
 
-	* [r2809] Changed names from ElemDefSolid to elemIntegrationSolid
-	  and related changes. Added call to fortran routine that will
-	  take global element node array and put it into the element
-	  family array. Added comments to indicate remaining sections of
-	  initialization that need to be completed. Once the material
-	  model for the family is defined and the spatial database stuff
-	  determined, the rest is easy.
+	* [r3873] added equation eps's for effective stress function for a
+	  maxwell linear viscoelastic material
 
-2006-04-25 15:40  willic3
+2006-06-23 22:03  cassie
 
-	* [r2808] Changed around some stuff when appending to elemFamilies
-	  list. Added the pointer to the elemFamilyNodes array, although
-	  the array does not get popoulated until later.
+	* [r3872] added equation eps's for intro
 
-2006-04-17 20:35  willic3
+2006-06-23 21:58  cassie
 
-	* [r2787] Moved file to new name to correspond to class.
+	* [r3871] updated manual with equations
 
-2006-04-17 20:34  willic3
+2006-06-23 15:54  willic3
 
-	* [r2786] Changed some names to reflect the fact that this is
-	  really just integration information.
+	* [r3869] Forgot to add this shell script earlier.
+
+2006-06-23 15:53  willic3
+
+	* [r3868] Changed mpiexec to mpirun. People without mpirun will
+	  need to fix things with a symbolic link.
+
+2006-06-23 15:52  willic3
+
+	* [r3867] Added shell scripts to run example problem.
+
+2006-06-23 15:47  willic3
+
+	* [r3866] Alternative BC for testing.
+
+2006-06-23 15:36  willic3
+
+	* [r3865] Debugging codes for unscrambling orderings.
+
+2006-06-23 15:32  willic3
+
+	* [r3864] Added shell scripts to run example.
+
+2006-06-23 15:09  willic3
+
+	* [r3863] Fixed error message.
+
+2006-06-23 15:07  willic3
+
+	* [r3862] Fixed error message.
+
+2006-06-23 15:06  willic3
+
+	* [r3861] Added shell scripts to run test problems.
+
+2006-06-23 15:01  willic3
+
+	* [r3860] Removed files that can be replaced by symlinks from a
+	  shell script.
+
+2006-06-23 14:54  willic3
+
+	* [r3859] Fixed titles.
+
+2006-06-23 14:53  willic3
+
+	* [r3858] Added shell scripts to run the test problem based on
+	  Brad's script.
+
+2006-06-23 14:29  willic3
+
+	* [r3857] Put in simple shell scripts to run the problem based on
+	  Brad's script. We probably still need to put in something like a
+	  'make clean'.
+
+2006-06-23 13:50  willic3
+
+	* [r3856] Commented out some new debugging statements.
+
+2006-06-22 19:47  baagaard
+
+	* [r3854] User guide. Added note about Intel Macs.
+
+2006-06-22 18:56  willic3
+
+	* [r3853] Minor changes to manual.
+
+2006-06-22 18:25  willic3
+
+	* [r3852] A few slight changes.
+
+2006-06-22 18:04  willic3
+
+	* [r3851] Put in a few minor changes.
+
+2006-06-22 17:38  baagaard
+
+	* [r3850] User guide. Added license text provided by Charles.
+	  Fixed some more typos in tutorial.
+
+2006-06-22 16:52  baagaard
+
+	* [r3849] User guide. Updated installation instructions.
+
+2006-06-22 04:27  baagaard
+
+	* [r3848] User guide. Cleaned up text. Added explicit indication
+	  of commands in tutorial.
+
+2006-06-22 04:12  baagaard
+
+	* [r3847] User guide. Cleaned up text. Added explicit indication
+	  of commands in tutorial.
+
+2006-06-22 00:30  baagaard
+
+	* [r3846] User guide. Added PETSc blurb.
+
+2006-06-22 00:05  baagaard
+
+	* [r3845] Added placeholder for software license.
+
+2006-06-21 23:58  baagaard
+
+	* [r3844] User guide. Worked more on getting help and running
+	  PyLith.
+
+2006-06-21 23:12  baagaard
+
+	* [r3843] User guide. Added documentation for final types of input
+	  files.
+
+2006-06-21 21:30  baagaard
+
+	* [r3842] User guide. Started filling in installation
+	  instructions. Worked more on running PyLith and tutorial.
+
+2006-06-21 15:36  baagaard
+
+	* [r3833] User guide. Fixed figure for bm5 geometry.
+
+2006-06-21 14:45  baagaard
+
+	* [r3832] User guide. Fixed path to tutorialbm5.xml.
+
+2006-06-21 04:48  baagaard
+
+	* [r3831] User guide. Added figure of geometry for bm5.
+
+2006-06-21 02:10  willic3
+
+	* [r3830] I left off the units in the field descriptions, which
+	  caused ParaView to barf. This has been fixed. It should already
+	  be correct for binary UCD output.
+
+2006-06-21 01:42  knepley
+
+	* [r3829] Fixed assembly of full_displacements from increments
+	  Fixed residu() to not overwrite the solution
+
+2006-06-21 00:34  baagaard
+
+	* [r3828] More on user guide. Changed layout of tutorial files to
+	  make it easier to load figures.
+
+2006-06-20 23:54  baagaard
+
+	* [r3827] More work on user guide. Added comments on MPI settings.
+	  Worked on tutorial.
+
+2006-06-20 22:03  baagaard
+
+	* [r3826] Worked on documentation of command-line arguments.
+
+2006-06-20 19:04  knepley
+
+	* [r3825] Fixed problem with viscos VTK output
+
+2006-06-20 17:57  knepley
+
+	* [r3824] Fixed stupid memory error in VTK outupt
+
+2006-06-20 16:01  baagaard
+
+	* [r3823] Fixed viz2 step in tutorial.
+
+2006-06-20 15:44  willic3
+
+	* [r3822] Added documentation to inventory, and altered the status
+	  of some files.
+
+2006-06-20 00:07  baagaard
+
+	* [r3821] Added documentation for more of the file formats.
+	  Cleaned up id tags in documentation.
+
+2006-06-19 20:10  knepley
+
+	* [r3819] Added Fortran files
+
+2006-06-19 19:06  knepley
+
+	* [r3818] Added a Python section which runs a timeloop
+
+2006-06-19 18:48  baagaard
+
+	* [r3817] Fixed setup step of tutorial.
+
+2006-06-18 03:44  baagaard
+
+	* [r3814] Added bc and connect file formats.
+
+2006-06-17 23:18  baagaard
+
+	* [r3813] Started work on file formats for user guide.
+
+2006-06-17 00:58  baagaard
+
+	* [r3811] Worked on tutorial and running PyLith sections.
+
+2006-06-16 15:42  baagaard
+
+	* [r3808] Incorporated more stuff from Cassie's previous version.
+	  Added layout for appendix with material models.
+
+2006-06-16 03:58  baagaard
+
+	* [r3807] Added use of tutor.sh in tutorial to simplify getting
+	  files from archive.
+
+2006-06-16 00:54  baagaard
+
+	* [r3806] Worked on tutorial for SCEC benchmark 5.
+
+2006-06-16 00:52  baagaard
+
+	* [r3805] Fixed bug where package was still called Lithomop3D.
+	  This caused the module to be put in the wrong directory.
+
+2006-06-15 17:13  willic3
+
+	* [r3804] Commented out a debugging line.
+	* [r3803] It appears that the fix for getting the correct residual
+	  vector in parallel is to first zero the entries, then use
+	  ADD_VALUES with assembleVectorComplete. This fix in these
+	  routines now appears to give the correct solution for bm1b in
+	  both serial and parallel runs for the elastic and time-dependent
+	  solutions.
+
+2006-06-14 23:49  baagaard
+
+	* [r3802] Moved makefile to userguide dir.
+
+2006-06-14 23:48  baagaard
+
+	* [r3801] Setup layout of source for userguide.
+
+2006-06-14 23:45  baagaard
+
+	* [r3800] Worked on user guide.
+
+2006-06-14 15:51  willic3
+
+	* [r3797] Fixed a silly error where quadratureOrder was written as
+	  a global variable rather than as pl3dscan.quadratureOrder.
+
+2006-06-14 00:05  baagaard
+
+	* [r3795] Started working on stage 2 stuff.
+
+2006-06-13 23:16  baagaard
+
+	* [r3794] Added more info.
+	* [r3793] Created tutorials dir.
+
+2006-06-13 14:08  willic3
+
+	* [r3792] Commented out debugging statements.
+
+2006-06-12 23:43  knepley
+
+	* [r3791] Fixing performance bugs with Sieve
+
+2006-06-12 21:03  baagaard
+
+	* [r3789] Started working on tutorial using SCEC benchmark 5.
+
+2006-06-09 17:40  knepley
+
+	* [r3783] Turned off diagnostic printing
+
+2006-06-09 15:40  willic3
+
+	* [r3782] Merged in debugging changes, which are now commented out.
+
+2006-06-09 15:38  willic3
+
+	* [r3781] Merged in debugging changes, which are now commented out.
+
+2006-06-08 20:14  willic3
+
+	* [r3779] Attempted fix for element sorting problem when one
+	  process gets less than the total number of element families.
+
+2006-06-07 19:45  willic3
+
+	* [r3777] Updated this routine to use ielindx array and some other
+	  fixes.
+
+2006-06-07 15:10  willic3
+
+	* [r3776] Resolved conflicts between Matt's changes and mine.
+
+2006-06-07 15:07  willic3
+
+	* [r3775] Resolved conflicts between Matt's changes and mine.
+
+2006-06-07 01:45  willic3
+
+	* [r3774] Commented out some debugging stuff.
+
+2006-06-06 23:16  knepley
+
+	* [r3773] Fixed compile errors
+
+2006-06-06 21:49  willic3
+
+	* [r3772] Fixed coordinate units to be km.
+
+2006-06-06 21:47  willic3
+
+	* [r3771] Updated bindings to use Ielindx array.
+
+2006-06-06 21:45  willic3
+
+	* [r3770] Temporarily commented out some debugging stuff.
+
+2006-06-06 21:42  willic3
+
+	* [r3769] Fixed output of original an reordered element numbers
+	  and fixed formatting.
+
+2006-06-06 21:41  willic3
+
+	* [r3768] Updated routine to use Ielindx array rather than Indxiel.
+
+2006-06-06 21:40  willic3
+
+	* [r3767] Updated routine to use Ielindx array rather than Indxiel.
+
+2006-06-06 21:39  willic3
+
+	* [r3766] Updated routine to use Ielindx array rather than Indxiel.
+
+2006-06-06 21:37  willic3
+
+	* [r3765] Updated routine to use ielindx array rather than indxiel.
+	* [r3764] Updated routine to use Ielindx array rather than Indxiel.
+
+2006-06-06 21:36  willic3
+
+	* [r3763] Updated routine to use Ielindx array rather than Indxiel.
+
+2006-06-06 21:33  willic3
+
+	* [r3762] Updated bindings for use of Ielindx array as well as
+	  updating some other stuff. The bindings will need to be
+	  double-checked.
+	* [r3761] Updated bindings to use Ielindx array as well as fixing
+	  some older stuff that had not been updated. This will need to be
+	  checked.
+
+2006-06-06 21:22  willic3
+
+	* [r3760] Updated bindings to use Ielindx array.
+
+2006-06-06 21:07  willic3
+
+	* [r3759] Updated routine calls for ielindx array and added some
+	  documentation.
+
+2006-06-06 20:55  willic3
+
+	* [r3758] Updated routine to use ielindx array.
+
+2006-06-06 20:37  willic3
+
+	* [r3757] Updated to use ielindx array rather than indxiel.
+
+2006-06-06 20:36  willic3
+
+	* [r3756] Updated to use ielindx array rather than indxiel.
+
+2006-06-06 20:33  willic3
+
+	* [r3755] Updated to use ielindx array rather than indxiel.
+
+2006-06-06 19:04  willic3
+
+	* [r3754] Replaced Indxiel with Ielindx.
+
+2006-06-06 19:01  willic3
+
+	* [r3753] Updated call to sort_elements to also contain new index
+	  array Ielindx.
+
+2006-06-06 18:57  willic3
+
+	* [r3752] Updated bindings for new index array Ielindx.
+
+2006-06-06 18:55  willic3
+
+	* [r3751] Updated bindings for sort_elements to include new index
+	  array Ielindx.
+
+2006-06-06 18:54  willic3
+
+	* [r3750] Added new index array to original element numbering.
+
+2006-06-06 16:05  willic3
+
+	* [r3748] Example problem with 2 materials.
+
+2006-06-02 01:50  knepley
+
+	* [r3740] I now use the original element number indxiel(elem) in
+	  the call to assembleMatrix() - This means I have to preserve the
+	  indxiel array
+
+2006-06-01 03:41  knepley
+
+	* [r3739] Fixed injection of boundary values in visualization
+
+2006-05-29 19:02  knepley
+
+	* [r3732] Added method and support for viewing fields in VTK
+
+2006-05-16 05:10  willic3
+
+	* [r3587] Added simple split node test, splitting a block in half.
+	  This should be correct, but hasn't been tested.
+
+2006-05-15 23:32  willic3
+
+	* [r3585] Changed things so elements are referenced by number
+	  rather than order in a file.
+
+2006-05-15 23:23  willic3
+
+	* [r3584] Changed code so that coordinates are indexed by node
+	  number rather than order in the file.
+
+2006-05-14 22:08  knepley
+
+	* [r3580] Need to reassign mesh with the distributed mesh
+
+2006-04-27 18:14  knepley
+
+	* [r3436] Moved to correct filenames Path to application corrected
+
+2006-04-14 18:19  willic3
+
+	* [r2779] Added new pylith-0.8 branch, which we will now use as
+	  our 'stable' branch.
 
 2006-04-13 20:16  willic3
 

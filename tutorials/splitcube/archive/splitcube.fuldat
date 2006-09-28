@@ -1,0 +1,9 @@
+# File containing time steps at which full output is desired.
+#
+# Comment lines begin with '#'
+#
+# Note: Time step 0 (elastic solution) is always included in the
+# output.
+#
+# List the time steps, one per line.
+#

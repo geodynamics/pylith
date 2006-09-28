@@ -1,0 +1,121 @@
+#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\language english
+\inputencoding latin1
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 2in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\end_header
+
+\begin_body
+
+\begin_layout Chapter
+Preface
+\end_layout
+
+\begin_layout Section
+About This Document
+\end_layout
+
+\begin_layout Standard
+This document is organized into two parts.
+ Part I begins with an introduction to PyLith and discusses how to run the
+ software.
+ Part II provides appendices and references.
+\end_layout
+
+\begin_layout Section
+Who Will Use This Documentation
+\end_layout
+
+\begin_layout Standard
+This documentation is aimed at scientists who prefer to use prepackaged
+ and specialized analysis tools.
+ Users are likely to be experienced computational Earth scientists and have
+ familiarity with basic scripting, software installation, and programming,
+ but are not likely to be professional programmers.
+ Of those, there are likely to be two classes of users: those who run models
+ and those who modify the source code.
+\end_layout
+
+\begin_layout Section
+Citation
+\end_layout
+
+\begin_layout Standard
+The Computational Infrastructure for Geodynamics (CIG) is making this source
+ code available to you at no cost in hopes that the software will enhance
+ your research in geophysics.
+ A number of individuals have contributed a significant portion of their
+ careers toward the development of this software.
+ It is essential that you recognize these individuals in the normal scientific
+ practice by citing the appropriate peer reviewed papers and making appropriate
+ acknowledgements in talks and publications.
+ NEED CITATION INFORMATION
+\end_layout
+
+\begin_layout Section
+Support
+\end_layout
+
+\begin_layout Standard
+Current PyLith development is supported by the Southern California Earthquake
+ Center, the National Science Foundation, the CIG, and internal U.S.
+ Geological Survey funding.
+ Pyre development is funded by the 
+\begin_inset LatexCommand \htmlurl[Department of Energy's]{http://www.doe.gov/engine/content.do}
+
+\end_inset
+
+ Advanced Simulation and Computing program and the 
+\begin_inset LatexCommand \htmlurl[National Science Foundation's]{http://www.nsf.gov}
+
+\end_inset
+
+ Information Technology Research (ITR) program.
+\end_layout
+
+\begin_layout Section
+Request for Comments
+\end_layout
+
+\begin_layout Standard
+Your suggestions and corrections can only improve this documentation.
+ Please report any errors, inaccuracies, or typos to 
+\begin_inset LatexCommand \url[Sue Kientz]{<sue@geodynamics.org>}
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_body
+\end_document

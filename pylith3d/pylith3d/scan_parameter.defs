@@ -1,0 +1,84 @@
+# Correspondences between python variables and their f77 equivalents.
+#
+#  Python				f77
+#		Geometry invariants
+_numberSpaceDimensions			nsd
+_numberDegreesFreedom			ndof
+_stateVariableDimension			nstr
+_geometryTypeInt			ngem
+_materialMatrixDimension		nddmat
+_numberSkewDimensions			nskdim
+_numberSlipDimensions			nsdim
+_numberSlipNeighbors			npdim
+_numberTractionDirections		npdir
+#		Element type definition invariants
+_maxElementNodes			nenmax
+_maxGaussPoints				ngaussmax
+--					neemax
+_numberElementTypes			netypes
+_numberElementTypesBase			netypesi
+_numberElementNodesBase			neni(netypesi)
+	_pointerToListArrayNumberElementNodesBase
+_pointerToElementTypeInfo		infetype(4,netypes)
+#		Material model definition invariants
+_maxMaterialModels			nmatmodmax
+_maxStateVariables			nstatesmax
+_pointerToMaterialModelInfo		infmatmod(5,nmatmodmax)
+_pointerToMaterialModelStates		ismatmod(nstatesmax,nmatmodmax)
+#		Parameters derived from inventory or category 2 params
+_analysisTypeInt			icode
+_quadratureOrderInt			intord
+_prestressAutoComputeInt		ipstrs
+_pointerToSh				sh(nsd+1,nenmax,ngaussmax,netypes)
+_pointerToShj				shj(nsd+1,nenmax,ngaussmax,netypes)
+_pointerToGauss				gauss(nsd+1,ngaussmax,netypes)
+#		Parameters derived from number of file entries
+_numberNodes				numnp
+_coordinateScaleFactor			cscale
+
+_numberBcEntries			numbc
+_displacementScaleFactor		dscale
+_velocityScaleFactor			vscale
+_forceScaleFactor			fscale
+
+_numberWinklerEntries			nwinke
+_numberWinklerForces			nwink
+
+_numberRotationEntries			numrot
+_rotationScaleFactor			runits
+
+_numberTimeStepGroups			nintg
+	_timeStepInfo[0]
+_totalNumberTimeSteps			lastep
+	_timeStepInfo[1]
+_timeScaleFactor			tunits
+
+_numberFullOutputs			icontr
+
+_numberLoadHistories			nhist
+
+_numberMaterials			numat
+_propertyListSize			npropsz
+_propertyList				prop(npropsz)
+	_pointerToListArrayPropertyList
+_propertyListIndex			indprop(numat)
+	_pointerToListArrayPropertyListIndex
+_materialModel				matmodel(numat)
+	_pointerToListArrayMaterialModel
+_pointerToMaterialInfo			infmat(3,numat)
+
+_numberElements				numelt
+_connectivitySize			nconsz
+
+_numberPrestressEntries			nprestr
+
+_numberTractionBc			numpr
+_tractionBcScaleFactor			trunits
+
+_numberSplitNodeEntries			numfn
+
+_numberSlipperyNodeEntries		numslp
+_numberDifferentialForceEntries		numdif
+_numberSlipperyWinklerEntries		nwinkxe
+_numberSlipperyWinklerForces		nwinkx
+

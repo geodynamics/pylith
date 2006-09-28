@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<section id="file_wink">
+  <title>xx.wink</title>
+
+  <para>
+    The <filename>xx.wink</filename> file specifies Winkler elements,
+    which may be used as spring foundations in the simulation of
+    gravity.
+  </para>
+
+  <figure>
+    <title>Format of <filename>xx.wink</filename> files</title>
+    <screen>
+# File containing Winkler elements.
+#
+# Comment lines begin with '#'
+#
+# Flags for the degrees of freedom can have the following values:
+#    0 = no Winkler force
+#    1 = Winkler force applied at all times
+#   -n = Winkler force applied according to load history n
+#        (requires xx.hist file)
+#
+# Columns:
+#  (1) Vertex number
+#  (2) Flag for DOF in x-direction
+#  (3) Flag for DOF in y-direction
+#  (4) Flag for DOF in z-direction
+#  (5) Magnitude of restoring force for x-direction
+#  (6) Magnitude of restoring force for x-direction
+#  (7) Magnitude of restoring force for x-direction
+#
+14  0 -1  0  0.0e+00  1.0e+25  0.0e+00
+18  0  1  0  1.0e+20  0.0e+00  0.0e+00
+...
+    </screen>
+  </figure>
+
+</section>

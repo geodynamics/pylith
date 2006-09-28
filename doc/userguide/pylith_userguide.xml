@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+                      "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<book id="pylith_userguide" lang="en">
+  <bookinfo>
+    <title>PyLith User Manual</title>
+    <authorgroup>
+      <author>
+	<firstname>Charles</firstname>
+	<surname>Williams</surname>
+      </author>
+      <author>
+	<firstname>Matthew</firstname>
+	<surname>Knepley</surname>
+      </author>
+      <author>
+	<firstname>Cassie</firstname>
+	<surname>Ferguson</surname>
+      </author>
+      <author>
+	<firstname>Brad</firstname>
+	<surname>Aagaard</surname>
+      </author>
+    </authorgroup>
+    <date>2006.06.12</date>
+    <copyright>
+      <year>2006</year>
+      <holder>CIG</holder>
+    </copyright>
+  </bookinfo>
+  
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="preface.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="pylith.xml" />
+  <xi:include
+    xmlns:xi="http://www.w3.org/2001/XInclude" href="appendices.xml" />
+</book>

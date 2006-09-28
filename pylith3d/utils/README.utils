@@ -1,0 +1,46 @@
+This directory contains a number of simple fortran utility codes.
+The codes are as follows:
+
+addflt.f:       Code to produce nodal coordinates with 'fake' nodes
+                inserted along faults.  Requires UCD file + split or
+		slippery node files.  This code is not yet finished or
+		tested.
+faultcalc.f:    Code to take output from readnetgen, readucd, or
+                readucd2 and create a fault slip distribution
+		according to a set of given polynomial coefficients.
+		This code requires a parameter file as well as a nodal
+		coordinate file and the initial split node input file
+		created by one of the codes listed above (*.fbc file).
+faultcalc2.f:   Code identical to faultcalc.f code, except that this
+                version uses the *.fcoord file rather than the nodal
+		coordinate file to get fault coordinate information and
+		uses essentially no memory compared to faultcalc.
+fixqt.f:        Simple code to insure that all non-vertex nodes for a
+                quadratic hex mesh occur at midside.  Requires
+		coordinate and connectivity files with no comments or
+		units.
+lh2qh.f:        Simple code to convert a linear hex mesh to a quadratic
+                (20-node) hex mesh.  Requires coordinate and
+		connectivity files with no comments or units.
+lt2qt.f:        Simple code to convert a linear tet mesh to a quadratic
+                (10-node) tet mesh.  Requires coordinate and
+		connectivity files with no comments or units.
+pylith2ucd.f:   Simple code to convert PyLith/LithoMop coordinate and
+                connectivity files into AVS UCD format.
+readnetgen.f:   Simple code to translate NetGen neutral format to a
+                format suitable for PyLith/LithoMop.  The code requires
+		a parameter file in addition to the NetGen file and
+		produces coordinates, connectivities, boundary
+		conditions, and split/slippery node input files.
+readucd.f:      Simple code to translate UCD files from LaGriT to a
+                format suitable for PyLith/LithoMop.  The code requires
+		a parameter file in addition to the UCD file and
+		produces coordinates, connectivities, boundary
+		conditions, and split/slippery node input files.
+readucd2.f:     Similar to readucd above but with more features and
+                flexibility.
+scalecoord.f:   Simple code to scale NetGen coordinates.
+scaleucd.f:     Simple code to scale UCD coordinates.
+tetcmp.f:       Debugging tool to compute determinant for a tet element.
+ucd3d.f:        Obsolete code that was used to translate old TECTON
+                output to UCD format.

@@ -1,0 +1,358 @@
+#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\language english
+\inputencoding latin1
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 2in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\end_header
+
+\begin_body
+
+\begin_layout Chapter
+Material Models
+\end_layout
+
+\begin_layout Section
+Effective Stress Function Formulation for a Maxwell Linear Viscoelastic
+ Material
+\end_layout
+
+\begin_layout Subsection
+Determination of stresses
+\end_layout
+
+\begin_layout Standard
+The element stresses are 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}\mathrm{\sigma=}\mathrm{\mathbf{D}}^{t+\Delta t}\mathrm{\varepsilon}+^{I}\sigma=_{\,\,\,\,\,\,\,\,\,\,\, I}^{t+\Delta t}\sigma+^{I}\,,\label{eq:1}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ is the total strain and 
+\begin_inset Formula $^{I}\sigma$
+\end_inset
+
+ is the initial stress.
+ In terms of the deviatoric stress, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}\mathrm{\mathbf{S}}=\frac{E}{1+\mathrm{v}}(^{t+\Delta t}\mathrm{\mathbf{e}}'-^{t+\Delta t}\mathrm{\mathbf{e}}^{C})+^{I}\mathrm{\mathbf{S}}\,,\label{eq:2}\end{equation}
+
+\end_inset
+
+where 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}S_{ij}=^{t+\Delta t}\sigma_{ij}-^{t+\Delta t}\sigma_{m}\delta_{ij},\,\,\,^{t+\Delta t}e'_{ij}=^{t+\Delta t}e_{ij}-^{t+\Delta t}e_{m}\delta_{ij}\,,\label{eq:3}\end{equation}
+
+\end_inset
+
+and the mean stress and strain are given by 
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}\sigma_{m}=\frac{^{t+\Delta t}\sigma_{ii}}{3},\,\,\,^{t+\Delta t}e_{m}=\frac{^{t+\Delta t}e_{ii}}{3}\,.\label{eq:4}\end{equation}
+
+\end_inset
+
+Equation\InsetSpace ~
+
+\begin_inset LatexCommand \ref{eq:2}
+
+\end_inset
+
+ may also be written as 
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}\mathrm{\mathbf{S}}=\frac{E}{1+\mathrm{v}}(^{t+\Delta t}\mathbf{\mathrm{e}''}-\Delta\mathrm{\mathbf{e}}^{C})+^{I}\mathrm{\mathbf{S}}\,,\label{eq:5}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}\mathbf{\mathrm{\mathbf{e}}''}=^{t+\Delta t}\mathbf{\mathbf{\mathrm{\mathbf{e}}}'}-^{t}\mathrm{\mathbf{e}}^{C}\,\,,\,\,\,\Delta\mathrm{\mathbf{e}}^{C}=^{t+\Delta t}\mathrm{\mathbf{e}}^{C}-^{t}\mathrm{\mathbf{e}}^{C}\,.\label{eq:6}\end{equation}
+
+\end_inset
+
+The creep strain increment is approximated using 
+\begin_inset Formula \begin{equation}
+\Delta\mathrm{\mathbf{e}}^{C}=\Delta t^{\tau}\gamma^{\tau}\mathrm{\mathbf{S}}\,\,,\label{eq:7}\end{equation}
+
+\end_inset
+
+where, using the 
+\begin_inset Formula $\alpha$
+\end_inset
+
+-method of time integration, 
+\begin_inset Formula \begin{equation}
+^{\tau}\mathbf{S}=(1-\alpha)_{I}^{t}\mathbf{S}+\alpha_{\,\,\,\,\,\,\,\,\,\,\, I}^{t+\Delta t}\mathbf{S}+^{I}\mathbf{S}=(1-\alpha)^{t}\mathbf{S}+\alpha^{t+\Delta t}\mathbf{S}\,\,,\label{eq:8}\end{equation}
+
+\end_inset
+
+and 
+\begin_inset Formula \begin{equation}
+^{\tau}\gamma=\frac{3\Delta\overline{e}^{C}}{2\Delta t^{\tau}\overline{\sigma}}\,\,,\label{eq:9}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula \begin{equation}
+\Delta\overline{e}^{C}=\sqrt{\frac{2}{3}\Delta\mathbf{e}^{C}\bullet\Delta\mathbf{e}^{C}}\label{eq:10}\end{equation}
+
+\end_inset
+
+and 
+\begin_inset Formula \begin{equation}
+^{\tau}\overline{\sigma}=(1-\alpha)_{I}^{t}\overline{\sigma}+\alpha_{\,\,\,\,\,\,\,\,\,\,\, I}^{t+\Delta t}\overline{\sigma}+^{I}\overline{\sigma}=\sqrt{\frac{3}{2}^{\tau}\mathbf{S}\bullet^{\tau}\mathbf{S}}=\sqrt{3^{\tau}J_{2}^{\mathbf{'}}}\,\,.\label{eq:11}\end{equation}
+
+\end_inset
+
+For a linear Maxwell viscoelastic material 
+\begin_inset Formula \begin{equation}
+\Delta\mathbf{e}^{C}=\frac{\Delta t^{\tau}\mathbf{S}}{2\eta}\,\,.\label{eq:12}\end{equation}
+
+\end_inset
+
+Therefore, 
+\begin_inset Formula \begin{equation}
+\Delta\overline{e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\mathbf{'}}}}{\sqrt{3\eta}}=\frac{\Delta t^{\tau}\overline{\sigma}}{3\eta}\,,\,\mathrm{and}\,^{\tau}\gamma=\frac{1}{2\eta}\,\,.\label{eq:13}\end{equation}
+
+\end_inset
+
+Substituting 
+\begin_inset LatexCommand \ref{eq:8}
+
+\end_inset
+
+, 
+\begin_inset LatexCommand \ref{eq:12}
+
+\end_inset
+
+, and 
+\begin_inset LatexCommand \ref{eq:13}
+
+\end_inset
+
+ into 
+\begin_inset LatexCommand \ref{eq:5}
+
+\end_inset
+
+, we obtain 
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}\mathbf{S}=\frac{E}{1+\mathrm{v}}\left\{ ^{t+\Delta t}\mathbf{e}^{''}-\frac{\Delta t}{2\eta}\left[(1-\alpha)^{t}\mathbf{S}+\alpha^{t+\Delta t}\mathbf{S}\right]\right\} +^{I}\mathbf{S}\,\,.\label{eq:14}\end{equation}
+
+\end_inset
+
+ Solving for 
+\begin_inset Formula $^{t+\Delta t}\mathbf{S}$
+\end_inset
+
+, 
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}\mathbf{S}=\frac{1}{\frac{1+\mathrm{v}}{E}+\frac{\alpha\Delta t}{2\eta}}\left[^{t+\Delta t}\mathbf{e''}-\frac{\Delta t}{2\eta}(1-\alpha)^{t}\mathbf{S}+\frac{1+\mathrm{v}}{E}\,^{I}\mathbf{S}\right]\,\,.\label{eq:15}\end{equation}
+
+\end_inset
+
+In this case it is possible to solve directly for the deviatoric stresses,
+ and the effective stress function approach is not needed.
+ To obtain the total stress, we simply use 
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}\mathbf{\sigma_{\mathit{ij}}=\mathit{^{t+\Delta t}}\mathbf{S}_{\mathit{ij}}\mathrm{+\frac{\mathit{E}}{1-2v}\mathit{^{t+\Delta t}e_{m}\delta_{ij}+^{I}\sigma_{m}\delta_{ij}}\,\,.}}\label{eq:16}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Tangent stress-strain relation
+\end_layout
+
+\begin_layout Standard
+It is now necessary to provide a relationship for the viscoelastic tangent
+ material matrix.
+ If we use vectors composed of the stresses and tensor strains, this relationshi
+p is
+\begin_inset Formula \begin{equation}
+\mathbf{C}^{VE}=\frac{\partial^{t+\Delta t}\sigma}{\partial^{t+\Delta t}\mathbf{e}}\,\,.\label{eq:17}\end{equation}
+
+\end_inset
+
+ In terms of the vectors, we have
+\begin_inset Formula \begin{eqnarray}
+^{t+\Delta t}\sigma_{i} & = & ^{t+\Delta t}S_{i}+^{t+\Delta t}\sigma_{m}\,\,;\,\,\, i=1,2,3\nonumber \\
+^{t+\Delta t}\sigma_{i} & = & ^{t+\Delta t}S_{i}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, i=4,5,6\label{eq:18}\end{eqnarray}
+
+\end_inset
+
+ Therefore, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{eqnarray}
+C_{ij}^{VE} & = & C_{ij}^{'}+\frac{E}{3(1-2\mathrm{v})}\,;\,\,1\leq i,j\leq3\,\,.\nonumber \\
+C_{ij}^{VE} & = & C_{ij}^{'}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\mathrm{otherwise}\label{eq:19}\end{eqnarray}
+
+\end_inset
+
+Using the chain rule, 
+\begin_inset Formula \begin{equation}
+\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{j}}=\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{''}}\frac{\partial^{t+\Delta t}e_{k}^{''}}{\partial^{t+\Delta t}e_{l}^{'}}\frac{\partial^{t+\Delta t}e_{l}^{'}}{\partial^{t+\Delta t}e_{j}}\,\,.\label{eq:20}\end{equation}
+
+\end_inset
+
+From 
+\begin_inset LatexCommand \ref{eq:6}
+
+\end_inset
+
+, we obtain 
+\begin_inset Formula \begin{equation}
+\frac{\partial^{t+\Delta t}e_{k}^{''}}{\partial^{t+\Delta t}e_{l}^{'}}=\delta_{kl}\,\,,\label{eq:21}\end{equation}
+
+\end_inset
+
+ and from 
+\begin_inset LatexCommand \ref{eq:3}
+
+\end_inset
+
+: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{eqnarray}
+\frac{\partial^{t+\Delta t}e_{l}^{'}}{\partial^{t+\Delta t}e_{j}} & = & \frac{1}{3}\left[\begin{array}{ccc}
+2 & -1 & -1\\
+-1 & 2 & -1\\
+-1 & -1 & 2\end{array}\right];\,\,1\leq l,j\leq3\nonumber \\
+\frac{\partial^{t+\Delta t}e_{l}^{'}}{\partial^{t+\Delta t}e_{j}} & = & \delta_{lj}\,\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\mathrm{otherwise}\label{eq:22}\end{eqnarray}
+
+\end_inset
+
+ Finally, from 
+\begin_inset LatexCommand \ref{eq:15}
+
+\end_inset
+
+, we have 
+\begin_inset Formula \begin{equation}
+\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{''}}=\frac{\delta_{ik}}{\frac{1+\mathrm{v}}{E}+\frac{\alpha\Delta t}{2\eta}}\,\,.\label{eq:23}\end{equation}
+
+\end_inset
+
+From 
+\begin_inset LatexCommand \ref{eq:19}
+
+\end_inset
+
+, the final material matrix relating stress and tensor strain is 
+\begin_inset Formula \begin{equation}
+C_{ij}^{VE}=\frac{E}{3(1-2\mathrm{v})}\left[\begin{array}{cccccc}
+1 & 1 & 1 & 0 & 0 & 0\\
+1 & 1 & 1 & 0 & 0 & 0\\
+1 & 1 & 1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3\left(\frac{1+\mathrm{v}}{E}+\frac{\alpha\Delta t}{2\eta}\right)}\left[\begin{array}{cccccc}
+2 & -1 & -1 & 0 & 0 & 0\\
+-1 & 2 & -1 & 0 & 0 & 0\\
+-1 & -1 & 2 & 0 & 0 & 0\\
+0 & 0 & 0 & 3 & 0 & 0\\
+0 & 0 & 0 & 0 & 3 & 0\\
+0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:24}\end{equation}
+
+\end_inset
+
+Note that the coefficient of the second matrix approaches 
+\begin_inset Formula $E/3(1+\nu)$
+\end_inset
+
+ as 
+\begin_inset Formula $\eta$
+\end_inset
+
+ goes to infinity.
+ Since finite element computations typically use engineering strain measures,
+ the matrix that is actually used is 
+\begin_inset Formula \begin{equation}
+C_{ij}^{VE}=\frac{E}{3(1-2\mathrm{v})}\left[\begin{array}{cccccc}
+1 & 1 & 1 & 0 & 0 & 0\\
+1 & 1 & 1 & 0 & 0 & 0\\
+1 & 1 & 1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3\left(\frac{1+\mathrm{v}}{E}+\frac{\alpha\Delta t}{2\eta}\right)}\left[\begin{array}{cccccc}
+2 & -1 & -1 & 0 & 0 & 0\\
+-1 & 2 & -1 & 0 & 0 & 0\\
+-1 & -1 & 2 & 0 & 0 & 0\\
+0 & 0 & 0 & \frac{3}{2} & 0 & 0\\
+0 & 0 & 0 & 0 & \frac{3}{2} & 0\\
+0 & 0 & 0 & 0 & 0 & \frac{3}{2}\end{array}\right]\,.\label{eq:25}\end{equation}
+
+\end_inset
+
+To check the results we make sure that the regular elastic constitutive
+ matrix is obtained for selected terms in the case where 
+\begin_inset Formula $\eta$
+\end_inset
+
+ goes to infinity.
+ 
+\begin_inset Formula \begin{eqnarray}
+C_{11}^{E} & = & \frac{E(1-\mathrm{v})}{(1+\mathrm{v})(1-2\mathrm{v})}\nonumber \\
+C_{12}^{E} & = & \frac{Ev}{(1+\mathrm{v})(1-2\mathrm{v})}\,.\label{eq:26}\\
+C_{44}^{E} & = & \frac{E}{2(1+\mathrm{v})}\nonumber \end{eqnarray}
+
+\end_inset
+
+ This is consistent with the regular elasticity matrix, and equation 
+\begin_inset LatexCommand \ref{eq:25}
+
+\end_inset
+
+ should thus be used when forming the stiffness matrix.
+ 
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,15 @@
+1.  Split viscos into applyBC and advance and output to conform to Solver.
+    Possibly for future:
+    Possible do the same thing to elastc so they can be used in the same way.
+    The solver could have an elastic facility and a viscous facility.
+2.  Fix elastc so it doesn't do any output itself.  Note:  output all the same
+things for both elastic and time-dependent (fix statevar).
+3.  Pylith3d_run will disappear.  Instead, I'll have solver_elastc and
+solver_const.  
+
+First thing to do:  write Mesh.py and see if Brad thinks it makes sense.
+If so, then start making other objects (e.g., Materials, etc.)
+
+Change looping in element routines to loop over material model rather than type.
+
+Change indexing to sort elements by model rather than type.

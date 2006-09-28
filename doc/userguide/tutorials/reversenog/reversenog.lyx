@@ -1,0 +1,1220 @@
+#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\language english
+\inputencoding latin1
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry true
+\use_amsmath 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 2in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+Tutorial Using Reverse-Slip Without Gravity Benchmark
+\end_layout
+
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
+In this tutorial, we will walk through the steps necessary to construct,
+ run, and view the results of a benchmark problem involving reverse slip
+ on a dipping fault.
+ This problem examines the viscoelastic (Maxwell) relaxation of stress from
+ a single, finite, reverse-slip earthquake in 3D without body forces.
+\end_layout
+
+\begin_layout Subsection
+Problem Description
+\end_layout
+
+\begin_layout Standard
+The model domain is a cube with edges 24 km long (0 km 
+\begin_inset Formula $\leq$
+\end_inset
+
+ x 
+\begin_inset Formula $\leq$
+\end_inset
+
+ 24 km; 0 km 
+\begin_inset Formula $\leq$
+\end_inset
+
+ y 
+\begin_inset Formula $\leq$
+\end_inset
+
+ 24 km; -24 km 
+\begin_inset Formula $\leq$
+\end_inset
+
+ z 
+\begin_inset Formula $\leq$
+\end_inset
+
+ 0) and is composed of two materials.
+ One material occupies the top-half of the domain, -12 km 
+\begin_inset Formula $\leq$
+\end_inset
+
+ z 
+\begin_inset Formula $\leq$
+\end_inset
+
+ 0 km, while the other occupies the lower half, -24 km 
+\begin_inset Formula $\leq$
+\end_inset
+
+ z 
+\begin_inset Formula $<$
+\end_inset
+
+ 12 km.
+ Both materials are Poisson solids with Lame's constants (
+\begin_inset Formula $\mu$
+\end_inset
+
+ and 
+\begin_inset Formula $\lambda$
+\end_inset
+
+) equal to 30 GPa and Maxwell viscoelastic properties.
+ The top layer has a viscosity of 
+\begin_inset Formula $10^{25}$
+\end_inset
+
+ Pa-s (and is essentially elastic) while the bottom layer has a viscosity
+ of 
+\begin_inset Formula $10^{18}$
+\end_inset
+
+ Pa-s.
+\end_layout
+
+\begin_layout Standard
+The reverse fault dips at an angle of 45 degrees.
+ The top of the fault sits at x = 4 km with the bottom of the fault at x
+ = 20 km.
+ The fault surface is confined to the region 0 km 
+\begin_inset Formula $\leq$
+\end_inset
+
+ y 
+\begin_inset Formula $\leq$
+\end_inset
+
+ 16 km and -16 km 
+\begin_inset Formula $\leq$
+\end_inset
+
+ z 
+\begin_inset Formula $\leq$
+\end_inset
+
+ 0 km.
+ The slip distribution is 1.0 m of uniform thrust motion for -12 km 
+\begin_inset Formula $\leq$
+\end_inset
+
+ z and y 
+\begin_inset Formula $\leq$
+\end_inset
+
+12 km with a linear taper to 0 at z = -16 km and y = 16 km.
+\end_layout
+
+\begin_layout Standard
+The plane y = 0 is a plane of symmetry, so the y-DOF displacements on this
+ face are zero.
+ The boundary conditions on the other lateral faces and bottom of the mesh
+ are the displacements from the analytical elastic solution.
+ These displacements are held fixed through time.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/geometry.eps
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Caption
+Geometry of model domain for reverse-slip benchmark.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Workflow
+\end_layout
+
+\begin_layout Standard
+The complete workflow used to create the input files for this tutorial is
+ shown in figure\InsetSpace ~
+
+\begin_inset LatexCommand \ref{fig:bmrsnog:workflow}
+
+\end_inset
+
+.
+ Because some of the steps involve commercial software (e.g., Matlab), we
+ will skip those steps in this tutorial.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/workflow.eps
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Caption
+Workflow for setting up input files for benchmark with reverse slip and
+ no gravity.
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \label{fig:bmrsnog:workflow}
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Download and unpack
+\end_layout
+
+\begin_layout Standard
+We will start by downloading the tutorial tarball and unpacking it.
+\end_layout
+
+\begin_layout Enumerate
+Download the 
+\begin_inset LatexCommand \htmlurl[tutorial tarball]{http://www.geodynamics.org/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8_tutorials.tgz}
+
+\end_inset
+
+ and unpack it in a location of your choosing.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ tar -zxvf pylith-0.8_tutorials.tgz
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Go to the
+\family typewriter
+ tutorials/reversenog
+\family default
+ directory.
+ The 
+\family typewriter
+archive
+\family default
+ directory contains all of the input and output files associated with this
+ tutorial.
+ We will copy input files from this directory into the 
+\family typewriter
+workarea
+\family default
+ directory.
+ At each step, you can check to make sure your input and output agree with
+ the files in the 
+\family typewriter
+archive
+\family default
+ directory.
+ These files also allow you to start at an intermediate step as described
+ in the next section.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ cd tutorials/reversenog
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Tutor
+\end_layout
+
+\begin_layout Standard
+Copy the 
+\family typewriter
+tutor.py
+\family default
+ script from the 
+\family typewriter
+archive
+\family default
+ directory into the 
+\family typewriter
+workarea
+\family default
+ directory.
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+TIP:
+\series default
+ If you have run this tutorial previously, you may want to run 
+\family typewriter
+tutor.py
+\family default
+ in mode "clean" with step "all" to clear out all old tutorial files.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+$ cd workarea
+\end_layout
+
+\begin_layout LyX-Code
+$ cp ../archive/tutor.py .
+\end_layout
+
+\begin_layout LyX-Code
+$ ./tutor.py -m clean -s all
+\end_layout
+
+\begin_layout Subsection
+Generate the mesh
+\end_layout
+
+\begin_layout Standard
+In this step we will generate the finite-element mesh for the benchmark
+ problem using 
+\family typewriter
+NETGEN
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+In the 
+\family typewriter
+reversenog/workarea
+\family default
+ directory, run 
+\family typewriter
+tutor.py
+\family default
+ for step "mesh" with mode "retrieve" to fetch the geometry file for 
+\family typewriter
+NETGEN
+\family default
+.
+ You may also want to run 
+\family typewriter
+tutor.py
+\family default
+ for this step with mode "clean" to clean out old files.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ ./tutor.py -m retrieve -s mesh
+\end_layout
+
+\begin_layout LyX-Code
+$ ./tutor.py -m clean -s mesh
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Examine the 
+\family typewriter
+bmrsnog.geo
+\family default
+ file to see how the geometry for the problem is defined.
+ Notice that the different planes have been flagged with different boundary
+ condition codes.
+ These will be used to associate boundary conditions with surfaces and element
+ nodes.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Start up 
+\family typewriter
+NETGEN
+\family default
+ by running 
+\family typewriter
+ng
+\family default
+.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ ng
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Select 
+\family sans
+File 
+\begin_inset Formula $\triangleright$
+\end_inset
+
+ Load Geometry
+\family default
+ and select 
+\family typewriter
+bmrsnog.geo
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Click on 
+\family sans
+Generate Mesh.
+
+\family default
+ 
+\end_layout
+
+\begin_layout Enumerate
+Export the mesh to a file named 
+\family typewriter
+bmrsnog.netgen
+\family default
+, making sure the export filetype is "Neutral format".
+ 
+\end_layout
+
+\begin_layout Enumerate
+You can now exit 
+\family typewriter
+NETGEN
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Subsection
+Set up simulation input files
+\end_layout
+
+\begin_layout Standard
+In this step we will set up the PyLith input files for the mesh and boundary
+ conditions.
+\end_layout
+
+\begin_layout Enumerate
+Run 
+\family typewriter
+tutor.py
+\family default
+ for step "setup" with mode "retrieve" to fetch files from the archive.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ ./tutor.py -m retrieve -s setup
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+We will use two simple Fortran utilities to generate PyLith input files
+ from the 
+\family typewriter
+NETGEN
+\family default
+ output.
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+
+\family typewriter
+readnetgen
+\family default
+ A Fortran program to read 
+\family typewriter
+NETGEN
+\family default
+ neutral format and create several of the input files needed by PyLith.
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+faultcalc
+\family default
+ A Fortran program to compute split node displacements using second order
+ polynomials over specified regions.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Run the 
+\family typewriter
+readnetgen
+\family default
+ utility program to process the 
+\family typewriter
+NETGEN
+\family default
+ output file into PyLith compatible input files.
+ It will ask for a root filename, enter 
+\family typewriter
+bmrsnog
+\family default
+.
+ This utilitiy will generate the following files: 
+\family typewriter
+bmrsnog.w01.wink, bmrsnog.coord, bmrsnog.connect, bmrsnog.bc, bmrsnog.1.fcoord,
+ bmrsnog.1.fbc.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ ../../utils/readnetgen
+\end_layout
+
+\begin_layout LyX-Code
+ Enter root name for all files.
+ Both input and
+\end_layout
+
+\begin_layout LyX-Code
+ output files will all have this prefix:
+\end_layout
+
+\begin_layout LyX-Code
+$ bmrsnog
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The boundary conditions on the fault for this benchmark are somewhat complex.
+ The utility program 
+\family typewriter
+faultcalc
+\family default
+ creates split node boundary conditions over specified regions, using functions
+ based on second degree polynomials.
+ The 
+\family typewriter
+readnetgen
+\family default
+ program has already produced the main input for 
+\family typewriter
+faultcalc
+\family default
+ -- split node definitions in 
+\family typewriter
+bmrsnog.1.fbc
+\family default
+ and nodal coordinates in 
+\family typewriter
+bmrsnog.coord
+\family default
+.
+ The file 
+\family typewriter
+bmrsnog.fault.par
+\family default
+ contains the polynomial coefficients for this benchmark problem.
+ Run 
+\family typewriter
+faultcalc
+\family default
+ to get the 
+\family typewriter
+bmrsnog.split
+\family default
+ file that PyLith needs as input.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ ../../utils/faultcalc p=bmrsnog.fault.par n=bmrsnog.coord 
+\begin_inset Formula $\backslash$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+$ i=bmrsnog.1.fbc o=bmrsnog.split
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The external boundary conditions for this benchmark are also complicated
+ and require computing the displacements for the analytical elastic solution
+ at each finite element node on the external boundaries.
+ The file specifying these boundary conditions, 
+\family typewriter
+bmrsnog.bc
+\family default
+, was produced with 
+\family typewriter
+readnetgen
+\family default
+ using the 
+\family typewriter
+bmrsnog.aux
+\family default
+ file (which contains precomputed displacements for the external boundaries
+ for the mesh produced from the 
+\family typewriter
+bmrsnog.geo 
+\family default
+geometry).
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\series default
+\color none
+ If you make any changes to 
+\family typewriter
+bmrsnog.geo
+\family default
+ or change the geometry within 
+\family typewriter
+NETGEN
+\family default
+, the boundary condition file 
+\family typewriter
+bmrsnog.bc
+\family default
+ will no longer be correct and you will have to generate one yourself.
+ Note that it is also possible that a different version of 
+\family typewriter
+NETGEN
+\family default
+ may provide a slightly different mesh, which would also be incompatible
+ with the provided boundary conditions.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Run the simulation on one processor
+\end_layout
+
+\begin_layout Standard
+In this step we will run the simulation on a single processor.
+\end_layout
+
+\begin_layout Enumerate
+Run 
+\family typewriter
+tutor.py
+\family default
+ for step "run1" with mode "retrieve" to fetch some parameter files from
+ the archive.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ ./tutor.py -m retrieve -s run1
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+In 
+\family typewriter
+bmrsnog.fuldat
+\family default
+, we have specified that we want full output at time steps 10, 50, and 100.
+ We define six materials with both elastic and viscoelastic behavior in
+ 
+\family typewriter
+bmrsnog.prop
+\family default
+.
+ In 
+\family typewriter
+bmrsnog.statevar
+\family default
+ we choose to include total stress, total strain, incremental stress, and
+ incremental strain in the output.
+ As defined in 
+\family typewriter
+bmrsnog.time
+\family default
+, the simulation will have 100 time steps of 0.1 year each.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Run the simulation by executing 
+\family typewriter
+runbm.py -n 1
+\family default
+, where the 1 refers to the number of processors.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\series bold
+TIP:
+\series default
+ All of the input is echoed in the file 
+\family typewriter
+bmrsnog.ascii
+\family default
+.
+ You can check to make sure your input is digested correctly by examining
+ this file.
+ For large problems, this file can be quite large.
+ You can suppress creation of this file using the command line argument
+ 
+\family typewriter
+--scanner.asciiOutput=none
+\family default
+ flag.
+ On the other hand, for debugging purposes in small problems, you may wish
+ to output everything, including the computed results, in this file using
+ 
+\family typewriter
+--scanner.asciiOutput=full
+\family default
+.
+\end_layout
+
+\begin_layout LyX-Code
+$ ./runbm.py -n 1
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Visualize the single processor run
+\end_layout
+
+\begin_layout Standard
+Now it is time to visualize the results of the simulation.
+ By default, PyLith writes simulation output using 
+\begin_inset LatexCommand \htmlurl[AVS UCD files]{http://help.avs.com/Express/doc/help/reference/dvmac/UCD_Form.htm}
+
+\end_inset
+
+.
+ These can be read by several other visualization tools besides 
+\family typewriter
+AVS
+\family default
+, e.g., 
+\family typewriter
+ParaView
+\family default
+ and 
+\family typewriter
+Iris Explorer
+\family default
+.
+ We will use the open-source application 
+\family typewriter
+ParaView
+\family default
+ to visualize the results.
+\end_layout
+
+\begin_layout Enumerate
+If necessary, run 
+\family typewriter
+tutor.py
+\family default
+ for step "viz1" with mode "retrieve" to fetch the simulation output from
+ the archive.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ ./tutor.py -m retrieve -s viz1
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+PyLith does not write complete UCD files.
+ So the first step is to combine the mesh topology information with the
+ output at a given time step into a complete UCD file.
+ For example, use 
+\family typewriter
+cat
+\family default
+ to merge the nodal coordinates file (
+\family typewriter
+bmrsnog_1.0.mesh.inp
+\family default
+) and the nodal displacements at time step 10 file (
+\family typewriter
+bmrsnog_1.0.mesh.time.00010.inp
+\family default
+) into 
+\family typewriter
+bmrsnog_1.0.mesh.t00010.inp
+\family default
+.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ cat bmrsnog_1.0.mesh.inp bmrsnog_1.0.mesh.time.00010.inp 
+\begin_inset Formula $\backslash$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+> bmrsnog_1.0.mesh.t00010.inp
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Start 
+\family typewriter
+ParaView
+\family default
+ by executing 
+\family typewriter
+paraview
+\family default
+.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ paraview
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Load the UCD file that you just created by selecting 
+\family sans
+File 
+\begin_inset Formula $\triangleright$
+\end_inset
+
+ Open Data
+\family default
+.
+ Select the file in the dialog box and then click the 
+\family sans
+Open
+\family default
+ button.
+ Click the 
+\family sans
+Accept
+\family default
+ button.
+ You should see a color rendering of the x displacements.
+ You can use the mouse to rotate, translate, and zoom.
+ Your image should look similar to the one in figure\InsetSpace ~
+
+\begin_inset LatexCommand \ref{fig:ParaView-rendering-of}
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/xdisp_t10.eps
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{fig:ParaView-rendering-of}
+
+\end_inset
+
+ParaView rendering of displacement in x-direction at time step 10 (10 yrs
+ after imposed dislocation) for the reverse slip without gravity benchmark.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+In the 
+\family sans
+Display
+\family default
+ tab, you can change several options, such as including a color bar, coloring
+ a different component, interpolating colors, and changing the color map.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Let's show the displacements as vectors.
+ Click on the calculator icon, and add the three displacement components
+ together.
+ Enter 
+\family typewriter
+XDispl*iHat+YDispl*jHat+ZDispl*kHat
+\family default
+  in the 
+\family sans
+Calculator
+\family default
+ box.
+ Note the variable names are available by clicking on the 
+\family sans
+scalars
+\family default
+ button, and the 
+\family sans
+iHat
+\family default
+, 
+\family sans
+jHat
+\family default
+, 
+\family sans
+kHat
+\family default
+ buttons are on the right side of the top row.
+ Click on the 
+\family sans
+Accept
+\family default
+ button.
+ To show the dataset as vectors, click on the 
+\family sans
+glyph
+\family default
+ button (looks like several dots) in the toolbar.
+ After clicking the 
+\family sans
+Accept
+\family default
+ button, you should have a vector plot.
+ You can turn on/off other datasets by clicking on the eye icon to the left
+ of the dataset name.
+ If you color the surfaces using the x-displacements field while also making
+ the displacement vectors visible (colored using property), you should see
+ an image similar to the one in figure\InsetSpace ~
+
+\begin_inset LatexCommand \ref{fig:ParaView-rendering-of2}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/xdisp_vec_t10.eps
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{fig:ParaView-rendering-of2}
+
+\end_inset
+
+ParaView rendering of displacement in x-direction and displacement vectors
+ at time step 10 (10 yrs after imposed dislocation) for the reverse slip
+ without gravity benchmark.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Run the simulation on two processors
+\end_layout
+
+\begin_layout Standard
+In this step we will run the simulation on two processors.
+ Even if your machine only has one processor, a "multprocessor" job will
+ run as multiple processes on the single processor.
+ In such cases, the job will run slightly slower than the single processor
+ run, but the two processes will behave independently as if they are on
+ different processors.
+\end_layout
+
+\begin_layout Enumerate
+Run 
+\family typewriter
+tutor.py
+\family default
+ for step "run2" with mode "retrieve" to make sure all parameter files are
+ available.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ ./tutor.py -m retrieve -s run2
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+The parameter files are the same as those in the single processor run.
+ The 
+\family typewriter
+runbm
+\family default
+ script will automatically take care of duplicating these files so that
+ there is one for each processor.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Run the simulation by executing 
+\family typewriter
+runbm.py -n 2
+\family default
+, where the 2 refers to the number of processors.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ ./runbm.py -n 2 
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Visualize the two processor run
+\end_layout
+
+\begin_layout Standard
+PyLith does not currently support parallel output, so each processor writes
+ its UCD output to a different file.
+ This means that you need to form complete UCD files for each processor
+ and then load each one into 
+\family typewriter
+ParaView
+\family default
+.
+\end_layout
+
+\begin_layout Enumerate
+If necessary, run 
+\family typewriter
+tutor.py
+\family default
+ for step "viz2" with mode "retrieve" to fetch the simulation output from
+ the archive.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ ./tutor.py -m retrieve -s viz2
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+As in the case of the single processor run, the first step is to combine
+ the mesh topology information with the output at a given time step into
+ a complete UCD file.
+ Because PyLith writes the output from each processor into a different file,
+ we must run 
+\family typewriter
+cat
+\family default
+ twice to create UCD files for each processor.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ cat bmrsnog_2.0.mesh.inp bmrsnog_2.0.mesh.time.00010.inp 
+\begin_inset Formula $\backslash$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+> bmrsnog_2.0.mesh.t00010.inp
+\end_layout
+
+\begin_layout LyX-Code
+$ cat bmrsnog_2.1.mesh.inp bmrsnog_2.1.mesh.time.00010.inp 
+\begin_inset Formula $\backslash$
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+> bmrsnog_2.1.mesh.t00010.inp
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Start 
+\family typewriter
+ParaView
+\family default
+ by executing 
+\family typewriter
+paraview
+\family default
+.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ paraview
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Load the UCD files that you just created by selecting 
+\family sans
+File 
+\begin_inset Formula $\triangleright$
+\end_inset
+
+ Open Data
+\family default
+.
+ Select the file in the dialog box and then click the 
+\family sans
+Open
+\family default
+ button.
+ Click the 
+\family sans
+Accept
+\family default
+ button.
+ You can now visualize the datasets just like you did for the single processor
+ case.
+ 
+\end_layout
+
+\begin_layout Enumerate
+You can merge the datasets from the different processors by selecting 
+\family sans
+Filter 
+\begin_inset Formula $\triangleright$
+\end_inset
+
+ Append
+\family default
+.
+ Doing so will allow you to operate on the data from all of the processors
+ simultaneously instead of having to repeat any processing for every processor.
+ 
+\end_layout
+
+\end_body
+\end_document
