@@ -359,7 +359,7 @@ class Pylith3d_scan(Component):
         self._maxGaussPoints2d = 4
         self._numberElementTypes2d = 2
         self._numberElementTypesBase2d = 2
-        self._numberElementNodesBase = [4, 3]
+        self._numberElementNodesBase2d = [4, 3]
         self._pointerToListArrayNumberElementNodesBase2d = pylith3d.intListToArray(
             self._numberElementNodesBase2d)
 	self._memorySize += self._numberElementTypesBase2d*self._intSize
@@ -512,9 +512,9 @@ class Pylith3d_scan(Component):
         #     f77FileInput,
         #     self._prestressInputFile)
 
-        self._numberTractionBc = pylith3d.scan_traction(
-            self._numberElementNodes2d,
-            self._numberSpaceDimensions,
+        self._numberTractionBc = pylith3d.scan_tractions(
+            self._maxElementNodes2d,
+            self._numberDegreesFreedom,
             self._tractionBcUnits,
             f77FileInput,
             self._tractionInputFile)
