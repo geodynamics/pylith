@@ -22,7 +22,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::Quadrature::Quadrature(void) :
-  _jacobianTol(0),
+  _minJacobian(0),
   _basis(0),
   _basisDeriv(0),
   _quadPtsRef(0),
@@ -55,7 +55,7 @@ pylith::feassemble::Quadrature::~Quadrature(void)
 // ----------------------------------------------------------------------
 // Copy constructor
 pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
-  _jacobianTol(q._jacobianTol),
+  _minJacobian(q._minJacobian),
   _basis(0),
   _basisDeriv(0),
   _quadPtsRef(0),
@@ -76,7 +76,7 @@ pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
   } // if
 
   if (0 != q._basisDeriv) {
-    const int size = _numCorners * _numQuadPts * _spaceDim;
+    const int size = _numCorners * _numQuadPts * _cellDim;
     _basisDeriv = (size > 0) ? new double[size] : 0;
     memcpy(_basisDeriv, q._basisDeriv, size*sizeof(double));
   } // if
@@ -160,7 +160,7 @@ pylith::feassemble::Quadrature::initialize(const double* basis,
   for (int i=0; i < size; ++i)
     _basis[i] = basis[i];
 
-  size = numCorners * numQuadPts * spaceDim;
+  size = numCorners * numQuadPts * cellDim;
   delete[] _basisDeriv; _basisDeriv = (size > 0) ? new double[size] : 0;
   for (int i=0; i < size; ++i)
     _basisDeriv[i] = basisDeriv[i];

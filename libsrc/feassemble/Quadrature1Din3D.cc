@@ -57,8 +57,8 @@ pylith::feassemble::Quadrature1Din3D::_computeGeometry(
   const ALE::Mesh::topology_type::patch_type patch  = 0;
   const ALE::Mesh::section_type::value_type* vertCoords = 
     coordinates->restrict(patch, cell);
-  assert(3 == coordinates.GetFiberDimensionByDepth(patch,
-						   *vertices->begin(), 0));
+  //assert(3 == coordinates.GetFiberDimensionByDepth(patch,
+  //*vertices->begin(), 0));
 
   // Loop over quadrature points
   for (int iQuadPt=0; iQuadPt < _numQuadPts; ++iQuadPt) {
