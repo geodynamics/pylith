@@ -37,14 +37,15 @@ c
      & nfault,dfault,tfault,                                            ! fault
      & s,stemp,                                                         ! stiff
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,ielindx,   ! elemnt
-     & ielno,iside,ihistry,pres,pdir,                                   ! tractn
+     & tractionverts,tractionvals,gauss2d,sh2d,infetype2d,              ! tractn
      & prop,infmatmod,tminmax,                                          ! materl
      & gauss,sh,shj,nen,ngauss,nee,nec,                                 ! eltype
      & histry,rtimdat,ntimdat,nvisdat,iprestress,                       ! timdat
      & rgiter,gtol,                                                     ! iterate
      & skew,                                                            ! skew
      & ncodat,nunits,nprint,                                            ! ioinfo
-     & getshape,bmatrix,gload_cmp,stress_cmp,stress_mat_cmp,            ! external
+     & getshape,bmatrix,gload_cmp,traction_cmp,                         ! external
+     & stress_cmp,stress_mat_cmp,                                       ! external
      & iterateEvent,                                                    ! PETSc logging
      & ierr,errstrng)                                                   ! errcode
 c
@@ -100,7 +101,8 @@ c
       integer idx(*),iwinkx(*),idslp(*),ipslp(*)
       integer nfault(*)
       integer ien(*),lm(*),lmx(*),lmf(*),ivfamily(*)
-      integer ielno(*),iside(*),ihistry(*),ielindx(*)
+      integer tractionverts(*),infetype2d(*)
+      integer ielindx(*)
       integer infmatmod(*)
       character errstrng*(*)
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
@@ -111,7 +113,7 @@ c
       double precision dfault(*),tfault(*)
       double precision s(*),stemp(*)
       double precision state(*),dstate(*),state0(*),dmat(*)
-      double precision pres(*),pdir(*)
+      double precision tractionvals(*),gauss2d(*),sh2d(*)
       double precision prop(*),tminmax
       double precision gauss(*),sh(*),shj(*)
       double precision histry(*)
@@ -133,7 +135,8 @@ c
 c
 c...  external functions
 c
-      external getshape,bmatrix,gload_cmp,stress_cmp,stress_mat_cmp
+      external getshape,bmatrix,gload_cmp,traction_cmp
+      external stress_cmp,stress_mat_cmp
 c
 c...  intrinsic functions
 c
@@ -141,7 +144,7 @@ c
 c
 c...  local variables
 c
-      integer i,iter
+      integer i,iter,nsnodes,nsgauss
       double precision gi(3),gprev(3),gcurr(3)
       logical fulout,converge,updats,skc,used,reform
 c
@@ -163,6 +166,8 @@ c
 cdebug      write(6,*) "Hello from iterate_f!"
 c
       call PetscLogEventBegin(iterateEvent, ierr)
+      nsnodes=infetype2d(1)
+      nsgauss=infetype2d(2)
       fulout=.true.
       converge=.false.
       reform=.false.
@@ -189,15 +194,19 @@ c
         used=nstep.gt.0.and.nprevdflag.eq.1.and.iter.eq.1
         if(iter.gt.1) fulout=.false.
 c
-c...add pressure forces,if present, to global load vector
+c...add traction forces,if present, to global load vector
 c
-clater        if(numpr.ne.0.and.updats.and.iprestress.eq.0) call addpr(
-clater     &   btot,bres,x,d,dx,tfault,histry,skew,
-clater     &   ien,infin,lm,lmx,lmf,
-clater     &   ielno,iside,ihistry,pres,pdir,pvec,gvec2,fulout,
-clater     &   nsd,ndof,nen,nskdim,npdir,numnp,neq,nee,numrot,lastep,nhist,
-clater     &   nstep,lgdefp,numel,numpr,numfn,numslp,ipstrs,idout,idebug,kto,
-clater     &   kw)
+        if(numtractions.ne.0.and.updats.and.iprestress.eq.0) then
+          call traction_drv(
+     &     btraction,ntractflag,neq,                                    ! force
+     &     x,d,id,numnp,                                                ! global
+     &     dx,numslp,                                                   ! slip
+     &     tfault,numfn,                                                ! split
+     &     gauss2d,sh2d,nsnodes,nsgauss,traction_cmp,                   ! eltype
+     &     tractionverts,tractionvals,numtractions,                     ! traction
+     &     skew,numrot,                                                 ! skew
+     &     ierr,errstrng)                                               ! errcode
+        end if
 c
 c...add gravity body forces to global load vector
 c

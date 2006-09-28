@@ -38,7 +38,7 @@ c
      & fault,nfault,dfault,tfault,                                      ! split
      & s,stemp,                                                         ! stiff
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,ielindx,   ! elemnt
-     & ielno,iside,ihistry,pres,pdir,                                   ! tractn
+     & tractionverts,tractionvals,gauss2d,sh2d,infetype2d,              ! tractn
      & prop,infmatmod,                                                  ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & histry,rtimdat,ntimdat,nvisdat,maxstp,delt,alfa,maxit,ntdinit,   ! timdat
@@ -87,7 +87,7 @@ c
       integer idx(*),iwinkx(*),idslp(*),ipslp(*),idhist(*)
       integer nfault(*)
       integer ien(*),lm(*),lmx(*),lmf(*),ivfamily(*),ielindx(*)
-      integer ielno(*),iside(*),ihistry(*)
+      integer tractionverts(*),infetype2d(*)
       integer infmatmod(*)
       integer infetype(4)
       integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
@@ -103,7 +103,7 @@ c
       double precision fault(*),dfault(*),tfault(*)
       double precision s(*),stemp(*)
       double precision state(*),dstate(*),state0(*),dmat(*)
-      double precision pres(*),pdir(*)
+      double precision tractionvals(*),gauss2d(*),sh2d(*)
       double precision prop(*)
       double precision gauss(*),sh(*),shj(*)
       double precision histry(*),delt(*),alfa(*),utol(*),ftol(*),etol(*)
@@ -132,8 +132,8 @@ c
 c...  external routines
 c
       external bmatrixn,bmatrixb,getshapn,getshapb
-      external td_matinit_cmp_ss,gload_cmp_ss,td_strs_cmp_ss
-      external td_strs_mat_cmp_ss
+      external td_matinit_cmp_ss,gload_cmp_ss,traction_cmp_ss
+      external td_strs_cmp_ss,td_strs_mat_cmp_ss
 c
 c...  local variables
 c
@@ -272,76 +272,76 @@ cdebug              write(6,*) "reform:",reform
          if(reform) then
             write(kto,650)
             call matinit_drv(
-     &           A,nnz,neq,     ! sparse
-     &           x,d,iwink,wink,numnp,nwink,iddmat, ! global
-     &           dx,iwinkx,winkx,numslp,numsn,nwinkx, ! slip
-     &           tfault,numfn,  ! fault
-     &           s,stemp,       ! stiff
-     &           state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily, ! elemnt
-     &           nvfamilies,numelv,nstatesz,nstatesz0,nprestrflag, ! elemnt
-     &           ipstrs,ipauto,ielindx, ! elemnt
-     &           prop,infmatmod,npropsz,tminmax, ! materl
-     &           gauss,sh,shj,nen,ngauss,nee, ! eltype
-     &           histry,rtimdat,ntimdat,rgiter,nhist,lastep, ! timdat
-     &           td_matinit_cmp_ss, ! timdat
-     &           skew,numrot,   ! skew
-     &           getshapn,bmatrixn, ! bbar
-     &           ierr,errstrng) ! errcode
+     &           A,nnz,neq,                                             ! sparse
+     &           x,d,iwink,wink,numnp,nwink,iddmat,                     ! global
+     &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
+     &           tfault,numfn,                                          ! fault
+     &           s,stemp,                                               ! stiff
+     &           state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,      ! elemnt
+     &           nvfamilies,numelv,nstatesz,nstatesz0,nprestrflag,      ! elemnt
+     &           ipstrs,ipauto,ielindx,                                 ! elemnt
+     &           prop,infmatmod,npropsz,tminmax,                        ! materl
+     &           gauss,sh,shj,nen,ngauss,nee,                           ! eltype
+     &           histry,rtimdat,ntimdat,rgiter,nhist,lastep,            ! timdat
+     &           td_matinit_cmp_ss,                                     ! timdat
+     &           skew,numrot,                                           ! skew
+     &           getshapn,bmatrixn,                                     ! bbar
+     &           ierr,errstrng)                                         ! errcode
          end if
 cdebug              write(6,*) "After matinit_drv (1):"
 c
          if(ierr.ne.izero) return
 c
          call formdf_ss(
-     &        bintern,neq,      ! force
-     &        x,d,deld,numnp,iddmat, ! global
-     &        s,stemp,          ! stiff
-     &        dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv, ! elemnt
-     &        infmatmod,        ! materl
-     &        gauss,sh,shj,nen,ngauss,nee, ! eltype
-     &        skew,numrot,      ! skew
-     &        getshapn,bmatrixn, ! bbar
-     &        ierr,errstrng)    ! errcode
+     &        bintern,neq,                                              ! force
+     &        x,d,deld,numnp,iddmat,                                    ! global
+     &        s,stemp,                                                  ! stiff
+     &        dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,               ! elemnt
+     &        infmatmod,                                                ! materl
+     &        gauss,sh,shj,nen,ngauss,nee,                              ! eltype
+     &        skew,numrot,                                              ! skew
+     &        getshapn,bmatrixn,                                        ! bbar
+     &        ierr,errstrng)                                            ! errcode
 c     debug              write(6,*) "After formdf_ss (1):"
 c     
          if(ierr.ne.izero) return
 c     
          if(numfn.ne.izero) call formf_ss(
-     &        bintern,neq,      ! force
-     &        x,numnp,iddmat,   ! global
-     &        s,stemp,          ! stiff
-     &        dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv, ! elemnt
-     &        infmatmod,        ! materl
-     &        gauss,sh,shj,nen,ngauss,nee, ! eltype
-     &        skew,numrot,      ! skew
-     &        nfault,dfault,tfault,numfn, ! split
-     &        getshapn,bmatrixn, ! bbar
-     &        ierr,errstrng)    ! errcode
+     &        bintern,neq,                                              ! force
+     &        x,numnp,iddmat,                                           ! global
+     &        s,stemp,                                                  ! stiff
+     &        dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,               ! elemnt
+     &        infmatmod,                                                ! materl
+     &        gauss,sh,shj,nen,ngauss,nee,                              ! eltype
+     &        skew,numrot,                                              ! skew
+     &        nfault,dfault,tfault,numfn,                               ! split
+     &        getshapn,bmatrixn,                                        ! bbar
+     &        ierr,errstrng)                                            ! errcode
 c     debug              write(6,*) "After formf_ss (1):"
 c     
          if(ierr.ne.izero) return
 c     
          call iterate(
-     &        A,rhs,sol,        ! sparse
-     &        bextern,btraction,bgravity,bconcforce,bintern,bresid, ! force
-     &        bwink,bwinkx,dispvec,dprev,nforce,grav, ! force
-     &        x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat, ! global
-     &        dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp, ! slip
-     &        nfault,dfault,tfault, ! fault
-     &        s,stemp,          ! stiff
-     &        state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar, ! elemnt
-     &        ielindx,          ! elemnt
-     &        ielno,iside,ihistry,pres,pdir, ! tractn
-     &        prop,infmatmod,tminmax, ! materl
-     &        gauss,sh,shj,nen,ngauss,nee,nec, ! eltype
-     &        histry,rtimdat,ntimdat,nvisdat,iprestress, ! timdat
-     &        rgiter,gtol,      ! iterate
-     &        skew,             ! skew
-     &        ncodat,nunits,nprint, ! ioinfo
-     &        getshapn,bmatrixn,gload_cmp_ss,td_strs_cmp_ss, ! external
-     &        td_strs_mat_cmp_ss, ! external
-     &        iterateEvent,     ! PETSc logging
-     &        ierr,errstrng)    ! errcode
+     &        A,rhs,sol,                                                ! sparse
+     &        bextern,btraction,bgravity,bconcforce,bintern,bresid,     ! force
+     &        bwink,bwinkx,dispvec,dprev,nforce,grav,                   ! force
+     &        x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,               ! global
+     &        dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,              ! slip
+     &        nfault,dfault,tfault,                                     ! fault
+     &        s,stemp,                                                  ! stiff
+     &        state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,    ! elemnt
+     &        ielindx,                                                  ! elemnt
+     &        tractionverts,tractionvals,gauss2d,sh2d,infetype2d,       ! tractn
+     &        prop,infmatmod,tminmax,                                   ! materl
+     &        gauss,sh,shj,nen,ngauss,nee,nec,                          ! eltype
+     &        histry,rtimdat,ntimdat,nvisdat,iprestress,                ! timdat
+     &        rgiter,gtol,                                              ! iterate
+     &        skew,                                                     ! skew
+     &        ncodat,nunits,nprint,                                     ! ioinfo
+     &        getshapn,bmatrixn,gload_cmp_ss,traction_cmp_ss,           ! external
+     &        td_strs_cmp_ss,td_strs_mat_cmp_ss,                        ! external
+     &        iterateEvent,                                             ! PETSc logging
+     &        ierr,errstrng)                                            ! errcode
 c     debug              write(6,*) "After iterate (1):"
 c     
          if(ierr.ne.izero) return
@@ -352,76 +352,76 @@ cdebug              write(6,*) "reform:",reform
          if(reform) then
             write(kto,650)
             call matinit_drv(
-     &           A,nnz,neq,     ! sparse
-     &           x,d,iwink,wink,numnp,nwink,iddmat, ! global
-     &           dx,iwinkx,winkx,numslp,numsn,nwinkx, ! slip
-     &           tfault,numfn,  ! fault
-     &           s,stemp,       ! stiff
-     &           state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily, ! elemnt
-     &           nvfamilies,numelv,nstatesz,nstatesz0,nprestrflag, ! elemnt
-     &           ipstrs,ipauto,ielindx, ! elemnt
-     &           prop,infmatmod,npropsz,tminmax, ! materl
-     &           gauss,sh,shj,nen,ngauss,nee, ! eltype
-     &           histry,rtimdat,ntimdat,rgiter,nhist,lastep, ! timdat
-     &           td_matinit_cmp_ss, ! timdat
-     &           skew,numrot,   ! skew
-     &           getshapb,bmatrixb, ! bbar
-     &           ierr,errstrng) ! errcode
+     &           A,nnz,neq,                                             ! sparse
+     &           x,d,iwink,wink,numnp,nwink,iddmat,                     ! global
+     &           dx,iwinkx,winkx,numslp,numsn,nwinkx,                   ! slip
+     &           tfault,numfn,                                          ! fault
+     &           s,stemp,                                               ! stiff
+     &           state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,      ! elemnt
+     &           nvfamilies,numelv,nstatesz,nstatesz0,nprestrflag,      ! elemnt
+     &           ipstrs,ipauto,ielindx,                                 ! elemnt
+     &           prop,infmatmod,npropsz,tminmax,                        ! materl
+     &           gauss,sh,shj,nen,ngauss,nee,                           ! eltype
+     &           histry,rtimdat,ntimdat,rgiter,nhist,lastep,            ! timdat
+     &           td_matinit_cmp_ss,                                     ! timdat
+     &           skew,numrot,                                           ! skew
+     &           getshapb,bmatrixb,                                     ! bbar
+     &           ierr,errstrng)                                         ! errcode
          end if
 c     debug              write(6,*) "After matinit_drv (2):"
 c     
          if(ierr.ne.izero) return
 c     
          call formdf_ss(
-     &        bintern,neq,      ! force
-     &        x,d,deld,numnp,iddmat, ! global
-     &        s,stemp,          ! stiff
-     &        dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv, ! elemnt
-     &        infmatmod,        ! materl
-     &        gauss,sh,shj,nen,ngauss,nee, ! eltype
-     &        skew,numrot,      ! skew
-     &        getshapb,bmatrixb, ! bbar
-     &        ierr,errstrng)    ! errcode
+     &        bintern,neq,                                              ! force
+     &        x,d,deld,numnp,iddmat,                                    ! global
+     &        s,stemp,                                                  ! stiff
+     &        dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,               ! elemnt
+     &        infmatmod,                                                ! materl
+     &        gauss,sh,shj,nen,ngauss,nee,                              ! eltype
+     &        skew,numrot,                                              ! skew
+     &        getshapb,bmatrixb,                                        ! bbar
+     &        ierr,errstrng)                                            ! errcode
 c     debug              write(6,*) "After formdf_ss (2):"
 c     
          if(ierr.ne.izero) return
 c     
          if(numfn.ne.izero) call formf_ss(
-     &        bintern,neq,      ! force
-     &        x,numnp,iddmat,   ! global
-     &        s,stemp,          ! stiff
-     &        dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv, ! elemnt
-     &        infmatmod,        ! materl
-     &        gauss,sh,shj,nen,ngauss,nee, ! eltype
-     &        skew,numrot,      ! skew
-     &        nfault,dfault,tfault,numfn, ! split
-     &        getshapb,bmatrixb, ! bbar
-     &        ierr,errstrng)    ! errcode
+     &        bintern,neq,                                              ! force
+     &        x,numnp,iddmat,                                           ! global
+     &        s,stemp,                                                  ! stiff
+     &        dmat,ien,lm,lmx,ivfamily,nvfamilies,numelv,               ! elemnt
+     &        infmatmod,                                                ! materl
+     &        gauss,sh,shj,nen,ngauss,nee,                              ! eltype
+     &        skew,numrot,                                              ! skew
+     &        nfault,dfault,tfault,numfn,                               ! split
+     &        getshapb,bmatrixb,                                        ! bbar
+     &        ierr,errstrng)                                            ! errcode
 c     debug              write(6,*) "After formf_ss (2):"
 c     
          if(ierr.ne.izero) return
 c     
          call iterate(
-     &        A,rhs,sol,        ! sparse
-     &        bextern,btraction,bgravity,bconcforce,bintern,bresid, ! force
-     &        bwink,bwinkx,dispvec,dprev,nforce,grav, ! force
-     &        x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat, ! global
-     &        dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp, ! slip
-     &        nfault,dfault,tfault, ! fault
-     &        s,stemp,          ! stiff
-     &        state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar, ! elemnt
-     &        ielindx,          ! elemnt
-     &        ielno,iside,ihistry,pres,pdir, ! tractn
-     &        prop,infmatmod,tminmax, ! materl
-     &        gauss,sh,shj,nen,ngauss,nee,nec, ! eltype
-     &        histry,rtimdat,ntimdat,nvisdat,iprestress, ! timdat
-     &        rgiter,gtol,      ! iterate
-     &        skew,             ! skew
-     &        ncodat,nunits,nprint, ! ioinfo
-     &        getshapb,bmatrixb,gload_cmp_ss,td_strs_cmp_ss, ! external
-     &        td_strs_mat_cmp_ss, ! external
-     &        iterateEvent,     ! PETSc logging
-     &        ierr,errstrng)    ! errcode
+     &        A,rhs,sol,                                                ! sparse
+     &        bextern,btraction,bgravity,bconcforce,bintern,bresid,     ! force
+     &        bwink,bwinkx,dispvec,dprev,nforce,grav,                   ! force
+     &        x,d,deld,dcur,id,iwink,wink,nsysdat,iddmat,               ! global
+     &        dx,deldx,dxcur,idx,iwinkx,winkx,idslp,ipslp,              ! slip
+     &        nfault,dfault,tfault,                                     ! fault
+     &        s,stemp,                                                  ! stiff
+     &        state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,    ! elemnt
+     &        ielindx,                                                  ! elemnt
+     &        tractionverts,tractionvals,gauss2d,sh2d,infetype2d,       ! tractn
+     &        prop,infmatmod,tminmax,                                   ! materl
+     &        gauss,sh,shj,nen,ngauss,nee,nec,                          ! eltype
+     &        histry,rtimdat,ntimdat,nvisdat,iprestress,                ! timdat
+     &        rgiter,gtol,                                              ! iterate
+     &        skew,                                                     ! skew
+     &        ncodat,nunits,nprint,                                     ! ioinfo
+     &        getshapb,bmatrixb,gload_cmp_ss,traction_cmp_ss,           ! external
+     &        td_strs_cmp_ss,td_strs_mat_cmp_ss,                        ! external
+     &        iterateEvent,                                             ! PETSc logging
+     &        ierr,errstrng)                                            ! errcode
 c     debug              write(6,*) "After iterate (2):"
 c     
          if(ierr.ne.izero) return
@@ -485,15 +485,15 @@ c     later     &         nfault,dfault,tfault,                                 
 c     later     &         s,stemp,                                                 ! stiff
 c     later     &         state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,   ! elemnt
 c     later     &         npar,                                                    ! elemnt
-c     later     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
+c     later     &         tractionverts,tractionvals,gauss2d,sh2d,infetype2d,      ! tractn
 c     later     &         prop,infmat,infmatmod,tminmax,                           ! materl
 c     later     &         gauss,sh,shj,infetype,                                   ! eltype
 c     later     &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
 c     later     &         rgiter,gtol,                                             ! iterate
 c     later     &         skew,                                                    ! skew
 c     later     &         ncodat,nunits,nprint,                                    ! ioinfo
-c     later     &         getshapn,bmatrixn,gload_cmp_ld,td_strs_cmp_ld,           ! external
-c     later     &         td_strs_mat_cmp_ld,                                      ! external
+c     later     &         getshapn,bmatrixn,gload_cmp_ld,traction_cmp_ld,          ! external
+c     later     &         td_strs_cmp_ld,td_strs_mat_cmp_ld,                       ! external
 c     later     &         ierr,errstrng)                                           ! errcode
 c     
 c     later              if(ierr.ne.izero) return
@@ -554,15 +554,15 @@ c     later     &         nfault,dfault,tfault,                                 
 c     later     &         s,stemp,                                                 ! stiff
 c     later     &         state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,   ! elemnt
 c     later     &         npar,                                                    ! elemnt
-c     later     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
+c     later     &         tractionverts,tractionvals,gauss2d,sh2d,infetype2d,      ! tractn
 c     later     &         prop,infmat,infmatmod,tminmax,                           ! materl
 c     later     &         gauss,sh,shj,infetype,                                   ! eltype
 c     later     &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
 c     later     &         rgiter,gtol,                                             ! iterate
 c     later     &         skew,                                                    ! skew
 c     later     &         ncodat,nunits,nprint,                                    ! ioinfo
-c     later     &         getshapb,bmatrixb,gload_cmp_ld,td_strs_cmp_ld,           ! external
-c     later     &         td_strs_mat_cmp_ld,                                      ! external
+c     later     &         getshapb,bmatrixb,gload_cmp_ld,traction_cmp_ld,          ! external
+c     later     &         td_strs_cmp_ld,td_strs_mat_cmp_ld,                       ! external
 c     later     &         iterateEvent,                                            ! PETSc logging
 c     later     &         ierr,errstrng)                                           ! errcode
 c     

@@ -38,7 +38,7 @@ c
      & fault,nfault,dfault,tfault,                                      ! split
      & s,stemp,                                                         ! stiff
      & state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,ielindx,   ! elemnt
-     & ielno,iside,ihistry,pres,pdir,                                   ! tractn
+     & tractionverts,tractionvals,gauss2d,sh2d,infetype2d,              ! tractn
      & prop,infmatmod,                                                  ! materl
      & gauss,sh,shj,infetype,                                           ! eltype
      & histry,rtimdat,ntimdat,nvisdat,maxstp,delt,alfa,maxit,ntdinit,   ! timdat
@@ -85,7 +85,7 @@ c
       integer idx(*),iwinkx(*),idslp(*),ipslp(*),idhist(*)
       integer nfault(*)
       integer ien(*),lm(*),lmx(*),lmf(*),ivfamily(*),ielindx(*)
-      integer ielno(*),iside(*),ihistry(*)
+      integer tractionverts(*),infetype2d(*)
       integer infmatmod(*)
       integer infetype(4)
       integer maxstp(*),maxit(*),ntdinit(*),lgdef(*),itmax(*)
@@ -100,7 +100,7 @@ c
       double precision fault(*),dfault(*),tfault(*)
       double precision s(*),stemp(*)
       double precision state(*),dstate(*),state0(*),dmat(*)
-      double precision pres(*),pdir(*)
+      double precision tractionvals(*),gauss2d(*),sh2d(*)
       double precision prop(*)
       double precision gauss(*),sh(*),shj(*)
       double precision histry(*),delt(*),alfa(*),utol(*),ftol(*),etol(*)
@@ -128,8 +128,8 @@ c
 c...  external routines
 c
       external bmatrixn,bmatrixb,getshapn,getshapb
-      external td_matinit_cmp_ss,gload_cmp_ss,td_strs_cmp_ss
-      external td_strs_mat_cmp_ss
+      external td_matinit_cmp_ss,gload_cmp_ss,traction_cmp_ss
+      external td_strs_cmp_ss,td_strs_mat_cmp_ss
 c
 c...  local variables
 c
@@ -376,15 +376,15 @@ c
      &         s,stemp,                                                 ! stiff
      &         state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,   ! elemnt
      &         ielindx,                                                 ! elemnt
-     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
+     &         tractionverts,tractionvals,gauss2d,sh2d,infetype2d,      ! tractn
      &         prop,infmatmod,tminmax,                                  ! materl
      &         gauss,sh,shj,nen,ngauss,nee,nec,                         ! eltype
      &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
      &         rgiter,gtol,                                             ! iterate
      &         skew,                                                    ! skew
      &         ncodat,nunits,nprint,                                    ! ioinfo
-     &         getshapn,bmatrixn,gload_cmp_ss,td_strs_cmp_ss,           ! external
-     &         td_strs_mat_cmp_ss,                                      ! external
+     &         getshapn,bmatrixn,gload_cmp_ss,traction_cmp_ss,          ! external
+     &         td_strs_cmp_ss,td_strs_mat_cmp_ss,                       ! external
      &         iterateEvent,                                            ! PETSc logging
      &         ierr,errstrng)                                           ! errcode
 cdebug              write(6,*) "After iterate (1):"
@@ -456,15 +456,15 @@ c
      &         s,stemp,                                                 ! stiff
      &         state,dstate,state0,dmat,ien,lm,lmx,lmf,ivfamily,npar,   ! elemnt
      &         ielindx,                                                 ! elemnt
-     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
+     &         tractionverts,tractionvals,gauss2d,sh2d,infetype2d,      ! tractn
      &         prop,infmatmod,tminmax,                                  ! materl
      &         gauss,sh,shj,nen,ngauss,nee,nec,                         ! eltype
      &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
      &         rgiter,gtol,                                             ! iterate
      &         skew,                                                    ! skew
      &         ncodat,nunits,nprint,                                    ! ioinfo
-     &         getshapb,bmatrixb,gload_cmp_ss,td_strs_cmp_ss,           ! external
-     &         td_strs_mat_cmp_ss,                                      ! external
+     &         getshapb,bmatrixb,gload_cmp_ss,traction_cmp_ss,          ! external
+     &         td_strs_cmp_ss,td_strs_mat_cmp_ss,                       ! external
      &         iterateEvent,                                            ! PETSc logging
      &         ierr,errstrng)                                           ! errcode
 cdebug              write(6,*) "After iterate (2):"
@@ -530,15 +530,15 @@ clater     &         nfault,dfault,tfault,                                    ! 
 clater     &         s,stemp,                                                 ! stiff
 clater     &         state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,   ! elemnt
 clater     &         npar,                                                    ! elemnt
-clater     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
+clater     &         tractionverts,tractionvals,gauss2d,sh2d,infetype2d,      ! tractn
 clater     &         prop,infmat,infmatmod,tminmax,                           ! materl
 clater     &         gauss,sh,shj,infetype,                                   ! eltype
 clater     &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
 clater     &         rgiter,gtol,                                             ! iterate
 clater     &         skew,                                                    ! skew
 clater     &         ncodat,nunits,nprint,                                    ! ioinfo
-clater     &         getshapn,bmatrixn,gload_cmp_ld,td_strs_cmp_ld,           ! external
-clater     &         td_strs_mat_cmp_ld,                                      ! external
+clater     &         getshapn,bmatrixn,gload_cmp_ld,traction_cmp_ld,          ! external
+clater     &         td_strs_cmp_ld,td_strs_mat_cmp_ld,                       ! external
 clater     &         ierr,errstrng)                                           ! errcode
 c
 clater              if(ierr.ne.izero) return
@@ -599,15 +599,15 @@ clater     &         nfault,dfault,tfault,                                    ! 
 clater     &         s,stemp,                                                 ! stiff
 clater     &         state,dstate,state0,dmat,ien,lm,lmx,lmf,infiel,iddmat,   ! elemnt
 clater     &         npar,                                                    ! elemnt
-clater     &         ielno,iside,ihistry,pres,pdir,                           ! tractn
+clater     &         tractionverts,tractionvals,gauss2d,sh2d,infetype2d,      ! tractn
 clater     &         prop,infmat,infmatmod,tminmax,                           ! materl
 clater     &         gauss,sh,shj,infetype,                                   ! eltype
 clater     &         histry,rtimdat,ntimdat,nvisdat,iprestress,               ! timdat
 clater     &         rgiter,gtol,                                             ! iterate
 clater     &         skew,                                                    ! skew
 clater     &         ncodat,nunits,nprint,                                    ! ioinfo
-clater     &         getshapb,bmatrixb,gload_cmp_ld,td_strs_cmp_ld,           ! external
-clater     &         td_strs_mat_cmp_ld,                                      ! external
+clater     &         getshapb,bmatrixb,gload_cmp_ld,traction_cmp_ld,          ! external
+clater     &         td_strs_cmp_ld,td_strs_mat_cmp_ld,                       ! external
 clater     &         iterateEvent,                                            ! PETSc logging
 clater     &         ierr,errstrng)                                           ! errcode
 c
