@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine scan_tractions(numtractions,nsnodesmax,ndof,kr,
+      subroutine scan_tractions(numtractions,nsnodesmax,kr,
      & traction_units,tfile,ierr,errstrng)
 c
 c...  subroutine to perform an initial scan of the traction BC input
@@ -44,11 +44,12 @@ c
 c
 c...  parameter definitions
 c
+      include "ndimens.inc"
       include "nconsts.inc"
 c
 c...  subroutine arguments
 c
-      integer numtractions,nsnodesmax,ndof,kr,ierr
+      integer numtractions,nsnodesmax,kr,ierr
       character traction_units*(*),tfile*(*),errstrng*(*)
 c
 c...  local constants
