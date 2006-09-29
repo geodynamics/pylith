@@ -30,7 +30,6 @@ AM_FFLAGS = \
 	$(MPIINCLUDES)
 sources = \
 	addfor.f \
-	addpr.f \
 	addsn.f \
 	addstf.F \
 	adfldp.f \
@@ -141,7 +140,6 @@ sources = \
 	preshape.f \
 	preshape2d.f \
 	prestr_matinit_cmp_ss.F \
-	presurql.f \
 	printd.f \
 	printf.f \
 	printl.f \
