@@ -20,7 +20,9 @@ libpylithfeassemble_la_SOURCES = \
 	Quadrature1D.cc \
 	Quadrature1Din2D.cc \
 	Quadrature1Din3D.cc \
-	Quadrature2D.cc
+	Quadrature2D.cc \
+	Quadrature2Din3D.cc \
+	Quadrature3D.cc
 
 subpkginclude_HEADERS = \
 	Quadrature.hh \
@@ -32,7 +34,11 @@ subpkginclude_HEADERS = \
 	Quadrature1Din3D.hh \
 	Quadrature1Din3D.icc \
 	Quadrature2D.hh \
-	Quadrature2D.icc
+	Quadrature2D.icc \
+	Quadrature2Din3D.hh \
+	Quadrature2Din3D.icc \
+	Quadrature3D.hh \
+	Quadrature3D.icc
 
 noinst_HEADERS =
 
