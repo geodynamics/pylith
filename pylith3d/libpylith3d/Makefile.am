@@ -66,6 +66,7 @@ sources = \
 	get_units.f \
 	getder.f \
 	getjac.f \
+	getjac2d.f \
 	getmat.f \
 	getshapb.f \
 	getshapn.f \
@@ -127,8 +128,10 @@ sources = \
 	open_append.F \
 	open_ucd.F \
 	plinhex.f \
+	plinhex2d.f \
 	plinpyr.f \
 	plintet.f \
+	plintet2d.f \
 	plinwedge.f \
 	poldcmp.f \
 	pquadhex.f \
@@ -136,6 +139,7 @@ sources = \
 	pquadtet.f \
 	pquadwedge.f \
 	preshape.f \
+	preshape2d.f \
 	prestr_matinit_cmp_ss.F \
 	presurql.f \
 	printd.f \
@@ -156,6 +160,7 @@ sources = \
 	read_split.f \
 	read_stateout.f \
 	read_timdat.f \
+	read_tractions.f \
 	read_wink.f \
 	residu.F \
 	rpforc.f \
@@ -172,6 +177,7 @@ sources = \
 	scan_slip.f \
 	scan_split.f \
 	scan_timdat.f \
+	scan_tractions.f \
 	scan_wink.f \
 	scan_winkx.f \
 	skclear.f \
@@ -188,6 +194,8 @@ sources = \
 	td_matinit_cmp_ss.F \
 	td_strs_cmp_ss.f \
 	td_strs_mat_cmp_ss.F \
+	traction_cmp_ss.f \
+	traction_drv.f \
 	transp.f \
 	try_binio.F \
 	unlock.f \
@@ -219,6 +227,7 @@ sources = \
 	write_strscomp.F \
 	write_subiter.F \
 	write_timdat.F \
+	write_tractions.F \
 	write_ucd_header.F \
 	write_ucd_mesh.F \
 	write_ucd_node_vals.F \
