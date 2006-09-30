@@ -14,6 +14,8 @@
 
 #include "Quadrature2Din3D.hh" // implementation of class methods
 
+#include <math.h> // USES fabs()
+
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES internal_error
 
@@ -89,7 +91,7 @@ pylith::feassemble::Quadrature2Din3D::_computeGeometry(
     // dz/dq = sum[i=0,n-1] (dNi/dq * zi)
     for (int iVertex=0; iVertex < _numCorners; ++iVertex)
       for (int iRow=0, 
-	     iB=iQuadPt*_numCorners*_spaceDim+iVertex*_cellDim;
+	     iB=iQuadPt*_numCorners*_cellDim+iVertex*_cellDim;
 	   iRow < _cellDim;
 	   ++iRow) {
       const double deriv = _basisDeriv[iB+iRow];
@@ -125,7 +127,7 @@ pylith::feassemble::Quadrature2Din3D::_computeGeometry(
     const double det = sqrt(jj00*jj11 - jj01*jj10);
     _checkJacobianDet(det);
     _jacobianDet[iQuadPt] = det;
-
+    
     // Compute inverse of Jacobian at quadrature point
     const double d01 = 
       _jacobian[i00]*_jacobian[i11] - _jacobian[i10]*_jacobian[i01];
@@ -133,21 +135,22 @@ pylith::feassemble::Quadrature2Din3D::_computeGeometry(
       _jacobian[i01]*_jacobian[i12] - _jacobian[i11]*_jacobian[i02];
     const double d02 = 
       _jacobian[i00]*_jacobian[i12] - _jacobian[i10]*_jacobian[i02];
-    if (d01 > _minJacobian) {
+    if (fabs(d01) > _minJacobian) {
       // Jinv00 = 1/d01 * J11
-      // Jinv10 = 1/d01 * -J10
       // Jinv01 = 1/d01 * -J01
+      // Jinv10 = 1/d01 * -J10
       // Jinv11 = 1/d01 * J00
       _jacobianInv[iJ+0] = _jacobian[i11] / d01; // Jinv00
-      _jacobianInv[iJ+1] = -_jacobian[i10] / d01; // Jinv10
-      _jacobianInv[iJ+2] = -_jacobian[i01] / d01; // Jinv01
+      _jacobianInv[iJ+1] = -_jacobian[i01] / d01; // Jinv01
+      _jacobianInv[iJ+2] = -_jacobian[i10] / d01; // Jinv10
       _jacobianInv[iJ+3] = _jacobian[i00] / d01; // Jinv11
-      if (d12 > _minJacobian) {
+      if (fabs(d12) > _minJacobian) {
 	// Jinv20 = 1/d12 -J11
 	// Jinv21 = 1/d12 J01
 	_jacobianInv[iJ+4] = -_jacobian[i11] / d12; // Jinv20
 	_jacobianInv[iJ+5] = _jacobian[i01] / d12; // Jinv21
-      } else if (d02 > _minJacobian) {
+
+      } else if (fabs(d02) > _minJacobian) {
 	// Jinv20 = 1/d02 -J10
 	// Jinv21 = 1/d02 J00
 	_jacobianInv[iJ+4] = -_jacobian[i10] / d02; // Jinv20
@@ -156,7 +159,7 @@ pylith::feassemble::Quadrature2Din3D::_computeGeometry(
 	_jacobianInv[iJ+4] = 0.0; // Jinv20
 	_jacobianInv[iJ+5] = 0.0; // Jinv21
       } // if/else
-    } else if (d02 > _minJacobian) {
+    } else if (fabs(d02) > _minJacobian) {
       // Jinv00 = 1/d02 * J12
       // Jinv01 = 1/d02 * -J02
       // Jinv20 = 1/d02 * -J10
@@ -165,7 +168,7 @@ pylith::feassemble::Quadrature2Din3D::_computeGeometry(
       _jacobianInv[iJ+1] = -_jacobian[i02] / d02; // Jinv01
       _jacobianInv[iJ+4] = -_jacobian[i10] / d02; // Jinv20
       _jacobianInv[iJ+5] = _jacobian[i00] / d02; // Jinv21
-      if (d12 > _minJacobian) {
+      if (fabs(d12) > _minJacobian) {
 	// Jinv10 = 1/d12 J12
 	// Jinv11 = 1/d12 -J02
 	_jacobianInv[iJ+2] = -_jacobian[i12] / d12; // Jinv10
@@ -174,7 +177,7 @@ pylith::feassemble::Quadrature2Din3D::_computeGeometry(
 	_jacobianInv[iJ+2] = 0.0; // Jinv10
 	_jacobianInv[iJ+3] = 0.0; // Jinv11
       } // if/else
-    } else if (d12 > _minJacobian) {
+    } else if (fabs(d12) > _minJacobian) {
       _jacobianInv[iJ+0] = 0.0; // Jinv00
       _jacobianInv[iJ+1] = 0.0; // Jinv01
       // Jinv10 = 1/d12 J12
