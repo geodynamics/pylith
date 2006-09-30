@@ -54,4 +54,29 @@ python Quadrature2DQuadratic.py \
     --data.object=QuadratureData2DQuadratic \
     --data.parent=QuadratureData
 
+python Quadrature2Din3DLinearXYZ.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=QuadratureData2Din3DLinearXYZ \
+    --data.parent=QuadratureData
+
+python Quadrature2Din3DLinearXY.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=QuadratureData2Din3DLinearXY \
+    --data.parent=QuadratureData
+
+python Quadrature2Din3DLinearYZ.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=QuadratureData2Din3DLinearYZ \
+    --data.parent=QuadratureData
+
+python Quadrature2Din3DLinearXZ.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=QuadratureData2Din3DLinearXZ \
+    --data.parent=QuadratureData
+
+python Quadrature2Din3DQuadratic.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=QuadratureData2Din3DQuadratic \
+    --data.parent=QuadratureData
+
 # End of file 

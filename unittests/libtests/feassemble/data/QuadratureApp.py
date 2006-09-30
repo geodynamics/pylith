@@ -130,8 +130,53 @@ class QuadratureApp(Script):
         if 1 == self.cellDim:
           self.jacobianInv[iQuad] = 1.0 / jacobian
         elif 2 == self.cellDim:
-          error
-    
+          minJacobian = 1.0e-06
+          jj01 = jacobian[:,[0,1]]
+          jj12 = jacobian[:,[1,2]]
+          jj02 = jacobian[:,[0,2]]
+          det01 = numpy.linalg.det(jj01)
+          det12 = numpy.linalg.det(jj12)
+          det02 = numpy.linalg.det(jj02)
+          if abs(det01) > minJacobian:
+            ij01 = numpy.linalg.inv(jj01)
+            if abs(det12) > minJacobian:
+              ij12 = numpy.linalg.inv(jj12)
+              self.jacobianInv[iQuad] = numpy.array([ [ij01[0,0], ij01[0,1]],
+                                                      [ij01[1,0], ij01[1,1]],
+                                                      [ij12[1,0], ij12[1,1]] ],
+                                                    dtype=numpy.Float64)
+            elif abs(det02) > minJacobian:
+              ij02 = numpy.linalg.inv(jj02)
+              self.jacobianInv[iQuad] = numpy.array([ [ij01[0,0], ij01[0,1]],
+                                                      [ij01[1,0], ij01[1,1]],
+                                                      [ij02[1,0], ij02[1,1]] ],
+                                                    dtype=numpy.Float64)
+            else:
+              self.jacobianInv[iQuad] = numpy.array([ [ij01[0,0], ij01[0,1]],
+                                                      [ij01[1,0], ij01[1,1]],
+                                                      [      0.0,       0.0] ],
+                                                    dtype=numpy.Float64)
+          elif abs(det02) > minJacobian:
+            ij02 = numpy.linalg.inv(jj02)
+            if abs(det12) > minJacobian:
+              ij12 = numpy.linalg.inv(jj12)
+              self.jacobianInv[iQuad] = numpy.array([ [ij02[0,0], ij02[0,1]],
+                                                      [ij12[0,0], ij12[0,1]],
+                                                      [ij02[1,0], ij02[1,1]] ],
+                                                    dtype=numpy.Float64)
+            else:
+              self.jacobianInv[iQuad] = numpy.array([ [ij02[0,0], ij02[0,1]],
+                                                      [      0.0,       0.0],
+                                                      [ij02[1,0], ij02[1,1]] ],
+                                                    dtype=numpy.Float64)
+          elif abs(det12) > minJacobian:
+            ij12 = numpy.linalg.inv(jj12)
+            self.jacobianInv[iQuad] = numpy.array([ [      0.0,       0.0],
+                                                    [ij12[0,0], ij12[0,1]],
+                                                    [ij12[1,0], ij12[1,1]] ],
+                                                  dtype=numpy.Float64)
+          else:
+            raise ValueError("Could not find inverse of Jacobian.")
       iQuad += 1
 
     # Quadrature points in cell
