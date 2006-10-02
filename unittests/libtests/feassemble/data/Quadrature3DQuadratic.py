@@ -10,10 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/Quadrature2DQuadratic.py
+## @file unittests/libtests/feassemble/data/Quadrature3DQuadratic.py
 
 ## @brief Python application for generating C++ data files for testing
-## C++ Quadrature2D object w/quadratic basis functions.
+## C++ Quadrature3D object w/quadratic basis functions.
 
 from QuadratureApp import QuadratureApp
 
@@ -21,21 +21,27 @@ import numpy
 
 # ----------------------------------------------------------------------
 def N0(p):
-  return (1.0-p[0]-p[1])*(1-2.0*p[0]-2.0*p[1])
+  return (1.0-p[0]-p[1]-p[2])*(1-2.0*p[0]-2.0*p[1]-2.0*p[2])
 
 def N0p(p):
-  return 4.0*p[0]+4.0*p[1]-3.0
+  return 3.0*p[0]+3.0*p[1]+3.0*p[2]+3.0
 
 def N0q(p):
-  return 4.0*p[0]+4.0*p[1]-3.0
+  return 3.0*p[0]+3.0*p[1]+3.0*p[2]+3.0
+
+def N0r(p):
+  return 3.0*p[0]+3.0*p[1]+3.0*p[2]+3.0
 
 def N1(p):
   return p[0]*(2.0*p[0]-1.0)
 
 def N1p(p):
-  return 4.0*p[0]-1.0
+  return 4.0*p[0]-1
 
 def N1q(p):
+  return 0.0
+
+def N1r(p):
   return 0.0
 
 def N2(p):
@@ -47,45 +53,105 @@ def N2p(p):
 def N2q(p):
   return 4.0*p[1]-1.0
 
+def N2r(p):
+  return 0.0
+
 def N3(p):
-  return 4.0*p[0]*(1.0-p[0]-p[1])
+  return p[2]*(2.0*p[2]-1.0)
 
 def N3p(p):
-  return -8.0*p[0]-4.0*p[1]+4.0
+  return 0.0
 
 def N3q(p):
-  return -4.0*p[0]
+  return 0.0
+
+def N3r(p):
+  return 4.0*p[2]-1.0
 
 def N4(p):
-  return 4.0*p[0]*p[1]
+  return 4.0*p[0]*(1.0-p[0]-p[1]-p[2])
 
 def N4p(p):
-  return 4.0*p[1]
+  return -8.0*p[0]+4.0*(1.0-p[1]-p[2])
 
 def N4q(p):
-  return 4.0*p[0]
+  return -4.0*p[0]
+
+def N4r(p):
+  return -4.0*p[0]
 
 def N5(p):
-  return 4.0*p[1]*(1.0-p[0]-p[1])
+  return 4.0*p[1]*(1.0-p[0]-p[1]-p[2])
 
 def N5p(p):
   return -4.0*p[1]
 
 def N5q(p):
-  return -8.0*p[1]-4.0*p[0]+4.0
+  return -8.0*p[1]+4.0*(1.0-p[0]-p[2])
+
+def N5r(p):
+  return -4.0*p[1]
+
+def N6(p):
+  return 4.0*p[2]*(1.0-p[0]-p[1]-p[2])
+
+def N6p(p):
+  return -4.0*p[2]
+
+def N6q(p):
+  return -4.0*p[2]
+
+def N6r(p):
+  return -8.0*p[2]+4.0*(1.0-p[0]-p[1])
+
+def N7(p):
+  return 4.0*p[0]*p[1]*(1.0-2.0*p[2])
+
+def N7p(p):
+  return 4.0*p[1]-8.0*p[1]*p[2]
+
+def N7q(p):
+  return 4.0*p[0]-8.0*p[0]*p[2]
+
+def N7r(p):
+  return -8.0*p[0]*p[1]
+
+def N8(p):
+  return 4.0*p[1]*p[2]*(1.0-2.0*p[0])
+
+def N8p(p):
+  return -8.0*p[1]*p[2]
+
+def N8q(p):
+  return 4.0*p[2]-8.0*p[0]*p[2]
+
+def N8r(p):
+  return 4.0*p[1]-8.0*p[0]*p[1]
+
+def N9(p):
+  return 4.0*p[0]*p[2]*(1.0-2.0*p[1])
+
+def N9p(p):
+  return 4.0*p[2]-8.0*p[1]*p[2]
+
+def N9q(p):
+  return -8.0*p[0]*p[2]
+
+def N9r(p):
+  return 4.0*p[0]-8.0*p[0]*p[1]
 
 # ----------------------------------------------------------------------
 
-# Quadrature2DQuadratic class
-class Quadrature2DQuadratic(QuadratureApp):
+# Quadrature3DQuadratic class
+class Quadrature3DQuadratic(QuadratureApp):
   """
   Python application for generating C++ data files for testing C++
-  Quadrature2D object w/quadratic basis functions.
+  Quadrature3D object w/quadratic basis functions.
   """
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="quadrature2dquadratic"):
+  def __init__(self, name="quadrature3dquadratic"):
     """
     Constructor.
     """
@@ -104,12 +170,16 @@ class Quadrature2DQuadratic(QuadratureApp):
                                    dtype=numpy.Float64)
     self.quadWts = numpy.array([1.0/6.0, 1.0/6.0, 1.0/6.0],
                                dtype=numpy.Float64)
-    self.vertices = numpy.array( [[-1.0, -1.0],
-                                  [+1.0, +0.2],
-                                  [-1.5, +0.5],
-                                  [+0.0, -0.6],
-                                  [+0.25, +0.35],
-                                  [-1.25, -0.25]],
+    self.vertices = numpy.array( [[0.0, 0.0, 0.0],
+                                  [1.0, 0.0, 0.0],
+                                  [0.0, 1.0, 0.0],
+                                  [0.0, 0.0, 1.0],
+                                  [0.5, 0.0, 0.0],
+                                  [0.0, 0.5, 0.0],
+                                  [0.0, 0.0, 0.5],
+                                  [0.5, 0.5, 0.0],
+                                  [0.0, 0.5, 0.5],
+                                  [0.5, 0.0, 0.5]],
                                  dtype=numpy.Float64)
     self.cells = numpy.array( [[0, 1, 2, 3, 4, 5]], dtype=numpy.Int32)
     
@@ -153,7 +223,7 @@ class Quadrature2DQuadratic(QuadratureApp):
 # MAIN /////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
 
-  app = Quadrature2DQuadratic()
+  app = Quadrature3DQuadratic()
   app.run()
 
 
