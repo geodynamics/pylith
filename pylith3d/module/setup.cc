@@ -292,7 +292,7 @@ PyObject * pypylith3d_preshape2d(PyObject *, PyObject *args)
   // return
   Py_INCREF(Py_None);
   return Py_None;
-    
+}
 // version
 // $Id: setup.cc,v 1.4 2005/06/07 19:39:11 willic3 Exp $
 
