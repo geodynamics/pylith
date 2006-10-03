@@ -86,4 +86,9 @@ python Quadrature3DLinear.py \
     --data.object=QuadratureData3DLinear \
     --data.parent=QuadratureData
 
+python Quadrature3DQuadratic.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=QuadratureData3DQuadratic \
+    --data.parent=QuadratureData
+
 # End of file 
