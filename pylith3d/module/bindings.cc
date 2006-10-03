@@ -163,6 +163,10 @@ struct PyMethodDef pypylith3d_methods[] = {
     {pypylith3d_preshape__name__, pypylith3d_preshape,
      METH_VARARGS, pypylith3d_preshape__doc__},
 
+    // precompute shape function information for surfaces
+    {pypylith3d_preshape2d__name__, pypylith3d_preshape2d,
+     METH_VARARGS, pypylith3d_preshape2d__doc__},
+
     // read boundary conditions
     {pypylith3d_read_bc__name__, pypylith3d_read_bc,
      METH_VARARGS, pypylith3d_read_bc__doc__},
@@ -378,6 +382,10 @@ struct PyMethodDef pypylith3d_methods[] = {
     // write out time step information
     {pypylith3d_write_timdat__name__, pypylith3d_write_timdat,
      METH_VARARGS, pypylith3d_write_timdat__doc__},
+
+    // write out traction information
+    {pypylith3d_write_tractions__name__, pypylith3d_write_tractions,
+     METH_VARARGS, pypylith3d_write_tractions__doc__},
 
     // write mesh info to UCD file
     {pypylith3d_write_ucd_mesh__name__, pypylith3d_write_ucd_mesh,
