@@ -23,6 +23,7 @@ testfeassemble_SOURCES = \
 	TestQuadrature1Din2D.cc \
 	TestQuadrature2D.cc \
 	TestQuadrature2Din3D.cc \
+	TestQuadrature3D.cc \
 	test_feassemble.cc \
 	data/QuadratureData.cc \
 	data/QuadratureData1DLinear.cc \
@@ -37,7 +38,9 @@ testfeassemble_SOURCES = \
 	data/QuadratureData2Din3DLinearXY.cc \
 	data/QuadratureData2Din3DLinearYZ.cc \
 	data/QuadratureData2Din3DLinearXZ.cc \
-	data/QuadratureData2Din3DQuadratic.cc
+	data/QuadratureData2Din3DQuadratic.cc \
+	data/QuadratureData3DLinear.cc \
+	data/QuadratureData3DQuadratic.cc
 
 noinst_HEADERS = \
 	TestQuadrature.hh \
@@ -59,7 +62,9 @@ noinst_HEADERS = \
 	data/QuadratureData2Din3DLinearXY.hh \
 	data/QuadratureData2Din3DLinearYZ.hh \
 	data/QuadratureData2Din3DLinearXZ.hh \
-	data/QuadratureData2Din3DQuadratic.hh
+	data/QuadratureData2Din3DQuadratic.hh \
+	data/QuadratureData3DLinear.hh \
+	data/QuadratureData3DQuadratic.hh
 
 testfeassemble_LDFLAGS = $(PETSC_LIB)
 
