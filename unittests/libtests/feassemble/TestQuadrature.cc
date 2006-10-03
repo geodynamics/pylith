@@ -232,10 +232,9 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(
 		    cellDim, numCorners, numQuadPts, spaceDim);
 
   // Create mesh with test cell
-  typedef ALE::Sieve<int, int, int> sieve_type;
-  typedef ALE::New::Topology<int, sieve_type> topology_type;
-  typedef ALE::New::Section<topology_type, double> section_type;
-  ALE::Obj<ALE::Mesh> mesh = ALE::Mesh(PETSC_COMM_WORLD, cellDim);
+  typedef ALE::Mesh::topology_type topology_type;
+  typedef topology_type::sieve_type sieve_type;
+  ALE::Obj<ALE::Mesh> mesh = new ALE::Mesh(PETSC_COMM_WORLD, cellDim);
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
   ALE::Obj<topology_type> topology = new topology_type(mesh->comm());
 
@@ -245,17 +244,17 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(
   sieve->stratify();
   topology->setPatch(0, sieve);
   topology->stratify();
-  mesh->setTopologyNew(topology);
+  mesh->setTopology(topology);
   ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
-		    mesh->getSection("coordinates"), spaceDim, vertCoords);
+		    mesh->getRealSection("coordinates"), spaceDim, vertCoords);
   
   // Check values from _computeGeometry()
   const ALE::Mesh::topology_type::patch_type patch = 0;
   const ALE::Obj<topology_type::label_sequence>& elements = 
     topology->heightStratum(patch, 0);
   const topology_type::label_sequence::iterator e_iter = elements->begin(); 
-  const ALE::Obj<ALE::Mesh::section_type>& coordinates = 
-    mesh->getSection("coordinates");
+  const ALE::Obj<ALE::Mesh::real_section_type>& coordinates = 
+    mesh->getRealSection("coordinates");
   pQuad->_computeGeometry(coordinates, *e_iter);
 
   CPPUNIT_ASSERT(1 == numCells);

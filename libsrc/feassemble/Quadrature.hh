@@ -127,7 +127,7 @@ protected :
    * @param cell Finite-element cell
    */
   virtual 
-  void _computeGeometry(const ALE::Obj<ALE::Mesh::section_type>& coordinates,
+  void _computeGeometry(const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
 			const ALE::Mesh::point_type& cell) = 0;
 
   /// Set entries in geometry arrays to zero.

@@ -59,7 +59,7 @@ protected :
    * @param coordinates Section containing vertex coordinates
    * @param cell Finite-element cell
    */
-  void _computeGeometry(const ALE::Obj<ALE::Mesh::section_type>& coordinates,
+  void _computeGeometry(const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
 			const ALE::Mesh::point_type& cell);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////

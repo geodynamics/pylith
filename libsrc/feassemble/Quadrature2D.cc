@@ -39,7 +39,7 @@ pylith::feassemble::Quadrature2D::Quadrature2D(const Quadrature2D& q) :
 // Compute geometric quantities for a cell.
 void
 pylith::feassemble::Quadrature2D::_computeGeometry(
-		       const ALE::Obj<ALE::Mesh::section_type>& coordinates,
+		       const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
 		       const ALE::Mesh::point_type& cell)
 { // _computeGeometry
   assert(2 == _cellDim);
@@ -55,7 +55,7 @@ pylith::feassemble::Quadrature2D::_computeGeometry(
 
   // Get coordinates of cell's vertices
   const ALE::Mesh::topology_type::patch_type patch  = 0;
-  const ALE::Mesh::section_type::value_type* vertCoords = 
+  const ALE::Mesh::real_section_type::value_type* vertCoords = 
     coordinates->restrict(patch, cell);
   //assert(2 == coordinates.GetFiberDimensionByDepth(patch,
   //*vertices->begin(), 0));
