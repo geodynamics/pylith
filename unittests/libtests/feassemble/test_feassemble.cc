@@ -21,37 +21,44 @@
 #include <cppunit/TestRunner.h>
 #include <cppunit/TextOutputter.h>
 
+#include <stdlib.h> // USES abort()
+
 int
 main(int argc,
      char* argv[])
 { // main
-  // Initialize PETSc
-  PetscErrorCode err = PetscInitialize(&argc, &argv, PETSC_NULL, PETSC_NULL);
-  CHKERRQ(err);
-
-  // Create event manager and test controller
-  CppUnit::TestResult controller;
-
-  // Add listener to collect test results
   CppUnit::TestResultCollector result;
-  controller.addListener(&result);
 
-  // Add listener to show progress as tests run
-  CppUnit::BriefTestProgressListener progress;
-  controller.addListener(&progress);
+  try {
+    // Initialize PETSc
+    PetscErrorCode err = PetscInitialize(&argc, &argv, PETSC_NULL, PETSC_NULL);
+    CHKERRQ(err);
 
-  // Add top suite to test runner
-  CppUnit::TestRunner runner;
-  runner.addTest(CppUnit::TestFactoryRegistry::getRegistry().makeTest());
-  runner.run(controller);
+    // Create event manager and test controller
+    CppUnit::TestResult controller;
 
-  // Print tests
-  CppUnit::TextOutputter outputter(&result, std::cerr);
-  outputter.write();
+    // Add listener to collect test results
+    controller.addListener(&result);
 
-  // Finalize PETSc
-  err = PetscFinalize();
-  CHKERRQ(err);
+    // Add listener to show progress as tests run
+    CppUnit::BriefTestProgressListener progress;
+    controller.addListener(&progress);
+
+    // Add top suite to test runner
+    CppUnit::TestRunner runner;
+    runner.addTest(CppUnit::TestFactoryRegistry::getRegistry().makeTest());
+    runner.run(controller);
+
+    // Print tests
+    CppUnit::TextOutputter outputter(&result, std::cerr);
+    outputter.write();
+
+    // Finalize PETSc
+    err = PetscFinalize();
+    CHKERRQ(err);
+  } catch (...) {
+    abort();
+  } // catch
 
   return (result.wasSuccessful() ? 0 : 1);
 } // main
