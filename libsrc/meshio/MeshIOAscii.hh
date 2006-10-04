@@ -17,8 +17,6 @@
 #include <string> // HASA std::string
 #include "MeshIO.hh"
 
-using ALE::Obj;
-
 namespace pylith {
   namespace meshio {
     class MeshIOAscii;
@@ -58,14 +56,14 @@ public :
    * @param pMesh Pointer to PETSc mesh object
    * @param interpolate Flag indicating whether to build intermediate topology
    */
-  void read(Obj<Mesh>& mesh, 
+  void read(ALE::Obj<Mesh>& mesh, 
 	    const bool interpolate =false);
 
   /** Write mesh to file.
    *
    * @param mesh PETSc mesh object
    */
-  void write(const Obj<Mesh>& mesh) const;
+  void write(const ALE::Obj<Mesh>& mesh) const;
 
 // PRIVATE METHODS ------------------------------------------------------
 private :
@@ -88,7 +86,7 @@ private :
    * @param mesh PETSc mesh
    */
   void _writeVertices(std::ostream& fileout,
-		      const Obj<Mesh>& mesh) const;
+		      const ALE::Obj<Mesh>& mesh) const;
   
   /** Read mesh cells.
    *
@@ -108,7 +106,7 @@ private :
    * @param mesh PETSc mesh
    */
   void _writeCells(std::ostream& fileout,
-		   const Obj<Mesh>& mesh) const;
+		   const ALE::Obj<Mesh>& mesh) const;
 
   /** Read mesh group.
    *
@@ -116,7 +114,7 @@ private :
    * @param pMesh Pointer to PETSc mesh
    */
   void _readGroup(std::istream& filein,
-		  const Obj<Mesh>& pMesh) const;
+		  const ALE::Obj<Mesh>& pMesh) const;
 
   /** Write mesh group.
    *
@@ -125,7 +123,7 @@ private :
    * @param name Name of group
    */
   void _writeGroup(std::ostream& fileout,
-		   const Obj<Mesh>& mesh,
+		   const ALE::Obj<Mesh>& mesh,
 		   const char* name) const;
 
 // PRIVATE MEMBERS ------------------------------------------------------
