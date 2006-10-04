@@ -73,6 +73,7 @@ c     Note the the current method of checking for units specification
 c     is pretty sloppy, assuming that they were already specified during
 c     the scan phase.
 c
+      if(numtractions.eq.0) return
       ierr=izero
       open(kr,file=tfile,status="old",err=20)
       call pskip(kr)
