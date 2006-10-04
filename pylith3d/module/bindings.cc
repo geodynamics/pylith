@@ -272,8 +272,8 @@ struct PyMethodDef pypylith3d_methods[] = {
      METH_VARARGS, pypylith3d_scan_timdat__doc__},
 
     // scan traction boundary conditions file
-    // {pypylith3d_scan_traction__name__, pypylith3d_scan_traction,
-     // METH_VARARGS, pypylith3d_scan_traction__doc__},
+    // {pypylith3d_scan_tractions__name__, pypylith3d_scan_tractions,
+     // METH_VARARGS, pypylith3d_scan_tractions__doc__},
 
     // scan winkler forces info file
     {pypylith3d_scan_wink__name__, pypylith3d_scan_wink,
