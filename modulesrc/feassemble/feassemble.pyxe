@@ -16,6 +16,8 @@
 #include "pylith/feassemble/Quadrature1Din2D.hh"
 #include "pylith/feassemble/Quadrature1Din3D.hh"
 #include "pylith/feassemble/Quadrature2D.hh"
+#include "pylith/feassemble/Quadrature2Din3D.hh"
+#include "pylith/feassemble/Quadrature3D.hh"
 #}header
 
 # ----------------------------------------------------------------------
@@ -226,6 +228,38 @@ cdef class Quadrature2D(Quadrature):
 
     Quadrature.__init__(self)
     self.thisptr = Quadrature2D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class Quadrature2Din3D(Quadrature):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* Quadrature2Din3D_constructor()
+    return (void*)(new pylith::feassemble::Quadrature2Din3D);
+    #}embed
+
+    Quadrature.__init__(self)
+    self.thisptr = Quadrature2Din3D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class Quadrature3D(Quadrature):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* Quadrature3D_constructor()
+    return (void*)(new pylith::feassemble::Quadrature3D);
+    #}embed
+
+    Quadrature.__init__(self)
+    self.thisptr = Quadrature3D_constructor()
     self.handle = self._createHandle()
     return
 
