@@ -1,0 +1,67 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_feassemble_pytestquadrature_hh)
+#error "TestQuadrature.icc must be included only from TestQuadrature.hh"
+#else
+
+// Get number of dimensions in reference cell.
+int
+pylith::feassemble::TestQuadrature::cellDim(const Quadrature& q) {
+  return q._cellDim;
+}
+
+// Get number of vertices in cell.
+int
+pylith::feassemble::TestQuadrature::numCorners(const Quadrature& q) {
+  return q._numCorners;
+}
+
+// Get number of quadrature points.
+int
+pylith::feassemble::TestQuadrature::numQuadPts(const Quadrature& q) {
+  return q._numQuadPts;
+}
+
+// Get number of dimensions in coordinates of cell vertices.
+int
+pylith::feassemble::TestQuadrature::spaceDim(const Quadrature& q) {
+  return q._spaceDim;
+}
+
+// Get basis functions evaluated at quadrature points.
+const double*
+pylith::feassemble::TestQuadrature::basis(const Quadrature& q) {
+  return q._basis;
+}
+
+// Get derivatives of basis functions evaluated at quadrature points.
+const double*
+pylith::feassemble::TestQuadrature::basisDeriv(const Quadrature& q) {
+  return q._basisDeriv;
+}
+
+// Get coordinates of quadrature points
+const double*
+pylith::feassemble::TestQuadrature::quadPtsRef(const Quadrature& q) {
+  return q._quadPtsRef;
+}
+
+// Get weights of quadrature points
+const double*
+pylith::feassemble::TestQuadrature::quadWts(const Quadrature& q) {
+  return q._quadWts;
+}
+
+#endif
+
+// End of file

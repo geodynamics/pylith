@@ -11,7 +11,6 @@
 #
 
 SUBDIRS = \
-	libtests \
-	pytests
+	feassemble
 
 # End of file 

@@ -56,6 +56,7 @@ class Quadrature(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="quadrature")
+    self.minJacobian = 1.0e-06
     self.cppHandle = None
     self.spaceDim = None
     return
@@ -105,7 +106,7 @@ class Quadrature1D(Quadrature):
     """
     Constructor.
     """
-    Quadrature.__init(self, name)
+    Quadrature.__init__(self, name)
     import pylith.feassemble.feassemble as bindings
     self.cppHandle = bindings.Quadrature1D()
     self.spaceDim = 1
@@ -125,7 +126,7 @@ class Quadrature1Din2D(Quadrature):
     """
     Constructor.
     """
-    Quadrature.__init(self, name)
+    Quadrature.__init__(self, name)
     import pylith.feassemble.feassemble as bindings
     self.cppHandle = bindings.Quadrature1Din2D()
     self.spaceDim = 2
@@ -145,7 +146,7 @@ class Quadrature1Din3D(Quadrature):
     """
     Constructor.
     """
-    Quadrature.__init(self, name)
+    Quadrature.__init__(self, name)
     import pylith.feassemble.feassemble as bindings
     self.cppHandle = bindings.Quadrature1Din3D()
     self.spaceDim = 3
@@ -165,7 +166,7 @@ class Quadrature2D(Quadrature):
     """
     Constructor.
     """
-    Quadrature.__init(self, name)
+    Quadrature.__init__(self, name)
     import pylith.feassemble.feassemble as bindings
     self.cppHandle = bindings.Quadrature2D()
     self.spaceDim = 2
@@ -185,7 +186,7 @@ class Quadrature2Din3D(Quadrature):
     """
     Constructor.
     """
-    Quadrature.__init(self, name)
+    Quadrature.__init__(self, name)
     import pylith.feassemble.feassemble as bindings
     self.cppHandle = bindings.Quadrature2Din3D()
     self.spaceDim = 3
@@ -195,7 +196,7 @@ class Quadrature2Din3D(Quadrature):
 
 # ----------------------------------------------------------------------
 # Quadrature3D class
-class Quadrature2D(Quadrature):
+class Quadrature3D(Quadrature):
   """
   Python object for integrating over 3-D finite-elements in a 3-D
   domain using quadrature.
@@ -205,7 +206,7 @@ class Quadrature2D(Quadrature):
     """
     Constructor.
     """
-    Quadrature.__init(self, name)
+    Quadrature.__init__(self, name)
     import pylith.feassemble.feassemble as bindings
     self.cppHandle = bindings.Quadrature3D()
     self.spaceDim = 3

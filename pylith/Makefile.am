@@ -15,10 +15,13 @@ nobase_pkgpyexec_PYTHON = \
 	__init__.py \
 	feassemble/__init__.py \
 	feassemble/Assembler.py \
+	feassemble/FIATCell.py \
+	feassemble/FIATSimplex.py \
 	feassemble/Field.py \
 	feassemble/Integrator.py \
 	feassemble/IntegratorElasticity.py \
 	feassemble/Quadrature.py \
+	feassemble/ReferenceCell.py \
 	materials/__init__.py \
 	materials/ElasticIsotropic3D.py \
 	materials/Homogeneous.py \
@@ -40,8 +43,9 @@ nobase_pkgpyexec_PYTHON = \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
 	utils/__init__.py \
+	utils/CppData.py \
 	utils/importing.py \
-	utils/CppData.py
+	utils/testarray.py
 
 # version
 # $Id$
