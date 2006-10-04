@@ -514,9 +514,8 @@ class Pylith3d_scan(Component):
 
         self._numberTractionBc = pylith3d.scan_tractions(
             self._maxElementNodes2d,
-            self._numberDegreesFreedom,
-            self._tractionBcUnits,
             f77FileInput,
+            self._tractionBcUnits,
             self._tractionInputFile)
 
         if self._numberTractionBc != 0:
@@ -726,7 +725,7 @@ class Pylith3d_scan(Component):
         prestressInputFile = InputFile("prestressInputFile",default="${fileRoot}.prestr")
         prestressInputFile.meta['tip'] = "Pathname for prestress input file (overrides default from fileRoot -- presently unused)."
 
-        tractionInputFile = InputFile("tractionInputFile",default="${fileRoot}.tract")
+        tractionInputFile = InputFile("tractionInputFile",default="${fileRoot}.traction")
         tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from fileRoot)."
 
         slipperyNodeInputFile = InputFile("slipperyNodeInputFile",default="${fileRoot}.slip")
