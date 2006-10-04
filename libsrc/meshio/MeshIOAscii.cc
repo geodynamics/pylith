@@ -36,7 +36,7 @@ pylith::meshio::MeshIOAscii::~MeshIOAscii(void)
 // ----------------------------------------------------------------------
 // Unpickle mesh
 void
-pylith::meshio::MeshIOAscii::read(Obj<Mesh>& mesh, 
+pylith::meshio::MeshIOAscii::read(ALE::Obj<Mesh>& mesh, 
 				  const bool interpolate)
 { // read
   int meshDim = 0;
@@ -107,18 +107,18 @@ pylith::meshio::MeshIOAscii::read(Obj<Mesh>& mesh,
     if (readDim && readCells && readVertices && !builtTopology) {
       // Can now build topology
       mesh = Mesh(PETSC_COMM_WORLD, meshDim);
-      mesh->debug = true;
 
       // allow mesh to have different dimension than coordinates
-      Obj<sieve_type>    sieve    = new sieve_type(mesh->comm(), mesh->debug);
-      Obj<topology_type> topology = new topology_type(mesh->comm(), mesh->debug);
+      ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
+      ALE::Obj<topology_type> topology = new topology_type(mesh->comm());
 
       ALE::New::SieveBuilder<sieve_type>::buildTopology(sieve, meshDim, numCells, cells, numVertices, interpolate, numCorners);
       sieve->stratify();
       topology->setPatch(0, sieve);
       topology->stratify();
-      mesh->setTopologyNew(topology);
-      ALE::New::SieveBuilder<sieve_type>::buildCoordinates(mesh->getSection("coordinates"), meshDim, coordinates);
+      mesh->setTopology(topology);
+      ALE::New::SieveBuilder<sieve_type>::buildCoordinates(mesh->getRealSection("coordinates"), 
+						  meshDim, coordinates);
       delete[] coordinates; coordinates = NULL;
       delete[] cells; cells = NULL;
       builtTopology = true;
@@ -132,7 +132,7 @@ pylith::meshio::MeshIOAscii::read(Obj<Mesh>& mesh,
 // ----------------------------------------------------------------------
 // Write mesh to file.
 void
-pylith::meshio::MeshIOAscii::write(const Obj<Mesh>& mesh) const
+pylith::meshio::MeshIOAscii::write(const ALE::Obj<Mesh>& mesh) const
 { // write
   std::ofstream fileout(_filename.c_str());
   if (!fileout.is_open() || !fileout.good()) {
@@ -217,13 +217,16 @@ pylith::meshio::MeshIOAscii::_readVertices(std::istream& filein,
 // Write mesh vertices.
 void
 pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout,
-			       const Obj<Mesh>& mesh) const
+					    const ALE::Obj<Mesh>& mesh) const
 { // _writeVertices
-  const Obj<Mesh::section_type>&       coords_field = mesh->getSection("coordinates");
-  const Obj<Mesh::topology_type>&      topology     = mesh->getTopologyNew();
-  const Mesh::section_type::patch_type patch        = 0;
-  const Obj<Mesh::topology_type::label_sequence>& vertices = topology->depthStratum(patch, 0);
-  const int                            embedDim     = coords_field->getFiberDimension(patch, *vertices->begin());
+  const ALE::Obj<Mesh::real_section_type>& 
+    coords_field = mesh->getRealSection("coordinates");
+  const ALE::Obj<Mesh::topology_type>& topology = mesh->getTopology();
+  const Mesh::real_section_type::patch_type patch = 0;
+  const ALE::Obj<Mesh::topology_type::label_sequence>& vertices = 
+    topology->depthStratum(patch, 0);
+  const int embedDim = 
+    coords_field->getFiberDimension(patch, *vertices->begin());
 
   fileout
     << "  vertices = {\n"
@@ -233,8 +236,11 @@ pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout,
     << std::resetiosflags(std::ios::fixed)
     << std::setiosflags(std::ios::scientific)
     << std::setprecision(6);
-  for(Mesh::topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter) {
-    const Mesh::section_type::value_type *coordinates = coords_field->restrict(patch, *v_iter);
+  for(Mesh::topology_type::label_sequence::iterator v_iter = vertices->begin();
+      v_iter != vertices->end();
+      ++v_iter) {
+    const Mesh::real_section_type::value_type *coordinates = 
+      coords_field->restrict(patch, *v_iter);
 
     fileout << "      ";
     for(int d = 0; d < embedDim; ++d) {
@@ -313,14 +319,17 @@ pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
 // Write mesh cells.
 void
 pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout,
-				  const Obj<Mesh>& mesh) const
+					 const ALE::Obj<Mesh>& mesh) const
 { // _writeCells
-  const Obj<topology_type>&        topology   = mesh->getTopologyNew();
-  const topology_type::patch_type  patch      = 0;
-  const Obj<sieve_type>&           sieve      = topology->getPatch(patch);
-  const Obj<Mesh::topology_type::label_sequence>& cells = topology->heightStratum(patch, 0);
-  const Obj<Mesh::numbering_type>& vNumbering = mesh->getLocalNumbering(0);
-  const int                        numCorners = sieve->nCone(*cells->begin(), topology->depth())->size();
+  const ALE::Obj<topology_type>& topology = mesh->getTopology();
+  const topology_type::patch_type patch = 0;
+  const ALE::Obj<sieve_type>& sieve = topology->getPatch(patch);
+  const ALE::Obj<Mesh::topology_type::label_sequence>& cells = 
+    topology->heightStratum(patch, 0);
+  const ALE::Obj<Mesh::numbering_type>& vNumbering = 
+    mesh->getFactory()->getLocalNumbering(topology, patch, 0);
+  const int numCorners = sieve->nCone(*cells->begin(), 
+				      topology->depth())->size();
 
   fileout
     << "  cells = {\n"
@@ -329,13 +338,17 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout,
     << "    simplices = {\n";
 
   const int offset = (useIndexZero()) ? 0 : 1;
-  for(Mesh::topology_type::label_sequence::iterator e_iter = cells->begin(); e_iter != cells->end(); ++e_iter) {
+  for(Mesh::topology_type::label_sequence::iterator e_iter = cells->begin();
+      e_iter != cells->end();
+      ++e_iter) {
     fileout << "      ";
-    const Obj<sieve_type::traits::coneSequence>& cone = sieve->cone(*e_iter);
-
-    for(sieve_type::traits::coneSequence::iterator c_iter = cone->begin(); c_iter != cone->end(); ++c_iter) {
-      fileout << std::setw(8) << vNumbering->getIndex(*c_iter) + offset;
-    }
+    const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
+      sieve->cone(*e_iter);
+    for(sieve_type::traits::coneSequence::iterator c_iter = cone->begin();
+	c_iter != cone->end();
+	++c_iter)
+      fileout << std::setw(8)
+	      << vNumbering->getIndex(*c_iter) + offset;
     fileout << "\n";
   } // for
   fileout
@@ -347,7 +360,7 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout,
 // Read mesh group.
 void
 pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
-					const Obj<Mesh>& mesh) const
+					const ALE::Obj<Mesh>& mesh) const
 { // _readGroup
   std::string name = ""; // Name of group
   int dimension = 0; // Topology dimension associated with group
@@ -392,9 +405,9 @@ pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
 
 #if 0
   assert(!mesh.isNull());
-  Obj<Mesh::field_type> groupField = mesh->getField(name);
+  ALE::Obj<Mesh::field_type> groupField = mesh->getField(name);
   const int meshDim = mesh->getDimension();
-  Obj<std::list<Mesh::point_type> > patchPoints = 
+  ALE::Obj<std::list<Mesh::point_type> > patchPoints = 
     std::list<Mesh::point_type>();
   Mesh::field_type::patch_type patch;
 
@@ -417,7 +430,7 @@ pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
 // Write mesh group.
 void
 pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
-					 const Obj<Mesh>& mesh,
+					 const ALE::Obj<Mesh>& mesh,
 					 const char* name) const
 { // _writeGroup
   //_writeGroup(fileout, mesh);
