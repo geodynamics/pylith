@@ -36,7 +36,8 @@ c     file to determine the total number of entries.
 c
 c     Error codes:
 c         0:  No error
-c         1:  Error opening input file
+c         1:  Error opening input file (no exception should be raised
+c             in this case since a traction BC file is optional)
 c         3:  Read error
 c       106:  Illegal element type
 c
@@ -74,7 +75,7 @@ c
       numtractions=izero
       numverts=izero
       nget=ione
-      open(kr,file=tfile,status="old",err=20)
+      open(kr,file=tfile,status="old",err=10)
 c
 c...  get traction units, returning error 5 if they aren't found
 c
@@ -119,14 +120,6 @@ c...  normal return
 c
  10   continue
         close(kr)
-        return
-c
-c...  error opening file
-c
- 20   continue
-        close(kr)
-	ierr=1
-        errstrng="scan_tractions"
         return
 c
 c...  read error
