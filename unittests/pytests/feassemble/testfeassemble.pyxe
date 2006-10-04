@@ -1,0 +1,189 @@
+#!/usr/bin/env python
+#
+# ======================================================================
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# {LicenseText}
+#
+# ======================================================================
+#
+
+#header{
+#include "TestQuadrature.hh"
+#}header
+
+import spatialdata.utils.simplearray
+
+# ----------------------------------------------------------------------
+cdef extern from "Python.h":
+  object PyCObject_FromVoidPtr(void*, void (*destruct)(void*))
+  void* PyCObject_AsVoidPtr(object)
+
+cdef void* ptrFromHandle(obj):
+  return PyCObject_AsVoidPtr(obj.handle)
+
+cdef extern from "stdlib.h":
+    ctypedef unsigned long size_t
+    void* malloc(size_t size)
+    void free(void* mem)
+
+
+# ----------------------------------------------------------------------
+# create shim for TestQuadrature::cellDim
+#embed{ int TestQuadrature_cellDim(void* obj)
+const pylith::feassemble::Quadrature* q =
+  (pylith::feassemble::Quadrature*) obj;
+return pylith::feassemble::TestQuadrature::cellDim(*q);
+#}embed
+
+# create shim for TestQuadrature::numCorners
+#embed{ int TestQuadrature_numCorners(void* obj)
+const pylith::feassemble::Quadrature* q =
+  (pylith::feassemble::Quadrature*) obj;
+return pylith::feassemble::TestQuadrature::numCorners(*q);
+#}embed
+
+# create shim for TestQuadrature::numQuadPts
+#embed{ int TestQuadrature_numQuadPts(void* obj)
+const pylith::feassemble::Quadrature* q =
+  (pylith::feassemble::Quadrature*) obj;
+return pylith::feassemble::TestQuadrature::numQuadPts(*q);
+#}embed
+
+# create shim for TestQuadrature::spaceDim
+#embed{ int TestQuadrature_spaceDim(void* obj)
+const pylith::feassemble::Quadrature* q =
+  (pylith::feassemble::Quadrature*) obj;
+return pylith::feassemble::TestQuadrature::spaceDim(*q);
+#}embed
+
+# create shim for TestQuadrature::basis
+#embed{ double* TestQuadrature_basis(void* obj)
+const pylith::feassemble::Quadrature* q =
+  (pylith::feassemble::Quadrature*) obj;
+return (double*) pylith::feassemble::TestQuadrature::basis(*q);
+#}embed
+
+# create shim for TestQuadrature::basisDeriv
+#embed{ double* TestQuadrature_basisDeriv(void* obj)
+const pylith::feassemble::Quadrature* q =
+  (pylith::feassemble::Quadrature*) obj;
+return (double*) pylith::feassemble::TestQuadrature::basisDeriv(*q);
+#}embed
+
+# create shim for TestQuadrature::quadPtsRef
+#embed{ double* TestQuadrature_quadPtsRef(void* obj)
+const pylith::feassemble::Quadrature* q =
+  (pylith::feassemble::Quadrature*) obj;
+return (double*) pylith::feassemble::TestQuadrature::quadPtsRef(*q);
+#}embed
+
+# create shim for TestQuadrature::quadWts
+#embed{ double* TestQuadrature_quadWts(void* obj)
+const pylith::feassemble::Quadrature* q =
+  (pylith::feassemble::Quadrature*) obj;
+return (double*) pylith::feassemble::TestQuadrature::quadWts(*q);
+#}embed
+
+# ----------------------------------------------------------------------
+def basis(qhandle):
+  """
+  Call TestQuadrature::basis().
+  """
+  if not qhandle.name == "pylith_feassemble_Quadrature":
+    raise TypeError, \
+          "Argument 'quadrature' must be extension type 'Quadrature'."
+
+  cdef void* qptr
+  qptr = ptrFromHandle(qhandle)
+
+  cdef int numQuadPts
+  cdef int numCorners
+  numQuadPts = TestQuadrature_numQuadPts(qptr)
+  numCorners = TestQuadrature_numCorners(qptr)
+
+  cdef double* values
+  values = TestQuadrature_basis(qptr)
+  dims = [numQuadPts, numCorners]
+  valuesObj = PyCObject_FromVoidPtr(values, NULL)
+  return spatialdata.utils.simplearray.SimpleCppArray(valuesObj, dims, "double")
+  
+
+# ----------------------------------------------------------------------
+def basisDeriv(qhandle):
+  """
+  Call TestQuadrature::basisDeriv().
+  """
+  if not qhandle.name == "pylith_feassemble_Quadrature":
+    raise TypeError, \
+          "Argument 'quadrature' must be extension type 'Quadrature'."
+
+  cdef void* qptr
+  qptr = ptrFromHandle(qhandle)
+
+  cdef int numQuadPts
+  cdef int numCorners
+  cdef int cellDim
+  numQuadPts = TestQuadrature_numQuadPts(qptr)
+  numCorners = TestQuadrature_numCorners(qptr)
+  cellDim = TestQuadrature_cellDim(qptr)
+
+  cdef double* values
+  values = TestQuadrature_basisDeriv(qptr)
+  dims = [numQuadPts, numCorners, cellDim]
+  valuesObj = PyCObject_FromVoidPtr(values, NULL)
+  return spatialdata.utils.simplearray.SimpleCppArray(valuesObj, dims,
+                                                      "double")
+  
+
+# ----------------------------------------------------------------------
+def quadPtsRef(qhandle):
+  """
+  Call TestQuadrature::quadPtsRef().
+  """
+  if not qhandle.name == "pylith_feassemble_Quadrature":
+    raise TypeError, \
+          "Argument 'quadrature' must be extension type 'Quadrature'."
+
+  cdef void* qptr
+  qptr = ptrFromHandle(qhandle)
+
+  cdef int numQuadPts
+  cdef int spaceDim
+  numQuadPts = TestQuadrature_numQuadPts(qptr)
+  spaceDim = TestQuadrature_spaceDim(qptr)
+
+  cdef double* values
+  values = TestQuadrature_quadPtsRef(qptr)
+  dims = [numQuadPts, spaceDim]
+  valuesObj = PyCObject_FromVoidPtr(values, NULL)
+  return spatialdata.utils.simplearray.SimpleCppArray(valuesObj, dims,
+                                                      "double")
+  
+
+# ----------------------------------------------------------------------
+def quadWts(qhandle):
+  """
+  Call TestQuadrature::quadWts().
+  """
+  if not qhandle.name == "pylith_feassemble_Quadrature":
+    raise TypeError, \
+          "Argument 'quadrature' must be extension type 'Quadrature'."
+
+  cdef void* qptr
+  qptr = ptrFromHandle(qhandle)
+
+  cdef int numQuadPts
+  numQuadPts = TestQuadrature_numQuadPts(qptr)
+
+  cdef double* values
+  values = TestQuadrature_quadWts(qptr)
+  dims = [numQuadPts]
+  valuesObj = PyCObject_FromVoidPtr(values, NULL)
+  return spatialdata.utils.simplearray.SimpleCppArray(valuesObj, dims,
+                                                      "double")
+
+
+# End of file 

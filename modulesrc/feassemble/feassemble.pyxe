@@ -96,7 +96,7 @@ cdef class Quadrature:
             "of type double."
     if numQuadPts != basisDeriv.shape[0] or \
            numCorners != basisDeriv.shape[1] or \
-           cellDim != basisDeriv[2]:
+           cellDim != basisDeriv.shape[2]:
       raise TypeError, \
             "Shape of argument 'basisDeriv' must be (numQuadPts, " \
             "numCorners, cellDim)."
@@ -151,13 +151,13 @@ cdef class Quadrature:
 
 
   property minJacobian:
-    def __set__(self, min):
+    def __set__(self, value):
       """Set minimum allowable Jacobian."""
       # create shim for method 'minJacobian'
-      #embed{ void Quadrature_minJacobian_set(void* pObj, double min)
-      ((pylith::feassemble::Quadrature*) pObj)->minJacobian(min);
+      #embed{ void Quadrature_minJacobian_set(void* pObj, double value)
+      ((pylith::feassemble::Quadrature*) pObj)->minJacobian(value);
       #}embed
-      Quadrature_minJacobian_set(self.thisptr, min)
+      Quadrature_minJacobian_set(self.thisptr, value)
 
     def __get__(self):
       """Get minimum allowable Jacobian."""
