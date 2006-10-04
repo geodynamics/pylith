@@ -68,6 +68,13 @@ class Quadrature(Component):
 
     c = self.cell
     c.initialize()
+
+    if c.cellDim != self.cellDim:
+      raise TypeError("Dimension of reference cell '%d' does not match "
+                      "dimension of quadrature implementation '%d'." % \
+                      (c.cellDim, self.cellDim))
+
+    
     self.cppHandle.initialize(c.basis, c.basisDeriv, c.quadPts, c.quadWts,
                               c.cellDim, c.numCorners, c.numQuadPts,
                               self.spaceDim)
@@ -102,6 +109,7 @@ class Quadrature1D(Quadrature):
     import pylith.feassemble.feassemble as bindings
     self.cppHandle = bindings.Quadrature1D()
     self.spaceDim = 1
+    self.cellDim = 1
     return
 
 
@@ -121,6 +129,7 @@ class Quadrature1Din2D(Quadrature):
     import pylith.feassemble.feassemble as bindings
     self.cppHandle = bindings.Quadrature1Din2D()
     self.spaceDim = 2
+    self.cellDim = 1
     return
 
 
@@ -140,6 +149,7 @@ class Quadrature1Din3D(Quadrature):
     import pylith.feassemble.feassemble as bindings
     self.cppHandle = bindings.Quadrature1Din3D()
     self.spaceDim = 3
+    self.cellDim = 1
     return
 
 
@@ -157,8 +167,49 @@ class Quadrature2D(Quadrature):
     """
     Quadrature.__init(self, name)
     import pylith.feassemble.feassemble as bindings
-    self.cppHandle = bindings.Quadrature@D()
+    self.cppHandle = bindings.Quadrature2D()
     self.spaceDim = 2
+    self.cellDim = 2
+    return
+
+
+# ----------------------------------------------------------------------
+# Quadrature2Din3D class
+class Quadrature2Din3D(Quadrature):
+  """
+  Python object for integrating over 2-D finite-elements in a 3-D
+  domain using quadrature.
+  """
+
+  def __init__(self, name="quadrature2din3d"):
+    """
+    Constructor.
+    """
+    Quadrature.__init(self, name)
+    import pylith.feassemble.feassemble as bindings
+    self.cppHandle = bindings.Quadrature2Din3D()
+    self.spaceDim = 3
+    self.cellDim = 2
+    return
+
+
+# ----------------------------------------------------------------------
+# Quadrature3D class
+class Quadrature2D(Quadrature):
+  """
+  Python object for integrating over 3-D finite-elements in a 3-D
+  domain using quadrature.
+  """
+
+  def __init__(self, name="quadrature3d"):
+    """
+    Constructor.
+    """
+    Quadrature.__init(self, name)
+    import pylith.feassemble.feassemble as bindings
+    self.cppHandle = bindings.Quadrature3D()
+    self.spaceDim = 3
+    self.cellDim = 3
     return
 
 
