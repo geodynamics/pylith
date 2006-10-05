@@ -1,4 +1,4 @@
-#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -537,7 +537,7 @@ Run the
 \family typewriter
 readnetgen
 \family default
- utility program to process the 
+ utility program (included in the PyLith package) to process the 
 \family typewriter
 NETGEN
 \family default
@@ -568,7 +568,7 @@ splitcube.bc, splitcube.1.fcoord, splitcube.1.fbc.
 \begin_layout LyX-Code
 $ 
 \series bold
-../../utils/readnetgen
+readnetgen
 \end_layout
 
 \begin_layout LyX-Code
@@ -583,7 +583,7 @@ $
 \begin_layout LyX-Code
 
 \series bold
-$ splitcube
+splitcube
 \end_layout
 
 \end_deeper

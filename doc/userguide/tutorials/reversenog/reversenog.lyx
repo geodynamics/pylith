@@ -1,4 +1,4 @@
-#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -492,6 +492,7 @@ We will use two simple Fortran utilities to generate PyLith input files
 NETGEN
 \family default
  output.
+ Both of these are included in the PyLith package.
 \end_layout
 
 \begin_deeper
@@ -542,7 +543,7 @@ bmrsnog.w01.wink, bmrsnog.coord, bmrsnog.connect, bmrsnog.bc, bmrsnog.1.fcoord,
 
 \begin_deeper
 \begin_layout LyX-Code
-$ ../../utils/readnetgen
+$ readnetgen
 \end_layout
 
 \begin_layout LyX-Code
@@ -555,7 +556,7 @@ $ ../../utils/readnetgen
 \end_layout
 
 \begin_layout LyX-Code
-$ bmrsnog
+bmrsnog
 \end_layout
 
 \end_deeper
@@ -602,7 +603,7 @@ bmrsnog.split
 
 \begin_deeper
 \begin_layout LyX-Code
-$ ../../utils/faultcalc p=bmrsnog.fault.par n=bmrsnog.coord 
+$ faultcalc p=bmrsnog.fault.par n=bmrsnog.coord 
 \begin_inset Formula $\backslash$
 \end_inset
 
@@ -610,7 +611,7 @@ $ ../../utils/faultcalc p=bmrsnog.fault.par n=bmrsnog.coord
 \end_layout
 
 \begin_layout LyX-Code
-$ i=bmrsnog.1.fbc o=bmrsnog.split
+i=bmrsnog.1.fbc o=bmrsnog.split
 \end_layout
 
 \end_deeper
