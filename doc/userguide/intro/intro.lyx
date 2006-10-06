@@ -233,7 +233,7 @@ where
  In our actual computations, we use a formulation that decomposes the stresses
  into the deviatoric and volumetric parts, using ideas based on the "effective
  stress function" 
-\begin_inset LatexCommand \cite{key-2}
+\begin_inset LatexCommand \cite{Kojic:Bathe:1987}
 
 \end_inset
 
