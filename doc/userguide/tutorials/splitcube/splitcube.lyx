@@ -225,7 +225,7 @@ We will start by downloading the tutorial tarball and unpacking it.
 
 \begin_layout Enumerate
 Download the 
-\begin_inset LatexCommand \htmlurl[tutorial tarball]{http://www.geodynamics.org/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8_tutorials.tgz}
+\begin_inset LatexCommand \htmlurl[tutorial tarball]{http://www.geodynamics.org/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8.1_tutorials.tgz}
 
 \end_inset
 
@@ -234,7 +234,7 @@ Download the
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -zxvf pylith-0.8_tutorials.tgz
+$ tar -zxvf pylith-0.8.1_tutorials.tgz
 \end_layout
 
 \end_deeper
@@ -566,23 +566,23 @@ splitcube.bc, splitcube.1.fcoord, splitcube.1.fbc.
 
 \begin_deeper
 \begin_layout LyX-Code
-$ 
-\series bold
-readnetgen
+$ readnetgen
 \end_layout
 
 \begin_layout LyX-Code
- Enter root name for all files.
+ 
+\shape italic
+Enter root name for all files.
  Both input and
 \end_layout
 
 \begin_layout LyX-Code
+
+\shape italic
  output files will all have this prefix:
 \end_layout
 
 \begin_layout LyX-Code
-
-\series bold
 splitcube
 \end_layout
 

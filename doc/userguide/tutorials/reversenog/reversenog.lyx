@@ -252,7 +252,7 @@ We will start by downloading the tutorial tarball and unpacking it.
 
 \begin_layout Enumerate
 Download the 
-\begin_inset LatexCommand \htmlurl[tutorial tarball]{http://www.geodynamics.org/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8_tutorials.tgz}
+\begin_inset LatexCommand \htmlurl[tutorial tarball]{http://www.geodynamics.org/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8.1_tutorials.tgz}
 
 \end_inset
 
@@ -261,7 +261,7 @@ Download the
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -zxvf pylith-0.8_tutorials.tgz
+$ tar -zxvf pylith-0.8.1_tutorials.tgz
 \end_layout
 
 \end_deeper
@@ -537,8 +537,29 @@ bmrsnog
 .
  This utilitiy will generate the following files: 
 \family typewriter
-bmrsnog.w01.wink, bmrsnog.coord, bmrsnog.connect, bmrsnog.bc, bmrsnog.1.fcoord,
- bmrsnog.1.fbc.
+bmrsnog.w01.wink
+\family default
+, 
+\family typewriter
+bmrsnog.coord
+\family default
+, 
+\family typewriter
+bmrsnog.connect
+\family default
+, 
+\family typewriter
+bmrsnog.bc
+\family default
+, 
+\family typewriter
+bmrsnog.1.fcoord
+\family default
+, 
+\family typewriter
+bmrsnog.1.fbc
+\family default
+.
 \end_layout
 
 \begin_deeper
@@ -547,11 +568,15 @@ $ readnetgen
 \end_layout
 
 \begin_layout LyX-Code
- Enter root name for all files.
+ 
+\shape italic
+Enter root name for all files.
  Both input and
 \end_layout
 
 \begin_layout LyX-Code
+
+\shape italic
  output files will all have this prefix:
 \end_layout
 
@@ -603,15 +628,7 @@ bmrsnog.split
 
 \begin_deeper
 \begin_layout LyX-Code
-$ faultcalc p=bmrsnog.fault.par n=bmrsnog.coord 
-\begin_inset Formula $\backslash$
-\end_inset
-
-
-\end_layout
-
-\begin_layout LyX-Code
-i=bmrsnog.1.fbc o=bmrsnog.split
+$ faultcalc p=bmrsnog.fault.par n=bmrsnog.coord i=bmrsnog.1.fbc o=bmrsnog.split
 \end_layout
 
 \end_deeper

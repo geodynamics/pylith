@@ -15,7 +15,7 @@
 \papersize default
 \use_geometry true
 \use_amsmath 1
-\cite_engine basic
+\cite_engine natbib_authoryear
 \use_bibtopic false
 \paperorientation portrait
 \leftmargin 1in
@@ -202,7 +202,33 @@ preview false
 
 \begin_layout Bibliography
 
-\bibitem {key-2}
+\bibitem {Williams:etal:2005}
+Williams, C.
+ A., B.
+ Aagaard, M.
+ G.
+ Knepley (2005), Development of software for studying earthquakes across
+ multiple spatial and temporal scales by coupling quasi-static and dynamic
+ simulations, Eos Trans.
+ AGU, 86 (52), Fall Meet.
+ Suppl., Abstract S53A-1072.
+\end_layout
+
+\begin_layout Bibliography
+
+\bibitem {Williams:2006}
+Williams, C.
+ A.
+ (2006), Development of a package for modeling stress in the lithosphere,
+ Eos Trans.
+ AGU, 87(36), Jt.
+ Assem.
+ Suppl., Abstract T24A-01 Invited.
+\end_layout
+
+\begin_layout Bibliography
+
+\bibitem {Kojic:Bathe:1987}
 Kojic, M.
  and K.-J.
  Bathe (1987), The 'Effective Stress-Function' Algorithm for Thermo-Elasto-Plast

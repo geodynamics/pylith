@@ -1,44 +1,89 @@
-% -*- TeX -*-
-\documentclass{book}
-\usepackage{amsmath}
+%% LyX 1.4.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{book}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,letterpaper,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\pagestyle{plain}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{array}
+\usepackage{float}
+\usepackage{color}
 \usepackage{graphicx}
-\usepackage{alltt}
-%\usepackage{url}
+\IfFileExists{url.sty}{\usepackage{url}}
+                      {\newcommand{\url}{\texttt}}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\newcommand{\noun}[1]{\textsc{#1}}
+%% Bold symbol macro for standard LaTeX users
+\providecommand{\boldsymbol}[1]{\mbox{\boldmath $#1$}}
+
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\newenvironment{lyxcode}
+{\begin{list}{}{
+\setlength{\rightmargin}{\leftmargin}
+\setlength{\listparindent}{0pt}% needed for AMS classes
+\raggedright
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\normalfont\ttfamily}%
+ \item[]}
+{\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 \usepackage{hyperref}
-\usepackage{moreverb}
 
-\input{docdefs.tex}
-
+\usepackage{babel}
+\makeatother
 \begin{document}
+%
+\begin{figure}[H]
+\includegraphics[width=0.75\paperwidth]{pylith_cover}
+\end{figure}
 
-% For reference only. Will be replaced with graphic cover.
-\title{PyLith User Manual}
-\author{Charles Williams\\
-  Matthew Knepley\\
-  Brad Aagaard\\
-  Cassie Ferguson\\
-  Sue Kientz}
-\date{\today}
-%\titlepage{pylith_cover}
- 
-\maketitle
+
+\thispagestyle{empty}
+
 
 \frontmatter
+
+\tableofcontents{}
+
+\listoffigures
+
 
 \input{preface.tex}
 
 \mainmatter
 
-\input{intro/intro.tex}
-\input{install/install.tex}
-\input{runpylith/runpylith.tex}
+\input{intro/intro.tex} \input{install/install.tex} \input{runpylith/runpylith.tex}
 \input{tutorials/tutorials.tex}
 
 \appendix
-\input{fileformats/fileformats.tex}
-\input{materials/materials.tex}
+%dummy comment inserted by tex2lyx to ensure that this paragraph is not empty
+\input{fileformats/fileformats.tex} \input{materials/materials.tex}
 \input{license.tex}
 
-\end{document}
+\begin{thebibliography}{1}
+\bibitem{Williams:2006}Williams, C. A. (2006), Development of a package
+for modeling stress in the lithosphere, Eos Trans. AGU, 87(36), Jt.
+Assem. Suppl., Abstract T24A-01 Invited.
 
-% End of file
+\bibitem{Williams:etal:2005}Williams, C. A., B. Aagaard, M. G. Knepley
+(2005), Development of software for studying earthquakes across multiple
+spatial and temporal scales by coupling quasi-static and dynamic simulations,
+Eos Trans. AGU, 86 (52), Fall Meet. Suppl., Abstract S53A-1072.
+
+\bibitem{Kojic:Bathe:1987}Kojic, M. and K.-J. Bathe (1987), The 'Effective
+Stress-Function' Algorithm for Thermo-Elasto-Plasticity and Creep,
+\emph{Int. J. Num. Meth. Eng.}, 24, 1509-1532.
+\end{thebibliography}
+
+\end{document}
