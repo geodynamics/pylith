@@ -110,7 +110,6 @@ def getStepFiles(step):
     fragments = [ [root1], [".0", ".1"],
                   [".t00000"], [".inp"] ]
     files['output'] += assembleStrings(fragments)
-    print files
   else:
     raise ValueError("Unknown tutor step: %s" % step)
   return files
