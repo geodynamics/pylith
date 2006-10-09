@@ -464,7 +464,7 @@ Because the volume
 \begin_inset Formula $V$
 \end_inset
 
- is arbitrary, the integrand must hold at every location in the volume,
+ is arbitrary, the integrand must be zero at every location in the volume,
  so that we end up with
 \begin_inset Formula \begin{gather}
 \rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}=0\text{ in }V,\\
@@ -547,7 +547,7 @@ Because the volume
 \begin_inset Formula $V$
 \end_inset
 
- is arbitrary, the integrand must hold at every location in the volume,
+ is arbitrary, the integrand must be zero at every location in the volume,
  so that we end up with
 \begin_inset Formula \begin{gather}
 \rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=0\text{ in }V,\\
@@ -744,7 +744,7 @@ and for infinitesimal strains
 
 \end_inset
 
-and our integral equation becomes
+so in this case our integral equation becomes
 \begin_inset Formula \begin{multline}
 \sum_{elements}(\int_{V^{e}}\frac{1}{4}C_{ijkl}(N_{r,l}u_{k}^{r}+N_{s,k}u_{l}^{s}){(N}_{p,j}+N_{q,i})\, dV+\int_{V^{e}}\rho N_{p}N_{q}\ddot{u}_{i}^{q}\: dV\\
 -\int_{V^{e}}N_{p}N_{q}f_{i}^{q}\, dV-\int_{S_{T}}N_{p}N_{q}T_{i}^{q}\, dS)=0.\end{multline}
@@ -899,45 +899,56 @@ This is the equation we want to solve.
 
 Within an element we represent the fields as a linear combination of a set
  of basis functions and the values of the fields at vertices of the element,
+\begin_inset Marginal
+status open
+
+\begin_layout Standard
+Is this written correctly?
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula \begin{equation}
-\overrightarrow{a}=\sum_{i=0}^{n-1}N_{i}\overrightarrow{a}^{i},\end{equation}
+\overrightarrow{a}=\underline{N}\cdot\overrightarrow{a^{e}},\end{equation}
 
 \end_inset
 
 where 
-\begin_inset Formula $N_{m}$
+\begin_inset Formula $\underline{N}$
 \end_inset
 
- is the 
-\begin_inset Formula $m$
+ are the basis functions for an element and 
+\begin_inset Formula $\overrightarrow{a^{e}}$
 \end_inset
 
-th basis function for an element and 
-\begin_inset Formula $\overrightarrow{a}^{m}$
-\end_inset
-
- is the field at vertex 
-\begin_inset Formula $m$
-\end_inset
-
-.
+ is the field at an element's vertices.
  Rewriting the trial functions and displacement field in terms of the basis
  functions gives
-\begin_inset Formula \begin{equation}
-\overrightarrow{\phi}=\sum_{i=0}^{n-1}N_{i},\text{ and}\end{equation}
+\begin_inset Marginal
+status open
+
+\begin_layout Standard
+Is the trial function expression correct?
+\end_layout
 
 \end_inset
 
 
 \begin_inset Formula \begin{equation}
-\overrightarrow{u}=\sum_{i=0}^{n-1}N_{i}\overrightarrow{u}^{i}.\end{equation}
+\overrightarrow{\phi}=\underline{N}\cdot\overrightarrow{1},\text{ and}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\overrightarrow{u}=\underline{N}\overrightarrow{u^{e}}.\end{equation}
 
 \end_inset
 
 Substituting into the integral equation yields
 \begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:\sum_{i=0}^{n-1}(\nabla+\nabla^{T})N_{i}\, dV+\int_{V^{e}}{\rho\sum}_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\ddot{\overrightarrow{u}}_{}^{j}\: dV-\int_{V^{e}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{f}_{}^{j}\, dV\\
--\int_{S_{T}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{T}_{}^{j}\, dS)=0\end{multline}
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\underline{N}\, dV+\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\ddot{\overrightarrow{{\cdot u}^{e}}}\: dV-\int_{V^{e}}\underline{N}\cdot\underline{N}\overrightarrow{{\cdot f}^{e}}^{}\, dV-\int_{S_{T}}\underline{N}\cdot\underline{N}\overrightarrow{{\cdot T}^{e}}_{}\, dS)=0\end{multline}
 
 \end_inset
 
@@ -953,10 +964,49 @@ and for infinitesimal strains
 
 \end_inset
 
-so our integral equation becomes
+so in this case our integral equation becomes
 \begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{4}\sum_{i=0}^{n-1}(\underline{C}\cdot(\nabla+\nabla^{T})\overrightarrow{u}^{i}):\sum_{j=0}^{n-1}(\nabla+\nabla^{T})N_{j}\, dV+\int_{V^{e}}\rho\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\ddot{u}_{}^{j}\: dV\\
--\int_{V^{e}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{f}^{j}\, dV-\int_{S_{T}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}T^{j}\, dS)=0.\end{multline}
+\sum_{elements}(\int_{V^{e}}\frac{1}{4}(\nabla+\nabla^{T})\underline{N}:C\cdot(\nabla+\nabla^{T})\underline{N}\cdot\overrightarrow{u^{e}})\, dV+\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\cdot\ddot{\overrightarrow{u^{e}}}_{}^{}\: dV-\int_{V^{e}}\underline{N}\cdot\underline{N}\cdot\overrightarrow{f^{e}}\, dV\\
+-\int_{S_{T}}\underline{N}\cdot\underline{N}\cdot\overrightarrow{T^{e}}\, dS)=0.\end{multline}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Time-Stepping
+\end_layout
+
+\begin_layout Standard
+Using the central difference method to approximate the acceleration (and
+ velocity),
+\begin_inset Formula \begin{gather}
+\ddot{\overrightarrow{u}}(t)=\frac{1}{\Delta t^{2}}\left(\overrightarrow{u}(t+\Delta t)-2\overrightarrow{u}(t)+\overrightarrow{u}(t-\Delta t)\right)\\
+\dot{\overrightarrow{u}}(t)=\frac{1}{2\Delta t}\left(\overrightarrow{u}(t+\Delta t)-\overrightarrow{u}(t-\Delta t)\right)\end{gather}
+
+\end_inset
+
+we have
+\begin_inset Formula \begin{multline}
+\sum_{elements}({\frac{1}{2}\int}_{V^{e}}\underline{\sigma}(t):(\nabla+\nabla^{T})\overrightarrow{\phi}\: dV+\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho\left(\overrightarrow{u}(t+\Delta t)-2\overrightarrow{u}(t)+\overrightarrow{u}(t-\Delta t)\right)\cdot\overrightarrow{\phi}\: dV\\
+-\int_{V^{e}}\overrightarrow{f}(t)\cdot\overrightarrow{\phi}\: dV-\int_{S_{T}}\overrightarrow{T}\cdot\overrightarrow{\phi}\: dS)=0,\end{multline}
+
+\end_inset
+
+which we can expand into
+\begin_inset Formula \begin{multline}
+\sum_{elements}({\frac{1}{\Delta t^{2}}\int}_{V^{e}}\rho\overrightarrow{u}(t+\Delta t)\cdot\overrightarrow{\phi}\, dV-\frac{2}{\Delta t^{2}}\int_{V^{e}}\rho\overrightarrow{u}(t)\cdot\overrightarrow{\phi}\, dV+\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho\overrightarrow{u}(t-\Delta t^{2})\cdot\overrightarrow{\phi}\, dV\\
++{\frac{1}{2}\int}_{V^{e}}\underline{\sigma}(t):(\nabla+\nabla^{T})\overrightarrow{\phi}\: dV-\int_{V^{e}}\overrightarrow{f}(t)\cdot\overrightarrow{\phi}\: dV-\int_{S_{T}}\overrightarrow{T}\cdot\overrightarrow{\phi}\: dS)=0.\end{multline}
+
+\end_inset
+
+Using the expression for the trial function and the displacement field in
+ terms of the values at the vertices yields
+\begin_inset Formula \begin{multline}
+\sum_{elements}(\frac{1}{\Delta t^{2}}{(\int}_{V^{e}}\rho\underline{N}\cdot\underline{N}\, dV)\cdot\overrightarrow{u^{e}}(t+\Delta t))=\sum_{elements}(\frac{2}{\Delta t^{2}}(\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\, dV)\cdot\overrightarrow{u^{e}}(t)\\
+-\frac{1}{\Delta t^{2}}(\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\, dV)\cdot\overrightarrow{u^{e}}(t-\Delta t)-\frac{1}{2}\int_{V^{w}}\overrightarrow{\sigma}(t):(\nabla+\nabla^{T})\underline{N}\: dV\\
++(\int_{V^{e}}\underline{N}\cdot\underline{N}\, dV)\cdot\overrightarrow{f^{e}}(t)+(\int_{S_{T}}\underline{N}\cdot\underline{N}\: dS)\cdot\overrightarrow{T^{e}}(t)).\end{multline}
 
 \end_inset
 
