@@ -466,20 +466,10 @@ Because the volume
 
  is arbitrary, the integrand must hold at every location in the volume,
  so that we end up with
-\begin_inset Formula \begin{equation}
-\rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}=0\text{ in }V,\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula \begin{equation}
-\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T}\text{, and}\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula \begin{equation}
-u_{i}=u_{i}^{o}\text{ on }S_{u.}\end{equation}
+\begin_inset Formula \begin{gather}
+\rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}=0\text{ in }V,\\
+\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T}\text{, and}\\
+u_{i}=u_{i}^{o}\text{ on }S_{u.}\end{gather}
 
 \end_inset
 
@@ -559,20 +549,10 @@ Because the volume
 
  is arbitrary, the integrand must hold at every location in the volume,
  so that we end up with
-\begin_inset Formula \begin{equation}
-\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=0\text{ in }V,\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula \[
-\underline{\sigma\cdot}\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{, and}\]
-
-\end_inset
-
-
-\begin_inset Formula \[
-\overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u.}\]
+\begin_inset Formula \begin{gather}
+\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=0\text{ in }V,\\
+\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{, and}\\
+\overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u.}\end{gather}
 
 \end_inset
 
@@ -593,42 +573,22 @@ We start with the wave equation (strong form),
 
 \begin_layout Standard
 \begin_inset Formula \begin{gather}
-\sigma_{ij}+f_{i}=\rho\ddot{u}\text{ in }V,\end{gather}
+\sigma_{ij}+f_{i}=\rho\ddot{u}\text{ in }V,\\
+\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T},\\
+u_{i}=u_{i}^{o}\text{ on }S_{u},\\
+\sigma_{ij}=\sigma_{ji}\text{ (symmetric).}\end{gather}
 
 \end_inset
 
- 
-\begin_inset Formula \begin{equation}
-\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T},\end{equation}
-
-\end_inset
-
- 
-\begin_inset Formula \begin{equation}
-u_{i}=u_{i}^{o}\text{ on }S_{u},\end{equation}
-
-\end_inset
-
- 
-\begin_inset Formula \begin{equation}
-\sigma_{ij}=\sigma_{ji}\text{ (symmetric).}\end{equation}
-
-\end_inset
-
-We construct the weak form by multiplying the wave equation by a trial function
- that is a piecewise differential vector field, 
+ We construct the weak form by multiplying the wave equation by a trial
+ function that is a piecewise differential vector field, 
 \begin_inset Formula $\phi_{i}$
 \end_inset
 
 , and setting the integral over the volume to zero,
-\begin_inset Formula \begin{equation}
-\int_{V}\left(\sigma_{ij,j}+f_{i}-\rho\ddot{u}_{i}\right)\phi_{i}\, dV=0\text{, or }\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula \begin{equation}
-\int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}f_{i}\phi_{i}\: dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\: dV=0.\end{equation}
+\begin_inset Formula \begin{gather}
+\int_{V}\left(\sigma_{ij,j}+f_{i}-\rho\ddot{u}_{i}\right)\phi_{i}\, dV=0\text{, or }\\
+\int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}f_{i}\phi_{i}\: dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\: dV=0.\end{gather}
 
 \end_inset
 
@@ -644,14 +604,9 @@ We construct the weak form by multiplying the wave equation by a trial function
 \end_inset
 
 Expanding the left hand side yields
-\begin_inset Formula \begin{equation}
-\int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}\sigma_{ij}\phi_{i,j}\: dV=\int_{S}\sigma_{ij}\phi_{i}n_{i}\: dS,\text{ or}\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula \begin{equation}
-\int_{V}\sigma_{ij,j}\phi_{i}\: dV=-\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS.\end{equation}
+\begin_inset Formula \begin{gather}
+\int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}\sigma_{ij}\phi_{i,j}\: dV=\int_{S}\sigma_{ij}\phi_{i}n_{i}\: dS,\text{ or}\\
+\int_{V}\sigma_{ij,j}\phi_{i}\: dV=-\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS.\end{gather}
 
 \end_inset
 
@@ -719,14 +674,9 @@ Turning our attention to the second term, we separate the integration over
 \end_inset
 
 and recognize that
-\begin_inset Formula \begin{equation}
-\sigma_{ij}n_{i}=T_{i}\text{ on }S_{T}\text{ and}\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula \begin{equation}
-\phi_{i}=0\text{ on }S_{u},\end{equation}
+\begin_inset Formula \begin{gather}
+\sigma_{ij}n_{i}=T_{i}\text{ on }S_{T}\text{ and}\\
+\phi_{i}=0\text{ on }S_{u},\end{gather}
 
 \end_inset
 
@@ -740,7 +690,7 @@ This is the equation we want to solve.
  Discretizing into finite-elements separates the integral over the domain
  and boundaries into a sum of integrals over elements and element boundaries,
 \begin_inset Formula \begin{equation}
-\sum_{elements}(\int\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\, dV+\int_{V^{e}}\rho\ddot{u}_{i}\phi_{i}\, dV-\int_{V^{e}}f_{i}\phi_{i}\, dV-\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=0.\label{eq:}\end{equation}
+\sum_{elements}(\int\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\, dV+\int_{V^{e}}\rho\ddot{u}_{i}\phi_{i}\, dV-\int_{V^{e}}f_{i}\phi_{i}\, dV-\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=0.\end{equation}
 
 \end_inset
 
@@ -770,22 +720,15 @@ th basis function for an element and
 .
  Rewriting the trial functions and displacement field in terms of the basis
  functions gives
-\begin_inset Formula \begin{equation}
-\phi_{i}=N_{m},\text{ and}\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula \begin{equation}
-u_{i}=N_{m}u_{i}^{m}.\end{equation}
+\begin_inset Formula \begin{gather}
+\phi_{i}=N_{m},\text{ and}\\
+u_{i}=N_{m}u_{i}^{m}.\end{gather}
 
 \end_inset
 
 Substituting into the integral equation yields
-\begin_inset Formula \begin{equation}
-\begin{split}\sum_{elements}( & \int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{p,j}+N_{q,i})\, dV+\int_{V^{e}}\rho N_{p}N_{q}\ddot{u}_{i}^{q}\: dV\\
- & -\int_{V^{e}}N_{p}N_{q}f_{i}^{q}\: dV-\int_{S_{T}^{e}}N_{p}N_{q}T_{i}^{q}\, dS)=0.\end{split}
-\end{equation}
+\begin_inset Formula \begin{multline}
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{p,j}+N_{q,i})\, dV+\int_{V^{e}}\rho N_{p}N_{q}\ddot{u}_{i}^{q}\: dV-\int_{V^{e}}N_{p}N_{q}f_{i}^{q}\: dV-\int_{S_{T}^{e}}N_{p}N_{q}T_{i}^{q}\, dS)=0.\end{multline}
 
 \end_inset
 
@@ -802,10 +745,9 @@ and for infinitesimal strains
 \end_inset
 
 and our integral equation becomes
-\begin_inset Formula \begin{equation}
-\begin{split}\sum_{elements}( & \int_{V^{e}}\frac{1}{4}C_{ijkl}(N_{r,l}u_{k}^{r}+N_{s,k}u_{l}^{s}){(N}_{p,j}+N_{q,i})\, dV+\int_{V^{e}}\rho N_{p}N_{q}\ddot{u}_{i}^{q}\: dV\\
- & -\int_{V^{e}}N_{p}N_{q}f_{i}^{q}\, dV-\int_{S_{T}}N_{p}N_{q}T_{i}^{q}\, dS)=0.\end{split}
-\end{equation}
+\begin_inset Formula \begin{multline}
+\sum_{elements}(\int_{V^{e}}\frac{1}{4}C_{ijkl}(N_{r,l}u_{k}^{r}+N_{s,k}u_{l}^{s}){(N}_{p,j}+N_{q,i})\, dV+\int_{V^{e}}\rho N_{p}N_{q}\ddot{u}_{i}^{q}\: dV\\
+-\int_{V^{e}}N_{p}N_{q}f_{i}^{q}\, dV-\int_{S_{T}}N_{p}N_{q}T_{i}^{q}\, dS)=0.\end{multline}
 
 \end_inset
 
@@ -822,42 +764,22 @@ We start with the wave equation (strong form),
 
 \begin_layout Standard
 \begin_inset Formula \begin{gather}
-\nabla\cdot\underline{\sigma}+\overrightarrow{f}=\rho\ddot{\overrightarrow{u}}\text{ in }V,\end{gather}
+\nabla\cdot\underline{\sigma}+\overrightarrow{f}=\rho\ddot{\overrightarrow{u}}\text{ in }V,\\
+\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T},\\
+\overrightarrow{u}=\overrightarrow{u}^{o}\text{ on }S_{u},\\
+\underline{\sigma}=\underline{\sigma}^{T}\text{ (symmetric).}\end{gather}
 
 \end_inset
 
- 
-\begin_inset Formula \begin{equation}
-\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T},\end{equation}
-
-\end_inset
-
- 
-\begin_inset Formula \begin{equation}
-\overrightarrow{u}=\overrightarrow{u}^{o}\text{ on }S_{u},\end{equation}
-
-\end_inset
-
- 
-\begin_inset Formula \begin{equation}
-\underline{\sigma}=\underline{\sigma}^{T}\text{ (symmetric).}\end{equation}
-
-\end_inset
-
-We construct the weak form by multiplying the wave equation by a trial function
- that is a piecewise differential vector field, 
+ We construct the weak form by multiplying the wave equation by a trial
+ function that is a piecewise differential vector field, 
 \begin_inset Formula $\overrightarrow{\phi}$
 \end_inset
 
 , and setting the integral over the volume to zero,
-\begin_inset Formula \begin{equation}
-\int_{V}\left(\nabla\cdot\underline{\sigma}+\overrightarrow{f}-\rho\ddot{\overrightarrow{u}}\right)\cdot\overrightarrow{\phi}\, dV=0\text{, or }\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula \begin{equation}
-\int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\: dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\: dV=0.\end{equation}
+\begin_inset Formula \begin{gather}
+\int_{V}\left(\nabla\cdot\underline{\sigma}+\overrightarrow{f}-\rho\ddot{\overrightarrow{u}}\right)\cdot\overrightarrow{\phi}\, dV=0\text{, or }\\
+\int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\: dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\: dV=0.\end{gather}
 
 \end_inset
 
@@ -942,20 +864,22 @@ Turning our attention to the second term, we separate the integration over
 \end_inset
 
 ,
-\begin_inset Formula \begin{equation}
--\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{S_{T}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{S_{u}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV=0,\end{equation}
+\begin_inset Formula \begin{multline}
+-\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{S_{T}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{S_{u}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV\\
+-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV=0,\end{multline}
+
+\end_inset
+
+
+\begin_inset Formula \[
+\]
 
 \end_inset
 
 and recognize that
-\begin_inset Formula \begin{equation}
-\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{ and}\end{equation}
-
-\end_inset
-
-
-\begin_inset Formula \begin{equation}
-\overrightarrow{\phi}=0\text{ on }S_{u},\end{equation}
+\begin_inset Formula \begin{gather}
+\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{ and}\\
+\overrightarrow{\phi}=0\text{ on }S_{u},\end{gather}
 
 \end_inset
 
@@ -969,7 +893,7 @@ This is the equation we want to solve.
  Discretizing into finite-elements separates the integral over the domain
  and boundaries into a sum of integrals over elements and element boundaries,
 \begin_inset Formula \begin{equation}
-\sum_{elements}(\int\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{V^{e}}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV-\int_{V^{e}}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{S_{t}^{e}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS)=0.\label{eq:}\end{equation}
+\sum_{elements}(\int\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{V^{e}}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV-\int_{V^{e}}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{S_{t}^{e}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS)=0.\end{equation}
 
 \end_inset
 
@@ -1011,8 +935,9 @@ th basis function for an element and
 \end_inset
 
 Substituting into the integral equation yields
-\begin_inset Formula \begin{equation}
-\sum_{elements}\left(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:\sum_{i=0}^{n-1}(\nabla+\nabla^{T})N_{i}\, dV+\int_{V^{e}}{\rho\sum}_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\ddot{\overrightarrow{u}}_{}^{j}\: dV-\int_{V^{e}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{f}_{}^{j}\, dV-\int_{S_{T}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{T}_{}^{j}\, dS\right)=0.\end{equation}
+\begin_inset Formula \begin{multline}
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:\sum_{i=0}^{n-1}(\nabla+\nabla^{T})N_{i}\, dV+\int_{V^{e}}{\rho\sum}_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\ddot{\overrightarrow{u}}_{}^{j}\: dV-\int_{V^{e}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{f}_{}^{j}\, dV\\
+-\int_{S_{T}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{T}_{}^{j}\, dS)=0\end{multline}
 
 \end_inset
 
@@ -1028,9 +953,10 @@ and for infinitesimal strains
 
 \end_inset
 
-and our integral equation becomes
-\begin_inset Formula \begin{equation}
-\sum_{elements}\left(\int_{V^{e}}\frac{1}{4}\sum_{i=0}^{n-1}(\underline{C}\cdot(\nabla+\nabla^{T})\overrightarrow{u}^{i}):\sum_{j=0}^{n-1}(\nabla+\nabla^{T})N_{j}\, dV+\int_{V^{e}}\rho\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\ddot{u}_{}^{j}\: dV-\int_{V^{e}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{f}^{j}\, dV-\int_{S_{T}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}T_{}^{j}\, dS\right)=0.\end{equation}
+so our integral equation becomes
+\begin_inset Formula \begin{multline}
+\sum_{elements}(\int_{V^{e}}\frac{1}{4}\sum_{i=0}^{n-1}(\underline{C}\cdot(\nabla+\nabla^{T})\overrightarrow{u}^{i}):\sum_{j=0}^{n-1}(\nabla+\nabla^{T})N_{j}\, dV+\int_{V^{e}}\rho\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\ddot{u}_{}^{j}\: dV\\
+-\int_{V^{e}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{f}^{j}\, dV-\int_{S_{T}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}T^{j}\, dS)=0.\end{multline}
 
 \end_inset
 
