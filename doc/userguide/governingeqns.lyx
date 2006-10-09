@@ -8,12 +8,17 @@
 \fontscheme default
 \graphics default
 \paperfontsize default
+\spacing single
 \papersize default
-\use_geometry false
+\use_geometry true
 \use_amsmath 1
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -34,16 +39,26 @@ Governing Equations
 
 \begin_layout Standard
 \begin_inset Tabular
-<lyxtabular version="3" rows="8" columns="2">
+<lyxtabular version="3" rows="10" columns="3">
 <features>
 <column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="0">
 <column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<row topline="true">
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
 Symbol
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
 \end_layout
 
 \end_inset
@@ -58,7 +73,48 @@ Description
 \end_inset
 </cell>
 </row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Index notation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Vector notation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
 <row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $a_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -86,11 +142,19 @@ Vector field a
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset Formula $\underline{a}$
+\begin_inset Formula $a_{ij}$
 \end_inset
 
 
-\begin_inset Formula $ $
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\underline{a}$
 \end_inset
 
 
@@ -109,6 +173,18 @@ Second order tensor field a
 </cell>
 </row>
 <row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $u_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -136,6 +212,18 @@ Displacement vector field
 \begin_inset Text
 
 \begin_layout Standard
+\begin_inset Formula $f_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
 \begin_inset Formula $\overrightarrow{f}$
 \end_inset
 
@@ -159,7 +247,7 @@ Body force vector field
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset Formula $\overrightarrow{T}$
+\begin_inset Formula $T_{i}$
 \end_inset
 
 
@@ -168,6 +256,18 @@ Body force vector field
 \end_inset
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\overrightarrow{T}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
@@ -182,7 +282,7 @@ Traction vector field
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset Formula $\underline{\sigma}$
+\begin_inset Formula $\sigma_{ij}$
 \end_inset
 
 
@@ -191,6 +291,18 @@ Traction vector field
 \end_inset
 </cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\underline{\sigma}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
@@ -205,7 +317,7 @@ Stress tensor field
 \begin_inset Text
 
 \begin_layout Standard
-\begin_inset Formula $\overrightarrow{n}$
+\begin_inset Formula $n_{i}$
 \end_inset
 
 
@@ -217,7 +329,54 @@ Stress tensor field
 \begin_inset Text
 
 \begin_layout Standard
+\begin_inset Formula $\overrightarrow{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
 Normal vector field
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\rho$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\rho$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Mass density scalar field
 \end_layout
 
 \end_inset
@@ -231,7 +390,7 @@ Normal vector field
 \end_layout
 
 \begin_layout Subsection
-Derivation of Wave Equation
+Derivation of Dynamic Elasticity Equation
 \end_layout
 
 \begin_layout Subsubsection
@@ -258,8 +417,8 @@ Consider volume
 \end_inset
 
 The traction vector field is related to the stress tensor through
-\begin_inset Formula \[
-T_{i}=\sigma_{ij}n_{j},\]
+\begin_inset Formula \begin{equation}
+T_{i}=\sigma_{ij}n_{j},\end{equation}
 
 \end_inset
 
@@ -278,26 +437,26 @@ where
 \end_inset
 
  yields
-\begin_inset Formula \[
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{S}\sigma_{ij}n_{j}\, dS.\]
+\begin_inset Formula \begin{equation}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{S}\sigma_{ij}n_{j}\, dS.\end{equation}
 
 \end_inset
 
- Applying the divergence theorem,
-\begin_inset Formula \[
-\int_{V}a_{i,j}\: dV=\int_{S}a_{j}n_{j}\: dS,\]
+Applying the divergence theorem,
+\begin_inset Formula \begin{equation}
+\int_{V}a_{i,j}\: dV=\int_{S}a_{j}n_{j}\: dS,\end{equation}
 
 \end_inset
 
- to the surface integral results in
-\begin_inset Formula \[
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{V}\sigma_{ij,j}\, dV,\]
+to the surface integral results in
+\begin_inset Formula \begin{equation}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{V}\sigma_{ij,j}\, dV,\end{equation}
 
 \end_inset
 
- which we can rewrite as
-\begin_inset Formula \[
-\int_{V}\left(\rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}\right)\, dV=0.\]
+which we can rewrite as
+\begin_inset Formula \begin{equation}
+\int_{V}\left(\rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}\right)\, dV=0.\end{equation}
 
 \end_inset
 
@@ -307,20 +466,20 @@ Because the volume
 
  is arbitrary, the integrand must hold at every location in the volume,
  so that we end up with
-\begin_inset Formula \[
-\rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}=0\text{ in }V,\]
+\begin_inset Formula \begin{equation}
+\rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}=0\text{ in }V,\end{equation}
 
 \end_inset
 
 
-\begin_inset Formula \[
-\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T}\text{, and}\]
+\begin_inset Formula \begin{equation}
+\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T}\text{, and}\end{equation}
 
 \end_inset
 
 
-\begin_inset Formula \[
-u_{i}=u_{i}^{o}\text{ on }S_{u.}\]
+\begin_inset Formula \begin{equation}
+u_{i}=u_{i}^{o}\text{ on }S_{u.}\end{equation}
 
 \end_inset
 
@@ -351,8 +510,8 @@ Consider volume
 \end_inset
 
 The traction vector field is related to the stress tensor through
-\begin_inset Formula \[
-\overrightarrow{T}=\underline{\sigma}\cdot\overrightarrow{n},\]
+\begin_inset Formula \begin{equation}
+\overrightarrow{T}=\underline{\sigma}\cdot\overrightarrow{n},\end{equation}
 
 \end_inset
 
@@ -371,26 +530,26 @@ where
 \end_inset
 
  yields
-\begin_inset Formula \[
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\overrightarrow{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\, dS.\]
+\begin_inset Formula \begin{equation}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\overrightarrow{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\, dS.\end{equation}
 
 \end_inset
 
- Applying the divergence theorem,
-\begin_inset Formula \[
-\int_{V}\nabla\cdot\overrightarrow{a}\: dV=\int_{S}\overrightarrow{a}\cdot\overrightarrow{n}\: dS,\]
+Applying the divergence theorem,
+\begin_inset Formula \begin{equation}
+\int_{V}\nabla\cdot\overrightarrow{a}\: dV=\int_{S}\overrightarrow{a}\cdot\overrightarrow{n}\: dS,\end{equation}
 
 \end_inset
 
- to the surface integral results in
-\begin_inset Formula \[
-\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\overrightarrow{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{V}\nabla\cdot\underline{\sigma}\, dV,\]
+to the surface integral results in
+\begin_inset Formula \begin{equation}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\overrightarrow{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{V}\nabla\cdot\underline{\sigma}\, dV,\end{equation}
 
 \end_inset
 
- which we can rewrite as
-\begin_inset Formula \[
-\int_{V}\left(\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}\right)\, dV=0.\]
+which we can rewrite as
+\begin_inset Formula \begin{equation}
+\int_{V}\left(\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}\right)\, dV=0.\end{equation}
 
 \end_inset
 
@@ -400,8 +559,8 @@ Because the volume
 
  is arbitrary, the integrand must hold at every location in the volume,
  so that we end up with
-\begin_inset Formula \[
-\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=0\text{ in }V,\]
+\begin_inset Formula \begin{equation}
+\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=0\text{ in }V,\end{equation}
 
 \end_inset
 
@@ -414,6 +573,464 @@ Because the volume
 
 \begin_inset Formula \[
 \overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u.}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Finite-Element Formulation of Dynamic Elasticity Equation
+\end_layout
+
+\begin_layout Subsubsection
+Index Notation
+\end_layout
+
+\begin_layout Standard
+We start with the wave equation (strong form),
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\sigma_{ij}+f_{i}=\rho\ddot{u}\text{ in }V,\end{gather}
+
+\end_inset
+
+ 
+\begin_inset Formula \begin{equation}
+\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T},\end{equation}
+
+\end_inset
+
+ 
+\begin_inset Formula \begin{equation}
+u_{i}=u_{i}^{o}\text{ on }S_{u},\end{equation}
+
+\end_inset
+
+ 
+\begin_inset Formula \begin{equation}
+\sigma_{ij}=\sigma_{ji}\text{ (symmetric).}\end{equation}
+
+\end_inset
+
+We construct the weak form by multiplying the wave equation by a trial function
+ that is a piecewise differential vector field, 
+\begin_inset Formula $\phi_{i}$
+\end_inset
+
+, and setting the integral over the volume to zero,
+\begin_inset Formula \begin{equation}
+\int_{V}\left(\sigma_{ij,j}+f_{i}-\rho\ddot{u}_{i}\right)\phi_{i}\, dV=0\text{, or }\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}f_{i}\phi_{i}\: dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\: dV=0.\end{equation}
+
+\end_inset
+
+ Consider the divergence theorem applied to the dot product of the stress
+ tensor and the trial function, 
+\begin_inset Formula $\sigma_{ij}\phi_{i}$
+\end_inset
+
+,
+\begin_inset Formula \begin{equation}
+\int_{V}(\sigma_{ij}\phi_{i})_{,j}\, dV=\int_{S}(\sigma_{ij}\phi_{i})n_{i}\, dS.\end{equation}
+
+\end_inset
+
+Expanding the left hand side yields
+\begin_inset Formula \begin{equation}
+\int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}\sigma_{ij}\phi_{i,j}\: dV=\int_{S}\sigma_{ij}\phi_{i}n_{i}\: dS,\text{ or}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\int_{V}\sigma_{ij,j}\phi_{i}\: dV=-\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS.\end{equation}
+
+\end_inset
+
+Substituting into the weak form gives
+\begin_inset Formula \begin{equation}
+-\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\end{equation}
+
+\end_inset
+
+Now, 
+\begin_inset Formula $\sigma_{ij}\phi_{i,j}$
+\end_inset
+
+ is a scalar, so it is symmetric,
+\begin_inset Formula \begin{equation}
+\sigma_{ij}\phi_{i,j}=\sigma_{ji}\phi_{j,i},\end{equation}
+
+\end_inset
+
+and we know that 
+\begin_inset Formula $\sigma_{ij}$
+\end_inset
+
+ is symmetric, so
+\begin_inset Formula \begin{equation}
+\sigma_{ij}\phi_{i,j}=\sigma_{ij}\phi_{j,i},\end{equation}
+
+\end_inset
+
+which means
+\begin_inset Formula \begin{equation}
+\phi_{i,j}=\phi_{j,i},\end{equation}
+
+\end_inset
+
+which we can write as
+\begin_inset Formula \begin{equation}
+\phi_{i,j}=\frac{1}{2}(\phi_{i,j}+\phi_{j,i}).\end{equation}
+
+\end_inset
+
+Substituting into the first term gives
+\begin_inset Formula \begin{equation}
+-\int_{V}\frac{1}{2}\sigma_{ij}\left(\phi_{i,j}+\phi_{j,i}\right)\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\end{equation}
+
+\end_inset
+
+Turning our attention to the second term, we separate the integration over
+ 
+\begin_inset Formula $S$
+\end_inset
+
+ into integration over 
+\begin_inset Formula $S_{T}$
+\end_inset
+
+ and 
+\begin_inset Formula $S_{u}$
+\end_inset
+
+,
+\begin_inset Formula \begin{equation}
+-\int_{V}\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\, dV+\int_{S_{T}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{S_{u}}\sigma_{ij}\phi_{i}n_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0,\end{equation}
+
+\end_inset
+
+and recognize that
+\begin_inset Formula \begin{equation}
+\sigma_{ij}n_{i}=T_{i}\text{ on }S_{T}\text{ and}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\phi_{i}=0\text{ on }S_{u},\end{equation}
+
+\end_inset
+
+so that the equation reduces to
+\begin_inset Formula \begin{equation}
+-\int_{V}\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\: dV+\int_{S_{T}}T_{i}\phi_{i}\, dS+\int_{V}f_{i}\phi_{i}\, dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\, dV=0.\end{equation}
+
+\end_inset
+
+This is the equation we want to solve.
+ Discretizing into finite-elements separates the integral over the domain
+ and boundaries into a sum of integrals over elements and element boundaries,
+\begin_inset Formula \begin{equation}
+\sum_{elements}(\int\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\, dV+\int_{V^{e}}\rho\ddot{u}_{i}\phi_{i}\, dV-\int_{V^{e}}f_{i}\phi_{i}\, dV-\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=0.\label{eq:}\end{equation}
+
+\end_inset
+
+Within an element we represent the fields as a linear combination of a set
+ of basis functions and the values of the fields at vertices of the element,
+\begin_inset Formula \begin{equation}
+a_{i}=N_{m}a_{i}^{m},\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $N_{m}$
+\end_inset
+
+ is the 
+\begin_inset Formula $m$
+\end_inset
+
+th basis function for an element and 
+\begin_inset Formula $a_{i}^{m}$
+\end_inset
+
+ is the field at vertex 
+\begin_inset Formula $m$
+\end_inset
+
+.
+ Rewriting the trial functions and displacement field in terms of the basis
+ functions gives
+\begin_inset Formula \begin{equation}
+\phi_{i}=N_{m},\text{ and}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+u_{i}=N_{m}u_{i}^{m}.\end{equation}
+
+\end_inset
+
+Substituting into the integral equation yields
+\begin_inset Formula \begin{equation}
+\begin{split}\sum_{elements}( & \int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{p,j}+N_{q,i})\, dV+\int_{V^{e}}\rho N_{p}N_{q}\ddot{u}_{i}^{q}\: dV\\
+ & -\int_{V^{e}}N_{p}N_{q}f_{i}^{q}\: dV-\int_{S_{T}^{e}}N_{p}N_{q}T_{i}^{q}\, dS)=0.\end{split}
+\end{equation}
+
+\end_inset
+
+For a linearly elastic material
+\begin_inset Formula \begin{equation}
+\sigma_{ij}=C_{ijkl}\varepsilon_{kl},\end{equation}
+
+\end_inset
+
+and for infinitesimal strains
+\begin_inset Formula \begin{equation}
+\varepsilon_{kl}=\frac{1}{2}\left(u_{k,l}+u_{l,k}\right),\end{equation}
+
+\end_inset
+
+and our integral equation becomes
+\begin_inset Formula \begin{equation}
+\begin{split}\sum_{elements}( & \int_{V^{e}}\frac{1}{4}C_{ijkl}(N_{r,l}u_{k}^{r}+N_{s,k}u_{l}^{s}){(N}_{p,j}+N_{q,i})\, dV+\int_{V^{e}}\rho N_{p}N_{q}\ddot{u}_{i}^{q}\: dV\\
+ & -\int_{V^{e}}N_{p}N_{q}f_{i}^{q}\, dV-\int_{S_{T}}N_{p}N_{q}T_{i}^{q}\, dS)=0.\end{split}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Vector Notation
+\end_layout
+
+\begin_layout Standard
+We start with the wave equation (strong form),
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\nabla\cdot\underline{\sigma}+\overrightarrow{f}=\rho\ddot{\overrightarrow{u}}\text{ in }V,\end{gather}
+
+\end_inset
+
+ 
+\begin_inset Formula \begin{equation}
+\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T},\end{equation}
+
+\end_inset
+
+ 
+\begin_inset Formula \begin{equation}
+\overrightarrow{u}=\overrightarrow{u}^{o}\text{ on }S_{u},\end{equation}
+
+\end_inset
+
+ 
+\begin_inset Formula \begin{equation}
+\underline{\sigma}=\underline{\sigma}^{T}\text{ (symmetric).}\end{equation}
+
+\end_inset
+
+We construct the weak form by multiplying the wave equation by a trial function
+ that is a piecewise differential vector field, 
+\begin_inset Formula $\overrightarrow{\phi}$
+\end_inset
+
+, and setting the integral over the volume to zero,
+\begin_inset Formula \begin{equation}
+\int_{V}\left(\nabla\cdot\underline{\sigma}+\overrightarrow{f}-\rho\ddot{\overrightarrow{u}}\right)\cdot\overrightarrow{\phi}\, dV=0\text{, or }\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\: dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\: dV=0.\end{equation}
+
+\end_inset
+
+ Consider the divergence theorem applied to the dot product of the stress
+ tensor and the trial function, 
+\begin_inset Formula $\underline{\sigma}\cdot\overrightarrow{\phi}$
+\end_inset
+
+,
+\begin_inset Formula \begin{equation}
+\int_{V}\nabla\cdot(\underline{\sigma}\cdot\overrightarrow{\phi})\, dV=\int_{S}(\underline{\sigma}\cdot\overrightarrow{\phi})\cdot\overrightarrow{n}\, dS.\end{equation}
+
+\end_inset
+
+Expanding the left hand side yields
+\begin_inset Formula \begin{equation}
+\int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV+\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\: dV=\int_{S}(\underline{\sigma}\cdot\overrightarrow{\phi})\cdot\overrightarrow{n}\: dS,\text{ or}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\int_{V}{(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}}_{ij,j}\: dV=-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS.\end{equation}
+
+\end_inset
+
+Substituting into the weak form gives
+\begin_inset Formula \begin{equation}
+-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\overrightarrow{\phi}\, dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
+
+\end_inset
+
+Now, 
+\begin_inset Formula $\underline{\sigma}:\nabla\overrightarrow{\phi}$
+\end_inset
+
+ is a scalar, so it is symmetric,
+\begin_inset Formula \begin{equation}
+{\underline{\sigma}:\nabla\overrightarrow{\phi}=(\underline{\sigma}:\nabla\overrightarrow{\phi})}^{T}=\underline{\sigma}^{T}:\overrightarrow{\phi}^{T}\nabla^{T},\end{equation}
+
+\end_inset
+
+and we know that 
+\begin_inset Formula $\underline{\sigma}$
+\end_inset
+
+ is symmetric, so
+\begin_inset Formula \begin{equation}
+\underline{\sigma}:\nabla\overrightarrow{\phi}=\underline{\sigma}:\overrightarrow{\phi}^{T}\nabla^{T},\end{equation}
+
+\end_inset
+
+which means
+\begin_inset Formula \begin{equation}
+\nabla\overrightarrow{\phi}=\overrightarrow{\phi}^{T}\nabla^{T},\end{equation}
+
+\end_inset
+
+which we can write as
+\begin_inset Formula \begin{equation}
+\nabla\overrightarrow{\phi}=\frac{1}{2}(\nabla+\nabla^{T})\overrightarrow{\phi}.\end{equation}
+
+\end_inset
+
+Substituting into the first term gives
+\begin_inset Formula \begin{equation}
+-\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
+
+\end_inset
+
+Turning our attention to the second term, we separate the integration over
+ 
+\begin_inset Formula $S$
+\end_inset
+
+ into integration over 
+\begin_inset Formula $S_{T}$
+\end_inset
+
+ and 
+\begin_inset Formula $S_{u}$
+\end_inset
+
+,
+\begin_inset Formula \begin{equation}
+-\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{S_{T}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{S_{u}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV=0,\end{equation}
+
+\end_inset
+
+and recognize that
+\begin_inset Formula \begin{equation}
+\underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{ and}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\overrightarrow{\phi}=0\text{ on }S_{u},\end{equation}
+
+\end_inset
+
+so that the equation reduces to
+\begin_inset Formula \begin{equation}
+-\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\: dV+\int_{S_{T}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
+
+\end_inset
+
+This is the equation we want to solve.
+ Discretizing into finite-elements separates the integral over the domain
+ and boundaries into a sum of integrals over elements and element boundaries,
+\begin_inset Formula \begin{equation}
+\sum_{elements}(\int\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{V^{e}}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV-\int_{V^{e}}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{S_{t}^{e}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS)=0.\label{eq:}\end{equation}
+
+\end_inset
+
+Within an element we represent the fields as a linear combination of a set
+ of basis functions and the values of the fields at vertices of the element,
+\begin_inset Formula \begin{equation}
+\overrightarrow{a}=\sum_{i=0}^{n-1}N_{i}\overrightarrow{a}^{i},\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $N_{m}$
+\end_inset
+
+ is the 
+\begin_inset Formula $m$
+\end_inset
+
+th basis function for an element and 
+\begin_inset Formula $\overrightarrow{a}^{m}$
+\end_inset
+
+ is the field at vertex 
+\begin_inset Formula $m$
+\end_inset
+
+.
+ Rewriting the trial functions and displacement field in terms of the basis
+ functions gives
+\begin_inset Formula \begin{equation}
+\overrightarrow{\phi}=\sum_{i=0}^{n-1}N_{i},\text{ and}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\overrightarrow{u}=\sum_{i=0}^{n-1}N_{i}\overrightarrow{u}^{i}.\end{equation}
+
+\end_inset
+
+Substituting into the integral equation yields
+\begin_inset Formula \begin{equation}
+\sum_{elements}\left(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:\sum_{i=0}^{n-1}(\nabla+\nabla^{T})N_{i}\, dV+\int_{V^{e}}{\rho\sum}_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\ddot{\overrightarrow{u}}_{}^{j}\: dV-\int_{V^{e}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{f}_{}^{j}\, dV-\int_{S_{T}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{T}_{}^{j}\, dS\right)=0.\end{equation}
+
+\end_inset
+
+For a linearly elastic material
+\begin_inset Formula \begin{equation}
+\underline{\sigma}=\underline{C}\cdot\underline{\varepsilon},\end{equation}
+
+\end_inset
+
+and for infinitesimal strains
+\begin_inset Formula \begin{equation}
+\underline{\varepsilon}=\frac{1}{2}(\nabla+\nabla^{T})\overrightarrow{u},\end{equation}
+
+\end_inset
+
+and our integral equation becomes
+\begin_inset Formula \begin{equation}
+\sum_{elements}\left(\int_{V^{e}}\frac{1}{4}\sum_{i=0}^{n-1}(\underline{C}\cdot(\nabla+\nabla^{T})\overrightarrow{u}^{i}):\sum_{j=0}^{n-1}(\nabla+\nabla^{T})N_{j}\, dV+\int_{V^{e}}\rho\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\ddot{u}_{}^{j}\: dV-\int_{V^{e}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}\overrightarrow{f}^{j}\, dV-\int_{S_{T}}\sum_{i=0}^{n-1}N_{i}\cdot\sum_{j=0}^{n-1}N_{j}T_{}^{j}\, dS\right)=0.\end{equation}
 
 \end_inset
 
