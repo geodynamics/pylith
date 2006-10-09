@@ -1,0 +1,424 @@
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass article
+\language english
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+Governing Equations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="2">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Symbol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\overrightarrow{a}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Vector field a
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\underline{a}$
+\end_inset
+
+
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Second order tensor field a
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\overrightarrow{u}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Displacement vector field
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\overrightarrow{f}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Body force vector field
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\overrightarrow{T}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Traction vector field
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\underline{\sigma}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Stress tensor field
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\overrightarrow{n}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Normal vector field
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Derivation of Wave Equation
+\end_layout
+
+\begin_layout Subsubsection
+Index Notation
+\end_layout
+
+\begin_layout Standard
+Consider volume 
+\begin_inset Formula $V$
+\end_inset
+
+ bounded by surface 
+\begin_inset Formula $S$
+\end_inset
+
+.
+ Applying a Lagrangian description of the convervation of momentum gives
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{S}T_{i}\, dS.\label{eqn:momentum:index}\end{equation}
+
+\end_inset
+
+The traction vector field is related to the stress tensor through
+\begin_inset Formula \[
+T_{i}=\sigma_{ij}n_{j},\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\overrightarrow{n}$
+\end_inset
+
+ is the vector normal to 
+\begin_inset Formula $S$
+\end_inset
+
+.
+ Substituting into 
+\begin_inset LatexCommand \eqref{eqn:momentum:index}
+
+\end_inset
+
+ yields
+\begin_inset Formula \[
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{S}\sigma_{ij}n_{j}\, dS.\]
+
+\end_inset
+
+ Applying the divergence theorem,
+\begin_inset Formula \[
+\int_{V}a_{i,j}\: dV=\int_{S}a_{j}n_{j}\: dS,\]
+
+\end_inset
+
+ to the surface integral results in
+\begin_inset Formula \[
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u_{i}}{\partial t}\, dV=\int_{V}f_{i}\, dV+\int_{V}\sigma_{ij,j}\, dV,\]
+
+\end_inset
+
+ which we can rewrite as
+\begin_inset Formula \[
+\int_{V}\left(\rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}\right)\, dV=0.\]
+
+\end_inset
+
+Because the volume 
+\begin_inset Formula $V$
+\end_inset
+
+ is arbitrary, the integrand must hold at every location in the volume,
+ so that we end up with
+\begin_inset Formula \[
+\rho\frac{\partial^{2}u_{i}}{\partial t^{2}}-f_{i}-\sigma_{ij,j}=0\text{ in }V,\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+\sigma_{ij}n_{j}=T_{i}\text{ on }S_{T}\text{, and}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+u_{i}=u_{i}^{o}\text{ on }S_{u.}\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Vector Notation
+\end_layout
+
+\begin_layout Standard
+Consider volume 
+\begin_inset Formula $V$
+\end_inset
+
+ bounded by surface 
+\begin_inset Formula $S$
+\end_inset
+
+.
+ Applying a Lagrangian description of the convervation of momentum gives
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial u}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\overrightarrow{T}\, dS.\label{eqn:momentum:vec}\end{equation}
+
+\end_inset
+
+The traction vector field is related to the stress tensor through
+\begin_inset Formula \[
+\overrightarrow{T}=\underline{\sigma}\cdot\overrightarrow{n},\]
+
+\end_inset
+
+where 
+\begin_inset Formula $\overrightarrow{n}$
+\end_inset
+
+ is the vector normal to 
+\begin_inset Formula $S$
+\end_inset
+
+.
+ Substituting into 
+\begin_inset LatexCommand \eqref{eqn:momentum:vec}
+
+\end_inset
+
+ yields
+\begin_inset Formula \[
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\overrightarrow{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\, dS.\]
+
+\end_inset
+
+ Applying the divergence theorem,
+\begin_inset Formula \[
+\int_{V}\nabla\cdot\overrightarrow{a}\: dV=\int_{S}\overrightarrow{a}\cdot\overrightarrow{n}\: dS,\]
+
+\end_inset
+
+ to the surface integral results in
+\begin_inset Formula \[
+\frac{\partial}{\partial t}\int_{V}\rho\frac{\partial\overrightarrow{u}}{\partial t}\, dV=\int_{V}\overrightarrow{f}\, dV+\int_{V}\nabla\cdot\underline{\sigma}\, dV,\]
+
+\end_inset
+
+ which we can rewrite as
+\begin_inset Formula \[
+\int_{V}\left(\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}\right)\, dV=0.\]
+
+\end_inset
+
+Because the volume 
+\begin_inset Formula $V$
+\end_inset
+
+ is arbitrary, the integrand must hold at every location in the volume,
+ so that we end up with
+\begin_inset Formula \[
+\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}-\overrightarrow{f}-\nabla\cdot\overrightarrow{\sigma}=0\text{ in }V,\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+\underline{\sigma\cdot}\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T}\text{, and}\]
+
+\end_inset
+
+
+\begin_inset Formula \[
+\overrightarrow{u}=\overrightarrow{u^{o}}\text{ on }S_{u.}\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
