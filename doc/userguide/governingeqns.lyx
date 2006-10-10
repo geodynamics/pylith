@@ -573,19 +573,28 @@ We start with the wave equation (strong form),
 
 \begin_layout Standard
 \begin_inset Formula \begin{gather}
-\sigma_{ij}+f_{i}=\rho\ddot{u}\text{ in }V,\\
+\sigma_{ij,j}+f_{i}=\rho\ddot{u}\text{ in }V,\\
 \sigma_{ij}n_{j}=T_{i}\text{ on }S_{T},\\
 u_{i}=u_{i}^{o}\text{ on }S_{u},\\
 \sigma_{ij}=\sigma_{ji}\text{ (symmetric).}\end{gather}
 
 \end_inset
 
- We construct the weak form by multiplying the wave equation by a trial
- function that is a piecewise differential vector field, 
+We construct the weak form by multiplying the wave equation by a trial function
+ and setting the integral over the domain to zero.
+ The trial function is a piecewise differential vector field, 
 \begin_inset Formula $\phi_{i}$
 \end_inset
 
-, and setting the integral over the volume to zero,
+, where 
+\begin_inset Formula $\phi_{i}=0$
+\end_inset
+
+ on 
+\begin_inset Formula $S_{u}.$
+\end_inset
+
+ Hence our weak form is
 \begin_inset Formula \begin{gather}
 \int_{V}\left(\sigma_{ij,j}+f_{i}-\rho\ddot{u}_{i}\right)\phi_{i}\, dV=0\text{, or }\\
 \int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}f_{i}\phi_{i}\: dV-\int_{V}\rho\ddot{u}_{i}\phi_{i}\: dV=0.\end{gather}
@@ -690,7 +699,7 @@ This is the equation we want to solve.
  Discretizing into finite-elements separates the integral over the domain
  and boundaries into a sum of integrals over elements and element boundaries,
 \begin_inset Formula \begin{equation}
-\sum_{elements}(\int\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\, dV+\int_{V^{e}}\rho\ddot{u}_{i}\phi_{i}\, dV-\int_{V^{e}}f_{i}\phi_{i}\, dV-\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=0.\end{equation}
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\, dV+\int_{V^{e}}\rho\ddot{u}_{i}\phi_{i}\, dV-\int_{V^{e}}f_{i}\phi_{i}\, dV-\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=0.\end{equation}
 
 \end_inset
 
@@ -720,6 +729,16 @@ th basis function for an element and
 .
  Rewriting the trial functions and displacement field in terms of the basis
  functions gives
+\begin_inset Marginal
+status open
+
+\begin_layout Standard
+Is the expression for the trial function correct?
+\end_layout
+
+\end_inset
+
+
 \begin_inset Formula \begin{gather}
 \phi_{i}=N_{m},\text{ and}\\
 u_{i}=N_{m}u_{i}^{m}.\end{gather}
@@ -764,22 +783,31 @@ We start with the wave equation (strong form),
 
 \begin_layout Standard
 \begin_inset Formula \begin{gather}
-\nabla\cdot\underline{\sigma}+\overrightarrow{f}=\rho\ddot{\overrightarrow{u}}\text{ in }V,\\
+\nabla\cdot\underline{\sigma}+\overrightarrow{f}=\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\text{ in }V,\\
 \underline{\sigma}\cdot\overrightarrow{n}=\overrightarrow{T}\text{ on }S_{T},\\
 \overrightarrow{u}=\overrightarrow{u}^{o}\text{ on }S_{u},\\
 \underline{\sigma}=\underline{\sigma}^{T}\text{ (symmetric).}\end{gather}
 
 \end_inset
 
- We construct the weak form by multiplying the wave equation by a trial
- function that is a piecewise differential vector field, 
+We construct the weak form by multiplying the wave equation by a trial function
+ and setting the integral over the domain to zero.
+ The trial function is a piecewise differential vector field, 
 \begin_inset Formula $\overrightarrow{\phi}$
 \end_inset
 
-, and setting the integral over the volume to zero,
+, where 
+\begin_inset Formula $\overrightarrow{\phi}=0$
+\end_inset
+
+ on 
+\begin_inset Formula $S_{u}.$
+\end_inset
+
+ Hence our weak form is
 \begin_inset Formula \begin{gather}
-\int_{V}\left(\nabla\cdot\underline{\sigma}+\overrightarrow{f}-\rho\ddot{\overrightarrow{u}}\right)\cdot\overrightarrow{\phi}\, dV=0\text{, or }\\
-\int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\: dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\: dV=0.\end{gather}
+\int_{V}\left(\nabla\cdot\underline{\sigma}+\overrightarrow{f}-\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\right)\cdot\overrightarrow{\phi}\, dV=0\text{, or }\\
+\int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\: dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\: dV=0.\end{gather}
 
 \end_inset
 
@@ -808,7 +836,7 @@ Expanding the left hand side yields
 
 Substituting into the weak form gives
 \begin_inset Formula \begin{equation}
--\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\overrightarrow{\phi}\, dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
+-\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
 
 \end_inset
 
@@ -846,7 +874,7 @@ which we can write as
 
 Substituting into the first term gives
 \begin_inset Formula \begin{equation}
--\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
+-\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{S}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
 
 \end_inset
 
@@ -866,13 +894,7 @@ Turning our attention to the second term, we separate the integration over
 ,
 \begin_inset Formula \begin{multline}
 -\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{S_{T}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{S_{u}}\underline{\sigma}\cdot\overrightarrow{n}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV\\
--\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV=0,\end{multline}
-
-\end_inset
-
-
-\begin_inset Formula \[
-\]
+-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0,\end{multline}
 
 \end_inset
 
@@ -885,7 +907,7 @@ and recognize that
 
 so that the equation reduces to
 \begin_inset Formula \begin{equation}
--\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\: dV+\int_{S_{T}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
+-\int_{V}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\: dV+\int_{S_{T}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS+\int_{V}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{V}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV=0.\end{equation}
 
 \end_inset
 
@@ -893,7 +915,7 @@ This is the equation we want to solve.
  Discretizing into finite-elements separates the integral over the domain
  and boundaries into a sum of integrals over elements and element boundaries,
 \begin_inset Formula \begin{equation}
-\sum_{elements}(\int\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{V^{e}}\rho\ddot{\overrightarrow{u}}\cdot\overrightarrow{\phi}\, dV-\int_{V^{e}}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{S_{t}^{e}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS)=0.\end{equation}
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{V^{e}}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV-\int_{V^{e}}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{S_{t}^{e}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS)=0.\end{equation}
 
 \end_inset
 
@@ -948,7 +970,7 @@ Is the trial function expression correct?
 
 Substituting into the integral equation yields
 \begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\underline{N}\, dV+\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\ddot{\overrightarrow{{\cdot u}^{e}}}\: dV-\int_{V^{e}}\underline{N}\cdot\underline{N}\overrightarrow{{\cdot f}^{e}}^{}\, dV-\int_{S_{T}}\underline{N}\cdot\underline{N}\overrightarrow{{\cdot T}^{e}}_{}\, dS)=0\end{multline}
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\underline{N}\, dV+\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\cdot\frac{\partial^{2}\overrightarrow{u^{e}}}{\partial t^{2}}\: dV-\int_{V^{e}}\underline{N}\cdot\underline{N}\overrightarrow{{\cdot f}^{e}}^{}\, dV-\int_{S_{T}}\underline{N}\cdot\underline{N}\overrightarrow{{\cdot T}^{e}}_{}\, dS)=0\end{multline}
 
 \end_inset
 
@@ -966,7 +988,7 @@ and for infinitesimal strains
 
 so in this case our integral equation becomes
 \begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{4}(\nabla+\nabla^{T})\underline{N}:C\cdot(\nabla+\nabla^{T})\underline{N}\cdot\overrightarrow{u^{e}})\, dV+\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\cdot\ddot{\overrightarrow{u^{e}}}_{}^{}\: dV-\int_{V^{e}}\underline{N}\cdot\underline{N}\cdot\overrightarrow{f^{e}}\, dV\\
+\sum_{elements}(\int_{V^{e}}\frac{1}{4}(\nabla+\nabla^{T})\underline{N}:C\cdot(\nabla+\nabla^{T})\underline{N}\cdot\overrightarrow{u^{e}})\, dV+\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\cdot\frac{\partial^{2}\overrightarrow{u^{e}}}{\partial t^{2}}\: dV-\int_{V^{e}}\underline{N}\cdot\underline{N}\cdot\overrightarrow{f^{e}}\, dV\\
 -\int_{S_{T}}\underline{N}\cdot\underline{N}\cdot\overrightarrow{T^{e}}\, dS)=0.\end{multline}
 
 \end_inset
@@ -982,8 +1004,8 @@ Time-Stepping
 Using the central difference method to approximate the acceleration (and
  velocity),
 \begin_inset Formula \begin{gather}
-\ddot{\overrightarrow{u}}(t)=\frac{1}{\Delta t^{2}}\left(\overrightarrow{u}(t+\Delta t)-2\overrightarrow{u}(t)+\overrightarrow{u}(t-\Delta t)\right)\\
-\dot{\overrightarrow{u}}(t)=\frac{1}{2\Delta t}\left(\overrightarrow{u}(t+\Delta t)-\overrightarrow{u}(t-\Delta t)\right)\end{gather}
+\frac{\partial^{2}\overrightarrow{u}(t)}{\partial t^{2}}=\frac{1}{\Delta t^{2}}\left(\overrightarrow{u}(t+\Delta t)-2\overrightarrow{u}(t)+\overrightarrow{u}(t-\Delta t)\right)\\
+\frac{\partial\overrightarrow{u}(t)}{\partial t}=\frac{1}{2\Delta t}\left(\overrightarrow{u}(t+\Delta t)-\overrightarrow{u}(t-\Delta t)\right)\end{gather}
 
 \end_inset
 
