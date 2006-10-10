@@ -162,13 +162,16 @@ c
       end
 c
 c
-      subroutine elas_strs_5(state,state0,ee,scur,dmat,nstate,nstate0,
-     & ierr,errstrng)
+      subroutine elas_strs_5(prop,nprop,state,state0,ee,scur,dmat,tmax,
+     & nstate,nstate0,ierr,errstrng)
 c
 c...  subroutine to compute stresses for the elastic solution.  For this
-c     material, there are 3 state variables:  total stress, total
-c     strain, and viscous strain.  The current total strain is contained
-c     in ee.
+c     material, there are 3 sets of state variables:  total stress,
+c     total strain, and viscous strain.  The Maxwell time is computed,
+c     even though this is the elastic solution, as an aid in determining
+c     the proper time step size for the next step.
+c     The current total strain is contained in ee and the computed
+c     total stress should be copied to scur.
 c
 c     state(1:6)   = Cauchy stress
 c     state(7:12)  = linear strain
@@ -186,10 +189,15 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nstate0,ierr
-      double precision state(nstate),state0(nstate0),ee(nstr),scur(nstr)
+      integer nprop,nstate,nstate0,ierr
+      double precision prop(nprop),state(nstate),state0(nstate0)
+      double precision ee(nstr),scur(nstr)
       double precision dmat(nddmat)
       character errstrng*(*)
+c
+c...  local variables
+c
+      double precision e,pr,vis,rmu
 c
 cdebug      write(6,*) "Hello from elas_strs_5_f!"
 c
@@ -197,6 +205,14 @@ c
       call dcopy(nstr,state0,ione,state,ione)
       call dspmv("u",nstr,one,dmat,state(7),ione,one,state,ione)
       call dcopy(nstr,state,ione,scur,ione)
+c
+c...  compute Maxwell time for current stress state
+c
+      e=prop(2)
+      pr=prop(3)
+      vis=prop(4)
+      rmu=half*e/(one+pr)
+      tmax=emhu/rmu
       return
       end
 c
