@@ -81,6 +81,8 @@ exceptionhandler(const int errorcode,
     case 111: exception = PyExc_ValueError; format = "%s: Load history times are out of order."; break;
     case 112: exception = PyExc_ValueError; format = "%s: Not enough points to define a plane for slippery nodes."; break;
     case 113: exception = PyExc_ValueError; format = "%s: Zero or negative jacobian for element."; break;
+    case 114: exception = PyExc_ValueError; format = "%s: Initial bracketing values are identical."; break;
+    case 115: exception = PyExc_ValueError; format = "%s: Root is not initially bracketed."; break;
     // MemoryErrors
     case 300: exception = PyExc_MemoryError; format = "%s: Insufficient memory assigned."; break;
     // binary I/O
@@ -90,6 +92,8 @@ exceptionhandler(const int errorcode,
     case 404: exception = PyExc_RuntimeError; format = "%s: Error writing to binary file."; break;
     case 405: exception = PyExc_RuntimeError; format = "%s: Unexpected 'inquire' result for binary file."; break;
     case 406: exception = PyExc_RuntimeError; format = "%s: Binary data read does not match data written."; break;
+    case 410: exception = PyExc_RuntimeError; format = "%s: Bracketing values not found."; break;
+    case 411: exception = PyExc_RuntimeError; format = "%s: Maximum iterations exceeded."; break;
     // ???
     default: exception = PyExc_RuntimeError; format = "%s: Unknown error."; break;
     }
