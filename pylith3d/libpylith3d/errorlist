@@ -7,6 +7,7 @@
 #  200-299:	Arithmetic errors
 #  negative:	Invalid jacobian
 #  300-399:	Memory errors
+#  400-499:     Runtime errors
 #
 #  ierr		Error
      1		Error opening file for reading.
@@ -28,4 +29,14 @@
    111		Load history times are out of order.
    112		Not enough points to define a plane for slippery nodes.
    113		Zero or negative jacobian for element.
+   114		Initial bracketing values are identical.
+   115		Root is not initially bracketed.
    300		Insufficient memory assigned.
+   400		Don't know how to open a binary file.
+   402		Error opening binary file for writing.
+   403		Error reading from binary file.
+   404		Error writing to binary file.
+   405		Unexpected 'inquire' result for binary file.
+   406		Binary data read does not match data written.
+   410		Bracketing values not found.
+   411		Maximum iterations exceeded.
