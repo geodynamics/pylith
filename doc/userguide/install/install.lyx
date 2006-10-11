@@ -144,7 +144,7 @@ Download the
 \family typewriter
 \size footnotesize
 
-\begin_inset LatexCommand \htmlurl[tarball]{http://www.geodynamics.org:8080/cig/software/packages/pylith/pylith-0.8.1-linux-x86.tar.gz}
+\begin_inset LatexCommand \htmlurl[tarball]{http://www.geodynamics.org/cig/software/packages/pylith/pylith-0.8.1-linux-x86.tar.gz}
 
 \end_inset
 
@@ -266,7 +266,7 @@ The OS X binary version was built to run on the Macintosh PowerPC architecture
 
 \begin_layout Enumerate
 Download the 
-\begin_inset LatexCommand \htmlurl[disk image]{http://www.geodynamics.org:8080/cig/software/packages/pylith/PyLith-0.8.1.dmg}
+\begin_inset LatexCommand \htmlurl[disk image]{http://www.geodynamics.org/cig/software/packages/pylith/PyLith-0.8.1.dmg}
 
 \end_inset
 
@@ -317,7 +317,7 @@ This Windows binary version of PyLith should be compatible with Windows
 
 \begin_layout Enumerate
 Download the 
-\begin_inset LatexCommand \htmlurl[installer]{http://www.geodynamics.org:8080/cig/software/packages/pylith/setup.exe}
+\begin_inset LatexCommand \htmlurl[installer]{http://www.geodynamics.org/cig/software/packages/pylith/setup.exe}
 
 \end_inset
 
@@ -619,23 +619,32 @@ Pull the source code from ANL and place the source tree in a suitable location.
 petsc-dev
 \family default
  sub-directory in the current directory.
-\newline
+\end_layout
 
-\newline
+\begin_deeper
+\begin_layout LyX-Code
 
 \family typewriter
 $ hg clone http://mercurial.mcs.anl.gov/petsc/petsc-dev
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ cd petsc-dev/python
-\newline
-$
- hg clone http://mercurial.mcs.anl.gov/petsc/BuildSystem BuildSystem
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+$ hg clone http://mercurial.mcs.anl.gov/petsc/BuildSystem BuildSystem
 \family default
 
 \newline
 
 \end_layout
 
+\end_deeper
 \begin_layout Enumerate
 Set the 
 \family typewriter
@@ -676,9 +685,10 @@ linux_gcc-4.0_debug, darwin_gcc-3.4_opt
 .cshrc
 \family default
 , or similar file.
-\newline
+\end_layout
 
-\newline
+\begin_deeper
+\begin_layout LyX-Code
 
 \family typewriter
 $ export PETSC_DIR=
@@ -686,12 +696,17 @@ $ export PETSC_DIR=
 replace_with_absolute_path
 \emph default
 /petsc-dev
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ export PETSC_ARCH=
 \emph on
 replace_with_PETSc_arch_tag
 \end_layout
 
+\end_deeper
 \begin_layout Enumerate
 Configure PETSc.
 \end_layout
@@ -709,22 +724,41 @@ config/configure.py --help
 \family default
  to see the long list of possible options.
  Building PETSc for use with PyLith requires the following arguments:
-\newline
+\end_layout
 
-\newline
+\begin_layout LyX-Code
 
 \family typewriter
 --with-clanguage=c++
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 --with-c-support
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 --with-shared=1
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 --with-boost=1
-\newline
---download-boos
-t=1
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+--download-boost=1
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 --with-sieve=1
 \end_layout
 
@@ -732,7 +766,7 @@ t=1
 Be sure to include flags indicating where MPI and BLAS/LAPACK are if you
  want to use a preinstalled implementation.
  If not, be sure to tell PETSc to download those packages.
- If you do not want yo build PETSc using the gnu compilers, be sure to let
+ If you do not want to build PETSc using the gnu compilers, be sure to let
  PETSc know which compilers you want to use instead.
 \end_layout
 
@@ -746,14 +780,16 @@ After several minutes, the configure script should finish and display the
 \begin_layout Enumerate
 Build PETSc.
  
-\newline
+\end_layout
 
-\newline
+\begin_deeper
+\begin_layout LyX-Code
 
 \family typewriter
 $ make
 \end_layout
 
+\end_deeper
 \begin_layout Enumerate
 Test PETSc installation.
 \end_layout
@@ -766,16 +802,12 @@ One of the tests will attempt to display some X windows.
 make test
 \family default
 , then that test will fail.
-\newline
+\end_layout
 
-\newline
+\begin_layout LyX-Code
 
 \family typewriter
 $ make test
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \end_deeper
@@ -793,7 +825,7 @@ hg update -v
  to see what files are being updated):
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
 
 \family typewriter
 $ cd petsc-dev
@@ -870,7 +902,7 @@ pythia-0.8
 \end_layout
 
 \begin_deeper
-\begin_layout Standard
+\begin_layout LyX-Code
 
 \family typewriter
 $ svn co svn://geodynamics.org/cig/vendor/pythia/v0.8/pythia-0.8
@@ -896,13 +928,21 @@ configure --help
  You may want to specify compilers and/or an install location.
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
 
 \family typewriter
 $ cd pythia-0.8 
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ autoreconf -i
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ ./configure
 \end_layout
 
@@ -920,11 +960,17 @@ make
  and 
 \family typewriter
 make install
-\newline
+\end_layout
 
-\newline
+\begin_layout LyX-Code
+
+\family typewriter
 $ make
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ make install
 \end_layout
 
@@ -985,7 +1031,7 @@ pylith-0.8
 \end_layout
 
 \begin_deeper
-\begin_layout Standard
+\begin_layout LyX-Code
 
 \family typewriter
 $ svn co svn://geodynamics.org/cig/short/3D/PyLith/branches/pylith-0.8
@@ -1023,13 +1069,21 @@ LDFLAGS
  appropriately.
 \end_layout
 
-\begin_layout Standard
+\begin_layout LyX-Code
 
 \family typewriter
 $ cd pylith-0.8
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ autoreconf -i
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ ./configure
 \end_layout
 
@@ -1047,11 +1101,17 @@ make
  and 
 \family typewriter
 make install
-\newline
+\end_layout
 
-\newline
+\begin_layout LyX-Code
+
+\family typewriter
 $ make
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ make install
 \end_layout
 

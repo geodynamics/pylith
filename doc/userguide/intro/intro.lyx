@@ -251,7 +251,7 @@ PyLith is separated into modules to encapsulate behavior and facilitate
  use across multiple applications.
  That way expert users can replace functionality of a wide variety of components
  without recompiling or polluting the main code.
- External packages reduce development time and enhance computational efficiency,
+ External packages reduce development time and enhance computational efficiency;
  for example, PyLith runs 2
 \begin_inset Formula $\times$
 \end_inset
