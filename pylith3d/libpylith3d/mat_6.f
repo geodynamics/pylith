@@ -221,7 +221,6 @@ c
       if(steff.ne.zero) tmax=(emhu/steff)**(anpwr-one)*emhu/rmu
       return
       end
-c****************  finish fixing from here *****************
 c
 c
       subroutine td_matinit_6(state,dstate,state0,dmat,prop,rtimdat,
@@ -259,16 +258,39 @@ c
       include "rgiter_dim.inc"
       include "ntimdat_dim.inc"
 c
+c...  local variables
+c
+      double precision e,pr,anpwr,emhu,f1,f2,gam,ae
+      double precision sdev(nstr),sinv1,steff
+c
 c...  included variable definitions
 c
       include "rtimdat_def.inc"
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-c...  return error code, as this material is not yet defined
+cdebug      write(6,*) "Hello from td_matinit_6_f!"
 c
-      ierr=101
-      errstrng="td_matinit_6"
+      call fill(dmat,zero,nddmat)
+      tmax=big
+      e=prop(2)
+      pr=prop(3)
+      anpwr=prop(4)
+      emhu=prop(5)
+      ae=(one+pr)/e
+      f1=third*e/(one-two*pr)
+      call invar(sdev,sinv1,steff,state)
+      gam=half*(steff/emhu)**(anpwr-one)/emhu
+      f2=third/(ae+deltp*gam)
+      dmat(iddmat(1,1))=f1+two*f2
+      dmat(iddmat(2,2))=dmat(iddmat(1,1))
+      dmat(iddmat(3,3))=dmat(iddmat(1,1))
+      dmat(iddmat(1,2))=f1-f2
+      dmat(iddmat(1,3))=dmat(iddmat(1,2))
+      dmat(iddmat(2,3))=dmat(iddmat(1,2))
+      dmat(iddmat(4,4))=half*three*f2
+      dmat(iddmat(5,5))=dmat(iddmat(4,4))
+      dmat(iddmat(6,6))=dmat(iddmat(4,4))
       return
       end
 c
