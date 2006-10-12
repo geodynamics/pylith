@@ -312,7 +312,7 @@ c
       include "nconsts.inc"
       include "rconsts.inc"
       integer nrpar,nipar
-      parameter(nrpar=10,nipar=0)
+      parameter(nrpar=7,nipar=0)
 c
 c...  subroutine arguments
 c
@@ -342,11 +342,10 @@ c
       integer ipar(nipar)
       double precision rpar(nrpar)
       double precision e,pr,anpwr,emhu,rmu,ae,tf
-      double precision emeantdt,smeant,smeantdt
-      double precision sinv1t,sefft,sinv10,seff0
-      double precision epptdt(6),sdevt(6),sdev0(6),sdevtdt(6)
-      double precision sdev,sdevtp,smean0,sdev0
-      double precision eett(6)
+      double precision emeantdt,smeant,smeantdt,smean0
+      double precision sinv1t,sefft,sinv10,seff0,sefftdt
+      double precision sefftau,gamtau,f1,f2,sdevtdt,sdevtau
+      double precision epptdt(6),sdevt(6),sdev0(6)
 
 c
 c...  included variable definitions
@@ -372,7 +371,7 @@ c
 c...  define stress and strain quantities
 c
       emeantdt=third*(ee(1)+ee(2)+ee(3))
-      smeantdt=e*emean/(one-two*pr)
+      smeantdt=e*emeantdt/(one-two*pr)
       call invar(sdevt,sinv1t,sefft,state)
       smeant=third*sinv1t
       call invar(sdev0,sinv10,seff0,state0)
@@ -386,21 +385,33 @@ c
       rpar(1)=ae
       rpar(2)=anpwr
       rpar(3)=emhu
-      rpar(4)=sprod(epptdt,epptdt)+two*ae*sprod(epptdt,sdev0)+
-     & ae*ae*seff0
-      rpar(5)=two*tf*(sprod(epptdt,sdevt)+ae*sprod(sdevt,sdev0))
-      rpar(6)=sefft
+      rpar(4)=sprod(epptdt,epptdt)
+      rpar(5)=two*ae*sprod(epptdt,sdev0)+ae*ae*seff0*seff0
+      rpar(6)=two*tf*(sprod(epptdt,sdevt)+ae*sprod(sdevt,sdev0))
+      rpar(7)=sefft
 c
 c...  call effective stress driver routine
 c
       call esfcomp_6(sefftdt,rpar,nrpar,ipar,nipar,ierr,errstrng)
-
-      
-      call dcopy(nstr,ee,ione,eett,ione)
-      eett(4)=half*eett(4)
-      eett(5)=half*eett(5)
-      eett(6)=half*eett(6)
-
+      if(ierr.ne.izero) return
+c
+c...  compute quantities at intermediate time tau used to compute
+c     values at end of time step.
+c
+      sefftau=(one-alfap)*sefft+alfap*sefftdt
+      gamtau=half*(sefftau/emhu)**(anpwr-one)/emhu
+      f1=one/(ae+alfap*deltp*gamtau)
+      f2=tf*gamtau
+c
+c...  compute new stresses and store stress and strain values in dstate
+c
+      do i=1,nstr
+        sdevtdt=f1*(epptdt(i)-f2*sdevt(i)+ae*sdev0(i))
+        dstate(i)=sdevtdt+diag*(smeant+smean0)
+        sdevtau=(one-alfap)*sdevt(i)+alfap*sdevtdt
+        dstate(i+6)=ee(i)
+        dstate(i+12)=deltp*gamtau*sdevtau
+      end do
 c
       return
       end
@@ -416,9 +427,6 @@ c
 c...  parameter definitions
 c
       include "rconsts.inc"
-      double precision brac
-c...  This value is arbitrary, but has worked OK in the past.
-      parameter(brac=5000.0d0)
 c
 c...  subroutine arguments
 c
@@ -439,7 +447,7 @@ c
 c
 c...  local variables
 c
-      double precision add,sefflo,seffhi
+      double precision seffel,sefflo,seffhi
 c
 c...  included variable definitions
 c
@@ -449,13 +457,27 @@ c
 c
 cdebug      write(6,*) "Hello from esfcomp_6!"
 c
-c********  decide whether to use current stress or elastic stress
-c          computed from current strains as initial value.  This
-c          would just be scalar product of eppdtd/ae.
-      add=brac*stol*
-
-
-
+      ierr=0
+c
+c...  use elastic stress as initial high value, defaulting to stol
+c     if this is zero.
+c
+      seffel=sqrt(rpar(4))/rpar(1)
+      sefflo=zero
+      seffhi=max(seffel,stol)
+c
+c...  bracket the root
+c
+      call zbrac(esf_6,sefflo,seffhi,rpar,nrpar,ipar,nipar,
+     & ierr,errstrng)
+      if(ierr.ne.izero) return
+c
+c...  compute effective stress
+c
+      sefftdt=rtsafe(esf_6,sefflo,seffhi,stol,rpar,nrpar,ipar,nipar,
+     & ierr,errstrng)
+      return
+      end
 c
 c
       subroutine esf_6(seffcur,f,df,rpar,nrpar,ipar,nipar)
@@ -503,9 +525,9 @@ c
       ae=rpar(1)
       anpwr=rpar(2)
       emhu=rpar(3)
-      b=rpar(4)
-      c=rpar(5)
-      sefft=rpar(6)
+      b=rpar(4)+rpar(5)
+      c=rpar(6)
+      sefft=rpar(7)
       d=tf*sefft
 c
 c...  additional values dependent on current effective stress
@@ -531,9 +553,7 @@ c
      & ierr,errstrng)
 c
 c...  subroutine to compute the current stress and updated material
-c     matrix for the time-dependent solution.  Since this is a purely
-c     elastic material, the material matrix should not change unless the
-c     material properties have changed for a time step.
+c     matrix for the time-dependent solution.
 c     Note that only the upper triangle is used (or available), as
 c     dmat is assumed to always be symmetric.
 c
@@ -560,16 +580,121 @@ c
       include "rgiter_dim.inc"
       include "ntimdat_dim.inc"
 c
+c...  local variables
+c
+      integer i
+      integer ipar(nipar)
+      double precision rpar(nrpar)
+      double precision e,pr,anpwr,emhu,rmu,ae,c1,c2,c3,a,c,d,rk1,rk2
+      double precision emeantdt,smeant,smeantdt,smean0
+      double precision sinv1t,sefft,sinv10,seff0,sefftdt
+      double precision sefftau,gamtau,f1,f2,sdevtdt,sdevtau
+      double precision epptdt(6),sdevt(6),sdev0(6)
+c
 c...  included variable definitions
 c
       include "rtimdat_def.inc"
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-c...  return error code, as this material is not yet defined
+c...  rather than call td_strs_6, we duplicate the functionality here,
+c     since otherwise there would be an enormous amount of duplicate
+c     computations.
 c
-      ierr=101
-      errstrng="td_strs_mat_6"
+      ierr=0
+c
+c...  define material properties
+c
+      e=prop(2)
+      pr=prop(3)
+      anpwr=prop(4)
+      emhu=prop(5)
+      rmu=half*e/(one+pr)
+      ae=(one+pr)/e
+      c1=one-alfap
+      c2=deltp*c1
+      c3=third*e/(one-two*pr)
+c
+c...  define stress and strain quantities
+c
+      emeantdt=ee(1)+ee(2)+ee(3)
+      smeantdt=c3*emeantdt
+      emeantdt=third*emeantdt
+      call invar(sdevt,sinv1t,sefft,state)
+      smeant=third*sinv1t
+      call invar(sdev0,sinv10,seff0,state0)
+      smean0=third*sinv10
+      do i=1,nstr
+        epptdt(i)=eng(i)*ee(i)-diag(i)*emeantdt-state(i+12)
+      end do
+c
+c...  define parameters needed by effective stress function
+c
+      rpar(1)=ae
+      rpar(2)=anpwr
+      rpar(3)=emhu
+      rpar(4)=sprod(epptdt,epptdt)
+      rpar(5)=two*ae*sprod(epptdt,sdev0)+ae*ae*seff0*seff0
+      rpar(6)=two*c2*(sprod(epptdt,sdevt)+ae*sprod(sdevt,sdev0))
+      rpar(7)=sefft
+c
+c...  call effective stress driver routine
+c
+      call esfcomp_6(sefftdt,rpar,nrpar,ipar,nipar,ierr,errstrng)
+      if(ierr.ne.izero) return
+c
+c...  compute quantities at intermediate time tau used to compute
+c     values at end of time step.
+c
+      sefftau=(one-alfap)*sefft+alfap*sefftdt
+      gamtau=half*(sefftau/emhu)**(anpwr-one)/emhu
+      a=ae+alfap*deltp*gamtau
+      f1=one/a
+      f2=c2*gamtau
+c
+c...  compute new stresses and store stress and strain values in dstate
+c
+      do i=1,nstr
+        sdevtdt=f1*(epptdt(i)-f2*sdevt(i)+ae*sdev0(i))
+        dstate(i)=sdevtdt+diag*(smeant+smean0)
+        sdevtau=(one-alfap)*sdevt(i)+alfap*sdevtdt
+        dstate(i+6)=ee(i)
+        dstate(i+12)=deltp*gamtau*sdevtau
+      end do
+c
+c...  define some constants for tangent computation
+c
+      rk1=half*(anpwr-one)*(sefftau/emhu)**(anpwr-two)/(emhu*emhu)
+      rk2=sefftau-f1*sefft
+      c=rpar(6)
+      d=c2*rpar(7)
+      f3=alfap*deltp*f1
+      f4=gamtau*c2
+      rkdnm=two*a*rk2*(alfap*deltp*rk1*rk2+a/(alfap*alfap)+
+     & rk1*(c-two*d*d*gamtau)
+      rkfac=rk1/rkdnm
+c
+c...  compute tangent matrix
+c
+      dgde=rkfac*(half*epptdt(1)+ae*sdev0(1)-f4*sdevt(1))
+      dsde=f1*(one-dgde*(c2*sdevt(1)+
+     & f3*(epptdt(1)-f4*sdevt(1)+ae*sdev0(1))))
+      dmat(iddmat(1,1))=c3+two*third*dsde
+c
+      dgde=rkfac*(half*epptdt(2)+ae*sdev0(2)-f4*sdevt(2))
+      dsde=f1*(one-dgde*(c2*sdevt(2)+
+     & f3*(epptdt(2)-f4*sdevt(2)+ae*sdev0(2))))
+      dmat(iddmat(2,2))=c3+two*third*dsde
+c
+      dgde=rkfac*(half*epptdt(3)+ae*sdev0(3)-f4*sdevt(3))
+      dsde=f1*(one-dgde*(c2*sdevt(3)+
+     & f3*(epptdt(3)-f4*sdevt(3)+ae*sdev0(3))))
+      dmat(iddmat(3,3))=c3+two*third*dsde
+c
+      dgde=rkfac*(half*epptdt(3)+ae*sdev0(3)-f4*sdevt(3))
+      dsde=f1*(one-dgde*(c2*sdevt(3)+
+     & f3*(epptdt(3)-f4*sdevt(3)+ae*sdev0(3))))
+      dmat(iddmat(1,2))=c3+two*third*dsde
 c
       return
       end
