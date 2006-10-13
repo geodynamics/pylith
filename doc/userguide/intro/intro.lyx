@@ -84,7 +84,7 @@ ce only enters through the constitutive relationships and the loading conditions
  only formulation available at present.
  If a large deformation solution is desired, interested users may contact
  
-\begin_inset LatexCommand \url[Charles Williams]{<willic3@rpi.edu>}
+\begin_inset LatexCommand \htmlurl[Charles Williams]{willic3@rpi.edu}
 
 \end_inset
 
@@ -279,7 +279,7 @@ PETSc
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \htmlurl[PETSc]{http://www-unix.mcs.anl.gov/petsc/petsc-as/}
+\begin_inset LatexCommand \htmlurl[PETSc]{www-unix.mcs.anl.gov/petsc/petsc-as/}
 
 \end_inset
 
