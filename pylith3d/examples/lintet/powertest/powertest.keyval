@@ -1,0 +1,97 @@
+# Example of a keyword=value file to be used with TECTON.
+# In this example, the default values are listed, but commented out.
+# To change a default value, uncomment the appropriate entry and
+# edit the value.
+# With the present implementation, there should not be any spaces
+# before the keyword.
+#
+# Non-default parameters to be used for SCEC BM 2.
+#
+# Scaling factors applied to Winkler forces.  These factors may be
+# used as a quick and easy way of changing the density or gravitational
+# acceleration when Winkler forces are used to simulate gravity.
+#
+#winklerScaleX = 1.0
+#winklerScaleY = 1.0
+#winklerScaleZ = 1.0
+#
+#
+# Parameters controlling stress integration and numerical computation
+# of the tangent material matrix.  These default values should be
+# reasonable for most cases.
+#
+#stressTolerance = 1.0e-12*Pa
+#minimumStrainPerturbation = 1.0e-7
+#initialStrainPerturbation = 1.0e-1
+#
+#
+# Parameters controlling the solution of the linear problem at each
+# iteration.  This is now all controlled by PETSc command-line
+# arguments.  The only option now specified in this file is whether to
+# use the solution from the previous time step as the starting guess
+# for the current time step.
+#
+# usePreviousDisplacementFlag = 0
+#
+#
+# Quadrature order for the problem.  The options are:
+#       Full:           Quadrature order that should give the exact
+#                       element matrices when the elements are
+#                       geometrically undistorted.
+#       Reduced:        Quadrature order that is one order less than
+#                       full quadrature.  This option should be used
+#                       with caution.
+#       Selective:      Uses Hughes' b-bar formulation to perform
+#                       reduced quadrature on the dilatational parts of
+#                       the strain-displacement matrix.  This can be
+#                       useful in nearly-incompressible problems.
+#
+#quadratureOrder = "Full"
+#
+#
+# Gravitational acceleration in each direction.
+#
+#gravityX = 0.0*m/(s*s)
+#gravityY = 0.0*m/(s*s)
+#gravityZ = 0.0*m/(s*s)
+#
+#
+# Factors controlling computation of prestresses.  When gravity is being
+# used, an automatic computation option may be used, with the option of
+# using alternative values for Poisson's ratio and Young's modulus.
+# Each prestress component may also be scaled.  This option is only
+# useful if the prestresses are read from a file (and not automatically
+# computed).
+#
+#prestressAutoCompute = False
+#prestressAutoChangeElasticProperties = False
+#prestressAutoComputePoisson = 0.49
+#prestressAutoComputeYoungs = 1.0e30*Pa
+#
+#prestressScaleXx = 1.0
+#prestressScaleYy = 1.0
+#prestressScaleZz = 1.0
+#prestressScaleXy = 1.0
+#prestressScaleXz = 1.0
+#prestressScaleYz = 1.0
+#
+#
+# Scaling factors applied to differential Winkler forces.  Differential
+# Winkler forces are those applied across a slippery node interface, and
+# are generally used to keep the fault locked at certain times.  These
+# factors control the magnitudes and provide a simple way of scaling the
+# forces so the fault remains sufficiently 'locked'.
+#
+#winklerSlipScaleX = 1.0
+#winklerSlipScaleY = 1.0
+#winklerSlipScaleZ = 1.0
+#
+#
+# Unit numbers used by f77.  These defaults should work for most Unix
+# systems, but may be altered if necessary.
+#
+#f77StandardInput = 5
+#f77StandardOutput = 6
+#f77FileInput = 10
+#f77AsciiOutput = 11
+#f77PlotOutput = 12
