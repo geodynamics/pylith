@@ -750,7 +750,7 @@ splitcube.ascii
 .
  You can check to make sure your input is digested correctly by examining
  this file.
- For large problems, this file can be quite large.
+ For large problems, this file can become quite large.
  You can suppress creation of this file using the command line argument
  
 \family typewriter
@@ -891,7 +891,7 @@ $ paraview
 
 \end_deeper
 \begin_layout Enumerate
-Load the UCD file that you just created by selecting 
+Load the UCD file that you have just created by selecting 
 \family sans
 File
 \color black
@@ -1230,7 +1230,7 @@ $ paraview
 
 \end_deeper
 \begin_layout Enumerate
-Load the UCD files that you just created by selecting
+Load the UCD files that you have just created by selecting
 \family sans
  File
 \color black
