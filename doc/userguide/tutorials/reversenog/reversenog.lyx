@@ -530,12 +530,12 @@ readnetgen
 NETGEN
 \family default
  output file into PyLith compatible input files.
- It will ask for a root filename, enter 
+ It will ask for a root filename; enter 
 \family typewriter
 bmrsnog
 \family default
 .
- This utilitiy will generate the following files: 
+ This utility will generate the following files: 
 \family typewriter
 bmrsnog.w01.wink
 \family default

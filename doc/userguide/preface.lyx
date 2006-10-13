@@ -56,13 +56,14 @@ Who Will Use This Documentation
 \end_layout
 
 \begin_layout Standard
-This documentation is aimed at scientists who prefer to use prepackaged
- and specialized analysis tools.
- Users are likely to be experienced computational Earth scientists and have
- familiarity with basic scripting, software installation, and programming,
- but are not likely to be professional programmers.
- Of those, there are likely to be two classes of users: those who run models
- and those who modify the source code.
+This documentation is aimed at two categories of users: scientists who prefer
+ to use prepackaged and specialized analysis tools, and experienced computationa
+l Earth scientists.
+ Of the latter, there are likely to be two classes of users: those who just
+ run models, and those who modify the source code.
+ Users who modify the source are likely to have familiarity with scripting,
+ software installation, and programming, but are not necessarily professional
+ programmers.
 \end_layout
 
 \begin_layout Section
