@@ -194,7 +194,7 @@ c
       integer nprop,nstate,nstate0,ierr
       double precision prop(nprop),state(nstate),state0(nstate0)
       double precision ee(nstr),scur(nstr)
-      double precision dmat(nddmat)
+      double precision dmat(nddmat),tmax
       character errstrng*(*)
 c
 c...  local variables
@@ -329,6 +329,11 @@ c
       include "rgiter_dim.inc"
       include "ntimdat_dim.inc"
 c
+c... external functions
+c
+      double precision sprod
+      external sprod
+c
 c...  local constants
 c
       double precision diag(6)
@@ -407,7 +412,7 @@ c...  compute new stresses and store stress and strain values in dstate
 c
       do i=1,nstr
         sdevtdt=f1*(epptdt(i)-f2*sdevt(i)+ae*sdev0(i))
-        dstate(i)=sdevtdt+diag*(smeant+smean0)
+        dstate(i)=sdevtdt+diag(i)*(smeant+smean0)
         sdevtau=(one-alfap)*sdevt(i)+alfap*sdevtdt
         dstate(i+6)=ee(i)
         dstate(i+12)=deltp*gamtau*sdevtau
@@ -441,9 +446,15 @@ c
       include "rgiter_dim.inc"
       include "ntimdat_dim.inc"
 c
+c...  intrinsic functions
+c
+      intrinsic sqrt,max
+c
 c...  external routines
 c
       external esf_6
+      double precision rtsafe
+      external rtsafe
 c
 c...  local variables
 c
@@ -470,7 +481,7 @@ c...  bracket the root
 c
       call zbrac(esf_6,sefflo,seffhi,rpar,nrpar,ipar,nipar,
      & ierr,errstrng)
-      if(ierr.ne.izero) return
+      if(ierr.ne.0) return
 c
 c...  compute effective stress
 c
@@ -504,7 +515,7 @@ c
 c
 c...  local variables
 c
-      double precision ae,anpwr,emhu,b,c,sefft
+      double precision ae,anpwr,emhu,a,b,c,sefft,d
       double precision f1,tf
       double precision gamtau,sefftau
 c
@@ -564,6 +575,8 @@ c
       include "ndimens.inc"
       include "nconsts.inc"
       include "rconsts.inc"
+      integer nrpar,nipar
+      parameter(nrpar=7,nipar=0)
 c
 c...  subroutine arguments
 c
@@ -580,6 +593,18 @@ c
       include "rgiter_dim.inc"
       include "ntimdat_dim.inc"
 c
+c...  external routines
+c
+      double precision sprod
+      external sprod
+c
+c...  local constants
+c
+      double precision diag(6)
+      data diag/one,one,one,zero,zero,zero/
+      double precision eng(6)
+      data eng/one,one,one,half,half,half/
+c
 c...  local variables
 c
       integer i
@@ -588,7 +613,8 @@ c
       double precision e,pr,anpwr,emhu,rmu,ae,c1,c2,c3,a,c,d,rk1,rk2
       double precision emeantdt,smeant,smeantdt,smean0
       double precision sinv1t,sefft,sinv10,seff0,sefftdt
-      double precision sefftau,gamtau,f1,f2,sdevtdt,sdevtau
+      double precision sefftau,gamtau,sdevtdt,sdevtau
+      double precision f1,f2,f3,f4,rkdnm,rkfac,dgde,dsde
       double precision epptdt(6),sdevt(6),sdev0(6)
 c
 c...  included variable definitions
@@ -656,7 +682,7 @@ c...  compute new stresses and store stress and strain values in dstate
 c
       do i=1,nstr
         sdevtdt=f1*(epptdt(i)-f2*sdevt(i)+ae*sdev0(i))
-        dstate(i)=sdevtdt+diag*(smeant+smean0)
+        dstate(i)=sdevtdt+diag(i)*(smeant+smean0)
         sdevtau=(one-alfap)*sdevt(i)+alfap*sdevtdt
         dstate(i+6)=ee(i)
         dstate(i+12)=deltp*gamtau*sdevtau
@@ -670,7 +696,7 @@ c
       d=c2*rpar(7)
       f3=alfap*deltp*f1
       f4=gamtau*c2
-      rkdnm=two*a*rk2*(alfap*deltp*rk1*rk2+a/(alfap*alfap)+
+      rkdnm=two*a*rk2*(alfap*deltp*rk1*rk2+a)/(alfap*alfap)+
      & rk1*(c-two*d*d*gamtau)
       rkfac=rk1/rkdnm
 c
@@ -680,21 +706,34 @@ c
       dsde=f1*(one-dgde*(c2*sdevt(1)+
      & f3*(epptdt(1)-f4*sdevt(1)+ae*sdev0(1))))
       dmat(iddmat(1,1))=c3+two*third*dsde
+      dmat(iddmat(1,2))=c3-half*third*dsde
+      dmat(iddmat(1,3))=dmat(iddmat(1,2))
 c
       dgde=rkfac*(half*epptdt(2)+ae*sdev0(2)-f4*sdevt(2))
       dsde=f1*(one-dgde*(c2*sdevt(2)+
      & f3*(epptdt(2)-f4*sdevt(2)+ae*sdev0(2))))
       dmat(iddmat(2,2))=c3+two*third*dsde
+      dmat(iddmat(2,3))=c3-half*third*dsde
 c
       dgde=rkfac*(half*epptdt(3)+ae*sdev0(3)-f4*sdevt(3))
       dsde=f1*(one-dgde*(c2*sdevt(3)+
      & f3*(epptdt(3)-f4*sdevt(3)+ae*sdev0(3))))
       dmat(iddmat(3,3))=c3+two*third*dsde
 c
-      dgde=rkfac*(half*epptdt(3)+ae*sdev0(3)-f4*sdevt(3))
-      dsde=f1*(one-dgde*(c2*sdevt(3)+
-     & f3*(epptdt(3)-f4*sdevt(3)+ae*sdev0(3))))
-      dmat(iddmat(1,2))=c3+two*third*dsde
+      dgde=rkfac*(half*epptdt(4)+ae*sdev0(4)-f4*sdevt(4))
+      dsde=f1*(one-dgde*(c2*sdevt(4)+
+     & f3*(epptdt(4)-f4*sdevt(4)+ae*sdev0(4))))
+      dmat(iddmat(4,4))=half*dsde
+c
+      dgde=rkfac*(half*epptdt(5)+ae*sdev0(5)-f4*sdevt(5))
+      dsde=f1*(one-dgde*(c2*sdevt(5)+
+     & f3*(epptdt(5)-f4*sdevt(5)+ae*sdev0(5))))
+      dmat(iddmat(5,5))=half*dsde
+c
+      dgde=rkfac*(half*epptdt(6)+ae*sdev0(6)-f4*sdevt(6))
+      dsde=f1*(one-dgde*(c2*sdevt(6)+
+     & f3*(epptdt(6)-f4*sdevt(6)+ae*sdev0(6))))
+      dmat(iddmat(6,6))=half*dsde
 c
       return
       end
@@ -754,6 +793,11 @@ c
       integer nstate
       double precision state(nstate),dstate(nstate),sout(3*nstatesmax)
 c
+cdebug      write(6,*) "Hello from get_state_6_f!"
+c
+      call dcopy(nstate,state,ione,sout,ione)
+      call dcopy(nstate,dstate,ione,sout(nstatesmax+ione),ione)
+c
       return
       end
 c
@@ -781,9 +825,13 @@ c
 c
 c...  local data
 c
+      double precision sub
+      data sub/-1.0d0/
 c
-c...  local variables
+cdebug      write(6,*) "Hello from update_state_6_f!"
 c
+      call daxpy(nstate-6,sub,state,ione,dstate,ione)
+      call daxpy(nstate,one,dstate,ione,state,ione)
 c
       return
       end
