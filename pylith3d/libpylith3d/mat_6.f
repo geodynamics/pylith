@@ -260,7 +260,7 @@ c
 c
 c...  local variables
 c
-      double precision e,pr,anpwr,emhu,f1,f2,gam,ae
+      double precision e,pr,anpwr,emhu,f1,f2,gam,ae,rmu
       double precision sdev(nstr),sinv1,steff
 c
 c...  included variable definitions
@@ -272,15 +272,17 @@ c
 cdebug      write(6,*) "Hello from td_matinit_6_f!"
 c
       call fill(dmat,zero,nddmat)
-      tmax=big
       e=prop(2)
       pr=prop(3)
       anpwr=prop(4)
       emhu=prop(5)
       ae=(one+pr)/e
+      rmu=half*e/(one+pr)
       f1=third*e/(one-two*pr)
       call invar(sdev,sinv1,steff,state)
       gam=half*(steff/emhu)**(anpwr-one)/emhu
+      tmax=big
+      if(steff.ne.zero) tmax=(emhu/steff)**(anpwr-one)*emhu/rmu
       f2=third/(ae+deltp*gam)
       dmat(iddmat(1,1))=f1+two*f2
       dmat(iddmat(2,2))=dmat(iddmat(1,1))
@@ -407,6 +409,8 @@ c
       gamtau=half*(sefftau/emhu)**(anpwr-one)/emhu
       f1=one/(ae+alfap*deltp*gamtau)
       f2=tf*gamtau
+      tmax=big
+      if(sefftdt.ne.zero) tmax=(emhu/sefftdt)**(anpwr-one)*emhu/rmu
 c
 c...  compute new stresses and store stress and strain values in dstate
 c
@@ -687,6 +691,8 @@ c
         dstate(i+6)=ee(i)
         dstate(i+12)=deltp*gamtau*sdevtau
       end do
+      tmax=big
+      if(sefftdt.ne.zero) tmax=(emhu/sefftdt)**(anpwr-one)*emhu/rmu
 c
 c...  define some constants for tangent computation
 c

@@ -108,8 +108,8 @@ c
       end
 c
 c
-      subroutine elas_strs_10(state,state0,ee,scur,dmat,nstate,nstate0,
-     & ierr,errstrng)
+      subroutine elas_strs_10(prop,nprop,state,state0,ee,scur,dmat,tmax,
+     & nstate,nstate0,ierr,errstrng)
 c
 c...  subroutine to compute stresses for the elastic solution.
 c     The current total strain is contained in ee and the computed
@@ -125,9 +125,10 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nstate0,ierr
-      double precision state(nstate),state0(nstate0),ee(nstr),scur(nstr)
-      double precision dmat(nddmat)
+      integer nprop,nstate,nstate0,ierr
+      double precision prop(nprop),state(nstate),state0(nstate0)
+      double precision ee(nstr),scur(nstr)
+      double precision dmat(nddmat),tmax
       character errstrng*(*)
 c
 c...  return error code, as this material is not yet defined

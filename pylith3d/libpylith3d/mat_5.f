@@ -192,7 +192,7 @@ c
       integer nprop,nstate,nstate0,ierr
       double precision prop(nprop),state(nstate),state0(nstate0)
       double precision ee(nstr),scur(nstr)
-      double precision dmat(nddmat)
+      double precision dmat(nddmat),tmax
       character errstrng*(*)
 c
 c...  local variables
@@ -212,7 +212,7 @@ c
       pr=prop(3)
       vis=prop(4)
       rmu=half*e/(one+pr)
-      tmax=emhu/rmu
+      tmax=vis/rmu
       return
       end
 c
@@ -257,7 +257,7 @@ c
 c
 c...  local variables
 c
-      double precision e,pr,vis,f1,f2
+      double precision e,pr,vis,f1,f2,rmu
 c
 c...  included variable definitions
 c
@@ -268,10 +268,11 @@ c
 cdebug      write(6,*) "Hello from td_matinit_5_f!"
 c
       call fill(dmat,zero,nddmat)
-      tmax=big
       e=prop(2)
       pr=prop(3)
       vis=prop(4)
+      rmu=half*e/(one+pr)
+      tmax=vis/rmu
       f1=third*e/(one-two*pr)
       f2=third/((one+pr)/e+half*alfap*deltp/vis)
       dmat(iddmat(1,1))=f1+two*f2
@@ -348,7 +349,7 @@ c
       vis=prop(4)
       rmu=half*e/(one+pr)
       rvis=one/vis
-      tmax=two*vis/rmu
+      tmax=vis/rmu
       fac1=half*deltp*rvis
       fac2=(one+pr)/e
       f1=fac1*(one-alfap)

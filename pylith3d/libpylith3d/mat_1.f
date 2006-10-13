@@ -156,8 +156,8 @@ c
       end
 c
 c
-      subroutine elas_strs_1(state,state0,ee,scur,dmat,nstate,nstate0,
-     & ierr,errstrng)
+      subroutine elas_strs_1(prop,nprop,state,state0,ee,scur,dmat,tmax,
+     & nstate,nstate0,ierr,errstrng)
 c
 c...  subroutine to compute stresses for the elastic solution.  For this
 c     material, there are just 2 sets of state variables:  total stress
@@ -179,11 +179,13 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nstate0,ierr
-      double precision state(nstate),state0(nstate0),ee(nstr),scur(nstr)
-      double precision dmat(nddmat)
+      integer nprop,nstate,nstate0,ierr
+      double precision prop(nprop),state(nstate),state0(nstate0)
+      double precision ee(nstr),scur(nstr)
+      double precision dmat(nddmat),tmax
       character errstrng*(*)
 c
+      tmax=big
       call dcopy(nstr,ee,ione,state(7),ione)
       call dcopy(nstr,state0,ione,state,ione)
       call dspmv("u",nstr,one,dmat,state(7),ione,one,state,ione)
