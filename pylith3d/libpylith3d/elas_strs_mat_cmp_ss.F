@@ -110,6 +110,7 @@ c
 c...  local variables
 c
       integer ielf,incstate0,indstate0,l
+      double precision tmax
       double precision dl(60),xl(60),scur(162),ee(162),p(60),det(27)
 c
 cdebug      integer idb,jdb
@@ -152,10 +153,11 @@ c...  loop over gauss points, compute stresses, and transfer them into
 c     scur
 c
         do l=1,ngauss
-          call elas_strs_mat(dstate(1,l,ielf),state0(1,l,indstate0),
-     &     ee(nstr*(l-1)+1),scur(nstr*(l-1)+1),dmat(1,l,ielf),
-     &     nstate,nstate0,ierr,errstrng)
+          call elas_strs_mat(prop,nprop,dstate(1,l,ielf),
+     &     state0(1,l,indstate0),ee(nstr*(l-1)+1),scur(nstr*(l-1)+1),
+     &     dmat(1,l,ielf),tmax,nstate,nstate0,ierr,errstrng)
           if(ierr.ne.izero) return
+          tminmax=min(tmax,tminmax)
         end do
 c
 c...  compute equivalent nodal loads and add them to global load
