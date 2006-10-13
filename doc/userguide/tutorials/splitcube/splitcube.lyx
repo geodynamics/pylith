@@ -225,7 +225,7 @@ We will start by downloading the tutorial tarball and unpacking it.
 
 \begin_layout Enumerate
 Download the 
-\begin_inset LatexCommand \htmlurl[tutorial tarball]{http://www.geodynamics.org/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8.1_tutorials.tgz}
+\begin_inset LatexCommand \htmlurl[tutorial tarball]{www.geodynamics.org/cig/Members/willic3/pylithusers/pylith0.8/pylith-0.8.1_tutorials.tgz}
 
 \end_inset
 
@@ -795,7 +795,7 @@ Visualize the single processor run
 \begin_layout Standard
 Now it is time to visualize the results of the simulation.
  By default, PyLith writes simulation output using 
-\begin_inset LatexCommand \htmlurl[AVS UCD files]{http://help.avs.com/Express/doc/help/reference/dvmac/UCD_Form.htm}
+\begin_inset LatexCommand \htmlurl[AVS UCD files]{help.avs.com/Express/doc/help/reference/dvmac/UCD_Form.htm}
 
 \end_inset
 

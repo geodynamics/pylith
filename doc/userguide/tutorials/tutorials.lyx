@@ -69,12 +69,12 @@ PyLith
 \family default
 \color none
  you will need 
-\begin_inset LatexCommand \htmlurl[NETGEN]{http://www.hpfem.jku.at/netgen/}
+\begin_inset LatexCommand \htmlurl[NETGEN]{www.hpfem.jku.at/netgen/}
 
 \end_inset
 
  to generate the mesh and 
-\begin_inset LatexCommand \htmlurl[ParaView]{http://www.paraview.org}
+\begin_inset LatexCommand \htmlurl[ParaView]{www.paraview.org}
 
 \end_inset
 
