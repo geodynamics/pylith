@@ -5,6 +5,9 @@
 \textclass book
 \begin_preamble
 \usepackage{hyperref}
+
+\let\myUrl\url
+\renewcommand{\url}[1]{(\myUrl{#1})}
 \end_preamble
 \language english
 \inputencoding latin1
