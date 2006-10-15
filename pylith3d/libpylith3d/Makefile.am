@@ -165,6 +165,7 @@ sources = \
 	rsplit.f \
 	rstiff.f \
 	rstress.f \
+	rtsafe.f \
 	scan_bc.f \
 	scan_connect.f \
 	scan_coords.f \
@@ -231,6 +232,7 @@ sources = \
 	write_ucd_node_vals.F \
 	write_wink.F \
 	write_winkx.F \
+	zbrac.f \
 	includes/binio.h \
 	includes/elas_matinit_ext.inc \
 	includes/elas_strs_ext.inc \
