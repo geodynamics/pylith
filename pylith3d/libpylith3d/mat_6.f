@@ -314,7 +314,7 @@ c
       include "nconsts.inc"
       include "rconsts.inc"
       integer nrpar,nipar
-      parameter(nrpar=7,nipar=0)
+      parameter(nrpar=7,nipar=1)
 c
 c...  subroutine arguments
 c
@@ -580,7 +580,7 @@ c
       include "nconsts.inc"
       include "rconsts.inc"
       integer nrpar,nipar
-      parameter(nrpar=7,nipar=0)
+      parameter(nrpar=7,nipar=1)
 c
 c...  subroutine arguments
 c
