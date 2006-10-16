@@ -306,10 +306,13 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   if (m->debug()) {
     s->view("Displacement field");
   }
+  m->getRealSection("displacement")->view("Displacement field");
+  m->getRealSection("default")->view("Default field");
+  m->getRealSection("default")->setDebug(1);
   ierr = SectionRealDestroy(section);
   debug << journal::at(__HERE__) << "[" << rank << "]Created displacement Field"  << journal::endl;
 
-  m->getFactory()->constructInverseOrder(m->getFactory()->getLocalNumbering(m->getTopology(), 0, 0));
+  m->getFactory()->constructInverseOrder(m->getFactory()->getLocalNumbering(m->getTopology(), 0, m->getTopology()->depth()));
 
   // return
   PyObject *pyMesh = PyCObject_FromVoidPtr(mesh, NULL);
@@ -370,24 +373,13 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
     return 0;
   }
 
-  PetscObjectContainer c;
-
-  ierr = PetscObjectContainerCreate(comm, &c);
-  ierr = PetscObjectContainerSetPointer(c, mesh);
-  ierr = PetscObjectCompose((PetscObject) A, "mesh", (PetscObject) c);
-  ierr = PetscObjectContainerDestroy(c);
+  ierr = PetscObjectCompose((PetscObject) A, "mesh", (PetscObject) mesh);
 
   VecScatter injection = NULL;
   ierr = MeshGetGlobalScatter(mesh, &injection);
-  ierr = PetscObjectContainerCreate(comm, &c);
-  ierr = PetscObjectContainerSetPointer(c, mesh);
-  ierr = PetscObjectCompose((PetscObject) rhs, "mesh", (PetscObject) c);
-  ierr = PetscObjectContainerDestroy(c);
+  ierr = PetscObjectCompose((PetscObject) rhs, "mesh",      (PetscObject) mesh);
   ierr = PetscObjectCompose((PetscObject) rhs, "injection", (PetscObject) injection);
-  ierr = PetscObjectContainerCreate(comm, &c);
-  ierr = PetscObjectContainerSetPointer(c, mesh);
-  ierr = PetscObjectCompose((PetscObject) sol, "mesh", (PetscObject) c);
-  ierr = PetscObjectContainerDestroy(c);
+  ierr = PetscObjectCompose((PetscObject) sol, "mesh",      (PetscObject) mesh);
   ierr = PetscObjectCompose((PetscObject) sol, "injection", (PetscObject) injection);
 
   ierr = MatSetFromOptions(A);
