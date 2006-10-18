@@ -9,7 +9,7 @@ namespace pylith {
       typedef ALE::Mesh                 Mesh;
       typedef Mesh::topology_type       topology_type;
       typedef topology_type::point_type point_type;
-      typedef Mesh::section_type        section_type;
+      typedef Mesh::real_section_type   section_type;
       typedef section_type::value_type  value_type;
     protected:
       const int   NUM_QUADRATURE_POINTS;
@@ -37,8 +37,8 @@ namespace pylith {
         _Jac        = new value_type[dim*dim];
         _invJac     = new value_type[dim*dim];
         _realCoords = new value_type[dim];
-        _elemVector = new value_type[numBasisFuncs];
-        _elemMatrix = new value_type[numBasisFuncs*numBasisFuncs];
+        _elemVector = new value_type[numBasisFuncs*dim];
+        _elemMatrix = new value_type[numBasisFuncs*numBasisFuncs*dim*dim];
         _testWork   = new value_type[numBasisFuncs];
         _basisWork  = new value_type[numBasisFuncs];
 
@@ -68,11 +68,18 @@ namespace pylith {
         delete [] _testWork;
         delete [] _basisWork;
       };
+    protected:
+      void integrateFunction_2d(const Obj<section_type>&, const Obj<section_type>&, value_type (*)(const value_type []));
+      void integrateFunction_3d(const Obj<section_type>&, const Obj<section_type>&, value_type (*)(const value_type []));
+      void integrateLaplacianAction_2d(const Obj<section_type>&, const Obj<section_type>&, const Obj<section_type>&);
+      void integrateLaplacianAction_3d(const Obj<section_type>&, const Obj<section_type>&, const Obj<section_type>&);
+      void integrateElasticAction_3d(const Obj<section_type>&, const Obj<section_type>&, const Obj<section_type>&);
     public:
       void computeElementGeometry(const Obj<section_type>&, const point_type&, value_type [], value_type [], value_type [], value_type&);
       void fillSection(const Obj<section_type>&, const Obj<section_type>&, value_type (*)(const value_type []));
       void integrateFunction(const Obj<section_type>&, const Obj<section_type>&, value_type (*)(const value_type []));
       void integrateLaplacianAction(const Obj<section_type>&, const Obj<section_type>&, const Obj<section_type>&);
+      void integrateElasticAction(const Obj<section_type>&, const Obj<section_type>&, const Obj<section_type>&);
     };
   }
 }
