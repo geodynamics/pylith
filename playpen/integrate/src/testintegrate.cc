@@ -17,17 +17,17 @@
 #include "Integration.hh"
 
 // ----------------------------------------------------------------------
-ALE::Mesh::section_type::value_type zeroF(const ALE::Mesh::section_type::value_type coords[])
+ALE::Mesh::real_section_type::value_type zeroF(const ALE::Mesh::real_section_type::value_type coords[])
 {
   return 0.0;
 }
 
-ALE::Mesh::section_type::value_type constantF(const ALE::Mesh::section_type::value_type coords[])
+ALE::Mesh::real_section_type::value_type constantF(const ALE::Mesh::real_section_type::value_type coords[])
 {
   return 1.0;
 }
 
-ALE::Mesh::section_type::value_type linearF(const ALE::Mesh::section_type::value_type coords[])
+ALE::Mesh::real_section_type::value_type linearF(const ALE::Mesh::real_section_type::value_type coords[])
 {
   return coords[0];
 }
@@ -53,12 +53,12 @@ main(int argc,
     iohandler.read(mesh, false);
 
     const ALE::Mesh::topology_type::patch_type patch = 0;
-    const Obj<ALE::Mesh::section_type>& coords = mesh->getSection("coordinates");
-    const Obj<ALE::Mesh::section_type>& X = mesh->getSection("X");
-    const Obj<ALE::Mesh::section_type>& F = mesh->getSection("F");
-    pylith::feassemble::Integrator      integrator(mesh->getDimension(),
-                                                   NUM_QUADRATURE_POINTS, points, weights,
-                                                   NUM_BASIS_FUNCTIONS, Basis, BasisDerivatives);
+    const Obj<ALE::Mesh::real_section_type>& coords = mesh->getRealSection("coordinates");
+    const Obj<ALE::Mesh::real_section_type>& X = mesh->getRealSection("X");
+    const Obj<ALE::Mesh::real_section_type>& F = mesh->getRealSection("F");
+    pylith::feassemble::Integrator           integrator(mesh->getDimension(),
+                                                        NUM_QUADRATURE_POINTS, points, weights,
+                                                        NUM_BASIS_FUNCTIONS, Basis, BasisDerivatives);
 
     coords->view("Coordinates");
     X->setFiberDimensionByDepth(patch, 0, 1);

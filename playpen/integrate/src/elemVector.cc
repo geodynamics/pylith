@@ -58,7 +58,7 @@ void pylith::feassemble::Integrator::fillSection(const Obj<section_type>& field,
   }
 };
 
-void pylith::feassemble::Integrator::integrateFunction(const Obj<section_type>& field, const Obj<section_type>& coordinates, value_type (*f)(const value_type []))
+void pylith::feassemble::Integrator::integrateFunction_2d(const Obj<section_type>& field, const Obj<section_type>& coordinates, value_type (*f)(const value_type []))
 {
   const topology_type::patch_type               patch    = 0;
   const Obj<topology_type>&                     topology = field->getTopology();
@@ -92,7 +92,46 @@ void pylith::feassemble::Integrator::integrateFunction(const Obj<section_type>& 
   }
 };
 
-void pylith::feassemble::Integrator::integrateLaplacianAction(const Obj<section_type>& X, const Obj<section_type>& F, const Obj<section_type>& coordinates)
+void pylith::feassemble::Integrator::integrateFunction_3d(const Obj<section_type>& field, const Obj<section_type>& coordinates, value_type (*f)(const value_type []))
+{
+  const topology_type::patch_type               patch    = 0;
+  const Obj<topology_type>&                     topology = field->getTopology();
+  const Obj<topology_type::label_sequence>&     elements = topology->heightStratum(patch, 0);
+  const topology_type::label_sequence::iterator end      = elements->end();
+  value_type detJ;
+
+  for(topology_type::label_sequence::iterator e_iter = elements->begin(); e_iter != end; ++e_iter) {
+    computeElementGeometry(coordinates, *e_iter, _v0, _Jac, PETSC_NULL, detJ);
+    // Element integral
+    PetscMemzero(_elemVector, NUM_BASIS_FUNCTIONS*sizeof(value_type));
+    for(int q = 0; q < NUM_QUADRATURE_POINTS; q++) {
+      value_type xi   = _points[q*3+0] + 1.0;
+      value_type eta  = _points[q*3+1] + 1.0;
+      value_type zeta = _points[q*3+2] + 1.0;
+      _realCoords[0] = _Jac[0]*xi + _Jac[1]*eta + _Jac[2]*zeta + _v0[0];
+      _realCoords[1] = _Jac[3]*xi + _Jac[4]*eta + _Jac[5]*zeta + _v0[1];
+      _realCoords[2] = _Jac[6]*xi + _Jac[7]*eta + _Jac[8]*zeta + _v0[2];
+      for(int i = 0; i < NUM_BASIS_FUNCTIONS; i++) {
+        _elemVector[i] += _basis[q*NUM_BASIS_FUNCTIONS+i]*f(_realCoords)*_weights[q]*detJ;
+      }
+    }
+    /* Assembly */
+    field->updateAdd(patch, *e_iter, _elemVector);
+  }
+};
+
+void pylith::feassemble::Integrator::integrateFunction(const Obj<section_type>& field, const Obj<section_type>& coordinates, value_type (*f)(const value_type []))
+{
+  if (_dim == 2) {
+    this->integrateFunction_2d(field, coordinates, f);
+  } else if (_dim == 2) {
+    this->integrateFunction_3d(field, coordinates, f);
+  } else {
+    throw ALE::Exception("No integration function for this dimension");
+  }
+};
+
+void pylith::feassemble::Integrator::integrateLaplacianAction_2d(const Obj<section_type>& X, const Obj<section_type>& F, const Obj<section_type>& coordinates)
 {
   const topology_type::patch_type               patch    = 0;
   const Obj<topology_type>&                     topology = X->getTopology();
@@ -124,5 +163,115 @@ void pylith::feassemble::Integrator::integrateLaplacianAction(const Obj<section_
       }
     }
     F->updateAdd(patch, *e_iter, _elemVector);
+  }
+};
+
+void pylith::feassemble::Integrator::integrateLaplacianAction_3d(const Obj<section_type>& X, const Obj<section_type>& F, const Obj<section_type>& coordinates)
+{
+  const topology_type::patch_type               patch    = 0;
+  const Obj<topology_type>&                     topology = X->getTopology();
+  const Obj<topology_type::label_sequence>&     elements = topology->heightStratum(patch, 0);
+  const topology_type::label_sequence::iterator end      = elements->end();
+  value_type detJ;
+
+  for(topology_type::label_sequence::iterator e_iter = elements->begin(); e_iter != end; ++e_iter) {
+    computeElementGeometry(coordinates, *e_iter, _v0, _Jac, _invJac, detJ);
+    // Element integral
+    PetscMemzero(_elemVector, NUM_BASIS_FUNCTIONS*sizeof(value_type));
+    PetscMemzero(_elemMatrix, NUM_BASIS_FUNCTIONS*NUM_BASIS_FUNCTIONS*sizeof(value_type));
+    for(int q = 0; q < NUM_QUADRATURE_POINTS; q++) {
+      for(int i = 0; i < NUM_BASIS_FUNCTIONS; i++) {
+        _testWork[0] = _invJac[0]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+0] + _invJac[3]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+1] + _invJac[6]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+2];
+        _testWork[1] = _invJac[1]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+0] + _invJac[4]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+1] + _invJac[7]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+2];
+        _testWork[2] = _invJac[2]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+0] + _invJac[5]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+1] + _invJac[8]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+2];
+        for(int j = 0; j < NUM_BASIS_FUNCTIONS; j++) {
+          _basisWork[0] = _invJac[0]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+0] + _invJac[3]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+1] + _invJac[6]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+2];
+          _basisWork[1] = _invJac[1]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+0] + _invJac[4]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+1] + _invJac[7]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+2];
+          _basisWork[2] = _invJac[2]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+0] + _invJac[5]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+1] + _invJac[8]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+2];
+          _elemMatrix[i*NUM_BASIS_FUNCTIONS+j] += (_testWork[0]*_basisWork[0] + _testWork[1]*_basisWork[1] + _testWork[2]*_basisWork[2])*_weights[q]*detJ;
+        }
+      }
+    }
+    // Assembly
+    const value_type *xWork = X->restrict(patch, *e_iter);
+    for(int i = 0; i < NUM_BASIS_FUNCTIONS; i++) {
+      for(int j = 0; j < NUM_BASIS_FUNCTIONS; j++) {
+        _elemVector[i] += _elemMatrix[i*NUM_BASIS_FUNCTIONS+j]*xWork[j];
+      }
+    }
+    F->updateAdd(patch, *e_iter, _elemVector);
+  }
+};
+
+void pylith::feassemble::Integrator::integrateLaplacianAction(const Obj<section_type>& X, const Obj<section_type>& F, const Obj<section_type>& coordinates)
+{
+  if (_dim == 2) {
+    this->integrateLaplacianAction_2d(X, F, coordinates);
+  } else if (_dim == 2) {
+    this->integrateLaplacianAction_3d(X, F, coordinates);
+  } else {
+    throw ALE::Exception("No integration function for this dimension");
+  }
+};
+
+void pylith::feassemble::Integrator::integrateElasticAction_3d(const Obj<section_type>& X, const Obj<section_type>& F, const Obj<section_type>& coordinates)
+{
+  const topology_type::patch_type               patch    = 0;
+  const Obj<topology_type>&                     topology = X->getTopology();
+  const Obj<topology_type::label_sequence>&     elements = topology->heightStratum(patch, 0);
+  const topology_type::label_sequence::iterator end      = elements->end();
+  const double                                  C        = 1.0;
+  value_type detJ;
+
+  for(topology_type::label_sequence::iterator e_iter = elements->begin(); e_iter != end; ++e_iter) {
+    computeElementGeometry(coordinates, *e_iter, _v0, _Jac, _invJac, detJ);
+    // Element integral
+    PetscMemzero(_elemVector, NUM_BASIS_FUNCTIONS*3*sizeof(value_type));
+    PetscMemzero(_elemMatrix, NUM_BASIS_FUNCTIONS*NUM_BASIS_FUNCTIONS*9*sizeof(value_type));
+    for(int q = 0; q < NUM_QUADRATURE_POINTS; q++) {
+      for(int i = 0; i < NUM_BASIS_FUNCTIONS; i++) {
+        _testWork[0] = _invJac[0]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+0] + _invJac[3]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+1] + _invJac[6]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+2];
+        _testWork[1] = _invJac[1]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+0] + _invJac[4]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+1] + _invJac[7]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+2];
+        _testWork[2] = _invJac[2]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+0] + _invJac[5]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+1] + _invJac[8]*_basisDer[(q*NUM_BASIS_FUNCTIONS+i)*3+2];
+        for(int j = 0; j < NUM_BASIS_FUNCTIONS; j++) {
+          _basisWork[0] = _invJac[0]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+0] + _invJac[3]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+1] + _invJac[6]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+2];
+          _basisWork[1] = _invJac[1]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+0] + _invJac[4]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+1] + _invJac[7]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+2];
+          _basisWork[2] = _invJac[2]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+0] + _invJac[5]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+1] + _invJac[8]*_basisDer[(q*NUM_BASIS_FUNCTIONS+j)*3+2];
+          for(int c = 0; c < 3; c++) {
+            for(int d = 0; d < 3; d++) {
+              for(int e = 0; e < 3; e++) {
+                for(int f = 0; f < 3; f++) {
+                  _elemMatrix[((i*3+c)*NUM_BASIS_FUNCTIONS + j)*3+d] += 0.25*C*(_testWork[d] + _testWork[c])*(_basisWork[f] +_basisWork[e])*_weights[q]*detJ;
+                }
+              }
+              _elemMatrix[((i*3+c)*NUM_BASIS_FUNCTIONS + j)*3+d] += _basis[q*NUM_BASIS_FUNCTIONS+i]*_basis[q*NUM_BASIS_FUNCTIONS+j]*_weights[q]*detJ;
+            }
+          }
+        }
+      }
+    }
+    // Assembly
+    const value_type *xWork = X->restrict(patch, *e_iter);
+    for(int i = 0; i < NUM_BASIS_FUNCTIONS; i++) {
+      for(int c = 0; c < 3; c++) {
+        for(int j = 0; j < NUM_BASIS_FUNCTIONS; j++) {
+          for(int d = 0; d < 3; d++) {
+            _elemVector[i*3+c] += _elemMatrix[((i*3+c)*NUM_BASIS_FUNCTIONS+j)*3+d]*xWork[j*3+d];
+          }
+        }
+      }
+    }
+    F->updateAdd(patch, *e_iter, _elemVector);
+  }
+};
+
+void pylith::feassemble::Integrator::integrateElasticAction(const Obj<section_type>& X, const Obj<section_type>& F, const Obj<section_type>& coordinates)
+{
+  if (_dim == 2) {
+    //this->integrateElasticAction_2d(X, F, coordinates);
+  } else if (_dim == 2) {
+    this->integrateElasticAction_3d(X, F, coordinates);
+  } else {
+    throw ALE::Exception("No integration function for this dimension");
   }
 };
