@@ -1,10 +1,10 @@
-#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
 \textclass book
 \begin_preamble
-
+\newcommand\Prefix[3]{\vphantom{#3}#1#2#3}
 \end_preamble
 \language english
 \inputencoding latin1
@@ -41,78 +41,167 @@ Material Models
 \end_layout
 
 \begin_layout Section
-Effective Stress Function Formulation for a Maxwell Linear Viscoelastic
- Material
+Effective Stress Function Formulation for Viscoelastic Materials
 \end_layout
 
 \begin_layout Subsection
-Determination of stresses
+Definitions
 \end_layout
 
 \begin_layout Standard
-The element stresses are 
-\end_layout
+In the following sections, we use a combination of vector/tensor and index
+ notation.
+ Vectors and tensors are shown in bold font, and we use the common convention
+ where repeated indices indicate summation over the number of degrees of
+ freedom.
+ We also make frequent use of the scalar inner product.
+ The scalar inner product of two second-order tensors may be written
+\begin_inset Formula \begin{gather}
+\boldsymbol{a}\bullet\boldsymbol{b}=a_{ij}b_{ij}\,.\label{eq:1}\end{gather}
 
-\begin_layout Standard
-\begin_inset Formula \begin{equation}
-^{t+\Delta t}\mathrm{\sigma=}\mathrm{\mathbf{D}}^{t+\Delta t}\mathrm{\varepsilon}+^{I}\sigma=_{\,\,\,\,\,\,\,\,\,\,\, I}^{t+\Delta t}\sigma+^{I}\,,\label{eq:1}\end{equation}
+\end_inset
+
+Although the general constitutive relations are formulated in terms of the
+ stress and strain, we make use of the deviatoric stress and strain in our
+ formulation.
+ We first define the mean stress, 
+\begin_inset Formula $\sigma_{m}$
+\end_inset
+
+, and mean strain, 
+\begin_inset Formula $\epsilon_{m}$
+\end_inset
+
+:
+\begin_inset Formula \begin{gather}
+\sigma_{m}=\frac{\sigma_{ii}}{3}\,,\,\,\,\,\epsilon_{m}=\frac{\epsilon_{ii}}{3}\,,\label{eq:2}\end{gather}
+
+\end_inset
+
+where the 
+\begin_inset Formula $\sigma_{ii}$
+\end_inset
+
+ and 
+\begin_inset Formula $\epsilon_{ii}$
+\end_inset
+
+ represent the trace of the stress and strain tensors, respectively.
+ We then define the deviatoric components of stress and strain as
+\begin_inset Formula \begin{gather}
+S_{ij}=\sigma_{ij}-\sigma_{m}\delta_{ij}\,,\,\,\,\, e_{ij}^{\prime}=\epsilon_{ij}-\epsilon_{m}\delta_{ij}\,,\label{eq:3}\end{gather}
 
 \end_inset
 
 where 
-\begin_inset Formula $\varepsilon$
+\begin_inset Formula $\delta_{ij}$
 \end_inset
 
- is the total strain and 
-\begin_inset Formula $^{I}\sigma$
+ is the Kronecker delta.
+ Using the deviatoric components, we define the effective stress, 
+\begin_inset Formula $\overline{\sigma}$
 \end_inset
 
- is the initial stress.
+, the second deviatoric stress invariant, 
+\begin_inset Formula $\sqrt{J_{2}^{\prime}}$
+\end_inset
+
+, and the effective deviatoric strain, 
+\begin_inset Formula $\overline{e}$
+\end_inset
+
+, as
+\begin_inset Formula \begin{gather}
+\overline{\sigma}=\sqrt{\frac{3}{2}S\bullet\boldsymbol{S}}\,\,\nonumber \\
+\sqrt{J_{2}^{\prime}}=\sqrt{\frac{1}{2}\boldsymbol{S}\bullet\boldsymbol{S}}\,.\label{eq:4}\\
+\overline{e}=\sqrt{\frac{2}{3}\boldsymbol{e}^{\prime}\bullet\boldsymbol{e}^{\prime}}\,\,\nonumber \end{gather}
+
+\end_inset
+
+For quantities evaluated over a specific time period, we represent the initial
+ time as a prefixed subscript and the end time as a prefixed superscript.
+ In cases where the initial time does not appear, it is understood to be
+ 
+\begin_inset Formula $-\infty$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Generalized constitutive relation
+\end_layout
+
+\begin_layout Standard
+For viscoelastic materials, the basic element stress-strain relationship
+ for time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+ may be written
+\begin_inset Formula \begin{gather}
+\Prefix{}^{{t+\Delta t}}{\boldsymbol{\sigma}}=\boldsymbol{D}\Prefix^{{t+\Delta t}}{\boldsymbol{\epsilon}}+\Prefix^{{I}}{\boldsymbol{\sigma}}=\Prefix^{{t+\Delta t}}{_{\,\,\,\,\,\,\,\,\,\, I}\boldsymbol{\sigma}}+\Prefix^{{I}}{\boldsymbol{\sigma}}\,,\label{eq:5}\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $^{t+\Delta t}\boldsymbol{\varepsilon}$
+\end_inset
+
+ is the total strain at time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+, 
+\begin_inset Formula $\Prefix^{{I}}{\sigma}$
+\end_inset
+
+ is the initial stress, and 
+\begin_inset Formula $\boldsymbol{D}$
+\end_inset
+
+ is the stress-strain constitutive matrix.
+ We assume incompressible viscous flow, so that volumetric stress is purely
+ elastic, and we may divide the stress-strain relationship into volumetric
+ and deviatoric parts.
  In terms of the deviatoric stress, 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula \begin{equation}
-^{t+\Delta t}\mathrm{\mathbf{S}}=\frac{E}{1+\mathrm{v}}(^{t+\Delta t}\mathrm{\mathbf{e}}'-^{t+\Delta t}\mathrm{\mathbf{e}}^{C})+^{I}\mathrm{\mathbf{S}}\,,\label{eq:2}\end{equation}
+\begin_inset Formula \begin{gather}
+\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{E}{1+\mathrm{\nu}}(\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime}}-\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{C}})+\Prefix^{{I}}{\boldsymbol{S}}\,,\label{eq:6}\end{gather}
 
 \end_inset
 
 where 
-\end_layout
+\begin_inset Formula $\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{C}}$
+\end_inset
 
-\begin_layout Standard
-\begin_inset Formula \begin{equation}
-^{t+\Delta t}S_{ij}=^{t+\Delta t}\sigma_{ij}-^{t+\Delta t}\sigma_{m}\delta_{ij},\,\,\,^{t+\Delta t}e'_{ij}=^{t+\Delta t}e_{ij}-^{t+\Delta t}e_{m}\delta_{ij}\,,\label{eq:3}\end{equation}
+ is the creep strain at time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+.
+ Equation 
+\begin_inset LatexCommand \ref{eq:6}
 
 \end_inset
 
-and the mean stress and strain are given by 
-\begin_inset Formula \begin{equation}
-^{t+\Delta t}\sigma_{m}=\frac{^{t+\Delta t}\sigma_{ii}}{3},\,\,\,^{t+\Delta t}e_{m}=\frac{^{t+\Delta t}e_{ii}}{3}\,.\label{eq:4}\end{equation}
+ may also be written as
+\begin_inset Formula \begin{gather}
+\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{E}{1+\mathrm{\nu}}(\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\boldsymbol{\Delta}\boldsymbol{e}^{C})+\Prefix^{{I}}{\boldsymbol{S}}\,,\label{eq:7}\end{gather}
 
 \end_inset
 
-Equation\InsetSpace ~
-
-\begin_inset LatexCommand \ref{eq:2}
-
-\end_inset
-
- may also be written as 
-\begin_inset Formula \begin{equation}
-^{t+\Delta t}\mathrm{\mathbf{S}}=\frac{E}{1+\mathrm{v}}(^{t+\Delta t}\mathbf{\mathrm{e}''}-\Delta\mathrm{\mathbf{e}}^{C})+^{I}\mathrm{\mathbf{S}}\,,\label{eq:5}\end{equation}
+where
+\begin_inset Formula \begin{gather}
+\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}=\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime}}-\Prefix^{{t}}{\boldsymbol{e}^{C}}\,\,,\,\,\,\boldsymbol{\Delta}\boldsymbol{e}^{C}=\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{C}}-\Prefix^{{t}}{\boldsymbol{e}^{C}}\,.\label{eq:8}\end{gather}
 
 \end_inset
 
-where 
-\begin_inset Formula \begin{equation}
-^{t+\Delta t}\mathbf{\mathrm{\mathbf{e}}''}=^{t+\Delta t}\mathbf{\mathbf{\mathrm{\mathbf{e}}}'}-^{t}\mathrm{\mathbf{e}}^{C}\,\,,\,\,\,\Delta\mathrm{\mathbf{e}}^{C}=^{t+\Delta t}\mathrm{\mathbf{e}}^{C}-^{t}\mathrm{\mathbf{e}}^{C}\,.\label{eq:6}\end{equation}
-
-\end_inset
-
-The creep strain increment is approximated using 
-\begin_inset Formula \begin{equation}
-\Delta\mathrm{\mathbf{e}}^{C}=\Delta t^{\tau}\gamma^{\tau}\mathrm{\mathbf{S}}\,\,,\label{eq:7}\end{equation}
+The creep strain increment is approximated using
+\begin_inset Formula \begin{gather}
+\boldsymbol{\Delta}\boldsymbol{e}^{C}=\Delta t\Prefix^{{\tau}}{\gamma}\Prefix^{{\tau}}{\boldsymbol{S}}\,,\label{eq:9}\end{gather}
 
 \end_inset
 
@@ -120,83 +209,27 @@ where, using the
 \begin_inset Formula $\alpha$
 \end_inset
 
--method of time integration, 
-\begin_inset Formula \begin{equation}
-^{\tau}\mathbf{S}=(1-\alpha)_{I}^{t}\mathbf{S}+\alpha_{\,\,\,\,\,\,\,\,\,\,\, I}^{t+\Delta t}\mathbf{S}+^{I}\mathbf{S}=(1-\alpha)^{t}\mathbf{S}+\alpha^{t+\Delta t}\mathbf{S}\,\,,\label{eq:8}\end{equation}
+-method of time integration,
+\begin_inset Formula \begin{gather}
+\Prefix^{{\tau}}{\boldsymbol{S}}=(1-\alpha)\Prefix^{{t}}{_{I}\boldsymbol{S}}+\alpha\Prefix^{{t+\Delta t}}{_{\,\,\,\,\,\,\,\,\,\, I}\boldsymbol{S}}+^{I}\boldsymbol{S}=(1-\alpha)\Prefix^{{t}}{\boldsymbol{S}}+\alpha\Prefix^{{t+\Delta t}}{\boldsymbol{S}}\,\,,\label{eq:10}\end{gather}
 
 \end_inset
 
-and 
-\begin_inset Formula \begin{equation}
-^{\tau}\gamma=\frac{3\Delta\overline{e}^{C}}{2\Delta t^{\tau}\overline{\sigma}}\,\,,\label{eq:9}\end{equation}
+and
+\begin_inset Formula \begin{gather}
+\Prefix^{{\tau}}{\gamma}=\frac{3\Delta\overline{e}^{C}}{2\Delta t\Prefix^{{\tau}}{\overline{\sigma}}}\,\,,\label{eq:11}\end{gather}
 
 \end_inset
 
-where 
-\begin_inset Formula \begin{equation}
-\Delta\overline{e}^{C}=\sqrt{\frac{2}{3}\Delta\mathbf{e}^{C}\bullet\Delta\mathbf{e}^{C}}\label{eq:10}\end{equation}
+where
+\begin_inset Formula \begin{gather}
+\Delta\overline{e}^{C}=\sqrt{\frac{2}{3}\boldsymbol{\Delta}\boldsymbol{e}^{C}\bullet\boldsymbol{\Delta}\boldsymbol{e}^{C}}\label{eq:12}\end{gather}
 
 \end_inset
 
-and 
-\begin_inset Formula \begin{equation}
-^{\tau}\overline{\sigma}=(1-\alpha)_{I}^{t}\overline{\sigma}+\alpha_{\,\,\,\,\,\,\,\,\,\,\, I}^{t+\Delta t}\overline{\sigma}+^{I}\overline{\sigma}=\sqrt{\frac{3}{2}^{\tau}\mathbf{S}\bullet^{\tau}\mathbf{S}}=\sqrt{3^{\tau}J_{2}^{\mathbf{'}}}\,\,.\label{eq:11}\end{equation}
-
-\end_inset
-
-For a linear Maxwell viscoelastic material 
-\begin_inset Formula \begin{equation}
-\Delta\mathbf{e}^{C}=\frac{\Delta t^{\tau}\mathbf{S}}{2\eta}\,\,.\label{eq:12}\end{equation}
-
-\end_inset
-
-Therefore, 
-\begin_inset Formula \begin{equation}
-\Delta\overline{e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\mathbf{'}}}}{\sqrt{3\eta}}=\frac{\Delta t^{\tau}\overline{\sigma}}{3\eta}\,,\,\mathrm{and}\,^{\tau}\gamma=\frac{1}{2\eta}\,\,.\label{eq:13}\end{equation}
-
-\end_inset
-
-Substituting 
-\begin_inset LatexCommand \ref{eq:8}
-
-\end_inset
-
-, 
-\begin_inset LatexCommand \ref{eq:12}
-
-\end_inset
-
-, and 
-\begin_inset LatexCommand \ref{eq:13}
-
-\end_inset
-
- into 
-\begin_inset LatexCommand \ref{eq:5}
-
-\end_inset
-
-, we obtain 
-\begin_inset Formula \begin{equation}
-^{t+\Delta t}\mathbf{S}=\frac{E}{1+\mathrm{v}}\left\{ ^{t+\Delta t}\mathbf{e}^{''}-\frac{\Delta t}{2\eta}\left[(1-\alpha)^{t}\mathbf{S}+\alpha^{t+\Delta t}\mathbf{S}\right]\right\} +^{I}\mathbf{S}\,\,.\label{eq:14}\end{equation}
-
-\end_inset
-
- Solving for 
-\begin_inset Formula $^{t+\Delta t}\mathbf{S}$
-\end_inset
-
-, 
-\begin_inset Formula \begin{equation}
-^{t+\Delta t}\mathbf{S}=\frac{1}{\frac{1+\mathrm{v}}{E}+\frac{\alpha\Delta t}{2\eta}}\left[^{t+\Delta t}\mathbf{e''}-\frac{\Delta t}{2\eta}(1-\alpha)^{t}\mathbf{S}+\frac{1+\mathrm{v}}{E}\,^{I}\mathbf{S}\right]\,\,.\label{eq:15}\end{equation}
-
-\end_inset
-
-In this case it is possible to solve directly for the deviatoric stresses,
- and the effective stress function approach is not needed.
- To obtain the total stress, we simply use 
-\begin_inset Formula \begin{equation}
-^{t+\Delta t}\mathbf{\sigma_{\mathit{ij}}=\mathit{^{t+\Delta t}}\mathbf{S}_{\mathit{ij}}\mathrm{+\frac{\mathit{E}}{1-2v}\mathit{^{t+\Delta t}e_{m}\delta_{ij}+^{I}\sigma_{m}\delta_{ij}}\,\,.}}\label{eq:16}\end{equation}
+and
+\begin_inset Formula \begin{gather}
+\Prefix^{{\tau}}{\overline{\sigma}}=(1-\alpha)\Prefix^{{t}}{_{I}\overline{\sigma}}+\alpha\Prefix^{{t+\Delta t}}{_{\,\,\,\,\,\,\,\,\,\, I}\overline{\sigma}}+\Prefix^{{I}}{\overline{\sigma}}=\sqrt{3\Prefix^{{\tau}}{J_{2}^{\prime}}}\,\,.\label{eq:13}\end{gather}
 
 \end_inset
 
@@ -204,102 +237,160 @@ In this case it is possible to solve directly for the deviatoric stresses,
 \end_layout
 
 \begin_layout Subsection
+Linear Maxwell viscoelastic material
+\end_layout
+
+\begin_layout Standard
+For a linear Maxwell viscoelastic material the creep strain increment is
+\begin_inset Formula \begin{gather}
+\boldsymbol{\Delta}\boldsymbol{e}^{C}=\frac{\Delta t\Prefix^{{\tau}}{\boldsymbol{S}}}{2\eta}\,\,.\label{eq:14}\end{gather}
+
+\end_inset
+
+Therefore,
+\begin_inset Formula \begin{gather}
+\Delta\overline{e}^{C}=\frac{\Delta t\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}{\sqrt{3\eta}}=\frac{\Delta t\Prefix^{{\tau}}{\overline{\sigma}}}{3\eta}\,,\,\mathrm{and}\,\Prefix^{{\tau}}{\gamma}=\frac{1}{2\eta}\,\,.\label{eq:15}\end{gather}
+
+\end_inset
+
+Substituting 
+\begin_inset LatexCommand \ref{eq:10}
+
+\end_inset
+
+, 
+\begin_inset LatexCommand \ref{eq:14}
+
+\end_inset
+
+, and 
+\begin_inset LatexCommand \ref{eq:15}
+
+\end_inset
+
+ into 
+\begin_inset LatexCommand \ref{eq:7}
+
+\end_inset
+
+, we obtain
+\begin_inset Formula \begin{gather}
+\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{E}{1+\nu}\left\{ \Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\frac{\Delta t}{2\eta}\left[(1-\alpha)\Prefix^{{t}}{\boldsymbol{S}}+\alpha\Prefix^{{t+\Delta t}}{\boldsymbol{S}}\right]\right\} +\Prefix^{{I}}{\boldsymbol{S}}\,\,.\label{eq:16}\end{gather}
+
+\end_inset
+
+Solving for 
+\begin_inset Formula $\Prefix^{{t+\Delta t}}{\boldsymbol{S}}$
+\end_inset
+
+,
+\begin_inset Formula \begin{gather}
+\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{1}{\frac{1+\mathrm{\nu}}{E}+\frac{\alpha\Delta t}{2\eta}}\left[\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\frac{\Delta t}{2\eta}(1-\alpha)\Prefix^{{t}}{\boldsymbol{S}}+\frac{1+\mathrm{\nu}}{E}\Prefix^{{I}}{\boldsymbol{S}}\right]\,\,.\label{eq:17}\end{gather}
+
+\end_inset
+
+In this case it is possible to solve directly for the deviatoric stresses,
+ and the effective stress function approach is not needed.
+ To obtain the total stress, we simply use
+\begin_inset Formula \begin{gather}
+\Prefix^{{t+\Delta t}}{\sigma_{ij}}=\Prefix^{{t+\Delta t}}{S_{ij}}+\frac{\mathit{E}}{1-2\nu}\Prefix^{{t+\Delta t}}{e_{m}}\delta_{ij}+\Prefix^{{I}}{\sigma_{m}}\delta_{ij}\,\,.\label{eq:18}\end{gather}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
 Tangent stress-strain relation
 \end_layout
 
 \begin_layout Standard
 It is now necessary to provide a relationship for the viscoelastic tangent
- material matrix.
+ material matrix relating stress and strain.
  If we use vectors composed of the stresses and tensor strains, this relationshi
 p is
-\begin_inset Formula \begin{equation}
-\mathbf{C}^{VE}=\frac{\partial^{t+\Delta t}\sigma}{\partial^{t+\Delta t}\mathbf{e}}\,\,.\label{eq:17}\end{equation}
+\begin_inset Formula \begin{gather}
+\boldsymbol{C}^{VE}=\frac{\partial\Prefix^{{t+\Delta t}}{\boldsymbol{\sigma}}}{\partial\Prefix^{{t+\Delta t}}{\boldsymbol{\epsilon}}}\,\,.\label{eq:19}\end{gather}
 
 \end_inset
 
- In terms of the vectors, we have
-\begin_inset Formula \begin{eqnarray}
-^{t+\Delta t}\sigma_{i} & = & ^{t+\Delta t}S_{i}+^{t+\Delta t}\sigma_{m}\,\,;\,\,\, i=1,2,3\nonumber \\
-^{t+\Delta t}\sigma_{i} & = & ^{t+\Delta t}S_{i}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, i=4,5,6\label{eq:18}\end{eqnarray}
+In terms of the vectors, we have
+\begin_inset Formula \begin{gather}
+\Prefix^{{t+\Delta t}}{\sigma_{i}}=\Prefix^{{t+\Delta t}}{S_{i}}+\Prefix^{{t+\Delta t}}{\sigma_{m}}\,\,;\,\,\, i=1,2,3\nonumber \\
+\Prefix^{{t+\Delta t}}{\sigma_{i}}=\Prefix^{{t+\Delta t}}{S_{i}}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, i=4,5,6\label{eq:20}\end{gather}
 
 \end_inset
 
- Therefore, 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \begin{eqnarray}
-C_{ij}^{VE} & = & C_{ij}^{'}+\frac{E}{3(1-2\mathrm{v})}\,;\,\,1\leq i,j\leq3\,\,.\nonumber \\
-C_{ij}^{VE} & = & C_{ij}^{'}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\mathrm{otherwise}\label{eq:19}\end{eqnarray}
+Therefore,
+\begin_inset Formula \begin{gather}
+C_{ij}^{VE}=C_{ij}^{'}+\frac{E}{3(1-2\mathrm{v})}\,;\,\,1\leq i,j\leq3\,\,.\nonumber \\
+C_{ij}^{VE}=C_{ij}^{'}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise}\label{eq:21}\end{gather}
 
 \end_inset
 
-Using the chain rule, 
-\begin_inset Formula \begin{equation}
-\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{j}}=\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{''}}\frac{\partial^{t+\Delta t}e_{k}^{''}}{\partial^{t+\Delta t}e_{l}^{'}}\frac{\partial^{t+\Delta t}e_{l}^{'}}{\partial^{t+\Delta t}e_{j}}\,\,.\label{eq:20}\end{equation}
+Using the chain rule,
+\begin_inset Formula \begin{gather}
+\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{\epsilon_{j}}}=\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}\frac{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}{\partial\Prefix^{{t+\Delta t}}{e_{l}^{\prime}}}\frac{\partial\Prefix^{{t+\Delta t}}{e_{l}^{\prime}}}{\partial\Prefix^{{t+\Delta t}}{\epsilon_{j}}}\,\,.\label{eq:22}\end{gather}
 
 \end_inset
 
 From 
-\begin_inset LatexCommand \ref{eq:6}
+\begin_inset LatexCommand \ref{eq:8}
 
 \end_inset
 
-, we obtain 
-\begin_inset Formula \begin{equation}
-\frac{\partial^{t+\Delta t}e_{k}^{''}}{\partial^{t+\Delta t}e_{l}^{'}}=\delta_{kl}\,\,,\label{eq:21}\end{equation}
+, we obtain
+\begin_inset Formula \begin{gather}
+\frac{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}{\partial\Prefix^{{t+\Delta t}}{e_{l}^{\prime}}}=\delta_{kl}\,\,,\label{eq:23}\end{gather}
 
 \end_inset
 
- and from 
+and from 
 \begin_inset LatexCommand \ref{eq:3}
 
 \end_inset
 
-: 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \begin{eqnarray}
-\frac{\partial^{t+\Delta t}e_{l}^{'}}{\partial^{t+\Delta t}e_{j}} & = & \frac{1}{3}\left[\begin{array}{ccc}
+:
+\begin_inset Formula \begin{gather}
+\frac{\partial\Prefix^{{t+\Delta t}}{e_{l}^{\prime}}}{\partial\Prefix^{{t+\Delta t}}{e_{j}}}=\frac{1}{3}\left[\begin{array}{ccc}
 2 & -1 & -1\\
 -1 & 2 & -1\\
 -1 & -1 & 2\end{array}\right];\,\,1\leq l,j\leq3\nonumber \\
-\frac{\partial^{t+\Delta t}e_{l}^{'}}{\partial^{t+\Delta t}e_{j}} & = & \delta_{lj}\,\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\mathrm{otherwise}\label{eq:22}\end{eqnarray}
+\frac{\partial\Prefix^{{t+\Delta t}}{e_{l}^{\prime}}}{\partial\Prefix^{{t+\Delta t}}{\epsilon_{j}}}=\delta_{lj}\,\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise}\label{eq:24}\end{gather}
 
 \end_inset
 
- Finally, from 
-\begin_inset LatexCommand \ref{eq:15}
+Finally, from 
+\begin_inset LatexCommand \ref{eq:17}
 
 \end_inset
 
-, we have 
-\begin_inset Formula \begin{equation}
-\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{''}}=\frac{\delta_{ik}}{\frac{1+\mathrm{v}}{E}+\frac{\alpha\Delta t}{2\eta}}\,\,.\label{eq:23}\end{equation}
+, we have
+\begin_inset Formula \begin{gather}
+\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=\frac{\delta_{ik}}{\frac{1+\nu}{E}+\frac{\alpha\Delta t}{2\eta}}\,\,.\label{eq:25}\end{gather}
 
 \end_inset
 
 From 
-\begin_inset LatexCommand \ref{eq:19}
+\begin_inset LatexCommand \ref{eq:21}
 
 \end_inset
 
-, the final material matrix relating stress and tensor strain is 
-\begin_inset Formula \begin{equation}
-C_{ij}^{VE}=\frac{E}{3(1-2\mathrm{v})}\left[\begin{array}{cccccc}
+, the final material matrix relating stress and tensor strain is
+\begin_inset Formula \begin{gather}
+C_{ij}^{VE}=\frac{E}{3(1-2\nu)}\left[\begin{array}{cccccc}
 1 & 1 & 1 & 0 & 0 & 0\\
 1 & 1 & 1 & 0 & 0 & 0\\
 1 & 1 & 1 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3\left(\frac{1+\mathrm{v}}{E}+\frac{\alpha\Delta t}{2\eta}\right)}\left[\begin{array}{cccccc}
+0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3\left(\frac{1+\nu}{E}+\frac{\alpha\Delta t}{2\eta}\right)}\left[\begin{array}{cccccc}
 2 & -1 & -1 & 0 & 0 & 0\\
 -1 & 2 & -1 & 0 & 0 & 0\\
 -1 & -1 & 2 & 0 & 0 & 0\\
 0 & 0 & 0 & 3 & 0 & 0\\
 0 & 0 & 0 & 0 & 3 & 0\\
-0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:24}\end{equation}
+0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:26}\end{gather}
 
 \end_inset
 
@@ -313,21 +404,21 @@ Note that the coefficient of the second matrix approaches
 
  goes to infinity.
  Since finite element computations typically use engineering strain measures,
- the matrix that is actually used is 
-\begin_inset Formula \begin{equation}
+ the matrix that is actually used is
+\begin_inset Formula \begin{gather}
 C_{ij}^{VE}=\frac{E}{3(1-2\mathrm{v})}\left[\begin{array}{cccccc}
 1 & 1 & 1 & 0 & 0 & 0\\
 1 & 1 & 1 & 0 & 0 & 0\\
 1 & 1 & 1 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3\left(\frac{1+\mathrm{v}}{E}+\frac{\alpha\Delta t}{2\eta}\right)}\left[\begin{array}{cccccc}
+0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3\left(\frac{1+\nu}{E}+\frac{\alpha\Delta t}{2\eta}\right)}\left[\begin{array}{cccccc}
 2 & -1 & -1 & 0 & 0 & 0\\
 -1 & 2 & -1 & 0 & 0 & 0\\
 -1 & -1 & 2 & 0 & 0 & 0\\
 0 & 0 & 0 & \frac{3}{2} & 0 & 0\\
 0 & 0 & 0 & 0 & \frac{3}{2} & 0\\
-0 & 0 & 0 & 0 & 0 & \frac{3}{2}\end{array}\right]\,.\label{eq:25}\end{equation}
+0 & 0 & 0 & 0 & 0 & \frac{3}{2}\end{array}\right]\,.\label{eq:27}\end{gather}
 
 \end_inset
 
@@ -337,21 +428,281 @@ To check the results we make sure that the regular elastic constitutive
 \end_inset
 
  goes to infinity.
- 
-\begin_inset Formula \begin{eqnarray}
-C_{11}^{E} & = & \frac{E(1-\mathrm{v})}{(1+\mathrm{v})(1-2\mathrm{v})}\nonumber \\
-C_{12}^{E} & = & \frac{Ev}{(1+\mathrm{v})(1-2\mathrm{v})}\,.\label{eq:26}\\
-C_{44}^{E} & = & \frac{E}{2(1+\mathrm{v})}\nonumber \end{eqnarray}
+\begin_inset Formula \begin{gather}
+C_{11}^{E}=\frac{E(1-\nu)}{(1+\nu)(1-2\nu)}\,\,\nonumber \\
+C_{12}^{E}=\frac{E\nu}{(1+\nu)(1-2\nu)}\,.\label{eq:28}\\
+C_{44}^{E}=\frac{E}{2(1+\nu)}\,\,\nonumber \end{gather}
 
 \end_inset
 
- This is consistent with the regular elasticity matrix, and equation 
-\begin_inset LatexCommand \ref{eq:25}
+This is consistent with the regular elasticity matrix, and equation 
+\begin_inset LatexCommand \ref{eq:27}
 
 \end_inset
 
  should thus be used when forming the stiffness matrix.
  
+\end_layout
+
+\begin_layout Subsection
+Power-law Maxwell viscoelastic material
+\end_layout
+
+\begin_layout Standard
+For a power-law Maxwell viscoelastic material, the creep strain increment
+ is
+\begin_inset Formula \begin{gather}
+\boldsymbol{\Delta}\boldsymbol{e}^{C}=\frac{\Delta t\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n-1}\Prefix^{{\tau}}{\boldsymbol{S}}}{2\eta^{n}}=\frac{\Delta t\Prefix^{{\tau}}{\overline{\sigma}^{n-1}}\Prefix^{{\tau}}{\boldsymbol{S}}}{2\sqrt{3}\eta^{n}}\,.\label{eq:29}\end{gather}
+
+\end_inset
+
+Therefore,
+\begin_inset Formula \begin{gather}
+\Delta\bar{e}^{C}=\frac{\Delta t\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n}}{\sqrt{3}\eta^{n}}=\frac{\Delta t\Prefix^{{\tau}}{\overline{\sigma}^{n}}}{\sqrt{3}^{n+1}\eta^{n}}\,,\,\textrm{and}\,\Prefix^{{\tau}}{\gamma}=\frac{\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n-1}}{2\eta^{n}}\,.\label{eq:30}\end{gather}
+
+\end_inset
+
+substituting 
+\begin_inset LatexCommand \ref{eq:10}
+
+\end_inset
+
+, 
+\begin_inset LatexCommand \ref{eq:29}
+
+\end_inset
+
+, and 
+\begin_inset LatexCommand \ref{eq:30}
+
+\end_inset
+
+ into 
+\begin_inset LatexCommand \ref{eq:7}
+
+\end_inset
+
+, we obtain:
+\begin_inset Formula \begin{gather}
+\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{E}{1+\nu}\left\{ \Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\Delta t\Prefix^{{\tau}}{\gamma}\left[\left(1-\alpha\right)\Prefix^{{t}}{\boldsymbol{S}}+\alpha\Prefix^{{t+\Delta t}}{\boldsymbol{S}}\right]\right\} +\Prefix^{{I}}{\boldsymbol{S}}\,,\label{eq:31}\end{gather}
+
+\end_inset
+
+which may be rewritten:
+\begin_inset Formula \begin{gather}
+\Prefix^{{t+\Delta t}}{\boldsymbol{S}}\left(\frac{1+\nu}{E}+\alpha\Delta t\Prefix^{{\tau}}{\gamma}\right)=\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\Delta t\Prefix^{{\tau}}{\gamma}\left(1-\alpha\right)\Prefix^{{t}}{\boldsymbol{S}}+\frac{1+\nu}{E}\Prefix^{{I}}{\boldsymbol{S}}\,.\label{eq:32}\end{gather}
+
+\end_inset
+
+Taking the scalar inner product of both sides we obtain:
+\begin_inset Formula \begin{gather}
+a^{2}\,\,\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}-b+c\Prefix^{{\tau}}{\gamma}-d^{2}\Prefix^{{\tau}}{\gamma^{2}}=F=0\,,\label{eq:33}\end{gather}
+
+\end_inset
+
+where
+\begin_inset Formula \begin{gather}
+a=\frac{1+\nu}{E}+\alpha\Delta t\Prefix^{{\tau}}{\gamma}\,\,\nonumber \\
+b=\frac{1}{2}\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}\bullet\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}+\frac{1+\nu}{E}\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}\bullet\Prefix^{{I}}{\boldsymbol{S}}+\left(\frac{1+\nu}{E}\right)^{2}\Prefix^{{I}}{J_{2}^{\prime}}\,.\label{eq:34}\\
+c=\Delta t\left(1-\alpha\right)\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}\bullet\Prefix^{{t}}{\boldsymbol{S}}+\Delta t\left(1-\alpha\right)\frac{1+\nu}{E}\Prefix^{{t}}{\boldsymbol{S}}\bullet\Prefix^{{I}}{\boldsymbol{S}}\,\,\nonumber \\
+d=\Delta t\left(1-\alpha\right)\sqrt{\Prefix^{{t}}{J_{2}^{\prime}}}\,\,\nonumber \end{gather}
+
+\end_inset
+
+Equation 
+\begin_inset LatexCommand \ref{eq:33}
+
+\end_inset
+
+ is a function of a single unknown - the second deviatoric stress invariant
+ at time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+ - and may be solved by bisection or by Newton's method.
+ Once this parameter has been found, the deviatoric stresses for the current
+ time step may be found from 
+\begin_inset LatexCommand \ref{eq:31}
+
+\end_inset
+
+ and 
+\begin_inset LatexCommand \ref{eq:30}
+
+\end_inset
+
+, and the total stresses may be found from 
+\begin_inset LatexCommand \ref{eq:18}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Tangent stress-strain relation
+\end_layout
+
+\begin_layout Standard
+We proceed as for the linear case, but the evaluation of the first derivative
+ in equation 
+\begin_inset LatexCommand \ref{eq:22}
+
+\end_inset
+
+ is more complicated.
+ We begin by rewriting 
+\begin_inset LatexCommand \ref{eq:32}
+
+\end_inset
+
+ as
+\begin_inset Formula \begin{gather}
+\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{1}{\left(a_{E}+\alpha\Delta t\Prefix^{{\tau}}{\gamma}\right)}\left[\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\Delta t\Prefix^{{\tau}}{\gamma}\left(1-\alpha\right)\Prefix^{{t}}{\boldsymbol{S}}+a_{E}\Prefix^{{I}}{\boldsymbol{S}}\right]\,,\label{eq:35}\end{gather}
+
+\end_inset
+
+where
+\begin_inset Formula \begin{gather}
+a_{E}=\frac{1+\nu}{E}\,.\label{eq:36}\end{gather}
+
+\end_inset
+
+The derivative is then
+\begin_inset Formula \begin{gather}
+\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=\frac{1}{a_{E}+\alpha\Delta t\Prefix^{{\tau}}{\gamma}}\nonumber \\
+\left\langle \delta_{ik}-\frac{\partial\Prefix^{{\tau}}{\gamma}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}\left\{ \Delta t\left(1-\alpha\right)\Prefix^{{t}}{S_{i}}+\frac{\alpha\Delta t}{a_{E}+\alpha\Delta t\Prefix^{{\tau}}{\gamma}}\left[\Prefix^{{t+\Delta t}}{e_{i}^{\prime\prime}}-\Delta t\Prefix^{{\tau}}{\gamma}\left(1-\alpha\right)\Prefix^{{t}}{S_{i}}+a_{E}\Prefix^{{I}}{S_{i}}\right]\right\} \right\rangle \,.\label{eq:37}\end{gather}
+
+\end_inset
+
+From 
+\begin_inset LatexCommand \ref{eq:30}
+
+\end_inset
+
+,
+\begin_inset Formula \begin{gather}
+\frac{\partial\Prefix^{{\tau}}{\gamma}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=\frac{\left(n-1\right)\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n-2}}{2\eta^{n}}\frac{\partial\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=K_{1}\frac{\partial\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}\,.\label{eq:38}\end{gather}
+
+\end_inset
+
+We first note that
+\begin_inset Formula \begin{gather}
+\sqrt{\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}}=\frac{1}{\alpha}\left[\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}-\left(1-\alpha\right)\sqrt{\Prefix^{{t}}{J_{2}^{\prime}}}\right]\,,\label{eq:39}\end{gather}
+
+\end_inset
+
+which allows us to rewrite 
+\begin_inset LatexCommand \ref{eq:33}
+
+\end_inset
+
+ as
+\begin_inset Formula \begin{gather}
+\frac{a^{2}}{\alpha^{2}}\left[\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}-\left(1-\alpha\right)\sqrt{\Prefix^{{t}}{J_{2}^{\prime}}}\right]^{2}-b+c\Prefix^{{\tau}}{\gamma}-d^{2}\Prefix^{{\tau}}{\gamma^{2}}=\frac{a^{2}}{\alpha^{2}}K_{2}^{2}-b+c\Prefix^{{\tau}}{\gamma}-d^{2}\Prefix^{{\tau}}{\gamma^{2}}=F=0\,.\label{eq:40}\end{gather}
+
+\end_inset
+
+The derivatives of this function are
+\begin_inset Formula \begin{gather}
+\frac{\partial F}{\partial\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}=\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\Prefix^{{\tau}}{\gamma}\right)\nonumber \\
+\frac{\partial F}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=-\delta_{ik}\left[\frac{\Prefix^{{t+\Delta t}}{e_{i}^{\prime\prime}}}{2}\right]+a_{E}\Prefix^{{I}}{S_{i}}-\Delta t\left(1-\alpha\right)\Prefix^{{t}}{S_{i}}\Prefix^{{\tau}}{\gamma}\,.\label{eq:41}\end{gather}
+
+\end_inset
+
+Then using the quotient rule for derivatives,
+\begin_inset Formula \begin{gather}
+\frac{\partial\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=\frac{\delta_{ik}\left[\frac{\Prefix^{{t+\Delta t}}{e_{i}^{\prime\prime}}}{2}+a_{E}\Prefix^{{I}}{S_{i}}-\Delta t\left(1-\alpha\right)\Prefix^{{t}}{S_{i}}\Prefix^{{\tau}}{\gamma}\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\Prefix^{{\tau}}{\gamma}\right)}\,.\label{eq:42}\end{gather}
+
+\end_inset
+
+This yields
+\begin_inset Formula \begin{gather}
+\frac{\partial\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=\frac{\delta_{ik}K_{1}\left[\frac{\Prefix^{{t+\Delta t}}{e_{i}^{\prime\prime}}}{2}+a_{E}\Prefix^{{I}}{S_{i}}-\Delta t\left(1-\alpha\right)\Prefix^{{t}}{S_{i}}\Prefix^{{\tau}}{\gamma}\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\Prefix^{{\tau}}{\gamma}\right)}\,.\label{eq:43}\end{gather}
+
+\end_inset
+
+Note that for a linear material 
+\begin_inset Formula $\left(n=1\right)$
+\end_inset
+
+, this derivative is zero.
+ This relation may be used in 
+\begin_inset LatexCommand \ref{eq:37}
+
+\end_inset
+
+.
+ Then, using equations 
+\begin_inset LatexCommand \ref{eq:21}
+
+\end_inset
+
+ through 
+\begin_inset LatexCommand \ref{eq:24}
+
+\end_inset
+
+,
+\begin_inset Formula \begin{gather}
+C_{ij}^{VE}=\frac{E}{3\left(1-2\nu\right)}\left[\begin{array}{cccccc}
+1 & 1 & 1 & 0 & 0 & 0\\
+1 & 1 & 1 & 0 & 0 & 0\\
+1 & 1 & 1 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3}\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}\left[\begin{array}{cccccc}
+2 & -1 & -1 & 0 & 0 & 0\\
+-1 & 2 & -1 & 0 & 0 & 0\\
+-1 & -1 & 2 & 0 & 0 & 0\\
+0 & 0 & 0 & 3 & 0 & 0\\
+0 & 0 & 0 & 0 & 3 & 0\\
+0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:44}\end{gather}
+
+\end_inset
+
+As for the linear case, we use an altered version of the matrix appropriate
+ for engineering strain measures.
+ At the beginning of a time step, the strains have not yet been computed,
+ and we use the following approximation:
+\begin_inset Formula \begin{gather}
+\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}\approx\frac{\delta_{ik}}{a_{E}+\Delta t\Prefix^{{\tau}}{\gamma}}\,,\label{eq:45}\end{gather}
+
+\end_inset
+
+where we have neglected the changes in 
+\begin_inset Formula $\Prefix^{{\tau}}{\gamma}$
+\end_inset
+
+ due to changes in 
+\begin_inset Formula $\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}$
+\end_inset
+
+, and we have used a value of 
+\begin_inset Formula $\alpha=1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Derivative of effective stress function
+\end_layout
+
+\begin_layout Standard
+To compute the zero of the effective stress function using Newton's method,
+ we require the derivative of 
+\begin_inset LatexCommand \ref{eq:33}
+
+\end_inset
+
+, which may be written:
+\begin_inset Formula \begin{gather}
+\frac{\partial F}{\partial\sqrt{\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}}}=2a^{2}+\frac{\alpha\left(n-1\right)\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}+c-2d^{2}\Prefix^{{\tau}}{\gamma}\right)\,.\label{eq:46}\end{gather}
+
+\end_inset
+
+
 \end_layout
 
 \end_body
