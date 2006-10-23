@@ -698,7 +698,7 @@ To compute the zero of the effective stress function using Newton's method,
 
 , which may be written:
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial\sqrt{\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}}}=2a^{2}+\frac{\alpha\left(n-1\right)\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}+c-2d^{2}\Prefix^{{\tau}}{\gamma}\right)\,.\label{eq:46}\end{gather}
+\frac{\partial F}{\partial\sqrt{\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}}}=2a^{2}\sqrt{\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}}+\frac{\alpha\left(n-1\right)\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}+c-2d^{2}\Prefix^{{\tau}}{\gamma}\right)\,.\label{eq:46}\end{gather}
 
 \end_inset
 
