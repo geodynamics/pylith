@@ -390,7 +390,7 @@ Mass density scalar field
 \end_layout
 
 \begin_layout Subsection
-Derivation of Dynamic Elasticity Equation
+Derivation of Elasticity Equation
 \end_layout
 
 \begin_layout Subsubsection
@@ -560,7 +560,7 @@ Because the volume
 \end_layout
 
 \begin_layout Subsection
-Finite-Element Formulation of Dynamic Elasticity Equation
+Finite-Element Formulation of Elasticity Equation
 \end_layout
 
 \begin_layout Subsubsection
@@ -706,12 +706,12 @@ This is the equation we want to solve.
 Within an element we represent the fields as a linear combination of a set
  of basis functions and the values of the fields at vertices of the element,
 \begin_inset Formula \begin{equation}
-a_{i}=N_{m}a_{i}^{m},\end{equation}
+a_{i}=N^{m}a_{i}^{m},\end{equation}
 
 \end_inset
 
 where 
-\begin_inset Formula $N_{m}$
+\begin_inset Formula $N^{m}$
 \end_inset
 
  is the 
@@ -729,44 +729,24 @@ th basis function for an element and
 .
  Rewriting the trial functions and displacement field in terms of the basis
  functions gives
-\begin_inset Marginal
-status open
-
-\begin_layout Standard
-Is the expression for the trial function correct?
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula \begin{gather}
-\phi_{i}=N_{m},\text{ and}\\
-u_{i}=N_{m}u_{i}^{m}.\end{gather}
+\phi_{i}=N^{m},\text{ and}\\
+u_{i}=N^{m}u_{i}^{m}.\end{gather}
 
 \end_inset
 
-Substituting into the integral equation yields
+We force the weak form to hold for each component in the vector space.
+ For basis function 
+\begin_inset Formula $N^{p}$
+\end_inset
+
+ and component 
+\begin_inset Formula $i$
+\end_inset
+
+, we have
 \begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{p,j}+N_{q,i})\, dV+\int_{V^{e}}\rho N_{p}N_{q}\ddot{u}_{i}^{q}\: dV-\int_{V^{e}}N_{p}N_{q}f_{i}^{q}\: dV-\int_{S_{T}^{e}}N_{p}N_{q}T_{i}^{q}\, dS)=0.\end{multline}
-
-\end_inset
-
-For a linearly elastic material
-\begin_inset Formula \begin{equation}
-\sigma_{ij}=C_{ijkl}\varepsilon_{kl},\end{equation}
-
-\end_inset
-
-and for infinitesimal strains
-\begin_inset Formula \begin{equation}
-\varepsilon_{kl}=\frac{1}{2}\left(u_{k,l}+u_{l,k}\right),\end{equation}
-
-\end_inset
-
-so in this case our integral equation becomes
-\begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{4}C_{ijkl}(N_{r,l}u_{k}^{r}+N_{s,k}u_{l}^{s}){(N}_{p,j}+N_{q,i})\, dV+\int_{V^{e}}\rho N_{p}N_{q}\ddot{u}_{i}^{q}\: dV\\
--\int_{V^{e}}N_{p}N_{q}f_{i}^{q}\, dV-\int_{S_{T}}N_{p}N_{q}T_{i}^{q}\, dS)=0.\end{multline}
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV+\int_{V^{e}}\rho N_{}^{p}\sum_{q}N_{}^{q}\ddot{u}_{i}^{q}\: dV-\int_{V^{e}}N_{}^{p}f_{i}\: dV-\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS)=0.\end{multline}
 
 \end_inset
 
@@ -958,19 +938,19 @@ Is the trial function expression correct?
 
 
 \begin_inset Formula \begin{equation}
-\overrightarrow{\phi}=\underline{N}\cdot\overrightarrow{1},\text{ and}\end{equation}
+\overrightarrow{\phi}=\overrightarrow{N},\text{ and}\end{equation}
 
 \end_inset
 
 
 \begin_inset Formula \begin{equation}
-\overrightarrow{u}=\underline{N}\overrightarrow{u^{e}}.\end{equation}
+\overrightarrow{u}=\underline{N}\cdot\overrightarrow{u^{e}}.\end{equation}
 
 \end_inset
 
 Substituting into the integral equation yields
 \begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\underline{N}\, dV+\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\cdot\frac{\partial^{2}\overrightarrow{u^{e}}}{\partial t^{2}}\: dV-\int_{V^{e}}\underline{N}\cdot\underline{N}\overrightarrow{{\cdot f}^{e}}^{}\, dV-\int_{S_{T}}\underline{N}\cdot\underline{N}\overrightarrow{{\cdot T}^{e}}_{}\, dS)=0\end{multline}
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\underline{N}\, dV+\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\cdot\frac{\partial^{2}\overrightarrow{u^{e}}}{\partial t^{2}}\: dV-\int_{V^{e}}\underline{N}\cdot\overrightarrow{f^{e}}^{}\, dV-\int_{S_{T}}\underline{N}\cdot\overrightarrow{T^{e}}_{}\, dS)=0\end{multline}
 
 \end_inset
 
@@ -996,8 +976,106 @@ so in this case our integral equation becomes
 
 \end_layout
 
+\begin_layout Subsection
+Explicit Time Integration of Elasticity Equation
+\end_layout
+
 \begin_layout Subsubsection
-Time-Stepping
+Index Notation
+\end_layout
+
+\begin_layout Standard
+Using the central difference method to approximate the acceleration (and
+ velocity),
+\begin_inset Formula \begin{gather}
+\ddot{u}_{i}=\frac{1}{\Delta t^{2}}\left(u_{i}(t+\Delta t)-2u_{i}(t)+u_{i}(t-\Delta t)\right)\\
+\dot{u}_{i}=\frac{1}{2\Delta t}\left(u_{i}(t+\Delta t)-u_{i}(t-\Delta t)\right)\end{gather}
+
+\end_inset
+
+we have
+\begin_inset Formula \begin{multline}
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV+\int_{V^{e}}\rho N_{}^{p}\sum_{q}N_{}^{q}(u_{i}^{q}(t+\Delta t)-2u_{i}^{q}(t)+u_{i}^{q}(t-\Delta t))\: dV\\
+-\int_{V^{e}}N^{p}f_{i}(t)\: dV-\int_{S_{T}}N^{p}T_{i}\: dS)=0,\end{multline}
+
+\end_inset
+
+which we can expand into
+\begin_inset Formula \begin{multline}
+\sum_{elements}({\frac{1}{\Delta t^{2}}\int}_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t+\Delta t)\, dV-\frac{2}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV+\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV\\
++{\frac{1}{2}\int}_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV-\int_{V^{e}}N^{p}f_{i}(t)\: dV-\int_{S_{T}}N^{p}T_{i}\: dS)=0\end{multline}
+
+\end_inset
+
+for the 
+\begin_inset Formula $i$
+\end_inset
+
+th component associated with basis function
+\begin_inset Formula $N^{p}$
+\end_inset
+
+.
+ Isolating the term containing 
+\begin_inset Formula $u_{i}^{q}(t+\Delta t)$
+\end_inset
+
+ yields
+\begin_inset Formula \begin{multline*}
+\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t+\Delta t)\, dV\right)=\frac{2}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV\right)-\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV\right)\\
+-\frac{1}{2}\sum_{elements}\left(\int_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV\right)+\sum_{elements}\left(\int_{V^{e}}N^{p}f_{i}(t)\: dV\right)+\sum_{elements}\left(\int_{S_{T}}N^{p}T_{i}\: dS\right).\end{multline*}
+
+\end_inset
+
+We can rewrite the left-hand-side as a matrix-vector product where the vector
+ is the displacement field at time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+ and the element mass matrix is given by
+\begin_inset Formula \[
+M_{ij}^{pq}=\delta_{ij}\int_{V^{e}}\rho N^{p}N^{q}\, dV,\]
+
+\end_inset
+
+where 
+\begin_inset Formula $M_{ij}^{pq}$
+\end_inset
+
+ is a 
+\begin_inset Formula $pn$
+\end_inset
+
+ by 
+\begin_inset Formula $qn$
+\end_inset
+
+ matrix (
+\begin_inset Formula $n$
+\end_inset
+
+ is the dimension of the vector space), 
+\begin_inset Formula $p$
+\end_inset
+
+ and 
+\begin_inset Formula $q$
+\end_inset
+
+ refer to the basis functions and 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $j$
+\end_inset
+
+ are vector space components.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Vector Notation
 \end_layout
 
 \begin_layout Standard
@@ -1006,29 +1084,6 @@ Using the central difference method to approximate the acceleration (and
 \begin_inset Formula \begin{gather}
 \frac{\partial^{2}\overrightarrow{u}(t)}{\partial t^{2}}=\frac{1}{\Delta t^{2}}\left(\overrightarrow{u}(t+\Delta t)-2\overrightarrow{u}(t)+\overrightarrow{u}(t-\Delta t)\right)\\
 \frac{\partial\overrightarrow{u}(t)}{\partial t}=\frac{1}{2\Delta t}\left(\overrightarrow{u}(t+\Delta t)-\overrightarrow{u}(t-\Delta t)\right)\end{gather}
-
-\end_inset
-
-we have
-\begin_inset Formula \begin{multline}
-\sum_{elements}({\frac{1}{2}\int}_{V^{e}}\underline{\sigma}(t):(\nabla+\nabla^{T})\overrightarrow{\phi}\: dV+\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho\left(\overrightarrow{u}(t+\Delta t)-2\overrightarrow{u}(t)+\overrightarrow{u}(t-\Delta t)\right)\cdot\overrightarrow{\phi}\: dV\\
--\int_{V^{e}}\overrightarrow{f}(t)\cdot\overrightarrow{\phi}\: dV-\int_{S_{T}}\overrightarrow{T}\cdot\overrightarrow{\phi}\: dS)=0,\end{multline}
-
-\end_inset
-
-which we can expand into
-\begin_inset Formula \begin{multline}
-\sum_{elements}({\frac{1}{\Delta t^{2}}\int}_{V^{e}}\rho\overrightarrow{u}(t+\Delta t)\cdot\overrightarrow{\phi}\, dV-\frac{2}{\Delta t^{2}}\int_{V^{e}}\rho\overrightarrow{u}(t)\cdot\overrightarrow{\phi}\, dV+\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho\overrightarrow{u}(t-\Delta t^{2})\cdot\overrightarrow{\phi}\, dV\\
-+{\frac{1}{2}\int}_{V^{e}}\underline{\sigma}(t):(\nabla+\nabla^{T})\overrightarrow{\phi}\: dV-\int_{V^{e}}\overrightarrow{f}(t)\cdot\overrightarrow{\phi}\: dV-\int_{S_{T}}\overrightarrow{T}\cdot\overrightarrow{\phi}\: dS)=0.\end{multline}
-
-\end_inset
-
-Using the expression for the trial function and the displacement field in
- terms of the values at the vertices yields
-\begin_inset Formula \begin{multline}
-\sum_{elements}(\frac{1}{\Delta t^{2}}{(\int}_{V^{e}}\rho\underline{N}\cdot\underline{N}\, dV)\cdot\overrightarrow{u^{e}}(t+\Delta t))=\sum_{elements}(\frac{2}{\Delta t^{2}}(\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\, dV)\cdot\overrightarrow{u^{e}}(t)\\
--\frac{1}{\Delta t^{2}}(\int_{V^{e}}\rho\underline{N}\cdot\underline{N}\, dV)\cdot\overrightarrow{u^{e}}(t-\Delta t)-\frac{1}{2}\int_{V^{w}}\overrightarrow{\sigma}(t):(\nabla+\nabla^{T})\underline{N}\: dV\\
-+(\int_{V^{e}}\underline{N}\cdot\underline{N}\, dV)\cdot\overrightarrow{f^{e}}(t)+(\int_{S_{T}}\underline{N}\cdot\underline{N}\: dS)\cdot\overrightarrow{T^{e}}(t)).\end{multline}
 
 \end_inset
 
