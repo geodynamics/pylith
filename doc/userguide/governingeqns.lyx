@@ -1002,8 +1002,9 @@ we have
 
 which we can expand into
 \begin_inset Formula \begin{multline}
-\sum_{elements}({\frac{1}{\Delta t^{2}}\int}_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t+\Delta t)\, dV-\frac{2}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV+\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV\\
-+{\frac{1}{2}\int}_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV-\int_{V^{e}}N^{p}f_{i}(t)\: dV-\int_{S_{T}}N^{p}T_{i}\: dS)=0\end{multline}
+\sum_{elements}({\frac{1}{\Delta t^{2}}\int}_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t+\Delta t)\, dV-\frac{2}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV\\
++\frac{1}{\Delta t^{2}}\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV+{\frac{1}{2}\int}_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV\\
+-\int_{V^{e}}N^{p}f_{i}(t)\: dV-\int_{S_{T}}N^{p}T_{i}\: dS)=0\end{multline}
 
 \end_inset
 
@@ -1022,8 +1023,9 @@ th component associated with basis function
 
  yields
 \begin_inset Formula \begin{multline*}
-\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t+\Delta t)\, dV\right)=\frac{2}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV\right)-\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV\right)\\
--\frac{1}{2}\sum_{elements}\left(\int_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV\right)+\sum_{elements}\left(\int_{V^{e}}N^{p}f_{i}(t)\: dV\right)+\sum_{elements}\left(\int_{S_{T}}N^{p}T_{i}\: dS\right).\end{multline*}
+\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t+\Delta t)\, dV\right)=\frac{2}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV\right)\\
+-\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV\right)-\frac{1}{2}\sum_{elements}\left(\int_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV\right)\\
++\sum_{elements}\left(\int_{V^{e}}N^{p}f_{i}(t)\: dV\right)+\sum_{elements}\left(\int_{S_{T}}N^{p}T_{i}\: dS\right).\end{multline*}
 
 \end_inset
 
