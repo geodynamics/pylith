@@ -10,14 +10,17 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	utils \
-	feassemble \
-	meshio
+subpackage = utils
+include $(top_srcdir)/subpackage.am
 
-# materials
+subpkginclude_HEADERS = \
+	petscfwd.h
 
-# version
-# $Id$
+noinst_HEADERS = 
+
+# export
+clean-local: clean-subpkgincludeHEADERS
+BUILT_SOURCES = export-subpkgincludeHEADERS
+CLEANFILES = export-subpkgincludeHEADERS
 
 # End of file 

@@ -1,0 +1,26 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_feassemble_integratorelasticity3d_hh)
+#error "IntegratorElasticity3D.icc must be included only from IntegratorElasticity3D.hh"
+#else
+
+// Create a copy of this object.
+inline
+pylith::feassemble::Integrator*
+pylith::feassemble::IntegratorElasticity3D::clone(void) const {
+  return new IntegratorElasticity3D(*this);
+} // clone
+
+#endif
+
+// End of file

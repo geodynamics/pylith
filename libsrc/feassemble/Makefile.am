@@ -16,6 +16,7 @@ include $(top_srcdir)/subpackage.am
 lib_LTLIBRARIES = libpylithfeassemble.la
 
 libpylithfeassemble_la_SOURCES = \
+	Integrator.cc \
 	Quadrature.cc \
 	Quadrature1D.cc \
 	Quadrature1Din2D.cc \
@@ -25,6 +26,7 @@ libpylithfeassemble_la_SOURCES = \
 	Quadrature3D.cc
 
 subpkginclude_HEADERS = \
+	Integrator.hh \
 	Quadrature.hh \
 	Quadrature.icc \
 	Quadrature1D.hh \
