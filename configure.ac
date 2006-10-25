@@ -27,6 +27,7 @@ AC_ARG_ENABLE([greensfns],
 	[enable_greensfns=no])
 AM_CONDITIONAL([ENABLE_GREENSFNS], [test "$enable_greensfns" = yes])
 
+
 # Checks for programs.
 AM_PATH_PYTHON([2.3])
 CIT_PYTHON_SYSCONFIG
