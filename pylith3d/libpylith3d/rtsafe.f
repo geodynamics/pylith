@@ -105,6 +105,12 @@ c
         endif
         if(abs(dx).lt.xacc) return
         call func(rtsafe,f,df,rpar,nrpar,ipar,nipar)
+c
+c...  put this in because original code didn't seem to deal with the
+c     case where the current value is already the root to machine
+c     precision.
+c
+        if(f.eq.0.0d0) return
         if(f.lt.0.0d0) then
           xl=rtsafe
         else
