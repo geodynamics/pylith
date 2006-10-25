@@ -58,7 +58,7 @@ c
 cdebug      write(6,*) "Hello from invar_f!"
 c
       sinv1=stn(1)+stn(2)+stn(3)
-      smean=sinv1/three
+      smean=sinv1*third
       sdev(1)=stn(1)-smean
       sdev(2)=stn(2)-smean
       sdev(3)=stn(3)-smean
