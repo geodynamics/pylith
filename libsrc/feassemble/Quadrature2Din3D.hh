@@ -29,7 +29,7 @@ namespace pylith {
 } // pylith
 
 class pylith::feassemble::Quadrature2Din3D : public Quadrature
-{ // Quadrature2D
+{ // Quadrature2Din3D
   friend class TestQuadrature2Din3D; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
