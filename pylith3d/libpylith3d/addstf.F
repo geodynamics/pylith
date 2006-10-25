@@ -68,20 +68,20 @@ c
       integer i,j,k,l,numeq,ierr
 cpetsc      integer lmp(neemax),lmxpa(neemax)
       double precision signi,signj
-      logical slip
+cold      logical slip
 c
 cdebug      integer idb,jdb
 c
 cdebug      write(6,*) "Hello from addstf_f!"
 c
-      slip=.false.
-      do i=1,nee
+cold      slip=.false.
+cold      do i=1,nee
 cdebug        write(6,*) "i,lm(i),s(i,i):",i,lm(i),s(i,i)
-        if(lm(i).ne.izero) numeq = numeq + 1
-        if(lmx(i).ne.izero) slip=.true.
+cold        if(lm(i).ne.izero) numeq = numeq + 1
+cold        if(lmx(i).ne.izero) slip=.true.
 cpetsc        lmp(i) = lm(i) - 1
 cpetsc        lmxpa(i) = abs(lmx(i))-1
-      end do
+cold      end do
 c     New Sieve section
       numeq = 0
       do i=1,nee
