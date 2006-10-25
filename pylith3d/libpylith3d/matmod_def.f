@@ -107,7 +107,7 @@ c
       infmatmod(6,3) =6
       infmatmod(6,4) =6
 c
-c...  Definition for Maxwell viscoelastic material
+c...  Definition for linear Maxwell viscoelastic material
 c
       infmatmod(1,5) = ione
       infmatmod(2,5) = 18
@@ -116,9 +116,18 @@ c
       infmatmod(5,5) = izero
       infmatmod(6,5) = 6
 c
+c...  Definition for power-law Maxwell viscoelastic material
+c
+      infmatmod(1,6) = ione
+      infmatmod(2,6) = 18
+      infmatmod(3,6) = ifive
+      infmatmod(4,6) = ione
+      infmatmod(5,6) = ione
+      infmatmod(6,6) = 6
+c
 c...  Dummy definitions for remaining materials
 c
-      do i=6,nmatmodmax
+      do i=7,nmatmodmax
         do j=2,6
           infmatmod(j,i)=infmatmod(j,5)
         end do
