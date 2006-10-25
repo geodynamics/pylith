@@ -33,12 +33,14 @@ AC_ARG_ENABLE([testing],
 	[  --enable-testing        Enable unit testing with cppunit (requires cppunit) [[default=no]]],
 	[enable_testing=yes],
 	[enable_testing=no])
+AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 
 # DOCUMENTATION w/doxygen
 AC_ARG_ENABLE([documentation],
 	[  --enable-documentation  Enable buuilding html documentation (requires doxygen) [[default=no]]],
 	[enable_documentation=yes],
 	[enable_documentation=no])
+AM_CONDITIONAL([ENABLE_DOCUMENTATION], [test "$enable_documentation" = yes])
 
 # ----------------------------------------------------------------------
 # C/C++/libtool/install
@@ -84,7 +86,6 @@ if test "$have_pyrexembed" = "no"; then
 fi
 
 # CPPUNIT
-AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 if test "$enable_testing" = "yes" ; then
   AC_LANG(C++)
   AC_CHECK_HEADER([cppunit/TestRunner.h], [], [
@@ -127,7 +128,6 @@ AC_COMPILE_IFELSE(
 ])
 
 # DOXYGEN
-AM_CONDITIONAL([ENABLE_DOCUMENTATION], [test "$enable_documentation" = yes])
 if test "$enable_documentation" = "yes" ; then
   AC_CHECK_PROG([have_doxygen],
     [doxygen],
