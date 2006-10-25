@@ -20,6 +20,13 @@ AC_ARG_WITH([embedding],
     [want_embedding=yes])
 AM_CONDITIONAL([COND_EMBEDDING], [test "$want_embedding" = yes])
 
+# Green's functions option
+AC_ARG_ENABLE([greensfns],
+	[  --enable-greensfns        Enable Green's functions application (requires Numeric) [[default=no]]],
+	[enable_greensfns=yes],
+	[enable_greensfns=no])
+AM_CONDITIONAL([ENABLE_GREENSFNS], [test "$enable_greensfns" = yes])
+
 # Checks for programs.
 AM_PATH_PYTHON([2.3])
 CIT_PYTHON_SYSCONFIG

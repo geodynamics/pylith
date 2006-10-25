@@ -66,4 +66,10 @@ sources = \
 	write_modelinfo.cc \
 	write_modelinfo.h
 
+if ENABLE_GREENSFNS
+sources += interpolate.cc \
+	interpolate.h
+CPPFLAGS += -DGREENSFNS
+endif
+
 ## end of Makefile.am
