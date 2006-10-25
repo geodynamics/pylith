@@ -569,6 +569,7 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
   return Py_None;
 }
 
+#if 0
 #include "Numeric/arrayobject.h"
 
 char pypylith3d_interpolatePoints__doc__[] = "";
@@ -630,6 +631,7 @@ PyObject * pypylith3d_interpolatePoints(PyObject *, PyObject *args)
 
   return Py_BuildValue((char *) "N", pyValues);
 }
+#endif
 
 // Scan boundary conditions
 
@@ -673,7 +675,7 @@ PyObject * pypylith3d_scan_bc(PyObject *, PyObject *args)
 	    strlen(forceUnits),
 	    strlen(bcInputFile),
 	    sizeof(errorstring));
-    
+
   if(0 != exceptionhandler(errorcode, errorstring)) {
     return 0;
   }

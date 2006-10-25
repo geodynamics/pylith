@@ -47,6 +47,10 @@
 #include "write_modelinfo.h" // output routines
 #include "misc.h"          // miscellaneous methods
 
+#if defined(GREENSFNS)
+#include "interpolate.h"
+#endif
+
 // the method table
 
 struct PyMethodDef pypylith3d_methods[] = {
@@ -402,6 +406,14 @@ struct PyMethodDef pypylith3d_methods[] = {
     // try binary I/O to see if it works
     {pypylith3d_try_binio__name__, pypylith3d_try_binio,
      METH_VARARGS, pypylith3d_try_binio__doc__},
+
+#if defined(GREENSFNS)
+
+    // try binary I/O to see if it works
+    {pypylith3d_interpolatePoints__name__, pypylith3d_interpolatePoints,
+     METH_VARARGS, pypylith3d_interpolatePoints__doc__},
+
+#endif
 
     // copyright note
     {pypylith3d_copyright__name__, pypylith3d_copyright,
