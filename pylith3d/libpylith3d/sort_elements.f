@@ -195,7 +195,7 @@ c...  check for illegal material model
 c
         if(matmod.gt.nmatmodmax.or.infmatmod(1,matmod).eq.izero) then
           ierr=101
-          errstrng="read_connect"
+          errstrng="sort_elements"
           return
         end if
 c
