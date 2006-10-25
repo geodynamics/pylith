@@ -218,7 +218,7 @@ c
       rmu=half*e/(one+pr)
       call invar(sdev,sinv1,steff,scur)
       tmax=big
-      if(steff.ne.zero) tmax=(emhu/steff)**(anpwr-one)*emhu/rmu
+      if(steff.ne.zero) tmax=((emhu/steff)**(anpwr-one))*emhu/rmu
       return
       end
 c
@@ -280,9 +280,9 @@ c
       rmu=half*e/(one+pr)
       f1=third*e/(one-two*pr)
       call invar(sdev,sinv1,steff,state)
-      gam=half*(steff/emhu)**(anpwr-one)/emhu
+      gam=half*((steff/emhu)**(anpwr-one))/emhu
       tmax=big
-      if(steff.ne.zero) tmax=(emhu/steff)**(anpwr-one)*emhu/rmu
+      if(steff.ne.zero) tmax=((emhu/steff)**(anpwr-one))*emhu/rmu
       f2=third/(ae+deltp*gam)
       dmat(iddmat(1,1))=f1+two*f2
       dmat(iddmat(2,2))=dmat(iddmat(1,1))
@@ -314,7 +314,7 @@ c
       include "nconsts.inc"
       include "rconsts.inc"
       integer nrpar,nipar
-      parameter(nrpar=7,nipar=1)
+      parameter(nrpar=9,nipar=1)
 c
 c...  subroutine arguments
 c
@@ -396,21 +396,23 @@ c
       rpar(5)=two*ae*sprod(epptdt,sdev0)+ae*ae*seff0*seff0
       rpar(6)=two*tf*(sprod(epptdt,sdevt)+ae*sprod(sdevt,sdev0))
       rpar(7)=sefft
+      rpar(8)=deltp
+      rpar(9)=alfap
 c
 c...  call effective stress driver routine
 c
-      call esfcomp_6(sefftdt,rpar,nrpar,ipar,nipar,ierr,errstrng)
+      call esfcomp_6(sefftdt,stol,rpar,nrpar,ipar,nipar,ierr,errstrng)
       if(ierr.ne.izero) return
 c
 c...  compute quantities at intermediate time tau used to compute
 c     values at end of time step.
 c
       sefftau=(one-alfap)*sefft+alfap*sefftdt
-      gamtau=half*(sefftau/emhu)**(anpwr-one)/emhu
+      gamtau=half*((sefftau/emhu)**(anpwr-one))/emhu
       f1=one/(ae+alfap*deltp*gamtau)
       f2=tf*gamtau
       tmax=big
-      if(sefftdt.ne.zero) tmax=(emhu/sefftdt)**(anpwr-one)*emhu/rmu
+      if(sefftdt.ne.zero) tmax=((emhu/sefftdt)**(anpwr-one))*emhu/rmu
 c
 c...  compute new stresses and store stress and strain values in dstate
 c
@@ -426,7 +428,8 @@ c
       end
 c
 c
-      subroutine esfcomp_6(sefftdt,rpar,nrpar,ipar,nipar,ierr,errstrng)
+      subroutine esfcomp_6(sefftdt,stol,rpar,nrpar,ipar,nipar,
+     & ierr,errstrng)
 c
 c...  driver routine to compute the effective stress at the current
 c     time step.
@@ -441,14 +444,11 @@ c...  subroutine arguments
 c
       integer nrpar,nipar,ierr
       integer ipar(nipar)
-      double precision sefftdt,rpar(nrpar)
+      double precision sefftdt,stol,rpar(nrpar)
       character errstrng*(*)
 c
 c...  included dimension and type statements
 c
-      include "rtimdat_dim.inc"
-      include "rgiter_dim.inc"
-      include "ntimdat_dim.inc"
 c
 c...  intrinsic functions
 c
@@ -462,24 +462,21 @@ c
 c
 c...  local variables
 c
-      double precision seffel,sefflo,seffhi
+      double precision sefft,sefflo,seffhi
 c
 c...  included variable definitions
 c
-      include "rtimdat_def.inc"
-      include "rgiter_def.inc"
-      include "ntimdat_def.inc"
 c
 cdebug      write(6,*) "Hello from esfcomp_6!"
 c
       ierr=0
 c
-c...  use elastic stress as initial high value, defaulting to stol
-c     if this is zero.
+c...  use stress from previous step as initial high value, defaulting to
+c     stol if this is zero.
 c
-      seffel=sqrt(rpar(4))/rpar(1)
-      sefflo=zero
-      seffhi=max(seffel,stol)
+      sefft=rpar(7)
+      seffhi=max(sefft,stol)
+      sefflo=half*seffhi
 c
 c...  bracket the root
 c
@@ -515,27 +512,20 @@ c
 c
 c...  included dimension and type statements
 c
-      include "rtimdat_dim.inc"
 c
 c...  local variables
 c
-      double precision ae,anpwr,emhu,a,b,c,sefft,d
+      double precision ae,anpwr,emhu,a,b,c,sefft,deltp,alfap,d
       double precision f1,tf
-      double precision gamtau,sefftau
+      double precision gamtau,sefftau,dgam
 c
 c...  included variable definitions
 c
-      include "rtimdat_def.inc"
 c
 cdebug      write(6,*) "Hello from esf_6!"
 c
 c
-c...  handy constants
-c
-      f1=one-alfap
-      tf=deltp*f1
-c
-c...  values from parameter list
+c...  values from parameter list and a few other constants
 c
       ae=rpar(1)
       anpwr=rpar(2)
@@ -543,20 +533,26 @@ c
       b=rpar(4)+rpar(5)
       c=rpar(6)
       sefft=rpar(7)
+      deltp=rpar(8)
+      alfap=rpar(9)
+      f1=one-alfap
+      tf=deltp*f1
       d=tf*sefft
 c
 c...  additional values dependent on current effective stress
 c
       sefftau=f1*sefft+alfap*seffcur
-      gamtau=half*(sefftau/emhu)**(anpwr-one)/emhu
+      gamtau=half*((sefftau/emhu)**(anpwr-one))/emhu
       a=ae+alfap*deltp*gamtau
 c
 c...  effective stress function and it's derivative
 c
       f=a*a*seffcur*seffcur-b+c*gamtau-d*d*gamtau*gamtau
+      dgam=half*alfap*(anpwr-one)*((sefftau/emhu)**(anpwr-two))/
+     & (emhu*emhu)
       df=two*a*a*seffcur+(two*a*alfap*deltp*seffcur*seffcur+
-     & c-two*d*d*gamtau)*
-     & (half*alfap*(anpwr-one)*(sefftau/emhu)**anpwr-two)/(emhu*emhu)
+     & c-two*d*d*gamtau)*dgam
+cdebug      write(6,*) seffcur,f,df
 c
       return
       end
@@ -580,7 +576,7 @@ c
       include "nconsts.inc"
       include "rconsts.inc"
       integer nrpar,nipar
-      parameter(nrpar=7,nipar=1)
+      parameter(nrpar=9,nipar=1)
 c
 c...  subroutine arguments
 c
@@ -667,17 +663,19 @@ c
       rpar(5)=two*ae*sprod(epptdt,sdev0)+ae*ae*seff0*seff0
       rpar(6)=two*c2*(sprod(epptdt,sdevt)+ae*sprod(sdevt,sdev0))
       rpar(7)=sefft
+      rpar(8)=deltp
+      rpar(9)=alfap
 c
 c...  call effective stress driver routine
 c
-      call esfcomp_6(sefftdt,rpar,nrpar,ipar,nipar,ierr,errstrng)
+      call esfcomp_6(sefftdt,stol,rpar,nrpar,ipar,nipar,ierr,errstrng)
       if(ierr.ne.izero) return
 c
 c...  compute quantities at intermediate time tau used to compute
 c     values at end of time step.
 c
       sefftau=(one-alfap)*sefft+alfap*sefftdt
-      gamtau=half*(sefftau/emhu)**(anpwr-one)/emhu
+      gamtau=half*((sefftau/emhu)**(anpwr-one))/emhu
       a=ae+alfap*deltp*gamtau
       f1=one/a
       f2=c2*gamtau
@@ -692,11 +690,11 @@ c
         dstate(i+12)=deltp*gamtau*sdevtau
       end do
       tmax=big
-      if(sefftdt.ne.zero) tmax=(emhu/sefftdt)**(anpwr-one)*emhu/rmu
+      if(sefftdt.ne.zero) tmax=((emhu/sefftdt)**(anpwr-one))*emhu/rmu
 c
 c...  define some constants for tangent computation
 c
-      rk1=half*(anpwr-one)*(sefftau/emhu)**(anpwr-two)/(emhu*emhu)
+      rk1=half*(anpwr-one)*((sefftau/emhu)**(anpwr-two))/(emhu*emhu)
       rk2=sefftau-f1*sefft
       c=rpar(6)
       d=c2*rpar(7)
