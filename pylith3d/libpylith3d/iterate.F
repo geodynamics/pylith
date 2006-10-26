@@ -344,6 +344,7 @@ c
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
         end if
+        if(ierr.ne.izero) return
 c
 c...compute the out-of-balance forces and convergence criteria
 c
