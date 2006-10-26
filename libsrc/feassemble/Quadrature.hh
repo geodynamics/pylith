@@ -112,6 +112,76 @@ public :
    */
   double minJacobian(void);
 
+  /** Get basis fns evaluated at quadrature points.
+   *
+   * @returns Array of basis fns evaluated at quadrature points
+   */
+  const double* basis(void) const;
+
+  /** Get derivatives of basis fns evaluated at quadrature points.
+   *
+   * @returns Array of derivatives of basis fns evaluated at
+   * quadrature points
+   */
+  const double* basisDeriv(void) const;
+
+  /** Get coordinates of quadrature points in cell (NOT reference cell).
+   *
+   * @returns Array of coordinates of quadrature points in cell
+   */
+  const double* quadPts(void) const;
+
+  /** Get weights of quadrature points.
+   *
+   * @returns Weights of quadrature points
+   */
+  const double* quadWts(void) const;
+
+  /** Get Jacobian inverses evaluated at quadrature points.
+   *
+   * @returns Array of Jacobian inverses evaluated at quadrature points.
+   */
+  const double* jacobianInv(void) const;
+
+  /** Get determinants of Jacobian evaluated at quadrature points.
+   *
+   * @returns Array of determinants of Jacobian evaluated at quadrature pts
+   */
+  const double* jacobianDet(void) const;
+
+  /** Get number of dimensions in reference cell.
+   *
+   * @returns Number of dimensions in reference cell
+   */
+  int cellDim(void) const;
+
+  /** Get number of vertices in cell.
+   *
+   * @returns Number of vertices in cell
+   */
+  int numCorners(void) const;
+
+  /** Get number of quadrature points.
+   *
+   * @returns Number of quadrature points
+   */
+  int numQuadPts(void) const;
+
+  /** Get number of dimensions in coordinates of cell vertices.
+   *
+   * @returns Number of dimensions in coordinates of cell vertices
+   */
+  int spaceDim(void) const;
+
+  /** Compute geometric quantities for a cell.
+   *
+   * @param coordinates Section containing vertex coordinates
+   * @param cell Finite-element cell
+   */
+  virtual 
+  void computeGeometry(const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
+		       const ALE::Mesh::point_type& cell) = 0;
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
@@ -121,20 +191,11 @@ protected :
    */
   Quadrature(const Quadrature& q);
 
-  /** Compute geometric quantities for a cell.
-   *
-   * @param coordinates Section containing vertex coordinates
-   * @param cell Finite-element cell
-   */
-  virtual 
-  void _computeGeometry(const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
-			const ALE::Mesh::point_type& cell) = 0;
+  /// Check determinant of Jacobian against minimum allowable value
+  void _checkJacobianDet(const double det) const;
 
   /// Set entries in geometry arrays to zero.
   void _resetGeometry(void);
-
-  /// Check determinant of Jacobian against minimum allowable value
-  void _checkJacobianDet(const double det) const;
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :

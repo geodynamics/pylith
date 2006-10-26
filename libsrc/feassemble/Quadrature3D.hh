@@ -39,11 +39,18 @@ public :
   Quadrature3D(void);
 
   /// Destructor
-  virtual ~Quadrature3D(void);
+  ~Quadrature3D(void);
 
   /// Create a copy of this object.
-  virtual
   Quadrature* clone(void) const;
+
+  /** Compute geometric quantities for a cell.
+   *
+   * @param coordinates Section containing vertex coordinates
+   * @param cell Finite-element cell
+   */
+  void computeGeometry(const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
+		       const ALE::Mesh::point_type& cell);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -53,14 +60,6 @@ protected :
    * @param q Quadrature to copy
    */
   Quadrature3D(const Quadrature3D& q);
-
-  /** Compute geometric quantities for a cell.
-   *
-   * @param coordinates Section containing vertex coordinates
-   * @param cell Finite-element cell
-   */
-  void _computeGeometry(const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
-			const ALE::Mesh::point_type& cell);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :

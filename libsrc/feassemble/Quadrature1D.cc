@@ -38,10 +38,10 @@ pylith::feassemble::Quadrature1D::Quadrature1D(const Quadrature1D& q) :
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell.
 void
-pylith::feassemble::Quadrature1D::_computeGeometry(
+pylith::feassemble::Quadrature1D::computeGeometry(
 		       const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
 		       const ALE::Mesh::point_type& cell)
-{ // _computeGeometry
+{ // computeGeometry
   assert(1 == _cellDim);
   assert(1 == _spaceDim);
   assert(0 != _basisDeriv);
@@ -85,6 +85,6 @@ pylith::feassemble::Quadrature1D::_computeGeometry(
     // Jinv = 1/j00
     _jacobianInv[iQuadPt] = 1.0/_jacobianDet[iQuadPt];
   } // for
-} // _computeGeometry
+} // computeGeometry
 
 // End of file 

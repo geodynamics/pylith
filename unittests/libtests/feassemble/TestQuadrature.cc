@@ -89,45 +89,45 @@ pylith::feassemble::TestQuadrature::testClone(void)
   CPPUNIT_ASSERT(0 != qCopy);
 
   CPPUNIT_ASSERT_EQUAL(minJacobian, qCopy->_minJacobian);
-  CPPUNIT_ASSERT_EQUAL(cellDim, qCopy->_cellDim);
-  CPPUNIT_ASSERT_EQUAL(numCorners, qCopy->_numCorners);
-  CPPUNIT_ASSERT_EQUAL(numQuadPts, qCopy->_numQuadPts);
-  CPPUNIT_ASSERT_EQUAL(spaceDim, qCopy->_spaceDim);
+  CPPUNIT_ASSERT_EQUAL(cellDim, qCopy->cellDim());
+  CPPUNIT_ASSERT_EQUAL(numCorners, qCopy->numCorners());
+  CPPUNIT_ASSERT_EQUAL(numQuadPts, qCopy->numQuadPts());
+  CPPUNIT_ASSERT_EQUAL(spaceDim, qCopy->spaceDim());
 
-  CPPUNIT_ASSERT(0 != qCopy->_basis);
+  CPPUNIT_ASSERT(0 != qCopy->basis());
   size = numCorners * numQuadPts;
   for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(basis[i], qCopy->_basis[i]);
+    CPPUNIT_ASSERT_EQUAL(basis[i], qCopy->basis()[i]);
 
-  CPPUNIT_ASSERT(0 != qCopy->_basisDeriv);
+  CPPUNIT_ASSERT(0 != qCopy->basisDeriv());
   size = numCorners * numQuadPts * spaceDim;
   for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(basisDeriv[i], qCopy->_basisDeriv[i]);
+    CPPUNIT_ASSERT_EQUAL(basisDeriv[i], qCopy->basisDeriv()[i]);
 
   CPPUNIT_ASSERT(0 != qCopy->_quadPtsRef);
   size = numQuadPts * cellDim;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(quadPtsRef[i], qCopy->_quadPtsRef[i]);
 
-  CPPUNIT_ASSERT(0 != qCopy->_quadWts);
+  CPPUNIT_ASSERT(0 != qCopy->quadWts());
   size = numQuadPts;
   for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(quadWts[i], qCopy->_quadWts[i]);
+    CPPUNIT_ASSERT_EQUAL(quadWts[i], qCopy->quadWts()[i]);
 
   size = 1;
 
-  CPPUNIT_ASSERT(0 != qCopy->_quadPts);
+  CPPUNIT_ASSERT(0 != qCopy->quadPts());
   for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(quadPts[i], qCopy->_quadPts[i]);
+    CPPUNIT_ASSERT_EQUAL(quadPts[i], qCopy->quadPts()[i]);
   CPPUNIT_ASSERT(0 != qCopy->_jacobian);
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(jacobian[i], qCopy->_jacobian[i]);
-  CPPUNIT_ASSERT(0 != qCopy->_jacobianInv);
+  CPPUNIT_ASSERT(0 != qCopy->jacobianInv());
   for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(jacobianInv[i], qCopy->_jacobianInv[i]);
-  CPPUNIT_ASSERT(0 != qCopy->_jacobianDet);
+    CPPUNIT_ASSERT_EQUAL(jacobianInv[i], qCopy->jacobianInv()[i]);
+  CPPUNIT_ASSERT(0 != qCopy->jacobianDet());
   for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(jacobianDet[i], qCopy->_jacobianDet[i]);
+    CPPUNIT_ASSERT_EQUAL(jacobianDet[i], qCopy->jacobianDet()[i]);
 } // testCopy
 
 // ----------------------------------------------------------------------
@@ -248,14 +248,14 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(
   ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
 		    mesh->getRealSection("coordinates"), spaceDim, vertCoords);
   
-  // Check values from _computeGeometry()
+  // Check values from computeGeometry()
   const ALE::Mesh::topology_type::patch_type patch = 0;
   const ALE::Obj<topology_type::label_sequence>& elements = 
     topology->heightStratum(patch, 0);
   const topology_type::label_sequence::iterator e_iter = elements->begin(); 
   const ALE::Obj<ALE::Mesh::real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
-  pQuad->_computeGeometry(coordinates, *e_iter);
+  pQuad->computeGeometry(coordinates, *e_iter);
 
   CPPUNIT_ASSERT(1 == numCells);
 

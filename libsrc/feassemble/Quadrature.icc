@@ -28,6 +28,76 @@ pylith::feassemble::Quadrature::minJacobian(const double min) {
   _minJacobian = min;
 }
 
+// Get basis fns evaluated at quadrature points.
+inline
+const double*
+pylith::feassemble::Quadrature::basis(void) const {
+  return _basis;
+}
+
+// Get derivatives of basis fns evaluated at quadrature points.
+inline
+const double*
+pylith::feassemble::Quadrature::basisDeriv(void) const {
+  return _basisDeriv;
+}
+
+// Get coordinates of quadrature points in cell (NOT reference cell).
+inline
+const double*
+pylith::feassemble::Quadrature::quadPts(void) const {
+  return _quadPts;
+}
+
+// Get weights of quadrature points.
+inline
+const double*
+pylith::feassemble::Quadrature::quadWts(void) const {
+  return _quadWts;
+}
+
+// Get Jacobian inverses evaluated at quadrature points.
+inline
+const double*
+pylith::feassemble::Quadrature::jacobianInv(void) const {
+  return _jacobianInv;
+}
+
+// Get determinants of Jacobian evaluated at quadrature points.
+inline
+const double*
+pylith::feassemble::Quadrature::jacobianDet(void) const {
+  return _jacobianDet;
+}
+
+// Get number of dimensions in reference cell.
+inline
+int
+pylith::feassemble::Quadrature::cellDim(void) const {
+  return _cellDim;
+}
+
+// Get number of vertices in cell.
+inline
+int
+pylith::feassemble::Quadrature::numCorners(void) const {
+  return _numCorners;
+}
+
+// Get number of quadrature points.
+inline
+int
+pylith::feassemble::Quadrature::numQuadPts(void) const {
+  return _numQuadPts;
+}
+
+// Get number of dimensions in coordinates of cell vertices.
+inline
+int
+pylith::feassemble::Quadrature::spaceDim(void) const {
+  return _spaceDim;
+}
+
 #endif
 
 // End of file
