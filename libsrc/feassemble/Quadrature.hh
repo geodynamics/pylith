@@ -43,6 +43,13 @@ class pylith::feassemble::Quadrature
 { // Quadrature
   friend class TestQuadrature; // unit testing
 
+// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+public :
+
+  typedef ALE::Mesh Mesh;
+  typedef Mesh::topology_type topology_type;
+  typedef Mesh::real_section_type real_section_type;
+
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
@@ -179,8 +186,8 @@ public :
    * @param cell Finite-element cell
    */
   virtual 
-  void computeGeometry(const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
-		       const ALE::Mesh::point_type& cell) = 0;
+  void computeGeometry(const ALE::Obj<real_section_type>& coordinates,
+		       const topology_type::point_type& cell) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
