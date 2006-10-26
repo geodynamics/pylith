@@ -46,20 +46,21 @@ public :
 
   /** Integrate elasticity term for 3-D finite elements.
    *
-   * @param 
+   * @param fieldOut Output field
+   * @param fieldIn Input field
+   * @param coordinates Field of cell vertex coordinates
    */
-  void integrateAction(const ALE::Mesh::Obj<section_type>& A,
-		       const ALE::Mesh::Obj<section_type>& F,
-		       const ALE::Mesh::Obj<section_type>& coordinates);
+  void integrateAction(const ALE::Obj<ALE::Mesh::real_section_type>& fieldOut,
+		       const ALE::Obj<ALE::Mesh::real_section_type>& fieldIn,
+		       const ALE::Obj<ALE::Mesh::real_section_type>& coordinates);
 
-  /** Compute tangent stiffness matrix.
+  /** Compute matrix associated with operator.
    *
-   * @param
+   * @param mat Sparse matrix
+   * @param coordinates Field of cell vertex coordinates
    */
-  void integrate(PetscMat& mat,
-		 const ALE::Mesh::Obj<section_type>& A,
-		 const ALE::Mesh::Obj<section_type>& F,
-		 const ALE::Mesh::Obj<section_type>& coordinates);
+  void integrate(PetscMat* mat,
+		 const ALE::Obj<ALE::Mesh::real_section_type>& coordinates);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -80,6 +81,6 @@ private :
 
 #include "IntegratorElasticity3D.icc" // inline methods
 
-#endif // pylith_feassemble_quadrature3d_hh
+#endif // pylith_feassemble_integratorelasticity3d_hh
 
 // End of file 

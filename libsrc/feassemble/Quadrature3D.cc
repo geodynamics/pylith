@@ -38,10 +38,10 @@ pylith::feassemble::Quadrature3D::Quadrature3D(const Quadrature3D& q) :
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell.
 void
-pylith::feassemble::Quadrature3D::_computeGeometry(
+pylith::feassemble::Quadrature3D::computeGeometry(
 		       const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
 		       const ALE::Mesh::point_type& cell)
-{ // _computeGeometry
+{ // computeGeometry
   assert(3 == _cellDim);
   assert(3 == _spaceDim);
   assert(0 != _basisDeriv);
@@ -146,6 +146,6 @@ pylith::feassemble::Quadrature3D::_computeGeometry(
     _jacobianInv[i22] = (_jacobian[i00]*_jacobian[i11] -
 			 _jacobian[i01]*_jacobian[i10]) / det;
   } // for
-} // _computeGeometry
+} // computeGeometry
 
 // End of file 

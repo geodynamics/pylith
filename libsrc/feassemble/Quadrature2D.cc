@@ -38,10 +38,10 @@ pylith::feassemble::Quadrature2D::Quadrature2D(const Quadrature2D& q) :
 // ----------------------------------------------------------------------
 // Compute geometric quantities for a cell.
 void
-pylith::feassemble::Quadrature2D::_computeGeometry(
+pylith::feassemble::Quadrature2D::computeGeometry(
 		       const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
 		       const ALE::Mesh::point_type& cell)
-{ // _computeGeometry
+{ // computeGeometry
   assert(2 == _cellDim);
   assert(2 == _spaceDim);
   assert(0 != _basisDeriv);
@@ -115,6 +115,6 @@ pylith::feassemble::Quadrature2D::_computeGeometry(
     _jacobianInv[i10] = -_jacobian[i10] / det;
     _jacobianInv[i11] = _jacobian[i00] / det;
   } // for
-} // _computeGeometry
+} // computeGeometry
 
 // End of file 
