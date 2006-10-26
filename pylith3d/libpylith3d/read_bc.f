@@ -84,6 +84,8 @@ c...  open input file and define scaling factors
 c
       ierr=izero
       nconcforce=izero
+      call fill(bond,zero,ndof*numnp)
+      call ifill(ibond,izero,ndof*numnp)
 c
 c...  return if no BC defined for this partition
 c
@@ -111,8 +113,6 @@ c
 c
 c...  read BC, returning an error code if node is out of range
 c
-      call fill(bond,zero,ndof*numnp)
-      call ifill(ibond,izero,ndof*numnp)
       call pskip(kr)
       do i=1,numbc
         read(kr,*,end=30,err=30) n,(ibond(j,n),j=1,ndof),
