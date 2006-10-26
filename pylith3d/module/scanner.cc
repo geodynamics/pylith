@@ -215,6 +215,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   ierr = MeshCreatePyLith(comm, 3, meshInputFile, PETSC_FALSE, (PetscTruth) interpolateMesh, &mesh);
   ierr = MeshGetMesh(mesh, m);
   m->setDebug(debugFlag);
+  int numElements = m->getTopology()->heightStratum(0, 0)->size();
   debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << meshInputFile << journal::endl;
   m = ALE::New::Distribution<ALE::Mesh::topology_type>::distributeMesh(m, partitioner);
   ierr = MeshSetMesh(mesh, m);
@@ -225,7 +226,6 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   ALE::Mesh::foliated_section_type::patch_type patch      = 0;
   std::set<int> seen;
 
-  int numElements = m->getTopology()->heightStratum(0, 0)->size();
   ierr = MPI_Bcast(&numElements, 1, MPI_INT, 0, comm);
   boundaries->setTopology(m->getTopology());
   // Reverse order allows newer conditions to override older, as required by PyLith
