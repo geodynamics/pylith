@@ -322,13 +322,16 @@ c...  local constants
 c
       double precision diag(6)
       data diag/one,one,one,zero,zero,zero/
+      double precision eng(6)
+      data eng/one,one,one,half,half,half/
 c
 c...  local variables
 c
       integer i
-      double precision e,pr,vis,rmu,f1,f2,emean,smean,eet,stau,smeantp
-      double precision sdev,sdevtp,smean0,sdev0,fac1,fac2,rvis
-      double precision eett(6)
+      double precision e,pr,vis,rmu,ae,tf
+      double precision emeantdt,smeant,smeantdt,smean0
+      double precision gamtau,f1,f2,f3,f4
+      double precision epptdt,sdevt,sdev0,sdevtdt,sdevtau
 c
 cdebug      integer idb
 c
@@ -340,49 +343,42 @@ c
 c
 cdebug      write(6,*) "Hello from td_strs_5!"
 c
-      call dcopy(nstr,ee,ione,eett,ione)
-      eett(4)=half*eett(4)
-      eett(5)=half*eett(5)
-      eett(6)=half*eett(6)
+      ierr=0
+c
+c...  define material properties
+c
       e=prop(2)
       pr=prop(3)
       vis=prop(4)
       rmu=half*e/(one+pr)
-      rvis=one/vis
+      ae=(one+pr)/e
+      tf=deltp*(one-alfap)
+      gamtau=half/vis
+      f1=one/(ae+alfap*deltp*gamtau)
+      f2=gamtau*tf
+      f3=e/(one-two*pr)
+      f4=deltp*gamtau
       tmax=vis/rmu
-      fac1=half*deltp*rvis
-      fac2=(one+pr)/e
-      f1=fac1*(one-alfap)
-      f2=one/(fac2+fac1*alfap)
-      emean=third*(ee(1)+ee(2)+ee(3))
-      smean=e*emean/(one-two*pr)
+c
+c...  define stress and strain quantities
+c
+      emeantdt=third*(ee(1)+ee(2)+ee(3))
+      smeantdt=emeantdt*f3
+      smeant=third*(state(1)+state(2)+state(3))
       smean0=third*(state0(1)+state0(2)+state0(3))
-      smeantp=third*(state(1)+state(2)+state(3))
-cdebug      write(6,*) "state-begin:",(state(idb),idb=1,nstate)
-cdebug      write(6,*) "dstate-begin:",(dstate(idb),idb=1,nstate)
-cdebug      write(6,*) "ee:",(ee(idb),idb=1,nstr)
-cdebug      write(6,*) "eett:",(eett(idb),idb=1,nstr)
-cdebug      write(6,*)
-cdebug     & "e,pr,rmu,rvis,tmax,fac1,fac2,f1,f2,emean,smean,smean0,smeantp:"
-cdebug      write(6,*)
-cdebug     & e,pr,rmu,rvis,tmax,fac1,fac2,f1,f2,emean,smean,smean0,smeantp
+c
+c...  compute new stresses and store stress and strain values in dstate
       do i=1,nstr
-        eet=eett(i)-diag(i)*emean-state(i+12)
-        sdevtp=state(i)-diag(i)*smeantp
+        epptdt=eng(i)*ee(i)-diag(i)*emeantdt-state(i+12)
+        sdevt=state(i)-diag(i)*smeant
         sdev0=state0(i)-diag(i)*smean0
-        sdev=f2*(eet-f1*sdevtp+fac2*sdev0)
-        dstate(i)=sdev+diag(i)*(smean+smean0)
-        stau=(one-alfap)*sdevtp+alfap*sdev
-        dstate(i+12)=fac1*stau
-        dstate(i+6)=ee(i)
+        sdevtdt=f1*(epptdt-f2*sdevt+ae*sdev0)
+        sdevtau=(one-alfap)*sdevt+alfap*sdevtdt
+        dstate(i)=sdevtdt+diag(i)*(smeantdt+smean0)
         scur(i)=dstate(i)
-cdebug        write(6,*) "i,eet,eett(i),state(i+12),sdevtp,sdev0,sdev:"
-cdebug        write(6,*) i,eet,eett(i),state(i+12),sdevtp,sdev0,sdev
-cdebug        write(6,*) "dstate(i),stau,dstate(i+6),dstate(i+12),scur(i):"
-cdebug        write(6,*) dstate(i),stau,dstate(i+6),dstate(i+12),scur(i)
+        dstate(i+6)=ee(i)
+        dstate(i+12)=f4*sdevtau
       end do
-cdebug      write(6,*) "state-end:",(state(idb),idb=1,nstate)
-cdebug      write(6,*) "dstate-end:",(dstate(idb),idb=1,nstate)
 c
       return
       end
