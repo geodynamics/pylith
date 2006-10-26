@@ -44,8 +44,8 @@ public :
   /// Create a copy of this object.
   Quadrature* clone(void) const;
 
-  void computeGeometry(const ALE::Obj<ALE::Mesh::real_section_type>& coordinates,
-		       const ALE::Mesh::point_type& cell);
+  void computeGeometry(const ALE::Obj<real_section_type>& coordinates,
+		       const topology_type::point_type& cell);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
