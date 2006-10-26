@@ -84,6 +84,10 @@ c...  open input file and define scaling factors
 c
       ierr=izero
       nconcforce=izero
+c
+c...  return if no BC defined for this partition
+c
+      if(numbc.eq.0) return
       open(kr,file=bcfile,status="old",err=20)
       scale(1)=zero
       scale(2)=dscale
