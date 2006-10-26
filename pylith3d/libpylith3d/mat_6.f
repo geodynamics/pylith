@@ -418,7 +418,8 @@ c...  compute new stresses and store stress and strain values in dstate
 c
       do i=1,nstr
         sdevtdt=f1*(epptdt(i)-f2*sdevt(i)+ae*sdev0(i))
-        dstate(i)=sdevtdt+diag(i)*(smeant+smean0)
+        dstate(i)=sdevtdt+diag(i)*(smeantdt+smean0)
+        scur(i)=dstate(i)
         sdevtau=(one-alfap)*sdevt(i)+alfap*sdevtdt
         dstate(i+6)=ee(i)
         dstate(i+12)=deltp*gamtau*sdevtau
@@ -462,7 +463,7 @@ c
 c
 c...  local variables
 c
-      double precision sefft,sefflo,seffhi
+      double precision sefft,sefflo,seffhi,xacc
 c
 c...  included variable definitions
 c
@@ -477,6 +478,7 @@ c
       sefft=rpar(7)
       seffhi=max(sefft,stol)
       sefflo=half*seffhi
+      xacc=max(stol*half*(seffhi-sefflo),stol)
 c
 c...  bracket the root
 c
@@ -486,7 +488,7 @@ c
 c
 c...  compute effective stress
 c
-      sefftdt=rtsafe(esf_6,sefflo,seffhi,stol,rpar,nrpar,ipar,nipar,
+      sefftdt=rtsafe(esf_6,sefflo,seffhi,xacc,rpar,nrpar,ipar,nipar,
      & ierr,errstrng)
       return
       end
@@ -684,7 +686,8 @@ c...  compute new stresses and store stress and strain values in dstate
 c
       do i=1,nstr
         sdevtdt=f1*(epptdt(i)-f2*sdevt(i)+ae*sdev0(i))
-        dstate(i)=sdevtdt+diag(i)*(smeant+smean0)
+        dstate(i)=sdevtdt+diag(i)*(smeantdt+smean0)
+        scur(i)=dstate(i)
         sdevtau=(one-alfap)*sdevt(i)+alfap*sdevtdt
         dstate(i+6)=ee(i)
         dstate(i+12)=deltp*gamtau*sdevtau
