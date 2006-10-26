@@ -14,7 +14,7 @@ root="powertest"
 
 # ----------------------------------------------------------------------
 def setupInput(nprocs):
-  dupext = [".fuldat", ".prop", ".statevar", ".time"]
+  dupext = [".fuldat", ".keyval", ".prop", ".statevar", ".time"]
   sinext = [".coord", ".connect", ".bc", ".split", ".traction"]
 
   print "Setting up symbolic links with prefix '%s_%d':" % (root, nprocs)
