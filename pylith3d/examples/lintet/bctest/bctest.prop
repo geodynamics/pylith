@@ -1,0 +1,36 @@
+# File containing material properties.
+#
+# Comment lines begin with '#'
+#
+# The material type and material property values are specified using a
+# "keyword = value" syntax. The keywords for the different material
+# types are given below. The units for values with dimensions should
+# follow the value as shown in the examples below.
+#
+# Materials and keywords:
+#   Isotropic linear elastic
+#     materialType ='IsotropicLinearElastic'
+#     density
+#     youngsModulus
+#     poissonsRatio
+#     endMaterial ='True' (flag indicating end of material)
+#   Isotropic linear maxwell viscoelastic
+#     materialType ='IsotropicLinearMaxwellViscoelastic'
+#     density
+#     youngsModulus
+#     poissonsRatio
+#     viscosity
+#     endMaterial ='True' (flag indicating end of material)
+#
+# Material number 1
+materialType 	= 'IsotropicLinearElastic'
+density         = 3000.0*kg/m**3		#  Density
+youngsModulus   = 7.5e10*Pa			#  Young's modulus
+poissonsRatio   = 0.25				#  Poisson's ratio
+endMaterial	= True
+# Material number 2
+materialType 	= 'IsotropicLinearElastic'
+density         = 3000.0*kg/m**3		#  Density
+youngsModulus   = 7.5e10*Pa			#  Young's modulus
+poissonsRatio   = 0.25				#  Poisson's ratio
+endMaterial	= True

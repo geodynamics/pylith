@@ -1,0 +1,7 @@
+# Boundary conditions for split cube problem.
+#
+displacement_units = m
+velocity_units = m/s
+force_units = newton
+#
+12   1   1   1   0.00000000e+00  0.00000000e+00  0.00000000e+00

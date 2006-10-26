@@ -1,0 +1,40 @@
+# File containing time stepping parameters.
+#
+# Comment lines begin with '#'
+#
+# First, specify units used in values with dimensions of time.
+#
+time_units = year
+#
+#
+# Time stepping parameters are given in groups. The elastic solution
+# corresponds to group 0 and must always be defined. Although some of
+# the parameters do not have any meaning for the elastic solution,
+# they must be present anyway.
+#
+# Columns:
+#   (1) Time step group number (=0 for elastic solution).
+#   (2) The number of time steps in the group (=1 for elastic solution).
+#   (3) Time step size (given in units of time_units).
+#   (4) Amount of implicitness. Real dimensionless parameter that
+#       ranges from 0.0 (fully explicit) to 1.0 (fully implicit). The
+#       value is generally set to 0.5.
+#   (5) Maximum number of equilibrium iterations before stiffness
+#       matrix is reformed.
+#   (6) Number of time steps between initial reformation of stiffness
+#       matrix.
+#       &lt;0 Indicates that reformation should occur only for the first
+#          step in each time step group.
+#       =0 Indicates that reformation should never occur.
+#   (7) Large deformation solution flag
+#       =0 Linear strain 
+#       =1 Large strain but use only linear contribution to the
+#          stiffness matrix (sometimes results in better convergence)
+#       =2 Large strain and use nonlinear contribution to the
+#          stiffness matrix
+#   (8) Convergece tolerance for displacements (dimensionless value)
+#   (9) Convergece tolerance for forces (dimensionless value)
+#   (10) Convergece tolerance for energy (dimensionless value)
+#   (11) Maximum number of equilibrium iterations
+#
+  0   1   0.e+0  5.e-1 1001   4      0  1.0e+00  1.0e+0  1.0e+00 1
