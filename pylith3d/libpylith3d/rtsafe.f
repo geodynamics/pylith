@@ -42,6 +42,7 @@ c...  parameter definitions
 c
       INTEGER MAXIT
       PARAMETER (MAXIT=100)
+      include "rconsts.inc"
 c
 c...  subroutine arguments
 c
@@ -63,20 +64,20 @@ c
 c
       call func(x1,fl,df,rpar,nrpar,ipar,nipar)
       call func(x2,fh,df,rpar,nrpar,ipar,nipar)
-      if((fl.gt.0.0d0.and.fh.gt.0.0d0).or.
-     & (fl.lt.0.0d0.and.fh.lt.0.0d0)) then
+      if((fl.gt.zero.and.fh.gt.zero).or.
+     & (fl.lt.zero.and.fh.lt.zero)) then
         ierr=115
         errstrng="rtsafe"
         return
       end if
 c
-      if(fl.eq.0.0d0)then
+      if(fl.eq.zero)then
         rtsafe=x1
         return
-      else if(fh.eq.0.0d0)then
+      else if(fh.eq.zero)then
         rtsafe=x2
         return
-      else if(fl.lt.0.0d0)then
+      else if(fl.lt.zero)then
         xl=x1
         xh=x2
       else
@@ -84,25 +85,25 @@ c
         xl=x2
       endif
 c
-      rtsafe=0.5d0*(x1+x2)
+      rtsafe=half*(x1+x2)
       dxold=abs(x2-x1)
       dx=dxold
       call func(rtsafe,f,df,rpar,nrpar,ipar,nipar)
 c
       do j=1,MAXIT
-        if(((rtsafe-xh)*df-f)*((rtsafe-xl)*df-f).ge.0.0d0.or.
-     &   abs(2.0d0*f).gt.abs(dxold*df) ) then
+        if((((rtsafe-xh)*df-f)*((rtsafe-xl)*df-f).ge.zero).or.
+     &   (abs(two*f).gt.abs(dxold*df)) ) then
           dxold=dx
-          dx=0.5d0*(xh-xl)
+          dx=half*(xh-xl)
           rtsafe=xl+dx
-          if(xl.eq.rtsafe)return
+          if(xl.eq.rtsafe) return
         else
           dxold=dx
           dx=f/df
           temp=rtsafe
           rtsafe=rtsafe-dx
-          if(temp.eq.rtsafe)return
-        endif
+          if(temp.eq.rtsafe) return
+        end if
         if(abs(dx).lt.xacc) return
         call func(rtsafe,f,df,rpar,nrpar,ipar,nipar)
 c
@@ -110,8 +111,8 @@ c...  put this in because original code didn't seem to deal with the
 c     case where the current value is already the root to machine
 c     precision.
 c
-        if(f.eq.0.0d0) return
-        if(f.lt.0.0d0) then
+        if(f.eq.zero) return
+        if(f.lt.zero) then
           xl=rtsafe
         else
           xh=rtsafe
