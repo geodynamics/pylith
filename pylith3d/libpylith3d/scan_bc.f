@@ -69,7 +69,7 @@ c
       integer nget,j,n,i1,i2
       integer ibond(3)
       double precision bond(3)
-      character units(3)*80
+      character units(3)*80,dum*1
       logical units_defined(3)
 c
 c...  open input file
@@ -78,6 +78,11 @@ c
       numbc=izero
       nget=ithree
       open(kr,file=bcfile,status="old",err=20)
+c
+c...  return if file is empty
+c
+      read(kr,"(a1)",end=10) dum
+      backspace(kr)
 c
 c...  get units, returning error 2 if they aren't found.
 c
