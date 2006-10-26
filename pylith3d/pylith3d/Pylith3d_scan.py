@@ -412,15 +412,16 @@ class Pylith3d_scan(Component):
             self._forceUnits,
             self._bcInputFile)
 
-        self._displacementScaleString = \
-                                      uparser.parse(string.strip(self._displacementUnits))
-        self._displacementScaleFactor = self._displacementScaleString.value
-        self._velocityScaleString = \
-                                  uparser.parse(string.strip(self._velocityUnits))
-        self._velocityScaleFactor = self._velocityScaleString.value
-        self._forceScaleString = \
-                               uparser.parse(string.strip(self._forceUnits))
-        self._forceScaleFactor = self._forceScaleString.value
+        if self._numberBcEntries > 0:
+            self._displacementScaleString = \
+                                          uparser.parse(string.strip(self._displacementUnits))
+            self._displacementScaleFactor = self._displacementScaleString.value
+            self._velocityScaleString = \
+                                      uparser.parse(string.strip(self._velocityUnits))
+            self._velocityScaleFactor = self._velocityScaleString.value
+            self._forceScaleString = \
+                                   uparser.parse(string.strip(self._forceUnits))
+            self._forceScaleFactor = self._forceScaleString.value
 
         self._winklerInfo = pylith3d.scan_wink(
             f77FileInput,

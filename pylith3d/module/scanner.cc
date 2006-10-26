@@ -146,16 +146,31 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, const ALE::Obj<ALE
   }
   ierr = PetscStrcpy(bcFilename, baseFilename);
   ierr = PetscStrcat(bcFilename, ".bc");
-  f = fopen(bcFilename, "w");CHKERRQ(ierr);
-  fprintf(f, "displacement_units = m\n");
-  fprintf(f, "velocity_units = m/s\n");
-  fprintf(f, "force_units = newton\n");
-  fprintf(f, "#\n");
-  fprintf(f, "# The last row for each node applies\n");
-  fprintf(f, "#\n");
-  fprintf(f, "#  Node X BC Y BC Z BC   X Value          Y Value          Z Value\n");
-  fprintf(f, "#\n");
+
+  // Determine if we have bc stuff
   const ALE::Obj<ALE::Mesh::topology_type::label_sequence>& vertices = boundaries->getTopology()->depthStratum(patch, 0);
+  bool haveBC = false;
+  for(ALE::Mesh::topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter)
+    if (boundaries->getFiberDimension(patch, *v_iter) > 0) {
+      haveBC = true;
+      break;
+    } // if
+
+  f = fopen(bcFilename, "w");CHKERRQ(ierr);
+  if (haveBC) {
+    // Only write header if bc file contains information
+    // If header is written and rest of file is empty,
+    // then we have a problem and reading will fail with
+    // error message.
+    fprintf(f, "displacement_units = m\n");
+    fprintf(f, "velocity_units = m/s\n");
+    fprintf(f, "force_units = newton\n");
+    fprintf(f, "#\n");
+    fprintf(f, "# The last row for each node applies\n");
+    fprintf(f, "#\n");
+    fprintf(f, "#  Node X BC Y BC Z BC   X Value          Y Value          Z Value\n");
+    fprintf(f, "#\n");
+  } // if
 
   for(ALE::Mesh::topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter) {
     int    constraints[3] = {0, 0, 0};
