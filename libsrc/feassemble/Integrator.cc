@@ -47,4 +47,54 @@ pylith::feassemble::Integrator::quadrature(const Quadrature* q)
   _quadrature = (0 != q) ? q->clone() : 0;
 } // quadrature
 
+// ----------------------------------------------------------------------
+// Initialize vector containing result of integration action for cell.
+void
+pylith::feassemble::Integrator::_initCellVector(void)
+{ // _initCellVector
+  assert(0 != _quadrature);
+  const int size = _quadrature->spaceDim() * _quadrature->numCorners();
+  _cellVector = (size > 0) ? new real_section_type::value_type[size] : 0;
+  for (int i=0; i < size; ++i)
+    _cellVector[i] = 0.0;
+} // _initCellVector
+
+// ----------------------------------------------------------------------
+// Zero out vector containing result of integration actions for cell.
+void
+pylith::feassemble::Integrator::_resetCellVector(void)
+{ // _resetCellVector
+  assert(0 != _quadrature);
+  const int size = _quadrature->spaceDim() * _quadrature->numCorners();
+  for (int i=0; i < size; ++i)
+    _cellVector[i] = 0.0;
+} // _resetCellVector
+
+// ----------------------------------------------------------------------
+// Initialize matrix containing result of integration for cell.
+void
+pylith::feassemble::Integrator::_initCellMatrix(void)
+{ // _initCellMatrix
+  assert(0 != _quadrature);
+  const int size =
+    _quadrature->spaceDim() * _quadrature->numCorners() *
+    _quadrature->spaceDim() * _quadrature->numCorners();
+  _cellMatrix = (size > 0) ? new real_section_type::value_type[size] : 0;
+  for (int i=0; i < size; ++i)
+    _cellMatrix[i] = 0.0;
+} // _initCellMatrix
+
+// ----------------------------------------------------------------------
+// Zero out matrix containing result of integration for cell.
+void
+pylith::feassemble::Integrator::_resetCellMatrix(void)
+{ // _resetCellMatrix
+  assert(0 != _quadrature);
+  const int size =
+    _quadrature->spaceDim() * _quadrature->numCorners() *
+    _quadrature->spaceDim() * _quadrature->numCorners();
+  for (int i=0; i < size; ++i)
+    _cellMatrix[i] = 0.0;
+} // _resetCellMatrix
+
 // End of file 

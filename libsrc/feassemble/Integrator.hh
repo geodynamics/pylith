@@ -35,6 +35,14 @@ class pylith::feassemble::Integrator
 { // Integrator
   friend class TestIntegrator; // unit testing
 
+// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+public :
+
+  typedef ALE::Mesh Mesh;
+  typedef Mesh::topology_type topology_type;
+  typedef topology_type::point_type point_type;
+  typedef Mesh::real_section_type real_section_type;
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -56,9 +64,9 @@ public :
    * @param coordinates Field of cell vertex coordinates
    */
   virtual 
-  void integrateAction(const ALE::Obj<ALE::Mesh::real_section_type>& fieldOut,
-		       const ALE::Obj<ALE::Mesh::real_section_type>& fieldIn,
-		       const ALE::Obj<ALE::Mesh::real_section_type>& coordinates) = 0;
+  void integrateAction(const ALE::Obj<real_section_type>& fieldOut,
+		       const ALE::Obj<real_section_type>& fieldIn,
+		       const ALE::Obj<real_section_type>& coordinates) = 0;
 
   /** Compute matrix associated with operator.
    *
@@ -67,7 +75,7 @@ public :
    */
   virtual 
   void integrate(PetscMat* mat,
-		 const ALE::Obj<ALE::Mesh::real_section_type>& coordinates) = 0;
+		 const ALE::Obj<real_section_type>& coordinates) = 0;
 
   /** Set quadrature for integrating finite-element quantities.
    *
@@ -84,16 +92,34 @@ protected :
    */
   Integrator(const Integrator& i);
 
+  /// Initialize vector containing result of integration action for cell.
+  void _initCellVector(void);
+
+  /// Zero out vector containing result of integration actions for cell.
+  void _resetCellVector(void);
+
+  /// Initialize matrix containing result of integration for cell.
+  void _initCellMatrix(void);
+
+  /// Zero out matrix containing result of integration for cell.
+  void _resetCellMatrix(void);
+
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
   /// Not implemented
   const Integrator& operator=(const Integrator&);
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
 
   Quadrature* _quadrature; ///< Quadrature for integrating finite-element
+
+  /// Vector local to cell containing result of integration action
+  real_section_type::value_type* _cellVector;
+
+  /// Matrix local to cell containing result of integration
+  real_section_type::value_type* _cellMatrix;
 
 }; // Integrator
 
