@@ -11,35 +11,35 @@
 //
 
 /**
- * @file pylith/feassemble/IntegratorInertia3D.hh
+ * @file pylith/feassemble/IntegratorInertia.hh
  *
  * @brief Integrate inertial term for 3-D finite elements.
  */
 
-#if !defined(pylith_feassemble_integratorinertia3d_hh)
-#define pylith_feassemble_integratorinertia3d_hh
+#if !defined(pylith_feassemble_integratorinertia_hh)
+#define pylith_feassemble_integratorinertia_hh
 
 #include "Integrator.hh"
 
 namespace pylith {
   namespace feassemble {
-    class IntegratorInertia3D;
-    class TestIntegratorInertia3D;
+    class IntegratorInertia;
+    class TestIntegratorInertia;
   } // feassemble
 } // pylith
 
-class pylith::feassemble::IntegratorInertia3D : public Integrator
+class pylith::feassemble::IntegratorInertia : public Integrator
 { // Integrator1D
-  friend class TestIntegratorInertia3D; // unit testing
+  friend class TestIntegratorInertia; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  IntegratorInertia3D(void);
+  IntegratorInertia(void);
 
   /// Destructor
-  ~IntegratorInertia3D(void);
+  ~IntegratorInertia(void);
 
   /// Create a copy of this object.
   Integrator* clone(void) const;
@@ -77,18 +77,18 @@ protected :
    *
    * @param i Integrator to copy
    */
-  IntegratorInertia3D(const IntegratorInertia3D& i);
+  IntegratorInertia(const IntegratorInertia& i);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
   /// Not implemented
-  const IntegratorInertia3D& operator=(const IntegratorInertia3D&);
+  const IntegratorInertia& operator=(const IntegratorInertia&);
 
-}; // IntegratorInertia3D
+}; // IntegratorInertia
 
-#include "IntegratorInertia3D.icc" // inline methods
+#include "IntegratorInertia.icc" // inline methods
 
-#endif // pylith_feassemble_integratorineria3d_hh
+#endif // pylith_feassemble_integratorineria_hh
 
 // End of file 

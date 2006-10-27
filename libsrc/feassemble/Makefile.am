@@ -18,7 +18,7 @@ lib_LTLIBRARIES = libpylithfeassemble.la
 libpylithfeassemble_la_SOURCES = \
 	Integrator.cc \
 	IntegratorElasticity3D.cc \
-	IntegratorInertia3D.cc \
+	IntegratorInertia.cc \
 	Quadrature.cc \
 	Quadrature1D.cc \
 	Quadrature1Din2D.cc \
@@ -31,8 +31,8 @@ subpkginclude_HEADERS = \
 	Integrator.hh \
 	IntegratorElasticity3D.hh \
 	IntegratorElasticity3D.icc \
-	IntegratorInertia3D.hh \
-	IntegratorInertia3D.icc \
+	IntegratorInertia.hh \
+	IntegratorInertia.icc \
 	Quadrature.hh \
 	Quadrature.icc \
 	Quadrature1D.hh \
