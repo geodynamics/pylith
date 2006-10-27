@@ -60,7 +60,15 @@ public :
    * @param coordinates Field of cell vertex coordinates
    */
   void integrate(PetscMat* mat,
-		 const ALE::Obj<ALE::Mesh::real_section_type>& coordinates);
+		 const ALE::Obj<real_section_type>& coordinates);
+
+  /** Compute lumped mass matrix.
+   *
+   * @param fieldOut Lumped mass matrix as field
+   * @param coordinates Field of cell vertex coordinates
+   */
+  void integrateLumped(const ALE::Obj<real_section_type>& fieldOut,
+		       const ALE::Obj<real_section_type>& coordinates);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
