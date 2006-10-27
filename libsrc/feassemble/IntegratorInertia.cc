@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-#include "IntegratorInertia3D.hh" // implementation of class methods
+#include "IntegratorInertia.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
 
@@ -23,19 +23,19 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::IntegratorInertia3D::IntegratorInertia3D(void)
+pylith::feassemble::IntegratorInertia::IntegratorInertia(void)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::IntegratorInertia3D::~IntegratorInertia3D(void)
+pylith::feassemble::IntegratorInertia::~IntegratorInertia(void)
 { // destructor
 } // destructor
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::feassemble::IntegratorInertia3D::IntegratorInertia3D(const IntegratorInertia3D& i) :
+pylith::feassemble::IntegratorInertia::IntegratorInertia(const IntegratorInertia& i) :
   Integrator(i)
 { // copy constructor
 } // copy constructor
@@ -43,7 +43,7 @@ pylith::feassemble::IntegratorInertia3D::IntegratorInertia3D(const IntegratorIne
 // ----------------------------------------------------------------------
 // Integrate inertial term for 3-D finite elements.
 void
-pylith::feassemble::IntegratorInertia3D::integrateAction(
+pylith::feassemble::IntegratorInertia::integrateAction(
 			      const ALE::Obj<real_section_type>& fieldOut,
 			      const ALE::Obj<real_section_type>& fieldIn,
 			      const ALE::Obj<real_section_type>& coordinates)
@@ -112,7 +112,7 @@ pylith::feassemble::IntegratorInertia3D::integrateAction(
 // ----------------------------------------------------------------------
 // Compute matrix associated with operator.
 void
-pylith::feassemble::IntegratorInertia3D::integrate(
+pylith::feassemble::IntegratorInertia::integrate(
 			     PetscMat* mat,
 			     const ALE::Obj<real_section_type>& coordinates)
 { // integrate
@@ -178,7 +178,7 @@ pylith::feassemble::IntegratorInertia3D::integrate(
 // ----------------------------------------------------------------------
 // Compute lumped matrix associated with operator.
 void
-pylith::feassemble::IntegratorInertia3D::integrateLumped(
+pylith::feassemble::IntegratorInertia::integrateLumped(
 			     const ALE::Obj<real_section_type>& fieldOut,
 			     const ALE::Obj<real_section_type>& coordinates)
 { // integrateLumped
