@@ -148,12 +148,23 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
   typedef ALE::Mesh::real_section_type real_section_type;
 
   ALE::Obj<ALE::Mesh> mesh = _TestIntegrator::_setupMesh(data);
+  const ALE::Mesh::int_section_type::patch_type patch = 0;
+
+  // Fiber dimension (number of values in field per vertex) for fields
+  const int fiberDim = data.fiberDim;
+
+  // Setup input field for action
+  const ALE::Obj<real_section_type>& fieldIn =
+    mesh->getRealSection("fieldIn");
+  fieldIn->setName("fieldIn");
+  fieldIn->setFiberDimensionByDepth(patch, 0, fiberDim);
+  fieldIn->allocate();
 
   // Integrate
   PetscMat mat;
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
-  integrator->integrate(&mat, coordinates);
+  integrator->integrate(&mat, mesh, fieldIn, coordinates);
 
   // Crate dense matrix
   // :TODO: ADD STUFF HERE

@@ -75,7 +75,8 @@ public :
    */
   virtual 
   void integrate(PetscMat* mat,
-         const ALE::Obj<real_section_type>& fieldIn,
+		 ALE::Obj<ALE::Mesh>& mesh,
+		 const ALE::Obj<real_section_type>& fieldIn,
 		 const ALE::Obj<real_section_type>& coordinates) = 0;
 
   /** Set quadrature for integrating finite-element quantities.
