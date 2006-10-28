@@ -54,10 +54,10 @@ pylith::feassemble::Quadrature3D::computeGeometry(
   _resetGeometry();
 
   // Get coordinates of cell's vertices
-  const topology_type::patch_type patch  = 0;
+  const topology_type::patch_type patch = 0;
   const real_section_type::value_type* vertCoords = 
     coordinates->restrict(patch, cell);
-  //assert(3 == coordinates.GetFiberDimensionByDepth(patch,
+  //assert(3 == coordinates->getFiberDimensionByDepth(patch,
   //*vertices->begin(), 0));
 
   // Loop over quadrature points

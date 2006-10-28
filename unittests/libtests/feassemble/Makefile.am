@@ -17,14 +17,33 @@ TESTS = testfeassemble
 
 check_PROGRAMS = testfeassemble
 
+# Primary source files
 testfeassemble_SOURCES = \
+	TestIntegrator.cc \
+	TestIntegratorInertia1D.cc \
 	TestQuadrature.cc \
 	TestQuadrature1D.cc \
 	TestQuadrature1Din2D.cc \
 	TestQuadrature2D.cc \
 	TestQuadrature2Din3D.cc \
 	TestQuadrature3D.cc \
-	test_feassemble.cc \
+	test_feassemble.cc
+
+noinst_HEADERS = \
+	TestIntegrator.hh \
+	TestIntegratorInertia1D.hh \
+	TestQuadrature.hh \
+	TestQuadrature1D.hh \
+	TestQuadrature1Din2D.hh \
+	TestQuadrature1Din3D.hh \
+	TestQuadrature2D.hh \
+	TestQuadrature2Din3D.hh
+
+# Source files associated with testing data
+testfeassemble_SOURCES += \
+	data/IntegratorData.cc \
+	data/IntegratorDataInertia1DLinear.cc \
+	data/IntegratorDataInertia1DQuadratic.cc \
 	data/QuadratureData.cc \
 	data/QuadratureData1DLinear.cc \
 	data/QuadratureData1DQuadratic.cc \
@@ -42,13 +61,10 @@ testfeassemble_SOURCES = \
 	data/QuadratureData3DLinear.cc \
 	data/QuadratureData3DQuadratic.cc
 
-noinst_HEADERS = \
-	TestQuadrature.hh \
-	TestQuadrature1D.hh \
-	TestQuadrature1Din2D.hh \
-	TestQuadrature1Din3D.hh \
-	TestQuadrature2D.hh \
-	TestQuadrature2Din3D.hh \
+noinst_HEADERS += \
+	data/IntegratorData.hh \
+	data/IntegratorDataInertia1DLinear.hh \
+	data/IntegratorDataInertia1DQuadratic.hh \
 	data/QuadratureData.hh \
 	data/QuadratureData1DLinear.hh \
 	data/QuadratureData1DQuadratic.hh \

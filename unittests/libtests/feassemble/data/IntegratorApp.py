@@ -10,29 +10,29 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/QuadratureApp.py
+## @file unittests/libtests/feassemble/data/IntegratorApp.py
 
 ## @brief Python application for generating C++ data files for testing
-## C++ quadrature objects.
+## C++ integrator objects.
 
 from pyre.applications.Script import Script
 
 import numpy
 
-# QuadratureApp class
-class QuadratureApp(Script):
+# IntegratorApp class
+class IntegratorApp(Script):
   """
   Python application for generating C++ data files for testing C++
-  quadrature objects.
+  integrator objects.
   """
   
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Script.Inventory):
-    """Python object for managing QuadratureApp facilities and properties."""
+    """Python object for managing IntegratorApp facilities and properties."""
 
     ## @class Inventory
-    ## Python object for managing QuadratureApp facilities and properties.
+    ## Python object for managing IntegratorApp facilities and properties.
     ##
     ## \b Properties
     ## @li None
@@ -49,33 +49,30 @@ class QuadratureApp(Script):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="quadratureapp"):
+  def __init__(self, name="integratorapp"):
     """
     Constructor.
     """
     Script.__init__(self, name)
 
-    # Mesh information
     self.numVertices = None
     self.spaceDim = None
     self.numCells = None
-    self.vertices = None
-    self.cells = None
-
-    # Reference cell information
     self.cellDim = None
     self.numCorners = None
     self.numQuadPts = None
-    self.quadPtsRef = None
+    self.fiberDim = None
+
+    self.quadPts = None
     self.quadWts = None
+    self.vertices = None
+    self.cells = None
+
     self.basis = None
     self.basisDeriv = None
-
-    # Computed quadrature information
-    self.quadPts = None
-    self.jacobian = None
-    self.jacobianDet = None
-    self.jacobianInv = None
+    self.fieldIn = None
+    self.valsActions = None
+    self.valsMatrix = None
     return
 
 
@@ -83,34 +80,13 @@ class QuadratureApp(Script):
     """
     Run the application.
     """
-    self.calculateBasis()
-    self.calculateJacobian()
-
-    # Quadrature points in cell
-    self.quadPts = numpy.dot(self.basis, self.vertices)
-
+    self._initialize()
+    self._calculateMatrix()
+    self._calculateAction()
     self._initData()
     self.data.write(self.name)
     return
   
-
-  def calculateBasis(self):
-    """
-    Calculate basis functions and derivatives at quadrature points.
-    """
-    raise NotImplementedError
-
-
-  def calculateJacobian(self):
-    """
-    Calculate Jacobian, its determinant, and its inverse at quadrature
-    pts plus coordinates of quadrature points in the cell.
-    """
-    import feutils
-    (self.jacobian, self.jacobianInv, self.jacobianDet) = \
-                    feutils.calculateJacobian(self, self.vertices)
-    return
-
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -122,6 +98,39 @@ class QuadratureApp(Script):
     self.data = self.inventory.data
     return
 
+
+  def _initialize(self):
+    """
+    Get quadrature information.
+    """
+    q = self.quadrature
+    q.calculateBasis()
+    self.spaceDim = q.spaceDim
+    self.numCorners = q.numCorners
+    self.cellDim = q.cellDim
+    self.numQuadPts = q.numQuadPts
+    self.basis = q.basis
+    self.basisDeriv = q.basisDeriv
+    self.quadPts = q.quadPtsRef
+    self.quadWts = q.quadWts
+
+    return
+  
+
+  def _calculateMatrix(self):
+    """
+    Calculate matrix associated with integration.
+    """
+    raise NotImplementedError("Not implemented in abstract base class.")
+
+
+  def _calculateAction(self):
+    """
+    Calculate integration action using matrix.
+    """
+    self.valsAction = numpy.dot(self.valsMatrix, self.fieldIn)[:]
+    return
+    
 
   def _initData(self):
     self.data.addScalar(vtype="int", name="_numVertices",
@@ -139,14 +148,17 @@ class QuadratureApp(Script):
     self.data.addScalar(vtype="int", name="_numQuadPts",
                         value=self.numQuadPts,
                         format="%d")
+    self.data.addScalar(vtype="int", name="_fiberDim",
+                        value=self.fiberDim,
+                        format="%d")
     
     self.data.addArray(vtype="double", name="_vertices", values=self.vertices,
                        format="%16.8e", ncols=self.spaceDim)
     self.data.addArray(vtype="int", name="_cells", values=self.cells,
                        format="%8d", ncols=self.numVertices)
     
-    self.data.addArray(vtype="double", name="_quadPtsRef",
-                       values=self.quadPtsRef,
+    self.data.addArray(vtype="double", name="_quadPts",
+                       values=self.quadPts,
                        format="%16.8e", ncols=self.cellDim)
     self.data.addArray(vtype="double", name="_quadWts", values=self.quadWts,
                        format="%16.8e", ncols=self.numQuadPts)
@@ -156,19 +168,16 @@ class QuadratureApp(Script):
     self.data.addArray(vtype="double", name="_basisDeriv",
                        values=self.basisDeriv,
                        format="%16.8e", ncols=self.cellDim)
-    self.data.addArray(vtype="double", name="_quadPts",
-                       values=self.quadPts,
-                       format="%16.8e", ncols=self.spaceDim)
     
-    self.data.addArray(vtype="double", name="_jacobian",
-                       values=self.jacobian,
+    self.data.addArray(vtype="double", name="_fieldIn",
+                       values=self.fieldIn,
                        format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="double", name="_jacobianDet",
-                       values=self.jacobianDet,
-                       format="%16.8e", ncols=self.numQuadPts)
-    self.data.addArray(vtype="double", name="_jacobianInv",
-                       values=self.jacobianInv,
-                       format="%16.8e", ncols=self.cellDim)
+    self.data.addArray(vtype="double", name="_valsAction",
+                       values=self.valsAction,
+                       format="%16.8e", ncols=self.spaceDim)
+    self.data.addArray(vtype="double", name="_valsMatrix",
+                       values=self.valsMatrix,
+                       format="%16.8e", ncols=self.spaceDim)
       
     return
 

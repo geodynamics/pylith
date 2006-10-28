@@ -75,7 +75,7 @@ class Quadrature1DQuadratic(QuadratureApp):
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
   
-  def _calculateBasis(self):
+  def calculateBasis(self):
     """
     Calculate basis functions and their derivatives at quadrature points.
     """

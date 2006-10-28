@@ -17,8 +17,6 @@
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
 #include "data/QuadratureData.hh" // USES QuadratureData
 
-#include <sstream> // USES std::stringstream
-
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestQuadrature );
 
