@@ -44,7 +44,7 @@ class Quadrature1Din2DQuadratic(Quadrature1DQuadratic):
     self.numQuadPts = 2
     
     self.vertices = numpy.array( [[-0.2, -0.5], [0.3, -0.2], [0.7, 0.3]],
-                                 dtype=numpy.Float64)
+                                 dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.Int32)
     
     return

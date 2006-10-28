@@ -122,7 +122,8 @@ pylith::feassemble::TestIntegrator::_testIntegrateAction(Integrator* integrator,
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   integrator->integrateAction(fieldOut, fieldIn, coordinates);
-
+  //fieldOut->view("field out");
+  
   // Check values in output field
   iVertex = 0;
   const double tolerance = 1.0e-06;

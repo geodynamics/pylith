@@ -93,12 +93,12 @@ class Quadrature3DLinear(QuadratureApp):
     self.numQuadPts = 1
     
     self.quadPtsRef = numpy.array( [[1.0/3.0, 1.0/3.0, 1.0/3.0]],
-                                   dtype=numpy.Float64)
-    self.quadWts = numpy.array([1.0/6.0], dtype=numpy.Float64)
+                                   dtype=numpy.float64)
+    self.quadWts = numpy.array([1.0/6.0], dtype=numpy.float64)
     self.vertices = numpy.array( [[-0.5, -1.0, -0.5],
                                   [ 2.0, -0.5, -0.4],
                                   [ 1.0, -0.1, -0.3],
-                                  [-0.2,  0.5,  2.0]], dtype=numpy.Float64)
+                                  [-0.2,  0.5,  2.0]], dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2, 3]], dtype=numpy.Int32)
     return
   
@@ -109,15 +109,15 @@ class Quadrature3DLinear(QuadratureApp):
     """
 
     self.basis = numpy.zeros( (self.numQuadPts, self.numCorners),
-                              dtype=numpy.Float64)
+                              dtype=numpy.float64)
     self.basisDeriv = numpy.zeros( (self.numQuadPts,
                                     self.numCorners, self.cellDim),
-                                   dtype=numpy.Float64)
+                                   dtype=numpy.float64)
 
     iQuad = 0
     for q in self.quadPtsRef:
       # Basis functions at quadrature points
-      basis = numpy.array([N0(q), N1(q), N2(q), N3(q)], dtype=numpy.Float64)
+      basis = numpy.array([N0(q), N1(q), N2(q), N3(q)], dtype=numpy.float64)
       self.basis[iQuad] = basis.reshape( (self.numCorners,) )
 
       # Derivatives of basis functions at quadrature points
@@ -125,7 +125,7 @@ class Quadrature3DLinear(QuadratureApp):
                            [N1p(q), N1q(q), N1r(q)],
                            [N2p(q), N2q(q), N2r(q)],
                            [N3p(q), N3q(q), N3r(q)]],
-                          dtype=numpy.Float64)      
+                          dtype=numpy.float64)      
       self.basisDeriv[iQuad] = deriv.reshape((self.numCorners, self.cellDim))
 
       iQuad += 1

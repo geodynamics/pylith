@@ -169,20 +169,9 @@ class Quadrature3DQuadratic(QuadratureApp):
                                     [3.0/4.0, 1.0/12.0, 1.0/12.0],
                                     [1.0/12.0, 3.0/4.0, 1.0/12.0],
                                     [1.0/12.0, 1.0/12.0, 3.0/4.0]],
-                                   dtype=numpy.Float64)
+                                   dtype=numpy.float64)
     self.quadWts = numpy.array([1.0/8.0, 1.0/8.0, 1.0/8.0, 1.0/8.0],
-                               dtype=numpy.Float64)
-    self.vertices = numpy.array( [[0.0, 0.0, 0.0],
-                                  [1.0, 0.0, 0.0],
-                                  [0.0, 1.0, 0.0],
-                                  [0.0, 0.0, 1.0],
-                                  [0.5, 0.0, 0.0],
-                                  [0.0, 0.5, 0.0],
-                                  [0.0, 0.0, 0.5],
-                                  [0.5, 0.5, 0.0],
-                                  [0.0, 0.5, 0.5],
-                                  [0.5, 0.0, 0.5]],
-                                 dtype=numpy.Float64)
+                               dtype=numpy.float64)
     
     self.vertices = numpy.array( [[-0.5, -2.0, -1.0],
                                   [ 2.0, -2.0, -0.5],
@@ -194,7 +183,7 @@ class Quadrature3DQuadratic(QuadratureApp):
                                   [ 1.5, -0.6, -0.2],
                                   [ 0.6,  0.8,  0.9],
                                   [ 1.1, -0.8,  0.7]],
-                                 dtype=numpy.Float64)
+                                 dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
                               dtype=numpy.Int32)
     
@@ -207,17 +196,17 @@ class Quadrature3DQuadratic(QuadratureApp):
     """
 
     self.basis = numpy.zeros( (self.numQuadPts, self.numCorners),
-                              dtype=numpy.Float64)
+                              dtype=numpy.float64)
     self.basisDeriv = numpy.zeros( (self.numQuadPts,
                                     self.numCorners, self.cellDim),
-                                   dtype=numpy.Float64)
+                                   dtype=numpy.float64)
 
     iQuad = 0
     for q in self.quadPtsRef:
       # Basis functions at quadrature points
       basis = numpy.array([N0(q), N1(q), N2(q), N3(q), N4(q),
                            N5(q), N6(q), N7(q), N8(q), N9(q)],
-                          dtype=numpy.Float64)
+                          dtype=numpy.float64)
       self.basis[iQuad] = basis.reshape( (self.numCorners,) )
 
       # Derivatives of basis functions at quadrature points
@@ -231,7 +220,7 @@ class Quadrature3DQuadratic(QuadratureApp):
                            [N7p(q), N7q(q), N7r(q)],
                            [N8p(q), N8q(q), N8r(q)],
                            [N9p(q), N9q(q), N9r(q)]],
-                          dtype=numpy.Float64)      
+                          dtype=numpy.float64)      
       self.basisDeriv[iQuad] = deriv.reshape((self.numCorners, self.cellDim))
 
       iQuad += 1
