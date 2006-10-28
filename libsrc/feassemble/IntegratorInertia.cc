@@ -115,12 +115,13 @@ pylith::feassemble::IntegratorInertia::integrateAction(
 void
 pylith::feassemble::IntegratorInertia::integrate(
 			     PetscMat* mat,
-                 const ALE::Obj<real_section_type>& fieldIn,
+			     ALE::Obj<ALE::Mesh>& mesh,
+			     const ALE::Obj<real_section_type>& fieldIn,
 			     const ALE::Obj<real_section_type>& coordinates)
 { // integrate
   assert(0 != mat);
   assert(0 != _quadrature);
-  PetscErrorCode ierr;
+  PetscErrorCode err;
 
   // Get information about section
   const topology_type::patch_type patch = 0;
@@ -128,15 +129,20 @@ pylith::feassemble::IntegratorInertia::integrate(
   const ALE::Obj<topology_type::label_sequence>& cells = 
     topology->heightStratum(patch, 0);
   const topology_type::label_sequence::iterator cellsEnd = cells->end();
-  const ALE::Obj<ALE::Mesh::order_type>& globalOrder = ALE::New::NumberingFactory<topology_type>::singleton(topology->debug())->getGlobalOrder(topology, patch, "default", fieldIn->getAtlas());
+  const ALE::Obj<ALE::Mesh::order_type>& globalOrder = 
+    ALE::New::NumberingFactory<topology_type>::singleton(
+       topology->debug())->getGlobalOrder(topology, patch, 
+					  "default", fieldIn->getAtlas());
 
   // Setup symmetric, sparse matrix
+  // :TODO: This needs to be moved outside Integrator object, because
+  // integrator object will be specific to cell type and material type
   int localSize  = globalOrder->getLocalSize();
   int globalSize = globalOrder->getGlobalSize();
-  ierr = MatCreate(topology->comm(), mat);
-  ierr = MatSetSizes(*mat, localSize, localSize, globalSize, globalSize);
-  ierr = MatSetFromOptions(*mat);
-  ierr = preallocateMatrix(topology, fieldIn->getAtlas(), globalOrder, *mat);
+  err = MatCreate(topology->comm(), mat);
+  err = MatSetSizes(*mat, localSize, localSize, globalSize, globalSize);
+  err = MatSetFromOptions(*mat);
+  err = preallocateMatrix(mesh, fieldIn->getAtlas(), globalOrder, *mat);
 
   // Allocate matrix for cell values (if necessary)
   _initCellMatrix();
@@ -177,13 +183,13 @@ pylith::feassemble::IntegratorInertia::integrate(
 	} // for
       } // for
     } // for
-    PetscErrorCode err = 
-      PetscLogFlops(numQuadPts*(2+numBasis*(1+numBasis*(1+spaceDim))));
+    err = PetscLogFlops(numQuadPts*(2+numBasis*(1+numBasis*(1+spaceDim))));
     if (err)
       throw std::runtime_error("Logging PETSc flops failed.");
     
     // Assemble cell contribution into sparse matrix
-    ierr = updateOperator(*mat, fieldIn, globalOrder, *cellIter, _cellMatrix, ADD_VALUES);
+    err = updateOperator(*mat, fieldIn, globalOrder, *cellIter, _cellMatrix, 
+			 ADD_VALUES);
   } // for
 } // integrate
 
