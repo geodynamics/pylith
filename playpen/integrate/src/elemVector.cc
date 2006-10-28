@@ -220,7 +220,7 @@ void pylith::feassemble::Integrator::integrateElasticAction_3d(const Obj<section
   const Obj<topology_type>&                     topology = X->getTopology();
   const Obj<topology_type::label_sequence>&     elements = topology->heightStratum(patch, 0);
   const topology_type::label_sequence::iterator end      = elements->end();
-  const double                                  C        = 1.0;
+  const double                                 *C;
   value_type detJ;
 
   for(topology_type::label_sequence::iterator e_iter = elements->begin(); e_iter != end; ++e_iter) {
@@ -241,10 +241,12 @@ void pylith::feassemble::Integrator::integrateElasticAction_3d(const Obj<section
             for(int d = 0; d < 3; d++) {
               for(int e = 0; e < 3; e++) {
                 for(int f = 0; f < 3; f++) {
-                  _elemMatrix[((i*3+c)*NUM_BASIS_FUNCTIONS + j)*3+d] += 0.25*C*(_testWork[d] + _testWork[c])*(_basisWork[f] +_basisWork[e])*_weights[q]*detJ;
+                  _elemMatrix[((i*3+c)*NUM_BASIS_FUNCTIONS + j)*3+d] += 0.25*C[q*81+(((c*3+d)*3)+e)*3)+f]*(_testWork[d] + _testWork[c])*(_basisWork[f] +_basisWork[e])*_weights[q]*detJ;
                 }
               }
-              _elemMatrix[((i*3+c)*NUM_BASIS_FUNCTIONS + j)*3+d] += _basis[q*NUM_BASIS_FUNCTIONS+i]*_basis[q*NUM_BASIS_FUNCTIONS+j]*_weights[q]*detJ;
+              if (c == d) {
+                _elemMatrix[((i*3+c)*NUM_BASIS_FUNCTIONS + j)*3+d] += _basis[q*NUM_BASIS_FUNCTIONS+i]*_basis[q*NUM_BASIS_FUNCTIONS+j]*_weights[q]*detJ;
+              }
             }
           }
         }

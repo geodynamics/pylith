@@ -50,6 +50,7 @@ pylith::feassemble::IntegratorElasticity3D::integrateAction(const ALE::Obj<ALE::
 // Compute matrix associated with operator.
 void
 pylith::feassemble::IntegratorElasticity3D::integrate(PetscMat* mat,
+   		    const ALE::Obj<ALE::Mesh::real_section_type>& fieldIn,
 		    const ALE::Obj<ALE::Mesh::real_section_type>& coordinates)
 { // integrate
 } // integrate

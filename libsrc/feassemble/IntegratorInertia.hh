@@ -66,8 +66,8 @@ public :
    * @param coordinates Field of cell vertex coordinates
    */
   void integrateAction(const ALE::Obj<ALE::Mesh::real_section_type>& fieldOut,
-		       const ALE::Obj<ALE::Mesh::real_section_type>& fieldIn,
-		       const ALE::Obj<ALE::Mesh::real_section_type>& coordinates);
+		       const ALE::Obj<real_section_type>& fieldIn,
+		       const ALE::Obj<real_section_type>& coordinates);
 
   /** Compute matrix associated with operator.
    *
@@ -75,7 +75,8 @@ public :
    * @param coordinates Field of cell vertex coordinates
    */
   void integrate(PetscMat* mat,
-		 const ALE::Obj<real_section_type>& coordinates);
+                 const ALE::Obj<real_section_type>& fieldIn,
+                 const ALE::Obj<real_section_type>& coordinates);
 
   /** Compute lumped mass matrix.
    *

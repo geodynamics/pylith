@@ -115,13 +115,12 @@ pylith::feassemble::IntegratorInertia::integrateAction(
 void
 pylith::feassemble::IntegratorInertia::integrate(
 			     PetscMat* mat,
+                 const ALE::Obj<real_section_type>& fieldIn,
 			     const ALE::Obj<real_section_type>& coordinates)
 { // integrate
   assert(0 != mat);
   assert(0 != _quadrature);
-
-  // Setup symmetric, sparse matrix
-  // :TODO: ADD STUFF HERE
+  PetscErrorCode ierr;
 
   // Get information about section
   const topology_type::patch_type patch = 0;
@@ -129,6 +128,15 @@ pylith::feassemble::IntegratorInertia::integrate(
   const ALE::Obj<topology_type::label_sequence>& cells = 
     topology->heightStratum(patch, 0);
   const topology_type::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<ALE::Mesh::order_type>& globalOrder = ALE::New::NumberingFactory<topology_type>::singleton(topology->debug())->getGlobalOrder(topology, patch, "default", fieldIn->getAtlas());
+
+  // Setup symmetric, sparse matrix
+  int localSize  = globalOrder->getLocalSize();
+  int globalSize = globalOrder->getGlobalSize();
+  ierr = MatCreate(topology->comm(), mat);
+  ierr = MatSetSizes(*mat, localSize, localSize, globalSize, globalSize);
+  ierr = MatSetFromOptions(*mat);
+  ierr = preallocateMatrix(topology, fieldIn->getAtlas(), globalOrder, *mat);
 
   // Allocate matrix for cell values (if necessary)
   _initCellMatrix();
@@ -175,7 +183,7 @@ pylith::feassemble::IntegratorInertia::integrate(
       throw std::runtime_error("Logging PETSc flops failed.");
     
     // Assemble cell contribution into sparse matrix
-    // :TODO: ADD STUFF HERE
+    ierr = updateOperator(*mat, fieldIn, globalOrder, *cellIter, _cellMatrix, ADD_VALUES);
   } // for
 } // integrate
 
