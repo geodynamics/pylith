@@ -19,7 +19,7 @@
 #if !defined(pylith_feassemble_integrator_hh)
 #define pylith_feassemble_integrator_hh
 
-#include <Mesh.hh> // USES Mesh
+#include <petscmesh.h> // USES Mesh
 #include "pylith/utils/petscfwd.h" // USES PetscMat
 
 namespace pylith {
@@ -75,6 +75,7 @@ public :
    */
   virtual 
   void integrate(PetscMat* mat,
+         const ALE::Obj<real_section_type>& fieldIn,
 		 const ALE::Obj<real_section_type>& coordinates) = 0;
 
   /** Set quadrature for integrating finite-element quantities.
