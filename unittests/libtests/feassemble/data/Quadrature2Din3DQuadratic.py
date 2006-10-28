@@ -49,7 +49,7 @@ class Quadrature2Din3DQuadratic(Quadrature2DQuadratic):
                                   [ 1.3,  1.2, -0.3],
                                   [ 0.1,  1.4,  0.9],
                                   [ 0.8, -0.3,  0.7]],
-                                 dtype=numpy.Float64)
+                                 dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2, 3, 4, 5]], dtype=numpy.Int32)
     
     return

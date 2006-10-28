@@ -45,7 +45,7 @@ class Quadrature1Din3DLinear(Quadrature1DLinear):
     
     self.vertices = numpy.array( [[1.0, -1.5, -2.0],
                                   [-0.5, 2.0,  3.0]],
-                                 dtype=numpy.Float64)
+                                 dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1]], dtype=numpy.Int32)
     return
   

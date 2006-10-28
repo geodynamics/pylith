@@ -46,7 +46,7 @@ class Quadrature2Din3DLinearYZ(Quadrature2DLinear):
     self.vertices = numpy.array( [[ 0.0,  0.0,  0.0],
                                   [ 0.0,  1.0,  0.0],
                                   [ 0.0,  0.0,  1.0]],
-                                 dtype=numpy.Float64)
+                                 dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.Int32)
     return
   

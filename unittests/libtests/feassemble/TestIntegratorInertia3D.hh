@@ -11,32 +11,31 @@
 //
 
 /**
- * @file unittests/libtests/feassemble/TestIntegratorInertia1D.hh
+ * @file unittests/libtests/feassemble/TestIntegratorInertia3D.hh
  *
- * @brief C++ TestIntegratorInertia1D object
+ * @brief C++ TestIntegratorInertia3D object
  *
  * C++ unit testing for IntegratorInertia.
  */
 
-#if !defined(pylith_feassemble_testintegratorinertia1d_hh)
-#define pylith_feassemble_testintegratorinertia1d_hh
+#if !defined(pylith_feassemble_testintegratorinertia3d_hh)
+#define pylith_feassemble_testintegratorinertia3d_hh
 
 #include "TestIntegrator.hh"
 
 /// Namespace for spatialdata package
 namespace pylith {
   namespace feassemble {
-    class TestIntegratorInertia1D;
+    class TestIntegratorInertia3D;
   } // feassemble
 } // pylith
 
-/// C++ unit testing for IntegratorInertia1D
-class pylith::feassemble::TestIntegratorInertia1D : public TestIntegrator
-{ // class TestIntegratorInertia1D
+/// C++ unit testing for IntegratorInertia3D
+class pylith::feassemble::TestIntegratorInertia3D : public TestIntegrator
+{ // class TestIntegratorInertia3D
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestIntegratorInertia1D );
-  CPPUNIT_TEST( testConstructor );
+  CPPUNIT_TEST_SUITE( TestIntegratorInertia3D );
   CPPUNIT_TEST( testLinear );
   CPPUNIT_TEST( testQuadratic );
   CPPUNIT_TEST_SUITE_END();
@@ -44,17 +43,14 @@ class pylith::feassemble::TestIntegratorInertia1D : public TestIntegrator
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
-  /// Test constructor
-  void testConstructor(void);
-
   /// Test integrate() & integrateAction() w/linear basis fns
   void testLinear(void);
 
   /// Test integrate() & integrateAction() w/quadratic basis fns
   void testQuadratic(void);
 
-}; // class TestIntegratorInertia1D
+}; // class TestIntegratorInertia3D
 
-#endif // pylith_feassemble_testintegratorinertia1d_hh
+#endif // pylith_feassemble_testintegratorinertia3d_hh
 
 // End of file 

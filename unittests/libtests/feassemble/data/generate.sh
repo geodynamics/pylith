@@ -116,6 +116,35 @@ if [ $1 == "integrator" ] || [ $1 == "all" ]; then
     --data.object=IntegratorDataInertia1DQuadratic \
     --data.parent=IntegratorData
 
+  # 2-D ----------------------------------------------------------------
+
+  python IntegratorInertia2Din3DOne.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=IntegratorDataInertia2Din3DOne \
+    --data.parent=IntegratorData
+
+  python IntegratorInertia2Din3DTwo.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=IntegratorDataInertia2Din3DTwo \
+    --data.parent=IntegratorData
+
+  python IntegratorInertia2Din3DThree.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=IntegratorDataInertia2Din3DThree \
+    --data.parent=IntegratorData
+
+  # 3-D ----------------------------------------------------------------
+
+  python IntegratorInertia3DLinear.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=IntegratorDataInertia3DLinear \
+    --data.parent=IntegratorData
+
+  python IntegratorInertia3DQuadratic.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=IntegratorDataInertia3DQuadratic \
+    --data.parent=IntegratorData
+
 fi
 
 
