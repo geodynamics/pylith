@@ -82,8 +82,8 @@ pylith::feassemble::IntegratorInertia::integrateAction(
     const int numBasis = _quadrature->numCorners();
     const int spaceDim = _quadrature->spaceDim();
 
-    // FIX THIS
-    // Hardwire mass density
+    // :TODO: Get mass density at quadrature points from material database
+    // For now, hardwire mass density
     const double density = 1.0;
 
     // Compute action for cell
@@ -91,18 +91,19 @@ pylith::feassemble::IntegratorInertia::integrateAction(
       const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density;
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	const int iBlock = iBasis * spaceDim;
-	double val = wt*basis[iQ+iBasis];
+	const double valI = wt*basis[iQ+iBasis];
 	for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	  val *= basis[iQ+jBasis];
+	  const int jBlock = jBasis * spaceDim;
+	  const double val = valI * basis[iQ+jBasis];
 	  for (int iDim=0; iDim < spaceDim; ++iDim)
-	    _cellVector[iBlock+iDim] += val * fieldInCell[iBlock+iDim];
+	    _cellVector[iBlock+iDim] += val * fieldInCell[jBlock+iDim];
 	} // for
       } // for
     } // for
     PetscErrorCode err = 
       PetscLogFlops(numQuadPts*(2+numBasis*(1+numBasis*(1+2*spaceDim))));
     if (err)
-      throw std::runtime_error("Couldn't log PETSc flops.");
+      throw std::runtime_error("Logging PETSc flops failed.");
     
     // Assemble cell contribution into field
     fieldOut->updateAdd(patch, *cellIter, _cellVector);
@@ -118,6 +119,9 @@ pylith::feassemble::IntegratorInertia::integrate(
 { // integrate
   assert(0 != mat);
   assert(0 != _quadrature);
+
+  // Setup symmetric, sparse matrix
+  // :TODO: ADD STUFF HERE
 
   // Get information about section
   const topology_type::patch_type patch = 0;
@@ -147,8 +151,8 @@ pylith::feassemble::IntegratorInertia::integrate(
     const int numBasis = _quadrature->numCorners();
     const int spaceDim = _quadrature->spaceDim();
 
-    // FIX THIS
-    // Hardwire mass density
+    // :TODO: Get mass density at quadrature points from material database
+    // For now, hardwire mass density
     const double density = 1.0;
 
     // Integrate cell
@@ -156,10 +160,10 @@ pylith::feassemble::IntegratorInertia::integrate(
       const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density;
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	const int iBlock = iBasis * spaceDim;
-	double val = wt*basis[iQ+iBasis];
+	const double valI = wt*basis[iQ+iBasis];
 	for (int jBasis=0; jBasis < numBasis; ++jBasis) {
 	  const int jBlock = jBasis * spaceDim;
-	  val *= basis[iQ+jBasis];
+	  const double val = valI * basis[iQ+jBasis];
 	  for (int iDim=0; iDim < spaceDim; ++iDim)
 	    _cellMatrix[(iBlock+iDim)*(numBasis*spaceDim)+jBlock+iDim] += val;
 	} // for
@@ -168,10 +172,10 @@ pylith::feassemble::IntegratorInertia::integrate(
     PetscErrorCode err = 
       PetscLogFlops(numQuadPts*(2+numBasis*(1+numBasis*(1+spaceDim))));
     if (err)
-      throw std::runtime_error("Couldn't log PETSc flops.");
+      throw std::runtime_error("Logging PETSc flops failed.");
     
     // Assemble cell contribution into sparse matrix
-    // STUFF GOES HERE
+    // :TODO: ADD STUFF HERE
   } // for
 } // integrate
 
@@ -238,9 +242,9 @@ pylith::feassemble::IntegratorInertia::integrateLumped(
 	_cellVector[iBlock+iDim] *= diagScale;
     } // for
     PetscErrorCode err = 
-      PetscLogFlops(numQuadPts*(2+numBasis*2) + numBasis);
+      PetscLogFlops(numQuadPts*(3+numBasis*(3+spaceDim)) + numBasis*spaceDim);
     if (err)
-      throw std::runtime_error("Couldn't log PETSc flops.");
+      throw std::runtime_error("Logging PETSc flops failed.");
     
     // Assemble cell contribution into field
     fieldOut->updateAdd(patch, *cellIter, _cellVector);

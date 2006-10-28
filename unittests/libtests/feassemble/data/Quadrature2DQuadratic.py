@@ -116,9 +116,7 @@ class Quadrature2DQuadratic(QuadratureApp):
     return
 
 
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-  
-  def _calculateBasis(self):
+  def calculateBasis(self):
     """
     Calculate basis functions and their derivatives at quadrature points.
     """

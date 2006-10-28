@@ -14,6 +14,21 @@
  * @file pylith/feassemble/IntegratorInertia.hh
  *
  * @brief Integrate inertial term for 3-D finite elements.
+ *
+ * This object performs integrals over the domain of a finite-element
+ * associated with translational inertia.
+ *   - Integrate action over cell
+ *     \f[
+ *       \int_{V^e} \rho N^p \sum_q N^q u_i^q \, dV
+ *     \f]
+ *   - Integrate to form matrix
+ *     \f[
+ *       \int_{V^e} (\rho N^q N^q)_i \, dV
+ *     \f]
+ *   - Integrate and lump to form lumped matrix (field)
+ *
+ * See governing equations section of user manual for more
+ * information.
  */
 
 #if !defined(pylith_feassemble_integratorinertia_hh)
