@@ -31,7 +31,7 @@ class IntegratorInertia3DQuadratic(IntegratorInertia):
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="itnegratorinertia3dquadratic"):
+  def __init__(self, name="integratorinertia3dquadratic"):
     """
     Constructor.
     """

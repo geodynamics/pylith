@@ -31,7 +31,7 @@ class IntegratorInertia3DLinear(IntegratorInertia):
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="itnegratorinertia3dlinear"):
+  def __init__(self, name="integratorinertia3dlinear"):
     """
     Constructor.
     """

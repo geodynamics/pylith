@@ -21,7 +21,7 @@
 #if !defined(pylith_feassemble_testintegratorinertia1d_hh)
 #define pylith_feassemble_testintegratorinertia1d_hh
 
-#include "TestIntegrator.hh"
+#include "TestIntegratorInertia.hh"
 
 /// Namespace for spatialdata package
 namespace pylith {
@@ -31,14 +31,19 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for IntegratorInertia1D
-class pylith::feassemble::TestIntegratorInertia1D : public TestIntegrator
+class pylith::feassemble::TestIntegratorInertia1D : 
+  public TestIntegratorInertia
 { // class TestIntegratorInertia1D
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestIntegratorInertia1D );
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testLinear );
-  CPPUNIT_TEST( testQuadratic );
+  CPPUNIT_TEST( testActionLinear );
+  CPPUNIT_TEST( testIntegrateLinear );
+  CPPUNIT_TEST( testLumpedLinear );
+  CPPUNIT_TEST( testActionQuadratic );
+  CPPUNIT_TEST( testIntegrateQuadratic );
+  CPPUNIT_TEST( testLumpedQuadratic );
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -47,11 +52,23 @@ public :
   /// Test constructor
   void testConstructor(void);
 
-  /// Test integrate() & integrateAction() w/linear basis fns
-  void testLinear(void);
+  /// Test integrateAction() w/linear basis fns
+  void testActionLinear(void);
 
-  /// Test integrate() & integrateAction() w/quadratic basis fns
-  void testQuadratic(void);
+  /// Test integrate() w/linear basis fns
+  void testIntegrateLinear(void);
+
+  /// Test integrateLumped() w/linear basis fns
+  void testLumpedLinear(void);
+
+  /// Test integrateAction() w/quadratic basis fns
+  void testActionQuadratic(void);
+
+  /// Test integrate() w/quadratic basis fns
+  void testIntegrateQuadratic(void);
+
+  /// Test integrateLumped() w/quadratic basis fns
+  void testLumpedQuadratic(void);
 
 }; // class TestIntegratorInertia1D
 

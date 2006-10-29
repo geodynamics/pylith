@@ -20,6 +20,7 @@ check_PROGRAMS = testfeassemble
 # Primary source files
 testfeassemble_SOURCES = \
 	TestIntegrator.cc \
+	TestIntegratorInertia.cc \
 	TestIntegratorInertia1D.cc \
 	TestIntegratorInertia2D.cc \
 	TestIntegratorInertia3D.cc \
@@ -33,6 +34,7 @@ testfeassemble_SOURCES = \
 
 noinst_HEADERS = \
 	TestIntegrator.hh \
+	TestIntegratorInertia.hh \
 	TestIntegratorInertia1D.hh \
 	TestIntegratorInertia2D.hh \
 	TestIntegratorInertia3D.hh \

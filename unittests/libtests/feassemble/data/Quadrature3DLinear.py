@@ -92,7 +92,7 @@ class Quadrature3DLinear(QuadratureApp):
     self.numCorners = 4
     self.numQuadPts = 1
     
-    self.quadPtsRef = numpy.array( [[1.0/3.0, 1.0/3.0, 1.0/3.0]],
+    self.quadPtsRef = numpy.array( [[1.0/4.0, 1.0/4.0, 1.0/4.0]],
                                    dtype=numpy.float64)
     self.quadWts = numpy.array([1.0/6.0], dtype=numpy.float64)
     self.vertices = numpy.array( [[-0.5, -1.0, -0.5],

@@ -230,33 +230,27 @@ pylith::feassemble::IntegratorInertia::integrateLumped(
     const int numBasis = _quadrature->numCorners();
     const int spaceDim = _quadrature->spaceDim();
 
-    // FIX THIS
-    // Hardwire mass density
+    // :TODO: Get mass density at quadrature points from material database
+    // For now, hardwire mass density
     const double density = 1.0;
 
     // Compute lumped mass matrix for cell
-    double sumdiag = 0;
-    double diagScale = 0;
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density;
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	const int iBlock = iBasis * spaceDim;
-	const double val = wt*basis[iQ+iBasis]*basis[iQ+iBasis];
-	for (int iDim=0; iDim < spaceDim; ++iDim)
-	  _cellVector[iBlock+iDim] += val;
-	sumdiag += val;
+	const double valI = wt*basis[iQ+iBasis];
+	for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+	  const int jBlock = jBasis * spaceDim;
+	  const double val = valI*basis[iQ+jBasis];
+	  for (int iDim=0; iDim < spaceDim; ++iDim)
+	    _cellVector[iBlock+iDim] += val;
+	} // for
       } // for
-      diagScale += numBasis*wt;
     } // for
-    diagScale /= sumdiag*numBasis;
 
-    for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-      const int iBlock = iBasis * spaceDim;
-      for (int iDim=0; iDim < numBasis; ++iDim)
-	_cellVector[iBlock+iDim] *= diagScale;
-    } // for
     PetscErrorCode err = 
-      PetscLogFlops(numQuadPts*(3+numBasis*(3+spaceDim)) + numBasis*spaceDim);
+      PetscLogFlops(numQuadPts*(2+numBasis*(1+numBasis*(1+spaceDim))));
     if (err)
       throw std::runtime_error("Logging PETSc flops failed.");
     

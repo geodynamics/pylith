@@ -106,25 +106,38 @@ def calculateJacobian(quadrature, vertices):
     
 
 # ----------------------------------------------------------------------
-def assembleMat(globalMat, cellMat, cell):
+def assembleMat(globalMat, cellMat, cell, fiberDim):
   """
   Assemble cell matrix into global matrix.
   """
   (nrows, ncols) = cellMat.shape
-  numCorners = len(cell)
-  fiberDim = nrows / numCorners
-  for iR in xrange(numCorners):
+  for iR in xrange(nrows/fiberDim):
     ibeginL = iR * fiberDim
     iendL = ibeginL + fiberDim
     ibeginG = cell[iR] * fiberDim
     iendG = ibeginG + fiberDim
-    for iC in xrange(numCorners):
+    for iC in xrange(ncols/fiberDim):
       jbeginL = iC * fiberDim
       jendL = jbeginL + fiberDim
       jbeginG = cell[iC] * fiberDim
       jendG = jbeginG + fiberDim
       globalMat[ibeginG:iendG, jbeginG:jendG] += cellMat[ibeginL:iendL,
                                                          jbeginL:jendL]
+  return
+
+  
+# ----------------------------------------------------------------------
+def assembleVec(globalVec, cellVec, cell, fiberDim):
+  """
+  Assemble cell vector into global vector.
+  """
+  (nrows,) = cellVec.shape
+  for iR in xrange(nrows/fiberDim):
+    ibeginL = iR * fiberDim
+    iendL = ibeginL + fiberDim
+    ibeginG = cell[iR] * fiberDim
+    iendG = ibeginG + fiberDim
+    globalVec[ibeginG:iendG] += cellVec[ibeginL:iendL]
   return
 
   
