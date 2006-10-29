@@ -39,7 +39,7 @@ const int pylith::feassemble::QuadratureData3DLinear::_cells[] = {
 };
 
 const double pylith::feassemble::QuadratureData3DLinear::_quadPtsRef[] = {
-  3.33333333e-01,  3.33333333e-01,  3.33333333e-01,
+  2.50000000e-01,  2.50000000e-01,  2.50000000e-01,
 };
 
 const double pylith::feassemble::QuadratureData3DLinear::_quadWts[] = {
@@ -47,8 +47,8 @@ const double pylith::feassemble::QuadratureData3DLinear::_quadWts[] = {
 };
 
 const double pylith::feassemble::QuadratureData3DLinear::_basis[] = {
-  1.11022302e-16,  3.33333333e-01,  3.33333333e-01,
-  3.33333333e-01,};
+  2.50000000e-01,  2.50000000e-01,  2.50000000e-01,
+  2.50000000e-01,};
 
 const double pylith::feassemble::QuadratureData3DLinear::_basisDeriv[] = {
  -1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
@@ -58,7 +58,7 @@ const double pylith::feassemble::QuadratureData3DLinear::_basisDeriv[] = {
 };
 
 const double pylith::feassemble::QuadratureData3DLinear::_quadPts[] = {
-  9.33333333e-01, -3.33333333e-02,  4.33333333e-01,
+  5.75000000e-01, -2.75000000e-01,  2.00000000e-01,
 };
 
 const double pylith::feassemble::QuadratureData3DLinear::_jacobian[] = {

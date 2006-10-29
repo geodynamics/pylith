@@ -32,7 +32,7 @@ class IntegratorInertia2Din3DOne(IntegratorInertia):
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="itnegratorinertia2din3done"):
+  def __init__(self, name="integratorinertia2din3done"):
     """
     Constructor.
     """

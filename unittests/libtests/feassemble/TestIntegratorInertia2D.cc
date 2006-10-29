@@ -25,10 +25,10 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegratorInertia2D );
 
 // ----------------------------------------------------------------------
-// Test integrate() & integrateAction() w/linear basis fns (1 cell)
+// Test integrateAction() w/linear basis fns (1 cell)
 void
-pylith::feassemble::TestIntegratorInertia2D::testOne(void)
-{ // testOne
+pylith::feassemble::TestIntegratorInertia2D::testActionOne(void)
+{ // testActionOne
   IntegratorDataInertia2Din3DOne data;
 
   Quadrature2Din3D q;
@@ -45,16 +45,59 @@ pylith::feassemble::TestIntegratorInertia2D::testOne(void)
   integrator.quadrature(&q);
 
   _testIntegrateAction(&integrator, data);
-
-  _testIntegrate(&integrator, data);
-} // testLinear
+} // testActionLinear
 
 // ----------------------------------------------------------------------
-// Test integrate() & integrateAction() w/linear basis fns
-// (2 cells sharing 1 vertex)
+// Test integrate() w/linear basis fns (1 cell)
 void
-pylith::feassemble::TestIntegratorInertia2D::testOverlap1(void)
-{ // testOverlap1
+pylith::feassemble::TestIntegratorInertia2D::testIntegrateOne(void)
+{ // testIntegrateOne
+  IntegratorDataInertia2Din3DOne data;
+
+  Quadrature2Din3D q;
+  q.initialize(data.basis,
+	       data.basisDeriv,
+	       data.quadPts,
+	       data.quadWts,
+	       data.cellDim,
+	       data.numCorners,
+	       data.numQuadPts,
+	       data.spaceDim);
+
+  IntegratorInertia integrator;
+  integrator.quadrature(&q);
+
+  _testIntegrate(&integrator, data);
+} // testIntegrateLinear
+
+// ----------------------------------------------------------------------
+// Test integrateLumped() w/linear basis fns (1 cell)
+void
+pylith::feassemble::TestIntegratorInertia2D::testLumpedOne(void)
+{ // testLumpedOne
+  IntegratorDataInertia2Din3DOne data;
+
+  Quadrature2Din3D q;
+  q.initialize(data.basis,
+	       data.basisDeriv,
+	       data.quadPts,
+	       data.quadWts,
+	       data.cellDim,
+	       data.numCorners,
+	       data.numQuadPts,
+	       data.spaceDim);
+
+  IntegratorInertia integrator;
+  integrator.quadrature(&q);
+
+  _testIntegrateLumped(&integrator, data);
+} // testLumpedLinear
+
+// ----------------------------------------------------------------------
+// Test integrateAction() w/linear basis fns (2 cells sharing 1 vertex)
+void
+pylith::feassemble::TestIntegratorInertia2D::testActionOverlap1(void)
+{ // testActionOverlap1
   IntegratorDataInertia2Din3DTwo data;
   
   Quadrature2Din3D q;
@@ -71,16 +114,59 @@ pylith::feassemble::TestIntegratorInertia2D::testOverlap1(void)
   integrator.quadrature(&q);
 
   _testIntegrateAction(&integrator, data);
-
-  _testIntegrate(&integrator, data);
-} // testOverlap1
+} // testActionOverlap1
 
 // ----------------------------------------------------------------------
-// Test integrate() & integrateAction() w/linear basis fns
-// (2 cells sharing 2 vertices)
+// Test integrateAction() w/linear basis fns (2 cells sharing 1 vertex)
 void
-pylith::feassemble::TestIntegratorInertia2D::testOverlap2(void)
-{ // testOverlap2
+pylith::feassemble::TestIntegratorInertia2D::testIntegrateOverlap1(void)
+{ // testIntegrateOverlap1
+  IntegratorDataInertia2Din3DTwo data;
+  
+  Quadrature2Din3D q;
+  q.initialize(data.basis,
+	       data.basisDeriv,
+	       data.quadPts,
+	       data.quadWts,
+	       data.cellDim,
+	       data.numCorners,
+	       data.numQuadPts,
+	       data.spaceDim);
+
+  IntegratorInertia integrator;
+  integrator.quadrature(&q);
+
+  _testIntegrate(&integrator, data);
+} // testIntegrateOverlap1
+
+// ----------------------------------------------------------------------
+// Test integrateLumped() w/linear basis fns (2 cells sharing 1 vertex)
+void
+pylith::feassemble::TestIntegratorInertia2D::testLumpedOverlap1(void)
+{ // testLumpedOverlap1
+  IntegratorDataInertia2Din3DTwo data;
+  
+  Quadrature2Din3D q;
+  q.initialize(data.basis,
+	       data.basisDeriv,
+	       data.quadPts,
+	       data.quadWts,
+	       data.cellDim,
+	       data.numCorners,
+	       data.numQuadPts,
+	       data.spaceDim);
+
+  IntegratorInertia integrator;
+  integrator.quadrature(&q);
+
+  _testIntegrateLumped(&integrator, data);
+} // testLumpedOverlap1
+
+// ----------------------------------------------------------------------
+// Test integrateAction() w/linear basis fns (2 cells sharing 2 vertices)
+void
+pylith::feassemble::TestIntegratorInertia2D::testActionOverlap2(void)
+{ // testActionOverlap2
   IntegratorDataInertia2Din3DThree data;
   
   Quadrature2Din3D q;
@@ -97,8 +183,52 @@ pylith::feassemble::TestIntegratorInertia2D::testOverlap2(void)
   integrator.quadrature(&q);
 
   _testIntegrateAction(&integrator, data);
+} // testActionOverlap2
+
+// ----------------------------------------------------------------------
+// Test integrate() w/linear basis fns (2 cells sharing 2 vertices)
+void
+pylith::feassemble::TestIntegratorInertia2D::testIntegrateOverlap2(void)
+{ // testIntegrateOverlap2
+  IntegratorDataInertia2Din3DThree data;
+  
+  Quadrature2Din3D q;
+  q.initialize(data.basis,
+	       data.basisDeriv,
+	       data.quadPts,
+	       data.quadWts,
+	       data.cellDim,
+	       data.numCorners,
+	       data.numQuadPts,
+	       data.spaceDim);
+
+  IntegratorInertia integrator;
+  integrator.quadrature(&q);
 
   _testIntegrate(&integrator, data);
-} // testOverlap2
+} // testIntegrateOverlap2
+
+// ----------------------------------------------------------------------
+// Test integrateLumped() w/linear basis fns (2 cells sharing 2 vertices)
+void
+pylith::feassemble::TestIntegratorInertia2D::testLumpedOverlap2(void)
+{ // testLumpedOverlap2
+  IntegratorDataInertia2Din3DThree data;
+  
+  Quadrature2Din3D q;
+  q.initialize(data.basis,
+	       data.basisDeriv,
+	       data.quadPts,
+	       data.quadWts,
+	       data.cellDim,
+	       data.numCorners,
+	       data.numQuadPts,
+	       data.spaceDim);
+
+  IntegratorInertia integrator;
+  integrator.quadrature(&q);
+
+  _testIntegrateLumped(&integrator, data);
+} // testLumpedOverlap2
 
 // End of file 

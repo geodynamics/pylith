@@ -61,6 +61,7 @@ public:
   double* fieldIn; ///< Input field for integration action
   double* valsAction; ///< Expected output for integration action
   double* valsMatrix; ///< Expected output for integration
+  double* valsLumped; ///< Expected output for lumped integration
   //@}
 };
 

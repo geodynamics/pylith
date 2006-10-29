@@ -30,7 +30,8 @@ pylith::feassemble::IntegratorData::IntegratorData(void) :
   basisDeriv(0),
   fieldIn(0),
   valsAction(0),
-  valsMatrix(0)
+  valsMatrix(0),
+  valsLumped(0)
 { // constructor
 } // constructor
 
