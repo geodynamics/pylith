@@ -115,7 +115,6 @@ pylith::feassemble::IntegratorInertia::integrateAction(
 void
 pylith::feassemble::IntegratorInertia::integrate(
 			     PetscMat* mat,
-			     ALE::Obj<ALE::Mesh>& mesh,
 			     const ALE::Obj<real_section_type>& fieldIn,
 			     const ALE::Obj<real_section_type>& coordinates)
 { // integrate
@@ -142,7 +141,7 @@ pylith::feassemble::IntegratorInertia::integrate(
   err = MatCreate(topology->comm(), mat);
   err = MatSetSizes(*mat, localSize, localSize, globalSize, globalSize);
   err = MatSetFromOptions(*mat);
-  err = preallocateMatrix(mesh, fieldIn->getAtlas(), globalOrder, *mat);
+  err = preallocateMatrix(topology, fieldIn->getAtlas(), globalOrder, *mat);
 
   // Allocate matrix for cell values (if necessary)
   _initCellMatrix();

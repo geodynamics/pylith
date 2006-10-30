@@ -60,7 +60,6 @@ public :
    * @param coordinates Field of cell vertex coordinates
    */
   void integrate(PetscMat* mat,
-		 ALE::Obj<ALE::Mesh>& mesh,
 		 const ALE::Obj<ALE::Mesh::real_section_type>& fieldIn,
 		 const ALE::Obj<ALE::Mesh::real_section_type>& coordinates);
 

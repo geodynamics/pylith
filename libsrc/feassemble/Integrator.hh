@@ -75,7 +75,6 @@ public :
    */
   virtual 
   void integrate(PetscMat* mat,
-		 ALE::Obj<ALE::Mesh>& mesh,
 		 const ALE::Obj<real_section_type>& fieldIn,
 		 const ALE::Obj<real_section_type>& coordinates) = 0;
 
