@@ -147,6 +147,7 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
 					  const IntegratorData& data) const
 { // _testIntegrate
   typedef ALE::Mesh::real_section_type real_section_type;
+  typedef ALE::Mesh::topology_type topology_type;
 
   ALE::Obj<ALE::Mesh> mesh = _TestIntegrator::_setupMesh(data);
   const ALE::Mesh::int_section_type::patch_type patch = 0;
@@ -160,14 +161,23 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
   fieldIn->setName("fieldIn");
   fieldIn->setFiberDimensionByDepth(patch, 0, fiberDim);
   fieldIn->allocate();
+  int iVertex = 0;
+  const ALE::Obj<topology_type::label_sequence>& vertices = 
+    mesh->getTopology()->depthStratum(patch, 0);
+  const topology_type::label_sequence::iterator verticesEnd =
+    vertices->end();
+  for (topology_type::label_sequence::iterator vIter=vertices->begin();
+       vIter != verticesEnd;
+       ++vIter, ++iVertex)
+    fieldIn->update(patch, *vIter, &data.fieldIn[iVertex*fiberDim]);
 
   // Integrate
   PetscMat mat;
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
-  integrator->integrate(&mat, mesh, fieldIn, coordinates);
+  integrator->integrate(&mat, fieldIn, coordinates);
 
-  // Crate dense matrix
+  // Create dense matrix
   // :TODO: ADD STUFF HERE
 
   // Get values associated with dense matrix
