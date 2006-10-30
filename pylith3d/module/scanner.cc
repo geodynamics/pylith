@@ -395,7 +395,7 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
   ierr = PetscObjectCompose((PetscObject) sol, "injection", (PetscObject) injection);
 
   ierr = MatSetFromOptions(A);
-  ierr = preallocateMatrix(m, m->getRealSection("displacement")->getAtlas(), m->getFactory()->getGlobalOrder(m->getTopology(), 0, "displacement", m->getRealSection("displacement")->getAtlas()), A);
+  ierr = preallocateMatrix(m->getTopology(), m->getRealSection("displacement")->getAtlas(), m->getFactory()->getGlobalOrder(m->getTopology(), 0, "displacement", m->getRealSection("displacement")->getAtlas()), A);
 
   journal::debug_t debug("pylith3d");
   debug
