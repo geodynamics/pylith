@@ -14,7 +14,7 @@
 #
 #   nblocks    nfaults    cscale    dipcut
 #-----------------------------------------------------------------------
-       3          3        1.0d0     75.0d0
+       4          3        1.0d0     75.0d0
 #-----------------------------------------------------------------------
 #
 #   Rotation pole info:
@@ -33,31 +33,47 @@
 #  blocknum(i)  polex(i)    poley(i)    poler(i),  i=1,nblocks
 #-----------------------------------------------------------------------
      1         -1.8d6     -4.7d6    1.0d-5
-     2         -1.8d6     -4.7d6    1.0d-5
-     5          0.0d0      0.0d0    0.0d0
+     2          1.8d6      4.7d6    1.0d-5
+     3          0.0d0      0.0d0    0.0d0
+     4          0.0d0      0.0d0    0.0d0
 # poles above should yield approximately equal amounts of strike-slip
-# and dip-slip movement on the fault between blocks 1 and 2.  Block 3
-# is chosen as the reference frame and so has no movement.
+# and dip-slip movement on the fault between blocks 1 and 2.  Blocks 3
+# and 4 are chosen as the reference frame and so have no movement.
 #-----------------------------------------------------------------------
 #
-#   Fault ranking info:
+#   Fault definition info:
 #
-#     Faults must be ranked so that we know what to do with faults lying
-#     on multiple faults.  Faults are defined by block pairs.  To make
-#     things easier, the lowest-numbered block should always be listed
-#     first.  If a node is found that lies on an unlisted fault, an
-#     error will be returned and the program will terminate.  For each
-#     fault, give the following information:
+#     For each 'fault' to be used, there must be an associated
+#     definition file.  These should be listed in order of priority.
+#     Nodes that lie on more than one fault will use the highest-listed
+#     definition.
 #
-#       block1(i) = Lower-numbered block number bounding the fault.
-#       block2(i) = Higher-numbered block number bounding the fault.
-#       history(i)= Load history to be associated with the fault.
+#     In addition to the file describing the fault, additional fault
+#     definition info is required.  For each fault, a list of possible
+#     block definitions is required.  Again, the highest-listed block
+#     definition is the one that is used.
 #
-#    block1(i)    block2(i)    history(i), i=1,nfaults
+#     For each fault, we require the following info:
+#
+#     numdefs(i)   = number of fault definitions for this fault
+#     block1(j,i)  = fault-bounding block toward which the normal points
+#     block2(j,i)  = fault-bounding block from which the normal points
+#     history(j,i) = load history to be associated with this definition
+#     faultfile(i) = file containing fault definition info for this
+#                    fault
+#     j=1,numdefs(i),i=1,nfaults
+#
 #-----------------------------------------------------------------------
-        1            5            1
-        2            5            2
-        1            2            3
-# This gives priority to the faults with the surrounding material
-# (block 5), and lowest priority to the fault between blocks 1 and 2.
+        1
+        1            2            1
+"fault07_01_02.flt_pylith"
+# Highest priority is dipping boundary between blocks 1 and 2.
+        1
+        1            3            2
+"fault10_01_03.flt_pylith"
+# Next highest priority is vertical boundary between blocks 1 and 3.
+        1
+        2            4            3
+"fault11_02_04.flt_pylith"
+# Lowest priority is vertical boundary between blocks 2 and 4.
 #-----------------------------------------------------------------------

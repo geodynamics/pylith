@@ -1,14 +1,11 @@
-      program blockrot2
+      program blockrot3
 c
 c...  This code computes split node boundary conditions due to the
 c     rotation of one or more blocks about local Cartesian Euler poles.
 c     The required inputs are:
 c     1. A parameter file describing block and fault information.
-c     2. A UCD file (as produced by LaGriT) describing the coordinates
-c        and connectivities for a finite element mesh.
-c     3. An auxiliary file (also produced by LaGriT) that describes
-c        elements and associated faces lying on faults, including
-c        fault normal information.
+c     2. Fault files (one per fault, produced by LaGriT) that
+c        describe element/node pairs lying on faults.
 c     The resulting output is a split node specification file suitable
 c     for use by PyLith or LithoMop.
 c
@@ -19,25 +16,20 @@ c
 c
 c...  parameters
 c
-      integer maxblocks,maxfaults,maxnodes,maxelems,maxentries
+      integer maxfaults,maxblocks,maxentries,maxattached,maxdefs
       integer nsd
       double precision eps
-      parameter(maxblocks=1000,maxfaults=10000,maxnodes=2000000,
-     & maxelems=10000000,maxentries=1000000,nsd=3,eps=1.0d-3)
+      parameter(maxfaults=10000,maxblocks=100,maxentries=10000000,
+     & maxattached=2000,maxdefs=10,nsd=3,eps=1.0d-3)
 c
 c...  global arrays
 c
-      integer nfault(4,maxentries)
-      double precision split(nsd,maxentries)
-      integer iface(3,4)
-      data iface/2,3,4,
-     &           1,4,3,
-     &           1,2,4,
-     &           1,3,2/
+      integer nfault(2,maxentries)
+      double precision split(nsd)
 c
 c...  info read or deduced from parameter file
 c
-      integer nblocks,nfaults,faultdef(3,maxfaults),blocknum(maxblocks)
+      integer nfaults,numdefs,faultdef(3,maxdefs),blocknum(maxblocks)
       double precision cscale,dipcut,pole(3,maxblocks)
       logical dflag
 c
@@ -47,18 +39,19 @@ c
 c
 c...  filenames and unit numbers
 c
-      integer kti,kto,kp,ka,kso
-      common/units/kti,kto,kp,ka,kso
+      integer kti,kto,kp,kf,kso
+      common/units/kti,kto,kp,kf,kso
 c
 c...  local variables
 c
-      integer i,j,k,n,mat
-      integer elem,face,node,elemc,elemnb,elemnbface,oelemc
-      integer nnodes,nelems,nnattr,neattr,nmattr
-      integer nentries,blk1,blk2,faultnum,entrynum,ind
+      integer i,j,k
+      integer node
+      integer nblocks,nentries,nattached,blk1,blk2,faultnum,ind
+      integer elems(maxattached),colors(maxattached)
       double precision pi,d2r
       double precision x(nsd),xtmp(nsd),fnorm(nsd)
-      logical pairused,highrank
+      logical pairused
+      character ffile*500
 c
       pi=acos(-1.0d0)
       d2r=pi/180.0d0
@@ -71,100 +64,111 @@ c
 c...  read info from parameter file
 c
       call pskip(kp)
+c
 c...  global info
+c
       read(kp,*) nblocks,nfaults,cscale,dipcut
       if(dipcut.lt.90.0d0-eps) dflag=.true.
       if(cscale.eq.0.0d0) cscale=1.0d0
+c
+c...  compute cutoff info in terms of projection onto z-axis
+c
+      if(dflag) dipcut=abs(sin(d2r*dipcut))
+c
 c...  block rotation poles
+c
       do i=1,nblocks
         call pskip(kp)
         read(kp,*) ind,(pole(j,i),j=1,3)
         blocknum(ind)=i
         pole(3,i)=d2r*pole(3,i)
       end do
-c...  fault rankings/definitions
-      do i=1,nfaults
-        call pskip(kp)
-        read(kp,*) (faultdef(j,i),j=1,3)
-      end do
-      close(kp)
 c
-c...  compute cutoff info in terms of projection onto z-axis
-c
-      if(dflag) dipcut=abs(sin(d2r*dipcut))
-c
-c...  read fault definitions and compute split node values
+c...  fault definition files
 c
       nentries=0
-      call ifill(nfault,0,4*maxentries)
-      do i=1,maxentries
-        read(ka,*,end=30) elem,face,node,(xtmp(j),j=1,nsd),
-     &   (fnorm(j),j=1,3),elemc,elemnb,elemnbface,oelemc
-        do j=1,nsd
-          x(j)=cscale*xtmp(j)
+      call ifill(nfault,0,2*maxentries)
+      do i=1,nfaults
+        call pskip(kp)
+        read(kp,*) numdefs
+        do j=1,numdefs
+          read(kp,*) (faultdef(k,j),k=1,3)
         end do
-        if(oelemc.lt.elemc) then
-          fnorm(1)=-fnorm(1)
-          fnorm(2)=-fnorm(2)
-          fnorm(3)=-fnorm(3)
-        else if(oelemc.eq.elemc) then
-          go to 40
-        end if
-        blk1=min(elemc,oelemc)
-        blk2=max(elemc,oelemc)
-        faultnum=0
-        do j=1,nfaults
-          if(blk1.eq.faultdef(1,j).and.blk2.eq.faultdef(2,j)) then
-            faultnum=j
-            go to 10
-          end if
-        end do
+        read(kp,*) ffile
+        open(kf,file=ffile,status="old")
+c
+c...  loop over entries in file
+c
+        call pskip(kf)
  10     continue
-        if(faultnum.eq.0) then
-          write(kto,*) "Warning!  Skipping entry #:  ",i
-          write(kto,*) "Fault not defined for blocks:",blk1,blk2
-          go to 40
-        end if
+          read(kf,*,end=20) node,(xtmp(j),j=1,3),(fnorm(j),j=1,3)
+          read(kf,*,end=20) nattached
+          read(kf,*,end=20) (elems(j),j=1,nattached)
+          read(kf,*,end=20) (colors(j),j=1,nattached)
+          do j=1,3
+            x(j)=cscale*xtmp(j)
+          end do
 c
-c...  loop over number of entries so far to determine whether
-c     element-node pair has already been used and whether the
-c     current one is of higher rank.
+c...  see if pair has been used previously.  If not, create a new entry
+c     if the fault has been defined.
 c
-        pairused=.false.
-        highrank=.false.
-        do k=1,nentries
-          if(elem.eq.nfault(1,k).and.node.eq.nfault(2,k)) then
-            pairused=.true.
-            if(nfault(4,k).gt.faultnum) highrank=.true.
-            entrynum=k
-            go to 20
-          end if
-        end do
-        nentries=nentries+1
-        entrynum=nentries
+          do j=1,nattached
+            pairused=.false.
+            do k=1,nentries
+              if(elems(j).eq.nfault(1,k).and.node.eq.nfault(2,k)) then
+                pairused=.true.
+                go to 30
+              end if
+            end do
+ 30         continue
+            if(.not.pairused) then
+c
+c...  for now, choose first fault in definition list
+c
+              blk1=0
+              blk2=0
+              faultnum=0
+              do k=1,numdefs
+                if(colors(j).eq.faultdef(1,k)) then
+                  blk1=colors(j)
+                  blk2=faultdef(2,k)
+                  faultnum=k
+                  go to 40
+                else if(colors(j).eq.faultdef(2,k)) then
+                  blk1=colors(j)
+                  blk2=faultdef(1,k)
+                  faultnum=k
+                  go to 40
+                end if
+              end do
+ 40           continue
+              if(blk1.eq.0) then
+                write(kto,810) elems(j),node,colors(j)
+              else
+                nentries=nentries+1
+                nfault(1,nentries)=elems(j)
+                nfault(2,nentries)=node
+                call getvals(x,fnorm,dipcut,dflag,
+     &           pole(1,blocknum(blk1)),pole(1,blocknum(blk2)),split)
+c
+c...  output split node values
+c
+                write(kso,"(3i8,3(2x,1pe15.8))")
+     &           (nfault(k,nentries),k=1,2),faultdef(3,faultnum),
+     &           (split(k),k=1,3)
+              end if
+            end if
+          end do
+          go to 10
  20     continue
-        if(.not.pairused.or.highrank) then
-          nfault(1,entrynum)=elem
-          nfault(2,entrynum)=node
-          nfault(3,entrynum)=faultdef(3,faultnum)
-          nfault(4,entrynum)=faultnum
-          call getvals(x,fnorm,dipcut,dflag,pole(1,blocknum(elemc)),
-     &     pole(1,blocknum(oelemc)),split(1,entrynum))
-        end if
- 40     continue
+        close(kf)
       end do
-      write(kto,*) "Maximum number of entries exceeded!"
-      stop
- 30   continue
-      close(ka)
-c
-c...  output results to split node file
-c
-      do i=1,nentries
-        write(kso,"(3i8,3(2x,1pe15.8))") (nfault(j,i),j=1,3),
-     & (split(j,i),j=1,3)
-      end do
+      close(kp)
       close(kso)
+ 810  format("WARNING!  No appropriate fault definition found for:",/,
+     &       "Element:  ",i8,/,
+     &       "Node:     ",i8,/,
+     &       "Color:    ",i8)
 c
       stop
       end
@@ -191,23 +195,23 @@ c
 c
 c...  unit numbers
 c
-      integer kti,kto,kp,ka,kso
-      common/units/kti,kto,kp,ka,kso
+      integer kti,kto,kp,kf,kso
+      common/units/kti,kto,kp,kf,kso
 c
 c...  local variables
 c
       integer nargs,i,j
       character string*2000
-      character pfile*500,ufile*500,afile*500,ofile*500
-      logical fflag(3)
+      character pfile*500,ofile*500
+      logical fflag(2)
 c
       kti=5
       kto=6
       kp=10
-      ka=12
+      kf=12
       kso=13
 c
-      do i=1,3
+      do i=1,2
         fflag(i)=.false.
       end do
 c
@@ -218,18 +222,14 @@ c
           j=nchar(string)
           pfile=string(3:j)
           fflag(1)=.true.
-        else if(index(string,'a=').ne.0) then
-          j=nchar(string)
-          afile=string(3:j)
-          fflag(2)=.true.
         else if(index(string,'o=').ne.0) then
           j=nchar(string)
           ofile=string(3:j)
-          fflag(3)=.true.
+          fflag(2)=.true.
         end if
       end do
 c
-      do i=1,3
+      do i=1,2
         if(.not.fflag(i)) then
           write(kto,800)
           stop
@@ -237,12 +237,11 @@ c
       end do
 c
       open(kp,file=pfile,status="old")
-      open(ka,file=afile,status="old")
       open(kso,file=ofile,status="new")
 c
  800  format("Usage:",/,
      & "    blockrot2 p=<parameter_file>",/,
-     & "    a=<auxiliary_input_file> o=<split_node_output_file>")
+     & "    o=<split_node_output_file>")
       return
       end
 c
@@ -272,7 +271,7 @@ c
 c
 c...  local variables
 c
-      double precision uxl,uyl,uzl,uxt,uyt,uzt,uxn,uyn,uzn
+      double precision uxl,uyl,uzl,uxt,uyt,uzt,uxn,uyn,uzn,dnm
       double precision dx1,dy1,dx2,dy2,dr,dfault,ssp,dsp,fac
       double precision ss(3),ds(3)
 c
@@ -338,7 +337,12 @@ c
           uxn=dsp*ds(1)
           uyn=dsp*ds(2)
           uzn=dsp*ds(3)
-          fac=dr/sqrt(uxn*uxn+uyn*uyn)
+          dnm=sqrt(uxn*uxn+uyn*uyn)
+          if(dnm.gt.0.0d0) then
+            fac=dr/dnm
+          else
+            fac=0.0d0
+          end if
           uxl=uxt+uxn*fac
           uyl=uyt+uyn*fac
           uzl=uzt+uzn*fac
