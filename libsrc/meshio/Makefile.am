@@ -28,6 +28,7 @@ subpkginclude_HEADERS = \
 noinst_HEADERS =
 
 INCLUDES += $(PETSC_INCLUDE)
+CPPFLAGS += $(SIEVE_FLAGS)
 
 # export
 clean-local: clean-subpkgincludeHEADERS
