@@ -131,7 +131,8 @@ pylith::feassemble::IntegratorInertia::integrate(
   const ALE::Obj<ALE::Mesh::order_type>& globalOrder = 
     ALE::New::NumberingFactory<topology_type>::singleton(
        topology->debug())->getGlobalOrder(topology, patch, 
-					  "default", fieldIn->getAtlas());
+					  fieldIn->getName(), 
+					  fieldIn->getAtlas());
 
   // Setup symmetric, sparse matrix
   // :TODO: This needs to be moved outside Integrator object, because
