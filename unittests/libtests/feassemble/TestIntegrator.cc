@@ -18,6 +18,10 @@
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
 #include "data/IntegratorData.hh" // USES IntegratorData
 
+#include "journal/debug.h"
+
+#include <petscmat.h>
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegrator );
 
@@ -149,44 +153,106 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
   typedef ALE::Mesh::real_section_type real_section_type;
   typedef ALE::Mesh::topology_type topology_type;
 
-  ALE::Obj<ALE::Mesh> mesh = _TestIntegrator::_setupMesh(data);
-  const ALE::Mesh::int_section_type::patch_type patch = 0;
+  journal::debug_t debug("TestIntegrator");
 
-  // Fiber dimension (number of values in field per vertex) for fields
-  const int fiberDim = data.fiberDim;
+  try {
+    ALE::Obj<ALE::Mesh> mesh = _TestIntegrator::_setupMesh(data);
+    const ALE::Mesh::int_section_type::patch_type patch = 0;
 
-  // Setup input field for action
-  const ALE::Obj<real_section_type>& fieldIn =
-    mesh->getRealSection("fieldIn");
-  fieldIn->setName("fieldIn");
-  fieldIn->setFiberDimensionByDepth(patch, 0, fiberDim);
-  fieldIn->allocate();
-  int iVertex = 0;
-  const ALE::Obj<topology_type::label_sequence>& vertices = 
-    mesh->getTopology()->depthStratum(patch, 0);
-  const topology_type::label_sequence::iterator verticesEnd =
-    vertices->end();
-  for (topology_type::label_sequence::iterator vIter=vertices->begin();
-       vIter != verticesEnd;
-       ++vIter, ++iVertex)
-    fieldIn->update(patch, *vIter, &data.fieldIn[iVertex*fiberDim]);
+    // Fiber dimension (number of values in field per vertex) for fields
+    const int fiberDim = data.fiberDim;
 
-  // Integrate
-  PetscMat mat;
-  const ALE::Obj<real_section_type>& coordinates = 
-    mesh->getRealSection("coordinates");
-  integrator->integrate(&mat, fieldIn, coordinates);
+    // Setup input field for action
+    const ALE::Obj<real_section_type>& fieldIn =
+      mesh->getRealSection("fieldIn");
+    fieldIn->setName("fieldIn");
+    fieldIn->setFiberDimensionByDepth(patch, 0, fiberDim);
+    fieldIn->allocate();
+    int iVertex = 0;
+    const ALE::Obj<topology_type::label_sequence>& vertices = 
+      mesh->getTopology()->depthStratum(patch, 0);
+    const topology_type::label_sequence::iterator verticesEnd =
+      vertices->end();
+    for (topology_type::label_sequence::iterator vIter=vertices->begin();
+	 vIter != verticesEnd;
+	 ++vIter, ++iVertex)
+      fieldIn->update(patch, *vIter, &data.fieldIn[iVertex*fiberDim]);
+    
+    // Integrate
+    PetscMat mat;
+    const ALE::Obj<real_section_type>& coordinates = 
+      mesh->getRealSection("coordinates");
+    integrator->integrate(&mat, fieldIn, coordinates);
 
-  // Create dense matrix
-  // :TODO: ADD STUFF HERE
+    MatAssemblyBegin(mat, MAT_FINAL_ASSEMBLY);
+    MatAssemblyEnd(mat, MAT_FINAL_ASSEMBLY);
+    
+    // Check matrix size
+    int nRows = 0;
+    int nCols = 0;
+    MatGetSize(mat, &nRows, &nCols);
+    debug
+      << journal::at(__HERE__)
+      << "# rows: " << nRows
+      << ", # cols: " << nCols
+      << journal::endl;
+    const int nRowsE = data.numVertices * data.fiberDim;
+    const int nColsE = data.numVertices * data.fiberDim;
+    CPPUNIT_ASSERT_EQUAL(nRowsE, nRows);
+    CPPUNIT_ASSERT_EQUAL(nColsE, nCols);
 
-  // Get values associated with dense matrix
-  // :TODO: ADD STUFF HERE
+    // Create dense matrix
+    PetscMat matDense;
+    PetscMat matSparseSeq;
+    MatConvert(mat, MATSEQAIJ, MAT_INITIAL_MATRIX, &matSparseSeq);
+    MatConvert(matSparseSeq, MATSEQDENSE, MAT_INITIAL_MATRIX, &matDense);
+    MatDestroy(matSparseSeq);
+    
+    // Get values associated with dense matrix
+    double* vals = 0;
+    int* rows = 0;
+    int* cols = 0;
+    const int size = nRows*nCols;
+    if (size > 0) {
+      vals = new double[size];
+      rows = new int[nRows];
+      for (int iRow=0; iRow < nRows; ++iRow)
+	rows[iRow] = iRow;
+      cols = new int[nCols];
+      for (int iCol=0; iCol < nCols; ++iCol)
+	cols[iCol] = iCol;
+    } // if
+    MatGetValues(matDense, nRows, rows, nCols, cols, vals);
+    delete[] rows; rows = 0;
+    delete[] cols; cols = 0;
 
-  // :TODO: Check values from dense matrix
-  // ADD STUFF HERE
-
-  CPPUNIT_ASSERT(false);
+    // Check values from dense matrix
+    const double tolerance = 1.0e-06;
+    for (int iRow=0; iRow < nRows; ++iRow)
+      for (int iCol=0; iCol < nCols; ++iCol) {
+	const int index = iRow * nCols + iCol;
+	debug
+	  << journal::at(__HERE__)
+	  << "index: " << index
+	  << ", valsE: " << data.valsMatrix[index]
+	  << ", vals: " << vals[index]
+	  << journal::endl;
+	if (fabs(data.valsMatrix[index]) > tolerance)
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/data.valsMatrix[index],
+				       tolerance);
+	else
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(data.valsMatrix[index], vals[index],
+				       tolerance);
+      } // for
+    delete[] vals; vals = 0;
+    MatDestroy(matDense);
+  } catch (std::exception& err) {
+    std::cerr << err.what() << std::endl;
+    throw;
+  } catch (ALE::Exception& err) {
+    std::cerr << err << std::endl;
+    throw;
+  } // try/catch
 } // _testIntegrate
 
 // ----------------------------------------------------------------------

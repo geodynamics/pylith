@@ -98,15 +98,13 @@ noinst_HEADERS += \
 	data/QuadratureData3DLinear.hh \
 	data/QuadratureData3DQuadratic.hh
 
-testfeassemble_LDFLAGS = $(PETSC_LIB)
+testfeassemble_LDFLAGS = $(PETSC_LIB) \
+	-ljournal
 
 INCLUDES += $(PETSC_INCLUDE)
 
 testfeassemble_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/feassemble/libpylithfeassemble.la
-
-# version
-# $Id$
 
 # End of file 
