@@ -19,8 +19,7 @@ libpylith3d_a_SOURCES = $(sources)
 # shared library (libtool)
 libpylith3d_la_SOURCES = $(sources)
 libpylith3d_la_LDFLAGS =
-libpylith3d_la_LIBADD = \
-	$(PETSC_LIB)
+libpylith3d_la_LIBADD = $(PETSC_LIB)
 
 F77 = $(FC)
 AM_FFLAGS = \
