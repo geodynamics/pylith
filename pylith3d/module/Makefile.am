@@ -21,16 +21,14 @@ pylith3dmodule_la_SOURCES = $(sources)
 pylith3dmodule_la_LDFLAGS = -module
 pylith3dmodule_la_LIBADD = \
 	$(top_builddir)/pylith3d/libpylith3d/libpylith3d.la \
-	-L$(PETSC_LIB_DIR) \
-	$(PETSC_FORTRAN_LIB_BASIC) \
-	$(PETSC_LIB_BASIC) \
-	$(PETSC_EXTERNAL_LIB_BASIC) \
+	$(PETSC_LIB) \
 	$(FCLIBS) \
 	-ljournal
 
 CXX = $(MPICXX)
 CXXLD = @CXX@
-INCLUDES = $(PETSC_INCLUDE) -I$(PETSC_DIR)/src/dm/mesh/sieve -I$(PYTHON_INCDIR) $(MPIINCLUDES)
+INCLUDES = $(PETSC_INCLUDE) -I$(PYTHON_INCDIR) $(MPIINCLUDES)
+CPPFLAGS += $(SIEVE_FLAGS)
 sources = \
 	array.cc \
 	array.h \

@@ -61,6 +61,17 @@ AC_LANG(C++)
 # Checks for libraries.
 CIT_CHECK_LIB_MPI
 CIT_CHECK_LIB_PETSC
+#CIT_PETSC_SIEVE --Out of date---
+# :TODO: Update CIT_PETSC_SIEVE as follows:
+# Replace
+# ALE::Sieve *topology;
+# with
+# const int dim = 3;
+# ALE::Mesh mesh(PETSC_COMM_WORLD, dim);
+# :TODO: Line below needs to be integrated into CIT_PETSC_SIEVE with 
+# value of SIEVE_FLAGS extracted from petsconf
+AC_SUBST([SIEVE_FLAGS], ["-DALE_USE_DEBUGGING -DALE_HAVE_CXX_ABI -DALE_USE_LOGGING -DALE_LOGGING_USE_EVENTS -DALE_LOGGING_LOG_MEM -DALE_LOGGING_VERBOSE"])
+
 
 # Checks for header files.
 CIT_HEADER_MPI
