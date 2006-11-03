@@ -524,6 +524,7 @@ c
 c
 c...  check stiffness matrix for zero or negative diagonals
 c
+      call PetscCommSynchronizeTags(MPI_COMM_WORLD, ierr)
       call MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY, ierr)
       call MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY, ierr)
       if (ierr.ne.0) then
