@@ -529,6 +529,7 @@ c
 c...  assemble stiffness matrix and check for zero or negative
 c     diagonal entries
 c
+      call PetscCommSynchronizeTags(MPI_COMM_WORLD, ierr)
       call MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY, ierr)
       call MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY, ierr)
       call ckdiag(A,ierr,errstrng)
