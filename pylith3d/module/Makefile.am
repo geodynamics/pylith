@@ -28,7 +28,7 @@ pylith3dmodule_la_LIBADD = \
 CXX = $(MPICXX)
 CXXLD = @CXX@
 INCLUDES = $(PETSC_INCLUDE) -I$(PYTHON_INCDIR) $(MPIINCLUDES)
-CPPFLAGS += $(SIEVE_FLAGS)
+AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS)
 sources = \
 	array.cc \
 	array.h \
