@@ -102,7 +102,7 @@ testfeassemble_LDFLAGS = $(PETSC_LIB) \
 	-ljournal
 
 INCLUDES += $(PETSC_INCLUDE)
-CPPFLAGS += $(SIEVE_FLAGS)
+AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS)
 
 testfeassemble_LDADD = \
 	-lcppunit -ldl \
