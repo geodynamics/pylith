@@ -15,7 +15,6 @@
 
 #include <iosfwd> // USES std::istream, std::ostream
 #include <string> // HASA std::string
-#include "MeshIO.hh"
 
 namespace pylith {
   namespace meshio {
@@ -25,11 +24,6 @@ namespace pylith {
 
 class pylith::meshio::MeshIOAscii : public pylith::meshio::MeshIO
 { // MeshIOAscii
-// PUBLIC TYPEDEFS -------------------------------------------------------
-public :
-  typedef ALE::Mesh                Mesh;
-  typedef ALE::Mesh::sieve_type    sieve_type;
-  typedef ALE::Mesh::topology_type topology_type;
 // PUBLIC METHODS -------------------------------------------------------
 public :
 
@@ -51,19 +45,14 @@ public :
    */
   const char* filename(void) const;
 
-  /** Read mesh from file.
-   *
-   * @param pMesh Pointer to PETSc mesh object
-   * @param interpolate Flag indicating whether to build intermediate topology
-   */
-  void read(ALE::Obj<Mesh>& mesh, 
-	    const bool interpolate =false);
+// PROTECTED METHODS ----------------------------------------------------
+protected :
 
-  /** Write mesh to file.
-   *
-   * @param mesh PETSc mesh object
-   */
-  void write(const ALE::Obj<Mesh>& mesh) const;
+  /// Write mesh
+  void _write(void) const;
+
+  /// Read mesh
+  void _read(void);
 
 // PRIVATE METHODS ------------------------------------------------------
 private :
@@ -73,60 +62,50 @@ private :
    * @param filein Input stream
    * @param pCoordinates Pointer to array of vertex coordinates
    * @param pNumVertices Pointer to number of vertices
-   * @param pNumDims Pointer to number of dimensions
+   * @param pSpaceDim Pointer to dimension of coordinates vector space
    */
   void _readVertices(std::istream& filein,
 		     double** pCoordinates,
-		     int* pNumVertices, 
-		     int* pNumDims) const;
+		     int* pNumVertices,
+		     int* pSpaceDim) const;
   
   /** Write mesh vertices.
    *
    * @param fileout Output stream
-   * @param mesh PETSc mesh
+   * @param coordinates Array of vertex coordinates
+   * @param numVertices Number of vertices
+   * @param spaceDim Dimension of coordinates vector space
    */
   void _writeVertices(std::ostream& fileout,
-		      const ALE::Obj<Mesh>& mesh) const;
+		      const double* coordinates,
+		      const int numVertices,
+		      const int spaceDim) const;
   
   /** Read mesh cells.
    *
    * @param filein Input stream
-   * @param pCells Pointer to array of cells (vertices in each element)
+   * @param pCells Pointer to array of indices of cell vertices
    * @param pNumCells Pointer to number of cells
-   * @param pNumCorners Pointer to number of corners in each element
+   * @param pNumCorners Pointer to number of corners
    */
   void _readCells(std::istream& filein,
 		  int** pCells,
-		  int* pNumCells, 
+		  int* pNumCells,
 		  int* pNumCorners) const;
   
   /** Write mesh cells.
    *
    * @param fileout Output stream
-   * @param mesh PETSc mesh
+   * @param cells Array of indices of cell vertices
+   * @param numCells Number of cells
+   * @param numCorners Number of corners
    */
   void _writeCells(std::ostream& fileout,
-		   const ALE::Obj<Mesh>& mesh) const;
+		   const int* cells,
+		   const int numCells,
+		   const int numCorners) const;
 
-  /** Read mesh group.
-   *
-   * @param filein Output stream
-   * @param pMesh Pointer to PETSc mesh
-   */
-  void _readGroup(std::istream& filein,
-		  const ALE::Obj<Mesh>& pMesh) const;
-
-  /** Write mesh group.
-   *
-   * @param fileout Output stream
-   * @param mesh PETSc mesh
-   * @param name Name of group
-   */
-  void _writeGroup(std::ostream& fileout,
-		   const ALE::Obj<Mesh>& mesh,
-		   const char* name) const;
-
-// PRIVATE MEMBERS ------------------------------------------------------
+  // PRIVATE MEMBERS ----------------------------------------------------
 private :
 
   std::string _filename; ///< Name of file
@@ -136,8 +115,5 @@ private :
 #include "MeshIOAscii.icc" // inline methods
 
 #endif // pylith_meshio_meshioascii_hh
-
-// version
-// $Id$
 
 // End of file 

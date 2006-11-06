@@ -23,6 +23,11 @@ namespace pylith {
 
 class pylith::meshio::MeshIO
 { // MeshIO
+// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+public :
+  typedef ALE::Mesh Mesh;
+  typedef ALE::Mesh::sieve_type sieve_type;
+  typedef ALE::Mesh::topology_type topology_type;
   
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -35,18 +40,26 @@ public :
 
   /** Read mesh from file.
    *
-   * @param pMesh Pointer to PETSc mesh object
+   * @param mesh Pointer to PETSc mesh object
    */
-  virtual void read(ALE::Obj<ALE::Mesh>& pMesh, const bool interpolate) = 0;
+  void read(ALE::Obj<Mesh>* mesh);
 
   /** Write mesh to file.
    *
-   * @param mesh PETSc mesh object
+   * @param mesh Pointer to PETSc mesh object
    */
-  virtual void write(const ALE::Obj<ALE::Mesh>& mesh) const = 0;
+  void write(ALE::Obj<Mesh>* mesh);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
+
+  /// Write mesh
+  virtual
+  void _write(void) const = 0;
+
+  /// Read mesh
+  virtual
+  void _read(void) = 0;
 
   /** Get flag indicating whether indices start at 0 (True) or 1 (False).
    *
@@ -60,10 +73,56 @@ protected :
    */
   void useIndexZero(const bool flag);
 
+  /** Build mesh topology and set vertex coordinates.
+   *
+   * @param coordinates Array of coordinates of vertices
+   * @param numVertices Number of vertices
+   * @param spaceDim Dimension of vector space for vertex coordinates
+   * @param cells Array of indices of vertices in cells (first index is 0 or 1)
+   * @param numCells Number of cells
+   * @param numCorners Number of vertices per cell
+   * @param meshDim Dimension of cells in mesh
+   */
+  void _buildMesh(const double* coordinates,
+		  const int numVertices,
+		  const int spaceDim,
+		  const int* cells,
+		  const int numCells,
+		  const int numCorners,
+		  const int meshDim);
+
+  /** Get information about vertices in mesh.
+   *
+   * Method caller is responsible for memory management.
+   *
+   * @param pCoordinates Pointer to array of vertex coordinates
+   * @param pNumVertices Pointer to number of vertices
+   * @param pSpaceDim Poiner to dimension of vector space for coordinates
+   */
+  void _getVertices(double** pCoordinates,
+		    int* pNumVertices,
+		    int* pSpaceDim) const;
+
+  /** Get information about cells in mesh.
+   *
+   * Method caller is responsible for memory management.
+   *
+   * @param pCells Pointer to array of indicates of vertices in each cell
+   * @param pNumCells Pointer to number of cells in mesh
+   * @param pNumCorners Pointer to number of vertices in each cell
+   * @param pMeshDim Pointer to number of dimensions associated with cell
+   */
+  void _getCells(int** pCells,
+		 int* pNumCells,
+		 int* pNumCorners,
+		 int* pMeshDim) const;
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
   bool _useIndexZero; ///< Flag indicating if indicates start at 0 (T) or 1 (F)
+
+  ALE::Obj<Mesh>* _mesh; ///< Pointer to PETSc mesh object
 
 }; // MeshIO
 

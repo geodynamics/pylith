@@ -10,46 +10,72 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/feassemble/Integrator.py
-## @brief Python abstract base class for finite-element integration.
+## @file pylith/feassemble/Integrator.py
+
+## @brief Python abstract base class for integration of operator
+## actions with finite-elements.
 
 from pyre.components.Component import Component
 
 # Integrator class
 class Integrator(Component):
-  """Python abstract base class for finite-element integration."""
+  """
+  Python abstract base class for integration of actions with
+  finite-elements.
+  """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(Component.Inventory):
+    """Python object for managing Integrator facilities and properties."""
+
+    ## @class Inventory
+    ## Python object for managing Integrator facilities and properties.
+    ##
+    ## \b Properties
+    ## @li None
+    ##
+    ## \b Facilities
+    ## @li \b quadrature Quadrature object for integration
+
+    import pyre.inventory
+
+    from Quadrature import Quadrature
+    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
+    quadrature.meta['tip'] = "Quadrature object for integration."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  # INITIALIZE
-  # set mesh, basis, basisDer, quadrature
-
-  def integrateResidual(self, element, state):
-    """Integrate residual for element."""
-    raise NotImplementedError, \
-          "Integrator::integrateResidual() not implemented."
-    return
-
-
-  def integrateJacobian(self, element, state):
-    """Integrate the Jacobian weak form over an element using the given
-    quadrature."""
-    raise NotImplementedError, \
-          "Integrator::integrateJacobian() not implemented."
-    return
-
-
   def __init__(self, name="integrator"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     Component.__init__(self, name, facility="integrator")
-    self.mesh = None
-    self.basis = None
-    self.basisDer = None
+    self.cppHandle = None
     self.quadrature = None
     return
 
 
-# version
-__id__ = "$Id$"
+  def initialize(self):
+    """
+    Initialize C++ integrator object.
+    """
+    q = self.quadrature
+    q.initialize()
+    self.cppHandle.quadrature(q.cppHandle)
+    return
+  
+  
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Set members based using inventory.
+    """
+    Component._configure(self)
+    self.quadrature = self.inventory.quadrature
+    return
+
 
 # End of file 
