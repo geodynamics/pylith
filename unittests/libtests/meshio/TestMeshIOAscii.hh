@@ -21,17 +21,18 @@
 #if !defined(pylith_meshio_testmeshioascii_hh)
 #define pylith_meshio_testmeshioascii_hh
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "TestMeshIO.hh"
 
-/// Namespace for spatialdata package
+/// Namespace for pylith package
 namespace pylith {
   namespace meshio {
     class TestMeshIOAscii;
+    class MeshData;
   } // meshio
 } // pylith
 
 /// C++ unit testing for Quadrature1D
-class pylith::meshio::TestMeshIOAscii : public CppUnit::TestFixture
+class pylith::meshio::TestMeshIOAscii : public TestMeshIO
 { // class TestMeshIOAscii
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
@@ -72,6 +73,17 @@ public :
 
   /// Test write() and read() for 3D mesh in 3D space.
   void testWriteRead3D(void);
+
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /** Build mesh, perform write() and read(), and then check values.
+   *
+   * @param data Mesh data
+   * @param filename Name of mesh file to write/read
+   */
+  void _testWriteRead(const MeshData& data,
+		      const char* filename);
 
 }; // class TestMeshIOAscii
 

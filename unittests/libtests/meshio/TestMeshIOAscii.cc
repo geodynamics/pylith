@@ -16,6 +16,15 @@
 
 #include "pylith/meshio/MeshIOAscii.hh"
 
+#include "data/MeshData1D.hh"
+#include "data/MeshData1Din2D.hh"
+#include "data/MeshData1Din3D.hh"
+#include "data/MeshData2D.hh"
+#include "data/MeshData2Din3D.hh"
+#include "data/MeshData3D.hh"
+
+#include <assert.h> // USES assert()
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestMeshIOAscii );
 
@@ -44,31 +53,39 @@ pylith::meshio::TestMeshIOAscii::testFilename(void)
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead1D(void)
 { // testWriteRead1D
-  CPPUNIT_ASSERT(false);
+  MeshData1D data;
+  const char* filename = "mesh1D.txt";
+  _testWriteRead(data, filename);
 } // testWriteRead1D
 
 // ----------------------------------------------------------------------
 // Test write() and read() for 1D mesh in 2D space.
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead1Din2D(void)
-{ // testWriteRead1D
-  CPPUNIT_ASSERT(false);
-} // testWriteRead1D
+{ // testWriteRead1Din2D
+  MeshData1Din2D data;
+  const char* filename = "mesh1Din2D.txt";
+  _testWriteRead(data, filename);
+} // testWriteRead1Din2D
 
 // ----------------------------------------------------------------------
 // Test write() and read() for 1D mesh in 3D space.
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead1Din3D(void)
-{ // testWriteRead1D
-  CPPUNIT_ASSERT(false);
-} // testWriteRead1D
+{ // testWriteRead1Din3D
+  MeshData1Din3D data;
+  const char* filename = "mesh1Din3D.txt";
+  _testWriteRead(data, filename);
+} // testWriteRead1Din3D
 
 // ----------------------------------------------------------------------
 // Test write() and read() for 2D mesh in 2D space.
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead2D(void)
 { // testWriteRead2D
-  CPPUNIT_ASSERT(false);
+  MeshData2D data;
+  const char* filename = "mesh2D.txt";
+  _testWriteRead(data, filename);
 } // testWriteRead2D
 
 // ----------------------------------------------------------------------
@@ -76,7 +93,9 @@ pylith::meshio::TestMeshIOAscii::testWriteRead2D(void)
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead2Din3D(void)
 { // testWriteRead2Din3D
-  CPPUNIT_ASSERT(false);
+  MeshData2Din3D data;
+  const char* filename = "mesh2Din3D.txt";
+  _testWriteRead(data, filename);
 } // testWriteRead2Din3D
 
 // ----------------------------------------------------------------------
@@ -84,7 +103,49 @@ pylith::meshio::TestMeshIOAscii::testWriteRead2Din3D(void)
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead3D(void)
 { // testWriteRead3D
-  CPPUNIT_ASSERT(false);
+  MeshData3D data;
+  const char* filename = "mesh3D.txt";
+  _testWriteRead(data, filename);
 } // testWriteRead3D
+
+// ----------------------------------------------------------------------
+// Build mesh, perform write() and read(), and then check values.
+void
+pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
+						const char* filename)
+{ // _testWriteRead
+  // buildTopology() requires zero based index
+  assert(true == data.useIndexZero);
+
+  // Build mesh
+  ALE::Obj<Mesh> meshOut = new Mesh(PETSC_COMM_WORLD, data.cellDim);
+  ALE::Obj<sieve_type> sieve = new sieve_type(meshOut->comm());
+  ALE::Obj<topology_type> topology = new topology_type(meshOut->comm());
+
+  const bool interpolate = false;
+  ALE::New::SieveBuilder<sieve_type>::buildTopology(
+			  sieve, data.cellDim, data.numCells, 
+			  const_cast<int*>(data.cells), 
+			  data.numVertices, interpolate, data.numCorners);
+  sieve->stratify();
+  topology->setPatch(0, sieve);
+  topology->stratify();
+  meshOut->setTopology(topology);
+  ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
+				      meshOut->getRealSection("coordinates"), 
+				      data.spaceDim, data.vertices);
+
+  // Write mesh
+  MeshIOAscii iohandler;
+  iohandler.filename(filename);
+  iohandler.write(&meshOut);
+
+  // Read mesh
+  ALE::Obj<Mesh> meshIn;
+  iohandler.read(&meshIn);
+
+  // Make sure meshIn matches data
+  _checkVals(meshIn, data);
+} // _testWriteRead
 
 // End of file 
