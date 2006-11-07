@@ -16,12 +16,12 @@ include $(top_srcdir)/subpackage.am
 lib_LTLIBRARIES = libpylithmeshio.la
 
 libpylithmeshio_la_SOURCES = \
-	MeshIO.cc 
+	MeshIO.cc \
 	MeshIOAscii.cc
 
 subpkginclude_HEADERS = \
 	MeshIO.hh \
-	MeshIO.icc
+	MeshIO.icc \
 	MeshIOAscii.hh \
 	MeshIOAscii.icc
 

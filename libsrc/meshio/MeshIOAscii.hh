@@ -16,13 +16,15 @@
 #include <iosfwd> // USES std::istream, std::ostream
 #include <string> // HASA std::string
 
+#include "MeshIO.hh"
+
 namespace pylith {
   namespace meshio {
     class MeshIOAscii;
   } // meshio
 } // pylith
 
-class pylith::meshio::MeshIOAscii : public pylith::meshio::MeshIO
+class pylith::meshio::MeshIOAscii : public MeshIO
 { // MeshIOAscii
 // PUBLIC METHODS -------------------------------------------------------
 public :
