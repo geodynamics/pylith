@@ -23,7 +23,7 @@
 
 #include "TestQuadrature.hh"
 
-/// Namespace for spatialdata package
+/// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
     class TestQuadrature3D;
