@@ -11,6 +11,7 @@
 #
 
 SUBDIRS = \
-	feassemble
+	feassemble \
+	meshio
 
 # End of file 

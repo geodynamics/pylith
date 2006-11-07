@@ -155,6 +155,7 @@ AC_CONFIG_FILES([Makefile
 		unittests/Makefile
 		unittests/libtests/Makefile
 		unittests/libtests/feassemble/Makefile
+		unittests/libtests/meshio/Makefile
 		unittests/pytests/Makefile
 		unittests/pytests/feassemble/Makefile
                 doc/Makefile])
