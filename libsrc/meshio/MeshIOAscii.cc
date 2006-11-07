@@ -85,31 +85,31 @@ pylith::meshio::MeshIOAscii::_read(void)
         useIndexZero(false);
     } else if (0 == strcasecmp(token.c_str(), "vertices")) {
       filein.ignore(maxIgnore, '{');
-      _readVertices(filein, &coordinates, &numVertices, &numDims);
+      _readVertices(filein, &coordinates, &numVertices, &spaceDim);
       readVertices = true;
     } else if (0 == strcasecmp(token.c_str(), "cells")) {
       filein.ignore(maxIgnore, '{');
       _readCells(filein, &cells, &numCells, &numCorners);
       readCells = true;
     } else if (0 == strcasecmp(token.c_str(), "group")) {
-      if (!builtTopology)
+      if (!builtMesh)
 	throw std::runtime_error("Both 'vertices' and 'cells' must "
 				 "precede any groups in mesh file.");
       filein.ignore(maxIgnore, '{');
-      _readGroup(filein, mesh);
+      //_readGroup(filein, mesh);
     } else {
       std::ostringstream msg;
       msg << "Could not parse '" << token << "' into a mesh setting.";
       throw std::runtime_error(msg.str());  
     } // else
 
-    if (readDim && readCells && readVertices && !builtTopology) {
+    if (readDim && readCells && readVertices && !builtMesh) {
       // Can now build mesh
       _buildMesh(coordinates, numVertices, spaceDim,
 		 cells, numCells, numCorners, meshDim);
       delete[] coordinates; coordinates = 0;
       delete[] cells; cells = 0;
-      builtTopology = true;
+      builtMesh = true;
     } // if
 
     filein >> token;
@@ -120,7 +120,7 @@ pylith::meshio::MeshIOAscii::_read(void)
 // ----------------------------------------------------------------------
 // Write mesh to file.
 void
-pylith::meshio::MeshIOAscii::_write(void)
+pylith::meshio::MeshIOAscii::_write(void) const
 { // write
   std::ofstream fileout(_filename.c_str());
   if (!fileout.is_open() || !fileout.good()) {

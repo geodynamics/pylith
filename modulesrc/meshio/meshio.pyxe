@@ -51,7 +51,7 @@ cdef class MeshIO:
     return
 
 
-  def read(self, interpolate):
+  def read(self):
     """
     Read mesh from file.
 
@@ -59,15 +59,15 @@ cdef class MeshIO:
       topology elements.
     """
     # create shim for method 'read'
-    #embed{ void MeshIO_read(void* pObj, void** ppMeshObj, int interpolate)
+    #embed{ void MeshIO_read(void* pObj, void** ppMeshObj)
     ALE::Obj<ALE::Mesh>* pMesh = new ALE::Obj<ALE::Mesh>;
-    ((pylith::meshio::MeshIO*) pObj)->read(*pMesh, interpolate);
+    ((pylith::meshio::MeshIO*) pObj)->read(pMesh);
     *ppMeshObj = (void*) pMesh;
     #}embed
 
     cdef void* pMeshObj
     pMeshObj = NULL
-    MeshIO_read(self.thisptr, &pMeshObj, interpolate)
+    MeshIO_read(self.thisptr, &pMeshObj)
     return PyCObject_FromVoidPtr(pMeshObj, ALEMesh_destructor)
 
 
@@ -78,7 +78,7 @@ cdef class MeshIO:
     # create shim for method 'write'
     #embed{ void MeshIO_write(void* pObj, void* pMeshObj)
     ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
-    ((pylith::meshio::MeshIO*) pObj)->write(*pMesh);
+    ((pylith::meshio::MeshIO*) pObj)->write(pMesh);
     #}embed
     cdef void* pMeshObj
     pMeshObj = <void*> PyCObject_AsVoidPtr(mesh)
