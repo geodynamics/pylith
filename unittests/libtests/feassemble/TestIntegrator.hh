@@ -23,7 +23,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-/// Namespace for spatialdata package
+/// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
     class Integrator;
