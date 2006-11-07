@@ -14,6 +14,8 @@
 
 #include "MeshIO.hh" // implementation of class methods
 
+#include <assert.h> // USES assert()
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
@@ -26,6 +28,7 @@ pylith::meshio::MeshIO::MeshIO(void) :
 // Destructor
 pylith::meshio::MeshIO::~MeshIO(void)
 { // destructor
+  assert(0 == _mesh);
 } // destructor
   
 // ----------------------------------------------------------------------
@@ -33,6 +36,8 @@ pylith::meshio::MeshIO::~MeshIO(void)
 void 
 pylith::meshio::MeshIO::read(ALE::Obj<Mesh>* mesh)
 { // read
+  assert(0 == _mesh);
+
   _mesh = mesh;
   _read();
   _mesh = 0;
@@ -43,6 +48,8 @@ pylith::meshio::MeshIO::read(ALE::Obj<Mesh>* mesh)
 void 
 pylith::meshio::MeshIO::write(ALE::Obj<Mesh>* mesh)
 { // write
+  assert(0 == _mesh);
+
   _mesh = mesh;
   _write();
   _mesh = 0;
@@ -60,7 +67,7 @@ pylith::meshio::MeshIO::_buildMesh(const double* coordinates,
 				   const int meshDim)
 { // _buildMesh
   assert(0 != _mesh);
-  *_mesh = Mesh(PETSC_COMM_WORLD, meshDim);
+  *_mesh = new Mesh(PETSC_COMM_WORLD, meshDim);
   ALE::Obj<Mesh>& mesh = *_mesh;
   
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
@@ -105,7 +112,7 @@ pylith::meshio::MeshIO::_getVertices(double** pCoordinates,
 
   double* coordinates = 0;
   const int size = numVertices * spaceDim;
-  if (0 != *pCoordinates && size > 0) {
+  if (0 != pCoordinates && size > 0) {
     coordinates = new double[size];
 
     int i = 0;
@@ -116,7 +123,7 @@ pylith::meshio::MeshIO::_getVertices(double** pCoordinates,
       const Mesh::real_section_type::value_type *vertexCoords = 
 	coordsField->restrict(patch, *v_iter);
       for (int iDim=0; iDim < spaceDim; ++iDim)
-	coordinates[i++] = coordinates[iDim];
+	coordinates[i++] = vertexCoords[iDim];
     } // for
   } // if
 
@@ -124,7 +131,7 @@ pylith::meshio::MeshIO::_getVertices(double** pCoordinates,
     *pCoordinates = coordinates;
   if (0 != pNumVertices)
     *pNumVertices = numVertices;
-  if (0 != *pSpaceDim)
+  if (0 != pSpaceDim)
     *pSpaceDim = spaceDim;
 } // _getVertices
 
