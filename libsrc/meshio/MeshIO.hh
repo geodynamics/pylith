@@ -38,6 +38,20 @@ public :
   /// Destructor
   virtual ~MeshIO(void);
 
+  /** Set flag associated with building intermediate mesh topology
+   *  elements.
+   *
+   * @param flag True to build intermediate topology, false not to build
+   */
+  void interpolate(const bool flag);
+
+  /** Get flag associated with building intermediate mesh topology
+   * elements.
+   *
+   * @returns True if building intermediate topology, false if not building
+   */
+  bool interpolate(void) const;
+
   /** Read mesh from file.
    *
    * @param mesh Pointer to PETSc mesh object
@@ -121,6 +135,7 @@ protected :
 private :
 
   bool _useIndexZero; ///< Flag indicating if indicates start at 0 (T) or 1 (F)
+  bool _interpolate; ///< True if building intermediate topology elements
 
   ALE::Obj<Mesh>* _mesh; ///< Pointer to PETSc mesh object
 
