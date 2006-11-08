@@ -67,7 +67,4 @@ class MeshImporter(MeshGenerator):
     return
   
 
-# version
-__id__ = "$Id$"
-
 # End of file 
