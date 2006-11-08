@@ -32,7 +32,4 @@ class MeshGenerator(Component):
     return
 
 
-# version
-__id__ = "$Id$"
-
 # End of file 
