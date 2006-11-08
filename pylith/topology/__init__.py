@@ -13,9 +13,8 @@
 ## @file pylith/topology/__init__.py
 ## @brief Python PyLith finite-element topology module initialization
 
-all = ['Mesh']
-
-# version
-__id__ = "$Id$"
+all = ['Mesh',
+       'MeshGenerator',
+       'MeshImporter']
 
 # End of file

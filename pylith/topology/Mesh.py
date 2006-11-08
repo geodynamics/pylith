@@ -47,7 +47,7 @@ class Mesh(Component):
   def __init__(self, name="mesh"):
     """Constructor."""
     Component.__init__(self, name, facility="mesh")
-    self.handle = None
+    self.cppHandle = None
     return
 
 
@@ -57,8 +57,5 @@ class Mesh(Component):
     """Set members based using inventory."""
     return
   
-
-# version
-__id__ = "$Id$"
 
 # End of file 
