@@ -14,7 +14,6 @@ nobase_pkgpyexec_PYTHON = \
 	PyLithApp.py \
 	__init__.py \
 	feassemble/__init__.py \
-	feassemble/Assembler.py \
 	feassemble/FIATCell.py \
 	feassemble/FIATSimplex.py \
 	feassemble/Field.py \
