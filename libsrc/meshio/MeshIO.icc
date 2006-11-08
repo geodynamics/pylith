@@ -28,6 +28,20 @@ pylith::meshio::MeshIO::useIndexZero(const bool flag) {
   _useIndexZero = flag;
 }
 
+// Set flag associated with building intermediate mesh topology
+inline
+void
+pylith::meshio::MeshIO::interpolate(const bool flag) {
+  _interpolate = flag;
+}
+
+// Get flag associated with building intermediate mesh topology
+inline
+bool
+pylith::meshio::MeshIO::interpolate(void) const {
+  return _interpolate;
+}
+
 #endif
 
 // End of file

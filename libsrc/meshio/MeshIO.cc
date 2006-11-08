@@ -20,6 +20,7 @@
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
   _useIndexZero(true),
+  _interpolate(false),
   _mesh(0)
 { // constructor
 } // constructor
@@ -73,12 +74,11 @@ pylith::meshio::MeshIO::_buildMesh(const double* coordinates,
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
   ALE::Obj<topology_type> topology = new topology_type(mesh->comm());
 
-  const bool interpolate = false;
   ALE::New::SieveBuilder<sieve_type>::buildTopology(sieve, meshDim, 
 						    numCells, 
 						    const_cast<int*>(cells), 
 						    numVertices, 
-						    interpolate, numCorners);
+						    _interpolate, numCorners);
   sieve->stratify();
   topology->setPatch(0, sieve);
   topology->stratify();

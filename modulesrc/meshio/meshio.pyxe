@@ -96,6 +96,24 @@ cdef class MeshIO:
     return PyCObject_FromVoidPtr(self.thisptr, MeshIO_destructor)
 
 
+  property interpolate:
+    def __set__(self, flag):
+      """Set interpolate."""
+      # create shim for method 'interpolate'
+      #embed{ void MeshIO_interpolate_set(void* pObj, int flag)
+      ((pylith::meshio::MeshIO*) pObj)->interpolate(flag);
+      #}embed
+      MeshIO_interpolate_set(self.thisptr, flag)
+
+    def __get__(self):
+      """Get interpolate."""
+      # create shim for method 'interpolate'
+      #embed{ int MeshIO_interpolate_get(void* pObj)
+      return ((pylith::meshio::MeshIO*) pObj)->interpolate();
+      #}embed
+      return MeshIO_interpolate_get(self.thisptr)
+
+
 # ----------------------------------------------------------------------
 cdef class MeshIOAscii(MeshIO):
 

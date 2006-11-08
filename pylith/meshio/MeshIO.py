@@ -31,7 +31,7 @@ class MeshIO(Component):
     ## Python object for managing MeshIO facilities and properties.
     ##
     ## \b Properties
-    ## @li \b interpolate Build intermediate mesh topology elements
+    ## @li \b interpolate Build intermediate mesh topology elements (if true)
     ##
     ## \b Facilities
     ## @li None
@@ -52,6 +52,7 @@ class MeshIO(Component):
     """
     Component.__init__(self, name, facility="meshio")
     self.cppHandle = None
+    self.interpolate = False
     return
 
 
@@ -59,11 +60,12 @@ class MeshIO(Component):
     """
     Read finite-element mesh and store in Sieve mesh object.
 
-    @returns Sieve mesh object containing finite-element mesh
+    @returns PETSc mesh object containing finite-element mesh
     """
     from pylith.topology.Mesh import Mesh
     mesh = Mesh()
-    mesh.handle = self.cppHandle.read(self.interpolate)
+    self.cppHandle.interpolate = interpolate
+    mesh.cppHandle = self.cppHandle.read(self.interpolate)
     return 
 
 
@@ -71,8 +73,9 @@ class MeshIO(Component):
     """
     Write finite-element mesh.stored in Sieve mesh object.
 
-    @param mesh Sieve mesh object containing finite-element mesh
+    @param mesh PETSc mesh object containing finite-element mesh
     """
+    self.cppHandle.interpolate = interpolate
     self.cppHandle.write(mesh.handle)
     return
 
@@ -80,12 +83,12 @@ class MeshIO(Component):
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
-    """Set members based using inventory."""
+    """
+    Set members based using inventory.
+    """
     Component._configure(self)
     self.interpolate = self.inventory.interpolate
     return
 
-# version
-__id__ = "$Id$"
 
 # End of file 
