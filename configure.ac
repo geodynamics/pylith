@@ -158,6 +158,7 @@ AC_CONFIG_FILES([Makefile
 		unittests/libtests/meshio/Makefile
 		unittests/pytests/Makefile
 		unittests/pytests/feassemble/Makefile
+		unittests/pytests/meshio/Makefile
                 doc/Makefile])
 
 #                 libsrc/materials/Makefile
