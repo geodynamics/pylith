@@ -1,49 +1,33 @@
-Immediate priorities, 3/11/2005:
+MAIN PRIORITIES
 
-1.  Break up all routines that affect equation numbering, and combine
-all numbering into a single routine.  This will affect:
+1. Implement unit tests for MeshIO at Python level.
+   a. write()/read()
+   b. checkVals()
 
-  Lithomop3d_setup.py
-  read_bc.f
-  read_wink.f
-  adjid.f
-  read_winkx.f
+2. Finish implementing IntegratorInertia.
+   a. Python object
+   b. bindings
+   c. unit tests at Python level
 
-2.  Change things so that only a single element type is used at a time.
-This will simplify indexing.  I need to think how this will affect
-infinite elements.  This should allow us to move more quickly, but I
-may need to switch back at some point, once element families are set
-up better.
+3. Implement Inertia object (manager for integrating inertia over ALL patches)
+   a. C++ object
+   b. unit tests at C++ level
+   c. Python object
+   d. bindings
+   e. unit tests at Python level
 
-3.  I can probably eliminate dmat as a global matrix.  See what this
-does to performance vs. memory savings.
+4. Construct test case for integrating inertia term for a mesh
+   a. Mesh input file (ascii)
+   b. Python driver
 
-4.  Start putting in more PETSc instrumentation (finer-grained) and
-evaluating performance bottlenecks.
-
-5.  Put in power-law viscoelastic model, and come up with equations to
-implement Drucker-Prager elasto-plastic model.  Look into viscoplastic
-models.
-
-6.  Create function in array.cc to deallocate memory for arrays, and
-then put in python calls for arrays that need to be deallocated.
-
-Longer-term priorities, 3/11/2005:
-
-1.  Create shape function info and integration routines for cohesive
-and surface elements.
-
-2.  Create routines necessary to implement cohesive (kinematic) elements
-and kinematic BC elements.  This will involve routines for rotations,
-use of quaternions, etc., as well as the looping over elements in a
-group.
-
-3.  Move control down a level so that routines elastc, viscos, and
-iterate are done in python.
+5. Specify material properties using spatial database
 
 
-After talking to Matt and seeing if Lagrange multipliers are OK:
+SECONDARY PRIORITIES
 
-1.  Come up with routines for integration of surfaces/cohesive elements, analogous to solid element routines.
-
-2.  Algorithms for setting stiffness matrix and vector structure for cohesive elements.
+1. Implement MeshIOHDF5 & HDF5
+   a. C++ objects
+   b. unit tests at C++ level
+   b. Python object (MeshIOHDF5)
+   c. bindings
+   d. unit tests at Python level
