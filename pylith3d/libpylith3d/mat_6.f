@@ -713,14 +713,14 @@ c
       dsde=f1*(one-dgde*(c2*sdevt(1)+
      & f3*(epptdt(1)-f4*sdevt(1)+ae*sdev0(1))))
       dmat(iddmat(1,1))=c3+two*third*dsde
-      dmat(iddmat(1,2))=c3-half*third*dsde
+      dmat(iddmat(1,2))=c3-third*dsde
       dmat(iddmat(1,3))=dmat(iddmat(1,2))
 c
       dgde=rkfac*(half*epptdt(2)+ae*sdev0(2)-f4*sdevt(2))
       dsde=f1*(one-dgde*(c2*sdevt(2)+
      & f3*(epptdt(2)-f4*sdevt(2)+ae*sdev0(2))))
       dmat(iddmat(2,2))=c3+two*third*dsde
-      dmat(iddmat(2,3))=c3-half*third*dsde
+      dmat(iddmat(2,3))=c3-third*dsde
 c
       dgde=rkfac*(half*epptdt(3)+ae*sdev0(3)-f4*sdevt(3))
       dsde=f1*(one-dgde*(c2*sdevt(3)+
