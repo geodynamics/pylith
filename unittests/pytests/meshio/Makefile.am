@@ -13,9 +13,9 @@
 subpackage = meshio
 include $(top_srcdir)/subpackage.am
 
-TESTS = testmeshio.py
+TESTS = testdriver.py
 
-check_SCRIPTS = testmeshio.py
+check_SCRIPTS = testdriver.py
 
 noinst_PYTHON = \
 	TestMeshIO.py \
