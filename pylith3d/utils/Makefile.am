@@ -10,6 +10,7 @@ bin_PROGRAMS = \
 	pylith2ucd \
 	readnetgen \
 	readucd2 \
+	readucd3 \
 	scalecoord \
 	scaleucd
 
@@ -23,5 +24,6 @@ makeucd_SOURCES = makeucd.f
 pylith2ucd_SOURCES = pylith2ucd.f
 readnetgen_SOURCES = readnetgen.f
 readucd2_SOURCES = readucd2.f
+readucd3_SOURCES = readucd3.f
 scalecoord_SOURCES = scalecoord.f
 scaleucd_SOURCES = scaleucd.f
