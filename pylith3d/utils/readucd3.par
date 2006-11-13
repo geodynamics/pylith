@@ -1,0 +1,116 @@
+#
+#   Parameter file for use with program readucd3.
+#
+# **********************************************************************
+#
+#   Coordinate parameters:
+#
+#    cscale  = coordinate scaling factor.
+#    ix      = coordinate number corresponding to x.
+#    iy      = coordinate number corresponding to y.
+#    iz      = coordinate number corresponding to z.
+#
+#    The integer parameters may be used to transpose coordinates if a
+#    different coordinate system is desired.
+#
+#   cscale   ix   iy   iz
+#-----------------------------------------------------------------------
+    1.0d0     1    2    3
+#-----------------------------------------------------------------------
+#
+#  Coordinate units:
+#
+#    Give a string specifying the units used after scaling.
+#
+#-----------------------------------------------------------------------
+  'km'
+#-----------------------------------------------------------------------
+#
+#
+# **********************************************************************
+#
+#   Boundary condition information:
+#    This information is used to determine the boundaries on which BC
+#    will be applied, as well as the default BC.
+#
+#    nbc    = number of boundary condition surfaces.  Note that
+#             each surface must be marked with a unique BC #.
+#
+#    nbc
+#-----------------------------------------------------------------------
+      5
+#-----------------------------------------------------------------------
+#
+#   BC numbers and corresponding boundary conditions to be applied to
+#   each boundary:
+#    This input will consist of nbc lines, one for each  mesh boundary.
+#    The order is the same as for the mesh limits above.
+#
+#    Each line will contain:
+#    ibfield  ibcode ibcx  bcx  ibcy  bcy  ibcz  bcz  acode
+#
+#    where ibfield is the field number from which the BC code is read,
+#    ibcode is the boundary condition code for a given surface,
+#    each ibc value is the integer boundary condition code
+#    (same as those for lithomop or tecton), and bc is the corresponding
+#    boundary condition value.
+#    The iauxcode value determines whether the actual BC value is read
+#    from an auxiliary file or not.  A value of zero indicates that
+#    the specified bc value is the one to use.  A value of one indicates
+#    that the value is to come from the auxiliary file.
+#
+#    Note that the ordering of the values below is important.  Those
+#    appearing first in the list will receive priority over those
+#    later in the list.  If a node lies on more than one boundary, the
+#    procedure is as follows:
+#    The first boundary in the list will have all of its conditions
+#    applied to the node; however, if a degree of freedom is left free,
+#    it may have a value assigned by a boundary lower in the list, and
+#    so on, until either the list is exhausted or all degrees of freedom
+#    have been assigned a value.
+#    This logic insures, for example, that if two faces have roller BC
+#    applied, the edge joining the faces will include both sets of BC.
+#
+# ibfield ibcode ibcx(i) bcx(i) ibcy(i) bcy(i) ibcz(i) bcz(i) acode(i), i=1,nbc
+#-----------------------------------------------------------------------
+     9      2      0     0.0d0    0     0.0d0     1    0.0d0    0
+    10      3      1     0.0d0    0     0.0d0     0    0.0d0    0
+    11      5      1     0.0d0    0     0.0d0     0    0.0d0    0
+    12      6      0     0.0d0    1     0.0d0     0    0.0d0    0
+    13      4      0     0.0d0    1     0.0d0     0    0.0d0    0
+# The numbering above corresponds to bottom, left, right, back, and
+# front in the UCD file.
+#-----------------------------------------------------------------------
+#
+#  Units used for boundary conditions:
+#    You must specify the units to be used for displacement, velocity,
+#    and force boundary conditions.
+#
+#-----------------------------------------------------------------------
+'m'
+# displacement_units
+'m/s'
+# velocity_units
+'newton'
+# force_units
+#-----------------------------------------------------------------------
+#
+#   Connectivity order option:
+#    This determines how the tetrahedral element connectivities are
+#    ordered/determined.
+#
+#    iconopt:  1 = assume connectivities are already in the proper
+#                  order (fastest, but frequently incorrect).
+#              2 = assume connectivities are in the wrong order.  In
+#                  this case, the positions of nodes 2 and 3 are
+#                  reversed.
+#              3 = assume that the connectivities are in any order.  In
+#                  this case, the element jacobian is first computed
+#                  using the original order.  If a negative value is
+#                  obtained, the positions of nodes 2 and 3 are
+#                  reversed.  This is probably the safest option.
+#
+#    iconopt
+#-----------------------------------------------------------------------
+        3
+#-----------------------------------------------------------------------

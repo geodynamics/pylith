@@ -240,7 +240,7 @@ c
       open(kso,file=ofile,status="new")
 c
  800  format("Usage:",/,
-     & "    blockrot2 p=<parameter_file>",/,
+     & "    blockrot3 p=<parameter_file>",/,
      & "    o=<split_node_output_file>")
       return
       end

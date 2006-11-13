@@ -32,8 +32,8 @@
 #
 #  blocknum(i)  polex(i)    poley(i)    poler(i),  i=1,nblocks
 #-----------------------------------------------------------------------
-     1         -1.8d6     -4.7d6    1.0d-5
-     2          1.8d6      4.7d6    1.0d-5
+     1          1.0d5      1.0d5   -5.0d-6
+     2         -1.0d5     -1.0d5   -5.0d-6
      3          0.0d0      0.0d0    0.0d0
      4          0.0d0      0.0d0    0.0d0
 # poles above should yield approximately equal amounts of strike-slip
@@ -66,14 +66,14 @@
 #-----------------------------------------------------------------------
         1
         1            2            1
-"fault07_01_02.flt_pylith"
+"fault_03_01_02.flt_pylith"
 # Highest priority is dipping boundary between blocks 1 and 2.
         1
-        1            3            2
-"fault10_01_03.flt_pylith"
-# Next highest priority is vertical boundary between blocks 1 and 3.
+        1            4            2
+"fault_08_01_04.flt_pylith"
+# Next highest priority is vertical boundary between blocks 1 and 4.
         1
-        2            4            3
-"fault11_02_04.flt_pylith"
-# Lowest priority is vertical boundary between blocks 2 and 4.
+        2            3            3
+"fault_11_02_03.flt_pylith"
+# Lowest priority is vertical boundary between blocks 2 and 3.
 #-----------------------------------------------------------------------
