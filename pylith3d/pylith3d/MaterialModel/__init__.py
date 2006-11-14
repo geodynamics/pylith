@@ -34,7 +34,8 @@
 __all__ = ["MaterialModel",
 	   "IsotropicLinearElastic",
 	   "IsotropicLinearMaxwellViscoelastic",
-	   "IsotropicPowerLawMaxwellViscoelastic"]
+	   "IsotropicPowerLawMaxwellViscoelastic",
+	   "IsotropicLinearGenMaxwellViscoelastic"]
 
 def copyright():
     return "pylith3d pyre module: Copyright (c) 1998-2003 California Institute of Technology";
