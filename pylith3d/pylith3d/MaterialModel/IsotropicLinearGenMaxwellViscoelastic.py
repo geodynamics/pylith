@@ -37,76 +37,97 @@ from pylith3d.MaterialModel.MaterialModel import MaterialModel
 # IsotropicLinearGenMaxwellViscoelastic class
 class IsotropicLinearGenMaxwellViscoelastic(MaterialModel):
     """
-    Python PyLith-0.8 material model consisting of a linear elastic spring in parallel
-    with N Maxwell elements.
+    Python PyLith-0.8 material model consisting of 3 Maxwell elements in parallel.
+    For now, the standard linear solid may be approximated by setting one viscosity to
+    a large value and setting one of the shear ratios to zero.
+    """
+    # """
+    # Python PyLith-0.8 material model consisting of a linear elastic spring in parallel
+    # with N Maxwell elements.
     """
 
-    def readprop(self,file):
-        """
-        We need to override the generic property reader since this
-        one has to increase the sizes of dictionaries and lists
-        depending on the input values.
-        """
+    # To prevent having to rewrite a bunch of other code sections, I am temporarily commenting
+    # out the specialized readprop function and setting the number of Maxwell elements to 3.
+    #temp def readprop(self,file):
+    #temp     """
+    #temp     We need to override the generic property reader since this
+    #temp     one has to increase the sizes of dictionaries and lists
+    #temp     depending on the input values.
+    #temp     """
 
-        from pylith3d.KeywordValueParse import KeywordValueParse
-        lineparse = KeywordValueParse()
+    #temp     from pylith3d.KeywordValueParse import KeywordValueParse
+    #temp     lineparse = KeywordValueParse()
 
-        # print "Hellof from IsotropicLinearGenMaxwellViscoelastic.readprop!"
+    #temp     # print "Hellof from IsotropicLinearGenMaxwellViscoelastic.readprop!"
 
-        endMaterial = False
-        count = 0
-        while not endMaterial:
-            line=file.readline()
-            if not line: break
-            keyvals = lineparse.parseline(line)
-            if count == 0:
-                if keyvals[0] != "numberMaxwellElements":
-                    raise ValueError, "First entry for this material type must be numberMaxwellElements"
-                else:
-                    numberModels = keyvals[1]
-                    self.numberProperties += 2*numberModels
-                    newModels = 1
-                    while newModels < numberModels + 1:
-                        shear = "shearModulus" + str(newModels)
-                        viscosity = "viscosity" + str(newModels)
-                        self.propertyDict += {shear: None, viscosity: None}
-                        self.propertyPosition += [shear, viscosity]
-                        self.propertyList += [0.0, 0.0]
-                        newModels += 1
-            count += 1
-            if keyvals[3]:
-                exec keyvals[0] + '=' + `keyvals[1]`
-        for propertyIndex in range(len(self.propertyPosition)):
-            self.propertyDict[self.propertyPosition[propertyIndex]] = eval(self.propertyPosition[propertyIndex])
-            self.propertyList[propertyIndex] = self.propertyDict[self.propertyPosition[propertyIndex]]
+    #temp     endMaterial = False
+    #temp     count = 0
+    #temp     while not endMaterial:
+    #temp         line=file.readline()
+    #temp         if not line: break
+    #temp         keyvals = lineparse.parseline(line)
+    #temp         if count == 0:
+    #temp             if keyvals[0] != "numberMaxwellElements":
+    #temp                 raise ValueError, "First entry for this material type must be numberMaxwellElements"
+    #temp             else:
+    #temp                 numberModels = keyvals[1]
+    #temp                 self.numberProperties += 2*numberModels
+    #temp                 newModels = 1
+    #temp                 while newModels < numberModels + 1:
+    #temp                     shear = "shearModulus" + str(newModels)
+    #temp                     viscosity = "viscosity" + str(newModels)
+    #temp                     self.propertyDict += {shear: None, viscosity: None}
+    #temp                     self.propertyPosition += [shear, viscosity]
+    #temp                     self.propertyList += [0.0, 0.0]
+    #temp                     newModels += 1
+    #temp         count += 1
+    #temp         if keyvals[3]:
+    #temp             exec keyvals[0] + '=' + `keyvals[1]`
+    #temp     for propertyIndex in range(len(self.propertyPosition)):
+    #temp         self.propertyDict[self.propertyPosition[propertyIndex]] = eval(self.propertyPosition[propertyIndex])
+    #temp         self.propertyList[propertyIndex] = self.propertyDict[self.propertyPosition[propertyIndex]]
 
-        test = None in self.propertyDict.values()
-        if test:
-            position = self.propertyDict.values().index(None)
-            noneKey = self.propertyDict.keys()[position]
-            raise ValueError, "No value assigned for property: %r" % noneKey
+    #temp     test = None in self.propertyDict.values()
+    #temp     if test:
+    #temp         position = self.propertyDict.values().index(None)
+    #temp         noneKey = self.propertyDict.keys()[position]
+    #temp         raise ValueError, "No value assigned for property: %r" % noneKey
 
-        return
+    #temp     return
                 
         
     def __init__(self):
         # print "Hello from IsotropicLinearGenMaxwellViscoelastic.__init__!"
         # print ""
         self.materialModel = 7
-        self.numberProperties = 5
+        self.numberProperties = 9
+        self.numberStateVariables = 15
         # This model starts with no Maxwell elements defined.
         # They are added as the material properties file is read.
+        # NOTE: ** I have temporarily changed this behavior to allow exactly 3 Maxwell models.
         self.propertyDict = {'density': None,
-                             'numberMaxwellElements': None,
-                             'bulkModulus': None,
-                             'shearModulus': None,
-                             'shearModulusInfinity': None}
+                             'youngsModulus': None,
+                             'poissonsRatio': None,
+                             'shearRatio1': None,
+                             'viscosity1': None,
+                             'shearRatio2': None,
+                             'viscosity2': None,
+                             'shearRatio3': None,
+                             'viscosity3': None}
         self.propertyPosition = ['density',
-                                 'numberMaxwellElements',
-                                 'bulkModulus',
-                                 'shearModulus',
-                                 'shearModulusInfinity']
+                                 'youngsModulus',
+                                 'poissonsRatio',
+                                 'shearRatio1',
+                                 'viscosity1',
+                                 'shearRatio2',
+                                 'viscosity2',
+                                 'shearRatio3',
+                                 'viscosity3']
         self.propertyList = [0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
                              0.0,
                              0.0,
                              0.0,
