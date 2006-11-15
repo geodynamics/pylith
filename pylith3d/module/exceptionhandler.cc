@@ -83,6 +83,7 @@ exceptionhandler(const int errorcode,
     case 113: exception = PyExc_ValueError; format = "%s: Zero or negative jacobian for element."; break;
     case 114: exception = PyExc_ValueError; format = "%s: Initial bracketing values are identical."; break;
     case 115: exception = PyExc_ValueError; format = "%s: Root is not initially bracketed."; break;
+    case 116: exception = PyExc_ValueError; format = "%s: Invalid set of shear ratios."; break;
     // MemoryErrors
     case 300: exception = PyExc_MemoryError; format = "%s: Insufficient memory assigned."; break;
     // binary I/O
