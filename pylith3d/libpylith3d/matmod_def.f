@@ -125,9 +125,18 @@ c
       infmatmod(5,6) = ione
       infmatmod(6,6) = 6
 c
+c...  Definition for generalized linear Maxwell viscoelastic material
+c
+      infmatmod(1,7) = ione
+      infmatmod(2,7) = 15
+      infmatmod(3,7) = 9
+      infmatmod(4,7) = ione
+      infmatmod(5,7) = izero
+      infmatmod(6,7) = 6
+c
 c...  Dummy definitions for remaining materials
 c
-      do i=7,nmatmodmax
+      do i=8,nmatmodmax
         do j=2,6
           infmatmod(j,i)=infmatmod(j,5)
         end do
