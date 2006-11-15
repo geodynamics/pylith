@@ -22,6 +22,7 @@ nobase_pyexec_PYTHON = \
 	pylith3d/Pylith3d_setup.py \
 	pylith3d/MaterialModel/__init__.py \
 	pylith3d/MaterialModel/IsotropicLinearElastic.py \
+	pylith3d/MaterialModel/IsotropicLinearGenMaxwellViscoelastic.py \
 	pylith3d/MaterialModel/IsotropicLinearMaxwellViscoelastic.py \
 	pylith3d/MaterialModel/IsotropicPowerLawMaxwellViscoelastic.py \
 	pylith3d/MaterialModel/MaterialModel.py \
