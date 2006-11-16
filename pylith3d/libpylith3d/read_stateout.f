@@ -36,7 +36,7 @@ c        to output.  It is assumed that the same set of variables are
 c        desired for both the elastic and time-dependent solutions.
 c
 c     The istatout array specifies output options for each individual
-c     state variable.  At present there are a maximum of 24 possible
+c     state variable.  At present there are a maximum of 30 possible
 c     state variables, and this number may increase with the addition
 c     of new material models.  There are three types of state variable
 c     output:
