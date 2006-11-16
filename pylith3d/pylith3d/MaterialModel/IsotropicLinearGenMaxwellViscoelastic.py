@@ -101,7 +101,7 @@ class IsotropicLinearGenMaxwellViscoelastic(MaterialModel):
         # print ""
         self.materialModel = 7
         self.numberProperties = 9
-        self.numberStateVariables = 15
+        self.numberStateVariables = 30
         # This model starts with no Maxwell elements defined.
         # They are added as the material properties file is read.
         # NOTE: ** I have temporarily changed this behavior to allow exactly 3 Maxwell models.
