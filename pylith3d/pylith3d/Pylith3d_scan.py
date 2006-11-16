@@ -366,7 +366,7 @@ class Pylith3d_scan(Component):
 
         # Invariant parameters related to material model
         self._maxMaterialModels = 20
-        self._maxStateVariables = 24
+        self._maxStateVariables = 30
         self._maxState0Variables = 6
         self._pointerToMaterialModelInfo = pylith3d.allocateInt(
             6*self._maxMaterialModels)
