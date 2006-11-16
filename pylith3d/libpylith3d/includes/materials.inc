@@ -30,15 +30,14 @@ c
 c...  materials.inc:  A header that defines the maximum number
 c     of material models and state variables.
 c     At present, the maximum number of material models is 20 and the
-c     maximum number of state variables is 24 (6 components each of
-c     stress, strain, viscous strain, and plastic strain).
+c     maximum number of state variables is 30.
 c    
 c     This header should be included before any subroutine arguments,
 c     as the parameters will generally be used to dimension the
 c     arguments.
 c
       integer nmatmodmax,nstatesmax
-      parameter(nmatmodmax=20,nstatesmax=24)
+      parameter(nmatmodmax=20,nstatesmax=30)
 c
 c version
 c $Id: materials.inc,v 1.2 2005/03/25 01:30:05 willic3 Exp $

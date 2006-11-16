@@ -32,7 +32,7 @@ c
 c       Model number:                      7
 c       Model name:                        IsotropicLinearGenMaxwellViscoelastic
 c       Number material properties:        9
-c       Number state variables:            15
+c       Number state variables:            30
 c       Tangent matrix varies with state:  True
 c       Material properties:               Density
 c                                          Young's Modulus
@@ -91,14 +91,14 @@ c
       integer i
       double precision sfrac
 c
-cdebug      write(6,*) "Hello from mat_prt_5_f!"
+cdebug      write(6,*) "Hello from mat_prt_7_f!"
 c
       ierr=0
       modelname="Isotropic Linear Generalized Maxwell Viscoelastic"
       sfrac=prop(4)+prop(6)+prop(8)
       if(sfrac.lt.0.0d0.or.sfrac.gt.1.0d0) then
         ierr=116
-        errstrng="mat_prt_5"
+        errstrng="mat_prt_7"
         return
       end if
 c
@@ -202,7 +202,12 @@ c     total stress should be copied to scur.
 c
 c     state(1:6)   = Cauchy stress
 c     state(7:12)  = linear strain
-c     state(13:15) = viscous state variable
+c     state(13:18) = dimensionless viscous deviatoric strains for
+c                    element 1
+c     state(19:24) = dimensionless viscous deviatoric strains for
+c                    element 2
+c     state(25:30) = dimensionless viscous deviatoric strains for
+c                    element 3
 c
 c     The state0 array contains initial stresses.
 c
@@ -233,7 +238,7 @@ c
       sfrac=prop(4)+prop(6)+prop(8)
       if(sfrac.lt.0.0d0.or.sfrac.gt.1.0d0) then
         ierr=116
-        errstrng="mat_prt_5"
+        errstrng="elas_strs_7"
         return
       end if
 c
@@ -364,15 +369,20 @@ c
       sfrac=prop(4)+prop(6)+prop(8)
       if(sfrac.lt.0.0d0.or.sfrac.gt.1.0d0) then
         ierr=116
-        errstrng="mat_prt_5"
+        errstrng="td_matinit_7"
         return
       end if
+c
+c...  get material properties
 c
       call fill(dmat,zero,nddmat)
       e=prop(2)
       pr=prop(3)
       rmu=half*e/(one+pr)
       bulkm=third*e/(one-two*pr)
+c
+c...  compute Prony series term
+c
       frac0=one-sfrac
       shfac=frac0
       tmax=big
@@ -384,6 +394,9 @@ c
           shfac=shfac+rmue*compdq(deltp,vise,rmue)
         end if
       end do
+c
+c...  compute stress-strain matrix
+c
       shfac=third*rmu*shfac
       dmat(iddmat(1,1))=bulkm+two*shfac
       dmat(iddmat(2,2))=dmat(iddmat(1,1))
@@ -430,16 +443,79 @@ c
       include "rgiter_dim.inc"
       include "ntimdat_dim.inc"
 c
+c...  external functions
+c
+      double precision compdq
+      external compdq
+c
+c...  local variables
+c
+      integer i
+      double precision sfrac,e,pr,rmu,bulkm,rmue,vise,frac0,shfac
+      double precision etracetdt,emeantddt,smeantdt,sdevtdt,dq(3),qt(3)
+      double precision rtime(3)
+c
 c...  included variable definitions
 c
       include "rtimdat_def.inc"
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-c...  return error code, as this material is not yet defined
+cdebug      write(6,*) "Hello from td_strs_7_f!"
 c
-      ierr=101
-      errstrng="td_strs_7"
+      ierr=0
+      sfrac=prop(4)+prop(6)+prop(8)
+      if(sfrac.lt.0.0d0.or.sfrac.gt.1.0d0) then
+        ierr=116
+        errstrng="td_strs_5"
+        return
+      end if
+c
+c...  define material properties and dilatational stress
+c
+      e=prop(2)
+      pr=prop(3)
+      rmu=half*e/(one+pr)
+      bulkm=third*e/(one-two*pr)
+      etracetdt=ee(1)+ee(2)+ee(3)
+      emeantdt=third*etracetdt
+      smeantdt=bulkm*(ee(1)+ee(2)+ee(3))
+      emeant=third*(state(7)+state(8)+state(9))
+c
+c...  compute Prony series terms
+c
+      frac0=one-sfrac
+      shfac=frac0
+      tmax=big
+      do i=1,3
+        rmue=prop(2*(i-1)+4)
+        vise=prop(2*(i-1)+5)
+        rtime(i)=zero
+        if(rmue.ne.zero) then
+          rtime(i)=vise/rmue
+          tmax=min(tmax,rtime(i))
+          dstate(i+12)=qt(i)+compdq(deltp,vise,rmue)
+          qtdt(i)=rmue*dstate(i+12)
+        end if
+      end do
+      shfac=two*rmu*shfac
+c
+c...  compute new stresses and store stress and strain values in dstate
+c
+      do i=1,nstr
+        edevtdt=eng(i)*ee(i)-diag(i)*emeantdt
+        edevt=eng(i)*state(i+6)-diag(i)*emeant
+        deltae=edevtdt-edevt
+        sdevtdt=frac0*edevtdt
+        do j=1,3
+          rmue=prop(2*(j-1)+4)
+          vise=prop(2*(j-1)+5)
+          if(rmue.ne.zero) then
+            qtdt=state(12+nstr*(j-1)+i)*exp(-deltp/rtime(j))+
+     &       dq(j)*deltae
+          qt(i)=state(i+12)*exp(-deltp/rtime)
+          dstate(i+12)=qt(i)+compdq(deltp,vise,rmue)
+          qtdt(i)=rmue*dstate(i+12)
 c
       return
       end

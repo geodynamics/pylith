@@ -329,6 +329,7 @@ c
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
+          write(6,*) "tminmax:  ",tminmax
         else
           call stress_drv(
      &     bintern,neq,                                                 ! force
@@ -343,6 +344,7 @@ c
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
+          write(6,*) "tminmax:  ",tminmax
         end if
         if(ierr.ne.izero) return
 c
