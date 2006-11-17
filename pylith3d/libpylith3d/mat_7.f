@@ -355,6 +355,7 @@ c
 c
 c...  local variables
 c
+      integer i
       double precision sfrac,frac0,e,pr,rmu,rmue,vise,bulkm,sfac,shfac
 c
 c...  included variable definitions
@@ -448,12 +449,18 @@ c
       double precision compdq
       external compdq
 c
+c...  local constants
+c
+      double precision diag(6),eng(6)
+      data diag/one,one,one,zero,zero,zero/
+      data eng/one,one,one,half,half,half/
+c
 c...  local variables
 c
-      integer i
-      double precision sfrac,e,pr,rmu,bulkm,rmue,vise,frac0,shfac
-      double precision etracetdt,emeantddt,smeantdt,sdevtdt,dq(3),qt(3)
-      double precision rtime(3)
+      integer i,j,ind
+      double precision sfrac,e,pr,rmu,bulkm,rmue,vise,frac0
+      double precision etracetdt,emeantdt,smeantdt,sdevtdt,dq(3)
+      double precision edevtdt,edevt,emeant,deltae,rtime(3)
 c
 c...  included variable definitions
 c
@@ -465,7 +472,7 @@ cdebug      write(6,*) "Hello from td_strs_7_f!"
 c
       ierr=0
       sfrac=prop(4)+prop(6)+prop(8)
-      if(sfrac.lt.0.0d0.or.sfrac.gt.1.0d0) then
+      if(sfrac.lt.zero.or.sfrac.gt.one) then
         ierr=116
         errstrng="td_strs_5"
         return
@@ -479,13 +486,12 @@ c
       bulkm=third*e/(one-two*pr)
       etracetdt=ee(1)+ee(2)+ee(3)
       emeantdt=third*etracetdt
-      smeantdt=bulkm*(ee(1)+ee(2)+ee(3))
+      smeantdt=bulkm*etracetdt
       emeant=third*(state(7)+state(8)+state(9))
 c
 c...  compute Prony series terms
 c
       frac0=one-sfrac
-      shfac=frac0
       tmax=big
       do i=1,3
         rmue=prop(2*(i-1)+4)
@@ -494,11 +500,9 @@ c
         if(rmue.ne.zero) then
           rtime(i)=vise/rmue
           tmax=min(tmax,rtime(i))
-          dstate(i+12)=qt(i)+compdq(deltp,vise,rmue)
-          qtdt(i)=rmue*dstate(i+12)
+          dq(i)=compdq(deltp,vise,rmue)
         end if
       end do
-      shfac=two*rmu*shfac
 c
 c...  compute new stresses and store stress and strain values in dstate
 c
@@ -511,11 +515,16 @@ c
           rmue=prop(2*(j-1)+4)
           vise=prop(2*(j-1)+5)
           if(rmue.ne.zero) then
-            qtdt=state(12+nstr*(j-1)+i)*exp(-deltp/rtime(j))+
-     &       dq(j)*deltae
-          qt(i)=state(i+12)*exp(-deltp/rtime)
-          dstate(i+12)=qt(i)+compdq(deltp,vise,rmue)
-          qtdt(i)=rmue*dstate(i+12)
+            ind=i+12+nstr*(j-1)
+            dstate(ind)=state(ind)*exp(-deltp/rtime(j))+dq(j)*deltae
+            sdevtdt=sdevtdt+rmue*dstate(ind)
+          end if
+        end do
+        sdevtdt=two*rmu*sdevtdt
+        dstate(i)=smeantdt+sdevtdt+state0(i)
+        dstate(i+6)=ee(i)
+        scur(i)=dstate(i)
+      end do
 c
       return
       end
@@ -526,9 +535,7 @@ c
      & ierr,errstrng)
 c
 c...  subroutine to compute the current stress and updated material
-c     matrix for the time-dependent solution.  Since this is a purely
-c     elastic material, the material matrix should not change unless the
-c     material properties have changed for a time step.
+c     matrix for the time-dependent solution.
 c     Note that only the upper triangle is used (or available), as
 c     dmat is assumed to always be symmetric.
 c
@@ -561,10 +568,14 @@ c
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-c...  return error code, as this material is not yet defined
+cdebug      write(6,*) "Hello from td_strs_mat_7_f!
 c
-      ierr=101
-      errstrng="td_strs_mat_7"
+      call td_matinit_7(state,dstate,state0,dmat,prop,rtimdat,rgiter,
+     & ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,errstrng)
+      if(ierr.ne.izero) return
+      call td_strs_7(state,dstate,state0,ee,scur,dmat,prop,rtimdat,
+     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & errstrng)
 c
       return
       end
@@ -596,7 +607,9 @@ c
 c
 c...  local variables
 c
-      double precision ptmp(10)
+      double precision ptmp(20)
+c
+cdebug      write(6,*) "Hello from prestr_mat_7_f!"
 c
       call dcopy(nprop,prop,ione,ptmp,ione)
       if(ipauto.eq.ione) then
@@ -624,6 +637,10 @@ c
       integer nstate
       double precision state(nstate),dstate(nstate),sout(3*nstatesmax)
 c
+cdebug      write(6,*) "Hello from get_state_7_f!"
+c
+      call dcopy(nstate,state,ione,sout,ione)
+      call dcopy(nstate,dstate,ione,sout(nstatesmax+ione),ione)
       return
       end
 c
@@ -651,9 +668,13 @@ c
 c
 c...  local data
 c
+      double precision sub
+      data sub/-1.0d0/
 c
 c...  local variables
 c
+      call daxpy(nstate,sub,state,ione,dstate,ione)
+      call daxpy(nstate,one,dstate,ione,state,ione)
 c
       return
       end
