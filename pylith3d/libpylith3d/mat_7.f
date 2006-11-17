@@ -227,10 +227,17 @@ c
       double precision dmat(nddmat),tmax
       character errstrng*(*)
 c
+c...  local constants
+c
+      double precision diag(6),eng(6)
+      data diag/one,one,one,zero,zero,zero/
+      data eng/one,one,one,half,half,half/
+c
 c...  local variables
 c
       integer i
-      double precision sfrac,e,pr,vise,rmu,rmue,tmaxe
+      double precision sfrac,e,pr,vise,rmu,rmue,tmaxe,emean
+      double precision edev(6)
 c
 cdebug      write(6,*) "Hello from elas_strs_7_f!"
 c
@@ -249,6 +256,16 @@ c
       call dcopy(nstr,state0,ione,state,ione)
       call dspmv("u",nstr,one,dmat,state(7),ione,one,state,ione)
       call dcopy(nstr,state,ione,scur,ione)
+c
+c...  compute strain quantities to initialize viscous strain
+c
+      emean=third*(ee(1)+ee(2)+ee(3))
+      do i=1,nstr
+        edev(i)=ee(i)*eng(i)-emean*diag(i)
+      end do
+      do i=1,3
+        call dcopy(nstr,edev,ione,state(nstr*(i-1)+13),ione)
+      end do
 c
 c...  compute Maxwell time for current stress state
 c
@@ -357,6 +374,7 @@ c...  local variables
 c
       integer i
       double precision sfrac,frac0,e,pr,rmu,rmue,vise,bulkm,sfac,shfac
+      double precision rmut
 c
 c...  included variable definitions
 c
@@ -389,10 +407,11 @@ c
       tmax=big
       do i=1,3
         rmue=prop(2*(i-1)+4)
+        rmut=rmu*rmue
         vise=prop(2*(i-1)+5)
         if(rmue.ne.zero) then
-          tmax=min(tmax,vise/rmue)
-          shfac=shfac+rmue*compdq(deltp,vise,rmue)
+          tmax=min(tmax,vise/rmut)
+          shfac=shfac+rmue*compdq(deltp,vise,rmut)
         end if
       end do
 c
@@ -458,7 +477,7 @@ c
 c...  local variables
 c
       integer i,j,ind
-      double precision sfrac,e,pr,rmu,bulkm,rmue,vise,frac0
+      double precision sfrac,e,pr,rmu,bulkm,rmue,rmut,vise,frac0
       double precision etracetdt,emeantdt,smeantdt,sdevtdt,dq(3)
       double precision edevtdt,edevt,emeant,deltae,rtime(3)
 c
@@ -495,12 +514,13 @@ c
       tmax=big
       do i=1,3
         rmue=prop(2*(i-1)+4)
+        rmut=rmu*rmue
         vise=prop(2*(i-1)+5)
         rtime(i)=zero
         if(rmue.ne.zero) then
-          rtime(i)=vise/rmue
+          rtime(i)=vise/rmut
           tmax=min(tmax,rtime(i))
-          dq(i)=compdq(deltp,vise,rmue)
+          dq(i)=compdq(deltp,vise,rmut)
         end if
       end do
 c
@@ -521,7 +541,7 @@ c
           end if
         end do
         sdevtdt=two*rmu*sdevtdt
-        dstate(i)=smeantdt+sdevtdt+state0(i)
+        dstate(i)=diag(i)*smeantdt+sdevtdt+state0(i)
         dstate(i+6)=ee(i)
         scur(i)=dstate(i)
       end do
