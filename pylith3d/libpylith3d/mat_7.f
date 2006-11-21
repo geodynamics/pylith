@@ -418,13 +418,13 @@ c
 c...  compute stress-strain matrix
 c
       shfac=third*rmu*shfac
-      dmat(iddmat(1,1))=bulkm+two*shfac
+      dmat(iddmat(1,1))=bulkm+four*shfac
       dmat(iddmat(2,2))=dmat(iddmat(1,1))
       dmat(iddmat(3,3))=dmat(iddmat(1,1))
-      dmat(iddmat(1,2))=bulkm-shfac
+      dmat(iddmat(1,2))=bulkm-two*shfac
       dmat(iddmat(1,3))=dmat(iddmat(1,2))
       dmat(iddmat(2,3))=dmat(iddmat(1,2))
-      dmat(iddmat(4,4))=half*three*shfac
+      dmat(iddmat(4,4))=three*shfac
       dmat(iddmat(5,5))=dmat(iddmat(4,4))
       dmat(iddmat(6,6))=dmat(iddmat(4,4))
       return
