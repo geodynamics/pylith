@@ -276,13 +276,14 @@ c
       do i=1,3
         rmue=prop(2*(i-1)+4)*rmu
         vise=prop(2*(i-1)+5)
-        if(rmue.ne.zero) tmax=min(tmax,vise/rmue)
+ctest        if(rmue.ne.zero) tmax=min(tmax,two*vise/rmue)
+        if(rmue.ne.zero) tmax=min(tmax,two*vise/rmue)
       end do
       return
       end
 c
 c
-      function compdq(deltp,vis,rmu)
+      function compdq(deltp,vis,tau)
 c
 c...  function to compute the viscous state variable increment delta-q.
 c
@@ -298,7 +299,7 @@ c
 c
 c...  subroutine arguments
 c
-      double precision compdq,deltp,vis,rmu
+      double precision compdq,deltp,vis,tau
 c
 c...  intrinsic functions
 c
@@ -307,11 +308,10 @@ c
 c...  local variables
 c
       integer i
-      double precision tau,fsign,fac,frac
+      double precision fsign,fac,frac
 c
       compdq=zero
-      if(rmu.eq.zero) return
-      tau=vis/rmu
+      if(tau.eq.zero) return
       if(tau.lt.tfrac*deltp) then
         fsign=one
         fac=one
@@ -374,7 +374,7 @@ c...  local variables
 c
       integer i
       double precision sfrac,frac0,e,pr,rmu,rmue,vise,bulkm,sfac,shfac
-      double precision rmut
+      double precision rmut,tau
 c
 c...  included variable definitions
 c
@@ -409,9 +409,11 @@ c
         rmue=prop(2*(i-1)+4)
         rmut=rmu*rmue
         vise=prop(2*(i-1)+5)
+        tau=zero
         if(rmue.ne.zero) then
-          tmax=min(tmax,vise/rmut)
-          shfac=shfac+rmue*compdq(deltp,vise,rmut)
+          tau=two*vise/rmut
+          tmax=min(tmax,tau)
+          shfac=shfac+rmue*compdq(deltp,vise,tau)
         end if
       end do
 c
@@ -518,9 +520,9 @@ c
         vise=prop(2*(i-1)+5)
         rtime(i)=zero
         if(rmue.ne.zero) then
-          rtime(i)=vise/rmut
+          rtime(i)=two*vise/rmut
           tmax=min(tmax,rtime(i))
-          dq(i)=compdq(deltp,vise,rmut)
+          dq(i)=compdq(deltp,vise,rtime(i))
         end if
       end do
 c
@@ -533,7 +535,6 @@ c
         sdevtdt=frac0*edevtdt
         do j=1,3
           rmue=prop(2*(j-1)+4)
-          vise=prop(2*(j-1)+5)
           if(rmue.ne.zero) then
             ind=i+12+nstr*(j-1)
             dstate(ind)=state(ind)*exp(-deltp/rtime(j))+dq(j)*deltae
