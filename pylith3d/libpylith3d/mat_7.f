@@ -276,14 +276,13 @@ c
       do i=1,3
         rmue=prop(2*(i-1)+4)*rmu
         vise=prop(2*(i-1)+5)
-ctest        if(rmue.ne.zero) tmax=min(tmax,two*vise/rmue)
-        if(rmue.ne.zero) tmax=min(tmax,two*vise/rmue)
+        if(rmue.ne.zero) tmax=min(tmax,vise/rmue)
       end do
       return
       end
 c
 c
-      function compdq(deltp,vis,tau)
+      function compdq(deltp,tau)
 c
 c...  function to compute the viscous state variable increment delta-q.
 c
@@ -299,7 +298,7 @@ c
 c
 c...  subroutine arguments
 c
-      double precision compdq,deltp,vis,tau
+      double precision compdq,deltp,tau
 c
 c...  intrinsic functions
 c
@@ -411,9 +410,9 @@ c
         vise=prop(2*(i-1)+5)
         tau=zero
         if(rmue.ne.zero) then
-          tau=two*vise/rmut
+          tau=vise/rmut
           tmax=min(tmax,tau)
-          shfac=shfac+rmue*compdq(deltp,vise,tau)
+          shfac=shfac+rmue*compdq(deltp,tau)
         end if
       end do
 c
@@ -520,9 +519,9 @@ c
         vise=prop(2*(i-1)+5)
         rtime(i)=zero
         if(rmue.ne.zero) then
-          rtime(i)=two*vise/rmut
+          rtime(i)=vise/rmut
           tmax=min(tmax,rtime(i))
-          dq(i)=compdq(deltp,vise,rtime(i))
+          dq(i)=compdq(deltp,rtime(i))
         end if
       end do
 c
