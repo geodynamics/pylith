@@ -282,7 +282,7 @@ c
       end
 c
 c
-      function compdq(deltp,tau)
+      function compdq_7(deltp,tau)
 c
 c...  function to compute the viscous state variable increment delta-q.
 c
@@ -298,7 +298,7 @@ c
 c
 c...  subroutine arguments
 c
-      double precision compdq,deltp,tau
+      double precision compdq_7,deltp,tau
 c
 c...  intrinsic functions
 c
@@ -309,21 +309,21 @@ c
       integer i
       double precision fsign,fac,frac
 c
-      compdq=zero
+      compdq_7=zero
       if(tau.eq.zero) return
       if(tau.lt.tfrac*deltp) then
         fsign=one
         fac=one
         frac=one
-        compdq=one
+        compdq_7=one
         do i=2,nterms
           fac=fac*dble(i)
           fsign=-one*fsign
           frac=frac*(deltp/tau)
-          compdq=compdq+fsign*frac/fac
+          compdq_7=compdq_7+fsign*frac/fac
         end do
       else
-        compdq=tau*(one-exp(-deltp/tau))/deltp
+        compdq_7=tau*(one-exp(-deltp/tau))/deltp
       end if
       return
       end
@@ -366,8 +366,8 @@ c
 c
 c...  external functions
 c
-      double precision compdq
-      external compdq
+      double precision compdq_7
+      external compdq_7
 c
 c...  local variables
 c
@@ -412,7 +412,7 @@ c
         if(rmue.ne.zero) then
           tau=vise/rmut
           tmax=min(tmax,tau)
-          shfac=shfac+rmue*compdq(deltp,tau)
+          shfac=shfac+rmue*compdq_7(deltp,tau)
         end if
       end do
 c
@@ -466,8 +466,8 @@ c
 c
 c...  external functions
 c
-      double precision compdq
-      external compdq
+      double precision compdq_7
+      external compdq_7
 c
 c...  local constants
 c
@@ -521,7 +521,7 @@ c
         if(rmue.ne.zero) then
           rtime(i)=vise/rmut
           tmax=min(tmax,rtime(i))
-          dq(i)=compdq(deltp,rtime(i))
+          dq(i)=compdq_7(deltp,rtime(i))
         end if
       end do
 c
