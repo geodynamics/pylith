@@ -47,8 +47,17 @@ class TestMeshIOAscii(unittest.TestCase):
     """
     Test write() and read().
     """
+    filename = "mesh.txt"
 
-    self.assertEqual(0,1)
+    import pylith.meshio.testmeshio as testmodule
+    mesh = testmodule.createMesh()
+  
+    iohandler = MeshIOAscii()
+    iohandler.filename = filename
+    iohandler.write(mesh)
+    iohandler.read(mesh)
+
+    testmodule.checkVals(mesh)
     return
 
 

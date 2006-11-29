@@ -19,11 +19,51 @@
 #include "data/MeshData.hh"
 
 // ----------------------------------------------------------------------
+// Get simple mesh for testing I/O.
+ALE::Obj<ALE::Mesh>*
+pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
+{ // createMesh
+  typedef ALE::Mesh::topology_type topology_type;
+  typedef topology_type::sieve_type sieve_type;
+
+  // buildTopology() requires zero based index
+  assert(true == data.useIndexZero);
+
+  const int cellDim = data.cellDim;
+  const int numCorners = data.numCorners;
+  const int spaceDim = data.spaceDim;
+  const int numVertices = data.numVertices;
+  const int numCells = data.numCells;
+  const double* vertCoords = data.vertices;
+  const int* cells = data.cells;
+  CPPUNIT_ASSERT(0 != vertCoords);
+  CPPUNIT_ASSERT(0 != cells);
+
+  ALE::Obj<ALE::Mesh>* meshHandle = new ALE::Obj<ALE::Mesh>;
+  *meshHandle = new ALE::Mesh(PETSC_COMM_WORLD, cellDim);
+  ALE::Obj<ALE::Mesh> mesh = *meshHandle;
+  ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
+  ALE::Obj<topology_type> topology = new topology_type(mesh->comm());
+
+  const bool interpolate = false;
+  ALE::New::SieveBuilder<sieve_type>::buildTopology(sieve, cellDim, numCells,
+	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
+  sieve->stratify();
+  topology->setPatch(0, sieve);
+  topology->stratify();
+  mesh->setTopology(topology);
+  ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
+		    mesh->getRealSection("coordinates"), spaceDim, vertCoords);
+
+  return meshHandle;
+} // createMesh
+
+// ----------------------------------------------------------------------
 // Check values in mesh against data.
 void
-pylith::meshio::TestMeshIO::_checkVals(const ALE::Obj<ALE::Mesh>& mesh,
-				       const MeshData& data)
-{ // _checkVals
+pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<ALE::Mesh>& mesh,
+				      const MeshData& data)
+{ // checkVals
   const Mesh::real_section_type::patch_type patch = 0;
   const ALE::Obj<topology_type>& topology = mesh->getTopology();
 
@@ -83,6 +123,6 @@ pylith::meshio::TestMeshIO::_checkVals(const ALE::Obj<ALE::Mesh>& mesh,
   } // for
 
   // :TODO: Check groups of vertices
-} // _checkVals
+} // checkVals
 
 // End of file 

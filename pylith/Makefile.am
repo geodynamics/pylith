@@ -19,6 +19,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/Field.py \
 	feassemble/Integrator.py \
 	feassemble/IntegratorElasticity.py \
+	feassemble/IntegratorInertia.py \
 	feassemble/Quadrature.py \
 	feassemble/ReferenceCell.py \
 	materials/__init__.py \
@@ -46,7 +47,5 @@ nobase_pkgpyexec_PYTHON = \
 	utils/importing.py \
 	utils/testarray.py
 
-# version
-# $Id$
 
 # End of file 

@@ -18,6 +18,9 @@
 #include "pylith/feassemble/Quadrature2D.hh"
 #include "pylith/feassemble/Quadrature2Din3D.hh"
 #include "pylith/feassemble/Quadrature3D.hh"
+
+#include "pylith/feassemble/Integrator.hh"
+#include "pylith/feassemble/IntegratorInertia.hh"
 #}header
 
 # ----------------------------------------------------------------------
@@ -262,6 +265,49 @@ cdef class Quadrature3D(Quadrature):
     self.thisptr = Quadrature3D_constructor()
     self.handle = self._createHandle()
     return
+
+
+# ----------------------------------------------------------------------
+cdef class Integrator:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_feassemble_integrator"
+    return
+
+
+  def _createHandle(self):
+    """Wrap pointer to C++ object in PyCObject."""
+    # create shim for destructor
+    #embed{ void Integrator_destructor(void* pObj)
+    pylith::feassemble::Integrator* pQ =
+      (pylith::feassemble::Integrator*) pObj;
+    delete pQ;
+    #}embed
+    return PyCObject_FromVoidPtr(self.thisptr, Integrator_destructor)
+
+
+  property quadrature:
+    def __set__(self, q):
+      """Set quadrature."""
+      # create shim for method 'quadrature'
+      #embed{ void Integrator_quadrature_set(void* pObj, void* qObj)
+      pylith::feassemble::Quadrature* quadrature =
+        (pylith::feassemble::Quadrature*) qObj;
+      ((pylith::feassemble::Integrator*) pObj)->quadrature(quadrature);
+      #}embed
+      if not q.name == "pylith_feassemble_Quadrature":
+        raise TypeError, \
+              "Argument must be extension module type 'Quadrature'."
+      Integrator_quadrature_set(self.thisptr, ptrFromHandle(q))
 
 
 # End of file 

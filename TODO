@@ -4,10 +4,15 @@ MAIN PRIORITIES
    a. write()/read()
    b. checkVals()
 
+  Status: Implemented but not debugged. Problem with linking (may need
+  to rebuild PETSc).
+
 2. Finish implementing IntegratorInertia.
    a. Python object
    b. bindings
    c. unit tests at Python level
+
+  Status: Implemented a & b.
 
 3. Implement Inertia object (manager for integrating inertia over ALL patches)
    a. C++ object
