@@ -368,7 +368,7 @@ c
       if(rmu.ne.zero) then
         tau=vis/rmu
         tmax=min(tmax,tau)
-        shfac=shfac+compdq_5(deltp,tau)
+        shfac=compdq_5(deltp,tau)
       end if
 c
 c...  compute stress-strain matrix
