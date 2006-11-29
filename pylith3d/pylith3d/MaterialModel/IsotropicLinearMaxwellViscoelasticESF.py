@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-# 
-#  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 #  PyLith by Charles A. Williams, Brad Aagaard, and Matt Knepley
 #
@@ -25,24 +25,33 @@
 #  OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
 #  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-#  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
 
-# Modules to include.  This should probably include everything in this
-# directory.
+from pylith3d.MaterialModel.MaterialModel import MaterialModel
 
-__all__ = ["MaterialModel",
-	   "IsotropicLinearElastic",
-	   "IsotropicLinearMaxwellViscoelastic",
-	   "IsotropicLinearMaxwellViscoelasticESF",
-	   "IsotropicPowerLawMaxwellViscoelastic",
-	   "IsotropicLinearGenMaxwellViscoelastic"]
+class IsotropicLinearMaxwellViscoelasticESF(MaterialModel):
 
-def copyright():
-    return "pylith3d pyre module: Copyright (c) 1998-2003 California Institute of Technology";
-
+    def __init__(self):
+        # print "Hello from IsotropicLinearMaxwellViscoelasticESF.__init__!"
+        # print ""
+        self.materialModel = 8
+        self.numberProperties = 4
+        self.propertyDict = {'density': None,
+                             'youngsModulus': None,
+                             'poissonsRatio': None,
+                             'viscosity': None}
+        self.propertyPosition = ['density',
+                                 'youngsModulus',
+                                 'poissonsRatio',
+                                 'viscosity']
+        self.propertyList = [0.0,
+                             0.0,
+                             0.0,
+                             0.0]
+        return
 
 # version
-__id__ = "$Id: __init__.py,v 1.2 2004/08/12 16:53:24 willic3 Exp $"
+# $Id: IsotropicLinearMaxwellViscoelasticESF.py,v 1.2 2004/08/12 16:49:07 willic3 Exp $
 
-#  End of file 
+# End of file 
