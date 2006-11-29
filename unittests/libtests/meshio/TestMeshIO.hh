@@ -43,16 +43,24 @@ public :
   typedef ALE::Mesh::sieve_type sieve_type;
   typedef ALE::Mesh::topology_type topology_type;
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  /** Get simple mesh for testing I/O.
+   *
+   * @param data Mesh data
+   *
+   * @returns PETSc mesh
+   */
+  ALE::Obj<ALE::Mesh>* createMesh(const MeshData& data);
 
   /** Check values in mesh against data.
    *
    * @param mesh PETSc mesh
    * @param data Mesh data
    */
-  void _checkVals(const ALE::Obj<ALE::Mesh>& mesh,
-		  const MeshData& data);
+  void checkVals(const ALE::Obj<ALE::Mesh>& mesh,
+		 const MeshData& data);
 
 }; // class TestMeshIO
 

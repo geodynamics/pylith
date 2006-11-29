@@ -114,38 +114,19 @@ void
 pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
 						const char* filename)
 { // _testWriteRead
-  // buildTopology() requires zero based index
-  assert(true == data.useIndexZero);
-
-  // Build mesh
-  ALE::Obj<Mesh> meshOut = new Mesh(PETSC_COMM_WORLD, data.cellDim);
-  ALE::Obj<sieve_type> sieve = new sieve_type(meshOut->comm());
-  ALE::Obj<topology_type> topology = new topology_type(meshOut->comm());
-
-  const bool interpolate = false;
-  ALE::New::SieveBuilder<sieve_type>::buildTopology(
-			  sieve, data.cellDim, data.numCells, 
-			  const_cast<int*>(data.cells), 
-			  data.numVertices, interpolate, data.numCorners);
-  sieve->stratify();
-  topology->setPatch(0, sieve);
-  topology->stratify();
-  meshOut->setTopology(topology);
-  ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
-				      meshOut->getRealSection("coordinates"), 
-				      data.spaceDim, data.vertices);
+  ALE::Obj<Mesh>* meshOut = createMesh(data);
 
   // Write mesh
   MeshIOAscii iohandler;
   iohandler.filename(filename);
-  iohandler.write(&meshOut);
+  iohandler.write(meshOut);
 
   // Read mesh
   ALE::Obj<Mesh> meshIn;
   iohandler.read(&meshIn);
 
   // Make sure meshIn matches data
-  _checkVals(meshIn, data);
+  checkVals(meshIn, data);
 } // _testWriteRead
 
 // End of file 

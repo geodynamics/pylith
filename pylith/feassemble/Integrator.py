@@ -63,7 +63,7 @@ class Integrator(Component):
     """
     q = self.quadrature
     q.initialize()
-    self.cppHandle.quadrature(q.cppHandle)
+    self.cppHandle.quadrature = q.cppHandle
     return
   
   
