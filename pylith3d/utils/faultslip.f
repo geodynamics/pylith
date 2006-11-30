@@ -88,7 +88,7 @@ c
       do i=1,numnp
         read(ku,*) node,(field(j),j=1,nfields)
         do j=1,nsd
-          slip(j,i)=field(isfield(j))
+          slip(j,i)=sscale*field(isfield(j))
         end do
       end do
       close(ku)
