@@ -49,6 +49,7 @@ pylith::feassemble::IntegratorInertia::integrateAction(
 			      const ALE::Obj<real_section_type>& coordinates)
 { // integrateAction
   assert(0 != _quadrature);
+  assert(0 != _density.isNull());
 
   // Get information about section
   const topology_type::patch_type patch = 0;
@@ -82,22 +83,22 @@ pylith::feassemble::IntegratorInertia::integrateAction(
     const int numBasis = _quadrature->numCorners();
     const int spaceDim = _quadrature->spaceDim();
 
-    // :TODO: Get mass density at quadrature points from material database
-    // For now, hardwire mass density
-    const double density = 1.0;
+    // Restrict density from material database to quadrature points for this cell
+    const real_section_type::value_type* _density->restrict(patch, *cellIter);
+    // ALSO RUN tractest IN PARALLEL (PROBLEM WITH SURFACE MESH DISTRIBUTION) pylith-0.8/pylith3d/examples/lintet/tractest
 
     // Compute action for cell
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density;
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	const int iBlock = iBasis * spaceDim;
-	const double valI = wt*basis[iQ+iBasis];
-	for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	  const int jBlock = jBasis * spaceDim;
-	  const double val = valI * basis[iQ+jBasis];
-	  for (int iDim=0; iDim < spaceDim; ++iDim)
-	    _cellVector[iBlock+iDim] += val * fieldInCell[jBlock+iDim];
-	} // for
+        const int iBlock = iBasis * spaceDim;
+        const double valI = wt*basis[iQ+iBasis];
+        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+          const int jBlock = jBasis * spaceDim;
+          const double val = valI * basis[iQ+jBasis];
+          for (int iDim=0; iDim < spaceDim; ++iDim)
+            _cellVector[iBlock+iDim] += val * fieldInCell[jBlock+iDim];
+        } // for
       } // for
     } // for
     PetscErrorCode err = 

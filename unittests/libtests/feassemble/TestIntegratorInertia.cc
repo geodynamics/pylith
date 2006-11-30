@@ -60,6 +60,14 @@ pylith::feassemble::TestIntegratorInertia::_testIntegrateLumped(
   fieldOut->setFiberDimensionByDepth(patch, 0, fiberDim);
   fieldOut->allocate();
 
+  // Should read density from spatial database
+  const ALE::Obj<real_section_type>& density =
+    mesh->getRealSection("density");
+  density->setName("density");
+  density->setFiberDimensionByDepth(patch, 0, _quadrature->numQuadPts());
+  density->allocate();
+  integrator->setDensity(density);
+
   // Integrate action
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");

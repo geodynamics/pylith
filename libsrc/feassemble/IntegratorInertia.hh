@@ -86,6 +86,9 @@ public :
   void integrateLumped(const ALE::Obj<real_section_type>& fieldOut,
 		       const ALE::Obj<real_section_type>& coordinates);
 
+
+  void setDensity(const ALE::Obj<real_section_type>& density) {_density = density};
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
@@ -94,6 +97,8 @@ protected :
    * @param i Integrator to copy
    */
   IntegratorInertia(const IntegratorInertia& i);
+
+  ALE::Obj<real_section_type> _density;
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
