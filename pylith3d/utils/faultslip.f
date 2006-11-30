@@ -39,7 +39,7 @@ c
 c
 c...  filenames and unit numbers
 c
-      integer kti,kto,kp,kf,kso
+      integer kti,kto,kp,ku,kf,kso
       common/units/kti,kto,kp,ku,kf,kso
 c
 c...  local variables
@@ -91,7 +91,7 @@ c
           slip(j,i)=field(isfield(j))
         end do
       end do
-      
+      close(ku)
 c
 c...  fault definition files
 c
@@ -207,7 +207,7 @@ c
 c
 c...  unit numbers
 c
-      integer kti,kto,kp,kf,kso
+      integer kti,kto,kp,ku,kf,kso
       common/units/kti,kto,kp,ku,kf,kso
 c
 c...  local variables

@@ -1,0 +1,100 @@
+#
+#   Parameter file for use with program faultslip.
+#
+# **********************************************************************
+#
+#   Global information:
+#
+#    nblocks = number of blocks for this problem.
+#    nfaults = number of faults for this problem.
+#    cscale  = coordinate scaling factor for information from fault
+#              definition files.
+#    sscale  = fault slip scaling factor for slip specified in UCD file.
+#
+#   nblocks    nfaults    cscale    sscale
+#-----------------------------------------------------------------------
+       7         11        1.0d0     1.0d-2
+#-----------------------------------------------------------------------
+#
+#   UCD field info:
+#
+#     Specify which nodal fields contain entries for x-slip, y-slip,
+#     and z-slip.
+#
+#     xfield  = field specifying x-slip
+#     yfield  = field specifying y-slip
+#     zfield  = field specifying z-slip
+#
+#    xfield   yfield   zfield
+#-----------------------------------------------------------------------
+        3        4        5
+#-----------------------------------------------------------------------
+#
+#   Fault definition info:
+#
+#     For each 'fault' to be used, there must be an associated
+#     definition file.  These should be listed in order of priority.
+#     Nodes that lie on more than one fault will use the highest-listed
+#     definition.
+#
+#     In addition to the file describing the fault, additional fault
+#     definition info is required.  For each fault, a list of possible
+#     block definitions is required.  Again, the highest-listed block
+#     definition is the one that is used.
+#
+#     For each fault, we require the following info:
+#
+#     numdefs(i)   = number of fault definitions for this fault
+#     block1(j,i)  = fault-bounding block toward which the normal points
+#     block2(j,i)  = fault-bounding block from which the normal points
+#     history(j,i) = load history to be associated with this definition
+#     faultfile(i) = file containing fault definition info for this
+#                    fault
+#     j=1,numdefs(i),i=1,nfaults
+#
+#-----------------------------------------------------------------------
+        1
+        7            5            1
+"fault_15_07_05.flt_pylith"
+# Highest priority is boundary between blocks 7 and 5.
+        1
+        7            6            2
+"fault_19_07_06.flt_pylith"
+# Next highest priority is boundary between blocks 7 and 6.
+        1
+        6            5            3
+"fault_16_06_05.flt_pylith"
+# Next highest priority is boundary between blocks 6 and 5.
+        1
+        6            4            4
+"fault_13_06_04.flt_pylith"
+# Next highest priority is boundary between blocks 6 and 4.
+        1
+        5            4            5
+"fault_12_05_04.flt_pylith"
+# Next highest priority is boundary between blocks 5 and 4.
+        1
+        5            3            6
+"fault_26_05_03.flt_pylith"
+# Next highest priority is boundary between blocks 5 and 3.
+        1
+        4            3            7
+"fault_09_04_03.flt_pylith"
+# Next highest priority is boundary between blocks 4 and 3.
+        1
+        4            2            8
+"fault_06_04_02.flt_pylith"
+# Next highest priority is boundary between blocks 4 and 2.
+        1
+        3            2            9
+"fault_07_03_02.flt_pylith"
+# Next highest priority is boundary between blocks 3 and 2.
+        1
+        3            1           10
+"fault_03_03_01.flt_pylith"
+# Next highest priority is boundary between blocks 3 and 1.
+        1
+        3            1           11
+"fault_04_02_01.flt_pylith"
+# Lowest priority is boundary between blocks 2 and 1.
+#-----------------------------------------------------------------------

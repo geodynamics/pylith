@@ -6,6 +6,7 @@ bin_PROGRAMS = \
 	blockrot3 \
 	faultcalc \
 	faultcalc2 \
+	faultslip \
 	makeucd \
 	pylith2ucd \
 	readnetgen \
