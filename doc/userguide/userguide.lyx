@@ -8,6 +8,7 @@
 
 \let\myUrl\url
 \renewcommand{\url}[1]{(\myUrl{#1})}
+\newcommand\Prefix[3]{\vphantom{#3}#1#2#3}
 \end_preamble
 \language english
 \inputencoding latin1
@@ -194,7 +195,7 @@ preview false
 
 \end_inset
 
- 
+
 \begin_inset Include \input{license.lyx}
 preview false
 
