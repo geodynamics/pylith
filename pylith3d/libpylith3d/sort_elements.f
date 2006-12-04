@@ -85,7 +85,7 @@ c
 c        nstatesz:         Size of state variable array.
 c        nstatesz0:        Size of initial state variable array.
 c        npropsz:          Size of material property array.
-c        ivfamily(5,nvfamilies):  Element family info array:
+c        ivfamily(6,nvfamilies):  Element family info array:
 c                          1:  Number of elements in family.
 c                          2:  Material model for family.
 c                          3:  Pointer into state variable array for
@@ -94,6 +94,7 @@ c                          4:  Pointer into initial state variable array
 c                              for the family.
 c                          5:  Pointer into material property array for
 c                              the family.
+c                          6:  Material ID for family.
 c        iens(nen,numelv): Sorted version of ien array.  The ien array
 c                          may be deleted after this routine has been
 c                          called.
@@ -123,7 +124,7 @@ c
       integer nen,ngauss,maxvfamilies,nvfamilies,nprestrflag,numelv
       integer numnp,nstatesz,nstatesz0,npropsz,ierr
       integer ien(nen,numelv),mat(numelv),infmatmod(6,nmatmodmax)
-      integer ivflist(3,maxvfamilies),ivfamily(5,nvfamilies)
+      integer ivflist(3,maxvfamilies),ivfamily(6,nvfamilies)
       integer iens(nen,numelv),ivftmp(nvfamilies),indxiel(numelv)
       integer ielindx(numelv)
       character errstrng*(*)
@@ -142,7 +143,7 @@ cdebug      integer idb,jdb
 c
 cdebug      write(6,*) "Hello from sort_elements_f!"
       call ifill(iens,izero,nen*numelv)
-      call ifill(ivfamily,izero,5*nvfamilies)
+      call ifill(ivfamily,izero,6*nvfamilies)
       ifam=izero
       nstatesz=izero
       nstatesz0=izero
@@ -174,6 +175,7 @@ ctest        if(ivflist(1,j).ne.izero) then
           ivfamily(3,ifam)=nstatesz+ione
           ivfamily(4,ifam)=nstatesz0+ione
           ivfamily(5,ifam)=npropsz+ione
+          ivfamily(6,ifam)=ivflist(2,j)
           nstatesz=nstatesz+nstate*ngauss*nelfamily
           nstatesz0=nstatesz0+incstate0*nstate0*ngauss*nelfamily
           npropsz=npropsz+nprop

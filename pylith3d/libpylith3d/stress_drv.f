@@ -62,7 +62,7 @@ c
       integer npropsz,nen,ngauss,nee,nhist,lastep,numrot,ierr
       integer iddmat(nstr,nstr)
       integer ien(nen,numelv),lm(ndof*nen,numelv),lmx(ndof*nen,numelv)
-      integer lmf(nen,numelv),ivfamily(5,nvfamilies)
+      integer lmf(nen,numelv),ivfamily(6,nvfamilies)
       integer infmatmod(6,nmatmodmax)
       character errstrng*(*)
       double precision bintern(neq),x(nsd,numnp),d(ndof,numnp)

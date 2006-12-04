@@ -49,7 +49,7 @@ c
 c...  subroutine arguments
 c
       integer nvfamilies,numelv,nstatesz,ngauss,ierr
-      integer ivfamily(5,nvfamilies),infmatmod(6,nmatmodmax)
+      integer ivfamily(6,nvfamilies),infmatmod(6,nmatmodmax)
       character errstrng*(*)
       double precision state(nstatesz),dstate(nstatesz)
 c

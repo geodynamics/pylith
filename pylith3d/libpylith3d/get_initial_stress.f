@@ -48,7 +48,7 @@ c
 c...  subroutine arguments
 c
       integer nvfamilies,numelv,nstatesz,nstatesz0,nen,ngauss
-      integer ivfamily(5,nvfamilies),infmatmod(6,nmatmodmax)
+      integer ivfamily(6,nvfamilies),infmatmod(6,nmatmodmax)
       double precision state(nstatesz),state0(nstatesz0)
 c
 c...  included dimension and type statements

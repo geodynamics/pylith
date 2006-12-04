@@ -44,7 +44,7 @@ c
 c...  subroutine arguments
 c
       integer nvfamilies,npropsz,idout,idsk,kw,kp,ierr
-      integer ivfamily(5,nvfamilies),infmatmod(6,nmatmodmax)
+      integer ivfamily(6,nvfamilies),infmatmod(6,nmatmodmax)
       double precision prop(npropsz),grav(ndof)
       character ofile*(*),pfile*(*),errstrng*(*)
 c
