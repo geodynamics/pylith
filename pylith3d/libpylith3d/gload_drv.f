@@ -57,7 +57,7 @@ c
       integer ngravflag,neq,numnp,numslp,numfn,nvfamilies,numelv,npropsz
       integer nen,ngauss,nee,nhist,lastep,numrot,ierr
       integer ien(nen,numelv),lm(ndof*nen,numelv),lmx(ndof*nen,numelv)
-      integer lmf(nen,numelv),ivfamily(5,nvfamilies)
+      integer lmf(nen,numelv),ivfamily(6,nvfamilies)
       integer infmatmod(6,nmatmodmax)
       character errstrng*(*)
       double precision bgravity(ngravflag*neq),grav(ndof)

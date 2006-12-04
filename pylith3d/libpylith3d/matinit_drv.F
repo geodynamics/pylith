@@ -75,7 +75,7 @@ c
       integer iwink(2,nwink),iddmat(nstr,nstr),iwinkx(2,nwinkx)
       integer ien(nen,numelv),ielindx(numelv)
       integer lm(ndof*nen,numelv),lmx(ndof*nen,numelv),lmf(nen,numelv)
-      integer ivfamily(5,nvfamilies)
+      integer ivfamily(6,nvfamilies)
       integer infmatmod(6,nmatmodmax)
       character errstrng*(*)
       double precision x(nsd,numnp),d(ndof,numnp)

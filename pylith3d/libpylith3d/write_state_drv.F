@@ -55,7 +55,7 @@ c...  subroutine arguments
 c
       integer nvfamilies,numelv,nstatesz,ngauss,nstep
       integer idout,idsk,iucd,kw,kp,kucd,iprestress,ierr
-      integer ivfamily(5,nvfamilies),infmatmod(6,nmatmodmax)
+      integer ivfamily(6,nvfamilies),infmatmod(6,nmatmodmax)
       integer istatout(nstatesmax,3),nstatout(3)
       double precision delt
       double precision state(nstatesz),dstate(nstatesz)

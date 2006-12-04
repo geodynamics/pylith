@@ -55,7 +55,7 @@ c
 c...  subroutine arguments
 c
       integer numnp,numelv,nvfamilies,nen,ngauss,ietype,kucd,iucd
-      integer ien(nen,numelv),ivfamily(5,nvfamilies)
+      integer ien(nen,numelv),ivfamily(6,nvfamilies)
       integer istatout(nstatesmax,3),nstatout(3)
       character ucdroot*(*)
       double precision x(nsd,numnp),sh(nsd+1,nen,ngauss)
@@ -91,7 +91,7 @@ c...  local variables
 c
       integer nnattr,neattr,nngattr,negattr,nmattr,nnlist,nglist,i,j
       integer iprestress,nstep,iopt
-      integer ielg,ifam,ielf,nelfamily,matmodel
+      integer ielg,ifam,ielf,nelfamily,matid
       integer numelg,l,ngpts,indtype,ictype,igpt
       integer ibyte,intlen,floatlen,istride
       integer itmp(20)
@@ -158,13 +158,13 @@ c
         ielg=izero
         do ifam=1,nvfamilies
           nelfamily=ivfamily(1,ifam)
-          matmodel=ivfamily(2,ifam)
+          matid=ivfamily(6,ifam)
           do ielf=1,nelfamily
             ielg=ielg+1
             do j=1,nen
               itmp(j)=ien(j,ielg)
             end do
-            write(kucd,"(2i7,2x,a4,20i7)") ielg,matmodel,
+            write(kucd,"(2i7,2x,a4,20i7)") ielg,matid,
      &       eltype(indtype),(itmp(inducd(j,indtype)),j=1,nen)
           end do
         end do
@@ -211,10 +211,10 @@ c
         ielg=izero
         do ifam=1,nvfamilies
           nelfamily=ivfamily(1,ifam)
-          matmodel=ivfamily(2,ifam)
+          matid=ivfamily(6,ifam)
           do ielf=1,nelfamily
             ielg=ielg+1
-            write(kucd,BINARY_POS=ibyte) ielg,matmodel,nen,ictype
+            write(kucd,BINARY_POS=ibyte) ielg,matid,nen,ictype
             ibyte=ibyte+4*intlen
           end do
         end do
@@ -224,7 +224,7 @@ c
         ielg=izero
         do ifam=1,nvfamilies
           nelfamily=ivfamily(1,ifam)
-          matmodel=ivfamily(2,ifam)
+          matid=ivfamily(6,ifam)
           do ielf=1,nelfamily
             ielg=ielg+1
             do j=1,nen
