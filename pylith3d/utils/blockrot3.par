@@ -17,6 +17,16 @@
        4          3        1.0d0     75.0d0
 #-----------------------------------------------------------------------
 #
+#   Coordinate ranges:
+#
+#     Enter coordinate ranges to be considered.  Any points lying
+#     outside of these ranges will be rejected.
+#
+#    xmin    xmax    ymin    ymax    zmin    zmax
+#-----------------------------------------------------------------------
+     -1.5d5  1.5d5  -1.5d5  1.5d5   4.0d3   1.9d4
+#-----------------------------------------------------------------------
+#
 #   Rotation pole info:
 #
 #     For each block, enter the following info:
@@ -32,13 +42,10 @@
 #
 #  blocknum(i)  polex(i)    poley(i)    poler(i),  i=1,nblocks
 #-----------------------------------------------------------------------
-     1          1.0d5      1.0d5   -5.0d-6
-     2         -1.0d5     -1.0d5   -5.0d-6
-     3          0.0d0      0.0d0    0.0d0
-     4          0.0d0      0.0d0    0.0d0
-# poles above should yield approximately equal amounts of strike-slip
-# and dip-slip movement on the fault between blocks 1 and 2.  Blocks 3
-# and 4 are chosen as the reference frame and so have no movement.
+     1        -3.373d5  -9.571d5  -2.291d-7
+     2        -5.002d5  -8.817d5  -4.584d-7
+     5          0.0d0      0.0d0    0.0d0
+     6        -1.500d5  -2.910d5  -3.163d-6
 #-----------------------------------------------------------------------
 #
 #   Fault definition info:
@@ -65,15 +72,27 @@
 #
 #-----------------------------------------------------------------------
         1
-        1            2            1
-"fault_03_01_02.flt_pylith"
-# Highest priority is dipping boundary between blocks 1 and 2.
+        6            5            0
+"fault_02_06_05_subset.flt_pylith"
+# Highest priority is San Andreas boundary.
         1
-        1            4            2
-"fault_08_01_04.flt_pylith"
-# Next highest priority is vertical boundary between blocks 1 and 4.
+        6            2            0
+"fault_06_06_02.flt_pylith"
+# Next highest priority is SAF boundary of block 2.
         1
-        2            3            3
-"fault_11_02_03.flt_pylith"
-# Lowest priority is vertical boundary between blocks 2 and 3.
+        6            1            0
+"fault_03_06_01.flt_pylith"
+# Next highest priority is SAF boundary of block 1.
+        1
+        5            2            0
+"fault_07_05_02.flt_pylith"
+# Next highest priority is boundary between block 2 and reference block.
+        1
+        5            1            0
+"fault_05_05_01.flt_pylith"
+# Next highest priority is boundary between block 1 and reference block.
+        1
+        2            1            0
+"fault_16_02_01.flt_pylith"
+# Lowest priority is boundary between blocks 1 and 2.
 #-----------------------------------------------------------------------

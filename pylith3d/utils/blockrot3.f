@@ -30,7 +30,7 @@ c
 c...  info read or deduced from parameter file
 c
       integer nfaults,numdefs,faultdef(3,maxdefs),blocknum(maxblocks)
-      double precision cscale,dipcut,pole(3,maxblocks)
+      double precision cscale,dipcut,pole(3,maxblocks),xlims(3,2)
       logical dflag
 c
 c...  intrinsic functions
@@ -50,7 +50,7 @@ c
       integer elems(maxattached),colors(maxattached)
       double precision pi,d2r
       double precision x(nsd),xtmp(nsd),fnorm(nsd)
-      logical pairused
+      logical pairused,inrange
       character ffile*500
 c
       pi=acos(-1.0d0)
@@ -74,6 +74,11 @@ c
 c...  compute cutoff info in terms of projection onto z-axis
 c
       if(dflag) dipcut=abs(sin(d2r*dipcut))
+c
+c...  coordinate ranges to be considered
+c
+      call pskip(kp)
+      read(kp,*) ((xlims(i,j),j=1,2),i=1,3)
 c
 c...  block rotation poles
 c
@@ -105,60 +110,64 @@ c
           read(kf,*,end=20) nattached
           read(kf,*,end=20) (elems(j),j=1,nattached)
           read(kf,*,end=20) (colors(j),j=1,nattached)
+          inrange=.true.
           do j=1,3
             x(j)=cscale*xtmp(j)
+            if(x(j).lt.xlims(j,1).or.x(j).gt.xlims(j,2)) inrange=.false.
           end do
 c
 c...  see if pair has been used previously.  If not, create a new entry
 c     if the fault has been defined.
 c
-          do j=1,nattached
-            pairused=.false.
-            do k=1,nentries
-              if(elems(j).eq.nfault(1,k).and.node.eq.nfault(2,k)) then
-                pairused=.true.
-                go to 30
-              end if
-            end do
- 30         continue
-            if(.not.pairused) then
+          if(inrange) then
+            do j=1,nattached
+              pairused=.false.
+              do k=1,nentries
+                if(elems(j).eq.nfault(1,k).and.node.eq.nfault(2,k)) then
+                  pairused=.true.
+                  go to 30
+                end if
+              end do
+ 30           continue
+              if(.not.pairused) then
 c
 c...  for now, choose first fault in definition list
 c
-              blk1=0
-              blk2=0
-              faultnum=0
-              do k=1,numdefs
-                if(colors(j).eq.faultdef(1,k)) then
-                  blk1=colors(j)
-                  blk2=faultdef(2,k)
-                  faultnum=k
-                  go to 40
-                else if(colors(j).eq.faultdef(2,k)) then
-                  blk1=colors(j)
-                  blk2=faultdef(1,k)
-                  faultnum=k
-                  go to 40
-                end if
-              end do
- 40           continue
-              if(blk1.eq.0) then
-                write(kto,810) elems(j),node,colors(j)
-              else
-                nentries=nentries+1
-                nfault(1,nentries)=elems(j)
-                nfault(2,nentries)=node
-                call getvals(x,fnorm,dipcut,dflag,
-     &           pole(1,blocknum(blk1)),pole(1,blocknum(blk2)),split)
+                blk1=0
+                blk2=0
+                faultnum=0
+                do k=1,numdefs
+                  if(colors(j).eq.faultdef(1,k)) then
+                    blk1=colors(j)
+                    blk2=faultdef(2,k)
+                    faultnum=k
+                    go to 40
+                  else if(colors(j).eq.faultdef(2,k)) then
+                    blk1=colors(j)
+                    blk2=faultdef(1,k)
+                    faultnum=k
+                    go to 40
+                  end if
+                end do
+ 40             continue
+                if(blk1.eq.0) then
+                  write(kto,810) elems(j),node,colors(j)
+                else
+                  nentries=nentries+1
+                  nfault(1,nentries)=elems(j)
+                  nfault(2,nentries)=node
+                  call getvals(x,fnorm,dipcut,dflag,
+     &             pole(1,blocknum(blk1)),pole(1,blocknum(blk2)),split)
 c
 c...  output split node values
 c
-                write(kso,"(3i8,3(2x,1pe15.8))")
-     &           (nfault(k,nentries),k=1,2),faultdef(3,faultnum),
-     &           (split(k),k=1,3)
+                  write(kso,"(3i8,3(2x,1pe15.8))")
+     &             (nfault(k,nentries),k=1,2),faultdef(3,faultnum),
+     &             (split(k),k=1,3)
+                end if
               end if
-            end if
-          end do
+            end do
+          end if
           go to 10
  20     continue
         close(kf)
