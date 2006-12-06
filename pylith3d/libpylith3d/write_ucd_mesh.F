@@ -145,12 +145,12 @@ c
 c
 c...  header info
 c
-        write(kucd,"(5i7)") numnp,numelv,nnattr,neattr,nmattr
+        write(kucd,"(5i9)") numnp,numelv,nnattr,neattr,nmattr
 c
 c...  write nodal coordinates
 c
         do i=1,numnp
-          write(kucd,"(i7,3(2x,1pe15.8))") i,(x(j,i),j=1,nsd)
+          write(kucd,"(i9,3(2x,1pe15.8))") i,(x(j,i),j=1,nsd)
         end do
 c
 c...  write element connectivities
@@ -164,7 +164,7 @@ c
             do j=1,nen
               itmp(j)=ien(j,ielg)
             end do
-            write(kucd,"(2i7,2x,a4,20i7)") ielg,matid,
+            write(kucd,"(2i9,2x,a4,20i9)") ielg,matid,
      &       eltype(indtype),(itmp(inducd(j,indtype)),j=1,nen)
           end do
         end do
@@ -174,7 +174,7 @@ c...  write Gauss point info
 c
         iopt=itwo
         call open_ucd(kucd,iprestress,nstep,ucdroot,iopt,iucd)
-        write(kucd,"(5i7)") ngpts,numelg,nngattr,negattr,nmattr
+        write(kucd,"(5i9)") ngpts,numelg,nngattr,negattr,nmattr
 c
 c...  write Gauss coordinates
 c
@@ -191,7 +191,7 @@ c
               xg(2)=xg(2)+xl(2,j)*sh(4,j,l)
               xg(3)=xg(3)+xl(3,j)*sh(4,j,l)
             end do
-            write(kucd,"(i7,3(2x,1pe15.8))") igpt,(xg(j),j=1,nsd)
+            write(kucd,"(i9,3(2x,1pe15.8))") igpt,(xg(j),j=1,nsd)
           end do
         end do
         close(kucd)
