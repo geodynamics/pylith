@@ -104,7 +104,7 @@ c
 c
       integer nnblnk,nchar
       external nnblnk,nchar
-      intrinsic lnblnk,iargc
+      intrinsic len_trim,iargc
 c
       integer nargs
       logical gotname,gotnodes,gotelems
@@ -124,17 +124,17 @@ c
       do i=1,nargs
         call getarg(i,string)
         if(index(string,"b=").ne.0) then
-          j=lnblnk(string)
+          j=len_trim(string)
           basename=string(3:j)
           gotname=.true.
           basebeg=nnblnk(basename)
           baseend=nchar(basename)
         else if(index(string,"n=").ne.0) then
-          j=lnblnk(string)
+          j=len_trim(string)
           read(string(3:j),*) numnodes
           gotnodes=.true.
         else if(index(string,"e=").ne.0) then
-          j=lnblnk(string)
+          j=len_trim(string)
           read(string(3:j),*) numels
           gotelems=.true.
         end if

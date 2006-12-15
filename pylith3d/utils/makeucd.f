@@ -343,22 +343,22 @@ c
         call getarg(i,string)
         if(index(string,'m=').ne.0) then
           massigned=.true.
-          j=lnblnk(string)
+          j=len_trim(string)
           mfile=string(3:j)
         else if(index(string,'p=').ne.0) then
           passigned=.true.
-          j=lnblnk(string)
+          j=len_trim(string)
           pfile=string(3:j)
         else if(index(string,'g=').ne.0) then
           gassigned=.true.
-          j=lnblnk(string)
+          j=len_trim(string)
           gfile=string(3:j)
         else if(index(string,'o=').ne.0) then
           oassigned=.true.
-          j=lnblnk(string)
+          j=len_trim(string)
           ofile=string(3:j)
         else if(index(string,'n=').ne.0) then
-          j=lnblnk(string)
+          j=len_trim(string)
           read(string(3:j),*) ival
           if(ival.eq.0) then
             ninterp=.false.
@@ -369,7 +369,7 @@ c
             stop
           end if
         else if(index(string,'nf=').ne.0) then
-          j=lnblnk(string)
+          j=len_trim(string)
           read(string(4:j),*) ival
           if(ival.eq.0) then
             nout=.false.
@@ -380,7 +380,7 @@ c
             stop
           end if
         else if(index(string,'cf=').ne.0) then
-          j=lnblnk(string)
+          j=len_trim(string)
           read(string(4:j),*) ival
           if(ival.eq.0) then
             cout=.false.
