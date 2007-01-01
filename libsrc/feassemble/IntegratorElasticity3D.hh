@@ -63,6 +63,16 @@ public :
 		 const ALE::Obj<ALE::Mesh::real_section_type>& fieldIn,
 		 const ALE::Obj<ALE::Mesh::real_section_type>& coordinates);
 
+  /** Initialize, get material property parameters from database.
+   *
+   * @param mesh PETSc mesh
+   * @param db Pointer to spatial database with material property parameters
+   * @param cs Pointer to coordinate system of vertices
+   */
+  void initialize(ALE::Obj<ALE::Mesh>& mesh,
+		  spatialdata::spatialdb::SpatialDB* db,
+		  spatialdata::geocoords::CoordSys* cs);
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
