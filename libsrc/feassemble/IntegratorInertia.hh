@@ -86,8 +86,15 @@ public :
   void integrateLumped(const ALE::Obj<real_section_type>& fieldOut,
 		       const ALE::Obj<real_section_type>& coordinates);
 
-
-  void setDensity(const ALE::Obj<real_section_type>& density) {_density = density};
+  /** Initialize, get material property parameters from database.
+   *
+   * @param mesh PETSc mesh
+   * @param db Pointer to spatial database with material property parameters
+   * @param cs Pointer to coordinate system of vertices
+   */
+  void initialize(ALE::Obj<ALE::Mesh>& mesh,
+		  spatialdata::spatialdb::SpatialDB* db,
+		  spatialdata::geocoords::CoordSys* cs);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -98,13 +105,18 @@ protected :
    */
   IntegratorInertia(const IntegratorInertia& i);
 
-  ALE::Obj<real_section_type> _density;
-
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
   /// Not implemented
   const IntegratorInertia& operator=(const IntegratorInertia&);
+
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
+
+  /// Field with density at quadrature points
+  /// Fiber dimension is number of quadrature points per cell
+  ALE::Obj<real_section_type> _density;
 
 }; // IntegratorInertia
 

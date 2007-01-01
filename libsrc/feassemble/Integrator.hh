@@ -31,6 +31,15 @@ namespace pylith {
   } // feassemble
 } // pylith
 
+namespace spatialdata {
+  namespace spatialdb {
+    class SpatialDB; // USES SpatialDB
+  } // spatialdb
+  namespace geocoords {
+    class CoordSys; // USES CoordSys
+  } // geocoords
+} // spatialdata
+
 class pylith::feassemble::Integrator
 { // Integrator
   friend class TestIntegrator; // unit testing
@@ -83,6 +92,22 @@ public :
    * @param q Quadrature for integrating.
    */
   void quadrature(const Quadrature* q);
+
+  /** Set spatial database for material properties.
+   *
+   * @param db Pointer to spatial database
+   */
+  void database(const spatialdata::spatialdb::SpatialDB* db);
+
+  /** Initialize, get material property parameters from database.
+   *
+   * @param mesh PETSc mesh
+   * @param db Pointer to spatial database with material property parameters
+   * @param cs Pointer to coordinate system of vertices
+   */
+  virtual void initialize(ALE::Obj<ALE::Mesh>& mesh,
+			  spatialdata::spatialdb::SpatialDB* db,
+			  spatialdata::geocoords::CoordSys* cs) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

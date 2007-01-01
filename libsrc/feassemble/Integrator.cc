@@ -12,9 +12,10 @@
 
 #include <portinfo>
 
-#include "Quadrature.hh"
-
 #include "Integrator.hh" // implementation of class methods
+
+#include "Quadrature.hh"
+#include "spatialdata/spatialdb/SpatialDB.hh"
 
 // ----------------------------------------------------------------------
 // Constructor
