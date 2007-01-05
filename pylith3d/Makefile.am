@@ -40,10 +40,10 @@ pypylith3d$(EXEEXT): $(pypylith3d_OBJECTS) $(pypylith3d_DEPENDENCIES)
 	$(CXXLINK) $(PYTHON_LDFLAGS) $(PYTHON_LINKFORSHARED) \
 		$(pypylith3d_LDFLAGS) $(pypylith3d_OBJECTS) $(pypylith3d_LDADD) \
 		$(PYTHON_BLDLIBRARY) \
+		$(PYTHON_EGG_LDFLAGS) \
 		$(PETSC_FORTRAN_LIB) $(PETSC_LIB) \
 		$(MPILIBS) \
 		$(FCLIBS) \
-		-ljournal \
 		$(PYTHON_LIBS) $(PYTHON_MODLIBS) $(PYTHON_SYSLIBS) \
 		$(LIBS) \
 		$(PYTHON_LDLAST)
