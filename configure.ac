@@ -3,7 +3,7 @@
 # $Id: configure.ac,v 1.1 2005/08/24 22:45:51 leif Exp $
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith3D], [0.8.1], [cig-short@geodynamics.org])
+AC_INIT([PyLith3D], [0.8.2], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_SRCDIR([pylith3d/applications/pylith3dapp.py])
 AC_CONFIG_HEADER([portinfo])
@@ -28,9 +28,46 @@ AC_ARG_ENABLE([greensfns],
     [enable_greensfns=no])
 AM_CONDITIONAL([ENABLE_GREENSFNS], [test "$enable_greensfns" = yes])
 
-# Checks for programs.
+# Check for Python.
 AM_PATH_PYTHON([2.3])
 CIT_PYTHON_SYSCONFIG
+
+# Checks for Python modules and packages.
+
+builddir=`pwd`
+save_PYTHONPATH="$PYTHONPATH"
+PYTHONPATH="$builddir/python:$PYTHONPATH"; export PYTHONPATH
+cd $srcdir
+
+AC_MSG_NOTICE([downloading missing Python dependencies])
+AS_IF([AC_TRY_COMMAND([$PYTHON setup.py install_deps -zmxd $builddir/deps >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD])],
+      [],
+      [AC_MSG_FAILURE([cannot download missing Python dependencies])])
+
+AC_MSG_NOTICE([building Python dependencies])
+AS_IF([AC_TRY_COMMAND([$PYTHON setup.py develop -H None -f $builddir/deps -x -d $builddir/python >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD])],
+      [],
+      [AC_MSG_FAILURE([building Python dependencies])])
+
+AC_MSG_CHECKING([for egg-related flags])
+AS_IF([AC_TRY_COMMAND([$PYTHON setup.py egg_flags >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD])],
+      [AC_MSG_RESULT(ok)
+       . egg-flags.sh
+       rm -f egg-flags.sh
+      ],
+      [AC_MSG_RESULT(failed)
+      AC_MSG_FAILURE([cannot scan Python eggs for flags])])
+
+cd $builddir
+PYTHONPATH="$save_PYTHONPATH"
+PYTHONPATH="${pythondir}:${pyexecdir}${save_PYTHONPATH:+:${save_PYTHONPATH}}"
+
+AC_SUBST(PYTHONPATH)
+AC_SUBST(PYTHON_EGG_CFLAGS)
+AC_SUBST(PYTHON_EGG_CPPFLAGS)
+AC_SUBST(PYTHON_EGG_LDFLAGS)
+
+# Checks for programs.
 CIT_PATH_PETSC([2.3])
 CIT_PROG_MPICXX
 # this is not portable
@@ -49,11 +86,6 @@ FFLAGS=$FCFLAGS
 AC_PROVIDE([AC_PROG_F77])
 AC_FC_WRAPPERS
 AC_PROG_LIBTOOL
-
-# Checks for Python modules and packages.
-CIT_PATH_PYTHIA([0.8])
-PYTHONPATH="${pyexecdir}${PYTHONPATH:+:${PYTHONPATH}}"; export PYTHONPATH
-AC_SUBST([PYTHONPATH])
 
 # Set the language for MPI tests.
 AC_LANG(C++)
