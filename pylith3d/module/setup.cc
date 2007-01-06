@@ -46,12 +46,15 @@
 char pypylith3d_petsc_initialize__doc__[] = "";
 char pypylith3d_petsc_initialize__name__[] = "PetscInitialize";
 
-PyObject * pypylith3d_petsc_initialize(PyObject *, PyObject *)
+PyObject * pypylith3d_petsc_initialize(PyObject *, PyObject *args)
 {
-  PyObject *sysMod = PyImport_ImportModule("sys");
-  PyObject *argList = PyObject_GetAttrString(sysMod, "argv");
+  PyObject *argList;
+  if (!PyArg_ParseTuple(args, "O:PetscInitialize", &argList)) {
+    return 0;
+  }
+
   int argc = PySequence_Length(argList);
-  char **argv = (char **) malloc(argc * sizeof(char *));
+  char **argv = (char **) malloc((argc + 1) * sizeof(char *));
   int a;
 
   for(a = 0; a < argc; a++) {
@@ -60,6 +63,7 @@ PyObject * pypylith3d_petsc_initialize(PyObject *, PyObject *)
     argv[a] = (char *) malloc((strlen(arg)+1)* sizeof(char));
     strcpy(argv[a], arg);
   }
+  argv[argc] = NULL;
   if (PetscInitialize(&argc, &argv, NULL, "Pylith 3D")) {
     PyErr_SetString(PyExc_RuntimeError, "PETSc failed to initialize");
     return 0;
@@ -71,13 +75,8 @@ PyObject * pypylith3d_petsc_initialize(PyObject *, PyObject *)
     << "Initializing PETSc"
     << journal::endl;
 
-  // cleanup
-  for(a = 0; a < argc; a++) {
-    free(argv[a]);
-  }
-  free(argv);
-  Py_DECREF(argList);
-  Py_DECREF(sysMod);
+  // Do not free 'argv' -- PETSc saves a reference to it ('PetscGlobalArgs').
+
   // return
   Py_INCREF(Py_None);
   return Py_None;

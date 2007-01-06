@@ -27,7 +27,8 @@ nobase_pyexec_PYTHON = \
 	pylith3d/MaterialModel/IsotropicLinearMaxwellViscoelasticESF.py \
 	pylith3d/MaterialModel/IsotropicPowerLawMaxwellViscoelastic.py \
 	pylith3d/MaterialModel/MaterialModel.py \
-	pylith3d/Materials.py
+	pylith3d/Materials.py \
+	pylith3d/PetscUtil.py
 
 # pypylith3d (libpylith3d + pylith3dmodule + embedded Python interpreter)
 INCLUDES = -I$(top_srcdir)/pylith3d/module -I$(PYTHON_INCDIR)
