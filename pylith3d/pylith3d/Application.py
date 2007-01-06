@@ -40,7 +40,7 @@ class Application(BaseScript):
 #        start = now()
         pl3dsetup = self.inventory.setup
         import pylith3d
-        pylith3d.PetscInitialize()
+        pylith3d.PetscInitialize(self.petscArgs)
         self.inventory.scanner.inventory.fileRoot, mesh = pylith3d.processMesh(self.inventory.scanner.inventory.fileRoot, self.inventory.scanner.inventory.interpolateMesh, self.inventory.scanner.inventory.partitioner)
         try:
             pl3dsetup.initialize(self.inventory.scanner)
@@ -74,23 +74,65 @@ class Application(BaseScript):
         return
 
 
+    def _configure(self):
+        self.petscArgs = []
+        
+        ksp_monitor = self.inventory.ksp_monitor
+        if ksp_monitor:
+            self.petscArgs.append("-ksp_monitor")
+            if ksp_monitor != "true":
+                self.petscArgs.append(ksp_monitor)
+        
+        if self.inventory.ksp_view:
+            self.petscArgs.append("-ksp_view")
+        
+        ksp_rtol = self.inventory.ksp_rtol
+        if ksp_rtol:
+            self.petscArgs.extend(["-ksp_rtol", ksp_rtol])
+        
+        if self.inventory.log_summary:
+            self.petscArgs.append("-log_summary")
+
+        pc_type = self.inventory.pc_type
+        sub_pc_type = self.inventory.sub_pc_type
+        self.petscArgs.extend(["-pc_type", pc_type, "-sub_pc_type", sub_pc_type])
+
+        if self.inventory.start_in_debugger:
+            self.petscArgs.append("-start_in_debugger")
+
+        self.petscArgs.extend(self.inventory.petsc.getArgs())
+
+        return
+
+
+    def createCommandlineParser(self):
+        from PetscUtil import PetscCommandlineParser
+        return PetscCommandlineParser()
+
+
     class Inventory(BaseScript.Inventory):
 
         import pyre.inventory
         from Pylith3d_scan import Pylith3d_scan
         from Pylith3d_setup import Pylith3d_setup
         from Pylith3d_run import Pylith3d_run
+        from PetscUtil import PetscFacility
 
         scanner = pyre.inventory.facility("scanner", factory=Pylith3d_scan)
         setup = pyre.inventory.facility("setup", factory=Pylith3d_setup)
         solver = pyre.inventory.facility("solver", factory=Pylith3d_run)
-        # ksp_monitor = pyre.inventory.str("ksp_monitor",default="1")
-        # ksp_view = pyre.inventory.str("ksp_view",default="1")
-        # log_summary = pyre.inventory.str("log_summary",default="1")
-        # log_info = pyre.inventory.str("log_info",default="0")
-        # pc_type = pyre.inventory.str("pc_type",default="1")
-        # start_in_debugger = pyre.inventory.str("start_in_debugger",default="0")
-        # petsc_solver = pyre.inventory.str("petsc_solver",default="1")
+
+        # declare PETSc options that are of interest to PyLith
+        ksp_monitor = pyre.inventory.str("ksp_monitor")
+        ksp_view = pyre.inventory.bool("ksp_view")
+        ksp_rtol = pyre.inventory.str("ksp_rtol")
+        log_summary = pyre.inventory.bool("log_summary")
+        pc_type = pyre.inventory.str("pc_type")
+        sub_pc_type = pyre.inventory.str("sub_pc_type")
+        start_in_debugger = pyre.inventory.str("start_in_debugger")
+
+        # a dummy facility for passing arbitrary options to PETSc
+        petsc = PetscFacility("petsc")
 
 
 # version

@@ -1002,12 +1002,6 @@ class Pylith3d_setup(Component):
         print "Hello from pl3dsetup.sparsesetup (begin)!"
         print "Setting up sparse matrix storage:"
         
-        # Initialize PETSc and set up logging
-        import os
-        wd = os.getcwd()
-        pylith3d.PetscInitialize()
-        os.chdir(wd) # Work-around MPI_Init() changing our directory!
-        
         self.autoprestrStage, \
         self.elasticStage, \
         self.viscousStage, \
