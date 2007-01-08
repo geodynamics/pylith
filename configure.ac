@@ -13,10 +13,10 @@ AM_INIT_AUTOMAKE([foreign])
 # 'configure' options
 AC_ARG_VAR(PYTHON, [Python interpreter])
 AC_ARG_VAR(PYTHONPATH, [Python module search path])
-AC_ARG_WITH([embedding],
-    [AC_HELP_STRING([--with-embedding],
+AC_ARG_ENABLE([embedding],
+    [AC_HELP_STRING([--enable-embedding],
         [embed Python with PyLith in a single executable @<:@default=yes@:>@])],
-    [want_embedding="$withval"],
+    [want_embedding="$enableval"],
     [want_embedding=yes])
 AM_CONDITIONAL([COND_EMBEDDING], [test "$want_embedding" = yes])
 
