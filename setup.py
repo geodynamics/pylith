@@ -10,7 +10,8 @@ setup(
     version = '0.8.2',
 
     zip_safe = False,
-    packages = find_packages(),
+    package_dir = { "":"pylith3d" },
+    packages = find_packages("pylith3d"),
     
     install_requires = [
     'pythia[mpi] >= 0.8.1.0, < 0.8.2a',

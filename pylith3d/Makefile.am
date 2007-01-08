@@ -3,12 +3,19 @@
 
 SUBDIRS = libpylith3d module utils
 
+abs_top_builddir = @abs_top_builddir@
+abs_builddir = @abs_builddir@
+
 bin_PROGRAMS = 
 if COND_EMBEDDING
     bin_PROGRAMS += pypylith3d
     INTERPRETER = $(bindir)/pypylith3d
+    noinstINTERPRETER = $(abs_builddir)/pypylith3d
+    noinstPYTHONPATH = $(abs_top_builddir)/python
 else
     INTERPRETER = $(PYTHON)
+    noinstINTERPRETER = $(PYTHON)
+    noinstPYTHONPATH = $(abs_top_builddir)/python:$(abs_top_builddir)/pylith3d/module/.libs
 endif
 
 # pylith3d
@@ -50,14 +57,27 @@ pypylith3d$(EXEEXT): $(pypylith3d_OBJECTS) $(pypylith3d_DEPENDENCIES)
 		$(PYTHON_LDLAST)
 
 # applications
-nodist_bin_SCRIPTS = pylith3dapp.py
-do_subst = sed \
-	-e 's|[@]INTERPRETER[@]|$(INTERPRETER)|g' \
-	-e 's|[@]PYTHONPATH[@]|$(PYTHONPATH)|g'
-pylith3dapp.py: $(srcdir)/applications/pylith3dapp.py
-	$(do_subst) < $(srcdir)/applications/pylith3dapp.py > $@ || (rm -f $@ && exit 1)
-CLEANFILES = $(nodist_bin_SCRIPTS)
+bin_SCRIPTS = pylith3dapp.py
+do_build = sed -e s%[@]INTERPRETER[@]%$(noinstINTERPRETER)%g -e s%[@]PYTHONPATH[@]%$(noinstPYTHONPATH)%g
+do_install = sed -e s%[@]INTERPRETER[@]%$(INTERPRETER)%g -e s%[@]PYTHONPATH[@]%$(PYTHONPATH)%g
+pylith3dapp.py:  $(srcdir)/applications/pylith3dapp.py Makefile
+	$(do_build) <  $(srcdir)/applications/pylith3dapp.py > $@ || (rm -f $@ && exit 1)
+	chmod +x $@
+install-binSCRIPTS: $(bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	test -z "$(bindir)" || $(mkdir_p) "$(DESTDIR)$(bindir)"
+	@list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  if test -f "$$p.in"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f $$d$$p.in; then \
+	    f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
+	    echo " $(do_install) '$$d$$p.in' > '$(DESTDIR)$(bindir)/$$f'"; \
+	    $(do_install) "$$d$$p.in" > "$(DESTDIR)$(bindir)/$$f"; \
+	    echo " chmod +x '$(DESTDIR)$(bindir)/$$f'"; \
+	    chmod +x "$(DESTDIR)$(bindir)/$$f"; \
+	  else :; fi; \
+	done
 EXTRA_DIST = applications/pylith3dapp.py
+CLEANFILES = $(bin_SCRIPTS)
 
 # examples
 EXTRA_DIST += \
