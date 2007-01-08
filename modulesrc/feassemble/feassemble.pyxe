@@ -284,6 +284,42 @@ cdef class Integrator:
     return
 
 
+  def initialize(self, mesh, cs, db):
+    """
+    Initialize integrator.
+
+    @param mesh PETSc mesh
+    @param cs Coordinate system associated with mesh vertices
+    @param db Database of material properties
+    """
+    # create shim for method 'initialize'
+    #embed{ void Integrator_initialize(void* pObj, void* meshObj, void* csObj, void* dbObj)
+    ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh*>) meshObj;
+    spatialdata::geocoords::CoordSys* cs =
+      (spatialdata::geocoords::CoordSys*) csObj;
+    spatialdata::spatialdb::SpatialDB* db =
+      (spatialdata::spatialdb::SpatialDB*) dbObj;
+    ((pylith::feassemble::Integrator*) pObj)->initialize(mesh, cs, db);
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    if not cs.name == "spatialdata_geocoords_CoordSys":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'spatialdata::geocoords::CoordSys'."
+    if not db.name == "spatialdata_spatialdb_SpatialDB":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'spatialdata::spatialdb::SpatialDB'."
+    meshObj = <void*> PyCObject_AsVoidPtr(mesh)
+    Integrator_initialize(self.thisptr, meshObj,
+                          ptrFromHandle(cs), ptrFromHandle(db))
+    return
+
+
   def _createHandle(self):
     """Wrap pointer to C++ object in PyCObject."""
     # create shim for destructor

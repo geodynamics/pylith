@@ -266,20 +266,21 @@ pylith::feassemble::IntegratorInertia::integrateLumped(
 void
 pylith::feassemble::IntegratorInertia::initialize(
 				     ALE::Obj<ALE::Mesh>& mesh,
-				     spatialdata::spatialdb::SpatialDB* db,
-				     spatialdata::geocoords::CoordSys* cs)
+				     spatialdata::geocoords::CoordSys* cs,
+				     spatialdata::spatialdb::SpatialDB* db)
 { // initialize
+  assert(0 != cs);
+  assert(0 != db);
+
   typedef ALE::Mesh::real_section_type real_section_type;
   typedef ALE::Mesh::topology_type topology_type;
 
-  assert(0 != db);
-  assert(0 != cs);
-
   // Create density section
+  const int numQuadPts = _quadrature->numQuadPts();
   const ALE::Mesh::int_section_type::patch_type patch = 0;
   _density = mesh->getRealSection("density");
-  const int fiberDim = 1; // number of values in field per cell
-  _density->setName("fieldOut");
+  const int fiberDim = numQuadPts; // number of values in field per cell
+  _density->setName("density");
   _density->setFiberDimensionByDepth(patch, 0, fiberDim);
   _density->allocate();
 
@@ -298,7 +299,6 @@ pylith::feassemble::IntegratorInertia::initialize(
   const topology_type::label_sequence::iterator cellsEnd = cells->end();
 
   // Loop over cells
-  const int numQuadPts = _quadrature->numQuadPts();
   double* cellDensity = (numQuadPts > 0) ? new double[numQuadPts] : 0;
   for (topology_type::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
@@ -314,9 +314,7 @@ pylith::feassemble::IntegratorInertia::initialize(
 	 iQuadPt < numQuadPts; 
 	 ++iQuadPt, index+=spaceDim)
       const int err = db->query(&cellDensity[iQuadPt], numVals, 
-				quadPts[index], 
-				quadPts[index+1], 
-				quadPts[index+2], cs);
+				&quadPts[index], spaceDim, cs);
     // Assemble cell contribution into field
     _density->updateAdd(patch, *cellIter, cellDensity);
   } // for

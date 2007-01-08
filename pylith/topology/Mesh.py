@@ -17,12 +17,16 @@ from pyre.components.Component import Component
 
 # Mesh class
 class Mesh(Component):
-  """Python Mesh for finite-element topology information."""
+  """
+  Python Mesh for finite-element topology information.
+  """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Component.Inventory):
-    """Python object for managing Mesh facilities and properties."""
+    """
+    Python object for managing Mesh facilities and properties.
+    """
 
     ## @class Inventory
     ## Python object for managing Mesh facilities and properties.
@@ -31,11 +35,13 @@ class Mesh(Component):
     ## @li None
     ##
     ## \b Facilities
-    ## @li None
+    ## @li \b coordsys Coordinate system associated with mesh
 
     import pyre.inventory
 
-
+    from spatialdata.geocoords.CSCart import CSCart
+    coordsys = pyre.inventory.facility("coordsys", factory=CSCart)
+    coordsys.meta['tip'] = "Coordinate system associated with mesh."
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -45,7 +51,9 @@ class Mesh(Component):
 
 
   def __init__(self, name="mesh"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     Component.__init__(self, name, facility="mesh")
     self.cppHandle = None
     return
@@ -54,7 +62,10 @@ class Mesh(Component):
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def _configure(self):
-    """Set members based using inventory."""
+    """
+    Set members based using inventory.
+    """
+    self.coordsys = self.inventory.coordsys
     return
   
 
