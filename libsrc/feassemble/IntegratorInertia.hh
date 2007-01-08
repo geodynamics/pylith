@@ -89,12 +89,12 @@ public :
   /** Initialize, get material property parameters from database.
    *
    * @param mesh PETSc mesh
-   * @param db Pointer to spatial database with material property parameters
    * @param cs Pointer to coordinate system of vertices
+   * @param db Pointer to spatial database with material property parameters
    */
   void initialize(ALE::Obj<ALE::Mesh>& mesh,
-		  spatialdata::spatialdb::SpatialDB* db,
-		  spatialdata::geocoords::CoordSys* cs);
+		  spatialdata::geocoords::CoordSys* cs,
+		  spatialdata::spatialdb::SpatialDB* db);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -122,6 +122,6 @@ private :
 
 #include "IntegratorInertia.icc" // inline methods
 
-#endif // pylith_feassemble_integratorineria_hh
+#endif // pylith_feassemble_integratorinertia_hh
 
 // End of file 

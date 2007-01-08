@@ -14,7 +14,7 @@ MAIN PRIORITIES
 
   Status: Implemented a & b.
 
-3. Implement Inertia object (manager for integrating inertia over ALL patches)
+3. Implement WFInertia object (manager for integrating inertia over ALL patches)
    a. C++ object
    b. unit tests at C++ level
    c. Python object
@@ -34,5 +34,12 @@ SECONDARY PRIORITIES
    a. C++ objects
    b. unit tests at C++ level
    b. Python object (MeshIOHDF5)
+   c. bindings
+   d. unit tests at Python level
+
+1. Implement MeshIOCubit
+   a. C++ objects
+   b. unit tests at C++ level
+   b. Python object (MeshIOCubit)
    c. bindings
    d. unit tests at Python level

@@ -27,7 +27,9 @@ class Integrator(Component):
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Component.Inventory):
-    """Python object for managing Integrator facilities and properties."""
+    """
+    Python object for managing Integrator facilities and properties.
+    """
 
     ## @class Inventory
     ## Python object for managing Integrator facilities and properties.
@@ -37,12 +39,17 @@ class Integrator(Component):
     ##
     ## \b Facilities
     ## @li \b quadrature Quadrature object for integration
+    ## @li \b db Database for material properties.
 
     import pyre.inventory
 
     from Quadrature import Quadrature
     quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
     quadrature.meta['tip'] = "Quadrature object for integration."
+
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    db = pyre.inventory.facility("db", factory=SimpleDB)
+    db.meta['tip'] = "Database for material properties."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -57,13 +64,15 @@ class Integrator(Component):
     return
 
 
-  def initialize(self):
+  def initialize(self, mesh):
     """
     Initialize C++ integrator object.
     """
     q = self.quadrature
     q.initialize()
     self.cppHandle.quadrature = q.cppHandle
+    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
+                              self.db)
     return
   
   
@@ -75,6 +84,7 @@ class Integrator(Component):
     """
     Component._configure(self)
     self.quadrature = self.inventory.quadrature
+    self.db = self.inventory.db
     return
 
 
