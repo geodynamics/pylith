@@ -51,6 +51,8 @@ class IsotropicLinearElastic(MaterialModel):
         Only 2 state variables (stress and strain) are required to describe
         this material."""
 
+        MaterialModel.__init__(self)
+
         # print "Hello from IsotropicLinearElastic.__init__!"
         # print ""
         self.materialModel = 1

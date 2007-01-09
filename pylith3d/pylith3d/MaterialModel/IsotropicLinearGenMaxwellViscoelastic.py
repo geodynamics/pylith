@@ -97,6 +97,8 @@ class IsotropicLinearGenMaxwellViscoelastic(MaterialModel):
                 
         
     def __init__(self):
+        MaterialModel.__init__(self)
+
         # print "Hello from IsotropicLinearGenMaxwellViscoelastic.__init__!"
         # print ""
         self.materialModel = 7
