@@ -38,7 +38,7 @@ class ElementTypeDef:
 
 	import pylith3d
 
-        print "Hello from ElementTypeDef.getdef!"
+        self.trace.log("Hello from ElementTypeDef.getdef!")
 
         self.numberVolumeElementNodes = self.elementNodes[elementType - 1]
         self.numberSurfaceElementNodes = self.elementNodes2d[elementType - 1]
@@ -125,8 +125,12 @@ class ElementTypeDef:
 
 
     def __init__(self):
-	print ""
-        print "Hello from ElementTypeDef.__init__!"
+
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+        
+        self.trace.log("Hello from ElementTypeDef.__init__!")
+        
         self.numberVolumeElementNodes = 0
         self.numberVolumeElementGaussPoints = 0
         self.numberVolumeElementEquations = 0

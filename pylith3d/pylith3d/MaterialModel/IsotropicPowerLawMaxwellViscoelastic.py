@@ -33,6 +33,8 @@ from pylith3d.MaterialModel.MaterialModel import MaterialModel
 class IsotropicPowerLawMaxwellViscoelastic(MaterialModel):
 
     def __init__(self):
+        MaterialModel.__init__(self)
+
         # print "Hello from IsotropicPowerLawMaxwellViscoelastic.__init__!"
         # print ""
         self.materialModel = 6

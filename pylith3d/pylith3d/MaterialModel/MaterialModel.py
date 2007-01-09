@@ -38,7 +38,7 @@ class MaterialModel:
 
         lineparse = KeywordValueParse()
 
-        # print "Hello from MaterialModel.readprop!"
+        self.trace.log("Hello from MaterialModel.readprop!")
 
         endMaterial = False
         while not endMaterial:
@@ -62,9 +62,12 @@ class MaterialModel:
 
 
     def __init__(self):
-        print ""
-        print "Hello from MaterialModel.__init__!"
-        self.propertyList = [0.0] * self.numberProperties
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+        
+        self.trace.log("Hello from MaterialModel.__init__!")
+
+        #self.propertyList = [0.0] * self.numberProperties
         return
 
 # version

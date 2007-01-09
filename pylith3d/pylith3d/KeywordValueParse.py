@@ -36,7 +36,7 @@ class KeywordValueParse:
 
         uparser = pyre.units.parser()
 
-        # print "Hello from KeywordValueParse.parseline!"
+        self.trace.log("Hello from KeywordValueParse.parseline!")
 
         self.keyvals[3] = False
         comment = line.find('#')
@@ -69,8 +69,11 @@ class KeywordValueParse:
 
 
     def __init__(self):
-        print ""
-        print "Hello from KeywordValueParse.__init__!"
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+        
+        self.trace.log("Hello from KeywordValueParse.__init__!")
+
         self.keyvals = [None, None, None,None]
         return
 

@@ -44,8 +44,8 @@ class Pylith3d_run(Component):
         pl3dscan = scanner
         pl3dsetup = setup
 
-        print ""
-        print "Hello from pl3drun.initialize (begin)!"
+        self.trace.log("Hello from pl3drun.initialize (begin)!")
+        
         print "Importing information from other modules:"
 
         # The only parameters required from Pylith3d_scan are those in the
@@ -173,8 +173,7 @@ class Pylith3d_run(Component):
         self.plotOutputFile = pl3dsetup.plotOutputFile
         self.ucdOutputRoot = pl3dsetup.ucdOutputRoot
 
-        print ""
-        print "Hello from pl3drun.initialize (end)!"
+        self.trace.log("Hello from pl3drun.initialize (end)!")
 
         return
 
@@ -283,8 +282,8 @@ class Pylith3d_run(Component):
         # and should not be accessed directly except as a member of the list.
         # They should not have been defined previously.
 
-        print ""
-        print "Hello from pl3drun.run (begin)!"
+        self.trace.log("Hello from pl3drun.run (begin)!")
+        
         print "Beginning problem solution:"
 
         # Output approximate memory usage
@@ -652,16 +651,19 @@ class Pylith3d_run(Component):
                     self.iterateEvent)
         pylith3d.destroyPETScMat(self.A,self.rhs,self.sol)
         pylith3d.PetscFinalize()
-        print ""
-        print "Hello from pl3drun.run (end)!"
+
+        self.trace.log("Hello from pl3drun.run (end)!")
+        
         return
 
 
     def __init__(self):
         Component.__init__(self, "pl3drun", "solver")
 
-        print ""
-        print "Hello from pl3drun.__init__!"
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+        
+        self.trace.log("Hello from pl3drun.__init__!")
 
         return
 

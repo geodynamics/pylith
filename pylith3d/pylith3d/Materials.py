@@ -34,7 +34,7 @@ class Materials:
 
     def readprop(self, propertyFile):
 
-        # print "Hello from Materials.readprop!"
+        self.trace.log("Hello from Materials.readprop!")
 
         file = open(propertyFile, 'r')
         while 1:
@@ -44,8 +44,9 @@ class Materials:
             materialType = None
             exec line
             if materialType != None:
-                matchoose = 'matmodel = ' + materialType + '.' + materialType + '()'
-                exec matchoose
+                matmodule = globals()[materialType]
+                matclass = getattr(matmodule, materialType)
+                matmodel = matclass()
                 matmodel.readprop(file)
                 self.numberMaterials += 1
                 self.materialNumber += [self.numberMaterials]
@@ -63,8 +64,11 @@ class Materials:
 
 
     def __init__(self):
-	print ""
-        print "Hello from Materials.__init__!"
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+        
+        self.trace.log("Hello from Materials.__init__!")
+        
         self.numberMaterials = 0
         self.materialNumber = []
         self.materialModel = []

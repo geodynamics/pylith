@@ -43,8 +43,11 @@ class Pylith3d_scan(Component):
         from pyre.units.length import m
         from pyre.units.time import s
 
-	print ""
-        print "Hello from pl3dscan.__init__ (begin)!"
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+
+        self.trace.log("Hello from pl3dscan.__init__ (begin)!")
+        
         print "Setting default keyword values:"
 
         # default values for extra input (category 2)
@@ -89,8 +92,7 @@ class Pylith3d_scan(Component):
         self.f77PlotOutput = 12
         self.f77UcdOutput = 13
 
-	print ""
-        print "Hello from pl3dscan.__init__ (end)!"
+        self.trace.log("Hello from pl3dscan.__init__ (end)!")
         
         return
 
@@ -108,8 +110,8 @@ class Pylith3d_scan(Component):
         matinfo = Materials()
         keyparse = KeywordValueParse()
 
-	print ""
-        print "Hello from pl3dscan.preinitialize (begin)!"
+        self.trace.log("Hello from pl3dscan.preinitialize (begin)!")
+        
         print "Scanning ascii files to determine dimensions:"
 
         # Initialization of all parameters
@@ -250,12 +252,10 @@ class Pylith3d_scan(Component):
                 if not line: break
                 keyvals = keyparse.parseline(line)
                 if keyvals[3]:
-		    if type(keyvals[2]) == str:
-		        exec 'self.' + keyvals[0] + '=' + "keyvals[2]"
-                    elif type(keyvals[2]) == pyre.units.unit.unit:
-                        exec 'self.' + keyvals[0] + '=' + 'uparser.parse(str(keyvals[2]))'
-		    else:
-		        exec 'self.' + keyvals[0] + '=' + str(keyvals[2])
+                    if hasattr(self, keyvals[0]):
+                        setattr(self, keyvals[0], keyvals[2])
+                    else:
+                        self._error.log("invalid keyword: %s" % keyvals[0])
             stream.close()
 
         # Define information needed from other functions:
@@ -545,8 +545,7 @@ class Pylith3d_scan(Component):
         self._numberSlipperyWinklerEntries = self._slipperyWinklerInfo[0]
         self._numberSlipperyWinklerForces = self._slipperyWinklerInfo[1]
 
-	print ""
-        print "Hello from pl3dscan.preinitialize (end)!"
+        self.trace.log("Hello from pl3dscan.preinitialize (end)!")
 
         return
 

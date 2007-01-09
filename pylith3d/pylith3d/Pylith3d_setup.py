@@ -50,8 +50,8 @@ class Pylith3d_setup(Component):
         pl3dscan = scanner
         pl3dscan.preinitialize()
 
-	print ""
-        print "Hello from pl3dsetup.initialize (begin)!"
+        self.trace.log("Hello from pl3dsetup.initialize (begin)!")
+        
         print "Importing values from scanning phase:"
 
         # Parameters needed from Pylith3d_scan.py.
@@ -262,8 +262,7 @@ class Pylith3d_setup(Component):
         self.numberSlipperyWinklerEntries = pl3dscan._numberSlipperyWinklerEntries
         self.numberSlipperyWinklerForces = pl3dscan._numberSlipperyWinklerForces
 
-	print ""
-        print "Hello from pl3dsetup.initialize (end)!"
+        self.trace.log("Hello from pl3dsetup.initialize (end)!")
 
         return
 
@@ -274,8 +273,8 @@ class Pylith3d_setup(Component):
         from ElementTypeDef import ElementTypeDef
         import pylith3d
 
-	print ""
-        print "Hello from pl3dsetup.read (begin)!"
+        self.trace.log("Hello from pl3dsetup.read (begin)!")
+        
         print "Reading problem definition and allocating necessary storage:"
 
 
@@ -731,8 +730,7 @@ class Pylith3d_setup(Component):
             self.f77FileInput,
             self.slipperyWinklerInputFile)
 
-	print ""
-        print "Hello from pl3dsetup.read (end)!"
+        self.trace.log("Hello from pl3dsetup.read (end)!")
 
         return
 
@@ -742,8 +740,8 @@ class Pylith3d_setup(Component):
 
         import pylith3d
 
-	print ""
-        print "Hello from pl3dsetup.numberequations (begin)!"
+        self.trace.log("Hello from pl3dsetup.numberequations (begin)!")
+        
         print "Numbering global equations:"
 
         # Initialize variables that are defined in this function.
@@ -887,8 +885,7 @@ class Pylith3d_setup(Component):
             self.numberSlipperyWinklerForces,
             self.numberSlipperyWinklerEntries)
 
-	print ""
-        print "Hello from pl3dsetup.numberequations (end)!"
+        self.trace.log("Hello from pl3dsetup.numberequations (end)!")
             
         return
             
@@ -900,8 +897,8 @@ class Pylith3d_setup(Component):
 
         import pylith3d
 
-	print ""
-        print "Hello from pl3dsetup.sortmesh (begin)!"
+        self.trace.log("Hello from pl3dsetup.sortmesh (begin)!")
+        
         print "Renumbering elements, split nodes, and slippery nodes:"
 
         # Initialize variables that are defined in this function.
@@ -986,8 +983,7 @@ class Pylith3d_setup(Component):
             self.numberSlipperyNodeEntries,
             self.numberVolumeElements)
             
-	print ""
-        print "Hello from pl3dsetup.sortmesh (end)!"
+        self.trace.log("Hello from pl3dsetup.sortmesh (end)!")
 
         return
 
@@ -998,8 +994,8 @@ class Pylith3d_setup(Component):
 
         import pylith3d
 
-	print ""
-        print "Hello from pl3dsetup.sparsesetup (begin)!"
+        self.trace.log("Hello from pl3dsetup.sparsesetup (begin)!")
+        
         print "Setting up sparse matrix storage:"
         
         self.autoprestrStage, \
@@ -1146,7 +1142,8 @@ class Pylith3d_setup(Component):
         print "maximumNonzeroTermsPerRow: %i" % self.maximumNonzeroTermsPerRow
         print "averageNonzeroTermsPerRow: %g" % self.averageNonzeroTermsPerRow
 	print ""
-        print "Hello from pl3dsetup.sparsesetup (end)!"
+        
+        self.trace.log("Hello from pl3dsetup.sparsesetup (end)!")
 
         return
         
@@ -1156,8 +1153,8 @@ class Pylith3d_setup(Component):
         
         import pylith3d
 
-	print ""
-        print "Hello from pl3dsetup.allocateremaining (begin)!"
+        self.trace.log("Hello from pl3dsetup.allocateremaining (begin)!")
+        
         print "Allocating remaining storage:"
         
         # Initialize variables that are defined in this function.
@@ -1490,8 +1487,7 @@ class Pylith3d_setup(Component):
             self.listNtimdat)
         self.memorySize += 9*self.intSize
 
-	print ""
-        print "Hello from pl3dsetup.allocateremaining (end)!"
+        self.trace.log("Hello from pl3dsetup.allocateremaining (end)!")
 
         return
 
@@ -1504,8 +1500,8 @@ class Pylith3d_setup(Component):
 
         import pylith3d
 
-	print ""
-        print "Hello from pl3dsetup.meshwriteascii (begin)!"
+        self.trace.log("Hello from pl3dsetup.meshwriteascii (begin)!")
+        
         print "Outputting Ascii mesh information:"
 
         # Write out global parameters
@@ -1798,8 +1794,7 @@ class Pylith3d_setup(Component):
             self.f77AsciiOutput,
             self.asciiOutputFile)
 
-	print ""
-        print "Hello from pl3dsetup.meshwrite (end)!"
+        self.trace.log("Hello from pl3dsetup.meshwrite (end)!")
 
         return
 
@@ -1807,8 +1802,10 @@ class Pylith3d_setup(Component):
     def __init__(self):
         Component.__init__(self, "pl3dsetup", "setup")
 
-	print ""
-        print "Hello from pl3dsetup.__init__!"
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+
+        self.trace.log("Hello from pl3dsetup.__init__!")
 
         return
 
