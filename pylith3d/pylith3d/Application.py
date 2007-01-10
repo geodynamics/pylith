@@ -29,13 +29,23 @@
 #
 
 
-from pyre.applications.Script import Script as BaseScript
+from mpi.Application import Application as BaseApplication
 
 
-class Application(BaseScript):
+class Application(BaseApplication):
 
 
     def main(self, *args, **kwds):
+        import sys
+        
+        # if we are embedding, insert the extension module in the
+        # 'pylith3d' package
+        try:
+            import builtin_pylith3d
+            sys.modules['pylith3d.pylith3d'] = builtin_pylith3d
+        except ImportError:
+            pass
+    
 #        from time import clock as now
 #        start = now()
         pl3dsetup = self.inventory.setup
@@ -45,7 +55,6 @@ class Application(BaseScript):
         try:
             pl3dsetup.initialize(self.inventory.scanner)
         except self.inventory.scanner.CanNotOpenInputOutputFilesError, error:
-            import sys
             print >> sys.stderr
             error.report(sys.stderr)
             print >> sys.stderr
@@ -70,7 +79,7 @@ class Application(BaseScript):
 
 
     def __init__(self, name="pylith3d"):
-        BaseScript.__init__(self, name)
+        BaseApplication.__init__(self, name)
         return
 
 
@@ -110,7 +119,7 @@ class Application(BaseScript):
         return PetscCommandlineParser()
 
 
-    class Inventory(BaseScript.Inventory):
+    class Inventory(BaseApplication.Inventory):
 
         import pyre.inventory
         from Pylith3d_scan import Pylith3d_scan
