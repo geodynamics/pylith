@@ -47,14 +47,6 @@ if __name__ == "__main__":
             sys.path.insert(1, directory)
             site.addsitedir(directory)
 
-    # if we are embedding, insert the extension module in the
-    # 'pylith3d' package
-    try:
-        import builtin_pylith3d
-        sys.modules['pylith3d.pylith3d'] = builtin_pylith3d
-    except ImportError:
-        pass
-    
     from pylith3d.Application import Application
     from pyre.applications import start
     start(applicationClass=Application)

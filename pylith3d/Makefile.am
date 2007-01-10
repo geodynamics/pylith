@@ -8,7 +8,7 @@ abs_builddir = @abs_builddir@
 
 bin_PROGRAMS = 
 if COND_EMBEDDING
-    bin_PROGRAMS += pypylith3d
+    bin_PROGRAMS += pypylith3d mpipypylith3d
     INTERPRETER = $(bindir)/pypylith3d
     noinstINTERPRETER = $(abs_builddir)/pypylith3d
     noinstPYTHONPATH = $(abs_top_builddir)/python
@@ -38,7 +38,7 @@ nobase_pyexec_PYTHON = \
 	pylith3d/PetscUtil.py
 
 # pypylith3d (libpylith3d + pylith3dmodule + embedded Python interpreter)
-INCLUDES = -I$(top_srcdir)/pylith3d/module -I$(PYTHON_INCDIR)
+INCLUDES = -I$(top_srcdir)/pylith3d/module $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)
 pypylith3d_SOURCES = pypylith3d.cc
 pypylith3d_LDADD = \
 	$(top_builddir)/pylith3d/module/libpylith3dmodule.a \
@@ -47,6 +47,23 @@ pypylith3d$(EXEEXT): $(pypylith3d_OBJECTS) $(pypylith3d_DEPENDENCIES)
 	@rm -f pypylith3d$(EXEEXT)
 	$(CXXLINK) $(PYTHON_LDFLAGS) $(PYTHON_LINKFORSHARED) \
 		$(pypylith3d_LDFLAGS) $(pypylith3d_OBJECTS) $(pypylith3d_LDADD) \
+		$(PYTHON_BLDLIBRARY) \
+		$(PYTHON_EGG_LDFLAGS) \
+		$(PETSC_FORTRAN_LIB) $(PETSC_LIB) \
+		$(MPILIBS) \
+		$(FCLIBS) \
+		$(PYTHON_LIBS) $(PYTHON_MODLIBS) $(PYTHON_SYSLIBS) \
+		$(LIBS) \
+		$(PYTHON_LDLAST)
+mpipypylith3d_SOURCES = pypylith3d.cc
+mpipypylith3d_CXXFLAGS = -DUSE_MPI
+mpipypylith3d_LDADD = \
+	$(top_builddir)/pylith3d/module/libpylith3dmodule.a \
+	$(top_builddir)/pylith3d/libpylith3d/libpylith3d.a
+mpipypylith3d$(EXEEXT): $(mpipypylith3d_OBJECTS) $(mpipypylith3d_DEPENDENCIES) 
+	@rm -f mpipypylith3d$(EXEEXT)
+	$(CXXLINK) $(PYTHON_LDFLAGS) $(PYTHON_LINKFORSHARED) \
+		$(mpipypylith3d_LDFLAGS) $(mpipypylith3d_OBJECTS) $(mpipypylith3d_LDADD) \
 		$(PYTHON_BLDLIBRARY) \
 		$(PYTHON_EGG_LDFLAGS) \
 		$(PETSC_FORTRAN_LIB) $(PETSC_LIB) \
