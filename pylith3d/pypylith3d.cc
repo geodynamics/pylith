@@ -32,8 +32,6 @@
 #include <stdio.h>
 #include "pylith3dmodule.h"
 
-#define MPICH_IGNORE_CXX_SEEK
-
 #define COMMAND \
 "import sys; " \
 "path = sys.argv[1]; " \
