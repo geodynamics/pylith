@@ -25,8 +25,7 @@ F77 = $(FC)
 AM_FFLAGS = \
 	$(FCFLAGS) \
 	-I$(top_srcdir)/pylith3d/libpylith3d/includes \
-	$(PETSC_INCLUDE) \
-	$(MPIINCLUDES)
+	$(PETSC_INCLUDE)
 sources = \
 	addfor.f \
 	addsn.f \

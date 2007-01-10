@@ -38,7 +38,7 @@ nobase_pyexec_PYTHON = \
 	pylith3d/PetscUtil.py
 
 # pypylith3d (libpylith3d + pylith3dmodule + embedded Python interpreter)
-INCLUDES = -I$(top_srcdir)/pylith3d/module $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)
+INCLUDES = -I$(top_srcdir)/pylith3d/module $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 pypylith3d_SOURCES = pypylith3d.cc
 pypylith3d_LDADD = \
 	$(top_builddir)/pylith3d/module/libpylith3dmodule.a \
@@ -50,7 +50,6 @@ pypylith3d$(EXEEXT): $(pypylith3d_OBJECTS) $(pypylith3d_DEPENDENCIES)
 		$(PYTHON_BLDLIBRARY) \
 		$(PYTHON_EGG_LDFLAGS) \
 		$(PETSC_FORTRAN_LIB) $(PETSC_LIB) \
-		$(MPILIBS) \
 		$(FCLIBS) \
 		$(PYTHON_LIBS) $(PYTHON_MODLIBS) $(PYTHON_SYSLIBS) \
 		$(LIBS) \
@@ -67,7 +66,6 @@ mpipypylith3d$(EXEEXT): $(mpipypylith3d_OBJECTS) $(mpipypylith3d_DEPENDENCIES)
 		$(PYTHON_BLDLIBRARY) \
 		$(PYTHON_EGG_LDFLAGS) \
 		$(PETSC_FORTRAN_LIB) $(PETSC_LIB) \
-		$(MPILIBS) \
 		$(FCLIBS) \
 		$(PYTHON_LIBS) $(PYTHON_MODLIBS) $(PYTHON_SYSLIBS) \
 		$(LIBS) \
