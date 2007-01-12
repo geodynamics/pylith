@@ -143,9 +143,18 @@ c
       infmatmod(5,8) = izero
       infmatmod(6,8) = 6
 c
+c...  Definition for power-law Maxwell viscoelastic material (ESF)
+c
+      infmatmod(1,9) = ione
+      infmatmod(2,9) = 18
+      infmatmod(3,9) = ifive
+      infmatmod(4,9) = ione
+      infmatmod(5,9) = ione
+      infmatmod(6,9) = 6
+c
 c...  Dummy definitions for remaining materials
 c
-      do i=9,nmatmodmax
+      do i=10,nmatmodmax
         do j=2,6
           infmatmod(j,i)=infmatmod(j,5)
         end do
