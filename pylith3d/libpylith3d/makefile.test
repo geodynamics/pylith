@@ -6,7 +6,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PROJ_F77_INCLUDES= -I./includes
 
-PROJ_CPP_INCLUDES= -I$(PETSC_DIR)/include -I$(PETSC_DIR)/bmake/$(PETSC_ARCH) -I$(MPI_INCDIR)
+PROJ_CPP_INCLUDES= -I$(PETSC_DIR)/include -I$(PETSC_DIR)/bmake/$(PETSC_ARCH) -I$(MPI_INCDIR) -I$(PETSC_DIR)
 
 #FFLAGC= -fno-silent -fno-ugly -fno-f77 -ff90 -fpedantic -Wall -fbackslash -Wsurprising -W $(PROJ_F77_INCLUDES) $(PROJ_CPP_INCLUDES)
 

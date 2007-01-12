@@ -326,6 +326,7 @@ c
      &     prop,infmatmod,npropsz,tminmax,                              ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
      &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_mat_cmp,   ! timdat
+     &     iter,                                                        ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -340,7 +341,7 @@ c
      &     numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,         ! elemnt
      &     prop,infmatmod,npropsz,tminmax,                              ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,       ! timdat
+     &     histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,iter,  ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode

@@ -40,7 +40,7 @@ c
      & ielg,numelv,ielindx,                                             ! elordering
      & prop,nprop,elas_strs_mat,td_strs_mat,matchg,tminmax,             ! materl
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
-     & rtimdat,ntimdat,rgiter,                                          ! timdat
+     & rtimdat,ntimdat,rgiter,iter,                                     ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
@@ -72,7 +72,7 @@ c
       integer ielg,numelv,ielindx(numelv)
       integer nnz,neq,numnp,numslp,numsn,numfn,nelfamily,nstate,nstate0
       integer nprestrflag,ipstrs,ipauto,n0states,nprop
-      integer nen,ngauss,nee,numrot,ierr
+      integer nen,ngauss,nee,iter,numrot,ierr
       integer iddmat(nstr,nstr)
       integer ien(nen,nelfamily),lm(nee,nelfamily),lmx(nee,nelfamily)
       integer lmf(nen,nelfamily)
@@ -149,7 +149,7 @@ c
         do l=1,ngauss
           call td_strs_mat(state(1,l,ielf),dstate(1,l,ielf),
      &     state0(1,l,indstate0),ee(nstr*(l-1)+1),scur(nstr*(l-1)+1),
-     &     dmat(1,l,ielf),prop,rtimdat,rgiter,ntimdat,iddmat,tmax,
+     &     dmat(1,l,ielf),prop,rtimdat,rgiter,iter,ntimdat,iddmat,tmax,
      &     nstate,nstate0,nprop,matchg,ierr,errstrng)
           if(ierr.ne.izero) return
           tminmax=min(tmax,tminmax)

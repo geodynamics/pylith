@@ -38,7 +38,7 @@ c
      & ielg,                                                            ! elemnt
      & prop,nprop,elas_strs,td_strs,matchg,tminmax,                     ! materl
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
-     & rtimdat,ntimdat,rgiter,                                          ! timdat
+     & rtimdat,ntimdat,rgiter,iter,                                     ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
@@ -64,7 +64,8 @@ c    the local variable ielf contains the element number within a given
 c    family.
 c
       integer ielg
-      integer nprestrflag,ipstrs,ipauto,nprop,nen,ngauss,nee,numrot,ierr
+      integer nprestrflag,ipstrs,ipauto,nprop,nen,ngauss,nee,iter
+      integer numrot,ierr
       integer iddmat(nstr,nstr)
       integer ien(nen,nelfamily),lm(ndof*nen,nelfamily)
       integer lmx(ndof*nen,nelfamily),lmf(nen,nelfamily)
@@ -142,7 +143,7 @@ c
         do l=1,ngauss
           call td_strs(state(1,l,ielf),dstate(1,l,ielf),
      &     state0(1,l,indstate0),ee(nstr*(l-1)+1),scur(nstr*(l-1)+1),
-     &     dmat(1,l,ielf),prop,rtimdat,rgiter,ntimdat,iddmat,tmax,
+     &     dmat(1,l,ielf),prop,rtimdat,rgiter,iter,ntimdat,iddmat,tmax,
      &     nstate,nstate0,nprop,matchg,ierr,errstrng)
           if(ierr.ne.izero) return
           tminmax=min(tmax,tminmax)
