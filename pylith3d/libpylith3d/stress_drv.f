@@ -37,7 +37,7 @@ c
      & numelv,nstatesz,nstatesz0,nprestrflag,ipstrs,ipauto,             ! elemnt
      & prop,infmatmod,npropsz,tminmax,                                  ! materl
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
-     & histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,           ! timdat
+     & histry,rtimdat,rgiter,ntimdat,nhist,lastep,stress_cmp,iter,      ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
@@ -59,7 +59,7 @@ c...  subroutine arguments
 c
       integer neq,numnp,numslp,numfn,nvfamilies,numelv,nstatesz
       integer nstatesz0,nprestrflag,ipstrs,ipauto
-      integer npropsz,nen,ngauss,nee,nhist,lastep,numrot,ierr
+      integer npropsz,nen,ngauss,nee,nhist,lastep,iter,numrot,ierr
       integer iddmat(nstr,nstr)
       integer ien(nen,numelv),lm(ndof*nen,numelv),lmx(ndof*nen,numelv)
       integer lmf(nen,numelv),ivfamily(6,nvfamilies)
@@ -145,7 +145,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_1,td_strs_1,matchg,tminmax,             ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -161,7 +161,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_2,td_strs_2,matchg,tminmax,             ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -177,7 +177,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_3,td_strs_3,matchg,tminmax,             ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -193,7 +193,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_4,td_strs_4,matchg,tminmax,             ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -209,7 +209,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_5,td_strs_5,matchg,tminmax,             ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -225,7 +225,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_6,td_strs_6,matchg,tminmax,             ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -241,7 +241,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_7,td_strs_7,matchg,tminmax,             ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -257,7 +257,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_8,td_strs_8,matchg,tminmax,             ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -273,7 +273,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_9,td_strs_9,matchg,tminmax,             ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -289,7 +289,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_10,td_strs_10,matchg,tminmax,           ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -305,7 +305,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_11,td_strs_11,matchg,tminmax,           ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -321,7 +321,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_12,td_strs_12,matchg,tminmax,           ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -337,7 +337,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_13,td_strs_13,matchg,tminmax,           ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -353,7 +353,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_14,td_strs_14,matchg,tminmax,           ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -369,7 +369,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_15,td_strs_15,matchg,tminmax,           ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -385,7 +385,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_16,td_strs_16,matchg,tminmax,           ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -401,7 +401,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_17,td_strs_17,matchg,tminmax,           ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -417,7 +417,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_18,td_strs_18,matchg,tminmax,           ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -433,7 +433,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_19,td_strs_19,matchg,tminmax,           ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode
@@ -449,7 +449,7 @@ c*****************************
      &     ipauto,n0states,ielg,                                        ! elemfamily
      &     ptmp,nprop,elas_strs_20,td_strs_20,matchg,tminmax,           ! materl
      &     gauss,sh,shj,nen,ngauss,nee,                                 ! eltype
-     &     rtimdat,ntimdat,rgiter,                                      ! timdat
+     &     rtimdat,ntimdat,rgiter,iter,                                 ! timdat
      &     skew,numrot,                                                 ! skew
      &     getshape,bmatrix,                                            ! bbar
      &     ierr,errstrng)                                               ! errcode

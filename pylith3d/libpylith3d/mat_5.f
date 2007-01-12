@@ -296,7 +296,7 @@ c
 c
 c
       subroutine td_matinit_5(state,dstate,state0,dmat,prop,rtimdat,
-     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & rgiter,iopt,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
      & errstrng)
 c
 c...  subroutine to form the material matrix for an integration point
@@ -317,7 +317,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nstate0,nprop,ierr
+      integer iopt,nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       double precision state(nstate),dstate(nstate)
@@ -388,8 +388,8 @@ c
 c
 c
       subroutine td_strs_5(state,dstate,state0,ee,scur,dmat,prop,
-     & rtimdat,rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
-     & ierr,errstrng)
+     & rtimdat,rgiter,iter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,
+     & matchg,ierr,errstrng)
 c
 c...  subroutine to compute the current stress for the time-dependent
 c     solution.
@@ -406,7 +406,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nstate0,nprop,ierr
+      integer iter,nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg
@@ -488,8 +488,8 @@ c
 c
 c
       subroutine td_strs_mat_5(state,dstate,state0,ee,scur,dmat,prop,
-     & rtimdat,rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
-     & ierr,errstrng)
+     & rtimdat,rgiter,iter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,
+     & matchg,ierr,errstrng)
 c
 c...  subroutine to compute the current stress and updated material
 c     matrix for the time-dependent solution.
@@ -506,7 +506,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer nstate,nstate0,nprop,ierr
+      integer iter,nstate,nstate0,nprop,ierr
       integer iddmat(nstr,nstr)
       character errstrng*(*)
       logical matchg

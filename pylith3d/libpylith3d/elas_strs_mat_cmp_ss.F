@@ -40,7 +40,7 @@ c
      & ielg,numelv,ielindx,                                             ! elemnt,orig element num
      & prop,nprop,elas_strs_mat,td_strs_mat,matchg,tminmax,             ! materl
      & gauss,sh,shj,nen,ngauss,nee,                                     ! eltype
-     & rtimdat,ntimdat,rgiter,                                          ! timdat
+     & rtimdat,ntimdat,rgiter,iter,                                     ! timdat
      & skew,numrot,                                                     ! skew
      & getshape,bmatrix,                                                ! bbar
      & ierr,errstrng)                                                   ! errcode
@@ -76,7 +76,7 @@ c    family.
 c
       integer ielg,numelv,ielindx(numelv)
       integer nprestrflag,ipstrs,ipauto,n0states,nprop,nen,ngauss,nee
-      integer numrot,ierr
+      integer iter,numrot,ierr
       integer iddmat(nstr,nstr)
       integer ien(nen,nelfamily),lm(ndof*nen,nelfamily)
       integer lmx(ndof*nen,nelfamily),lmf(nen,nelfamily)
