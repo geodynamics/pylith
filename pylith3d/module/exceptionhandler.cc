@@ -84,6 +84,9 @@ exceptionhandler(const int errorcode,
     case 114: exception = PyExc_ValueError; format = "%s: Initial bracketing values are identical."; break;
     case 115: exception = PyExc_ValueError; format = "%s: Root is not initially bracketed."; break;
     case 116: exception = PyExc_ValueError; format = "%s: Invalid set of shear ratios."; break;
+    case 117: exception = PyExc_ValueError; format = "%s: Illegal value in triangular matrix."; break;
+    case 118: exception = PyExc_ValueError; format = "%s: Triangular matrix not positive definite."; break;
+    case 119: exception = PyExc_ValueError; format = "%s: Diagonal of factored triangular matrix is zero."; break;
     // MemoryErrors
     case 300: exception = PyExc_MemoryError; format = "%s: Insufficient memory assigned."; break;
     // binary I/O
