@@ -416,6 +416,10 @@ c
       include "rgiter_dim.inc"
       include "ntimdat_dim.inc"
 c
+c...  local variables
+c
+      integer iopt
+c
 c...  included variable definitions
 c
       include "rtimdat_def.inc"
@@ -424,11 +428,13 @@ c
 c
 cdebug      write(6,*) "Hello from td_strs_mat_8_f!"
 c
+      iopt=2
       call td_matinit_8(state,dstate,state0,dmat,prop,rtimdat,rgiter,
-     & ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,errstrng)
+     & iopt,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
+     & ierr,errstrng)
       if(ierr.ne.izero) return
       call td_strs_8(state,dstate,state0,ee,scur,dmat,prop,rtimdat,
-     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & rgiter,iter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
      & errstrng)
 c
       return
