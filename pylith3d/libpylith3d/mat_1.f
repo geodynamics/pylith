@@ -339,7 +339,7 @@ c
 c
       if(matchg) call elas_mat_1(dmat,prop,iddmat,nprop,ierr,errstrng)
       call td_strs_1(state,dstate,state0,ee,scur,dmat,prop,rtimdat,
-     & rgiter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
+     & rgiter,iter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
      & ierr,errstrng)
 c
       return
