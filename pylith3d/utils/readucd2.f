@@ -243,7 +243,7 @@ c
           end if
         end do
       end do
-      write(kto,*) (nfnodes(j),j=1,numflt)
+      write(kto,800) (nfnodes(j),j=1,numflt)
 c
 c...  read element attributes to determine which elements are adjacent
 c     to each fault
@@ -265,8 +265,8 @@ c
           end if
         end do
       end do
-      write(kto,*) (nfelems(1,j),j=1,numflt)
-      write(kto,*) (nfelems(2,j),j=1,numflt)
+      write(kto,810) (nfelems(1,j),j=1,numflt)
+      write(kto,820) (nfelems(2,j),j=1,numflt)
       close(kr)
 c
 c...  if auxiliary file is being used, read BC from it
@@ -360,6 +360,9 @@ c
       end do
       write(kto,700) nflip
 700   format("Number of connectivities flipped:  ",i7)
+800   format("Number of faulted nodes:  ",i7)
+810   format("Number of faulted elements (side 1):  ",i7)
+820   format("Number of faulted elements (side 2):  ",i7)
       stop
       end
 c
