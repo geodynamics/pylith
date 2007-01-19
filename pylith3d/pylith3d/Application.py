@@ -84,7 +84,9 @@ class Application(BaseApplication):
 
 
     def _configure(self):
-        self.petscArgs = []
+        import sys
+        
+        self.petscArgs = [sys.executable]
         
         ksp_monitor = self.inventory.ksp_monitor
         if ksp_monitor:
@@ -108,6 +110,10 @@ class Application(BaseApplication):
 
         if self.inventory.start_in_debugger:
             self.petscArgs.append("-start_in_debugger")
+
+        debugger_pause = self.inventory.debugger_pause
+        if debugger_pause:
+            self.petscArgs.extend(["-debugger_pause", debugger_pause])
 
         self.petscArgs.extend(self.inventory.petsc.getArgs())
 
@@ -139,6 +145,7 @@ class Application(BaseApplication):
         pc_type = pyre.inventory.str("pc_type")
         sub_pc_type = pyre.inventory.str("sub_pc_type")
         start_in_debugger = pyre.inventory.str("start_in_debugger")
+        debugger_pause = pyre.inventory.str("debugger_pause")
 
         # a dummy facility for passing arbitrary options to PETSc
         petsc = PetscFacility("petsc")
