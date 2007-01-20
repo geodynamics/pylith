@@ -17,6 +17,8 @@
 #include "Quadrature.hh"
 #include "spatialdata/spatialdb/SpatialDB.hh"
 
+#include <assert.h> // USES assert()
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::Integrator::Integrator(void) :

@@ -44,6 +44,10 @@ pylith::feassemble::TestIntegratorInertia::_testIntegrateLumped(
 					   IntegratorInertia* integrator,
 					   const IntegratorData& data) const
 { // _testIntegrateLumped
+
+  CPPUNIT_ASSERT(false);
+
+#if 0
   typedef ALE::Mesh::real_section_type real_section_type;
   typedef ALE::Mesh::topology_type topology_type;
 
@@ -64,7 +68,8 @@ pylith::feassemble::TestIntegratorInertia::_testIntegrateLumped(
   const ALE::Obj<real_section_type>& density =
     mesh->getRealSection("density");
   density->setName("density");
-  density->setFiberDimensionByDepth(patch, 0, _quadrature->numQuadPts());
+  density->setFiberDimensionByDepth(patch, 0, 
+				    integrator->_quadrature->numQuadPts());
   density->allocate();
   integrator->setDensity(density);
 
@@ -92,6 +97,7 @@ pylith::feassemble::TestIntegratorInertia::_testIntegrateLumped(
     for (int iDim=0; iDim < fiberDim; ++iDim)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[iDim]/valsE[iDim], tolerance);
   } // for
+#endif
 } // _testIntegrateLumped
 
 

@@ -55,5 +55,15 @@ pylith::feassemble::IntegratorElasticity3D::integrate(PetscMat* mat,
 { // integrate
 } // integrate
 
+// ----------------------------------------------------------------------
+// Compute matrix associated with operator.
+void
+pylith::feassemble::IntegratorElasticity3D::initialize(
+				      ALE::Obj<ALE::Mesh>& mesh,
+				      spatialdata::geocoords::CoordSys* cs,
+				      spatialdata::spatialdb::SpatialDB* db)
+{ // initialize
+} // initialize
+
 
 // End of file 
