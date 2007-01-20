@@ -90,6 +90,9 @@ void
 pylith::feassemble::TestIntegrator::_testIntegrateAction(Integrator* integrator,
 					   const IntegratorData& data) const
 { // _testIntegrateAction
+  CPPUNIT_ASSERT(false);
+
+#if 0
   typedef ALE::Mesh::real_section_type real_section_type;
   typedef ALE::Mesh::topology_type topology_type;
 
@@ -142,6 +145,7 @@ pylith::feassemble::TestIntegrator::_testIntegrateAction(Integrator* integrator,
     for (int iDim=0; iDim < fiberDim; ++iDim)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[iDim]/valsE[iDim], tolerance);
   } // for
+#endif
 } // _testIntegrateAction
 
 // ----------------------------------------------------------------------
@@ -150,6 +154,9 @@ void
 pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
 					  const IntegratorData& data) const
 { // _testIntegrate
+  CPPUNIT_ASSERT(false);
+
+#if 0
   typedef ALE::Mesh::real_section_type real_section_type;
   typedef ALE::Mesh::topology_type topology_type;
 
@@ -253,6 +260,7 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
     std::cerr << err << std::endl;
     throw;
   } // try/catch
+#endif
 } // _testIntegrate
 
 // ----------------------------------------------------------------------

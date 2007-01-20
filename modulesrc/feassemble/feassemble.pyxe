@@ -294,12 +294,12 @@ cdef class Integrator:
     """
     # create shim for method 'initialize'
     #embed{ void Integrator_initialize(void* pObj, void* meshObj, void* csObj, void* dbObj)
-    ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh*>) meshObj;
+    ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshObj;
     spatialdata::geocoords::CoordSys* cs =
       (spatialdata::geocoords::CoordSys*) csObj;
     spatialdata::spatialdb::SpatialDB* db =
       (spatialdata::spatialdb::SpatialDB*) dbObj;
-    ((pylith::feassemble::Integrator*) pObj)->initialize(mesh, cs, db);
+    ((pylith::feassemble::Integrator*) pObj)->initialize(*mesh, cs, db);
     #}embed
 
     if not mesh.name == "pylith_topology_Mesh":
@@ -314,6 +314,7 @@ cdef class Integrator:
       raise TypeError, \
             "Argument must be extension module type " \
             "'spatialdata::spatialdb::SpatialDB'."
+    cdef void* meshObj
     meshObj = <void*> PyCObject_AsVoidPtr(mesh)
     Integrator_initialize(self.thisptr, meshObj,
                           ptrFromHandle(cs), ptrFromHandle(db))
