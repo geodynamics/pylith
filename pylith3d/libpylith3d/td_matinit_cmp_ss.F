@@ -103,7 +103,7 @@ c
 c
 c...  local variables
 c
-      integer ielf,incstate0,indstate0,l
+      integer iopt,ielf,incstate0,indstate0,l
       double precision tmax
 c
 c...  included variable definitions
@@ -114,6 +114,7 @@ c
 c
 cdebug      write(6,*) "Hello from td_matinit_cmp_ss_f!"
 c
+      iopt=1
       incstate0=izero
       indstate0=ione
       if(ipstrs.ne.izero) then
@@ -129,7 +130,7 @@ c
         do l=1,ngauss
           call td_matinit(state(1,l,ielf),dstate(1,l,ielf),
      &     state0(1,l,indstate0),dmat(1,l,ielf),prop,rtimdat,rgiter,
-     &     ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
+     &     iopt,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,
      &     ierr,errstrng)
         end do
         call formes_ss(
