@@ -51,7 +51,17 @@ class Application(BaseApplication):
         pl3dsetup = self.inventory.setup
         import pylith3d
         pylith3d.PetscInitialize(self.petscArgs)
-        self.inventory.scanner.inventory.fileRoot, mesh = pylith3d.processMesh(self.inventory.scanner.inventory.fileRoot, self.inventory.scanner.inventory.interpolateMesh, self.inventory.scanner.inventory.partitioner)
+
+        scanner = self.inventory.scanner
+        
+        from mpi import MPI_Comm_rank, MPI_COMM_WORLD
+        scanner.rank = MPI_Comm_rank(MPI_COMM_WORLD)
+
+        mesh = pylith3d.processMesh(scanner.macroString(scanner.Inventory.outputFileRoot),
+                                    scanner.macroString(scanner.Inventory.inputFileRoot),
+                                    scanner.inventory.interpolateMesh,
+                                    scanner.inventory.partitioner)
+        
         try:
             pl3dsetup.initialize(self.inventory.scanner)
         except self.inventory.scanner.CanNotOpenInputOutputFilesError, error:
