@@ -48,7 +48,7 @@ class Pylith3d_scan(Component):
 
         self.trace.log("Hello from pl3dscan.__init__ (begin)!")
         
-        print "Setting default keyword values:"
+        self.trace.log("Setting default keyword values:")
 
         # default values for extra input (category 2)
         # these can be overriden using a script or keyword=value file
@@ -99,23 +99,126 @@ class Pylith3d_scan(Component):
         return
 
 
+    def _configure(self):
+        self._summaryIOError = self.CanNotOpenInputOutputFilesError()
+
+        inputFile = self.inputFile
+        inputFileStream = self.inputFileStream
+        outputFile = self.outputFile
+        macroString = self.macroString
+
+        #                              open?   fatal?  label
+        optional = self.IOFileCategory(True,   0,      "optional")
+        unused   = self.IOFileCategory(False,  0,      "unused")
+        required = self.IOFileCategory(True,   1,       None)
+        
+        Inventory = Pylith3d_scan.Inventory
+
+        # First see if there is a keyword = value file, which may be used
+        # to override parameters from __init__.
+
+        from KeywordValueParse import KeywordValueParse
+        keyparse = KeywordValueParse()
+
+        self._keywordEqualsValueFile = inputFileStream(Inventory.keywordEqualsValueFile, optional)
+
+        # print self._keywordEqualsValueFile.name
+        if self._keywordEqualsValueFile:
+            stream = self._keywordEqualsValueFile
+            while 1:
+                line = stream.readline()
+                if not line: break
+                keyvals = keyparse.parseline(line)
+                if keyvals[3]:
+                    if hasattr(self, keyvals[0]):
+                        setattr(self, keyvals[0], keyvals[2])
+                    else:
+                        self._error.log("invalid keyword: %s" % keyvals[0])
+            stream.close()
+
+        analysisType = self.inventory.analysisType
+
+        self._asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
+        self._plotOutputFile              = outputFile(Inventory.plotOutputFile,             optional)
+        self._coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
+        self._bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
+        self._winklerInputFile            = inputFile(Inventory.winklerInputFile,            optional)
+        self._rotationInputFile           = inputFile(Inventory.rotationInputFile,           optional)
+        self._timeStepInputFile           = inputFile(Inventory.timeStepInputFile,           required)
+        self._fullOutputInputFile         = inputFile(Inventory.fullOutputInputFile, analysisType == "fullSolution" and required or unused)
+        self._stateVariableInputFile      = inputFile(Inventory.stateVariableInputFile,      required)
+        self._loadHistoryInputFile        = inputFile(Inventory.loadHistoryInputFile,        optional)
+        self._materialPropertiesInputFile = inputFile(Inventory.materialPropertiesInputFile, required)
+        self._materialHistoryInputFile    = inputFile(Inventory.materialHistoryInputFile,    unused)
+        self._connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
+        self._prestressInputFile          = inputFile(Inventory.prestressInputFile,          unused)
+        self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
+        self._splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
+        # Slippery nodes are not yet implemented in PyLith-0.8.
+        self._slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       unused)
+        self._differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  unused)
+        self._slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    unused)
+
+        # The call to glob() is somewhat crude -- basically, determine
+        # if any files might be in the way.
+        self._ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
+        from glob import glob
+        ucdFiles = ([self._ucdOutputRoot + ".mesh.inp",
+                     self._ucdOutputRoot + ".gmesh.inp",
+                     self._ucdOutputRoot + ".mesh.time.prest.inp",
+                     self._ucdOutputRoot + ".gmesh.time.prest.inp"]
+                    + glob(self._ucdOutputRoot + ".mesh.time.[0-9][0-9][0-9][0-9][0-9].inp")
+                    + glob(self._ucdOutputRoot + ".gmesh.time.[0-9][0-9][0-9][0-9][0-9].inp"))
+        trait = Inventory.ucdOutputRoot
+        for ucdFile in ucdFiles:
+            try:
+                stream = os.fdopen(os.open(ucdFile, os.O_WRONLY|os.O_CREAT|os.O_EXCL), "w")
+            except (OSError, IOError), error:
+                descriptor = self.inventory.getTraitDescriptor(trait.name)
+                self._summaryIOError.openFailed(trait, descriptor,self._ucdOutputRoot + ".*mesh*.inp", error, required)
+                break
+            else:
+                stream.close()
+                os.remove(ucdFile)
+
+        if self._summaryIOError.fatalIOErrors():
+            self._summaryIOError.log(self._error)
+            import sys
+            sys.exit("%s: configuration error(s)" % self.name)
+        
+        return
+
+
 # derived or automatically-specified quantities (category 3)
 
-    def preinitialize(self):
+    def initialize(self):
 
         from Materials import Materials
-        from KeywordValueParse import KeywordValueParse
         import pyre.units
         import pylith3d
         import string
+        from mpi import MPI_Comm_rank, MPI_COMM_WORLD
+        
+        self.rank = MPI_Comm_rank(MPI_COMM_WORLD)
+        outputFile = self.outputFile
+        Inventory = Pylith3d_scan.Inventory
+        optional = self.IOFileCategory(True,   0,      "optional")
+        # Re-initialize these with the newly acquired rank.
+        self._asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
+        self._plotOutputFile              = outputFile(Inventory.plotOutputFile,             optional)
 
         uparser = pyre.units.parser()
         matinfo = Materials()
-        keyparse = KeywordValueParse()
 
         self.trace.log("Hello from pl3dscan.preinitialize (begin)!")
         
-        print "Scanning ascii files to determine dimensions:"
+        self.trace.log("Scanning ascii files to determine dimensions:")
+
+        # Define information needed from other functions:
+        f77FileInput = self.f77FileInput
+        prestressAutoCompute = self.prestressAutoCompute
+        prestressAutoChangeElasticProps = self.prestressAutoChangeElasticProps
+        quadratureOrder = self.quadratureOrder
 
         # Initialization of all parameters
 	# Memory size variable to keep approximate track of all
@@ -228,94 +331,6 @@ class Pylith3d_scan(Component):
         self._numberSlipperyWinklerEntries = 0
         self._numberSlipperyWinklerForces = 0
 
-        self._summaryIOError = self.CanNotOpenInputOutputFilesError()
-
-        inputFile = self.inputFile
-        inputFileStream = self.inputFileStream
-        outputFile = self.outputFile
-        macroString = self.macroString
-
-        #                              open?   fatal?  label
-        optional = self.IOFileCategory(True,   0,      "optional")
-        unused   = self.IOFileCategory(False,  0,      "unused")
-        required = self.IOFileCategory(True,   1,       None)
-        
-        Inventory = Pylith3d_scan.Inventory
-
-        # First see if there is a keyword = value file, which may be used
-        # to override parameters from __init__.
-
-        self._keywordEqualsValueFile = inputFileStream(Inventory.keywordEqualsValueFile, optional)
-
-        # print self._keywordEqualsValueFile.name
-        if self._keywordEqualsValueFile:
-            stream = self._keywordEqualsValueFile
-            while 1:
-                line = stream.readline()
-                if not line: break
-                keyvals = keyparse.parseline(line)
-                if keyvals[3]:
-                    if hasattr(self, keyvals[0]):
-                        setattr(self, keyvals[0], keyvals[2])
-                    else:
-                        self._error.log("invalid keyword: %s" % keyvals[0])
-            stream.close()
-
-        # Define information needed from other functions:
-        f77FileInput = self.f77FileInput
-        prestressAutoCompute = self.prestressAutoCompute
-        prestressAutoChangeElasticProps = self.prestressAutoChangeElasticProps
-        quadratureOrder = self.quadratureOrder
-        
-        analysisType = self.inventory.analysisType
-        pythonTimestep = self.inventory.pythonTimestep
-
-        self._asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
-        self._plotOutputFile              = outputFile(Inventory.plotOutputFile,              optional)
-        self._coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
-        self._bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
-        self._winklerInputFile            = inputFile(Inventory.winklerInputFile,            optional)
-        self._rotationInputFile           = inputFile(Inventory.rotationInputFile,           optional)
-        self._timeStepInputFile           = inputFile(Inventory.timeStepInputFile,           required)
-        self._fullOutputInputFile         = inputFile(Inventory.fullOutputInputFile, analysisType == "fullSolution" and required or unused)
-        self._stateVariableInputFile      = inputFile(Inventory.stateVariableInputFile,      required)
-        self._loadHistoryInputFile        = inputFile(Inventory.loadHistoryInputFile,        optional)
-        self._materialPropertiesInputFile = inputFile(Inventory.materialPropertiesInputFile, required)
-        self._materialHistoryInputFile    = inputFile(Inventory.materialHistoryInputFile,    unused)
-        self._connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
-        self._prestressInputFile          = inputFile(Inventory.prestressInputFile,          unused)
-        self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
-        self._splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
-        # Slippery nodes are not yet implemented in PyLith-0.8.
-        self._slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       unused)
-        self._differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  unused)
-        self._slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    unused)
-
-        # The call to glob() is somewhat crude -- basically, determine
-        # if any files might be in the way.
-        self._ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
-        from glob import glob
-        ucdFiles = ([self._ucdOutputRoot + ".mesh.inp",
-                     self._ucdOutputRoot + ".gmesh.inp",
-                     self._ucdOutputRoot + ".mesh.time.prest.inp",
-                     self._ucdOutputRoot + ".gmesh.time.prest.inp"]
-                    + glob(self._ucdOutputRoot + ".mesh.time.[0-9][0-9][0-9][0-9][0-9].inp")
-                    + glob(self._ucdOutputRoot + ".gmesh.time.[0-9][0-9][0-9][0-9][0-9].inp"))
-        trait = Inventory.ucdOutputRoot
-        for ucdFile in ucdFiles:
-            try:
-                stream = os.fdopen(os.open(ucdFile, os.O_WRONLY|os.O_CREAT|os.O_EXCL), "w")
-            except (OSError, IOError), error:
-                descriptor = self.inventory.getTraitDescriptor(trait.name)
-                self._summaryIOError.openFailed(trait, descriptor,self._ucdOutputRoot + ".*mesh*.inp", error, required)
-                break
-            else:
-                stream.close()
-                os.remove(ucdFile)
-
-        if self._summaryIOError.fatalIOErrors():
-            raise self._summaryIOError
-
         # This is a test version where the geometry type is automatically
         # specified by using Pylith3d.  The geometry type is only used for
         # f77 routines and not in pyre. An integer value is also defined
@@ -380,6 +395,7 @@ class Pylith3d_scan(Component):
 
         # Parameters derived from values in the inventory or the
         # category 2 parameters above.
+        analysisType = self.inventory.analysisType
         analysisTypeMap = {
             "dataCheck":       0,
             "stiffnessFactor": 1,
@@ -577,9 +593,10 @@ class Pylith3d_scan(Component):
 
         def fatalIOErrors(self): return self._fatalIOErrors
 
-        def __str__(self): return "Errors opening input/output files!"
-    
-        def report(self, stream):
+        def log(self, diag):
+            from StringIO import StringIO
+            diag.line("error(s) opening input/output file(s)")
+            diag.line("")
             errnos = self._ioErrors.keys()
             errnos.sort()
             cw = [4, 4, 30, 15, 10, 10] # column widths
@@ -592,25 +609,32 @@ class Pylith3d_scan(Component):
                     if valueLen > cw[3]:
                         cw[3] = valueLen
             for errno in errnos:
-                print >> stream, "".ljust(cw[0]), self._ioErrorProtos[errno]
+                stream = StringIO()
+                print >> stream, "".ljust(cw[0]), self._ioErrorProtos[errno],
+                diag.line(stream.getvalue())
+                stream = StringIO()
                 for column in xrange(0, len(ch)):
                     print >> stream, ch[column].ljust(cw[column]),
-                print >> stream
+                diag.line(stream.getvalue())
+                stream = StringIO()
                 for column in xrange(0, len(ch)):
                     print >> stream, ("-" * len(ch[column])).ljust(cw[column]),
-                print >> stream
+                diag.line(stream.getvalue())
                 propertyNames = self._ioErrors[errno].keys()
                 propertyNames.sort()
                 for name in propertyNames:
                     error, descriptor, category = self._ioErrors[errno][name]
+                    stream = StringIO()
                     print >> stream, \
                           "".ljust(cw[0]), \
                           "".ljust(cw[1]), \
                           name.ljust(cw[2]), \
                           descriptor.value.ljust(cw[3]), \
                           str(descriptor.locator).ljust(cw[4]), \
-                          (category.label and ("(%s)" % category.label).ljust(cw[5]) or "")
-                print >> stream
+                          (category.label and ("(%s)" % category.label).ljust(cw[5]) or ""),
+                    diag.line(stream.getvalue())
+                diag.line("")
+            diag.log()
             return
 
     class IOFileCategory(object):

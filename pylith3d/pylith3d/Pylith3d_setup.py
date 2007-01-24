@@ -48,7 +48,6 @@ class Pylith3d_setup(Component):
     def initialize(self, scanner):
 
         pl3dscan = scanner
-        pl3dscan.preinitialize()
 
         self.trace.log("Hello from pl3dsetup.initialize (begin)!")
         
