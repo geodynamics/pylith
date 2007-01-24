@@ -202,11 +202,11 @@ char pypylith3d_processMesh__name__[] = "processMesh";
 PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 {
   char *meshInputFile;
-  char  meshOutputFile[2048];
+  char  *meshOutputFile;
   int   interpolateMesh;
   char* partitioner;
 
-  int ok = PyArg_ParseTuple(args, (char *) "sis:processMesh", &meshInputFile, &interpolateMesh, &partitioner);
+  int ok = PyArg_ParseTuple(args, (char *) "ssis:processMesh", &meshOutputFile, &meshInputFile, &interpolateMesh, &partitioner);
 
   if (!ok) {
     return 0;
@@ -226,7 +226,6 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   PetscErrorCode    ierr;
 
   ierr = MPI_Comm_rank(comm, &rank);
-  sprintf(meshOutputFile, "%s.%d", meshInputFile, rank);
   ierr = MeshCreatePyLith(comm, 3, meshInputFile, PETSC_FALSE, (PetscTruth) interpolateMesh, &mesh);
   ierr = MeshGetMesh(mesh, m);
   m->setDebug(debugFlag);
@@ -331,7 +330,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   //PyObject *pyMesh = PyCObject_FromVoidPtr(mesh.ptr(), NULL);
   //mesh.int_allocator->del(mesh.refCnt);
   //mesh.refCnt = NULL;
-  return Py_BuildValue((char *) "sN", meshOutputFile, pyMesh);
+  return pyMesh;
 }
 
 // Create a PETSc Mat

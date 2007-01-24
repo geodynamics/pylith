@@ -92,9 +92,12 @@ class Pylith3d_scan(Component):
         self.f77PlotOutput = 12
         self.f77UcdOutput = 13
 
+        self.rank = 0
+
         self.trace.log("Hello from pl3dscan.__init__ (end)!")
         
         return
+
 
 # derived or automatically-specified quantities (category 3)
 
@@ -619,12 +622,19 @@ class Pylith3d_scan(Component):
     def macroString(self, trait):
         from pyre.util import expandMacros
         class InventoryAdapter(object):
-            def __init__(self, inventory):
+            def __init__(self, inventory, builtins):
                 self.inventory = inventory
+                self.builtins = builtins
             def __getitem__(self, key):
-                return expandMacros(str(self.inventory.getTraitValue(key)), self)
+                builtin = self.builtins.get(key)
+                if builtin is None:
+                    return expandMacros(str(self.inventory.getTraitValue(key)), self)
+                return builtin
         descriptor = self.inventory.getTraitDescriptor(trait.name)
-        return expandMacros(descriptor.value, InventoryAdapter(self.inventory))
+        builtins = {
+            'rank': str(self.rank),
+            }
+        return expandMacros(descriptor.value, InventoryAdapter(self.inventory, builtins))
 
     def ioFileStream(self, trait, flags, mode, category):
         value = self.macroString(trait)
@@ -668,74 +678,78 @@ class Pylith3d_scan(Component):
         # Basename for all files (may be overridden by specific filename entries).
         fileRoot = pyre.inventory.str("fileRoot", default="pt1")
         fileRoot.meta['tip'] = "Root pathname for simulation (all filenames derive from this)."
+        inputFileRoot = pyre.inventory.str("inputFileRoot", default="${fileRoot}")
+        inputFileRoot.meta['tip'] = "Root input pathname for simulation (all input filenames derive from this)."
+        outputFileRoot = pyre.inventory.str("outputFileRoot", default="${fileRoot}.${rank}")
+        outputFileRoot.meta['tip'] = "Root output pathname for simulation (all output filenames derive from this)."
         
         # Output filenames (all are optional).
-        asciiOutputFile = OutputFile("asciiOutputFile",default="${fileRoot}.ascii")
-        asciiOutputFile.meta['tip'] = "Pathname for ascii output file (overrides default from fileRoot)."
+        asciiOutputFile = OutputFile("asciiOutputFile",default="${outputFileRoot}.ascii")
+        asciiOutputFile.meta['tip'] = "Pathname for ascii output file (overrides default from outputFileRoot)."
 
-        plotOutputFile = OutputFile("plotOutputFile",default="${fileRoot}.plot")
-        plotOutputFile.meta['tip'] = "Pathname for plot output file (overrides default from fileRoot)."
+        plotOutputFile = OutputFile("plotOutputFile",default="${outputFileRoot}.plot")
+        plotOutputFile.meta['tip'] = "Pathname for plot output file (overrides default from outputFileRoot)."
 
-        ucdOutputRoot = MacroString("ucdOutputRoot",default="${fileRoot}")
-        ucdOutputRoot.meta['tip'] = "Base name for UCD output files (overrides default from fileRoot)."
+        ucdOutputRoot = MacroString("ucdOutputRoot",default="${outputFileRoot}")
+        ucdOutputRoot.meta['tip'] = "Base name for UCD output files (overrides default from outputFileRoot)."
 
         # Required input files.
-        coordinateInputFile = InputFile("coordinateInputFile",default="${fileRoot}.coord")
-        coordinateInputFile.meta['tip'] = "Pathname for coordinate input file (overrides default from fileRoot)."
+        coordinateInputFile = InputFile("coordinateInputFile",default="${inputFileRoot}.coord")
+        coordinateInputFile.meta['tip'] = "Pathname for coordinate input file (overrides default from inputFileRoot)."
 
-        bcInputFile = InputFile("bcInputFile",default="${fileRoot}.bc")
-        bcInputFile.meta['tip'] = "Pathname for boundary condition input file (overrides default from fileRoot)."
+        bcInputFile = InputFile("bcInputFile",default="${inputFileRoot}.bc")
+        bcInputFile.meta['tip'] = "Pathname for boundary condition input file (overrides default from inputFileRoot)."
 
-        timeStepInputFile = InputFile("timeStepInputFile",default="${fileRoot}.time")
-        timeStepInputFile.meta['tip'] = "Pathname for time step definitions input file (overrides default from fileRoot)."
+        timeStepInputFile = InputFile("timeStepInputFile",default="${inputFileRoot}.time")
+        timeStepInputFile.meta['tip'] = "Pathname for time step definitions input file (overrides default from inputFileRoot)."
 
-        stateVariableInputFile = InputFile("stateVariableInputFile",default="${fileRoot}.statevar")
-        stateVariableInputFile.meta['tip'] = "Pathname for file defining which state variables to output (overrides default from fileRoot)."
+        stateVariableInputFile = InputFile("stateVariableInputFile",default="${inputFileRoot}.statevar")
+        stateVariableInputFile.meta['tip'] = "Pathname for file defining which state variables to output (overrides default from inputFileRoot)."
 
-        materialPropertiesInputFile = InputFile("materialPropertiesInputFile",default="${fileRoot}.prop")
-        materialPropertiesInputFile.meta['tip'] = "Pathname for file defining material properties (overrides default from fileRoot)."
+        materialPropertiesInputFile = InputFile("materialPropertiesInputFile",default="${inputFileRoot}.prop")
+        materialPropertiesInputFile.meta['tip'] = "Pathname for file defining material properties (overrides default from inputFileRoot)."
 
-        connectivityInputFile = InputFile("connectivityInputFile",default="${fileRoot}.connect")
-        connectivityInputFile.meta['tip'] = "Pathname for connectivity input file (overrides default from fileRoot)."
+        connectivityInputFile = InputFile("connectivityInputFile",default="${inputFileRoot}.connect")
+        connectivityInputFile.meta['tip'] = "Pathname for connectivity input file (overrides default from inputFileRoot)."
 
         # This file is only required for time-dependent problems.
-        fullOutputInputFile = InputFile("fullOutputInputFile",default="${fileRoot}.fuldat")
-        fullOutputInputFile.meta['tip'] = "Pathname for file defining when to provide output (overrides default from fileRoot)."
+        fullOutputInputFile = InputFile("fullOutputInputFile",default="${inputFileRoot}.fuldat")
+        fullOutputInputFile.meta['tip'] = "Pathname for file defining when to provide output (overrides default from inputFileRoot)."
 
         # Optional input files.
-        keywordEqualsValueFile = InputFile("keywordEqualsValueFile",default="${fileRoot}.keyval")
-        keywordEqualsValueFile.meta['tip'] = "Pathname for keyword = value file (overrides default from fileRoot)."
+        keywordEqualsValueFile = InputFile("keywordEqualsValueFile",default="${inputFileRoot}.keyval")
+        keywordEqualsValueFile.meta['tip'] = "Pathname for keyword = value file (overrides default from inputFileRoot)."
 
-        winklerInputFile = InputFile("winklerInputFile",default="${fileRoot}.wink")
-        winklerInputFile.meta['tip'] = "Pathname for Winkler force input file (overrides default from fileRoot)."
+        winklerInputFile = InputFile("winklerInputFile",default="${inputFileRoot}.wink")
+        winklerInputFile.meta['tip'] = "Pathname for Winkler force input file (overrides default from inputFileRoot)."
 
-        rotationInputFile = InputFile("rotationInputFile",default="${fileRoot}.skew")
-        rotationInputFile.meta['tip'] = "Pathname for skew rotations input file (overrides default from fileRoot)."
+        rotationInputFile = InputFile("rotationInputFile",default="${inputFileRoot}.skew")
+        rotationInputFile.meta['tip'] = "Pathname for skew rotations input file (overrides default from inputFileRoot)."
 
-        loadHistoryInputFile = InputFile("loadHistoryInputFile",default="${fileRoot}.hist")
-        loadHistoryInputFile.meta['tip'] = "Pathname for file defining load histories (overrides default from fileRoot)."
+        loadHistoryInputFile = InputFile("loadHistoryInputFile",default="${inputFileRoot}.hist")
+        loadHistoryInputFile.meta['tip'] = "Pathname for file defining load histories (overrides default from inputFileRoot)."
 
-        splitNodeInputFile = InputFile("splitNodeInputFile",default="${fileRoot}.split")
-        splitNodeInputFile.meta['tip'] = "Pathname for split node input file (overrides default from fileRoot)."
+        splitNodeInputFile = InputFile("splitNodeInputFile",default="${inputFileRoot}.split")
+        splitNodeInputFile.meta['tip'] = "Pathname for split node input file (overrides default from inputFileRoot)."
 
         # Unused input files.
-        materialHistoryInputFile = InputFile("materialHistoryInputFile",default="${fileRoot}.mhist")
-        materialHistoryInputFile.meta['tip'] = "Pathname for file defining material histories (overrides default from fileRoot -- presently unused)."
+        materialHistoryInputFile = InputFile("materialHistoryInputFile",default="${inputFileRoot}.mhist")
+        materialHistoryInputFile.meta['tip'] = "Pathname for file defining material histories (overrides default from inputFileRoot -- presently unused)."
 
-        prestressInputFile = InputFile("prestressInputFile",default="${fileRoot}.prestr")
-        prestressInputFile.meta['tip'] = "Pathname for prestress input file (overrides default from fileRoot -- presently unused)."
+        prestressInputFile = InputFile("prestressInputFile",default="${inputFileRoot}.prestr")
+        prestressInputFile.meta['tip'] = "Pathname for prestress input file (overrides default from inputFileRoot -- presently unused)."
 
-        tractionInputFile = InputFile("tractionInputFile",default="${fileRoot}.traction")
-        tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from fileRoot)."
+        tractionInputFile = InputFile("tractionInputFile",default="${inputFileRoot}.traction")
+        tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from inputFileRoot)."
 
-        slipperyNodeInputFile = InputFile("slipperyNodeInputFile",default="${fileRoot}.slip")
-        slipperyNodeInputFile.meta['tip'] = "Pathname for slippery node input file (overrides default from fileRoot -- presently unused)."
+        slipperyNodeInputFile = InputFile("slipperyNodeInputFile",default="${inputFileRoot}.slip")
+        slipperyNodeInputFile.meta['tip'] = "Pathname for slippery node input file (overrides default from inputFileRoot -- presently unused)."
 
-        differentialForceInputFile = InputFile("differentialForceInputFile",default="${fileRoot}.diff")
-        differentialForceInputFile.meta['tip'] = "Pathname for file defining slippery node differential forces (overrides default from fileRoot -- presently unused)."
+        differentialForceInputFile = InputFile("differentialForceInputFile",default="${inputFileRoot}.diff")
+        differentialForceInputFile.meta['tip'] = "Pathname for file defining slippery node differential forces (overrides default from inputFileRoot -- presently unused)."
 
-        slipperyWinklerInputFile = InputFile("slipperyWinklerInputFile",default="${fileRoot}.winkx")
-        slipperyWinklerInputFile.meta['tip'] = "Pathname for file defining slippery node Winkler forces (overrides default from fileRoot -- presently unused)."
+        slipperyWinklerInputFile = InputFile("slipperyWinklerInputFile",default="${inputFileRoot}.winkx")
+        slipperyWinklerInputFile.meta['tip'] = "Pathname for file defining slippery node Winkler forces (overrides default from inputFileRoot -- presently unused)."
 
         # Output option flags.
         asciiOutput = pyre.inventory.str("asciiOutput",default="echo")

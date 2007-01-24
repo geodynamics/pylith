@@ -62,7 +62,17 @@ class GreenFunctionApp(BaseScript):
         pl3drun     = self.inventory.solver
         points      = readSamplePoints()
         pylith3d.PetscInitialize(pl3dscanner.inventory.fileRoot+'.sample')
-        self.inventory.scanner.inventory.fileRoot, mesh = pylith3d.processMesh(pl3dscanner.inventory.fileRoot, pl3dscanner.inventory.interpolateMesh)
+        
+        scanner = self.inventory.scanner
+        
+        from mpi import MPI_Comm_rank, MPI_COMM_WORLD
+        scanner.rank = MPI_Comm_rank(MPI_COMM_WORLD)
+
+        mesh = pylith3d.processMesh(scanner.macroString(scanner.Inventory.outputFileRoot),
+                                    scanner.macroString(scanner.Inventory.inputFileRoot),
+                                    scanner.inventory.interpolateMesh,
+                                    scanner.inventory.partitioner)
+        
         try:
             pl3dsetup.initialize(pl3dscanner)
         except self.inventory.scanner.CanNotOpenInputOutputFilesError, error:
