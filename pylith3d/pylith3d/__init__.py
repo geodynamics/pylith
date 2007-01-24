@@ -28,6 +28,18 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 
 
+
+import sys
+        
+# if we are embedding, insert the extension module in the
+# 'pylith3d' package
+try:
+    import builtin_pylith3d
+    sys.modules['pylith3d.pylith3d'] = builtin_pylith3d
+except ImportError:
+    pass
+
+
 def copyright():
     return "pylith3d pyre module: Copyright (c) 2006 Rensselaer Polytechnic Institute";
 

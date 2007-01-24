@@ -36,15 +36,6 @@ class Application(BaseApplication):
 
 
     def main(self, *args, **kwds):
-        import sys
-        
-        # if we are embedding, insert the extension module in the
-        # 'pylith3d' package
-        try:
-            import builtin_pylith3d
-            sys.modules['pylith3d.pylith3d'] = builtin_pylith3d
-        except ImportError:
-            pass
     
 #        from time import clock as now
 #        start = now()
@@ -53,23 +44,15 @@ class Application(BaseApplication):
         pylith3d.PetscInitialize(self.petscArgs)
 
         scanner = self.inventory.scanner
-        
-        from mpi import MPI_Comm_rank, MPI_COMM_WORLD
-        scanner.rank = MPI_Comm_rank(MPI_COMM_WORLD)
+
+        scanner.initialize()
 
         mesh = pylith3d.processMesh(scanner.macroString(scanner.Inventory.outputFileRoot),
                                     scanner.macroString(scanner.Inventory.inputFileRoot),
                                     scanner.inventory.interpolateMesh,
                                     scanner.inventory.partitioner)
         
-        try:
-            pl3dsetup.initialize(self.inventory.scanner)
-        except self.inventory.scanner.CanNotOpenInputOutputFilesError, error:
-            print >> sys.stderr
-            error.report(sys.stderr)
-            print >> sys.stderr
-            print >> sys.stderr, "%s: %s" % (error.__class__.__name__, error)
-            sys.exit(1)
+        pl3dsetup.initialize(scanner)
         pl3dsetup.read()
         pl3dsetup.numberequations()
         pl3dsetup.sortmesh()
@@ -77,10 +60,10 @@ class Application(BaseApplication):
         pl3dsetup.allocateremaining()
         pl3dsetup.meshwrite()
         pl3drun = self.inventory.solver
-        pl3drun.fileRoot = self.inventory.scanner.inventory.fileRoot
+        pl3drun.fileRoot = scanner.inventory.fileRoot
         pl3drun.pointerToIelindx = pl3dsetup.pointerToIelindx
         pl3drun.mesh = mesh
-        pl3drun.initialize(self.inventory.scanner, self.inventory.setup)
+        pl3drun.initialize(scanner, self.inventory.setup)
         pl3drun.run()
 #        finish = now()
 #        usertime = finish - start
