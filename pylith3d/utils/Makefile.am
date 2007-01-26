@@ -4,6 +4,7 @@ bin_PROGRAMS = \
 	blockrot \
 	blockrot2 \
 	blockrot3 \
+	faultbm \
 	faultcalc \
 	faultcalc2 \
 	faultslip \
@@ -19,6 +20,7 @@ bin_PROGRAMS = \
 blockrot_SOURCES = blockrot.f
 blockrot2_SOURCES = blockrot2.f
 blockrot3_SOURCES = blockrot3.f
+faultbm_SOURCES = faultbm.f
 faultcalc_SOURCES = faultcalc.f
 faultcalc2_SOURCES = faultcalc2.f
 faultslip_SOURCES = faultslip.f
