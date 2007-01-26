@@ -226,7 +226,7 @@ c
         uxt=xsign*compd2(x,scoef(1,1,i))
         uyt=ysign*compd2(x,scoef(1,2,i))
         uzt=zsign*compd2(x,scoef(1,3,i))
-        ut=sqrt(ux*ux+uy*uy+uz*uz)
+        ut=sqrt(uxt*uxt+uyt*uyt+uzt*uzt)
         if(ut.lt.u) then
           ux=uxt
           uy=uyt
@@ -234,7 +234,6 @@ c
           u=ut
         end if
         if(u.lt.eps) insurf=.false.
-        return
  10     continue
       end do
       return
