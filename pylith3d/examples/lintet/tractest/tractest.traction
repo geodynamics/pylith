@@ -10,7 +10,7 @@
 # and 4 nodes for hexahedral meshes.  The traction components are simply
 # the x, y, and z-components of the applied stress vector in the global
 # coordinate system.
-traction_units = "Pa"
+traction_units = Pa
 #
 #
   16  18  15   -1.0    0.0   0.0
