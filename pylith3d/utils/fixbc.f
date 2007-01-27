@@ -85,11 +85,11 @@ c
       open(kbi,file=bifile,status="old")
       open(kbo,file=bofile,status="new")
       call pskip(kbi)
-      read(kbi,*) string
+      read(kbi,"(a80)") string
       write(kbo,"(a80)") string
-      read(kbi,*) string
+      read(kbi,"(a80)") string
       write(kbo,"(a80)") string
-      read(kbi,*) string
+      read(kbi,"(a80)") string
       write(kbo,"(a80)") string
       call pskip(kbi)
  30   continue
