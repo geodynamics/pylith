@@ -24,7 +24,9 @@ class MeshImporter(MeshGenerator):
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(MeshGenerator.Inventory):
-    """Python object for managing MeshImporter facilities and properties."""
+    """
+    Python object for managing MeshImporter facilities and properties.
+    """
 
     ## @class Inventory
     ## Python object for managing MeshImporter facilities and properties.
@@ -46,13 +48,15 @@ class MeshImporter(MeshGenerator):
 
   def create(self):
     """
-    Create a mesh.
+    Hook for creating mesh.
     """
     return self.importer.read()
 
 
   def __init__(self, name="meshimporter"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     MeshGenerator.__init__(self, name)
     return
 

@@ -14,6 +14,8 @@
 
 ## @brief Python PyLith field.
 
+from pyre.components.Component import Component
+
 # Field class
 class Field(Component):
   """
@@ -23,7 +25,9 @@ class Field(Component):
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Component.Inventory):
-    """Python object for managing Field facilities and properties."""
+    """
+    Python object for managing Field facilities and properties.
+    """
 
     ## @class Inventory
     ## Python object for managing Field facilities and properties.
@@ -45,7 +49,9 @@ class Field(Component):
 
 
   def __init__(self, name="field"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     Component.__init__(self, name, facility="field")
     self.sieveField = None
     return

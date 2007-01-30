@@ -24,7 +24,4 @@ if __name__ == "__main__":
   app.run()
 
 
-# version
-__id__ = "$Id$"
-
 # End of file 

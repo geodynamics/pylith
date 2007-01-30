@@ -64,8 +64,8 @@ class MeshIO(Component):
     """
     from pylith.topology.Mesh import Mesh
     mesh = Mesh()
-    self.cppHandle.interpolate = interpolate
-    mesh.cppHandle = self.cppHandle.read(self.interpolate)
+    self.cppHandle.interpolate = self.interpolate
+    mesh.cppHandle = self.cppHandle.read()
     return 
 
 
@@ -75,7 +75,7 @@ class MeshIO(Component):
 
     @param mesh PETSc mesh object containing finite-element mesh
     """
-    self.cppHandle.interpolate = interpolate
+    self.cppHandle.interpolate = self.interpolate
     self.cppHandle.write(mesh.handle)
     return
 

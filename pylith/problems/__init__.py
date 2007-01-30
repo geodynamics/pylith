@@ -11,11 +11,13 @@
 #
 
 ## @file pylith/problems/__init__.py
+
 ## @brief Python PyLith crustal dynamics problems module initialization
 
-all = ['Dynamic', 'Problem', 'QuasiStatic']
+all = ['Dynamic',
+       'DynamicExplicit',
+       'Problem',
+       'QuasiStatic']
 
-# version
-__id__ = "$Id$"
 
 # End of file

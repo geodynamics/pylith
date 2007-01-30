@@ -32,6 +32,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/__init__.py \
 	problems/__init__.py \
 	problems/Dynamic.py \
+	problems/DynamicExplicit.py \
 	problems/Problem.py \
 	problems/QuasiStatic.py \
 	solver/__init__.py \

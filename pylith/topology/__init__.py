@@ -11,10 +11,12 @@
 #
 
 ## @file pylith/topology/__init__.py
+
 ## @brief Python PyLith finite-element topology module initialization
 
 all = ['Mesh',
        'MeshGenerator',
        'MeshImporter']
+
 
 # End of file
