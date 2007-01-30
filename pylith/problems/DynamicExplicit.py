@@ -10,15 +10,16 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/Dynamic.py
-## @brief Python Dynamic for dynamic crustal dynamics simulations.
+## @file pylith/problems/DynamicExplicit.py
+
+## @brief Python DynamicExplicit for dynamic simulations with explicit solver.
 
 from Problem import Problem
 
 # Dynamic class
-class Dynamic(Problem):
+class DynamicExplicit(Problem):
   """
-  Python Dynamic for dynamic crustal dynamics simulations.
+  Python DynamicExplicit for dynamic simulations with explicit solver.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -63,36 +64,61 @@ class Dynamic(Problem):
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def initialize(self):
+    """
+    Create domain, bounday conditions, fields, and setup time loop.
+    """
     Problem.initialize(self)
     
-    self.disptpdt.initialize()
-    self.dispt.initialize()
-    self.disptmdt.initialize()
+    #self.disptpdt.initialize()
+    #self.dispt.initialize()
+    #self.disptmdt.initialize()
+    return
+
+
+  def prestep(self):
+    """
+    User hook for doing stuff before advancing time step.
+    """
+    self._info.log("WARNING: DynamicExplicit::prestep not implemented.")
     return
 
 
   def step(self, dt):
-    raise NotImplementedError, "Dynamic::step() not implemented."
+    """
+    Advance to next time step.
+    """
+    self._info.log("WARNING: DynamicExplicit::step not implemented.")
     return
 
 
   def poststep(self):
-    raise NotImplementedError, "Dynamic::poststep() not implemented."
+    """
+    Update time and storage.
+    """
+    self._info.log("WARNING: DynamicExplicit::poststep not implemented.")
     return
 
 
   def stableTimestep(self):
-    raise NotImplementedError, "Dynamic::stableTimestep() not implemented."
+    """
+    Determine stable time step for problem.
+    """
+    self._info.log("WARNING: DynamicExplicit::stableTimestep not implemented.")
     return
 
 
   def checkpoint(self):
-    raise NotImplementedError, "Dynamic::checkpoint() not implemented."
+    """
+    Save problem state for restart.
+    """
+    self._info.log("WARNING: DynamicExplicit::checkpoint not implemented.")
     return
   
 
   def __init__(self, name="dynamic"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     Problem.__init__(self, name)
     return
 
@@ -100,7 +126,9 @@ class Dynamic(Problem):
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
-    """Set members based using inventory."""
+    """
+    Set members based using inventory.
+    """
     Problem._configure(self)
     self.solver = self.inventory.solver
     self.disptpdt = self.inventory.disptpdt
@@ -108,23 +136,5 @@ class Dynamic(Problem):
     self.disptmdt = self.inventory.disptmdt
     return
 
-
-  def _calcResidual(self):
-    """Compute solution residual."""
-    return
-
-
-  def _calcJacobian(self):
-    """Calculation Jacobian."""
-    return
-  
-
-  def _convergenceTest(self):
-    """Test for convergence."""
-    return
-
-  
-# version
-__id__ = "$Id$"
 
 # End of file 

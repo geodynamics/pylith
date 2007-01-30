@@ -17,17 +17,24 @@ from pyre.components.Component import Component
 
 # MeshGenerator class
 class MeshGenerator(Component):
-  """Python abstract base class for mesh generator."""
+  """
+  Python abstract base class for mesh generator.
+  """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def create(self):
+    """
+    Hook for creating mesh.
+    """
     raise NotImplementedError, "MeshGenerator::create() not implemented."
     return
 
 
   def __init__(self, name="meshgenerator"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     Component.__init__(self, name, facility="meshgenerator")
     return
 

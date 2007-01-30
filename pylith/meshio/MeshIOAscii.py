@@ -27,7 +27,9 @@ class MeshIOAscii(MeshIO):
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(MeshIO.Inventory):
-    """Python object for managing MeshIOAscii facilities and properties."""
+    """
+    Python object for managing MeshIOAscii facilities and properties.
+    """
 
     ## @class Inventory
     ## Python object for managing MeshIOAscii facilities and properties.
@@ -40,14 +42,16 @@ class MeshIOAscii(MeshIO):
 
     import pyre.inventory
 
-    filename = pyre.inventory.str("filename", default=False)
+    filename = pyre.inventory.str("filename", default="")
     filename.meta['tip'] = "Name of mesh file"
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="meshioascii"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     MeshIO.__init__(self, name)
     import pylith.meshio.meshio as bindings
     self.cppHandle = bindings.MeshIOAscii()
@@ -57,14 +61,13 @@ class MeshIOAscii(MeshIO):
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
-    """Set members based using inventory."""
+    """
+    Set members based using inventory.
+    """
     MeshIO._configure(self)
     self.filename = self.inventory.filename
     self.cppHandle.filename = self.filename
     return
 
-
-# version
-__id__ = "$Id$"
 
 # End of file 

@@ -17,12 +17,16 @@ from pyre.applications.Script import Script
 
 # PyLithApp class
 class PyLithApp(Script):
-  """Python PyLithApp application."""
+  """
+  Python PyLithApp application.
+  """
   
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Script.Inventory):
-    """Python object for managing PyLithApp facilities and properties."""
+    """
+    Python object for managing PyLithApp facilities and properties.
+    """
 
     ## @class Inventory
     ## Python object for managing PyLithApp facilities and properties.
@@ -45,14 +49,16 @@ class PyLithApp(Script):
     mesher = pyre.inventory.facility("mesh_generator", factory=MeshImporter)
     mesher.meta['tip'] = "Generates or imports the computational mesh."
 
-    from pylith.problems.QuasiStatic import QuasiStatic
-    problem = pyre.inventory.facility("problem", factory=QuasiStatic)
+    from pylith.problems.DynamicExplicit import DynamicExplicit
+    problem = pyre.inventory.facility("problem", factory=DynamicExplicit)
     problem.meta['tip'] = "Computational problem to solve."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def main(self):
-    """Run the application."""
+    """
+    Run the application.
+    """
 
     mesh = self.mesher.create()
     self.problem.mesh = mesh.distribute()
@@ -70,7 +76,9 @@ class PyLithApp(Script):
   
 
   def __init__(self, name="pylithapp"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     Script.__init__(self, name)
     self.totalTime = None
     self.mesher = None
@@ -81,15 +89,14 @@ class PyLithApp(Script):
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
-    """Setup members using inventory."""
+    """
+    Setup members using inventory.
+    """
     Script._configure(self)
     self.totalTime = self.inventory.totalTime
     self.mesher = self.inventory.mesher
     self.problem = self.inventory.problem
     return
 
-
-# version
-__id__ = "$Id$"
 
 # End of file 
