@@ -32,40 +32,8 @@ AM_CONDITIONAL([ENABLE_GREENSFNS], [test "$enable_greensfns" = yes])
 AM_PATH_PYTHON([2.3])
 CIT_PYTHON_SYSCONFIG
 
-# Checks for Python modules and packages.
-
-builddir=`pwd`
-save_PYTHONPATH="$PYTHONPATH"
-PYTHONPATH="$builddir/python:$PYTHONPATH"; export PYTHONPATH
-cd $srcdir
-
-AC_MSG_NOTICE([downloading missing Python dependencies])
-AS_IF([AC_TRY_COMMAND([$PYTHON setup.py install_deps -zmxd $builddir/deps >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD])],
-      [],
-      [AC_MSG_FAILURE([cannot download missing Python dependencies])])
-
-AC_MSG_NOTICE([building Python dependencies])
-AS_IF([AC_TRY_COMMAND([$PYTHON setup.py develop -H None -f $builddir/deps -x -d $builddir/python >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD])],
-      [],
-      [AC_MSG_FAILURE([building Python dependencies])])
-
-AC_MSG_CHECKING([for egg-related flags])
-AS_IF([AC_TRY_COMMAND([$PYTHON setup.py egg_flags >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD])],
-      [AC_MSG_RESULT(ok)
-       . egg-flags.sh
-       rm -f egg-flags.sh
-      ],
-      [AC_MSG_RESULT(failed)
-      AC_MSG_FAILURE([cannot scan Python eggs for flags])])
-
-cd $builddir
-PYTHONPATH="$save_PYTHONPATH"
-PYTHONPATH="${pythondir}:${pyexecdir}${save_PYTHONPATH:+:${save_PYTHONPATH}}"
-
-AC_SUBST(PYTHONPATH)
-AC_SUBST(PYTHON_EGG_CFLAGS)
-AC_SUBST(PYTHON_EGG_CPPFLAGS)
-AC_SUBST(PYTHON_EGG_LDFLAGS)
+# Check for Python modules and packages.
+CIT_PYTHON_EGG_SETUP
 
 # Check for PETSc.
 CIT_PATH_PETSC([2.3])
