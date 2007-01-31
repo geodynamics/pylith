@@ -98,11 +98,9 @@ noinst_HEADERS += \
 	data/QuadratureData3DLinear.hh \
 	data/QuadratureData3DQuadratic.hh
 
-testfeassemble_LDFLAGS = $(PETSC_LIB) \
-	-ljournal
+testfeassemble_LDFLAGS = $(PETSC_LIB)
 
-INCLUDES += $(PETSC_INCLUDE)
-AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS)
+AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
 
 testfeassemble_LDADD = \
 	-lcppunit -ldl \

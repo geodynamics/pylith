@@ -18,8 +18,6 @@
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
 #include "data/IntegratorData.hh" // USES IntegratorData
 
-#include "journal/debug.h"
-
 #include <petscmat.h>
 
 // ----------------------------------------------------------------------
