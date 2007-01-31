@@ -67,10 +67,8 @@ CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 CIT_CHECK_LIB_PETSC_SIEVE
 
-# Checks for Python modules and packages.
-CIT_PATH_PYTHIA([0.8], [mpi])
-PYTHONPATH="${pyexecdir}${PYTHONPATH:+:${PYTHONPATH}}"; export PYTHONPATH
-AC_SUBST([PYTHONPATH])
+# Check for Python modules and packages.
+CIT_PYTHON_EGG_SETUP
 
 # PYREX/PYREXEMBED
 AC_CHECK_PROG([have_pyrex],

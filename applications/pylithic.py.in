@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+## @file applications/pylith.py
+## @brief Python PyLith application driver
+
+__requires__ = "PyLith"
+
+if __name__ == "__main__":
+
+    # re-create the PYTHONPATH at 'configure' time
+    import os.path, sys, site
+    path = '@PYTHONPATH@'.split(':')
+    path.reverse()
+    for directory in path:
+        if directory:
+            directory = os.path.abspath(directory)
+            sys.path.insert(1, directory)
+            site.addsitedir(directory)
+
+    import journal
+    journal.info('coordinates').activate()
+
+    from pylith.PyLithApp import PyLithApp
+
+    app = PyLithApp()
+    app.run()
+
+
+# End of file 
