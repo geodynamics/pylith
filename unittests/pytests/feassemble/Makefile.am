@@ -38,7 +38,9 @@ testfeassemblemodule_la_LIBADD = \
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 testfeassemble.pyx testfeassemble_embed.cpp  testfeassemble_embed.h: testfeassemble.pyxe
-	cp $< . && pyrexembed testfeassemble.pyxe && rm -f testfeassemble.pyxe
+	pyrexembed testfeassemble.pyxe
+testfeassemble.pyxe: $(srcdir)/testfeassemble.pyxe
+	cp $(srcdir)/testfeassemble.pyxe $@
 testfeassemble_embed.cpp: testfeassemble_embed.h
 testfeassemble_embed.h: testfeassemble.pyx
 
