@@ -23,15 +23,10 @@
 
 #include <stdlib.h> // USES abort()
 
-#include "journal/debug.h"
-
 int
 main(int argc,
      char* argv[])
 { // main
-  journal::debug_t debug("TestMeshIOAscii");
-  debug.deactivate();
-
   CppUnit::TestResultCollector result;
 
   try {

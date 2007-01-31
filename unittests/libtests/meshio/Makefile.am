@@ -46,11 +46,9 @@ noinst_HEADERS += \
 	data/MeshData2Din3D.hh \
 	data/MeshData3D.hh
 
-testmeshio_LDFLAGS = $(PETSC_LIB) \
-	-ljournal
+testmeshio_LDFLAGS = $(PETSC_LIB)
 
-INCLUDES += $(PETSC_INCLUDE)
-AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS)
+AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
 
 testmeshio_LDADD = \
 	-lcppunit -ldl \
