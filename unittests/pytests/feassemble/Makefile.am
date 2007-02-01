@@ -39,8 +39,8 @@ INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 testfeassemble.pyx testfeassemble_embed.cpp  testfeassemble_embed.h: testfeassemble.pyxe
 	pyrexembed testfeassemble.pyxe
-testfeassemble.pyxe: $(srcdir)/testfeassemble.pyxe
-	cp $(srcdir)/testfeassemble.pyxe $@
+testfeassemble.pyxe: $(srcdir)/testfeassemble.pyxe.src
+	cp $(srcdir)/testfeassemble.pyxe.src $@
 testfeassemble_embed.cpp: testfeassemble_embed.h
 testfeassemble_embed.h: testfeassemble.pyx
 
@@ -48,7 +48,7 @@ testfeassemble_embed.h: testfeassemble.pyx
 	pyrexc $<
 
 CLEANFILES = \
-	testfeassemble.pyx testfeassemble.c *_embed.* \
+	testfeassemble.pyxe testfeassemble.pyx testfeassemble.c *_embed.* \
 	$(am__installdirs)/testfeassemblemodule.*
 
 # End of file 

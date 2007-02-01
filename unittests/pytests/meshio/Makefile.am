@@ -42,7 +42,9 @@ INCLUDES += \
 	-I$(top_srcdir)/unittests/libtests/meshio
 
 testmeshio.pyx testmeshio_embed.cpp  testmeshio_embed.h: testmeshio.pyxe
-	cp $< . && pyrexembed testmeshio.pyxe && rm -f testmeshio.pyxe
+	pyrexembed testmeshio.pyxe
+testmeshio.pyxe: $(srcdir)/testmeshio.pyxe.src
+	cp $(srcdir)/testmeshio.pyxe.src $@
 testmeshio_embed.cpp: testmeshio_embed.h
 testmeshio_embed.h: testmeshio.pyx
 
@@ -50,7 +52,7 @@ testmeshio_embed.h: testmeshio.pyx
 	pyrexc $<
 
 CLEANFILES = \
-	testmeshio.pyx testmeshio.c *_embed.* \
+	testmeshio.pyxe testmeshio.pyx testmeshio.c *_embed.* \
 	$(am__installdirs)/testmeshiomodule.*
 
 # End of file 
