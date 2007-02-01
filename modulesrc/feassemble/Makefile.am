@@ -29,13 +29,15 @@ feassemblemodule_la_LIBADD = \
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 feassemble.pyx feassemble_embed.cpp  feassemble_embed.h: feassemble.pyxe
-	if [ "${VPATH}" != "" ]; then cp $< .; fi && pyrexembed feassemble.pyxe && if [ "${VPATH}" != "" ]; then rm -f feassemble.pyxe; fi
+	pyrexembed feassemble.pyxe
+feassemble.pyxe: $(srcdir)/feassemble.pyxe.src
+	cp $(srcdir)/feassemble.pyxe.src $@
 feassemble_embed.cpp: feassemble_embed.h
 feassemble_embed.h: feassemble.pyx
 
 .pyx.c:
 	pyrexc $<
 
-CLEANFILES = feassemble.pyx feassemble.c *_embed.*
+CLEANFILES = feassemble.pyxe feassemble.pyx feassemble.c *_embed.*
 
 # End of file 

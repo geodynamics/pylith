@@ -28,13 +28,15 @@ meshiomodule_la_LIBADD = \
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 meshio.pyx meshio_embed.cpp  meshio_embed.h: meshio.pyxe
-	if [ "${VPATH}" != "" ]; then cp $< .; fi && pyrexembed meshio.pyxe && if [ "${VPATH}" != "" ]; then rm -f meshio.pyxe; fi
+	pyrexembed meshio.pyxe
+meshio.pyxe: $(srcdir)/meshio.pyxe.src
+	cp $(srcdir)/meshio.pyxe.src $@
 meshio_embed.cpp: meshio_embed.h
 meshio_embed.h: meshio.pyx
 
 .pyx.c:
 	pyrexc $<
 
-CLEANFILES = meshio.pyx meshio.c *_embed.*
+CLEANFILES = meshio.pyxe meshio.pyx meshio.c *_embed.*
 
 # End of file 
