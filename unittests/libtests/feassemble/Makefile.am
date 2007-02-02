@@ -104,6 +104,6 @@ AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
 
 testfeassemble_LDADD = \
 	-lcppunit -ldl \
-	$(top_builddir)/libsrc/feassemble/libpylithfeassemble.la
+	$(top_builddir)/libsrc/libpylith.la
 
 # End of file 
