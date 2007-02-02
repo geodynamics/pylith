@@ -313,6 +313,7 @@ pylith::feassemble::IntegratorInertia::initialize(
     for (int iQuadPt=0, index=0; 
 	 iQuadPt < numQuadPts; 
 	 ++iQuadPt, index+=spaceDim)
+      // account for differences in spaceDim
       const int err = db->query(&cellDensity[iQuadPt], numVals, 
 				&quadPts[index], spaceDim, cs);
     // Assemble cell contribution into field
