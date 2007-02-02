@@ -52,7 +52,7 @@ AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
 
 testmeshio_LDADD = \
 	-lcppunit -ldl \
-	$(top_builddir)/libsrc/meshio/libpylithmeshio.la
+	$(top_builddir)/libsrc/libpylith.la
 
 noinst_tmp = \
 	mesh1D.txt \

@@ -23,7 +23,7 @@ nodist_feassemblemodule_la_SOURCES = \
 	feassemble.c feassemble_embed.cpp feassemble_embed.h
 
 feassemblemodule_la_LIBADD = \
-	$(top_builddir)/libsrc/feassemble/libpylithfeassemble.la \
+	$(top_builddir)/libsrc/libpylith.la \
 	$(PETSC_LIB)
 
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
