@@ -4,8 +4,12 @@ MAIN PRIORITIES
    a. write()/read()
    b. checkVals()
 
-  Status: Implemented but not debugged. Problem with linking (may need
-  to rebuild PETSc).
+  STATUS: 
+
+    Postponed. Easiest implementation requires semi-messy build
+    on top of libtests/meshio classes and initializing/finalizing
+    PETSc from Python. May be easier to include in higher-level unit
+    test.
 
 2. Finish implementing IntegratorInertia.
    a. Python object
