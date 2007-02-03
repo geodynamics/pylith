@@ -39,67 +39,29 @@ class Pylith3d_scan(Component):
     def __init__(self):
         Component.__init__(self, "pl3dscan", "scanner")
 
-        from pyre.units.pressure import Pa
-        from pyre.units.length import m
-        from pyre.units.time import s
-
         import journal
         self.trace = journal.debug("pylith3d.trace")
 
-        self.trace.log("Hello from pl3dscan.__init__ (begin)!")
+        self.trace.log("Hello from pl3dscan.__init__!")
         
-        self.trace.log("Setting default keyword values:")
-
-        # default values for extra input (category 2)
-        # these can be overriden using a script or keyword=value file
-
-        self.winklerScaleX = 1.0
-        self.winklerScaleY = 1.0
-        self.winklerScaleZ = 1.0
-
-        self.stressTolerance = 1.0e-12*Pa
-        self.minimumStrainPerturbation = 1.0e-7
-        self.initialStrainPerturbation = 1.0e-1
-
-        self.usePreviousDisplacementFlag = 0
-
-        self.quadratureOrder = "Full"
-
-        self.gravityX = 0.0*m/(s*s)
-        self.gravityY = 0.0*m/(s*s)
-        self.gravityZ = 0.0*m/(s*s)
-
-        self.prestressAutoCompute = False
-        self.prestressAutoChangeElasticProps = False
-        self.prestressAutoComputePoisson = 0.49
-        self.prestressAutoComputeYoungs = 1.0e30*Pa
-
-        self.prestressScaleXx = 1.0
-        self.prestressScaleYy = 1.0
-        self.prestressScaleZz = 1.0
-        self.prestressScaleXy = 1.0
-        self.prestressScaleXz = 1.0
-        self.prestressScaleYz = 1.0
-
-        self.winklerSlipScaleX = 1.0
-        self.winklerSlipScaleY = 1.0
-        self.winklerSlipScaleZ = 1.0
-
-        self.f77StandardInput = 5
-        self.f77StandardOutput = 6
-        self.f77FileInput = 10
-        self.f77AsciiOutput = 11
-        self.f77PlotOutput = 12
-        self.f77UcdOutput = 13
-
         self.rank = 0
-
-        self.trace.log("Hello from pl3dscan.__init__ (end)!")
         
         return
 
 
-    def _configure(self):
+    def configureProperties(self, context):
+        """set the values of all the properties and facilities in my inventory"""
+
+        #
+        # First, configure my properties as defined by the framework.
+        #
+        
+        super(Pylith3d_scan, self).configureProperties(context)
+        
+        #
+        # Second, open input files.  Log I/O errors.
+        #
+        
         self._summaryIOError = self.CanNotOpenInputOutputFilesError()
 
         inputFile = self.inputFile
@@ -113,28 +75,6 @@ class Pylith3d_scan(Component):
         required = self.IOFileCategory(True,   1,       None)
         
         Inventory = Pylith3d_scan.Inventory
-
-        # First see if there is a keyword = value file, which may be used
-        # to override parameters from __init__.
-
-        from KeywordValueParse import KeywordValueParse
-        keyparse = KeywordValueParse()
-
-        self._keywordEqualsValueFile = inputFileStream(Inventory.keywordEqualsValueFile, optional)
-
-        # print self._keywordEqualsValueFile.name
-        if self._keywordEqualsValueFile:
-            stream = self._keywordEqualsValueFile
-            while 1:
-                line = stream.readline()
-                if not line: break
-                keyvals = keyparse.parseline(line)
-                if keyvals[3]:
-                    if hasattr(self, keyvals[0]):
-                        setattr(self, keyvals[0], keyvals[2])
-                    else:
-                        self._error.log("invalid keyword: %s" % keyvals[0])
-            stream.close()
 
         analysisType = self.inventory.analysisType
 
@@ -158,6 +98,18 @@ class Pylith3d_scan(Component):
         self._slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       unused)
         self._differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  unused)
         self._slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    unused)
+
+        def openKeywordEqualsValueFile(filename, flags, mode):
+            from CodecKeyVal import CodecKeyVal
+            from os.path import splitext
+            base, ext = splitext(filename)
+            assert ext == ".keyval"
+            codec = CodecKeyVal()
+            shelf = codec.open(base, mode)
+            return shelf
+        
+        self._keywordEqualsValueFile      = inputFileStream(Inventory.keywordEqualsValueFile, optional,
+                                                            opener=openKeywordEqualsValueFile)
 
         # The call to glob() is somewhat crude -- basically, determine
         # if any files might be in the way.
@@ -185,7 +137,73 @@ class Pylith3d_scan(Component):
             self._summaryIOError.log(self._error)
             import sys
             sys.exit("%s: configuration error(s)" % self.name)
+
+        #
+        # Third, read the data from the .keyval file -- potentially
+        # reconfiguring some of my properties.
+        #
         
+        if self._keywordEqualsValueFile:
+            registry = self._keywordEqualsValueFile['inventory']
+            registry = registry.getFacility("pylith3d")
+            registry = registry.getFacility("scanner")
+            if registry:
+                # Transfer .keyval input to my private registry...
+                self.updateConfiguration(registry)
+                # ..and from there to my inventory.
+                self.inventory.configureProperties(context)
+
+        #
+        # Finally, decorate any missing traits with my name.
+        #
+        
+        self._claim(context)
+
+        return
+
+
+    def _configure(self):
+        # get values for extra input (category 2)
+
+        self.winklerScaleX = self.inventory.winklerScaleX
+        self.winklerScaleY = self.inventory.winklerScaleY
+        self.winklerScaleZ = self.inventory.winklerScaleZ
+        
+        self.stressTolerance = self.inventory.stressTolerance
+        self.minimumStrainPerturbation = self.inventory.minimumStrainPerturbation
+        self.initialStrainPerturbation = self.inventory.initialStrainPerturbation
+        
+        self.usePreviousDisplacementFlag = self.inventory.usePreviousDisplacementFlag
+        
+        self.quadratureOrder = self.inventory.quadratureOrder
+        
+        self.gravityX = self.inventory.gravityX
+        self.gravityY = self.inventory.gravityY
+        self.gravityZ = self.inventory.gravityZ
+        
+        self.prestressAutoCompute = self.inventory.prestressAutoCompute
+        self.prestressAutoChangeElasticProps = self.inventory.prestressAutoChangeElasticProps
+        self.prestressAutoComputePoisson = self.inventory.prestressAutoComputePoisson
+        self.prestressAutoComputeYoungs = self.inventory.prestressAutoComputeYoungs
+        
+        self.prestressScaleXx = self.inventory.prestressScaleXx
+        self.prestressScaleYy = self.inventory.prestressScaleYy
+        self.prestressScaleZz = self.inventory.prestressScaleZz
+        self.prestressScaleXy = self.inventory.prestressScaleXy
+        self.prestressScaleXz = self.inventory.prestressScaleXz
+        self.prestressScaleYz = self.inventory.prestressScaleYz
+        
+        self.winklerSlipScaleX = self.inventory.winklerSlipScaleX
+        self.winklerSlipScaleY = self.inventory.winklerSlipScaleY
+        self.winklerSlipScaleZ = self.inventory.winklerSlipScaleZ
+        
+        self.f77StandardInput = self.inventory.f77StandardInput
+        self.f77StandardOutput = self.inventory.f77StandardOutput
+        self.f77FileInput = self.inventory.f77FileInput
+        self.f77AsciiOutput = self.inventory.f77AsciiOutput
+        self.f77PlotOutput = self.inventory.f77PlotOutput
+        self.f77UcdOutput = self.inventory.f77UcdOutput
+
         return
 
 
@@ -660,12 +678,15 @@ class Pylith3d_scan(Component):
             }
         return expandMacros(descriptor.value, InventoryAdapter(self.inventory, builtins))
 
-    def ioFileStream(self, trait, flags, mode, category):
+    def ioFileStream(self, trait, flags, mode, category, opener=None):
         value = self.macroString(trait)
         stream = None
         if category.tryOpen:
             try:
-                stream = os.fdopen(os.open(value, flags), mode)
+                if opener is None:
+                    stream = os.fdopen(os.open(value, flags), mode)
+                else:
+                    stream = opener(value, flags, mode)
             except (OSError, IOError), error:
                 descriptor = self.inventory.getTraitDescriptor(trait.name)
                 self._summaryIOError.openFailed(trait, descriptor, value, error, category)
@@ -677,7 +698,8 @@ class Pylith3d_scan(Component):
             stream.close()
         return value
     
-    def inputFileStream(self, trait, category): return self.ioFileStream(trait, os.O_RDONLY, "r", category)[1]
+    def inputFileStream(self, trait, category, opener=None):
+        return self.ioFileStream(trait, os.O_RDONLY, "r", category, opener=opener)[1]
     
     def outputFile(self, trait, category):
         value, stream = self.ioFileStream(trait, os.O_WRONLY|os.O_CREAT|os.O_EXCL, "w", category)
@@ -813,6 +835,55 @@ class Pylith3d_scan(Component):
         # Unused option flags.
         autoRotateSlipperyNodes = pyre.inventory.bool("autoRotateSlipperyNodes",default=True)
         autoRotateSlipperyNodes.meta['tip'] = "Whether to performa automatic rotation for slippery nodes (presently unused)."
+
+        #
+        # category 2 parameters formerly placed in *.keyval files
+        #
+
+        from pyre.units.pressure import Pa
+        from pyre.units.length import m
+        from pyre.units.time import s
+
+        winklerScaleX = pyre.inventory.float("winklerScaleX", default=1.0)
+        winklerScaleY = pyre.inventory.float("winklerScaleY", default=1.0)
+        winklerScaleZ = pyre.inventory.float("winklerScaleZ", default=1.0)
+
+        stressTolerance = pyre.inventory.dimensional("stressTolerance", default=1.0e-12*Pa)
+        minimumStrainPerturbation = pyre.inventory.float("minimumStrainPerturbation", default=1.0e-7)
+        initialStrainPerturbation = pyre.inventory.float("initialStrainPerturbation", default=1.0e-1)
+
+        usePreviousDisplacementFlag = pyre.inventory.int("usePreviousDisplacementFlag", default=0)
+
+        quadratureOrder = pyre.inventory.str("quadratureOrder", default="Full")
+        quadratureOrder.validator = pyre.inventory.choice(["Full", "Reduced", "Selective"])
+
+        gravityX = pyre.inventory.dimensional("gravityX", default=0.0*m/(s*s))
+        gravityY = pyre.inventory.dimensional("gravityY", default=0.0*m/(s*s))
+        gravityZ = pyre.inventory.dimensional("gravityZ", default=0.0*m/(s*s))
+
+        prestressAutoCompute = pyre.inventory.bool("prestressAutoCompute", default=False)
+        prestressAutoChangeElasticProps = pyre.inventory.bool("prestressAutoChangeElasticProps", default=False)
+        prestressAutoComputePoisson = pyre.inventory.float("prestressAutoComputePoisson", default=0.49)
+        prestressAutoComputeYoungs = pyre.inventory.dimensional("prestressAutoComputeYoungs", default=1.0e30*Pa)
+
+        prestressScaleXx = pyre.inventory.float("prestressScaleXx", default=1.0)
+        prestressScaleYy = pyre.inventory.float("prestressScaleYy", default=1.0)
+        prestressScaleZz = pyre.inventory.float("prestressScaleZz", default=1.0)
+        prestressScaleXy = pyre.inventory.float("prestressScaleXy", default=1.0)
+        prestressScaleXz = pyre.inventory.float("prestressScaleXz", default=1.0)
+        prestressScaleYz = pyre.inventory.float("prestressScaleYz", default=1.0)
+
+        winklerSlipScaleX = pyre.inventory.float("winklerSlipScaleX", default=1.0)
+        winklerSlipScaleY = pyre.inventory.float("winklerSlipScaleY", default=1.0)
+        winklerSlipScaleZ = pyre.inventory.float("winklerSlipScaleZ", default=1.0)
+
+        f77StandardInput = pyre.inventory.int("f77StandardInput", default=5)
+        f77StandardOutput = pyre.inventory.int("f77StandardOutput", default=6)
+        f77FileInput = pyre.inventory.int("f77FileInput", default=10)
+        f77AsciiOutput = pyre.inventory.int("f77AsciiOutput", default=11)
+        f77PlotOutput = pyre.inventory.int("f77PlotOutput", default=12)
+        f77UcdOutput = pyre.inventory.int("f77UcdOutput", default=13)
+
 
 
 # version
