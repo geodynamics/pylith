@@ -654,7 +654,7 @@ c
 c
 cdebug      write(6,*) "Hello from update_state_6_f!"
 c
-      call daxpy(nstate-6,sub,state,ione,dstate,ione)
+      call daxpy(nstate,sub,state,ione,dstate,ione)
       call daxpy(nstate,one,dstate,ione,state,ione)
 c
       return
