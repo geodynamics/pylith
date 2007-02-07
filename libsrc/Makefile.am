@@ -21,6 +21,7 @@ lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
 	feassemble/DynExplicitElasticity.cc \
+	feassemble/Integrator.cc \
 	feassemble/IntegratorDynExplicit.cc \
 	feassemble/Quadrature.cc \
 	feassemble/Quadrature1D.cc \

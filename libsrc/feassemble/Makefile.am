@@ -15,6 +15,7 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	DynExplicitElasticity.hh \
+	Integrator.hh \
 	IntegratorDynExplicit.hh \
 	Quadrature.hh \
 	Quadrature.icc \

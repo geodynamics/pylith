@@ -25,15 +25,14 @@
 #if !defined(pylith_feassemble_integratordynexplicit_hh)
 #define pylith_feassemble_integratordynexplicit_hh
 
-#include <petscmesh.h> // USES Mesh
 #include "pylith/utils/petscfwd.h" // USES PetscMat
+
+#include "Integrator.hh" // ISA Integrator
 
 namespace pylith {
   namespace feassemble {
     class IntegratorDynExplicit;
     class TestIntegratorDynExplicit;
-
-    class Quadrature; // HOLDSA Quadrature
   } // feassemble
 } // pylith
 
@@ -46,17 +45,9 @@ namespace spatialdata {
   } // geocoords
 } // spatialdata
 
-class pylith::feassemble::IntegratorDynExplicit
+class pylith::feassemble::IntegratorDynExplicit : public Integrator
 { // Integrator
   friend class TestIntegratorDynExplicit; // unit testing
-
-// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
-public :
-
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::topology_type topology_type;
-  typedef topology_type::point_type point_type;
-  typedef Mesh::real_section_type real_section_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -75,13 +66,13 @@ public :
   /** Integrate residual term (b) for dynamic elasticity term 
    * for 3-D finite elements.
    *
-   * @param fieldOut Output field
+   * @param residual Residual field (output)
    * @param fieldInT Input field at time t
    * @param fieldInTmdt Input field at time t-dt
    * @param coordinates Field of cell vertex coordinates
    */
   virtual 
-  void integrateResidual(const ALE::Obj<real_section_type>& fieldOut,
+  void integrateResidual(const ALE::Obj<real_section_type>& residual,
 			 const ALE::Obj<real_section_type>& fieldInT,
 			 const ALE::Obj<real_section_type>& fieldInTmdt,
 			 const ALE::Obj<real_section_type>& coordinates) = 0;
@@ -108,12 +99,6 @@ public :
 			 const ALE::Obj<real_section_type>& fieldIn,
 			 const ALE::Obj<real_section_type>& coordinates) = 0;
   
-  /** Set quadrature for integrating finite-element quantities.
-   *
-   * @param q Quadrature for integrating.
-   */
-  void quadrature(const Quadrature* q);
-
   /** Initialize, get material property parameters from database.
    *
    * @param mesh PETSc mesh
@@ -134,34 +119,11 @@ protected :
    */
   IntegratorDynExplicit(const IntegratorDynExplicit& i);
 
-  /// Initialize vector containing result of integration action for cell.
-  void _initCellVector(void);
-
-  /// Zero out vector containing result of integration actions for cell.
-  void _resetCellVector(void);
-
-  /// Initialize matrix containing result of integration for cell.
-  void _initCellMatrix(void);
-
-  /// Zero out matrix containing result of integration for cell.
-  void _resetCellMatrix(void);
-
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
   /// Not implemented
   const IntegratorDynExplicit& operator=(const IntegratorDynExplicit&);
-
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected :
-
-  Quadrature* _quadrature; ///< Quadrature for integrating finite-element
-
-  /// Vector local to cell containing result of integration action
-  real_section_type::value_type* _cellVector;
-
-  /// Matrix local to cell containing result of integration
-  real_section_type::value_type* _cellMatrix;
 
 }; // IntegratorDynExplicit
 

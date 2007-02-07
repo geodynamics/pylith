@@ -14,15 +14,52 @@
 
 #include "TestIntegrator.hh" // Implementation of class methods
 
-#include "pylith/feassemble/IntegratorInertia.hh" // USES IntegratorInertia
+#include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
-#include "data/IntegratorData.hh" // USES IntegratorData
 
 #include <petscmat.h>
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegrator );
 
+// ----------------------------------------------------------------------
+// Test clone().
+void
+pylith::feassemble::TestIntegrator::testCopy(void)
+{ // testCopy
+  // Test copy constructor by testing value of minJacobian value in quadrature
+
+  Quadrature1D quadrature;
+  const double minJacobian = 4.0;
+  quadrature.minJacobian(minJacobian);
+  
+  Integrator iOrig;
+  iOrig.quadrature(&quadrature);
+
+  Integrator iCopy = Integrator(iOrig);
+  CPPUNIT_ASSERT_EQUAL(minJacobian, iCopy._quadrature->minJacobian());
+} // testCopy
+
+// ----------------------------------------------------------------------
+// Test quadrature().
+void
+pylith::feassemble::TestIntegrator::testQuadrature(void)
+{ // testQuadrature
+  // Since quadrature is cloned, test setting quadrature by testing
+  // value of minJacobian
+
+  Quadrature1D quadrature;
+  const double minJacobian = 4.0;
+  quadrature.minJacobian(minJacobian);
+  
+  Integrator integrator;
+  integrator.quadrature(&quadrature);
+
+  CPPUNIT_ASSERT_EQUAL(minJacobian, integrator._quadrature->minJacobian());
+} // testQuadrature
+
+
+#if 0
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace feassemble {
@@ -43,44 +80,6 @@ public :
   _setupMesh(const IntegratorData& data);
 }; // _TestIntegrator
 
-// ----------------------------------------------------------------------
-// Test clone().
-void
-pylith::feassemble::TestIntegrator::testClone(void)
-{ // testClone
-  // Test cloning by testing value of minJacobian value in quadrature
-
-  Quadrature1D quadrature;
-  const double minJacobian = 4.0;
-  quadrature.minJacobian(minJacobian);
-  
-  IntegratorInertia iOrig;
-  iOrig.quadrature(&quadrature);
-
-  Integrator* iCopy = iOrig.clone();
-  CPPUNIT_ASSERT_EQUAL(minJacobian, iCopy->_quadrature->minJacobian());
-
-  delete iCopy;
-} // testClone
-
-// ----------------------------------------------------------------------
-// Test quadrature().
-void
-pylith::feassemble::TestIntegrator::testQuadrature(void)
-{ // testQuadrature
-  // Since quadrature is cloned, test setting quadrature by testing
-  // value of minJacobian
-
-  Quadrature1D quadrature;
-  const double minJacobian = 4.0;
-  quadrature.minJacobian(minJacobian);
-  
-  IntegratorInertia integrator;
-  integrator.quadrature(&quadrature);
-
-  CPPUNIT_ASSERT_EQUAL(minJacobian, integrator._quadrature->minJacobian());
-} // testQuadrature
-
 
 // ----------------------------------------------------------------------
 // Test integrateAction()
@@ -90,7 +89,6 @@ pylith::feassemble::TestIntegrator::_testIntegrateAction(Integrator* integrator,
 { // _testIntegrateAction
   CPPUNIT_ASSERT(false);
 
-#if 0
   typedef ALE::Mesh::real_section_type real_section_type;
   typedef ALE::Mesh::topology_type topology_type;
 
@@ -143,7 +141,6 @@ pylith::feassemble::TestIntegrator::_testIntegrateAction(Integrator* integrator,
     for (int iDim=0; iDim < fiberDim; ++iDim)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[iDim]/valsE[iDim], tolerance);
   } // for
-#endif
 } // _testIntegrateAction
 
 // ----------------------------------------------------------------------
@@ -154,7 +151,6 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
 { // _testIntegrate
   CPPUNIT_ASSERT(false);
 
-#if 0
   typedef ALE::Mesh::real_section_type real_section_type;
   typedef ALE::Mesh::topology_type topology_type;
 
@@ -258,7 +254,6 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
     std::cerr << err << std::endl;
     throw;
   } // try/catch
-#endif
 } // _testIntegrate
 
 // ----------------------------------------------------------------------
@@ -295,6 +290,7 @@ pylith::feassemble::_TestIntegrator::_setupMesh(const IntegratorData& data)
 
   return mesh;
 } // _setupMesh
+#endif
 
 
 // End of file 

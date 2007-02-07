@@ -14,8 +14,7 @@
 
 #include "Integrator.hh" // implementation of class methods
 
-#include "Quadrature.hh"
-#include "spatialdata/spatialdb/SpatialDB.hh"
+#include "Quadrature.hh" // USES Quadrature
 
 #include <assert.h> // USES assert()
 
@@ -111,5 +110,6 @@ pylith::feassemble::Integrator::_resetCellMatrix(void)
   for (int i=0; i < size; ++i)
     _cellMatrix[i] = 0.0;
 } // _resetCellMatrix
+
 
 // End of file 
