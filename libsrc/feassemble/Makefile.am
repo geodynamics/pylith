@@ -14,11 +14,8 @@ subpackage = feassemble
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	Integrator.hh \
-	IntegratorElasticity3D.hh \
-	IntegratorElasticity3D.icc \
-	IntegratorInertia.hh \
-	IntegratorInertia.icc \
+	DynExplicitElasticity.hh \
+	IntegratorDynExplicit.hh \
 	Quadrature.hh \
 	Quadrature.icc \
 	Quadrature1D.hh \

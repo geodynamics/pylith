@@ -20,9 +20,8 @@ SUBDIRS = \
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
-	feassemble/Integrator.cc \
-	feassemble/IntegratorElasticity3D.cc \
-	feassemble/IntegratorInertia.cc \
+	feassemble/DynExplicitElasticity.cc \
+	feassemble/IntegratorDynExplicit.cc \
 	feassemble/Quadrature.cc \
 	feassemble/Quadrature1D.cc \
 	feassemble/Quadrature1Din2D.cc \
