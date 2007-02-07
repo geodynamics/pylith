@@ -13,7 +13,12 @@
 /**
  * @file pylith/feassemble/Integrator.hh
  *
- * @brief Abstract base class for integration of finite-element actions.
+ * @brief Abstract base class for integration of finite-element
+ * actions.
+ *
+ * Note: Each object operates on a single finite-element family, which
+ * is defined by the quadrature and a database of material property
+ * parameters.
  */
 
 #if !defined(pylith_feassemble_integrator_hh)
