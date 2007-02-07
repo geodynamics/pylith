@@ -19,11 +19,6 @@ check_PROGRAMS = testfeassemble
 
 # Primary source files
 testfeassemble_SOURCES = \
-	TestIntegrator.cc \
-	TestIntegratorInertia.cc \
-	TestIntegratorInertia1D.cc \
-	TestIntegratorInertia2D.cc \
-	TestIntegratorInertia3D.cc \
 	TestQuadrature.cc \
 	TestQuadrature1D.cc \
 	TestQuadrature1Din2D.cc \
@@ -31,6 +26,12 @@ testfeassemble_SOURCES = \
 	TestQuadrature2Din3D.cc \
 	TestQuadrature3D.cc \
 	test_feassemble.cc
+
+#TestIntegrator.cc \
+#TestIntegratorInertia.cc \
+#TestIntegratorInertia1D.cc \
+#TestIntegratorInertia2D.cc \
+#TestIntegratorInertia3D.cc
 
 noinst_HEADERS = \
 	TestIntegrator.hh \
