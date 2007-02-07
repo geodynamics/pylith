@@ -20,7 +20,6 @@
 #define pylith_feassemble_integrator_hh
 
 #include <petscmesh.h> // USES Mesh
-#include "pylith/utils/petscfwd.h" // USES PetscMat
 
 namespace pylith {
   namespace feassemble {
@@ -30,15 +29,6 @@ namespace pylith {
     class Quadrature; // HOLDSA Quadrature
   } // feassemble
 } // pylith
-
-namespace spatialdata {
-  namespace spatialdb {
-    class SpatialDB; // USES SpatialDB
-  } // spatialdb
-  namespace geocoords {
-    class CoordSys; // USES CoordSys
-  } // geocoords
-} // spatialdata
 
 class pylith::feassemble::Integrator
 { // Integrator
@@ -59,49 +49,13 @@ public :
   Integrator(void);
 
   /// Destructor
-  virtual
   ~Integrator(void);
-
-  /// Create a copy of this object.
-  virtual
-  Integrator* clone(void) const = 0;
-
-  /** Integrate elasticity term for 3-D finite elements.
-   *
-   * @param fieldOut Output field
-   * @param fieldIn Input field
-   * @param coordinates Field of cell vertex coordinates
-   */
-  virtual 
-  void integrateAction(const ALE::Obj<real_section_type>& fieldOut,
-		       const ALE::Obj<real_section_type>& fieldIn,
-		       const ALE::Obj<real_section_type>& coordinates) = 0;
-
-  /** Compute matrix associated with operator.
-   *
-   * @param mat Sparse matrix
-   * @param coordinates Field of cell vertex coordinates
-   */
-  virtual 
-  void integrate(PetscMat* mat,
-		 const ALE::Obj<real_section_type>& fieldIn,
-		 const ALE::Obj<real_section_type>& coordinates) = 0;
 
   /** Set quadrature for integrating finite-element quantities.
    *
    * @param q Quadrature for integrating.
    */
   void quadrature(const Quadrature* q);
-
-  /** Initialize, get material property parameters from database.
-   *
-   * @param mesh PETSc mesh
-   * @param cs Pointer to coordinate system of vertices
-   * @param db Pointer to spatial database with material property parameters
-   */
-  virtual void initialize(ALE::Obj<ALE::Mesh>& mesh,
-			  spatialdata::geocoords::CoordSys* cs,
-			  spatialdata::spatialdb::SpatialDB* db) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

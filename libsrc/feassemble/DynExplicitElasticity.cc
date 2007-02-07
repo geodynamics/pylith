@@ -46,16 +46,16 @@ pylith::feassemble::DynExplicitElasticity::DynExplicitElasticity(const DynExplic
 // finite elements.
 void
 pylith::feassemble::DynExplicitElasticity::integrateResidual(
-			      const ALE::Obj<real_section_type>& fieldOut,
-			      const ALE::Obj<real_section_type>& fieldInT,
-			      const ALE::Obj<real_section_type>& fieldInTmdt,
+			      const ALE::Obj<real_section_type>& residual,
+			      const ALE::Obj<real_section_type>& dispT,
+			      const ALE::Obj<real_section_type>& dispTmdt,
 			      const ALE::Obj<real_section_type>& coordinates)
 { // integrateResidual
   assert(0 != _quadrature);
 
   // Get information about section
   const topology_type::patch_type patch = 0;
-  const ALE::Obj<topology_type>& topology = fieldInT->getTopology();
+  const ALE::Obj<topology_type>& topology = dispT->getTopology();
   const ALE::Obj<topology_type::label_sequence>& cells = 
     topology->heightStratum(patch, 0);
   const topology_type::label_sequence::iterator cellsEnd = cells->end();
@@ -73,10 +73,10 @@ pylith::feassemble::DynExplicitElasticity::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    const real_section_type::value_type* fieldInTCell = 
-      fieldInT->restrict(patch, *cellIter);
-    const real_section_type::value_type* fieldInTmdtCell = 
-      fieldInTmdt->restrict(patch, *cellIter);
+    const real_section_type::value_type* dispTCell = 
+      dispT->restrict(patch, *cellIter);
+    const real_section_type::value_type* dispTmdtCell = 
+      dispTmdt->restrict(patch, *cellIter);
 
     // Get cell geometry information
     const int numQuadPts = _quadrature->numQuadPts();
@@ -108,7 +108,7 @@ pylith::feassemble::DynExplicitElasticity::integrateResidual(
           const int jBlock = jBasis * spaceDim;
           const double val = valI * basis[iQ+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
-            _cellVector[iBlock+iDim] += val * fieldInTCell[jBlock+iDim];
+            _cellVector[iBlock+iDim] += val * dispTCell[jBlock+iDim];
         } // for
       } // for
     } // for
@@ -118,7 +118,7 @@ pylith::feassemble::DynExplicitElasticity::integrateResidual(
       throw std::runtime_error("Logging PETSc flops failed.");
     
     // Assemble cell contribution into field
-    fieldOut->updateAdd(patch, *cellIter, _cellVector);
+    residual->updateAdd(patch, *cellIter, _cellVector);
   } // for
 } // integrateResidual
 
@@ -127,7 +127,7 @@ pylith::feassemble::DynExplicitElasticity::integrateResidual(
 void
 pylith::feassemble::DynExplicitElasticity::integrateJacobian(
 			     PetscMat* mat,
-			     const ALE::Obj<real_section_type>& fieldIn,
+			     const ALE::Obj<real_section_type>& dispT,
 			     const ALE::Obj<real_section_type>& coordinates)
 { // integrateJacobian
   assert(0 != mat);
@@ -143,8 +143,8 @@ pylith::feassemble::DynExplicitElasticity::integrateJacobian(
   const ALE::Obj<ALE::Mesh::order_type>& globalOrder = 
     ALE::New::NumberingFactory<topology_type>::singleton(
        topology->debug())->getGlobalOrder(topology, patch, 
-					  fieldIn->getName(), 
-					  fieldIn->getAtlas());
+					  dispT->getName(), 
+					  dispT->getAtlas());
 
   // Setup symmetric, sparse matrix
   // :TODO: This needs to be moved outside Integrator object, because
@@ -154,7 +154,7 @@ pylith::feassemble::DynExplicitElasticity::integrateJacobian(
   err = MatCreate(topology->comm(), mat);
   err = MatSetSizes(*mat, localSize, localSize, globalSize, globalSize);
   err = MatSetFromOptions(*mat);
-  err = preallocateMatrix(topology, fieldIn->getAtlas(), globalOrder, *mat);
+  err = preallocateMatrix(topology, dispT->getAtlas(), globalOrder, *mat);
 
   // Allocate matrix for cell values (if necessary)
   _initCellMatrix();
@@ -206,7 +206,7 @@ pylith::feassemble::DynExplicitElasticity::integrateJacobian(
       throw std::runtime_error("Logging PETSc flops failed.");
     
     // Assemble cell contribution into sparse matrix
-    err = updateOperator(*mat, fieldIn, globalOrder, *cellIter, _cellMatrix, 
+    err = updateOperator(*mat, dispT, globalOrder, *cellIter, _cellMatrix, 
 			 ADD_VALUES);
   } // for
 } // integrateResidual
@@ -216,7 +216,7 @@ pylith::feassemble::DynExplicitElasticity::integrateJacobian(
 void
 pylith::feassemble::DynExplicitElasticity::integrateJacobian(
 			     const ALE::Obj<real_section_type>& fieldOut,
-			     const ALE::Obj<real_section_type>& fieldIn,
+			     const ALE::Obj<real_section_type>& dispT,
 			     const ALE::Obj<real_section_type>& coordinates)
 { // integrateJacobian
   assert(0 != _quadrature);

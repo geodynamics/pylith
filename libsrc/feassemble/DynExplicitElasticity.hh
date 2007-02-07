@@ -23,38 +23,24 @@
  *
  * A = 1/(dt*dt) [M]
  *
- * b = 2/(dt*dt)[M]{u(t)} - 1/(dt*dt)[M]{u(t-dt)} - 1/s[K]{u(t)} + {f(t)}
+ * b = 2/(dt*dt)[M]{u(t)} - 1/(dt*dt)[M]{u(t-dt)} - [K]{u(t)} + {f(t)}
  */
 
 #if !defined(pylith_feassemble_dynexplicitelasticity_hh)
 #define pylith_feassemble_dynexplicitelasticity_hh
 
-#include <petscmesh.h> // USES Mesh
-#include "pylith/utils/petscfwd.h" // USES PetscMat
-
-#include "IntegratorDynExplicit.hh"
+#include "IntegratorDynExplicit.hh" // ISA IntegratorDynExplicit
 
 namespace pylith {
   namespace feassemble {
     class DynExplicitElasticity;
     class TestDynExplicitElasticity;
-
-    class Quadrature; // HOLDSA Quadrature
   } // feassemble
 } // pylith
 
-class pylith::feassemble::DynExplicitElasticity : 
-  public IntegratorDynExplicit
+class pylith::feassemble::DynExplicitElasticity : public IntegratorDynExplicit
 { // DynExplicitElasticity
   friend class TestDynExplicitElasticity; // unit testing
-
-// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
-public :
-
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::topology_type topology_type;
-  typedef topology_type::point_type point_type;
-  typedef Mesh::real_section_type real_section_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -71,34 +57,34 @@ public :
   /** Integrate residual term (b) for dynamic elasticity term 
    * for 3-D finite elements.
    *
-   * @param fieldOut Output field
-   * @param fieldInT Input field at time t
-   * @param fieldInTmdt Input field at time t-dt
+   * @param residual Residual field (output)
+   * @param dispT Displacement field at time t
+   * @param dispTmdt Displacement field at time t-dt
    * @param coordinates Field of cell vertex coordinates
    */
-  void integrateResidual(const ALE::Obj<real_section_type>& fieldOut,
-			 const ALE::Obj<real_section_type>& fieldInT,
-			 const ALE::Obj<real_section_type>& fieldInTmdt,
+  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+			 const ALE::Obj<real_section_type>& dispT,
+			 const ALE::Obj<real_section_type>& dispTmdt,
 			 const ALE::Obj<real_section_type>& coordinates);
 
   /** Compute matrix (A) associated with operator.
    *
    * @param mat Sparse matrix
-   * @param fieldIn Input field at time t
+   * @param dispT Displacement at time t
    * @param coordinates Field of cell vertex coordinates
    */
   void integrateJacobian(PetscMat* mat,
-			 const ALE::Obj<real_section_type>& fieldIn,
+			 const ALE::Obj<real_section_type>& dispT,
 			 const ALE::Obj<real_section_type>& coordinates);
   
   /** Compute field (A) associated with lumped operator.
    *
    * @param fieldOut Output Jacobian field
-   * @param fieldIn Input field at time t
+   * @param dispT Displacement at time t
    * @param coordinates Field of cell vertex coordinates
    */
   void integrateJacobian(const ALE::Obj<real_section_type>& fieldOut,
-			 const ALE::Obj<real_section_type>& fieldIn,
+			 const ALE::Obj<real_section_type>& dispT,
 			 const ALE::Obj<real_section_type>& coordinates);
   
   /** Initialize, get material property parameters from database.

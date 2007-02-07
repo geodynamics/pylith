@@ -38,7 +38,7 @@ class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestIntegrator );
-  CPPUNIT_TEST( testClone );
+  CPPUNIT_TEST( testCopy );
   CPPUNIT_TEST( testQuadrature );
 
   CPPUNIT_TEST_SUITE_END();
@@ -46,30 +46,11 @@ class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
-  /// Test clone()
-  void testClone(void);
+  /// Test copy constructor.
+  void testCopy(void);
 
   /// Test quadrature()
   void testQuadrature(void);
-
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
-
-  /** Test integrateAction()
-   *
-   * @param integrator Pointer to integrator
-   * @param data Data for testing integrator
-   */
-  void _testIntegrateAction(Integrator* integrator,
-			    const IntegratorData& data) const;
-
-  /** Test integrate()
-   *
-   * @param integrator Pointer to integrator
-   * @param data Data for testing integrator
-   */
-  void _testIntegrate(Integrator* integrator,
-		      const IntegratorData& data) const;
 
 }; // class TestIntegrator
 
