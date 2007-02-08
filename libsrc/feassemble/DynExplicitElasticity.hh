@@ -20,14 +20,17 @@
  * is defined by the quadrature and a database of material property
  * parameters.
  *
- * Computes terms A and b in A(t) u(t+dt) = b(u(t), u(t-dt)), where
- * A(t) is a sparse matrix or vector, u(t+dt) is the field we want to
- * compute at time t+dt and b is a vector that depends on the field at
- * time t and t-dt.
+ * Computes contributions to terms A and b in A(t) u(t+dt) = b(u(t),
+ * u(t-dt)), where A(t) is a sparse matrix or vector, u(t+dt) is the
+ * field we want to compute at time t+dt and b is a vector that
+ * depends on the field at time t and t-dt.
+ *
+ * Contributions from elasticity include the intertial and stiffness
+ * terms, so this object computes the following portions of A and b:
  *
  * A = 1/(dt*dt) [M]
  *
- * b = 2/(dt*dt)[M]{u(t)} - 1/(dt*dt)[M]{u(t-dt)} - [K]{u(t)} + {f(t)}
+ * b = 2/(dt*dt)[M]{u(t)} - 1/(dt*dt)[M]{u(t-dt)} - [K]{u(t)}
  */
 
 #if !defined(pylith_feassemble_dynexplicitelasticity_hh)

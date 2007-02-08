@@ -20,7 +20,8 @@
 #include "pylith/feassemble/Quadrature3D.hh"
 
 #include "pylith/feassemble/Integrator.hh"
-#include "pylith/feassemble/IntegratorInertia.hh"
+#include "pylith/feassemble/IntegratorDynExplicit.hh"
+#include "pylith/feassemble/DynExplicitElasticity.hh"
 #}header
 
 # ----------------------------------------------------------------------
@@ -284,43 +285,6 @@ cdef class Integrator:
     return
 
 
-  def initialize(self, mesh, cs, db):
-    """
-    Initialize integrator.
-
-    @param mesh PETSc mesh
-    @param cs Coordinate system associated with mesh vertices
-    @param db Database of material properties
-    """
-    # create shim for method 'initialize'
-    #embed{ void Integrator_initialize(void* pObj, void* meshObj, void* csObj, void* dbObj)
-    ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshObj;
-    spatialdata::geocoords::CoordSys* cs =
-      (spatialdata::geocoords::CoordSys*) csObj;
-    spatialdata::spatialdb::SpatialDB* db =
-      (spatialdata::spatialdb::SpatialDB*) dbObj;
-    ((pylith::feassemble::Integrator*) pObj)->initialize(*mesh, cs, db);
-    #}embed
-
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'pylith::topology::Mesh'."
-    if not cs.name == "spatialdata_geocoords_CoordSys":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'spatialdata::geocoords::CoordSys'."
-    if not db.name == "spatialdata_spatialdb_SpatialDB":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'spatialdata::spatialdb::SpatialDB'."
-    cdef void* meshObj
-    meshObj = <void*> PyCObject_AsVoidPtr(mesh)
-    Integrator_initialize(self.thisptr, meshObj,
-                          ptrFromHandle(cs), ptrFromHandle(db))
-    return
-
-
   def _createHandle(self):
     """Wrap pointer to C++ object in PyCObject."""
     # create shim for destructor
@@ -345,6 +309,93 @@ cdef class Integrator:
         raise TypeError, \
               "Argument must be extension module type 'Quadrature'."
       Integrator_quadrature_set(self.thisptr, ptrFromHandle(q))
+
+
+# ----------------------------------------------------------------------
+cdef class IntegratorDynExplicit(Integrator):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    Integrator.__init__(self)
+    return
+
+  def integrateResidual(residual, fieldInT, fieldInTmdt, coordinates):
+    """
+    Integrate residual term (b) for dynamic elasticity term for 3-D
+    finite elemtnts.
+    """
+    print "WARNING: IntegratorDynExplicit::integrateResidual not implemented."
+    return
+
+  def integrateJacobianMat(mat, fieldIn, coordinates):
+    """
+    Compute matrix (A) associated with operator.
+    """
+    print "WARNING: IntegratorDynExplicit::integrateJacobian not implemented."
+    return
+
+  def integrateJacobianField(fieldOut, fieldIn, coordinates):
+    """
+    Compute field (A) associated with operator.
+    """
+    print "WARNING: IntegratorDynExplicit::integrateJacobian not implemented."
+    return
+
+  def initialize(self, mesh, cs, db):
+    """
+    Initialize integrator.
+
+    @param mesh PETSc mesh
+    @param cs Coordinate system associated with mesh vertices
+    @param db Database of material properties
+    """
+    # create shim for method 'initialize'
+    #embed{ void IntegratorDynExplicit_initialize(void* pObj, void* meshObj, void* csObj, void* dbObj)
+    ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshObj;
+    spatialdata::geocoords::CoordSys* cs =
+      (spatialdata::geocoords::CoordSys*) csObj;
+    spatialdata::spatialdb::SpatialDB* db =
+      (spatialdata::spatialdb::SpatialDB*) dbObj;
+    ((pylith::feassemble::IntegratorDynExplicit*) pObj)->initialize(*mesh, cs, db);
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    if not cs.name == "spatialdata_geocoords_CoordSys":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'spatialdata::geocoords::CoordSys'."
+    if not db.name == "spatialdata_spatialdb_SpatialDB":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'spatialdata::spatialdb::SpatialDB'."
+    cdef void* meshObj
+    meshObj = <void*> PyCObject_AsVoidPtr(mesh)
+    IntegratorDynExplicit_initialize(self.thisptr, meshObj,
+                          ptrFromHandle(cs), ptrFromHandle(db))
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class DynExplicitElasticity(IntegratorDynExplicit):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* DynExplicitElasticity_constructor()
+    return (void*)(new pylith::feassemble::DynExplicitElasticity);
+    #}embed
+
+    IntegratorDynExplicit.__init__(self)
+    self.thisptr = DynExplicitElasticity_constructor()
+    self.handle = self._createHandle()
+    return
 
 
 # End of file 
