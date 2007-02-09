@@ -343,7 +343,24 @@ cdef class IntegratorDynExplicit(Integrator):
     print "WARNING: IntegratorDynExplicit::integrateJacobian not implemented."
     return
 
-  def initialize(self, mesh, cs, db):
+# ----------------------------------------------------------------------
+cdef class DynExplicitElasticity(IntegratorDynExplicit):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* DynExplicitElasticity_constructor()
+    return (void*)(new pylith::feassemble::DynExplicitElasticity);
+    #}embed
+
+    IntegratorDynExplicit.__init__(self)
+    self.thisptr = DynExplicitElasticity_constructor()
+    self.handle = self._createHandle()
+    return
+
+  def setupMatProp(self, mesh, cs, db):
     """
     Initialize integrator.
 
@@ -351,14 +368,14 @@ cdef class IntegratorDynExplicit(Integrator):
     @param cs Coordinate system associated with mesh vertices
     @param db Database of material properties
     """
-    # create shim for method 'initialize'
-    #embed{ void IntegratorDynExplicit_initialize(void* pObj, void* meshObj, void* csObj, void* dbObj)
+    # create shim for method 'setupMatProp'
+    #embed{ void DynExplicitElasticity_setupMatProp(void* pObj, void* meshObj, void* csObj, void* dbObj)
     ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshObj;
     spatialdata::geocoords::CoordSys* cs =
       (spatialdata::geocoords::CoordSys*) csObj;
     spatialdata::spatialdb::SpatialDB* db =
       (spatialdata::spatialdb::SpatialDB*) dbObj;
-    ((pylith::feassemble::IntegratorDynExplicit*) pObj)->initialize(*mesh, cs, db);
+    ((pylith::feassemble::DynExplicitElasticity*) pObj)->setupMatProp(*mesh, cs, db);
     #}embed
 
     if not mesh.name == "pylith_topology_Mesh":
@@ -375,26 +392,8 @@ cdef class IntegratorDynExplicit(Integrator):
             "'spatialdata::spatialdb::SpatialDB'."
     cdef void* meshObj
     meshObj = <void*> PyCObject_AsVoidPtr(mesh)
-    IntegratorDynExplicit_initialize(self.thisptr, meshObj,
+    DynExplicitElasticity_setupMatProp(self.thisptr, meshObj,
                           ptrFromHandle(cs), ptrFromHandle(db))
-    return
-
-
-# ----------------------------------------------------------------------
-cdef class DynExplicitElasticity(IntegratorDynExplicit):
-
-  def __init__(self):
-    """
-    Constructor.
-    """
-    # create shim for constructor
-    #embed{ void* DynExplicitElasticity_constructor()
-    return (void*)(new pylith::feassemble::DynExplicitElasticity);
-    #}embed
-
-    IntegratorDynExplicit.__init__(self)
-    self.thisptr = DynExplicitElasticity_constructor()
-    self.handle = self._createHandle()
     return
 
 
