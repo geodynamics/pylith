@@ -285,13 +285,13 @@ pylith::feassemble::DynExplicitElasticity::integrateJacobian(
 } // integrateLumped
 
 // ----------------------------------------------------------------------
-// Initialize, get material property parameters from database.
+// Setup material property parameters by querying database.
 void
-pylith::feassemble::DynExplicitElasticity::initialize(
+pylith::feassemble::DynExplicitElasticity::setupMatProp(
 				     ALE::Obj<ALE::Mesh>& mesh,
 				     spatialdata::geocoords::CoordSys* cs,
 				     spatialdata::spatialdb::SpatialDB* db)
-{ // initialize
+{ // setupMatProp
   assert(0 != cs);
   assert(0 != db);
 
@@ -353,7 +353,7 @@ pylith::feassemble::DynExplicitElasticity::initialize(
 
   // Close database
   db->close();
-} // initialize
+} // setupMatProp
 
 
 // End of file 

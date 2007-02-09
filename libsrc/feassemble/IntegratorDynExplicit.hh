@@ -40,15 +40,6 @@ namespace pylith {
   } // feassemble
 } // pylith
 
-namespace spatialdata {
-  namespace spatialdb {
-    class SpatialDB; // USES SpatialDB
-  } // spatialdb
-  namespace geocoords {
-    class CoordSys; // USES CoordSys
-  } // geocoords
-} // spatialdata
-
 class pylith::feassemble::IntegratorDynExplicit : public Integrator
 { // Integrator
   friend class TestIntegratorDynExplicit; // unit testing
@@ -103,17 +94,6 @@ public :
 			 const ALE::Obj<real_section_type>& fieldIn,
 			 const ALE::Obj<real_section_type>& coordinates) = 0;
   
-  /** Initialize, get material property parameters from database.
-   *
-   * @param mesh PETSc mesh
-   * @param cs Pointer to coordinate system of vertices
-   * @param db Pointer to spatial database with material property parameters
-   */
-  virtual
-  void initialize(ALE::Obj<ALE::Mesh>& mesh,
-		  spatialdata::geocoords::CoordSys* cs,
-		  spatialdata::spatialdb::SpatialDB* db) = 0;
-
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
