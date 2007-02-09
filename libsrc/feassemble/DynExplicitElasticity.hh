@@ -45,6 +45,15 @@ namespace pylith {
   } // feassemble
 } // pylith
 
+namespace spatialdata {
+  namespace spatialdb {
+    class SpatialDB; // USES SpatialDB
+  } // spatialdb
+  namespace geocoords {
+    class CoordSys; // USES CoordSys
+  } // geocoords
+} // spatialdata
+
 class pylith::feassemble::DynExplicitElasticity : public IntegratorDynExplicit
 { // DynExplicitElasticity
   friend class TestDynExplicitElasticity; // unit testing
@@ -94,15 +103,15 @@ public :
 			 const ALE::Obj<real_section_type>& dispT,
 			 const ALE::Obj<real_section_type>& coordinates);
   
-  /** Initialize, get material property parameters from database.
+  /** Setup material property parameters by querying database.
    *
    * @param mesh PETSc mesh
    * @param cs Pointer to coordinate system of vertices
    * @param db Pointer to spatial database with material property parameters
    */
-  void initialize(ALE::Obj<ALE::Mesh>& mesh,
-		  spatialdata::geocoords::CoordSys* cs,
-		  spatialdata::spatialdb::SpatialDB* db);
+  void setupMatProp(ALE::Obj<ALE::Mesh>& mesh,
+		    spatialdata::geocoords::CoordSys* cs,
+		    spatialdata::spatialdb::SpatialDB* db);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
