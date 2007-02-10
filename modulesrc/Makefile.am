@@ -12,9 +12,8 @@
 
 SUBDIRS = \
 	feassemble \
-	meshio
+	meshio \
+	topology
 
-# version
-# $Id$
 
 # End of file 

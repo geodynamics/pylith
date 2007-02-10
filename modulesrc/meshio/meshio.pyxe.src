@@ -29,10 +29,7 @@ cdef extern from "stdlib.h":
     void* malloc(size_t size)
     void free(void* mem)
 
-#embed{ void ALEMesh_destructor(void* pObj)
-  ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pObj;
-  delete pMesh;
-#}embed
+#cimport topology # USES topology.Mesh
 
 # ----------------------------------------------------------------------
 cdef class MeshIO:
@@ -51,24 +48,19 @@ cdef class MeshIO:
     return
 
 
-  def read(self):
+  def read(self, mesh):
     """
     Read mesh from file.
-
-    @param interpolate Flag indicating whether to build intermediate
-      topology elements.
     """
     # create shim for method 'read'
-    #embed{ void MeshIO_read(void* pObj, void** ppMeshObj)
-    ALE::Obj<ALE::Mesh>* pMesh = new ALE::Obj<ALE::Mesh>;
+    #embed{ void MeshIO_read(void* pObj, void* pMeshObj)
+    ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
     ((pylith::meshio::MeshIO*) pObj)->read(pMesh);
-    *ppMeshObj = (void*) pMesh;
     #}embed
 
-    cdef void* pMeshObj
-    pMeshObj = NULL
-    MeshIO_read(self.thisptr, &pMeshObj)
-    return PyCObject_FromVoidPtr(pMeshObj, ALEMesh_destructor)
+    #cdef topology.Mesh mesh
+    MeshIO_read(self.thisptr, ptrFromHandle(mesh))
+    return mesh
 
 
   def write(self, mesh):
@@ -80,9 +72,7 @@ cdef class MeshIO:
     ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
     ((pylith::meshio::MeshIO*) pObj)->write(pMesh);
     #}embed
-    cdef void* pMeshObj
-    pMeshObj = <void*> PyCObject_AsVoidPtr(mesh)
-    MeshIO_write(self.thisptr, pMeshObj)
+    MeshIO_write(self.thisptr, ptrFromHandle(mesh))
     return
 
 

@@ -46,7 +46,10 @@ class Mesh(Component):
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def distribute(self):
-    #raise NotImplementedError, "Mesh::distribute() not implemented."
+    """
+    Distribute mesh across processors.
+    """
+    self._info.log("WARNING: Mesh::distribute() not implemented.")
     return self
 
 
@@ -55,7 +58,8 @@ class Mesh(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="mesh")
-    self.cppHandle = None
+    import pylith.topology.topology as bindings
+    self.cppHandle = bindings.Mesh()
     return
 
 

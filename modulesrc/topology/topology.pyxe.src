@@ -1,0 +1,64 @@
+# -*- Pyrex -*-
+#
+# ======================================================================
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# {LicenseText}
+#
+# ======================================================================
+#
+
+#header{
+#include <Mesh.hh>
+#}header
+
+# ----------------------------------------------------------------------
+cdef extern from "Python.h":
+  object PyCObject_FromVoidPtr(void*, void (*destruct)(void*))
+  void* PyCObject_AsVoidPtr(object)
+
+cdef void* ptrFromHandle(obj):
+  """Extract pointer from PyCObject."""
+  return PyCObject_AsVoidPtr(obj.handle)
+
+cdef extern from "stdlib.h":
+    ctypedef unsigned long size_t
+    void* malloc(size_t size)
+    void free(void* mem)
+
+# ----------------------------------------------------------------------
+cdef class Mesh:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* MeshPtr_constructor()
+    return (void*)(new ALE::Obj<ALE::Mesh>);
+    #}embed
+
+    self.thisptr = MeshPtr_constructor()
+    self.handle = self._createHandle()
+    self.name = "pylith_topology_Mesh"
+    return
+
+
+  def _createHandle(self):
+    """
+    Wrap pointer to C++ object in PyCObject.
+    """
+    #embed{ void MeshPtr_destructor(void* pObj)
+    ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pObj;
+    delete pMesh;
+    #}embed
+    return PyCObject_FromVoidPtr(self.thisptr, MeshPtr_destructor)
+
+
+# End of file 

@@ -30,6 +30,7 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature2D.cc \
 	feassemble/Quadrature2Din3D.cc \
 	feassemble/Quadrature3D.cc \
+	feassemble/ParameterManager.cc \
 	meshio/MeshIO.cc \
 	meshio/MeshIOAscii.cc
 
