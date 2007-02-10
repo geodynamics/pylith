@@ -41,7 +41,7 @@ namespace pylith {
 } // pylith
 
 class pylith::feassemble::ParameterManager
-{ // Integrator
+{ // ParameterManager
   friend class TestParameterManager; // unit testing
 
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
