@@ -28,6 +28,8 @@ meshiomodule_la_LIBADD = \
 
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
+PYREX_INCLUDES = -I$(top_srcdir)/modulesrc/topology
+
 meshio.pyx meshio_embed.cpp  meshio_embed.h: meshio.pyxe
 	pyrexembed meshio.pyxe
 meshio.pyxe: $(srcdir)/meshio.pyxe.src
@@ -36,7 +38,7 @@ meshio_embed.cpp: meshio_embed.h
 meshio_embed.h: meshio.pyx
 
 .pyx.c:
-	pyrexc $<
+	pyrexc $< $(PYREX_INCLUDES)
 
 CLEANFILES = meshio.pyxe meshio.pyx meshio.c *_embed.*
 

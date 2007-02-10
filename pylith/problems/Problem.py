@@ -35,29 +35,29 @@ class Problem(Component):
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b mesh Finite-element topology.
-    ## @li \b assembler Finite-element assembler.
     ## @li \b materials Materials in problem.
+    ## @li \b bc Boundary conditions.
+    ## @li \b formulation Formulation for solving PDE
 
     import pyre.inventory
 
-    from pylith.topology.Mesh import Mesh
-    mesh = pyre.inventory.facility("mesh", factory=Mesh)
-    mesh.meta['tip'] = "Finite-element topology."
-
-    #from pylith.feassemble.Assembler import Assembler
-    #assembler = pyre.inventory.facility("assembler", factory=Assembler)
-    #assembler.meta['tip'] = "Finite-element assembler."
-
     from pylith.materials.Homogeneous import Homogeneous
     materials = pyre.inventory.facility("materials", factory=Homogeneous)
-    mesh.meta['tip'] = "Materials in problem."
+    materials.meta['tip'] = "Materials in problem."
+
+    #from BoundaryConditions import BoundaryConditions
+    #bc = pyre.inventory.facility("bc", factory=BoundaryConditions)
+    #bc.meta['tip'] = "Boundary conditions."
   
+    from Explicit import Explicit
+    formulation = pyre.inventory.facility("formulation", factory=Explicit)
+    formulation.meta['tip'] = "Formulation for solving PDE."
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def initialize(self):
     """
-    Create domain, bounday conditions, fields, and setup time loop.
+    Initialize problem by getting mesh, setting up boundary conditions, etc.
     """
     return
 
@@ -104,6 +104,7 @@ class Problem(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="problem")
+    mesh = None
     return
 
 
@@ -113,9 +114,9 @@ class Problem(Component):
     """
     Set members based using inventory.
     """
-    self.mesh = self.inventory.mesh
-    #self.assembler = self.inventory.assembler
-    self.material = self.inventory.materials
+    self.materials = self.inventory.materials
+    #self.bc = self.inventory.bc
+    self.formulation = self.inventory.formulation
     return
 
 

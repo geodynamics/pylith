@@ -16,10 +16,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/__init__.py \
 	feassemble/FIATCell.py \
 	feassemble/FIATSimplex.py \
-	feassemble/Field.py \
 	feassemble/Integrator.py \
-	feassemble/IntegratorElasticity.py \
-	feassemble/IntegratorInertia.py \
 	feassemble/Quadrature.py \
 	feassemble/ReferenceCell.py \
 	materials/__init__.py \
@@ -31,14 +28,12 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/MeshIOAscii.py \
 	meshio/__init__.py \
 	problems/__init__.py \
-	problems/Dynamic.py \
-	problems/DynamicExplicit.py \
+	problems/EqDeformation.py \
+	problems/Explicit.py \
+	problems/Formulation.py \
 	problems/Problem.py \
-	problems/QuasiStatic.py \
 	solver/__init__.py \
 	solver/Solver.py \
-	solver/SolverTSE.py \
-	solver/SolverTSI.py \
 	topology/__init__.py \
 	topology/Mesh.py \
 	topology/MeshGenerator.py \

@@ -13,17 +13,17 @@
 ## @file pylith/PyLithApp.py
 ## @brief Python PyLith application
 
-from pyre.applications.Script import Script
+from mpi.Application import Application
 
 # PyLithApp class
-class PyLithApp(Script):
+class PyLithApp(Application):
   """
   Python PyLithApp application.
   """
   
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Script.Inventory):
+  class Inventory(Application.Inventory):
     """
     Python object for managing PyLithApp facilities and properties.
     """
@@ -49,8 +49,8 @@ class PyLithApp(Script):
     mesher = pyre.inventory.facility("mesh_generator", factory=MeshImporter)
     mesher.meta['tip'] = "Generates or imports the computational mesh."
 
-    from pylith.problems.DynamicExplicit import DynamicExplicit
-    problem = pyre.inventory.facility("problem", factory=DynamicExplicit)
+    from pylith.problems.EqDeformation import EqDeformation
+    problem = pyre.inventory.facility("problem", factory=EqDeformation)
     problem.meta['tip'] = "Computational problem to solve."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -61,8 +61,8 @@ class PyLithApp(Script):
     """
 
     mesh = self.mesher.create()
-    self.problem.mesh = mesh.distribute()
-    self.problem.initialize()
+    #self.problem.mesh = mesh.distribute()
+    #self.problem.initialize()
 
     from pyre.units.time import second
     t = 0.0*second
@@ -79,7 +79,7 @@ class PyLithApp(Script):
     """
     Constructor.
     """
-    Script.__init__(self, name)
+    Application.__init__(self, name)
     self.totalTime = None
     self.mesher = None
     self.problem = None
@@ -92,7 +92,7 @@ class PyLithApp(Script):
     """
     Setup members using inventory.
     """
-    Script._configure(self)
+    Application._configure(self)
     self.totalTime = self.inventory.totalTime
     self.mesher = self.inventory.mesher
     self.problem = self.inventory.problem

@@ -17,9 +17,9 @@ setup(
     'pythia[mpi] >= 0.8.1.0, < 0.8.2a',
     ],
 
-    author = 'Charles A. Williams, Brad Aagaard, and Matt Knepley',
+    author = 'Brad Aagaard, Charles A. Williams, and Matt Knepley',
     author_email = 'cig-short@geodynamics.org',
-    description = """A finite element code for the solution of visco-elastic/plastic deformation that was designed for lithospheric modeling problems.""",
+    description = """A finite element code for the solution of crustal deformation problems associated with earthquakes, including kinematic ruptures, spontaneous ruptures, and pre- and post-seismic deformation.""",
     license = 'other',
     url = 'http://www.geodynamics.org/cig/software/packages/short/pylith/',
 

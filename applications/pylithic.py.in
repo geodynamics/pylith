@@ -32,8 +32,8 @@ if __name__ == "__main__":
 
     from pylith.PyLithApp import PyLithApp
 
-    app = PyLithApp()
-    app.run()
+    from pyre.applications import start
+    start(applicationClass=PyLithApp)
 
 
 # End of file 
