@@ -15,6 +15,7 @@
 #include "Integrator.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
+#include "ParameterManager.hh" // USES ParameterManager
 
 #include <assert.h> // USES assert()
 
@@ -22,6 +23,7 @@
 // Constructor
 pylith::feassemble::Integrator::Integrator(void) :
   _quadrature(0),
+  _parameters(0),
   _cellVector(0),
   _cellMatrix(0)
 { // constructor
@@ -32,6 +34,7 @@ pylith::feassemble::Integrator::Integrator(void) :
 pylith::feassemble::Integrator::~Integrator(void)
 { // destructor
   delete _quadrature; _quadrature = 0;
+  delete _parameters; _parameters = 0;
   delete[] _cellVector; _cellVector = 0;
   delete[] _cellMatrix; _cellMatrix = 0;
 } // destructor
@@ -39,6 +42,8 @@ pylith::feassemble::Integrator::~Integrator(void)
 // ----------------------------------------------------------------------
 // Copy constructor
 pylith::feassemble::Integrator::Integrator(const Integrator& i) :
+  _quadrature(0),
+  _parameters(0),
   _cellVector(0),
   _cellMatrix(0)
 { // copy constructor
@@ -58,6 +63,14 @@ pylith::feassemble::Integrator::quadrature(const Quadrature* q)
   delete[] _cellVector; _cellVector = 0;
   delete[] _cellMatrix; _cellMatrix = 0;
 } // quadrature
+
+// ----------------------------------------------------------------------
+// Create parameter manager.
+void
+pylith::feassemble::Integrator::createParameters(const ALE::Obj<ALE::Mesh>& mesh)
+{ // createParameters
+  delete _parameters; _parameters = new ParameterManager(mesh);
+} // createParameters
 
 // ----------------------------------------------------------------------
 // Initialize vector containing result of integration action for cell.

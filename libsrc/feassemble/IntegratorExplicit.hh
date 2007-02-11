@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/IntegratorDynExplicit.hh
+ * @file pylith/feassemble/IntegratorExplicit.hh
  *
  * @brief Abstract base class for explicit time integration of
  * finite-element actions.
@@ -26,8 +26,8 @@
  * time t and t-dt.
  */
 
-#if !defined(pylith_feassemble_integratordynexplicit_hh)
-#define pylith_feassemble_integratordynexplicit_hh
+#if !defined(pylith_feassemble_integratorexplicit_hh)
+#define pylith_feassemble_integratorexplicit_hh
 
 #include "pylith/utils/petscfwd.h" // USES PetscMat
 
@@ -35,31 +35,46 @@
 
 namespace pylith {
   namespace feassemble {
-    class IntegratorDynExplicit;
-    class TestIntegratorDynExplicit;
+    class IntegratorExplicit;
+    class TestIntegratorExplicit;
   } // feassemble
 } // pylith
 
-class pylith::feassemble::IntegratorDynExplicit : public Integrator
+class pylith::feassemble::IntegratorExplicit : public Integrator
 { // Integrator
-  friend class TestIntegratorDynExplicit; // unit testing
+  friend class TestIntegratorExplicit; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  IntegratorDynExplicit(void);
+  IntegratorExplicit(void);
 
   /// Destructor
   virtual
-  ~IntegratorDynExplicit(void);
+  ~IntegratorExplicit(void);
 
   /// Create a copy of this object.
   virtual
-  IntegratorDynExplicit* clone(void) const = 0;
+  IntegratorExplicit* clone(void) const = 0;
+
+  /** Set time step for advancing from time t to time t+dt.
+   *
+   * @param dt Time step
+   */
+  void timeStep(const double dt);
+
+  /** Get stable time step for advancing from time t to time t+dt.
+   *
+   * Default is current time step.
+   *
+   * @returns Time step
+   */
+  virtual
+  double stableTimeStep(void) const;
 
   /** Integrate residual term (b) for dynamic elasticity term 
-   * for 3-D finite elements.
+   * for finite elements.
    *
    * @param residual Residual field (output)
    * @param fieldInT Input field at time t
@@ -86,12 +101,12 @@ public :
   /** Compute field (A) associated with lumped operator.
    *
    * @param fieldOut Output Jacobian field
-   * @param fieldIn Input field at time t
+   * @param fieldInT Input field at time t
    * @param coordinates Field of cell vertex coordinates
    */
   virtual 
   void integrateJacobian(const ALE::Obj<real_section_type>& fieldOut,
-			 const ALE::Obj<real_section_type>& fieldIn,
+			 const ALE::Obj<real_section_type>& fieldInT,
 			 const ALE::Obj<real_section_type>& coordinates) = 0;
   
 // PROTECTED METHODS ////////////////////////////////////////////////////
@@ -101,17 +116,23 @@ protected :
    *
    * @param i Integrator to copy
    */
-  IntegratorDynExplicit(const IntegratorDynExplicit& i);
+  IntegratorExplicit(const IntegratorExplicit& i);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
   /// Not implemented
-  const IntegratorDynExplicit& operator=(const IntegratorDynExplicit&);
+  const IntegratorExplicit& operator=(const IntegratorExplicit&);
 
-}; // IntegratorDynExplicit
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
 
-#endif // pylith_feassemble_integratordynexplicit_hh
+  double _dt; ///< Time step for t -> t+dt
+  double _dtm1; ///< Time step for t-dt1 -> t
+
+}; // IntegratorExplicit
+
+#endif // pylith_feassemble_integratorexplicit_hh
 
 
 // End of file 

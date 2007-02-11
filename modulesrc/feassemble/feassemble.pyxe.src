@@ -20,8 +20,8 @@
 #include "pylith/feassemble/Quadrature3D.hh"
 
 #include "pylith/feassemble/Integrator.hh"
-#include "pylith/feassemble/IntegratorDynExplicit.hh"
-#include "pylith/feassemble/DynExplicitElasticity.hh"
+#include "pylith/feassemble/IntegratorExplicit.hh"
+#include "pylith/feassemble/ExplicitElasticity.hh"
 #}header
 
 # ----------------------------------------------------------------------
@@ -285,8 +285,26 @@ cdef class Integrator:
     return
 
 
+  def createParameters(self, mesh):
+    """
+    Create manager for parameters.
+    """
+    # create shim for method 'createParameters'
+    #embed{ void Integrator_createParameters(void* pObj, void* pMeshObj)
+    const ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
+    ((pylith::feassemble::Integrator*) pObj)->createParameters(*pMesh);
+    #}embed
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    Integrator_createParameters(self.thisptr, ptrFromHandle(mesh))
+    return
+
+
   def _createHandle(self):
-    """Wrap pointer to C++ object in PyCObject."""
+    """
+    Wrap pointer to C++ object in PyCObject.
+    """
     # create shim for destructor
     #embed{ void Integrator_destructor(void* pObj)
     pylith::feassemble::Integrator* pQ =
@@ -298,7 +316,9 @@ cdef class Integrator:
 
   property quadrature:
     def __set__(self, q):
-      """Set quadrature."""
+      """
+      Set quadrature.
+      """
       # create shim for method 'quadrature'
       #embed{ void Integrator_quadrature_set(void* pObj, void* qObj)
       pylith::feassemble::Quadrature* quadrature =
@@ -312,7 +332,7 @@ cdef class Integrator:
 
 
 # ----------------------------------------------------------------------
-cdef class IntegratorDynExplicit(Integrator):
+cdef class IntegratorExplicit(Integrator):
 
   def __init__(self):
     """
@@ -321,44 +341,58 @@ cdef class IntegratorDynExplicit(Integrator):
     Integrator.__init__(self)
     return
 
-  def integrateResidual(residual, fieldInT, fieldInTmdt, coordinates):
+
+  def integrateResidualLumped(residual, fieldInT, fieldInTmdt, coords):
     """
     Integrate residual term (b) for dynamic elasticity term for 3-D
     finite elemtnts.
     """
-    print "WARNING: IntegratorDynExplicit::integrateResidual not implemented."
+    print "WARNING: IntegratorExplicit::integrateResidualLumped not implemented."
     return
 
-  def integrateJacobianMat(mat, fieldIn, coordinates):
+
+  def integrateResidual(residual, fieldInT, fieldInTmdt, coords):
+    """
+    Integrate residual term (b) for dynamic elasticity term for 3-D
+    finite elemtnts.
+    """
+    print "WARNING: IntegratorExplicit::integrateResidual not implemented."
+    return
+
+
+  def integrateJacobianLumped(mat, fieldIn, coords):
     """
     Compute matrix (A) associated with operator.
     """
-    print "WARNING: IntegratorDynExplicit::integrateJacobian not implemented."
+    print "WARNING: IntegratorExplicit::integrateJacobianLumped not implemented."
     return
 
-  def integrateJacobianField(fieldOut, fieldIn, coordinates):
+
+  def integrateJacobianField(fieldOut, fieldIn, coords):
     """
     Compute field (A) associated with operator.
     """
-    print "WARNING: IntegratorDynExplicit::integrateJacobian not implemented."
+    print "WARNING: IntegratorExplicit::integrateJacobian not implemented."
     return
 
+
 # ----------------------------------------------------------------------
-cdef class DynExplicitElasticity(IntegratorDynExplicit):
+cdef class ExplicitElasticity(IntegratorExplicit):
 
   def __init__(self):
     """
     Constructor.
     """
     # create shim for constructor
-    #embed{ void* DynExplicitElasticity_constructor()
-    return (void*)(new pylith::feassemble::DynExplicitElasticity);
+    #embed{ void* ExplicitElasticity_constructor()
+    return (void*)(new pylith::feassemble::ExplicitElasticity);
     #}embed
 
-    IntegratorDynExplicit.__init__(self)
-    self.thisptr = DynExplicitElasticity_constructor()
+    IntegratorExplicit.__init__(self)
+    self.thisptr = ExplicitElasticity_constructor()
     self.handle = self._createHandle()
     return
+
 
   def setupMatProp(self, mesh, cs, db):
     """
@@ -369,13 +403,13 @@ cdef class DynExplicitElasticity(IntegratorDynExplicit):
     @param db Database of material properties
     """
     # create shim for method 'setupMatProp'
-    #embed{ void DynExplicitElasticity_setupMatProp(void* pObj, void* meshObj, void* csObj, void* dbObj)
+    #embed{ void ExplicitElasticity_setupMatProp(void* pObj, void* meshObj, void* csObj, void* dbObj)
     ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshObj;
     spatialdata::geocoords::CoordSys* cs =
       (spatialdata::geocoords::CoordSys*) csObj;
     spatialdata::spatialdb::SpatialDB* db =
       (spatialdata::spatialdb::SpatialDB*) dbObj;
-    ((pylith::feassemble::DynExplicitElasticity*) pObj)->setupMatProp(*mesh, cs, db);
+    ((pylith::feassemble::ExplicitElasticity*) pObj)->setupMatProp(*mesh, cs, db);
     #}embed
 
     if not mesh.name == "pylith_topology_Mesh":
@@ -392,7 +426,7 @@ cdef class DynExplicitElasticity(IntegratorDynExplicit):
             "'spatialdata::spatialdb::SpatialDB'."
     cdef void* meshObj
     meshObj = <void*> PyCObject_AsVoidPtr(mesh)
-    DynExplicitElasticity_setupMatProp(self.thisptr, meshObj,
+    ExplicitElasticity_setupMatProp(self.thisptr, meshObj,
                           ptrFromHandle(cs), ptrFromHandle(db))
     return
 

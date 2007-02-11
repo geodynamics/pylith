@@ -47,11 +47,6 @@ class Integrator(Component):
     quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
     quadrature.meta['tip'] = "Quadrature object for integration."
 
-    from spatialdata.spatialdb.SimpleDB import SimpleDB
-    db = pyre.inventory.facility("db", factory=SimpleDB)
-    db.meta['tip'] = "Database for material properties."
-
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="integrator"):
@@ -71,8 +66,7 @@ class Integrator(Component):
     q = self.quadrature
     q.initialize()
     self.cppHandle.quadrature = q.cppHandle
-    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
-                              self.db)
+    self.cppHandle.createParameters(mesh.cppHandle)
     return
   
   

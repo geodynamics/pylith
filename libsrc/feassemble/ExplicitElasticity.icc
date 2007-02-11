@@ -10,17 +10,18 @@
 // ======================================================================
 //
 
-#if !defined(pylith_feassemble_integratorelasticity3d_hh)
-#error "IntegratorElasticity3D.icc must be included only from IntegratorElasticity3D.hh"
+#if !defined(pylith_feassemble_explicitelasticity_hh)
+#error "ExplicitElasticity.icc must be included only from ExplicitElasticity.hh"
 #else
 
 // Create a copy of this object.
 inline
-pylith::feassemble::Integrator*
-pylith::feassemble::IntegratorElasticity3D::clone(void) const {
-  return new IntegratorElasticity3D(*this);
+pylith::feassemble::IntegratorExplicit*
+pylith::feassemble::ExplicitElasticity::clone(void) const {
+  return new ExplicitElasticity(*this);
 } // clone
 
 #endif
+
 
 // End of file

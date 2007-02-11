@@ -39,8 +39,6 @@ pylith::meshio::MeshIO::read(ALE::Obj<Mesh>* mesh)
 { // read
   assert(0 == _mesh);
 
-  std::cout << "mesh: " << mesh << std::endl;
-
   _mesh = mesh;
   _read();
   _mesh = 0;

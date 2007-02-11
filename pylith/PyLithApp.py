@@ -11,9 +11,11 @@
 #
 
 ## @file pylith/PyLithApp.py
+
 ## @brief Python PyLith application
 
-from mpi.Application import Application
+#from mpi.Application import Application
+from pyre.applications.Script import Script as Application
 
 # PyLithApp class
 class PyLithApp(Application):
@@ -32,7 +34,7 @@ class PyLithApp(Application):
     ## Python object for managing PyLithApp facilities and properties.
     ##
     ## \b Properties
-    ## @li totalTime Time duration for simulation
+    ## @li None
     ##
     ## \b Facilities
     ## @li \b mesher Generates or imports the computational mesh.
@@ -53,6 +55,7 @@ class PyLithApp(Application):
     problem = pyre.inventory.facility("problem", factory=EqDeformation)
     problem.meta['tip'] = "Computational problem to solve."
 
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def main(self):
@@ -60,18 +63,9 @@ class PyLithApp(Application):
     Run the application.
     """
 
-    mesh = self.mesher.create()
+    #mesh = self.mesher.create()
     #self.problem.mesh = mesh.distribute()
-    #self.problem.initialize()
-
-    from pyre.units.time import second
-    t = 0.0*second
-    while t.value < self.totalTime.value:
-      self.problem.prestep()
-      dt = self.problem.stableTimestep()
-      self.problem.step(dt)
-      self.poststep(t+dt)
-      t += dt
+    self.problem.run(self)
     return
   
 
@@ -80,7 +74,6 @@ class PyLithApp(Application):
     Constructor.
     """
     Application.__init__(self, name)
-    self.totalTime = None
     self.mesher = None
     self.problem = None
     return
@@ -93,7 +86,6 @@ class PyLithApp(Application):
     Setup members using inventory.
     """
     Application._configure(self)
-    self.totalTime = self.inventory.totalTime
     self.mesher = self.inventory.mesher
     self.problem = self.inventory.problem
     return

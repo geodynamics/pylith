@@ -12,9 +12,10 @@
 
 #include <portinfo>
 
-#include "DynExplicitElasticity.hh" // implementation of class methods
+#include "ExplicitElasticity.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
+#include "ParameterManager.hh" // USES ParameterManager
 
 #include "petscmat.h" // USES PetscMat
 #include "spatialdata/spatialdb/SpatialDB.hh"
@@ -24,20 +25,20 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::DynExplicitElasticity::DynExplicitElasticity(void)
+pylith::feassemble::ExplicitElasticity::ExplicitElasticity(void)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::DynExplicitElasticity::~DynExplicitElasticity(void)
+pylith::feassemble::ExplicitElasticity::~ExplicitElasticity(void)
 { // destructor
 } // destructor
   
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::feassemble::DynExplicitElasticity::DynExplicitElasticity(const DynExplicitElasticity& i) :
-  IntegratorDynExplicit(i)
+pylith::feassemble::ExplicitElasticity::ExplicitElasticity(const ExplicitElasticity& i) :
+  IntegratorExplicit(i)
 { // copy constructor
 } // copy constructor
 
@@ -45,7 +46,7 @@ pylith::feassemble::DynExplicitElasticity::DynExplicitElasticity(const DynExplic
 // Integrate residual term (b) for dynamic elasticity term for 3-D
 // finite elements.
 void
-pylith::feassemble::DynExplicitElasticity::integrateResidual(
+pylith::feassemble::ExplicitElasticity::integrateResidual(
 			      const ALE::Obj<real_section_type>& residual,
 			      const ALE::Obj<real_section_type>& dispT,
 			      const ALE::Obj<real_section_type>& dispTmdt,
@@ -59,6 +60,11 @@ pylith::feassemble::DynExplicitElasticity::integrateResidual(
   const ALE::Obj<topology_type::label_sequence>& cells = 
     topology->heightStratum(patch, 0);
   const topology_type::label_sequence::iterator cellsEnd = cells->end();
+
+
+  // Get parameters used in integration.
+  const double dt = _dt;
+  const ALE::Obj<real_section_type>& density = _parameters->getReal("density");
 
   // Allocate vector for cell values (if necessary)
   _initCellVector();
@@ -89,31 +95,35 @@ pylith::feassemble::DynExplicitElasticity::integrateResidual(
 
     // Restrict material properties material database to quadrature 
     // points for this cell
-#if 0
-    // :QUESTION: Not sure where we will store the density section
-    const real_section_type::value_type* density = 
-      _density->restrict(patch, *cellIter);
-#else
-    const double density = 1.0;
-#endif
+    const real_section_type::value_type* densityCell = 
+      density->restrict(patch, *cellIter);
 
     // Compute action for cell
-    // :TODO: Start with inertia terms, then add elastic term
+
+    // Compute action for inertial terms
+    const double dt2 = dt*dt;
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density;
+      const double wt = 
+	quadWts[iQuad] * jacobianDet[iQuad] * densityCell[iQuad] / dt2;
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
         const int iBlock = iBasis * spaceDim;
         const double valI = wt*basis[iQ+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
           const int jBlock = jBasis * spaceDim;
-          const double val = valI * basis[iQ+jBasis];
+          const double valIJ = valI * basis[iQ+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
-            _cellVector[iBlock+iDim] += val * dispTCell[jBlock+iDim];
+            _cellVector[iBlock+iDim] += 
+	      valIJ * 2.0 * (dispTCell[jBlock+iDim] - 
+			     dispTmdtCell[jBlock+iDim]);
         } // for
       } // for
     } // for
+
+    // Compute action for elastic terms
+    // ADD STUFF HERE
+
     PetscErrorCode err = 
-      PetscLogFlops(numQuadPts*(2+numBasis*(1+numBasis*(1+2*spaceDim))));
+      PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+4*spaceDim))));
     if (err)
       throw std::runtime_error("Logging PETSc flops failed.");
     
@@ -125,7 +135,7 @@ pylith::feassemble::DynExplicitElasticity::integrateResidual(
 // ----------------------------------------------------------------------
 // Compute matrix associated with operator.
 void
-pylith::feassemble::DynExplicitElasticity::integrateJacobian(
+pylith::feassemble::ExplicitElasticity::integrateJacobian(
 			     PetscMat* mat,
 			     const ALE::Obj<real_section_type>& dispT,
 			     const ALE::Obj<real_section_type>& coordinates)
@@ -156,6 +166,9 @@ pylith::feassemble::DynExplicitElasticity::integrateJacobian(
   err = MatSetFromOptions(*mat);
   err = preallocateMatrix(topology, dispT->getAtlas(), globalOrder, *mat);
 
+  // Get parameters used in integration.
+  const ALE::Obj<real_section_type>& density = _parameters->getReal("density");
+
   // Allocate matrix for cell values (if necessary)
   _initCellMatrix();
 
@@ -179,17 +192,13 @@ pylith::feassemble::DynExplicitElasticity::integrateJacobian(
 
     // Restrict material properties material database to quadrature 
     // points for this cell
-#if 0
-    // :QUESTION: Not sure where we will store the density section
-    const real_section_type::value_type* density = 
-      _density->restrict(patch, *cellIter);
-#else
-    const double density = 1.0;
-#endif
+    const real_section_type::value_type* densityCell = 
+      density->restrict(patch, *cellIter);
 
     // Integrate cell
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density;
+      const double wt = 
+	quadWts[iQuad] * jacobianDet[iQuad] * densityCell[iQuad];
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	const int iBlock = iBasis * spaceDim;
 	const double valI = wt*basis[iQ+iBasis];
@@ -214,12 +223,13 @@ pylith::feassemble::DynExplicitElasticity::integrateJacobian(
 // ----------------------------------------------------------------------
 // Compute lumped matrix associated with operator.
 void
-pylith::feassemble::DynExplicitElasticity::integrateJacobian(
+pylith::feassemble::ExplicitElasticity::integrateJacobian(
 			     const ALE::Obj<real_section_type>& fieldOut,
 			     const ALE::Obj<real_section_type>& dispT,
 			     const ALE::Obj<real_section_type>& coordinates)
 { // integrateJacobian
   assert(0 != _quadrature);
+  assert(0 != _parameters);
 
   // Get information about section
   const topology_type::patch_type patch = 0;
@@ -227,6 +237,8 @@ pylith::feassemble::DynExplicitElasticity::integrateJacobian(
   const ALE::Obj<topology_type::label_sequence>& cells = 
     topology->heightStratum(patch, 0);
   const topology_type::label_sequence::iterator cellsEnd = cells->end();
+
+  const ALE::Obj<real_section_type>& density = _parameters->getReal("density");
 
   // Allocate matrix for cell values (if necessary)
   _initCellVector();
@@ -251,17 +263,13 @@ pylith::feassemble::DynExplicitElasticity::integrateJacobian(
 
     // Restrict material properties material database to quadrature 
     // points for this cell
-#if 0
-    // :QUESTION: Not sure where we will store the density section
-    const real_section_type::value_type* density = 
-      _density->restrict(patch, *cellIter);
-#else
-    const double density = 1.0;
-#endif
+    const real_section_type::value_type* densityCell = 
+      density->restrict(patch, *cellIter);
 
     // Compute lumped mass matrix for cell
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density;
+      const double wt = 
+	quadWts[iQuad] * jacobianDet[iQuad] * densityCell[iQuad];
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	const int iBlock = iBasis * spaceDim;
 	const double valI = wt*basis[iQ+iBasis];
@@ -287,30 +295,25 @@ pylith::feassemble::DynExplicitElasticity::integrateJacobian(
 // ----------------------------------------------------------------------
 // Setup material property parameters by querying database.
 void
-pylith::feassemble::DynExplicitElasticity::setupMatProp(
-				     ALE::Obj<ALE::Mesh>& mesh,
-				     spatialdata::geocoords::CoordSys* cs,
-				     spatialdata::spatialdb::SpatialDB* db)
+pylith::feassemble::ExplicitElasticity::setupMatProp(ALE::Obj<ALE::Mesh>& mesh,
+						     spatialdata::geocoords::CoordSys* cs,
+						     spatialdata::spatialdb::SpatialDB* db)
 { // setupMatProp
   assert(0 != cs);
   assert(0 != db);
+  assert(0 != _parameters);
 
   typedef ALE::Mesh::real_section_type real_section_type;
   typedef ALE::Mesh::topology_type topology_type;
 
-  // :QUESTION: Where should we store and
-  // create the density section. Perhaps one level up.
+  _parameters->addReal("density");
+  const ALE::Obj<real_section_type>& density = _parameters->getReal("density");
 
-  // Create density section
   const int numQuadPts = _quadrature->numQuadPts();
   const ALE::Mesh::int_section_type::patch_type patch = 0;
-#if 0
-  _density = mesh->getRealSection("density");
   const int fiberDim = numQuadPts; // number of values in field per cell
-  _density->setName("density");
-  _density->setFiberDimensionByDepth(patch, 0, fiberDim);
-  _density->allocate();
-#endif
+  density->setFiberDimensionByDepth(patch, 0, fiberDim);
+  density->allocate();
 
   // Open database
   db->open();
@@ -345,9 +348,7 @@ pylith::feassemble::DynExplicitElasticity::setupMatProp(
       const int err = db->query(&cellDensity[iQuadPt], numVals, 
 				&quadPts[index], spaceDim, cs);
     // Assemble cell contribution into field
-#if 0
-    _density->updateAdd(patch, *cellIter, cellDensity);
-#endif
+    density->updateAdd(patch, *cellIter, cellDensity);
   } // for
   delete[] cellDensity; cellDensity = 0;
 

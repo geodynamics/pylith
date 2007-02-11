@@ -40,15 +40,30 @@ class Explicit(Formulation):
     ## Python object for managing Explicit facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li \b lump_jacobian Flag for indicating to use lumped
+    ##   formulation for Jacobian matrix
     ##
     ## \b Facilities
     ## @li None
 
-    #import pyre.inventory
+    import pyre.inventory
+
+    lumpJacobian = pyre.inventory.bool("lump_jacobian", default=True)
+    lumpJacobian.meta['tip'] = "Flag for indicating to use lumped " \
+                               "formulation for Jacobian matrix."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def stableTimeStep(self):
+    """
+    Get stable time step for advancing forward in time.
+    """
+    self._info.log("WARNING: Explicit::stableTimeStep() not implemented.")
+    from pyre.units.time import second
+    dt = 0.0*second
+    return dt
+  
 
   def initialize(self):
     """
@@ -64,6 +79,7 @@ class Explicit(Formulation):
     """
     self._info.log("WARNING: Explicit::calcResidual not implemented.")
     return
+
 
   def calcJacobian(self):
     """
@@ -88,6 +104,7 @@ class Explicit(Formulation):
     Set members based using inventory.
     """
     Formulation._configure(self)
+    self.lumpJacobian = self.inventory.lumpJacobian
     return
 
 

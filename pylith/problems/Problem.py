@@ -11,6 +11,7 @@
 #
 
 ## @file pylith/problems/Problem.py
+
 ## @brief Python abstract base class for crustal dynamics problems.
 
 from pyre.components.Component import Component
@@ -37,7 +38,6 @@ class Problem(Component):
     ## \b Facilities
     ## @li \b materials Materials in problem.
     ## @li \b bc Boundary conditions.
-    ## @li \b formulation Formulation for solving PDE
 
     import pyre.inventory
 
@@ -49,45 +49,14 @@ class Problem(Component):
     #bc = pyre.inventory.facility("bc", factory=BoundaryConditions)
     #bc.meta['tip'] = "Boundary conditions."
   
-    from Explicit import Explicit
-    formulation = pyre.inventory.facility("formulation", factory=Explicit)
-    formulation.meta['tip'] = "Formulation for solving PDE."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def initialize(self):
+  def run(self, app):
     """
-    Initialize problem by getting mesh, setting up boundary conditions, etc.
+    Solve the problem.
     """
-    return
-
-
-  def prestep(self):
-    """
-    User hook for doing stuff before advancing time step.
-    """
-    return
-
-
-  def step(self, dt):
-    """
-    Advance to next time step.
-    """
-    return
-
-
-  def poststep(self):
-    """
-    Update time and storage.
-    """
-    return
-
-
-  def stableTimestep(self):
-    """
-    Determine stable time step for problem.
-    """
-    raise NotImplementedError, "Problem::stableTimestep() not implemented."
+    raise NotImplementedError, "Problem::run() not implemented."
     return
 
 
@@ -104,7 +73,7 @@ class Problem(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="problem")
-    mesh = None
+    self.mesh = None
     return
 
 
