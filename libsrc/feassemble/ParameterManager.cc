@@ -20,7 +20,9 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::ParameterManager::ParameterManager(void)
+pylith::feassemble::ParameterManager::ParameterManager(
+					  const ALE::Obj<Mesh>& mesh) :
+  _mesh(mesh)
 { // constructor
 } // constructor
 
@@ -43,13 +45,9 @@ pylith::feassemble::ParameterManager::addReal(const char* name)
     throw std::runtime_error(msg.str());
   } // if
   
-  // :QUESTION:
-  // How do we get the topology information we need here?
-
-#if 0
-  ALE::Obj<real_section_type> parameter = new real_section_type(_topology);
+  ALE::Obj<real_section_type> parameter = 
+    new real_section_type(_mesh->getTopology());
   _real[name] = parameter;
-#endif
 } // addReal
 
 // ----------------------------------------------------------------------

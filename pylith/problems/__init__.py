@@ -14,10 +14,10 @@
 
 ## @brief Python PyLith crustal dynamics problems module initialization
 
-all = ['Problem',
-       'EqDeformation',
-       'Formulation',
-       'Explicit']
+all = ['EqDeformation',
+       'Explicit',
+       'Problem',
+       'TimeDependent']
 
 
 # End of file

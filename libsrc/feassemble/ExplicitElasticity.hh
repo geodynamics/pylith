@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/DynExplicitElasticity.hh
+ * @file pylith/feassemble/ExplicitElasticity.hh
  *
  * @brief Explicit time integration of dynamic elasticity equation
  * using finite-elements.
@@ -31,17 +31,31 @@
  * A = 1/(dt*dt) [M]
  *
  * b = 2/(dt*dt)[M]{u(t)} - 1/(dt*dt)[M]{u(t-dt)} - [K]{u(t)}
+ *
+ * Translational inertia.
+ *   - Residual action over cell
+ *     \f[
+ *       \int_{V^e} \rho N^p \sum_q N^q u_i^q \, dV
+ *     \f]
+ *   - Jacobian action over cell
+ *     \f[
+ *       \int_{V^e} (\rho N^q N^q)_i \, dV
+ *     \f]
+ *   - Integrate and lump to form lumped matrix (field)
+ *
+ * See governing equations section of user manual for more
+ * information.
  */
 
-#if !defined(pylith_feassemble_dynexplicitelasticity_hh)
-#define pylith_feassemble_dynexplicitelasticity_hh
+#if !defined(pylith_feassemble_explicitelasticity_hh)
+#define pylith_feassemble_explicitelasticity_hh
 
-#include "IntegratorDynExplicit.hh" // ISA IntegratorDynExplicit
+#include "IntegratorExplicit.hh" // ISA IntegratorExplicit
 
 namespace pylith {
   namespace feassemble {
-    class DynExplicitElasticity;
-    class TestDynExplicitElasticity;
+    class ExplicitElasticity;
+    class TestExplicitElasticity;
   } // feassemble
 } // pylith
 
@@ -54,24 +68,28 @@ namespace spatialdata {
   } // geocoords
 } // spatialdata
 
-class pylith::feassemble::DynExplicitElasticity : public IntegratorDynExplicit
-{ // DynExplicitElasticity
-  friend class TestDynExplicitElasticity; // unit testing
+class pylith::feassemble::ExplicitElasticity : public IntegratorExplicit
+{ // ExplicitElasticity
+  friend class TestExplicitElasticity; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  DynExplicitElasticity(void);
+  ExplicitElasticity(void);
 
   /// Destructor
-  ~DynExplicitElasticity(void);
+  ~ExplicitElasticity(void);
 
   /// Create a copy of this object.
-  IntegratorDynExplicit* clone(void) const;
+  IntegratorExplicit* clone(void) const;
 
   /** Integrate residual term (b) for dynamic elasticity term 
    * for 3-D finite elements.
+   *
+   * Compute b = 2/(dt*dt)[M]{u(t) - 1/(dt*dt)[M]{u(t-dt)} - [K]{u(t)}, where
+   * [M] = density * [N]^T [N]
+   *
    *
    * @param residual Residual field (output)
    * @param dispT Displacement field at time t
@@ -120,19 +138,19 @@ protected :
    *
    * @param i Integrator to copy
    */
-  DynExplicitElasticity(const DynExplicitElasticity& i);
+  ExplicitElasticity(const ExplicitElasticity& i);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
   /// Not implemented
-  const DynExplicitElasticity& operator=(const DynExplicitElasticity&);
+  const ExplicitElasticity& operator=(const ExplicitElasticity&);
 
-}; // DynExplicitElasticity
+}; // ExplicitElasticity
 
-#include "DynExplicitElasticity.icc" // inline methods
+#include "ExplicitElasticity.icc" // inline methods
 
-#endif // pylith_feassemble_dynexplicitelasticity_hh
+#endif // pylith_feassemble_explicitelasticity_hh
 
 
 // End of file 

@@ -10,6 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-all = ['CppData', 'testarray', 'importing']
+all = ['CheckpointTimer',
+       'CppData',
+       'testarray',
+       'importing']
+
 
 # End of file

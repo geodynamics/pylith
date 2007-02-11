@@ -14,9 +14,11 @@ nobase_pkgpyexec_PYTHON = \
 	PyLithApp.py \
 	__init__.py \
 	feassemble/__init__.py \
+	feassemble/ExplicitElasticity.py \
 	feassemble/FIATCell.py \
 	feassemble/FIATSimplex.py \
 	feassemble/Integrator.py \
+	feassemble/IntegratorExplicit.py \
 	feassemble/Quadrature.py \
 	feassemble/ReferenceCell.py \
 	materials/__init__.py \
@@ -32,6 +34,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/Explicit.py \
 	problems/Formulation.py \
 	problems/Problem.py \
+	problems/TimeDependent.py \
 	solver/__init__.py \
 	solver/Solver.py \
 	topology/__init__.py \
@@ -39,6 +42,7 @@ nobase_pkgpyexec_PYTHON = \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
 	utils/__init__.py \
+	utils/CheckpointTimer.py \
 	utils/CppData.py \
 	utils/importing.py \
 	utils/testarray.py

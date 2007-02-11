@@ -10,12 +10,11 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/__init__.py
-## @brief Python top-level PyLith module initialization
+## @file pylith/materials/__init__.py
+## @brief Python PyLith materials module initialization
 
-all = ['PyLithApp']
+all = ['Material',
+       'MaterialsBin']
 
-# version
-__id__ = "$Id$"
 
 # End of file

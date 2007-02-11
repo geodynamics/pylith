@@ -15,10 +15,10 @@
 ## @brief Python EqDeformation for computing deformation associated
 ## with earthquakes.
 
-from Problem import Problem
+from TimeDependent import TimeDependent
 
 # EqDeformation class
-class EqDeformation(Problem):
+class EqDeformation(TimeDependent):
   """
   Python EqDeformation for computing deformation associated with
   earthquakes.
@@ -26,7 +26,7 @@ class EqDeformation(Problem):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Problem.Inventory):
+  class Inventory(TimeDependent.Inventory):
     """
     Python object for managing EqDeformation facilities and properties.
     """
@@ -49,53 +49,18 @@ class EqDeformation(Problem):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def initialize(self):
-    """
-    Setup formulation for solving PDE.
-    """
-    Problem.initialize(self)
-
-    self._info.log("WARNING: EqDeofmraiton::initialize not implemented.")
-    return
-
-
-  def prestep(self):
-    """
-    User hook for doing stuff before advancing time step.
-    """
-    self._info.log("WARNING: EqDeformation::prestep not implemented.")
-    return
-
-
-  def step(self, dt):
-    """
-    Advance to next time step.
-    """
-    self._info.log("WARNING: EqDeformation::step not implemented.")
-    return
-
-
-  def poststep(self):
-    """
-    Update time and storage.
-    """
-    self._info.log("WARNING: EqDeformation::poststep not implemented.")
-    return
-
-
-  def stableTimestep(self):
-    """
-    Determine stable time step for problem.
-    """
-    self._info.log("WARNING: EqDeformation::stableTimestep not implemented.")
-    return
-
-
   def checkpoint(self):
     """
     Save problem state for restart.
     """
-    self._info.log("WARNING: EqDeformation::checkpoint not implemented.")
+    TimeDependent.checkpoint() # Save state of parent
+    
+    # Save state of this object
+    raise NotImplementedError, \
+          "EqDeformation::checkpoint() not implemented."
+
+    # Save state of children
+    #self.faults.checkpoint()
     return
   
 
@@ -103,7 +68,7 @@ class EqDeformation(Problem):
     """
     Constructor.
     """
-    Problem.__init__(self, name)
+    TimeDependent.__init__(self, name)
     return
 
 
@@ -113,7 +78,7 @@ class EqDeformation(Problem):
     """
     Set members based using inventory.
     """
-    Problem._configure(self)
+    TimeDependent._configure(self)
     #self.faults = self.inventory.faults
     return
 

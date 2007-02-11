@@ -56,7 +56,7 @@ public :
 public :
 
   /// Constructor
-  ParameterManager(void);
+  ParameterManager(const ALE::Obj<Mesh>& mesh);
 
   /// Destructor
   ~ParameterManager(void);
@@ -90,6 +90,9 @@ private :
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
+
+  /// PETSc mesh associated with fields
+  const ALE::Obj<ALE::Mesh>& _mesh;
 
   /// Map for parameters stored as real fields
   map_real_type _real;

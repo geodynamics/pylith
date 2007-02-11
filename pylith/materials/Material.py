@@ -17,12 +17,16 @@ from pyre.components.Component import Component
 
 # Material class
 class Material(Component):
-  """Python material property manager."""
+  """
+  Python material property manager.
+  """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Component.Inventory):
-    """Python object for managing Material facilities and properties."""
+    """
+    Python object for managing Material facilities and properties.
+    """
     
     ## @class Inventory
     ## Python object for managing Material facilities and properties.
@@ -45,13 +49,15 @@ class Material(Component):
     from spatialdata.spatialdb.SpatialDB import SpatialDB
     db = pyre.inventory.facility("db", factory=SpatialDB,
                                  args=["db"])
-    db.meta['tip'] = "Database of material properties."
+    db.meta['tip'] = "Database of material property parameters."
     
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def initialize(self):
-    """Initialize material property manager."""
+    """
+    Initialize material property manager.
+    """
 
     self._info.log("Initializing material '%s'." % self.name)
     self.db.initialize()
@@ -59,7 +65,9 @@ class Material(Component):
 
 
   def openDB(self):
-    """Open material property database."""
+    """
+    Open material property database.
+    """
 
     self._info.line("Material '%s' opening property database." % self.name)
     self._info.log("  Setting up query for values: %s." % valNames)
@@ -68,7 +76,9 @@ class Material(Component):
 
 
   def closeDB(self):
-    """Close material property database."""
+    """
+    Close material property database.
+    """
 
     self._info.log("Material '%s' closing property database." % self.name)
     self.db.close()
@@ -76,7 +86,9 @@ class Material(Component):
 
 
   def __init__(self, name="material"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     
     Component.__init__(self, name, facility="material")
     return
@@ -92,7 +104,4 @@ class Material(Component):
     return
 
   
- # version
-__id__ = "$Id$"
-
 # End of file 

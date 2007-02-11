@@ -27,13 +27,13 @@ if __name__ == "__main__":
             sys.path.insert(1, directory)
             site.addsitedir(directory)
 
-    import journal
-    journal.info('coordinates').activate()
-
     from pylith.PyLithApp import PyLithApp
 
-    from pyre.applications import start
-    start(applicationClass=PyLithApp)
+    app = PyLithApp()
+    app.run()
+
+    #from pyre.applications import start
+    #start(applicationClass=PyLithApp)
 
 
 # End of file 
