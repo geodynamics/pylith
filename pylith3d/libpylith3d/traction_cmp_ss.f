@@ -105,7 +105,7 @@ c
       do i=1,nsnodes
         do j=1,ndof
           k=id(j,tractionverts(i))
-          btraction(k)=p(j,i)
+          if(k.gt.0) btraction(k)=btraction(k)+p(j,i)
         end do
       end do
       return
