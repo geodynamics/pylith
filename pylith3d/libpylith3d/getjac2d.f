@@ -80,6 +80,7 @@ c
         ierr=113
         write(errstrng,700) ientry,det
       end if
+      det=sqrt(det)
 c
  700  format("getjac2d:  entry # ",i7,2x,1pe15.8)
       return
