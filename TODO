@@ -1,6 +1,31 @@
 MAIN PRIORITIES
 
-1. Implement unit tests for MeshIO at Python level.
+0. Add in PETSc initialize/finalize using petsc2py.
+
+  STATUS:
+
+    Initial implementation. Still need to get PETSc options from
+    command line. See comment in PyLithApp.py.
+
+1. Debug reading mesh via pylithic
+
+2. Bridge gap b/t Problem and Formulation (advance versus calcResidual)
+
+3. Finish implementing ExplicitElasticity
+   a. C++
+   a. Python object
+   b. bindings
+   c. unit tests at C++ level
+   d. unit tests at Python level
+
+  Status: Started on a.
+
+4.  Finish implementing Python Formulation
+    (e.g., Explicit) with initialization of solid element families.
+   c. Python object
+   e. unit tests at Python level
+
+5. Implement unit tests for MeshIO at Python level.
    a. write()/read()
    b. checkVals()
 
@@ -11,27 +36,6 @@ MAIN PRIORITIES
     PETSc from Python. May be easier to include in higher-level unit
     test.
 
-2. Finish implementing IntegratorInertia.
-   a. Python object
-   b. bindings
-   c. unit tests at Python level
-
-  Status: Implemented a & b.
-
-3. Implement WFInertia object (manager for integrating inertia over ALL patches)
-   a. C++ object
-   b. unit tests at C++ level
-   c. Python object
-   d. bindings
-   e. unit tests at Python level
-
-4. Construct test case for integrating inertia term for a mesh
-   a. Mesh input file (ascii)
-   b. Python driver
-
-5. Specify material properties using spatial database
-
-
 SECONDARY PRIORITIES
 
 1. Implement MeshIOHDF5 & HDF5
@@ -41,9 +45,14 @@ SECONDARY PRIORITIES
    c. bindings
    d. unit tests at Python level
 
-1. Implement MeshIOCubit
+2. Implement MeshIOCubit
    a. C++ objects
    b. unit tests at C++ level
    b. Python object (MeshIOCubit)
    c. bindings
    d. unit tests at Python level
+
+UNRESOLVED ISSUES
+
+1. Integration of nemesis (pylithic.py as mpi/python application)
+

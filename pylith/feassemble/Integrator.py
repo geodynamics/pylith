@@ -39,7 +39,6 @@ class Integrator(Component):
     ##
     ## \b Facilities
     ## @li \b quadrature Quadrature object for integration
-    ## @li \b db Database for material properties.
 
     import pyre.inventory
 

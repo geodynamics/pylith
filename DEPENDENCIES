@@ -1,0 +1,14 @@
+REQUIRED DEPENDENCIES
+
+MPI
+PETSc
+petsc2py (http://cheeseshop.python.org/pypi/petsc4py)
+pythia
+spatialdata
+  proj
+numpy
+
+OPTIONAL DEPENDENCIES
+
+cppunit
+doxygen
