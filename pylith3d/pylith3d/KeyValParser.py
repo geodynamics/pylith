@@ -38,12 +38,10 @@ class KeyValParser:
 
     def parse(self, stream):
         registry = Registry("root")
-        node = registry.getNode("pylith3d")
-        node = node.getNode("scanner")
         lineNumber = 1
         for line in stream:
             locator = locators.file(stream.name, lineNumber)
-            self.parseLine(line, node, locator)
+            self.parseLine(line, registry, locator)
             lineNumber = lineNumber + 1
         return registry
 
