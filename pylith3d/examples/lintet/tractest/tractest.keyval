@@ -14,9 +14,6 @@
 #winklerScaleX = 1.0
 #winklerScaleY = 1.0
 #winklerScaleZ = 1.0
-winklerScaleZ = tomato
-zoo = bar
-fileRoot=tractesthh
 #
 #
 # Parameters controlling stress integration and numerical computation
