@@ -33,7 +33,7 @@ from pyre.components.Component import Component
 import os
 
 
-class Pylith3d_scan(Component):
+class Scanner(Component):
 
 
     def __init__(self):
@@ -44,19 +44,20 @@ class Pylith3d_scan(Component):
 
         self.trace.log("Hello from pl3dscan.__init__!")
         
-        self.rank = 0
+        self.macros = {}
+        self.defineMacros({'rank': '0'})
         
         return
 
 
     def configureProperties(self, context):
-        """set the values of all the properties and facilities in my inventory"""
+        """set the values of all the properties in my inventory"""
 
         #
         # First, configure my properties as defined by the framework.
         #
         
-        super(Pylith3d_scan, self).configureProperties(context)
+        super(Scanner, self).configureProperties(context)
         
         #
         # Second, open input files.  Log I/O errors.
@@ -74,7 +75,7 @@ class Pylith3d_scan(Component):
         unused   = self.IOFileCategory(False,  0,      "unused")
         required = self.IOFileCategory(True,   1,       None)
         
-        Inventory = Pylith3d_scan.Inventory
+        Inventory = Scanner.Inventory
 
         analysisType = self.inventory.analysisType
 
@@ -98,18 +99,6 @@ class Pylith3d_scan(Component):
         self._slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       unused)
         self._differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  unused)
         self._slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    unused)
-
-        def openKeywordEqualsValueFile(filename, flags, mode):
-            from CodecKeyVal import CodecKeyVal
-            from os.path import splitext
-            base, ext = splitext(filename)
-            assert ext == ".keyval"
-            codec = CodecKeyVal()
-            shelf = codec.open(base, mode)
-            return shelf
-        
-        self._keywordEqualsValueFile      = inputFileStream(Inventory.keywordEqualsValueFile, optional,
-                                                            opener=openKeywordEqualsValueFile)
 
         # The call to glob() is somewhat crude -- basically, determine
         # if any files might be in the way.
@@ -139,21 +128,6 @@ class Pylith3d_scan(Component):
             sys.exit("%s: configuration error(s)" % self.name)
 
         #
-        # Third, read the data from the .keyval file -- potentially
-        # reconfiguring some of my properties.
-        #
-        
-        if self._keywordEqualsValueFile:
-            registry = self._keywordEqualsValueFile['inventory']
-            registry = registry.getFacility("pylith3d")
-            registry = registry.getFacility("scanner")
-            if registry:
-                # Transfer .keyval input to my private registry...
-                self.updateConfiguration(registry)
-                # ..and from there to my inventory.
-                self.inventory.configureProperties(context)
-
-        #
         # Finally, decorate any missing traits with my name.
         #
         
@@ -163,6 +137,8 @@ class Pylith3d_scan(Component):
 
 
     def _configure(self):
+        super(Scanner, self)._configure()
+        
         # get values for extra input (category 2)
 
         self.winklerScaleX = self.inventory.winklerScaleX
@@ -217,9 +193,11 @@ class Pylith3d_scan(Component):
         import string
         from mpi import MPI_Comm_rank, MPI_COMM_WORLD
         
-        self.rank = MPI_Comm_rank(MPI_COMM_WORLD)
+        rank = MPI_Comm_rank(MPI_COMM_WORLD)
+        self.defineMacros({'rank': str(rank)})
+        
         outputFile = self.outputFile
-        Inventory = Pylith3d_scan.Inventory
+        Inventory = Scanner.Inventory
         optional = self.IOFileCategory(True,   0,      "optional")
         # Re-initialize these with the newly acquired rank.
         self._asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
@@ -660,23 +638,14 @@ class Pylith3d_scan(Component):
             self.tryOpen = tryOpen
             self.fatalPoints = fatalPoints
             self.label = label
+
+    def defineMacros(self, macros):
+        self.macros.update(macros)
     
     def macroString(self, trait):
         from pyre.util import expandMacros
-        class InventoryAdapter(object):
-            def __init__(self, inventory, builtins):
-                self.inventory = inventory
-                self.builtins = builtins
-            def __getitem__(self, key):
-                builtin = self.builtins.get(key)
-                if builtin is None:
-                    return expandMacros(str(self.inventory.getTraitValue(key)), self)
-                return builtin
         descriptor = self.inventory.getTraitDescriptor(trait.name)
-        builtins = {
-            'rank': str(self.rank),
-            }
-        return expandMacros(descriptor.value, InventoryAdapter(self.inventory, builtins))
+        return expandMacros(descriptor.value, self.macros)
 
     def ioFileStream(self, trait, flags, mode, category, opener=None):
         value = self.macroString(trait)
@@ -708,7 +677,6 @@ class Pylith3d_scan(Component):
             os.remove(value)
         return value
 
-
     class Inventory(Component.Inventory):
 
         import pyre.inventory
@@ -721,14 +689,6 @@ class Pylith3d_scan(Component):
                                    default="PyLith-0.8 Simulation")
         title.meta['tip'] = "Title for this simulation"
 
-        # Basename for all files (may be overridden by specific filename entries).
-        fileRoot = pyre.inventory.str("fileRoot", default="pt1")
-        fileRoot.meta['tip'] = "Root pathname for simulation (all filenames derive from this)."
-        inputFileRoot = pyre.inventory.str("inputFileRoot", default="${fileRoot}")
-        inputFileRoot.meta['tip'] = "Root input pathname for simulation (all input filenames derive from this)."
-        outputFileRoot = pyre.inventory.str("outputFileRoot", default="${fileRoot}.${rank}")
-        outputFileRoot.meta['tip'] = "Root output pathname for simulation (all output filenames derive from this)."
-        
         # Output filenames (all are optional).
         asciiOutputFile = OutputFile("asciiOutputFile",default="${outputFileRoot}.ascii")
         asciiOutputFile.meta['tip'] = "Pathname for ascii output file (overrides default from outputFileRoot)."
@@ -763,9 +723,6 @@ class Pylith3d_scan(Component):
         fullOutputInputFile.meta['tip'] = "Pathname for file defining when to provide output (overrides default from inputFileRoot)."
 
         # Optional input files.
-        keywordEqualsValueFile = InputFile("keywordEqualsValueFile",default="${inputFileRoot}.keyval")
-        keywordEqualsValueFile.meta['tip'] = "Pathname for keyword = value file (overrides default from inputFileRoot)."
-
         winklerInputFile = InputFile("winklerInputFile",default="${inputFileRoot}.wink")
         winklerInputFile.meta['tip'] = "Pathname for Winkler force input file (overrides default from inputFileRoot)."
 
@@ -837,7 +794,7 @@ class Pylith3d_scan(Component):
         autoRotateSlipperyNodes.meta['tip'] = "Whether to performa automatic rotation for slippery nodes (presently unused)."
 
         #
-        # category 2 parameters formerly placed in *.keyval files
+        # category 2 parameters traditionally placed in *.keyval files
         #
 
         from pyre.units.pressure import Pa
@@ -884,6 +841,102 @@ class Pylith3d_scan(Component):
         f77PlotOutput = pyre.inventory.int("f77PlotOutput", default=12)
         f77UcdOutput = pyre.inventory.int("f77UcdOutput", default=13)
 
+
+
+from pyre.applications import ComponentHarnessAdapter
+#from pyre.applications.ComponentHarness import ComponentHarness as ComponentHarnessAdapter
+
+
+class ScannerComponentHarness(ComponentHarnessAdapter, Component):
+
+
+    class Inventory(Component.Inventory):
+
+        import pyre.inventory
+        MacroString = pyre.inventory.str
+        InputFile = pyre.inventory.str
+
+        # Basename for all files (may be overridden by specific filename entries).
+        fileRoot = MacroString("fileRoot", default="pt1")
+        fileRoot.meta['tip'] = "Root pathname for simulation (all filenames derive from this)."
+        inputFileRoot = MacroString("inputFileRoot", default="${fileRoot}")
+        inputFileRoot.meta['tip'] = "Root input pathname for simulation (all input filenames derive from this)."
+        outputFileRoot = MacroString("outputFileRoot", default="${fileRoot}.${rank}")
+        outputFileRoot.meta['tip'] = "Root output pathname for simulation (all output filenames derive from this)."
+        
+        # Optional input files.
+        keywordEqualsValueFile = InputFile("keywordEqualsValueFile",default="${inputFileRoot}.keyval")
+        keywordEqualsValueFile.meta['tip'] = "Pathname for keyword = value file (overrides default from inputFileRoot)."
+
+
+    def __init__(self):
+        Component.__init__(self, "pl3dscan", "scanner")
+        ComponentHarnessAdapter.__init__(self)
+
+
+    def _configure(self):
+        super(ScannerComponentHarness, self)._configure()
+        self.fileRoot = self.inventory.fileRoot
+        self.inputFileRoot = self.inventory.fileRoot
+        self.outputFileRoot = self.inventory.outputFileRoot
+        self.keywordEqualsValueFile = self.inventory.keywordEqualsValueFile
+
+
+    def _init(self):
+        super(ScannerComponentHarness, self)._init()
+        self.scanner = self.harnessComponent()
+
+
+    def createComponent(self):
+        """create the harnessed component"""
+
+        return Scanner()
+
+
+    def prepareComponentConfiguration(self, component):
+        """prepare the settings for the harnessed component"""
+
+        # Expand macros.
+
+        macros = self.getMacros()
+        component.defineMacros(macros)
+
+        # Read traits from the .keyval file.
+        
+        from pyre.util import expandMacros
+        from CodecKeyVal import CodecKeyVal
+        from os.path import splitext
+
+        filename = expandMacros(self.keywordEqualsValueFile, macros)
+        base, ext = splitext(filename)
+        assert ext == ".keyval"
+        codec = CodecKeyVal()
+        shelf = codec.open(base, 'r')
+
+        if shelf:
+            registry = shelf['inventory']
+            if registry:
+                self.componentRegistry.update(registry)
+
+        return super(ScannerComponentHarness, self).prepareComponentConfiguration(component)
+
+
+    def getMacros(self):
+        from pyre.util import expandMacros
+
+        macros = {
+            'fileRoot': self.fileRoot,
+            }
+
+        # Expand occurrences of '${fileRoot}'.  (Expansion of other
+        # macros is deferred until later.)
+        macros['inputFileRoot'] = expandMacros(self.inputFileRoot, macros)
+        macros['outputFileRoot'] = expandMacros(self.outputFileRoot, macros)
+
+        return macros
+
+
+Pylith3d_scan = ScannerComponentHarness
 
 
 # version
