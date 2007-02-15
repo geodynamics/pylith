@@ -73,19 +73,27 @@ class Explicit(Formulation):
     return
 
 
-  def calcResidual(self):
+  def prestep(self):
     """
-    Compute residual, {b(t)}.
+    Hook for doing stuff before advancing time step.
     """
-    self._info.log("WARNING: Explicit::calcResidual not implemented.")
+    self._info.log("WARNING: Explicit::prestep() not implemented.")
     return
 
 
-  def calcJacobian(self):
+  def step(self, dt):
     """
-    Compute Jacobian, [A(t)].
+    Advance to next time step.
     """
-    self._info.log("WARNING: Explicit::calcJacobian not implemented.")
+    self._info.log("WARNING: Explicit::step() not implemented.")
+    return
+
+
+  def poststep(self, t):
+    """
+    Hook for doing stuff after advancing time step.
+    """
+    self._info.log("WARNING: Explicit::poststep() not implemented.")
     return
 
 
@@ -105,6 +113,22 @@ class Explicit(Formulation):
     """
     Formulation._configure(self)
     self.lumpJacobian = self.inventory.lumpJacobian
+    return
+
+
+  def _calcResidual(self):
+    """
+    Compute residual, {b(t)}.
+    """
+    self._info.log("WARNING: Explicit::calcResidual() not implemented.")
+    return
+
+
+  def _calcJacobian(self):
+    """
+    Compute Jacobian, [A(t)].
+    """
+    self._info.log("WARNING: Explicit::calcJacobian() not implemented.")
     return
 
 

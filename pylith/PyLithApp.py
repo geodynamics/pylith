@@ -63,13 +63,12 @@ class PyLithApp(Application):
     Run the application.
     """
 
-    import petsc4py
-    # :TODO: Add PETSc command line arguments using something like
-    # PetscUtil.py in 0.8. Some update may be necessary to be
-    # compatible with petsc4py. Brad doesn' like mixing different
+    # :TODO: Setup initialize/finalize of PETSc here. Will need to get
+    # PETSc command line arguments using something like PetscUtil.py
+    # in 0.8. If we end up using petsc2py, some modification of
+    # PetscUtil may be necessary. Brad doesn' like mixing different
     # formats of command line arguments and he would like to require
     # Pyre style formats.
-    petsc4py.init()
 
     #mesh = self.mesher.create()
     #self.problem.mesh = mesh.distribute()
