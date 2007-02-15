@@ -137,7 +137,7 @@ class TimeDependent(Problem):
     """
     Hook for doing stuff before advancing time step.
     """
-    self._info.log("WARNING: TimeDependent::_prestep() not implemented.")
+    self.formulation.prestep()
     return
 
 
@@ -145,7 +145,7 @@ class TimeDependent(Problem):
     """
     Advance to next time step.
     """
-    self._info.log("WARNING: TimeDependent::_step() not implemented.")
+    self.formulation.step(dt)
     return
 
 
@@ -153,7 +153,7 @@ class TimeDependent(Problem):
     """
     Hook for doing stuff after advancing time step.
     """
-    self._info.log("WARNING: TimeDependent::_poststep() not implemented.")
+    self.formulation.poststep(t)
     return
 
 

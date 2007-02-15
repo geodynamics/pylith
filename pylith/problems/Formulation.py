@@ -58,21 +58,6 @@ class Formulation(Component):
     return
 
 
-  def calcResidual(self):
-    """
-    Compute residual, {b(t)}.
-    """
-    raise NotImplementedError("Please implement calcResidual().")
-    return
-
-  def calcJacobian(self):
-    """
-    Compute Jacobian, [A(t)].
-    """
-    raise NotImplementedError("Please implement calcJacobian().")
-    return
-
-
   def __init__(self, name="formulation"):
     """
     Constructor.
@@ -90,6 +75,23 @@ class Formulation(Component):
     Component._configure(self)
     #self.solver = self.inventory.solver
     return
+
+
+  def _calcResidual(self):
+    """
+    Compute residual, {b(t)}.
+    """
+    raise NotImplementedError("Please implement calcResidual().")
+    return
+
+
+  def _calcJacobian(self):
+    """
+    Compute Jacobian, [A(t)].
+    """
+    raise NotImplementedError("Please implement calcJacobian().")
+    return
+
 
 
 # End of file 
