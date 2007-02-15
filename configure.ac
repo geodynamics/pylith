@@ -48,6 +48,7 @@ AM_CONDITIONAL([ENABLE_DOCUMENTATION], [test "$enable_documentation" = yes])
 # C/C++/libtool/install
 AC_PROG_CXX
 AC_PROG_CC
+AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 
