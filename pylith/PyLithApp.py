@@ -39,6 +39,7 @@ class PyLithApp(Application):
     ## \b Facilities
     ## @li \b mesher Generates or imports the computational mesh.
     ## @li \b problem Computational problem to solve
+    ## @li \b petsc Manager for PETSc options
 
     import pyre.inventory
 
@@ -55,6 +56,10 @@ class PyLithApp(Application):
     problem = pyre.inventory.facility("problem", factory=EqDeformation)
     problem.meta['tip'] = "Computational problem to solve."
 
+    # Dummy facility for passing options to PETSc
+    from pylith.utils.PetscManager import PetscManager
+    petsc = pyre.inventory.facility("petsc", factory=PetscManager)
+    petsc.meta['tip'] = "Manager for PETSc options."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -63,16 +68,11 @@ class PyLithApp(Application):
     Run the application.
     """
 
-    # :TODO: Setup initialize/finalize of PETSc here. Will need to get
-    # PETSc command line arguments using something like PetscUtil.py
-    # in 0.8. If we end up using petsc2py, some modification of
-    # PetscUtil may be necessary. Brad doesn' like mixing different
-    # formats of command line arguments and he would like to require
-    # Pyre style formats.
-
-    #mesh = self.mesher.create()
+    self.petsc.initialize()
+    mesh = self.mesher.create()
     #self.problem.mesh = mesh.distribute()
     self.problem.run(self)
+    self.petsc.finalize()
     return
   
 
@@ -81,8 +81,6 @@ class PyLithApp(Application):
     Constructor.
     """
     Application.__init__(self, name)
-    self.mesher = None
-    self.problem = None
     return
 
 
@@ -95,6 +93,7 @@ class PyLithApp(Application):
     Application._configure(self)
     self.mesher = self.inventory.mesher
     self.problem = self.inventory.problem
+    self.petsc = self.inventory.petsc
     return
 
 

@@ -63,11 +63,8 @@ class MeshIO(Component):
     @returns PETSc mesh object containing finite-element mesh
     """
     from pylith.topology.Mesh import Mesh
-    print "Creating Mesh object"
     mesh = Mesh()
-    print "Setting interpolate"
     self.cppHandle.interpolate = self.interpolate
-    print "Reading mesh"
     mesh.cppHandle = self.cppHandle.read(mesh.cppHandle)
     return 
 

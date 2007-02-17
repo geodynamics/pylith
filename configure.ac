@@ -151,6 +151,7 @@ AC_CONFIG_FILES([Makefile
                 modulesrc/feassemble/Makefile
                 modulesrc/meshio/Makefile
 		modulesrc/topology/Makefile
+		modulesrc/utils/Makefile
 		applications/Makefile
 		unittests/Makefile
 		unittests/libtests/Makefile
