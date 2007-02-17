@@ -13,7 +13,8 @@
 SUBDIRS = \
 	feassemble \
 	meshio \
-	topology
+	topology \
+	utils
 
 
 # End of file 

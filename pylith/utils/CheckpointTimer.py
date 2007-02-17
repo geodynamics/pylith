@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/CheckpointTimer.py
+## @file pylith/utils/CheckpointTimer.py
 
 ## @brief Python CheckpointTimer object for managing checkpointing.
 

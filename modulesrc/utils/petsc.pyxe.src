@@ -1,0 +1,74 @@
+# -*- Pyrex -*-
+#
+# ======================================================================
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# {LicenseText}
+#
+# ======================================================================
+#
+
+# ----------------------------------------------------------------------
+cdef enum:
+  PETSC_NULL = 0
+cdef extern from "petsc.h":
+  ctypedef int PetscErrorCode
+  PetscErrorCode PetscInitialize(int*, char***, char[], char[])
+  PetscErrorCode PetscFinalize()
+
+# ----------------------------------------------------------------------
+cdef extern from "Python.h":
+  object PyCObject_FromVoidPtr(void*, void (*destruct)(void*))
+  void* PyCObject_AsVoidPtr(object)
+  char* PyString_AsString(object)
+  object PyList_GetItem(object, int)
+
+cdef void* ptrFromHandle(obj):
+  """Extract pointer from PyCObject."""
+  return PyCObject_AsVoidPtr(obj.handle)
+
+cdef extern from "stdlib.h":
+    ctypedef unsigned long size_t
+    void* malloc(size_t size)
+    void free(void* mem)
+
+cdef extern from "string.h":
+    void strcpy(char*, char*)
+    int strlen(char*)
+
+# ----------------------------------------------------------------------
+def petsc_initialize(options):
+  """
+  Initialize PETSc.
+  """
+  cdef PetscErrorCode err
+  cdef char** argv
+  cdef char* arg
+  cdef int argc
+
+  argc = len(options)
+  argv = <char**> malloc((argc+1)*sizeof(char*));
+  for i from 0 <= i < argc:
+    arg = PyString_AsString(PyList_GetItem(options, i));
+    argv[i] = <char*> malloc((strlen(arg)+1)*sizeof(char));
+    strcpy(argv[i], arg);
+  argv[argc] = NULL;
+  err = PetscInitialize(&argc, &argv, <char*> PETSC_NULL, <char*> PETSC_NULL)
+  for i from 0 <= i < argc:
+    free(argv[i])
+  free(argv)
+  return
+
+
+def petsc_finalize():
+  """
+  Finalize PETSc.
+  """
+  cdef PetscErrorCode err
+  err = PetscFinalize()
+  return
+
+
+# End of file 
