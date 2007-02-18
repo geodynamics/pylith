@@ -1,10 +1,6 @@
 MAIN PRIORITIES
 
-1. Debug reading mesh via pylithic
-
-2. Bridge gap b/t Problem and Formulation (advance versus calcResidual)
-
-3. Finish implementing ExplicitElasticity
+1. Finish implementing ExplicitElasticity
    a. C++
    a. Python object
    b. bindings
@@ -13,12 +9,12 @@ MAIN PRIORITIES
 
   Status: Started on a.
 
-4.  Finish implementing Python Formulation
+2.  Finish implementing Python Formulation
     (e.g., Explicit) with initialization of solid element families.
    c. Python object
    e. unit tests at Python level
 
-5. Implement unit tests for MeshIO at Python level.
+3. Implement unit tests for MeshIO at Python level.
    a. write()/read()
    b. checkVals()
 
@@ -49,3 +45,13 @@ UNRESOLVED ISSUES
 
 1. Integration of nemesis (pylithic.py as mpi/python application)
 
+QUESTIONS FOR MATT
+
+1. How do we create element families?
+  a. How should we identify materials? Assume field over elements or
+  groups of elements? LaGriT would be field over elements. Need to
+  check on what CUBIT does.
+  b. How do we create boundary conditions given group of vertices
+  (list of labels of vertices) corresponding to vertices associated
+  with faces? Note: this is unique if we don't allow groups to have
+  multiple faces per element, which should be okay.
