@@ -81,14 +81,14 @@ class TestFIATSimplex(unittest.TestCase):
                              (+1.0/3**0.5,)],
                             dtype=numpy.float64 )
     quadWtsE = numpy.array( [1.0, 1.0], dtype=numpy.float64 )
-    basis = numpy.zeros( (2, 3), dtype=numpy.Float64)
-    basisDeriv = numpy.zeros( (2, 3, 1), dtype=numpy.Float64)
+    basis = numpy.zeros( (2, 3), dtype=numpy.float64)
+    basisDeriv = numpy.zeros( (2, 3, 1), dtype=numpy.float64)
     iQuad = 0
     for q in quadPtsE:
       basis[iQuad] = numpy.array([N0(q), N1(q), N2(q)],
                                  dtype=numpy.float64).reshape( (3,) )
       deriv = numpy.array([[N0p(q)], [N1p(q)], [N2p(q)]],
-                          dtype=numpy.Float64)      
+                          dtype=numpy.float64)      
       basisDeriv[iQuad] = deriv.reshape((3, 1))
       iQuad += 1
 

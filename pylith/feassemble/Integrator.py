@@ -46,6 +46,7 @@ class Integrator(Component):
     quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
     quadrature.meta['tip'] = "Quadrature object for integration."
 
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="integrator"):

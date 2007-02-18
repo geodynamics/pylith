@@ -11,8 +11,6 @@
 #
 
 # ----------------------------------------------------------------------
-cdef enum:
-  PETSC_NULL = 0
 cdef extern from "petsc.h":
   ctypedef int PetscErrorCode
   PetscErrorCode PetscInitialize(int*, char***, char[], char[])
@@ -55,7 +53,7 @@ def petsc_initialize(options):
     argv[i] = <char*> malloc((strlen(arg)+1)*sizeof(char));
     strcpy(argv[i], arg);
   argv[argc] = NULL;
-  err = PetscInitialize(&argc, &argv, <char*> PETSC_NULL, <char*> PETSC_NULL)
+  err = PetscInitialize(&argc, &argv, NULL, NULL)
   for i from 0 <= i < argc:
     free(argv[i])
   free(argv)
