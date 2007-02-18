@@ -70,4 +70,13 @@ class MeshIOAscii(MeshIO):
     return
 
 
+  def _sync(self):
+    """
+    Force synchronization between Python and C++.
+    """
+    MeshIO._sync(self)
+    self.cppHandle.filename = self.filename
+    return
+  
+
 # End of file 

@@ -27,6 +27,14 @@ class IntegratorInertia(Integrator):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
+  def __init__(self, name="integratorexplicit"):
+    """
+    Constructor.
+    """
+    Integrator.__init__(self, name)
+    return
+
+
   def timeStep(self, t):
     """
     Set time step for advancing from time t to time t+dt.
@@ -70,14 +78,6 @@ class IntegratorInertia(Integrator):
       self.cppHandle.integrateJacobianLumped(jacobian, fieldInT, coords)
     else:
       self.cppHandle.integrateJacobian(jacobian, fieldInT, coords)
-    return
-
-
-  def __init__(self, name="integratorexplicit"):
-    """
-    Constructor.
-    """
-    Integrator.__init__(self, name)
     return
 
 

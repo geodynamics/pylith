@@ -35,6 +35,7 @@ class FIATCell(ReferenceCell):
     ReferenceCell.__init__(self, name)
     return
 
+
   def initialize(self):
     """
     Initialize reference finite-element cell.

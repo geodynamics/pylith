@@ -62,11 +62,12 @@ class MeshIO(Component):
 
     @returns PETSc mesh object containing finite-element mesh
     """
+    self._info.log("Reading finite-element mesh")
+    self._sync()
     from pylith.topology.Mesh import Mesh
     mesh = Mesh()
-    self.cppHandle.interpolate = self.interpolate
     mesh.cppHandle = self.cppHandle.read(mesh.cppHandle)
-    return 
+    return mesh
 
 
   def write(self, mesh):
@@ -75,8 +76,9 @@ class MeshIO(Component):
 
     @param mesh PETSc mesh object containing finite-element mesh
     """
-    self.cppHandle.interpolate = self.interpolate
-    self.cppHandle.write(mesh.handle)
+    self._info.log("Writing finite-element mesh")
+    self._sync()
+    self.cppHandle.write(mesh.cppHandle)
     return
 
 
@@ -90,5 +92,13 @@ class MeshIO(Component):
     self.interpolate = self.inventory.interpolate
     return
 
+
+  def _sync(self):
+    """
+    Force synchronization between Python and C++.
+    """
+    self.cppHandle.interpolate = self.interpolate
+    return
+  
 
 # End of file 

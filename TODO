@@ -1,12 +1,5 @@
 MAIN PRIORITIES
 
-0. Add in PETSc initialize/finalize using petsc2py.
-
-  STATUS:
-
-    Initial implementation. Still need to get PETSc options from
-    command line. See comment in PyLithApp.py.
-
 1. Debug reading mesh via pylithic
 
 2. Bridge gap b/t Problem and Formulation (advance versus calcResidual)

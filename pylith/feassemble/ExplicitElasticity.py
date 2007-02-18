@@ -49,14 +49,6 @@ class ExplicitElasticity(IntegratorExplicit):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def initialize(self, mesh):
-    """
-    Initialize integrator.
-    """
-    self.cppHandle.setupMatProp(mesh.cppHandle, mesh.coordsys, db.cppHandle)
-    return
-
-
   def __init__(self, name="explicitelasticity"):
     """
     Constructor.
@@ -65,6 +57,14 @@ class ExplicitElasticity(IntegratorExplicit):
 
     import pylith.feassemble.feassemble as bindings
     self.cppHandle = bindings.ExplicitElasticity()
+    return
+
+
+  def initialize(self, mesh):
+    """
+    Initialize integrator.
+    """
+    self.cppHandle.setupMatProp(mesh.cppHandle, mesh.coordsys, db.cppHandle)
     return
 
 

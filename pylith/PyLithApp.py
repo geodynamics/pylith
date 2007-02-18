@@ -61,7 +61,16 @@ class PyLithApp(Application):
     petsc = pyre.inventory.facility("petsc", factory=PetscManager)
     petsc.meta['tip'] = "Manager for PETSc options."
 
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="pylithapp"):
+    """
+    Constructor.
+    """
+    Application.__init__(self, name)
+    return
+
 
   def main(self):
     """
@@ -75,14 +84,6 @@ class PyLithApp(Application):
     self.petsc.finalize()
     return
   
-
-  def __init__(self, name="pylithapp"):
-    """
-    Constructor.
-    """
-    Application.__init__(self, name)
-    return
-
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
