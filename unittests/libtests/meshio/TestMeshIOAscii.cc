@@ -127,6 +127,8 @@ pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
 
   // Make sure meshIn matches data
   checkVals(meshIn, data);
+
+  delete meshOut; meshOut = 0;
 } // _testWriteRead
 
 // End of file 
