@@ -126,6 +126,8 @@ pylith::feassemble::TestQuadrature::testClone(void)
   CPPUNIT_ASSERT(0 != qCopy->jacobianDet());
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(jacobianDet[i], qCopy->jacobianDet()[i]);
+
+  delete qCopy; qCopy = 0;
 } // testCopy
 
 // ----------------------------------------------------------------------

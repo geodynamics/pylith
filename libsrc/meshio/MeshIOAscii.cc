@@ -154,6 +154,9 @@ pylith::meshio::MeshIOAscii::_write(void) const
 
   fileout << "}\n";
   fileout.close();
+
+  delete[] coordinates; coordinates = 0;
+  delete[] cells; cells = 0;
 } // write
 
 // ----------------------------------------------------------------------
