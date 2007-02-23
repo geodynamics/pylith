@@ -35,6 +35,15 @@ pylith::meshio::MeshIO::~MeshIO(void)
 } // destructor
   
 // ----------------------------------------------------------------------
+// Get spatial dimension of mesh.
+int
+pylith::meshio::MeshIO::getMeshDim(void) const
+{ // getMeshDim
+  assert(0 != _mesh);
+  return (*_mesh)->getDimension();
+} // getMeshDim
+
+// ----------------------------------------------------------------------
 // Read mesh from file.
 void 
 pylith::meshio::MeshIO::read(ALE::Obj<Mesh>* mesh)
@@ -228,7 +237,7 @@ pylith::meshio::MeshIO::_setMaterials(const int* materialIds,
 // Get material identifiers for cells.
 void
 pylith::meshio::MeshIO::_getMaterials(int** pMaterialIds,
-				      int* pNumCells)
+				      int* pNumCells) const
 { // _getMaterials
   assert(0 != _mesh);
   ALE::Obj<Mesh>& mesh = *_mesh;

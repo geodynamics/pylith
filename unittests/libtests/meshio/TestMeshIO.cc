@@ -25,6 +25,7 @@ pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
 { // createMesh
   typedef ALE::Mesh::topology_type topology_type;
   typedef topology_type::sieve_type sieve_type;
+  typedef ALE::Sifter<int, sieve_type::point_type, int> patch_label_type;
 
   // buildTopology() requires zero based index
   assert(true == data.useIndexZero);
@@ -36,8 +37,10 @@ pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
   const int numCells = data.numCells;
   const double* vertCoords = data.vertices;
   const int* cells = data.cells;
+  const int* materialIds = data.materialIds;
   CPPUNIT_ASSERT(0 != vertCoords);
   CPPUNIT_ASSERT(0 != cells);
+  CPPUNIT_ASSERT(0 != materialIds);
 
   ALE::Obj<ALE::Mesh>* meshHandle = new ALE::Obj<ALE::Mesh>;
   *meshHandle = new ALE::Mesh(PETSC_COMM_WORLD, cellDim);
@@ -55,6 +58,20 @@ pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
   ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
 		    mesh->getRealSection("coordinates"), spaceDim, vertCoords);
 
+  const Mesh::real_section_type::patch_type patch = 0;
+  const ALE::Obj<Mesh::topology_type::label_sequence>& cellsMesh = 
+    topology->heightStratum(patch, 0);
+
+  const ALE::Obj<patch_label_type>& labelMaterials = 
+    topology->createLabel(patch, "material-id");
+  
+  int i = 0;
+  for(Mesh::topology_type::label_sequence::iterator e_iter = 
+	cellsMesh->begin();
+      e_iter != cellsMesh->end();
+      ++e_iter)
+    topology->setValue(labelMaterials, *e_iter, materialIds[i++]);
+
   return meshHandle;
 } // createMesh
 
@@ -64,6 +81,8 @@ void
 pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<ALE::Mesh>& mesh,
 				      const MeshData& data)
 { // checkVals
+  typedef ALE::Sifter<int, sieve_type::point_type, int> patch_label_type;
+
   const Mesh::real_section_type::patch_type patch = 0;
   const ALE::Obj<topology_type>& topology = mesh->getTopology();
 
@@ -121,6 +140,22 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<ALE::Mesh>& mesh,
       CPPUNIT_ASSERT_EQUAL(data.cells[i++], 
 			   vNumbering->getIndex(*c_iter) + offset);
   } // for
+
+  // check materials
+  const int size = numCells;
+  int* materialIds = (size > 0) ? new int[size] : 0;
+  const ALE::Obj<patch_label_type>& labelMaterials = 
+    topology->getLabel(patch, "material-id");
+  const int idDefault = -999;
+
+  i = 0;
+  for(Mesh::topology_type::label_sequence::iterator e_iter = cells->begin();
+      e_iter != cells->end();
+      ++e_iter)
+    materialIds[i++] = topology->getValue(labelMaterials, *e_iter, idDefault);
+  
+  for (int iCell=0; iCell < numCells; ++iCell)
+    CPPUNIT_ASSERT_EQUAL(data.materialIds[iCell], materialIds[iCell]);
 
   // :TODO: Check groups of vertices
 } // checkVals

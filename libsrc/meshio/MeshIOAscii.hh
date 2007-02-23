@@ -74,24 +74,20 @@ private :
   /** Write mesh vertices.
    *
    * @param fileout Output stream
-   * @param coordinates Array of vertex coordinates
-   * @param numVertices Number of vertices
-   * @param spaceDim Dimension of coordinates vector space
    */
-  void _writeVertices(std::ostream& fileout,
-		      const double* coordinates,
-		      const int numVertices,
-		      const int spaceDim) const;
+  void _writeVertices(std::ostream& fileout) const;
   
   /** Read mesh cells.
    *
    * @param filein Input stream
    * @param pCells Pointer to array of indices of cell vertices
+   * @param pMaterialIds Pointer to array of material identifiers
    * @param pNumCells Pointer to number of cells
    * @param pNumCorners Pointer to number of corners
    */
   void _readCells(std::istream& filein,
 		  int** pCells,
+		  int** pMaterialIds,
 		  int* pNumCells,
 		  int* pNumCorners) const;
   
@@ -102,10 +98,7 @@ private :
    * @param numCells Number of cells
    * @param numCorners Number of corners
    */
-  void _writeCells(std::ostream& fileout,
-		   const int* cells,
-		   const int numCells,
-		   const int numCorners) const;
+  void _writeCells(std::ostream& fileout) const;
 
   // PRIVATE MEMBERS ----------------------------------------------------
 private :
