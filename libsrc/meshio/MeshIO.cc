@@ -15,6 +15,8 @@
 #include "MeshIO.hh" // implementation of class methods
 
 #include <assert.h> // USES assert()
+#include <sstream> // USES std::ostringstream
+#include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -84,8 +86,8 @@ pylith::meshio::MeshIO::_buildMesh(const double* coordinates,
   topology->stratify();
   mesh->setTopology(topology);
   ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
-					  mesh->getRealSection("coordinates"), 
-					  spaceDim, coordinates);
+		      mesh->getRealSection("coordinates"), 
+		      spaceDim, coordinates);
 } // _buildMesh
 
 // ----------------------------------------------------------------------
@@ -189,5 +191,76 @@ pylith::meshio::MeshIO::_getCells(int** pCells,
   if (0 != pMeshDim)
     *pMeshDim = meshDim;
 } // _getCells
+
+// ----------------------------------------------------------------------
+// Tag cells in mesh with material identifiers.
+void
+pylith::meshio::MeshIO::_setMaterials(const int* materialIds,
+				      const int numCells)
+{ // _setMaterials
+  assert(0 != _mesh);
+  ALE::Obj<Mesh>& mesh = *_mesh;
+  
+  const topology_type::patch_type patch = 0;
+  const ALE::Obj<topology_type>& topology = mesh->getTopology();
+  const ALE::Obj<Mesh::topology_type::label_sequence>& cells = 
+    topology->heightStratum(patch, 0);
+
+  if (cells->size() != numCells) {
+    std::ostringstream msg;
+    msg << "Mismatch in size of materials identifier array ("
+	<< numCells << ") and number of cells in mesh ("
+	<< cells->size() << ").";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  const ALE::Obj<patch_label_type>& labelMaterials = 
+    topology->createLabel(patch, "material-id");
+  
+  int i = 0;
+  for(Mesh::topology_type::label_sequence::iterator e_iter = cells->begin();
+      e_iter != cells->end();
+      ++e_iter)
+    topology->setValue(labelMaterials, *e_iter, materialIds[i++]);
+} // _setMaterials
+
+// ----------------------------------------------------------------------
+// Get material identifiers for cells.
+void
+pylith::meshio::MeshIO::_getMaterials(int** pMaterialIds,
+				      int* pNumCells)
+{ // _getMaterials
+  assert(0 != _mesh);
+  ALE::Obj<Mesh>& mesh = *_mesh;
+
+  const topology_type::patch_type patch = 0;
+  const ALE::Obj<topology_type>& topology = mesh->getTopology();
+  const ALE::Obj<Mesh::topology_type::label_sequence>& cells = 
+    topology->heightStratum(patch, 0);
+  const int numCells = cells->size();
+
+  int* materialsArray = 0;
+  const int size = numCells;
+  if (0 != pMaterialIds && size > 0) {
+    materialsArray = new int[size];
+  
+    const ALE::Obj<patch_label_type>& labelMaterials = 
+      topology->getLabel(patch, "material-id");
+    const int idDefault = 0;
+
+    int i = 0;
+    for(Mesh::topology_type::label_sequence::iterator e_iter = cells->begin();
+	e_iter != cells->end();
+	++e_iter)
+      materialsArray[i++] = 
+	topology->getValue(labelMaterials, *e_iter, idDefault);
+  } // if  
+
+  if (0 != pMaterialIds)
+    *pMaterialIds = materialsArray;
+  if (0 != pNumCells)
+    *pNumCells = numCells;
+} // _getMaterials
+
 
 // End of file 
