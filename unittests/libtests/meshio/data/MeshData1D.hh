@@ -44,6 +44,7 @@ private:
 
   static const double _vertices[]; ///< Pointer to coordinates of vertices
   static const int _cells[]; ///< Pointer to indices of vertices in cells
+  static const int _materialIds[]; ///< Pointer to cell material identifiers
 
   static const bool _useIndexZero; ///< First vertex is 0 if true, 1 if false
 

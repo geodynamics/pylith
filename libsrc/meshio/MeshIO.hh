@@ -88,6 +88,12 @@ protected :
    */
   void useIndexZero(const bool flag);
 
+  /** Get spatial dimension of mesh.
+   *
+   * @returns Spatial dimension of mesh
+   */
+  int getMeshDim(void) const;
+
   /** Build mesh topology and set vertex coordinates.
    *
    * @param coordinates Array of coordinates of vertices
@@ -146,7 +152,7 @@ protected :
    * @param numCells Number of cells
    */
   void _getMaterials(int** pMaterialIds,
-		     int* pNumCells);
+		     int* pNumCells) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

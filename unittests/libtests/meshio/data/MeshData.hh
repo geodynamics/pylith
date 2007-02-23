@@ -42,6 +42,7 @@ public:
 
   double* vertices; ///< Pointer to coordinates of vertices
   int* cells; ///< Pointer to indices of vertices in cells
+  int* materialIds; ///< Pointer to cell material identifiers
 
   bool useIndexZero; ///< Indices start with 0 if true, 1 if false
 

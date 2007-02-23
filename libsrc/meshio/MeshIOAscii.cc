@@ -45,7 +45,8 @@ pylith::meshio::MeshIOAscii::_read(void)
   int numCorners = 0;
   double* coordinates = 0;
   int* cells = 0;
-
+  int* materialIds = 0;
+  
   std::ifstream filein(_filename.c_str());
   if (!filein.is_open() || !filein.good()) {
     std::ostringstream msg;
@@ -89,7 +90,7 @@ pylith::meshio::MeshIOAscii::_read(void)
       readVertices = true;
     } else if (0 == strcasecmp(token.c_str(), "cells")) {
       filein.ignore(maxIgnore, '{');
-      _readCells(filein, &cells, &numCells, &numCorners);
+      _readCells(filein, &cells, &materialIds, &numCells, &numCorners);
       readCells = true;
     } else if (0 == strcasecmp(token.c_str(), "group")) {
       if (!builtMesh)
@@ -107,8 +108,10 @@ pylith::meshio::MeshIOAscii::_read(void)
       // Can now build mesh
       _buildMesh(coordinates, numVertices, spaceDim,
 		 cells, numCells, numCorners, meshDim);
+      _setMaterials(materialIds, numCells);
       delete[] coordinates; coordinates = 0;
       delete[] cells; cells = 0;
+      delete[] materialIds; materialIds = 0;
       builtMesh = true;
     } // if
 
@@ -130,33 +133,19 @@ pylith::meshio::MeshIOAscii::_write(void) const
     throw std::runtime_error(msg.str());
   } // if
 
-  int meshDim = 0;
-  int spaceDim = 0;
-  int numVertices = 0;
-  int numCells = 0;
-  int numCorners = 0;
-  double* coordinates = 0;
-  int* cells = 0;
-
-  _getVertices(&coordinates, &numVertices, &spaceDim);
-  _getCells(&cells, &numCells, &numCorners, &meshDim);
-  
   fileout
     << "mesh = {\n"
-    << "  dimension = " << meshDim << "\n"
+    << "  dimension = " << getMeshDim() << "\n"
     << "  use-index-zero = " << (useIndexZero() ? "true" : "false") << "\n";
 
-  _writeVertices(fileout, coordinates, numVertices, spaceDim);
-  _writeCells(fileout, cells, numCells, numCorners);
+  _writeVertices(fileout);
+  _writeCells(fileout);
 
   // LOOP OVER GROUPS
   // _writeGroup(fileout, mesh, nameIter->c_str());
 
   fileout << "}\n";
   fileout.close();
-
-  delete[] coordinates; coordinates = 0;
-  delete[] cells; cells = 0;
 } // write
 
 // ----------------------------------------------------------------------
@@ -184,9 +173,9 @@ pylith::meshio::MeshIOAscii::_readVertices(std::istream& filein,
     } else if (0 == strcasecmp(token.c_str(), "coordinates")) {
       const int size = numVertices*numDims;
       if (0 == size) {
-	std::ostringstream msg;
-	msg << "Tokens 'dimension' and 'count' must precede 'coordinates'.";
-	throw std::runtime_error(msg.str());
+	const char* msg = 
+	  "Tokens 'dimension' and 'count' must precede 'coordinates'.";
+	throw std::runtime_error(msg);
       } // if
       
       filein.ignore(maxIgnore, '{');
@@ -216,11 +205,13 @@ pylith::meshio::MeshIOAscii::_readVertices(std::istream& filein,
 // ----------------------------------------------------------------------
 // Write mesh vertices.
 void
-pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout,
-					    const double* coordinates,
-					    const int numVertices,
-					    const int spaceDim) const
+pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const
 { // _writeVertices
+  int spaceDim = 0;
+  int numVertices = 0;
+  double* coordinates = 0;
+  _getVertices(&coordinates, &numVertices, &spaceDim);
+
   fileout
     << "  vertices = {\n"
     << "    dimension = " << spaceDim << "\n"
@@ -238,17 +229,21 @@ pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout,
   fileout
     << "    }\n"
     << "  }\n";
+
+  delete[] coordinates; coordinates = 0;
 } // _writeVertices
   
 // ----------------------------------------------------------------------
 // Read mesh cells.
 void
 pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
-					   int** pCells,
-					   int* pNumCells, 
-					   int* pNumCorners) const
+					int** pCells,
+					int** pMaterialIds,
+					int* pNumCells, 
+					int* pNumCorners) const
 { // _readCells
   int* cells = 0;
+  int* materialIds = 0;
   int numCells = 0;
   int numCorners = 0;
   int dimension = 0;
@@ -266,9 +261,9 @@ pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
     } else if (0 == strcasecmp(token.c_str(), "simplices")) {
       const int size = numCells*numCorners;
       if (0 == size) {
-	std::ostringstream msg;
-	msg << "Tokens 'num-corners' and 'count' must precede 'cells'.";
-	throw std::runtime_error(msg.str());
+	const char* msg = 
+	  "Tokens 'num-corners' and 'count' must precede 'cells'.";
+	throw std::runtime_error(msg);
       } // if
       
       filein.ignore(maxIgnore, '{');
@@ -284,6 +279,19 @@ pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
       } // if
       
       filein.ignore(maxIgnore, '}');
+    } else if (0 == strcasecmp(token.c_str(), "material-ids")) {
+      if (0 == numCells) {
+	const char* msg =
+	  "Token 'count' must precede 'material-ids'.";
+	throw std::runtime_error(msg);
+      } // if
+      const int size = numCells;
+      filein.ignore(maxIgnore, '{');
+      delete[] materialIds; materialIds = new int[size];
+      assert(0 != materialIds);
+      for (int i=0; i < size; ++i)
+	filein >> materialIds[i];      
+      filein.ignore(maxIgnore, '}');
     } else {
       std::ostringstream msg;
       msg << "Could not parse '" << token << "' into an cells setting.";
@@ -294,22 +302,35 @@ pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
   if (!filein.good())
     throw std::runtime_error("I/O error while parsing cells settings.");
 
+  // If no materials given, assign each cell material identifier of 0
+  if (0 == materialIds && numCells > 0) {
+    const int size = numCells;
+    materialIds = new int[size];
+    for (int i=0; i < size; ++i)
+      materialIds[i] = 0;
+  } // if
+
   if (0 != pCells)
     *pCells = cells;
   if (0 != pNumCells)
     *pNumCells = numCells;
   if (0 != pNumCorners)
     *pNumCorners = numCorners;
+  if (0 != pMaterialIds)
+    *pMaterialIds = materialIds;
 } // _readCells
 
 // ----------------------------------------------------------------------
 // Write mesh cells.
 void
-pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout,
-					 const int* cells,
-					 const int numCells,
-					 const int numCorners) const
+pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
 { // _writeCells
+  int meshDim = 0;
+  int numCells = 0;
+  int numCorners = 0;
+  int* cells = 0;
+  _getCells(&cells, &numCells, &numCorners, &meshDim);
+  
   fileout
     << "  cells = {\n"
     << "    count = " << numCells << "\n"
@@ -324,7 +345,23 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout,
     fileout << "\n";
   } // for
   fileout
-    << "    }\n"
+    << "    }\n";
+  delete[] cells; cells = 0;
+
+  // Write material identifiers
+  int* materialIds = 0;
+  _getMaterials(&materialIds, &numCells);
+  assert( (0 != materialIds && 0 < numCells) ||
+	  (0 == materialIds && 0 == numCells) );
+  fileout
+    << "    material-ids = {\n";
+  for(int iCell=0, i=0; iCell < numCells; ++iCell)
+    fileout << "      " << materialIds[iCell] << "\n";
+  fileout
+    << "    }\n";  
+  delete[] materialIds; materialIds = 0;
+
+  fileout
     << "  }\n";
 } // _writeCells
 

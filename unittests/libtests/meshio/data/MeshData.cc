@@ -22,6 +22,7 @@ pylith::meshio::MeshData::MeshData(void) :
   numCorners(0),
   vertices(0),
   cells(0),
+  materialIds(0),
   useIndexZero(true)
 { // constructor
 } // constructor

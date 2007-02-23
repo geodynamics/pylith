@@ -43,6 +43,9 @@ const int pylith::meshio::MeshData3D::_cells[] = {
   6, 12, 13, 11,  7,  9, 10,  8,
   0,  2,  6,  5,  1,  3,  7,  4
 };
+const int pylith::meshio::MeshData3D::_materialIds[] = {
+  1, 0
+};
 
 const bool pylith::meshio::MeshData3D::_useIndexZero = true;
 
@@ -55,6 +58,7 @@ pylith::meshio::MeshData3D::MeshData3D(void)
   numCorners = _numCorners;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
+  materialIds = const_cast<int*>(_materialIds);
   useIndexZero = _useIndexZero;
 } // constructor
 
