@@ -1,5 +1,15 @@
 MAIN PRIORITIES
 
+0. Create element families for materials.
+   a. Move quadrature component from Integrator to Material?
+      [Integrator will hold material; user configures quadrature w/material]
+   a. Create method in spatialdata for generating a trivial database.
+   b. In Formulation?, create an integrator for each "material"
+   c. C++ Material (1 per element family)
+      Holds physical properties
+      Initialize involves getting parameters from db
+   d. ExplicitElasticity gets density field from material's property manager
+
 1. Finish implementing ExplicitElasticity
    a. C++
    a. Python object
@@ -48,9 +58,6 @@ UNRESOLVED ISSUES
 QUESTIONS FOR MATT
 
 1. How do we create element families?
-  a. How should we identify materials? Assume field over elements or
-  groups of elements? LaGriT would be field over elements. Need to
-  check on what CUBIT does.
   b. How do we create boundary conditions given group of vertices
   (list of labels of vertices) corresponding to vertices associated
   with faces? Note: this is unique if we don't allow groups to have
