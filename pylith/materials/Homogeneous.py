@@ -11,6 +11,7 @@
 #
 
 ## @file pylith/materials/Homogeneous.py
+
 ## @brief Python materials container with one material.
 
 from MaterialsBin import MaterialsBin
@@ -22,7 +23,9 @@ class Homogeneous(MaterialsBin):
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(MaterialsBin.Inventory):
-    """Python object for managing Homogeneous facilities and properties."""
+    """
+    Python object for managing Homogeneous facilities and properties.
+    """
     
     ## @class Inventory
     ## Python object for managing Homogeneous facilities and properties.
@@ -44,7 +47,6 @@ class Homogeneous(MaterialsBin):
 
   def __init__(self, name="homogeneous"):
     """Constructor."""
-    
     MaterialsBin.__init__(self, name)
     return
 
@@ -53,13 +55,9 @@ class Homogeneous(MaterialsBin):
 
   def _configure(self):
     """Set attributes from inventory."""
-
     MaterialsBin._configure(self)
     self.materials = [self.inventory.material]
     return
 
   
- # version
-__id__ = "$Id$"
-
 # End of file 

@@ -11,7 +11,8 @@
 #
 
 ## @file pylith/materials/ElasticIsotropic3D.py
-## @brief Python object for 3-D isotropic linear elastic constitutive model.
+
+## @brief Python object for 3-D isotropic linear elastic material.
 
 from Material import Material
 
@@ -62,23 +63,34 @@ class ElasticIsotropic3D(Material):
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def initialize(self):
-    """Initialize material. If not using predefined database, create
-    one with given parameters."""
+    """
+    Initialize material. If not using predefined database, create one
+    with given parameters.
+    """
     if not self.useDB:
-      from spatialdata.spatialdb.SimpleDB import SimpleDB
-      self.db = SimpleDB()
-      self.db.create(values=["Vp", "Vs", "density"],
-                     units=["m/s", "m/s", "kg/m^3"],
-                     data=[ [self.vp, self.vs, self.density] ],
-                     topology="point")
+      self._info.log("Creating trivial database for uniform properties.")
+      # :TODO: Need method to create trivial database
+      #from spatialdata.spatialdb.SimpleDB import createdb
+      #import numpy
+      #coords = numpy.zeros( (1,3), dtype=numpy.float64)
+      #data = numpy.array( [ [self.vp, self.vs, self.density] ] )
+      #self.db = createdb(values=["Vp", "Vs", "density"],
+      #                   units=["m/s", "m/s", "kg/m^3"],
+      #                   data=data,
+      #                   coords=coords,
+      #                   spaceDim=0)
     Material.initialize(self)
     return
 
 
   def __init__(self, name="elasticisotropic3d"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     Material.__init__(self, name)
-    # NEED TO CREATE HANDLE TO C++ BINDINGS
+    # :TODO: Need to create module for materials
+    # import pylith.materials.materials as bindings
+    # self.cppHandle = bindings.ElasticIsotropic3D()
     return
 
 
@@ -88,12 +100,9 @@ class ElasticIsotropic3D(Material):
     """Set members using inventory."""
     self.useDB = self.inventory.useDB
     self.density = self.inventory.density
-    self.muLame = self.density * self.inventory.vs**2
-    self.lambdaLame = self.density * self.inventory.vp**2 - 2*self.muLame
+    self.vs = self.inventory.vs
+    self.vp = self.inventory.vp
     return
 
-
- # version
-__id__ = "$Id$"
 
 # End of file 
