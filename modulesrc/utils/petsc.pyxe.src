@@ -10,11 +10,9 @@
 # ======================================================================
 #
 
-# ----------------------------------------------------------------------
-cdef extern from "petsc.h":
-  ctypedef int PetscErrorCode
-  PetscErrorCode PetscInitialize(int*, char***, char[], char[])
-  PetscErrorCode PetscFinalize()
+#header{
+#include <petsc.h>
+#}header
 
 # ----------------------------------------------------------------------
 cdef extern from "Python.h":
@@ -41,7 +39,12 @@ def petsc_initialize(options):
   """
   Initialize PETSc.
   """
-  cdef PetscErrorCode err
+  # create shim for 'PetscInitialize'
+  #embed{ int Petsc_initialize(int* argc, char*** argv)
+  PetscErrorCode err = PetscInitialize(argc, argv, NULL, NULL);
+  return err;
+  #}embed
+  cdef int err
   cdef char** argv
   cdef char* arg
   cdef int argc
@@ -53,7 +56,9 @@ def petsc_initialize(options):
     argv[i] = <char*> malloc((strlen(arg)+1)*sizeof(char));
     strcpy(argv[i], arg);
   argv[argc] = NULL;
-  err = PetscInitialize(&argc, &argv, NULL, NULL)
+  err = Petsc_initialize(&argc, &argv);
+  # :TODO: Check error code for success
+  
   for i from 0 <= i < argc:
     free(argv[i])
   free(argv)
@@ -64,8 +69,15 @@ def petsc_finalize():
   """
   Finalize PETSc.
   """
-  cdef PetscErrorCode err
-  err = PetscFinalize()
+  # create shim for 'PetscFnitialize'
+  #embed{ int Petsc_finalize()
+  PetscErrorCode err = PetscFinalize();
+  return err;
+  #}embed
+  cdef int err
+  err = Petsc_finalize()
+  # :TODO: Check error code for success
+
   return
 
 
