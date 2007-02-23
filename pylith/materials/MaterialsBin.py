@@ -11,6 +11,7 @@
 #
 
 ## @file pylith/materials/MaterialsBin.py
+
 ## @brief Python container for materials.
 
 from pyre.components.Component import Component
@@ -23,22 +24,10 @@ class MaterialsBin(Component):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def initialize(self):
-    """
-    Initialize material property manager.
-    """
-
-    self._info.log("Initializing materials '%s'." % self.name)
-    for material in self.materials:
-      material.initialize()
-    return
-
-
   def __init__(self, name="materialsbin"):
     """
     Constructor.
     """
-    
     Component.__init__(self, name, facility="materialsbin")
     self.materials = []
     return

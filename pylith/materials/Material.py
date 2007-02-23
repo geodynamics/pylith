@@ -11,6 +11,7 @@
 #
 
 ## @file pylith/materials/Material.py
+
 ## @brief Python material property manager.
 
 from pyre.components.Component import Component
@@ -58,30 +59,8 @@ class Material(Component):
     """
     Initialize material property manager.
     """
-
-    self._info.log("Initializing material '%s'." % self.name)
+    self._info.log("Initializing material '%s'." % self.matname)
     self.db.initialize()
-    return
-
-
-  def openDB(self):
-    """
-    Open material property database.
-    """
-
-    self._info.line("Material '%s' opening property database." % self.name)
-    self._info.log("  Setting up query for values: %s." % valNames)
-    self.db.open()
-    return
-
-
-  def closeDB(self):
-    """
-    Close material property database.
-    """
-
-    self._info.log("Material '%s' closing property database." % self.name)
-    self.db.close()
     return
 
 
@@ -89,8 +68,8 @@ class Material(Component):
     """
     Constructor.
     """
-    
     Component.__init__(self, name, facility="material")
+    self.cppHandle = None
     return
 
 
