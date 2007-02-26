@@ -18,8 +18,6 @@
 cdef extern from "Python.h":
   object PyCObject_FromVoidPtr(void*, void (*destruct)(void*))
   void* PyCObject_AsVoidPtr(object)
-  char* PyString_AsString(object)
-  object PyList_GetItem(object, int)
 
 cdef void* ptrFromHandle(obj):
   """Extract pointer from PyCObject."""
@@ -52,7 +50,7 @@ def petsc_initialize(options):
   argc = len(options)
   argv = <char**> malloc((argc+1)*sizeof(char*));
   for i from 0 <= i < argc:
-    arg = PyString_AsString(PyList_GetItem(options, i));
+    arg = options[i]
     argv[i] = <char*> malloc((strlen(arg)+1)*sizeof(char));
     strcpy(argv[i], arg);
   argv[argc] = NULL;
