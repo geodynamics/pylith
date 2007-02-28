@@ -58,7 +58,7 @@ def run(nprocs):
         "-ksp_monitor -ksp_view -ksp_rtol 1e-09" % (nprocs, root, nprocs)
   import os
   print cmd
-  os.system(cmd)
+  #os.system(cmd)
   return
 
 
