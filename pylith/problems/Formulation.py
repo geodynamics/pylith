@@ -29,11 +29,11 @@ class Formulation(Component):
 
   class Inventory(Component.Inventory):
     """
-    Python object for managing Explicit facilities and properties.
+    Python object for managing Formulation facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing Explicit facilities and properties.
+    ## Python object for managing Formulation facilities and properties.
     ##
     ## \b Properties
     ## @li None
@@ -50,19 +50,20 @@ class Formulation(Component):
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def initialize(self):
-    """
-    Initialize the formulation.
-    """
-    self._info.log("WARNING: Formulation::initialize not implemented.")
-    return
-
-
   def __init__(self, name="formulation"):
     """
     Constructor.
     """
     Component.__init__(self, name)
+    self.integrators = None
+    return
+
+
+  def initialize(self, mesh, materials):
+    """
+    Create integrators for each element family.
+    """
+    raise NotImplementedError, "initialize() not implemented."
     return
 
 

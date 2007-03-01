@@ -55,6 +55,30 @@ class Explicit(Formulation):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
+  def __init__(self, name="explicit"):
+    """
+    Constructor.
+    """
+    Formulation.__init__(self, name)
+    return
+
+
+  def initialize(self, mesh, materials):
+    """
+    Create explicit integrators for each element family.
+    """
+    self._info.log("Initializing integrators.")
+    from pylith.feassemble.ExplicitElasticity import ExplicitElasticity
+    
+    self.integrators = []
+    for material in materials:
+      integrator = ExplicitElasticity()
+      integrator.initQuadrature(material.quadrature)
+      #integrator.initMaterial(mesh, material)
+      self.integrators.append(integrator)
+    return
+
+
   def stableTimeStep(self):
     """
     Get stable time step for advancing forward in time.
@@ -94,14 +118,6 @@ class Explicit(Formulation):
     Hook for doing stuff after advancing time step.
     """
     self._info.log("WARNING: Explicit::poststep() not implemented.")
-    return
-
-
-  def __init__(self, name="explicit"):
-    """
-    Constructor.
-    """
-    Formulation.__init__(self, name)
     return
 
 

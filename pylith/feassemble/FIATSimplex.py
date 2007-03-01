@@ -19,7 +19,7 @@ from FIATCell import FIATCell
 
 import numpy
 
-def validateShape(self, shape):
+def validateShape(shape):
   name = shape.lower()
   if not ("tetrahedron" == name or 
           "triangle" == name or 
@@ -62,8 +62,8 @@ class FIATSimplex(FIATCell):
     degree = pyre.inventory.int("degree", default=1)
     degree.meta['tip'] = "Degree of finite-element cell."
 
-    quadOrder = pyre.inventory.int("quad_order", default=1)
-    quadOrder.meta['tip'] = "Order of quadrature rule."
+    order = pyre.inventory.int("quad_order", default=1)
+    order.meta['tip'] = "Order of quadrature rule."
     
 
   # PUBLIC METHODS /////////////////////////////////////////////////////

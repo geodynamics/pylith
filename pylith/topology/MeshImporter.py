@@ -11,6 +11,7 @@
 #
 
 ## @file pylith/topology/MeshImporter.py
+
 ## @brief Python implementation of importing a mesh.
 
 from MeshGenerator import MeshGenerator
@@ -46,19 +47,19 @@ class MeshImporter(MeshGenerator):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def create(self):
-    """
-    Hook for creating mesh.
-    """
-    return self.importer.read()
-
-
   def __init__(self, name="meshimporter"):
     """
     Constructor.
     """
     MeshGenerator.__init__(self, name)
     return
+
+
+  def create(self):
+    """
+    Hook for creating mesh.
+    """
+    return self.importer.read()
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

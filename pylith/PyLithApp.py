@@ -79,7 +79,7 @@ class PyLithApp(Application):
 
     self.petsc.initialize()
     mesh = self.mesher.create()
-    #self.problem.mesh = mesh.distribute()
+    self.problem.initialize(mesh.distribute())
     self.problem.run(self)
     self.petsc.finalize()
     return

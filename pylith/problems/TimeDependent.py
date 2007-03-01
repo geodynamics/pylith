@@ -64,10 +64,30 @@ class TimeDependent(Problem):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
+  def __init__(self, name="timedependent"):
+    """
+    Constructor.
+    """
+    Problem.__init__(self, name)
+    return
+
+
+  def initialize(self, mesh):
+    """
+    Setup integrators for each element family (material/quadrature,
+    bc/quadrature, etc.).
+    """
+    self._info.log("Initializing problem.")
+    self.mesh = mesh
+    #self.formulation.initialize(mesh, self.materials)
+    return
+
+
   def run(self, app):
     """
     Solve time dependent problem.
     """
+    self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
     
     from pyre.units.time import second
@@ -112,20 +132,13 @@ class TimeDependent(Problem):
     return
   
 
-  def __init__(self, name="timedependent"):
-    """
-    Constructor.
-    """
-    Problem.__init__(self, name)
-    return
-
-
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
     """
     Set members based using inventory.
     """
+    Problem._configure(self)
     self.totalTime = self.inventory.totalTime
     self.dt = self.inventory.dt
     self.formulation = self.inventory.formulation
