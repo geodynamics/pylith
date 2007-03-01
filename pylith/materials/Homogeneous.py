@@ -18,7 +18,9 @@ from MaterialsBin import MaterialsBin
 
 # Homogeneous class
 class Homogeneous(MaterialsBin):
-  """Python materials container with one material."""
+  """
+  Python materials container with one material.
+  """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
@@ -38,7 +40,7 @@ class Homogeneous(MaterialsBin):
 
     import pyre.inventory
 
-    from ElasticIsotropic3D import ElasticIsotropic3D
+    from ElasticIsotropic import ElasticIsotropic3D
     material = pyre.inventory.facility("material", factory=ElasticIsotropic3D)
     material.meta['tip'] = "Material in problem."
 
@@ -46,7 +48,9 @@ class Homogeneous(MaterialsBin):
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="homogeneous"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     MaterialsBin.__init__(self, name)
     return
 
@@ -54,7 +58,9 @@ class Homogeneous(MaterialsBin):
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
-    """Set attributes from inventory."""
+    """
+    Set attributes from inventory.
+    """
     MaterialsBin._configure(self)
     self.materials = [self.inventory.material]
     return

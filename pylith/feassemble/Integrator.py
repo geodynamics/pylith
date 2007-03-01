@@ -24,29 +24,6 @@ class Integrator(Component):
   finite-elements.
   """
 
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(Component.Inventory):
-    """
-    Python object for managing Integrator facilities and properties.
-    """
-
-    ## @class Inventory
-    ## Python object for managing Integrator facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b quadrature Quadrature object for integration
-
-    import pyre.inventory
-
-    from Quadrature import Quadrature
-    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
-    quadrature.meta['tip'] = "Quadrature object for integration."
-
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="integrator"):
@@ -59,27 +36,14 @@ class Integrator(Component):
     return
 
 
-  def initialize(self, mesh):
+  def initQuadrature(self, quadrature):
     """
-    Initialize C++ integrator object.
+    Initialize quadrature.
     """
-    q = self.quadrature
-    q.initialize()
-    self.cppHandle.quadrature = q.cppHandle
-    self.cppHandle.createParameters(mesh.cppHandle)
+    quadrature.initialize()
+    self.quadrature = quadrature    
+    self.cppHandle.quadrature = self.quadrature.cppHandle
     return
   
   
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set members based using inventory.
-    """
-    Component._configure(self)
-    self.quadrature = self.inventory.quadrature
-    self.db = self.inventory.db
-    return
-
-
 # End of file 

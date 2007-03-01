@@ -10,10 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/feassemble/IntegratorInertia.py
+## @file pylith/feassemble/IntegratorExplicit.py
 
-## @brief Python object for integration of inertial operator
-## actions with finite-elements.
+## @brief Python object for explicit time integration of actions with
+## finite-elements.
 
 from Integrator import Integrator
 
@@ -23,7 +23,6 @@ class IntegratorInertia(Integrator):
   Python object for integration of inertial operator actions with
   finite-elements.
   """
-
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -50,17 +49,10 @@ class IntegratorInertia(Integrator):
     return self.cppHandle.getStableTimeStep()
 
 
-  def initialize(self, mesh):
-    """
-    Initialize integrator.
-    """
-    return
-
-
   def integrateResidual(self,
                         residual, fieldInT, fieldInTmdt, coords, lumpJacobian):
     """
-    Integrate residual term for dynamic elasticity terms for finite-elements.
+    Integrate residual term for dynamic terms for finite-elements.
     """
     if lumpJacobian:
       self.cppHandle.integrateResidualLumped(residual,
@@ -72,7 +64,7 @@ class IntegratorInertia(Integrator):
 
   def integrateJacobian(self, jacobian, fieldInT, coords, lumpJacobian):
     """
-    Integrate Jacobian term for dynamic elasticity terms for finite-elements.
+    Integrate Jacobian term for dynamic terms for finite-elements.
     """
     if lumpJacobian:
       self.cppHandle.integrateJacobianLumped(jacobian, fieldInT, coords)

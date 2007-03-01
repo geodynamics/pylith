@@ -55,6 +55,19 @@ class CheckpointTimer(Component):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
+  def __init__(self, name="checkpoint"):
+    """
+    Constructor.
+    """
+    Component.__init__(self, name, facility="checkpoint")
+
+    from pyre.units.time import second
+    self.t = -8.9e+99*second
+
+    self.toplevel = None
+    return
+
+
   def update(self, t):
     """
     CheckpointTimer if necessary.
@@ -68,19 +81,6 @@ class CheckpointTimer(Component):
       self.t = t
     return
   
-
-  def __init__(self, name="checkpoint"):
-    """
-    Constructor.
-    """
-    Component.__init__(self, name, facility="checkpoint")
-
-    from pyre.units.time import second
-    self.t = -8.9e+99*second
-
-    self.toplevel = None
-    return
-
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 

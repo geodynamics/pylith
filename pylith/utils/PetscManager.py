@@ -27,6 +27,15 @@ class PetscManager(Component):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
+  def __init__(self, name="petsc"):
+    """
+    Constructor.
+    """
+    Component.__init__(self, name, facility="petsc")
+    self.options = []
+    return
+
+
   def initialize(self):
     """
     Initialize PETSc.
@@ -64,15 +73,6 @@ class PetscManager(Component):
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def __init__(self, name="petsc"):
-    """
-    Constructor.
-    """
-    Component.__init__(self, name, facility="petsc")
-    self.options = []
-    return
-
 
   def _getOptions(self):
     """

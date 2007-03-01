@@ -38,6 +38,7 @@ class Material(Component):
     ##
     ## \b Facilities
     ## @li \b db Database of material property parameters
+    ## @li \b quadrature Quadrature object for numerical integration
 
     import pyre.inventory
 
@@ -52,17 +53,12 @@ class Material(Component):
                                  args=["db"])
     db.meta['tip'] = "Database of material property parameters."
     
+    from pylith.feassemble.Quadrature import Quadrature
+    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
+    quadrature.meta['tip'] = "Quadrature object for numerical integration."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def initialize(self):
-    """
-    Initialize material property manager.
-    """
-    self._info.log("Initializing material '%s'." % self.matname)
-    self.db.initialize()
-    return
-
 
   def __init__(self, name="material"):
     """
@@ -73,13 +69,27 @@ class Material(Component):
     return
 
 
+  def initialize(self):
+    """
+    Initialize material property manager.
+    """
+    self._info.log("Initializing material '%s'." % self.matname)
+    #self.cppHandle.id = self.id
+    #self.cppHandle.matname = self.matname
+    self.db.initialize()
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
-    """Setup members using inventory."""
+    """
+    Setup members using inventory.
+    """
     self.id = self.inventory.id
     self.matname = self.inventory.matname
     self.db = self.inventory.db
+    self.quadrature = self.inventory.quadrature
     return
 
   

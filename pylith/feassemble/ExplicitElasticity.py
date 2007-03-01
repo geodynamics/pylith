@@ -24,29 +24,6 @@ class ExplicitElasticity(IntegratorExplicit):
   equation using finite-elements.
   """
 
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(IntegratorExplicit.Inventory):
-    """
-    Python object for managing ExplicitElasticity facilities and properties.
-    """
-
-    ## @class Inventory
-    ## Python object for managing ExplicitElasticity facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b db Database for material property parameters.
-
-    import pyre.inventory
-
-    from spatialdata.spatialdb.SimpleDB import SimpleDB
-    db = pyre.inventory.facility("db", factory=SimpleDB)
-    db.meta['tip'] = "Database for material property parameters."
-
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="explicitelasticity"):
@@ -60,23 +37,18 @@ class ExplicitElasticity(IntegratorExplicit):
     return
 
 
-  def initialize(self, mesh):
+  def initialize(self, mesh, material):
     """
-    Initialize integrator.
+    Initialize C++ integrator object.
     """
-    self.cppHandle.setupMatProp(mesh.cppHandle, mesh.coordsys, db.cppHandle)
+    self._info.log("Initializing integrator for material '%s'." % \
+                   material.matname)
+    material.initialize()
+    
+    self.material = material
+    self.cppHandle.material = self.material.cppHandle
+    self.cppHandle.createParameters(mesh.cppHandle)
     return
-
-
-  # PRIVATE METHODS ////////////////////////////////////////////////////
-
-  def _configure(self):
-    """
-    Set members based using inventory.
-    """
-    IntegratorExplicit._configure(self)
-    self.db = self.inventory.db
-    return
-
-
+  
+  
 # End of file 

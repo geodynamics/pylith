@@ -22,7 +22,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/Quadrature.py \
 	feassemble/ReferenceCell.py \
 	materials/__init__.py \
-	materials/ElasticIsotropic3D.py \
+	materials/ElasticIsotropic.py \
 	materials/Homogeneous.py \
 	materials/Material.py \
 	materials/MaterialsBin.py \

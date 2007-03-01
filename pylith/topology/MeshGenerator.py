@@ -11,6 +11,7 @@
 #
 
 ## @file pylith/topology/MeshGenerator.py
+
 ## @brief Python abstract base class for mesh generator.
 
 from pyre.components.Component import Component
@@ -23,19 +24,19 @@ class MeshGenerator(Component):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def create(self):
-    """
-    Hook for creating mesh.
-    """
-    raise NotImplementedError, "MeshGenerator::create() not implemented."
-    return
-
-
   def __init__(self, name="meshgenerator"):
     """
     Constructor.
     """
     Component.__init__(self, name, facility="meshgenerator")
+    return
+
+
+  def create(self):
+    """
+    Hook for creating mesh.
+    """
+    raise NotImplementedError, "MeshGenerator::create() not implemented."
     return
 
 

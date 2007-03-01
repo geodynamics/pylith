@@ -11,9 +11,12 @@
 #
 
 ## @file pylith/materials/__init__.py
+
 ## @brief Python PyLith materials module initialization
 
-all = ['Material',
+all = ['ElasticIsotropic',
+       'Homogeneous',
+       'Material',
        'MaterialsBin']
 
 

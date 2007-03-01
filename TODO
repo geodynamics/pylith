@@ -2,9 +2,10 @@ MAIN PRIORITIES
 
 0. Create element families for materials.
    a. Move quadrature component from Integrator to Material?
-      [Integrator will hold material; user configures quadrature w/material]
-   a. Create method in spatialdata for generating a trivial database.
+      [Integrator will hold quadrature; user configures quadrature w/material]
+     [DONE]
    b. In Formulation?, create an integrator for each "material"
+     [IN PROGRESS]
    c. C++ Material (1 per element family)
       Holds physical properties
       Initialize involves getting parameters from db

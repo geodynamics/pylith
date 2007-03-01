@@ -11,6 +11,7 @@
 #
 
 ## @file pylith/topology/Mesh.py
+
 ## @brief Python Mesh for finite-element topology information.
 
 from pyre.components.Component import Component
@@ -45,14 +46,6 @@ class Mesh(Component):
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def distribute(self):
-    """
-    Distribute mesh across processors.
-    """
-    self._info.log("WARNING: Mesh::distribute() not implemented.")
-    return self
-
-
   def __init__(self, name="mesh"):
     """
     Constructor.
@@ -61,6 +54,14 @@ class Mesh(Component):
     import pylith.topology.topology as bindings
     self.cppHandle = bindings.Mesh()
     return
+
+
+  def distribute(self):
+    """
+    Distribute mesh across processors.
+    """
+    self._info.log("WARNING: Mesh::distribute() not implemented.")
+    return self
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////

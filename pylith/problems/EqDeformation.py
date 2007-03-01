@@ -49,6 +49,14 @@ class EqDeformation(TimeDependent):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
+  def __init__(self, name="eqdeformation"):
+    """
+    Constructor.
+    """
+    TimeDependent.__init__(self, name)
+    return
+
+
   def checkpoint(self):
     """
     Save problem state for restart.
@@ -63,14 +71,6 @@ class EqDeformation(TimeDependent):
     #self.faults.checkpoint()
     return
   
-
-  def __init__(self, name="eqdeformation"):
-    """
-    Constructor.
-    """
-    TimeDependent.__init__(self, name)
-    return
-
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 

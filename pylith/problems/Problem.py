@@ -52,22 +52,6 @@ class Problem(Component):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def run(self, app):
-    """
-    Solve the problem.
-    """
-    raise NotImplementedError, "Problem::run() not implemented."
-    return
-
-
-  def checkpoint(self):
-    """
-    Save problem state for restart.
-    """
-    raise NotImplementedError, "Problem::checkpoint() not implemented."
-    return
-  
-
   def __init__(self, name="problem"):
     """
     Constructor.
@@ -76,6 +60,31 @@ class Problem(Component):
     self.mesh = None
     return
 
+
+  def initialize(self, mesh):
+    """
+    Setup integrators for each element family (material/quadrature,
+    bc/quadrature, etc.).
+    """
+    raise NotImplementedError, "initialize() not implemented."
+    return
+
+
+  def run(self, app):
+    """
+    Solve the problem.
+    """
+    raise NotImplementedError, "run() not implemented."
+    return
+
+
+  def checkpoint(self):
+    """
+    Save problem state for restart.
+    """
+    raise NotImplementedError, "checkpoint() not implemented."
+    return
+  
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
