@@ -79,7 +79,7 @@ class TimeDependent(Problem):
     """
     self._info.log("Initializing problem.")
     self.mesh = mesh
-    #self.formulation.initialize(mesh, self.materials)
+    self.formulation.initialize(mesh, self.materials)
     return
 
 
