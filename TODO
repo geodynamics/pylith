@@ -1,9 +1,10 @@
-MAIN PRIORITIES
+======================================================================
+MAIN PRIORITIES (Brad)
+======================================================================
 
 0. Create element families for materials.
    a. Move quadrature component from Integrator to Material?
-      [Integrator will hold quadrature; user configures quadrature w/material]
-     [DONE]
+      [Integrator will hold material; user configures quadrature w/material]
    b. In Formulation?, create an integrator for each "material"
      [IN PROGRESS]
    c. C++ Material (1 per element family)
@@ -36,7 +37,9 @@ MAIN PRIORITIES
     PETSc from Python. May be easier to include in higher-level unit
     test.
 
+======================================================================
 SECONDARY PRIORITIES
+======================================================================
 
 1. Implement MeshIOHDF5 & HDF5
    a. C++ objects
@@ -52,14 +55,77 @@ SECONDARY PRIORITIES
    c. bindings
    d. unit tests at Python level
 
+======================================================================
 UNRESOLVED ISSUES
+======================================================================
 
-1. Integration of nemesis (pylithic.py as mpi/python application)
+1. Integration of nemesis (pylithic.py as mpi/python application) [Leif?]
 
-QUESTIONS FOR MATT
+======================================================================
+THINGS WE NEED SIEVE TO DO (Matt)
+======================================================================
 
-1. How do we create element families?
-  b. How do we create boundary conditions given group of vertices
-  (list of labels of vertices) corresponding to vertices associated
-  with faces? Note: this is unique if we don't allow groups to have
-  multiple faces per element, which should be okay.
+1. Create PETSc mesh with associated boundary condition meshes.
+
+  In general we can only rely on mesh generators to provide vertices,
+  cells, attributes for vertices and cells (i.e., one value for each
+  vertex or cell), and groups of vertices and cells. As a result,
+  boundary conditions would be associated with groups of
+  vertices. This is nonunique if we require users to not allow
+  multiple surfaces be associated with a single group of vertices. In
+  other words, there is a unique set of faces for a group of
+  vertices. For our boundary conditions we will want the N-1 dimension
+  (where the mesh is N dimensions) representation of a subset of the
+  mesh (i.e., 2-D mesh of fault surface).
+
+  Inputs:
+    * PETSc mesh
+    * Group of vertices
+  Outputs:
+    * PETSc mesh with bc mesh
+
+  Note: Above would be repeated for each group of vertices.
+
+2. Create cohesive cells.
+
+  Inputs:
+    * PETSc mesh
+    * Surface meshes defining faults
+  Output:
+    * PETSc mesh with cohesive cells.
+
+  Note: Not sure whether this would be done with global or distributed mesh.
+
+3. Distribute mesh/bc in scalable manner. 
+
+  Inputs:
+    * PETSc Mesh (with bc) (global on each processor)
+    * number of processors
+  Outputs:
+    * PETSc Mesh on each processor (restricted to processor)
+
+  Note: Called from topology.Mesh.py (need Python bindings for Sieve function).
+
+4. Global refinement of mesh.
+
+  Inputs:
+    * PETSc Mesh (original)
+    * refinement factor (limited to factor of 2?)
+  Outputs:
+    * PETSc Mesh (refined)
+
+5. Construct mesh with higher order cells from mesh with lower order cells.
+
+  Many mesh generators do not know how to construct higher order
+  elements, so we will need a general utility for doing this.
+
+  Inputs:
+    * PETSc Mesh
+    * some sort of map (Python object) defining how to construct
+      higher order reference cell from lower order reference cell.
+  Output:
+    * PETSc Mesh
+
+  Note: I think this would give us incredible flexibility in selecting
+  the appropriate discretization for a problem. For example, I think
+  it would allow us to use spectral elements.
