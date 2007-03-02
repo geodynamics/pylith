@@ -263,7 +263,6 @@ c...  local variables
 c
       double precision e,pr,anpwr,emhu,rmu
       double precision sdev(nstr),sinv1,steff
-      double precision sigma,sigmap,sxx,syy,szz,sxy,syz,sxz
       double precision cmat(nddmat)
 c
 c...  included variable definitions
@@ -294,25 +293,11 @@ c...  otherwise, invert elastic matrix and augment it by the viscous
 c     Jacobian.
 c
       else
-        call dpptrf('u',nstr,dmat,ierr)
-        if(ierr.ne.izero) then
-          errstrng="td_matinit_6(1)"
-          if(ierr.lt.izero) then
-            ierr=117
-          else
-            ierr=118
-          end if
-        end if
-        call dpptri('u',nstr,dmat,ierr)
-        if(ierr.ne.izero) then
-          errstrng="td_matinit_6(2)"
-          if(ierr.lt.izero) then
-            ierr=117
-          else
-            ierr=119
-          end if
-        end if
-        call fill(cmat,zero,nddmat)
+c
+c...  invert elastic matrix
+c
+        call invsymp(nddmat,nstr,dmat,ierr,errstrng)
+        if(ierr.ne.izero) return
 c
 c...  define material properties
 c
@@ -322,66 +307,194 @@ c
         emhu=prop(5)
         rmu=half*e/(one+pr)
 c
-c...  get stress invariants and compute factors for Jacobian
+c...  compute viscous Jacobian and add it to inverted elastic matrix
 c
-        sigma=(steff/emhu)**(anpwr-one)
-        sigmap=(anpwr-one)*sigma
-        sigma=half*alfap*deltp*sigma/emhu
-        sigmap=fourth*alfap*deltp*sigmap/emhu
-        sxx=sdev(1)/steff
-        syy=sdev(2)/steff
-        szz=sdev(3)/steff
-        sxy=two*sdev(4)/steff
-        syz=two*sdev(5)/steff
-        sxz=two*sdev(6)/steff
+        call dbds_6(cmat,nddmat,iddmat,sdev,nstr,steff,anpwr,emhu,
+     &   alfap,deltp)
+        call daxpy(nddmat,one,cmat,ione,dmat,ione)
+c
+c...  invert augmented matrix
+c
+        call invsymp(nddmat,nstr,dmat,ierr,errstrng)
+        if(ierr.ne.izero) return
+        tmax=((emhu/steff)**(anpwr-one))*emhu/rmu
+      end if
+      return
+      end
+c
+c
+      subroutine jaccmp_6(scur,n,fvec,NP,fjac,rpar,nrpar,ipar,nipar,
+     & ierr,errstrng)
+c
+c...  subroutine to form the Jacobian used in finding the zero of the
+c     stress function.
+c
+      include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+      include "parmat_6.inc"
+c
+c...  subroutine arguments
+c
+      integer n,NP,nrpar,nipar,ierr
+c***  note that the dimension below is a bit kludgy and does not allow
+c***  anything else to be put in the ipar array
+      integer ipar(nstr,nstr)
+      double precision scur(n),fvec(n),fjac(NP,NP),rpar(nrpar)
+      character errstrng*(*)
+c
+c...  local variables
+c
+      integer i,j
+ctest      integer iddmat(nstr,nstr)
+ctest      equivalence(ipar(indiddmat),iddmat)
+      double precision dtmp(nddmat),cmat(nddmat)
+      double precision sdev(nstr),sinv1,steff
+c
+cdebug      write(6,*) "Hello from jaccmp_6_f!"
+c
+c
+c...  get stress invariants and a copy of inverted elasticity matrix
+c
+      call invar(sdev,sinv1,steff,scur)
+      call dcopy(nddmat,rpar(inddmati),ione,dtmp,ione)
+c
+c...  if second deviatoric invariant is zero, use only elastic solution
+c
+      if(steff.eq.zero) then
+        call invsymp(nddmat,nstr,dtmp,ierr,errstrng)
+        if(ierr.ne.izero) return
+        do i=1,nstr
+          do j=1,nstr
+            fjac(i,j)=dtmp(ipar(i,j))
+          end do
+        end do
+        return
+c
+c...  otherwise, invert elastic matrix and augment it by the viscous
+c     Jacobian.
+c
+      else
+c
+c...  compute viscous Jacobian and add it to inverted elastic matrix
+c
+        call dbds_6(cmat,nddmat,ipar,sdev,nstr,steff,
+     &   rpar(indanpwr),rpar(indemhu),rpar(indalfap),rpar(inddeltp))
+        call daxpy(nddmat,one,cmat,ione,dtmp,ione)
+c
+c...  invert augmented matrix and store results in fjac
+c
+        call invsymp(nddmat,nstr,dtmp,ierr,errstrng)
+        do i=1,nstr
+          do j=1,nstr
+            fjac(i,j)=dtmp(ipar(i,j))
+          end do
+        end do
+      end if
+      return
+      end
+c
+c
+      subroutine dbds_6(cmat,nddmat,iddmat,sdev,nstr,steff,anpwr,emhu,
+     & alfap,deltp)
+c
+c...  subroutine to compute derivatives of viscous strain rate with
+c     respect to stress.
+c
+      implicit none
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nddmat,nstr
+      integer iddmat(nstr,nstr)
+      double precision cmat(nddmat),sdev(nstr),steff,anpwr,emhu
+      double precision alfap,deltp
+c
+c...  local variables
+c
+      double precision sigma,sigmap,sxx,syy,szz,sxy,syz,sxz
+c
+cdebug      write(6,*) "Hello from dbds_6!"
+c
+      call fill(cmat,zero,nddmat)
+      sigma=(steff/emhu)**(anpwr-one)
+      sigmap=(anpwr-one)*sigma
+      sigma=half*alfap*deltp*sigma/emhu
+      sigmap=fourth*alfap*deltp*sigmap/emhu
+      sxx=sdev(1)/steff
+      syy=sdev(2)/steff
+      szz=sdev(3)/steff
+      sxy=two*sdev(4)/steff
+      syz=two*sdev(5)/steff
+      sxz=two*sdev(6)/steff
 c
 c...  compute viscous Jacobian
 c
-        cmat(iddmat(1,1))=sigma*two*third+sigmap*sxx*sxx
-        cmat(iddmat(1,2))=-sigma*third   +sigmap*sxx*syy
-        cmat(iddmat(1,3))=-sigma*third   +sigmap*sxx*szz
-        cmat(iddmat(1,4))=                sigmap*sxx*sxy
-        cmat(iddmat(1,5))=                sigmap*sxx*syz
-        cmat(iddmat(1,6))=                sigmap*sxx*sxz
-        cmat(iddmat(2,2))=sigma*two*third+sigmap*syy*syy
-        cmat(iddmat(2,3))=-sigma*third   +sigmap*syy*szz
-        cmat(iddmat(2,4))=                sigmap*syy*sxy
-        cmat(iddmat(2,5))=                sigmap*syy*syz
-        cmat(iddmat(2,6))=                sigmap*syy*sxz
-        cmat(iddmat(3,3))=sigma*two*third+sigmap*szz*szz
-        cmat(iddmat(3,4))=                sigmap*szz*sxy
-        cmat(iddmat(3,5))=                sigmap*szz*syz
-        cmat(iddmat(3,6))=                sigmap*szz*sxz
-        cmat(iddmat(4,4))=sigma*two      +sigmap*sxy*sxy
-        cmat(iddmat(4,5))=                sigmap*sxy*syz
-        cmat(iddmat(4,6))=                sigmap*sxy*sxz
-        cmat(iddmat(5,5))=sigma*two      +sigmap*syz*syz
-        cmat(iddmat(5,6))=                sigmap*syz*sxz
-        cmat(iddmat(6,6))=sigma*two      +sigmap*sxz*sxz
+      cmat(iddmat(1,1))=sigma*two*third+sigmap*sxx*sxx
+      cmat(iddmat(1,2))=-sigma*third   +sigmap*sxx*syy
+      cmat(iddmat(1,3))=-sigma*third   +sigmap*sxx*szz
+      cmat(iddmat(1,4))=                sigmap*sxx*sxy
+      cmat(iddmat(1,5))=                sigmap*sxx*syz
+      cmat(iddmat(1,6))=                sigmap*sxx*sxz
+      cmat(iddmat(2,2))=sigma*two*third+sigmap*syy*syy
+      cmat(iddmat(2,3))=-sigma*third   +sigmap*syy*szz
+      cmat(iddmat(2,4))=                sigmap*syy*sxy
+      cmat(iddmat(2,5))=                sigmap*syy*syz
+      cmat(iddmat(2,6))=                sigmap*syy*sxz
+      cmat(iddmat(3,3))=sigma*two*third+sigmap*szz*szz
+      cmat(iddmat(3,4))=                sigmap*szz*sxy
+      cmat(iddmat(3,5))=                sigmap*szz*syz
+      cmat(iddmat(3,6))=                sigmap*szz*sxz
+      cmat(iddmat(4,4))=sigma*two      +sigmap*sxy*sxy
+      cmat(iddmat(4,5))=                sigmap*sxy*syz
+      cmat(iddmat(4,6))=                sigmap*sxy*sxz
+      cmat(iddmat(5,5))=sigma*two      +sigmap*syz*syz
+      cmat(iddmat(5,6))=                sigmap*syz*sxz
+      cmat(iddmat(6,6))=sigma*two      +sigmap*sxz*sxz
+      return
+      end
 c
-c...  add this to inverted elastic matrix and invert again
 c
-        call daxpy(nddmat,one,cmat,ione,dmat,ione)
-        call dpptrf('u',nstr,dmat,ierr)
-        if(ierr.ne.izero) then
-          errstrng="td_matinit_6(3)"
-          if(ierr.lt.izero) then
-            ierr=117
-          else
-            ierr=118
-          end if
-        end if
-        call dpptri('u',nstr,dmat,ierr)
-        if(ierr.ne.izero) then
-          errstrng="td_matinit_6(4)"
-          if(ierr.lt.izero) then
-            ierr=117
-          else
-            ierr=119
-          end if
-        end if
-        tmax=((emhu/steff)**(anpwr-one))*emhu/rmu
-      end if
+      subroutine betacmp_6(strs,beta,sdev,seff,sinv1,emhu,anpwr,nstr)
+c
+c...  subroutine to compute viscous strain rate vector beta
+c     Routine also returns stress invariants
+c
+      implicit none
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nstr
+      double precision strs(nstr),beta(nstr),sdev(nstr),seff,sinv1
+      double precision emhu,anpwr
+c
+c...  local variables
+c
+      double precision rm
+c
+c... compute stress invariants and constants for loop
+c
+      call fill(beta,zero,nstr)
+      call invar(sdev,sinv1,seff,strs)
+      rm=half*(seff/emhu)**(anpwr-one)/emhu
+c
+c...  compute strain rate components
+c
+      call daxpy(nstr,rm,sdev,ione,beta,ione)
       return
       end
 c
@@ -402,6 +515,9 @@ c
       include "ndimens.inc"
       include "nconsts.inc"
       include "rconsts.inc"
+      include "parmat_6.inc"
+      integer nrpar,nipar
+      parameter(nrpar=31,nipar=36)
 c
 c...  subroutine arguments
 c
@@ -420,21 +536,22 @@ c
 c
 c... external functions
 c
-      double precision sprod
-      external sprod
+      double precision sprod,dasum
+      external sprod,funcv_6,jaccmp_6,dasum
 c
 c...  local constants
 c
+      double precision sub
+      data sub/-1.0d0/
 c
 c...  local variables
 c
       integer i
       double precision e,pr,anpwr,emhu,rmu
-      double precision sinv1t,sefft,sinv1tdt,sefftdt,beta,betat,betatdt
-      double precision rmt,rmtdt
-      double precision sdevt(nstr),sdevtdt(nstr),eetdt(nstr)
-      double precision dtmp(nddmat)
-
+      double precision test0,rm,rmt,rmtdt
+      double precision sdev(nstr),betat(nstr),betatdt(nstr),sinv1,seff
+      double precision rpar(nrpar)
+      logical check
 c
 c...  included variable definitions
 c
@@ -445,6 +562,7 @@ c
 cdebug      write(6,*) "Hello from td_strs_6!"
 c
       ierr=0
+      test0=dasum(nstate0,state0,ione)
 c
 c...  define material properties
 c
@@ -454,43 +572,119 @@ c
       emhu=prop(5)
       rmu=half*e/(one+pr)
       tmax=big
+      rmt=deltp*(one-alfap)
+      rm=sub*rmt
+      rmtdt=deltp*alfap
 c
-c...  for first iteration, beta is computed using only the stresses at
-c     time t.  Otherwise, the stress estimates at time t + dt are also
-c     used.
+c...  for first iteration, use stresses from previous step as initial
+c     guess, otherwise use current estimate.
 c
-      call invar(sdevt,sinv1t,sefft,state)
-      if(iter.eq.ione) then
-        do i=1,nstr
-          beta=half*(sefft/emhu)**(anpwr-one)*sdevt(i)/emhu
-          dstate(i+12)=state(i+12)+deltp*beta
-          eetdt(i)=ee(i)-dstate(i+12)
-        end do
-      else
-        rmt=one-alfap
-        rmtdt=alfap
-        call invar(sdevtdt,sinv1tdt,sefftdt,dstate)
-        do i=1,nstr
-          betat=half*(sefft/emhu)**(anpwr-one)*sdevt(i)/emhu
-          betatdt=half*(sefftdt/emhu)**(anpwr-one)*sdevtdt(i)/emhu
-          dstate(i+12)=state(i+12)+deltp*(rmt*betat+rmtdt*betatdt)
-          eetdt(i)=ee(i)-dstate(i+12)
-        end do
-      end if
+      if(iter.eq.ione) call dcopy(nstr,state,ione,dstate,ione)
 c
-c...  compute current stress estimates and copy state variables into the
-c     appropriate spot
+c...  compute constant part of iterative solution equation.
 c
-      call elas_mat_6(dtmp,prop,iddmat,nprop,ierr,errstrng)
+c...  current total strain
+      call dcopy(nstr,ee,ione,rpar(indconst),ione)
+c...  inverted elasticity matrix times initial stresses
+      call elas_mat_6(rpar(inddmati),prop,iddmat,nprop,ierr,errstrng)
+      call invsymp(nddmat,nstr,rpar(inddmati),ierr,errstrng)
+      if(ierr.ne.izero) return
+      if(test0.ne.zero) call dspmv("u",nstr,one,rpar(inddmati),state0,
+     & ione,one,rpar(indconst),ione)
+c...  viscous strain from previous time step
+      call daxpy(nstr,sub,state(13),ione,rpar(indconst),ione)
+c...  contribution to viscous strain from stresses at beginning of step
+      call betacmp_6(state,betat,sdev,seff,sinv1,emhu,anpwr,nstr)
+      call daxpy(nstr,rm,betat,ione,rpar(indconst),ione)
+c
+c...  finish defining parameters for stress computation then call Newton
+c     routine to compute stresses.
+c
+      rpar(indalfap)=alfap
+      rpar(inddeltp)=deltp
+      rpar(indemhu)=emhu
+      rpar(indanpwr)=anpwr
+      call newt(dstate,nstr,rpar,nrpar,iddmat,nipar,funcv_6,jaccmp_6,
+     & check,ierr,errstrng)
+      if(ierr.ne.izero) return
+c
+c...  update state variables for current stress estimates.
+c
+      call betacmp_6(dstate,betatdt,sdev,seff,sinv1,emhu,anpwr,nstr)
       call dcopy(nstr,ee,ione,dstate(7),ione)
-      call dcopy(nstr,state0,ione,dstate,ione)
-      call dspmv("u",nstr,one,dtmp,eetdt,ione,one,dstate,ione)
+      call dcopy(nstr,state(13),ione,dstate(13),ione)
+      call daxpy(nstr,rmt,betat,ione,dstate(13),ione)
+      call daxpy(nstr,rmtdt,betatdt,ione,dstate(13),ione)
       call dcopy(nstr,dstate,ione,scur,ione)
 c
 c...  compute current Maxwell time
 c
-      call invar(sdevtdt,sinv1tdt,sefftdt,dstate)
-      if(sefftdt.ne.zero) tmax=((emhu/sefftdt)**(anpwr-one))*emhu/rmu
+      call invar(sdev,sinv1,seff,dstate)
+      if(seff.ne.zero) tmax=((emhu/seff)**(anpwr-one))*emhu/rmu
+c
+      return
+      end
+c
+c
+      subroutine funcv_6(n,scur,r,rpar,nrpar,ipar,nipar,
+     & ierr,errstrng)
+c
+c...  routine to compute the vector of functions(r) evaluated at the
+c     given stress state (contained in scur).
+c
+c...  The rpar array contains:
+c     1-6:      Constant part of vector, which includes current total
+c               strain, viscous strain from previous step, stress-related
+c               quantities from prefious time step, and prestress term.
+c     7-27:     Inverted elastic material matrix.
+c     28:       Integration parameter alfap.
+c     29:       Time step size deltp.
+c     30:       Viscosity coefficient emhu.
+c     31:       Power-law exponent anpwr.
+c
+c...  The ipar array contains:
+c     1-36:     The iddmat index array
+c
+      implicit none
+c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+      include "parmat_6.inc"
+c
+c...  subroutine arguments
+c
+      integer n,nrpar,nipar,ierr
+      integer ipar(nipar)
+      double precision scur(n),r(n),rpar(nrpar)
+      character errstrng*(*)
+c
+c...  local data
+c
+      double precision sub
+      data sub/-1.0d0/
+c
+c...  local variables
+c
+      double precision betatdt(nstr),rmtdt
+      double precision sdev(nstr),seff,sinv1
+c
+c...  viscous strain rate multiplier
+c
+      rmtdt=-rpar(indalfap)*rpar(inddeltp)
+c
+c...  compute current viscous strain rate
+c
+      call betacmp_6(scur,betatdt,sdev,seff,sinv1,
+     & rpar(indemhu),rpar(indanpwr),nstr)
+c
+c...  compute contributions to r and accumulate
+c
+      call dcopy(nstr,rpar(indconst),ione,r,ione)
+      call daxpy(nstr,rmtdt,betatdt,ione,r,ione)
+      call dspmv("u",nstr,sub,rpar(inddmati),scur,ione,one,r,ione)
 c
       return
       end
