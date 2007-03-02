@@ -14,9 +14,9 @@
 
 ## @brief Python PyLith finite-element topology module initialization
 
-all = ['Mesh',
-       'MeshGenerator',
-       'MeshImporter']
+__all__ = ['Mesh',
+           'MeshGenerator',
+           'MeshImporter']
 
 
 # End of file

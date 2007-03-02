@@ -11,9 +11,11 @@
 #
 
 ## @file pylith/problems/TimeDependent.py
-
+##
 ## @brief Python abstract base class for time dependent crustal
 ## dynamics problems.
+##
+## Factory: problem.
 
 from Problem import Problem
 
@@ -21,6 +23,8 @@ from Problem import Problem
 class TimeDependent(Problem):
   """
   Python abstract base class for time dependent crustal dynamics problems.
+
+  Factory: problem.
   """
   
   # INVENTORY //////////////////////////////////////////////////////////
@@ -53,11 +57,14 @@ class TimeDependent(Problem):
     dt.meta['tip'] = "Default time step for simulation."
 
     from Explicit import Explicit
-    formulation = pyre.inventory.facility("formulation", factory=Explicit)
+    formulation = pyre.inventory.facility("formulation",
+                                          family="pde_formulation",
+                                          factory=Explicit)
     formulation.meta['tip'] = "Formulation for solving PDE."
 
     from pylith.utils.CheckpointTimer import CheckpointTimer
     checkpointTimer = pyre.inventory.facility("checkpoint",
+                                              family="checkpointer",
                                               factory=CheckpointTimer)
     checkpointTimer.meta['tip'] = "Checkpoint manager."
 
@@ -168,6 +175,15 @@ class TimeDependent(Problem):
     """
     self.formulation.poststep(t)
     return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def problem():
+  """
+  Factory associated with TimeDependent.
+  """
+  return TimeDependent()
 
 
 # End of file 

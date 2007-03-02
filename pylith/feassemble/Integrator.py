@@ -11,9 +11,11 @@
 #
 
 ## @file pylith/feassemble/Integrator.py
-
+##
 ## @brief Python abstract base class for integration of operator
 ## actions with finite-elements.
+##
+## Factory: fe_integrator.
 
 from pyre.components.Component import Component
 
@@ -22,6 +24,8 @@ class Integrator(Component):
   """
   Python abstract base class for integration of actions with
   finite-elements.
+
+  Factory: integrator.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////

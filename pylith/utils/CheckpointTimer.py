@@ -11,15 +11,17 @@
 #
 
 ## @file pylith/utils/CheckpointTimer.py
-
+##
 ## @brief Python CheckpointTimer object for managing checkpointing.
-
+##
 ## USAGE:
 ##
-## @li Set toplevel attribute to top-level object that contains a
-## checkpoint() method.
+## @li Call initialize with argument 'toplevel' set to top-level
+## object that contains a checkpoint() method.
 ##
 ## @li Call update() every time step to checkpoint at desired frequency.
+##
+## Factory: checkpointer.
 
 from pyre.components.Component import Component
 
@@ -27,6 +29,15 @@ from pyre.components.Component import Component
 class CheckpointTimer(Component):
   """
   Python CheckpointTimer object for managing checkpointing.
+
+  USAGE:
+
+  (1) Call initialize with argument 'toplevel' set to top-level object
+  that contains a checkpoint() method.
+
+  (2) Call update() every time step to checkpoint at desired frequency.
+
+  Factory: checkpointer.
   """
   
   # INVENTORY //////////////////////////////////////////////////////////
@@ -55,11 +66,11 @@ class CheckpointTimer(Component):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="checkpoint"):
+  def __init__(self, name="checkpointtimer"):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="checkpoint")
+    Component.__init__(self, name, facility="checkpointer")
 
     from pyre.units.time import second
     self.t = -8.9e+99*second
@@ -67,6 +78,14 @@ class CheckpointTimer(Component):
     self.toplevel = None
     return
 
+
+  def initialize(self, toplevel):
+    """
+    Initialize checkpoint timer.
+    """
+    self.toplevel = toplevel
+    return
+  
 
   def update(self, t):
     """
@@ -91,6 +110,15 @@ class CheckpointTimer(Component):
     Component._configure(self)
     self.dt = self.inventory.dt
     return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def checkpointer():
+  """
+  Factory associated with CheckpointTimer.
+  """
+  return CheckpointTimer()
 
 
 # End of file 

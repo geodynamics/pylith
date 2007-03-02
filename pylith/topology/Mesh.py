@@ -11,8 +11,10 @@
 #
 
 ## @file pylith/topology/Mesh.py
-
+##
 ## @brief Python Mesh for finite-element topology information.
+##
+## Factory: finite_element_mesh
 
 from pyre.components.Component import Component
 
@@ -41,7 +43,8 @@ class Mesh(Component):
     import pyre.inventory
 
     from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pyre.inventory.facility("coordsys", factory=CSCart)
+    coordsys = pyre.inventory.facility("coordsys", family="coordsys",
+                                       factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with mesh."
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -50,7 +53,7 @@ class Mesh(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="mesh")
+    Component.__init__(self, name, facility="finite_element_mesh")
     import pylith.topology.topology as bindings
     self.cppHandle = bindings.Mesh()
     return
@@ -70,8 +73,18 @@ class Mesh(Component):
     """
     Set members based using inventory.
     """
+    Component._configure(self)
     self.coordsys = self.inventory.coordsys
     return
   
 
-# End of file 
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def finite_element_mesh():
+  """
+  Factory associated with Mesh.
+  """
+  return Mesh()
+
+
+# End of file

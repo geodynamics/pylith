@@ -11,9 +11,11 @@
 #
 
 ## @file pyre/meshio/MeshIOAscii.py
-
+##
 ## @brief Python object for reading/writing finite-element mesh from
 ## simple ASCII file.
+##
+## Factory: mesh_io
 
 from MeshIO import MeshIO
 
@@ -22,6 +24,8 @@ class MeshIOAscii(MeshIO):
   """
   Python object for reading/writing finite-element mesh from simple
   ASCII file.
+
+  Factory: mesh_io
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -78,5 +82,14 @@ class MeshIOAscii(MeshIO):
     self.cppHandle.filename = self.filename
     return
   
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def mesh_io():
+  """
+  Factory associated with MeshIOAscii.
+  """
+  return MeshIOAscii()
+
 
 # End of file 

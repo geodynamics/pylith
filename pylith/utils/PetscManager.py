@@ -11,11 +11,13 @@
 #
 
 ## @file pylith/utils/PetscManager.py
-
+##
 ## @brief Python PetscManager object for managing PETSc options.
-
+##
 ## The PetscManager also takes care of initializing and finalizing
 ## PETSc.
+##
+## Factory: petsc_manager
 
 from pyre.components.Component import Component
 
@@ -23,6 +25,8 @@ from pyre.components.Component import Component
 class PetscManager(Component):
   """
   Python PetscManager object for managing PETSc options.
+
+  Factory: petsc_manager
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -31,7 +35,7 @@ class PetscManager(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="petsc")
+    Component.__init__(self, name, facility="petsc_manager")
     self.options = []
     return
 
@@ -84,6 +88,15 @@ class PetscManager(Component):
       if value != 'true':
         args.append(value)
     return args
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def petsc_manager():
+  """
+  Factory associated with PetscManager.
+  """
+  return PetscManager()
 
 
 # End of file 

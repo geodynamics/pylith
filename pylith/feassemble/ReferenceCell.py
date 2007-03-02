@@ -11,9 +11,11 @@
 #
 
 ## @file pylith/feassemble/ReferenceCell.py
-
+##
 ## @brief Python abstract base class for managing basis functions and
 ## quadrature rules of a reference finite-element cell.
+##
+## Factory: reference_cell.
 
 from pyre.components.Component import Component
 
@@ -22,6 +24,8 @@ class ReferenceCell(Component):
   """
   Python abstract base class for managing basis functions and
   quadrature rules of a reference finite-element cell.
+
+  Factory: reference_cell.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -30,7 +34,7 @@ class ReferenceCell(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="referencecell")
+    Component.__init__(self, name, facility="reference_cell")
 
     self.basis = None # numpy array w/basis fns at quad pts
     self.basisDeriv = None # numpy array w/basis fn derivs at quad pts

@@ -14,7 +14,14 @@
 
 ## @brief Python top-level PyLith module initialization
 
-all = ['PyLithApp']
+__all__ = ['PyLithApp',
+           'feassemble',
+           'materials',
+           'meshio',
+           'problems',
+           'solver',
+           'topology',
+           'utils']
 
 
 # End of file

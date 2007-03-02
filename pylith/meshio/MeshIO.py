@@ -11,8 +11,10 @@
 #
 
 ## @file pyre/meshio/MeshIO.py
-
+##
 ## @brief Python abstract base class for finite-element mesh I/O.
+##
+## Factory: mesh_io
 
 from pyre.components.Component import Component
 
@@ -25,7 +27,11 @@ class MeshIO(Component):
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Component.Inventory):
-    """Python object for managing MeshIO facilities and properties."""
+    """
+    Python object for managing MeshIO facilities and properties.
+
+    Factory: mesh.
+    """
 
     ## @class Inventory
     ## Python object for managing MeshIO facilities and properties.
@@ -47,10 +53,8 @@ class MeshIO(Component):
   def __init__(self, name="meshio"):
     """
     Constructor.
-
-    @param name Component name
     """
-    Component.__init__(self, name, facility="meshio")
+    Component.__init__(self, name, facility="mesh_io")
     self.cppHandle = None
     self.interpolate = False
     return

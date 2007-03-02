@@ -11,8 +11,10 @@
 #
 
 ## @file pylith/problems/Formulation.py
-
+##
 ## @brief Python abstract base class for formulations of solving equations.
+##
+## Factory: pde_formulation
 
 from pyre.components.Component import Component
 
@@ -23,6 +25,8 @@ class Formulation(Component):
 
   In general, we use some explicit or implicit formulation of the PDEs
   to create a linear form, [A]{u}={b} that we can solve.
+
+  Factory: pde_formulation.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -54,7 +58,7 @@ class Formulation(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name)
+    Component.__init__(self, name, facility="pde_formulation")
     self.integrators = None
     return
 
@@ -93,6 +97,14 @@ class Formulation(Component):
     raise NotImplementedError("Please implement calcJacobian().")
     return
 
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def pde_formulation():
+  """
+  Factory associated with Formulation.
+  """
+  return Formulation()
 
 
 # End of file 

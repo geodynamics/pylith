@@ -11,9 +11,11 @@ b#!/usr/bin/env python
 #
 
 ## @file pylith/feassemble/FIATLagrange.py
-
+##
 ## @brief Python object for managing basis functions and quadrature
 ## rules of a Lagrange reference finite-element cell using FIAT.
+##
+## Factory: reference_cell.
 
 from FIATCell import FIATCell
 
@@ -29,6 +31,8 @@ class FIATLagrange(FIATCell):
   """
   Python object for managing basis functions and quadrature rules of a
   Lagrange reference finite-element cell using FIAT.
+
+  Factory: reference_cell.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -105,6 +109,13 @@ class FIATLagrange(FIATCell):
 
     return
 
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def reference_cell():
+  """
+  Factory associated with FIATLagrange.
+  """
+  return FIATLagrange()
 
 
 # End of file 

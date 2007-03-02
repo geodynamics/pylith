@@ -11,12 +11,11 @@
 #
 
 ## @file pylith/meshio___init__.py
-## @brief Python meshio PyLith module initialization
+##
+## @brief Python PyLith meshio module initialization
 
-all = ['MeshIO',
-       'MeshIOAscii']
+__all__ = ['MeshIO',
+           'MeshIOAscii']
 
-# version
-__id__ = "$Id$"
 
 # End of file

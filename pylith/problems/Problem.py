@@ -11,8 +11,10 @@
 #
 
 ## @file pylith/problems/Problem.py
-
+##
 ## @brief Python abstract base class for crustal dynamics problems.
+##
+## Factory: problem.
 
 from pyre.components.Component import Component
 
@@ -20,6 +22,8 @@ from pyre.components.Component import Component
 class Problem(Component):
   """
   Python abstract base class for crustal dynamics problems.
+
+  Factory: problem.
   """
   
   # INVENTORY //////////////////////////////////////////////////////////
@@ -42,11 +46,13 @@ class Problem(Component):
     import pyre.inventory
 
     from pylith.materials.Homogeneous import Homogeneous
-    materials = pyre.inventory.facility("materials", factory=Homogeneous)
+    materials = pyre.inventory.facility("materials", family="materials",
+                                        factory=Homogeneous)
     materials.meta['tip'] = "Materials in problem."
 
     #from BoundaryConditions import BoundaryConditions
-    #bc = pyre.inventory.facility("bc", factory=BoundaryConditions)
+    #bc = pyre.inventory.facility("bc", familty="bc",
+    #                             factory=BoundaryConditions)
     #bc.meta['tip'] = "Boundary conditions."
   
 
@@ -92,10 +98,20 @@ class Problem(Component):
     """
     Set members based using inventory.
     """
+    Component._configure(self)
     self.materials = self.inventory.materials
     #self.bc = self.inventory.bc
     self.formulation = self.inventory.formulation
     return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def problem():
+  """
+  Factory associated with Problem.
+  """
+  return Problem()
 
 
 # End of file 

@@ -11,8 +11,10 @@
 #
 
 ## @file pylith/topology/MeshImporter.py
-
+##
 ## @brief Python implementation of importing a mesh.
+##
+## Factory: mesh_generator.
 
 from MeshGenerator import MeshGenerator
 
@@ -20,6 +22,8 @@ from MeshGenerator import MeshGenerator
 class MeshImporter(MeshGenerator):
   """
   Python implementation of importing a mesh.
+
+  Factory: mesh_generator.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -68,8 +72,18 @@ class MeshImporter(MeshGenerator):
     """
     Set members based on inventory.
     """
+    MeshGenerator._configure(self)
     self.importer = self.inventory.importer
     return
   
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def mesh_generator():
+  """
+  Factory associated with MeshImporter.
+  """
+  return MeshImporter()
+
 
 # End of file 

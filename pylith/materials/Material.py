@@ -11,8 +11,18 @@
 #
 
 ## @file pylith/materials/Material.py
+##
 
-## @brief Python material property manager.
+## @brief Python abstract base class for managing physical properties
+## of a material.
+##
+## This implementation of a material associates both physical
+## properties and a quadrature scheme with the material. Thus,
+## applying different quadrature schemes within a region with the same
+## physical property database requires two "materials", which can use
+## the same database.  a material.
+##
+## Factory: material
 
 from pyre.components.Component import Component
 
@@ -86,6 +96,7 @@ class Material(Component):
     """
     Setup members using inventory.
     """
+    Component._configure(self)
     self.id = self.inventory.id
     self.matname = self.inventory.matname
     self.db = self.inventory.db

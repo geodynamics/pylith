@@ -11,17 +11,21 @@
 #
 
 ## @file pylith/feassemble/IntegratorExplicit.py
-
+##
 ## @brief Python object for explicit time integration of actions with
 ## finite-elements.
+##
+## Factory: integrator
 
 from Integrator import Integrator
 
 # IntegratorInertia class
-class IntegratorInertia(Integrator):
+class IntegratorExplicit(Integrator):
   """
-  Python object for integration of inertial operator actions with
+  Python object for explicit integration of operator actions with
   finite-elements.
+
+  Factory: integrator.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////

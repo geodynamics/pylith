@@ -11,7 +11,7 @@
 #
 
 ## @file pylith/PyLithApp.py
-
+##
 ## @brief Python PyLith application
 
 #from mpi.Application import Application
@@ -49,16 +49,19 @@ class PyLithApp(Application):
     totalTime.meta['tip'] = "Time duration for simulation."
 
     from pylith.topology.MeshImporter import MeshImporter
-    mesher = pyre.inventory.facility("mesh_generator", factory=MeshImporter)
+    mesher = pyre.inventory.facility("mesh_generator", family="mesh_generator",
+                                     factory=MeshImporter)
     mesher.meta['tip'] = "Generates or imports the computational mesh."
 
     from pylith.problems.EqDeformation import EqDeformation
-    problem = pyre.inventory.facility("problem", factory=EqDeformation)
+    problem = pyre.inventory.facility("problem", family="problem",
+                                      factory=EqDeformation)
     problem.meta['tip'] = "Computational problem to solve."
 
     # Dummy facility for passing options to PETSc
     from pylith.utils.PetscManager import PetscManager
-    petsc = pyre.inventory.facility("petsc", factory=PetscManager)
+    petsc = pyre.inventory.facility("petsc", family="petsc_manager",
+                                    factory=PetscManager)
     petsc.meta['tip'] = "Manager for PETSc options."
 
 
