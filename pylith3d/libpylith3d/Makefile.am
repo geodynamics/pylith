@@ -54,6 +54,7 @@ sources = \
 	elas_strs_mat_cmp_ss.F \
 	elastc.F \
 	fill.f \
+	fmin.f \
 	formdf_ss.f \
 	formes_ss.f \
 	formf_ss.f \
@@ -78,6 +79,7 @@ sources = \
 	infellh.f \
 	infelqh.f \
 	invar.f \
+	invsymp.f \
 	iquate.f \
 	isort.f \
 	iterate.F \
@@ -89,6 +91,7 @@ sources = \
 	lfit.f \
 	lflteq.f \
 	lnklst.f \
+	lnsrch.f \
 	load.f \
 	loadf.f \
 	loadx.f \
@@ -120,6 +123,7 @@ sources = \
 	matmod_def.f \
 	meansh.f \
 	nchar.f \
+	newt.f \
 	nfind.f \
 	nnblnk.f \
 	open_append.F \
@@ -267,6 +271,7 @@ sources = \
 	includes/nunits_dim.inc \
 	includes/nvisdat_def.inc \
 	includes/nvisdat_dim.inc \
+	includes/parmat_6.inc \
 	includes/prestr_matinit_ext.inc \
 	includes/prscal_dim.inc \
 	includes/rconsts.inc \
