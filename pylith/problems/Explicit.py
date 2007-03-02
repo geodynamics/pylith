@@ -89,14 +89,6 @@ class Explicit(Formulation):
     return dt
   
 
-  def initialize(self):
-    """
-    Initialize explicit formulation.
-    """
-    Formulation.initialize(self)
-    return
-
-
   def prestep(self):
     """
     Hook for doing stuff before advancing time step.
