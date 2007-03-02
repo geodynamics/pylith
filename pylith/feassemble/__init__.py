@@ -11,17 +11,17 @@
 #
 
 ## @file pylith/feassemble/__init__.py
-
+##
 ## @brief Python PyLith finite-element assembler module initialization
 
-all = ['ExplicitElasticity',
-       'FIATCell',
-       'FIATLagrange',
-       'FIATSimplex',
-       'Integrator',
-       'IntegratorExplicit',
-       'Quadrature',
-       'ReferenceCell']
+__all__ = ['ExplicitElasticity',
+           'FIATCell',
+           'FIATLagrange',
+           'FIATSimplex',
+           'Integrator',
+           'IntegratorExplicit',
+           'ReferenceCell',
+           'quadrature']
 
 
 # End of file

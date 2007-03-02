@@ -11,9 +11,11 @@
 #
 
 ## @file pylith/feassemble/FIATSimplex.py
-
+##
 ## @brief Python object for managing basis functions and quadrature
 ## rules of a simplex reference finite-element cell using FIAT.
+##
+## Factory: reference_cell.
 
 from FIATCell import FIATCell
 
@@ -28,13 +30,15 @@ def validateShape(shape):
                      "cell.\n" \
                      "Known shapes: 'tetrahedron', 'triangle', 'line'" % \
                      name)
-  return
+  return name
 
 # FIATSimplex class
 class FIATSimplex(FIATCell):
   """
   Python object for managing basis functions and quadrature rules of a
   simplex reference finite-element cell using FIAT.
+
+  Factory: reference_cell.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -122,6 +126,15 @@ class FIATSimplex(FIATCell):
                        "Known shapes: 'tetrahedron', 'triangle', 'line'" % \
                        name)
     return shape
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def reference_cell():
+  """
+  Factory associated with FIATSimplex.
+  """
+  return FIATSimplex()
 
 
 # End of file 

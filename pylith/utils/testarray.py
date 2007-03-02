@@ -32,3 +32,6 @@ def test_double(obj, valuesE, values):
         obj.assertAlmostEqual(1.0, v/vE, 6)
 
     return
+
+
+# End of file

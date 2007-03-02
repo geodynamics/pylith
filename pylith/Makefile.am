@@ -19,10 +19,19 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/FIATSimplex.py \
 	feassemble/Integrator.py \
 	feassemble/IntegratorExplicit.py \
-	feassemble/Quadrature.py \
 	feassemble/ReferenceCell.py \
+	feassemble/quadrature/Quadrature.py \
+	feassemble/quadrature/Quadrature1D.py \
+	feassemble/quadrature/Quadrature1Din2D.py \
+	feassemble/quadrature/Quadrature1Din3D.py \
+	feassemble/quadrature/Quadrature2D.py \
+	feassemble/quadrature/Quadrature2Din3D.py \
+	feassemble/quadrature/Quadrature3D.py \
+	feassemble/quadrature/__init__.py \
 	materials/__init__.py \
-	materials/ElasticIsotropic.py \
+	materials/ElasticIsotropic1D.py \
+	materials/ElasticIsotropic2D.py \
+	materials/ElasticIsotropic3D.py \
 	materials/Homogeneous.py \
 	materials/Material.py \
 	materials/MaterialsBin.py \

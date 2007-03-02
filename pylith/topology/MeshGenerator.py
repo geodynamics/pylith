@@ -11,8 +11,10 @@
 #
 
 ## @file pylith/topology/MeshGenerator.py
-
+##
 ## @brief Python abstract base class for mesh generator.
+##
+## Factory: mesh_generator.
 
 from pyre.components.Component import Component
 
@@ -20,6 +22,8 @@ from pyre.components.Component import Component
 class MeshGenerator(Component):
   """
   Python abstract base class for mesh generator.
+
+  Factory: mesh_generator
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -28,7 +32,7 @@ class MeshGenerator(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="meshgenerator")
+    Component.__init__(self, name, facility="mesh_generator")
     return
 
 

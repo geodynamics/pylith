@@ -11,9 +11,11 @@
 #
 
 ## @file pylith/problems/Explicit.py
-
+##
 ## @brief Python Explicit object for solving equations using an
 ## explicit formulation.
+##
+## Factory: pde_formulation
 
 from Formulation import Formulation
 
@@ -27,6 +29,8 @@ class Explicit(Formulation):
   where we want to solve for {u(t+dt)}, A(t) is usually constant
   (i.e., independent of time), and {b(t)} usually depends on {u(t)}
   and {u(t-dt)}.
+
+  Factory: pde_formulation.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -63,7 +67,7 @@ class Explicit(Formulation):
     return
 
 
-  def initialize(self, mesh, materials):
+  def initialize(self, mesh, materialsBin):
     """
     Create explicit integrators for each element family.
     """
@@ -71,9 +75,9 @@ class Explicit(Formulation):
     from pylith.feassemble.ExplicitElasticity import ExplicitElasticity
     
     self.integrators = []
-    for material in materials:
+    for material in materialsBin.materials:
       integrator = ExplicitElasticity()
-      integrator.initQuadrature(material.quadrature)
+      #integrator.initQuadrature(material.quadrature)
       #integrator.initMaterial(mesh, material)
       self.integrators.append(integrator)
     return
@@ -138,6 +142,15 @@ class Explicit(Formulation):
     """
     self._info.log("WARNING: Explicit::calcJacobian() not implemented.")
     return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def pde_formulation():
+  """
+  Factory associated with Explicit.
+  """
+  return Explicit()
 
 
 # End of file 

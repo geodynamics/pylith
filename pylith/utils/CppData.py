@@ -11,15 +11,17 @@
 #
 
 ## @file pylith/utils/CppData.py
-
+##
 ## @brief Python object to create C++ object holding data values.
-
+##
 ## Useful in unit testing of C++ objects where data is generate with
 ## Python code.
 ##
 ## If parent property is set, we assume object is providing only the
 ## data, so data is private and object needs a constructor and
 ## destructor. Otherwise, object just has public data and no methods.
+##
+## Factory: cpp_data
 
 from pyre.components.Component import Component
 
@@ -35,6 +37,15 @@ class CppData(Component):
   class Inventory(Component.Inventory):
     """
     Python object for managing CppData facilities and properties.
+
+    Useful in unit testing of C++ objects where data is generate with
+    Python code.
+
+    If parent property is set, we assume object is providing only the
+    data, so data is private and object needs a constructor and
+    destructor. Otherwise, object just has public data and no methods.
+
+    Factory: cpp_data
     """
 
     ## @class Inventory
@@ -70,7 +81,7 @@ class CppData(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="cppdata")
+    Component.__init__(self, name, facility="cpp_data")
     self.scalars = []
     self.arrays = []
     self.app = ""
@@ -118,6 +129,7 @@ class CppData(Component):
     """
     Set members based using inventory.
     """
+    Component._configure(self)
     self.header = self.inventory.header
     self.objname = self.inventory.objname
     self.namespace = self.inventory.namespace
@@ -297,6 +309,15 @@ class CppData(Component):
     """
     fileOut.write("\n// End of file\n")
     return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def cpp_data():
+  """
+  Factory associated with CppData.
+  """
+  return CppData()
 
 
 # End of file 

@@ -11,9 +11,10 @@
 #
 
 ## @file pylith/solver/__init__.py
+##
 ## @brief Python Pylith solver module initialization
 
-all = ['Solver']
+__all__ = ['Solver']
 
 
 # End of file

@@ -11,9 +11,11 @@
 #
 
 ## @file pylith/feassemble/FIATCell.py
-
+##
 ## @brief Python object for managing basis functions and quadrature
 ## rules of a reference finite-element cell using FIAT.
+##
+## Factory: reference_cell.
 
 from ReferenceCell import ReferenceCell
 
@@ -24,6 +26,8 @@ class FIATCell(ReferenceCell):
   """
   Python object for managing basis functions and quadrature rules of a
   reference finite-element cell using FIAT.
+
+  Factory: reference_cell.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////

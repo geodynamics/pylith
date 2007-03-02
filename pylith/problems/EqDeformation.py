@@ -11,9 +11,11 @@
 #
 
 ## @file pylith/problems/EqDeformation.py
-
+##
 ## @brief Python EqDeformation for computing deformation associated
 ## with earthquakes.
+##
+## Factory: problem.
 
 from TimeDependent import TimeDependent
 
@@ -22,6 +24,8 @@ class EqDeformation(TimeDependent):
   """
   Python EqDeformation for computing deformation associated with
   earthquakes.
+
+  Factory: problem.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -43,7 +47,8 @@ class EqDeformation(TimeDependent):
     import pyre.inventory
 
     #from Faults import Faults
-    #faults = pyre.inventory.facility("faults", factory=Faults)
+    #faults = pyre.inventory.facility("faults", family="faults",
+    #                                 factory=Faults)
     #faults.meta['tip'] = "Faults or interior slip surfaces."
 
 
@@ -81,6 +86,15 @@ class EqDeformation(TimeDependent):
     TimeDependent._configure(self)
     #self.faults = self.inventory.faults
     return
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def problem():
+  """
+  Factory associated with EqDeformation.
+  """
+  return EqDeformation()
 
 
 # End of file 

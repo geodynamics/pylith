@@ -11,13 +11,13 @@
 #
 
 ## @file pylith/problems/__init__.py
-
+##
 ## @brief Python PyLith crustal dynamics problems module initialization
 
-all = ['EqDeformation',
-       'Explicit',
-       'Problem',
-       'TimeDependent']
+__all__ = ['EqDeformation',
+           'Explicit',
+           'Problem',
+           'TimeDependent']
 
 
 # End of file

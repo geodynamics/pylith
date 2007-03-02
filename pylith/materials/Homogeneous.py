@@ -11,8 +11,10 @@
 #
 
 ## @file pylith/materials/Homogeneous.py
-
+##
 ## @brief Python materials container with one material.
+##
+## Factory: materials_bin
 
 from MaterialsBin import MaterialsBin
 
@@ -20,6 +22,8 @@ from MaterialsBin import MaterialsBin
 class Homogeneous(MaterialsBin):
   """
   Python materials container with one material.
+
+  Factory: materials_bin
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -41,7 +45,8 @@ class Homogeneous(MaterialsBin):
     import pyre.inventory
 
     from ElasticIsotropic import ElasticIsotropic3D
-    material = pyre.inventory.facility("material", factory=ElasticIsotropic3D)
+    material = pyre.inventory.facility("material", family="material",
+                                       factory=ElasticIsotropic3D)
     material.meta['tip'] = "Material in problem."
 
 
@@ -66,4 +71,13 @@ class Homogeneous(MaterialsBin):
     return
 
   
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def materials_bin():
+  """
+  Factory associated with Homogeneous.
+  """
+  return Homogeneous()
+
+
 # End of file 

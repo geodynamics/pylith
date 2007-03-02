@@ -11,8 +11,10 @@
 #
 
 ## @file pylith/materials/MaterialsBin.py
-
+##
 ## @brief Python container for materials.
+##
+## Factory: materials_bin
 
 from pyre.components.Component import Component
 
@@ -20,6 +22,8 @@ from pyre.components.Component import Component
 class MaterialsBin(Component):
   """
   Python container for materials.
+
+  Factory: materials_bin
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -28,7 +32,7 @@ class MaterialsBin(Component):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="materialsbin")
+    Component.__init__(self, name, facility="materials_bin")
     self.materials = []
     return
 

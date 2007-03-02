@@ -11,18 +11,27 @@
 #
 
 ## @file pylith/solver/Solver.py
+##
 ## @brief Python PyLith abstract base class for solver.
+##
+## Factory: solver
 
 from pyre.components.Component import Component
 
 # Solver class
 class Solver(Component):
-  """Python abstract base class for solver."""
+  """
+  Python abstract base class for solver.
+
+  Factory: solver.
+  """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Component.Inventory):
-    """Python object for managing Solver facilities and properties."""
+    """
+    Python object for managing Solver facilities and properties.
+    """
 
     ## @class Inventory
     ## Python object for managing Solver facilities and properties.
@@ -38,7 +47,9 @@ class Solver(Component):
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="solver"):
-    """Constructor."""
+    """
+    Constructor.
+    """
     Component.__init__(self, name, facility="solver")
     return
 
@@ -46,7 +57,10 @@ class Solver(Component):
   # PRIVATE METHODS /////////////////////////////////////////////////////
 
   def _configure(self):
-    """Set members based using inventory."""
+    """
+    Set members based using inventory.
+    """
+    Component._configure(self)
     return
 
 

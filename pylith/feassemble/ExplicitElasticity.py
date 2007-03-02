@@ -11,9 +11,11 @@
 #
 
 ## @file pylith/feassemble/ExplicitElasticity.py
-
+##
 ## @brief Python object for explicit time integration of dynamic
 ## elasticity equation using finite-elements.
+##
+## Factory: integrator
 
 from IntegratorExplicit import IntegratorExplicit
 
@@ -37,9 +39,9 @@ class ExplicitElasticity(IntegratorExplicit):
     return
 
 
-  def initialize(self, mesh, material):
+  def initMaterial(self, mesh, material):
     """
-    Initialize C++ integrator object.
+    Initialize material properties.
     """
     self._info.log("Initializing integrator for material '%s'." % \
                    material.matname)
@@ -47,8 +49,17 @@ class ExplicitElasticity(IntegratorExplicit):
     
     self.material = material
     self.cppHandle.material = self.material.cppHandle
-    self.cppHandle.createParameters(mesh.cppHandle)
+    #self.cppHandle.createParameters(mesh.cppHandle)
     return
   
   
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def integrator():
+  """
+  Factory associated with ExplicitElasticity.
+  """
+  return ExplicitElasticity()
+
+
 # End of file 
