@@ -40,6 +40,7 @@ pylith::feassemble::ExplicitElasticity::~ExplicitElasticity(void)
 pylith::feassemble::ExplicitElasticity::ExplicitElasticity(const ExplicitElasticity& i) :
   IntegratorExplicit(i)
 { // copy constructor
+  std::cout << "In ExplicitElasticity copy constructor." << std::endl;
 } // copy constructor
 
 // ----------------------------------------------------------------------
