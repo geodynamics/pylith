@@ -27,6 +27,7 @@ pylith::feassemble::Integrator::Integrator(void) :
   _cellVector(0),
   _cellMatrix(0)
 { // constructor
+  std::cout << "In constructor, _quadrature: " << _quadrature << std::endl;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -56,7 +57,8 @@ pylith::feassemble::Integrator::Integrator(const Integrator& i) :
 void
 pylith::feassemble::Integrator::quadrature(const Quadrature* q)
 { // quadrature
-  delete _quadrature; 
+  std::cout << "In quadrature(), _quadrature: " << _quadrature << std::endl;
+  //delete _quadrature;
   _quadrature = (0 != q) ? q->clone() : 0;
 
   // Deallocate cell vector and matrix since size may change

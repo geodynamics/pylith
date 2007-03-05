@@ -298,6 +298,7 @@ cdef class Quadrature2D(Quadrature):
     void* result = 0;
     try {
       result = (void*)(new pylith::feassemble::Quadrature2D);
+      std::cout << "Quadrature2D ptr: " << result << std::endl;
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -440,7 +441,7 @@ cdef class Integrator:
         assert(0 != qObj);
         // :BUG: Cannot cast void* to Quadrature* because we lose what
         // type of Quadrature qObj is. 
-        assert(0);
+        std::cout << "qObj ptr: " << qObj << std::endl;
         pylith::feassemble::Quadrature* quadrature =
           (pylith::feassemble::Quadrature*) qObj;
         ((pylith::feassemble::Integrator*) pObj)->quadrature(quadrature);
