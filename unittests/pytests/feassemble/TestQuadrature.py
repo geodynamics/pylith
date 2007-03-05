@@ -16,7 +16,14 @@
 
 import unittest
 import numpy
-from pylith.feassemble.Quadrature import *
+
+from pylith.feassemble.quadrature.Quadrature1D import Quadrature1D
+from pylith.feassemble.quadrature.Quadrature1Din2D import Quadrature1Din2D
+from pylith.feassemble.quadrature.Quadrature1Din3D import Quadrature1Din3D
+from pylith.feassemble.quadrature.Quadrature2D import Quadrature2D
+from pylith.feassemble.quadrature.Quadrature2Din3D import Quadrature2Din3D
+from pylith.feassemble.quadrature.Quadrature3D import Quadrature3D
+
 
 # ----------------------------------------------------------------------
 def N0(p):

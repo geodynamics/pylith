@@ -18,8 +18,9 @@ TESTS = testfeassemble.py
 check_SCRIPTS = testfeassemble.py
 
 noinst_PYTHON = \
+	TestFIATSimplex.py \
 	TestQuadrature.py \
-	TestFIATSimplex.py
+	TestIntegrator.py
 
 
 # module
