@@ -44,6 +44,9 @@ class Integrator(Component):
     """
     Initialize quadrature.
     """
+    if self.cppHandle is None:
+      raise ValueError("C++ handle not set.")
+    
     self._info.log("Initialize quadrature")
     quadrature.initialize()
     self.quadrature = quadrature

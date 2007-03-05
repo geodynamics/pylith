@@ -56,6 +56,12 @@ class TestApp(Script):
     from TestQuadrature import TestQuadrature
     suite.addTest(unittest.makeSuite(TestQuadrature))
 
+    from TestIntegrator import TestIntegrator
+    suite.addTest(unittest.makeSuite(TestIntegrator))
+
+    from TestExplicitElasticity import TestExplicitElasticity
+    suite.addTest(unittest.makeSuite(TestExplicitElasticity))
+
     return suite
 
 

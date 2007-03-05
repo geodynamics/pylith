@@ -71,6 +71,9 @@ class Quadrature(Component):
     """
     Initialize C++ quadrature object.
     """
+    if self.cppHandle is None:
+      raise ValueError("C++ handle not set.")
+    
     self.cppHandle.minJacobian = self.minJacobian
 
     self._info.log("Initializing reference cell.")

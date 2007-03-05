@@ -63,7 +63,7 @@ class Material(Component):
                                  args=["db"])
     db.meta['tip'] = "Database of material property parameters."
     
-    from pylith.feassemble.Quadrature import Quadrature
+    from pylith.feassemble.quadrature.Quadrature import Quadrature
     quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
