@@ -13,6 +13,9 @@
 #header{
 #include "pylith/meshio/MeshIO.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
+
+#include <stdexcept>
+#include <Python.h>
 #}header
 
 # ----------------------------------------------------------------------
@@ -54,8 +57,16 @@ cdef class MeshIO:
     """
     # create shim for method 'read'
     #embed{ void MeshIO_read(void* pObj, void* pMeshObj)
-    ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
-    ((pylith::meshio::MeshIO*) pObj)->read(pMesh);
+    try {
+      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
+      ((pylith::meshio::MeshIO*) pObj)->read(pMesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
     #}embed
 
     #cdef topology.Mesh mesh
@@ -69,8 +80,16 @@ cdef class MeshIO:
     """
     # create shim for method 'write'
     #embed{ void MeshIO_write(void* pObj, void* pMeshObj)
-    ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
-    ((pylith::meshio::MeshIO*) pObj)->write(pMesh);
+    try {
+      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
+      ((pylith::meshio::MeshIO*) pObj)->write(pMesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
     #}embed
     MeshIO_write(self.thisptr, ptrFromHandle(mesh))
     return
@@ -80,8 +99,16 @@ cdef class MeshIO:
     """Wrap pointer to C++ object in PyCObject."""
     # create shim for destructor
     #embed{ void MeshIO_destructor(void* pObj)
-    pylith::meshio::MeshIO* pMesh = (pylith::meshio::MeshIO*) pObj;
-    delete pMesh;
+    try {
+      pylith::meshio::MeshIO* pMesh = (pylith::meshio::MeshIO*) pObj;
+      delete pMesh;
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
     #}embed
     return PyCObject_FromVoidPtr(self.thisptr, MeshIO_destructor)
 
@@ -91,7 +118,15 @@ cdef class MeshIO:
       """Set interpolate."""
       # create shim for method 'interpolate'
       #embed{ void MeshIO_interpolate_set(void* pObj, int flag)
-      ((pylith::meshio::MeshIO*) pObj)->interpolate(flag);
+      try {
+        ((pylith::meshio::MeshIO*) pObj)->interpolate(flag);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
       #}embed
       MeshIO_interpolate_set(self.thisptr, flag)
 
@@ -99,7 +134,17 @@ cdef class MeshIO:
       """Get interpolate."""
       # create shim for method 'interpolate'
       #embed{ int MeshIO_interpolate_get(void* pObj)
-      return ((pylith::meshio::MeshIO*) pObj)->interpolate();
+      int result = 0;
+      try {
+        result = ((pylith::meshio::MeshIO*) pObj)->interpolate();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
       #}embed
       return MeshIO_interpolate_get(self.thisptr)
 
@@ -111,7 +156,17 @@ cdef class MeshIOAscii(MeshIO):
     """Constructor."""
     # create shim for constructor
     #embed{ void* MeshIOAscii_constructor()
-    return (void*)(new pylith::meshio::MeshIOAscii);
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::meshio::MeshIOAscii);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
     #}embed
 
     MeshIO.__init__(self)
@@ -125,7 +180,15 @@ cdef class MeshIOAscii(MeshIO):
       """Set filename."""
       # create shim for method 'filename'
       #embed{ void MeshIOAscii_filename_set(void* pObj, char* name)
-      ((pylith::meshio::MeshIOAscii*) pObj)->filename(name);
+      try {
+        ((pylith::meshio::MeshIOAscii*) pObj)->filename(name);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
       #}embed
       MeshIOAscii_filename_set(self.thisptr, name)
 
@@ -133,7 +196,17 @@ cdef class MeshIOAscii(MeshIO):
       """Get filename."""
       # create shim for method 'filename'
       #embed{ char* MeshIOAscii_filename_get(void* pObj)
-      return (char*) ((pylith::meshio::MeshIOAscii*) pObj)->filename();
+      char* result = 0;
+      try {
+        result = (char*) ((pylith::meshio::MeshIOAscii*) pObj)->filename();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
       #}embed
       return MeshIOAscii_filename_get(self.thisptr)
 

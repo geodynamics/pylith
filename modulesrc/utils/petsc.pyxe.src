@@ -39,8 +39,8 @@ def petsc_initialize(options):
   """
   # create shim for 'PetscInitialize'
   #embed{ int Petsc_initialize(int* argc, char*** argv)
-  PetscErrorCode err = PetscInitialize(argc, argv, NULL, NULL);
-  return err;
+  PetscErrorCode err = PetscInitialize(argc, argv, NULL, NULL); CHKERRQ(err);
+  return 0;
   #}embed
   cdef int err
   cdef char** argv
@@ -55,7 +55,8 @@ def petsc_initialize(options):
     strcpy(argv[i], arg);
   argv[argc] = NULL;
   err = Petsc_initialize(&argc, &argv);
-  # :TODO: Check error code for success
+  if err:
+    raise RuntimeError("Error initializing PETSc.")
   
   for i from 0 <= i < argc:
     free(argv[i])
@@ -69,12 +70,13 @@ def petsc_finalize():
   """
   # create shim for 'PetscFnitialize'
   #embed{ int Petsc_finalize()
-  PetscErrorCode err = PetscFinalize();
-  return err;
+  PetscErrorCode err = PetscFinalize(); CHKERRQ(err);
+  return 0;
   #}embed
   cdef int err
   err = Petsc_finalize()
-  # :TODO: Check error code for success
+  if err:
+    raise RuntimError("Error finalizing PETSc.")
 
   return
 

@@ -44,8 +44,9 @@ class Integrator(Component):
     """
     Initialize quadrature.
     """
+    self._info.log("Initialize quadrature")
     quadrature.initialize()
-    self.quadrature = quadrature    
+    self.quadrature = quadrature
     self.cppHandle.quadrature = self.quadrature.cppHandle
     return
   

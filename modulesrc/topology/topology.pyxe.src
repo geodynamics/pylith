@@ -12,6 +12,9 @@
 
 #header{
 #include <Mesh.hh>
+
+#include <stdexcept>
+#include <Python.h>
 #}header
 
 # ----------------------------------------------------------------------
@@ -41,7 +44,17 @@ cdef class Mesh:
     """
     # create shim for constructor
     #embed{ void* MeshPtr_constructor()
-    return (void*)(new ALE::Obj<ALE::Mesh>);
+    void* result = 0;
+    try {
+      result = (void*)(new ALE::Obj<ALE::Mesh>);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
     #}embed
 
     self.thisptr = MeshPtr_constructor()
@@ -55,8 +68,16 @@ cdef class Mesh:
     Wrap pointer to C++ object in PyCObject.
     """
     #embed{ void MeshPtr_destructor(void* pObj)
-    ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pObj;
-    delete pMesh;
+    try {
+      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pObj;
+      delete pMesh;
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
     #}embed
     return PyCObject_FromVoidPtr(self.thisptr, MeshPtr_destructor)
 
