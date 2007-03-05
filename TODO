@@ -2,6 +2,12 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+Fix bug related to casting C++ objects in module. This is bad because
+we lose what type the abstract base class is.
+
+Unit tests:
+  petsc module
+
 0. Create element families for materials.
    a. Move quadrature component from Integrator to Material?
       [Integrator will hold material; user configures quadrature w/material]

@@ -73,6 +73,7 @@ class Quadrature(Component):
     """
     self.cppHandle.minJacobian = self.minJacobian
 
+    self._info.log("Initializing reference cell.")
     c = self.cell
     c.initialize()
 
@@ -81,7 +82,8 @@ class Quadrature(Component):
                       "dimension of quadrature implementation '%d'." % \
                       (c.cellDim, self.cellDim))
 
-    
+
+    self._info.log("Initializing C++ quadrature.")
     self.cppHandle.initialize(c.basis, c.basisDeriv, c.quadPts, c.quadWts,
                               c.cellDim, c.numCorners, c.numQuadPts,
                               self.spaceDim)

@@ -22,6 +22,10 @@
 #include "pylith/feassemble/Integrator.hh"
 #include "pylith/feassemble/IntegratorExplicit.hh"
 #include "pylith/feassemble/ExplicitElasticity.hh"
+
+#include <assert.h>
+#include <stdexcept>
+#include <Python.h>
 #}header
 
 # ----------------------------------------------------------------------
@@ -72,10 +76,18 @@ cdef class Quadrature:
     """
     # create shim for method 'initialize'
     #embed{ void Quadrature_initialize(void* pObj, double* basis, double* basisDeriv, double* quadPts, double* quadWts, int cellDim, int numCorners, int numQuadPts, int spaceDim)
-    ((pylith::feassemble::Quadrature*) pObj)->initialize(basis, basisDeriv,
-                                                         quadPts, quadWts,
-                                                         cellDim, numCorners,
-                                                         numQuadPts, spaceDim);
+    try {
+      ((pylith::feassemble::Quadrature*) pObj)->initialize(basis, basisDeriv,
+                                                           quadPts, quadWts,
+                                                           cellDim, numCorners,
+                                                           numQuadPts, spaceDim);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
     #}embed
 
     import spatialdata.utils.simplearray
@@ -147,9 +159,17 @@ cdef class Quadrature:
     """Wrap pointer to C++ object in PyCObject."""
     # create shim for destructor
     #embed{ void Quadrature_destructor(void* pObj)
-    pylith::feassemble::Quadrature* pQ =
-      (pylith::feassemble::Quadrature*) pObj;
-    delete pQ;
+    try {
+      pylith::feassemble::Quadrature* pQ =
+        (pylith::feassemble::Quadrature*) pObj;
+      delete pQ;
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
     #}embed
     return PyCObject_FromVoidPtr(self.thisptr, Quadrature_destructor)
 
@@ -159,7 +179,15 @@ cdef class Quadrature:
       """Set minimum allowable Jacobian."""
       # create shim for method 'minJacobian'
       #embed{ void Quadrature_minJacobian_set(void* pObj, double value)
-      ((pylith::feassemble::Quadrature*) pObj)->minJacobian(value);
+      try {
+        ((pylith::feassemble::Quadrature*) pObj)->minJacobian(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
       #}embed
       Quadrature_minJacobian_set(self.thisptr, value)
 
@@ -167,7 +195,17 @@ cdef class Quadrature:
       """Get minimum allowable Jacobian."""
       # create shim for method 'minJacobian'
       #embed{ double Quadrature_minJacobian_get(void* pObj)
-      return ((pylith::feassemble::Quadrature*) pObj)->minJacobian();
+      double result = 0;
+      try {
+        result = ((pylith::feassemble::Quadrature*) pObj)->minJacobian();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
       #}embed
       return Quadrature_minJacobian_get(self.thisptr)
 
@@ -179,7 +217,17 @@ cdef class Quadrature1D(Quadrature):
     """Constructor."""
     # create shim for constructor
     #embed{ void* Quadrature1D_constructor()
-    return (void*)(new pylith::feassemble::Quadrature1D);
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::Quadrature1D);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
     #}embed
 
     Quadrature.__init__(self)
@@ -195,7 +243,17 @@ cdef class Quadrature1Din2D(Quadrature):
     """Constructor."""
     # create shim for constructor
     #embed{ void* Quadrature1Din2D_constructor()
-    return (void*)(new pylith::feassemble::Quadrature1Din2D);
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::Quadrature1Din2D);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
     #}embed
 
     Quadrature.__init__(self)
@@ -211,7 +269,17 @@ cdef class Quadrature1Din3D(Quadrature):
     """Constructor."""
     # create shim for constructor
     #embed{ void* Quadrature1Din3D_constructor()
-    return (void*)(new pylith::feassemble::Quadrature1Din3D);
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::Quadrature1Din3D);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
     #}embed
 
     Quadrature.__init__(self)
@@ -227,7 +295,17 @@ cdef class Quadrature2D(Quadrature):
     """Constructor."""
     # create shim for constructor
     #embed{ void* Quadrature2D_constructor()
-    return (void*)(new pylith::feassemble::Quadrature2D);
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::Quadrature2D);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
     #}embed
 
     Quadrature.__init__(self)
@@ -243,7 +321,17 @@ cdef class Quadrature2Din3D(Quadrature):
     """Constructor."""
     # create shim for constructor
     #embed{ void* Quadrature2Din3D_constructor()
-    return (void*)(new pylith::feassemble::Quadrature2Din3D);
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::Quadrature2Din3D);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
     #}embed
 
     Quadrature.__init__(self)
@@ -259,7 +347,17 @@ cdef class Quadrature3D(Quadrature):
     """Constructor."""
     # create shim for constructor
     #embed{ void* Quadrature3D_constructor()
-    return (void*)(new pylith::feassemble::Quadrature3D);
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::Quadrature3D);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
     #}embed
 
     Quadrature.__init__(self)
@@ -291,8 +389,16 @@ cdef class Integrator:
     """
     # create shim for method 'createParameters'
     #embed{ void Integrator_createParameters(void* pObj, void* pMeshObj)
-    const ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
-    ((pylith::feassemble::Integrator*) pObj)->createParameters(*pMesh);
+    try {
+      const ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
+      ((pylith::feassemble::Integrator*) pObj)->createParameters(*pMesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
     #}embed
     if not mesh.name == "pylith_topology_Mesh":
       raise TypeError, \
@@ -307,9 +413,17 @@ cdef class Integrator:
     """
     # create shim for destructor
     #embed{ void Integrator_destructor(void* pObj)
-    pylith::feassemble::Integrator* pQ =
-      (pylith::feassemble::Integrator*) pObj;
-    delete pQ;
+    try {
+      pylith::feassemble::Integrator* pQ =
+        (pylith::feassemble::Integrator*) pObj;
+      delete pQ;
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
     #}embed
     return PyCObject_FromVoidPtr(self.thisptr, Integrator_destructor)
 
@@ -321,9 +435,22 @@ cdef class Integrator:
       """
       # create shim for method 'quadrature'
       #embed{ void Integrator_quadrature_set(void* pObj, void* qObj)
-      pylith::feassemble::Quadrature* quadrature =
-        (pylith::feassemble::Quadrature*) qObj;
-      ((pylith::feassemble::Integrator*) pObj)->quadrature(quadrature);
+      try {
+        assert(0 != pObj);
+        assert(0 != qObj);
+        // :BUG: Cannot cast void* to Quadrature* because we lose what
+        // type of Quadrature qObj is. 
+        assert(0);
+        pylith::feassemble::Quadrature* quadrature =
+          (pylith::feassemble::Quadrature*) qObj;
+        ((pylith::feassemble::Integrator*) pObj)->quadrature(quadrature);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
       #}embed
       if not q.name == "pylith_feassemble_Quadrature":
         raise TypeError, \
@@ -385,7 +512,17 @@ cdef class ExplicitElasticity(IntegratorExplicit):
     """
     # create shim for constructor
     #embed{ void* ExplicitElasticity_constructor()
-    return (void*)(new pylith::feassemble::ExplicitElasticity);
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::ExplicitElasticity);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
     #}embed
 
     IntegratorExplicit.__init__(self)
@@ -404,12 +541,20 @@ cdef class ExplicitElasticity(IntegratorExplicit):
     """
     # create shim for method 'setupMatProp'
     #embed{ void ExplicitElasticity_setupMatProp(void* pObj, void* meshObj, void* csObj, void* dbObj)
-    ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshObj;
-    spatialdata::geocoords::CoordSys* cs =
-      (spatialdata::geocoords::CoordSys*) csObj;
-    spatialdata::spatialdb::SpatialDB* db =
-      (spatialdata::spatialdb::SpatialDB*) dbObj;
-    ((pylith::feassemble::ExplicitElasticity*) pObj)->setupMatProp(*mesh, cs, db);
+    try {
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshObj;
+      spatialdata::geocoords::CoordSys* cs =
+        (spatialdata::geocoords::CoordSys*) csObj;
+      spatialdata::spatialdb::SpatialDB* db =
+        (spatialdata::spatialdb::SpatialDB*) dbObj;
+      ((pylith::feassemble::ExplicitElasticity*) pObj)->setupMatProp(*mesh, cs, db);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
     #}embed
 
     if not mesh.name == "pylith_topology_Mesh":

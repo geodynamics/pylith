@@ -77,7 +77,7 @@ class Explicit(Formulation):
     self.integrators = []
     for material in materialsBin.materials:
       integrator = ExplicitElasticity()
-      #integrator.initQuadrature(material.quadrature)
+      integrator.initQuadrature(material.quadrature)
       #integrator.initMaterial(mesh, material)
       self.integrators.append(integrator)
     return
