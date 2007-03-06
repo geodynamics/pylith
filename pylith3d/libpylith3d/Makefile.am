@@ -98,6 +98,8 @@ sources = \
 	local.f \
 	localf.f \
 	localx.f \
+	lubksb.f \
+	ludcmp.f \
 	makemsr.F \
 	mat_1.f \
 	mat_2.f \
