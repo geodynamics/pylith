@@ -30,6 +30,12 @@ from pyre.components.Component import Component
 class Material(Component):
   """
   Python material property manager.
+
+  This implementation of a material associates both physical
+  properties and a quadrature scheme with the material. Thus, applying
+  different quadrature schemes within a region with the same physical
+  property database requires two 'materials', which can use the same
+  database.  a material.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
