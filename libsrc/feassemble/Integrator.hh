@@ -55,6 +55,7 @@ public :
   Integrator(void);
 
   /// Destructor
+  virtual
   ~Integrator(void);
 
   /** Set quadrature for integrating finite-element quantities.
