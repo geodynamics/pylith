@@ -49,17 +49,18 @@ class Pylith3d_scan(Component):
         return
 
 
-    def configureProperties(self, context):
-        """set the values of all the properties and facilities in my inventory"""
+    def _configure(self):
+
+        super(Pylith3d_scan, self)._configure()
+
+        # Help is currently broken.  With this ugly hack, it at least
+        # works for the scanner.
+        if self._helpRequested:
+            return
+        # This method also breaks tab completion :-(
 
         #
-        # First, configure my properties as defined by the framework.
-        #
-        
-        super(Pylith3d_scan, self).configureProperties(context)
-        
-        #
-        # Second, open input files.  Log I/O errors.
+        # Open input files.  Log I/O errors.
         #
         
         self._summaryIOError = self.CanNotOpenInputOutputFilesError()
@@ -99,18 +100,6 @@ class Pylith3d_scan(Component):
         self._differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  unused)
         self._slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    unused)
 
-        def openKeywordEqualsValueFile(filename, flags, mode):
-            from CodecKeyVal import CodecKeyVal
-            from os.path import splitext
-            base, ext = splitext(filename)
-            assert ext == ".keyval"
-            codec = CodecKeyVal()
-            shelf = codec.open(base, mode)
-            return shelf
-        
-        self._keywordEqualsValueFile      = inputFileStream(Inventory.keywordEqualsValueFile, optional,
-                                                            opener=openKeywordEqualsValueFile)
-
         # The call to glob() is somewhat crude -- basically, determine
         # if any files might be in the way.
         self._ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
@@ -138,31 +127,7 @@ class Pylith3d_scan(Component):
             import sys
             sys.exit("%s: configuration error(s)" % self.name)
 
-        #
-        # Third, read the data from the .keyval file -- potentially
-        # reconfiguring some of my properties.
-        #
-        
-        if self._keywordEqualsValueFile:
-            registry = self._keywordEqualsValueFile['inventory']
-            registry = registry.getFacility("pylith3d")
-            registry = registry.getFacility("scanner")
-            if registry:
-                # Transfer .keyval input to my private registry...
-                self.updateConfiguration(registry)
-                # ..and from there to my inventory.
-                self.inventory.configureProperties(context)
 
-        #
-        # Finally, decorate any missing traits with my name.
-        #
-        
-        self._claim(context)
-
-        return
-
-
-    def _configure(self):
         # get values for extra input (category 2)
 
         self.winklerScaleX = self.inventory.winklerScaleX
@@ -678,15 +643,12 @@ class Pylith3d_scan(Component):
             }
         return expandMacros(descriptor.value, InventoryAdapter(self.inventory, builtins))
 
-    def ioFileStream(self, trait, flags, mode, category, opener=None):
+    def ioFileStream(self, trait, flags, mode, category):
         value = self.macroString(trait)
         stream = None
         if category.tryOpen:
             try:
-                if opener is None:
-                    stream = os.fdopen(os.open(value, flags), mode)
-                else:
-                    stream = opener(value, flags, mode)
+                stream = os.fdopen(os.open(value, flags), mode)
             except (OSError, IOError), error:
                 descriptor = self.inventory.getTraitDescriptor(trait.name)
                 self._summaryIOError.openFailed(trait, descriptor, value, error, category)
@@ -698,8 +660,8 @@ class Pylith3d_scan(Component):
             stream.close()
         return value
     
-    def inputFileStream(self, trait, category, opener=None):
-        return self.ioFileStream(trait, os.O_RDONLY, "r", category, opener=opener)[1]
+    def inputFileStream(self, trait, category):
+        return self.ioFileStream(trait, os.O_RDONLY, "r", category)[1]
     
     def outputFile(self, trait, category):
         value, stream = self.ioFileStream(trait, os.O_WRONLY|os.O_CREAT|os.O_EXCL, "w", category)
@@ -763,9 +725,6 @@ class Pylith3d_scan(Component):
         fullOutputInputFile.meta['tip'] = "Pathname for file defining when to provide output (overrides default from inputFileRoot)."
 
         # Optional input files.
-        keywordEqualsValueFile = InputFile("keywordEqualsValueFile",default="${inputFileRoot}.keyval")
-        keywordEqualsValueFile.meta['tip'] = "Pathname for keyword = value file (overrides default from inputFileRoot)."
-
         winklerInputFile = InputFile("winklerInputFile",default="${inputFileRoot}.wink")
         winklerInputFile.meta['tip'] = "Pathname for Winkler force input file (overrides default from inputFileRoot)."
 
