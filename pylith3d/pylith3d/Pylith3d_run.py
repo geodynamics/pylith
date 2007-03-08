@@ -650,7 +650,6 @@ class Pylith3d_run(Component):
                     self.viscousStage,                                 # PETSc logging
                     self.iterateEvent)
         pylith3d.destroyPETScMat(self.A,self.rhs,self.sol)
-        pylith3d.PetscFinalize()
 
         self.trace.log("Hello from pl3drun.run (end)!")
         

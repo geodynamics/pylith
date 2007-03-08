@@ -29,10 +29,21 @@
 #
 
 
-from mpi.Application import Application as BaseApplication
+from cig.cs.petsc import PetscApplication
 
 
-class Application(BaseApplication):
+class Application(PetscApplication):
+
+
+    name = "pylith3d"
+
+
+    # Tell the framework where to find PETSc functions.
+    import pylith3d as petsc
+
+
+    # Use PETSc-style command line parsing.
+    from cig.cs.petsc import PetscCommandlineParser as CommandlineParser
 
 
     def main(self, *args, **kwds):
@@ -41,7 +52,6 @@ class Application(BaseApplication):
 #        start = now()
         pl3dsetup = self.inventory.setup
         import pylith3d
-        pylith3d.PetscInitialize(self.petscArgs)
 
         scanner = self.inventory.scanner
 
@@ -71,77 +81,27 @@ class Application(BaseApplication):
         return
 
 
-    def __init__(self, name="pylith3d"):
-        BaseApplication.__init__(self, name)
-        return
-
-
-    def _configure(self):
-        import sys
-        
-        self.petscArgs = [sys.executable]
-        
-        ksp_monitor = self.inventory.ksp_monitor
-        if ksp_monitor:
-            self.petscArgs.append("-ksp_monitor")
-            if ksp_monitor != "true":
-                self.petscArgs.append(ksp_monitor)
-        
-        if self.inventory.ksp_view:
-            self.petscArgs.append("-ksp_view")
-        
-        ksp_rtol = self.inventory.ksp_rtol
-        if ksp_rtol:
-            self.petscArgs.extend(["-ksp_rtol", ksp_rtol])
-        
-        if self.inventory.log_summary:
-            self.petscArgs.append("-log_summary")
-
-        pc_type = self.inventory.pc_type
-        sub_pc_type = self.inventory.sub_pc_type
-        self.petscArgs.extend(["-pc_type", pc_type, "-sub_pc_type", sub_pc_type])
-
-        if self.inventory.start_in_debugger:
-            self.petscArgs.append("-start_in_debugger")
-
-        debugger_pause = self.inventory.debugger_pause
-        if debugger_pause:
-            self.petscArgs.extend(["-debugger_pause", debugger_pause])
-
-        self.petscArgs.extend(self.inventory.petsc.getArgs())
-
-        return
-
-
-    def createCommandlineParser(self):
-        from PetscUtil import PetscCommandlineParser
-        return PetscCommandlineParser()
-
-
-    class Inventory(BaseApplication.Inventory):
+    class Inventory(PetscApplication.Inventory):
 
         import pyre.inventory
+        from cig.cs.petsc import PetscProperty
         from Pylith3d_scan import Pylith3d_scan
         from Pylith3d_setup import Pylith3d_setup
         from Pylith3d_run import Pylith3d_run
-        from PetscUtil import PetscFacility
 
         scanner = pyre.inventory.facility("scanner", factory=Pylith3d_scan)
         setup = pyre.inventory.facility("setup", factory=Pylith3d_setup)
         solver = pyre.inventory.facility("solver", factory=Pylith3d_run)
 
         # declare PETSc options that are of interest to PyLith
-        ksp_monitor = pyre.inventory.str("ksp_monitor")
-        ksp_view = pyre.inventory.bool("ksp_view")
-        ksp_rtol = pyre.inventory.str("ksp_rtol")
-        log_summary = pyre.inventory.bool("log_summary")
-        pc_type = pyre.inventory.str("pc_type")
-        sub_pc_type = pyre.inventory.str("sub_pc_type")
-        start_in_debugger = pyre.inventory.str("start_in_debugger")
-        debugger_pause = pyre.inventory.str("debugger_pause")
-
-        # a dummy facility for passing arbitrary options to PETSc
-        petsc = PetscFacility("petsc")
+        ksp_monitor        = PetscProperty()
+        ksp_view           = PetscProperty()
+        ksp_rtol           = PetscProperty()
+        log_summary        = PetscProperty()
+        pc_type            = PetscProperty()
+        sub_pc_type        = PetscProperty()
+        start_in_debugger  = PetscProperty()
+        debugger_pause     = PetscProperty()
 
 
 # version
