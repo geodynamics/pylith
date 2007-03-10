@@ -35,8 +35,8 @@ c     output them in UCD format.
 c
       implicit none
 c
-      integer maxnodes,maxelems
-      parameter(maxnodes=500000,maxelems=500000)
+      integer maxnodes,maxelems,nenmax
+      parameter(maxnodes=500000,maxelems=500000,nenmax=20)
 c
       integer kti,kto,kr,kw
       common/units/kti,kto,kr,kw
@@ -44,11 +44,13 @@ c
       common/dimens/numnodes,numels
       integer basebeg,baseend
       common/baseinfo/basebeg,baseend
+      integer nent(10)
+      data nent/8,7,6,5,4,20,18,15,13,10/
 c
       character basename*500,filenm*500,dummy*80
 c
-      integer i,j,n,ietype,infin
-      integer ien(4,maxelems),mat(maxelems)
+      integer i,j,n,ietype,infin,nen
+      integer ien(nenmax,maxelems),mat(maxelems)
       double precision x(3,maxnodes)
 c
       call files(basename)
@@ -70,8 +72,11 @@ c
       filenm=basename(basebeg:baseend)//".connect"
       open(kr,file=filenm,status="old")
       call pskip(kr)
+      read(kr,*) n,ietype,mat(1),infin,(ien(j,1),j=1,4)
+      nen=nent(ietype)
+      backspace(kr)
       do i=1,numels
-        read(kr,*) n,ietype,mat(i),infin,(ien(j,i),j=1,4)
+        read(kr,*) n,ietype,mat(i),infin,(ien(j,i),j=1,nen)
       end do
       close(kr)
 c
@@ -80,7 +85,7 @@ c
       filenm=basename(basebeg:baseend)//".inp"
       open(kw,file=filenm,status="replace")
       call write_ucd_mesh(x,numnodes,
-     & ien,numels,
+     & ien,numels,nen,
      & ietype,kw)
       close(kw)
       stop
@@ -152,7 +157,7 @@ c
 c
       subroutine write_ucd_mesh(
      & x,numnp,                                                         ! global
-     & ien,numelv,                                                      ! elemnt
+     & ien,numelv,nen,                                                  ! elemnt
      & ietype,                                                          ! eltype
      & kucd)                                                            ! ioinfo
 c
@@ -165,8 +170,8 @@ c
 c
 c...  subroutine arguments
 c
-      integer numnp,numelv,ietype,kucd
-      integer ien(4,numelv)
+      integer numnp,numelv,nen,ietype,kucd
+      integer ien(nenmax,numelv)
       double precision x(3,numnp)
 c
 c...  local constants
@@ -202,7 +207,7 @@ c
 c...  local variables
 c
       integer nnattr,neattr,nmattr,i,j
-      integer nsd,nen,iucd
+      integer nsd,iucd
       integer iel,matmodel
       integer ibyte,intlen,floatlen
       integer itmp(20)
@@ -210,7 +215,6 @@ c
 c
 cdebug      write(6,*) "Hello from write_ucdmesh_f!"
 c
-      nen=4
       nsd=3
       iucd=1
       magnum=char(7)
