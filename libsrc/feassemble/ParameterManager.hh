@@ -18,11 +18,6 @@
  *
  * The parameter manager stores the fields associated with parameters
  * for physical properties or boundary conditions.
- *
- * :QUESTION: Should there be only one parameter manager for all
- * element families or one per element family? If we can easily create
- * a section that pertains only to an element family, then one per
- * family would make the most sense.
  */
 
 #if !defined(pylith_feassemble_parametermanager_hh)

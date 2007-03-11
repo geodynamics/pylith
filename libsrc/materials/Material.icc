@@ -1,0 +1,53 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_materials_material_hh)
+#error "Material.icc can only be included from Material.hh"
+#endif
+
+// Set database for material parameters.
+inline
+void
+pylith::materials::Material::parametersDB(spatialdata::spatialdb::SpatialDB* db) {
+  _db = db;
+}
+
+// Set identifier of material.
+inline
+void
+pylith::materials::Material::id(const int value) {
+  _id = value;
+}
+
+// Get identifier of material.
+inline
+int
+pylith::materials::Material::id(void) const {
+  return _id;
+}
+
+// Set name of material.
+inline
+void
+pylith::materials::Material::label(const char* value) {
+  _label = value;
+}
+
+// Get label of material.
+inline
+const std::string&
+pylith::materials::Material::label(void) const {
+  return _label;
+}
+
+
+// End of file 

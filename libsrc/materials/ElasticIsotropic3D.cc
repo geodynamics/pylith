@@ -12,7 +12,6 @@
 
 #include <portinfo>
 
-#include "ElasticMaterial.hh" // ISA ElasticMaterial
 #include "ElasticIsotropic3D.hh" // implementation of object methods
 
 #include <assert.h> // USES assert()
@@ -23,21 +22,33 @@ namespace pylith {
     class _ElasticIsotropic3D;
   } // materials
 } // pylith
-class pylith::materials::_ElasticIsotropic3D {
-public :
-  static const char* NAMESPARAMS[];
-  static const int NUMPARAMS;
 
-  /// Indices of paramters in queries
-  enum parameters {
-    IVP = 0, ///< Index for Vp
-    IVS = 1, ///< Index for Vs
-    IDENSITY = 2 ///< Index for density
-  };
+class pylith::materials::_ElasticIsotropic3D {
+public:
+  static const int numDBValues;
+  static const char* namesDBValues[];
+  static const int numParameters;
+  static const char* namesParameters[];
+  static const int didDensity;
+  static const int didVs;
+  static const int didVp;
+  static const int pidDensity;
+  static const int pidMu;
+  static const int pidLambda;
 }; // _ElasticIsotropic3D
-const char* pylith::materials::_ElasticIsotropic3D::NAMESPARAMS[] =
-  { "Vp", "Vs", "Density" };
-const int pylith::materials::_ElasticIsotropic3D::NUMPARAMS = 3;
+
+const int pylith::materials::_ElasticIsotropic3D::numDBValues = 3;
+const char* pylith::materials::_ElasticIsotropic3D::namesDBValues[] =
+  {"density", "vp", "vs" };
+const int pylith::materials::_ElasticIsotropic3D::numParameters = 3;
+const char* pylith::materials::_ElasticIsotropic3D::namesParameters[] =
+  {"density", "mu", "lambda" };
+const int pylith::materials::_ElasticIsotropic3D::didDensity = 0;
+const int pylith::materials::_ElasticIsotropic3D::didVs = 1;
+const int pylith::materials::_ElasticIsotropic3D::didVp = 2;
+const int pylith::materials::_ElasticIsotropic3D::pidDensity = 0;
+const int pylith::materials::_ElasticIsotropic3D::pidMu = 1;
+const int pylith::materials::_ElasticIsotropic3D::pidLambda = 2;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -55,103 +66,85 @@ pylith::materials::ElasticIsotropic3D::~ElasticIsotropic3D(void)
 // Copy constructor.
 pylith::materials::ElasticIsotropic3D::ElasticIsotropic3D(
 						const ElasticIsotropic3D& m) :
-  ElasticMaterial(m)
+  ElasticMaterial3D(m)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
-// Get names of parameters for material.
-const char**
-pylith::materials::ElasticIsotropic3D::namesParams(void) const
-{ // namesParams
-  return _ElasticIsotropic3D::NAMESPARAMS;
-} // namesParams
-  
-// ----------------------------------------------------------------------
-// Get number of parameters for material.
-int
-pylith::materials::ElasticIsotropic3D::numParams(void) const
-{ // numParams
-  return _ElasticIsotropic3D::NUMPARAMS;
-} // numParams
-  
-// ----------------------------------------------------------------------
-// Compute inertia at points using material parameters.
+// Compute parameters from values in spatial database.
 void
-pylith::materials::ElasticIsotropic3D::calcInertia(double** ppInertia,
-						   int* pSize,
-						   const double* pParams,
-						   const int npts,
-						   const void* pState) const
-{ // calcInertia
-  assert(0 != ppInertia);
-  assert(0 != pSize);
-  assert( (0 == pParams && 0 == npts) ||
-	  (0 != pParams && 0 < npts) );
+pylith::materials::ElasticIsotropic3D::dbToParams(double* paramVals,
+						  const int numParams,
+						  double* dbValues,
+						  const int numValues) const
+{ // computeParameters
+  assert(0 != paramVals);
+  assert(_NUMPARAMETERS == numParams);
+  assert(0 != dbValues);
+  assert(_NUMDBVALUES == numValues);
 
-  delete[] *ppInertia; *ppInertia = (npts > 0) ? new double[npts] : 0;
-  *pSize = npts;
+  const double density = dbValues[_ElasticIsotropic3D::didDensity];
+  const double vs = dbValues[_ElasticIsotropic3D::didVs];
+  const double vp = dbValues[_ElasticIsotropic3D::didVp];
+ 
+  const double mu = density * vs*vs;
+  const double lambda = density * vp*vp - 2.0*mu;
 
-  for (int ipt=0; ipt < npts; ++ipt) {
-    const double* pParamsPt = pParams + ipt*_ElasticIsotropic3D::NUMPARAMS;
-    (*ppInertia)[ipt] = pParamsPt[_ElasticIsotropic3D::IDENSITY];
-  } // for
-} // calcInertia
+  paramVals[_ElasticIsotropic3D::pidDensity] = density;
+  paramVals[_ElasticIsotropic3D::pidMu] = mu;
+  paramVals[_ElasticIsotropic3D::pidLambda] = lambda;
+} // computeParameters
 
 // ----------------------------------------------------------------------
-// Compute elasticity constants at points using material parameters.
+// Compute density at location from parameters.
 void
-pylith::materials::ElasticIsotropic3D::calcElasticityConsts(
-						    double** ppElasticityC,
-						    int* pSize,
-						    const double* pParams,
-						    const int npts,
-						    const void* pState) const
-{ // calcElasticityConsts
-  assert(0 != ppElasticityC);
-  assert(0 != pSize);
-  assert( (0 == pParams && 0 == npts) ||
-	  (0 != pParams && 0 < npts) );
+pylith::materials::ElasticIsotropic3D::calcDensity(double* density,
+						   const double* parameters,
+						   const int numParameters)
+{ // calcDensity
+  assert(0 != density);
+  *density = parameters[_ElasticIsotropic3D::pidDensity];
+} // calcDensity
 
-  delete[] *ppElasticityC; 
-  *ppElasticityC = (npts > 0) ? new double[NUMELASTCONSTS*npts] : 0;
-  *pSize = NUMELASTCONSTS*npts;
+// ----------------------------------------------------------------------
+// Compute density at location from parameters.
+void
+pylith::materials::ElasticIsotropic3D::calcElasticConsts(double* elasticConsts,
+							 const int numConsts,
+							 const double* parameters,
+							 const int numParameters)
+{ // calcElasticConsts
+  assert(0 != elasticConsts);
+  assert(NUMELASTCONSTS == numConsts);
+  assert(0 != parameters);
+  assert(_ElasticIsotropic3D::numParameters == numParameters);
 
-  for (int ipt=0; ipt < npts; ++ipt) {
-    const double* pParamsPt = pParams + ipt*_ElasticIsotropic3D::NUMPARAMS;
-    const double density = pParamsPt[_ElasticIsotropic3D::IDENSITY];
-    const double vp = pParamsPt[_ElasticIsotropic3D::IVP];
-    const double vs = pParamsPt[_ElasticIsotropic3D::IVS];
+  const double density = parameters[_ElasticIsotropic3D::pidDensity];
+  const double mu = parameters[_ElasticIsotropic3D::pidMu];
+  const double lambda = parameters[_ElasticIsotropic3D::pidLambda];
+  
+  elasticConsts[ 0] = lambda + 2.0*mu; // C1111
+  elasticConsts[ 1] = lambda; // C1122
+  elasticConsts[ 2] = lambda; // C1133
+  elasticConsts[ 3] = 0; // C1112
+  elasticConsts[ 4] = 0; // C1123
+  elasticConsts[ 5] = 0; // C1113
+  elasticConsts[ 6] = lambda + 2.0*mu; // C2222
+  elasticConsts[ 7] = lambda; // C2233
+  elasticConsts[ 8] = 0; // C2212
+  elasticConsts[ 9] = 0; // C2223
+  elasticConsts[10] = 0; // C2212
+  elasticConsts[11] = lambda + 2.0*mu; // C3333
+  elasticConsts[12] = 0; // C3312
+  elasticConsts[13] = 0; // C3323
+  elasticConsts[14] = 0; // C3312
+  elasticConsts[15] = mu; // C1212
+  elasticConsts[16] = 0; // C1223
+  elasticConsts[17] = 0; // C1213
+  elasticConsts[18] = mu; // C2323
+  elasticConsts[19] = 0; // C2313
+  elasticConsts[20] = mu; // C1313
+} // calcElasticConsts
 
-    const double mu = density*vs*vs;
-    const double lambda = density*vp*vp - 2.0*mu;
-    
-    const int iElasticityC = NUMELASTCONSTS*ipt;
-    (*ppElasticityC)[iElasticityC   ] = lambda + 2.0*mu; // C1111
-    (*ppElasticityC)[iElasticityC+ 1] = lambda; // C1122
-    (*ppElasticityC)[iElasticityC+ 2] = lambda; // C1133
-    (*ppElasticityC)[iElasticityC+ 3] = 0; // C1112
-    (*ppElasticityC)[iElasticityC+ 4] = 0; // C1123
-    (*ppElasticityC)[iElasticityC+ 5] = 0; // C1113
-    (*ppElasticityC)[iElasticityC+ 6] = lambda + 2.0*mu; // C2222
-    (*ppElasticityC)[iElasticityC+ 7] = lambda; // C2233
-    (*ppElasticityC)[iElasticityC+ 8] = 0; // C2212
-    (*ppElasticityC)[iElasticityC+ 9] = 0; // C2223
-    (*ppElasticityC)[iElasticityC+10] = 0; // C2212
-    (*ppElasticityC)[iElasticityC+11] = lambda + 2.0*mu; // C3333
-    (*ppElasticityC)[iElasticityC+12] = 0; // C3312
-    (*ppElasticityC)[iElasticityC+13] = 0; // C3323
-    (*ppElasticityC)[iElasticityC+14] = 0; // C3312
-    (*ppElasticityC)[iElasticityC+15] = mu; // C1212
-    (*ppElasticityC)[iElasticityC+16] = 0; // C1223
-    (*ppElasticityC)[iElasticityC+17] = 0; // C1213
-    (*ppElasticityC)[iElasticityC+18] = mu; // C2323
-    (*ppElasticityC)[iElasticityC+19] = 0; // C2313
-    (*ppElasticityC)[iElasticityC+20] = mu; // C1313
-  } // for
-} // elasticityConsts
-
-// version
-// $Id$
 
 // End of file 
