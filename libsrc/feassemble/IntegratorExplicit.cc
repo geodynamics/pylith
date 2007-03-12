@@ -46,7 +46,7 @@ pylith::feassemble::IntegratorExplicit::timeStep(const double dt)
 { // timeStep
   _dtm1 = _dt;
   _dt = dt;
-  assert(_dt == _dtm1);
+  assert(_dt == _dtm1); // For now, don't allow variable time step
 } // timeStep
 
 // ----------------------------------------------------------------------

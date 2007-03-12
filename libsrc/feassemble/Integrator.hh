@@ -58,17 +58,12 @@ public :
   virtual
   ~Integrator(void);
 
-  /** Set quadrature for integrating finite-element quantities.
+  /** Set quadrature for integrating finite-element
+   * quantities. Quadrature should already be initialized.
    *
    * @param q Quadrature for integrating.
    */
   void quadrature(const Quadrature* q);
-
-  /** Create manager for parameters.
-   *
-   * @param mesh PETSc mesh associated with integrator.
-   */
-  void createParameters(const ALE::Obj<ALE::Mesh>& mesh);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -101,9 +96,6 @@ private :
 protected :
 
   Quadrature* _quadrature; ///< Quadrature for integrating finite-element
-
-  /// Manager for parameters needed by integrator
-  ParameterManager* _parameters;
 
   /// Vector local to cell containing result of integration action
   real_section_type::value_type* _cellVector;

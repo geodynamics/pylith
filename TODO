@@ -2,64 +2,66 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Fix bug related to casting C++ objects in module. This is bad because
-we lose what type the abstract base class is.
-
 Unit tests:
   petsc module
+  ParameterManager
+  Material
+  MaterialElastic
+  ElasticIsotropic3D
 
-0. Create element families for materials.
-   a. Move quadrature component from Integrator to Material?
-      [Integrator will hold material; user configures quadrature w/material]
-   b. In Formulation?, create an integrator for each "material"
-     [IN PROGRESS]
-   c. C++ Material (1 per element family)
-      Holds physical properties
-      Initialize involves getting parameters from db
-   d. ExplicitElasticity gets density field from material's property manager
+0. Finish implementing materials with 3-D linear, isotropic elastic material
+  a. module
+  b. unit tests for C++ level
+  c. unit tests for Python level
 
-1. Finish implementing ExplicitElasticity
-   a. C++
-   a. Python object
-   b. bindings
-   c. unit tests at C++ level
-   d. unit tests at Python level
+1. Create element families for materials.
+  a. Limit cells to cells with material label
+
+2. Finish implementing ExplicitElasticity
+  a. C++
+  a. Python object
+  b. bindings
+  c. unit tests at C++ level
+  d. unit tests at Python level
 
   Status: Started on a.
 
-2.  Finish implementing Python Formulation
+3.  Finish implementing Python Formulation
     (e.g., Explicit) with initialization of solid element families.
-   c. Python object
-   e. unit tests at Python level
+  a. Python object
+  b. unit tests at Python level
 
-3. Implement unit tests for MeshIO at Python level.
-   a. write()/read()
-   b. checkVals()
+4. Implement unit tests for MeshIO at Python level.
+  a. read()/write()
+  b. checkFile()
 
   STATUS: 
 
-    Postponed. Easiest implementation requires semi-messy build
-    on top of libtests/meshio classes and initializing/finalizing
-    PETSc from Python. May be easier to include in higher-level unit
-    test.
+    Replace write/read with read/write and check to make sure files
+    are the same. A little more of pain to setup but doesn't require
+    any messy module stuff.
 
 ======================================================================
 SECONDARY PRIORITIES
 ======================================================================
 
+0. Adjust MeshIOAscii format
+  a. Add indices for coordinates, simplices, material ids (easier to see)
+  b. Add group of vertices
+
 1. Implement MeshIOHDF5 & HDF5
-   a. C++ objects
-   b. unit tests at C++ level
-   b. Python object (MeshIOHDF5)
-   c. bindings
-   d. unit tests at Python level
+  a. C++ objects
+  b. unit tests at C++ level
+  b. Python object (MeshIOHDF5)
+  c. bindings
+  d. unit tests at Python level
 
 2. Implement MeshIOCubit
-   a. C++ objects
-   b. unit tests at C++ level
-   b. Python object (MeshIOCubit)
-   c. bindings
-   d. unit tests at Python level
+  a. C++ objects
+  b. unit tests at C++ level
+  b. Python object (MeshIOCubit)
+  c. bindings
+  d. unit tests at Python level
 
 ======================================================================
 UNRESOLVED ISSUES

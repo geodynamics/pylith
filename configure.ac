@@ -145,8 +145,10 @@ AC_CONFIG_FILES([Makefile
 		pylith/Makefile
                 libsrc/Makefile
                 libsrc/feassemble/Makefile
+                libsrc/materials/Makefile
                 libsrc/meshio/Makefile
 		libsrc/utils/Makefile
+		libsrc/topology/Makefile
                 modulesrc/Makefile
                 modulesrc/feassemble/Makefile
                 modulesrc/meshio/Makefile
@@ -161,8 +163,6 @@ AC_CONFIG_FILES([Makefile
 		unittests/pytests/feassemble/Makefile
 		unittests/pytests/meshio/Makefile
                 doc/Makefile])
-
-#                 libsrc/materials/Makefile
 
 AC_OUTPUT
 
