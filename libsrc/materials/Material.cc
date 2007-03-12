@@ -28,8 +28,8 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::Material::Material(void) :
-  _db(0),
   _parameters(0),
+  _db(0),
   _id(0),
   _label("")
 { // constructor
@@ -48,8 +48,8 @@ pylith::materials::Material::~Material(void)
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::materials::Material::Material(const Material& m) :
-  _db(m._db),
   _parameters(m._parameters),
+  _db(m._db),
   _id(m._id),
   _label(m._label)
 { // copy constructor
@@ -90,8 +90,8 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
    * this material, we want to carry around storage for density,
    * etc. for cells not of this material.
    */
-  const int numParams = numParameters();
-  const char** paramNames = parameterNames();
+  const int numParams = _numParameters();
+  const char** paramNames = _parameterNames();
 
   ALE::Obj<real_section_type>* paramSections = 
     (numParams > 0) ? new ALE::Obj<real_section_type>[numParams] : 0;
@@ -104,9 +104,9 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   } // for
 
   // Setup database for querying
-  const int numValues = numDBValues();
+  const int numValues = _numDBValues();
   _db->open();
-  _db->queryVals(dbValues(), numValues);
+  _db->queryVals(_dbValues(), numValues);
   
   // Loop over cells
   double* queryData = (numValues > 0) ? new double[numValues] : 0;
@@ -147,7 +147,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	delete[] paramData; paramData = 0;
 	throw std::runtime_error(msg.str());
       } // if
-      dbToParams(paramData, numParams, queryData, numValues);
+      _dbToParams(paramData, numParams, queryData, numValues);
 
       for (int iParam=0; iParam < numParams; ++iParam)
 	cellData[iParam][iQuadPt] = paramData[iParam];

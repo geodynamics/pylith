@@ -16,8 +16,10 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	ElasticIsotropic3D.hh \
 	ElasticIsotropic3D.icc \
-	ElasticMaterial3D.hh \
-	Material.hh
+	ElasticMaterial.hh \
+	ElasticMaterial.icc \
+	Material.hh \
+	Material.icc
 
 noinst_HEADERS =
 

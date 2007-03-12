@@ -25,7 +25,7 @@
 #if !defined(pylith_materials_elasticisotropic3d_hh)
 #define pylith_materials_elasticisotropic3d_hh
 
-#include "ElasticMaterial3D.hh"
+#include "ElasticMaterial.hh"
 
 /// Namespace for pylith package
 namespace pylith {
@@ -36,7 +36,7 @@ namespace pylith {
 } // pylith
 
 /// 3-D, isotropic, linear elastic material.
-class pylith::materials::ElasticIsotropic3D : public ElasticMaterial3D
+class pylith::materials::ElasticIsotropic3D : public ElasticMaterial
 { // class ElasticIsotropic3D
   friend class TestElasticIsotropic3D; // unit testing
 
@@ -53,7 +53,17 @@ public :
    *
    * @returns Pointer to copy
    */
-  ElasticMaterial3D* clone(void) const;
+  ElasticMaterial* clone(void) const;
+
+  /** Get number of elastic constants for material.
+   *
+   * 1-D = 1
+   * 2-D = 6
+   * 3-D = 21
+   *
+   * @returns Number of elastic constants
+   */
+  const int numElasticConsts(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -69,26 +79,26 @@ protected :
    *
    * @returns Names of values
    */
-  const char** dbValues(void) const;
+  const char** _dbValues(void) const;
 
   /** Get number of values expected to be in database of parameters for
    *  physical properties.
    *
    * @returns Number of values
    */
-  int numDBValues(void) const;
+  int _numDBValues(void) const;
 
   /** Get names of parameters for physical properties.
    *
    * @returns Names of parameters
    */
-  const char** parameterNames(void) const;
+  const char** _parameterNames(void) const;
 
   /** Get number of parameters for physical properties.
    *
    * @returns Number of parameters
    */
-  int numParameters(void) const;
+  int _numParameters(void) const;
 
   /** Compute parameters from values in spatial database.
    *
@@ -100,53 +110,44 @@ protected :
    * @param dbValues Array of database values
    * @param numValues Number of database values
    */
-  void dbToParams(double* paramVals,
-		  const int numParams,
-		  double* dbValues,
-		  const int numValues) const;
+  void _dbToParams(double* paramVals,
+		   const int numParams,
+		   double* dbValues,
+		   const int numValues) const;
 
-  /** Compute density at location from parameters.
+  /** Compute density at locations from parameters.
    *
-   * @param density Pointer to density at location
+   * Results are stored in _density.
+   *
+   * Index into parameters = iLoc*numParameters + iParam
+   *
    * @param parameters Parameters at location
    * @param numParameters Number of parameters
+   * @param numLocs Number of locations
    */
-  void calcDensity(double* density,
-		   const double* parameters,
-		   const int numParameters);
+  void _calcDensity(const double* parameters,
+		    const int numParameters,
+		    const int numLocs);
 
-  /** Compute density at location from parameters.
+  /** Compute density at locations from parameters.
    *
-   * @param elasticConsts Pointer to elastic constants at location
-   * @param numConsts Number of elastic constants
+   * Results are stored in _elasticConsts.
+   *
+   * Index into parameters = iLoc*numParameters + iParam
+   *
    * @param parameters Parameters at location
    * @param numParameters Number of parameters
+   * @param numLocs Number of locations
    */
-  void calcElasticConsts(double* elasticConsts,
-			 const int numConsts,
-			 const double* parameters,
-			 const int numParameters);
+  void _calcElasticConsts(const double* parameters,
+			  const int numParameters,
+			  const int numLocs);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
   /// Not implemented
   const ElasticIsotropic3D& operator=(const ElasticIsotropic3D& m);
-
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
-
-  /// Number of values expected in database of physical property parameters
-  static const int _NUMDBVALUES;
-
-  /// Names of values expected in database of physical property parameters
-  static const char* _NAMESDBVALUES[];
-
-  /// Number of physical property parameters
-  static const int _NUMPARAMETERS;
-
-  /// Names of physical property parameters
-  static const char* _NAMESPARAMETERS[];  
 
 }; // class ElasticIsotropic3D
 
