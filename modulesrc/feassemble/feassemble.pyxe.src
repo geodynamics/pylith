@@ -383,30 +383,6 @@ cdef class Integrator:
     return
 
 
-  def createParameters(self, mesh):
-    """
-    Create manager for parameters.
-    """
-    # create shim for method 'createParameters'
-    #embed{ void Integrator_createParameters(void* pObj, void* pMeshObj)
-    try {
-      const ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
-      ((pylith::feassemble::Integrator*) pObj)->createParameters(*pMesh);
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type 'Mesh'."
-    Integrator_createParameters(self.thisptr, ptrFromHandle(mesh))
-    return
-
-
   def _createHandle(self):
     """
     Wrap pointer to C++ object in PyCObject.
@@ -500,6 +476,27 @@ cdef class IntegratorExplicit(Integrator):
     return
 
 
+  property timeStep:
+    def __set__(self, dt):
+      """
+      Set timeStep.
+      """
+      # create shim for method 'timeStep'
+      #embed{ void IntegratorExplicit_timeStep_set(void* pObj, double dt)
+      try {
+        assert(0 != pObj);
+        ((pylith::feassemble::IntegratorExplicit*) pObj)->timeStep(dt);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      IntegratorExplicit_timeStep_set(self.thisptr, dt)
+
+
 # ----------------------------------------------------------------------
 cdef class ExplicitElasticity(IntegratorExplicit):
 
@@ -528,23 +525,20 @@ cdef class ExplicitElasticity(IntegratorExplicit):
     return
 
 
-  def setupMatProp(self, mesh, cs, db):
+  def initialize(self, mesh, cs):
     """
     Initialize integrator.
 
     @param mesh PETSc mesh
     @param cs Coordinate system associated with mesh vertices
-    @param db Database of material properties
     """
-    # create shim for method 'setupMatProp'
-    #embed{ void ExplicitElasticity_setupMatProp(void* pObj, void* meshObj, void* csObj, void* dbObj)
+    # create shim for method 'initialize'
+    #embed{ void ExplicitElasticity_initialize(void* pObj, void* meshObj, void* csObj)
     try {
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshObj;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csObj;
-      spatialdata::spatialdb::SpatialDB* db =
-        (spatialdata::spatialdb::SpatialDB*) dbObj;
-      ((pylith::feassemble::ExplicitElasticity*) pObj)->setupMatProp(*mesh, cs, db);
+      ((pylith::feassemble::ExplicitElasticity*) pObj)->initialize(*mesh, cs);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -562,15 +556,37 @@ cdef class ExplicitElasticity(IntegratorExplicit):
       raise TypeError, \
             "Argument must be extension module type " \
             "'spatialdata::geocoords::CoordSys'."
-    if not db.name == "spatialdata_spatialdb_SpatialDB":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'spatialdata::spatialdb::SpatialDB'."
     cdef void* meshObj
     meshObj = <void*> PyCObject_AsVoidPtr(mesh)
-    ExplicitElasticity_setupMatProp(self.thisptr, meshObj,
-                          ptrFromHandle(cs), ptrFromHandle(db))
+    ExplicitElasticity_initialize(self.thisptr, meshObj, ptrFromHandle(cs))
     return
+
+
+  property material:
+    def __set__(self, m):
+      """
+      Set material.
+      """
+      # create shim for method 'material'
+      #embed{ void ExplicitElasticity_material_set(void* pObj, void* mObj)
+      try {
+        assert(0 != pObj);
+        assert(0 != mObj);
+        pylith::materials::ElasticMaterial* material =
+          (pylith::materials::ElasticMaterial*) mObj;
+        ((pylith::feassemble::ExplicitElasticity*) pObj)->material(material);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not m.name == "pylith_materials_ElasticMaterial":
+        raise TypeError, \
+              "Argument must be extension module type 'ElasticMaterial'."
+      ExplicitElasticity_material_set(self.thisptr, ptrFromHandle(m))
 
 
 # End of file 
