@@ -90,9 +90,10 @@ class Material(Component):
     Initialize material property manager.
     """
     self._info.log("Initializing material '%s'." % self.matname)
+    self.db.initialize()
     #self.cppHandle.id = self.id
     #self.cppHandle.matname = self.matname
-    self.db.initialize()
+    #self.cppHandle.db = self.db
     return
 
 

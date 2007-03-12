@@ -17,8 +17,8 @@
 // Set database for material parameters.
 inline
 void
-pylith::materials::Material::parametersDB(spatialdata::spatialdb::SpatialDB* db) {
-  _db = db;
+pylith::materials::Material::db(spatialdata::spatialdb::SpatialDB* value) {
+  _db = value;
 }
 
 // Set identifier of material.

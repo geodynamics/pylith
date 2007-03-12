@@ -57,6 +57,10 @@ namespace pylith {
     class ExplicitElasticity;
     class TestExplicitElasticity;
   } // feassemble
+
+  namespace materials {
+    class ElasticMaterial;
+  } // feassemble
 } // pylith
 
 namespace spatialdata {
@@ -83,6 +87,12 @@ public :
 
   /// Create a copy of this object.
   IntegratorExplicit* clone(void) const;
+
+  /** Set material.
+   *
+   * @param m Elastic material.
+   */
+  void material(const materials::ElasticMaterial* m);
 
   /** Integrate residual term (b) for dynamic elasticity term 
    * for 3-D finite elements.
@@ -125,11 +135,9 @@ public :
    *
    * @param mesh PETSc mesh
    * @param cs Pointer to coordinate system of vertices
-   * @param db Pointer to spatial database with material property parameters
    */
-  void setupMatProp(ALE::Obj<ALE::Mesh>& mesh,
-		    spatialdata::geocoords::CoordSys* cs,
-		    spatialdata::spatialdb::SpatialDB* db);
+  void initialize(ALE::Obj<ALE::Mesh>& mesh,
+		  spatialdata::geocoords::CoordSys* cs);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -145,6 +153,12 @@ private :
 
   /// Not implemented
   const ExplicitElasticity& operator=(const ExplicitElasticity&);
+
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
+
+  /// Elastic material associated with integrator
+  materials::ElasticMaterial* _material;
 
 }; // ExplicitElasticity
 

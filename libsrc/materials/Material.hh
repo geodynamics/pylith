@@ -68,9 +68,9 @@ public :
 
   /** Set database for physical property parameters.
    *
-   * @param pDB Pointer to database.
+   * @param value Pointer to database.
    */
-  void parametersDB(spatialdata::spatialdb::SpatialDB* db);
+  void db(spatialdata::spatialdb::SpatialDB* value);
 
   /** Set identifier of material.
    *
