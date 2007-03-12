@@ -16,37 +16,9 @@
 
 // Create a pointer to a copy of this.
 inline
-pylith::materials::ElasticMaterial3D*
+pylith::materials::ElasticMaterial*
 pylith::materials::ElasticIsotropic3D::clone(void) const {
   return new ElasticIsotropic3D(*this);
-}
-
-// Get names of values expected to be in database of parameters for
-inline
-const char**
-pylith::materials::ElasticIsotropic3D::dbValues(void) const {
-  return _NAMESDBVALUES;
-}
-
-// Get number of values expected to be in database of parameters for
-inline
-int
-pylith::materials::ElasticIsotropic3D::numDBValues(void) const {
-  return _NUMDBVALUES;
-}
-
-// Get names of parameters for physical properties.
-inline
-const char**
-pylith::materials::ElasticIsotropic3D::parameterNames(void) const {
-  return _NAMESPARAMETERS;
-}
-
-// Get number of parameters for physical properties.
-inline
-int
-pylith::materials::ElasticIsotropic3D::numParameters(void) const {
-  return _NUMPARAMETERS;
 }
 
 

@@ -122,7 +122,7 @@ protected :
    * @returns Names of values
    */
   virtual
-  const char** dbValues(void) const = 0;
+  const char** _dbValues(void) const = 0;
 
   /** Get number of values expected to be in database of parameters for
    *  physical properties.
@@ -130,21 +130,21 @@ protected :
    * @returns Number of values
    */
   virtual
-  int numDBValues(void) const = 0;
+  int _numDBValues(void) const = 0;
 
   /** Get names of parameters for physical properties.
    *
    * @returns Names of parameters
    */
   virtual
-  const char** parameterNames(void) const = 0;
+  const char** _parameterNames(void) const = 0;
 
   /** Get number of parameters for physical properties.
    *
    * @returns Number of parameters
    */
   virtual
-  int numParameters(void) const = 0;
+  int _numParameters(void) const = 0;
 
   /** Compute parameters from values in spatial database.
    *
@@ -154,7 +154,7 @@ protected :
    * @param numValues Number of database values
    */
   virtual
-  void dbToParams(double* paramVals,
+  void _dbToParams(double* paramVals,
 		  const int numParams,
 		  double* dbValues,
 		  const int numValues) const = 0;
@@ -165,14 +165,17 @@ private :
   /// Not implemented
   const Material& operator=(const Material& m);
 
+  // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected :
+
+  ///< Manager of parameters for physical properties of material
+  pylith::feassemble::ParameterManager* _parameters;
+
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
   /// Database of parameters for physical properties of material
   spatialdata::spatialdb::SpatialDB* _db;
-
-  ///< Manager of parameters for physical properties of material
-  pylith::feassemble::ParameterManager* _parameters;
 
   int _id; ///< Material identifier
   std::string _label; ///< Label of material
