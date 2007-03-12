@@ -58,12 +58,6 @@ public :
   virtual
   IntegratorExplicit* clone(void) const = 0;
 
-  /** Set quadrature for integrating finite-element quantities.
-   *
-   * @param q Quadrature for integrating.
-   */
-  void quadrature(const Quadrature* q);
-
   /** Set time step for advancing from time t to time t+dt.
    *
    * @param dt Time step
