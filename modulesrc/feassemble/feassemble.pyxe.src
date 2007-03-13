@@ -556,9 +556,8 @@ cdef class ExplicitElasticity(IntegratorExplicit):
       raise TypeError, \
             "Argument must be extension module type " \
             "'spatialdata::geocoords::CoordSys'."
-    cdef void* meshObj
-    meshObj = <void*> PyCObject_AsVoidPtr(mesh)
-    ExplicitElasticity_initialize(self.thisptr, meshObj, ptrFromHandle(cs))
+    ExplicitElasticity_initialize(self.thisptr, ptrFromHandle(mesh),
+                                  ptrFromHandle(cs))
     return
 
 
