@@ -25,6 +25,7 @@ Unit tests:
   d. unit tests at Python level
 
   Status: Started on a.
+    Only implement nonlumped and let PETSc "solver" do the lumping.
 
 3.  Finish implementing Python Formulation
     (e.g., Explicit) with initialization of solid element families.

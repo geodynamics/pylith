@@ -75,21 +75,14 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     mesh->getRealSection("coordinates");
   const ALE::Obj<topology_type>& topology = coordinates->getTopology();
   const ALE::Obj<topology_type::label_sequence>& cells = 
-    topology->heightStratum(patch, 0);
+    topology->getLabelStratum(patch, "material-id", _id);
   const topology_type::label_sequence::iterator cellsEnd = cells->end();
-  // :TODO: Get cells for material only
 
   // Create sections to hold parameters for physical properties
   delete _parameters; _parameters = new feassemble::ParameterManager(mesh);
   const int numQuadPts = quadrature->numQuadPts();
   const int fiberDim = numQuadPts; // number of values in field per cell
 
-  /* :QUESTION: MATT
-   *
-   * We want to create a section that stores values just for cells in
-   * this material, we want to carry around storage for density,
-   * etc. for cells not of this material.
-   */
   const int numParams = _numParameters();
   const char** paramNames = _parameterNames();
 
@@ -99,7 +92,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   for (int iParam=0; iParam < numParams; ++iParam) {
     _parameters->addReal(paramNames[iParam]);
     paramSections[iParam] = _parameters->getReal(paramNames[iParam]);
-    paramSections[iParam]->setFiberDimensionByDepth(patch, 0, fiberDim);
+    paramSections[iParam]->setFiberDimension(patch, cells, fiberDim);
     paramSections[iParam]->allocate();
   } // for
 
