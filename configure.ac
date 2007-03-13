@@ -151,6 +151,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/topology/Makefile
                 modulesrc/Makefile
                 modulesrc/feassemble/Makefile
+                modulesrc/materials/Makefile
                 modulesrc/meshio/Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
