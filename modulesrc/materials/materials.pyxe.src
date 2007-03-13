@@ -1,0 +1,249 @@
+# -*- Pyrex -*-
+#
+# ======================================================================
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# {LicenseText}
+#
+# ======================================================================
+#
+
+#header{
+#include "pylith/materials/Material.hh"
+#include "pylith/materials/ElasticMaterial.hh"
+#include "pylith/materials/ElasticIsotropic3D.hh"
+
+#include <assert.h>
+#include <stdexcept>
+#include <Python.h>
+#}header
+
+# ----------------------------------------------------------------------
+cdef extern from "Python.h":
+  object PyCObject_FromVoidPtr(void*, void (*destruct)(void*))
+  void* PyCObject_AsVoidPtr(object)
+
+cdef void* ptrFromHandle(obj):
+  """Extract pointer from PyCObject."""
+  return PyCObject_AsVoidPtr(obj.handle)
+
+cdef extern from "stdlib.h":
+    ctypedef unsigned long size_t
+    void* malloc(size_t size)
+    void free(void* mem)
+
+# ----------------------------------------------------------------------
+cdef class Material:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_materials_Material"
+    return
+
+
+  def initialize(self, mesh, cs, quadrature):
+    """
+    Initialzie material by getting physical property parameters from
+    database.
+    """
+    # create shim for method 'initialize'
+    #embed{ void Material_initialize(void* pObj, void* meshObj, void* csObj, void* qObj)
+    try {
+      assert(0 != pObj);
+      assert(0 != meshObj);
+      assert(0 != csObj);
+      assert(0 != qObj);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshObj;
+      spatialdata::geocoords::CoordSys* cs =
+        (spatialdata::geocoords::CoordSys*) csObj;
+      pylith::feassemble::Quadrature* quadrature =
+        (pylith::feassemble::Quadrature*) qObj;
+      ((pylith::materials::Material*) pObj)->initialize(*mesh, cs, quadrature);
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    if not cs.name == "spatialdata_geocoords_CoordSys":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'spatialdata::geocoords::CoordSys'."
+    if not quadrature.name == "pylith_feassemble_quadrature":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::feassemble::Quadrature'."
+    Material_initialize(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs),
+                        ptrFromHandle(quadrature))
+    return
+
+
+  def _createHandle(self):
+    """
+    Wrap pointer to C++ object in PyCObject.
+    """
+    # create shim for destructor
+    #embed{ void Material_destructor(void* pObj)
+    try {
+      pylith::materials::Material* pM =
+        (pylith::materials::Material*) pObj;
+      delete pM;
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    return PyCObject_FromVoidPtr(self.thisptr, Material_destructor)
+
+
+  property db:
+    def __set__(self, value):
+      """
+      Set database for physical property parameters.
+      """
+      # create shim for method 'db'
+      #embed{ void Material_db_set(void* pObj, void* dbObj)
+      try {
+        assert(0 != pObj);
+        assert(0 != dbObj);
+        spatialdata::spatialdb::SpatialDB* db =
+          (spatialdata::spatialdb::SpatialDB*) dbObj;
+        ((pylith::materials::Material*) pObj)->db(db);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not db.name == "spatialdata_spatialdb_SpatialDB":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::spatialdb::SpatialDB'."
+      Material_db_set(self.thisptr, ptrFromHandle(value))
+
+
+  property id:
+    def __set__(self, value):
+      """
+      Set identifier of material.
+      """
+      # create shim for method 'id'
+      #embed{ void Material_id_set(void* pObj, int value)
+      try {
+        assert(0 != pObj);
+        ((pylith::materials::Material*) pObj)->id(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      Material_id_set(self.thisptr, value)
+
+    def __get__(self):
+      """
+      Get identifier of material.
+      """
+      # create shim for method 'id'
+      #embed{ int Material_id_get(void* pObj)
+      int result = 0;
+      try {
+        assert(0 != pObj);
+        result = ((pylith::materials::Material*) pObj)->id();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return Material_id_get(self.thisptr)
+
+
+  property label:
+    def __set__(self, value):
+      """
+      Set label of material.
+      """
+      # create shim for method 'label'
+      #embed{ void Material_label_set(void* pObj, char* value)
+      try {
+        assert(0 != pObj);
+        ((pylith::materials::Material*) pObj)->label(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      Material_label_set(self.thisptr, value)
+
+
+# ----------------------------------------------------------------------
+cdef class ElasticMaterial(Material):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    Material.__init__(self)
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class ElasticIsotropic3D(ElasticMaterial):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* ElasticIsotropic3D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::materials::ElasticIsotropic3D);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    ElasticMaterial.__init__(self)
+    self.thisptr = ElasticIsotropic3D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# End of file 
