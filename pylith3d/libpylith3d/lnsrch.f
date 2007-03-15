@@ -1,4 +1,4 @@
-      SUBROUTINE lnsrch(n,xold,fold,g,p,x,f,stpmax,check,func,rpar,
+      SUBROUTINE lnsrch(n,xold,fold,g,p,x,f,fvec,stpmax,check,func,rpar,
      & nrpar,ipar,nipar,funcv,ierr,errstrng)
 c
 c...  routine to perform a line search along the direction given by p.
@@ -18,7 +18,7 @@ c...  subroutine arguments
 c
       integer n,nrpar,nipar,ierr
       integer ipar(nipar)
-      double precision xold(n),fold,g(n),p(n),x(n),f,stpmax,func
+      double precision xold(n),fold,g(n),p(n),x(n),f,fvec(n),stpmax,func
       double precision rpar(nrpar)
       external func,funcv
       logical check
@@ -35,7 +35,6 @@ c
       INTEGER i
       double precision a,alam,alam2,alamin,b,disc,f2,fold2,rhs1,rhs2
       double precision slope,sum,temp,test,tmplam,da
-      double precision fvec(NP)
 c
       check=.false.
       sum=dnrm2(n,p,ione)
@@ -47,7 +46,7 @@ c
       test=zero
       do i=1,n
         temp=abs(p(i))/max(abs(xold(i)),one)
-        if(temp.gt.test)test=temp
+        test=max(temp,test)
       end do
       alamin=TOLX/test
       alam=one

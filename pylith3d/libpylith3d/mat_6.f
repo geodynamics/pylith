@@ -323,11 +323,13 @@ c
       end
 c
 c
-      subroutine jaccmp_6(scur,n,fvec,NP,fjac,rpar,nrpar,ipar,nipar,
-     & ierr,errstrng)
+      subroutine jaccmp_6(scur,n,fvec,nfjsize,fjac,rpar,nrpar,ipar,
+     & nipar,ierr,errstrng)
 c
 c...  subroutine to form the Jacobian used in finding the zero of the
 c     stress function.
+c**   Note that in this version fjac is always assumed to be a symmetric
+c     matrix stored in packed format.
 c
       include "implicit.inc"
 c
@@ -340,11 +342,11 @@ c
 c
 c...  subroutine arguments
 c
-      integer n,NP,nrpar,nipar,ierr
+      integer n,nfjsize,nrpar,nipar,ierr
 c***  note that the dimension below is a bit kludgy and does not allow
 c***  anything else to be put in the ipar array
       integer ipar(nstr,nstr)
-      double precision scur(n),fvec(n),fjac(NP,NP),rpar(nrpar)
+      double precision scur(n),fvec(n),fjac(nfjsize),rpar(nrpar)
       character errstrng*(*)
 c
 c...  local variables
@@ -352,7 +354,7 @@ c
       integer i,j
 ctest      integer iddmat(nstr,nstr)
 ctest      equivalence(ipar(indiddmat),iddmat)
-      double precision dtmp(nddmat),cmat(nddmat)
+      double precision cmat(nddmat)
       double precision sdev(nstr),sinv1,steff
 c
 cdebug      write(6,*) "Hello from jaccmp_6_f!"
@@ -361,22 +363,14 @@ c
 c...  get stress invariants and a copy of inverted elasticity matrix
 c
       call invar(sdev,sinv1,steff,scur)
-      call dcopy(nddmat,rpar(inddmati),ione,dtmp,ione)
+      call dcopy(nddmat,rpar(inddmati),ione,fjac,ione)
 c
 c...  if second deviatoric invariant is zero, use only elastic solution
 c
       if(steff.eq.zero) then
-        call invsymp(nddmat,nstr,dtmp,ierr,errstrng)
-        if(ierr.ne.izero) return
-        do i=1,nstr
-          do j=1,nstr
-            fjac(i,j)=dtmp(ipar(i,j))
-          end do
-        end do
         return
 c
-c...  otherwise, invert elastic matrix and augment it by the viscous
-c     Jacobian.
+c...  otherwise, augment inverted elastic matrix by the viscous Jacobian.
 c
       else
 c
@@ -384,16 +378,7 @@ c...  compute viscous Jacobian and add it to inverted elastic matrix
 c
         call dbds_6(cmat,nddmat,ipar,sdev,nstr,steff,
      &   rpar(indanpwr),rpar(indemhu),rpar(indalfap),rpar(inddeltp))
-        call daxpy(nddmat,one,cmat,ione,dtmp,ione)
-c
-c...  invert augmented matrix and store results in fjac
-c
-        call invsymp(nddmat,nstr,dtmp,ierr,errstrng)
-        do i=1,nstr
-          do j=1,nstr
-            fjac(i,j)=dtmp(ipar(i,j))
-          end do
-        end do
+        call daxpy(nddmat,one,cmat,ione,fjac,ione)
       end if
       return
       end
@@ -548,7 +533,7 @@ c...  local variables
 c
       integer i
       double precision e,pr,anpwr,emhu,rmu
-      double precision test0,rm,rmt,rmtdt
+      double precision test0,rmt,rmtdt
       double precision sdev(nstr),betat(nstr),betatdt(nstr),sinv1,seff
       double precision rpar(nrpar)
       logical check
@@ -573,7 +558,6 @@ c
       rmu=half*e/(one+pr)
       tmax=big
       rmt=deltp*(one-alfap)
-      rm=sub*rmt
       rmtdt=deltp*alfap
 c
 c...  for first iteration, use stresses from previous step as initial
@@ -585,17 +569,18 @@ c...  compute constant part of iterative solution equation.
 c
 c...  current total strain
       call dcopy(nstr,ee,ione,rpar(indconst),ione)
+      call dscal(nstr,sub,rpar(indconst),ione)
 c...  inverted elasticity matrix times initial stresses
       call elas_mat_6(rpar(inddmati),prop,iddmat,nprop,ierr,errstrng)
       call invsymp(nddmat,nstr,rpar(inddmati),ierr,errstrng)
       if(ierr.ne.izero) return
-      if(test0.ne.zero) call dspmv("u",nstr,one,rpar(inddmati),state0,
+      if(test0.ne.zero) call dspmv("u",nstr,sub,rpar(inddmati),state0,
      & ione,one,rpar(indconst),ione)
 c...  viscous strain from previous time step
-      call daxpy(nstr,sub,state(13),ione,rpar(indconst),ione)
+      call daxpy(nstr,one,state(13),ione,rpar(indconst),ione)
 c...  contribution to viscous strain from stresses at beginning of step
       call betacmp_6(state,betat,sdev,seff,sinv1,emhu,anpwr,nstr)
-      call daxpy(nstr,rm,betat,ione,rpar(indconst),ione)
+      call daxpy(nstr,rmt,betat,ione,rpar(indconst),ione)
 c
 c...  finish defining parameters for stress computation then call Newton
 c     routine to compute stresses.
@@ -673,7 +658,7 @@ c
 c
 c...  viscous strain rate multiplier
 c
-      rmtdt=-rpar(indalfap)*rpar(inddeltp)
+      rmtdt=rpar(indalfap)*rpar(inddeltp)
 c
 c...  compute current viscous strain rate
 c
@@ -684,7 +669,7 @@ c...  compute contributions to r and accumulate
 c
       call dcopy(nstr,rpar(indconst),ione,r,ione)
       call daxpy(nstr,rmtdt,betatdt,ione,r,ione)
-      call dspmv("u",nstr,sub,rpar(inddmati),scur,ione,one,r,ione)
+      call dspmv("u",nstr,one,rpar(inddmati),scur,ione,one,r,ione)
 c
       return
       end

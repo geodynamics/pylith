@@ -4,6 +4,9 @@ c
 c...  routine to find zero of a function using Newton's method with
 c     line search.
 c     Adapted from Numerical Recipes.
+c**   Note that in this version, the Jacobian is assumed to always
+c     be symmetric and stored in packed triangular form, with dimensions
+c     of 6x6.
 c
       include "implicit.inc"
 c
@@ -11,6 +14,7 @@ c...  parameter definitions
 c
       include "nconsts.inc"
       include "rconsts.inc"
+      include "ndimens.inc"
       integer NP,MAXITS
       double precision TOLF,TOLMIN,TOLX,STPMX
       parameter(NP=6,MAXITS=100,TOLF=1.0d-8,TOLMIN=1.0d-10,TOLX=1.0d-12,
@@ -34,7 +38,7 @@ c
       double precision fvec(NP)
 CU    USES fdjac,fmin,lnsrch,lubksb,ludcmp
       INTEGER i,its,j,indx(NP)
-      double precision d,den,f,fold,stpmax,sum,temp,test,fjac(NP,NP)
+      double precision d,den,f,fold,stpmax,sum,temp,test,fjac(nddmat)
       double precision g(NP),p(NP),xold(NP),fmin
       external fmin
 c
@@ -42,38 +46,27 @@ c
       if(ierr.ne.izero) return
       test=zero
       do i=1,n
-        if(abs(fvec(i)).gt.test)test=abs(fvec(i))
+        test=max(test,abs(fvec(i)))
       end do
       if(test.lt.0.01d0*TOLF)return
       sum=dnrm2(n,x,ione)
       stpmax=STPMX*max(sum,dble(n))
       do its=1,MAXITS
-        call jaccmp(x,n,fvec,NP,fjac,rpar,nrpar,ipar,nipar,
+        call jaccmp(x,n,fvec,nddmat,fjac,rpar,nrpar,ipar,nipar,
      &   ierr,errstrng)
-c****  I should replace this with a BLAS call
-        do i=1,n
-          sum=zero
-          do j=1,n
-            sum=sum+fjac(j,i)*fvec(j)
-          end do
-          g(i)=sum
-        end do
+        call dspmv("u",n,one,fjac,fvec,ione,zero,g,ione)
         call dcopy(n,x,ione,xold,ione)
         fold=f
         do i=1,n
           p(i)=-fvec(i)
         end do
-c****  these can be replaced by LAPACK calls -- eventually, it will
-c****  probably make more sense to use symmetric packed format for
-c****  all matrices.
-        call ludcmp(fjac,n,NP,indx,d)
-        call lubksb(fjac,n,NP,indx,p)
-        call lnsrch(n,xold,fold,g,p,x,f,stpmax,check,fmin,rpar,nrpar,
-     &   ipar,nipar,funcv,ierr,errstrng)
+        call dppsv('u',n,1,fjac,p,n,ierr)
+        call lnsrch(n,xold,fold,g,p,x,f,fvec,stpmax,check,fmin,
+     &   rpar,nrpar,ipar,nipar,funcv,ierr,errstrng)
         if(ierr.ne.izero) return
         test=zero
         do i=1,n
-          if(abs(fvec(i)).gt.test)test=abs(fvec(i))
+          test=max(test,abs(fvec(i)))
         end do
         if(test.lt.TOLF)then
           check=.false.
@@ -84,7 +77,7 @@ c****  all matrices.
           den=max(f,half*dble(n))
           do i=1,n
             temp=abs(g(i))*max(abs(x(i)),one)/den
-            if(temp.gt.test)test=temp
+            test=max(test,temp)
           end do
           if(test.lt.TOLMIN)then
             check=.true.
@@ -96,10 +89,11 @@ c****  all matrices.
         test=zero
         do i=1,n
           temp=(abs(x(i)-xold(i)))/max(abs(x(i)),one)
-          if(temp.gt.test)test=temp
+          test=max(test,temp)
         end do
         if(test.lt.TOLX)return
       end do
-c**** replace this with an error code
-      pause 'MAXITS exceeded in newt'
+      ierr=120
+      errstrng="newt"
+      return
       END
