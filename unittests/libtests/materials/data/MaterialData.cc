@@ -1,0 +1,31 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#include "MaterialData.hh"
+
+// ----------------------------------------------------------------------
+// Constructor
+pylith::materials::MaterialData::MaterialData(void) :
+  numDBValues(0),
+  numParameters(0),
+  dbValues(0),
+  parameterNames(0)
+{ // constructor
+} // constructor
+
+// ----------------------------------------------------------------------
+// Destructor
+pylith::materials::MaterialData::~MaterialData(void)
+{ // destructor
+} // destructor
+
+// End of file

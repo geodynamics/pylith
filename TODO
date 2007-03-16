@@ -10,31 +10,30 @@ Unit tests:
   ElasticIsotropic3D
 
 0. Finish implementing materials with 3-D linear, isotropic elastic material
-  a. module
-  b. unit tests for C++ level
-  c. unit tests for Python level
+   a. unit tests for C++ level
+   b. unit tests for Python level
 
 1. Create element families for materials.
-  a. Limit cells to cells with material label
+   a. Limit cells to cells with material label
 
 2. Finish implementing ExplicitElasticity
-  a. C++
-  a. Python object
-  b. bindings
-  c. unit tests at C++ level
-  d. unit tests at Python level
+   a. C++
+   b. Python object
+   c. bindings
+   d. unit tests at C++ level
+   e. unit tests at Python level
 
-  Status: Started on a.
+   Status: Started on a.
     Only implement nonlumped and let PETSc "solver" do the lumping.
 
-3.  Finish implementing Python Formulation
-    (e.g., Explicit) with initialization of solid element families.
-  a. Python object
-  b. unit tests at Python level
+3. Finish implementing Python Formulation
+   (e.g., Explicit) with initialization of solid element families.
+   a. Python object
+   b. unit tests at Python level
 
 4. Implement unit tests for MeshIO at Python level.
-  a. read()/write()
-  b. checkFile()
+   a. read()/write()
+   b. checkFile()
 
   STATUS: 
 
@@ -47,22 +46,22 @@ SECONDARY PRIORITIES
 ======================================================================
 
 0. Adjust MeshIOAscii format
-  a. Add indices for coordinates, simplices, material ids (easier to see)
-  b. Add group of vertices
+   a. Add indices for coordinates, simplices, material ids (easier to see)
+   b. Add group of vertices
 
 1. Implement MeshIOHDF5 & HDF5
-  a. C++ objects
-  b. unit tests at C++ level
-  b. Python object (MeshIOHDF5)
-  c. bindings
-  d. unit tests at Python level
+   a. C++ objects
+   b. unit tests at C++ level
+   c. Python object (MeshIOHDF5)
+   d. bindings
+   e. unit tests at Python level
 
 2. Implement MeshIOCubit
-  a. C++ objects
-  b. unit tests at C++ level
-  b. Python object (MeshIOCubit)
-  c. bindings
-  d. unit tests at Python level
+   a. C++ objects
+   b. unit tests at C++ level
+   c. Python object (MeshIOCubit)
+   d. bindings
+   e. unit tests at Python level
 
 ======================================================================
 UNRESOLVED ISSUES

@@ -110,10 +110,10 @@ protected :
    * @param dbValues Array of database values
    * @param numValues Number of database values
    */
-  void _dbToParams(double* paramVals,
-		   const int numParams,
-		   double* dbValues,
-		   const int numValues) const;
+  void _dbToParameters(double* paramVals,
+		       const int numParams,
+		       double* dbValues,
+		       const int numValues) const;
 
   /** Compute density at locations from parameters.
    *
