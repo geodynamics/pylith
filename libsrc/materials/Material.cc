@@ -140,7 +140,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	delete[] paramData; paramData = 0;
 	throw std::runtime_error(msg.str());
       } // if
-      _dbToParams(paramData, numParams, queryData, numValues);
+      _dbToParameters(paramData, numParams, queryData, numValues);
 
       for (int iParam=0; iParam < numParams; ++iParam)
 	cellData[iParam][iQuadPt] = paramData[iParam];

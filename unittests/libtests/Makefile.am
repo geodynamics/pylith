@@ -12,6 +12,7 @@
 
 SUBDIRS = \
 	feassemble \
+	materials \
 	meshio
 
 # End of file 

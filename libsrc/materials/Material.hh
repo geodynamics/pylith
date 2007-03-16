@@ -154,10 +154,10 @@ protected :
    * @param numValues Number of database values
    */
   virtual
-  void _dbToParams(double* paramVals,
-		  const int numParams,
-		  double* dbValues,
-		  const int numValues) const = 0;
+  void _dbToParameters(double* paramVals,
+		       const int numParams,
+		       double* dbValues,
+		       const int numValues) const = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

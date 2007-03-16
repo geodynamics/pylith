@@ -127,10 +127,10 @@ pylith::materials::ElasticIsotropic3D::_numParameters(void) const
 // ----------------------------------------------------------------------
 // Compute parameters from values in spatial database.
 void
-pylith::materials::ElasticIsotropic3D::_dbToParams(double* paramVals,
-						   const int numParams,
-						   double* dbValues,
-						   const int numValues) const
+pylith::materials::ElasticIsotropic3D::_dbToParameters(double* paramVals,
+						       const int numParams,
+						       double* dbValues,
+						       const int numValues) const
 { // computeParameters
   assert(0 != paramVals);
   assert(_ElasticIsotropic3D::numParameters == numParams);
