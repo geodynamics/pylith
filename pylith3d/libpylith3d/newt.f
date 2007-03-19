@@ -36,7 +36,7 @@ c
 c...  local variables
 c
       double precision fvec(NP)
-CU    USES fdjac,fmin,lnsrch,lubksb,ludcmp
+CU    USES fdjac,fmin,lnsrch
       INTEGER i,its,j,indx(NP)
       double precision d,den,f,fold,stpmax,sum,temp,test,fjac(nddmat)
       double precision g(NP),p(NP),xold(NP),fmin

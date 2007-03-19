@@ -32,7 +32,7 @@ c
 c       Model number:                      1
 c       Model name:                        IsotropicLinearElastic
 c       Number material properties:        3
-c       Number state variables:            2
+c       Number state variables:            12
 c       Tangent matrix varies with state:  False
 c       Material properties:               Density
 c                                          Young's modulus
