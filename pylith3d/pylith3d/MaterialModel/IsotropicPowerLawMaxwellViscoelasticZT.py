@@ -4,7 +4,7 @@
 #
 #  PyLith by Charles A. Williams, Brad Aagaard, and Matt Knepley
 #
-#  Copyright (c) 2004-2006 Rensselaer Polytechnic Institute
+#  Copyright (c) 2004-2007 Rensselaer Polytechnic Institute
 #
 #  Permission is hereby granted, free of charge, to any person obtaining
 #  a copy of this software and associated documentation files (the
@@ -28,15 +28,25 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
+## @file pylith-0.8/pylith3d/pylith3d/MaterialModel/IsotropicPowerLawMaxwellViscoelasticZT.py
+
+## @brief Python PyLith-0.8 power-law viscoelastic model using Zienkiewicz & Taylor approach
+
 from pylith3d.MaterialModel.MaterialModel import MaterialModel
 
-class IsotropicPowerLawMaxwellViscoelasticESF(MaterialModel):
+class IsotropicPowerLawMaxwellViscoelasticZT(MaterialModel):
+    """
+    Python PyLith-0.8 material model consisting of a linear isotropic spring in series
+    with a power-law dashpot. Implementation follows approach of Zienkiewicz & Taylor.
+    """
 
     def __init__(self):
         MaterialModel.__init__(self)
 
-        # print "Hello from IsotropicPowerLawMaxwellViscoelasticESF.__init__!"
-        # print ""
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+        self.trace.log("Hello from IsotropicPowerLawMaxwellViscoelasticZT.__init__!")
+
         self.materialModel = 9
         self.numberProperties = 5
         self.propertyDict = {'density': None,
@@ -57,6 +67,6 @@ class IsotropicPowerLawMaxwellViscoelasticESF(MaterialModel):
         return
 
 # version
-# $Id: IsotropicPowerLawMaxwellViscoelasticESF.py,v 1.2 2004/08/12 16:49:07 willic3 Exp $
+# $Id: IsotropicPowerLawMaxwellViscoelasticZT.py,v 1.2 2004/08/12 16:49:07 willic3 Exp $
 
 # End of file 

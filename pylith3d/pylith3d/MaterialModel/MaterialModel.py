@@ -28,11 +28,16 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
+## @file pylith-0.8/pylith3d/pylith3d/MaterialModel/MaterialModel.py
+
+## @brief Python PyLith-0.8 base class for material models
 
 from pylith3d.KeywordValueParse import KeywordValueParse
 
 class MaterialModel:
-
+    """
+    Python PyLith-0.8 base class for material model definitions.
+    """
 
     def readprop(self,file):
 

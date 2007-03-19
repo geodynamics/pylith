@@ -36,7 +36,7 @@ __all__ = ["MaterialModel",
 	   "IsotropicLinearMaxwellViscoelastic",
 	   "IsotropicLinearMaxwellViscoelasticESF",
 	   "IsotropicPowerLawMaxwellViscoelastic",
-	   "IsotropicPowerLawMaxwellViscoelasticESF",
+	   "IsotropicPowerLawMaxwellViscoelasticZT",
 	   "IsotropicLinearGenMaxwellViscoelastic"]
 
 def copyright():

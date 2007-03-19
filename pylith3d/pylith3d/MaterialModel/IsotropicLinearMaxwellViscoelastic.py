@@ -28,17 +28,32 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
+## @file pylith-0.8/pylith3d/pylith3d/MaterialModel/IsotropicLinearMaxwellViscoelastic.py
+
+## @brief Python PyLith-0.8 linear Maxwell Model.
+
 from pylith3d.MaterialModel.MaterialModel import MaterialModel
 
 class IsotropicLinearMaxwellViscoelastic(MaterialModel):
+    """
+    Python PyLith-0.8 definitions for a linear Maxwell viscoelastic material.
+    This version uses an adaptation of the generalized Maxwell viscoelastic model
+    described by Zienkiewicz & Taylor.
+    """
 
     def __init__(self):
         MaterialModel.__init__(self)
 
-        # print "Hello from IsotropicLinearMaxwellViscoelastic.__init__!"
-        # print ""
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+        self.trace.log("Hello from IsotropicLinearMaxwellViscoelastic.__init__!")
+
         self.materialModel = 5
         self.numberProperties = 4
+        # materialVariation flag is set to false since the material matrix does not vary
+        # with the state variables.  It does vary with the time step size, however.
+        self.materialVariation = False
+        self.numberStateVariables = 18
         self.propertyDict = {'density': None,
                              'youngsModulus': None,
                              'poissonsRatio': None,
