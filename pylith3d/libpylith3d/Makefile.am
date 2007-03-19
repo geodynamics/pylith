@@ -98,8 +98,6 @@ sources = \
 	local.f \
 	localf.f \
 	localx.f \
-	lubksb.f \
-	ludcmp.f \
 	makemsr.F \
 	mat_1.f \
 	mat_2.f \
@@ -273,7 +271,7 @@ sources = \
 	includes/nunits_dim.inc \
 	includes/nvisdat_def.inc \
 	includes/nvisdat_dim.inc \
-	includes/parmat_6.inc \
+	includes/parmat_9.inc \
 	includes/prestr_matinit_ext.inc \
 	includes/prscal_dim.inc \
 	includes/rconsts.inc \

@@ -30,7 +30,7 @@ c
 c...  Program segment to define material model 9:
 c
 c       Model number:                      9
-c       Model name:                        IsotropicPowerLawMaxwellViscoelasticESF
+c       Model name:                        IsotropicPowerLawMaxwellViscoelasticZT
 c       Number material properties:        5
 c       Number state variables:            18
 c       Tangent matrix varies with state:  True
@@ -62,13 +62,14 @@ c
 c
 c...  local constants
 c
-      character labelp(5)*21,modelname*40
+      character labelp(5)*21,modelname*44
       data labelp/"Density",
      &            "Young's modulus",
      &            "Poisson's ratio",
      &            "Power-law exponent",
      &            "Viscosity coefficient"/
-      parameter(modelname="Isotropic Powerlaw Maxwell Viscoelastic ESF")
+      parameter(modelname=
+     & "Isotropic Power-Law Maxwell Viscoelastic Z&T")
       integer mattype
       parameter(mattype=9)
 c
@@ -107,7 +108,7 @@ c
         return
 c
  700  format(/,5x,"Material number:       ",i7,/,5x,
-     &            "Material type:         ",a40,/,5x,
+     &            "Material type:         ",a44,/,5x,
      &            "Number of properties:  ",i7,/)
  710  format(15x,a21,3x,1pe15.8)
 c
@@ -241,6 +242,7 @@ c
 c...  parameter definitions
 c
       include "ndimens.inc"
+      include "nconsts.inc"
       include "rconsts.inc"
 c
 c...  subroutine arguments
@@ -260,8 +262,9 @@ c
 c
 c...  local variables
 c
-      double precision e,pr,anpwr,emhu,f1,f2,gam,ae,rmu
+      double precision e,pr,anpwr,emhu,rmu
       double precision sdev(nstr),sinv1,steff
+      double precision cmat(nddmat)
 c
 c...  included variable definitions
 c
@@ -271,28 +274,213 @@ c
 c
 cdebug      write(6,*) "Hello from td_matinit_9_f!"
 c
-      call fill(dmat,zero,nddmat)
-      e=prop(2)
-      pr=prop(3)
-      anpwr=prop(4)
-      emhu=prop(5)
-      ae=(one+pr)/e
-      rmu=half*e/(one+pr)
-      f1=third*e/(one-two*pr)
-      call invar(sdev,sinv1,steff,state)
-      gam=half*((steff/emhu)**(anpwr-one))/emhu
+c
+c...  get stress invariants and compute elastic material matrix
+c
+      if(iopt.eq.1) then
+        call invar(sdev,sinv1,steff,state)
+      else
+        call invar(sdev,sinv1,steff,dstate)
+      end if
+      call elas_mat_9(dmat,prop,iddmat,nprop,ierr,errstrng)
       tmax=big
-      if(steff.ne.zero) tmax=((emhu/steff)**(anpwr-one))*emhu/rmu
-      f2=third/(ae+deltp*gam)
-      dmat(iddmat(1,1))=f1+two*f2
-      dmat(iddmat(2,2))=dmat(iddmat(1,1))
-      dmat(iddmat(3,3))=dmat(iddmat(1,1))
-      dmat(iddmat(1,2))=f1-f2
-      dmat(iddmat(1,3))=dmat(iddmat(1,2))
-      dmat(iddmat(2,3))=dmat(iddmat(1,2))
-      dmat(iddmat(4,4))=half*three*f2
-      dmat(iddmat(5,5))=dmat(iddmat(4,4))
-      dmat(iddmat(6,6))=dmat(iddmat(4,4))
+c
+c...  if second deviatoric invariant is zero, use only elastic solution
+c
+      if(steff.eq.zero) then
+        return
+c
+c...  otherwise, invert elastic matrix and augment it by the viscous
+c     Jacobian.
+c
+      else
+c
+c...  invert elastic matrix
+c
+        call invsymp(nddmat,nstr,dmat,ierr,errstrng)
+        if(ierr.ne.izero) return
+c
+c...  define material properties
+c
+        e=prop(2)
+        pr=prop(3)
+        anpwr=prop(4)
+        emhu=prop(5)
+        rmu=half*e/(one+pr)
+c
+c...  compute viscous Jacobian and add it to inverted elastic matrix
+c
+        call dbds_9(cmat,nddmat,iddmat,sdev,nstr,steff,anpwr,emhu,
+     &   alfap,deltp)
+        call daxpy(nddmat,one,cmat,ione,dmat,ione)
+c
+c...  invert augmented matrix
+c
+        call invsymp(nddmat,nstr,dmat,ierr,errstrng)
+        if(ierr.ne.izero) return
+        tmax=((emhu/steff)**(anpwr-one))*emhu/rmu
+      end if
+      return
+      end
+c
+c
+      subroutine jaccmp_9(scur,n,fvec,nfjsize,fjac,rpar,nrpar,ipar,
+     & nipar,ierr,errstrng)
+c
+c...  subroutine to form the Jacobian used in finding the zero of the
+c     stress function.
+c**   Note that in this version fjac is always assumed to be a symmetric
+c     matrix stored in packed format.
+c
+      include "implicit.inc"
+c
+c...  parameter definitions
+c
+      include "ndimens.inc"
+      include "nconsts.inc"
+      include "rconsts.inc"
+      include "parmat_9.inc"
+c
+c...  subroutine arguments
+c
+      integer n,nfjsize,nrpar,nipar,ierr
+c***  note that the dimension below is a bit kludgy and does not allow
+c***  anything else to be put in the ipar array
+      integer ipar(nstr,nstr)
+      double precision scur(n),fvec(n),fjac(nfjsize),rpar(nrpar)
+      character errstrng*(*)
+c
+c...  local variables
+c
+      integer i,j
+ctest      integer iddmat(nstr,nstr)
+ctest      equivalence(ipar(indiddmat),iddmat)
+      double precision cmat(nddmat)
+      double precision sdev(nstr),sinv1,steff
+c
+cdebug      write(6,*) "Hello from jaccmp_9_f!"
+c
+c
+c...  get stress invariants and a copy of inverted elasticity matrix
+c
+      call invar(sdev,sinv1,steff,scur)
+      call dcopy(nddmat,rpar(inddmati),ione,fjac,ione)
+c
+c...  if second deviatoric invariant is zero, use only elastic solution
+c
+      if(steff.eq.zero) then
+        return
+c
+c...  otherwise, augment inverted elastic matrix by the viscous Jacobian.
+c
+      else
+c
+c...  compute viscous Jacobian and add it to inverted elastic matrix
+c
+        call dbds_9(cmat,nddmat,ipar,sdev,nstr,steff,
+     &   rpar(indanpwr),rpar(indemhu),rpar(indalfap),rpar(inddeltp))
+        call daxpy(nddmat,one,cmat,ione,fjac,ione)
+      end if
+      return
+      end
+c
+c
+      subroutine dbds_9(cmat,nddmat,iddmat,sdev,nstr,steff,anpwr,emhu,
+     & alfap,deltp)
+c
+c...  subroutine to compute derivatives of viscous strain rate with
+c     respect to stress.
+c
+      implicit none
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nddmat,nstr
+      integer iddmat(nstr,nstr)
+      double precision cmat(nddmat),sdev(nstr),steff,anpwr,emhu
+      double precision alfap,deltp
+c
+c...  local variables
+c
+      double precision sigma,sigmap,sxx,syy,szz,sxy,syz,sxz
+c
+cdebug      write(6,*) "Hello from dbds_9!"
+c
+      call fill(cmat,zero,nddmat)
+      sigma=(steff/emhu)**(anpwr-one)
+      sigmap=(anpwr-one)*sigma
+      sigma=half*alfap*deltp*sigma/emhu
+      sigmap=fourth*alfap*deltp*sigmap/emhu
+      sxx=sdev(1)/steff
+      syy=sdev(2)/steff
+      szz=sdev(3)/steff
+      sxy=two*sdev(4)/steff
+      syz=two*sdev(5)/steff
+      sxz=two*sdev(6)/steff
+c
+c...  compute viscous Jacobian
+c
+      cmat(iddmat(1,1))=sigma*two*third+sigmap*sxx*sxx
+      cmat(iddmat(1,2))=-sigma*third   +sigmap*sxx*syy
+      cmat(iddmat(1,3))=-sigma*third   +sigmap*sxx*szz
+      cmat(iddmat(1,4))=                sigmap*sxx*sxy
+      cmat(iddmat(1,5))=                sigmap*sxx*syz
+      cmat(iddmat(1,6))=                sigmap*sxx*sxz
+      cmat(iddmat(2,2))=sigma*two*third+sigmap*syy*syy
+      cmat(iddmat(2,3))=-sigma*third   +sigmap*syy*szz
+      cmat(iddmat(2,4))=                sigmap*syy*sxy
+      cmat(iddmat(2,5))=                sigmap*syy*syz
+      cmat(iddmat(2,6))=                sigmap*syy*sxz
+      cmat(iddmat(3,3))=sigma*two*third+sigmap*szz*szz
+      cmat(iddmat(3,4))=                sigmap*szz*sxy
+      cmat(iddmat(3,5))=                sigmap*szz*syz
+      cmat(iddmat(3,6))=                sigmap*szz*sxz
+      cmat(iddmat(4,4))=sigma*two      +sigmap*sxy*sxy
+      cmat(iddmat(4,5))=                sigmap*sxy*syz
+      cmat(iddmat(4,6))=                sigmap*sxy*sxz
+      cmat(iddmat(5,5))=sigma*two      +sigmap*syz*syz
+      cmat(iddmat(5,6))=                sigmap*syz*sxz
+      cmat(iddmat(6,6))=sigma*two      +sigmap*sxz*sxz
+      return
+      end
+c
+c
+      subroutine betacmp_9(strs,beta,sdev,seff,sinv1,emhu,anpwr,nstr)
+c
+c...  subroutine to compute viscous strain rate vector beta
+c     Routine also returns stress invariants
+c
+      implicit none
+c
+c...  parameter definitions
+c
+      include "nconsts.inc"
+      include "rconsts.inc"
+c
+c...  subroutine arguments
+c
+      integer nstr
+      double precision strs(nstr),beta(nstr),sdev(nstr),seff,sinv1
+      double precision emhu,anpwr
+c
+c...  local variables
+c
+      double precision rm
+c
+c... compute stress invariants and constants for loop
+c
+      call fill(beta,zero,nstr)
+      call invar(sdev,sinv1,seff,strs)
+      rm=half*(seff/emhu)**(anpwr-one)/emhu
+c
+c...  compute strain rate components
+c
+      call daxpy(nstr,rm,sdev,ione,beta,ione)
       return
       end
 c
@@ -313,8 +501,9 @@ c
       include "ndimens.inc"
       include "nconsts.inc"
       include "rconsts.inc"
+      include "parmat_9.inc"
       integer nrpar,nipar
-      parameter(nrpar=9,nipar=1)
+      parameter(nrpar=31,nipar=36)
 c
 c...  subroutine arguments
 c
@@ -333,27 +522,22 @@ c
 c
 c... external functions
 c
-      double precision sprod
-      external sprod
+      double precision sprod,dasum
+      external sprod,funcv_9,jaccmp_9,dasum
 c
 c...  local constants
 c
-      double precision diag(6)
-      data diag/one,one,one,zero,zero,zero/
-      double precision eng(6)
-      data eng/one,one,one,half,half,half/
+      double precision sub
+      data sub/-1.0d0/
 c
 c...  local variables
 c
       integer i
-      integer ipar(nipar)
+      double precision e,pr,anpwr,emhu,rmu
+      double precision test0,rmt,rmtdt
+      double precision sdev(nstr),betat(nstr),betatdt(nstr),sinv1,seff
       double precision rpar(nrpar)
-      double precision e,pr,anpwr,emhu,rmu,ae,tf
-      double precision emeantdt,smeant,smeantdt,smean0
-      double precision sinv1t,sefft,sinv10,seff0,sefftdt
-      double precision sefftau,gamtau,f1,f2,sdevtdt,sdevtau
-      double precision epptdt(6),sdevt(6),sdev0(6)
-
+      logical check
 c
 c...  included variable definitions
 c
@@ -364,6 +548,7 @@ c
 cdebug      write(6,*) "Hello from td_strs_9!"
 c
       ierr=0
+      test0=dasum(nstate0,state0,ione)
 c
 c...  define material properties
 c
@@ -372,193 +557,123 @@ c
       anpwr=prop(4)
       emhu=prop(5)
       rmu=half*e/(one+pr)
-      ae=(one+pr)/e
-      tf=deltp*(one-alfap)
+      tmax=big
+      rmt=deltp*(one-alfap)
+      rmtdt=deltp*alfap
 c
-c...  define stress and strain quantities
+c...  for first iteration, use stresses from previous step as initial
+c     guess, otherwise use current estimate.
 c
-      emeantdt=third*(ee(1)+ee(2)+ee(3))
-      smeantdt=e*emeantdt/(one-two*pr)
-      call invar(sdevt,sinv1t,sefft,state)
-      smeant=third*sinv1t
-      call invar(sdev0,sinv10,seff0,state0)
-      smean0=third*sinv10
-      do i=1,nstr
-        epptdt(i)=eng(i)*ee(i)-diag(i)*emeantdt-state(i+12)
-      end do
+      if(iter.eq.ione) call dcopy(nstr,state,ione,dstate,ione)
 c
-c...  define parameters needed by effective stress function
+c...  compute constant part of iterative solution equation.
 c
-      rpar(1)=ae
-      rpar(2)=anpwr
-      rpar(3)=emhu
-      rpar(4)=sprod(epptdt,epptdt)
-      rpar(5)=two*ae*sprod(epptdt,sdev0)+ae*ae*seff0*seff0
-      rpar(6)=two*tf*(sprod(epptdt,sdevt)+ae*sprod(sdevt,sdev0))
-      rpar(7)=sefft
-      rpar(8)=deltp
-      rpar(9)=alfap
+c...  current total strain
+      call dcopy(nstr,ee,ione,rpar(indconst),ione)
+      call dscal(nstr,sub,rpar(indconst),ione)
+c...  inverted elasticity matrix times initial stresses
+      call elas_mat_9(rpar(inddmati),prop,iddmat,nprop,ierr,errstrng)
+      call invsymp(nddmat,nstr,rpar(inddmati),ierr,errstrng)
+      if(ierr.ne.izero) return
+      if(test0.ne.zero) call dspmv("u",nstr,sub,rpar(inddmati),state0,
+     & ione,one,rpar(indconst),ione)
+c...  viscous strain from previous time step
+      call daxpy(nstr,one,state(13),ione,rpar(indconst),ione)
+c...  contribution to viscous strain from stresses at beginning of step
+      call betacmp_9(state,betat,sdev,seff,sinv1,emhu,anpwr,nstr)
+      call daxpy(nstr,rmt,betat,ione,rpar(indconst),ione)
 c
-c...  call effective stress driver routine
+c...  finish defining parameters for stress computation then call Newton
+c     routine to compute stresses.
 c
-      call esfcomp_9(sefftdt,stol,rpar,nrpar,ipar,nipar,ierr,errstrng)
+      rpar(indalfap)=alfap
+      rpar(inddeltp)=deltp
+      rpar(indemhu)=emhu
+      rpar(indanpwr)=anpwr
+      call newt(dstate,nstr,rpar,nrpar,iddmat,nipar,funcv_9,jaccmp_9,
+     & check,ierr,errstrng)
       if(ierr.ne.izero) return
 c
-c...  compute quantities at intermediate time tau used to compute
-c     values at end of time step.
+c...  update state variables for current stress estimates.
 c
-      sefftau=(one-alfap)*sefft+alfap*sefftdt
-      gamtau=half*((sefftau/emhu)**(anpwr-one))/emhu
-      f1=one/(ae+alfap*deltp*gamtau)
-      f2=tf*gamtau
-      tmax=big
-      if(sefftdt.ne.zero) tmax=((emhu/sefftdt)**(anpwr-one))*emhu/rmu
+      call betacmp_9(dstate,betatdt,sdev,seff,sinv1,emhu,anpwr,nstr)
+      call dcopy(nstr,ee,ione,dstate(7),ione)
+      call dcopy(nstr,state(13),ione,dstate(13),ione)
+      call daxpy(nstr,rmt,betat,ione,dstate(13),ione)
+      call daxpy(nstr,rmtdt,betatdt,ione,dstate(13),ione)
+      call dcopy(nstr,dstate,ione,scur,ione)
 c
-c...  compute new stresses and store stress and strain values in dstate
+c...  compute current Maxwell time
 c
-      do i=1,nstr
-        sdevtdt=f1*(epptdt(i)-f2*sdevt(i)+ae*sdev0(i))
-        dstate(i)=sdevtdt+diag(i)*(smeantdt+smean0)
-        scur(i)=dstate(i)
-        sdevtau=(one-alfap)*sdevt(i)+alfap*sdevtdt
-        dstate(i+6)=ee(i)
-        dstate(i+12)=deltp*gamtau*sdevtau
-      end do
+      call invar(sdev,sinv1,seff,dstate)
+      if(seff.ne.zero) tmax=((emhu/seff)**(anpwr-one))*emhu/rmu
 c
       return
       end
 c
 c
-      subroutine esfcomp_9(sefftdt,stol,rpar,nrpar,ipar,nipar,
+      subroutine funcv_9(n,scur,r,rpar,nrpar,ipar,nipar,
      & ierr,errstrng)
 c
-c...  driver routine to compute the effective stress at the current
-c     time step.
+c...  routine to compute the vector of functions(r) evaluated at the
+c     given stress state (contained in scur).
 c
-      include "implicit.inc"
+c...  The rpar array contains:
+c     1-6:      Constant part of vector, which includes current total
+c               strain, viscous strain from previous step, stress-related
+c               quantities from prefious time step, and prestress term.
+c     7-27:     Inverted elastic material matrix.
+c     28:       Integration parameter alfap.
+c     29:       Time step size deltp.
+c     30:       Viscosity coefficient emhu.
+c     31:       Power-law exponent anpwr.
+c
+c...  The ipar array contains:
+c     1-36:     The iddmat index array
+c
+      implicit none
 c
 c...  parameter definitions
 c
+      include "ndimens.inc"
+      include "nconsts.inc"
       include "rconsts.inc"
+      include "parmat_9.inc"
 c
 c...  subroutine arguments
 c
-      integer nrpar,nipar,ierr
+      integer n,nrpar,nipar,ierr
       integer ipar(nipar)
-      double precision sefftdt,stol,rpar(nrpar)
+      double precision scur(n),r(n),rpar(nrpar)
       character errstrng*(*)
 c
-c...  included dimension and type statements
+c...  local data
 c
-c
-c...  intrinsic functions
-c
-      intrinsic sqrt,max
-c
-c...  external routines
-c
-      external esf_9
-      double precision rtsafe
-      external rtsafe
+      double precision sub
+      data sub/-1.0d0/
 c
 c...  local variables
 c
-      double precision sefft,sefflo,seffhi,xacc
+      double precision betatdt(nstr),rmtdt
+      double precision sdev(nstr),seff,sinv1
 c
-c...  included variable definitions
+c...  viscous strain rate multiplier
 c
+      rmtdt=rpar(indalfap)*rpar(inddeltp)
 c
-cdebug      write(6,*) "Hello from esfcomp_9!"
+c...  compute current viscous strain rate
 c
-      ierr=0
+      call betacmp_9(scur,betatdt,sdev,seff,sinv1,
+     & rpar(indemhu),rpar(indanpwr),nstr)
 c
-c...  use stress from previous step as initial high value, defaulting to
-c     stol if this is zero.
+c...  compute contributions to r and accumulate
 c
-      sefft=rpar(7)
-      seffhi=max(sefft,stol)
-      sefflo=half*seffhi
-      xacc=max(stol*half*(seffhi-sefflo),stol)
-c
-c...  bracket the root
-c
-      call zbrac(esf_9,sefflo,seffhi,rpar,nrpar,ipar,nipar,
-     & ierr,errstrng)
-      if(ierr.ne.0) return
-c
-c...  compute effective stress
-c
-      sefftdt=rtsafe(esf_9,sefflo,seffhi,xacc,rpar,nrpar,ipar,nipar,
-     & ierr,errstrng)
-      return
-      end
-c
-c
-      subroutine esf_9(seffcur,f,df,rpar,nrpar,ipar,nipar)
-c
-c...  subroutine to compute the effective stress function and it's
-c     derivative for a given effective stress for a Maxwell power-law
-c     viscoelastic material.
-c
-      include "implicit.inc"
-c
-c...  parameter definitions
-c
-      include "rconsts.inc"
-c
-c...  subroutine arguments
-c
-      integer nrpar,nipar
-      integer ipar(nipar)
-      double precision seffcur,f,df,rpar(nrpar)
-c
-c...  included dimension and type statements
-c
-c
-c...  local variables
-c
-      double precision ae,anpwr,emhu,a,b,c,sefft,deltp,alfap,d
-      double precision f1,tf
-      double precision gamtau,sefftau,dgam
-c
-c...  included variable definitions
-c
-c
-cdebug      write(6,*) "Hello from esf_9!"
-c
-c
-c...  values from parameter list and a few other constants
-c
-      ae=rpar(1)
-      anpwr=rpar(2)
-      emhu=rpar(3)
-      b=rpar(4)+rpar(5)
-      c=rpar(6)
-      sefft=rpar(7)
-      deltp=rpar(8)
-      alfap=rpar(9)
-      f1=one-alfap
-      tf=deltp*f1
-      d=tf*sefft
-c
-c...  additional values dependent on current effective stress
-c
-      sefftau=f1*sefft+alfap*seffcur
-      gamtau=half*((sefftau/emhu)**(anpwr-one))/emhu
-      a=ae+alfap*deltp*gamtau
-c
-c...  effective stress function and it's derivative
-c
-      f=a*a*seffcur*seffcur-b+c*gamtau-d*d*gamtau*gamtau
-      dgam=half*alfap*(anpwr-one)*((sefftau/emhu)**(anpwr-two))/
-     & (emhu*emhu)
-      df=two*a*a*seffcur+(two*a*alfap*deltp*seffcur*seffcur+
-     & c-two*d*d*gamtau)*dgam
-cdebug      write(6,*) seffcur,f,df
+      call dcopy(nstr,rpar(indconst),ione,r,ione)
+      call daxpy(nstr,rmtdt,betatdt,ione,r,ione)
+      call dspmv("u",nstr,one,rpar(inddmati),scur,ione,one,r,ione)
 c
       return
       end
-
 c
 c
       subroutine td_strs_mat_9(state,dstate,state0,ee,scur,dmat,prop,
@@ -577,8 +692,6 @@ c
       include "ndimens.inc"
       include "nconsts.inc"
       include "rconsts.inc"
-      integer nrpar,nipar
-      parameter(nrpar=9,nipar=1)
 c
 c...  subroutine arguments
 c
@@ -597,27 +710,13 @@ c
 c
 c...  external routines
 c
-      double precision sprod
-      external sprod
 c
 c...  local constants
 c
-      double precision diag(6)
-      data diag/one,one,one,zero,zero,zero/
-      double precision eng(6)
-      data eng/one,one,one,half,half,half/
 c
 c...  local variables
 c
-      integer i
-      integer ipar(nipar)
-      double precision rpar(nrpar)
-      double precision e,pr,anpwr,emhu,rmu,ae,c1,c2,c3,a,c,d,rk1,rk2
-      double precision emeantdt,smeant,smeantdt,smean0
-      double precision sinv1t,sefft,sinv10,seff0,sefftdt
-      double precision sefftau,gamtau,sdevtdt,sdevtau
-      double precision f1,f2,f3,f4,rkdnm,rkfac,dgde,dsde
-      double precision epptdt(6),sdevt(6),sdev0(6)
+      integer iopt
 c
 c...  included variable definitions
 c
@@ -625,122 +724,20 @@ c
       include "rgiter_def.inc"
       include "ntimdat_def.inc"
 c
-c...  rather than call td_strs_9, we duplicate the functionality here,
-c     since otherwise there would be an enormous amount of duplicate
-c     computations.
-c
       ierr=0
+      iopt=2
 c
-c...  define material properties
+c...  compute current stress estimates for time-dependent solution
 c
-      e=prop(2)
-      pr=prop(3)
-      anpwr=prop(4)
-      emhu=prop(5)
-      rmu=half*e/(one+pr)
-      ae=(one+pr)/e
-      c1=one-alfap
-      c2=deltp*c1
-      c3=third*e/(one-two*pr)
+      call td_strs_9(state,dstate,state0,ee,scur,dmat,prop,
+     & rtimdat,rgiter,iter,ntimdat,iddmat,tmax,nstate,nstate0,nprop,
+     & matchg,ierr,errstrng)
 c
-c...  define stress and strain quantities
+c...  compute tangent stiffness corresponding to new stress estimates
 c
-      emeantdt=ee(1)+ee(2)+ee(3)
-      smeantdt=c3*emeantdt
-      emeantdt=third*emeantdt
-      call invar(sdevt,sinv1t,sefft,state)
-      smeant=third*sinv1t
-      call invar(sdev0,sinv10,seff0,state0)
-      smean0=third*sinv10
-      do i=1,nstr
-        epptdt(i)=eng(i)*ee(i)-diag(i)*emeantdt-state(i+12)
-      end do
-c
-c...  define parameters needed by effective stress function
-c
-      rpar(1)=ae
-      rpar(2)=anpwr
-      rpar(3)=emhu
-      rpar(4)=sprod(epptdt,epptdt)
-      rpar(5)=two*ae*sprod(epptdt,sdev0)+ae*ae*seff0*seff0
-      rpar(6)=two*c2*(sprod(epptdt,sdevt)+ae*sprod(sdevt,sdev0))
-      rpar(7)=sefft
-      rpar(8)=deltp
-      rpar(9)=alfap
-c
-c...  call effective stress driver routine
-c
-      call esfcomp_9(sefftdt,stol,rpar,nrpar,ipar,nipar,ierr,errstrng)
-      if(ierr.ne.izero) return
-c
-c...  compute quantities at intermediate time tau used to compute
-c     values at end of time step.
-c
-      sefftau=(one-alfap)*sefft+alfap*sefftdt
-      gamtau=half*((sefftau/emhu)**(anpwr-one))/emhu
-      a=ae+alfap*deltp*gamtau
-      f1=one/a
-      f2=c2*gamtau
-c
-c...  compute new stresses and store stress and strain values in dstate
-c
-      do i=1,nstr
-        sdevtdt=f1*(epptdt(i)-f2*sdevt(i)+ae*sdev0(i))
-        dstate(i)=sdevtdt+diag(i)*(smeantdt+smean0)
-        scur(i)=dstate(i)
-        sdevtau=(one-alfap)*sdevt(i)+alfap*sdevtdt
-        dstate(i+6)=ee(i)
-        dstate(i+12)=deltp*gamtau*sdevtau
-      end do
-      tmax=big
-      if(sefftdt.ne.zero) tmax=((emhu/sefftdt)**(anpwr-one))*emhu/rmu
-c
-c...  define some constants for tangent computation
-c
-      rk1=half*(anpwr-one)*((sefftau/emhu)**(anpwr-two))/(emhu*emhu)
-      rk2=sefftau-f1*sefft
-      c=rpar(6)
-      d=c2*rpar(7)
-      f3=alfap*deltp*f1
-      f4=gamtau*c2
-      rkdnm=two*a*rk2*(alfap*deltp*rk1*rk2+a)/(alfap*alfap)+
-     & rk1*(c-two*d*d*gamtau)
-      rkfac=rk1/rkdnm
-c
-c...  compute tangent matrix
-c
-      dgde=rkfac*(half*epptdt(1)+ae*sdev0(1)-f4*sdevt(1))
-      dsde=f1*(one-dgde*(c2*sdevt(1)+
-     & f3*(epptdt(1)-f4*sdevt(1)+ae*sdev0(1))))
-      dmat(iddmat(1,1))=c3+two*third*dsde
-      dmat(iddmat(1,2))=c3-third*dsde
-      dmat(iddmat(1,3))=dmat(iddmat(1,2))
-c
-      dgde=rkfac*(half*epptdt(2)+ae*sdev0(2)-f4*sdevt(2))
-      dsde=f1*(one-dgde*(c2*sdevt(2)+
-     & f3*(epptdt(2)-f4*sdevt(2)+ae*sdev0(2))))
-      dmat(iddmat(2,2))=c3+two*third*dsde
-      dmat(iddmat(2,3))=c3-third*dsde
-c
-      dgde=rkfac*(half*epptdt(3)+ae*sdev0(3)-f4*sdevt(3))
-      dsde=f1*(one-dgde*(c2*sdevt(3)+
-     & f3*(epptdt(3)-f4*sdevt(3)+ae*sdev0(3))))
-      dmat(iddmat(3,3))=c3+two*third*dsde
-c
-      dgde=rkfac*(half*epptdt(4)+ae*sdev0(4)-f4*sdevt(4))
-      dsde=f1*(one-dgde*(c2*sdevt(4)+
-     & f3*(epptdt(4)-f4*sdevt(4)+ae*sdev0(4))))
-      dmat(iddmat(4,4))=half*dsde
-c
-      dgde=rkfac*(half*epptdt(5)+ae*sdev0(5)-f4*sdevt(5))
-      dsde=f1*(one-dgde*(c2*sdevt(5)+
-     & f3*(epptdt(5)-f4*sdevt(5)+ae*sdev0(5))))
-      dmat(iddmat(5,5))=half*dsde
-c
-      dgde=rkfac*(half*epptdt(6)+ae*sdev0(6)-f4*sdevt(6))
-      dsde=f1*(one-dgde*(c2*sdevt(6)+
-     & f3*(epptdt(6)-f4*sdevt(6)+ae*sdev0(6))))
-      dmat(iddmat(6,6))=half*dsde
+      call td_matinit_9(state,dstate,state0,dmat,prop,rtimdat,
+     & rgiter,iopt,ntimdat,iddmat,tmax,nstate,nstate0,nprop,matchg,ierr,
+     & errstrng)
 c
       return
       end
@@ -837,7 +834,7 @@ c
 c
 cdebug      write(6,*) "Hello from update_state_9_f!"
 c
-      call daxpy(nstate-6,sub,state,ione,dstate,ione)
+      call daxpy(nstate,sub,state,ione,dstate,ione)
       call daxpy(nstate,one,dstate,ione,state,ione)
 c
       return

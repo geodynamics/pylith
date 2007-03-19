@@ -43,6 +43,8 @@ c
      & ierr,errstrng)
 c
 c...  subroutine to output material properties for material model 8.
+c     This model is based on an ESF formulation although an actual
+c     Effective Stress Function is not needed for a linear model.
 c
 c     Error codes:
 c         4:  Write error
@@ -105,7 +107,7 @@ c
         return
 c
  700  format(/,5x,"Material number:       ",i7,/,5x,
-     &            "Material type:         ",a37,/,5x,
+     &            "Material type:         ",a41,/,5x,
      &            "Number of properties:  ",i7,/)
  710  format(15x,a15,3x,1pe15.8)
 c

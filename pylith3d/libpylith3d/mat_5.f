@@ -66,11 +66,12 @@ c
 c
 c...  local constants
 c
-      character labelp(4)*15,modelname*49
+      character labelp(4)*15,modelname*37
       data labelp/"Density",
      &            "Young's modulus",
      &            "Poisson's ratio",
      &            "Viscosity"/
+      parameter(modelname="Isotropic Linear Maxwell Viscoelastic")
       integer mattype
       parameter(mattype=5)
 c
@@ -81,7 +82,6 @@ c
 cdebug      write(6,*) "Hello from mat_prt_5_f!"
 c
       ierr=0
-      modelname="Isotropic Linear Maxwell Viscoelastic"
 c
 c...  output plot results
 c

@@ -116,22 +116,22 @@ c
       infmatmod(5,5) = izero
       infmatmod(6,5) = 6
 c
-c...  Definition for power-law Maxwell viscoelastic material
-c
-      infmatmod(1,6) = ione
-      infmatmod(2,6) = 18
-      infmatmod(3,6) = ifive
-      infmatmod(4,6) = ione
-      infmatmod(5,6) = ione
-      infmatmod(6,6) = 6
-c
 c...  Definition for generalized linear Maxwell viscoelastic material
 c
+      infmatmod(1,6) = ione
+      infmatmod(2,6) = 30
+      infmatmod(3,6) = 9
+      infmatmod(4,6) = ione
+      infmatmod(5,6) = izero
+      infmatmod(6,6) = 6
+c
+c...  Definition for power-law Maxwell viscoelastic material (ESF)
+c
       infmatmod(1,7) = ione
-      infmatmod(2,7) = 30
-      infmatmod(3,7) = 9
+      infmatmod(2,7) = 18
+      infmatmod(3,7) = ifive
       infmatmod(4,7) = ione
-      infmatmod(5,7) = izero
+      infmatmod(5,7) = ione
       infmatmod(6,7) = 6
 c
 c...  Definition for linear Maxwell viscoelastic material (ESF version)
@@ -143,7 +143,7 @@ c
       infmatmod(5,8) = izero
       infmatmod(6,8) = 6
 c
-c...  Definition for power-law Maxwell viscoelastic material (ESF)
+c...  Definition for power-law Maxwell viscoelastic material (Z&T)
 c
       infmatmod(1,9) = ione
       infmatmod(2,9) = 18
