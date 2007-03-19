@@ -27,7 +27,7 @@ c  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
-c...  parmat_6.inc:  Parameter definitions for material type 6.
+c...  parmat_9.inc:  Parameter definitions for material type 9.
 c
 c...  The rpar array contains:
 c     1-6:    Constant part of vector, which includes current total
@@ -54,7 +54,7 @@ c
      &          indiddmat=1)
 c
 c version
-c $Id: parmat_6.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
+c $Id: parmat_9.inc,v 1.1 2004/04/14 21:18:30 willic3 Exp $
 c
 c Generated automatically by Fortran77Mill on Wed May 21 21:38:38 2003
 c
