@@ -28,17 +28,32 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
+## @file pylith-0.8/pylith3d/pylith3d/MaterialModel/IsotropicLinearMaxwellViscoelasticESF.py
+
+## @brief Python PyLith-0.8 linear Maxwell Model using ESF approach.
+
 from pylith3d.MaterialModel.MaterialModel import MaterialModel
 
 class IsotropicLinearMaxwellViscoelasticESF(MaterialModel):
+    """Python PyLith-0.8 definitions for a linear Maxwell viscoelastic material.
+    This version uses the Bathe Effective Stress Function approach, although
+    the actuall stress functions are not needed for this linear material.
+    """
 
     def __init__(self):
         MaterialModel.__init__(self)
 
-        # print "Hello from IsotropicLinearMaxwellViscoelasticESF.__init__!"
-        # print ""
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+        self.trace.log("Hello from IsotropicLinearMaxwellViscoelasticESF.__init__!")
+
         self.materialModel = 8
         self.numberProperties = 4
+        # materialVariation flag is set to false since the material matrix does not vary
+        # with the state variables.  It does vary with the time step size, however.
+        self.materialVariation = False
+        self.numberStateVariables = 18
+
         self.propertyDict = {'density': None,
                              'youngsModulus': None,
                              'poissonsRatio': None,

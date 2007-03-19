@@ -28,17 +28,29 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
+## @file pylith-0.8/pylith3d/pylith3d/MaterialModel/IsotropicPowerLawMaxwellViscoelastic.py
+
+## @brief Python PyLith-0.8 power-law Maxwell viscoelastic model.
+
 from pylith3d.MaterialModel.MaterialModel import MaterialModel
 
 class IsotropicPowerLawMaxwellViscoelastic(MaterialModel):
+    """
+    Python PyLith-0.8 definitions for a power-law Maxwell viscoelastic material.
+    This version uses the Bathe Effective Stress Function (ESF) approach.
+    """
 
     def __init__(self):
         MaterialModel.__init__(self)
 
-        # print "Hello from IsotropicPowerLawMaxwellViscoelastic.__init__!"
-        # print ""
-        self.materialModel = 6
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+        self.trace.log("Hello from IsotropicPowerLawMaxwellViscoelastic.__init__!")
+
+        self.materialModel = 7
         self.numberProperties = 5
+        self.materialVariation = True
+        self.numberStateVariables = 18
         self.propertyDict = {'density': None,
                              'youngsModulus': None,
                              'poissonsRatio': None,

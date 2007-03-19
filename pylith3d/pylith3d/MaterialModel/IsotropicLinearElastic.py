@@ -28,10 +28,16 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
+## @file pylith-0.8/pylith3d/pylith3d/MaterialModel/IsotropicLinearElastic.py
+
+## @brief Python PyLith-0.8 linear isotropic elastic material model
+
 from pylith3d.MaterialModel.MaterialModel import MaterialModel
 
 class IsotropicLinearElastic(MaterialModel):
-    """Basic definitions for an isotropic linear elastic material"""
+    """
+    Python PyLith-0.8 definitions for an isotropic linear elastic material
+    """
 
     def __init__(self):
         """Initialization for isotropic linear elastic material
@@ -48,17 +54,19 @@ class IsotropicLinearElastic(MaterialModel):
         means that only a single material matrix is required for each
         material group of this type.
 
-        Only 2 state variables (stress and strain) are required to describe
+        Only 2 sets of state variables (stress and strain) are required to describe
         this material."""
 
         MaterialModel.__init__(self)
 
-        # print "Hello from IsotropicLinearElastic.__init__!"
-        # print ""
+        import journal
+        self.trace = journal.debug("pylith3d.trace")
+        self.trace.log("Hello from IsotropicLinearElastic.__init__!")
+
         self.materialModel = 1
         self.numberProperties = 3
         self.materialVariation = False
-        self.numberStateVariables = 2
+        self.numberStateVariables = 12
         self.propertyDict = {'density': None,
                              'youngsModulus': None,
                              'poissonsRatio': None}
