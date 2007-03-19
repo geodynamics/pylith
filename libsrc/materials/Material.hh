@@ -156,7 +156,7 @@ protected :
   virtual
   void _dbToParameters(double* paramVals,
 		       const int numParams,
-		       double* dbValues,
+		       const double* dbValues,
 		       const int numValues) const = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////

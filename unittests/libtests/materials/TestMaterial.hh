@@ -18,8 +18,8 @@
  * C++ unit testing for Material.
  */
 
-#if !defined(pylith_materials_testquadrature_hh)
-#define pylith_materials_testquadrature_hh
+#if !defined(pylith_materials_testmaterial_hh)
+#define pylith_materials_testmaterial_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -88,6 +88,6 @@ protected :
 
 }; // class TestMaterial
 
-#endif // pylith_materials_testquadrature_hh
+#endif // pylith_materials_testmaterial_hh
 
 // End of file 

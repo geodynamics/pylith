@@ -112,7 +112,7 @@ protected :
    */
   void _dbToParameters(double* paramVals,
 		       const int numParams,
-		       double* dbValues,
+		       const double* dbValues,
 		       const int numValues) const;
 
   /** Compute density at locations from parameters.

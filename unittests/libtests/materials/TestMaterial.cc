@@ -19,6 +19,8 @@
 
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 
+#include <math.h> // USES assert()
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaterial );
 
@@ -76,7 +78,24 @@ void
 pylith::materials::TestMaterial::_testDBToParameters(Material* material,
 						     const MaterialData& data) const
 { // _testDBToParameters
-  CPPUNIT_ASSERT(false);
+  CPPUNIT_ASSERT(0 != material);
+  
+  const int numDBValues = data.numDBValues;
+  double* const dbData = data.dbData;
+  const int numParameters = data.numParameters;
+  double* const parameterDataE = data.parameterData;
+
+  double* parameterData = (numParameters > 0) ? new double[numParameters] : 0;
+  material->_dbToParameters(parameterData, numParameters,
+			    dbData, numDBValues);
+
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < numParameters; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				 parameterData[i]/parameterDataE[i],
+				 tolerance);
+
+  delete[] parameterData; parameterData = 0;
 } // _testDBToParameters
 
 // ----------------------------------------------------------------------
@@ -85,6 +104,8 @@ void
 pylith::materials::TestMaterial::_testDBValues(Material* material,
 					       const MaterialData& data) const
 { // _testDBValues
+  CPPUNIT_ASSERT(0 != material);
+
   const int numDBValues = data.numDBValues;
 
   CPPUNIT_ASSERT(numDBValues == material->_numDBValues());
@@ -100,6 +121,8 @@ void
 pylith::materials::TestMaterial::_testParameters(Material* material,
 						 const MaterialData& data) const
 { // _testParameters
+  CPPUNIT_ASSERT(0 != material);
+
   const int numParameters = data.numParameters;
 
   CPPUNIT_ASSERT(numParameters == material->_numParameters());

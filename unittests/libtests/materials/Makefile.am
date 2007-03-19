@@ -20,6 +20,8 @@ check_PROGRAMS = testmaterials
 # Primary source files
 testmaterials_SOURCES = \
 	TestMaterial.cc \
+	TestElasticMaterial.cc \
+	TestElasticIsotropic3D.cc \
 	test_materials.cc
 
 noinst_HEADERS = \
@@ -28,10 +30,12 @@ noinst_HEADERS = \
 # Source files associated with testing data
 testmaterials_SOURCES += \
 	data/MaterialData.cc \
+	data/ElasticMaterialData.cc \
 	data/ElasticIsotropic3DData.cc
 
 noinst_HEADERS += \
 	data/MaterialData.hh \
+	data/ElasticMaterialData.hh \
 	data/ElasticIsotropic3DData.hh
 
 testmaterials_LDFLAGS = $(PETSC_LIB)
