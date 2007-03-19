@@ -53,7 +53,7 @@ public:
 const int pylith::materials::_ElasticIsotropic3D::numElasticConsts = 21;
 const int pylith::materials::_ElasticIsotropic3D::numDBValues = 3;
 const char* pylith::materials::_ElasticIsotropic3D::namesDBValues[] =
-  {"density", "vp", "vs" };
+  {"density", "vs", "vp" };
 const int pylith::materials::_ElasticIsotropic3D::numParameters = 3;
 const char* pylith::materials::_ElasticIsotropic3D::namesParameters[] =
   {"density", "mu", "lambda" };
@@ -129,7 +129,7 @@ pylith::materials::ElasticIsotropic3D::_numParameters(void) const
 void
 pylith::materials::ElasticIsotropic3D::_dbToParameters(double* paramVals,
 						       const int numParams,
-						       double* dbValues,
+						       const double* dbValues,
 						       const int numValues) const
 { // computeParameters
   assert(0 != paramVals);
@@ -194,11 +194,11 @@ pylith::materials::ElasticIsotropic3D::_calcElasticConsts(const double* paramete
     _elasticConsts[indexC+ 7] = lambda; // C2233
     _elasticConsts[indexC+ 8] = 0; // C2212
     _elasticConsts[indexC+ 9] = 0; // C2223
-    _elasticConsts[indexC+10] = 0; // C2212
+    _elasticConsts[indexC+10] = 0; // C2213
     _elasticConsts[indexC+11] = lambda + 2.0*mu; // C3333
     _elasticConsts[indexC+12] = 0; // C3312
     _elasticConsts[indexC+13] = 0; // C3323
-    _elasticConsts[indexC+14] = 0; // C3312
+    _elasticConsts[indexC+14] = 0; // C3313
     _elasticConsts[indexC+15] = mu; // C1212
     _elasticConsts[indexC+16] = 0; // C1223
     _elasticConsts[indexC+17] = 0; // C1213

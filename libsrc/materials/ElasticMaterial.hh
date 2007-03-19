@@ -28,12 +28,15 @@
 namespace pylith {
   namespace materials {
     class ElasticMaterial;
+
+    class TestElasticMaterial; // unit testing
   } // materials
 } // pylith
 
 /// C++ object for material constitutive model.
 class pylith::materials::ElasticMaterial : public Material
 { // class ElasticMaterial
+  friend class TestElasticMaterial; ///< unit testing
 
   // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
 public :

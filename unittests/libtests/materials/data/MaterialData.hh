@@ -39,6 +39,9 @@ public:
 
   char** dbValues; ///< Aray of names of database values;
   char** parameterNames; //< Array of names of parameters
+
+  double* dbData; ///< Array of database values
+  double* parameterData; ///< Array of parameter values
 };
 
 #endif // pylith_materials_materialdata_hh
