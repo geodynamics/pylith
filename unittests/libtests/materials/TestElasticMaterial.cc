@@ -38,6 +38,8 @@ pylith::materials::TestElasticMaterial::testClone(void)
   CPPUNIT_ASSERT(0 != mycopy);
   CPPUNIT_ASSERT(0 == strcmp(label, material.label().c_str()));
   CPPUNIT_ASSERT_EQUAL(id, material.id());
+
+  delete mycopy; mycopy = 0;
 } // testClone
 
 // ----------------------------------------------------------------------

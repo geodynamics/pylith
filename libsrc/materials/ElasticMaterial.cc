@@ -71,6 +71,7 @@ pylith::materials::ElasticMaterial::calcProperties(
   } // for
   _calcDensity(paramsCell, numParams, numQuadPts);
   _calcElasticConsts(paramsCell, numParams, numQuadPts);
+  delete[] paramsCell; paramsCell = 0;
 } // calcProperties
 
 // ----------------------------------------------------------------------
