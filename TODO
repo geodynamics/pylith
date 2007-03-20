@@ -5,18 +5,12 @@ MAIN PRIORITIES (Brad)
 Unit tests:
   petsc module
   ParameterManager
-  Material
-  MaterialElastic
-  ElasticIsotropic3D
 
 0. Finish implementing materials with 3-D linear, isotropic elastic material
-   a. unit tests for C++ level
+   a. unit tests for C++ level [DONE]
    b. unit tests for Python level
 
-1. Create element families for materials.
-   a. Limit cells to cells with material label
-
-2. Finish implementing ExplicitElasticity
+1. Finish implementing ExplicitElasticity
    a. C++
    b. Python object
    c. bindings
@@ -26,12 +20,12 @@ Unit tests:
    Status: Started on a.
     Only implement nonlumped and let PETSc "solver" do the lumping.
 
-3. Finish implementing Python Formulation
+2. Finish implementing Python Formulation
    (e.g., Explicit) with initialization of solid element families.
    a. Python object
    b. unit tests at Python level
 
-4. Implement unit tests for MeshIO at Python level.
+3. Implement unit tests for MeshIO at Python level.
    a. read()/write()
    b. checkFile()
 

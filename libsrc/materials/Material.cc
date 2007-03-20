@@ -105,7 +105,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   double* queryData = (numValues > 0) ? new double[numValues] : 0;
   double* paramData = (numParams > 0) ? new double[numParams] : 0;
   double** cellData = (numParams > 0) ? new double*[numParams] : 0;
-  for (int iParam = 0; iParam < 0; ++iParam)
+  for (int iParam = 0; iParam < numParams; ++iParam)
     cellData[iParam] = (numQuadPts > 0) ? new double[numQuadPts] : 0;
   for (topology_type::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
@@ -134,7 +134,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	// Cleanup, then throw exception
 	for (int iParam=0; iParam < numParams; ++iParam) {
 	  delete[] cellData[iParam]; cellData[iParam] = 0;
-	} // fir
+	} // for
 	delete[] cellData; cellData = 0;
 	delete[] queryData; queryData = 0;
 	delete[] paramData; paramData = 0;
@@ -155,6 +155,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   delete[] cellData; cellData = 0;
   delete[] queryData; queryData = 0;
   delete[] paramData; paramData = 0;
+  delete[] paramSections; paramSections = 0;
 
   // Close database
   _db->close();

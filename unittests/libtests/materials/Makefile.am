@@ -13,6 +13,8 @@
 subpackage = materials
 include $(top_srcdir)/subpackage.am
 
+SUBDIRS = data
+
 TESTS = testmaterials
 
 check_PROGRAMS = testmaterials
@@ -36,7 +38,8 @@ testmaterials_SOURCES += \
 noinst_HEADERS += \
 	data/MaterialData.hh \
 	data/ElasticMaterialData.hh \
-	data/ElasticIsotropic3DData.hh
+	data/ElasticIsotropic3DData.hh \
+	data/header.hh
 
 testmaterials_LDFLAGS = $(PETSC_LIB)
 
@@ -47,8 +50,5 @@ testmaterials_LDADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata
 
-noinst_tmp =
-
-CLEANFILES = $(noinst_tmp)
 
 # End of file 
