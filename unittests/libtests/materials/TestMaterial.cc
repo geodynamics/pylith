@@ -18,6 +18,12 @@
 #include "data/MaterialData.hh" // USES MaterialData
 
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
+#include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
+
+#include <petscmesh.h> // USES PETSc Mesh
 
 #include <math.h> // USES assert()
 
@@ -69,7 +75,128 @@ pylith::materials::TestMaterial::testLabel(void)
 void
 pylith::materials::TestMaterial::testInitialize(void)
 { // testInitialize
-  CPPUNIT_ASSERT(false);
+  typedef ALE::Mesh::topology_type topology_type;
+  typedef topology_type::sieve_type sieve_type;
+  typedef ALE::Mesh::real_section_type real_section_type;
+  typedef ALE::Sifter<int, sieve_type::point_type, int> patch_label_type;
+
+  ALE::Obj<ALE::Mesh> mesh;
+  const int materialID = 24;
+  { // create mesh
+    const int cellDim = 1;
+    const int numCorners = 3;
+    const int spaceDim = 1;
+    const int numVertices = 3;
+    const int numCells = 1;
+    const double vertCoords[] = { -1.0, 0.0, 1.0};
+    const int cells[] = { 0, 1, 2 };
+    CPPUNIT_ASSERT(0 != vertCoords);
+    CPPUNIT_ASSERT(0 != cells);
+
+    mesh = new ALE::Mesh(PETSC_COMM_WORLD, cellDim);
+    ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
+    ALE::Obj<topology_type> topology = new topology_type(mesh->comm());
+
+    const bool interpolate = false;
+    ALE::New::SieveBuilder<sieve_type>::buildTopology(sieve, cellDim, numCells,
+	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
+    sieve->stratify();
+    topology->setPatch(0, sieve);
+    topology->stratify();
+    mesh->setTopology(topology);
+    ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
+		   mesh->getRealSection("coordinates"), spaceDim, vertCoords);
+
+  } // create mesh
+
+  { // set material ids
+    const topology_type::patch_type patch = 0;
+    const ALE::Obj<topology_type>& topology = mesh->getTopology();
+    const ALE::Obj<ALE::Mesh::topology_type::label_sequence>& cells = 
+      topology->heightStratum(patch, 0);
+    const ALE::Obj<patch_label_type>& labelMaterials = 
+      topology->createLabel(patch, "material-id");
+    int i = 0;
+    for(ALE::Mesh::topology_type::label_sequence::iterator e_iter = cells->begin();
+	e_iter != cells->end();
+	++e_iter)
+      topology->setValue(labelMaterials, *e_iter, materialID);
+  } // set material ids
+
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(1);
+  cs.initialize();
+
+  feassemble::Quadrature1D quadrature;
+  const int cellDim = 1;
+  const int numCorners = 3;
+  const int numQuadPts = 2;
+  const int spaceDim = 1;
+  const double basis[] = { 0.455, 0.667, -0.122, -0.122, 0.667, 0.455 };
+  const double basisDeriv[] = { -1.077, 1.155, -0.077, 0.077, -1.155, 1.077 };
+  const double quadPtsRef[] = { -0.577350269, 0.577350269 };
+  const double quadWts[] = { 1.0, 1.0  };
+  quadrature.initialize(basis, basisDeriv, quadPtsRef, quadWts,
+	       cellDim, numCorners, numQuadPts, spaceDim);
+
+  spatialdata::spatialdb::SimpleDB db;
+  spatialdata::spatialdb::SimpleIOAscii iohandler;
+  iohandler.filename("data/matinitialize.spatialdb");
+  db.ioHandler(&iohandler);
+  db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
+  
+  ElasticIsotropic3D material;
+  material.db(&db);
+  material.id(materialID);
+  material.label("my_material");
+  material.initialize(mesh, &cs, &quadrature);
+
+  const double densityA = 2000.0;
+  const double vsA = 100.0;
+  const double vpA = 180.0;
+  const double muA = vsA*vsA*densityA;
+  const double lambdaA = vpA*vpA*densityA - 2.0*muA;
+  const double densityB = 3000.0;
+  const double vsB = 200.0;
+  const double vpB = 400.0;
+  const double muB = vsB*vsB*densityB;
+  const double lambdaB = vpB*vpB*densityB - 2.0*muB;
+  const double densityE[] = { densityA, densityB };
+  const double muE[] = { muA, muB };
+  const double lambdaE[] = { lambdaA, lambdaB };
+
+  // Get cells associated with material
+  const ALE::Mesh::int_section_type::patch_type patch = 0;
+  const ALE::Obj<topology_type>& topology = mesh->getTopology();
+  const ALE::Obj<topology_type::label_sequence>& cells = 
+    topology->heightStratum(patch, 0);
+
+  topology_type::label_sequence::iterator cellIter=cells->begin();
+  const double tolerance = 1.0e-06;
+
+  const ALE::Obj<real_section_type>& parameterDensity = 
+    material._parameters->getReal("density");
+  const real_section_type::value_type* densityCell = 
+    parameterDensity->restrict(patch, *cellIter);
+  CPPUNIT_ASSERT(0 != densityCell);
+  for (int i=0; i < numQuadPts; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, densityCell[i]/densityE[i], tolerance);
+  
+  const ALE::Obj<real_section_type>& parameterMu = 
+    material._parameters->getReal("mu");
+  const real_section_type::value_type* muCell = 
+    parameterMu->restrict(patch, *cellIter);
+  CPPUNIT_ASSERT(0 != muCell);
+  for (int i=0; i < numQuadPts; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, muCell[i]/muE[i], tolerance);
+  
+  const ALE::Obj<real_section_type>& parameterLambda = 
+    material._parameters->getReal("lambda");
+  const real_section_type::value_type* lambdaCell = 
+    parameterLambda->restrict(patch, *cellIter);
+  CPPUNIT_ASSERT(0 != lambdaCell);
+  for (int i=0; i < numQuadPts; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, lambdaCell[i]/lambdaE[i], tolerance);
 } // testInitialize
 
 // ----------------------------------------------------------------------
