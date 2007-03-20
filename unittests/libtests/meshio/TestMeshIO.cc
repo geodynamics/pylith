@@ -156,6 +156,7 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<ALE::Mesh>& mesh,
   
   for (int iCell=0; iCell < numCells; ++iCell)
     CPPUNIT_ASSERT_EQUAL(data.materialIds[iCell], materialIds[iCell]);
+  delete[] materialIds; materialIds = 0;
 
   // :TODO: Check groups of vertices
 } // checkVals
