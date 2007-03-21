@@ -67,7 +67,8 @@ PetscErrorCode ReadBoundary_PyLith(const char *baseFilename, PetscTruth useZeroB
 
   PetscFunctionBegin;
   ierr = PetscStrcpy(bcFilename, baseFilename);
-  ierr = PetscStrcat(bcFilename, ".bc");
+  // ierr = PetscStrcat(bcFilename, ".bc");
+  std::cout << bcFilename;
   f = fopen(bcFilename, "r");CHKERRQ(ierr);
   IgnoreComments_PyLith(buf, 2048, f);
   /* Ignore displacement units */
@@ -150,8 +151,12 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, const ALE::Obj<ALE
   if (mesh->debug()) {
     boundaries->view("PyLith boundaries");
   }
-  ierr = PetscStrcpy(bcFilename, baseFilename);
+  int slen = std::strlen(baseFilename);
+  std::strncpy(bcFilename, baseFilename, slen-3);
+  bcFilename[slen-3] = '\0';
+  // ierr = PetscStrcpy(bcFilename, baseFilename.substr(0,slen-4));
   ierr = PetscStrcat(bcFilename, suff);
+  std::cout << bcFilename;
 
   // Determine if we have bc stuff
   const ALE::Obj<ALE::Mesh::topology_type::label_sequence>& vertices = boundaries->getTopology()->depthStratum(patch, 0);
@@ -162,6 +167,7 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, const ALE::Obj<ALE
       break;
     } // if
 
+  std::cout << bcFilename;
   f = fopen(bcFilename, "w");CHKERRQ(ierr);
   if (haveBC) {
     // Only write header if bc file contains information
@@ -208,11 +214,11 @@ char pypylith3d_processMesh__name__[] = "processMesh";
 PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 {
   char *meshInputFile;
-  char  *meshOutputFile;
+  char  *meshBcFile;
   int   interpolateMesh;
   char* partitioner;
 
-  int ok = PyArg_ParseTuple(args, (char *) "ssis:processMesh", &meshOutputFile, &meshInputFile, &interpolateMesh, &partitioner);
+  int ok = PyArg_ParseTuple(args, (char *) "ssis:processMesh", &meshBcFile, &meshInputFile, &interpolateMesh, &partitioner);
 
   if (!ok) {
     return 0;
@@ -240,7 +246,8 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   m = ALE::New::Distribution<ALE::Mesh::topology_type>::distributeMesh(m, partitioner);
   ierr = MeshSetMesh(mesh, m);
   debug << journal::at(__HERE__) << "[" << rank << "]Distributed PETSc Mesh"  << journal::endl;
-  ierr = ReadBoundary_PyLith(meshInputFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
+  std::cout << meshBcFile;
+  ierr = ReadBoundary_PyLith(meshBcFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
 
   const Obj<ALE::Mesh::foliated_section_type>& boundaries = m->getBoundariesNew();
   ALE::Mesh::foliated_section_type::patch_type patch      = 0;
@@ -303,12 +310,16 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   char           suff[9];
 
   sprintf(suff, "%s%d%s", ".", rank, ".bc");
-  ierr = PetscStrcpy(bcFilename, meshInputFile);
+
+  int slen = std::strlen(meshBcFile);
+  std::strncpy(bcFilename, meshBcFile, slen-3);
+  // ierr = PetscStrcpy(bcFilename, meshBcFile.substr(0,slen-4));
   ierr = PetscStrcat(bcFilename, suff);
+  std::cout << bcFilename;
 
   debug << journal::at(__HERE__) << "[" << rank << "]Output new PyLith mesh into: " << bcFilename << journal::endl;
 
-  ierr = WriteBoundary_PyLith(meshInputFile, m);
+  ierr = WriteBoundary_PyLith(meshBcFile, m);
   debug << journal::at(__HERE__) << "[" << rank << "]Wrote PyLith boundary conditions"  << journal::endl;
 
   const Obj<ALE::Mesh::topology_type::label_sequence>& vertices = m->getTopology()->depthStratum(0, 0);
