@@ -61,8 +61,8 @@ class Material(Component):
     id = pyre.inventory.int("id", default=0)
     id.meta['tip'] = "Material identifier (from mesh generator)."
 
-    matname = pyre.inventory.str("name", default="")
-    matname.meta['tip'] = "Name of material."
+    label = pyre.inventory.str("label", default="")
+    label.meta['tip'] = "Name of material."
 
     from spatialdata.spatialdb.SpatialDB import SpatialDB
     db = pyre.inventory.facility("db", factory=SpatialDB,
@@ -85,15 +85,17 @@ class Material(Component):
     return
 
 
-  def initialize(self):
+  def initialize(self, mesh):
     """
     Initialize material property manager.
     """
-    self._info.log("Initializing material '%s'." % self.matname)
+    self._info.log("Initializing material '%s'." % self.label)
     self.db.initialize()
-    #self.cppHandle.id = self.id
-    #self.cppHandle.matname = self.matname
-    #self.cppHandle.db = self.db
+    self.cppHandle.id = self.id
+    self.cppHandle.label = self.label
+    self.cppHandle.db = self.db
+    self.cppHandle.initialize(mesh.cppHandle. mesh.coordsys.cppHandle,
+                              self.quadrature.cppHandle)
     return
 
 
@@ -105,7 +107,7 @@ class Material(Component):
     """
     Component._configure(self)
     self.id = self.inventory.id
-    self.matname = self.inventory.matname
+    self.label = self.inventory.label
     self.db = self.inventory.db
     self.quadrature = self.inventory.quadrature
     return

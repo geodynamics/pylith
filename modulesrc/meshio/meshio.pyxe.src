@@ -15,6 +15,7 @@
 #include "pylith/meshio/MeshIOAscii.hh"
 
 #include <stdexcept>
+#include <assert.h>
 #include <Python.h>
 #}header
 
@@ -31,8 +32,6 @@ cdef extern from "stdlib.h":
     ctypedef unsigned long size_t
     void* malloc(size_t size)
     void free(void* mem)
-
-#cimport topology # USES topology.Mesh
 
 # ----------------------------------------------------------------------
 cdef class MeshIO:
@@ -58,6 +57,8 @@ cdef class MeshIO:
     # create shim for method 'read'
     #embed{ void MeshIO_read(void* pObj, void* pMeshObj)
     try {
+      assert(0 != pObj);
+      assert(0 != pMeshObj);
       ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
       ((pylith::meshio::MeshIO*) pObj)->read(pMesh);
     } catch (const std::exception& err) {
@@ -71,7 +72,7 @@ cdef class MeshIO:
 
     #cdef topology.Mesh mesh
     MeshIO_read(self.thisptr, ptrFromHandle(mesh))
-    return mesh
+    return
 
 
   def write(self, mesh):
