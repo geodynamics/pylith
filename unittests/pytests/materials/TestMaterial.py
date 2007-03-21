@@ -29,18 +29,27 @@ class TestMaterial(unittest.TestCase):
     WARNING: This is not a rigorous test of initialize() because we
     don't verify the results.
     """
-    from pylith.utils.PetscManager import PetscManager
-    petsc = PetscManager()
-    petsc.initialize()
-
     from pylith.materials.ElasticIsotropic3D import ElasticIsotropic3D
     material = ElasticIsotropic3D()
+
+    from pylith.feassemble.quadrature.Quadrature1D import Quadrature1D
+    quadrature = Quadrature1D()
+    from pylith.feassemble.FIATSimplex import FIATSimplex
+    cell = FIATSimplex()
+    cell.shape = "line"
+    cell.order = 1
+    cell.degree = 1
+    quadrature.cell = cell
+    quadrature.minJacobian = 1.0e-4
+    quadrature.initialize()
+    material.quadrature = quadrature
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
     iohandler = SimpleIOAscii()
     iohandler.filename = "data/matinitialize.spatialdb"
     db = SimpleDB()
+    db.label = "material properties"
     db.iohandler = iohandler
     material.db = db
     material.label = "my material"
@@ -50,13 +59,16 @@ class TestMaterial(unittest.TestCase):
     importer = MeshIOAscii()
     importer.filename = "data/twoelems.mesh"
     mesh = importer.read()
+
+    from spatialdata.geocoords.CSCart import CSCart
+    cs = CSCart()
+    cs.spaceDim = 1
+    mesh.coordsys = cs
     
     material.initialize(mesh)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
-
-    petsc.finalize()
     return
 
 

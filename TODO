@@ -6,10 +6,6 @@ Unit tests:
   petsc module
   ParameterManager
 
-0. Finish implementing materials with 3-D linear, isotropic elastic material
-   a. unit tests for C++ level [DONE]
-   b. unit tests for Python level
-
 1. Finish implementing ExplicitElasticity
    a. C++
    b. Python object

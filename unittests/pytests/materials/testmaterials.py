@@ -37,7 +37,13 @@ class TestApp(Script):
     """
     Run the application.
     """
+    from pylith.utils.PetscManager import PetscManager
+    petsc = PetscManager()
+    petsc.initialize()
+
     unittest.TextTestRunner(verbosity=2).run(self._suite())
+
+    petsc.finalize()
     return
 
 
