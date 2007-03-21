@@ -205,30 +205,18 @@ class Pylith3d_scan(Component):
         self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           required)
 
         # Create filenames for each process
-        self._asciiOutputFileSieve = \
-             self._asciiOutputFile.rpartition(".")[0]+ \
-             "."+str(self.rank)+"."+self._asciiOutputFile.rpartition(".")[2]
-        self._plotOutputFileSieve = \
-             self._plotOutputFile.rpartition(".")[0]+ \
-             "."+str(self.rank)+"."+self._plotOutputFile.rpartition(".")[2]
-        self._ucdOutputRootSieve = \
-             self._ucdOutputRoot.partition(".")[0]+ \
-             "."+str(self.rank)+self._ucdOutputRoot.partition(".")[2]
-        self._coordinateInputFileSieve = \
-             self._coordinateInputFile.rpartition(".")[0]+ \
-             "."+str(self.rank)+"."+self._coordinateInputFile.rpartition(".")[2]
-        self._connectivityInputFileSieve = \
-             self._connectivityInputFile.rpartition(".")[0]+ \
-             "."+str(self.rank)+"."+self._connectivityInputFile.rpartition(".")[2]
-        self._bcInputFileSieve = \
-             self._bcInputFile.rpartition(".")[0]+ \
-             "."+str(self.rank)+"."+self._bcInputFile.rpartition(".")[2]
-        self._splitNodeInputFileSieve = \
-             self._splitNodeInputFile.rpartition(".")[0]+ \
-             "."+str(self.rank)+"."+self._splitNodeInputFile.rpartition(".")[2]
-        self._tractionInputFileSieve = \
-             self._tractionInputFile.rpartition(".")[0]+ \
-             "."+str(self.rank)+"."+self._tractionInputFile.rpartition(".")[2]
+        for attr in ['_asciiOutputFile',
+                     '_plotOutputFile',
+                     '_ucdOutputRoot',
+                     '_coordinateInputFile',
+                     '_connectivityInputFile',
+                     '_bcInputFile',
+                     '_splitNodeInputFile',
+                     '_tractionInputFile']:
+            filename = getattr(self, attr)
+            s = filename.split('.')
+            sieveFilename = ".".join(s[0:1] + [str(self.rank)] + s[1:])
+            setattr(self, attr + 'Sieve', sieveFilename)
 
         uparser = pyre.units.parser()
         matinfo = Materials()
