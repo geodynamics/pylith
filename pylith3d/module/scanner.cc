@@ -139,13 +139,19 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, const ALE::Obj<ALE
   FILE          *f;
   char           bcFilename[2048];
   PetscErrorCode ierr;
+  MPI_Comm          comm = PETSC_COMM_WORLD;
+  PetscMPIInt       rank;
+  char           suff[9];
+
+  ierr = MPI_Comm_rank(comm, &rank);
+  sprintf(suff, "%s%d%s", ".", rank, ".bc");
 
   PetscFunctionBegin;
   if (mesh->debug()) {
     boundaries->view("PyLith boundaries");
   }
   ierr = PetscStrcpy(bcFilename, baseFilename);
-  ierr = PetscStrcat(bcFilename, ".bc");
+  ierr = PetscStrcat(bcFilename, suff);
 
   // Determine if we have bc stuff
   const ALE::Obj<ALE::Mesh::topology_type::label_sequence>& vertices = boundaries->getTopology()->depthStratum(patch, 0);
@@ -292,9 +298,17 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   } 
   ierr = MeshView(mesh, viewer);
   ierr = PetscViewerDestroy(viewer);
-  debug << journal::at(__HERE__) << "[" << rank << "]Output new PyLith mesh into: " << meshOutputFile << journal::endl;
 
-  ierr = WriteBoundary_PyLith(meshOutputFile, m);
+  char           bcFilename[2048];
+  char           suff[9];
+
+  sprintf(suff, "%s%d%s", ".", rank, ".bc");
+  ierr = PetscStrcpy(bcFilename, meshInputFile);
+  ierr = PetscStrcat(bcFilename, suff);
+
+  debug << journal::at(__HERE__) << "[" << rank << "]Output new PyLith mesh into: " << bcFilename << journal::endl;
+
+  ierr = WriteBoundary_PyLith(meshInputFile, m);
   debug << journal::at(__HERE__) << "[" << rank << "]Wrote PyLith boundary conditions"  << journal::endl;
 
   const Obj<ALE::Mesh::topology_type::label_sequence>& vertices = m->getTopology()->depthStratum(0, 0);
