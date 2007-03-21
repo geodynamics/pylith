@@ -86,7 +86,7 @@ cdef class Material:
       raise TypeError, \
             "Argument must be extension module type " \
             "'spatialdata::geocoords::CoordSys'."
-    if not quadrature.name == "pylith_feassemble_quadrature":
+    if not quadrature.name == "pylith_feassemble_Quadrature":
       raise TypeError, \
             "Argument must be extension module type " \
             "'pylith::feassemble::Quadrature'."
@@ -137,7 +137,7 @@ cdef class Material:
                         "Caught unknown C++ exception.");
       } // try/catch
       #}embed
-      if not db.name == "spatialdata_spatialdb_SpatialDB":
+      if not value.name == "spatialdata_spatialdb_SpatialDB":
         raise TypeError, \
               "Argument must be extension module type " \
               "'spatialdata::spatialdb::SpatialDB'."

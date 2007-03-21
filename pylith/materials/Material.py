@@ -93,8 +93,8 @@ class Material(Component):
     self.db.initialize()
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
-    self.cppHandle.db = self.db
-    self.cppHandle.initialize(mesh.cppHandle. mesh.coordsys.cppHandle,
+    self.cppHandle.db = self.db.cppHandle
+    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
                               self.quadrature.cppHandle)
     return
 
