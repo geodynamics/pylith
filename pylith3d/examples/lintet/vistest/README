@@ -1,0 +1,10 @@
+This is meant to be a very simple test of all the viscoelastic models
+presently available.  The default model is a linear Maxwell viscoelastic
+model, which is obtained by simply typing 'pylith3dapp.py' in this
+directory.  Additional models can be used by typing:
+'pylith3dapp.py xxx.cfg'
+where xxx is the name of the desired model (just look at the names of
+the xxx.cfg files in this directory).
+
+Notice that the nonlinear models (power-law) make use of a different
+time stepping description file designed for nonlinear material models.
