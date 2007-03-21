@@ -55,7 +55,7 @@ class Application(PetscApplication):
 
         scanner = self.inventory.scanner
 
-        mesh = pylith3d.processMesh(scanner.macroString(scanner.Inventory.outputFileRoot),
+        mesh = pylith3d.processMesh(scanner.macroString(scanner.Inventory.bcInputFile),
                                     scanner.macroString(scanner.Inventory.inputFileRoot),
                                     scanner.inventory.interpolateMesh,
                                     scanner.inventory.partitioner)
