@@ -70,7 +70,6 @@ class MeshIOAscii(MeshIO):
     """
     MeshIO._configure(self)
     self.filename = self.inventory.filename
-    self.cppHandle.filename = self.filename
     return
 
 

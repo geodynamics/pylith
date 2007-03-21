@@ -70,7 +70,7 @@ class MeshIO(Component):
     self._sync()
     from pylith.topology.Mesh import Mesh
     mesh = Mesh()
-    mesh.cppHandle = self.cppHandle.read(mesh.cppHandle)
+    self.cppHandle.read(mesh.cppHandle)
     return mesh
 
 

@@ -36,8 +36,8 @@ class ElasticIsotropic3D(Material):
     Constructor.
     """
     Material.__init__(self, name)
-    # :TODO: Need to create module for materials
-    # self.cppHandle = bindings.ElasticIsotropic3D()
+    import pylith.materials.materials as bindings
+    self.cppHandle = bindings.ElasticIsotropic3D()
     return
 
 
