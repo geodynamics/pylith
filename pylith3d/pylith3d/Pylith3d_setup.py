@@ -169,11 +169,11 @@ class Pylith3d_setup(Component):
 	self.doubleSize = pl3dscan._doubleSize
 
         # First get all filenames
-        self.asciiOutputFile = pl3dscan._asciiOutputFile
-        self.plotOutputFile = pl3dscan._plotOutputFile
-        self.ucdOutputRoot = pl3dscan._ucdOutputRoot
-        self.coordinateInputFile = pl3dscan._coordinateInputFile
-        self.bcInputFile = pl3dscan._bcInputFile
+        self.asciiOutputFile = pl3dscan._asciiOutputFileSieve
+        self.plotOutputFile = pl3dscan._plotOutputFileSieve
+        self.ucdOutputRoot = pl3dscan._ucdOutputRootSieve
+        self.coordinateInputFile = pl3dscan._coordinateInputFileSieve
+        self.bcInputFile = pl3dscan._bcInputFileSieve
         self.winklerInputFile = pl3dscan._winklerInputFile
         self.rotationInputFile = pl3dscan._rotationInputFile
         self.timeStepInputFile = pl3dscan._timeStepInputFile
@@ -182,10 +182,10 @@ class Pylith3d_setup(Component):
         self.loadHistoryInputFile = pl3dscan._loadHistoryInputFile
         self.materialPropertiesInputFile = pl3dscan._materialPropertiesInputFile
         self.materialHistoryInputFile = pl3dscan._materialHistoryInputFile
-        self.connectivityInputFile = pl3dscan._connectivityInputFile
+        self.connectivityInputFile = pl3dscan._connectivityInputFileSieve
         self.prestressInputFile = pl3dscan._prestressInputFile
-        self.tractionInputFile = pl3dscan._tractionInputFile
-        self.splitNodeInputFile = pl3dscan._splitNodeInputFile
+        self.tractionInputFile = pl3dscan._tractionInputFileSieve
+        self.splitNodeInputFile = pl3dscan._splitNodeInputFileSieve
         self.slipperyNodeInputFile = pl3dscan._slipperyNodeInputFile
         self.differentialForceInputFile = pl3dscan._differentialForceInputFile
         self.slipperyWinklerInputFile = pl3dscan._slipperyWinklerInputFile
