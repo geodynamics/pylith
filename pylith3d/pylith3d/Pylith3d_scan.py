@@ -83,7 +83,7 @@ class Pylith3d_scan(Component):
         self._plotOutputFile              = outputFile(Inventory.plotOutputFile,             optional)
         self._coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
         self._bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
-        self._winklerInputFile            = inputFile(Inventory.winklerInputFile,            optional)
+        self._winklerInputFile            = inputFile(Inventory.winklerInputFile,            unused)
         self._rotationInputFile           = inputFile(Inventory.rotationInputFile,           optional)
         self._timeStepInputFile           = inputFile(Inventory.timeStepInputFile,           required)
         self._fullOutputInputFile         = inputFile(Inventory.fullOutputInputFile, analysisType == "fullSolution" and required or unused)
@@ -184,18 +184,55 @@ class Pylith3d_scan(Component):
         
         self.rank = MPI_Comm_rank(MPI_COMM_WORLD)
         outputFile = self.outputFile
+        inputFile = self.inputFile
+        macroString = self.macroString
         Inventory = Pylith3d_scan.Inventory
         optional = self.IOFileCategory(True,   0,      "optional")
-        # Re-initialize these with the newly acquired rank.
+        required = self.IOFileCategory(True,   1,       None)
+
+        self.trace.log("Hello from pl3dscan.initialize (begin)!")
+        
+        self.trace.log("Scanning ascii files to determine dimensions:")
+
+        # Get base file names
         self._asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
         self._plotOutputFile              = outputFile(Inventory.plotOutputFile,             optional)
+        self._ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
+        self._coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
+        self._connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
+        self._bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
+        self._splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          required)
+        self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           required)
+
+        # Create filenames for each process
+        self._asciiOutputFileSieve = \
+             self._asciiOutputFile.rpartition(".")[0]+ \
+             "."+str(self.rank)+"."+self._asciiOutputFile.rpartition(".")[2]
+        self._plotOutputFileSieve = \
+             self._plotOutputFile.rpartition(".")[0]+ \
+             "."+str(self.rank)+"."+self._plotOutputFile.rpartition(".")[2]
+        self._ucdOutputRootSieve = \
+             self._ucdOutputRoot.partition(".")[0]+ \
+             "."+str(self.rank)+self._ucdOutputRoot.partition(".")[2]
+        self._coordinateInputFileSieve = \
+             self._coordinateInputFile.rpartition(".")[0]+ \
+             "."+str(self.rank)+"."+self._coordinateInputFile.rpartition(".")[2]
+        self._connectivityInputFileSieve = \
+             self._connectivityInputFile.rpartition(".")[0]+ \
+             "."+str(self.rank)+"."+self._connectivityInputFile.rpartition(".")[2]
+        self._bcInputFileSieve = \
+             self._bcInputFile.rpartition(".")[0]+ \
+             "."+str(self.rank)+"."+self._bcInputFile.rpartition(".")[2]
+        self._splitNodeInputFileSieve = \
+             self._splitNodeInputFile.rpartition(".")[0]+ \
+             "."+str(self.rank)+"."+self._splitNodeInputFile.rpartition(".")[2]
+        self._tractionInputFileSieve = \
+             self._tractionInputFile.rpartition(".")[0]+ \
+             "."+str(self.rank)+"."+self._tractionInputFile.rpartition(".")[2]
 
         uparser = pyre.units.parser()
         matinfo = Materials()
 
-        self.trace.log("Hello from pl3dscan.preinitialize (begin)!")
-        
-        self.trace.log("Scanning ascii files to determine dimensions:")
 
         # Define information needed from other functions:
         f77FileInput = self.f77FileInput
@@ -401,7 +438,7 @@ class Pylith3d_scan(Component):
         self._numberNodes = pylith3d.scan_coords(
             f77FileInput,
             self._coordinateUnits,
-            self._coordinateInputFile)
+            self._coordinateInputFileSieve)
 
         self._coordinateScaleString = \
                                     uparser.parse(string.strip(self._coordinateUnits))
@@ -412,7 +449,7 @@ class Pylith3d_scan(Component):
             self._displacementUnits,
             self._velocityUnits,
             self._forceUnits,
-            self._bcInputFile)
+            self._bcInputFileSieve)
 
         if self._numberBcEntries > 0:
             self._displacementScaleString = \
@@ -497,7 +534,7 @@ class Pylith3d_scan(Component):
             self._maxNumberVolumeElementFamilies,
 	    self._numberMaterials,
             f77FileInput,
-            self._connectivityInputFile)
+            self._connectivityInputFileSieve)
 
         self._numberVolumeElements = self._volumeElementDimens[0]
         self._numberVolumeElementFamilies = self._volumeElementDimens[1]
@@ -519,7 +556,7 @@ class Pylith3d_scan(Component):
             self._maxElementNodes2d,
             f77FileInput,
             self._tractionBcUnits,
-            self._tractionInputFile)
+            self._tractionInputFileSieve)
 
         if self._numberTractionBc != 0:
             self._tractionBcScaleString = \
@@ -529,7 +566,7 @@ class Pylith3d_scan(Component):
 
         self._numberSplitNodeEntries = pylith3d.scan_split(
             f77FileInput,
-            self._splitNodeInputFile)
+            self._splitNodeInputFileSieve)
 
         self._numberSlipperyNodeEntries = pylith3d.scan_slip(
             f77FileInput,
@@ -547,7 +584,7 @@ class Pylith3d_scan(Component):
         self._numberSlipperyWinklerEntries = self._slipperyWinklerInfo[0]
         self._numberSlipperyWinklerForces = self._slipperyWinklerInfo[1]
 
-        self.trace.log("Hello from pl3dscan.preinitialize (end)!")
+        self.trace.log("Hello from pl3dscan.initialize (end)!")
 
         return
 
@@ -688,7 +725,7 @@ class Pylith3d_scan(Component):
         fileRoot.meta['tip'] = "Root pathname for simulation (all filenames derive from this)."
         inputFileRoot = pyre.inventory.str("inputFileRoot", default="${fileRoot}")
         inputFileRoot.meta['tip'] = "Root input pathname for simulation (all input filenames derive from this)."
-        outputFileRoot = pyre.inventory.str("outputFileRoot", default="${fileRoot}.${rank}")
+        outputFileRoot = pyre.inventory.str("outputFileRoot", default="${fileRoot}")
         outputFileRoot.meta['tip'] = "Root output pathname for simulation (all output filenames derive from this)."
         
         # Output filenames (all are optional).
@@ -725,9 +762,6 @@ class Pylith3d_scan(Component):
         fullOutputInputFile.meta['tip'] = "Pathname for file defining when to provide output (overrides default from inputFileRoot)."
 
         # Optional input files.
-        winklerInputFile = InputFile("winklerInputFile",default="${inputFileRoot}.wink")
-        winklerInputFile.meta['tip'] = "Pathname for Winkler force input file (overrides default from inputFileRoot)."
-
         rotationInputFile = InputFile("rotationInputFile",default="${inputFileRoot}.skew")
         rotationInputFile.meta['tip'] = "Pathname for skew rotations input file (overrides default from inputFileRoot)."
 
@@ -737,15 +771,18 @@ class Pylith3d_scan(Component):
         splitNodeInputFile = InputFile("splitNodeInputFile",default="${inputFileRoot}.split")
         splitNodeInputFile.meta['tip'] = "Pathname for split node input file (overrides default from inputFileRoot)."
 
+        tractionInputFile = InputFile("tractionInputFile",default="${inputFileRoot}.traction")
+        tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from inputFileRoot)."
+
         # Unused input files.
+        winklerInputFile = InputFile("winklerInputFile",default="${inputFileRoot}.wink")
+        winklerInputFile.meta['tip'] = "Pathname for Winkler force input file (overrides default from inputFileRoot)."
+
         materialHistoryInputFile = InputFile("materialHistoryInputFile",default="${inputFileRoot}.mhist")
         materialHistoryInputFile.meta['tip'] = "Pathname for file defining material histories (overrides default from inputFileRoot -- presently unused)."
 
         prestressInputFile = InputFile("prestressInputFile",default="${inputFileRoot}.prestr")
         prestressInputFile.meta['tip'] = "Pathname for prestress input file (overrides default from inputFileRoot -- presently unused)."
-
-        tractionInputFile = InputFile("tractionInputFile",default="${inputFileRoot}.traction")
-        tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from inputFileRoot)."
 
         slipperyNodeInputFile = InputFile("slipperyNodeInputFile",default="${inputFileRoot}.slip")
         slipperyNodeInputFile.meta['tip'] = "Pathname for slippery node input file (overrides default from inputFileRoot -- presently unused)."

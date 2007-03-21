@@ -55,12 +55,12 @@ class Application(PetscApplication):
 
         scanner = self.inventory.scanner
 
-        scanner.initialize()
-
         mesh = pylith3d.processMesh(scanner.macroString(scanner.Inventory.outputFileRoot),
                                     scanner.macroString(scanner.Inventory.inputFileRoot),
                                     scanner.inventory.interpolateMesh,
                                     scanner.inventory.partitioner)
+
+        scanner.initialize()
         
         pl3dsetup.initialize(scanner)
         pl3dsetup.read()
