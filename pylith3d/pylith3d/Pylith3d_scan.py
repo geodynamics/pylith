@@ -99,6 +99,7 @@ class Pylith3d_scan(Component):
         self._slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       unused)
         self._differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  unused)
         self._slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    unused)
+        self._sampleLocationFile          = inputFile(Inventory.sampleLocationFile,          optional)
 
         # The call to glob() is somewhat crude -- basically, determine
         # if any files might be in the way.
@@ -755,6 +756,9 @@ class Pylith3d_scan(Component):
 
         loadHistoryInputFile = InputFile("loadHistoryInputFile",default="${inputFileRoot}.hist")
         loadHistoryInputFile.meta['tip'] = "Pathname for file defining load histories (overrides default from inputFileRoot)."
+
+        sampleLocationFile = InputFile("sampleLocationFile",default="${inputFileRoot}.sample")
+        sampleLocationFile.meta['tip'] = "Pathname for Green's function sample locations (overrides default from inputFileRoot)."
 
         splitNodeInputFile = InputFile("splitNodeInputFile",default="${inputFileRoot}.split")
         splitNodeInputFile.meta['tip'] = "Pathname for split node input file (overrides default from inputFileRoot)."
