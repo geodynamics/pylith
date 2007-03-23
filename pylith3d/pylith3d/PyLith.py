@@ -39,6 +39,199 @@ class PyLith(PetscApplication):
     name = "pylith3d"
 
 
+    #
+    # properties
+    #
+
+    import pyre.inventory as pyre
+    from cig.cs.petsc import PetscProperty
+
+    MacroString = pyre.str
+    OutputFile = pyre.str
+    InputFile = pyre.str
+
+    green = pyre.bool("green")
+
+    # declare PETSc options that are of interest to PyLith
+    ksp_monitor        = PetscProperty(default="true")
+    ksp_view           = PetscProperty(default="true")
+    ksp_rtol           = PetscProperty(default="1.0e-9")
+    log_summary        = PetscProperty(default="true")
+    pc_type            = PetscProperty(default="bjacobi")
+    sub_pc_type        = PetscProperty(default="ilu")
+    start_in_debugger  = PetscProperty()
+    debugger_pause     = PetscProperty()
+
+    # Title
+    title = pyre.str("title", default="PyLith-0.8 Simulation")
+    title.meta['tip'] = "Title for this simulation"
+
+    # Basename for all files (may be overridden by specific filename entries).
+    fileRoot = pyre.str("fileRoot", default="pt1")
+    fileRoot.meta['tip'] = "Root pathname for simulation (all filenames derive from this)."
+    inputFileRoot = pyre.str("inputFileRoot", default="${fileRoot}")
+    inputFileRoot.meta['tip'] = "Root input pathname for simulation (all input filenames derive from this)."
+    outputFileRoot = pyre.str("outputFileRoot", default="${fileRoot}")
+    outputFileRoot.meta['tip'] = "Root output pathname for simulation (all output filenames derive from this)."
+
+    # Output filenames (all are optional).
+    asciiOutputFile = OutputFile("asciiOutputFile",default="${outputFileRoot}.ascii")
+    asciiOutputFile.meta['tip'] = "Pathname for ascii output file (overrides default from outputFileRoot)."
+
+    plotOutputFile = OutputFile("plotOutputFile",default="${outputFileRoot}.plot")
+    plotOutputFile.meta['tip'] = "Pathname for plot output file (overrides default from outputFileRoot)."
+
+    ucdOutputRoot = MacroString("ucdOutputRoot",default="${outputFileRoot}")
+    ucdOutputRoot.meta['tip'] = "Base name for UCD output files (overrides default from outputFileRoot)."
+
+    # Required input files.
+    coordinateInputFile = InputFile("coordinateInputFile",default="${inputFileRoot}.coord")
+    coordinateInputFile.meta['tip'] = "Pathname for coordinate input file (overrides default from inputFileRoot)."
+
+    bcInputFile = InputFile("bcInputFile",default="${inputFileRoot}.bc")
+    bcInputFile.meta['tip'] = "Pathname for boundary condition input file (overrides default from inputFileRoot)."
+
+    timeStepInputFile = InputFile("timeStepInputFile",default="${inputFileRoot}.time")
+    timeStepInputFile.meta['tip'] = "Pathname for time step definitions input file (overrides default from inputFileRoot)."
+
+    stateVariableInputFile = InputFile("stateVariableInputFile",default="${inputFileRoot}.statevar")
+    stateVariableInputFile.meta['tip'] = "Pathname for file defining which state variables to output (overrides default from inputFileRoot)."
+
+    materialPropertiesInputFile = InputFile("materialPropertiesInputFile",default="${inputFileRoot}.prop")
+    materialPropertiesInputFile.meta['tip'] = "Pathname for file defining material properties (overrides default from inputFileRoot)."
+
+    connectivityInputFile = InputFile("connectivityInputFile",default="${inputFileRoot}.connect")
+    connectivityInputFile.meta['tip'] = "Pathname for connectivity input file (overrides default from inputFileRoot)."
+
+    # This file is only required for time-dependent problems.
+    fullOutputInputFile = InputFile("fullOutputInputFile",default="${inputFileRoot}.fuldat")
+    fullOutputInputFile.meta['tip'] = "Pathname for file defining when to provide output (overrides default from inputFileRoot)."
+
+    # Optional input files.
+    rotationInputFile = InputFile("rotationInputFile",default="${inputFileRoot}.skew")
+    rotationInputFile.meta['tip'] = "Pathname for skew rotations input file (overrides default from inputFileRoot)."
+
+    loadHistoryInputFile = InputFile("loadHistoryInputFile",default="${inputFileRoot}.hist")
+    loadHistoryInputFile.meta['tip'] = "Pathname for file defining load histories (overrides default from inputFileRoot)."
+
+    sampleLocationFile = InputFile("sampleLocationFile",default="${inputFileRoot}.sample")
+    sampleLocationFile.meta['tip'] = "Pathname for Green's function sample locations (overrides default from inputFileRoot)."
+
+    splitNodeInputFile = InputFile("splitNodeInputFile",default="${inputFileRoot}.split")
+    splitNodeInputFile.meta['tip'] = "Pathname for split node input file (overrides default from inputFileRoot)."
+
+    tractionInputFile = InputFile("tractionInputFile",default="${inputFileRoot}.traction")
+    tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from inputFileRoot)."
+
+    # Unused input files.
+    winklerInputFile = InputFile("winklerInputFile",default="${inputFileRoot}.wink")
+    winklerInputFile.meta['tip'] = "Pathname for Winkler force input file (overrides default from inputFileRoot)."
+
+    materialHistoryInputFile = InputFile("materialHistoryInputFile",default="${inputFileRoot}.mhist")
+    materialHistoryInputFile.meta['tip'] = "Pathname for file defining material histories (overrides default from inputFileRoot -- presently unused)."
+
+    prestressInputFile = InputFile("prestressInputFile",default="${inputFileRoot}.prestr")
+    prestressInputFile.meta['tip'] = "Pathname for prestress input file (overrides default from inputFileRoot -- presently unused)."
+
+    slipperyNodeInputFile = InputFile("slipperyNodeInputFile",default="${inputFileRoot}.slip")
+    slipperyNodeInputFile.meta['tip'] = "Pathname for slippery node input file (overrides default from inputFileRoot -- presently unused)."
+
+    differentialForceInputFile = InputFile("differentialForceInputFile",default="${inputFileRoot}.diff")
+    differentialForceInputFile.meta['tip'] = "Pathname for file defining slippery node differential forces (overrides default from inputFileRoot -- presently unused)."
+
+    slipperyWinklerInputFile = InputFile("slipperyWinklerInputFile",default="${inputFileRoot}.winkx")
+    slipperyWinklerInputFile.meta['tip'] = "Pathname for file defining slippery node Winkler forces (overrides default from inputFileRoot -- presently unused)."
+
+    # Output option flags.
+    asciiOutput = pyre.str("asciiOutput",default="echo")
+    asciiOutput.validator = pyre.choice(["none","echo","full"])
+    asciiOutput.meta['tip'] = "Type of ascii output desired (none, echo, full)."
+
+    plotOutput = pyre.str("plotOutput",default="none")
+    plotOutput.validator = pyre.choice(["none","ascii","binary"])
+    plotOutput.meta['tip'] = "Type of plot output desired (none, ascii, binary)."
+
+    ucdOutput = pyre.str("ucdOutput",default=None)
+    ucdOutput.validator = pyre.choice(["none","ascii","binary"])
+    ucdOutput.meta['tip'] = "Type of UCD output desired (none, ascii, binary)."
+
+    # Additional option flags.
+    analysisType = pyre.str("analysisType",default="fullSolution")
+    analysisType.validator = pyre.choice(["dataCheck","stiffnessFactor",
+                                          "elasticSolution","fullSolution"])
+    analysisType.meta['tip'] = "Type of analysis (dataCheck, stiffnessFactor, elasticSolution, fullSolution)."
+
+    pythonTimestep = pyre.bool("pythonTimestep",default=False)
+    pythonTimestep.meta['tip'] = "Whether to use python timestepping loop (enables VTK output for time-dependent solution)."
+
+    debuggingOutput = pyre.bool("debuggingOutput",default=False)
+    debuggingOutput.meta['tip'] = "Whether to produce debugging output."
+
+    numberCycles = pyre.int("numberCycles",default=1)
+    numberCycles.meta['tip'] = "Number of cycles of the given timestep definitions to perform (default=1)."
+
+    interpolateMesh = pyre.bool("interpolateMesh",default=False)
+    interpolateMesh.meta['tip'] = "Create intermediate mesh entities, such as edges and faces."
+
+    partitioner = pyre.str("partitioner",default="chaco")
+    partitioner.validator = pyre.choice(["chaco","parmetis"])
+    partitioner.meta['tip'] = "Partitioner (chaco, parmetis)."
+
+    # Unused option flags.
+    autoRotateSlipperyNodes = pyre.bool("autoRotateSlipperyNodes",default=True)
+    autoRotateSlipperyNodes.meta['tip'] = "Whether to performa automatic rotation for slippery nodes (presently unused)."
+
+    #
+    # category 2 parameters formerly placed in *.keyval files
+    #
+
+    from pyre.units.pressure import Pa
+    from pyre.units.length import m
+    from pyre.units.time import s
+
+    winklerScaleX = pyre.float("winklerScaleX", default=1.0)
+    winklerScaleY = pyre.float("winklerScaleY", default=1.0)
+    winklerScaleZ = pyre.float("winklerScaleZ", default=1.0)
+
+    stressTolerance = pyre.dimensional("stressTolerance", default=1.0e-12*Pa)
+    minimumStrainPerturbation = pyre.float("minimumStrainPerturbation", default=1.0e-7)
+    initialStrainPerturbation = pyre.float("initialStrainPerturbation", default=1.0e-1)
+
+    usePreviousDisplacementFlag = pyre.int("usePreviousDisplacementFlag", default=0)
+
+    quadratureOrder = pyre.str("quadratureOrder", default="Full")
+    quadratureOrder.validator = pyre.choice(["Full", "Reduced", "Selective"])
+
+    gravityX = pyre.dimensional("gravityX", default=0.0*m/(s*s))
+    gravityY = pyre.dimensional("gravityY", default=0.0*m/(s*s))
+    gravityZ = pyre.dimensional("gravityZ", default=0.0*m/(s*s))
+
+    prestressAutoCompute = pyre.bool("prestressAutoCompute", default=False)
+    prestressAutoChangeElasticProps = pyre.bool("prestressAutoChangeElasticProps", default=False)
+    prestressAutoComputePoisson = pyre.float("prestressAutoComputePoisson", default=0.49)
+    prestressAutoComputeYoungs = pyre.dimensional("prestressAutoComputeYoungs", default=1.0e30*Pa)
+
+    prestressScaleXx = pyre.float("prestressScaleXx", default=1.0)
+    prestressScaleYy = pyre.float("prestressScaleYy", default=1.0)
+    prestressScaleZz = pyre.float("prestressScaleZz", default=1.0)
+    prestressScaleXy = pyre.float("prestressScaleXy", default=1.0)
+    prestressScaleXz = pyre.float("prestressScaleXz", default=1.0)
+    prestressScaleYz = pyre.float("prestressScaleYz", default=1.0)
+
+    winklerSlipScaleX = pyre.float("winklerSlipScaleX", default=1.0)
+    winklerSlipScaleY = pyre.float("winklerSlipScaleY", default=1.0)
+    winklerSlipScaleZ = pyre.float("winklerSlipScaleZ", default=1.0)
+
+    f77StandardInput = pyre.int("f77StandardInput", default=5)
+    f77StandardOutput = pyre.int("f77StandardOutput", default=6)
+    f77FileInput = pyre.int("f77FileInput", default=10)
+    f77AsciiOutput = pyre.int("f77AsciiOutput", default=11)
+    f77PlotOutput = pyre.int("f77PlotOutput", default=12)
+    f77UcdOutput = pyre.int("f77UcdOutput", default=13)
+
+
+
+
     # Tell the framework where to find PETSc functions.
     import pylith3d as petsc
 
@@ -140,15 +333,13 @@ for() {
 
         import pylith3d
 
-        green = self.inventory.green
-        
-        if green:
+        if self.green:
             points      = self.readSamplePoints(self.macroString(self.metainventory.sampleLocationFile))
 
         self.mesh = pylith3d.processMesh(self.macroString(self.metainventory.bcInputFile),
                                          self.macroString(self.metainventory.inputFileRoot),
-                                         self.inventory.interpolateMesh,
-                                         self.inventory.partitioner)
+                                         self.interpolateMesh,
+                                         self.partitioner)
 
         self.initialize()
         
@@ -160,7 +351,7 @@ for() {
         self.allocateremaining()
         self.meshwrite()
 
-        if green:
+        if self.green:
             self.greenFunction(points)
         else:
             self.runSimulation()
@@ -189,8 +380,6 @@ for() {
         
         Inventory = self.metainventory
 
-        analysisType = self.inventory.analysisType
-
         self.asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
         self.plotOutputFile              = outputFile(Inventory.plotOutputFile,             optional)
         self.coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
@@ -198,7 +387,7 @@ for() {
         self.winklerInputFile            = inputFile(Inventory.winklerInputFile,            unused)
         self.rotationInputFile           = inputFile(Inventory.rotationInputFile,           optional)
         self.timeStepInputFile           = inputFile(Inventory.timeStepInputFile,           required)
-        self.fullOutputInputFile         = inputFile(Inventory.fullOutputInputFile, analysisType == "fullSolution" and required or unused)
+        self.fullOutputInputFile         = inputFile(Inventory.fullOutputInputFile, self.analysisType == "fullSolution" and required or unused)
         self.stateVariableInputFile      = inputFile(Inventory.stateVariableInputFile,      required)
         self.loadHistoryInputFile        = inputFile(Inventory.loadHistoryInputFile,        optional)
         self.materialPropertiesInputFile = inputFile(Inventory.materialPropertiesInputFile, required)
@@ -235,57 +424,6 @@ for() {
                 else:
                     stream.close()
                     os.remove(ucdFile)
-
-        return
-
-
-    def _configure(self):
-
-        super(PyLith, self)._configure()
-
-        # get values for extra input (category 2)
-
-        self.winklerScaleX = self.inventory.winklerScaleX
-        self.winklerScaleY = self.inventory.winklerScaleY
-        self.winklerScaleZ = self.inventory.winklerScaleZ
-        
-        self.stressTolerance = self.inventory.stressTolerance
-        self.minimumStrainPerturbation = self.inventory.minimumStrainPerturbation
-        self.initialStrainPerturbation = self.inventory.initialStrainPerturbation
-        
-        self.usePreviousDisplacementFlag = self.inventory.usePreviousDisplacementFlag
-        
-        self.quadratureOrder = self.inventory.quadratureOrder
-        
-        self.gravityX = self.inventory.gravityX
-        self.gravityY = self.inventory.gravityY
-        self.gravityZ = self.inventory.gravityZ
-        
-        self.prestressAutoCompute = self.inventory.prestressAutoCompute
-        self.prestressAutoChangeElasticProps = self.inventory.prestressAutoChangeElasticProps
-        self.prestressAutoComputePoisson = self.inventory.prestressAutoComputePoisson
-        self.prestressAutoComputeYoungs = self.inventory.prestressAutoComputeYoungs
-        
-        self.prestressScaleXx = self.inventory.prestressScaleXx
-        self.prestressScaleYy = self.inventory.prestressScaleYy
-        self.prestressScaleZz = self.inventory.prestressScaleZz
-        self.prestressScaleXy = self.inventory.prestressScaleXy
-        self.prestressScaleXz = self.inventory.prestressScaleXz
-        self.prestressScaleYz = self.inventory.prestressScaleYz
-        
-        self.winklerSlipScaleX = self.inventory.winklerSlipScaleX
-        self.winklerSlipScaleY = self.inventory.winklerSlipScaleY
-        self.winklerSlipScaleZ = self.inventory.winklerSlipScaleZ
-        
-        self.f77StandardInput = self.inventory.f77StandardInput
-        self.f77StandardOutput = self.inventory.f77StandardOutput
-        self.f77FileInput = self.inventory.f77FileInput
-        self.f77AsciiOutput = self.inventory.f77AsciiOutput
-        self.f77PlotOutput = self.inventory.f77PlotOutput
-        self.f77UcdOutput = self.inventory.f77UcdOutput
-
-        self.fileRoot = self.inventory.fileRoot
-        self.analysisType = self.inventory.analysisType
 
         return
 
@@ -332,7 +470,7 @@ for() {
             filename = getattr(self, attr)
             s = filename.split('.')
             sieveFilename = ".".join(s[0:1] + [str(self.rank)] + s[1:])
-            setattr(self, attr + 'Sieve', sieveFilename)
+            setattr(self, attr, sieveFilename)
 
         uparser = pyre.units.parser()
         matinfo = Materials()
@@ -519,14 +657,13 @@ for() {
 
         # Parameters derived from values in the inventory or the
         # category 2 parameters above.
-        analysisType = self.inventory.analysisType
         analysisTypeMap = {
             "dataCheck":       0,
             "stiffnessFactor": 1,
             "elasticSolution": 2,
             "fullSolution":    3,
             }
-        self.analysisTypeInt = analysisTypeMap[analysisType]
+        self.analysisTypeInt = analysisTypeMap[self.analysisType]
 
         if prestressAutoCompute:
             self.prestressAutoComputeInt = 1
@@ -542,7 +679,7 @@ for() {
         self.numberNodes = pylith3d.scan_coords(
             f77FileInput,
             self.coordinateUnits,
-            self.coordinateInputFileSieve)
+            self.coordinateInputFile)
 
         self.coordinateScaleString = \
                                     uparser.parse(string.strip(self.coordinateUnits))
@@ -553,7 +690,7 @@ for() {
             self.displacementUnits,
             self.velocityUnits,
             self.forceUnits,
-            self.bcInputFileSieve)
+            self.bcInputFile)
 
         if self.numberBcEntries > 0:
             self.displacementScaleString = \
@@ -638,7 +775,7 @@ for() {
             self.maxNumberVolumeElementFamilies,
 	    self.numberMaterials,
             f77FileInput,
-            self.connectivityInputFileSieve)
+            self.connectivityInputFile)
 
         self.numberVolumeElements = self.volumeElementDimens[0]
         self.numberVolumeElementFamilies = self.volumeElementDimens[1]
@@ -660,7 +797,7 @@ for() {
             self.maxElementNodes2d,
             f77FileInput,
             self.tractionBcUnits,
-            self.tractionInputFileSieve)
+            self.tractionInputFile)
 
         if self.numberTractionBc != 0:
             self.tractionBcScaleString = \
@@ -670,7 +807,7 @@ for() {
 
         self.numberSplitNodeEntries = pylith3d.scan_split(
             f77FileInput,
-            self.splitNodeInputFileSieve)
+            self.splitNodeInputFile)
 
         self.numberSlipperyNodeEntries = pylith3d.scan_slip(
             f77FileInput,
@@ -746,196 +883,6 @@ for() {
         return value
 
 
-    class Inventory(PetscApplication.Inventory):
-
-        import pyre.inventory
-        from cig.cs.petsc import PetscProperty
-
-        MacroString = pyre.inventory.str
-        OutputFile = pyre.inventory.str
-        InputFile = pyre.inventory.str
-
-        green = pyre.inventory.bool("green")
-
-        # declare PETSc options that are of interest to PyLith
-        ksp_monitor        = PetscProperty()
-        ksp_view           = PetscProperty()
-        ksp_rtol           = PetscProperty()
-        log_summary        = PetscProperty()
-        pc_type            = PetscProperty()
-        sub_pc_type        = PetscProperty()
-        start_in_debugger  = PetscProperty()
-        debugger_pause     = PetscProperty()
-
-        # Title
-        title = pyre.inventory.str("title",
-                                   default="PyLith-0.8 Simulation")
-        title.meta['tip'] = "Title for this simulation"
-
-        # Basename for all files (may be overridden by specific filename entries).
-        fileRoot = pyre.inventory.str("fileRoot", default="pt1")
-        fileRoot.meta['tip'] = "Root pathname for simulation (all filenames derive from this)."
-        inputFileRoot = pyre.inventory.str("inputFileRoot", default="${fileRoot}")
-        inputFileRoot.meta['tip'] = "Root input pathname for simulation (all input filenames derive from this)."
-        outputFileRoot = pyre.inventory.str("outputFileRoot", default="${fileRoot}")
-        outputFileRoot.meta['tip'] = "Root output pathname for simulation (all output filenames derive from this)."
-        
-        # Output filenames (all are optional).
-        asciiOutputFile = OutputFile("asciiOutputFile",default="${outputFileRoot}.ascii")
-        asciiOutputFile.meta['tip'] = "Pathname for ascii output file (overrides default from outputFileRoot)."
-
-        plotOutputFile = OutputFile("plotOutputFile",default="${outputFileRoot}.plot")
-        plotOutputFile.meta['tip'] = "Pathname for plot output file (overrides default from outputFileRoot)."
-
-        ucdOutputRoot = MacroString("ucdOutputRoot",default="${outputFileRoot}")
-        ucdOutputRoot.meta['tip'] = "Base name for UCD output files (overrides default from outputFileRoot)."
-
-        # Required input files.
-        coordinateInputFile = InputFile("coordinateInputFile",default="${inputFileRoot}.coord")
-        coordinateInputFile.meta['tip'] = "Pathname for coordinate input file (overrides default from inputFileRoot)."
-
-        bcInputFile = InputFile("bcInputFile",default="${inputFileRoot}.bc")
-        bcInputFile.meta['tip'] = "Pathname for boundary condition input file (overrides default from inputFileRoot)."
-
-        timeStepInputFile = InputFile("timeStepInputFile",default="${inputFileRoot}.time")
-        timeStepInputFile.meta['tip'] = "Pathname for time step definitions input file (overrides default from inputFileRoot)."
-
-        stateVariableInputFile = InputFile("stateVariableInputFile",default="${inputFileRoot}.statevar")
-        stateVariableInputFile.meta['tip'] = "Pathname for file defining which state variables to output (overrides default from inputFileRoot)."
-
-        materialPropertiesInputFile = InputFile("materialPropertiesInputFile",default="${inputFileRoot}.prop")
-        materialPropertiesInputFile.meta['tip'] = "Pathname for file defining material properties (overrides default from inputFileRoot)."
-
-        connectivityInputFile = InputFile("connectivityInputFile",default="${inputFileRoot}.connect")
-        connectivityInputFile.meta['tip'] = "Pathname for connectivity input file (overrides default from inputFileRoot)."
-
-        # This file is only required for time-dependent problems.
-        fullOutputInputFile = InputFile("fullOutputInputFile",default="${inputFileRoot}.fuldat")
-        fullOutputInputFile.meta['tip'] = "Pathname for file defining when to provide output (overrides default from inputFileRoot)."
-
-        # Optional input files.
-        rotationInputFile = InputFile("rotationInputFile",default="${inputFileRoot}.skew")
-        rotationInputFile.meta['tip'] = "Pathname for skew rotations input file (overrides default from inputFileRoot)."
-
-        loadHistoryInputFile = InputFile("loadHistoryInputFile",default="${inputFileRoot}.hist")
-        loadHistoryInputFile.meta['tip'] = "Pathname for file defining load histories (overrides default from inputFileRoot)."
-
-        sampleLocationFile = InputFile("sampleLocationFile",default="${inputFileRoot}.sample")
-        sampleLocationFile.meta['tip'] = "Pathname for Green's function sample locations (overrides default from inputFileRoot)."
-
-        splitNodeInputFile = InputFile("splitNodeInputFile",default="${inputFileRoot}.split")
-        splitNodeInputFile.meta['tip'] = "Pathname for split node input file (overrides default from inputFileRoot)."
-
-        tractionInputFile = InputFile("tractionInputFile",default="${inputFileRoot}.traction")
-        tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from inputFileRoot)."
-
-        # Unused input files.
-        winklerInputFile = InputFile("winklerInputFile",default="${inputFileRoot}.wink")
-        winklerInputFile.meta['tip'] = "Pathname for Winkler force input file (overrides default from inputFileRoot)."
-
-        materialHistoryInputFile = InputFile("materialHistoryInputFile",default="${inputFileRoot}.mhist")
-        materialHistoryInputFile.meta['tip'] = "Pathname for file defining material histories (overrides default from inputFileRoot -- presently unused)."
-
-        prestressInputFile = InputFile("prestressInputFile",default="${inputFileRoot}.prestr")
-        prestressInputFile.meta['tip'] = "Pathname for prestress input file (overrides default from inputFileRoot -- presently unused)."
-
-        slipperyNodeInputFile = InputFile("slipperyNodeInputFile",default="${inputFileRoot}.slip")
-        slipperyNodeInputFile.meta['tip'] = "Pathname for slippery node input file (overrides default from inputFileRoot -- presently unused)."
-
-        differentialForceInputFile = InputFile("differentialForceInputFile",default="${inputFileRoot}.diff")
-        differentialForceInputFile.meta['tip'] = "Pathname for file defining slippery node differential forces (overrides default from inputFileRoot -- presently unused)."
-
-        slipperyWinklerInputFile = InputFile("slipperyWinklerInputFile",default="${inputFileRoot}.winkx")
-        slipperyWinklerInputFile.meta['tip'] = "Pathname for file defining slippery node Winkler forces (overrides default from inputFileRoot -- presently unused)."
-
-        # Output option flags.
-        asciiOutput = pyre.inventory.str("asciiOutput",default="echo")
-        asciiOutput.validator = pyre.inventory.choice(["none","echo","full"])
-        asciiOutput.meta['tip'] = "Type of ascii output desired (none, echo, full)."
-
-        plotOutput = pyre.inventory.str("plotOutput",default="none")
-        plotOutput.validator = pyre.inventory.choice(["none","ascii","binary"])
-        plotOutput.meta['tip'] = "Type of plot output desired (none, ascii, binary)."
-
-        ucdOutput = pyre.inventory.str("ucdOutput",default=None)
-        ucdOutput.validator = pyre.inventory.choice(["none","ascii","binary"])
-        ucdOutput.meta['tip'] = "Type of UCD output desired (none, ascii, binary)."
-
-        # Additional option flags.
-        analysisType = pyre.inventory.str("analysisType",default="fullSolution")
-        analysisType.validator = pyre.inventory.choice(["dataCheck","stiffnessFactor",
-                                                        "elasticSolution","fullSolution"])
-        analysisType.meta['tip'] = "Type of analysis (dataCheck, stiffnessFactor, elasticSolution, fullSolution)."
-
-        pythonTimestep = pyre.inventory.bool("pythonTimestep",default=False)
-        pythonTimestep.meta['tip'] = "Whether to use python timestepping loop (enables VTK output for time-dependent solution)."
-
-        debuggingOutput = pyre.inventory.bool("debuggingOutput",default=False)
-        debuggingOutput.meta['tip'] = "Whether to produce debugging output."
-
-        numberCycles = pyre.inventory.int("numberCycles",default=1)
-        numberCycles.meta['tip'] = "Number of cycles of the given timestep definitions to perform (default=1)."
-
-        interpolateMesh = pyre.inventory.bool("interpolateMesh",default=False)
-        interpolateMesh.meta['tip'] = "Create intermediate mesh entities, such as edges and faces."
-
-        partitioner = pyre.inventory.str("partitioner",default="chaco")
-        partitioner.validator = pyre.inventory.choice(["chaco","parmetis"])
-        partitioner.meta['tip'] = "Partitioner (chaco, parmetis)."
-
-        # Unused option flags.
-        autoRotateSlipperyNodes = pyre.inventory.bool("autoRotateSlipperyNodes",default=True)
-        autoRotateSlipperyNodes.meta['tip'] = "Whether to performa automatic rotation for slippery nodes (presently unused)."
-
-        #
-        # category 2 parameters formerly placed in *.keyval files
-        #
-
-        from pyre.units.pressure import Pa
-        from pyre.units.length import m
-        from pyre.units.time import s
-
-        winklerScaleX = pyre.inventory.float("winklerScaleX", default=1.0)
-        winklerScaleY = pyre.inventory.float("winklerScaleY", default=1.0)
-        winklerScaleZ = pyre.inventory.float("winklerScaleZ", default=1.0)
-
-        stressTolerance = pyre.inventory.dimensional("stressTolerance", default=1.0e-12*Pa)
-        minimumStrainPerturbation = pyre.inventory.float("minimumStrainPerturbation", default=1.0e-7)
-        initialStrainPerturbation = pyre.inventory.float("initialStrainPerturbation", default=1.0e-1)
-
-        usePreviousDisplacementFlag = pyre.inventory.int("usePreviousDisplacementFlag", default=0)
-
-        quadratureOrder = pyre.inventory.str("quadratureOrder", default="Full")
-        quadratureOrder.validator = pyre.inventory.choice(["Full", "Reduced", "Selective"])
-
-        gravityX = pyre.inventory.dimensional("gravityX", default=0.0*m/(s*s))
-        gravityY = pyre.inventory.dimensional("gravityY", default=0.0*m/(s*s))
-        gravityZ = pyre.inventory.dimensional("gravityZ", default=0.0*m/(s*s))
-
-        prestressAutoCompute = pyre.inventory.bool("prestressAutoCompute", default=False)
-        prestressAutoChangeElasticProps = pyre.inventory.bool("prestressAutoChangeElasticProps", default=False)
-        prestressAutoComputePoisson = pyre.inventory.float("prestressAutoComputePoisson", default=0.49)
-        prestressAutoComputeYoungs = pyre.inventory.dimensional("prestressAutoComputeYoungs", default=1.0e30*Pa)
-
-        prestressScaleXx = pyre.inventory.float("prestressScaleXx", default=1.0)
-        prestressScaleYy = pyre.inventory.float("prestressScaleYy", default=1.0)
-        prestressScaleZz = pyre.inventory.float("prestressScaleZz", default=1.0)
-        prestressScaleXy = pyre.inventory.float("prestressScaleXy", default=1.0)
-        prestressScaleXz = pyre.inventory.float("prestressScaleXz", default=1.0)
-        prestressScaleYz = pyre.inventory.float("prestressScaleYz", default=1.0)
-
-        winklerSlipScaleX = pyre.inventory.float("winklerSlipScaleX", default=1.0)
-        winklerSlipScaleY = pyre.inventory.float("winklerSlipScaleY", default=1.0)
-        winklerSlipScaleZ = pyre.inventory.float("winklerSlipScaleZ", default=1.0)
-
-        f77StandardInput = pyre.inventory.int("f77StandardInput", default=5)
-        f77StandardOutput = pyre.inventory.int("f77StandardOutput", default=6)
-        f77FileInput = pyre.inventory.int("f77FileInput", default=10)
-        f77AsciiOutput = pyre.inventory.int("f77AsciiOutput", default=11)
-        f77PlotOutput = pyre.inventory.int("f77PlotOutput", default=12)
-        f77UcdOutput = pyre.inventory.int("f77UcdOutput", default=13)
-
-
 # The main function of this code is to emulate the original functionality of
 # input.f in the original version of TECTON.  This code segment controls the
 # allocation of memory and the reading of the input file.  Additional functions
@@ -962,17 +909,17 @@ for() {
             self.quadratureOrderInt = 1
 
         self.asciiOutputInt = 0
-        if self.inventory.asciiOutput == "none":
+        if self.asciiOutput == "none":
             self.asciiOutputInt = 0
-        elif self.inventory.asciiOutput == "echo":
+        elif self.asciiOutput == "echo":
             self.asciiOutputInt = 1
         else:
             self.asciiOutputInt = 2
             
         self.plotOutputInt = 0
-        if self.inventory.plotOutput == "none":
+        if self.plotOutput == "none":
             self.plotOutputInt = 0
-        elif self.inventory.plotOutput == "ascii":
+        elif self.plotOutput == "ascii":
             self.plotOutputInt = 1
         else:
             self.plotOutputInt = 2
@@ -985,11 +932,11 @@ for() {
             self.ucdOutputInt = 1
         else:
             self.ucdOutputInt = 2
-        if self.inventory.ucdOutput == "none":
+        if self.ucdOutput == "none":
             self.ucdOutputInt = 0
-        elif self.inventory.ucdOutput == "ascii":
+        elif self.ucdOutput == "ascii":
             self.ucdOutputInt = 1
-        elif self.inventory.ucdOutput == "binary":
+        elif self.ucdOutput == "binary":
             if binIOError is None:
                 self.ucdOutputInt = 2
             else:
@@ -1000,20 +947,16 @@ for() {
                 warning.log(binIOError)
             
         self.debuggingOutputInt = 0
-        if self.inventory.debuggingOutput:
+        if self.debuggingOutput:
             self.debuggingOutputInt = 1
         else:
             self.debuggingOutputInt = 0
 
         self.autoRotateSlipperyNodesInt = 0
-        if self.inventory.autoRotateSlipperyNodes:
+        if self.autoRotateSlipperyNodes:
             self.autoRotateSlipperyNodesInt = 2
         else:
             self.autoRotateSlipperyNodesInt = 1
-
-        # Get some parameters from the inventory list.
-        self.title = self.inventory.title
-        self.numberCycles = self.inventory.numberCycles
 
         self.trace.log("Hello from pl3dsetup.initialize (end)!")
 
