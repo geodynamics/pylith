@@ -70,40 +70,40 @@ class Pylith3d_scan(Component):
 
         analysisType = self.inventory.analysisType
 
-        self._asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
-        self._plotOutputFile              = outputFile(Inventory.plotOutputFile,             optional)
-        self._coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
-        self._bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
-        self._winklerInputFile            = inputFile(Inventory.winklerInputFile,            unused)
-        self._rotationInputFile           = inputFile(Inventory.rotationInputFile,           optional)
-        self._timeStepInputFile           = inputFile(Inventory.timeStepInputFile,           required)
-        self._fullOutputInputFile         = inputFile(Inventory.fullOutputInputFile, analysisType == "fullSolution" and required or unused)
-        self._stateVariableInputFile      = inputFile(Inventory.stateVariableInputFile,      required)
-        self._loadHistoryInputFile        = inputFile(Inventory.loadHistoryInputFile,        optional)
-        self._materialPropertiesInputFile = inputFile(Inventory.materialPropertiesInputFile, required)
-        self._materialHistoryInputFile    = inputFile(Inventory.materialHistoryInputFile,    unused)
-        self._connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
-        self._prestressInputFile          = inputFile(Inventory.prestressInputFile,          unused)
-        self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
-        self._splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
+        self.asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
+        self.plotOutputFile              = outputFile(Inventory.plotOutputFile,             optional)
+        self.coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
+        self.bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
+        self.winklerInputFile            = inputFile(Inventory.winklerInputFile,            unused)
+        self.rotationInputFile           = inputFile(Inventory.rotationInputFile,           optional)
+        self.timeStepInputFile           = inputFile(Inventory.timeStepInputFile,           required)
+        self.fullOutputInputFile         = inputFile(Inventory.fullOutputInputFile, analysisType == "fullSolution" and required or unused)
+        self.stateVariableInputFile      = inputFile(Inventory.stateVariableInputFile,      required)
+        self.loadHistoryInputFile        = inputFile(Inventory.loadHistoryInputFile,        optional)
+        self.materialPropertiesInputFile = inputFile(Inventory.materialPropertiesInputFile, required)
+        self.materialHistoryInputFile    = inputFile(Inventory.materialHistoryInputFile,    unused)
+        self.connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
+        self.prestressInputFile          = inputFile(Inventory.prestressInputFile,          unused)
+        self.tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
+        self.splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
         # Slippery nodes are not yet implemented in PyLith-0.8.
-        self._slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       unused)
-        self._differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  unused)
-        self._slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    unused)
-        self._sampleLocationFile          = inputFile(Inventory.sampleLocationFile,          optional)
+        self.slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       unused)
+        self.differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  unused)
+        self.slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    unused)
+        self.sampleLocationFile          = inputFile(Inventory.sampleLocationFile,          optional)
 
         # The call to glob() is somewhat crude -- basically, determine
         # if any files might be in the way.
-        self._ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
+        self.ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
 
         if False: # broken
             from glob import glob
-            ucdFiles = ([self._ucdOutputRoot + ".mesh.inp",
-                         self._ucdOutputRoot + ".gmesh.inp",
-                         self._ucdOutputRoot + ".mesh.time.prest.inp",
-                         self._ucdOutputRoot + ".gmesh.time.prest.inp"]
-                        + glob(self._ucdOutputRoot + ".mesh.time.[0-9][0-9][0-9][0-9][0-9].inp")
-                        + glob(self._ucdOutputRoot + ".gmesh.time.[0-9][0-9][0-9][0-9][0-9].inp"))
+            ucdFiles = ([self.ucdOutputRoot + ".mesh.inp",
+                         self.ucdOutputRoot + ".gmesh.inp",
+                         self.ucdOutputRoot + ".mesh.time.prest.inp",
+                         self.ucdOutputRoot + ".gmesh.time.prest.inp"]
+                        + glob(self.ucdOutputRoot + ".mesh.time.[0-9][0-9][0-9][0-9][0-9].inp")
+                        + glob(self.ucdOutputRoot + ".gmesh.time.[0-9][0-9][0-9][0-9][0-9].inp"))
             item = Inventory.ucdOutputRoot
             for ucdFile in ucdFiles:
                 try:
@@ -182,24 +182,24 @@ class Pylith3d_scan(Component):
         self.trace.log("Scanning ascii files to determine dimensions:")
 
         # Get base file names
-        self._asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
-        self._plotOutputFile              = outputFile(Inventory.plotOutputFile,             optional)
-        self._ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
-        self._coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
-        self._connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
-        self._bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
-        self._splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
-        self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
+        self.asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
+        self.plotOutputFile              = outputFile(Inventory.plotOutputFile,             optional)
+        self.ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
+        self.coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
+        self.connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
+        self.bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
+        self.splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
+        self.tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
 
         # Create filenames for each process
-        for attr in ['_asciiOutputFile',
-                     '_plotOutputFile',
-                     '_ucdOutputRoot',
-                     '_coordinateInputFile',
-                     '_connectivityInputFile',
-                     '_bcInputFile',
-                     '_splitNodeInputFile',
-                     '_tractionInputFile']:
+        for attr in ['asciiOutputFile',
+                     'plotOutputFile',
+                     'ucdOutputRoot',
+                     'coordinateInputFile',
+                     'connectivityInputFile',
+                     'bcInputFile',
+                     'splitNodeInputFile',
+                     'tractionInputFile']:
             filename = getattr(self, attr)
             s = filename.split('.')
             sieveFilename = ".".join(s[0:1] + [str(self.rank)] + s[1:])
@@ -219,112 +219,112 @@ class Pylith3d_scan(Component):
 	# Memory size variable to keep approximate track of all
 	# allocated memory.  This does not include python variables and
 	# lists.
-	self._memorySize = 0L
-	self._intSize = 4L
-	self._doubleSize = 8L
+	self.memorySize = 0L
+	self.intSize = 4L
+	self.doubleSize = 8L
         # Parameters that are invariant for this geometry type
-        self._geometryType = ""
-        self._geometryTypeInt = 0
-        self._numberSpaceDimensions = 0
-        self._numberDegreesFreedom = 0
+        self.geometryType = ""
+        self.geometryTypeInt = 0
+        self.numberSpaceDimensions = 0
+        self.numberDegreesFreedom = 0
         # Note:  eventually the variable below should disappear, and the
         # total size of the state variable array for each material model
         # should be used instead.  This means that all state variable
         # bookkeeping should be done within the material model routines.
-        self._stateVariableDimension = 0
-        self._materialMatrixDimension = 0
-        self._numberSkewDimensions = 0
-        self._numberSlipDimensions = 0
-        self._numberSlipNeighbors = 0
-        self._listIddmat = [0]
+        self.stateVariableDimension = 0
+        self.materialMatrixDimension = 0
+        self.numberSkewDimensions = 0
+        self.numberSlipDimensions = 0
+        self.numberSlipNeighbors = 0
+        self.listIddmat = [0]
 
         # Invariant parameters related to element type
-        self._numberElementTypes = 0
-        self._numberElementTypesBase = 0
-        self._numberElementNodesBase = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self._pointerToListArrayNumberElementNodesBase = None
+        self.numberElementTypes = 0
+        self.numberElementTypesBase = 0
+        self.numberElementNodesBase = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.pointerToListArrayNumberElementNodesBase = None
 
         # Invariant parameters related to material model
-        self._maxMaterialModels = 0
-        self._maxStateVariables = 0
-        self._maxState0Variables = 0
-        self._pointerToMaterialModelInfo = None
+        self.maxMaterialModels = 0
+        self.maxStateVariables = 0
+        self.maxState0Variables = 0
+        self.pointerToMaterialModelInfo = None
 
         # Parameters derived from values in the inventory or the
         # category 2 parameters above.
-        self._analysisTypeInt = 0
-        self._pythonTimestep = 0
-        self._prestressAutoComputeInt = 0
-        self._prestressAutoChangeElasticPropsInt = 0
-        self._pointerToSh = None
-        self._pointerToShj = None
-        self._pointerToGauss = None
-        self._pointerToSh2d = None
-        self._pointerToGauss2d = None
+        self.analysisTypeInt = 0
+        self.pythonTimestep = 0
+        self.prestressAutoComputeInt = 0
+        self.prestressAutoChangeElasticPropsInt = 0
+        self.pointerToSh = None
+        self.pointerToShj = None
+        self.pointerToGauss = None
+        self.pointerToSh2d = None
+        self.pointerToGauss2d = None
 
         # Parameters derived from the number of entries in a file
 
-        self._numberNodes = 0
-        self._coordinateUnits = "coordinateUnitsInitial12345678"
-        self._coordinateScaleFactor = 0.0
+        self.numberNodes = 0
+        self.coordinateUnits = "coordinateUnitsInitial12345678"
+        self.coordinateScaleFactor = 0.0
 
-        self._numberBcEntries = 0
-        self._displacementUnits = "displacementUnitsInitial123456"
-        self._displacementScaleFactor = 0.0
-        self._velocityUnits = "velocityUnitsInitial1234567890"
-        self._velocityScaleFactor = 0.0
-        self._forceUnits = "forceUnitsInitial1234567890123"
-        self._forceScaleFactor = 0.0
+        self.numberBcEntries = 0
+        self.displacementUnits = "displacementUnitsInitial123456"
+        self.displacementScaleFactor = 0.0
+        self.velocityUnits = "velocityUnitsInitial1234567890"
+        self.velocityScaleFactor = 0.0
+        self.forceUnits = "forceUnitsInitial1234567890123"
+        self.forceScaleFactor = 0.0
 
-	self._winklerInfo = [0, 0]
-        self._numberWinklerEntries = 0
-        self._numberWinklerForces = 0
+	self.winklerInfo = [0, 0]
+        self.numberWinklerEntries = 0
+        self.numberWinklerForces = 0
 
-        self._numberRotationEntries = 0
-        self._rotationUnits = "rotationUnitsInitial1234567890"
-        self._rotationScaleFactor = 0.0
+        self.numberRotationEntries = 0
+        self.rotationUnits = "rotationUnitsInitial1234567890"
+        self.rotationScaleFactor = 0.0
 
-        self._timeStepInfo = [0, 0]
-        self._numberTimeStepGroups = 0
-        self._totalNumberTimeSteps = 0
-        self._timeUnits = "timeUnitsInitial12345678901234"
-        self._timeScaleFactor = 0.0
+        self.timeStepInfo = [0, 0]
+        self.numberTimeStepGroups = 0
+        self.totalNumberTimeSteps = 0
+        self.timeUnits = "timeUnitsInitial12345678901234"
+        self.timeScaleFactor = 0.0
 
-        self._numberFullOutputs = 0
+        self.numberFullOutputs = 0
 
-        self._numberLoadHistories = 0
+        self.numberLoadHistories = 0
 
-        self._numberMaterials = 0
-        self._propertyListSize = 0
-        self._propertyList = [0]
-        self._pointerToListArrayPropertyList = None
-        self._propertyListIndex = [0]
-        self._pointerToListArrayPropertyListIndex = None
-        self._materialModel = [0]
-        self._pointerToListArrayMaterialModel = None
+        self.numberMaterials = 0
+        self.propertyListSize = 0
+        self.propertyList = [0]
+        self.pointerToListArrayPropertyList = None
+        self.propertyListIndex = [0]
+        self.pointerToListArrayPropertyListIndex = None
+        self.materialModel = [0]
+        self.pointerToListArrayMaterialModel = None
 
-        self._volumeElementDimens = [0, 0, 0]
-        self._numberVolumeElements = 0
-        self._volumeElementType = 0
-        self._numberVolumeElementFamilies = 0
-        self._maxNumberVolumeElementFamilies = 0
-        self._numberAllowedVolumeElementTypes = 0
-        self._pointerToVolumeElementFamilyList = None
+        self.volumeElementDimens = [0, 0, 0]
+        self.numberVolumeElements = 0
+        self.volumeElementType = 0
+        self.numberVolumeElementFamilies = 0
+        self.maxNumberVolumeElementFamilies = 0
+        self.numberAllowedVolumeElementTypes = 0
+        self.pointerToVolumeElementFamilyList = None
 
-        self._numberPrestressEntries = 0
+        self.numberPrestressEntries = 0
 
-        self._numberTractionBc = 0
-        self._tractionBcUnits = "tractionBcUnitsInitial12345678"
-        self._tractionBcScaleFactor = 0.0
-        self._tractionFlag = 0
+        self.numberTractionBc = 0
+        self.tractionBcUnits = "tractionBcUnitsInitial12345678"
+        self.tractionBcScaleFactor = 0.0
+        self.tractionFlag = 0
 
-        self._numberSplitNodeEntries = 0
+        self.numberSplitNodeEntries = 0
 
-        self._numberSlipperyNodeEntries = 0
-        self._numberDifferentialForceEntries = 0
-	self._slipperyWinklerInfo = [0, 0]
-        self._numberSlipperyWinklerEntries = 0
-        self._numberSlipperyWinklerForces = 0
+        self.numberSlipperyNodeEntries = 0
+        self.numberDifferentialForceEntries = 0
+	self.slipperyWinklerInfo = [0, 0]
+        self.numberSlipperyWinklerEntries = 0
+        self.numberSlipperyWinklerForces = 0
 
         # This is a test version where the geometry type is automatically
         # specified by using Pylith3d.  The geometry type is only used for
@@ -333,16 +333,16 @@ class Pylith3d_scan(Component):
         # Define some integer values that are derived from string variables.
 
         # Parameters that are invariant for this geometry type
-        self._geometryType = "3D"
-        self._geometryTypeInt = 4
-        self._numberSpaceDimensions = 3
-        self._numberDegreesFreedom = 3
-        self._stateVariableDimension = 6
-        self._materialMatrixDimension = 21
-        self._numberSkewDimensions = 2
-        self._numberSlipDimensions = 5
-        self._numberSlipNeighbors = 4
-        # self._listIddmat = [
+        self.geometryType = "3D"
+        self.geometryTypeInt = 4
+        self.numberSpaceDimensions = 3
+        self.numberDegreesFreedom = 3
+        self.stateVariableDimension = 6
+        self.materialMatrixDimension = 21
+        self.numberSkewDimensions = 2
+        self.numberSlipDimensions = 5
+        self.numberSlipNeighbors = 4
+        # self.listIddmat = [
         #     1, 2, 3, 4, 5, 6,
         #     2, 7, 8, 9,10,11,
         #     3, 8,12,13,14,15,
@@ -350,7 +350,7 @@ class Pylith3d_scan(Component):
         #     5,10,14,17,19,20,
         #     6,11,15,18,20,21]
         # Changed this to correspond to BLAS packed symmetric matrix format.
-        self._listIddmat = [
+        self.listIddmat = [
              1, 2, 4, 7,11,16,
              2, 3, 5, 8,12,17,
              4, 5, 6, 9,13,18,
@@ -359,34 +359,34 @@ class Pylith3d_scan(Component):
             16,17,18,19,20,21]
 
         # Invariant parameters related to element type
-        self._maxElementNodes = 20
-        self._maxGaussPoints = 27
-        self._maxElementEquations = self._numberDegreesFreedom*self._maxElementNodes
-        self._numberElementTypes = 62
-        self._numberElementTypesBase = 10
-        self._numberElementNodesBase = [8, 7, 6, 5, 4, 20, 18, 15, 13, 10]
-        self._pointerToListArrayNumberElementNodesBase = pylith3d.intListToArray(
-            self._numberElementNodesBase)
-	self._memorySize += self._numberElementTypesBase*self._intSize
-        self._maxElementNodes2d = 4
-        self._maxGaussPoints2d = 4
-        self._numberElementTypes2d = 2
-        self._numberElementTypesBase2d = 2
-        self._numberElementNodesBase2d = [4, 3]
-        self._pointerToListArrayNumberElementNodesBase2d = pylith3d.intListToArray(
-            self._numberElementNodesBase2d)
-	self._memorySize += self._numberElementTypesBase2d*self._intSize
+        self.maxElementNodes = 20
+        self.maxGaussPoints = 27
+        self.maxElementEquations = self.numberDegreesFreedom*self.maxElementNodes
+        self.numberElementTypes = 62
+        self.numberElementTypesBase = 10
+        self.numberElementNodesBase = [8, 7, 6, 5, 4, 20, 18, 15, 13, 10]
+        self.pointerToListArrayNumberElementNodesBase = pylith3d.intListToArray(
+            self.numberElementNodesBase)
+	self.memorySize += self.numberElementTypesBase*self.intSize
+        self.maxElementNodes2d = 4
+        self.maxGaussPoints2d = 4
+        self.numberElementTypes2d = 2
+        self.numberElementTypesBase2d = 2
+        self.numberElementNodesBase2d = [4, 3]
+        self.pointerToListArrayNumberElementNodesBase2d = pylith3d.intListToArray(
+            self.numberElementNodesBase2d)
+	self.memorySize += self.numberElementTypesBase2d*self.intSize
 
         # Invariant parameters related to material model
-        self._maxMaterialModels = 20
-        self._maxStateVariables = 30
-        self._maxState0Variables = 6
-        self._pointerToMaterialModelInfo = pylith3d.allocateInt(
-            6*self._maxMaterialModels)
-	self._memorySize += 6*self._maxMaterialModels*self._intSize
+        self.maxMaterialModels = 20
+        self.maxStateVariables = 30
+        self.maxState0Variables = 6
+        self.pointerToMaterialModelInfo = pylith3d.allocateInt(
+            6*self.maxMaterialModels)
+	self.memorySize += 6*self.maxMaterialModels*self.intSize
 
         pylith3d.matmod_def(
-            self._pointerToMaterialModelInfo)
+            self.pointerToMaterialModelInfo)
 
         # Parameters derived from values in the inventory or the
         # category 2 parameters above.
@@ -397,167 +397,167 @@ class Pylith3d_scan(Component):
             "elasticSolution": 2,
             "fullSolution":    3,
             }
-        self._analysisTypeInt = analysisTypeMap[analysisType]
+        self.analysisTypeInt = analysisTypeMap[analysisType]
 
         if prestressAutoCompute:
-            self._prestressAutoComputeInt = 1
+            self.prestressAutoComputeInt = 1
         else:
-            self._prestressAutoComputeInt = 0
+            self.prestressAutoComputeInt = 0
 
         if prestressAutoChangeElasticProps:
-            self._prestressAutoChangeElasticPropsInt = 1
+            self.prestressAutoChangeElasticPropsInt = 1
         else:
-            self._prestressAutoChangeElasticPropsInt = 0
+            self.prestressAutoChangeElasticPropsInt = 0
 
         # Parameters derived from the number of entries in a file.
-        self._numberNodes = pylith3d.scan_coords(
+        self.numberNodes = pylith3d.scan_coords(
             f77FileInput,
-            self._coordinateUnits,
-            self._coordinateInputFileSieve)
+            self.coordinateUnits,
+            self.coordinateInputFileSieve)
 
-        self._coordinateScaleString = \
-                                    uparser.parse(string.strip(self._coordinateUnits))
-        self._coordinateScaleFactor = self._coordinateScaleString.value
+        self.coordinateScaleString = \
+                                    uparser.parse(string.strip(self.coordinateUnits))
+        self.coordinateScaleFactor = self.coordinateScaleString.value
 
-        self._numberBcEntries = pylith3d.scan_bc(
+        self.numberBcEntries = pylith3d.scan_bc(
             f77FileInput,
-            self._displacementUnits,
-            self._velocityUnits,
-            self._forceUnits,
-            self._bcInputFileSieve)
+            self.displacementUnits,
+            self.velocityUnits,
+            self.forceUnits,
+            self.bcInputFileSieve)
 
-        if self._numberBcEntries > 0:
-            self._displacementScaleString = \
-                                          uparser.parse(string.strip(self._displacementUnits))
-            self._displacementScaleFactor = self._displacementScaleString.value
-            self._velocityScaleString = \
-                                      uparser.parse(string.strip(self._velocityUnits))
-            self._velocityScaleFactor = self._velocityScaleString.value
-            self._forceScaleString = \
-                                   uparser.parse(string.strip(self._forceUnits))
-            self._forceScaleFactor = self._forceScaleString.value
+        if self.numberBcEntries > 0:
+            self.displacementScaleString = \
+                                          uparser.parse(string.strip(self.displacementUnits))
+            self.displacementScaleFactor = self.displacementScaleString.value
+            self.velocityScaleString = \
+                                      uparser.parse(string.strip(self.velocityUnits))
+            self.velocityScaleFactor = self.velocityScaleString.value
+            self.forceScaleString = \
+                                   uparser.parse(string.strip(self.forceUnits))
+            self.forceScaleFactor = self.forceScaleString.value
 
-        self._winklerInfo = pylith3d.scan_wink(
+        self.winklerInfo = pylith3d.scan_wink(
             f77FileInput,
-            self._winklerInputFile)
-        self._numberWinklerEntries = self._winklerInfo[0]
-        self._numberWinklerForces = self._winklerInfo[1]
+            self.winklerInputFile)
+        self.numberWinklerEntries = self.winklerInfo[0]
+        self.numberWinklerForces = self.winklerInfo[1]
 
-        self._numberRotationEntries = pylith3d.scan_skew(
+        self.numberRotationEntries = pylith3d.scan_skew(
             f77FileInput,
-            self._rotationUnits,
-            self._rotationInputFile)
+            self.rotationUnits,
+            self.rotationInputFile)
 
-        if self._numberRotationEntries != 0:
-            self._rotationScaleString = \
-                                      uparser.parse(string.strip(self._rotationUnits))
-            self._rotationScaleFactor = self._rotationScaleString.value
+        if self.numberRotationEntries != 0:
+            self.rotationScaleString = \
+                                      uparser.parse(string.strip(self.rotationUnits))
+            self.rotationScaleFactor = self.rotationScaleString.value
 
-        self._timeStepInfo = pylith3d.scan_timdat(
+        self.timeStepInfo = pylith3d.scan_timdat(
             f77FileInput,
-            self._timeUnits,
-            self._timeStepInputFile)
-        self._numberTimeStepGroups = self._timeStepInfo[0]
-        self._totalNumberTimeSteps = self._timeStepInfo[1]
+            self.timeUnits,
+            self.timeStepInputFile)
+        self.numberTimeStepGroups = self.timeStepInfo[0]
+        self.totalNumberTimeSteps = self.timeStepInfo[1]
 
-        self._timeScaleString = \
-                              uparser.parse(string.strip(self._timeUnits))
-        self._timeScaleFactor = self._timeScaleString.value
+        self.timeScaleString = \
+                              uparser.parse(string.strip(self.timeUnits))
+        self.timeScaleFactor = self.timeScaleString.value
 
-        self._numberFullOutputs = pylith3d.scan_fuldat(
-            self._analysisTypeInt,
-            self._totalNumberTimeSteps,
+        self.numberFullOutputs = pylith3d.scan_fuldat(
+            self.analysisTypeInt,
+            self.totalNumberTimeSteps,
             f77FileInput,
-            self._fullOutputInputFile)
+            self.fullOutputInputFile)
 
-        self._numberLoadHistories = pylith3d.scan_hist(
+        self.numberLoadHistories = pylith3d.scan_hist(
             f77FileInput,
-            self._loadHistoryInputFile)
+            self.loadHistoryInputFile)
 
-        self._numberMaterials = matinfo.readprop(self._materialPropertiesInputFile)
+        self.numberMaterials = matinfo.readprop(self.materialPropertiesInputFile)
 
-        self._propertyList = matinfo.propertyList
-        self._propertyListIndex = matinfo.propertyIndex
-        self._materialModel = matinfo.materialModel
-        self._propertyListSize = len(self._propertyList)
-        self._pointerToListArrayPropertyList = pylith3d.doubleListToArray(
-            self._propertyList)
-        self._memorySize += self._propertyListSize*self._doubleSize
-        self._pointerToListArrayPropertyListIndex = pylith3d.intListToArray(
-            self._propertyListIndex)
-        self._memorySize += self._numberMaterials*self._intSize
-        self._pointerToListArrayMaterialModel = pylith3d.intListToArray(
-            self._materialModel)
-        self._memorySize += self._numberMaterials*self._intSize
+        self.propertyList = matinfo.propertyList
+        self.propertyListIndex = matinfo.propertyIndex
+        self.materialModel = matinfo.materialModel
+        self.propertyListSize = len(self.propertyList)
+        self.pointerToListArrayPropertyList = pylith3d.doubleListToArray(
+            self.propertyList)
+        self.memorySize += self.propertyListSize*self.doubleSize
+        self.pointerToListArrayPropertyListIndex = pylith3d.intListToArray(
+            self.propertyListIndex)
+        self.memorySize += self.numberMaterials*self.intSize
+        self.pointerToListArrayMaterialModel = pylith3d.intListToArray(
+            self.materialModel)
+        self.memorySize += self.numberMaterials*self.intSize
 
         # At present, we assume that the number of element families is equal to
         # the number of material types used, since only one volume element type at a
         # time is allowed.
-        self._numberAllowedVolumeElementTypes = 1
-        self._maxNumberVolumeElementFamilies = self._numberAllowedVolumeElementTypes* \
-                                               self._numberMaterials
+        self.numberAllowedVolumeElementTypes = 1
+        self.maxNumberVolumeElementFamilies = self.numberAllowedVolumeElementTypes* \
+                                               self.numberMaterials
 
-        self._pointerToVolumeElementFamilyList = pylith3d.allocateInt(
-            3*self._maxNumberVolumeElementFamilies)
-        self._memorySize += 3*self._maxNumberVolumeElementFamilies*self._intSize
+        self.pointerToVolumeElementFamilyList = pylith3d.allocateInt(
+            3*self.maxNumberVolumeElementFamilies)
+        self.memorySize += 3*self.maxNumberVolumeElementFamilies*self.intSize
 
-        self._volumeElementDimens = pylith3d.scan_connect(
-            self._pointerToListArrayNumberElementNodesBase,
-            self._pointerToMaterialModelInfo,
-            self._pointerToListArrayMaterialModel,
-            self._pointerToVolumeElementFamilyList,
-            self._maxNumberVolumeElementFamilies,
-	    self._numberMaterials,
+        self.volumeElementDimens = pylith3d.scan_connect(
+            self.pointerToListArrayNumberElementNodesBase,
+            self.pointerToMaterialModelInfo,
+            self.pointerToListArrayMaterialModel,
+            self.pointerToVolumeElementFamilyList,
+            self.maxNumberVolumeElementFamilies,
+	    self.numberMaterials,
             f77FileInput,
-            self._connectivityInputFileSieve)
+            self.connectivityInputFileSieve)
 
-        self._numberVolumeElements = self._volumeElementDimens[0]
-        self._numberVolumeElementFamilies = self._volumeElementDimens[1]
-        self._volumeElementType = self._volumeElementDimens[2]
+        self.numberVolumeElements = self.volumeElementDimens[0]
+        self.numberVolumeElementFamilies = self.volumeElementDimens[1]
+        self.volumeElementType = self.volumeElementDimens[2]
 
-        self._pointerToListArrayMaterialModel = None
-        self._pointerToListArrayPropertyListIndex = None
-        self._memorySize -= 2*self._numberMaterials*self._intSize
+        self.pointerToListArrayMaterialModel = None
+        self.pointerToListArrayPropertyListIndex = None
+        self.memorySize -= 2*self.numberMaterials*self.intSize
 
-        # self._numberPrestressEntries = pylith3d.scan_prestr(
-        #     self._stateVariableDimension,
-        #     self._numberPrestressGaussPoints,
-        #     self._numberElements,
-        #     self._prestressAutoComputeInt,
+        # self.numberPrestressEntries = pylith3d.scan_prestr(
+        #     self.stateVariableDimension,
+        #     self.numberPrestressGaussPoints,
+        #     self.numberElements,
+        #     self.prestressAutoComputeInt,
         #     f77FileInput,
-        #     self._prestressInputFile)
+        #     self.prestressInputFile)
 
-        self._numberTractionBc = pylith3d.scan_tractions(
-            self._maxElementNodes2d,
+        self.numberTractionBc = pylith3d.scan_tractions(
+            self.maxElementNodes2d,
             f77FileInput,
-            self._tractionBcUnits,
-            self._tractionInputFileSieve)
+            self.tractionBcUnits,
+            self.tractionInputFileSieve)
 
-        if self._numberTractionBc != 0:
-            self._tractionBcScaleString = \
-                                        uparser.parse(string.strip(self._tractionBcUnits))
-            self._tractionBcScaleFactor = self._tractionBcScaleString.value
-            self._tractionFlag = 1
+        if self.numberTractionBc != 0:
+            self.tractionBcScaleString = \
+                                        uparser.parse(string.strip(self.tractionBcUnits))
+            self.tractionBcScaleFactor = self.tractionBcScaleString.value
+            self.tractionFlag = 1
 
-        self._numberSplitNodeEntries = pylith3d.scan_split(
+        self.numberSplitNodeEntries = pylith3d.scan_split(
             f77FileInput,
-            self._splitNodeInputFileSieve)
+            self.splitNodeInputFileSieve)
 
-        self._numberSlipperyNodeEntries = pylith3d.scan_slip(
+        self.numberSlipperyNodeEntries = pylith3d.scan_slip(
             f77FileInput,
-            self._slipperyNodeInputFile)
+            self.slipperyNodeInputFile)
 
-        self._numberDifferentialForceEntries = pylith3d.scan_diff(
-            self._numberSlipperyNodeEntries,
+        self.numberDifferentialForceEntries = pylith3d.scan_diff(
+            self.numberSlipperyNodeEntries,
             f77FileInput,
-            self._differentialForceInputFile)
+            self.differentialForceInputFile)
 
-        self._slipperyWinklerInfo = pylith3d.scan_winkx(
-            self._numberSlipperyNodeEntries,
+        self.slipperyWinklerInfo = pylith3d.scan_winkx(
+            self.numberSlipperyNodeEntries,
             f77FileInput,
-            self._slipperyWinklerInputFile)
-        self._numberSlipperyWinklerEntries = self._slipperyWinklerInfo[0]
-        self._numberSlipperyWinklerForces = self._slipperyWinklerInfo[1]
+            self.slipperyWinklerInputFile)
+        self.numberSlipperyWinklerEntries = self.slipperyWinklerInfo[0]
+        self.numberSlipperyWinklerForces = self.slipperyWinklerInfo[1]
 
         self.trace.log("Hello from pl3dscan.initialize (end)!")
 
