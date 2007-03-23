@@ -50,7 +50,6 @@ class Application(PetscApplication):
     
 #        from time import clock as now
 #        start = now()
-        pl3dsetup = self.inventory.setup
         import pylith3d
 
         scanner = self.inventory.scanner
@@ -62,18 +61,18 @@ class Application(PetscApplication):
 
         scanner.initialize()
         
-        pl3dsetup.initialize(scanner)
-        pl3dsetup.read()
-        pl3dsetup.numberequations()
-        pl3dsetup.sortmesh()
-        pl3dsetup.sparsesetup(mesh)
-        pl3dsetup.allocateremaining()
-        pl3dsetup.meshwrite()
+        scanner.setup()
+        scanner.read()
+        scanner.numberequations()
+        scanner.sortmesh()
+        scanner.sparsesetup(mesh)
+        scanner.allocateremaining()
+        scanner.meshwrite()
         pl3drun = self.inventory.solver
         pl3drun.fileRoot = scanner.inventory.fileRoot
-        pl3drun.pointerToIelindx = pl3dsetup.pointerToIelindx
+        pl3drun.pointerToIelindx = scanner.pointerToIelindx
         pl3drun.mesh = mesh
-        pl3drun.initialize(scanner, self.inventory.setup)
+        pl3drun.initialize(scanner, scanner)
         pl3drun.run()
 #        finish = now()
 #        usertime = finish - start
@@ -86,11 +85,9 @@ class Application(PetscApplication):
         import pyre.inventory
         from cig.cs.petsc import PetscProperty
         from Pylith3d_scan import Pylith3d_scan
-        from Pylith3d_setup import Pylith3d_setup
         from Pylith3d_run import Pylith3d_run
 
         scanner = pyre.inventory.facility("scanner", factory=Pylith3d_scan)
-        setup = pyre.inventory.facility("setup", factory=Pylith3d_setup)
         solver = pyre.inventory.facility("solver", factory=Pylith3d_run)
 
         # declare PETSc options that are of interest to PyLith
