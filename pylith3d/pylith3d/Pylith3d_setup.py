@@ -164,102 +164,102 @@ class Pylith3d_setup(Component):
         # not meant to be altered by the user.
         
 	# Approximate memory allocation info:
-	self.memorySize = pl3dscan._memorySize
-	self.intSize = pl3dscan._intSize
-	self.doubleSize = pl3dscan._doubleSize
+	self.memorySize = pl3dscan.memorySize
+	self.intSize = pl3dscan.intSize
+	self.doubleSize = pl3dscan.doubleSize
 
         # First get all filenames
-        self.asciiOutputFile = pl3dscan._asciiOutputFileSieve
-        self.plotOutputFile = pl3dscan._plotOutputFileSieve
-        self.ucdOutputRoot = pl3dscan._ucdOutputRootSieve
-        self.coordinateInputFile = pl3dscan._coordinateInputFileSieve
-        self.bcInputFile = pl3dscan._bcInputFileSieve
-        self.winklerInputFile = pl3dscan._winklerInputFile
-        self.rotationInputFile = pl3dscan._rotationInputFile
-        self.timeStepInputFile = pl3dscan._timeStepInputFile
-        self.fullOutputInputFile = pl3dscan._fullOutputInputFile
-        self.stateVariableInputFile = pl3dscan._stateVariableInputFile
-        self.loadHistoryInputFile = pl3dscan._loadHistoryInputFile
-        self.materialPropertiesInputFile = pl3dscan._materialPropertiesInputFile
-        self.materialHistoryInputFile = pl3dscan._materialHistoryInputFile
-        self.connectivityInputFile = pl3dscan._connectivityInputFileSieve
-        self.prestressInputFile = pl3dscan._prestressInputFile
-        self.tractionInputFile = pl3dscan._tractionInputFileSieve
-        self.splitNodeInputFile = pl3dscan._splitNodeInputFileSieve
-        self.slipperyNodeInputFile = pl3dscan._slipperyNodeInputFile
-        self.differentialForceInputFile = pl3dscan._differentialForceInputFile
-        self.slipperyWinklerInputFile = pl3dscan._slipperyWinklerInputFile
+        self.asciiOutputFile = pl3dscan.asciiOutputFileSieve
+        self.plotOutputFile = pl3dscan.plotOutputFileSieve
+        self.ucdOutputRoot = pl3dscan.ucdOutputRootSieve
+        self.coordinateInputFile = pl3dscan.coordinateInputFileSieve
+        self.bcInputFile = pl3dscan.bcInputFileSieve
+        self.winklerInputFile = pl3dscan.winklerInputFile
+        self.rotationInputFile = pl3dscan.rotationInputFile
+        self.timeStepInputFile = pl3dscan.timeStepInputFile
+        self.fullOutputInputFile = pl3dscan.fullOutputInputFile
+        self.stateVariableInputFile = pl3dscan.stateVariableInputFile
+        self.loadHistoryInputFile = pl3dscan.loadHistoryInputFile
+        self.materialPropertiesInputFile = pl3dscan.materialPropertiesInputFile
+        self.materialHistoryInputFile = pl3dscan.materialHistoryInputFile
+        self.connectivityInputFile = pl3dscan.connectivityInputFileSieve
+        self.prestressInputFile = pl3dscan.prestressInputFile
+        self.tractionInputFile = pl3dscan.tractionInputFileSieve
+        self.splitNodeInputFile = pl3dscan.splitNodeInputFileSieve
+        self.slipperyNodeInputFile = pl3dscan.slipperyNodeInputFile
+        self.differentialForceInputFile = pl3dscan.differentialForceInputFile
+        self.slipperyWinklerInputFile = pl3dscan.slipperyWinklerInputFile
 
         # Parameters that are invariant for this geometry type
-        self.geometryType = pl3dscan._geometryType
-        self.geometryTypeInt = pl3dscan._geometryTypeInt
-        self.numberSpaceDimensions = pl3dscan._numberSpaceDimensions
-        self.numberDegreesFreedom = pl3dscan._numberDegreesFreedom
-        self.stateVariableDimension = pl3dscan._stateVariableDimension
-        self.materialMatrixDimension = pl3dscan._materialMatrixDimension
-        self.numberSkewDimensions = pl3dscan._numberSkewDimensions
-        self.numberSlipDimensions = pl3dscan._numberSlipDimensions
-        self.numberSlipNeighbors = pl3dscan._numberSlipNeighbors
-        self.listIddmat = pl3dscan._listIddmat
+        self.geometryType = pl3dscan.geometryType
+        self.geometryTypeInt = pl3dscan.geometryTypeInt
+        self.numberSpaceDimensions = pl3dscan.numberSpaceDimensions
+        self.numberDegreesFreedom = pl3dscan.numberDegreesFreedom
+        self.stateVariableDimension = pl3dscan.stateVariableDimension
+        self.materialMatrixDimension = pl3dscan.materialMatrixDimension
+        self.numberSkewDimensions = pl3dscan.numberSkewDimensions
+        self.numberSlipDimensions = pl3dscan.numberSlipDimensions
+        self.numberSlipNeighbors = pl3dscan.numberSlipNeighbors
+        self.listIddmat = pl3dscan.listIddmat
 
         # Invariant parameters related to element type
-        self.maxElementEquations = pl3dscan._maxElementEquations
-        self.maxNumberVolumeElementFamilies = pl3dscan._maxNumberVolumeElementFamilies
-        self.pointerToListArrayNumberElementNodesBase = pl3dscan._pointerToListArrayNumberElementNodesBase
+        self.maxElementEquations = pl3dscan.maxElementEquations
+        self.maxNumberVolumeElementFamilies = pl3dscan.maxNumberVolumeElementFamilies
+        self.pointerToListArrayNumberElementNodesBase = pl3dscan.pointerToListArrayNumberElementNodesBase
 
         # Invariant parameters related to material model
-        self.maxMaterialModels = pl3dscan._maxMaterialModels
-        self.maxStateVariables = pl3dscan._maxStateVariables
-        self.maxState0Variables = pl3dscan._maxState0Variables
-        self.pointerToMaterialModelInfo = pl3dscan._pointerToMaterialModelInfo
+        self.maxMaterialModels = pl3dscan.maxMaterialModels
+        self.maxStateVariables = pl3dscan.maxStateVariables
+        self.maxState0Variables = pl3dscan.maxState0Variables
+        self.pointerToMaterialModelInfo = pl3dscan.pointerToMaterialModelInfo
 
         # Parameters derived from values in the inventory or the category 2 parameters.
-        self.analysisTypeInt = pl3dscan._analysisTypeInt
-        self.prestressAutoComputeInt = pl3dscan._prestressAutoComputeInt
-        self.prestressAutoChangeElasticPropsInt = pl3dscan._prestressAutoChangeElasticPropsInt
+        self.analysisTypeInt = pl3dscan.analysisTypeInt
+        self.prestressAutoComputeInt = pl3dscan.prestressAutoComputeInt
+        self.prestressAutoChangeElasticPropsInt = pl3dscan.prestressAutoChangeElasticPropsInt
 
         # Parameters derived from the number of entries in a file
-        self.numberNodes = pl3dscan._numberNodes
-        self.coordinateScaleFactor = pl3dscan._coordinateScaleFactor
+        self.numberNodes = pl3dscan.numberNodes
+        self.coordinateScaleFactor = pl3dscan.coordinateScaleFactor
 
-        self.numberBcEntries = pl3dscan._numberBcEntries
-        self.displacementScaleFactor = pl3dscan._displacementScaleFactor
-        self.velocityScaleFactor = pl3dscan._velocityScaleFactor
-        self.forceScaleFactor = pl3dscan._forceScaleFactor
+        self.numberBcEntries = pl3dscan.numberBcEntries
+        self.displacementScaleFactor = pl3dscan.displacementScaleFactor
+        self.velocityScaleFactor = pl3dscan.velocityScaleFactor
+        self.forceScaleFactor = pl3dscan.forceScaleFactor
 
-        self.numberWinklerEntries = pl3dscan._numberWinklerEntries
-        self.numberWinklerForces = pl3dscan._numberWinklerForces
+        self.numberWinklerEntries = pl3dscan.numberWinklerEntries
+        self.numberWinklerForces = pl3dscan.numberWinklerForces
 
-        self.numberRotationEntries = pl3dscan._numberRotationEntries
-        self.rotationScaleFactor = pl3dscan._rotationScaleFactor
+        self.numberRotationEntries = pl3dscan.numberRotationEntries
+        self.rotationScaleFactor = pl3dscan.rotationScaleFactor
 
-        self.numberTimeStepGroups = pl3dscan._numberTimeStepGroups
-        self.totalNumberTimeSteps = pl3dscan._totalNumberTimeSteps
-        self.timeScaleFactor = pl3dscan._timeScaleFactor
+        self.numberTimeStepGroups = pl3dscan.numberTimeStepGroups
+        self.totalNumberTimeSteps = pl3dscan.totalNumberTimeSteps
+        self.timeScaleFactor = pl3dscan.timeScaleFactor
 
-        self.numberFullOutputs = pl3dscan._numberFullOutputs
+        self.numberFullOutputs = pl3dscan.numberFullOutputs
 
-        self.numberLoadHistories = pl3dscan._numberLoadHistories
+        self.numberLoadHistories = pl3dscan.numberLoadHistories
 
-        self.numberMaterials = pl3dscan._numberMaterials
-        self.pointerToListArrayPropertyList = pl3dscan._pointerToListArrayPropertyList
+        self.numberMaterials = pl3dscan.numberMaterials
+        self.pointerToListArrayPropertyList = pl3dscan.pointerToListArrayPropertyList
 
-        self.numberVolumeElements = pl3dscan._numberVolumeElements
-        self.numberVolumeElementFamilies = pl3dscan._numberVolumeElementFamilies
-        self.volumeElementType = pl3dscan._volumeElementType
-        self.pointerToVolumeElementFamilyList = pl3dscan._pointerToVolumeElementFamilyList
+        self.numberVolumeElements = pl3dscan.numberVolumeElements
+        self.numberVolumeElementFamilies = pl3dscan.numberVolumeElementFamilies
+        self.volumeElementType = pl3dscan.volumeElementType
+        self.pointerToVolumeElementFamilyList = pl3dscan.pointerToVolumeElementFamilyList
 
-        self.numberPrestressEntries = pl3dscan._numberPrestressEntries
+        self.numberPrestressEntries = pl3dscan.numberPrestressEntries
 
-        self.numberTractionBc = pl3dscan._numberTractionBc
-        self.tractionBcScaleFactor = pl3dscan._tractionBcScaleFactor
+        self.numberTractionBc = pl3dscan.numberTractionBc
+        self.tractionBcScaleFactor = pl3dscan.tractionBcScaleFactor
 
-        self.numberSplitNodeEntries = pl3dscan._numberSplitNodeEntries
+        self.numberSplitNodeEntries = pl3dscan.numberSplitNodeEntries
 
-        self.numberSlipperyNodeEntries = pl3dscan._numberSlipperyNodeEntries
-        self.numberDifferentialForceEntries = pl3dscan._numberDifferentialForceEntries
-        self.numberSlipperyWinklerEntries = pl3dscan._numberSlipperyWinklerEntries
-        self.numberSlipperyWinklerForces = pl3dscan._numberSlipperyWinklerForces
+        self.numberSlipperyNodeEntries = pl3dscan.numberSlipperyNodeEntries
+        self.numberDifferentialForceEntries = pl3dscan.numberDifferentialForceEntries
+        self.numberSlipperyWinklerEntries = pl3dscan.numberSlipperyWinklerEntries
+        self.numberSlipperyWinklerForces = pl3dscan.numberSlipperyWinklerForces
 
         self.trace.log("Hello from pl3dsetup.initialize (end)!")
 
