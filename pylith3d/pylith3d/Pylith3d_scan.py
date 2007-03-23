@@ -49,33 +49,24 @@ class Pylith3d_scan(Component):
         return
 
 
-    def _configure(self):
+    def _validate(self, context):
 
-        super(Pylith3d_scan, self)._configure()
-
-        # Help is currently broken.  With this ugly hack, it at least
-        # works for the scanner.
-        if self._helpRequested:
-            return
-        # This method also breaks tab completion :-(
+        super(Pylith3d_scan, self)._validate(context)
 
         #
         # Open input files.  Log I/O errors.
         #
         
-        self._summaryIOError = self.CanNotOpenInputOutputFilesError()
-
-        inputFile = self.inputFile
-        inputFileStream = self.inputFileStream
-        outputFile = self.outputFile
+        inputFile = lambda item, category: self.inputFile(item, category, context)
+        outputFile = lambda item, category:  self.outputFile(item, category, context)
         macroString = self.macroString
 
         #                              open?   fatal?  label
-        optional = self.IOFileCategory(True,   0,      "optional")
-        unused   = self.IOFileCategory(False,  0,      "unused")
-        required = self.IOFileCategory(True,   1,       None)
+        optional = self.IOFileCategory(True,   False,  "optional")
+        unused   = self.IOFileCategory(False,  False,  "unused")
+        required = self.IOFileCategory(True,   True,    None)
         
-        Inventory = Pylith3d_scan.Inventory
+        Inventory = self.metainventory
 
         analysisType = self.inventory.analysisType
 
@@ -104,30 +95,25 @@ class Pylith3d_scan(Component):
         # The call to glob() is somewhat crude -- basically, determine
         # if any files might be in the way.
         self._ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
-        from glob import glob
-        ucdFiles = ([self._ucdOutputRoot + ".mesh.inp",
-                     self._ucdOutputRoot + ".gmesh.inp",
-                     self._ucdOutputRoot + ".mesh.time.prest.inp",
-                     self._ucdOutputRoot + ".gmesh.time.prest.inp"]
-                    + glob(self._ucdOutputRoot + ".mesh.time.[0-9][0-9][0-9][0-9][0-9].inp")
-                    + glob(self._ucdOutputRoot + ".gmesh.time.[0-9][0-9][0-9][0-9][0-9].inp"))
-        trait = Inventory.ucdOutputRoot
-        for ucdFile in ucdFiles:
-            try:
-                stream = os.fdopen(os.open(ucdFile, os.O_WRONLY|os.O_CREAT|os.O_EXCL), "w")
-            except (OSError, IOError), error:
-                descriptor = self.inventory.getTraitDescriptor(trait.name)
-                self._summaryIOError.openFailed(trait, descriptor,self._ucdOutputRoot + ".*mesh*.inp", error, required)
-                break
-            else:
-                stream.close()
-                os.remove(ucdFile)
 
-        if self._summaryIOError.fatalIOErrors():
-            self._summaryIOError.log(self._error)
-            import sys
-            sys.exit("%s: configuration error(s)" % self.name)
-
+        if False: # broken
+            from glob import glob
+            ucdFiles = ([self._ucdOutputRoot + ".mesh.inp",
+                         self._ucdOutputRoot + ".gmesh.inp",
+                         self._ucdOutputRoot + ".mesh.time.prest.inp",
+                         self._ucdOutputRoot + ".gmesh.time.prest.inp"]
+                        + glob(self._ucdOutputRoot + ".mesh.time.[0-9][0-9][0-9][0-9][0-9].inp")
+                        + glob(self._ucdOutputRoot + ".gmesh.time.[0-9][0-9][0-9][0-9][0-9].inp"))
+            item = Inventory.ucdOutputRoot
+            for ucdFile in ucdFiles:
+                try:
+                    stream = os.fdopen(os.open(ucdFile, os.O_WRONLY|os.O_CREAT|os.O_EXCL), "w")
+                except (OSError, IOError), error:
+                    context.error(error, items=[item])
+                    break
+                else:
+                    stream.close()
+                    os.remove(ucdFile)
 
         # get values for extra input (category 2)
 
@@ -184,10 +170,10 @@ class Pylith3d_scan(Component):
         from mpi import MPI_Comm_rank, MPI_COMM_WORLD
         
         self.rank = MPI_Comm_rank(MPI_COMM_WORLD)
-        outputFile = self.outputFile
-        inputFile = self.inputFile
+        inputFile = lambda item, category: self.inputFile(item, category, None)
+        outputFile = lambda item, category:  self.outputFile(item, category, None)
         macroString = self.macroString
-        Inventory = Pylith3d_scan.Inventory
+        Inventory = self.metainventory
         optional = self.IOFileCategory(True,   0,      "optional")
         required = self.IOFileCategory(True,   1,       None)
 
@@ -202,8 +188,8 @@ class Pylith3d_scan(Component):
         self._coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
         self._connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
         self._bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
-        self._splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          required)
-        self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           required)
+        self._splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
+        self._tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
 
         # Create filenames for each process
         for attr in ['_asciiOutputFile',
@@ -578,81 +564,13 @@ class Pylith3d_scan(Component):
         return
 
 
-    class CanNotOpenInputOutputFilesError(Exception):
-        
-        def __init__(self):
-            self._ioErrors = {}
-            self._ioErrorProtos = {}
-            self._fatalIOErrors = 0
-        
-        def openFailed(self, trait, descriptor, value, error, category):
-            """Open failed for an I/O file property."""
-            errno = error[0]
-            if not self._ioErrors.has_key(errno):
-                self._ioErrors[errno] = {}
-                proto = IOError(error[0], error[1]) # omit filename
-                self._ioErrorProtos[errno] = proto
-            from copy import copy
-            descriptor = copy(descriptor)
-            descriptor.origValue = descriptor.value
-            descriptor.value = value
-            self._ioErrors[errno][trait.name] = (error, descriptor, category)
-            self._fatalIOErrors = self._fatalIOErrors + category.fatalPoints
-            return
-
-        def fatalIOErrors(self): return self._fatalIOErrors
-
-        def log(self, diag):
-            from StringIO import StringIO
-            diag.line("error(s) opening input/output file(s)")
-            diag.line("")
-            errnos = self._ioErrors.keys()
-            errnos.sort()
-            cw = [4, 4, 30, 15, 10, 10] # column widths
-            ch = ("", "", "property", "value", "from", "") # column headers
-            for errno in errnos:
-                propertyNames = self._ioErrors[errno].keys()
-                for name in propertyNames:
-                    error, descriptor, category = self._ioErrors[errno][name]
-                    valueLen = len(descriptor.value)
-                    if valueLen > cw[3]:
-                        cw[3] = valueLen
-            for errno in errnos:
-                stream = StringIO()
-                print >> stream, "".ljust(cw[0]), self._ioErrorProtos[errno],
-                diag.line(stream.getvalue())
-                stream = StringIO()
-                for column in xrange(0, len(ch)):
-                    print >> stream, ch[column].ljust(cw[column]),
-                diag.line(stream.getvalue())
-                stream = StringIO()
-                for column in xrange(0, len(ch)):
-                    print >> stream, ("-" * len(ch[column])).ljust(cw[column]),
-                diag.line(stream.getvalue())
-                propertyNames = self._ioErrors[errno].keys()
-                propertyNames.sort()
-                for name in propertyNames:
-                    error, descriptor, category = self._ioErrors[errno][name]
-                    stream = StringIO()
-                    print >> stream, \
-                          "".ljust(cw[0]), \
-                          "".ljust(cw[1]), \
-                          name.ljust(cw[2]), \
-                          descriptor.value.ljust(cw[3]), \
-                          str(descriptor.locator).ljust(cw[4]), \
-                          (category.label and ("(%s)" % category.label).ljust(cw[5]) or ""),
-                    diag.line(stream.getvalue())
-                diag.line("")
-            diag.log()
-            return
-
     class IOFileCategory(object):
-        def __init__(self, tryOpen, fatalPoints, label):
+        def __init__(self, tryOpen, isFatal, label):
             self.tryOpen = tryOpen
-            self.fatalPoints = fatalPoints
+            self.isFatal = isFatal
             self.label = label
     
-    def macroString(self, trait):
+    def macroString(self, item):
         from pyre.util import expandMacros
         class InventoryAdapter(object):
             def __init__(self, inventory, builtins):
@@ -663,34 +581,38 @@ class Pylith3d_scan(Component):
                 if builtin is None:
                     return expandMacros(str(self.inventory.getTraitValue(key)), self)
                 return builtin
-        descriptor = self.inventory.getTraitDescriptor(trait.name)
         builtins = {
             'rank': str(self.rank),
             }
-        return expandMacros(descriptor.value, InventoryAdapter(self.inventory, builtins))
+        return expandMacros(item.value, InventoryAdapter(self.inventory, builtins))
 
-    def ioFileStream(self, trait, flags, mode, category):
-        value = self.macroString(trait)
+    def ioFileStream(self, item, flags, mode, category, context):
+        value = self.macroString(item)
         stream = None
         if category.tryOpen:
             try:
                 stream = os.fdopen(os.open(value, flags), mode)
             except (OSError, IOError), error:
-                descriptor = self.inventory.getTraitDescriptor(trait.name)
-                self._summaryIOError.openFailed(trait, descriptor, value, error, category)
+                if context is None:
+                    if category.isFatal:
+                        raise
+                elif category.isFatal:
+                    context.error(error, items=[item])
+                else:
+                    pass # warning?
         return value, stream
 
-    def inputFile(self, trait, category):
-        value, stream = self.ioFileStream(trait,os. O_RDONLY, "r", category)
+    def inputFile(self, item, category, context):
+        value, stream = self.ioFileStream(item, os.O_RDONLY, "r", category, context)
         if stream is not None:
             stream.close()
         return value
     
-    def inputFileStream(self, trait, category):
-        return self.ioFileStream(trait, os.O_RDONLY, "r", category)[1]
+    def inputFileStream(self, item, category, context):
+        return self.ioFileStream(item, os.O_RDONLY, "r", category, context)[1]
     
-    def outputFile(self, trait, category):
-        value, stream = self.ioFileStream(trait, os.O_WRONLY|os.O_CREAT|os.O_EXCL, "w", category)
+    def outputFile(self, item, category, context):
+        value, stream = self.ioFileStream(item, os.O_WRONLY|os.O_CREAT|os.O_EXCL, "w", category, context)
         if stream is not None:
             stream.close()
             os.remove(value)
