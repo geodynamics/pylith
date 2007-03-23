@@ -115,6 +115,11 @@ class Pylith3d_scan(Component):
                     stream.close()
                     os.remove(ucdFile)
 
+        return
+
+
+    def _configure(self):
+
         # get values for extra input (category 2)
 
         self.winklerScaleX = self.inventory.winklerScaleX
@@ -155,6 +160,9 @@ class Pylith3d_scan(Component):
         self.f77AsciiOutput = self.inventory.f77AsciiOutput
         self.f77PlotOutput = self.inventory.f77PlotOutput
         self.f77UcdOutput = self.inventory.f77UcdOutput
+
+        self.fileRoot = self.inventory.fileRoot
+        self.analysisType = self.inventory.analysisType
 
         return
 
@@ -801,10 +809,7 @@ class Pylith3d_scan(Component):
 # covered by this code include the sparse matrix setup portion, which also does
 # some memory allocation.  Additional code sections will call the main elastic
 # and time-dependent solution drivers, which are presently f77 subroutines.
-#
-# The code here should be executed after all initializations in Pylith3d_scan.py
-# have been performed, including reading of the keyword=value file.
-#
+
 
     def setup(self):
 
@@ -1604,7 +1609,7 @@ class Pylith3d_scan(Component):
         return
 
         
-    def sparsesetup(self, mesh):
+    def sparsesetup(self):
 
         # This function sets up sparse matrix and associated storage.
 
@@ -1723,7 +1728,7 @@ class Pylith3d_scan(Component):
         self.stiffnessOffDiagonalSize = self.stiffnessMatrixInfo[1]
 	self.stiffnessTrueSize = self.stiffnessMatrixSize-1
 
-        self.A, self.rhs, self.sol = pylith3d.createPETScMat(mesh)
+        self.A, self.rhs, self.sol = pylith3d.createPETScMat(self.mesh)
 	self.memorySize += self.stiffnessMatrixSize*self.intSize
 
         self.stiffnessMatrixStats = pylith3d.makemsr(
@@ -2414,6 +2419,489 @@ class Pylith3d_scan(Component):
 
         return
 
+
+# The function of this code is to call the elastic and time-dependent solution
+# drivers.  To do this, a number of previously-defined parameters need to be
+# bundled into lists.
+
+
+    def solveElastic(self):
+        import pylith3d
+        pylith3d.elastc(
+            self.A,self.rhs,self.sol,                          # sparse
+            self.pointerToBextern,                             # force
+            self.pointerToBtraction,
+            self.pointerToBgravity,
+            self.pointerToBconcForce,
+            self.pointerToBintern,
+            self.pointerToBresid,
+            self.pointerToBwink,
+            self.pointerToBwinkx,
+            self.pointerToDispVec,
+            self.pointerToDprev,
+            self.pointerToListArrayNforce,
+            self.pointerToListArrayGrav,
+            self.pointerToX,                                   # global
+            self.pointerToD,
+            self.pointerToDeld,
+            self.pointerToDcur,
+            self.pointerToId,
+            self.pointerToIwink,
+            self.pointerToWink,
+            self.pointerToListArrayNsysdat,
+            self.pointerToListArrayIddmat,
+            self.pointerToIbond,                               # BC
+            self.pointerToBond,
+            self.pointerToDx,                                  # slip
+            self.pointerToDeldx,
+            self.pointerToDxcur,
+            self.pointerToDiforc,
+            self.pointerToIdx,
+            self.pointerToIwinkx,
+            self.pointerToWinkx,
+            self.pointerToIdslp,
+            self.pointerToIpslp,
+            self.pointerToIdhist,
+            self.pointerToFault,                               # fault
+            self.pointerToNfault,
+            self.pointerToDfault,
+            self.pointerToTfault,
+            self.pointerToS,                                   # stiff
+            self.pointerToStemp,
+            self.pointerToState,                               # element
+            self.pointerToDstate,
+            self.pointerToState0,
+            self.pointerToDmat,
+            self.pointerToIens,
+            self.pointerToLm,
+            self.pointerToLmx,
+            self.pointerToLmf,
+            self.pointerToIvfamily,
+            self.pointerToListArrayNpar,
+            self.pointerToIelindx,
+            self.pointerToTractionverts,                       # traction
+            self.pointerToTractionvals,
+            self.pointerToGauss2d,
+            self.pointerToSh2d,
+            self.pointerToListArrayElementTypeInfo2d,
+            self.pointerToListArrayPropertyList,               # material
+            self.pointerToMaterialModelInfo,
+            self.pointerToGauss,                               # eltype
+            self.pointerToSh,
+            self.pointerToShj,
+            self.pointerToListArrayElementTypeInfo,
+            self.pointerToHistry,                              # timdat
+            self.pointerToListArrayRtimdat,
+            self.pointerToListArrayNtimdat,
+            self.pointerToListArrayNvisdat,
+            self.pointerToMaxstp,
+            self.pointerToDelt,
+            self.pointerToAlfa,
+            self.pointerToMaxit,
+            self.pointerToNtdinit,
+            self.pointerToLgdef,
+            self.pointerToUtol,
+            self.pointerToFtol,
+            self.pointerToEtol,
+            self.pointerToItmax,
+            self.pointerToListArrayRgiter,                     # stresscmp
+            self.pointerToSkew,                                # skew
+            self.pointerToListArrayNcodat,                     # ioinfo
+            self.pointerToListArrayNunits,
+            self.pointerToListArrayNprint,
+            self.pointerToIstatout,
+            self.pointerToNstatout,
+            self.asciiOutputFile,                              # files
+            self.plotOutputFile,
+            self.ucdOutputRoot,
+            self.elasticStage,                                 # PETSc logging
+            self.iterateEvent)
+        return
+
+    def interpolatePoints(self, points):
+        import pylith3d
+        return pylith3d.interpolatePoints(self.mesh, self.sol, points)
+
+    def run(self):
+        import pylith3d
+        
+        # First define all of the lists that maintain variable values.  The
+        # variables in these lists are altered during the running of the code
+        # and should not be accessed directly except as a member of the list.
+        # They should not have been defined previously.
+
+        self.trace.log("Hello from pl3drun.run (begin)!")
+        
+        print "Beginning problem solution:"
+
+        # Output approximate memory usage
+        self.memorySizeMB =0.0
+        self.memorySizeMB=self.memorySize/(1024.0*1024.0)
+
+        print ""
+        print "Approximate memory allocation for f77 arrays (MB): %g" % self.memorySizeMB
+        # print "Just before pylith3d.autoprestr:"
+
+        # Compute gravitational prestresses, if requested.
+        if self.analysisType == "elasticSolution" or self.analysisType == "fullSolution":
+            if self.prestressAutoComputeInt == 1:
+                pylith3d.autoprestr(
+                    self.A,self.rhs,self.sol,                      # sparse
+                    self.pointerToBextern,                         # force
+                    self.pointerToBtraction,
+                    self.pointerToBgravity,
+                    self.pointerToBconcForce,
+                    self.pointerToBintern,
+                    self.pointerToBresid,
+                    self.pointerToBwink,
+                    self.pointerToBwinkx,
+                    self.pointerToDispVec,
+                    self.pointerToDprev,
+                    self.pointerToListArrayNforce,
+                    self.pointerToListArrayGrav,
+                    self.pointerToX,                               # global
+                    self.pointerToD,
+                    self.pointerToDeld,
+                    self.pointerToDcur,
+                    self.pointerToId,
+                    self.pointerToIwink,
+                    self.pointerToWink,
+                    self.pointerToListArrayNsysdat,
+                    self.pointerToListArrayIddmat,
+                    self.pointerToIbond,                           # BC
+                    self.pointerToBond,
+                    self.pointerToDx,                              # slip
+                    self.pointerToDeldx,
+                    self.pointerToDxcur,
+                    self.pointerToDiforc,
+                    self.pointerToIdx,
+                    self.pointerToIwinkx,
+                    self.pointerToWinkx,
+                    self.pointerToIdslp,
+                    self.pointerToIpslp,
+                    self.pointerToIdhist,
+                    self.pointerToFault,                           # split
+                    self.pointerToNfault,
+                    self.pointerToDfault,
+                    self.pointerToTfault,
+                    self.pointerToS,                               # stiff
+                    self.pointerToStemp,
+                    self.pointerToState,                           # element
+                    self.pointerToDstate,
+                    self.pointerToState0,
+                    self.pointerToDmat,
+                    self.pointerToIens,
+                    self.pointerToLm,
+                    self.pointerToLmx,
+                    self.pointerToLmf,
+                    self.pointerToIvfamily,
+                    self.pointerToListArrayNpar,
+                    self.pointerToIelindx,
+                    self.pointerToTractionverts,                   # traction
+                    self.pointerToTractionvals,
+                    self.pointerToGauss2d,
+                    self.pointerToSh2d,
+                    self.pointerToListArrayElementTypeInfo2d,
+                    self.pointerToListArrayPropertyList,           # material
+                    self.pointerToMaterialModelInfo,
+                    self.pointerToGauss,                           # eltype
+                    self.pointerToSh,
+                    self.pointerToShj,
+                    self.pointerToListArrayElementTypeInfo,
+                    self.pointerToHistry,                          # timdat
+                    self.pointerToListArrayRtimdat,
+                    self.pointerToListArrayNtimdat,
+                    self.pointerToListArrayNvisdat,
+                    self.pointerToMaxstp,
+                    self.pointerToDelt,
+                    self.pointerToAlfa,
+                    self.pointerToMaxit,
+                    self.pointerToNtdinit,
+                    self.pointerToLgdef,
+                    self.pointerToUtol,
+                    self.pointerToFtol,
+                    self.pointerToEtol,
+                    self.pointerToItmax,
+                    self.pointerToListArrayRgiter,                 # stresscmp
+                    self.pointerToSkew,                            # skew
+                    self.pointerToListArrayNcodat,                 # ioinfo
+                    self.pointerToListArrayNunits,
+                    self.pointerToListArrayNprint,
+                    self.pointerToIstatout,
+                    self.pointerToNstatout,
+                    self.asciiOutputFile,                          # files
+                    self.plotOutputFile,
+                    self.ucdOutputRoot,
+                    self.autoprestrStage,                          # PETSc logging
+                    self.iterateEvent)
+
+            # Perform elastic solution, if requested.
+            self.solveElastic()
+            pylith3d.outputMesh(self.fileRoot, self.mesh, self.sol)
+
+        # Perform time-dependent solution, if requested.
+
+        if self.analysisType == "fullSolution" and self.numberTimeStepGroups > 1:
+            if self.pythonTimestep:
+                # Setup timestepping
+                #   Open output files
+                pylith3d.viscos_setup(self.pointerToListArrayNprint,
+                                      self.pointerToListArrayNunits,
+                                      self.asciiOutputFile,
+                                      self.plotOutputFile,
+                                      self.viscousStage)
+                numCycles         = pylith3d.intListRef(self.pointerToListArrayNvisdat, 0)
+                numTimeStepGroups = pylith3d.intListRef(self.pointerToListArrayNvisdat, 1)
+                numslp            = pylith3d.intListRef(self.pointerToListArrayNpar, 3)
+                iskopt            = pylith3d.intListRef(self.pointerToListArrayNsysdat, 10)
+                icontr            = pylith3d.intListRef(self.pointerToListArrayNprint, 0)
+                indexx            = 1 # Fortran index
+                totalSteps        = 0 # This is ntot
+                for cycle in range(numCycles):
+                    if numCycles > 1: print '     working on cycle %d' % cycle
+                    nextStartStep = 0 # This is naxstp
+                    timeStep      = 0 # This is nstep
+                    startStep     = 0 # This is nfirst
+                    time          = 0.0
+
+                    for tsGroup in range(1, numTimeStepGroups):
+                        # Define constants
+                        dt = pylith3d.doubleListRef(self.pointerToDelt, tsGroup) # This is deltp
+                        pylith3d.doubleListSet(self.pointerToListArrayRtimdat, 0, dt)
+                        alfap = pylith3d.doubleListRef(self.pointerToAlfa, tsGroup)
+                        pylith3d.doubleListSet(self.pointerToListArrayRtimdat, 1, alfap)
+                        pylith3d.intListSet(self.pointerToListArrayNtimdat, 0, timeStep)
+                        maxitp = pylith3d.intListRef(self.pointerToMaxit, tsGroup)
+                        pylith3d.intListSet(self.pointerToListArrayNtimdat, 1, maxitp)
+                        ntdinitp = pylith3d.intListRef(self.pointerToNtdinit, tsGroup)
+                        pylith3d.intListSet(self.pointerToListArrayNtimdat, 2, ntdinitp)
+                        lgdefp = pylith3d.intListRef(self.pointerToLgdef, tsGroup)
+                        pylith3d.intListSet(self.pointerToListArrayNtimdat, 3, lgdefp)
+                        itmaxp = pylith3d.intListRef(self.pointerToItmax, tsGroup)
+                        pylith3d.intListSet(self.pointerToListArrayNtimdat, 4, itmaxp)
+                        gtol = [pylith3d.doubleListRef(self.pointerToUtol, tsGroup),
+                                pylith3d.doubleListRef(self.pointerToFtol, tsGroup),
+                                pylith3d.doubleListRef(self.pointerToEtol, tsGroup)]
+                        startStep     = nextStartStep + 1
+                        nextStartStep = startStep + pylith3d.intListRef(self.pointerToMaxstp, tsGroup) - 1
+
+                        ltim = 1
+
+                        for j in range(startStep, nextStartStep+1):
+                            totalSteps += 1
+                            timeStep   += 1
+                            pylith3d.intListSet(self.pointerToListArrayNtimdat, 0, timeStep)
+                            time += dt
+                            skc   = (numslp != 0 and (iskopt == 2 or (iskopt <= 0 and abs(iskopt) == timeStep)))
+
+                            pylith3d.viscos_step(
+                                self.A,self.rhs,self.sol,                          # sparse
+                                self.pointerToBextern,                             # force
+                                self.pointerToBtraction,
+                                self.pointerToBgravity,
+                                self.pointerToBconcForce,
+                                self.pointerToBintern,
+                                self.pointerToBresid,
+                                self.pointerToBwink,
+                                self.pointerToBwinkx,
+                                self.pointerToDispVec,
+                                self.pointerToDprev,
+                                self.pointerToListArrayNforce,
+                                self.pointerToListArrayGrav,
+                                self.pointerToX,                                   # global
+                                self.pointerToD,
+                                self.pointerToDeld,
+                                self.pointerToDcur,
+                                self.pointerToId,
+                                self.pointerToIwink,
+                                self.pointerToWink,
+                                self.pointerToListArrayNsysdat,
+                                self.pointerToListArrayIddmat,
+                                self.pointerToIbond,                               # BC
+                                self.pointerToBond,
+                                self.pointerToDx,                                  # slip
+                                self.pointerToDeldx,
+                                self.pointerToDxcur,
+                                self.pointerToDiforc,
+                                self.pointerToIdx,
+                                self.pointerToIwinkx,
+                                self.pointerToWinkx,
+                                self.pointerToIdslp,
+                                self.pointerToIpslp,
+                                self.pointerToIdhist,
+                                self.pointerToFault,                               # fault
+                                self.pointerToNfault,
+                                self.pointerToDfault,
+                                self.pointerToTfault,
+                                self.pointerToS,                                   # stiff
+                                self.pointerToStemp,
+                                self.pointerToState,                               # element
+                                self.pointerToDstate,
+                                self.pointerToState0,
+                                self.pointerToDmat,
+                                self.pointerToIens,
+                                self.pointerToLm,
+                                self.pointerToLmx,
+                                self.pointerToLmf,
+                                self.pointerToIvfamily,
+                                self.pointerToListArrayNpar,
+                                self.pointerToIelindx,
+                                self.pointerToTractionverts,                       # traction
+                                self.pointerToTractionvals,
+                                self.pointerToGauss2d,
+                                self.pointerToSh2d,
+                                self.pointerToListArrayElementTypeInfo2d,
+                                self.pointerToListArrayPropertyList,               # material
+                                self.pointerToMaterialModelInfo,
+                                self.pointerToGauss,                               # eltype
+                                self.pointerToSh,
+                                self.pointerToShj,
+                                self.pointerToListArrayElementTypeInfo,
+                                self.pointerToHistry,                              # timdat
+                                self.pointerToListArrayRtimdat,
+                                self.pointerToListArrayNtimdat,
+                                self.pointerToListArrayNvisdat,
+                                self.pointerToMaxstp,
+                                self.pointerToDelt,
+                                self.pointerToAlfa,
+                                self.pointerToMaxit,
+                                self.pointerToNtdinit,
+                                self.pointerToLgdef,
+                                self.pointerToUtol,
+                                self.pointerToFtol,
+                                self.pointerToEtol,
+                                self.pointerToItmax,
+                                self.pointerToListArrayRgiter,                     # stresscmp
+                                self.pointerToSkew,                                # skew
+                                self.pointerToIprint,                              # ioinfo
+                                self.pointerToListArrayNcodat,
+                                self.pointerToListArrayNunits,
+                                self.pointerToListArrayNprint,
+                                self.pointerToIstatout,
+                                self.pointerToNstatout,
+                                self.asciiOutputFile,                              # files
+                                self.plotOutputFile,
+                                self.ucdOutputRoot,
+                                self.viscousStage,                                 # PETSc logging
+                                self.iterateEvent,
+                                totalSteps,
+                                ltim,
+                                indexx,
+                                cycle,
+                                tsGroup,
+                                j,
+                                skc,
+                                startStep,
+                                timeStep,
+                                time,
+                                dt,
+                                lgdefp,
+                                gtol)
+                            ltim = 0
+                            if (totalSteps == pylith3d.intListRef(self.pointerToIprint, indexx-1)):
+                                pylith3d.outputMesh(self.fileRoot+'.'+str(totalSteps), self.mesh, self.sol)
+                                indexx += 1
+                            if (indexx > icontr): indexx = icontr
+                print " Total number of equilibrium iterations        =",pylith3d.intListRef(self.pointerToListArrayNtimdat, 5)
+                print " Total number of stiffness matrix reformations =",pylith3d.intListRef(self.pointerToListArrayNtimdat, 6)
+                print " Total number of displacement subiterations    =",pylith3d.intListRef(self.pointerToListArrayNtimdat, 7)
+                pylith3d.viscos_cleanup(self.pointerToListArrayNtimdat, self.pointerToListArrayNprint, self.pointerToListArrayNunits)
+            else:
+                pylith3d.viscos(
+                    self.A,self.rhs,self.sol,                          # sparse
+                    self.pointerToBextern,                             # force
+                    self.pointerToBtraction,
+                    self.pointerToBgravity,
+                    self.pointerToBconcForce,
+                    self.pointerToBintern,
+                    self.pointerToBresid,
+                    self.pointerToBwink,
+                    self.pointerToBwinkx,
+                    self.pointerToDispVec,
+                    self.pointerToDprev,
+                    self.pointerToListArrayNforce,
+                    self.pointerToListArrayGrav,
+                    self.pointerToX,                                   # global
+                    self.pointerToD,
+                    self.pointerToDeld,
+                    self.pointerToDcur,
+                    self.pointerToId,
+                    self.pointerToIwink,
+                    self.pointerToWink,
+                    self.pointerToListArrayNsysdat,
+                    self.pointerToListArrayIddmat,
+                    self.pointerToIbond,                               # BC
+                    self.pointerToBond,
+                    self.pointerToDx,                                  # slip
+                    self.pointerToDeldx,
+                    self.pointerToDxcur,
+                    self.pointerToDiforc,
+                    self.pointerToIdx,
+                    self.pointerToIwinkx,
+                    self.pointerToWinkx,
+                    self.pointerToIdslp,
+                    self.pointerToIpslp,
+                    self.pointerToIdhist,
+                    self.pointerToFault,                               # fault
+                    self.pointerToNfault,
+                    self.pointerToDfault,
+                    self.pointerToTfault,
+                    self.pointerToS,                                   # stiff
+                    self.pointerToStemp,
+                    self.pointerToState,                               # element
+                    self.pointerToDstate,
+                    self.pointerToState0,
+                    self.pointerToDmat,
+                    self.pointerToIens,
+                    self.pointerToLm,
+                    self.pointerToLmx,
+                    self.pointerToLmf,
+                    self.pointerToIvfamily,
+                    self.pointerToListArrayNpar,
+                    self.pointerToIelindx,
+                    self.pointerToTractionverts,                       # traction
+                    self.pointerToTractionvals,
+                    self.pointerToGauss2d,
+                    self.pointerToSh2d,
+                    self.pointerToListArrayElementTypeInfo2d,
+                    self.pointerToListArrayPropertyList,               # material
+                    self.pointerToMaterialModelInfo,
+                    self.pointerToGauss,                               # eltype
+                    self.pointerToSh,
+                    self.pointerToShj,
+                    self.pointerToListArrayElementTypeInfo,
+                    self.pointerToHistry,                              # timdat
+                    self.pointerToListArrayRtimdat,
+                    self.pointerToListArrayNtimdat,
+                    self.pointerToListArrayNvisdat,
+                    self.pointerToMaxstp,
+                    self.pointerToDelt,
+                    self.pointerToAlfa,
+                    self.pointerToMaxit,
+                    self.pointerToNtdinit,
+                    self.pointerToLgdef,
+                    self.pointerToUtol,
+                    self.pointerToFtol,
+                    self.pointerToEtol,
+                    self.pointerToItmax,
+                    self.pointerToListArrayRgiter,                     # stresscmp
+                    self.pointerToSkew,                                # skew
+                    self.pointerToIprint,                              # ioinfo
+                    self.pointerToListArrayNcodat,
+                    self.pointerToListArrayNunits,
+                    self.pointerToListArrayNprint,
+                    self.pointerToIstatout,
+                    self.pointerToNstatout,
+                    self.asciiOutputFile,                              # files
+                    self.plotOutputFile,
+                    self.ucdOutputRoot,
+                    self.viscousStage,                                 # PETSc logging
+                    self.iterateEvent)
+        pylith3d.destroyPETScMat(self.A,self.rhs,self.sol)
+
+        self.trace.log("Hello from pl3drun.run (end)!")
+        
+        return
 
 
 # version
