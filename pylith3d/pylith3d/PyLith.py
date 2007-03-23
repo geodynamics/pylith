@@ -29,29 +29,150 @@
 #
 
 
-from pyre.components.Component import Component
+from cig.cs.petsc import PetscApplication
 import os
 
 
-class Pylith3d_scan(Component):
+class PyLith(PetscApplication):
 
 
-    def __init__(self):
-        Component.__init__(self, "pl3dscan", "scanner")
+    name = "pylith3d"
+
+
+    # Tell the framework where to find PETSc functions.
+    import pylith3d as petsc
+
+
+    # Use PETSc-style command line parsing.
+    from cig.cs.petsc import PetscCommandlineParser as CommandlineParser
+
+
+    # hack to recognize old 'pl3dscan.xxx' and 'scanner.xxx' options
+    def applyConfiguration(self, context=None):
+        # this mimics the standard Pyre order:  <component-name>.xxx overrides <facility-name>.xxx
+        for alias in ["scanner", "pl3dscan"]:
+            node = self.inventory._priv_registry.extractNode(alias)
+            if node:
+                node.name = self.name
+                self.updateConfiguration(node)
+        return super(PyLith, self).applyConfiguration(context)
+
+
+    def readSamplePoints(self, filename):
+        '''Read in the sampling locations
+        - One point per line, three values per line (x,y,z)
+        - Returns a Numeric array'''
+        import Numeric
+        f = file(filename)
+        points = []
+        for line in f.readlines():
+            points.append([float(v) for v in line.strip().split(' ')])
+        f.close()
+        return Numeric.array(points)
+
+
+    def outputSampleValues(self, filename, values):
+        '''sample# sample values impluse# impulse type'''
+        # Computing normal to the fault:
+        #   Split nodes define the fault
+        #   Get all fault faces for a node
+        #   Area weighted average of normals
+        f = file(filename, 'w')
+        for v, values in enumerate(values):
+            write(f, '%d %g %g %g 1 0' % (v, values[0], values[1], values[2]))
+        f.close()
+        return
+
+
+    def greenFunction(self, points):
+        """
+        # Beginning of loop that loops over split node sets, creating
+        # an 'impulse' for each one and outputting response values.
+        # Below at present is a quasi-C version of the needed code.
+SectionReal splitField;
+
+# Need bindings for this
+ierr = MeshGetSectionPair(mesh, "split", &splitField);
+// Loop over split nodes
+for() {
+  // Loop over elements
+  for() {
+# Need bindings for this
+    ierr = SectionPairSetFiberDimension(splitField, e, 1);
+  }
+# Need bindings for this
+  ierr = SectionPairAllocate(splitField);
+  // Loop over elements
+  for() {
+    PetscPair value;
+
+    value.i = node;
+    value.x = ;
+    value.y = ;
+    value.z = ;
+# Need bindings for this
+    ierr = SectionPairUpdate(splitField, e, &value);
+# Major problem right now:  This just updates PETSc/Sieve's copy of splitField.
+# It does not change the values within PyLith, which have been read from
+# per-process input files.
+  }
+  // Solve
+        pl3drun.solveElastic()
+# Need bindings for this
+  ierr = SectionPairClear(splitField);
+}
+"""
+        values = self.interpolatePoints(points)
+        self.outputSampleValues(self.fileRoot+'.output', values)
+        return
+
+
+    def main(self, *args, **kwds):
+    
+#        from time import clock as now
+#        start = now()
 
         import journal
         self.trace = journal.debug("pylith3d.trace")
+        
+        from mpi import MPI_Comm_rank, MPI_COMM_WORLD
+        self.rank = MPI_Comm_rank(MPI_COMM_WORLD)
 
-        self.trace.log("Hello from pl3dscan.__init__!")
+        import pylith3d
+
+        green = self.inventory.green
         
-        self.rank = 0
+        if green:
+            points      = self.readSamplePoints(self.macroString(self.metainventory.sampleLocationFile))
+
+        self.mesh = pylith3d.processMesh(self.macroString(self.metainventory.bcInputFile),
+                                         self.macroString(self.metainventory.inputFileRoot),
+                                         self.inventory.interpolateMesh,
+                                         self.inventory.partitioner)
+
+        self.initialize()
         
+        self.setup()
+        self.read()
+        self.numberequations()
+        self.sortmesh()
+        self.sparsesetup()
+        self.allocateremaining()
+        self.meshwrite()
+
+        if green:
+            self.greenFunction(points)
+        else:
+            self.runSimulation()
+#        finish = now()
+#        usertime = finish - start
+#        print "Total user time:  %g" % usertime
         return
 
 
     def _validate(self, context):
 
-        super(Pylith3d_scan, self)._validate(context)
+        super(PyLith, self)._validate(context)
 
         #
         # Open input files.  Log I/O errors.
@@ -120,6 +241,8 @@ class Pylith3d_scan(Component):
 
     def _configure(self):
 
+        super(PyLith, self)._configure()
+
         # get values for extra input (category 2)
 
         self.winklerScaleX = self.inventory.winklerScaleX
@@ -175,9 +298,7 @@ class Pylith3d_scan(Component):
         import pyre.units
         import pylith3d
         import string
-        from mpi import MPI_Comm_rank, MPI_COMM_WORLD
         
-        self.rank = MPI_Comm_rank(MPI_COMM_WORLD)
         inputFile = lambda item, category: self.inputFile(item, category, None)
         outputFile = lambda item, category:  self.outputFile(item, category, None)
         macroString = self.macroString
@@ -589,9 +710,7 @@ class Pylith3d_scan(Component):
                 if builtin is None:
                     return expandMacros(str(self.inventory.getTraitValue(key)), self)
                 return builtin
-        builtins = {
-            'rank': str(self.rank),
-            }
+        builtins = {}
         return expandMacros(item.value, InventoryAdapter(self.inventory, builtins))
 
     def ioFileStream(self, item, flags, mode, category, context):
@@ -627,12 +746,26 @@ class Pylith3d_scan(Component):
         return value
 
 
-    class Inventory(Component.Inventory):
+    class Inventory(PetscApplication.Inventory):
 
         import pyre.inventory
+        from cig.cs.petsc import PetscProperty
+
         MacroString = pyre.inventory.str
         OutputFile = pyre.inventory.str
         InputFile = pyre.inventory.str
+
+        green = pyre.inventory.bool("green")
+
+        # declare PETSc options that are of interest to PyLith
+        ksp_monitor        = PetscProperty()
+        ksp_view           = PetscProperty()
+        ksp_rtol           = PetscProperty()
+        log_summary        = PetscProperty()
+        pc_type            = PetscProperty()
+        sub_pc_type        = PetscProperty()
+        start_in_debugger  = PetscProperty()
+        debugger_pause     = PetscProperty()
 
         # Title
         title = pyre.inventory.str("title",
@@ -2522,7 +2655,7 @@ class Pylith3d_scan(Component):
         import pylith3d
         return pylith3d.interpolatePoints(self.mesh, self.sol, points)
 
-    def run(self):
+    def runSimulation(self):
         import pylith3d
         
         # First define all of the lists that maintain variable values.  The
@@ -2904,7 +3037,4 @@ class Pylith3d_scan(Component):
         return
 
 
-# version
-# $Id: Pylith3d_scan.py,v 1.19 2005/06/24 20:22:03 willic3 Exp $
-
-# End of file 
+# end of file 

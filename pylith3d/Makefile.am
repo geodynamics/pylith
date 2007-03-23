@@ -20,13 +20,9 @@ endif
 
 # pylith3d
 nobase_pyexec_PYTHON = \
-	pylith3d/Application.py \
 	pylith3d/ElementTypeDef.py \
 	pylith3d/__init__.py \
 	pylith3d/KeywordValueParse.py \
-	pylith3d/Pylith3d_run.py \
-	pylith3d/Pylith3d_scan.py \
-	pylith3d/Pylith3d_setup.py \
 	pylith3d/MaterialModel/__init__.py \
 	pylith3d/MaterialModel/IsotropicLinearElastic.py \
 	pylith3d/MaterialModel/IsotropicLinearGenMaxwellViscoelastic.py \
@@ -35,7 +31,8 @@ nobase_pyexec_PYTHON = \
 	pylith3d/MaterialModel/IsotropicPowerLawMaxwellViscoelastic.py \
 	pylith3d/MaterialModel/IsotropicPowerLawMaxwellViscoelasticZT.py \
 	pylith3d/MaterialModel/MaterialModel.py \
-	pylith3d/Materials.py
+	pylith3d/Materials.py \
+	pylith3d/PyLith.py
 
 # pypylith3d (libpylith3d + pylith3dmodule + embedded Python interpreter)
 INCLUDES = -I$(top_srcdir)/pylith3d/module $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)

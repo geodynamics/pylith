@@ -47,9 +47,9 @@ if __name__ == "__main__":
             sys.path.insert(1, directory)
             site.addsitedir(directory)
 
-    from pylith3d.Application import Application
+    from pylith3d.PyLith import PyLith
     from pyre.applications import start
-    start(applicationClass=Application)
+    start(applicationClass=PyLith)
     
 
 # version
