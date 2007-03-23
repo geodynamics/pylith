@@ -27,9 +27,25 @@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-from pyre.applications.Script import Script as BaseScript
 
-class GreenFunctionApp(BaseScript):
+
+from cig.cs.petsc import PetscApplication
+
+
+class GreenFunctionApp(PetscApplication):
+
+
+    name = "pylith3d"
+
+
+    # Tell the framework where to find PETSc functions.
+    import pylith3d as petsc
+
+
+    # Use PETSc-style command line parsing.
+    from cig.cs.petsc import PetscCommandlineParser as CommandlineParser
+
+
     def readSamplePoints(self, filename):
         '''Read in the sampling locations
         - One point per line, three values per line (x,y,z)
@@ -55,55 +71,79 @@ class GreenFunctionApp(BaseScript):
         return
 
     def main(self, *args, **kwds):
-        import pylith3d
 
-        pl3dscanner = self.inventory.scanner
+        import pylith3d
         pl3dsetup   = self.inventory.setup
+        scanner = self.inventory.scanner
         pl3drun     = self.inventory.solver
-        points      = readSamplePoints()
-        pylith3d.PetscInitialize(pl3dscanner.inventory.fileRoot+'.sample')
+        points      = readSamplePoints(scanner.macroString(scanner.metainventory.sampleLocationFile))
         
         scanner = self.inventory.scanner
         
-        from mpi import MPI_Comm_rank, MPI_COMM_WORLD
-        scanner.rank = MPI_Comm_rank(MPI_COMM_WORLD)
-
-        mesh = pylith3d.processMesh(scanner.macroString(scanner.Inventory.outputFileRoot),
-                                    scanner.macroString(scanner.Inventory.inputFileRoot),
+        mesh = pylith3d.processMesh(scanner.macroString(scanner.metainventory.bcInputFile),
+                                    scanner.macroString(scanner.metainventory.inputFileRoot),
                                     scanner.inventory.interpolateMesh,
                                     scanner.inventory.partitioner)
         
-        try:
-            pl3dsetup.initialize(pl3dscanner)
-        except self.inventory.scanner.CanNotOpenInputOutputFilesError, error:
-            import sys
-            print >> sys.stderr
-            error.report(sys.stderr)
-            print >> sys.stderr
-            print >> sys.stderr, "%s: %s" % (error.__class__.__name__, error)
-            sys.exit(1)
+        scanner.initialize()
+
+        pl3dsetup.initialize(scanner)
         pl3dsetup.read()
         pl3dsetup.numberequations()
         pl3dsetup.sortmesh()
         pl3dsetup.sparsesetup(mesh)
         pl3dsetup.allocateremaining()
         pl3dsetup.meshwrite()
-        pl3drun.fileRoot = self.inventory.scanner.inventory.fileRoot
+        pl3drun.fileRoot = scanner.inventory.fileRoot
         pl3drun.pointerToIelindx = pl3dsetup.pointerToIelindx
         pl3drun.mesh = mesh
-        pl3drun.initialize(self.inventory.scanner, self.inventory.setup)
+        pl3drun.initialize(scanner, self.inventory.setup)
+
+        # Beginning of loop that loops over split node sets, creating
+        # an 'impulse' for each one and outputting response values.
+        # Below at present is a quasi-C version of the needed code.
+SectionReal splitField;
+
+# Need bindings for this
+ierr = MeshGetSectionPair(mesh, "split", &splitField);
+// Loop over split nodes
+for() {
+  // Loop over elements
+  for() {
+# Need bindings for this
+    ierr = SectionPairSetFiberDimension(splitField, e, 1);
+  }
+# Need bindings for this
+  ierr = SectionPairAllocate(splitField);
+  // Loop over elements
+  for() {
+    PetscPair value;
+
+    value.i = node;
+    value.x = ;
+    value.y = ;
+    value.z = ;
+# Need bindings for this
+    ierr = SectionPairUpdate(splitField, e, &value);
+# Major problem right now:  This just updates PETSc/Sieve's copy of splitField.
+# It does not change the values within PyLith, which have been read from
+# per-process input files.
+  }
+  // Solve
         pl3drun.solveElastic()
+# Need bindings for this
+  ierr = SectionPairClear(splitField);
+}
+
         values = pl3drun.interpolatePoints(points)
         self.outputSampleValues(pl3dscanner.inventory.fileRoot+'.output', values):
         return
 
 
-    def __init__(self, name = "pylith3d"):
-        BaseScript.__init__(self, name)
-        return
-
-    class Inventory(BaseScript.Inventory):
+    class Inventory(PetscApplication.Inventory):
+        
         import pyre.inventory
+        from cig.cs.petsc import PetscProperty
         from Pylith3d_scan  import Pylith3d_scan
         from Pylith3d_setup import Pylith3d_setup
         from Pylith3d_run   import Pylith3d_run
@@ -112,7 +152,17 @@ class GreenFunctionApp(BaseScript):
         setup   = pyre.inventory.facility("setup",   factory = Pylith3d_setup)
         solver  = pyre.inventory.facility("solver",  factory = Pylith3d_run)
 
+        # declare PETSc options that are of interest to PyLith
+        ksp_monitor        = PetscProperty()
+        ksp_view           = PetscProperty()
+        ksp_rtol           = PetscProperty()
+        log_summary        = PetscProperty()
+        pc_type            = PetscProperty()
+        sub_pc_type        = PetscProperty()
+        start_in_debugger  = PetscProperty()
+        debugger_pause     = PetscProperty()
+
 # version
-# $Id: Application.py,v 1.5 2005/04/15 00:18:21 willic3 Exp $
+# $Id: GreenFunctionApp.py,v 1.5 2005/04/15 00:18:21 willic3 Exp $
 
 # End of file 
