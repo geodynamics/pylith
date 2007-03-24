@@ -20,6 +20,7 @@ endif
 
 # pylith3d
 nobase_pyexec_PYTHON = \
+	pylith3d/constants.py \
 	pylith3d/ElementTypeDef.py \
 	pylith3d/__init__.py \
 	pylith3d/KeywordValueParse.py \
