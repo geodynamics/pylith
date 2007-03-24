@@ -28,13 +28,15 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
+
+import constants
+
+
 class ElementTypeDef:
 
     def getdef(self,
                elementType,
-               quadratureOrderInt,
-               numberSpaceDimensions,
-               numberDegreesFreedom):
+               quadratureOrderInt):
 
 	import pylith3d
 
@@ -60,15 +62,15 @@ class ElementTypeDef:
                                            self.elementFullGauss2d[elementType -1]
 
         self.numberVolumeElementEquations = \
-                                    numberDegreesFreedom * \
+                                    constants.numberDegreesFreedom * \
                                     self.numberVolumeElementNodes
 
         self.numberSurfaceElementEquations = \
-                                    numberDegreesFreedom * \
+                                    constants.numberDegreesFreedom * \
                                     self.numberSurfaceElementNodes
 
         self.numberSurfaceElementCoordinates = \
-                                      numberSpaceDimensions * \
+                                      constants.numberSpaceDimensions * \
                                       self.numberSurfaceElementNodes
 
         self.elementTypeInfo = [self.numberVolumeElementNodes,
@@ -82,26 +84,26 @@ class ElementTypeDef:
                                   self.numberSurfaceElementCoordinates]
 
         self.pointerToSh = pylith3d.allocateDouble(
-            (numberSpaceDimensions+1)*
+            (constants.numberSpaceDimensions+1)*
             self.numberVolumeElementNodes*
             self.numberVolumeElementGaussPoints)
 
         self.pointerToSh2d = pylith3d.allocateDouble(
-            numberSpaceDimensions*
+            constants.numberSpaceDimensions*
             self.numberSurfaceElementNodes*
             self.numberSurfaceElementGaussPoints)
             
         self.pointerToShj = pylith3d.allocateDouble(
-            (numberSpaceDimensions+1)*
+            (constants.numberSpaceDimensions+1)*
             self.numberVolumeElementNodes*
             self.numberVolumeElementGaussPoints)
             
         self.pointerToGauss = pylith3d.allocateDouble(
-            (numberSpaceDimensions+1)*
+            (constants.numberSpaceDimensions+1)*
             self.numberVolumeElementGaussPoints)
             
         self.pointerToGauss2d = pylith3d.allocateDouble(
-            numberSpaceDimensions*
+            constants.numberSpaceDimensions*
             self.numberSurfaceElementGaussPoints)
 
         pylith3d.preshape(
