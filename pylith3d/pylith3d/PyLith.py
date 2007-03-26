@@ -833,118 +833,6 @@ for() {
 
         eltype=ElementTypeDef()
 
-        # Initialize variables that are defined in this function.
-
-        # Number of split/slippery nodes
-        self.totalNumberSplitNodes = 0
-        self.totalNumberSlipperyNodes = 0
-
-        # Force vector flags
-        self.externFlag = 0
-        self.tractionFlag = 0
-        self.gravityFlag = 0
-        self.concForceFlag = 0
-        self.numberConcForces = 0
-        self.prestressFlag = 0
-	self.winklerFlag = 0
-	self.slipperyWinklerFlag = 0
-
-        # Nodal arrays and equation numbers
-        self.pointerToX = None
-        self.pointerToIwinkdef = None
-        self.pointerToIwinkid = None
-        self.pointerToWinkdef = None
-
-        # Local coordinate rotations
-        self.pointerToSkew = None
-
-        # Nodal boundary conditions
-        self.pointerToIbond = None
-        self.pointerToBond = None
-
-	# Time step information
-        self.pointerToMaxstp = None
-        self.pointerToDelt = None
-        self.pointerToAlfa = None
-        self.pointerToMaxit = None
-        self.pointerToNtdinit = None
-        self.pointerToLgdef = None
-        self.pointerToUtol = None
-        self.pointerToFtol = None
-        self.pointerToEtol = None
-        self.pointerToItmax = None
-
-        # Split node arrays
-        self.pointerToFault = None
-        self.pointerToNfault = None
-
-        # Slippery node arrays
-        self.pointerToDiforc = None
-        self.pointerToIwinkxdef = None
-        self.pointerToIwinkxid = None
-        self.pointerToWinkxdef = None
-        self.pointerToIdhist = None
-
-        # Element information
-        self.pointerToIen = None
-        self.pointerToMat = None
-
-        # Element type information
-        self.elementTypeInfo = [0, 0, 0, 0]
-        self.pointerToListArrayElementTypeInfo = None
-        self.pointerToSh = None
-        self.pointerToShj = None
-        self.pointerToGauss = None
-        self.numberVolumeElementNodes = 0
-        self.numberVolumeElementGaussPoints = 0
-        self.numberVolumeElementEquations = 0
-	self.connectivitySize = 0
-
-        # Surface element type information
-        self.elementTypeInfo2d = [0, 0, 0, 0]
-        self.pointerToListArrayElementTypeInfo2d = None
-        self.pointerToSh2d = None
-        self.pointerToGauss2d = None
-        self.numberSurfaceElementNodes = 0
-
-        # Traction BC
-        self.pointerToTractionverts = None
-        self.pointerToTractionvals = None
-
-        # Time histories
-        self.pointerToHistry = None
-
-        # Output information
-        self.pointerToIprint = None
-        self.listNcodat = [0, 0]
-        self.pointerToListArrayNcodat = None
-        self.listNunits = [0, 0, 0, 0, 0]
-        self.pointerToListArrayNunits = None
-        self.listNprint = [0, 0, 0]
-        self.pointerToListArrayNprint = None
-        self.pointerToIstatout = None
-        self.pointerToNstatout = None
-
-        # Arrays that can be deallocated after use.
-        # Note that array Nslip is also required in functions sortmesh and sparsesetup
-        # before it can be deallocated.  Also, array Times is needed for output, if
-        # requested.
-        self.pointerToTimes = None
-        self.pointerToNslip = None
-        self.pointerToXtmp = None
-        self.pointerToItmp = None
-        self.pointerToItmp1 = None
-        self.pointerToItmp2 = None
-
-        # Lists that are used as arrays in the input routines below
-        self.listWscal = [0.0, 0.0, 0.0]
-        self.pointerToListArrayWscal = None
-        self.listPrscal = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.pointerToListArrayPrscal = None
-        self.listWxscal = [0.0, 0.0, 0.0]
-        self.pointerToListArrayWxscal = None
-
-
         # Make lists that are used as arrays in the f77 function calls below.
         self.listWscal = [
             self.winklerScaleX,
@@ -1084,6 +972,8 @@ for() {
         self.pointerToIprint = pylith3d.allocateInt(
             self.numberFullOutputs)
 	self.memorySize += self.numberFullOutputs*self.intSize
+
+        # Note that array Times is needed for output, if requested.
         self.pointerToTimes = pylith3d.allocateDouble(
             self.totalNumberTimeSteps+1)
 	self.memorySize += (self.totalNumberTimeSteps+1)*self.doubleSize
@@ -1144,6 +1034,8 @@ for() {
         self.memorySize += self.numberVolumeElements*self.intSize
         if self.numberPrestressEntries != 0 or self.prestressAutoComputeInt != 0:
             self.prestressFlag = 1
+        else:
+            self.prestressFlag = 0
 
         pylith3d.read_connect(
             self.pointerToIen,
@@ -1205,6 +1097,8 @@ for() {
             self.splitNodeInputFile)
 
         # Read slippery node info
+        # Note that array Nslip is also required in functions sortmesh and sparsesetup
+        # before it can be deallocated.
         self.pointerToNslip = pylith3d.allocateInt(
             constants.numberSlipDimensions*self.numberSlipperyNodeEntries)
 	self.memorySize += constants.numberSlipDimensions* \
@@ -1295,27 +1189,7 @@ for() {
         
         print "Numbering global equations:"
 
-        # Initialize variables that are defined in this function.
-        
-        # Number of equations
-        self.numberGlobalEquations = 0
-
-        # Nodal equation numbers and Winkler restoring force info
-        self.pointerToId = None
-        self.pointerToIwink = None
-        self.pointerToWink = None
-
-        # Split node ID array.  This can be deallocated after meshwrite function has been called.
-        self.pointerToIdftn = None
-
-        # Slippery node equation numbers and Winkler restoring force info
-        self.pointerToIdx = None
-        self.pointerToIwinkx = None
-        self.pointerToWinkx = None
-        self.pointerToIdslp = None
-        self.pointerToIpslp = None
-
-        # Create Idftn array for split nodes.
+        # Create Idftn array for split nodes.  This can be deallocated after meshwrite function has been called.
         self.pointerToIdftn = pylith3d.allocateInt(
             self.totalNumberSplitNodes)
 	self.memorySize += self.totalNumberSplitNodes*self.intSize
@@ -1341,6 +1215,7 @@ for() {
             self.numberNodes)
 	self.memorySize += self.numberNodes*self.intSize
 
+        # Number of equations
         self.numberGlobalEquations = pylith3d.create_id(
             self.pointerToId,
             self.pointerToIdx,
@@ -1452,17 +1327,6 @@ for() {
         
         print "Renumbering elements, split nodes, and slippery nodes:"
 
-        # Initialize variables that are defined in this function.
-
-        # Element arrays
-        self.pointerToIens = None
-        self.pointerToIvfamily = None
-        self.elementSizeInfo = [ 0, 0, 0]
-        self.pointerToIvftmp = None
-        self.stateSize = 0
-        self.state0Size = 0
-        self.propertySize = 0
-
         # Sort elements into families.  The sorted elements are contained
         # in array Iens, and the index array for the new ordering is
         # Indxiel.  The index array for the original ordering is Ielindx.
@@ -1554,29 +1418,7 @@ for() {
         self.viscousStage, \
         self.iterateEvent = pylith3d.setupPETScLogging()
 
-        # Initialize variables that are defined in this function.
-
         # Arrays to map element equation numbers to global
-        self.pointerToLm = None
-        self.pointerToLmx = None
-        self.pointerToLmf = None
-
-        # Sparse matrix info
-        self.workingArraySize = 0
-        self.stiffnessMatrixSize = 0
-        self.stiffnessTrueSize = 0
-        self.stiffnessOffDiagonalSize = 0
-        self.stiffnessMatrixInfo = [0, 0]
-        self.minimumNonzeroTermsPerRow = 0
-        self.maximumNonzeroTermsPerRow = 0
-        self.averageNonzeroTermsPerRow = 0.0
-        self.stiffnessMatrixStats = [0, 0, 0.0]
-
-        # Temporary arrays that can be deallocated after use
-        self.pointerToIndx = None
-        self.pointerToLink = None
-        self.pointerToNbrs = None
-
         # Localize global equation numbers in element index arrays.
         self.pointerToLm = pylith3d.allocateInt(
             constants.numberDegreesFreedom*self.connectivitySize)
@@ -1631,6 +1473,7 @@ for() {
             self.totalNumberSlipperyNodes,
             self.numberVolumeElementNodes)
 
+        # Temporary arrays that can be deallocated after use
         self.pointerToIndx = pylith3d.allocateInt(
             self.numberGlobalEquations)
 	self.memorySize += self.numberGlobalEquations*self.intSize
@@ -1708,77 +1551,6 @@ for() {
         
         print "Allocating remaining storage:"
         
-        # Initialize variables that are defined in this function.
-
-        # Force/displacement vectors and list of force flags
-        self.pointerToBextern = None
-        self.pointerToBtraction = None
-        self.pointerToBgravity = None
-        self.pointerToBconcForce = None
-        self.pointerToBintern = None
-        self.pointerToBresid = None
-        self.pointerToBwink = None
-        self.pointerToBwinkx = None
-        self.pointerToDispVec = None
-        self.pointerToDprev = None
-        self.listNforce = [0, 0, 0, 0, 0, 0, 0, 0]
-        self.pointerToListArrayNforce = None
-
-        # Body forces
-        self.listGrav = [0.0, 0.0, 0.0]
-        self.pointerToListArrayGrav = None
-
-        # Displacement arrays and global dimensions
-        self.pointerToD = None
-        self.pointerToDeld = None
-        self.pointerToDcur = None
-        self.listNsysdat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.pointerToListArrayNsysdat = None
-        self.pointerToListArrayIddmat = None
-
-        # Split node displacement arrays
-        self.pointerToDfault = None
-        self.pointerToTfault = None
-
-        # Slippery node displacement arrays
-        self.pointerToDx = None
-        self.pointerToDeldx = None
-        self.pointerToDxcur = None
-
-        # Storage for element stiffness arrays
-        self.pointerToS = None
-        self.pointerToStemp = None
-
-        # Element arrays and dimensions
-        self.pointerToState = None
-        self.pointerToDstate = None
-        self.pointerToState0 = None
-        self.pointerToDmat = None
-        self.listNpar = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.pointerToListArrayNpar = None
-
-        # Time step information
-        self.listRtimdat = [0.0, 0.0, 0.0]
-        self.pointerToListArrayRtimdat = None
-        self.listNtimdat = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.currentTimeStep = 0
-        self.currentIterationsBetweenReform = 0
-        self.currentStepsBetweenReform = 0
-        self.currentLargeDeformationFlag = 0
-        self.currentMaximumIterations = 0
-        self.currentNumberTotalIterations = 0
-        self.currentNumberReforms = 0
-        self.currentNumberTotalPcgIterations = 0
-	self.reformFlagInt = 0
-        self.pointerToListArrayNtimdat = None
-        self.listNvisdat = [0, 0, 0, 0]
-        self.pointerToListArrayNvisdat = None
-
-        # Tolerance information
-        self.listRgiter = [0.0, 0.0, 0.0]
-        self.pointerToListArrayRgiter = None
-        
-
         # Create necessary lists and convert them to arrays
         self.listGrav = [
             self.gravityX.value,
@@ -1793,16 +1565,28 @@ for() {
         # Force vectors
         if self.numberTractionBc != 0:
             self.tractionFlag = 1
+        else:
+            self.tractionFlag = 0
         if self.gravityX.value != 0.0 or self.gravityY.value != 0.0 or self.gravityZ.value != 0.0:
             self.gravityFlag = 1
+        else:
+            self.gravityFlag = 0
         if self.numberConcForces != 0 or self.numberDifferentialForceEntries != 0:
             self.concForceFlag = 1
+        else:
+            self.concForceFlag = 0
         if self.tractionFlag != 0 or self.gravityFlag != 0 or self.concForceFlag != 0:
             self.externFlag = 1
+        else:
+            self.externFlag = 0
 	if self.numberWinklerForces != 0:
 	    self.winklerFlag = 1
+        else:
+            self.winklerFlag = 0
 	if self.numberSlipperyWinklerForces != 0:
 	    self.slipperyWinklerFlag = 1
+        else:
+            self.slipperyWinklerFlag = 0
 
         self.pointerToBextern = pylith3d.allocateDouble(
             self.externFlag*self.numberGlobalEquations)
@@ -2023,6 +1807,16 @@ for() {
             self.listRtimdat)
 	self.memorySize += 4*self.doubleSize
 
+        # Time step information
+        self.currentTimeStep = 0
+        self.currentIterationsBetweenReform = 0
+        self.currentStepsBetweenReform = 0
+        self.currentLargeDeformationFlag = 0
+        self.currentMaximumIterations = 0
+        self.currentNumberTotalIterations = 0
+        self.currentNumberReforms = 0
+        self.currentNumberTotalPcgIterations = 0
+	self.reformFlagInt = 0
         # ntimdat array
         self.listNtimdat = [
             self.currentTimeStep,
