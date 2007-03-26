@@ -478,10 +478,6 @@ for() {
 
 
         # Initialization of all parameters
-	# Memory size variable to keep approximate track of all
-	# allocated memory.  This does not include python variables and
-	# lists.
-	self.memorySize = 0L
 	self.intSize = 4L
 	self.doubleSize = 8L
 
@@ -506,12 +502,10 @@ for() {
         numberElementTypesBase = len(self.numberElementNodesBase)
         self.pointerToListArrayNumberElementNodesBase = pylith3d.intListToArray(
             self.numberElementNodesBase)
-	self.memorySize += numberElementTypesBase*self.intSize
 
         # Invariant parameters related to material model
         self.pointerToMaterialModelInfo = pylith3d.allocateInt(
             6*constants.maxMaterialModels)
-	self.memorySize += 6*constants.maxMaterialModels*self.intSize
 
         pylith3d.matmod_def(
             self.pointerToMaterialModelInfo)
@@ -603,13 +597,10 @@ for() {
         self.propertyListSize = len(self.propertyList)
         self.pointerToListArrayPropertyList = pylith3d.doubleListToArray(
             self.propertyList)
-        self.memorySize += self.propertyListSize*self.doubleSize
         self.pointerToListArrayPropertyListIndex = pylith3d.intListToArray(
             self.propertyListIndex)
-        self.memorySize += self.numberMaterials*self.intSize
         self.pointerToListArrayMaterialModel = pylith3d.intListToArray(
             self.materialModel)
-        self.memorySize += self.numberMaterials*self.intSize
 
         # At present, we assume that the number of element families is equal to
         # the number of material types used, since only one volume element type at a
@@ -619,7 +610,6 @@ for() {
 
         self.pointerToVolumeElementFamilyList = pylith3d.allocateInt(
             3*self.maxNumberVolumeElementFamilies)
-        self.memorySize += 3*self.maxNumberVolumeElementFamilies*self.intSize
 
         self.volumeElementDimens = pylith3d.scan_connect(
             self.pointerToListArrayNumberElementNodesBase,
@@ -635,9 +625,8 @@ for() {
         self.numberVolumeElementFamilies = self.volumeElementDimens[1]
         self.volumeElementType = self.volumeElementDimens[2]
 
-        self.pointerToListArrayMaterialModel = None
-        self.pointerToListArrayPropertyListIndex = None
-        self.memorySize -= 2*self.numberMaterials*self.intSize
+        self.pointerToListArrayMaterialModel = None ### DEALLOC
+        self.pointerToListArrayPropertyListIndex = None ### DEALLOC
 
         self.numberPrestressEntries = 0
         # self.numberPrestressEntries = pylith3d.scan_prestr(
@@ -840,7 +829,6 @@ for() {
             self.winklerScaleZ]
         self.pointerToListArrayWscal = pylith3d.doubleListToArray(
             self.listWscal)
-	self.memorySize += 3*self.doubleSize
 
         self.listPrscal = [
             self.prestressScaleXx,
@@ -851,15 +839,13 @@ for() {
             self.prestressScaleYz]
         self.pointerToListArrayPrscal = pylith3d.doubleListToArray(
             self.listPrscal)
-	self.memorySize += 6*self.doubleSize
-                                  
+        
         self.listWxscal = [
             self.winklerSlipScaleX,
             self.winklerSlipScaleY,
             self.winklerSlipScaleZ]
         self.pointerToListArrayWxscal = pylith3d.doubleListToArray(
             self.listWxscal)
-	self.memorySize += 3*self.doubleSize
 
         # Set up global integration info.
         eltype.getdef(
@@ -882,29 +868,16 @@ for() {
             self.elementTypeInfo)
         self.pointerToListArrayElementTypeInfo2d = pylith3d.intListToArray(
             self.elementTypeInfo2d)
-	self.memorySize += 8*self.intSize
 
         # Node-based info (coordinates, displacement arrays, BC, and skew BC).
         self.pointerToX = pylith3d.allocateDouble(
             constants.numberSpaceDimensions*self.numberNodes)
-	self.memorySize += constants.numberSpaceDimensions* \
-	    self.numberNodes* \
-	    self.doubleSize
         self.pointerToIbond = pylith3d.allocateInt(
             constants.numberDegreesFreedom*self.numberNodes)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberNodes* \
-	    self.intSize
         self.pointerToBond = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberNodes)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberNodes* \
-	    self.doubleSize
         self.pointerToSkew = pylith3d.allocateDouble(
             constants.numberSkewDimensions*self.numberNodes)
-	self.memorySize += constants.numberSkewDimensions* \
-	    self.numberNodes* \
-	    self.doubleSize
 
         pylith3d.read_coords(
             self.pointerToX,
@@ -936,52 +909,35 @@ for() {
         # Allocate and read time step, time output, and load history info.
         self.pointerToHistry = pylith3d.allocateDouble(
             (self.totalNumberTimeSteps+1)*self.numberLoadHistories)
-	self.memorySize += (self.totalNumberTimeSteps+1)* \
-	    self.numberLoadHistories* \
-	    self.doubleSize
         self.pointerToMaxstp = pylith3d.allocateInt(
             self.numberTimeStepGroups)
-	self.memorySize += self.numberTimeStepGroups*self.intSize
         self.pointerToDelt = pylith3d.allocateDouble(
             self.numberTimeStepGroups)
-	self.memorySize += self.numberTimeStepGroups*self.doubleSize
         self.pointerToAlfa = pylith3d.allocateDouble(
             self.numberTimeStepGroups)
-	self.memorySize += self.numberTimeStepGroups*self.doubleSize
         self.pointerToMaxit = pylith3d.allocateInt(
             self.numberTimeStepGroups)
-	self.memorySize += self.numberTimeStepGroups*self.intSize
         self.pointerToNtdinit = pylith3d.allocateInt(
             self.numberTimeStepGroups)
-	self.memorySize += self.numberTimeStepGroups*self.intSize
         self.pointerToLgdef = pylith3d.allocateInt(
             self.numberTimeStepGroups)
-	self.memorySize += self.numberTimeStepGroups*self.intSize
         self.pointerToUtol = pylith3d.allocateDouble(
             self.numberTimeStepGroups)
-	self.memorySize += self.numberTimeStepGroups*self.doubleSize
         self.pointerToFtol = pylith3d.allocateDouble(
             self.numberTimeStepGroups)
-	self.memorySize += self.numberTimeStepGroups*self.doubleSize
         self.pointerToEtol = pylith3d.allocateDouble(
             self.numberTimeStepGroups)
-	self.memorySize += self.numberTimeStepGroups*self.doubleSize
         self.pointerToItmax = pylith3d.allocateInt(
             self.numberTimeStepGroups)
-	self.memorySize += self.numberTimeStepGroups*self.intSize
         self.pointerToIprint = pylith3d.allocateInt(
             self.numberFullOutputs)
-	self.memorySize += self.numberFullOutputs*self.intSize
 
         # Note that array Times is needed for output, if requested.
         self.pointerToTimes = pylith3d.allocateDouble(
             self.totalNumberTimeSteps+1)
-	self.memorySize += (self.totalNumberTimeSteps+1)*self.doubleSize
         self.pointerToIstatout = pylith3d.allocateInt(
             3*constants.maxStateVariables)
-	self.memorySize += 3*constants.maxStateVariables*self.intSize
         self.pointerToNstatout = pylith3d.allocateInt(3)
-	self.memorySize += 3*self.intSize
 
         pylith3d.read_timdat(
             self.pointerToDelt,
@@ -1027,11 +983,8 @@ for() {
         # Allocate and read info on connectivities and prestresses
         self.pointerToIen = pylith3d.allocateInt(
             self.numberVolumeElementNodes*self.numberVolumeElements)
-	self.memorySize += self.numberVolumeElementNodes* \
-                           self.numberVolumeElements*self.intSize
 	self.pointerToMat = pylith3d.allocateInt(
 	    self.numberVolumeElements)
-        self.memorySize += self.numberVolumeElements*self.intSize
         if self.numberPrestressEntries != 0 or self.prestressAutoComputeInt != 0:
             self.prestressFlag = 1
         else:
@@ -1081,11 +1034,8 @@ for() {
         # Read split node info
         self.pointerToNfault = pylith3d.allocateInt(
             3*self.numberSplitNodeEntries)
-	self.memorySize += 3*self.numberSplitNodeEntries*self.intSize
         self.pointerToFault = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberSplitNodeEntries)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberSplitNodeEntries*self.doubleSize
 
         self.totalNumberSplitNodes = pylith3d.read_split(
             self.pointerToFault,
@@ -1101,15 +1051,10 @@ for() {
         # before it can be deallocated.
         self.pointerToNslip = pylith3d.allocateInt(
             constants.numberSlipDimensions*self.numberSlipperyNodeEntries)
-	self.memorySize += constants.numberSlipDimensions* \
-	    self.numberSlipperyNodeEntries*self.intSize
         self.pointerToIdhist = pylith3d.allocateInt(
             self.numberNodes)
-	self.memorySize += self.numberNodes*self.intSize
         self.pointerToDiforc = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberNodes)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberNodes*self.doubleSize
 
         self.totalNumberSlipperyNodes = pylith3d.read_slip(
             self.pointerToNslip,
@@ -1128,32 +1073,22 @@ for() {
             self.numberNodes,
             self.f77FileInput,
             self.differentialForceInputFile)
-                         
+        
         # Read Winkler forces and slippery Winkler forces.
         # All input is finished after this section.
         self.pointerToIwinkdef = pylith3d.allocateInt(
             constants.numberDegreesFreedom*self.numberWinklerEntries)
-	self.memorySize += constants.numberDegreesFreedom* \
-                           self.numberWinklerEntries*self.intSize
         self.pointerToIwinkid = pylith3d.allocateInt(
             self.numberWinklerEntries)
-	self.memorySize += self.numberWinklerEntries*self.intSize
         self.pointerToWinkdef = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberWinklerEntries)
-	self.memorySize += constants.numberDegreesFreedom* \
-                           self.numberWinklerEntries*self.doubleSize
 
         self.pointerToIwinkxdef = pylith3d.allocateInt(
             constants.numberDegreesFreedom*self.numberSlipperyWinklerEntries)
-	self.memorySize += constants.numberDegreesFreedom* \
-                           self.numberSlipperyWinklerEntries*self.intSize
         self.pointerToIwinkxid = pylith3d.allocateInt(
             self.numberSlipperyWinklerEntries)
-	self.memorySize += self.numberSlipperyWinklerEntries*self.intSize
         self.pointerToWinkxdef = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberSlipperyWinklerEntries)
-	self.memorySize += constants.numberDegreesFreedom* \
-                           self.numberSlipperyWinklerEntries*self.doubleSize
 
         pylith3d.read_wink(
             self.pointerToWinkdef,
@@ -1192,7 +1127,6 @@ for() {
         # Create Idftn array for split nodes.  This can be deallocated after meshwrite function has been called.
         self.pointerToIdftn = pylith3d.allocateInt(
             self.totalNumberSplitNodes)
-	self.memorySize += self.totalNumberSplitNodes*self.intSize
 
         pylith3d.id_split(
             self.pointerToNfault,
@@ -1204,16 +1138,10 @@ for() {
         # Determine global equations and store equation numbers in Id and Idx.
         self.pointerToId = pylith3d.allocateInt(
             constants.numberSpaceDimensions*self.numberNodes)
-	self.memorySize += constants.numberSpaceDimensions* \
-	    self.numberNodes* \
-	    self.intSize
         self.pointerToIdx = pylith3d.allocateInt(
             constants.numberSpaceDimensions*self.numberNodes)
-	self.memorySize += constants.numberSpaceDimensions* \
-	    self.numberNodes*self.intSize
         self.pointerToIdslp = pylith3d.allocateInt(
             self.numberNodes)
-	self.memorySize += self.numberNodes*self.intSize
 
         # Number of equations
         self.numberGlobalEquations = pylith3d.create_id(
@@ -1228,8 +1156,6 @@ for() {
 
         self.pointerToIpslp = pylith3d.allocateInt(
             constants.numberSlipNeighbors*self.totalNumberSlipperyNodes)
-        self.memorySize += constants.numberSlipNeighbors* \
-                           self.totalNumberSlipperyNodes*self.intSize
 
         # If there are slippery nodes and the auto-rotation option is selected, find
         # neighboring nodes on the fault so that a best-fit plane can be determined at
@@ -1238,16 +1164,12 @@ for() {
 
             self.pointerToXtmp = pylith3d.allocateDouble(
                 self.totalNumberSlipperyNodes)
-	    self.memorySize += self.totalNumberSlipperyNodes*self.doubleSize
             self.pointerToItmp = pylith3d.allocateInt(
                 self.totalNumberSlipperyNodes)
-	    self.memorySize += self.totalNumberSlipperyNodes*self.intSize
             self.pointerToItmp1 = pylith3d.allocateInt(
                 self.totalNumberSlipperyNodes)
-	    self.memorySize += self.totalNumberSlipperyNodes*self.intSize
             self.pointerToItmp2 = pylith3d.allocateInt(
                 self.totalNumberSlipperyNodes)
-	    self.memorySize += self.totalNumberSlipperyNodes*self.intSize
 
             pylith3d.nfind(
                 self.pointerToX,
@@ -1262,23 +1184,17 @@ for() {
                 self.totalNumberSlipperyNodes,
                 self.numberNodes)
 
-            self.pointerToXtmp = None
-            self.pointerToItmp = None
-            self.pointerToItmp1 = None
-            self.pointerToItmp2 = None
-	    self.memorySize -= self.totalNumberSlipperyNodes*self.doubleSize
-	    self.memorySize -= self.totalNumberSlipperyNodes*self.intSize
-	    self.memorySize -= self.totalNumberSlipperyNodes*self.intSize
-	    self.memorySize -= self.totalNumberSlipperyNodes*self.intSize
+            self.pointerToXtmp = None ### DEALLOC
+            self.pointerToItmp = None ### DEALLOC
+            self.pointerToItmp1 = None ### DEALLOC
+            self.pointerToItmp2 = None  ### DEALLOC
 
         # Assign appropriate equation numbers to Iwink array, and compact Wink
         # array to correspond to assigned BC.
         self.pointerToWink = pylith3d.allocateDouble(
             self.numberWinklerForces)
-        self.memorySize += self.numberWinklerForces*self.doubleSize
         self.pointerToIwink = pylith3d.allocateInt(
             2*self.numberWinklerForces)
-        self.memorySize += 2*self.numberWinklerForces*self.intSize
 
         pylith3d.assign_wink(
             self.pointerToWinkdef,
@@ -1295,10 +1211,8 @@ for() {
         # array to correspond to assigned BC.
         self.pointerToWinkx = pylith3d.allocateDouble(
             self.numberSlipperyWinklerForces)
-        self.memorySize += self.numberSlipperyWinklerForces*self.doubleSize
         self.pointerToIwinkx = pylith3d.allocateInt(
             2*self.numberSlipperyWinklerForces)
-        self.memorySize += 2*self.numberSlipperyWinklerForces*self.intSize
 
         pylith3d.assign_wink(
             self.pointerToWinkxdef,
@@ -1334,23 +1248,17 @@ for() {
         # material type array (Mat) may be deallocated after sorting.
         self.pointerToIens = pylith3d.allocateInt(
             self.numberVolumeElementNodes*self.numberVolumeElements)
-	self.memorySize += self.numberVolumeElementNodes* \
-                           self.numberVolumeElements*self.intSize
         self.pointerToIvfamily = pylith3d.allocateInt(
             6*self.numberVolumeElementFamilies)
-        self.memorySize += 5*self.numberVolumeElementFamilies*self.intSize
 
         self.pointerToIvftmp = pylith3d.allocateInt(
             self.numberVolumeElementFamilies)
-        self.memorySize += self.numberVolumeElementFamilies*self.intSize
 
         self.pointerToIndxiel = pylith3d.allocateInt(
             self.numberVolumeElements)
-	self.memorySize += self.numberVolumeElements*self.intSize
 
         self.pointerToIelindx = pylith3d.allocateInt(
             self.numberVolumeElements)
-	self.memorySize += self.numberVolumeElements*self.intSize
 
 	self.elementSizeInfo = pylith3d.sort_elements(
             self.pointerToIen,
@@ -1374,15 +1282,10 @@ for() {
         self.state0Size = self.elementSizeInfo[1]
         self.propertySize = self.elementSizeInfo[2]
 
-        self.pointerToIen = None
-	self.memorySize -= self.numberVolumeElementNodes* \
-                           self.numberVolumeElements*self.intSize
-        self.pointerToMat = None
-	self.memorySize -= self.numberVolumeElements*self.intSize
-        self.pointerToVolumeElementFamilyList = None
-        self.memorySize -= 3*self.maxNumberVolumeElementFamilies*self.intSize
-        self.pointerToIvftmp = None
-        self.memorySize -= self.numberVolumeElementFamilies*self.intSize
+        self.pointerToIen = None ### DEALLOC
+        self.pointerToMat = None ### DEALLOC
+        self.pointerToVolumeElementFamilyList = None ### DEALLOC
+        self.pointerToIvftmp = None ### DEALLOC
 
         # Sort split node entries.
         pylith3d.sort_split_nodes(
@@ -1422,15 +1325,10 @@ for() {
         # Localize global equation numbers in element index arrays.
         self.pointerToLm = pylith3d.allocateInt(
             constants.numberDegreesFreedom*self.connectivitySize)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.connectivitySize*self.intSize
         self.pointerToLmx = pylith3d.allocateInt(
             constants.numberDegreesFreedom*self.connectivitySize)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.connectivitySize*self.intSize
         self.pointerToLmf = pylith3d.allocateInt(
             self.connectivitySize)
-	self.memorySize += self.connectivitySize*self.intSize
 
         pylith3d.local(
             self.pointerToId,
@@ -1459,9 +1357,7 @@ for() {
             self.numberVolumeElementNodes)
 
         # Keeping this for now as it may be wanted for output
-        # self.pointerToNslip = None
-	# self.memorySize -= constants.numberSlipDimensions* \
-	#     self.numberSlipperyNodeEntries*self.intSize
+        # self.pointerToNslip = None ### DEALLOC
 
         # Allocate and populate sparse matrix arrays.  Some of these are
         # temporary and are then deleted after use.
@@ -1476,13 +1372,10 @@ for() {
         # Temporary arrays that can be deallocated after use
         self.pointerToIndx = pylith3d.allocateInt(
             self.numberGlobalEquations)
-	self.memorySize += self.numberGlobalEquations*self.intSize
         self.pointerToLink = pylith3d.allocateInt(
             self.workingArraySize)
-	self.memorySize += self.workingArraySize*self.intSize
         self.pointerToNbrs = pylith3d.allocateInt(
             self.workingArraySize)
-	self.memorySize += self.workingArraySize*self.intSize
 
         self.stiffnessMatrixInfo = pylith3d.lnklst(
             self.numberGlobalEquations,
@@ -1502,7 +1395,6 @@ for() {
 	self.stiffnessTrueSize = self.stiffnessMatrixSize-1
 
         self.A, self.rhs, self.sol = pylith3d.createPETScMat(self.mesh)
-	self.memorySize += self.stiffnessMatrixSize*self.intSize
 
         self.stiffnessMatrixStats = pylith3d.makemsr(
             self.A,
@@ -1517,12 +1409,9 @@ for() {
         self.maximumNonzeroTermsPerRow = self.stiffnessMatrixStats[1]
         self.averageNonzeroTermsPerRow = float(self.stiffnessMatrixStats[2])
 
-        self.pointerToIndx = None
-        self.pointerToLink = None
-        self.pointerToNbrs = None
-	self.memorySize -= self.numberGlobalEquations*self.intSize
-	self.memorySize -= self.workingArraySize*self.intSize
-	self.memorySize -= self.workingArraySize*self.intSize
+        self.pointerToIndx = None ### DEALLOC
+        self.pointerToLink = None ### DEALLOC
+        self.pointerToNbrs = None ### DEALLOC
 
 	print ""
 	print ""
@@ -1558,8 +1447,7 @@ for() {
             self.gravityZ.value]
         self.pointerToListArrayGrav = pylith3d.doubleListToArray(
             self.listGrav)
-	self.memorySize += 3*self.doubleSize
-                             
+        
         # Allocate memory for all additional arrays
 
         # Force vectors
@@ -1590,110 +1478,66 @@ for() {
 
         self.pointerToBextern = pylith3d.allocateDouble(
             self.externFlag*self.numberGlobalEquations)
-	self.memorySize += self.externFlag* \
-                           self.numberGlobalEquations*self.doubleSize
         self.pointerToBtraction = pylith3d.allocateDouble(
             self.tractionFlag*self.numberGlobalEquations)
-	self.memorySize += self.tractionFlag* \
-                           self.numberGlobalEquations*self.doubleSize
         self.pointerToBgravity = pylith3d.allocateDouble(
             self.gravityFlag*self.numberGlobalEquations)
-	self.memorySize += self.gravityFlag* \
-                           self.numberGlobalEquations*self.doubleSize
         self.pointerToBconcForce = pylith3d.allocateDouble(
             self.concForceFlag*self.numberGlobalEquations)
-	self.memorySize += self.concForceFlag* \
-                           self.numberGlobalEquations*self.doubleSize
         self.pointerToBwink = pylith3d.allocateDouble(
             self.winklerFlag*self.numberGlobalEquations)
-	self.memorySize += self.winklerFlag* \
-                           self.numberGlobalEquations*self.doubleSize
         self.pointerToBwinkx = pylith3d.allocateDouble(
             self.slipperyWinklerFlag*self.numberGlobalEquations)
-	self.memorySize += self.slipperyWinklerFlag* \
-                           self.numberGlobalEquations*self.doubleSize
         self.pointerToBintern = pylith3d.allocateDouble(
             self.numberGlobalEquations)
-	self.memorySize += self.numberGlobalEquations*self.doubleSize
         self.pointerToBresid = pylith3d.allocateDouble(
             self.numberGlobalEquations)
-	self.memorySize += self.numberGlobalEquations*self.doubleSize
         self.pointerToDispVec = pylith3d.allocateDouble(
             self.numberGlobalEquations)
-	self.memorySize += self.numberGlobalEquations*self.doubleSize
         self.pointerToDprev = pylith3d.allocateDouble(
             self.usePreviousDisplacementFlag*self.numberGlobalEquations)
-	self.memorySize += self.usePreviousDisplacementFlag* \
-                           self.numberGlobalEquations*self.doubleSize
             
         # Displacement arrays
         self.pointerToD = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberNodes)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberNodes*self.doubleSize
         self.pointerToDeld = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberNodes)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberNodes*self.doubleSize
         self.pointerToDcur = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberNodes)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberNodes*self.doubleSize
 
         # Slippery node arrays
         self.pointerToDx = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberNodes)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberNodes*self.doubleSize
         self.pointerToDeldx = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberNodes)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberNodes*self.doubleSize
         self.pointerToDxcur = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberNodes)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberNodes*self.doubleSize
 
         # Split node arrays
         self.pointerToDfault = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberSplitNodeEntries)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberSplitNodeEntries*self.doubleSize
         self.pointerToTfault = pylith3d.allocateDouble(
             constants.numberDegreesFreedom*self.numberSplitNodeEntries)
-	self.memorySize += constants.numberDegreesFreedom* \
-	    self.numberSplitNodeEntries*self.doubleSize
 
         # Local stiffness matrix arrays
         self.pointerToS = pylith3d.allocateDouble(
             self.maxElementEquations*self.maxElementEquations)
-	self.memorySize += self.maxElementEquations* \
-	    self.maxElementEquations*self.doubleSize
         self.pointerToStemp = pylith3d.allocateDouble(
             self.maxElementEquations*self.maxElementEquations)
-	self.memorySize += self.maxElementEquations* \
-	    self.maxElementEquations*self.doubleSize
 
         # Element arrays
         self.pointerToState = pylith3d.allocateDouble(
             self.stateSize)
-	self.memorySize += self.stateSize*self.doubleSize
         self.pointerToDstate = pylith3d.allocateDouble(
             self.stateSize)
-	self.memorySize += self.stateSize*self.doubleSize
         self.pointerToDmat = pylith3d.allocateDouble(
             constants.materialMatrixDimension*
             self.numberVolumeElementGaussPoints*
             self.numberVolumeElements)
-	self.memorySize += constants.materialMatrixDimension* \
-	    self.numberVolumeElementGaussPoints* \
-            self.numberVolumeElements*self.doubleSize
         self.pointerToListArrayIddmat = pylith3d.intListToArray( 
             constants.listIddmat)
-	self.memorySize += 36*self.intSize
         self.pointerToState0 = pylith3d.allocateDouble(
             self.state0Size)
-        self.memorySize += self.state0Size*self.doubleSize
 
         # Create arrays from lists that will be needed for the solution
 
@@ -1709,7 +1553,6 @@ for() {
             self.usePreviousDisplacementFlag]
         self.pointerToListArrayNforce = pylith3d.intListToArray(
             self.listNforce)
-	self.memorySize += 8*self.intSize
            
         # ncodat array
         self.listNcodat = [
@@ -1717,7 +1560,6 @@ for() {
             self.debuggingOutputInt]
         self.pointerToListArrayNcodat = pylith3d.intListToArray(
             self.listNcodat)
-	self.memorySize += 2*self.intSize
             
         # npar array
         self.listNpar = [
@@ -1735,7 +1577,6 @@ for() {
             self.quadratureOrderInt]
         self.pointerToListArrayNpar = pylith3d.intListToArray(
             self.listNpar)
-	self.memorySize += 12*self.intSize
 
         # nprint array
         self.listNprint = [
@@ -1745,7 +1586,6 @@ for() {
             self.ucdOutputInt]
         self.pointerToListArrayNprint = pylith3d.intListToArray(
             self.listNprint)
-	self.memorySize += 4*self.intSize
 
         # nsysdat array
         self.listNsysdat = [
@@ -1762,7 +1602,6 @@ for() {
             self.autoRotateSlipperyNodesInt]
         self.pointerToListArrayNsysdat = pylith3d.intListToArray(
             self.listNsysdat)
-	self.memorySize += 11*self.intSize
 
         # nunits array
         self.listNunits = [
@@ -1774,7 +1613,6 @@ for() {
             self.f77UcdOutput]
         self.pointerToListArrayNunits = pylith3d.intListToArray(
             self.listNunits)
-	self.memorySize += 6*self.intSize
 
         # nvisdat array
         self.listNvisdat = [
@@ -1784,7 +1622,6 @@ for() {
             self.numberLoadHistories]
         self.pointerToListArrayNvisdat = pylith3d.intListToArray(
             self.listNvisdat)
-	self.memorySize += 4*self.intSize
             
         # rgiter array
         self.listRgiter = [
@@ -1793,7 +1630,6 @@ for() {
             self.initialStrainPerturbation]
         self.pointerToListArrayRgiter = pylith3d.doubleListToArray(
             self.listRgiter)
-	self.memorySize += 3*self.doubleSize
 
         # rtimdat array
         self.currentTimeStepSize = 0.0
@@ -1805,7 +1641,6 @@ for() {
             self.prestressAutoComputeYoungs.value]
         self.pointerToListArrayRtimdat = pylith3d.doubleListToArray(
             self.listRtimdat)
-	self.memorySize += 4*self.doubleSize
 
         # Time step information
         self.currentTimeStep = 0
@@ -1830,7 +1665,6 @@ for() {
             self.reformFlagInt]
         self.pointerToListArrayNtimdat = pylith3d.intListToArray(
             self.listNtimdat)
-        self.memorySize += 9*self.intSize
 
         self.trace.log("Hello from pl3dsetup.allocateremaining (end)!")
 
@@ -1961,8 +1795,7 @@ for() {
             self.asciiOutputInt,
             self.asciiOutputFile)
 
-        self.Times = None
-	self.memorySize -= (self.totalNumberTimeSteps+1)*self.doubleSize
+        self.Times = None ### DEALLOC
 
         # Write element info
         pylith3d.write_element_info(
@@ -1996,8 +1829,7 @@ for() {
             self.asciiOutputFile,
             self.plotOutputFile)
 
-        self.pointerToIndxiel = None
-	self.memorySize -= self.numberVolumeElements*self.intSize
+        self.pointerToIndxiel = None ### DEALLOC
 
         # Write material properties
         pylith3d.write_props(
@@ -2079,9 +1911,7 @@ for() {
             self.asciiOutputInt,
             self.asciiOutputFile)
 
-        self.pointerToNslip = None
-        self.memorySize -= constants.numberSlipDimensions* \
-                           self.numberSlipperyNodeEntries*self.intSize
+        self.pointerToNslip = None ### DEALLOC
 
         # Write split nodes to plot file, if requested and deallocate Idftn
         pylith3d.write_split_plot(
@@ -2091,8 +1921,7 @@ for() {
             self.plotOutputInt,
             self.plotOutputFile)
 
-        self.pointerToIdftn = None
-	self.memorySize -= self.totalNumberSplitNodes*self.intSize
+        self.pointerToIdftn = None ### DEALLOC
 
         # Write Winkler force info and deallocate definition arrays
         pylith3d.write_wink(
@@ -2104,12 +1933,8 @@ for() {
             self.asciiOutputInt,
             self.asciiOutputFile)
 
-        self.pointerToWinkdef = None
-	self.memorySize -= constants.numberDegreesFreedom* \
-                           self.numberWinklerEntries*self.doubleSize
-        self.pointerToIwinkdef = None
-	self.memorySize -= constants.numberDegreesFreedom* \
-                           self.numberWinklerEntries*self.intSize
+        self.pointerToWinkdef = None ### DEALLOC
+        self.pointerToIwinkdef = None ### DEALLOC
 
         # Write slippery node Winkler force info and deallocate definition arrays
         pylith3d.write_winkx(
@@ -2121,12 +1946,8 @@ for() {
             self.asciiOutputInt,
             self.asciiOutputFile)
 
-        self.pointerToWinkxdef = None
-	self.memorySize -= constants.numberDegreesFreedom* \
-                           self.numberSlipperyWinklerEntries*self.doubleSize
-        self.pointerToIwinkxdef = None
-	self.memorySize -= constants.numberDegreesFreedom* \
-                           self.numberSlipperyWinklerEntries*self.intSize
+        self.pointerToWinkxdef = None ### DEALLOC
+        self.pointerToIwinkxdef = None ### DEALLOC
 
         # Write sparse matrix info
         pylith3d.write_sparse_info(
@@ -2258,12 +2079,14 @@ for() {
         
         print "Beginning problem solution:"
 
-        # Output approximate memory usage
-        self.memorySizeMB =0.0
-        self.memorySizeMB=self.memorySize/(1024.0*1024.0)
+        if False: # Temporarily out-of-order
+            # Output approximate memory usage
+            self.memorySizeMB =0.0
+            self.memorySizeMB=self.memorySize/(1024.0*1024.0)
 
-        print ""
-        print "Approximate memory allocation for f77 arrays (MB): %g" % self.memorySizeMB
+            print ""
+            print "Approximate memory allocation for f77 arrays (MB): %g" % self.memorySizeMB
+
         # print "Just before pylith3d.autoprestr:"
 
         # Compute gravitational prestresses, if requested.
