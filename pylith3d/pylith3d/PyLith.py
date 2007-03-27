@@ -32,6 +32,10 @@
 from cig.cs.petsc import PetscApplication
 import constants
 import os
+import pylith3d
+
+
+prestress = False # 'prestress' code is disabled
 
 
 class PyLith(PetscApplication):
@@ -332,8 +336,6 @@ for() {
         from mpi import MPI_Comm_rank, MPI_COMM_WORLD
         self.rank = MPI_Comm_rank(MPI_COMM_WORLD)
 
-        import pylith3d
-
         if self.green:
             points      = self.readSamplePoints(self.macroString(self.metainventory.sampleLocationFile))
 
@@ -435,7 +437,6 @@ for() {
 
         from Materials import Materials
         import pyre.units
-        import pylith3d
         import string
         
         inputFile = lambda item, category: self.inputFile(item, category, None)
@@ -477,18 +478,14 @@ for() {
         matinfo = Materials()
 
 
-        # Initialization of all parameters
-	self.intSize = 4L
-	self.doubleSize = 8L
-
         # poor man's allocation
-        self.coordinateUnits = "coordinateUnitsInitial12345678"
-        self.displacementUnits = "displacementUnitsInitial123456"
-        self.velocityUnits = "velocityUnitsInitial1234567890"
-        self.forceUnits = "forceUnitsInitial1234567890123"
-        self.rotationUnits = "rotationUnitsInitial1234567890"
-        self.timeUnits = "timeUnitsInitial12345678901234"
-        self.tractionBcUnits = "tractionBcUnitsInitial12345678"
+        coordinateUnits = "coordinateUnitsInitial12345678"
+        displacementUnits = "displacementUnitsInitial123456"
+        velocityUnits = "velocityUnitsInitial1234567890"
+        forceUnits = "forceUnitsInitial1234567890123"
+        rotationUnits = "rotationUnitsInitial1234567890"
+        timeUnits = "timeUnitsInitial12345678901234"
+        tractionBcUnits = "tractionBcUnitsInitial12345678"
 
         # This is a test version where the geometry type is automatically
         # specified by using Pylith3d.  The geometry type is only used for
@@ -498,10 +495,8 @@ for() {
 
         # Invariant parameters related to element type
         self.maxElementEquations = constants.numberDegreesFreedom*constants.maxElementNodes
-        self.numberElementNodesBase = [8, 7, 6, 5, 4, 20, 18, 15, 13, 10]
-        numberElementTypesBase = len(self.numberElementNodesBase)
         self.pointerToListArrayNumberElementNodesBase = pylith3d.intListToArray(
-            self.numberElementNodesBase)
+            [8, 7, 6, 5, 4, 20, 18, 15, 13, 10])
 
         # Invariant parameters related to material model
         self.pointerToMaterialModelInfo = pylith3d.allocateInt(
@@ -533,51 +528,51 @@ for() {
         # Parameters derived from the number of entries in a file.
         self.numberNodes = pylith3d.scan_coords(
             self.f77FileInput,
-            self.coordinateUnits,
+            coordinateUnits,
             self.coordinateInputFile)
 
-        self.coordinateScaleFactor = uparser.parse(string.strip(self.coordinateUnits)).value
+        self.coordinateScaleFactor = uparser.parse(string.strip(coordinateUnits)).value
 
         self.numberBcEntries = pylith3d.scan_bc(
             self.f77FileInput,
-            self.displacementUnits,
-            self.velocityUnits,
-            self.forceUnits,
+            displacementUnits,
+            velocityUnits,
+            forceUnits,
             self.bcInputFile)
 
         if self.numberBcEntries > 0:
-            self.displacementScaleFactor = uparser.parse(string.strip(self.displacementUnits)).value
-            self.velocityScaleFactor = uparser.parse(string.strip(self.velocityUnits)).value
-            self.forceScaleFactor = uparser.parse(string.strip(self.forceUnits)).value
+            self.displacementScaleFactor = uparser.parse(string.strip(displacementUnits)).value
+            self.velocityScaleFactor = uparser.parse(string.strip(velocityUnits)).value
+            self.forceScaleFactor = uparser.parse(string.strip(forceUnits)).value
         else:
             self.displacementScaleFactor = 0.0
             self.velocityScaleFactor = 0.0
             self.forceScaleFactor = 0.0
 
-        self.winklerInfo = pylith3d.scan_wink(
+        winklerInfo = pylith3d.scan_wink(
             self.f77FileInput,
             self.winklerInputFile)
-        self.numberWinklerEntries = self.winklerInfo[0]
-        self.numberWinklerForces = self.winklerInfo[1]
+        self.numberWinklerEntries = winklerInfo[0]
+        self.numberWinklerForces = winklerInfo[1]
 
         self.numberRotationEntries = pylith3d.scan_skew(
             self.f77FileInput,
-            self.rotationUnits,
+            rotationUnits,
             self.rotationInputFile)
 
         if self.numberRotationEntries != 0:
-            self.rotationScaleFactor = uparser.parse(string.strip(self.rotationUnits)).value
+            self.rotationScaleFactor = uparser.parse(string.strip(rotationUnits)).value
         else:
             self.rotationScaleFactor = 0.0
 
-        self.timeStepInfo = pylith3d.scan_timdat(
+        timeStepInfo = pylith3d.scan_timdat(
             self.f77FileInput,
-            self.timeUnits,
+            timeUnits,
             self.timeStepInputFile)
-        self.numberTimeStepGroups = self.timeStepInfo[0]
-        self.totalNumberTimeSteps = self.timeStepInfo[1]
+        self.numberTimeStepGroups = timeStepInfo[0]
+        self.totalNumberTimeSteps = timeStepInfo[1]
 
-        self.timeScaleFactor = uparser.parse(string.strip(self.timeUnits)).value
+        self.timeScaleFactor = uparser.parse(string.strip(timeUnits)).value
 
         self.numberFullOutputs = pylith3d.scan_fuldat(
             self.analysisTypeInt,
@@ -591,64 +586,33 @@ for() {
 
         self.numberMaterials = matinfo.readprop(self.materialPropertiesInputFile)
 
-        self.propertyList = matinfo.propertyList
-        self.propertyListIndex = matinfo.propertyIndex
         self.materialModel = matinfo.materialModel
-        self.propertyListSize = len(self.propertyList)
         self.pointerToListArrayPropertyList = pylith3d.doubleListToArray(
-            self.propertyList)
-        self.pointerToListArrayPropertyListIndex = pylith3d.intListToArray(
-            self.propertyListIndex)
-        self.pointerToListArrayMaterialModel = pylith3d.intListToArray(
-            self.materialModel)
+            matinfo.propertyList)
 
-        # At present, we assume that the number of element families is equal to
-        # the number of material types used, since only one volume element type at a
-        # time is allowed.
-        self.maxNumberVolumeElementFamilies = constants.numberAllowedVolumeElementTypes* \
-                                               self.numberMaterials
+        self.scan_connect()
 
-        self.pointerToVolumeElementFamilyList = pylith3d.allocateInt(
-            3*self.maxNumberVolumeElementFamilies)
-
-        self.volumeElementDimens = pylith3d.scan_connect(
-            self.pointerToListArrayNumberElementNodesBase,
-            self.pointerToMaterialModelInfo,
-            self.pointerToListArrayMaterialModel,
-            self.pointerToVolumeElementFamilyList,
-            self.maxNumberVolumeElementFamilies,
-	    self.numberMaterials,
-            self.f77FileInput,
-            self.connectivityInputFile)
-
-        self.numberVolumeElements = self.volumeElementDimens[0]
-        self.numberVolumeElementFamilies = self.volumeElementDimens[1]
-        self.volumeElementType = self.volumeElementDimens[2]
-
-        self.pointerToListArrayMaterialModel = None ### DEALLOC
-        self.pointerToListArrayPropertyListIndex = None ### DEALLOC
-
-        self.numberPrestressEntries = 0
-        # self.numberPrestressEntries = pylith3d.scan_prestr(
-        #     constants.stateVariableDimension,
-        #     self.numberPrestressGaussPoints,
-        #     self.numberElements,
-        #     self.prestressAutoComputeInt,
-        #     self.f77FileInput,
-        #     self.prestressInputFile)
+        if prestress:
+            self.numberPrestressEntries = pylith3d.scan_prestr(
+                constants.stateVariableDimension,
+                self.numberPrestressGaussPoints,
+                self.numberElements,
+                self.prestressAutoComputeInt,
+                self.f77FileInput,
+                self.prestressInputFile)
+        else:
+            self.numberPrestressEntries = 0
 
         self.numberTractionBc = pylith3d.scan_tractions(
             constants.maxElementNodes2d,
             self.f77FileInput,
-            self.tractionBcUnits,
+            tractionBcUnits,
             self.tractionInputFile)
 
         if self.numberTractionBc != 0:
-            self.tractionBcScaleFactor = uparser.parse(string.strip(self.tractionBcUnits)).value
-            self.tractionFlag = 1
+            self.tractionBcScaleFactor = uparser.parse(string.strip(tractionBcUnits)).value
         else:
             self.tractionBcScaleFactor = 0.0
-            self.tractionFlag = 0
 
         self.numberSplitNodeEntries = pylith3d.scan_split(
             self.f77FileInput,
@@ -663,14 +627,44 @@ for() {
             self.f77FileInput,
             self.differentialForceInputFile)
 
-        self.slipperyWinklerInfo = pylith3d.scan_winkx(
+        slipperyWinklerInfo = pylith3d.scan_winkx(
             self.numberSlipperyNodeEntries,
             self.f77FileInput,
             self.slipperyWinklerInputFile)
-        self.numberSlipperyWinklerEntries = self.slipperyWinklerInfo[0]
-        self.numberSlipperyWinklerForces = self.slipperyWinklerInfo[1]
+        self.numberSlipperyWinklerEntries = slipperyWinklerInfo[0]
+        self.numberSlipperyWinklerForces = slipperyWinklerInfo[1]
 
         self.trace.log("Hello from pl3dscan.initialize (end)!")
+
+        return
+
+
+    def scan_connect(self):
+        pointerToListArrayMaterialModel = pylith3d.intListToArray(
+            self.materialModel)
+
+        # At present, we assume that the number of element families is equal to
+        # the number of material types used, since only one volume element type at a
+        # time is allowed.
+        self.maxNumberVolumeElementFamilies = constants.numberAllowedVolumeElementTypes* \
+                                               self.numberMaterials
+
+        self.pointerToVolumeElementFamilyList = pylith3d.allocateInt(
+            3*self.maxNumberVolumeElementFamilies)
+
+        volumeElementDimens = pylith3d.scan_connect(
+            self.pointerToListArrayNumberElementNodesBase,
+            self.pointerToMaterialModelInfo,
+            pointerToListArrayMaterialModel,
+            self.pointerToVolumeElementFamilyList,
+            self.maxNumberVolumeElementFamilies,
+	    self.numberMaterials,
+            self.f77FileInput,
+            self.connectivityInputFile)
+
+        self.numberVolumeElements = volumeElementDimens[0]
+        self.numberVolumeElementFamilies = volumeElementDimens[1]
+        self.volumeElementType = volumeElementDimens[2]
 
         return
 
@@ -770,7 +764,6 @@ for() {
             self.plotOutputInt = 2
 
         binIOError = None
-        import pylith3d
         try:
             pylith3d.try_binio(self.f77UcdOutput)
         except RuntimeError, binIOError:
@@ -813,7 +806,6 @@ for() {
         # This function reads all input and performs some memory allocation.
 
         from ElementTypeDef import ElementTypeDef
-        import pylith3d
 
         self.trace.log("Hello from pl3dsetup.read (begin)!")
         
@@ -823,37 +815,30 @@ for() {
         eltype=ElementTypeDef()
 
         # Make lists that are used as arrays in the f77 function calls below.
-        self.listWscal = [
-            self.winklerScaleX,
-            self.winklerScaleY,
-            self.winklerScaleZ]
-        self.pointerToListArrayWscal = pylith3d.doubleListToArray(
-            self.listWscal)
+        pointerToListArrayWscal = pylith3d.doubleListToArray(
+            [self.winklerScaleX,
+             self.winklerScaleY,
+             self.winklerScaleZ])
 
-        self.listPrscal = [
-            self.prestressScaleXx,
-            self.prestressScaleYy,
-            self.prestressScaleZz,
-            self.prestressScaleXy,
-            self.prestressScaleXz,
-            self.prestressScaleYz]
-        self.pointerToListArrayPrscal = pylith3d.doubleListToArray(
-            self.listPrscal)
+        if prestress:
+            self.pointerToListArrayPrscal = pylith3d.doubleListToArray(
+                [self.prestressScaleXx,
+                 self.prestressScaleYy,
+                 self.prestressScaleZz,
+                 self.prestressScaleXy,
+                 self.prestressScaleXz,
+                 self.prestressScaleYz])
         
-        self.listWxscal = [
-            self.winklerSlipScaleX,
-            self.winklerSlipScaleY,
-            self.winklerSlipScaleZ]
-        self.pointerToListArrayWxscal = pylith3d.doubleListToArray(
-            self.listWxscal)
+        pointerToListArrayWxscal = pylith3d.doubleListToArray(
+            [self.winklerSlipScaleX,
+             self.winklerSlipScaleY,
+             self.winklerSlipScaleZ])
 
         # Set up global integration info.
         eltype.getdef(
             self.volumeElementType,
             self.quadratureOrderInt)
 
-        self.elementTypeInfo = eltype.elementTypeInfo
-        self.elementTypeInfo2d = eltype.elementTypeInfo2d
         self.pointerToSh = eltype.pointerToSh
         self.pointerToSh2d = eltype.pointerToSh2d
         self.pointerToShj = eltype.pointerToShj
@@ -865,9 +850,9 @@ for() {
         self.numberSurfaceElementNodes = eltype.numberSurfaceElementNodes
 	self.connectivitySize = self.numberVolumeElements*self.numberVolumeElementNodes
         self.pointerToListArrayElementTypeInfo = pylith3d.intListToArray(
-            self.elementTypeInfo)
+            eltype.elementTypeInfo)
         self.pointerToListArrayElementTypeInfo2d = pylith3d.intListToArray(
-            self.elementTypeInfo2d)
+            eltype.elementTypeInfo2d)
 
         # Node-based info (coordinates, displacement arrays, BC, and skew BC).
         self.pointerToX = pylith3d.allocateDouble(
@@ -1000,21 +985,22 @@ for() {
             self.f77FileInput,
             self.connectivityInputFile)
 
-        # pylith3d.read_prestr(
-        #     self.pointerToStn,
-        #     self.pointerToSt0,
-        #     self.pointerToListArrayPrscal,
-        #     self.numberStressComponents,
-        #     self.numberGaussPoints,
-        #     self.numberPrestressGaussPoints,
-        #     self.numberElements,
-        #     self.numberPrestressEntries,
-        #     self.prestressAutoComputeInt,
-        #     self.asciiOutputInt,
-        #     self.f77FileInput,
-        #     self.f77AsciiOutput,
-        #     self.prestressInputFile,
-        #     self.asciiOutputFile)
+        if prestress:
+            pylith3d.read_prestr(
+                self.pointerToStn,
+                self.pointerToSt0,
+                self.pointerToListArrayPrscal,
+                self.numberStressComponents,
+                self.numberGaussPoints,
+                self.numberPrestressGaussPoints,
+                self.numberElements,
+                self.numberPrestressEntries,
+                self.prestressAutoComputeInt,
+                self.asciiOutputInt,
+                self.f77FileInput,
+                self.f77AsciiOutput,
+                self.prestressInputFile,
+                self.asciiOutputFile)
 
         # Read traction BC
         self.pointerToTractionverts = pylith3d.allocateInt(
@@ -1092,7 +1078,7 @@ for() {
 
         pylith3d.read_wink(
             self.pointerToWinkdef,
-            self.pointerToListArrayWscal,
+            pointerToListArrayWscal,
             self.pointerToIwinkdef,
             self.pointerToIwinkid,
             self.numberWinklerForces,
@@ -1102,7 +1088,7 @@ for() {
 
         pylith3d.read_wink(
             self.pointerToWinkxdef,
-            self.pointerToListArrayWxscal,
+            pointerToListArrayWxscal,
             self.pointerToIwinkxdef,
             self.pointerToIwinkxid,
             self.numberSlipperyWinklerForces,
@@ -1117,8 +1103,6 @@ for() {
     def numberequations(self):
 
         # This functions numbers equations based on BC and slippery node info.
-
-        import pylith3d
 
         self.trace.log("Hello from pl3dsetup.numberequations (begin)!")
         
@@ -1159,35 +1143,9 @@ for() {
 
         # If there are slippery nodes and the auto-rotation option is selected, find
         # neighboring nodes on the fault so that a best-fit plane can be determined at
-        # each node.  Deallocate temporary arrays after use.
+        # each node.
         if self.totalNumberSlipperyNodes != 0 and self.autoRotateSlipperyNodesInt ==  2:
-
-            self.pointerToXtmp = pylith3d.allocateDouble(
-                self.totalNumberSlipperyNodes)
-            self.pointerToItmp = pylith3d.allocateInt(
-                self.totalNumberSlipperyNodes)
-            self.pointerToItmp1 = pylith3d.allocateInt(
-                self.totalNumberSlipperyNodes)
-            self.pointerToItmp2 = pylith3d.allocateInt(
-                self.totalNumberSlipperyNodes)
-
-            pylith3d.nfind(
-                self.pointerToX,
-                self.pointerToXtmp,
-                self.pointerToIdslp,
-                self.pointerToIpslp,
-                self.pointerToItmp,
-                self.pointerToItmp1,
-                self.pointerToItmp2,
-                self.pointerToNslip,
-                self.numberSlipperyNodeEntries,
-                self.totalNumberSlipperyNodes,
-                self.numberNodes)
-
-            self.pointerToXtmp = None ### DEALLOC
-            self.pointerToItmp = None ### DEALLOC
-            self.pointerToItmp1 = None ### DEALLOC
-            self.pointerToItmp2 = None  ### DEALLOC
+            self.nfind()
 
         # Assign appropriate equation numbers to Iwink array, and compact Wink
         # array to correspond to assigned BC.
@@ -1228,64 +1186,49 @@ for() {
         self.trace.log("Hello from pl3dsetup.numberequations (end)!")
             
         return
-            
-        
+
+
+    def nfind(self):
+        # Temporary arrays
+        pointerToXtmp = pylith3d.allocateDouble(
+            self.totalNumberSlipperyNodes)
+        pointerToItmp = pylith3d.allocateInt(
+            self.totalNumberSlipperyNodes)
+        pointerToItmp1 = pylith3d.allocateInt(
+            self.totalNumberSlipperyNodes)
+        pointerToItmp2 = pylith3d.allocateInt(
+            self.totalNumberSlipperyNodes)
+
+        pylith3d.nfind(
+            self.pointerToX,
+            pointerToXtmp,
+            self.pointerToIdslp,
+            self.pointerToIpslp,
+            pointerToItmp,
+            pointerToItmp1,
+            pointerToItmp2,
+            self.pointerToNslip,
+            self.numberSlipperyNodeEntries,
+            self.totalNumberSlipperyNodes,
+            self.numberNodes)
+
+        return
+
+
     def sortmesh(self):
 
         # This function sorts elements into families and sorts all other items that are
         # affected by this.
 
-        import pylith3d
-
         self.trace.log("Hello from pl3dsetup.sortmesh (begin)!")
         
         print "Renumbering elements, split nodes, and slippery nodes:"
 
-        # Sort elements into families.  The sorted elements are contained
-        # in array Iens, and the index array for the new ordering is
-        # Indxiel.  The index array for the original ordering is Ielindx.
-        # The original element node array (Ien) and the associated
-        # material type array (Mat) may be deallocated after sorting.
-        self.pointerToIens = pylith3d.allocateInt(
-            self.numberVolumeElementNodes*self.numberVolumeElements)
-        self.pointerToIvfamily = pylith3d.allocateInt(
-            6*self.numberVolumeElementFamilies)
+        self.sort_elements()
 
-        self.pointerToIvftmp = pylith3d.allocateInt(
-            self.numberVolumeElementFamilies)
-
-        self.pointerToIndxiel = pylith3d.allocateInt(
-            self.numberVolumeElements)
-
-        self.pointerToIelindx = pylith3d.allocateInt(
-            self.numberVolumeElements)
-
-	self.elementSizeInfo = pylith3d.sort_elements(
-            self.pointerToIen,
-            self.pointerToMat,
-            self.pointerToMaterialModelInfo,
-            self.pointerToVolumeElementFamilyList,
-            self.pointerToIvfamily,
-            self.pointerToIens,
-            self.pointerToIvftmp,
-            self.pointerToIndxiel,
-            self.pointerToIelindx,
-            self.numberVolumeElementNodes,
-            self.numberVolumeElementGaussPoints,
-            self.maxNumberVolumeElementFamilies,
-            self.numberVolumeElementFamilies,
-            self.prestressFlag,
-            self.numberVolumeElements,
-            self.numberNodes)
-            
         self.stateSize = self.elementSizeInfo[0]
         self.state0Size = self.elementSizeInfo[1]
         self.propertySize = self.elementSizeInfo[2]
-
-        self.pointerToIen = None ### DEALLOC
-        self.pointerToMat = None ### DEALLOC
-        self.pointerToVolumeElementFamilyList = None ### DEALLOC
-        self.pointerToIvftmp = None ### DEALLOC
 
         # Sort split node entries.
         pylith3d.sort_split_nodes(
@@ -1305,12 +1248,56 @@ for() {
 
         return
 
+
+    def sort_elements(self):
+        # Sort elements into families.  The sorted elements are contained
+        # in array Iens, and the index array for the new ordering is
+        # Indxiel.  The index array for the original ordering is Ielindx.
+        # The original element node array (Ien) and the associated
+        # material type array (Mat) may be deallocated after sorting.
+        
+        self.pointerToIens = pylith3d.allocateInt(
+            self.numberVolumeElementNodes*self.numberVolumeElements)
+        self.pointerToIvfamily = pylith3d.allocateInt(
+            6*self.numberVolumeElementFamilies)
+
+        self.pointerToIndxiel = pylith3d.allocateInt(
+            self.numberVolumeElements)
+
+        self.pointerToIelindx = pylith3d.allocateInt(
+            self.numberVolumeElements)
+
+        pointerToIvftmp = pylith3d.allocateInt(
+            self.numberVolumeElementFamilies)
+
+	self.elementSizeInfo = pylith3d.sort_elements(
+            self.pointerToIen,
+            self.pointerToMat,
+            self.pointerToMaterialModelInfo,
+            self.pointerToVolumeElementFamilyList,
+            self.pointerToIvfamily,
+            self.pointerToIens,
+            pointerToIvftmp,
+            self.pointerToIndxiel,
+            self.pointerToIelindx,
+            self.numberVolumeElementNodes,
+            self.numberVolumeElementGaussPoints,
+            self.maxNumberVolumeElementFamilies,
+            self.numberVolumeElementFamilies,
+            self.prestressFlag,
+            self.numberVolumeElements,
+            self.numberNodes)
+        
+        self.pointerToIen = None ### DEALLOC
+        self.pointerToMat = None ### DEALLOC
+        self.pointerToVolumeElementFamilyList = None ### DEALLOC
+
+        return
+
         
     def sparsesetup(self):
 
         # This function sets up sparse matrix and associated storage.
-
-        import pylith3d
 
         self.trace.log("Hello from pl3dsetup.sparsesetup (begin)!")
         
@@ -1361,7 +1348,7 @@ for() {
 
         # Allocate and populate sparse matrix arrays.  Some of these are
         # temporary and are then deleted after use.
-        self.workingArraySize = pylith3d.cmp_stiffsz(
+        workingArraySize = pylith3d.cmp_stiffsz(
             self.numberGlobalEquations,
             self.pointerToLm,
             self.pointerToLmx,
@@ -1369,58 +1356,52 @@ for() {
             self.totalNumberSlipperyNodes,
             self.numberVolumeElementNodes)
 
-        # Temporary arrays that can be deallocated after use
-        self.pointerToIndx = pylith3d.allocateInt(
+        # Temporary arrays
+        pointerToIndx = pylith3d.allocateInt(
             self.numberGlobalEquations)
-        self.pointerToLink = pylith3d.allocateInt(
-            self.workingArraySize)
-        self.pointerToNbrs = pylith3d.allocateInt(
-            self.workingArraySize)
+        pointerToLink = pylith3d.allocateInt(
+            workingArraySize)
+        pointerToNbrs = pylith3d.allocateInt(
+            workingArraySize)
 
-        self.stiffnessMatrixInfo = pylith3d.lnklst(
+        stiffnessMatrixInfo = pylith3d.lnklst(
             self.numberGlobalEquations,
             self.pointerToLm,
             self.pointerToLmx,
             self.numberVolumeElements,
             self.numberVolumeElementNodes,
             self.numberVolumeElementEquations,
-            self.pointerToIndx,
-            self.pointerToLink,
-            self.pointerToNbrs,
-            self.workingArraySize,
+            pointerToIndx,
+            pointerToLink,
+            pointerToNbrs,
+            workingArraySize,
             self.totalNumberSlipperyNodes)
 
-        self.stiffnessMatrixSize = self.stiffnessMatrixInfo[0]
-        self.stiffnessOffDiagonalSize = self.stiffnessMatrixInfo[1]
-	self.stiffnessTrueSize = self.stiffnessMatrixSize-1
+        self.stiffnessMatrixSize = stiffnessMatrixInfo[0]
 
         self.A, self.rhs, self.sol = pylith3d.createPETScMat(self.mesh)
 
-        self.stiffnessMatrixStats = pylith3d.makemsr(
+        stiffnessMatrixStats = pylith3d.makemsr(
             self.A,
-            self.pointerToIndx,
-            self.pointerToLink,
-            self.pointerToNbrs,
+            pointerToIndx,
+            pointerToLink,
+            pointerToNbrs,
             self.numberGlobalEquations,
             self.stiffnessMatrixSize,
-            self.workingArraySize)
+            workingArraySize)
 
-        self.minimumNonzeroTermsPerRow = self.stiffnessMatrixStats[0]
-        self.maximumNonzeroTermsPerRow = self.stiffnessMatrixStats[1]
-        self.averageNonzeroTermsPerRow = float(self.stiffnessMatrixStats[2])
-
-        self.pointerToIndx = None ### DEALLOC
-        self.pointerToLink = None ### DEALLOC
-        self.pointerToNbrs = None ### DEALLOC
+        self.minimumNonzeroTermsPerRow = stiffnessMatrixStats[0]
+        self.maximumNonzeroTermsPerRow = stiffnessMatrixStats[1]
+        self.averageNonzeroTermsPerRow = float(stiffnessMatrixStats[2])
 
 	print ""
 	print ""
         print "Sparse matrix information:"
 	print ""
         print "numberGlobalEquations:     %i" % self.numberGlobalEquations
-        print "workingArraySize:          %i" % self.workingArraySize
-        print "stiffnessMatrixSize:       %i" % self.stiffnessTrueSize
-        print "stiffnessOffDiagonalSize:  %i" % self.stiffnessOffDiagonalSize
+        print "workingArraySize:          %i" % workingArraySize
+        print "stiffnessMatrixSize:       %i" % (self.stiffnessMatrixSize-1)
+        print "stiffnessOffDiagonalSize:  %i" % stiffnessMatrixInfo[1]
         print "minimumNonzeroTermsPerRow: %i" % self.minimumNonzeroTermsPerRow
         print "maximumNonzeroTermsPerRow: %i" % self.maximumNonzeroTermsPerRow
         print "averageNonzeroTermsPerRow: %g" % self.averageNonzeroTermsPerRow
@@ -1434,60 +1415,56 @@ for() {
 
         # This function allocates all remaining arrays that are needed for computations.
         
-        import pylith3d
-
         self.trace.log("Hello from pl3dsetup.allocateremaining (begin)!")
         
         print "Allocating remaining storage:"
         
         # Create necessary lists and convert them to arrays
-        self.listGrav = [
-            self.gravityX.value,
-            self.gravityY.value,
-            self.gravityZ.value]
         self.pointerToListArrayGrav = pylith3d.doubleListToArray(
-            self.listGrav)
+            [self.gravityX.value,
+             self.gravityY.value,
+             self.gravityZ.value])
         
         # Allocate memory for all additional arrays
 
         # Force vectors
         if self.numberTractionBc != 0:
-            self.tractionFlag = 1
+            tractionFlag = 1
         else:
-            self.tractionFlag = 0
+            tractionFlag = 0
         if self.gravityX.value != 0.0 or self.gravityY.value != 0.0 or self.gravityZ.value != 0.0:
-            self.gravityFlag = 1
+            gravityFlag = 1
         else:
-            self.gravityFlag = 0
+            gravityFlag = 0
         if self.numberConcForces != 0 or self.numberDifferentialForceEntries != 0:
-            self.concForceFlag = 1
+            concForceFlag = 1
         else:
-            self.concForceFlag = 0
-        if self.tractionFlag != 0 or self.gravityFlag != 0 or self.concForceFlag != 0:
-            self.externFlag = 1
+            concForceFlag = 0
+        if tractionFlag != 0 or gravityFlag != 0 or concForceFlag != 0:
+            externFlag = 1
         else:
-            self.externFlag = 0
+            externFlag = 0
 	if self.numberWinklerForces != 0:
-	    self.winklerFlag = 1
+	    winklerFlag = 1
         else:
-            self.winklerFlag = 0
+            winklerFlag = 0
 	if self.numberSlipperyWinklerForces != 0:
-	    self.slipperyWinklerFlag = 1
+	    slipperyWinklerFlag = 1
         else:
-            self.slipperyWinklerFlag = 0
+            slipperyWinklerFlag = 0
 
         self.pointerToBextern = pylith3d.allocateDouble(
-            self.externFlag*self.numberGlobalEquations)
+            externFlag*self.numberGlobalEquations)
         self.pointerToBtraction = pylith3d.allocateDouble(
-            self.tractionFlag*self.numberGlobalEquations)
+            tractionFlag*self.numberGlobalEquations)
         self.pointerToBgravity = pylith3d.allocateDouble(
-            self.gravityFlag*self.numberGlobalEquations)
+            gravityFlag*self.numberGlobalEquations)
         self.pointerToBconcForce = pylith3d.allocateDouble(
-            self.concForceFlag*self.numberGlobalEquations)
+            concForceFlag*self.numberGlobalEquations)
         self.pointerToBwink = pylith3d.allocateDouble(
-            self.winklerFlag*self.numberGlobalEquations)
+            winklerFlag*self.numberGlobalEquations)
         self.pointerToBwinkx = pylith3d.allocateDouble(
-            self.slipperyWinklerFlag*self.numberGlobalEquations)
+            slipperyWinklerFlag*self.numberGlobalEquations)
         self.pointerToBintern = pylith3d.allocateDouble(
             self.numberGlobalEquations)
         self.pointerToBresid = pylith3d.allocateDouble(
@@ -1542,129 +1519,98 @@ for() {
         # Create arrays from lists that will be needed for the solution
 
         # nforce array
-        self.listNforce = [
-            self.externFlag,
-            self.tractionFlag,
-            self.gravityFlag,
-            self.concForceFlag,
-            self.prestressFlag,
-            self.winklerFlag,
-            self.slipperyWinklerFlag,
-            self.usePreviousDisplacementFlag]
         self.pointerToListArrayNforce = pylith3d.intListToArray(
-            self.listNforce)
+            [externFlag,
+             tractionFlag,
+             gravityFlag,
+             concForceFlag,
+             self.prestressFlag,
+             winklerFlag,
+             slipperyWinklerFlag,
+             self.usePreviousDisplacementFlag])
            
         # ncodat array
-        self.listNcodat = [
-            self.analysisTypeInt,
-            self.debuggingOutputInt]
         self.pointerToListArrayNcodat = pylith3d.intListToArray(
-            self.listNcodat)
+            [self.analysisTypeInt,
+             self.debuggingOutputInt])
             
         # npar array
-        self.listNpar = [
-            self.numberVolumeElements,
-            self.numberMaterials,
-            self.numberTractionBc,
-            self.numberSlipperyNodeEntries,
-            self.numberSplitNodeEntries,
-            self.prestressAutoComputeInt,
-            self.prestressAutoChangeElasticPropsInt,
-            self.stateSize,
-            self.state0Size,
-            self.numberVolumeElementFamilies,
-            self.numberDifferentialForceEntries,
-            self.quadratureOrderInt]
         self.pointerToListArrayNpar = pylith3d.intListToArray(
-            self.listNpar)
+            [self.numberVolumeElements,
+             self.numberMaterials,
+             self.numberTractionBc,
+             self.numberSlipperyNodeEntries,
+             self.numberSplitNodeEntries,
+             self.prestressAutoComputeInt,
+             self.prestressAutoChangeElasticPropsInt,
+             self.stateSize,
+             self.state0Size,
+             self.numberVolumeElementFamilies,
+             self.numberDifferentialForceEntries,
+             self.quadratureOrderInt])
 
         # nprint array
-        self.listNprint = [
-            self.numberFullOutputs,
-            self.asciiOutputInt,
-            self.plotOutputInt,
-            self.ucdOutputInt]
         self.pointerToListArrayNprint = pylith3d.intListToArray(
-            self.listNprint)
+            [self.numberFullOutputs,
+             self.asciiOutputInt,
+             self.plotOutputInt,
+             self.ucdOutputInt])
 
         # nsysdat array
-        self.listNsysdat = [
-            self.numberNodes,
-            self.numberGlobalEquations,
-            self.stiffnessMatrixSize,
-            self.numberRotationEntries,
-            self.numberPrestressEntries,
-            self.totalNumberSlipperyNodes,
-            self.totalNumberSplitNodes,
-            self.propertySize,
-            self.numberWinklerForces,
-            self.numberSlipperyWinklerForces,
-            self.autoRotateSlipperyNodesInt]
         self.pointerToListArrayNsysdat = pylith3d.intListToArray(
-            self.listNsysdat)
+            [self.numberNodes,
+             self.numberGlobalEquations,
+             self.stiffnessMatrixSize,
+             self.numberRotationEntries,
+             self.numberPrestressEntries,
+             self.totalNumberSlipperyNodes,
+             self.totalNumberSplitNodes,
+             self.propertySize,
+             self.numberWinklerForces,
+             self.numberSlipperyWinklerForces,
+             self.autoRotateSlipperyNodesInt])
 
         # nunits array
-        self.listNunits = [
-            self.f77StandardInput,
-            self.f77StandardOutput,
-            self.f77FileInput,
-            self.f77AsciiOutput,
-            self.f77PlotOutput,
-            self.f77UcdOutput]
         self.pointerToListArrayNunits = pylith3d.intListToArray(
-            self.listNunits)
+            [self.f77StandardInput,
+             self.f77StandardOutput,
+             self.f77FileInput,
+             self.f77AsciiOutput,
+             self.f77PlotOutput,
+             self.f77UcdOutput])
 
         # nvisdat array
-        self.listNvisdat = [
-            self.numberCycles,
-            self.numberTimeStepGroups,
-            self.totalNumberTimeSteps,
-            self.numberLoadHistories]
         self.pointerToListArrayNvisdat = pylith3d.intListToArray(
-            self.listNvisdat)
-            
+            [self.numberCycles,
+             self.numberTimeStepGroups,
+             self.totalNumberTimeSteps,
+             self.numberLoadHistories])
+        
         # rgiter array
-        self.listRgiter = [
-            self.stressTolerance.value,
-            self.minimumStrainPerturbation,
-            self.initialStrainPerturbation]
         self.pointerToListArrayRgiter = pylith3d.doubleListToArray(
-            self.listRgiter)
-
+            [self.stressTolerance.value,
+             self.minimumStrainPerturbation,
+             self.initialStrainPerturbation])
+        
         # rtimdat array
-        self.currentTimeStepSize = 0.0
-        self.currentAlfaParameter = 0.0
-        self.listRtimdat = [
-            self.currentTimeStepSize,
-            self.currentAlfaParameter,
-            self.prestressAutoComputePoisson,
-            self.prestressAutoComputeYoungs.value]
         self.pointerToListArrayRtimdat = pylith3d.doubleListToArray(
-            self.listRtimdat)
+            [0.0, # currentTimeStepSize
+             0.0, # currentAlfaParameter
+             self.prestressAutoComputePoisson,
+             self.prestressAutoComputeYoungs.value])
 
-        # Time step information
-        self.currentTimeStep = 0
-        self.currentIterationsBetweenReform = 0
-        self.currentStepsBetweenReform = 0
-        self.currentLargeDeformationFlag = 0
-        self.currentMaximumIterations = 0
-        self.currentNumberTotalIterations = 0
-        self.currentNumberReforms = 0
-        self.currentNumberTotalPcgIterations = 0
-	self.reformFlagInt = 0
         # ntimdat array
-        self.listNtimdat = [
-            self.currentTimeStep,
-            self.currentIterationsBetweenReform,
-            self.currentStepsBetweenReform,
-            self.currentLargeDeformationFlag,
-            self.currentMaximumIterations,
-            self.currentNumberTotalIterations,
-            self.currentNumberReforms,
-            self.currentNumberTotalPcgIterations,
-            self.reformFlagInt]
         self.pointerToListArrayNtimdat = pylith3d.intListToArray(
-            self.listNtimdat)
+            [0, # currentTimeStep
+             0, # currentIterationsBetweenReform
+             0, # currentStepsBetweenReform
+             0, # currentLargeDeformationFlag
+             0, # currentMaximumIterations
+             0, # currentNumberTotalIterations
+             0, # currentNumberReforms
+             0, # currentNumberTotalPcgIterations
+             0, # reformFlagInt
+             ])
 
         self.trace.log("Hello from pl3dsetup.allocateremaining (end)!")
 
@@ -1676,8 +1622,6 @@ for() {
         # This function outputs mesh information.
         # In the near future, this needs to be broken into classes for
         # Ascii output, plot output, UCD output, etc.
-
-        import pylith3d
 
         self.trace.log("Hello from pl3dsetup.meshwriteascii (begin)!")
         
@@ -1795,7 +1739,7 @@ for() {
             self.asciiOutputInt,
             self.asciiOutputFile)
 
-        self.Times = None ### DEALLOC
+        self.pointerToTimes = None ### DEALLOC
 
         # Write element info
         pylith3d.write_element_info(
@@ -1971,7 +1915,6 @@ for() {
 
 
     def solveElastic(self):
-        import pylith3d
         pylith3d.elastc(
             self.A,self.rhs,self.sol,                          # sparse
             self.pointerToBextern,                             # force
@@ -2064,12 +2007,9 @@ for() {
         return
 
     def interpolatePoints(self, points):
-        import pylith3d
         return pylith3d.interpolatePoints(self.mesh, self.sol, points)
 
     def runSimulation(self):
-        import pylith3d
-        
         # First define all of the lists that maintain variable values.  The
         # variables in these lists are altered during the running of the code
         # and should not be accessed directly except as a member of the list.
