@@ -35,7 +35,7 @@ import os
 import pylith3d
 
 
-prestress = False # 'prestress' code is disabled
+prestress = False # code for reading prestress input files is presently disabled
 
 
 class PyLith(PetscApplication):
@@ -54,8 +54,6 @@ class PyLith(PetscApplication):
     MacroString = pyre.str
     OutputFile = pyre.str
     InputFile = pyre.str
-
-    green = pyre.bool("green")
 
     # declare PETSc options that are of interest to PyLith
     ksp_monitor        = PetscProperty(default="true")
@@ -112,18 +110,19 @@ class PyLith(PetscApplication):
     fullOutputInputFile = InputFile("fullOutputInputFile",default="${inputFileRoot}.fuldat")
     fullOutputInputFile.meta['tip'] = "Pathname for file defining when to provide output (overrides default from inputFileRoot)."
 
+    # These files are optional unless generating Green's functions, in which case they are required.
+    sampleLocationFile = InputFile("sampleLocationFile",default="${inputFileRoot}.sample")
+    sampleLocationFile.meta['tip'] = "Pathname for Green's function sample locations (overrides default from inputFileRoot)."
+
+    splitNodeInputFile = InputFile("splitNodeInputFile",default="${inputFileRoot}.split")
+    splitNodeInputFile.meta['tip'] = "Pathname for split node input file (overrides default from inputFileRoot)."
+
     # Optional input files.
     rotationInputFile = InputFile("rotationInputFile",default="${inputFileRoot}.skew")
     rotationInputFile.meta['tip'] = "Pathname for skew rotations input file (overrides default from inputFileRoot)."
 
     loadHistoryInputFile = InputFile("loadHistoryInputFile",default="${inputFileRoot}.hist")
     loadHistoryInputFile.meta['tip'] = "Pathname for file defining load histories (overrides default from inputFileRoot)."
-
-    sampleLocationFile = InputFile("sampleLocationFile",default="${inputFileRoot}.sample")
-    sampleLocationFile.meta['tip'] = "Pathname for Green's function sample locations (overrides default from inputFileRoot)."
-
-    splitNodeInputFile = InputFile("splitNodeInputFile",default="${inputFileRoot}.split")
-    splitNodeInputFile.meta['tip'] = "Pathname for split node input file (overrides default from inputFileRoot)."
 
     tractionInputFile = InputFile("tractionInputFile",default="${inputFileRoot}.traction")
     tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from inputFileRoot)."
@@ -168,6 +167,9 @@ class PyLith(PetscApplication):
 
     pythonTimestep = pyre.bool("pythonTimestep",default=False)
     pythonTimestep.meta['tip'] = "Whether to use python timestepping loop (enables VTK output for time-dependent solution)."
+
+    generateGreen = pyre.bool("generateGreen",default=False)
+    generateGreen.meta['tip'] = "Whether to generate Green's function results for the specified split node inputs."
 
     debuggingOutput = pyre.bool("debuggingOutput",default=False)
     debuggingOutput.meta['tip'] = "Whether to produce debugging output."
@@ -269,15 +271,15 @@ class PyLith(PetscApplication):
         return Numeric.array(points)
 
 
-    def outputSampleValues(self, filename, values):
-        '''sample# sample values impluse# impulse type'''
+    def outputSampleValues(self, filename, impulseNode, values):
+        '''impulse# sample# sample values'''
         # Computing normal to the fault:
         #   Split nodes define the fault
         #   Get all fault faces for a node
         #   Area weighted average of normals
         f = file(filename, 'w')
         for v, values in enumerate(values):
-            write(f, '%d %g %g %g 1 0' % (v, values[0], values[1], values[2]))
+            write(f, '%d %d %g %g %g' % (impulseNode, v, values[0], values[1], values[2]))
         f.close()
         return
 
@@ -336,7 +338,7 @@ for() {
         from mpi import MPI_Comm_rank, MPI_COMM_WORLD
         self.rank = MPI_Comm_rank(MPI_COMM_WORLD)
 
-        if self.green:
+        if self.generateGreen:
             points      = self.readSamplePoints(self.macroString(self.metainventory.sampleLocationFile))
 
         self.mesh = pylith3d.processMesh(self.macroString(self.metainventory.bcInputFile),
@@ -354,7 +356,7 @@ for() {
         self.allocateremaining()
         self.meshwrite()
 
-        if self.green:
+        if self.generateGreen:
             self.greenFunction(points)
         else:
             self.runSimulation()
@@ -398,13 +400,12 @@ for() {
         self.connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
         self.prestressInputFile          = inputFile(Inventory.prestressInputFile,          unused)
         self.tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
-        self.splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
+        self.splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile, self.generateGreen and required or optional)
         # Slippery nodes are not yet implemented in PyLith-0.8.
         self.slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       unused)
         self.differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  unused)
         self.slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    unused)
-        self.sampleLocationFile          = inputFile(Inventory.sampleLocationFile,          optional)
-
+        self.sampleLocationFile          = inputFile(Inventory.sampleLocationFile, self.generateGreen and required or unused)
         # The call to glob() is somewhat crude -- basically, determine
         # if any files might be in the way.
         self.ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
