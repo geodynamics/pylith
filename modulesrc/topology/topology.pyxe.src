@@ -15,6 +15,7 @@
 
 #include <stdexcept>
 #include <Python.h>
+#include <assert.h>
 #}header
 
 # ----------------------------------------------------------------------

@@ -21,22 +21,11 @@ Unit tests:
    a. Python object
    b. unit tests at Python level
 
-3. Implement unit tests for MeshIO at Python level.
-   a. read()/write()
-   b. checkFile()
-
-  STATUS: 
-
-    Replace write/read with read/write and check to make sure files
-    are the same. A little more of pain to setup but doesn't require
-    any messy module stuff.
-
 ======================================================================
 SECONDARY PRIORITIES
 ======================================================================
 
 0. Adjust MeshIOAscii format
-   a. Add indices for coordinates, simplices, material ids (easier to see)
    b. Add group of vertices
 
 1. Implement MeshIOHDF5 & HDF5
@@ -127,3 +116,11 @@ THINGS WE NEED SIEVE TO DO (Matt)
   Note: I think this would give us incredible flexibility in selecting
   the appropriate discretization for a problem. For example, I think
   it would allow us to use spectral elements.
+
+
+======================================================================
+QUESTIONS FOR LEIF
+======================================================================
+
+How do we trap C++ exceptions in Pyrex?
+

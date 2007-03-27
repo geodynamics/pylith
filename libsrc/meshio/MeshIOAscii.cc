@@ -181,8 +181,12 @@ pylith::meshio::MeshIOAscii::_readVertices(std::istream& filein,
       filein.ignore(maxIgnore, '{');
       delete[] coordinates; coordinates = new double[size];
       assert(0 != coordinates);
-      for (int i=0; i < size; ++i)
-	filein >> coordinates[i];
+      int label;
+      for (int iVertex=0, i=0; iVertex < numVertices; ++iVertex) {
+	filein >> label;
+	for (int iDim=0; iDim < numDims; ++iDim)
+	  filein >> coordinates[i++];
+      } // for
       filein.ignore(maxIgnore, '}');
     } else {
       std::ostringstream msg;
@@ -222,6 +226,7 @@ pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const
     << std::setprecision(6);
   for(int iVertex=0, i=0; iVertex < numVertices; ++iVertex) {
     fileout << "      ";
+    fileout << std::setw(8) << iVertex;
     for(int iDim=0; iDim < spaceDim; ++iDim)
       fileout << std::setw(18) << coordinates[i++];
     fileout << "\n";
@@ -269,8 +274,12 @@ pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
       filein.ignore(maxIgnore, '{');
       delete[] cells; cells = new int[size];
       assert(0 != cells);
-      for (int i=0; i < size; ++i)
-	filein >> cells[i];
+      int label;
+      for (int iCell=0, i=0; iCell < numCells; ++iCell) {
+	filein >> label;
+	for (int iCorner=0; iCorner < numCorners; ++iCorner)
+	  filein >> cells[i++];
+      } // for
       if (!useIndexZero()) {
 	// if files begins with index 1, then decrement to index 0
 	// for compatibility with Sieve
@@ -289,8 +298,11 @@ pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
       filein.ignore(maxIgnore, '{');
       delete[] materialIds; materialIds = new int[size];
       assert(0 != materialIds);
-      for (int i=0; i < size; ++i)
-	filein >> materialIds[i];      
+      int label = 0;
+      for (int iCell=0; iCell < numCells; ++iCell) {
+	filein >> label;
+	filein >> materialIds[iCell];
+      } // for
       filein.ignore(maxIgnore, '}');
     } else {
       std::ostringstream msg;
@@ -338,10 +350,9 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
     << "    simplices = {\n";
 
   for(int iCell=0, i=0; iCell < numCells; ++iCell) {
-    fileout << "      ";
+    fileout << "      " << std::setw(8) << iCell;
     for (int iCorner=0; iCorner < numCorners; ++iCorner)
-      fileout << std::setw(8)
-	      << cells[i++];
+      fileout << std::setw(8) << cells[i++];
     fileout << "\n";
   } // for
   fileout
@@ -355,8 +366,10 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
 	  (0 == materialIds && 0 == numCells) );
   fileout
     << "    material-ids = {\n";
-  for(int iCell=0, i=0; iCell < numCells; ++iCell)
-    fileout << "      " << materialIds[iCell] << "\n";
+  for(int iCell=0, i=0; iCell < numCells; ++iCell) {
+    fileout << "      " << std::setw(8) << iCell;
+    fileout << std::setw(4) << materialIds[iCell] << "\n";
+  } // for
   fileout
     << "    }\n";  
   delete[] materialIds; materialIds = 0;

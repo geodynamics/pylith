@@ -43,21 +43,29 @@ class TestMeshIOAscii(unittest.TestCase):
     return
 
 
-  def test_writeread(self):
+  def test_readwrite(self):
     """
     Test write() and read().
     """
-    filename = "mesh.txt"
-
-    import pylith.meshio.testmeshio as testmodule
-    mesh = testmodule.createMesh()
-  
+    filenameIn = "data/mesh2Din3D.txt"
+    filenameOut = "data/mesh2Din3D_test.txt"
+    
     iohandler = MeshIOAscii()
-    iohandler.filename = filename
+    iohandler.filename = filenameIn
+    mesh = iohandler.read()
+    iohandler.filename = filenameOut
     iohandler.write(mesh)
-    iohandler.read(mesh)
 
-    testmodule.checkVals(mesh)
+    fileE = open(filenameIn, "r")
+    linesE = fileE.readlines()
+    fileE.close()
+    fileT = open(filenameOut, "r")
+    linesT = fileT.readlines()
+    fileT.close()
+
+    self.assertEqual(len(linesE), len(linesT))
+    for (lineE, lineT) in zip(linesE, linesT):
+      self.assertEqual(lineE, lineT)
     return
 
 

@@ -79,6 +79,7 @@ pylith::meshio::MeshIO::_buildMesh(const double* coordinates,
 				   const int meshDim)
 { // _buildMesh
   assert(0 != _mesh);
+
   *_mesh = new Mesh(PETSC_COMM_WORLD, meshDim);
   ALE::Obj<Mesh>& mesh = *_mesh;
   

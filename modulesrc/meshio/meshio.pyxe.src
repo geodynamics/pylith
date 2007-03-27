@@ -69,8 +69,9 @@ cdef class MeshIO:
                       "Caught unknown C++ exception.");
     } // try/catch
     #}embed
-
-    #cdef topology.Mesh mesh
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
     MeshIO_read(self.thisptr, ptrFromHandle(mesh))
     return
 
@@ -92,6 +93,9 @@ cdef class MeshIO:
                       "Caught unknown C++ exception.");
     } // try/catch
     #}embed
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
     MeshIO_write(self.thisptr, ptrFromHandle(mesh))
     return
 
