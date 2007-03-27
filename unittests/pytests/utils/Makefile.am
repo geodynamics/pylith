@@ -10,10 +10,15 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	feassemble \
-	materials \
-	meshio \
-	utils
+subpackage = utils
+include $(top_srcdir)/subpackage.am
+
+TESTS = testdriver.py
+
+check_SCRIPTS = testdriver.py
+
+noinst_PYTHON = \
+	TestPetscManager.py
+
 
 # End of file 

@@ -2,10 +2,6 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Unit tests:
-  petsc module
-  ParameterManager
-
 1. Finish implementing ExplicitElasticity
    a. C++
    b. Python object

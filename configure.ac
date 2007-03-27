@@ -168,6 +168,7 @@ AC_CONFIG_FILES([Makefile
 		unittests/pytests/materials/data/Makefile
 		unittests/pytests/meshio/Makefile
 		unittests/pytests/meshio/data/Makefile
+		unittests/pytests/utils/Makefile
                 doc/Makefile])
 
 AC_OUTPUT
