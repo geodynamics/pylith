@@ -120,6 +120,7 @@ pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
   MeshIOAscii iohandler;
   iohandler.filename(filename);
   iohandler.write(meshOut);
+  delete meshOut; meshOut = 0;
 
   // Read mesh
   ALE::Obj<Mesh> meshIn;
@@ -127,8 +128,6 @@ pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
 
   // Make sure meshIn matches data
   checkVals(meshIn, data);
-
-  delete meshOut; meshOut = 0;
 } // _testWriteRead
 
 // End of file 
