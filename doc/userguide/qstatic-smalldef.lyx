@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -390,11 +390,125 @@ Mass density scalar field
 \end_layout
 
 \begin_layout Subsection
-Derivation of Equilibrium Equation
+Constitutive Model
 \end_layout
 
 \begin_layout Subsubsection
 Index Notation
+\end_layout
+
+\begin_layout Standard
+We consider a general class of quasi-static viscoelastic models under the
+ assumption of infinitesimal strain, and the methods we derive are also
+ appropriate for plastic or viscoplastic behavior.
+ The stresses are considered to be a function of the total strains and possibly
+ of other variables as well:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\sigma_{ij}=h_{ij}\left(\varepsilon_{ij},q_{k}\right).\end{equation}
+
+\end_inset
+
+The strains are given by 
+\begin_inset Formula $\varepsilon_{ij}$
+\end_inset
+
+, while the 
+\begin_inset Formula $q_{k}$
+\end_inset
+
+represent additional variables upon which the stress depends.
+ These additional variables follow the evolution equations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\dot{q_{k}}=r_{k}\left(\varepsilon_{ij},q_{k}\right),\end{equation}
+
+\end_inset
+
+with the initial conditions 
+\begin_inset Formula $q_{k}\left(t_{0}\right)=q_{k}^{0}$
+\end_inset
+
+.
+ The strain tensor is given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\varepsilon_{ij}=\frac{1}{2}\left(u_{i,j}+u_{j,i}\right).\end{equation}
+
+\end_inset
+
+The stress can be either a linear or nonlinear function of strain and the
+ additional variables, and in some cases the additional variables are not
+ needed.
+ In linear elastic behavior, for example, the stress is linearly dependent
+ on the strain and there are no additional variables.
+\end_layout
+
+\begin_layout Subsubsection
+Vector Notation
+\end_layout
+
+\begin_layout Standard
+We consider a general class of quasi-static viscoelastic models under the
+ assumption of infinitesimal strain, and the methods we derive are also
+ appropriate for plastic or viscoplastic behavior.
+ The stresses are considered to be a function of the total strains and possibly
+ of other variables as well:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\boldsymbol{\underline{\sigma}}=\boldsymbol{\underline{h}}\left(\boldsymbol{\underline{\varepsilon}},\boldsymbol{q}\right).\end{equation}
+
+\end_inset
+
+The strains are given by 
+\begin_inset Formula $\boldsymbol{\underline{\varepsilon}}$
+\end_inset
+
+, while the 
+\begin_inset Formula $\boldsymbol{q}$
+\end_inset
+
+represent additional variables upon which the stress depends.
+ These additional variables follow the evolution equations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\dot{\boldsymbol{q}}=\boldsymbol{r}\left(\boldsymbol{\underline{\varepsilon}},\boldsymbol{q}\right),\end{equation}
+
+\end_inset
+
+with the initial conditions 
+\begin_inset Formula $\boldsymbol{q}\left(t_{0}\right)=\boldsymbol{q}_{0}$
+\end_inset
+
+.
+ The strain tensor is given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\boldsymbol{\underline{\varepsilon}}=\frac{1}{2}\left(\boldsymbol{\bigtriangledown}\boldsymbol{u}+\boldsymbol{\bigtriangledown}^{T}\boldsymbol{u}\right).\end{equation}
+
+\end_inset
+
+The stress can be either a linear or nonlinear function of strain and the
+ additional variables, and in some cases the additional variables are not
+ needed.
+ In linear elastic behavior, for example, the stress is linearly dependent
+ on the strain and there are no additional variables.
+\end_layout
+
+\begin_layout Subsection*
+Derivation of Equilibrium Equations
 \end_layout
 
 \begin_layout Standard
