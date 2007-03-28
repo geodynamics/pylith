@@ -44,18 +44,12 @@ class Explicit(Formulation):
     ## Python object for managing Explicit facilities and properties.
     ##
     ## \b Properties
-    ## @li \b lump_jacobian Flag for indicating to use lumped
-    ##   formulation for Jacobian matrix
+    ## @li None
     ##
     ## \b Facilities
     ## @li None
 
     import pyre.inventory
-
-    lumpJacobian = pyre.inventory.bool("lump_jacobian", default=True)
-    lumpJacobian.meta['tip'] = "Flag for indicating to use lumped " \
-                               "formulation for Jacobian matrix."
-
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -78,7 +72,7 @@ class Explicit(Formulation):
     for material in materialsBin.materials:
       integrator = ExplicitElasticity()
       integrator.initQuadrature(material.quadrature)
-      #integrator.initMaterial(mesh, material)
+      integrator.initMaterial(mesh, material)
       self.integrators.append(integrator)
     return
 
@@ -124,15 +118,14 @@ class Explicit(Formulation):
     Set members based using inventory.
     """
     Formulation._configure(self)
-    self.lumpJacobian = self.inventory.lumpJacobian
     return
 
 
-  def _calcResidual(self):
+  def _calcConstant(self):
     """
     Compute residual, {b(t)}.
     """
-    self._info.log("WARNING: Explicit::calcResidual() not implemented.")
+    self._info.log("WARNING: Explicit::calcConstant() not implemented.")
     return
 
 

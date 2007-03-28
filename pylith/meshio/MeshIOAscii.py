@@ -49,6 +49,11 @@ class MeshIOAscii(MeshIO):
     filename = pyre.inventory.str("filename", default="")
     filename.meta['tip'] = "Name of mesh file"
 
+    from spatialdata.geocoords.CSCart import CSCart
+    coordsys = pyre.inventory.facility("coordsys", family="coordsys",
+                                       factory=CSCart)
+    coordsys.meta['tip'] = "Coordinate system associated with mesh."
+  
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -70,6 +75,7 @@ class MeshIOAscii(MeshIO):
     """
     MeshIO._configure(self)
     self.filename = self.inventory.filename
+    self.coordsys = self.inventory.coordsys
     return
 
 

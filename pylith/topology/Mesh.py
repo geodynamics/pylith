@@ -24,29 +24,6 @@ class Mesh(Component):
   Python Mesh for finite-element topology information.
   """
 
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(Component.Inventory):
-    """
-    Python object for managing Mesh facilities and properties.
-    """
-
-    ## @class Inventory
-    ## Python object for managing Mesh facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li \b coordsys Coordinate system associated with mesh
-
-    import pyre.inventory
-
-    from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pyre.inventory.facility("coordsys", family="coordsys",
-                                       factory=CSCart)
-    coordsys.meta['tip'] = "Coordinate system associated with mesh."
-  
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="mesh"):
@@ -56,6 +33,15 @@ class Mesh(Component):
     Component.__init__(self, name, facility="finite_element_mesh")
     import pylith.topology.topology as bindings
     self.cppHandle = bindings.Mesh()
+    self.coordsys = None
+    return
+
+
+  def initialize(self, coordsys):
+    """
+    Initialize mesh.
+    """
+    self.coordsys = coordsys
     return
 
 
@@ -74,7 +60,6 @@ class Mesh(Component):
     Set members based using inventory.
     """
     Component._configure(self)
-    self.coordsys = self.inventory.coordsys
     return
   
 

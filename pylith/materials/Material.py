@@ -64,8 +64,8 @@ class Material(Component):
     label = pyre.inventory.str("label", default="")
     label.meta['tip'] = "Name of material."
 
-    from spatialdata.spatialdb.SpatialDB import SpatialDB
-    db = pyre.inventory.facility("db", factory=SpatialDB,
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    db = pyre.inventory.facility("db", factory=SimpleDB,
                                  args=["db"])
     db.meta['tip'] = "Database of material property parameters."
     
