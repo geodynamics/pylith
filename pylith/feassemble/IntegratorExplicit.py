@@ -53,27 +53,19 @@ class IntegratorExplicit(Integrator):
     return self.cppHandle.getStableTimeStep()
 
 
-  def integrateResidual(self,
-                        residual, fieldInT, fieldInTmdt, coords, lumpJacobian):
+  def integrateConstant(self, fieldOut, fieldInT, fieldInTmdt, coords):
     """
-    Integrate residual term for dynamic terms for finite-elements.
+    Integrate constant term for dynamic terms for finite-elements.
     """
-    if lumpJacobian:
-      self.cppHandle.integrateResidualLumped(residual,
-                                             fieldInT, fieldInTmdt, coords)
-    else:
-      self.cppHandle.integrateResidual(residual, fieldInT, fieldInTmdt, coords)
+    self.cppHandle.integrateConstant(fieldOut, fieldInT, fieldInTmdt, coords)
     return
 
 
-  def integrateJacobian(self, jacobian, fieldInT, coords, lumpJacobian):
+  def integrateJacobian(self, jacobian, fieldInT, coords):
     """
     Integrate Jacobian term for dynamic terms for finite-elements.
     """
-    if lumpJacobian:
-      self.cppHandle.integrateJacobianLumped(jacobian, fieldInT, coords)
-    else:
-      self.cppHandle.integrateJacobian(jacobian, fieldInT, coords)
+    self.cppHandle.integrateJacobian(jacobian, fieldInT, coords)
     return
 
 

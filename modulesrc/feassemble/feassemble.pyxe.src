@@ -442,35 +442,18 @@ cdef class IntegratorExplicit(Integrator):
     return
 
 
-  def integrateResidualLumped(residual, fieldInT, fieldInTmdt, coords):
+  def integrateConstant(fieldOut, fieldInT, fieldInTmdt, coords):
     """
     Integrate residual term (b) for dynamic elasticity term for 3-D
-    finite elemtnts.
+    finite elemnts.
     """
-    print "WARNING: IntegratorExplicit::integrateResidualLumped not implemented."
+    print "WARNING: IntegratorExplicit::integrateConstant not implemented."
     return
 
 
-  def integrateResidual(residual, fieldInT, fieldInTmdt, coords):
-    """
-    Integrate residual term (b) for dynamic elasticity term for 3-D
-    finite elemtnts.
-    """
-    print "WARNING: IntegratorExplicit::integrateResidual not implemented."
-    return
-
-
-  def integrateJacobianLumped(mat, fieldIn, coords):
+  def integrateJacobian(mat, fieldIn, coords):
     """
     Compute matrix (A) associated with operator.
-    """
-    print "WARNING: IntegratorExplicit::integrateJacobianLumped not implemented."
-    return
-
-
-  def integrateJacobianField(fieldOut, fieldIn, coords):
-    """
-    Compute field (A) associated with operator.
     """
     print "WARNING: IntegratorExplicit::integrateJacobian not implemented."
     return

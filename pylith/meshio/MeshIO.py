@@ -57,6 +57,7 @@ class MeshIO(Component):
     Component.__init__(self, name, facility="mesh_io")
     self.cppHandle = None
     self.interpolate = False
+    self.coordsys = None
     return
 
 
@@ -70,6 +71,9 @@ class MeshIO(Component):
     self._sync()
     from pylith.topology.Mesh import Mesh
     mesh = Mesh()
+    if self.coordsys is None:
+      raise ValueError, "Coordinate system for mesh is unknown."
+    mesh.initialize(self.coordsys)
     self.cppHandle.read(mesh.cppHandle)
     return mesh
 

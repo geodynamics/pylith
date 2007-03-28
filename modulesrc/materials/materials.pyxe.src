@@ -215,6 +215,7 @@ cdef class ElasticMaterial(Material):
     Constructor.
     """
     Material.__init__(self)
+    self.name = "pylith_materials_ElasticMaterial"
     return
 
 

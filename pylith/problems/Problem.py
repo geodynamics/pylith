@@ -101,7 +101,6 @@ class Problem(Component):
     Component._configure(self)
     self.materials = self.inventory.materials
     #self.bc = self.inventory.bc
-    self.formulation = self.inventory.formulation
     return
 
 
