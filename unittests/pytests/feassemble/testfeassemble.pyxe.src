@@ -63,28 +63,48 @@ return pylith::feassemble::TestQuadrature::spaceDim(*q);
 #embed{ double* TestQuadrature_basis(void* obj)
 const pylith::feassemble::Quadrature* q =
   (pylith::feassemble::Quadrature*) obj;
-return (double*) pylith::feassemble::TestQuadrature::basis(*q);
+const int size = TestQuadrature_numQuadPts(obj) *
+                 TestQuadrature_numCorners(obj);
+double* vals = (size > 0) ? new double[size] : 0;
+const double* basis = pylith::feassemble::TestQuadrature::basis(*q);
+memcpy(vals, basis, size*sizeof(double));
+return vals;
 #}embed
 
 # create shim for TestQuadrature::basisDeriv
 #embed{ double* TestQuadrature_basisDeriv(void* obj)
 const pylith::feassemble::Quadrature* q =
   (pylith::feassemble::Quadrature*) obj;
-return (double*) pylith::feassemble::TestQuadrature::basisDeriv(*q);
+const int size = TestQuadrature_numQuadPts(obj) *
+                 TestQuadrature_numCorners(obj) *
+                 TestQuadrature_cellDim(obj);
+double* vals = (size > 0) ? new double[size] : 0;
+const double* basisDeriv = pylith::feassemble::TestQuadrature::basisDeriv(*q);
+memcpy(vals, basisDeriv, size*sizeof(double));
+return vals;
 #}embed
 
 # create shim for TestQuadrature::quadPtsRef
 #embed{ double* TestQuadrature_quadPtsRef(void* obj)
 const pylith::feassemble::Quadrature* q =
   (pylith::feassemble::Quadrature*) obj;
-return (double*) pylith::feassemble::TestQuadrature::quadPtsRef(*q);
+const int size = TestQuadrature_numQuadPts(obj) *
+                 TestQuadrature_cellDim(obj);
+double* vals = (size > 0) ? new double[size] : 0;
+const double* quadPtsRef = pylith::feassemble::TestQuadrature::quadPtsRef(*q);
+memcpy(vals, quadPtsRef, size*sizeof(double));
+return vals;
 #}embed
 
 # create shim for TestQuadrature::quadWts
 #embed{ double* TestQuadrature_quadWts(void* obj)
 const pylith::feassemble::Quadrature* q =
   (pylith::feassemble::Quadrature*) obj;
-return (double*) pylith::feassemble::TestQuadrature::quadWts(*q);
+const int size = TestQuadrature_numQuadPts(obj);
+double* vals = (size > 0) ? new double[size] : 0;
+const double* quadWts = pylith::feassemble::TestQuadrature::quadWts(*q);
+memcpy(vals, quadWts, size*sizeof(double));
+return vals;
 #}embed
 
 # ----------------------------------------------------------------------
@@ -151,13 +171,13 @@ def quadPtsRef(qhandle):
   qptr = ptrFromHandle(qhandle)
 
   cdef int numQuadPts
-  cdef int spaceDim
+  cdef int cellDim
   numQuadPts = TestQuadrature_numQuadPts(qptr)
-  spaceDim = TestQuadrature_spaceDim(qptr)
+  cellDim = TestQuadrature_cellDim(qptr)
 
   cdef double* values
   values = TestQuadrature_quadPtsRef(qptr)
-  dims = [numQuadPts, spaceDim]
+  dims = [numQuadPts, cellDim]
   valuesObj = PyCObject_FromVoidPtr(values, NULL)
   return spatialdata.utils.simplearray.SimpleCppArray(valuesObj, dims,
                                                       "double")
