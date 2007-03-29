@@ -61,7 +61,7 @@ class Explicit(Formulation):
     return
 
 
-  def initialize(self, mesh, materialsBin):
+  def initialize(self, mesh, materialsBin, spaceDim):
     """
     Create explicit integrators for each element family.
     """
@@ -70,17 +70,28 @@ class Explicit(Formulation):
     self._info.log("Initializing integrators.")
     self.integrators = []
     for material in materialsBin.materials:
+      if material.quadrature.spaceDim != spaceDim:
+        raise ValueError, \
+              "Spatial dimension of problem is '%d' but quadrature " \
+              "for material '%s' is for spatial dimension '%d'." % \
+              (spaceDim, material.label, material.quadrature.spaceDim)
       integrator = ExplicitElasticity()
       integrator.initQuadrature(material.quadrature)
       integrator.initMaterial(mesh, material)
       self.integrators.append(integrator)
 
     self._info.log("Creating fields and matrices.")
-    # ADD STUFF HERE
+    # self.jacobian = mesh.cppHandle.getPetscMat()
+    self.dispT = mesh.cppHandle.createRealSection("dispT", spaceDim)
+    self.dispTmdt = mesh.cppHandle.createRealSection("dispTmdt", spaceDim)
+    self.dispTpdt = mesh.cppHandle.createRealSection("dispTpdt", spaceDim)
+    self.constant = mesh.cppHandle.createRealSection("constant", spaceDim)
+    self.coordinates = mesh.cppHandle.getRealSection("coordinates")
 
     self._info.log("Integrating Jacobian of operator.")
     #for integrator in integrators:
-    #  integrator.integrateJacobian(jacobian, dispT, coords) 
+    #  integrator.integrateJacobian(self.jacobian, self.dispT,
+    #                               self.coordinates) 
     return
 
 
@@ -107,8 +118,10 @@ class Explicit(Formulation):
     Advance to next time step.
     """
     self._info.log("Integrating constant term in operator.")
+    # Need to zero out sections
     #for integrator in self.integrators:
-    #  integrator.integrateConstant(constant, dispT, dispTmdt, coords)
+    #  integrator.integrateConstant(self.constant, self.dispT, self.dispTmdt,
+    #                               self.coordinates)
 
     self._info.log("Solving equations.")
     # solve
