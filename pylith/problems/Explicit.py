@@ -65,15 +65,22 @@ class Explicit(Formulation):
     """
     Create explicit integrators for each element family.
     """
-    self._info.log("Initializing integrators.")
     from pylith.feassemble.ExplicitElasticity import ExplicitElasticity
     
+    self._info.log("Initializing integrators.")
     self.integrators = []
     for material in materialsBin.materials:
       integrator = ExplicitElasticity()
       integrator.initQuadrature(material.quadrature)
       integrator.initMaterial(mesh, material)
       self.integrators.append(integrator)
+
+    self._info.log("Creating fields and matrices.")
+    # ADD STUFF HERE
+
+    self._info.log("Integrating Jacobian of operator.")
+    #for integrator in integrators:
+    #  integrator.integrateJacobian(jacobian, dispT, coords) 
     return
 
 
@@ -99,7 +106,12 @@ class Explicit(Formulation):
     """
     Advance to next time step.
     """
-    self._info.log("WARNING: Explicit::step() not implemented.")
+    self._info.log("Integrating constant term in operator.")
+    #for integrator in self.integrators:
+    #  integrator.integrateConstant(constant, dispT, dispTmdt, coords)
+
+    self._info.log("Solving equations.")
+    # solve
     return
 
 
