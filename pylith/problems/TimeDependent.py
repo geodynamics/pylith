@@ -40,6 +40,7 @@ class TimeDependent(Problem):
     ## \b Properties
     ## @li \b total_time Time duration for simulation.
     ## @li \b default_dt Default time step.
+    ## @li \b dimension Spatial dimension of problem space.
     ##
     ## \b Facilities
     ## @li \b formulation Formulation for solving PDE.
@@ -55,6 +56,10 @@ class TimeDependent(Problem):
     dt = pyre.inventory.dimensional("default_dt", default=1.0*second,
                                  validator=pyre.inventory.greater(0.0*second))
     dt.meta['tip'] = "Default time step for simulation."
+
+    dimension = pyre.inventory.int("dimension", default=3,
+                                   validator=pyre.inventory.choice([1,2,3]))
+    dimension.meta['tip'] = "Spatial dimension of problem space."
 
     from Explicit import Explicit
     formulation = pyre.inventory.facility("formulation",
@@ -86,7 +91,7 @@ class TimeDependent(Problem):
     """
     self._info.log("Initializing problem.")
     self.mesh = mesh
-    self.formulation.initialize(mesh, self.materials)
+    self.formulation.initialize(mesh, self.materials, self.dimension)
     return
 
 
@@ -148,6 +153,7 @@ class TimeDependent(Problem):
     Problem._configure(self)
     self.totalTime = self.inventory.totalTime
     self.dt = self.inventory.dt
+    self.dimension = self.inventory.dimension
     self.formulation = self.inventory.formulation
     self.checkpointTimer = self.inventory.checkpointTimer
     return
