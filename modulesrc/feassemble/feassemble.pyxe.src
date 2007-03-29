@@ -42,6 +42,33 @@ cdef extern from "stdlib.h":
     void* malloc(size_t size)
     void free(void* mem)
 
+cdef void Quadrature_destructor(void* obj):
+  """
+  Destroy Quadrature object.
+  """
+  # create shim for destructor
+  #embed{ void Quadrature_destructor_cpp(void* pObj)
+  pylith::feassemble::Quadrature* pQ =
+    (pylith::feassemble::Quadrature*) pObj;
+  delete pQ;
+  #}embed
+  Quadrature_destructor_cpp(obj)
+  return
+
+cdef void Integrator_destructor(void* obj):
+  """
+  Destroy Integrator object.
+  """
+  # create shim for destructor
+  #embed{ void Integrator_destructor_cpp(void* pObj)
+  pylith::feassemble::Integrator* pQ =
+    (pylith::feassemble::Integrator*) pObj;
+  delete pQ;
+  #}embed
+  Integrator_destructor_cpp(obj)
+  return
+
+
 # ----------------------------------------------------------------------
 cdef class Quadrature:
 
@@ -157,20 +184,6 @@ cdef class Quadrature:
 
   def _createHandle(self):
     """Wrap pointer to C++ object in PyCObject."""
-    # create shim for destructor
-    #embed{ void Quadrature_destructor(void* pObj)
-    try {
-      pylith::feassemble::Quadrature* pQ =
-        (pylith::feassemble::Quadrature*) pObj;
-      delete pQ;
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
     return PyCObject_FromVoidPtr(self.thisptr, Quadrature_destructor)
 
 
@@ -387,20 +400,6 @@ cdef class Integrator:
     """
     Wrap pointer to C++ object in PyCObject.
     """
-    # create shim for destructor
-    #embed{ void Integrator_destructor(void* pObj)
-    try {
-      pylith::feassemble::Integrator* pQ =
-        (pylith::feassemble::Integrator*) pObj;
-      delete pQ;
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
     return PyCObject_FromVoidPtr(self.thisptr, Integrator_destructor)
 
 

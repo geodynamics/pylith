@@ -63,6 +63,7 @@ class TestMaterial(unittest.TestCase):
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
     cs.spaceDim = 1
+    cs.initialize()
     mesh.coordsys = cs
     
     material.initialize(mesh)
