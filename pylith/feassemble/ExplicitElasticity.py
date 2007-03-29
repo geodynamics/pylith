@@ -46,10 +46,8 @@ class ExplicitElasticity(IntegratorExplicit):
     self._info.log("Initializing integrator for material '%s'." % \
                    material.label)
     material.initialize(mesh)
-    
     self.material = material
     self.cppHandle.material = self.material.cppHandle
-    #self.cppHandle.createParameters(mesh.cppHandle)
     return
   
   

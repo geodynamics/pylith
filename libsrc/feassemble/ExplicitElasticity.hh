@@ -94,24 +94,24 @@ public :
    */
   void material(const materials::ElasticMaterial* m);
 
-  /** Integrate residual term (b) for dynamic elasticity term 
+  /** Integrate constant term (b) for dynamic elasticity term 
    * for 3-D finite elements.
    *
    * Compute b = 2/(dt*dt)[M]{u(t) - 1/(dt*dt)[M]{u(t-dt)} - [K]{u(t)}, where
    * [M] = density * [N]^T [N]
    *
    *
-   * @param residual Residual field (output)
+   * @param b Constant field (output)
    * @param dispT Displacement field at time t
    * @param dispTmdt Displacement field at time t-dt
    * @param coordinates Field of cell vertex coordinates
    */
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+  void integrateConstant(const ALE::Obj<real_section_type>& b,
 			 const ALE::Obj<real_section_type>& dispT,
 			 const ALE::Obj<real_section_type>& dispTmdt,
 			 const ALE::Obj<real_section_type>& coordinates);
 
-  /** Compute matrix (A) associated with operator.
+  /** Compute Jacobian matrix (A) associated with operator.
    *
    * @param mat Sparse matrix
    * @param dispT Displacement at time t
@@ -121,24 +121,6 @@ public :
 			 const ALE::Obj<real_section_type>& dispT,
 			 const ALE::Obj<real_section_type>& coordinates);
   
-  /** Compute field (A) associated with lumped operator.
-   *
-   * @param fieldOut Output Jacobian field
-   * @param dispT Displacement at time t
-   * @param coordinates Field of cell vertex coordinates
-   */
-  void integrateJacobian(const ALE::Obj<real_section_type>& fieldOut,
-			 const ALE::Obj<real_section_type>& dispT,
-			 const ALE::Obj<real_section_type>& coordinates);
-  
-  /** Setup material property parameters by querying database.
-   *
-   * @param mesh PETSc mesh
-   * @param cs Pointer to coordinate system of vertices
-   */
-  void initialize(ALE::Obj<ALE::Mesh>& mesh,
-		  spatialdata::geocoords::CoordSys* cs);
-
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 

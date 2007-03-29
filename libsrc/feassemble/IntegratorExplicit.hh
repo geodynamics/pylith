@@ -73,21 +73,21 @@ public :
   virtual
   double stableTimeStep(void) const;
 
-  /** Integrate residual term (b) for dynamic elasticity term 
+  /** Integrate constant term (b) for dynamic elasticity term 
    * for finite elements.
    *
-   * @param residual Residual field (output)
+   * @param fieldOut Constant field (output)
    * @param fieldInT Input field at time t
    * @param fieldInTmdt Input field at time t-dt
    * @param coordinates Field of cell vertex coordinates
    */
   virtual 
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+  void integrateConstant(const ALE::Obj<real_section_type>& fieldOut,
 			 const ALE::Obj<real_section_type>& fieldInT,
 			 const ALE::Obj<real_section_type>& fieldInTmdt,
 			 const ALE::Obj<real_section_type>& coordinates) = 0;
 
-  /** Compute matrix (A) associated with operator.
+  /** Compute Jacobian matrix (A) associated with operator.
    *
    * @param mat Sparse matrix
    * @param fieldIn Input field at time t
@@ -97,18 +97,7 @@ public :
   void integrateJacobian(PetscMat* mat,
 			 const ALE::Obj<real_section_type>& fieldIn,
 			 const ALE::Obj<real_section_type>& coordinates) = 0;
-  
-  /** Compute field (A) associated with lumped operator.
-   *
-   * @param fieldOut Output Jacobian field
-   * @param fieldInT Input field at time t
-   * @param coordinates Field of cell vertex coordinates
-   */
-  virtual 
-  void integrateJacobian(const ALE::Obj<real_section_type>& fieldOut,
-			 const ALE::Obj<real_section_type>& fieldInT,
-			 const ALE::Obj<real_section_type>& coordinates) = 0;
-  
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 

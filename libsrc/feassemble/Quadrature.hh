@@ -222,9 +222,9 @@ protected :
    * size = numQuadPts * numCorners
    * index = iQuadPt*numCorners + iBasis
    */
-  double* _basis; ///< Array of basis fns evaluated at quad pts
+  double* _basis;
 
-  /** Array of basis functions evaluated at the quadrature points.
+  /** Array of basis function derivatives evaluated at the quadrature points.
    *
    * N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
    * N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
