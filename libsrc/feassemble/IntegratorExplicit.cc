@@ -19,6 +19,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::IntegratorExplicit::IntegratorExplicit(void) :
+  Integrator(),
   _dt(0.0),
   _dtm1(0.0)
 { // constructor

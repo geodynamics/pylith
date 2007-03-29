@@ -24,7 +24,8 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::IntegratorInertia::IntegratorInertia(void)
+pylith::feassemble::IntegratorInertia::IntegratorInertia(void) :
+  Integrator()
 { // constructor
 } // constructor
 

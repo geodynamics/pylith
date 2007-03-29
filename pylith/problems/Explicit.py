@@ -30,6 +30,11 @@ class Explicit(Formulation):
   (i.e., independent of time), and {b(t)} usually depends on {u(t)}
   and {u(t-dt)}.
 
+  Jacobian: A(t)
+  solution: u(t+dt)
+  residual: b(t) - A(t) \hat u(t+dt)
+  constant: b(t)
+
   Factory: pde_formulation.
   """
 
