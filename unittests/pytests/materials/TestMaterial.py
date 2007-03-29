@@ -64,7 +64,6 @@ class TestMaterial(unittest.TestCase):
     importer.filename = "data/twoelems.mesh"
     importer.coordsys = cs
     mesh = importer.read()
-
     
     material.initialize(mesh)
 
