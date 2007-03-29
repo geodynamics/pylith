@@ -29,9 +29,21 @@ cdef void* ptrFromHandle(obj):
   return PyCObject_AsVoidPtr(obj.handle)
 
 cdef extern from "stdlib.h":
-    ctypedef unsigned long size_t
-    void* malloc(size_t size)
-    void free(void* mem)
+  ctypedef unsigned long size_t
+  void* malloc(size_t size)
+  void free(void* mem)
+
+cdef void MeshIO_destructor(void* obj):
+  """
+  Destroy MeshIO object.
+  """
+  # create shim for destructor
+  #embed{ void MeshIO_destructor_cpp(void* pObj)
+  pylith::meshio::MeshIO* pMesh = (pylith::meshio::MeshIO*) pObj;
+  delete pMesh;
+  #}embed
+  MeshIO_destructor_cpp(obj)
+  return
 
 # ----------------------------------------------------------------------
 cdef class MeshIO:
@@ -102,19 +114,6 @@ cdef class MeshIO:
 
   def _createHandle(self):
     """Wrap pointer to C++ object in PyCObject."""
-    # create shim for destructor
-    #embed{ void MeshIO_destructor(void* pObj)
-    try {
-      pylith::meshio::MeshIO* pMesh = (pylith::meshio::MeshIO*) pObj;
-      delete pMesh;
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
     return PyCObject_FromVoidPtr(self.thisptr, MeshIO_destructor)
 
 
