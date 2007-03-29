@@ -55,16 +55,16 @@ class TestMaterial(unittest.TestCase):
     material.label = "my material"
     material.id = 54
 
-    from pylith.meshio.MeshIOAscii import MeshIOAscii
-    importer = MeshIOAscii()
-    importer.filename = "data/twoelems.mesh"
-    mesh = importer.read()
-
     from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
     cs.spaceDim = 1
-    cs.initialize()
-    mesh.coordsys = cs
+
+    from pylith.meshio.MeshIOAscii import MeshIOAscii
+    importer = MeshIOAscii()
+    importer.filename = "data/twoelems.mesh"
+    importer.coordsys = cs
+    mesh = importer.read()
+
     
     material.initialize(mesh)
 

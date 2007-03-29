@@ -50,8 +50,10 @@ class TestMeshIOAscii(unittest.TestCase):
     filenameIn = "data/mesh2Din3D.txt"
     filenameOut = "data/mesh2Din3D_test.txt"
     
+    from spatialdata.geocoords.CSCart import CSCart
     iohandler = MeshIOAscii()
     iohandler.filename = filenameIn
+    iohandler.coordsys = CSCart()
     mesh = iohandler.read()
     iohandler.filename = filenameOut
     iohandler.write(mesh)
