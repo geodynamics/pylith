@@ -32,8 +32,11 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature3D.cc \
 	feassemble/ParameterManager.cc \
 	materials/Material.cc \
+	materials/ElasticIsotropic1D.cc \
 	materials/ElasticIsotropic3D.cc \
 	materials/ElasticMaterial.cc \
+	materials/ElasticPlaneStrain.cc \
+	materials/ElasticPlaneStress.cc \
 	meshio/MeshIO.cc \
 	meshio/MeshIOAscii.cc
 

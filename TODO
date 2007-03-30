@@ -5,6 +5,9 @@ MAIN PRIORITIES (Brad)
 Error checking
   add isNull() assertions before using ALE::Obj.
 
+0. Add unit tests for ElasticIsotropic1D, ElasticPlaneStrain,
+ElasticPlaneStress.
+
 1. Finish implementing ExplicitElasticity
    a. C++
    b. Python object

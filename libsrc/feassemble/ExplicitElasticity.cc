@@ -364,8 +364,7 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
       throw std::runtime_error("Logging PETSc flops failed.");
     
     // Assemble cell contribution into field
-    PetscErrorCode err = 
-      assembleMatrix(*mat, *cellIter, _cellMatrix, ADD_VALUES);
+    err = assembleMatrix(*mat, *cellIter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for

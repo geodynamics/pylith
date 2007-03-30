@@ -30,8 +30,9 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/quadrature/__init__.py \
 	materials/__init__.py \
 	materials/ElasticIsotropic1D.py \
-	materials/ElasticIsotropic2D.py \
 	materials/ElasticIsotropic3D.py \
+	materials/ElasticPlaneStrain.py \
+	materials/ElasticPlaneStress.py \
 	materials/Homogeneous.py \
 	materials/Material.py \
 	materials/MaterialsBin.py \
