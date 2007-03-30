@@ -32,6 +32,7 @@
 #define pylith3d_externs_h
 
 #include <stddef.h>
+#include <petscmat.h>
 
 #define assign_wink_f FC_FUNC_(assign_wink, ASSIGN_WINK)
 #define autoprestr_f FC_FUNC(autoprestr, AUTOPRESTR)

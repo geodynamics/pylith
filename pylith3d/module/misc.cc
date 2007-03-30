@@ -36,42 +36,7 @@
 
 #include "misc.h"
 #include "exceptionhandler.h"
-#include "pylith3d_externs.h"
 
-
-// try_binio
-
-char pypylith3d_try_binio__doc__[] = "";
-char pypylith3d_try_binio__name__[] = "try_binio";
-
-PyObject * pypylith3d_try_binio(PyObject *, PyObject *args)
-{
-  int unit;
-
-  int ok = PyArg_ParseTuple(args, "i:try_binio",
-			    &unit);
-  if (!ok) {
-    return 0;
-  }
-
-  int errorcode = 0;
-  const int maxsize = 4096;
-  char errorstring[maxsize];
-
-  try_binio_f(&unit,
-	      &errorcode,
-	      errorstring,
-	      sizeof(errorstring));
-    
-  if(0 != exceptionhandler(errorcode, errorstring)) {
-    return 0;
-  }
-
-  // return
-  Py_INCREF(Py_None);
-  return Py_None;
-}
-    
 
 // copyright
 

@@ -31,12 +31,6 @@
 #if !defined(pypylith3d_misc_h)
 #define pypylith3d_misc_h
 
-// try_binio
-extern char pypylith3d_try_binio__name__[];
-extern char pypylith3d_try_binio__doc__[];
-extern "C"
-PyObject * pypylith3d_try_binio(PyObject *, PyObject *);
-
 // copyright
 extern char pypylith3d_copyright__name__[];
 extern char pypylith3d_copyright__doc__[];

@@ -30,37 +30,23 @@ AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) $(PETSC_SIEVE_FLAGS)
 sources = \
 	array.cc \
 	array.h \
-	autoprestr.cc \
-	autoprestr.h \
 	bindings.cc \
 	bindings.h \
-	elastc.cc \
-	elastc.h \
 	exceptionhandler.cc \
 	exceptionhandler.h \
 	exceptions.cc \
 	exceptions.h \
+	libpylith3d.cc \
+	libpylith3d.h \
 	pylith3dmodule.cc \
 	pylith3dmodule.h \
 	pylith3d_externs.h \
+	mesh.cc \
+	mesh.h \
 	misc.cc \
 	misc.h \
-	numbering.cc \
-	numbering.h \
-	parser.cc \
-	parser.h \
-	scanner.cc \
-	scanner.h \
 	setup.cc \
-	setup.h \
-	sorting.cc \
-	sorting.h \
-	sparse.cc \
-	sparse.h \
-	viscos.cc \
-	viscos.h \
-	write_modelinfo.cc \
-	write_modelinfo.h
+	setup.h
 
 if ENABLE_GREENSFNS
 sources += interpolate.cc \

@@ -28,36 +28,33 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pypylith3d_numbering_h)
-#define pypylith3d_numbering_h
+#if !defined(pypylith3d_mesh_h)
+#define pypylith3d_mesh_h
 
-// assign equation numbers for Winkler BC
-extern char pypylith3d_assign_wink__name__[];
-extern char pypylith3d_assign_wink__doc__[];
+// process mesh
+extern char pypylith3d_processMesh__name__[];
+extern char pypylith3d_processMesh__doc__[];
 extern "C"
-PyObject * pypylith3d_assign_wink(PyObject *, PyObject *);
+PyObject * pypylith3d_processMesh(PyObject *, PyObject *);
 
-// create id array
-extern char pypylith3d_create_id__name__[];
-extern char pypylith3d_create_id__doc__[];
+// create a PETSc Mat
+extern char pypylith3d_createPETScMat__name__[];
+extern char pypylith3d_createPETScMat__doc__[];
 extern "C"
-PyObject * pypylith3d_create_id(PyObject *, PyObject *);
+PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *);
 
-// form id array for split nodes
-extern char pypylith3d_id_split__name__[];
-extern char pypylith3d_id_split__doc__[];
+// destroy a PETSc Mat
+extern char pypylith3d_destroyPETScMat__name__[];
+extern char pypylith3d_destroyPETScMat__doc__[];
 extern "C"
-PyObject * pypylith3d_id_split(PyObject *, PyObject *);
+PyObject * pypylith3d_destroyPETScMat(PyObject *, PyObject *);
 
-// find closest fault neignbors for slippery nodes
-extern char pypylith3d_nfind__name__[];
-extern char pypylith3d_nfind__doc__[];
+// output a PETSc Mesh and Fields
+extern char pypylith3d_outputMesh__name__[];
+extern char pypylith3d_outputMesh__doc__[];
 extern "C"
-PyObject * pypylith3d_nfind(PyObject *, PyObject *);
+PyObject * pypylith3d_outputMesh(PyObject *, PyObject *);
 
 #endif
-
-// version
-// $Id: numbering.h,v 1.3 2005/04/21 23:17:42 willic3 Exp $
 
 // End of file
