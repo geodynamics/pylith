@@ -33,18 +33,11 @@
 
 #include "bindings.h"
 
+#include "libpylith3d.h"   // fortran library functions
+
 #include "array.h"         // array allocation and conversion functions
-#include "autoprestr.h"    // prestress autocomputation
-#include "elastc.h"        // elastic solution driver
-#include "numbering.h"     // routines to create global equation numbers
-                           // and localize them.
-#include "parser.h"        // parsers
-#include "scanner.h"       // scanners
+#include "mesh.h"          // PETSc Sieve Mesh routines
 #include "setup.h"         // initialization/setup routines
-#include "sparse.h"        // sparse matrix routines
-#include "sorting.h"        // element sorting routines
-#include "viscos.h"        // time-dependent solution driver
-#include "write_modelinfo.h" // output routines
 #include "misc.h"          // miscellaneous methods
 
 #if defined(GREENSFNS)

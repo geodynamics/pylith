@@ -39,7 +39,6 @@
 
 #include "interpolate.h"
 #include "exceptionhandler.h"
-#include "pylith3d_externs.h"
 #include <stdio.h>
 #include <string.h>
 
