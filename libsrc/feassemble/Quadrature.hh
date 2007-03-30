@@ -46,8 +46,7 @@ class pylith::feassemble::Quadrature
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public :
 
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::topology_type topology_type;
+  typedef ALE::Field::Mesh        Mesh;
   typedef Mesh::real_section_type real_section_type;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -186,8 +185,9 @@ public :
    * @param cell Finite-element cell
    */
   virtual 
-  void computeGeometry(const ALE::Obj<real_section_type>& coordinates,
-		       const topology_type::point_type& cell) = 0;
+  void computeGeometry(const ALE::Obj<Mesh>& mesh,
+               const ALE::Obj<real_section_type>& coordinates,
+		       const Mesh::point_type& cell) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

@@ -61,6 +61,7 @@ pylith::feassemble::ExplicitElasticity::material(
 // finite elements.
 void
 pylith::feassemble::ExplicitElasticity::integrateConstant(
+                  const ALE::Obj<Mesh>& m,
 			      const ALE::Obj<real_section_type>& b,
 			      const ALE::Obj<real_section_type>& dispT,
 			      const ALE::Obj<real_section_type>& dispTmdt,
@@ -69,11 +70,8 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
   assert(0 != _quadrature);
 
   // Get information about section
-  const topology_type::patch_type patch = 0;
-  const ALE::Obj<topology_type>& topology = dispT->getTopology();
-  const ALE::Obj<topology_type::label_sequence>& cells = 
-    topology->heightStratum(patch, 0);
-  const topology_type::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<Mesh::label_sequence>& cells    = m->heightStratum(0);
+  const Mesh::label_sequence::iterator  cellsEnd = cells->end();
 
   // Get parameters used in integration.
   const double dt = _dt;
@@ -89,20 +87,20 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
 
-  for (topology_type::label_sequence::iterator cellIter=cells->begin();
+  for (Mesh::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell
-    _quadrature->computeGeometry(coordinates, *cellIter);
+    _quadrature->computeGeometry(m, coordinates, *cellIter);
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict input fields to cell
     const real_section_type::value_type* dispTCell = 
-      dispT->restrict(patch, *cellIter);
+      m->restrict(dispT, *cellIter);
     const real_section_type::value_type* dispTmdtCell = 
-      dispTmdt->restrict(patch, *cellIter);
+      m->restrict(dispTmdt, *cellIter);
 
     // Get cell geometry information that depends on cell
     const double* basis = _quadrature->basis();
@@ -110,7 +108,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
     const double* jacobianDet = _quadrature->jacobianDet();
 
     // Get material physical properties at quadrature points for this cell
-    _material->calcProperties(*cellIter, patch, numQuadPts);
+    _material->calcProperties(*cellIter, numQuadPts);
     const double* density = _material->density();
     const double* elasticConsts = _material->elasticConsts();
     const int numElasticConsts = _material->numElasticConsts();
@@ -291,7 +289,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
     } // if/else
 
     // Assemble cell contribution into field
-    b->updateAdd(patch, *cellIter, _cellVector);
+    m->updateAdd(b, *cellIter, _cellVector);
   } // for
 } // integrateConstant
 
@@ -300,17 +298,15 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 void
 pylith::feassemble::ExplicitElasticity::integrateJacobian(
 			     PetscMat* mat,
+                 const ALE::Obj<Mesh>& m,
 			     const ALE::Obj<real_section_type>& dispT,
 			     const ALE::Obj<real_section_type>& coordinates)
 { // integrateJacobian
   assert(0 != _quadrature);
 
   // Get information about section
-  const topology_type::patch_type patch = 0;
-  const ALE::Obj<topology_type>& topology = dispT->getTopology();
-  const ALE::Obj<topology_type::label_sequence>& cells = 
-    topology->heightStratum(patch, 0);
-  const topology_type::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<Mesh::label_sequence>& cells    = m->heightStratum(0);
+  const Mesh::label_sequence::iterator  cellsEnd = cells->end();
 
   // Get parameters used in integration.
   const double dt = _dt;
@@ -324,11 +320,11 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
   const double* quadWts = _quadrature->quadWts();
   const int numBasis = _quadrature->numCorners();
   const int spaceDim = _quadrature->spaceDim();
-  for (topology_type::label_sequence::iterator cellIter=cells->begin();
+  for (Mesh::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell
-    _quadrature->computeGeometry(coordinates, *cellIter);
+    _quadrature->computeGeometry(m, coordinates, *cellIter);
 
     // Reset element vector to zero
     _resetCellMatrix();
@@ -338,7 +334,7 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
     const double* jacobianDet = _quadrature->jacobianDet();
 
     // Get material physical properties at quadrature points for this cell
-    _material->calcProperties(*cellIter, patch, numQuadPts);
+    _material->calcProperties(*cellIter, numQuadPts);
     const double* density = _material->density();
 
     // Compute Jacobian for cell
@@ -364,7 +360,9 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
       throw std::runtime_error("Logging PETSc flops failed.");
     
     // Assemble cell contribution into field
-    err = assembleMatrix(*mat, *cellIter, _cellMatrix, ADD_VALUES);
+    const ALE::Obj<Mesh::order_type>& globalOrder = m->getFactory()->getGlobalOrder(m, "default", dispT->getAtlas());
+
+    err = updateOperator(*mat, m, dispT, globalOrder, *cellIter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for

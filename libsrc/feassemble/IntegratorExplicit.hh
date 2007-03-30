@@ -82,7 +82,8 @@ public :
    * @param coordinates Field of cell vertex coordinates
    */
   virtual 
-  void integrateConstant(const ALE::Obj<real_section_type>& fieldOut,
+  void integrateConstant(const ALE::Obj<Mesh>& mesh,
+             const ALE::Obj<real_section_type>& fieldOut,
 			 const ALE::Obj<real_section_type>& fieldInT,
 			 const ALE::Obj<real_section_type>& fieldInTmdt,
 			 const ALE::Obj<real_section_type>& coordinates) = 0;
@@ -95,6 +96,7 @@ public :
    */
   virtual 
   void integrateJacobian(PetscMat* mat,
+             const ALE::Obj<Mesh>& mesh,
 			 const ALE::Obj<real_section_type>& fieldIn,
 			 const ALE::Obj<real_section_type>& coordinates) = 0;
 

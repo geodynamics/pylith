@@ -75,12 +75,12 @@ pylith::materials::TestMaterial::testLabel(void)
 void
 pylith::materials::TestMaterial::testInitialize(void)
 { // testInitialize
-  typedef ALE::Mesh::topology_type topology_type;
-  typedef topology_type::sieve_type sieve_type;
-  typedef ALE::Mesh::real_section_type real_section_type;
-  typedef ALE::Sifter<int, sieve_type::point_type, int> patch_label_type;
+  typedef ALE::Field::Mesh Mesh;
+  typedef Mesh::sieve_type sieve_type;
+  typedef Mesh::label_type label_type;
+  typedef Mesh::real_section_type real_section_type;
 
-  ALE::Obj<ALE::Mesh> mesh;
+  ALE::Obj<Mesh> mesh;
   const int materialID = 24;
   { // create mesh
     const int cellDim = 1;
@@ -93,34 +93,26 @@ pylith::materials::TestMaterial::testInitialize(void)
     CPPUNIT_ASSERT(0 != vertCoords);
     CPPUNIT_ASSERT(0 != cells);
 
-    mesh = new ALE::Mesh(PETSC_COMM_WORLD, cellDim);
+    mesh = new Mesh(PETSC_COMM_WORLD, cellDim);
     ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
-    ALE::Obj<topology_type> topology = new topology_type(mesh->comm());
 
     const bool interpolate = false;
-    ALE::New::SieveBuilder<sieve_type>::buildTopology(sieve, cellDim, numCells,
+    ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
 	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
-    sieve->stratify();
-    topology->setPatch(0, sieve);
-    topology->stratify();
-    mesh->setTopology(topology);
-    ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
-		   mesh->getRealSection("coordinates"), spaceDim, vertCoords);
+    mesh->setSieve(sieve);
+    mesh->stratify();
+    ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, vertCoords);
 
   } // create mesh
 
   { // set material ids
-    const topology_type::patch_type patch = 0;
-    const ALE::Obj<topology_type>& topology = mesh->getTopology();
-    const ALE::Obj<ALE::Mesh::topology_type::label_sequence>& cells = 
-      topology->heightStratum(patch, 0);
-    const ALE::Obj<patch_label_type>& labelMaterials = 
-      topology->createLabel(patch, "material-id");
+    const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+    const ALE::Obj<label_type>& labelMaterials = mesh->createLabel("material-id");
     int i = 0;
-    for(ALE::Mesh::topology_type::label_sequence::iterator e_iter = cells->begin();
+    for(Mesh::label_sequence::iterator e_iter = cells->begin();
 	e_iter != cells->end();
 	++e_iter)
-      topology->setValue(labelMaterials, *e_iter, materialID);
+      mesh->setValue(labelMaterials, *e_iter, materialID);
   } // set material ids
 
   spatialdata::geocoords::CSCart cs;
@@ -166,18 +158,15 @@ pylith::materials::TestMaterial::testInitialize(void)
   const double lambdaE[] = { lambdaA, lambdaB };
 
   // Get cells associated with material
-  const ALE::Mesh::int_section_type::patch_type patch = 0;
-  const ALE::Obj<topology_type>& topology = mesh->getTopology();
-  const ALE::Obj<topology_type::label_sequence>& cells = 
-    topology->heightStratum(patch, 0);
+  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
 
-  topology_type::label_sequence::iterator cellIter=cells->begin();
+  Mesh::label_sequence::iterator cellIter=cells->begin();
   const double tolerance = 1.0e-06;
 
   const ALE::Obj<real_section_type>& parameterDensity = 
     material._parameters->getReal("density");
   const real_section_type::value_type* densityCell = 
-    parameterDensity->restrict(patch, *cellIter);
+    parameterDensity->restrictPoint(*cellIter);
   CPPUNIT_ASSERT(0 != densityCell);
   for (int i=0; i < numQuadPts; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, densityCell[i]/densityE[i], tolerance);
@@ -185,7 +174,7 @@ pylith::materials::TestMaterial::testInitialize(void)
   const ALE::Obj<real_section_type>& parameterMu = 
     material._parameters->getReal("mu");
   const real_section_type::value_type* muCell = 
-    parameterMu->restrict(patch, *cellIter);
+    parameterMu->restrictPoint(*cellIter);
   CPPUNIT_ASSERT(0 != muCell);
   for (int i=0; i < numQuadPts; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, muCell[i]/muE[i], tolerance);
@@ -193,7 +182,7 @@ pylith::materials::TestMaterial::testInitialize(void)
   const ALE::Obj<real_section_type>& parameterLambda = 
     material._parameters->getReal("lambda");
   const real_section_type::value_type* lambdaCell = 
-    parameterLambda->restrict(patch, *cellIter);
+    parameterLambda->restrictPoint(*cellIter);
   CPPUNIT_ASSERT(0 != lambdaCell);
   for (int i=0; i < numQuadPts; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, lambdaCell[i]/lambdaE[i], tolerance);

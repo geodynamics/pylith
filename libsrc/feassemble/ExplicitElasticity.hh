@@ -106,7 +106,8 @@ public :
    * @param dispTmdt Displacement field at time t-dt
    * @param coordinates Field of cell vertex coordinates
    */
-  void integrateConstant(const ALE::Obj<real_section_type>& b,
+  void integrateConstant(const ALE::Obj<Mesh>& m,
+             const ALE::Obj<real_section_type>& b,
 			 const ALE::Obj<real_section_type>& dispT,
 			 const ALE::Obj<real_section_type>& dispTmdt,
 			 const ALE::Obj<real_section_type>& coordinates);
@@ -118,6 +119,7 @@ public :
    * @param coordinates Field of cell vertex coordinates
    */
   void integrateJacobian(PetscMat* mat,
+             const ALE::Obj<Mesh>& m,
 			 const ALE::Obj<real_section_type>& dispT,
 			 const ALE::Obj<real_section_type>& coordinates);
   

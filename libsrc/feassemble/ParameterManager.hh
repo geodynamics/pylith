@@ -42,9 +42,8 @@ class pylith::feassemble::ParameterManager
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public :
 
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::topology_type topology_type;
-  typedef topology_type::point_type point_type;
+  typedef ALE::Field::Mesh        Mesh;
+  typedef Mesh::point_type        point_type;
   typedef Mesh::real_section_type real_section_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
@@ -87,7 +86,7 @@ private :
 private :
 
   /// PETSc mesh associated with fields
-  const ALE::Obj<ALE::Mesh>& _mesh;
+  const ALE::Obj<Mesh>& _mesh;
 
   /// Map for parameters stored as real fields
   map_real_type _real;

@@ -49,8 +49,7 @@ pylith::materials::ElasticMaterial::ElasticMaterial(const ElasticMaterial& m) :
 // Compute physical properties of cell at quadrature points.
 void
 pylith::materials::ElasticMaterial::calcProperties(
-				     const topology_type::point_type& cell,
-				     const topology_type::patch_type& patch,
+				     const Mesh::point_type& cell,
 				     const int numQuadPts)
 { // calcProperties
   _initCellData(numQuadPts);
@@ -64,9 +63,9 @@ pylith::materials::ElasticMaterial::calcProperties(
     const ALE::Obj<real_section_type> parameter = 
       _parameters->getReal(paramNames[iParam]);
 
-    assert(numQuadPts == parameter->getFiberDimension(patch, cell));
+    assert(numQuadPts == parameter->getFiberDimension(cell));
     const real_section_type::value_type* parameterCell =
-      parameter->restrict(patch, cell);
+      parameter->restrictPoint(cell);
     for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt)
       paramsCell[iQuadPt*numParams+iParam] = parameterCell[iQuadPt];
   } // for

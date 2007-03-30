@@ -39,9 +39,8 @@ class pylith::meshio::TestMeshIO : public CppUnit::TestFixture
   // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
 public :
 
-  typedef ALE::Mesh Mesh;
-  typedef ALE::Mesh::sieve_type sieve_type;
-  typedef ALE::Mesh::topology_type topology_type;
+  typedef ALE::Field::Mesh Mesh;
+  typedef Mesh::sieve_type sieve_type;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -52,14 +51,14 @@ public :
    *
    * @returns PETSc mesh
    */
-  ALE::Obj<ALE::Mesh>* createMesh(const MeshData& data);
+  ALE::Obj<Mesh>* createMesh(const MeshData& data);
 
   /** Check values in mesh against data.
    *
    * @param mesh PETSc mesh
    * @param data Mesh data
    */
-  void checkVals(const ALE::Obj<ALE::Mesh>& mesh,
+  void checkVals(const ALE::Obj<Mesh>& mesh,
 		 const MeshData& data);
 
 }; // class TestMeshIO
