@@ -37,7 +37,7 @@ cdef void MeshPtr_destructor(void* obj):
   Destroy Petsc Mesh.
   """
   #embed{ void MeshPtr_destructor_cpp(void* pObj)
-  ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pObj;
+  ALE::Obj<ALE::Field::Mesh>* pMesh = (ALE::Obj<ALE::Field::Mesh>*) pObj;
   delete pMesh;
   #}embed
   MeshPtr_destructor_cpp(obj)
@@ -58,7 +58,7 @@ cdef class Mesh:
     #embed{ void* MeshPtr_constructor()
     void* result = 0;
     try {
-      result = (void*)(new ALE::Obj<ALE::Mesh>);
+      result = (void*)(new ALE::Obj<ALE::Field::Mesh>);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -81,11 +81,11 @@ cdef class Mesh:
     """
     # create shim for getRealSection
     #embed{ void* Mesh_getRealSection(void* pObj, char* label)
-    typedef ALE::Mesh::real_section_type real_section_type;
+    typedef ALE::Field::Mesh::real_section_type real_section_type;
     
     void* result = 0;
     try {
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) pObj;
+      ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) pObj;
       assert(0 != mesh);
       const ALE::Obj<real_section_type>& section =
         (*mesh)->getRealSection(label);
@@ -111,18 +111,17 @@ cdef class Mesh:
     """
     # create shim for createRealSection
     #embed{ void* Mesh_createRealSection(void* pObj, char* label, int fiberDim)
-    typedef ALE::Mesh::real_section_type real_section_type;
+    typedef ALE::Field::Mesh::real_section_type real_section_type;
     
     void* result = 0;
     try {
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) pObj;
+      ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) pObj;
       assert(0 != mesh);
       const ALE::Obj<real_section_type>& section =
         (*mesh)->getRealSection(label);
       assert(!section.isNull());
-      const ALE::Mesh::topology_type::patch_type patch = 0;      
-      section->setFiberDimensionByDepth(patch, 0, fiberDim);
-      section->allocate();
+      section->setFiberDimension((*mesh)->depthStratum(0), fiberDim);
+      (*mesh)->allocate(section);
       result = (void*) &section;
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -151,14 +150,13 @@ def zeroRealSection(section):
   """
   # create shim for zero section
   #embed{ void* Section_zero(void* pObj)
-  typedef ALE::Mesh::real_section_type real_section_type;
+  typedef ALE::Field::Mesh::real_section_type real_section_type;
   
   try {
     ALE::Obj<real_section_type>* section =
       (ALE::Obj<real_section_type>*) pObj;
     assert(!section->isNull());
-    const ALE::Mesh::topology_type::patch_type patch = 0;      
-    (*section)->zero(patch);
+    (*section)->zero();
   } catch (const std::exception& err) {
     PyErr_SetString(PyExc_RuntimeError,
                     const_cast<char*>(err.what()));

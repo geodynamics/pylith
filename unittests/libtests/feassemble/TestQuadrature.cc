@@ -232,30 +232,24 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(
 		    cellDim, numCorners, numQuadPts, spaceDim);
 
   // Create mesh with test cell
-  typedef ALE::Mesh::topology_type topology_type;
-  typedef topology_type::sieve_type sieve_type;
-  ALE::Obj<ALE::Mesh> mesh = new ALE::Mesh(PETSC_COMM_WORLD, cellDim);
+  typedef ALE::Field::Mesh Mesh;
+  typedef ALE::Field::Mesh::sieve_type sieve_type;
+  ALE::Obj<Mesh> mesh = new Mesh(PETSC_COMM_WORLD, cellDim);
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
-  ALE::Obj<topology_type> topology = new topology_type(mesh->comm());
 
   const bool interpolate = false;
-  ALE::New::SieveBuilder<sieve_type>::buildTopology(sieve, cellDim, numCells,
+  ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
 		     (int*) cells, numVertices, interpolate, numCorners);
-  sieve->stratify();
-  topology->setPatch(0, sieve);
-  topology->stratify();
-  mesh->setTopology(topology);
-  ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
-		    mesh->getRealSection("coordinates"), spaceDim, vertCoords);
+  mesh->setSieve(sieve);
+  mesh->stratify();
+  ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, vertCoords);
   
   // Check values from computeGeometry()
-  const ALE::Mesh::topology_type::patch_type patch = 0;
-  const ALE::Obj<topology_type::label_sequence>& elements = 
-    topology->heightStratum(patch, 0);
-  const topology_type::label_sequence::iterator e_iter = elements->begin(); 
-  const ALE::Obj<ALE::Mesh::real_section_type>& coordinates = 
+  const ALE::Obj<Mesh::label_sequence>& elements = mesh->heightStratum(0);
+  const Mesh::label_sequence::iterator e_iter = elements->begin(); 
+  const ALE::Obj<Mesh::real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
-  pQuad->computeGeometry(coordinates, *e_iter);
+  pQuad->computeGeometry(mesh, coordinates, *e_iter);
 
   CPPUNIT_ASSERT(1 == numCells);
 

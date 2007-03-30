@@ -39,8 +39,9 @@ pylith::feassemble::Quadrature1Din2D::Quadrature1Din2D(const Quadrature1Din2D& q
 // Compute geometric quantities for a cell.
 void
 pylith::feassemble::Quadrature1Din2D::computeGeometry(
+		       const ALE::Obj<Mesh>& mesh,
 		       const ALE::Obj<real_section_type>& coordinates,
-		       const topology_type::point_type& cell)
+		       const Mesh::point_type& cell)
 { // computeGeometry
   assert(1 == _cellDim);
   assert(2 == _spaceDim);
@@ -54,9 +55,8 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(
   _resetGeometry();
 
   // Get coordinates of cell's vertices
-  const topology_type::patch_type patch  = 0;
   const real_section_type::value_type* vertCoords = 
-    coordinates->restrict(patch, cell);
+    mesh->restrict(coordinates, cell);
   //assert(2 == coordinates.GetFiberDimensionByDepth(patch, 
   //*vertices->begin(), 0));
 

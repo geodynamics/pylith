@@ -46,13 +46,13 @@ pylith::feassemble::ParameterManager::addReal(const char* name)
   } // if
   
   ALE::Obj<real_section_type> parameter = 
-    new real_section_type(_mesh->getTopology());
+    new real_section_type(_mesh->comm(), _mesh->debug());
   _real[name] = parameter;
 } // addReal
 
 // ----------------------------------------------------------------------
 // Get parameter.
-const ALE::Obj<ALE::Mesh::real_section_type>&
+const ALE::Obj<pylith::feassemble::ParameterManager::Mesh::real_section_type>&
 pylith::feassemble::ParameterManager::getReal(const char* name)
 { // getReal
   map_real_type::const_iterator iter = _real.find(name);

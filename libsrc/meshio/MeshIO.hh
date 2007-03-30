@@ -25,10 +25,9 @@ class pylith::meshio::MeshIO
 { // MeshIO
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public :
-  typedef ALE::Mesh Mesh;
-  typedef ALE::Mesh::sieve_type sieve_type;
-  typedef ALE::Mesh::topology_type topology_type;
-  typedef ALE::Sifter<int, sieve_type::point_type, int> patch_label_type;
+  typedef ALE::Field::Mesh Mesh;
+  typedef Mesh::sieve_type sieve_type;
+  typedef Mesh::label_type label_type;
   
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :

@@ -84,20 +84,15 @@ pylith::meshio::MeshIO::_buildMesh(const double* coordinates,
   ALE::Obj<Mesh>& mesh = *_mesh;
   
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
-  ALE::Obj<topology_type> topology = new topology_type(mesh->comm());
 
-  ALE::New::SieveBuilder<sieve_type>::buildTopology(sieve, meshDim, 
+  ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, meshDim, 
 						    numCells, 
 						    const_cast<int*>(cells), 
 						    numVertices, 
 						    _interpolate, numCorners);
-  sieve->stratify();
-  topology->setPatch(0, sieve);
-  topology->stratify();
-  mesh->setTopology(topology);
-  ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
-		      mesh->getRealSection("coordinates"), 
-		      spaceDim, coordinates);
+  mesh->setSieve(sieve);
+  mesh->stratify();
+  ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, coordinates);
 } // _buildMesh
 
 // ----------------------------------------------------------------------
@@ -110,17 +105,13 @@ pylith::meshio::MeshIO::_getVertices(double** pCoordinates,
   assert(0 != _mesh);
   ALE::Obj<Mesh>& mesh = *_mesh;
 
-  const Mesh::real_section_type::patch_type patch = 0;
-  const ALE::Obj<topology_type>& topology = mesh->getTopology();
-
-  const ALE::Obj<Mesh::topology_type::label_sequence>& vertices = 
-    topology->depthStratum(patch, 0);
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
   const ALE::Obj<Mesh::real_section_type>& coordsField =
     mesh->getRealSection("coordinates");
 
   const int numVertices = vertices->size();
   const int spaceDim = 
-    coordsField->getFiberDimension(patch, *vertices->begin());
+    coordsField->getFiberDimension(*vertices->begin());
 
   double* coordinates = 0;
   const int size = numVertices * spaceDim;
@@ -128,12 +119,11 @@ pylith::meshio::MeshIO::_getVertices(double** pCoordinates,
     coordinates = new double[size];
 
     int i = 0;
-    for(Mesh::topology_type::label_sequence::iterator v_iter = 
-	  vertices->begin();
-	v_iter != vertices->end();
-	++v_iter) {
+    for(Mesh::label_sequence::iterator v_iter = vertices->begin();
+        v_iter != vertices->end();
+	    ++v_iter) {
       const Mesh::real_section_type::value_type *vertexCoords = 
-	coordsField->restrict(patch, *v_iter);
+	coordsField->restrictPoint(*v_iter);
       for (int iDim=0; iDim < spaceDim; ++iDim)
 	coordinates[i++] = vertexCoords[iDim];
     } // for
@@ -158,20 +148,16 @@ pylith::meshio::MeshIO::_getCells(int** pCells,
   assert(0 != _mesh);
   ALE::Obj<Mesh>& mesh = *_mesh;
 
-  const topology_type::patch_type patch = 0;
-  const ALE::Obj<topology_type>& topology = mesh->getTopology();
-
-  const ALE::Obj<sieve_type>& sieve = topology->getPatch(patch);
-  const ALE::Obj<Mesh::topology_type::label_sequence>& cells = 
-    topology->heightStratum(patch, 0);
+  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
+  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
 
   const int meshDim = mesh->getDimension();
   const int numCells = cells->size();
   const int numCorners = sieve->nCone(*cells->begin(), 
-				      topology->depth())->size();
+				      mesh->depth())->size();
 
   const ALE::Obj<Mesh::numbering_type>& vNumbering = 
-    mesh->getFactory()->getLocalNumbering(topology, patch, 0);
+    mesh->getFactory()->getLocalNumbering(mesh, 0);
 
   int* cellsArray = 0;
   const int size = numCells * numCorners;
@@ -180,7 +166,7 @@ pylith::meshio::MeshIO::_getCells(int** pCells,
     
     const int offset = (useIndexZero()) ? 0 : 1;
     int i = 0;
-    for(Mesh::topology_type::label_sequence::iterator e_iter = cells->begin();
+    for(Mesh::label_sequence::iterator e_iter = cells->begin();
 	e_iter != cells->end();
 	++e_iter) {
       const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
@@ -211,10 +197,7 @@ pylith::meshio::MeshIO::_setMaterials(const int* materialIds,
   assert(0 != _mesh);
   ALE::Obj<Mesh>& mesh = *_mesh;
   
-  const topology_type::patch_type patch = 0;
-  const ALE::Obj<topology_type>& topology = mesh->getTopology();
-  const ALE::Obj<Mesh::topology_type::label_sequence>& cells = 
-    topology->heightStratum(patch, 0);
+  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
 
   if (cells->size() != numCells) {
     std::ostringstream msg;
@@ -224,14 +207,13 @@ pylith::meshio::MeshIO::_setMaterials(const int* materialIds,
     throw std::runtime_error(msg.str());
   } // if
 
-  const ALE::Obj<patch_label_type>& labelMaterials = 
-    topology->createLabel(patch, "material-id");
+  const ALE::Obj<label_type>& labelMaterials = mesh->createLabel("material-id");
   
   int i = 0;
-  for(Mesh::topology_type::label_sequence::iterator e_iter = cells->begin();
+  for(Mesh::label_sequence::iterator e_iter = cells->begin();
       e_iter != cells->end();
       ++e_iter)
-    topology->setValue(labelMaterials, *e_iter, materialIds[i++]);
+    mesh->setValue(labelMaterials, *e_iter, materialIds[i++]);
 } // _setMaterials
 
 // ----------------------------------------------------------------------
@@ -243,10 +225,7 @@ pylith::meshio::MeshIO::_getMaterials(int** pMaterialIds,
   assert(0 != _mesh);
   ALE::Obj<Mesh>& mesh = *_mesh;
 
-  const topology_type::patch_type patch = 0;
-  const ALE::Obj<topology_type>& topology = mesh->getTopology();
-  const ALE::Obj<Mesh::topology_type::label_sequence>& cells = 
-    topology->heightStratum(patch, 0);
+  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
   const int numCells = cells->size();
 
   int* materialsArray = 0;
@@ -254,16 +233,15 @@ pylith::meshio::MeshIO::_getMaterials(int** pMaterialIds,
   if (0 != pMaterialIds && size > 0) {
     materialsArray = new int[size];
   
-    const ALE::Obj<patch_label_type>& labelMaterials = 
-      topology->getLabel(patch, "material-id");
+    const ALE::Obj<label_type>& labelMaterials = mesh->getLabel("material-id");
     const int idDefault = 0;
 
     int i = 0;
-    for(Mesh::topology_type::label_sequence::iterator e_iter = cells->begin();
+    for(Mesh::label_sequence::iterator e_iter = cells->begin();
 	e_iter != cells->end();
 	++e_iter)
       materialsArray[i++] = 
-	topology->getValue(labelMaterials, *e_iter, idDefault);
+	mesh->getValue(labelMaterials, *e_iter, idDefault);
   } // if  
 
   if (0 != pMaterialIds)

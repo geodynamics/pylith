@@ -58,7 +58,7 @@ pylith::materials::Material::Material(const Material& m) :
 // ----------------------------------------------------------------------
 // Get physical property parameters from database.
 void
-pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
+pylith::materials::Material::initialize(const ALE::Obj<ALE::Field::Mesh>& mesh,
 					const spatialdata::geocoords::CoordSys* cs,
 					pylith::feassemble::Quadrature* quadrature)
 { // initialize
@@ -66,17 +66,14 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   assert(0 != cs);
   assert(0 != quadrature);
 
-  typedef ALE::Mesh::real_section_type real_section_type;
-  typedef ALE::Mesh::topology_type topology_type;
+  typedef ALE::Field::Mesh::real_section_type real_section_type;
 
   // Get cells associated with material
-  const ALE::Mesh::int_section_type::patch_type patch = 0;
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
-  const ALE::Obj<topology_type>& topology = coordinates->getTopology();
-  const ALE::Obj<topology_type::label_sequence>& cells = 
-    topology->getLabelStratum(patch, "material-id", _id);
-  const topology_type::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<ALE::Field::Mesh::label_sequence>& cells = 
+    mesh->getLabelStratum("material-id", _id);
+  const ALE::Field::Mesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Check to make sure we have cells
   if (0 == cells->size()) {
@@ -99,8 +96,8 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   for (int iParam=0; iParam < numParams; ++iParam) {
     _parameters->addReal(paramNames[iParam]);
     paramSections[iParam] = _parameters->getReal(paramNames[iParam]);
-    paramSections[iParam]->setFiberDimension(patch, cells, fiberDim);
-    paramSections[iParam]->allocate();
+    paramSections[iParam]->setFiberDimension(cells, fiberDim);
+    mesh->allocate(paramSections[iParam]);
   } // for
 
   // Setup database for querying
@@ -114,11 +111,11 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   double** cellData = (numParams > 0) ? new double*[numParams] : 0;
   for (int iParam = 0; iParam < numParams; ++iParam)
     cellData[iParam] = (numQuadPts > 0) ? new double[numQuadPts] : 0;
-  for (topology_type::label_sequence::iterator cellIter=cells->begin();
+  for (ALE::Field::Mesh::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell
-    quadrature->computeGeometry(coordinates, *cellIter);
+    quadrature->computeGeometry(mesh, coordinates, *cellIter);
 
     const double* quadPts = quadrature->quadPts();
     const int spaceDim = quadrature->spaceDim();
@@ -154,7 +151,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     } // for
     // Assemble cell contribution into fields
     for (int iParam=0; iParam < numParams; ++iParam)
-      paramSections[iParam]->updateAdd(patch, *cellIter, cellData[iParam]);
+      mesh->updateAdd(paramSections[iParam], *cellIter, cellData[iParam]);
   } // for
   for (int iParam=0; iParam < numParams; ++iParam) {
     delete[] cellData[iParam]; cellData[iParam] = 0;

@@ -41,8 +41,7 @@ class pylith::materials::ElasticMaterial : public Material
   // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
 public :
 
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::topology_type topology_type;
+  typedef ALE::Field::Mesh        Mesh;
   typedef Mesh::real_section_type real_section_type;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -110,8 +109,7 @@ public :
    * @param patch Finite-element patch
    * @param numQuadPts Number of quadrature points (consistency check)
    */
-  void calcProperties(const topology_type::point_type& cell,
-		      const topology_type::patch_type& patch,
+  void calcProperties(const Mesh::point_type& cell,
 		      const int numQuadPts);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
