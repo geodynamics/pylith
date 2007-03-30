@@ -123,10 +123,11 @@ class Explicit(Formulation):
     Advance to next time step.
     """
     self._info.log("Integrating constant term in operator.")
-    # Need to zero out sections
-    #for integrator in self.integrators:
-    #  integrator.integrateConstant(self.constant, self.dispT, self.dispTmdt,
-    #                               self.coordinates)
+    import pylith.topology.topology as bindings
+    bindings.zeroRealSection(self.constant)
+    for integrator in self.integrators:
+      integrator.integrateConstant(self.constant, self.dispT, self.dispTmdt,
+                                   self.coordinates)
 
     self._info.log("Solving equations.")
     # solve

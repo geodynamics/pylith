@@ -63,6 +63,7 @@ pylith::materials::ElasticMaterial::calcProperties(
   for (int iParam=0; iParam < numParams; ++iParam) {
     const ALE::Obj<real_section_type> parameter = 
       _parameters->getReal(paramNames[iParam]);
+
     assert(numQuadPts == parameter->getFiberDimension(patch, cell));
     const real_section_type::value_type* parameterCell =
       parameter->restrict(patch, cell);
