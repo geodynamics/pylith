@@ -10,34 +10,35 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/materials/ElasticIsotropic1D.py
+## @file pylith/materials/ElasticPlaneStress.py
 ##
-## @brief Python object implementing 2-D isotropic linear elastic material.
+## @brief Python object implementing 2-D isotropic linear elastic
+## material for plane stress.
 ##
 ## Factory: material.
 
 from Material import Material
 
-# import pylith.materials.materials as bindings
+import pylith.materials.materials as bindings
 
 
-# ElasticIsotropic2D class
-class ElasticIsotropic2D(Material):
+# ElasticPlaneStress class
+class ElasticPlaneStress(Material):
   """
-  Python object implementing 2-D isotropic linear elastic material.
+  Python object implementing 2-D isotropic linear elastic material for
+  plane stress.
 
   Factory: material.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="elasticisotropic2d"):
+  def __init__(self, name="elasticplanestress"):
     """
     Constructor.
     """
     Material.__init__(self, name)
-    # :TODO: Need to create module for materials
-    # self.cppHandle = bindings.ElasticIsotropic2D()
+    self.cppHandle = bindings.ElasticPlaneStress()
     return
 
 
@@ -45,9 +46,9 @@ class ElasticIsotropic2D(Material):
 
 def material():
   """
-  Factory associated with ElasticIsotropic2D.
+  Factory associated with ElasticPlaneStress.
   """
-  return ElasticIsotropic2D()
+  return ElasticPlaneStress()
 
 
 # End of file 

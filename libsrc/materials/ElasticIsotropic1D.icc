@@ -1,0 +1,25 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_materials_elasticisotropic1d_hh)
+#error "ElasticIsotropic1D.icc can only be included from ElasticIsotropic1D.hh"
+#endif
+
+// Create a pointer to a copy of this.
+inline
+pylith::materials::ElasticMaterial*
+pylith::materials::ElasticIsotropic1D::clone(void) const {
+  return new ElasticIsotropic1D(*this);
+}
+
+
+// End of file 

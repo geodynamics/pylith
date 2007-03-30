@@ -1,0 +1,25 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_materials_elasticplanestrain_hh)
+#error "ElasticPlanestrain.icc can only be included from ElasticPlanestrain.hh"
+#endif
+
+// Create a pointer to a copy of this.
+inline
+pylith::materials::ElasticMaterial*
+pylith::materials::ElasticPlaneStrain::clone(void) const {
+  return new ElasticPlaneStrain(*this);
+}
+
+
+// End of file 

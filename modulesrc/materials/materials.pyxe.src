@@ -13,7 +13,10 @@
 #header{
 #include "pylith/materials/Material.hh"
 #include "pylith/materials/ElasticMaterial.hh"
+#include "pylith/materials/ElasticIsotropic1D.hh"
 #include "pylith/materials/ElasticIsotropic3D.hh"
+#include "pylith/materials/ElasticPlaneStrain.hh"
+#include "pylith/materials/ElasticPlaneStress.hh"
 
 #include <assert.h>
 #include <stdexcept>
@@ -216,6 +219,90 @@ cdef class ElasticMaterial(Material):
     """
     Material.__init__(self)
     self.name = "pylith_materials_ElasticMaterial"
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class ElasticIsotropic1D(ElasticMaterial):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* ElasticIsotropic1D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::materials::ElasticIsotropic1D);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    ElasticMaterial.__init__(self)
+    self.thisptr = ElasticIsotropic1D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class ElasticPlaneStrain(ElasticMaterial):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* ElasticPlaneStrain_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::materials::ElasticPlaneStrain);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    ElasticMaterial.__init__(self)
+    self.thisptr = ElasticPlaneStrain_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class ElasticPlaneStress(ElasticMaterial):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* ElasticPlaneStress_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::materials::ElasticPlaneStress);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    ElasticMaterial.__init__(self)
+    self.thisptr = ElasticPlaneStress_constructor()
+    self.handle = self._createHandle()
     return
 
 
