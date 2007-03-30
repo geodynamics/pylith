@@ -73,6 +73,7 @@ class MeshIO(Component):
     mesh = Mesh()
     if self.coordsys is None:
       raise ValueError, "Coordinate system for mesh is unknown."
+    self.coordsys.initialize()
     mesh.initialize(self.coordsys)
     self.cppHandle.read(mesh.cppHandle)
     return mesh

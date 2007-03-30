@@ -43,18 +43,6 @@ cdef void MeshPtr_destructor(void* obj):
   MeshPtr_destructor_cpp(obj)
   return
 
-cdef void RealSection_destructor(void* obj):
-  """
-  Destroy real section.
-  """
-  #embed{ void RealSection_destructor_cpp(void* pObj)
-  typedef ALE::Mesh::real_section_type real_section_type;
-  ALE::Obj<real_section_type>* section = (ALE::Obj<real_section_type>*) pObj;
-  delete section;
-  #}embed
-  RealSection_destructor_cpp(obj)
-  return
-
 # ----------------------------------------------------------------------
 cdef class Mesh:
 
@@ -99,8 +87,10 @@ cdef class Mesh:
     try {
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) pObj;
       assert(0 != mesh);
-      result =
-        (void*) new ALE::Obj<real_section_type>((*mesh)->getRealSection(label));
+      const ALE::Obj<real_section_type>& section =
+        (*mesh)->getRealSection(label);
+      assert(!section.isNull());
+      result = (void*) &section;
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -112,7 +102,7 @@ cdef class Mesh:
     #}embed
     cdef void* ptr
     ptr = Mesh_getRealSection(self.thisptr, label)
-    return PyCObject_FromVoidPtr(ptr, RealSection_destructor)
+    return PyCObject_FromVoidPtr(ptr, NULL)
     
 
   def createRealSection(self, label, fiberDim):
@@ -127,15 +117,13 @@ cdef class Mesh:
     try {
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) pObj;
       assert(0 != mesh);
-      ALE::Obj<real_section_type>* pSection =
-        new ALE::Obj<real_section_type>((*mesh)->getRealSection(label));
-      assert(0 != *pSection);
-      ALE::Obj<real_section_type>& section = *pSection;
+      const ALE::Obj<real_section_type>& section =
+        (*mesh)->getRealSection(label);
       assert(!section.isNull());
       const ALE::Mesh::topology_type::patch_type patch = 0;      
       section->setFiberDimensionByDepth(patch, 0, fiberDim);
       section->allocate();
-      result = (void*) *pSection;
+      result = (void*) &section;
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -147,7 +135,7 @@ cdef class Mesh:
     #}embed
     cdef void* ptr
     ptr = Mesh_createRealSection(self.thisptr, label, fiberDim)
-    return PyCObject_FromVoidPtr(ptr, RealSection_destructor)
+    return PyCObject_FromVoidPtr(ptr, NULL)
     
 
   def _createHandle(self):
@@ -155,6 +143,36 @@ cdef class Mesh:
     Wrap pointer to C++ object in PyCObject.
     """
     return PyCObject_FromVoidPtr(self.thisptr, MeshPtr_destructor)
+
+
+def zeroRealSection(section):
+  """
+  Zero real section.
+  """
+  # create shim for zero section
+  #embed{ void* Section_zero(void* pObj)
+  typedef ALE::Mesh::real_section_type real_section_type;
+  
+  try {
+    ALE::Obj<real_section_type>* section =
+      (ALE::Obj<real_section_type>*) pObj;
+    assert(!section->isNull());
+    const ALE::Mesh::topology_type::patch_type patch = 0;      
+    (*section)->zero(patch);
+  } catch (const std::exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.what()));
+  } catch (...) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    "Caught unknown C++ exception.");
+  } // try/catch
+  #}embed
+  cdef void* ptr
+  ptr = PyCObject_AsVoidPtr(section)
+  Section_zero(ptr)
+  return
+    
+
 
 
 # End of file 

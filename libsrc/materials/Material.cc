@@ -78,6 +78,13 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     topology->getLabelStratum(patch, "material-id", _id);
   const topology_type::label_sequence::iterator cellsEnd = cells->end();
 
+  // Check to make sure we have cells
+  if (0 == cells->size()) {
+    std::ostringstream msg;
+    msg << "Could not find any cells for material '" << _label << "'.";
+    throw std::runtime_error(msg.str());
+  } // if
+
   // Create sections to hold parameters for physical properties
   delete _parameters; _parameters = new feassemble::ParameterManager(mesh);
   const int numQuadPts = quadrature->numQuadPts();
@@ -151,7 +158,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   } // for
   for (int iParam=0; iParam < numParams; ++iParam) {
     delete[] cellData[iParam]; cellData[iParam] = 0;
-  } // fir
+  } // for
   delete[] cellData; cellData = 0;
   delete[] queryData; queryData = 0;
   delete[] paramData; paramData = 0;

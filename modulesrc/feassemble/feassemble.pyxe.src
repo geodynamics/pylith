@@ -441,16 +441,57 @@ cdef class IntegratorExplicit(Integrator):
     return
 
 
-  def integrateConstant(fieldOut, fieldInT, fieldInTmdt, coords):
+  def integrateConstant(self, fieldOut, fieldInT, fieldInTmdt, coords):
     """
-    Integrate residual term (b) for dynamic elasticity term for 3-D
-    finite elemnts.
+    Integrate constant term (b) for dynamic elasticity term for 3-D
+    finite elements.
     """
-    print "WARNING: IntegratorExplicit::integrateConstant not implemented."
+    # create shim for method 'integrateConstant'
+    #embed{ void IntegratorExplicit_integrateConstant(void* objVptr, void* fieldOutVptr, void* fieldInTVptr, void* fieldInTmdtVptr, void* coordsVptr)
+    typedef ALE::Mesh::real_section_type real_section_type;
+
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldOutVptr);
+      assert(0 != fieldInTVptr);
+      assert(0 != fieldInTmdtVptr);
+      assert(0 != coordsVptr);
+      ALE::Obj<real_section_type>* fieldOut =
+        (ALE::Obj<real_section_type>*) fieldOutVptr;
+      ALE::Obj<real_section_type>* fieldInT =
+        (ALE::Obj<real_section_type>*) fieldInTVptr;
+      ALE::Obj<real_section_type>* fieldInTmdt =
+        (ALE::Obj<real_section_type>*) fieldInTmdtVptr;
+      ALE::Obj<real_section_type>* coords =
+        (ALE::Obj<real_section_type>*) coordsVptr;
+      ((pylith::feassemble::IntegratorExplicit*) objVptr)->integrateConstant(
+                *fieldOut, *fieldInT, *fieldInTmdt, *coords);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    cdef void* fieldOutVptr
+    cdef void* fieldInTVptr
+    cdef void* fieldInTmdtVptr
+    cdef void* coordsVptr
+    fieldOutVptr = PyCObject_AsVoidPtr(fieldOut)
+    fieldInTVptr = PyCObject_AsVoidPtr(fieldInT)
+    fieldInTmdtVptr = PyCObject_AsVoidPtr(fieldInTmdt)
+    coordsVptr = PyCObject_AsVoidPtr(coords)
+    IntegratorExplicit_integrateConstant(self.thisptr,
+                                         fieldOutVptr, fieldInTVptr,
+                                         fieldInTmdtVptr, coordsVptr)
     return
 
 
-  def integrateJacobian(mat, fieldIn, coords):
+  def integrateJacobian(self, mat, fieldIn, coords):
     """
     Compute matrix (A) associated with operator.
     """
