@@ -80,7 +80,7 @@ cdef class Material:
       assert(0 != meshObj);
       assert(0 != csObj);
       assert(0 != qObj);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshObj;
+      ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) meshObj;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csObj;
       pylith::feassemble::Quadrature* quadrature =

@@ -44,7 +44,7 @@ class pylith::feassemble::Integrator
 public :
 
   typedef ALE::Field::Mesh        Mesh;
-  typedef ALE::Mesh::point_type   point_type;
+  typedef Mesh::point_type        point_type;
   typedef Mesh::real_section_type real_section_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
