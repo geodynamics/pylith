@@ -14,6 +14,13 @@
 #error "Material.icc can only be included from Material.hh"
 #endif
 
+// Get spatial dimension of material.
+inline
+int
+pylith::materials::Material::dimension(void) const {
+  return _dimension;
+}
+
 // Set database for material parameters.
 inline
 void

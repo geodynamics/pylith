@@ -39,6 +39,8 @@ public:
   int numLocs; ///< Number of locations
 
   double* density; ///< Density at locations
+  double* strain; ///< Strain at locations
+  double* stress; ///< Stress at locations
   double* elasticConsts; ///< Elastic constants at locations
 
 };

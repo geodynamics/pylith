@@ -61,6 +61,16 @@ pylith::materials::TestElasticIsotropic3D::testCalcDensity(void)
 } // testCalcDensity
 
 // ----------------------------------------------------------------------
+// Test calcStress()
+void
+pylith::materials::TestElasticIsotropic3D::testCalcStress(void)
+{ // testCalcStress
+  ElasticIsotropic3D material;
+  ElasticIsotropic3DData data;
+  _testCalcStress(&material, data);
+} // testCalcStress
+
+// ----------------------------------------------------------------------
 // Test calcElasticConsts()
 void
 pylith::materials::TestElasticIsotropic3D::testCalcElasticConsts(void)

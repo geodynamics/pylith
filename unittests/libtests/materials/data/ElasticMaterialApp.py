@@ -58,6 +58,7 @@ class ElasticMaterialApp(Script):
     Script.__init__(self, name)
 
     # Material information
+    self.dimension = None
     self.numDBValues = None
     self.numParameters = None
     self.dbValues = None
@@ -68,7 +69,9 @@ class ElasticMaterialApp(Script):
     # Elastic material information
     self.numLocs = None
     self.density = None
-    self.parameters = None
+    self.strain = None
+    self.stress = None
+    self.elasticConsts = None
     return
 
 
@@ -93,6 +96,9 @@ class ElasticMaterialApp(Script):
 
 
   def _initData(self):
+    self.data.addScalar(vtype="int", name="_dimension",
+                        value=self.dimension,
+                        format="%d")
     self.data.addScalar(vtype="int", name="_numDBValues",
                         value=self.numDBValues,
                         format="%d")
@@ -114,6 +120,12 @@ class ElasticMaterialApp(Script):
                         format="%d")
     self.data.addArray(vtype="double", name="_density",
                        values=self.density,
+                       format="%16.8e", ncols=1)
+    self.data.addArray(vtype="double", name="_strain",
+                       values=self.strain,
+                       format="%16.8e", ncols=1)
+    self.data.addArray(vtype="double", name="_stress",
+                       values=self.stress,
                        format="%16.8e", ncols=1)
     self.data.addArray(vtype="double", name="_elasticConsts",
                        values=self.elasticConsts,

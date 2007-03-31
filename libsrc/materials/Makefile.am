@@ -19,7 +19,6 @@ subpkginclude_HEADERS = \
 	ElasticIsotropic3D.hh \
 	ElasticIsotropic3D.icc \
 	ElasticMaterial.hh \
-	ElasticMaterial.icc \
 	ElasticPlaneStrain.hh \
 	ElasticPlaneStrain.icc \
 	ElasticPlaneStress.hh \

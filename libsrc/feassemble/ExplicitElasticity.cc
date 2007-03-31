@@ -107,15 +107,10 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
     const double* basisDeriv = _quadrature->basisDeriv();
     const double* jacobianDet = _quadrature->jacobianDet();
 
-    // Get material physical properties at quadrature points for this cell
-    _material->calcProperties(*cellIter, numQuadPts);
-    const double* density = _material->density();
-    const double* elasticConsts = _material->elasticConsts();
-    const int numElasticConsts = _material->numElasticConsts();
-
     // Compute action for cell
 
     // Compute action for inertial terms
+    const double* density = _material->calcDensity(*cellIter, numQuadPts);
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = 
 	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
@@ -133,7 +128,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
       } // for
     } // for
     PetscErrorCode err = 
-      PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+4*spaceDim))));
+      PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
     if (err)
       throw std::runtime_error("Logging PETSc flops failed.");
     
@@ -149,141 +144,124 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 
     // Compute action for elastic terms
     if (1 == cellDim) {
-      assert(1 == numElasticConsts);
+      // Compute total strains
+      const int stressSize = _material->stressSize();
+      assert(numQuadPts == stressSize);
+      const int strainSize = stressSize;;
+      double* totalStrain = (strainSize > 0) ? new double[strainSize] : 0;
+      memset(totalStrain, 0, strainSize*sizeof(double));
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis)
+	  totalStrain[iQuad] += basisDeriv[iQ+iBasis] * dispTCell[iBasis];
+      } // for
+      const double* stress = 
+	_material->calcStress(*cellIter, totalStrain, numQuadPts, 
+			      spaceDim);
+
+      // Compute elastic action
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-	const double C1111 = elasticConsts[iQuad];
+	const int iStress = iQuad*stressSize;
+	const double s11 = stress[iStress  ];
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	  const int iBlock = iBasis * spaceDim;
-	  const double valI = wt*basisDeriv[iQ+iBasis]*C1111;
-	  for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	    const int jBlock = jBasis * spaceDim;
-	    const double valIJ = valI * basisDeriv[iQ+jBasis];
-	    _cellVector[iBlock] -= valIJ * dispTCell[jBlock];
-	  } // for
+	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
+	  _cellVector[iBlock  ] -= N1*s11;
 	} // for
-      } // for      
-      PetscErrorCode err = 
-	PetscLogFlops(numQuadPts*(1+numBasis*(2+numBasis*3)));
+      } // for
+      delete[] totalStrain; totalStrain = 0;
+      PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*5));
       if (err)
 	throw std::runtime_error("Logging PETSc flops failed.");
     } else if (2 == cellDim) {
-      assert(6 == numElasticConsts);
+      // Compute total strains
+      const int stressSize = _material->stressSize();
+      assert(3*numQuadPts == stressSize);
+      const int strainSize = stressSize;;
+      double* totalStrain = (strainSize > 0) ? new double[strainSize] : 0;
+      memset(totalStrain, 0, strainSize*sizeof(double));
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-	const int iConst = iQuad*numElasticConsts;
-	const double C1111 = elasticConsts[iConst+0];
-	const double C1122 = elasticConsts[iConst+1];
-	const double C1112 = elasticConsts[iConst+2];
-	const double C2222 = elasticConsts[iConst+3];
-	const double C2212 = elasticConsts[iConst+4];
-	const double C1212 = elasticConsts[iConst+5];
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  const int iBlock = iBasis * spaceDim;
-	  const double Nip = wt*basisDeriv[iQ+iBasis*cellDim+0];
-	  const double Niq = wt*basisDeriv[iQ+iBasis*cellDim+1];
-	  for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	    const int jBlock = jBasis * spaceDim;
-	    const double Njp = basisDeriv[iQ+jBasis*cellDim+0];
-	    const double Njq = basisDeriv[iQ+jBasis*cellDim+1];
-	    const double ki0j0 = 
-	      C1111 * Nip * Njp + C1112 * Niq * Njp +
-	      C1112 * Nip * Njq + C1212 * Niq * Njq;
-	    const double ki0j1 =
-	      C1122 * Nip * Njq + C2212 * Niq * Njq +
-	      C1112 * Nip * Njp + C1212 * Niq * Njp;
-	    const double ki1j1 =
-	      C2222 * Niq * Njq + C2212 * Nip * Njq +
-	      C2212 * Niq * Njp + C1212 * Nip * Njp;
-	    _cellVector[iBlock  ] -=
-	      ki0j0 * dispTCell[jBlock  ] + ki0j1 * dispTCell[jBlock+1];
-	    _cellVector[iBlock+1] -=
-	      ki0j1 * dispTCell[jBlock  ] + ki1j1 * dispTCell[jBlock+1];
-	  } // for
+	  totalStrain[iQuad  ] += 
+	    basisDeriv[iQ+iBasis  ] * dispTCell[iBasis  ];
+	  totalStrain[iQuad+1] += 
+	    basisDeriv[iQ+iBasis+1] * dispTCell[iBasis+1];
+	  totalStrain[iQuad+2] += 
+	    0.5 * (basisDeriv[iQ+iBasis+1] * dispTCell[iBasis  ] +
+		   basisDeriv[iQ+iBasis  ] * dispTCell[iBasis+1]);
 	} // for
       } // for
-      PetscErrorCode err = 
-	PetscLogFlops(numQuadPts*(1+numBasis*(2+numBasis*(2+3*11+2*4))));
+      const double* stress = 
+	_material->calcStress(*cellIter, totalStrain, numQuadPts, 
+			      spaceDim);
+      // Compute elastic action
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+	const int iStress = iQuad*stressSize;
+	const double s11 = stress[iStress  ];
+	const double s22 = stress[iStress+1];
+	const double s12 = stress[iStress+2];
+	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
+	  const int iBlock = iBasis * spaceDim;
+	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
+	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
+	  _cellVector[iBlock  ] -= N1*s11 + N2*s12;
+	  _cellVector[iBlock+1] -= N1*s12 + N2*s22;
+	} // for
+      } // for
+      err = PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
       if (err)
 	throw std::runtime_error("Logging PETSc flops failed.");
     } else if (3 == cellDim) {
-      assert(21 == numElasticConsts);
+      // Compute total strains
+      const int stressSize = _material->stressSize();
+      assert(6*numQuadPts == stressSize);
+      const int strainSize = stressSize;;
+      double* totalStrain = (strainSize > 0) ? new double[strainSize] : 0;
+      memset(totalStrain, 0, strainSize*sizeof(double));
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-	const int iConst = iQuad*numElasticConsts;
-	const double C1111 = elasticConsts[iConst+ 0];
-	const double C1122 = elasticConsts[iConst+ 1];
-	const double C1133 = elasticConsts[iConst+ 2];
-	const double C1112 = elasticConsts[iConst+ 3];
-	const double C1123 = elasticConsts[iConst+ 4];
-	const double C1113 = elasticConsts[iConst+ 5];
-	const double C2222 = elasticConsts[iConst+ 6];
-	const double C2233 = elasticConsts[iConst+ 7];
-	const double C2212 = elasticConsts[iConst+ 8];
-	const double C2223 = elasticConsts[iConst+ 9];
-	const double C2213 = elasticConsts[iConst+10];
-	const double C3333 = elasticConsts[iConst+11];
-	const double C3312 = elasticConsts[iConst+12];
-	const double C3323 = elasticConsts[iConst+13];
-	const double C3313 = elasticConsts[iConst+14];
-	const double C1212 = elasticConsts[iConst+15];
-	const double C1223 = elasticConsts[iConst+16];
-	const double C1213 = elasticConsts[iConst+17];
-	const double C2323 = elasticConsts[iConst+18];
-	const double C2313 = elasticConsts[iConst+19];
-	const double C1313 = elasticConsts[iConst+20];
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  const int iBlock = iBasis * spaceDim;
-	  const double Nip = wt*basisDeriv[iQ+iBasis*cellDim+0];
-	  const double Niq = wt*basisDeriv[iQ+iBasis*cellDim+1];
-	  const double Nir = wt*basisDeriv[iQ+iBasis*cellDim+2];
-	  for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	    const int jBlock = jBasis * spaceDim;
-	    const double Njp = basisDeriv[iQ+jBasis*cellDim+0];
-	    const double Njq = basisDeriv[iQ+jBasis*cellDim+1];
-	    const double Njr = basisDeriv[iQ+jBasis*cellDim+2];
-	    const double ki0j0 = 
-	      C1111 * Nip * Njp + C1112 * Niq * Njp + C1113 * Nir * Njp +
-	      C1112 * Nip * Njq + C1212 * Niq * Njq + C1213 * Nir * Njq +
-	      C1113 * Nip * Njr + C1213 * Niq * Njr + C1313 * Nir * Njr;
-	    const double ki0j1 =
-	      C1122 * Nip * Njq + C2212 * Niq * Njq + C2213 * Nir * Njq +
-	      C1112 * Nip * Njp + C1212 * Niq * Njp + C1213 * Nir * Njp +
-	      C1123 * Nip * Njr + C1223 * Niq * Njr + C2313 * Nir * Njr;
-	    const double ki0j2 =
-	      C1133 * Nip * Njr + C3312 * Niq * Njr + C3313 * Nir * Njr +
-	      C1123 * Nip * Njq + C1223 * Niq * Njq + C2313 * Nir * Njq +
-	      C1113 * Nip * Njp + C1213 * Niq * Njp + C1313 * Nir * Njp;
-	    const double ki1j1 =
-	      C2222 * Niq * Njq + C2212 * Nip * Njq + C2223 * Nir * Njq +
-	      C2212 * Niq * Njp + C1212 * Nip * Njp + C1223 * Nir * Njp +
-	      C2223 * Niq * Njr + C1223 * Nip * Njr + C2323 * Nir * Njr;
-	    const double ki1j2 =
-	      C2233 * Niq * Njr + C3312 * Nip * Njr + C3323 * Nir * Njr +
-	      C2223 * Niq * Njq + C1223 * Nip * Njq + C2323 * Nir * Njq +
-	      C2213 * Niq * Njp + C1213 * Nip * Njp + C2313 * Nir * Njp;
-	    const double ki2j2 =
-	      C3333 * Nir * Njr + C3323 * Niq * Njr + C3313 * Nip * Njr +
-	      C3323 * Nir * Njq + C2323 * Niq * Njq + C2313 * Nip * Njq +
-	      C3313 * Nir * Njp + C2313 * Niq * Njp + C1313 * Nip * Njp;
-
-	    _cellVector[iBlock  ] -=
-	      ki0j0 * dispTCell[jBlock  ] + 
-	      ki0j1 * dispTCell[jBlock+1] +
-	      ki0j2 * dispTCell[jBlock+2];
-	    _cellVector[iBlock+1] -=
-	      ki0j1 * dispTCell[jBlock  ] + 
-	      ki1j1 * dispTCell[jBlock+1] +
-	      ki1j2 * dispTCell[jBlock+2];
-	    _cellVector[iBlock+2] -=
-	      ki0j2 * dispTCell[jBlock  ] + 
-	      ki1j2 * dispTCell[jBlock+1] +
-	      ki2j2 * dispTCell[jBlock+2];
-	  } // for
+	  totalStrain[iQuad  ] += 
+	    basisDeriv[iQ+iBasis  ] * dispTCell[iBasis  ];
+	  totalStrain[iQuad+1] += 
+	    basisDeriv[iQ+iBasis+1] * dispTCell[iBasis+1];
+	  totalStrain[iQuad+2] += 
+	    basisDeriv[iQ+iBasis+2] * dispTCell[iBasis+2];
+	  totalStrain[iQuad+3] += 
+	    0.5 * (basisDeriv[iQ+iBasis+1] * dispTCell[iBasis  ] +
+		   basisDeriv[iQ+iBasis  ] * dispTCell[iBasis+1]);
+	  totalStrain[iQuad+4] += 
+	    0.5 * (basisDeriv[iQ+iBasis+2] * dispTCell[iBasis+1] +
+		   basisDeriv[iQ+iBasis+1] * dispTCell[iBasis+2]);
+	  totalStrain[iQuad+5] += 
+	    0.5 * (basisDeriv[iQ+iBasis+2] * dispTCell[iBasis  ] +
+		   basisDeriv[iQ+iBasis  ] * dispTCell[iBasis+2]);
 	} // for
       } // for
-      PetscErrorCode err = 
-	PetscLogFlops(numQuadPts*(1+numBasis*(3+numBasis*(3+6*26+3*6))));
+      const double* stress = 
+	_material->calcStress(*cellIter, totalStrain, numQuadPts, spaceDim);
+      // Compute elastic action
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+	const int iStress = iQuad*stressSize;
+	const double s11 = stress[iStress  ];
+	const double s22 = stress[iStress+1];
+	const double s33 = stress[iStress+2];
+	const double s12 = stress[iStress+3];
+	const double s23 = stress[iStress+4];
+	const double s13 = stress[iStress+5];
+
+	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
+	  const int iBlock = iBasis * spaceDim;
+	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim+0];
+	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
+	  const double N3 = wt*basisDeriv[iQ+iBasis*cellDim+2];
+	  _cellVector[iBlock  ] -= N1*s11 + N2*s12 + N3*s13;
+	  _cellVector[iBlock+1] -= N1*s12 + N2*s22 + N3*s23;
+	  _cellVector[iBlock+2] -= N1*s13 + N2*s23 + N3*s33;
+	} // for
+      } // for
+      err = PetscLogFlops(numQuadPts*(1+numBasis*(3+12)));
       if (err)
 	throw std::runtime_error("Logging PETSc flops failed.");
     } // if/else
@@ -334,8 +312,7 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
     const double* jacobianDet = _quadrature->jacobianDet();
 
     // Get material physical properties at quadrature points for this cell
-    _material->calcProperties(*cellIter, numQuadPts);
-    const double* density = _material->density();
+    const double* density = _material->calcDensity(*cellIter, numQuadPts);
 
     // Compute Jacobian for cell
 

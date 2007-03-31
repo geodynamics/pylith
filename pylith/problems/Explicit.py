@@ -138,7 +138,10 @@ class Explicit(Formulation):
     """
     Hook for doing stuff after advancing time step.
     """
-    self._info.log("WARNING: Explicit::poststep() not implemented.")
+    tmp = self.dispTmdt
+    self.dispTmdt = self.dispT
+    self.dispT = dispTpdt
+    self.dispTpdt = tmp
     return
 
 
