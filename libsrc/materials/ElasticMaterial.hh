@@ -69,8 +69,7 @@ public :
    *
    * @returns Array of density values at cell's quadrature points.
    */
-  const double* calcDensity(const topology_type::point_type& cell,
-			    const topology_type::patch_type& patch,
+  const double* calcDensity(const Mesh::point_type& cell,
 			    const int numQuadPts);
   
   /** Get stress tensor at quadrature points.
@@ -95,8 +94,7 @@ public :
    *
    * @returns Array of stresses at cell's quadrature points.
    */
-  const double* calcStress(const topology_type::point_type& cell,
-			   const topology_type::patch_type& patch,
+  const double* calcStress(const Mesh::point_type& cell,
 			   const double* totalStrain,
 			   const int numQuadPts,
 			   const int spaceDim);
@@ -139,8 +137,7 @@ public :
    * @param numQuadPts Number of quadrature points (consistency check)
    * @param spaceDim Spatial dimension (consistency check)
    */
-  const double* calcDerivElastic(const topology_type::point_type& cell,
-				 const topology_type::patch_type& patch,
+  const double* calcDerivElastic(const Mesh::point_type& cell,
 				 const double* totalStrain,
 				 const int numQuadPts,
 				 const int spaceDim);
