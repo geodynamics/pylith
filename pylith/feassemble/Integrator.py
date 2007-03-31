@@ -37,8 +37,17 @@ class Integrator(Component):
     Component.__init__(self, name, facility="integrator")
     self.cppHandle = None
     self.quadrature = None
+    self.mesh = None
     return
 
+
+  def setMesh(self, mesh):
+    """
+    Set mesh.
+    """
+    self.mesh = mesh
+    return
+  
 
   def initQuadrature(self, quadrature):
     """

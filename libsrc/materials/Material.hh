@@ -167,13 +167,6 @@ protected :
 		       const double* dbValues,
 		       const int numValues) const = 0;
 
-  /** Initialize arrays holding cell data.
-   *
-   * @param numQuadPts Number of quadrature points
-   */
-  virtual
-  void _initCellData(const int numQuadPts);
-
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 

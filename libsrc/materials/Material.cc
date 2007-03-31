@@ -165,16 +165,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Field::Mesh>& mesh,
 
   // Close database
   _db->close();
-
-  // Initialize cell data
-  _initCellData(numQuadPts);
 } // initialize
   
-// ----------------------------------------------------------------------
-// Initialize arrays holding cell data.
-void
-pylith::materials::Material::_initCellData(const int numQuadPts)
-{}
-
 
 // End of file 
