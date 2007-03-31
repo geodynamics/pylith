@@ -1,0 +1,27 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_feassemble_implicitelasticity_hh)
+#error "ImplicitElasticity.icc must be included only from ImplicitElasticity.hh"
+#else
+
+// Create a copy of this object.
+inline
+pylith::feassemble::IntegratorImplicit*
+pylith::feassemble::ImplicitElasticity::clone(void) const {
+  return new ImplicitElasticity(*this);
+} // clone
+
+#endif
+
+
+// End of file
