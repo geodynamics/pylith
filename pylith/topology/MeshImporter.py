@@ -63,7 +63,9 @@ class MeshImporter(MeshGenerator):
     """
     Hook for creating mesh.
     """
-    return self.importer.read()
+    mesh = self.importer.read()
+    mesh.setDebug(self.debug)
+    return mesh
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
