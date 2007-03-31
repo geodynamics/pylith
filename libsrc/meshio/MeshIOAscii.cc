@@ -20,6 +20,8 @@
 #include <assert.h> // USES assert()
 #include <iomanip> // USES setw(), setiosflags(), resetiosflags()
 
+const char *pylith::meshio::MeshIOAscii::groupTypeNames[] = {"vertices", "cells"};
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIOAscii::MeshIOAscii(void) :
@@ -93,11 +95,18 @@ pylith::meshio::MeshIOAscii::_read(void)
       _readCells(filein, &cells, &materialIds, &numCells, &numCorners);
       readCells = true;
     } else if (0 == strcasecmp(token.c_str(), "group")) {
+      std::string name;
+      pylith::meshio::MeshIO::PointType type;
+      int  numPoints;
+      int *points;
+
       if (!builtMesh)
-	throw std::runtime_error("Both 'vertices' and 'cells' must "
+        throw std::runtime_error("Both 'vertices' and 'cells' must "
 				 "precede any groups in mesh file.");
       filein.ignore(maxIgnore, '{');
-      //_readGroup(filein, mesh);
+      _readGroup(filein, name, type, numPoints, &points);
+      _buildGroup(name, type, numPoints, points);
+      delete [] points;
     } else {
       std::ostringstream msg;
       msg << "Could not parse '" << token << "' into a mesh setting.";
@@ -140,6 +149,11 @@ pylith::meshio::MeshIOAscii::_write(void) const
 
   _writeVertices(fileout);
   _writeCells(fileout);
+  ALE::Obj<std::set<std::string> > groups = _getGroups();
+
+  for(std::set<std::string>::const_iterator name = groups->begin(); name != groups->end(); ++name) {
+    _writeGroup(fileout, name->c_str());
+  }
 
   // LOOP OVER GROUPS
   // _writeGroup(fileout, mesh, nameIter->c_str());
@@ -378,43 +392,53 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
     << "  }\n";
 } // _writeCells
 
-#if 0
 // ----------------------------------------------------------------------
 // Read mesh group.
 void
 pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
-					const ALE::Obj<Mesh>& mesh) const
+             std::string& name,
+             pylith::meshio::MeshIO::PointType& type,
+             int& numPoints,
+             int *points[]) const
 { // _readGroup
-  std::string name = ""; // Name of group
-  int dimension = 0; // Topology dimension associated with group
-  int count = 0; // Number of entities in group
   int* indices = 0; // Indices of entities in group
 
   std::string token;
   const int maxIgnore = 1024;
+  numPoints = -1;
   filein >> token;
   while (filein.good() && token != "}") {
     if (0 == strcasecmp(token.c_str(), "name")) {
       filein.ignore(maxIgnore, '=');
       filein >> name;
-    } else if (0 == strcasecmp(token.c_str(), "dimension")) {
+    } else if (0 == strcasecmp(token.c_str(), "type")) {
+      std::string typeName;
       filein.ignore(maxIgnore, '=');
-      filein >> dimension;
+      filein >> typeName;
+      if (typeName == groupTypeNames[VERTEX]) {
+        type = VERTEX;
+      } else if (typeName == groupTypeNames[CELL]) {
+        type = CELL;
+      } else {
+        std::ostringstream msg;
+        msg << "Invalid point type " << typeName << ".";
+        throw std::runtime_error(msg.str());
+      }
     } else if (0 == strcasecmp(token.c_str(), "count")) {
       filein.ignore(maxIgnore, '=');
-      filein >> count;
+      filein >> numPoints;
     } else if (0 == strcasecmp(token.c_str(), "indices")) {
-      if (0 == count) {
-	std::ostringstream msg;
-	msg << "Tokens 'count' must precede 'indices'.";
-	throw std::runtime_error(msg.str());
+      if (-1 == numPoints) {
+        std::ostringstream msg;
+        msg << "Tokens 'count' must precede 'indices'.";
+        throw std::runtime_error(msg.str());
       } // if
       
       filein.ignore(maxIgnore, '{');
-      delete[] indices; indices = new int[count];
+      delete[] indices; indices = new int[numPoints];
       assert(0 != indices);
-      for (int i = 0; i < count; ++i)
-	filein >> indices[i];
+      for (int i = 0; i < numPoints; ++i)
+        filein >> indices[i];
       filein.ignore(maxIgnore, '}');
     } else {
       std::ostringstream msg;
@@ -425,51 +449,32 @@ pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
   } // while
   if (!filein.good())
     throw std::runtime_error("I/O error while parsing group settings.");
-
-  assert(!mesh.isNull());
-  ALE::Obj<Mesh::field_type> groupField = mesh->getField(name);
-  const int meshDim = mesh->getDimension();
-  ALE::Obj<std::list<Mesh::point_type> > patchPoints = 
-    std::list<Mesh::point_type>();
-  Mesh::field_type::patch_type patch;
-
-  patchPoints->clear();
-  if (meshDim == dimension) {
-    for (int i=0; i < count; ++i)
-      patchPoints->push_back(Mesh::point_type(0, indices[i]));
-    groupField->setPatch(patchPoints, patch);
-  } else if (0 == dimension) {
-  } // if
-  groupField->setFiberDimensionByHeight(patch, 0, 1);
-  groupField->orderPatches();
-  const double zero = 0;
-  for (int i=0; i < count; ++i)
-    groupField->update(patch, Mesh::point_type(0, i), &zero);
+  *points = indices;
 } // _readGroup
 
 // ----------------------------------------------------------------------
 // Write mesh group.
 void
 pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
-					 const ALE::Obj<Mesh>& mesh,
 					 const char* name) const
 { // _writeGroup
-  //_writeGroup(fileout, mesh);
-  // ADD STUFF HERE
-  int count = 0; // TEMPORARY
-  int dimension = 0; // TEMPORARY
+  pylith::meshio::MeshIO::PointType         type;
+  int numPoints;
+  int *points;
 
+  _getGroup(name, type, numPoints, &points);
   fileout
     << "  group = {\n"
     << "    name = " << name << "\n"
-    << "    dimension = " << dimension << "\n"
-    << "    count = " << count << "\n"
+    << "    type = " << groupTypeNames[type] << "\n"
+    << "    count = " << numPoints << "\n"
     << "    indices = {\n";
-    
+  for(int i = 0; i < numPoints; ++i) {
+    fileout << "      " << points[i] << "\n";
+  }
   fileout
     << "    }\n"
     << "  }\n";
 } // _writeGroup
-#endif
   
 // End of file 

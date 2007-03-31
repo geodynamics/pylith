@@ -22,4 +22,13 @@ mesh = {
       1   1
     }
   }
+  group = {
+    type = vertices
+    name = fault
+    count = 2
+    indices = {
+      1
+      2
+    }
+  }
 }

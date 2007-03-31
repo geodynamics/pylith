@@ -31,6 +31,7 @@ public :
   
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
+  typedef enum {VERTEX, CELL} PointType;
 
   /// Constructor
   MeshIO(void);
@@ -152,6 +153,35 @@ protected :
    */
   void _getMaterials(int** pMaterialIds,
 		     int* pNumCells) const;
+
+  /** Build a point group
+   *
+   * @param name The group name
+   * @param type The point type, e.g. VERTEX, CELL
+   * @param numPoints The number of points
+   * @param points An array of the points
+   */
+  void _buildGroup(const std::string& name,
+                   const PointType type,
+                   const int numPoints,
+				   const int* points);
+
+  /** Return all group names
+   *
+   */
+  ALE::Obj<std::set<std::string> > _getGroups() const;
+
+  /** Return a point group
+   *
+   * @param name The group name
+   * @param type The point type, e.g. VERTEX, CELL
+   * @param numPoints The number of points
+   * @param points An array of the points
+   */
+  void _getGroup(const char *name,
+                 PointType& type,
+                 int& numPoints,
+                 int *points[]) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

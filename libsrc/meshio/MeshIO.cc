@@ -255,5 +255,75 @@ pylith::meshio::MeshIO::_getMaterials(int** pMaterialIds,
     *pNumCells = numCells;
 } // _getMaterials
 
+// ----------------------------------------------------------------------
+// Build a point group as an int sectio
+void
+pylith::meshio::MeshIO::_buildGroup(const std::string& name,
+                   const PointType type,
+                   const int numPoints,
+				   const int* points)
+{ // _buildMesh
+  assert(0 != _mesh);
+
+  ALE::Obj<Mesh>& mesh = *_mesh;
+  mesh.addRef();
+
+  const ALE::Obj<Mesh::int_section_type>& groupField = mesh->getIntSection(name);
+
+  if (CELL == type) {
+    for(int i = 0; i < numPoints; ++i) {
+      groupField->setFiberDimension(points[i], 1);
+    }
+  } else if (VERTEX == type) {
+    const int numCells = mesh->heightStratum(0)->size();
+    for(int i = 0; i < numPoints; ++i) {
+      groupField->setFiberDimension(points[i]+numCells, 1);
+    }
+  } // if
+  mesh->allocate(groupField);
+  groupField->view("Group Field");
+} // _buildMesh
+
+// ----------------------------------------------------------------------
+// Get group names
+ALE::Obj<std::set<std::string> >
+pylith::meshio::MeshIO::_getGroups() const
+{
+  return (*_mesh)->getIntSections();
+}
+
+// ----------------------------------------------------------------------
+// Get group entities
+void
+pylith::meshio::MeshIO::_getGroup(const char *name,
+                      PointType& type,
+                      int& numPoints,
+				      int *points[]) const
+{ // _getMaterials
+  assert(0 != _mesh);
+  ALE::Obj<Mesh>& mesh = *_mesh;
+  mesh.addRef();
+
+  const ALE::Obj<Mesh::int_section_type>&   groupField = mesh->getIntSection(name);
+  const Mesh::int_section_type::chart_type& chart      = groupField->getChart();
+  const Mesh::point_type                    firstPoint = *chart.begin();
+  ALE::Obj<Mesh::numbering_type>            numbering;
+
+  if (mesh->height(firstPoint) == 0) {
+    type      = CELL;
+    numbering = mesh->getFactory()->getNumbering(mesh, mesh->depth());
+  } else {
+    type      = VERTEX;
+    numbering = mesh->getFactory()->getNumbering(mesh, 0);
+  }
+  numPoints = chart.size();
+  int *indices = new int[numPoints];
+  int  i       = 0;
+
+  for(Mesh::int_section_type::chart_type::iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+    indices[i++] = numbering->getIndex(*c_iter);
+  }
+  *points = indices;
+} // _getMaterials
 
 // End of file 
