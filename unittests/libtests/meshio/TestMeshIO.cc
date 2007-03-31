@@ -45,6 +45,7 @@ pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
   ALE::Obj<Mesh>* meshHandle = new ALE::Obj<Mesh>;
   *meshHandle = new Mesh(PETSC_COMM_WORLD, cellDim);
   ALE::Obj<Mesh> mesh = *meshHandle;
+  mesh.addRef();
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
   const bool interpolate = false;
