@@ -40,6 +40,7 @@ public:
 
   // Indices (order) of database values
   static const int didDensity;
+  static const int didVs;
   static const int didVp;
 
   // Parameters
@@ -48,21 +49,24 @@ public:
 
   // Indices (order) of parameters
   static const int pidDensity;
-  static const int pidLambda2Mu;
+  static const int pidMu;
+  static const int pidLambda;
 }; // _ElasticIsotropic1D
 
 const int pylith::materials::_ElasticIsotropic1D::stressSize = 1;
 const int pylith::materials::_ElasticIsotropic1D::numElasticConsts = 1;
-const int pylith::materials::_ElasticIsotropic1D::numDBValues = 2;
+const int pylith::materials::_ElasticIsotropic1D::numDBValues = 3;
 const char* pylith::materials::_ElasticIsotropic1D::namesDBValues[] =
-  {"density", "vp" };
+  {"density", "vs", "vp" };
 const int pylith::materials::_ElasticIsotropic1D::numParameters = 3;
 const char* pylith::materials::_ElasticIsotropic1D::namesParameters[] =
-  {"density", "lambda+2mu" };
+  {"density", "mu", "lambda" };
 const int pylith::materials::_ElasticIsotropic1D::didDensity = 0;
-const int pylith::materials::_ElasticIsotropic1D::didVp = 1;
+const int pylith::materials::_ElasticIsotropic1D::didVs = 1;
+const int pylith::materials::_ElasticIsotropic1D::didVp = 2;
 const int pylith::materials::_ElasticIsotropic1D::pidDensity = 0;
-const int pylith::materials::_ElasticIsotropic1D::pidLambda2Mu = 1;
+const int pylith::materials::_ElasticIsotropic1D::pidMu = 1;
+const int pylith::materials::_ElasticIsotropic1D::pidLambda = 2;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -147,12 +151,15 @@ pylith::materials::ElasticIsotropic1D::_dbToParameters(double* paramVals,
   assert(_ElasticIsotropic1D::numDBValues == numValues);
 
   const double density = dbValues[_ElasticIsotropic1D::didDensity];
+  const double vs = dbValues[_ElasticIsotropic1D::didVs];
   const double vp = dbValues[_ElasticIsotropic1D::didVp];
  
-  const double lambda2mu = density * vp*vp;
+  const double mu = density * vs*vs;
+  const double lambda = density * vp*vp - 2.0*mu;
 
   paramVals[_ElasticIsotropic1D::pidDensity] = density;
-  paramVals[_ElasticIsotropic1D::pidLambda2Mu] = lambda2mu;
+  paramVals[_ElasticIsotropic1D::pidMu] = mu;
+  paramVals[_ElasticIsotropic1D::pidLambda] = lambda;
 } // computeParameters
 
 // ----------------------------------------------------------------------
@@ -190,10 +197,11 @@ pylith::materials::ElasticIsotropic1D::_calcStress(const double* parameters,
 	 indexP+=_ElasticIsotropic1D::numParameters,
 	 indexS+=_ElasticIsotropic1D::stressSize) {
     const double density = parameters[indexP+_ElasticIsotropic1D::pidDensity];
-    const double lambda2mu = parameters[indexP+_ElasticIsotropic1D::pidLambda2Mu];
+    const double mu = parameters[indexP+_ElasticIsotropic1D::pidMu];
+    const double lambda = parameters[indexP+_ElasticIsotropic1D::pidLambda];
 
     const double e11 = totalStrain[indexS  ];
-    _stress[indexS  ] = lambda2mu * e11;
+    _stress[indexS  ] = mu*(3.0*lambda+2.0*mu)/(lambda + mu) * e11;
   } // for
 } // _calcStress
 
@@ -217,9 +225,10 @@ pylith::materials::ElasticIsotropic1D::_calcElasticConsts(const double* paramete
        indexP+=_ElasticIsotropic1D::numParameters,
        indexC+=_ElasticIsotropic1D::numElasticConsts) {
     const double density = parameters[indexP+_ElasticIsotropic1D::pidDensity];
-    const double lambda2mu = parameters[indexP+_ElasticIsotropic1D::pidLambda2Mu];
+    const double mu = parameters[indexP+_ElasticIsotropic1D::pidMu];
+    const double lambda = parameters[indexP+_ElasticIsotropic1D::pidLambda];
 
-    _elasticConsts[indexC+ 0] = lambda2mu; // C1111
+    _elasticConsts[indexC  ] = mu*(3.0*lambda+2.0*mu)/(lambda + mu);
   } // for
 } // _calcElasticConsts
 
