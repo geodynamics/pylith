@@ -281,7 +281,6 @@ pylith::meshio::MeshIO::_buildGroup(const std::string& name,
     }
   } // if
   mesh->allocate(groupField);
-  groupField->view("Group Field");
 } // _buildMesh
 
 // ----------------------------------------------------------------------
