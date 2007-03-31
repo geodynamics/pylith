@@ -338,13 +338,14 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
       const double wt = 
 	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-        const int iBlock = (iBasis * spaceDim) * (spaceDim * numBasis);
         const double valI = wt*basis[iQ+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const int jBlock = (jBasis * spaceDim);
           const double valIJ = valI * basis[iQ+jBasis];
-          for (int iDim=0; iDim < spaceDim; ++iDim)
-            _cellMatrix[iBlock+jBlock+iDim*spaceDim+iDim] += valIJ;
+          for (int iDim=0; iDim < spaceDim; ++iDim) {
+            const int iBlock = (iBasis * spaceDim + iDim) * (spaceDim * numBasis);
+            const int jBlock = (jBasis * spaceDim + iDim);
+            _cellMatrix[iBlock+jBlock] += valIJ;
+          } // for
         } // for
       } // for
     } // for
