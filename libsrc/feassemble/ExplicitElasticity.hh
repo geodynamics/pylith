@@ -104,24 +104,22 @@ public :
    * @param b Constant field (output)
    * @param dispT Displacement field at time t
    * @param dispTmdt Displacement field at time t-dt
-   * @param coordinates Field of cell vertex coordinates
+   * @param mesh Finite-element mesh
    */
-  void integrateConstant(const ALE::Obj<Mesh>& m,
-             const ALE::Obj<real_section_type>& b,
+  void integrateConstant(const ALE::Obj<real_section_type>& b,
 			 const ALE::Obj<real_section_type>& dispT,
 			 const ALE::Obj<real_section_type>& dispTmdt,
-			 const ALE::Obj<real_section_type>& coordinates);
+			 const ALE::Obj<Mesh>& mesh);
 
   /** Compute Jacobian matrix (A) associated with operator.
    *
    * @param mat Sparse matrix
    * @param dispT Displacement at time t
-   * @param coordinates Field of cell vertex coordinates
+   * @param mesh Finite-element mesh
    */
   void integrateJacobian(PetscMat* mat,
-             const ALE::Obj<Mesh>& m,
 			 const ALE::Obj<real_section_type>& dispT,
-			 const ALE::Obj<real_section_type>& coordinates);
+			 const ALE::Obj<Mesh>& mesh);
   
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

@@ -53,11 +53,12 @@ class IntegratorExplicit(Integrator):
     return self.cppHandle.getStableTimeStep()
 
 
-  def integrateConstant(self, fieldOut, fieldInT, fieldInTmdt, coords):
+  def integrateConstant(self, fieldOut, fieldInT, fieldInTmdt):
     """
     Integrate constant term for dynamic terms for finite-elements.
     """
-    self.cppHandle.integrateConstant(fieldOut, fieldInT, fieldInTmdt, coords)
+    self.cppHandle.integrateConstant(fieldOut, fieldInT, fieldInTmdt,
+                                     self.mesh.cppHandle)
     return
 
 
@@ -65,7 +66,7 @@ class IntegratorExplicit(Integrator):
     """
     Integrate Jacobian term for dynamic terms for finite-elements.
     """
-    self.cppHandle.integrateJacobian(jacobian, fieldInT, coords)
+    self.cppHandle.integrateJacobian(jacobian, fieldInT, self.mesh.cppHandle)
     return
 
 

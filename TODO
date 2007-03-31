@@ -7,8 +7,8 @@ Error checking
 
   add check to material::initialize material dimension must match cell dimension
 
-0. Add unit tests for ElasticIsotropic1D, ElasticPlaneStrain,
-ElasticPlaneStress.
+0. Update Material tests. Add unit tests for ElasticIsotropic1D,
+ElasticPlaneStrain, ElasticPlaneStress.
 
 1. Finish implementing ExplicitElasticity
    a. C++

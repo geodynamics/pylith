@@ -81,6 +81,7 @@ class Explicit(Formulation):
               "for material '%s' is for spatial dimension '%d'." % \
               (spaceDim, material.label, material.quadrature.spaceDim)
       integrator = ExplicitElasticity()
+      integrator.setMesh(mesh)
       integrator.initQuadrature(material.quadrature)
       integrator.initMaterial(mesh, material)
       self.integrators.append(integrator)
@@ -91,12 +92,10 @@ class Explicit(Formulation):
     self.dispTmdt = mesh.cppHandle.createRealSection("dispTmdt", spaceDim)
     self.dispTpdt = mesh.cppHandle.createRealSection("dispTpdt", spaceDim)
     self.constant = mesh.cppHandle.createRealSection("constant", spaceDim)
-    self.coordinates = mesh.cppHandle.getRealSection("coordinates")
 
     self._info.log("Integrating Jacobian of operator.")
     #for integrator in integrators:
-    #  integrator.integrateJacobian(self.jacobian, self.dispT,
-    #                               self.coordinates) 
+    #  integrator.integrateJacobian(self.jacobian, self.dispT)
     return
 
 
@@ -126,8 +125,7 @@ class Explicit(Formulation):
     import pylith.topology.topology as bindings
     bindings.zeroRealSection(self.constant)
     for integrator in self.integrators:
-      integrator.integrateConstant(self.constant, self.dispT, self.dispTmdt,
-                                   self.coordinates)
+      integrator.integrateConstant(self.constant, self.dispT, self.dispTmdt)
 
     self._info.log("Solving equations.")
     # solve
@@ -140,7 +138,7 @@ class Explicit(Formulation):
     """
     tmp = self.dispTmdt
     self.dispTmdt = self.dispT
-    self.dispT = dispTpdt
+    self.dispT = self.dispTpdt
     self.dispTpdt = tmp
     return
 

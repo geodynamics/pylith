@@ -119,8 +119,8 @@ pylith::materials::ElasticMaterial::calcDerivElastic(
 // ----------------------------------------------------------------------
 // Initialize arrays holding cell data.
 void
-pylith::materials::ElasticMaterial::_initCellData(const int numQuadPts)
-{ // _initCellData
+pylith::materials::ElasticMaterial::initCellData(const int numQuadPts)
+{ // initCellData
   int size = numQuadPts;
   delete[] _density; _density = (size > 0) ? new double[size] : 0;
 
@@ -129,7 +129,7 @@ pylith::materials::ElasticMaterial::_initCellData(const int numQuadPts)
 
   size = numQuadPts * numElasticConsts();
   delete[] _elasticConsts; _elasticConsts = (size > 0) ? new double[size] : 0;
-} // _initCellData
+} // initCellData
 
 
 // ----------------------------------------------------------------------

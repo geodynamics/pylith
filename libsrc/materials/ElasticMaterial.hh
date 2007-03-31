@@ -153,13 +153,11 @@ public :
   virtual
   int numElasticConsts(void) const = 0;
 
-  /** Compute physical properties of cell at quadrature points.
+  /** Initialize arrays holding cell data.
    *
-   * @param cell Finite-element cell
-   * @param numQuadPts Number of quadrature points (consistency check)
+   * @param numQuadPts Number of quadrature points
    */
-  void calcProperties(const Mesh::point_type& cell,
-		      const int numQuadPts);
+  void initCellData(const int numQuadPts);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -169,12 +167,6 @@ protected :
    * @param m Material to copy
    */
   ElasticMaterial(const ElasticMaterial& m);
-
-  /** Initialize arrays holding cell data.
-   *
-   * @param numQuadPts Number of quadrature points
-   */
-  void _initCellData(const int numQuadPts);
 
   /** Compute density at locations from parameters.
    *
