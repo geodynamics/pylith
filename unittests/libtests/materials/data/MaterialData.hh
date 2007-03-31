@@ -34,6 +34,8 @@ public :
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
+  int dimension; ///< Number of dimensions
+
   int numDBValues; ///< Number of database values
   int numParameters; ///< Number of parameters
 

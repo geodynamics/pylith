@@ -42,6 +42,7 @@ class pylith::materials::TestElasticIsotropic3D : public TestElasticMaterial
   CPPUNIT_TEST( testDBValues );
   CPPUNIT_TEST( testParameters );
   CPPUNIT_TEST( testCalcDensity );
+  CPPUNIT_TEST( testCalcStress );
   CPPUNIT_TEST( testCalcElasticConsts );
   CPPUNIT_TEST_SUITE_END();
 
@@ -59,6 +60,9 @@ public :
 
   /// Test calcDensity()
   void testCalcDensity(void);
+
+  /// Test calcStress()
+  void testCalcStress(void);
 
   /// Test calcElasticConsts()
   void testCalcElasticConsts(void);

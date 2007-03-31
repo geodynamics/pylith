@@ -15,6 +15,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::materials::MaterialData::MaterialData(void) :
+  dimension(0),
   numDBValues(0),
   numParameters(0),
   dbValues(0),

@@ -68,6 +68,12 @@ public :
   virtual
   ~Material(void);
 
+  /** Get spatial dimension of material.
+   *
+   * @returns Spatial dimension.
+   */
+  int dimension(void) const;
+
   /** Set database for physical property parameters.
    *
    * @param value Pointer to database.
@@ -161,6 +167,13 @@ protected :
 		       const double* dbValues,
 		       const int numValues) const = 0;
 
+  /** Initialize arrays holding cell data.
+   *
+   * @param numQuadPts Number of quadrature points
+   */
+  virtual
+  void _initCellData(const int numQuadPts);
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
@@ -172,6 +185,8 @@ protected :
 
   ///< Manager of parameters for physical properties of material
   pylith::feassemble::ParameterManager* _parameters;
+
+  int _dimension; ///< Spatial dimension associated with material
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

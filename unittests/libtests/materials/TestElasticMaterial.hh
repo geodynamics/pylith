@@ -39,9 +39,9 @@ class pylith::materials::TestElasticMaterial : public TestMaterial
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestElasticMaterial );
   CPPUNIT_TEST( testClone );
-  CPPUNIT_TEST( testDensity );
-  CPPUNIT_TEST( testElasticConsts );
-  CPPUNIT_TEST( testCalcProperties );
+  CPPUNIT_TEST( testCalcDensity );
+  CPPUNIT_TEST( testCalcStress );
+  CPPUNIT_TEST( testCalcDerivElastic );
   CPPUNIT_TEST( testInitCellData );
   CPPUNIT_TEST_SUITE_END();
 
@@ -51,14 +51,14 @@ public :
   /// Test clone()
   void testClone(void);
 
-  /// Test density()
-  void testDensity(void);
+  /// Test calcDensity()
+  void testCalcDensity(void);
 
-  /// Test elaticConsts()
-  void testElasticConsts(void);
+  /// Test calcStress()
+  void testCalcStress(void);
 
-  /// Test calcProperties()
-  void testCalcProperties(void);
+  /// Test calcDerivElastic()
+  void testCalcDerivElastic(void);
 
   /// Test _initCellData()
   void testInitCellData(void);
@@ -73,6 +73,14 @@ protected :
    */
   void _testCalcDensity(ElasticMaterial* material,
 			const ElasticMaterialData& data) const;
+
+  /** Test _calcStress()
+   *
+   * @param material Pointer to material
+   * @param data Data for testing material
+   */
+  void _testCalcStress(ElasticMaterial* material,
+		       const ElasticMaterialData& data) const;
 
   /** Test _calcElasticConsts()
    *

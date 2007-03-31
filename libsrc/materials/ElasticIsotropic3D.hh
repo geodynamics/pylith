@@ -55,15 +55,25 @@ public :
    */
   ElasticMaterial* clone(void) const;
 
-  /** Get number of elastic constants for material.
+  /** Get number of entries in stress tensor.
+   *
+   * 1-D = 1
+   * 2-D = 3
+   * 3-D = 6
+   *
+   * @returns Number of entries in stress tensor.
+   */
+  int stressSize(void) const;
+
+  /** Get number of entries in derivative of elasticity matrix.
    *
    * 1-D = 1
    * 2-D = 6
    * 3-D = 21
    *
-   * @returns Number of elastic constants
+   * @returns Number of entries in derivative of elasticity matrix.
    */
-  const int numElasticConsts(void) const;
+  int numElasticConsts(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -129,19 +139,39 @@ protected :
 		    const int numParameters,
 		    const int numLocs);
 
-  /** Compute density at locations from parameters.
+  /** Compute stress tensor at locations from parameters.
    *
-   * Results are stored in _elasticConsts.
+   * Results are stored in _stress.
    *
    * Index into parameters = iLoc*numParameters + iParam
    *
    * @param parameters Parameters at location
    * @param numParameters Number of parameters
+   * @param totalStrain Total strain at locations
    * @param numLocs Number of locations
+   * @param spaceDim Spatial dimension for locations.
+   */
+  void _calcStress(const double* parameters,
+		   const int numParameters,
+		   const double* totalStrain,
+		   const int numLocs,
+		   const int spaceDim);
+
+  /** Compute derivatives of elasticity matrix at locations from parameters.
+   *
+   * Results are stored in _elasticConsts.
+   *
+   * @param parameters Parameters at locations.
+   * @param numParameters Number of parameters.
+   * @param totalStrain Total strain at locations.
+   * @param numLocs Number of locations.
+   * @param spaceDim Spatial dimension for locations.
    */
   void _calcElasticConsts(const double* parameters,
 			  const int numParameters,
-			  const int numLocs);
+			  const double* totalStrain,
+			  const int numLocs,
+			  const int spaceDim);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

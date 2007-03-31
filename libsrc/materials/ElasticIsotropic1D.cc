@@ -28,7 +28,10 @@ namespace pylith {
 
 class pylith::materials::_ElasticIsotropic1D {
 public:
-  // Number of elastic constants (for general 3-D elastic material)
+  // Number of entries in stress tensor.
+  static const int stressSize;
+
+  // Number of entries in derivative of elasticity matrix.
   static const int numElasticConsts;
 
   // Values expected in spatial database
@@ -48,6 +51,7 @@ public:
   static const int pidLambda2Mu;
 }; // _ElasticIsotropic1D
 
+const int pylith::materials::_ElasticIsotropic1D::stressSize = 1;
 const int pylith::materials::_ElasticIsotropic1D::numElasticConsts = 1;
 const int pylith::materials::_ElasticIsotropic1D::numDBValues = 2;
 const char* pylith::materials::_ElasticIsotropic1D::namesDBValues[] =
@@ -64,6 +68,7 @@ const int pylith::materials::_ElasticIsotropic1D::pidLambda2Mu = 1;
 // Default constructor.
 pylith::materials::ElasticIsotropic1D::ElasticIsotropic1D(void)
 { // constructor
+  _dimension = 1;
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -81,8 +86,16 @@ pylith::materials::ElasticIsotropic1D::ElasticIsotropic1D(
 } // copy constructor
 
 // ----------------------------------------------------------------------
+// Get number of entries in stress tensor.
+int
+pylith::materials::ElasticIsotropic1D::stressSize(void) const
+{ // stressSize
+  return _ElasticIsotropic1D::stressSize;
+} // stressSize
+
+// ----------------------------------------------------------------------
 // Get number of elastic constants for material.
-const int
+int
 pylith::materials::ElasticIsotropic1D::numElasticConsts(void) const
 { // numElasticConsts
   return _ElasticIsotropic1D::numElasticConsts;
@@ -148,38 +161,67 @@ void
 pylith::materials::ElasticIsotropic1D::_calcDensity(const double* parameters,
 						    const int numParameters,
 						    const int numLocs)
-{ // calcDensity
+{ // _calcDensity
   assert(0 != _density);
   assert(0 != parameters);
 
   for (int iLoc=0, index=0; iLoc < numLocs; ++iLoc, index+=numParameters)
     _density[iLoc] = 
       parameters[index+_ElasticIsotropic1D::pidDensity];
-} // calcDensity
+} // _calcDensity
 
 // ----------------------------------------------------------------------
-// Compute density at location from parameters.
+// Compute stress tensor at location from parameters.
 void
-pylith::materials::ElasticIsotropic1D::_calcElasticConsts(const double* parameters,
-							  const int numParameters,
-							  const int numLocs)
-{ // calcElasticConsts
-  assert(0 != _elasticConsts);
+pylith::materials::ElasticIsotropic1D::_calcStress(const double* parameters,
+						   const int numParameters,
+						   const double* totalStrain,
+						   const int numLocs,
+						   const int spaceDim)
+{ // _calcStress
+  assert(0 != _stress);
   assert(0 != parameters);
   assert(_ElasticIsotropic1D::numParameters == numParameters);
+  assert(spaceDim == _dimension);
 
-  for (int iLoc=0, indexP=0, indexC=0;
+  for (int iLoc=0, indexP=0, indexS=0;
        iLoc < numLocs; 
        ++iLoc, 
 	 indexP+=_ElasticIsotropic1D::numParameters,
-	 indexC+=_ElasticIsotropic1D::numElasticConsts) {
+	 indexS+=_ElasticIsotropic1D::stressSize) {
     const double density = parameters[indexP+_ElasticIsotropic1D::pidDensity];
-    const double lambda2mu = 
-      parameters[indexP+_ElasticIsotropic1D::pidLambda2Mu];
-  
+    const double lambda2mu = parameters[indexP+_ElasticIsotropic1D::pidLambda2Mu];
+
+    const double e11 = totalStrain[indexS  ];
+    _stress[indexS  ] = lambda2mu * e11;
+  } // for
+} // _calcStress
+
+// ----------------------------------------------------------------------
+// Compute derivative of elasticity matrix at location from parameters.
+void
+pylith::materials::ElasticIsotropic1D::_calcElasticConsts(const double* parameters,
+							  const int numParameters,
+							  const double* totalStrain,
+							  const int numLocs,
+							  const int spaceDim)
+{ // _calcElasticConsts
+  assert(0 != _elasticConsts);
+  assert(0 != parameters);
+  assert(_ElasticIsotropic1D::numParameters == numParameters);
+  assert(spaceDim == _dimension);
+ 
+  for (int iLoc=0, indexP=0, indexC=0;
+       iLoc < numLocs; 
+       ++iLoc, 
+       indexP+=_ElasticIsotropic1D::numParameters,
+       indexC+=_ElasticIsotropic1D::numElasticConsts) {
+    const double density = parameters[indexP+_ElasticIsotropic1D::pidDensity];
+    const double lambda2mu = parameters[indexP+_ElasticIsotropic1D::pidLambda2Mu];
+
     _elasticConsts[indexC+ 0] = lambda2mu; // C1111
   } // for
-} // calcElasticConsts
+} // _calcElasticConsts
 
 
 // End of file 

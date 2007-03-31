@@ -37,6 +37,8 @@ public:
 
 private:
 
+  static const int _dimension;
+
   static const int _numDBValues;
 
   static const int _numParameters;
@@ -52,6 +54,10 @@ private:
   static const double _parameterData[];
 
   static const double _density[];
+
+  static const double _strain[];
+
+  static const double _stress[];
 
   static const double _elasticConsts[];
 
