@@ -63,7 +63,7 @@ class Formulation(Component):
     return
 
 
-  def initialize(self, mesh, materials):
+  def initialize(self, mesh, materials, dimension, dt):
     """
     Create integrators for each element family.
     """

@@ -3,9 +3,6 @@ MAIN PRIORITIES (Brad)
 ======================================================================
 
 Error checking
-  Add debug Pyre property to MeshIO
-
-  Add debug attribute to Mesh and extension module
 
   add isNull() assertions before using ALE::Obj.
 

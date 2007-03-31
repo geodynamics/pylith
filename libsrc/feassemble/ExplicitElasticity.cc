@@ -303,6 +303,7 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
   // Get parameters used in integration.
   const double dt = _dt;
   const double dt2 = dt*dt;
+  assert(dt > 0);
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();

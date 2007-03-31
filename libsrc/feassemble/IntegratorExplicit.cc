@@ -20,8 +20,8 @@
 // Constructor
 pylith::feassemble::IntegratorExplicit::IntegratorExplicit(void) :
   Integrator(),
-  _dt(0.0),
-  _dtm1(0.0)
+  _dt(-1.0),
+  _dtm1(-1.0)
 { // constructor
 } // constructor
 
@@ -45,7 +45,10 @@ pylith::feassemble::IntegratorExplicit::IntegratorExplicit(const IntegratorExpli
 void
 pylith::feassemble::IntegratorExplicit::timeStep(const double dt)
 { // timeStep
-  _dtm1 = _dt;
+  if (_dt != -1.0)
+    _dtm1 = _dt;
+  else
+    _dtm1 = dt;
   _dt = dt;
   assert(_dt == _dtm1); // For now, don't allow variable time step
 } // timeStep
