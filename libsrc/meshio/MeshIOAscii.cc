@@ -410,7 +410,10 @@ pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
   while (filein.good() && token != "}") {
     if (0 == strcasecmp(token.c_str(), "name")) {
       filein.ignore(maxIgnore, '=');
-      filein >> name;
+      filein >> std::ws;
+      char buffer[maxIgnore];
+      filein.get(buffer, maxIgnore, '\n');
+      name = buffer;
     } else if (0 == strcasecmp(token.c_str(), "type")) {
       std::string typeName;
       filein.ignore(maxIgnore, '=');
