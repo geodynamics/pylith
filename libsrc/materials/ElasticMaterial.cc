@@ -60,7 +60,7 @@ pylith::materials::ElasticMaterial::calcDensity(
   memset(_density, 0, size*sizeof(double));
 
   double* paramsCell = 0;
-  _getParameters(&paramsCell, cell, patch, numQuadPts);
+  _getParameters(&paramsCell, cell, numQuadPts);
   const int numParams = _numParameters();
   _calcDensity(paramsCell, numParams, numQuadPts);
   delete[] paramsCell; paramsCell = 0;
@@ -72,8 +72,7 @@ pylith::materials::ElasticMaterial::calcDensity(
 // Compute stress tensor for cell at quadrature points.
 const double*
 pylith::materials::ElasticMaterial::calcStress(
-				     const topology_type::point_type& cell,
-				     const topology_type::patch_type& patch,
+				     const Mesh::point_type& cell,
 				     const double* totalStrain,
 				     const int numQuadPts,
 				     const int spaceDim)
@@ -85,7 +84,7 @@ pylith::materials::ElasticMaterial::calcStress(
   memset(_stress, 0, size*sizeof(double));
 
   double* paramsCell = 0;
-  _getParameters(&paramsCell, cell, patch, numQuadPts);
+  _getParameters(&paramsCell, cell, numQuadPts);
   const int numParams = _numParameters();
   _calcStress(paramsCell, numParams, totalStrain, numQuadPts, spaceDim);
   delete[] paramsCell; paramsCell = 0;
@@ -97,8 +96,7 @@ pylith::materials::ElasticMaterial::calcStress(
 // Compute derivative of elasticity matrix for cell at quadrature points.
 const double*
 pylith::materials::ElasticMaterial::calcDerivElastic(
-				     const topology_type::point_type& cell,
-				     const topology_type::patch_type& patch,
+				     const Mesh::point_type& cell,
 				     const double* totalStrain,
 				     const int numQuadPts,
 				     const int spaceDim)
@@ -110,7 +108,7 @@ pylith::materials::ElasticMaterial::calcDerivElastic(
   memset(_elasticConsts, 0, size*sizeof(double));
 
   double* paramsCell = 0;
-  _getParameters(&paramsCell, cell, patch, numQuadPts);
+  _getParameters(&paramsCell, cell, numQuadPts);
   const int numParams = _numParameters();
   _calcElasticConsts(paramsCell, numParams, totalStrain, numQuadPts, spaceDim);
   delete[] paramsCell; paramsCell = 0;
@@ -138,8 +136,7 @@ pylith::materials::ElasticMaterial::_initCellData(const int numQuadPts)
 // Get parameters for cell.
 void
 pylith::materials::ElasticMaterial::_getParameters(double** paramsCell,
-				       const topology_type::point_type& cell,
-				       const topology_type::patch_type& patch,
+				       const Mesh::point_type& cell,
 				       const int numQuadPts)
 { // _getParameters
   const int numParams = _numParameters();
@@ -151,9 +148,9 @@ pylith::materials::ElasticMaterial::_getParameters(double** paramsCell,
     const ALE::Obj<real_section_type> parameter = 
       _parameters->getReal(paramNames[iParam]);
     
-    assert(numQuadPts == parameter->getFiberDimension(patch, cell));
+    assert(numQuadPts == parameter->getFiberDimension(cell));
     const real_section_type::value_type* parameterCell =
-      parameter->restrict(patch, cell);
+      parameter->restrictPoint(cell);
     for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt)
       (*paramsCell)[iQuadPt*numParams+iParam] = parameterCell[iQuadPt];
   } // for
