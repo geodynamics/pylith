@@ -7,18 +7,16 @@ Error checking
 
   add check to material::initialize material dimension must match cell dimension
 
-0. Update Material tests. Add unit tests for ElasticIsotropic1D,
-ElasticPlaneStrain, ElasticPlaneStress.
+0. Update unit testing.
+
+  a. Update Material tests.
+  b.  Add unit tests for ElasticIsotropic1D, ElasticPlaneStrain, 
+    ElasticPlaneStress.
+  c. Update MeshIOAscii tests (groups of vertices and cells)
 
 1. Finish implementing ExplicitElasticity
-   a. C++
-   b. Python object
-   c. bindings
    d. unit tests at C++ level
    e. unit tests at Python level
-
-   Status: Started on a.
-    Only implement nonlumped and let PETSc "solver" do the lumping.
 
 2. Finish implementing Python Formulation
    (e.g., Explicit) with initialization of solid element families.
@@ -28,9 +26,6 @@ ElasticPlaneStrain, ElasticPlaneStress.
 ======================================================================
 SECONDARY PRIORITIES
 ======================================================================
-
-0. Adjust MeshIOAscii format
-   b. Add group of vertices
 
 1. Implement MeshIOHDF5 & HDF5
    a. C++ objects

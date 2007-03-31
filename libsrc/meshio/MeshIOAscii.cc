@@ -20,7 +20,8 @@
 #include <assert.h> // USES assert()
 #include <iomanip> // USES setw(), setiosflags(), resetiosflags()
 
-const char *pylith::meshio::MeshIOAscii::groupTypeNames[] = {"vertices", "cells"};
+const char* pylith::meshio::MeshIOAscii::groupTypeNames[] = 
+  {"vertices", "cells"};
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -154,9 +155,6 @@ pylith::meshio::MeshIOAscii::_write(void) const
   for(std::set<std::string>::const_iterator name = groups->begin(); name != groups->end(); ++name) {
     _writeGroup(fileout, name->c_str());
   }
-
-  // LOOP OVER GROUPS
-  // _writeGroup(fileout, mesh, nameIter->c_str());
 
   fileout << "}\n";
   fileout.close();
@@ -401,6 +399,8 @@ pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
              int& numPoints,
              int *points[]) const
 { // _readGroup
+  assert(0 != points);
+
   int* indices = 0; // Indices of entities in group
 
   std::string token;
@@ -435,9 +435,8 @@ pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
       } // if
       
       filein.ignore(maxIgnore, '{');
-      delete[] indices; indices = new int[numPoints];
-      assert(0 != indices);
-      for (int i = 0; i < numPoints; ++i)
+      delete[] indices; indices = (numPoints > 0) ? new int[numPoints] : 0;
+      for (int i=0; i < numPoints; ++i)
         filein >> indices[i];
       filein.ignore(maxIgnore, '}');
     } else {
@@ -458,7 +457,7 @@ void
 pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
 					 const char* name) const
 { // _writeGroup
-  pylith::meshio::MeshIO::PointType         type;
+  pylith::meshio::MeshIO::PointType type;
   int numPoints;
   int *points;
 
