@@ -96,6 +96,8 @@ class Explicit(Formulation):
     self._info.log("Integrating Jacobian of operator.")
     for integrator in self.integrators:
       integrator.integrateJacobian(self.jacobian, self.dispT)
+    import pylith.utils.petsc as petsc
+    petsc.mat_assemble(self.jacobian)
     return
 
 

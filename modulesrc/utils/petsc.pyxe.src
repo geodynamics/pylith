@@ -12,6 +12,7 @@
 
 #header{
 #include <petsc.h>
+#include <petscmat.h>
 #}header
 
 # ----------------------------------------------------------------------
@@ -68,7 +69,7 @@ def petsc_finalize():
   """
   Finalize PETSc.
   """
-  # create shim for 'PetscFnitialize'
+  # create shim for 'PetscFinalize'
   #embed{ int Petsc_finalize()
   PetscErrorCode err = PetscFinalize(); CHKERRQ(err);
   return 0;
@@ -77,6 +78,27 @@ def petsc_finalize():
   err = Petsc_finalize()
   if err:
     raise RuntimError("Error finalizing PETSc.")
+
+  return
+
+
+def mat_assemble(mat):
+  """
+  Assemble matrix.
+  """
+  # create shim for 'MatAssemblyBegin/MatAssemblyEnd'
+  #embed{ int Mat_assemble(void* matVptr)
+  Mat* mat = (Mat*) matVptr;
+  PetscErrorCode err = 0;
+  err = MatAssemblyBegin(*mat, MAT_FINAL_ASSEMBLY); CHKERRQ(err);
+  err = MatAssemblyEnd(*mat, MAT_FINAL_ASSEMBLY); CHKERRQ(err);
+  return 0;
+  #}embed
+  cdef void* matVptr
+  matVptr = PyCObject_AsVoidPtr(mat)
+  err = Mat_assemble(matVptr)
+  if err:
+    raise RuntimError("Error assembling matrix.")
 
   return
 

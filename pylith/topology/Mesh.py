@@ -45,6 +45,15 @@ class Mesh(Component):
     return
 
 
+  def setDebug(self, flag):
+    """
+    Set debugging flag.
+    """
+    self.debug = flag
+    self.cppHandle.debug = self.debug
+    return
+  
+
   def distribute(self):
     """
     Distribute mesh across processors.

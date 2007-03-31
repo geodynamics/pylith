@@ -198,6 +198,52 @@ cdef class Mesh:
     return PyCObject_FromVoidPtr(self.thisptr, MeshPtr_destructor)
 
 
+  property debug:
+    def __set__(self, value):
+      """
+      Set debugging flag.
+      """
+      # create shim for method 'debug'
+      #embed{ void Mesh_debug_set(void* objVptr, int value)
+      try {
+        ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) objVptr;
+        assert(0 != mesh);
+        assert(!mesh->isNull());
+        (*mesh)->setDebug(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      Mesh_debug_set(self.thisptr, value)
+
+    def __get__(self):
+      """
+      Get debugging flag.
+      """
+      # create shim for method 'debug'
+      #embed{ int Mesh_debug_get(void* objVptr)
+      int result = 0;
+      try {
+        ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) objVptr;
+        assert(0 != mesh);
+        assert(!mesh->isNull());
+        result = (*mesh)->debug();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return Mesh_debug_get(self.thisptr)
+
+      
 def zeroRealSection(section):
   """
   Zero real section.
