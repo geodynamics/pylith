@@ -28,6 +28,7 @@ class pylith::meshio::MeshIOAscii : public MeshIO
 { // MeshIOAscii
 // PUBLIC METHODS -------------------------------------------------------
 public :
+  static const char *groupTypeNames[];
 
   /// Constructor
   MeshIOAscii(void);
@@ -99,6 +100,25 @@ private :
    * @param numCorners Number of corners
    */
   void _writeCells(std::ostream& fileout) const;
+  
+  /** Read a point group.
+   *
+   * @param filein Input stream
+   * @param mesh The mesh
+   */
+  void _readGroup(std::istream& filein,
+                  std::string& name,
+                  pylith::meshio::MeshIO::PointType& type,
+                  int& numPoints, int *points[]) const;
+  
+  /** Write a point group.
+   *
+   * @param fileout Output stream
+   * @param mesh The mesh
+   * @param name The group name
+   */
+  void _writeGroup(std::ostream& fileout,
+          const char *name) const;
 
   // PRIVATE MEMBERS ----------------------------------------------------
 private :
