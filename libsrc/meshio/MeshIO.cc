@@ -82,6 +82,7 @@ pylith::meshio::MeshIO::_buildMesh(const double* coordinates,
 
   *_mesh = new Mesh(PETSC_COMM_WORLD, meshDim);
   ALE::Obj<Mesh>& mesh = *_mesh;
+  mesh.addRef();
   
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
@@ -104,6 +105,7 @@ pylith::meshio::MeshIO::_getVertices(double** pCoordinates,
 { // _getVertices
   assert(0 != _mesh);
   ALE::Obj<Mesh>& mesh = *_mesh;
+  mesh.addRef();
 
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
   const ALE::Obj<Mesh::real_section_type>& coordsField =
@@ -147,6 +149,7 @@ pylith::meshio::MeshIO::_getCells(int** pCells,
 { // _getCells
   assert(0 != _mesh);
   ALE::Obj<Mesh>& mesh = *_mesh;
+  mesh.addRef();
 
   const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
@@ -196,6 +199,7 @@ pylith::meshio::MeshIO::_setMaterials(const int* materialIds,
 { // _setMaterials
   assert(0 != _mesh);
   ALE::Obj<Mesh>& mesh = *_mesh;
+  mesh.addRef();
   
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
 
@@ -224,6 +228,7 @@ pylith::meshio::MeshIO::_getMaterials(int** pMaterialIds,
 { // _getMaterials
   assert(0 != _mesh);
   ALE::Obj<Mesh>& mesh = *_mesh;
+  mesh.addRef();
 
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
   const int numCells = cells->size();
