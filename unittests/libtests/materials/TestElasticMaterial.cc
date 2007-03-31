@@ -116,7 +116,7 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   cellData[1] = data.parameterData[5];
   parameterLambda->updateAddPoint(*cellIter, cellData);
 
-  material._initCellData(numQuadPts);
+  material.initCellData(numQuadPts);
   const double* density = material.calcDensity(*cellIter, numQuadPts);
 
   const double tolerance = 1.0e-06;
@@ -202,7 +202,7 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
   cellData[1] = data.parameterData[5];
   parameterLambda->updateAddPoint(*cellIter, cellData);
 
-  material._initCellData(numQuadPts);
+  material.initCellData(numQuadPts);
   const double* stress = material.calcStress(*cellIter, data.strain, 
 					     numQuadPts, data.dimension);
 
@@ -293,7 +293,7 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   cellData[1] = data.parameterData[5];
   parameterLambda->updateAddPoint(*cellIter, cellData);
 
-  material._initCellData(numQuadPts);
+  material.initCellData(numQuadPts);
   const double* elasticConsts = 
     material.calcDerivElastic(*cellIter, data.strain, 
 			      numQuadPts, data.dimension);
@@ -313,7 +313,7 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 } // testCalcDerivElastic
     
 // ----------------------------------------------------------------------
-// Test _initCellData()
+// Test initCellData()
 void
 pylith::materials::TestElasticMaterial::testInitCellData(void)
 { // testInitCellData
@@ -322,7 +322,7 @@ pylith::materials::TestElasticMaterial::testInitCellData(void)
   CPPUNIT_ASSERT(0 == material._density);
   CPPUNIT_ASSERT(0 == material._elasticConsts);
   const int numQuadPts = 4;
-  material._initCellData(numQuadPts);
+  material.initCellData(numQuadPts);
   CPPUNIT_ASSERT(0 != material._density);
   CPPUNIT_ASSERT(0 != material._stress);
   CPPUNIT_ASSERT(0 != material._elasticConsts);
@@ -336,7 +336,7 @@ pylith::materials::TestElasticMaterial::_testCalcDensity(
 					const ElasticMaterialData& data) const
 { // _testCalcDensity
   const int numQuadPts = data.numLocs;
-  material->_initCellData(numQuadPts);
+  material->initCellData(numQuadPts);
   material->_calcDensity(data.parameterData, data.numParameters, data.numLocs);
   const double* densityE = data.density;
   const double* density = material->_density;
@@ -358,7 +358,7 @@ pylith::materials::TestElasticMaterial::_testCalcStress(
 				       const ElasticMaterialData& data) const
 { // _testCalcElasticConsts
   const int numQuadPts = data.numLocs;
-  material->_initCellData(numQuadPts);
+  material->initCellData(numQuadPts);
   material->_calcStress(data.parameterData, data.numParameters, data.strain, 
 			data.numLocs, data.dimension);
   const double* stressE = data.stress;
@@ -386,7 +386,7 @@ pylith::materials::TestElasticMaterial::_testCalcElasticConsts(
 				       const ElasticMaterialData& data) const
 { // _testCalcElasticConsts
   const int numQuadPts = data.numLocs;
-  material->_initCellData(numQuadPts);
+  material->initCellData(numQuadPts);
   material->_calcElasticConsts(data.parameterData, data.numParameters, 
 			       data.strain, data.numLocs, data.dimension);
   const double* elasticConstsE = data.elasticConsts;
