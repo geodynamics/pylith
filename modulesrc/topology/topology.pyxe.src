@@ -12,6 +12,8 @@
 
 #header{
 #include <Mesh.hh>
+#include <petscmesh.h>
+#include "pylith/utils/petscfwd.h"
 
 #include <stdexcept>
 #include <Python.h>
@@ -41,6 +43,20 @@ cdef void MeshPtr_destructor(void* obj):
   delete pMesh;
   #}embed
   MeshPtr_destructor_cpp(obj)
+  return
+
+cdef void PetscMat_destructor(void* obj):
+  """
+  Destroy PetscMat.
+  """
+  #embed{ void PetscMat_destructor_cpp(void* objVptr)
+  assert(0 != objVptr);
+  PetscMat* mat = (PetscMat*) objVptr;
+  PetscErrorCode err = MatDestroy(*mat);
+  if (err)
+    throw std::runtime_error("Could not destroy PETSc matrix.");
+  #}embed
+  PetscMat_destructor_cpp(obj)
   return
 
 # ----------------------------------------------------------------------
@@ -122,6 +138,7 @@ cdef class Mesh:
       assert(!section.isNull());
       section->setFiberDimension((*mesh)->depthStratum(0), fiberDim);
       (*mesh)->allocate(section);
+      section->zero();
       result = (void*) &section;
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -135,6 +152,43 @@ cdef class Mesh:
     cdef void* ptr
     ptr = Mesh_createRealSection(self.thisptr, label, fiberDim)
     return PyCObject_FromVoidPtr(ptr, NULL)
+    
+
+  def createMatrix(self, field):
+    """
+    Create matrix compatible with field.
+    """
+    # create shim for MeshCreateMatrix
+    #embed{ void* Mesh_createMatrix(void* objVptr, void* fieldVptr)
+    typedef ALE::Field::Mesh::real_section_type real_section_type;
+    
+    void* result = 0;
+    try {
+      ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) objVptr;
+      assert(0 != mesh);
+      assert(!mesh->isNull());
+      const ALE::Obj<real_section_type>* field =
+        (ALE::Obj<real_section_type>*) fieldVptr;
+      assert(!field->isNull());
+
+      PetscMat* mat = new PetscMat;
+      assert(0 != mat);
+      MeshCreateMatrix(*mesh, *field, MATMPIBAIJ, mat);
+      result = (void*) mat;
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+    cdef void* ptr
+    cdef void* fieldVptr
+    fieldVptr = PyCObject_AsVoidPtr(field)
+    ptr = Mesh_createMatrix(self.thisptr, fieldVptr)
+    return PyCObject_FromVoidPtr(ptr, PetscMat_destructor)
     
 
   def _createHandle(self):

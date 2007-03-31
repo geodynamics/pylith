@@ -62,7 +62,7 @@ class IntegratorExplicit(Integrator):
     return
 
 
-  def integrateJacobian(self, jacobian, fieldInT, coords):
+  def integrateJacobian(self, jacobian, fieldInT):
     """
     Integrate Jacobian term for dynamic terms for finite-elements.
     """

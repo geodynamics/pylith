@@ -23,6 +23,8 @@
 #include "pylith/feassemble/IntegratorExplicit.hh"
 #include "pylith/feassemble/ExplicitElasticity.hh"
 
+#include "pylith/utils/petscfwd.h"
+
 #include <assert.h>
 #include <stdexcept>
 #include <Python.h>
@@ -495,7 +497,40 @@ cdef class IntegratorExplicit(Integrator):
     """
     Compute matrix (A) associated with operator.
     """
-    print "WARNING: IntegratorExplicit::integrateJacobian not implemented."
+    # create shim for method 'integrateJacobian'
+    #embed{ void IntegratorExplicit_integrateJacobian(void* objVptr, void* matVptr, void* fieldInVptr, void* meshVptr)
+    typedef ALE::Field::Mesh Mesh;
+    typedef ALE::Field::Mesh::real_section_type real_section_type;
+
+    try {
+      assert(0 != objVptr);
+      assert(0 != matVptr);
+      assert(0 != fieldInVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<Mesh>* mesh =
+        (ALE::Obj<Mesh>*) meshVptr;
+      PetscMat* mat = (PetscMat*) matVptr;
+      ALE::Obj<real_section_type>* fieldIn =
+        (ALE::Obj<real_section_type>*) fieldInVptr;
+      ((pylith::feassemble::IntegratorExplicit*) objVptr)->integrateJacobian(
+                mat, *fieldIn, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    cdef void* matVptr
+    cdef void* fieldInVptr
+    matVptr = PyCObject_AsVoidPtr(mat)
+    fieldInVptr = PyCObject_AsVoidPtr(fieldIn)
+    IntegratorExplicit_integrateJacobian(self.thisptr, matVptr, fieldInVptr,
+                                         ptrFromHandle(mesh))
     return
 
 

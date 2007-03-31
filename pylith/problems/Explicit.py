@@ -87,15 +87,15 @@ class Explicit(Formulation):
       self.integrators.append(integrator)
 
     self._info.log("Creating fields and matrices.")
-    # self.jacobian = mesh.cppHandle.getPetscMat()
     self.dispT = mesh.cppHandle.createRealSection("dispT", spaceDim)
     self.dispTmdt = mesh.cppHandle.createRealSection("dispTmdt", spaceDim)
     self.dispTpdt = mesh.cppHandle.createRealSection("dispTpdt", spaceDim)
     self.constant = mesh.cppHandle.createRealSection("constant", spaceDim)
+    self.jacobian = mesh.cppHandle.createMatrix(self.constant)
 
     self._info.log("Integrating Jacobian of operator.")
-    #for integrator in integrators:
-    #  integrator.integrateJacobian(self.jacobian, self.dispT)
+    for integrator in self.integrators:
+      integrator.integrateJacobian(self.jacobian, self.dispT)
     return
 
 
