@@ -32,9 +32,8 @@ class pylith::topology::Mesh
 public :
 
   typedef ALE::Obj Obj;
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::topology_type topology_type;
-  typedef topology_type::point_type point_type;
+  typedef ALE::Field::Mesh Mesh;
+  typedef Mesh::point_type point_type;
   typedef Mesh::real_section_type real_section_type;
 
 }; // Mesh

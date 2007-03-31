@@ -18,19 +18,19 @@ main(int argc,
   } // if
 
   try {
-    ALE::Obj<ALE::Mesh> mesh;
+    typedef ALE::Field::Mesh Mesh;
+    ALE::Obj<Mesh> mesh;
 
     pylith::meshio::MeshIOAscii iohandler;
     iohandler.filename(argv[1]);
     iohandler.read(&mesh);
 
-    const ALE::Mesh::topology_type::patch_type patch = 0;
-    const ALE::Obj<ALE::Mesh::real_section_type>& coords = mesh->getRealSection("coordinates");
+    const ALE::Obj<Mesh::real_section_type>& coords = mesh->getRealSection("coordinates");
 
     mesh->view("Original Mesh");
     // For the tractest mesh, we will split a face on the midplane
     // Elem 2: 17-22-19-(18) Elem 23: 22-19-(25)-17
-    std::set<ALE::Mesh::point_type> faultVertices;
+    std::set<Mesh::point_type> faultVertices;
 
     faultVertices.insert(17+41-1);
     faultVertices.insert(19+41-1);
@@ -43,7 +43,7 @@ main(int argc,
     std::cout <<"["<<rank<<"]: " << e << std::endl;
   }
   err = PetscFinalize(); CHKERRQ(err);
-  
+
   return err;
 } // main
 

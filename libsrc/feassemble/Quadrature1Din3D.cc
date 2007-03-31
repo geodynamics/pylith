@@ -55,7 +55,7 @@ pylith::feassemble::Quadrature1Din3D::computeGeometry(
   _resetGeometry();
 
   // Get coordinates of cell's vertices
-  const ALE::Mesh::real_section_type::value_type* vertCoords = 
+  const real_section_type::value_type* vertCoords = 
     mesh->restrict(coordinates, cell);
   //assert(3 == coordinates.GetFiberDimensionByDepth(patch,
   //*vertices->begin(), 0));

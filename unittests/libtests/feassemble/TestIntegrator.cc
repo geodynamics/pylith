@@ -76,7 +76,7 @@ public :
    * @param data Integrator data
    */
   static 
-  ALE::Obj<ALE::Mesh>
+  ALE::Obj<ALE::Field::Mesh>
   _setupMesh(const IntegratorData& data);
 }; // _TestIntegrator
 
@@ -89,11 +89,10 @@ pylith::feassemble::TestIntegrator::_testIntegrateAction(Integrator* integrator,
 { // _testIntegrateAction
   CPPUNIT_ASSERT(false);
 
-  typedef ALE::Mesh::real_section_type real_section_type;
-  typedef ALE::Mesh::topology_type topology_type;
+  typedef ALE::Field::Mesh        Mesh;
+  typedef Mesh::real_section_type real_section_type;
 
-  ALE::Obj<ALE::Mesh> mesh = _TestIntegrator::_setupMesh(data);
-  const ALE::Mesh::int_section_type::patch_type patch = 0;
+  ALE::Obj<Mesh> mesh = _TestIntegrator::_setupMesh(data);
 
   // Fiber dimension (number of values in field per vertex) for fields
   const int fiberDim = data.fiberDim;
@@ -102,24 +101,22 @@ pylith::feassemble::TestIntegrator::_testIntegrateAction(Integrator* integrator,
   const ALE::Obj<real_section_type>& fieldIn =
     mesh->getRealSection("fieldIn");
   fieldIn->setName("fieldIn");
-  fieldIn->setFiberDimensionByDepth(patch, 0, fiberDim);
-  fieldIn->allocate();
+  fieldIn->setFiberDimension(mesh->depthStratum(0), fiberDim);
+  mesh->allocate(fieldIn);
   int iVertex = 0;
-  const ALE::Obj<topology_type::label_sequence>& vertices = 
-    mesh->getTopology()->depthStratum(patch, 0);
-  const topology_type::label_sequence::iterator verticesEnd =
-    vertices->end();
-  for (topology_type::label_sequence::iterator vIter=vertices->begin();
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  const Mesh::label_sequence::iterator verticesEnd = vertices->end();
+  for (Mesh::label_sequence::iterator vIter=vertices->begin();
        vIter != verticesEnd;
        ++vIter, ++iVertex)
-    fieldIn->update(patch, *vIter, &data.fieldIn[iVertex*fiberDim]);
+    fieldIn->updatePoint(*vIter, &data.fieldIn[iVertex*fiberDim]);
 
   // Setup field for action result
   const ALE::Obj<real_section_type>& fieldOut =
     mesh->getRealSection("fieldOut");
   fieldOut->setName("fieldOut");
-  fieldOut->setFiberDimensionByDepth(patch, 0, fiberDim);
-  fieldOut->allocate();
+  fieldOut->setFiberDimension(mesh->depthStratum(0), fiberDim);
+  mesh->allocate(fieldOut);
 
   // Integrate action
   const ALE::Obj<real_section_type>& coordinates = 
@@ -130,13 +127,13 @@ pylith::feassemble::TestIntegrator::_testIntegrateAction(Integrator* integrator,
   // Check values in output field
   iVertex = 0;
   const double tolerance = 1.0e-06;
-  for (topology_type::label_sequence::iterator vIter=vertices->begin();
+  for (Mesh::label_sequence::iterator vIter=vertices->begin();
        vIter != verticesEnd;
        ++vIter, ++iVertex) {
     const real_section_type::value_type* vals = 
-      fieldOut->restrict(patch, *vIter);
+      fieldOut->restrictPoint(*vIter);
     const double* valsE = &data.valsAction[iVertex*fiberDim];
-    const int dim = fieldOut->getFiberDimension(patch, *vIter);
+    const int dim = fieldOut->getFiberDimension(*vIter);
     CPPUNIT_ASSERT_EQUAL(fiberDim, dim);
     for (int iDim=0; iDim < fiberDim; ++iDim)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[iDim]/valsE[iDim], tolerance);
@@ -151,14 +148,13 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
 { // _testIntegrate
   CPPUNIT_ASSERT(false);
 
-  typedef ALE::Mesh::real_section_type real_section_type;
-  typedef ALE::Mesh::topology_type topology_type;
+  typedef ALE::Field::Mesh        Mesh;
+  typedef Mesh::real_section_type real_section_type;
 
   journal::debug_t debug("TestIntegrator");
 
   try {
-    ALE::Obj<ALE::Mesh> mesh = _TestIntegrator::_setupMesh(data);
-    const ALE::Mesh::int_section_type::patch_type patch = 0;
+    ALE::Obj<Mesh> mesh = _TestIntegrator::_setupMesh(data);
 
     // Fiber dimension (number of values in field per vertex) for fields
     const int fiberDim = data.fiberDim;
@@ -167,17 +163,15 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
     const ALE::Obj<real_section_type>& fieldIn =
       mesh->getRealSection("fieldIn");
     fieldIn->setName("fieldIn");
-    fieldIn->setFiberDimensionByDepth(patch, 0, fiberDim);
-    fieldIn->allocate();
+    fieldIn->setFiberDimension(mesh->depthStratum(0), fiberDim);
+    mesh->allocate(fieldIn);
     int iVertex = 0;
-    const ALE::Obj<topology_type::label_sequence>& vertices = 
-      mesh->getTopology()->depthStratum(patch, 0);
-    const topology_type::label_sequence::iterator verticesEnd =
-      vertices->end();
+    const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+    const Mesh::label_sequence::iterator verticesEnd = vertices->end();
     for (topology_type::label_sequence::iterator vIter=vertices->begin();
 	 vIter != verticesEnd;
 	 ++vIter, ++iVertex)
-      fieldIn->update(patch, *vIter, &data.fieldIn[iVertex*fiberDim]);
+      fieldIn->updatePoint(*vIter, &data.fieldIn[iVertex*fiberDim]);
     
     // Integrate
     PetscMat mat;
@@ -261,8 +255,8 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
 ALE::Obj<ALE::Mesh>
 pylith::feassemble::_TestIntegrator::_setupMesh(const IntegratorData& data)
 { // _setupMesh
-  typedef ALE::Mesh::topology_type topology_type;
-  typedef topology_type::sieve_type sieve_type;
+  typedef ALE::Field::Mesh Mesh;
+  typedef Meh::sieve_type  sieve_type;
 
   const int cellDim = data.cellDim;
   const int numCorners = data.numCorners;
@@ -274,19 +268,15 @@ pylith::feassemble::_TestIntegrator::_setupMesh(const IntegratorData& data)
   CPPUNIT_ASSERT(0 != vertCoords);
   CPPUNIT_ASSERT(0 != cells);
 
-  ALE::Obj<ALE::Mesh> mesh = new ALE::Mesh(PETSC_COMM_WORLD, cellDim);
+  ALE::Obj<Mesh> mesh = new Mesh(PETSC_COMM_WORLD, cellDim);
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
-  ALE::Obj<topology_type> topology = new topology_type(mesh->comm());
 
   const bool interpolate = false;
-  ALE::New::SieveBuilder<sieve_type>::buildTopology(sieve, cellDim, numCells,
+  ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
 	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
-  sieve->stratify();
-  topology->setPatch(0, sieve);
-  topology->stratify();
-  mesh->setTopology(topology);
-  ALE::New::SieveBuilder<sieve_type>::buildCoordinates(
-		    mesh->getRealSection("coordinates"), spaceDim, vertCoords);
+  mesh->setSieve(sieve);
+  mesh->stratify();
+  ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, vertCoords);
 
   return mesh;
 } // _setupMesh
