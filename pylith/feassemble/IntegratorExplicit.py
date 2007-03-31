@@ -42,7 +42,7 @@ class IntegratorExplicit(Integrator):
     """
     Set time step for advancing from time t to time t+dt.
     """
-    self.cppHandle.timeStep(t.value)
+    self.cppHandle.timeStep = t.value
     return
 
 

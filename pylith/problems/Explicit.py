@@ -66,7 +66,7 @@ class Explicit(Formulation):
     return
 
 
-  def initialize(self, mesh, materialsBin, spaceDim):
+  def initialize(self, mesh, materialsBin, spaceDim, dt):
     """
     Create explicit integrators for each element family.
     """
@@ -84,6 +84,7 @@ class Explicit(Formulation):
       integrator.setMesh(mesh)
       integrator.initQuadrature(material.quadrature)
       integrator.initMaterial(mesh, material)
+      integrator.timeStep(dt)
       self.integrators.append(integrator)
 
     self._info.log("Creating fields and matrices.")
@@ -127,6 +128,7 @@ class Explicit(Formulation):
     import pylith.topology.topology as bindings
     bindings.zeroRealSection(self.constant)
     for integrator in self.integrators:
+      integrator.timeStep(dt)
       integrator.integrateConstant(self.constant, self.dispT, self.dispTmdt)
 
     self._info.log("Solving equations.")
