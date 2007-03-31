@@ -66,7 +66,7 @@ class FIATSimplex(FIATCell):
     degree = pyre.inventory.int("degree", default=1)
     degree.meta['tip'] = "Degree of finite-element cell."
 
-    order = pyre.inventory.int("quad_order", default=1)
+    order = pyre.inventory.int("quad_order", default=3)
     order.meta['tip'] = "Order of quadrature rule."
     
 
