@@ -14,7 +14,8 @@
 ##
 ## @brief Python Pylith solver module initialization
 
-__all__ = ['Solver']
+__all__ = ['Solver',
+           'SolverLinear']
 
 
 # End of file

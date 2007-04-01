@@ -47,6 +47,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/TimeDependent.py \
 	solver/__init__.py \
 	solver/Solver.py \
+	solver/SolverLinear.py \
 	topology/__init__.py \
 	topology/Mesh.py \
 	topology/MeshGenerator.py \

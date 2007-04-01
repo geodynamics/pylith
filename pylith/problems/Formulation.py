@@ -47,9 +47,10 @@ class Formulation(Component):
 
     import pyre.inventory
 
-    #from pylith.solver.SolverTSE import SolverTSE
-    #solver = pyre.inventory.facility("solver", factory=SolverTSE)
-    #solver.meta['tip'] = "Algebraic solver."
+    from pylith.solver.SolverLinear import SolverLinear
+    solver = pyre.inventory.facility("solver", family="solver",
+                                     factory=SolverLinear)
+    solver.meta['tip'] = "Algebraic solver."
     
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -78,7 +79,7 @@ class Formulation(Component):
     Set members based using inventory.
     """
     Component._configure(self)
-    #self.solver = self.inventory.solver
+    self.solver = self.inventory.solver
     return
 
 

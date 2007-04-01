@@ -153,6 +153,7 @@ AC_CONFIG_FILES([Makefile
                 modulesrc/feassemble/Makefile
                 modulesrc/materials/Makefile
                 modulesrc/meshio/Makefile
+                modulesrc/solver/Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
 		applications/Makefile
