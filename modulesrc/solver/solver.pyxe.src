@@ -60,6 +60,9 @@ cdef class Solver:
     self.name = "pylith_solver_Solver"
 
     # ADD STUFF HERE (CREATE KSP)
+    KSP ksp;
+    ierr = KSPCreate(comm, &ksp);CHKERRQ(ierr);
+    ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
     return
 
 
@@ -74,8 +77,10 @@ cdef class Solver:
       assert(0 != meshVptr);
       assert(0 != fieldVptr);
       ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) meshVptr;
-      // STUFF GOES HERE
-      } catch (const std::exception& err) {
+      ALE::Obj<ALE::Field::Mesh::real_section_type>* field = (ALE::Obj<ALE::Field::Mesh::real_section_type>*) fieldVptr;
+      VecScatter scatter;
+      ierr = MeshCreateGlobalScatter(*mesh, *field, &scatter);CHKERRQ(ierr);
+    } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
     } catch (...) {
@@ -123,7 +128,17 @@ cdef class SolverLinear(Solver):
       assert(0 != fieldOutVptr);
       assert(0 != jacobianVptr);
       assert(0 != fieldInVptr);
-      // STUFF GOES HERE
+      Vec localVec;
+      ierr = VecCreateSeqWithArray(PETSC_COMM_SELF, fieldIn->size(), fieldIn->restrict(), &localVec);CHKERRQ(ierr);
+      ierr = VecScatterBegin(localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD, scatter);CHKERRQ(ierr);
+      ierr = VecScatterEnd(localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD, scatter);CHKERRQ(ierr);
+      ierr = VecDestroy(localVec);CHKERRQ(ierr);
+      ierr = KSPSetOperators(ksp, jacobian, jacobian, DIFFERENT_NONZERO_PATTERN);CHKERRQ(ierr);
+      ierr = KSPSolve(vecIn, vecOut);CHKERRQ(ierr);
+      ierr = VecCreateSeqWithArray(PETSC_COMM_SELF, fieldOut->size(), fieldOut->restrict(), &localVec);CHKERRQ(ierr);
+      ierr = VecScatterBegin(vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE, scatter);CHKERRQ(ierr);
+      ierr = VecScatterEnd(vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE, scatter);CHKERRQ(ierr);
+      ierr = VecDestroy(localVec);CHKERRQ(ierr);
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));

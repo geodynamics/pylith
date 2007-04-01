@@ -122,6 +122,9 @@ THINGS WE NEED SIEVE TO DO (Matt)
   the appropriate discretization for a problem. For example, I think
   it would allow us to use spectral elements.
 
+6. Trial run with quadratic elements
+
+7. Trial run with fully interpolated mesh
 
 ======================================================================
 QUESTIONS FOR LEIF
