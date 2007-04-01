@@ -56,6 +56,7 @@ class Explicit(Formulation):
 
     import pyre.inventory
 
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="explicit"):
@@ -99,6 +100,8 @@ class Explicit(Formulation):
       integrator.integrateJacobian(self.jacobian, self.dispT)
     import pylith.utils.petsc as petsc
     petsc.mat_assemble(self.jacobian)
+
+    self.solver.initialize(mesh, self.dispTpdt)
     return
 
 
@@ -132,7 +135,7 @@ class Explicit(Formulation):
       integrator.integrateConstant(self.constant, self.dispT, self.dispTmdt)
 
     self._info.log("Solving equations.")
-    # solve
+    self.solver.solve(self.dispTpdt, self.jacobian, self.constant)
     return
 
 

@@ -4,6 +4,11 @@ MAIN PRIORITIES (Brad)
 
 Error checking
 
+  Fix when Mesh debug is turned on. Make sure set upon creation (pass
+  to topology Mesh constructor).
+
+  Move interpolate to same location as Mesh debug (not in importer).
+
   add isNull() assertions before using ALE::Obj.
 
   add check to material::initialize material dimension must match cell dimension

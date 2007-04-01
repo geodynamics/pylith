@@ -51,6 +51,7 @@ class Solver(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="solver")
+    self.cppHandle = None
     return
 
 
