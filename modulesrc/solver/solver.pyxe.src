@@ -1,0 +1,150 @@
+# -*- Pyrex -*-
+#
+# ======================================================================
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# {LicenseText}
+#
+# ======================================================================
+#
+
+#header{
+#include <petscksp.h>
+#include <Mesh.hh>
+
+#include <assert.h>
+#include <stdexcept>
+#include <Python.h>
+#}header
+
+# ----------------------------------------------------------------------
+cdef extern from "Python.h":
+  object PyCObject_FromVoidPtr(void*, void (*destruct)(void*))
+  void* PyCObject_AsVoidPtr(object)
+
+cdef void* ptrFromHandle(obj):
+  """Extract pointer from PyCObject."""
+  return PyCObject_AsVoidPtr(obj.handle)
+
+cdef extern from "stdlib.h":
+  ctypedef unsigned long size_t
+  void* malloc(size_t size)
+  void free(void* mem)
+
+cdef void KSP_destructor(void* obj):
+  """
+  Destroy KSP object.
+  """
+  # create shim for destructor
+  #embed{ void KSP_destructor_cpp(void* pObj)
+  #}embed
+  KSP_destructor_cpp(obj)
+  return
+
+
+# ----------------------------------------------------------------------
+cdef class Solver:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_solver_Solver"
+
+    # ADD STUFF HERE (CREATE KSP)
+    return
+
+
+  def initialize(self, mesh, field):
+    """
+    Initialzie solver.
+    """
+    # create shim for method 'initialize'
+    #embed{ void Solver_initialize(void* objVptr, void* meshVptr, void* fieldVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      assert(0 != fieldVptr);
+      ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) meshVptr;
+      // STUFF GOES HERE
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    cdef void* fieldVptr
+    fieldVptr = PyCObject_AsVoidPtr(field)
+    Solver_initialize(self.thisptr, ptrFromHandle(mesh), fieldVptr)
+    return
+
+
+  def _createHandle(self):
+    """
+    Wrap pointer to C++ object in PyCObject.
+    """
+    return PyCObject_FromVoidPtr(self.thisptr, KSP_destructor)
+
+
+# ----------------------------------------------------------------------
+cdef class SolverLinear(Solver):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    Solver.__init__(self)
+    return
+
+
+  def solve(self, fieldOut, jacobian, fieldIn):
+    """
+    Solve linear system.
+    """
+    # create shim for method 'solve'
+    #embed{ void SolverLinear_solve(void* objVptr, void* fieldOutVptr, void* jacobianVptr, void* fieldInVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldOutVptr);
+      assert(0 != jacobianVptr);
+      assert(0 != fieldInVptr);
+      // STUFF GOES HERE
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    cdef void* fieldOutVptr
+    cdef void* jacobianVptr
+    cdef void* fieldInVptr
+    fieldOutVptr = PyCObject_AsVoidPtr(fieldOut)
+    jacobianVptr = PyCObject_AsVoidPtr(jacobian)
+    fieldInVptr = PyCObject_AsVoidPtr(fieldIn)
+    SolverLinear_solve(self.thisptr, fieldOutVptr, jacobianVptr, fieldInVptr)
+    return
+
+
+# End of file 
