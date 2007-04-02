@@ -103,11 +103,11 @@ public :
    * Includes element internal force contribution.
    *
    *
-   * @param b Constant field (output)
+   * @param b Residual field (output)
    * @param dispT Displacement field at time t
    * @param coordinates Field of cell vertex coordinates
    */
-  void integrateConstant(const ALE::Obj<real_section_type>& b,
+  void integrateResidual(const ALE::Obj<real_section_type>& b,
 			 const ALE::Obj<real_section_type>& dispT,
 			 const ALE::Obj<real_section_type>& coordinates);
 
