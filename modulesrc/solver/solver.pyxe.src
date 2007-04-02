@@ -38,7 +38,22 @@ cdef void KSP_destructor(void* obj):
   Destroy KSP object.
   """
   # create shim for destructor
-  #embed{ void KSP_destructor_cpp(void* pObj)
+  #embed{ void KSP_destructor_cpp(void* objVptr)
+  try {
+    KSP* ksp = (KSP*) objVptr;
+    PetscErrorCode err = KSPDestroy(*ksp);
+    if (err) {
+      PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
+      throw std::runtime_error("Could not destroy KSP object.");
+    } // if
+    delete ksp;
+  } catch (const std::exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.what()));
+  } catch (...) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    "Caught unknown C++ exception.");
+  } // try/catch
   #}embed
   KSP_destructor_cpp(obj)
   return
@@ -50,6 +65,7 @@ cdef class Solver:
   cdef void* thisptr # Pointer to C++ object
   cdef readonly object handle # PyCObject holding pointer to C++ object
   cdef readonly object name # Identifier for object base type
+  cdef void* vecScatterVptr # Handle to VecScatter
 
   def __init__(self):
     """
@@ -58,11 +74,35 @@ cdef class Solver:
     self.handle = None
     self.thisptr = NULL
     self.name = "pylith_solver_Solver"
+    self.vecScatterVptr = NULL
 
-    # ADD STUFF HERE (CREATE KSP)
-    KSP ksp;
-    ierr = KSPCreate(comm, &ksp);CHKERRQ(ierr);
-    ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
+    # create shim for constructor
+    #embed{ void* KSP_create()
+    void* result = 0;
+    try {
+      KSP* ksp = new KSP;
+      PetscErrorCode err = KSPCreate(PETSC_COMM_WORLD, ksp);
+      if (err) {
+        PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
+        throw std::runtime_error("Could not create KSP object.");
+      } // if
+      err = KSPSetFromOptions(*ksp);
+      if (err) {
+        PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
+        throw std::runtime_error("Could not set KSP options.");
+      } // if
+      result = (void*) ksp;
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+    self.thisptr = KSP_create()
+    self.handle = self._createHandle()
     return
 
 
@@ -71,15 +111,27 @@ cdef class Solver:
     Initialzie solver.
     """
     # create shim for method 'initialize'
-    #embed{ void Solver_initialize(void* objVptr, void* meshVptr, void* fieldVptr)
+    #embed{ void Solver_initialize(void* objVptr, void** scatterVptr, void* meshVptr, void* fieldVptr)
     try {
       assert(0 != objVptr);
+      assert(0 != scatterVptr);
       assert(0 != meshVptr);
       assert(0 != fieldVptr);
-      ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) meshVptr;
-      ALE::Obj<ALE::Field::Mesh::real_section_type>* field = (ALE::Obj<ALE::Field::Mesh::real_section_type>*) fieldVptr;
-      VecScatter scatter;
-      ierr = MeshCreateGlobalScatter(*mesh, *field, &scatter);CHKERRQ(ierr);
+      ALE::Obj<ALE::Field::Mesh>* mesh =
+        (ALE::Obj<ALE::Field::Mesh>*) meshVptr;
+      ALE::Obj<ALE::Field::Mesh::real_section_type>* field =
+        (ALE::Obj<ALE::Field::Mesh::real_section_type>*) fieldVptr;
+      VecScatter* scatter = new VecScatter;
+      PetscErrorCode err = MeshCreateGlobalScatter(*mesh, *field, &scatter);
+      if (err) {
+        PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
+        throw std::runtime_error("Could not create scatter.");
+      } // if
+      if (0 != *scatterVptr) {
+        VecScatter* scatter = (VecScatter*) scatterVptr;
+        delete *scatter;
+      } // if
+      *scatterVptr = (void*) scatter;
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -95,7 +147,8 @@ cdef class Solver:
             "'pylith::topology::Mesh'."
     cdef void* fieldVptr
     fieldVptr = PyCObject_AsVoidPtr(field)
-    Solver_initialize(self.thisptr, ptrFromHandle(mesh), fieldVptr)
+    Solver_initialize(self.thisptr, &self.vecScatterVptr,
+                      ptrFromHandle(mesh), fieldVptr)
     return
 
 
@@ -122,24 +175,52 @@ cdef class SolverLinear(Solver):
     Solve linear system.
     """
     # create shim for method 'solve'
-    #embed{ void SolverLinear_solve(void* objVptr, void* fieldOutVptr, void* jacobianVptr, void* fieldInVptr)
+    #embed{ int SolverLinear_solve(void* objVptr, void* fieldOutVptr, void* jacobianVptr, void* fieldInVptr, void* scatterVptr)
+    typedef ALE::Field::Mesh::real_section_type real_section_type;
     try {
       assert(0 != objVptr);
       assert(0 != fieldOutVptr);
       assert(0 != jacobianVptr);
       assert(0 != fieldInVptr);
+      assert(0 != scatterVptr);
+
+      KSP* ksp = (KSP*) objVptr;
+      ALE::Obj<real_section_type>* fieldOut =
+        (ALE::Obj<real_section_type>*) fieldOutVptr;
+      Mat* jacobian = (Mat*) jacobianVptr;
+      ALE::Obj<real_section_type>* fieldIn =
+        (ALE::Obj<real_section_type>*) fieldInVptr;
+      VecScatter* scatter = (VecScatter*) scatterVptr;
+
+      PetscErrorCode err = 0;
       Vec localVec;
-      ierr = VecCreateSeqWithArray(PETSC_COMM_SELF, fieldIn->size(), fieldIn->restrict(), &localVec);CHKERRQ(ierr);
-      ierr = VecScatterBegin(localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD, scatter);CHKERRQ(ierr);
-      ierr = VecScatterEnd(localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD, scatter);CHKERRQ(ierr);
-      ierr = VecDestroy(localVec);CHKERRQ(ierr);
-      ierr = KSPSetOperators(ksp, jacobian, jacobian, DIFFERENT_NONZERO_PATTERN);CHKERRQ(ierr);
-      ierr = KSPSolve(vecIn, vecOut);CHKERRQ(ierr);
-      ierr = VecCreateSeqWithArray(PETSC_COMM_SELF, fieldOut->size(), fieldOut->restrict(), &localVec);CHKERRQ(ierr);
-      ierr = VecScatterBegin(vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE, scatter);CHKERRQ(ierr);
-      ierr = VecScatterEnd(vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE, scatter);CHKERRQ(ierr);
-      ierr = VecDestroy(localVec);CHKERRQ(ierr);
-      } catch (const std::exception& err) {
+
+      /** :QUESTION:
+       *
+       * Declare these here or hold them in the Solver object so that
+       * we can reuse them?
+       */
+      Vec vecIn;
+      Vec vecOut;
+      
+      err = VecCreateSeqWithArray(PETSC_COMM_SELF, fieldIn->size(),
+                                  fieldIn->restrict(), &localVec);CHKERRQ(err);
+      err = VecScatterBegin(localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD,
+                             *scatter);CHKERRQ(err);
+      err = VecScatterEnd(localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD,
+                          *scatter); CHKERRQ(err);
+      err = VecDestroy(localVec); CHKERRQ(err);
+      err = KSPSetOperators(*ksp, *jacobian, *jacobian,
+                            DIFFERENT_NONZERO_PATTERN); CHKERRQ(err);
+      err = KSPSolve(*ksp, vecIn, vecOut); CHKERRQ(err);
+      err = VecCreateSeqWithArray(PETSC_COMM_SELF, fieldOut->size(),
+                                fieldOut->restrict(), &localVec);CHKERRQ(err);
+      err = VecScatterBegin(vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE,
+                            *scatter); CHKERRQ(err);
+      err = VecScatterEnd(vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE,
+                          *scatter); CHKERRQ(err);
+      err = VecDestroy(localVec); CHKERRQ(err);
+    } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
     } catch (...) {
@@ -158,7 +239,8 @@ cdef class SolverLinear(Solver):
     fieldOutVptr = PyCObject_AsVoidPtr(fieldOut)
     jacobianVptr = PyCObject_AsVoidPtr(jacobian)
     fieldInVptr = PyCObject_AsVoidPtr(fieldIn)
-    SolverLinear_solve(self.thisptr, fieldOutVptr, jacobianVptr, fieldInVptr)
+    SolverLinear_solve(self.thisptr, fieldOutVptr, jacobianVptr,
+                       fieldInVptr, self.vecScatterVptr)
     return
 
 
