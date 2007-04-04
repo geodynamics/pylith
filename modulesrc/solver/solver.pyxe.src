@@ -11,8 +11,8 @@
 #
 
 #header{
+#include <petscmesh.h>
 #include <petscksp.h>
-#include <Mesh.hh>
 
 #include <assert.h>
 #include <stdexcept>
@@ -121,17 +121,20 @@ cdef class Solver:
         (ALE::Obj<ALE::Field::Mesh>*) meshVptr;
       ALE::Obj<ALE::Field::Mesh::real_section_type>* field =
         (ALE::Obj<ALE::Field::Mesh::real_section_type>*) fieldVptr;
-      VecScatter* scatter = new VecScatter;
+      VecScatter scatter;
       PetscErrorCode err = MeshCreateGlobalScatter(*mesh, *field, &scatter);
       if (err) {
         PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
         throw std::runtime_error("Could not create scatter.");
       } // if
       if (0 != *scatterVptr) {
-        VecScatter* scatter = (VecScatter*) scatterVptr;
-        delete *scatter;
+        err = VecScatterDestroy((VecScatter) *scatterVptr);
+        if (err) {
+          PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
+          throw std::runtime_error("Could not destroy scatter.");
+        } // if
       } // if
-      *scatterVptr = (void*) scatter;
+      *scatterVptr = (void *) scatter;
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -190,7 +193,7 @@ cdef class SolverLinear(Solver):
       Mat* jacobian = (Mat*) jacobianVptr;
       ALE::Obj<real_section_type>* fieldIn =
         (ALE::Obj<real_section_type>*) fieldInVptr;
-      VecScatter* scatter = (VecScatter*) scatterVptr;
+      VecScatter scatter = (VecScatter) scatterVptr;
 
       PetscErrorCode err = 0;
       Vec localVec;
@@ -203,22 +206,22 @@ cdef class SolverLinear(Solver):
       Vec vecIn;
       Vec vecOut;
       
-      err = VecCreateSeqWithArray(PETSC_COMM_SELF, fieldIn->size(),
-                                  fieldIn->restrict(), &localVec);CHKERRQ(err);
+      err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldIn)->size(),
+                                  (*fieldIn)->restrict(), &localVec);CHKERRQ(err);
       err = VecScatterBegin(localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD,
-                             *scatter);CHKERRQ(err);
+                            scatter);CHKERRQ(err);
       err = VecScatterEnd(localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD,
-                          *scatter); CHKERRQ(err);
+                          scatter); CHKERRQ(err);
       err = VecDestroy(localVec); CHKERRQ(err);
       err = KSPSetOperators(*ksp, *jacobian, *jacobian,
                             DIFFERENT_NONZERO_PATTERN); CHKERRQ(err);
       err = KSPSolve(*ksp, vecIn, vecOut); CHKERRQ(err);
-      err = VecCreateSeqWithArray(PETSC_COMM_SELF, fieldOut->size(),
-                                fieldOut->restrict(), &localVec);CHKERRQ(err);
+      err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldOut)->size(),
+                                (*fieldOut)->restrict(), &localVec);CHKERRQ(err);
       err = VecScatterBegin(vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE,
-                            *scatter); CHKERRQ(err);
+                            scatter); CHKERRQ(err);
       err = VecScatterEnd(vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE,
-                          *scatter); CHKERRQ(err);
+                          scatter); CHKERRQ(err);
       err = VecDestroy(localVec); CHKERRQ(err);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
