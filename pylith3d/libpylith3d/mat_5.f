@@ -436,6 +436,7 @@ c
       double precision e,pr,rmu,bulkm,vis
       double precision etracetdt,emeantdt,smeantdt,sdevtdt,dq
       double precision edevtdt,edevt,emeant,deltae,rtime
+      double precision fac1,fac2
 c
 c...  included variable definitions
 c
@@ -472,12 +473,14 @@ c
 c
 c...  compute new stresses and store stress and strain values in dstate
 c
+      fac1=exp(-deltp/rtime)
+      fac2=two*rmu
       do i=1,nstr
         edevtdt=eng(i)*ee(i)-diag(i)*emeantdt
         edevt=eng(i)*state(i+6)-diag(i)*emeant
         deltae=edevtdt-edevt
-        dstate(i+12)=state(i+12)*exp(-deltp/rtime)+dq*deltae
-        sdevtdt=two*rmu*dstate(i+12)
+        dstate(i+12)=state(i+12)*fac1+dq*deltae
+        sdevtdt=fac2*dstate(i+12)
         dstate(i)=diag(i)*smeantdt+sdevtdt+state0(i)
         dstate(i+6)=ee(i)
         scur(i)=dstate(i)
