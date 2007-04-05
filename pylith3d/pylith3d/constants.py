@@ -57,7 +57,7 @@ listIddmat = [
 
 # Invariant parameters related to element type
 maxElementNodes = 20
-maxElementNodes2d = 4
+nsnodesmax = 4
 
 
 # Invariant parameters related to material model
