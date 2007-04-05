@@ -42,85 +42,79 @@ class ElementTypeDef:
 
         self.trace.log("Hello from ElementTypeDef.getdef!")
 
-        self.numberVolumeElementNodes = self.elementNodes[elementType - 1]
-        self.numberSurfaceElementNodes = self.elementNodes2d[elementType - 1]
+        self.nen = self.elementNodes[elementType - 1]
+        self.nsnodes = self.elementNodes2d[elementType - 1]
 
         if quadratureOrderInt == 1:
-            self.numberVolumeElementGaussPoints = \
-                                          self.elementFullGauss[elementType -1]
-            self.numberSurfaceElementGaussPoints = \
-                                          self.elementFullGauss2d[elementType -1]
+            self.ngauss = self.elementFullGauss[elementType -1]
+            self.numberSurfaceElementGaussPoints = self.elementFullGauss2d[elementType -1]
         elif quadratureOrderInt == 2:
-            self.numberVolumeElementGaussPoints =  \
-                                          self.elementReducedGauss[elementType -1]
-            self.numberSurfaceElementGaussPoints =  \
-                                          self.elementReducedGauss2d[elementType -1]
+            self.ngauss = self.elementReducedGauss[elementType -1]
+            self.numberSurfaceElementGaussPoints = self.elementReducedGauss2d[elementType -1]
         elif quadratureOrderInt == 3:
-            self.numberVolumeElementGaussPoints = \
-                                           self.elementFullGauss[elementType -1]
-            self.numberSurfaceElementGaussPoints = \
-                                           self.elementFullGauss2d[elementType -1]
+            self.ngauss = self.elementFullGauss[elementType -1]
+            self.numberSurfaceElementGaussPoints = self.elementFullGauss2d[elementType -1]
 
-        self.numberVolumeElementEquations = \
-                                    constants.numberDegreesFreedom * \
-                                    self.numberVolumeElementNodes
+        self.nee = constants.numberDegreesFreedom * self.nen
 
-        self.numberSurfaceElementEquations = \
-                                    constants.numberDegreesFreedom * \
-                                    self.numberSurfaceElementNodes
+        self.numberSurfaceElementEquations = (
+            constants.numberDegreesFreedom *
+            self.nsnodes
+            )
 
-        self.numberSurfaceElementCoordinates = \
-                                      constants.numberSpaceDimensions * \
-                                      self.numberSurfaceElementNodes
+        self.numberSurfaceElementCoordinates = (
+            constants.numberSpaceDimensions *
+            self.nsnodes
+            )
 
-        self.elementTypeInfo = [self.numberVolumeElementNodes,
-                                self.numberVolumeElementGaussPoints,
-                                self.numberVolumeElementEquations,
+        self.elementTypeInfo = [self.nen,
+                                self.ngauss,
+                                self.nee,
                                 self.numberVolumeElementCoordinates]
 
-        self.elementTypeInfo2d = [self.numberSurfaceElementNodes,
+        self.elementTypeInfo2d = [self.nsnodes,
                                   self.numberSurfaceElementGaussPoints,
                                   self.numberSurfaceElementEquations,
                                   self.numberSurfaceElementCoordinates]
 
-        self.pointerToSh = pylith3d.allocateDouble(
+        self.sh = pylith3d.allocateDouble(
             (constants.numberSpaceDimensions+1)*
-            self.numberVolumeElementNodes*
-            self.numberVolumeElementGaussPoints)
+            self.nen*
+            self.ngauss)
 
-        self.pointerToSh2d = pylith3d.allocateDouble(
+        self.sh2d = pylith3d.allocateDouble(
             constants.numberSpaceDimensions*
-            self.numberSurfaceElementNodes*
+            self.nsnodes*
             self.numberSurfaceElementGaussPoints)
             
-        self.pointerToShj = pylith3d.allocateDouble(
+        self.shj = pylith3d.allocateDouble(
             (constants.numberSpaceDimensions+1)*
-            self.numberVolumeElementNodes*
-            self.numberVolumeElementGaussPoints)
+            self.nen*
+            self.ngauss)
             
-        self.pointerToGauss = pylith3d.allocateDouble(
+        self.gauss = pylith3d.allocateDouble(
             (constants.numberSpaceDimensions+1)*
-            self.numberVolumeElementGaussPoints)
+            self.ngauss)
             
-        self.pointerToGauss2d = pylith3d.allocateDouble(
+        self.gauss2d = pylith3d.allocateDouble(
             constants.numberSpaceDimensions*
             self.numberSurfaceElementGaussPoints)
 
         pylith3d.preshape(
-            self.pointerToSh,
-            self.pointerToShj,
-            self.pointerToGauss,
+            self.sh,
+            self.shj,
+            self.gauss,
             quadratureOrderInt,
             elementType,
-            self.numberVolumeElementNodes,
-            self.numberVolumeElementGaussPoints)
+            self.nen,
+            self.ngauss)
 
         pylith3d.preshape2d(
-            self.pointerToSh2d,
-            self.pointerToGauss2d,
+            self.sh2d,
+            self.gauss2d,
             quadratureOrderInt,
             elementType,
-            self.numberSurfaceElementNodes,
+            self.nsnodes,
             self.numberSurfaceElementGaussPoints)
         
         return
@@ -133,64 +127,64 @@ class ElementTypeDef:
         
         self.trace.log("Hello from ElementTypeDef.__init__!")
         
-        self.numberVolumeElementNodes = 0
-        self.numberVolumeElementGaussPoints = 0
-        self.numberVolumeElementEquations = 0
+        self.nen = 0
+        self.ngauss = 0
+        self.nee = 0
         self.numberVolumeElementCoordinates = 0
         self.elementTypeInfo = [0, 0, 0, 0]
         self.pointerToListArrayElementTypeInfo = None
-        self.pointerToSh = None
-        self.pointerToShj = None
-        self.pointerToGauss = None
-        self.elementNodes = [ 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                              8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                              8, 8, 8, 8, 8, 8, 8, 7, 6, 5, \
-                              4,20,20,20,20,20,20,20,20,20, \
-                             20,20,20,20,20,20,20,20,20,20, \
-                             20,20,20,20,20,20,20,20,18,15, \
+        self.sh = None
+        self.shj = None
+        self.gauss = None
+        self.elementNodes = [ 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+                              8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+                              8, 8, 8, 8, 8, 8, 8, 7, 6, 5,
+                              4,20,20,20,20,20,20,20,20,20,
+                             20,20,20,20,20,20,20,20,20,20,
+                             20,20,20,20,20,20,20,20,18,15,
                              13,10]
-        self.elementFullGauss = [ 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                                  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                                  8, 8, 8, 8, 8, 8, 8, 8, 2, 5, \
-                                  1,27,27,27,27,27,27,27,27,27, \
-                                 27,27,27,27,27,27,27,27,27,27, \
-                                 27,27,27,27,27,27,27,27,27, 9, \
+        self.elementFullGauss = [ 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+                                  8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+                                  8, 8, 8, 8, 8, 8, 8, 8, 2, 5,
+                                  1,27,27,27,27,27,27,27,27,27,
+                                 27,27,27,27,27,27,27,27,27,27,
+                                 27,27,27,27,27,27,27,27,27, 9,
                                  13, 4]
-        self.elementReducedGauss = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-                                     1, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                                     8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                                     8, 8, 8, 8, 8, 8, 8, 8, 8, 2, \
+        self.elementReducedGauss = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                     1, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+                                     8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+                                     8, 8, 8, 8, 8, 8, 8, 8, 8, 2,
                                      5, 1]
-        self.numberSurfaceElementNodes = 0
+        self.nsnodes = 0
         self.numberSurfaceElementGaussPoints = 0
         self.numberSurfaceElementEquations = 0
         self.numberSurfaceElementCoordinates = 0
         self.elementTypeInfo2d = [0, 0, 0, 0]
         self.pointerToListArrayElementTypeInfo2d = None
-        self.pointerToSh2d = None
-        self.pointerToGauss2d = None
-        self.elementNodes2d = [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, \
-                                4, 4, 4, 4, 4, 4, 4, 4, 4, 4, \
-                                4, 4, 4, 4, 4, 4, 4, 4, 4, 3, \
-                                3, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                                8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
-                                8, 8, 8, 8, 8, 8, 8, 8, 8, 8, \
+        self.sh2d = None
+        self.gauss2d = None
+        self.elementNodes2d = [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                                4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                                4, 4, 4, 4, 4, 4, 4, 4, 4, 3,
+                                3, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+                                8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+                                8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
                                 6, 6]
-        self.elementFullGauss2d = [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, \
-                                    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, \
-                                    4, 4, 4, 4, 4, 4, 4, 4, 4, 1, \
-                                    1, 9, 9, 9, 9, 9, 9, 9, 9, 9, \
-                                    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, \
-                                    9, 9, 9, 9, 9, 9, 9, 9, 9, 8, \
+        self.elementFullGauss2d = [ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                                    4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                                    4, 4, 4, 4, 4, 4, 4, 4, 4, 1,
+                                    1, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+                                    9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+                                    9, 9, 9, 9, 9, 9, 9, 9, 9, 8,
                                     3, 3]
-        self.elementReducedGauss2d = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-                                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-                                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-                                       1, 4, 4, 4, 4, 4, 4, 4, 4, 4, \
-                                       4, 4, 4, 4, 4, 4, 4, 4, 4, 4, \
-                                       4, 4, 4, 4, 4, 4, 4, 4, 4, 4, \
+        self.elementReducedGauss2d = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                       1, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                                       4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                                       4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
                                        1, 1]
         return
 

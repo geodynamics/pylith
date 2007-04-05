@@ -50,182 +50,182 @@ PyObject * pypylith3d_autoprestr(PyObject *, PyObject *args)
   PyObject* pyA;                             // Sparse matrix array
   PyObject* pyRhs;
   PyObject* pySol;
-  PyObject* pyPointerToBextern;               // Force vectors
-  PyObject* pyPointerToBtraction;
-  PyObject* pyPointerToBgravity;
-  PyObject* pyPointerToBconcForce;
-  PyObject* pyPointerToBintern;
-  PyObject* pyPointerToBresid;
-  PyObject* pyPointerToBwink;
-  PyObject* pyPointerToBwinkx;
-  PyObject* pyPointerToDispVec;
-  PyObject* pyPointerToDprev;
-  PyObject* pyPointerToListArrayNforce;
-  PyObject* pyPointerToListArrayGrav;
-  PyObject* pyPointerToX;                     // Global arrays
-  PyObject* pyPointerToD;
-  PyObject* pyPointerToDeld;
-  PyObject* pyPointerToDcur;
-  PyObject* pyPointerToId;
-  PyObject* pyPointerToIwink;
-  PyObject* pyPointerToWink;
-  PyObject* pyPointerToListArrayNsysdat;
-  PyObject* pyPointerToListArrayIddmat;
-  PyObject* pyPointerToIbond;                 // Boundary condition arrays
-  PyObject* pyPointerToBond;
-  PyObject* pyPointerToDx;                    // Slippery node arrays
-  PyObject* pyPointerToDeldx;
-  PyObject* pyPointerToDxcur;
-  PyObject* pyPointerToDiforc;
-  PyObject* pyPointerToIdx;
-  PyObject* pyPointerToIwinkx;
-  PyObject* pyPointerToWinkx;
-  PyObject* pyPointerToIdslp;
-  PyObject* pyPointerToIpslp;
-  PyObject* pyPointerToIdhist;
-  PyObject* pyPointerToFault;                 // Split node arrays
-  PyObject* pyPointerToNfault;
-  PyObject* pyPointerToDfault;
-  PyObject* pyPointerToTfault;
-  PyObject* pyPointerToS;                     // Local stiffness matrix arrays
-  PyObject* pyPointerToStemp;
-  PyObject* pyPointerToState;                 // Element arrays
-  PyObject* pyPointerToDstate;
-  PyObject* pyPointerToState0;
-  PyObject* pyPointerToDmat;
-  PyObject* pyPointerToIens;
-  PyObject* pyPointerToLm;
-  PyObject* pyPointerToLmx;
-  PyObject* pyPointerToLmf;
-  PyObject* pyPointerToIvfamily;
-  PyObject* pyPointerToListArrayNpar;
-  PyObject* pyPointerToIelindx;
-  PyObject* pyPointerToTractionverts;         // Traction BC arrays
-  PyObject* pyPointerToTractionvals;
-  PyObject* pyPointerToGauss2d;
-  PyObject* pyPointerToSh2d;
-  PyObject* pyPointerToListArrayElementTypeInfo2d;
-  PyObject* pyPointerToListArrayPropertyList; // Material property arrays
-  PyObject* pyPointerToMaterialModelInfo;
-  PyObject* pyPointerToGauss;                 // Element type arrays
-  PyObject* pyPointerToSh;
-  PyObject* pyPointerToShj;
-  PyObject* pyPointerToListArrayElementTypeInfo;
-  PyObject* pyPointerToHistry;                // Time information
-  PyObject* pyPointerToListArrayRtimdat;
-  PyObject* pyPointerToListArrayNtimdat;
-  PyObject* pyPointerToListArrayNvisdat;
-  PyObject* pyPointerToMaxstp;
-  PyObject* pyPointerToDelt;
-  PyObject* pyPointerToAlfa;
-  PyObject* pyPointerToMaxit;
-  PyObject* pyPointerToNtdinit;
-  PyObject* pyPointerToLgdef;
-  PyObject* pyPointerToUtol;
-  PyObject* pyPointerToFtol;
-  PyObject* pyPointerToEtol;
-  PyObject* pyPointerToItmax;
-  PyObject* pyPointerToListArrayRgiter;       // Iterative solution information
-  PyObject* pyPointerToSkew;                  // Skew rotation information
-  PyObject* pyPointerToListArrayNcodat;       // Input/output information
-  PyObject* pyPointerToListArrayNunits;
-  PyObject* pyPointerToListArrayNprint;
-  PyObject* pyPointerToIstatout;
-  PyObject* pyPointerToNstatout;
-  char* asciiOutputFile;                      // Output file names
-  char* plotOutputFile;
-  char* ucdOutputRoot;
+  PyObject* py_bextern;               // Force vectors
+  PyObject* py_btraction;
+  PyObject* py_bgravity;
+  PyObject* py_bconcForce;
+  PyObject* py_bintern;
+  PyObject* py_bresid;
+  PyObject* py_bwink;
+  PyObject* py_bwinkx;
+  PyObject* py_dispVec;
+  PyObject* py_dprev;
+  PyObject* py_nforce;
+  PyObject* py_grav;
+  PyObject* py_x;                             // Global arrays
+  PyObject* py_d;
+  PyObject* py_deld;
+  PyObject* py_dcur;
+  PyObject* py_id;
+  PyObject* py_iwink;
+  PyObject* py_wink;
+  PyObject* py_nsysdat;
+  PyObject* py_iddmat;
+  PyObject* py_ibond;                 // Boundary condition arrays
+  PyObject* py_bond;
+  PyObject* py_dx;                    // Slippery node arrays
+  PyObject* py_deldx;
+  PyObject* py_dxcur;
+  PyObject* py_diforc;
+  PyObject* py_idx;
+  PyObject* py_iwinkx;
+  PyObject* py_winkx;
+  PyObject* py_idslp;
+  PyObject* py_ipslp;
+  PyObject* py_idhist;
+  PyObject* py_fault;                 // Split node arrays
+  PyObject* py_nfault;
+  PyObject* py_dfault;
+  PyObject* py_tfault;
+  PyObject* py_s;                     // Local stiffness matrix arrays
+  PyObject* py_stemp;
+  PyObject* py_state;                 // Element arrays
+  PyObject* py_dstate;
+  PyObject* py_state0;
+  PyObject* py_dmat;
+  PyObject* py_iens;
+  PyObject* py_lm;
+  PyObject* py_lmx;
+  PyObject* py_lmf;
+  PyObject* py_ivfamily;
+  PyObject* py_npar;
+  PyObject* py_ielindx;
+  PyObject* py_tractionverts;         // Traction BC arrays
+  PyObject* py_tractionvals;
+  PyObject* py_gauss2d;
+  PyObject* py_sh2d;
+  PyObject* py_infetype2d;
+  PyObject* py_prop; // Material property arrays
+  PyObject* py_infmatmod;
+  PyObject* py_gauss;                 // Element type arrays
+  PyObject* py_sh;
+  PyObject* py_shj;
+  PyObject* py_infetype;
+  PyObject* py_histry;                // Time information
+  PyObject* py_rtimdat;
+  PyObject* py_ntimdat;
+  PyObject* py_nvisdat;
+  PyObject* py_maxstp;
+  PyObject* py_delt;
+  PyObject* py_alfa;
+  PyObject* py_maxit;
+  PyObject* py_ntdinit;
+  PyObject* py_lgdef;
+  PyObject* py_utol;
+  PyObject* py_ftol;
+  PyObject* py_etol;
+  PyObject* py_itmax;
+  PyObject* py_rgiter;       // Iterative solution information
+  PyObject* py_skew;                  // Skew rotation information
+  PyObject* py_ncodat;       // Input/output information
+  PyObject* py_nunits;
+  PyObject* py_nprint;
+  PyObject* py_istatout;
+  PyObject* py_nstatout;
+  char* ofile;                      // Output file names
+  char* pfile;
+  char* ucdroot;
   int autoprestrStage, iterateEvent;          // PETSc logging
 
   int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:autoprestr",
                             &pyA,                             // Sparse matrix arrays
                             &pyRhs,
                             &pySol,
-                            &pyPointerToBextern,               // Force vectors
-                            &pyPointerToBtraction,
-                            &pyPointerToBgravity,
-                            &pyPointerToBconcForce,
-                            &pyPointerToBintern,
-                            &pyPointerToBresid,
-                            &pyPointerToBwink,
-                            &pyPointerToBwinkx,
-                            &pyPointerToDispVec,
-                            &pyPointerToDprev,
-                            &pyPointerToListArrayNforce,
-                            &pyPointerToListArrayGrav,
-                            &pyPointerToX,                     // Global arrays
-                            &pyPointerToD,
-                            &pyPointerToDeld,
-                            &pyPointerToDcur,
-                            &pyPointerToId,
-                            &pyPointerToIwink,
-                            &pyPointerToWink,
-                            &pyPointerToListArrayNsysdat,
-                            &pyPointerToListArrayIddmat,
-                            &pyPointerToIbond,                 // Boundary condition arrays
-                            &pyPointerToBond,
-                            &pyPointerToDx,                    // Slippery node arrays
-                            &pyPointerToDeldx,
-                            &pyPointerToDxcur,
-                            &pyPointerToDiforc,
-                            &pyPointerToIdx,
-                            &pyPointerToIwinkx,
-                            &pyPointerToWinkx,
-                            &pyPointerToIdslp,
-                            &pyPointerToIpslp,
-                            &pyPointerToIdhist,
-                            &pyPointerToFault,                 // Split node arrays
-                            &pyPointerToNfault,
-                            &pyPointerToDfault,
-                            &pyPointerToTfault,
-                            &pyPointerToS,                     // Local stiffness matrix arrays
-                            &pyPointerToStemp,
-                            &pyPointerToState,                 // Element arrays
-                            &pyPointerToDstate,
-                            &pyPointerToState0,
-                            &pyPointerToDmat,
-                            &pyPointerToIens,
-                            &pyPointerToLm,
-                            &pyPointerToLmx,
-                            &pyPointerToLmf,
-                            &pyPointerToIvfamily,
-                            &pyPointerToListArrayNpar,
-                            &pyPointerToIelindx,
-                            &pyPointerToTractionverts,         // Traction BC arrays
-                            &pyPointerToTractionvals,
-                            &pyPointerToGauss2d,
-                            &pyPointerToSh2d,
-                            &pyPointerToListArrayElementTypeInfo2d,
-                            &pyPointerToListArrayPropertyList, // Material property arrays
-                            &pyPointerToMaterialModelInfo,
-                            &pyPointerToGauss,                 // Element type arrays
-                            &pyPointerToSh,
-                            &pyPointerToShj,
-                            &pyPointerToListArrayElementTypeInfo,
-                            &pyPointerToHistry,                // Time information
-                            &pyPointerToListArrayRtimdat,
-                            &pyPointerToListArrayNtimdat,
-                            &pyPointerToListArrayNvisdat,
-                            &pyPointerToMaxstp,
-                            &pyPointerToDelt,
-                            &pyPointerToAlfa,
-                            &pyPointerToMaxit,
-                            &pyPointerToNtdinit,
-                            &pyPointerToLgdef,
-                            &pyPointerToUtol,
-                            &pyPointerToFtol,
-                            &pyPointerToEtol,
-                            &pyPointerToItmax,
-                            &pyPointerToListArrayRgiter,       // Iterative solution information
-                            &pyPointerToSkew,                  // Skew rotation information
-                            &pyPointerToListArrayNcodat,       // Input/output information
-                            &pyPointerToListArrayNunits,
-                            &pyPointerToListArrayNprint,
-                            &pyPointerToIstatout,
-                            &pyPointerToNstatout,
-                            &asciiOutputFile,                  // Output file names
-                            &plotOutputFile,
-                            &ucdOutputRoot,
+                            &py_bextern,               // Force vectors
+                            &py_btraction,
+                            &py_bgravity,
+                            &py_bconcForce,
+                            &py_bintern,
+                            &py_bresid,
+                            &py_bwink,
+                            &py_bwinkx,
+                            &py_dispVec,
+                            &py_dprev,
+                            &py_nforce,
+                            &py_grav,
+                            &py_x,                             // Global arrays
+                            &py_d,
+                            &py_deld,
+                            &py_dcur,
+                            &py_id,
+                            &py_iwink,
+                            &py_wink,
+                            &py_nsysdat,
+                            &py_iddmat,
+                            &py_ibond,                 // Boundary condition arrays
+                            &py_bond,
+                            &py_dx,                    // Slippery node arrays
+                            &py_deldx,
+                            &py_dxcur,
+                            &py_diforc,
+                            &py_idx,
+                            &py_iwinkx,
+                            &py_winkx,
+                            &py_idslp,
+                            &py_ipslp,
+                            &py_idhist,
+                            &py_fault,                 // Split node arrays
+                            &py_nfault,
+                            &py_dfault,
+                            &py_tfault,
+                            &py_s,                     // Local stiffness matrix arrays
+                            &py_stemp,
+                            &py_state,                 // Element arrays
+                            &py_dstate,
+                            &py_state0,
+                            &py_dmat,
+                            &py_iens,
+                            &py_lm,
+                            &py_lmx,
+                            &py_lmf,
+                            &py_ivfamily,
+                            &py_npar,
+                            &py_ielindx,
+                            &py_tractionverts,         // Traction BC arrays
+                            &py_tractionvals,
+                            &py_gauss2d,
+                            &py_sh2d,
+                            &py_infetype2d,
+                            &py_prop, // Material property arrays
+                            &py_infmatmod,
+                            &py_gauss,                 // Element type arrays
+                            &py_sh,
+                            &py_shj,
+                            &py_infetype,
+                            &py_histry,                // Time information
+                            &py_rtimdat,
+                            &py_ntimdat,
+                            &py_nvisdat,
+                            &py_maxstp,
+                            &py_delt,
+                            &py_alfa,
+                            &py_maxit,
+                            &py_ntdinit,
+                            &py_lgdef,
+                            &py_utol,
+                            &py_ftol,
+                            &py_etol,
+                            &py_itmax,
+                            &py_rgiter,       // Iterative solution information
+                            &py_skew,                  // Skew rotation information
+                            &py_ncodat,       // Input/output information
+                            &py_nunits,
+                            &py_nprint,
+                            &py_istatout,
+                            &py_nstatout,
+                            &ofile,                  // Output file names
+                            &pfile,
+                            &ucdroot,
                             &autoprestrStage,                  // PETSc logging
                             &iterateEvent);
 
@@ -240,184 +240,184 @@ PyObject * pypylith3d_autoprestr(PyObject *, PyObject *args)
   Mat      A = (Mat) PyCObject_AsVoidPtr(pyA);
   Vec      rhs = (Vec) PyCObject_AsVoidPtr(pyRhs);
   Vec      sol = (Vec) PyCObject_AsVoidPtr(pySol);
-  double*  pointerToBextern = (double*) PyCObject_AsVoidPtr(pyPointerToBextern);
-  double*  pointerToBtraction = (double*) PyCObject_AsVoidPtr(pyPointerToBtraction);
-  double*  pointerToBgravity = (double*) PyCObject_AsVoidPtr(pyPointerToBgravity);
-  double*  pointerToBconcForce = (double*) PyCObject_AsVoidPtr(pyPointerToBconcForce);
-  double*  pointerToBintern = (double*) PyCObject_AsVoidPtr(pyPointerToBintern);
-  double*  pointerToBresid = (double*) PyCObject_AsVoidPtr(pyPointerToBresid);
-  double*  pointerToBwink = (double*) PyCObject_AsVoidPtr(pyPointerToBwink);
-  double*  pointerToBwinkx = (double*) PyCObject_AsVoidPtr(pyPointerToBwinkx);
-  double*  pointerToDispVec = (double*) PyCObject_AsVoidPtr(pyPointerToDispVec);
-  double*  pointerToDprev = (double*) PyCObject_AsVoidPtr(pyPointerToDprev);
-  int*  pointerToListArrayNforce = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNforce);
-  double*  pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
-  double*  pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
-  double*  pointerToD = (double*) PyCObject_AsVoidPtr(pyPointerToD);
-  double*  pointerToDeld = (double*) PyCObject_AsVoidPtr(pyPointerToDeld);
-  double*  pointerToDcur = (double*) PyCObject_AsVoidPtr(pyPointerToDcur);
-  int*  pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
-  int*  pointerToIwink = (int*) PyCObject_AsVoidPtr(pyPointerToIwink);
-  double*  pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
-  int*  pointerToListArrayNsysdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNsysdat);
-  int*  pointerToListArrayIddmat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayIddmat);
-  int*  pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
-  double*  pointerToBond = (double*) PyCObject_AsVoidPtr(pyPointerToBond);
-  double*  pointerToDx = (double*) PyCObject_AsVoidPtr(pyPointerToDx);
-  double*  pointerToDeldx = (double*) PyCObject_AsVoidPtr(pyPointerToDeldx);
-  double*  pointerToDxcur = (double*) PyCObject_AsVoidPtr(pyPointerToDxcur);
-  double*  pointerToDiforc = (double*) PyCObject_AsVoidPtr(pyPointerToDiforc);
-  int*  pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
-  int*  pointerToIwinkx = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkx);
-  double*  pointerToWinkx = (double*) PyCObject_AsVoidPtr(pyPointerToWinkx);
-  int*  pointerToIdslp = (int*) PyCObject_AsVoidPtr(pyPointerToIdslp);
-  int*  pointerToIpslp = (int*) PyCObject_AsVoidPtr(pyPointerToIpslp);
-  int*  pointerToIdhist = (int*) PyCObject_AsVoidPtr(pyPointerToIdhist);
-  double*  pointerToFault = (double*) PyCObject_AsVoidPtr(pyPointerToFault);
-  int*  pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
-  double*  pointerToDfault = (double*) PyCObject_AsVoidPtr(pyPointerToDfault);
-  double*  pointerToTfault = (double*) PyCObject_AsVoidPtr(pyPointerToTfault);
-  double*  pointerToS = (double*) PyCObject_AsVoidPtr(pyPointerToS);
-  double*  pointerToStemp = (double*) PyCObject_AsVoidPtr(pyPointerToStemp);
-  double*  pointerToState = (double*) PyCObject_AsVoidPtr(pyPointerToState);
-  double*  pointerToDstate = (double*) PyCObject_AsVoidPtr(pyPointerToDstate);
-  double*  pointerToState0 = (double*) PyCObject_AsVoidPtr(pyPointerToState0);
-  double*  pointerToDmat = (double*) PyCObject_AsVoidPtr(pyPointerToDmat);
-  int*  pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
-  int*  pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
-  int*  pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int*  pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
-  int*  pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
-  int*  pointerToListArrayNpar = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNpar);
-  int*  pointerToIelindx = (int*) PyCObject_AsVoidPtr(pyPointerToIelindx);
-  int*  pointerToTractionverts = (int*) PyCObject_AsVoidPtr(pyPointerToTractionverts);
-  double*  pointerToTractionvals = (double*) PyCObject_AsVoidPtr(pyPointerToTractionvals);
-  double*  pointerToGauss2d = (double*) PyCObject_AsVoidPtr(pyPointerToGauss2d);
-  double*  pointerToSh2d = (double*) PyCObject_AsVoidPtr(pyPointerToSh2d);
-  int*  pointerToListArrayElementTypeInfo2d = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayElementTypeInfo2d);
-  double*  pointerToListArrayPropertyList = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyList);
-  int*  pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
-  double*  pointerToGauss = (double*) PyCObject_AsVoidPtr(pyPointerToGauss);
-  double*  pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
-  double*  pointerToShj = (double*) PyCObject_AsVoidPtr(pyPointerToShj);
-  int*  pointerToListArrayElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayElementTypeInfo);
-  double*  pointerToHistry = (double*) PyCObject_AsVoidPtr(pyPointerToHistry);
-  double*  pointerToListArrayRtimdat = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRtimdat);
-  int*  pointerToListArrayNtimdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNtimdat);
-  int*  pointerToListArrayNvisdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNvisdat);
-  int*  pointerToMaxstp = (int*) PyCObject_AsVoidPtr(pyPointerToMaxstp);
-  double*  pointerToDelt = (double*) PyCObject_AsVoidPtr(pyPointerToDelt);
-  double*  pointerToAlfa = (double*) PyCObject_AsVoidPtr(pyPointerToAlfa);
-  int*  pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
-  int*  pointerToNtdinit = (int*) PyCObject_AsVoidPtr(pyPointerToNtdinit);
-  int*  pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
-  double*  pointerToUtol = (double*) PyCObject_AsVoidPtr(pyPointerToUtol);
-  double*  pointerToFtol = (double*) PyCObject_AsVoidPtr(pyPointerToFtol);
-  double*  pointerToEtol = (double*) PyCObject_AsVoidPtr(pyPointerToEtol);
-  int*  pointerToItmax = (int*) PyCObject_AsVoidPtr(pyPointerToItmax);
-  double*  pointerToListArrayRgiter = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRgiter);
-  double*  pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
-  int*  pointerToListArrayNcodat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNcodat);
-  int*  pointerToListArrayNunits = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNunits);
-  int*  pointerToListArrayNprint = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
-  int*  pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
-  int*  pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
+  double*  bextern = (double*) PyCObject_AsVoidPtr(py_bextern);
+  double*  btraction = (double*) PyCObject_AsVoidPtr(py_btraction);
+  double*  bgravity = (double*) PyCObject_AsVoidPtr(py_bgravity);
+  double*  bconcForce = (double*) PyCObject_AsVoidPtr(py_bconcForce);
+  double*  bintern = (double*) PyCObject_AsVoidPtr(py_bintern);
+  double*  bresid = (double*) PyCObject_AsVoidPtr(py_bresid);
+  double*  bwink = (double*) PyCObject_AsVoidPtr(py_bwink);
+  double*  bwinkx = (double*) PyCObject_AsVoidPtr(py_bwinkx);
+  double*  dispVec = (double*) PyCObject_AsVoidPtr(py_dispVec);
+  double*  dprev = (double*) PyCObject_AsVoidPtr(py_dprev);
+  int*  nforce = (int*) PyCObject_AsVoidPtr(py_nforce);
+  double*  grav = (double*) PyCObject_AsVoidPtr(py_grav);
+  double*  x = (double*) PyCObject_AsVoidPtr(py_x);
+  double*  d = (double*) PyCObject_AsVoidPtr(py_d);
+  double*  deld = (double*) PyCObject_AsVoidPtr(py_deld);
+  double*  dcur = (double*) PyCObject_AsVoidPtr(py_dcur);
+  int*  id = (int*) PyCObject_AsVoidPtr(py_id);
+  int*  iwink = (int*) PyCObject_AsVoidPtr(py_iwink);
+  double*  wink = (double*) PyCObject_AsVoidPtr(py_wink);
+  int*  nsysdat = (int*) PyCObject_AsVoidPtr(py_nsysdat);
+  int*  iddmat = (int*) PyCObject_AsVoidPtr(py_iddmat);
+  int*  ibond = (int*) PyCObject_AsVoidPtr(py_ibond);
+  double*  bond = (double*) PyCObject_AsVoidPtr(py_bond);
+  double*  dx = (double*) PyCObject_AsVoidPtr(py_dx);
+  double*  deldx = (double*) PyCObject_AsVoidPtr(py_deldx);
+  double*  dxcur = (double*) PyCObject_AsVoidPtr(py_dxcur);
+  double*  diforc = (double*) PyCObject_AsVoidPtr(py_diforc);
+  int*  idx = (int*) PyCObject_AsVoidPtr(py_idx);
+  int*  iwinkx = (int*) PyCObject_AsVoidPtr(py_iwinkx);
+  double*  winkx = (double*) PyCObject_AsVoidPtr(py_winkx);
+  int*  idslp = (int*) PyCObject_AsVoidPtr(py_idslp);
+  int*  ipslp = (int*) PyCObject_AsVoidPtr(py_ipslp);
+  int*  idhist = (int*) PyCObject_AsVoidPtr(py_idhist);
+  double*  fault = (double*) PyCObject_AsVoidPtr(py_fault);
+  int*  nfault = (int*) PyCObject_AsVoidPtr(py_nfault);
+  double*  dfault = (double*) PyCObject_AsVoidPtr(py_dfault);
+  double*  tfault = (double*) PyCObject_AsVoidPtr(py_tfault);
+  double*  s = (double*) PyCObject_AsVoidPtr(py_s);
+  double*  stemp = (double*) PyCObject_AsVoidPtr(py_stemp);
+  double*  state = (double*) PyCObject_AsVoidPtr(py_state);
+  double*  dstate = (double*) PyCObject_AsVoidPtr(py_dstate);
+  double*  state0 = (double*) PyCObject_AsVoidPtr(py_state0);
+  double*  dmat = (double*) PyCObject_AsVoidPtr(py_dmat);
+  int*  iens = (int*) PyCObject_AsVoidPtr(py_iens);
+  int*  lm = (int*) PyCObject_AsVoidPtr(py_lm);
+  int*  lmx = (int*) PyCObject_AsVoidPtr(py_lmx);
+  int*  lmf = (int*) PyCObject_AsVoidPtr(py_lmf);
+  int*  ivfamily = (int*) PyCObject_AsVoidPtr(py_ivfamily);
+  int*  npar = (int*) PyCObject_AsVoidPtr(py_npar);
+  int*  ielindx = (int*) PyCObject_AsVoidPtr(py_ielindx);
+  int*  tractionverts = (int*) PyCObject_AsVoidPtr(py_tractionverts);
+  double*  tractionvals = (double*) PyCObject_AsVoidPtr(py_tractionvals);
+  double*  gauss2d = (double*) PyCObject_AsVoidPtr(py_gauss2d);
+  double*  sh2d = (double*) PyCObject_AsVoidPtr(py_sh2d);
+  int*  infetype2d = (int*) PyCObject_AsVoidPtr(py_infetype2d);
+  double*  prop = (double*) PyCObject_AsVoidPtr(py_prop);
+  int*  infmatmod = (int*) PyCObject_AsVoidPtr(py_infmatmod);
+  double*  gauss = (double*) PyCObject_AsVoidPtr(py_gauss);
+  double*  sh = (double*) PyCObject_AsVoidPtr(py_sh);
+  double*  shj = (double*) PyCObject_AsVoidPtr(py_shj);
+  int*  infetype = (int*) PyCObject_AsVoidPtr(py_infetype);
+  double*  histry = (double*) PyCObject_AsVoidPtr(py_histry);
+  double*  rtimdat = (double*) PyCObject_AsVoidPtr(py_rtimdat);
+  int*  ntimdat = (int*) PyCObject_AsVoidPtr(py_ntimdat);
+  int*  nvisdat = (int*) PyCObject_AsVoidPtr(py_nvisdat);
+  int*  maxstp = (int*) PyCObject_AsVoidPtr(py_maxstp);
+  double*  delt = (double*) PyCObject_AsVoidPtr(py_delt);
+  double*  alfa = (double*) PyCObject_AsVoidPtr(py_alfa);
+  int*  maxit = (int*) PyCObject_AsVoidPtr(py_maxit);
+  int*  ntdinit = (int*) PyCObject_AsVoidPtr(py_ntdinit);
+  int*  lgdef = (int*) PyCObject_AsVoidPtr(py_lgdef);
+  double*  utol = (double*) PyCObject_AsVoidPtr(py_utol);
+  double*  ftol = (double*) PyCObject_AsVoidPtr(py_ftol);
+  double*  etol = (double*) PyCObject_AsVoidPtr(py_etol);
+  int*  itmax = (int*) PyCObject_AsVoidPtr(py_itmax);
+  double*  rgiter = (double*) PyCObject_AsVoidPtr(py_rgiter);
+  double*  skew = (double*) PyCObject_AsVoidPtr(py_skew);
+  int*  ncodat = (int*) PyCObject_AsVoidPtr(py_ncodat);
+  int*  nunits = (int*) PyCObject_AsVoidPtr(py_nunits);
+  int*  nprint = (int*) PyCObject_AsVoidPtr(py_nprint);
+  int*  istatout = (int*) PyCObject_AsVoidPtr(py_istatout);
+  int*  nstatout = (int*) PyCObject_AsVoidPtr(py_nstatout);
 
   autoprestr_f(&A,                                // Sparse matrix arrays
                &rhs,
                &sol,
-               pointerToBextern,                  // Force vectors
-               pointerToBtraction,
-               pointerToBgravity,
-               pointerToBconcForce,
-               pointerToBintern,
-               pointerToBresid,
-               pointerToBwink,
-               pointerToBwinkx,
-               pointerToDispVec,
-               pointerToDprev,
-               pointerToListArrayNforce,
-               pointerToListArrayGrav,
-               pointerToX,                        // Global arrays
-               pointerToD,
-               pointerToDeld,
-               pointerToDcur,
-               pointerToId,
-               pointerToIwink,
-               pointerToWink,
-               pointerToListArrayNsysdat,
-               pointerToListArrayIddmat,
-               pointerToIbond,                    // Boundary condition arrays
-               pointerToBond,
-               pointerToDx,                       // Slippery node arrays
-               pointerToDeldx,
-               pointerToDxcur,
-               pointerToDiforc,
-               pointerToIdx,
-               pointerToIwinkx,
-               pointerToWinkx,
-               pointerToIdslp,
-               pointerToIpslp,
-               pointerToIdhist,
-               pointerToFault,                    // Split node arrays
-               pointerToNfault,
-               pointerToDfault,
-               pointerToTfault,
-               pointerToS,                        // Local stiffness matrix arrays
-               pointerToStemp,
-               pointerToState,                    // Element arrays
-               pointerToDstate,
-               pointerToState0,
-               pointerToDmat,
-               pointerToIens,
-               pointerToLm,
-               pointerToLmx,
-               pointerToLmf,
-               pointerToIvfamily,
-               pointerToListArrayNpar,
-               pointerToIelindx,
-               pointerToTractionverts,            // Traction BC arrays
-               pointerToTractionvals,
-               pointerToGauss2d,
-               pointerToSh2d,
-               pointerToListArrayElementTypeInfo2d,
-               pointerToListArrayPropertyList,    // Material property arrays
-               pointerToMaterialModelInfo,
-               pointerToGauss,                    // Element type arrays
-               pointerToSh,
-               pointerToShj,
-               pointerToListArrayElementTypeInfo,
-               pointerToHistry,                   // Time information
-               pointerToListArrayRtimdat,
-               pointerToListArrayNtimdat,
-               pointerToListArrayNvisdat,
-               pointerToMaxstp,
-               pointerToDelt,
-               pointerToAlfa,
-               pointerToMaxit,
-               pointerToNtdinit,
-               pointerToLgdef,
-               pointerToUtol,
-               pointerToFtol,
-               pointerToEtol,
-               pointerToItmax,
-               pointerToListArrayRgiter,          // Iterative solution information
-               pointerToSkew,                     // Skew rotation information
-               pointerToListArrayNcodat,          // Input/output information
-               pointerToListArrayNunits,
-               pointerToListArrayNprint,
-               pointerToIstatout,
-               pointerToNstatout,
-               asciiOutputFile,                   // Output file names
-               plotOutputFile,
-               ucdOutputRoot,
+               bextern,                  // Force vectors
+               btraction,
+               bgravity,
+               bconcForce,
+               bintern,
+               bresid,
+               bwink,
+               bwinkx,
+               dispVec,
+               dprev,
+               nforce,
+               grav,
+               x,                                 // Global arrays
+               d,
+               deld,
+               dcur,
+               id,
+               iwink,
+               wink,
+               nsysdat,
+               iddmat,
+               ibond,                    // Boundary condition arrays
+               bond,
+               dx,                       // Slippery node arrays
+               deldx,
+               dxcur,
+               diforc,
+               idx,
+               iwinkx,
+               winkx,
+               idslp,
+               ipslp,
+               idhist,
+               fault,                    // Split node arrays
+               nfault,
+               dfault,
+               tfault,
+               s,                        // Local stiffness matrix arrays
+               stemp,
+               state,                    // Element arrays
+               dstate,
+               state0,
+               dmat,
+               iens,
+               lm,
+               lmx,
+               lmf,
+               ivfamily,
+               npar,
+               ielindx,
+               tractionverts,            // Traction BC arrays
+               tractionvals,
+               gauss2d,
+               sh2d,
+               infetype2d,
+               prop,    // Material property arrays
+               infmatmod,
+               gauss,                    // Element type arrays
+               sh,
+               shj,
+               infetype,
+               histry,                   // Time information
+               rtimdat,
+               ntimdat,
+               nvisdat,
+               maxstp,
+               delt,
+               alfa,
+               maxit,
+               ntdinit,
+               lgdef,
+               utol,
+               ftol,
+               etol,
+               itmax,
+               rgiter,          // Iterative solution information
+               skew,                     // Skew rotation information
+               ncodat,          // Input/output information
+               nunits,
+               nprint,
+               istatout,
+               nstatout,
+               ofile,                   // Output file names
+               pfile,
+               ucdroot,
                &autoprestrStage,
                &iterateEvent,
                &errorcode,                        // Error codes
                errorstring,
-               strlen(asciiOutputFile),           // String lengths
-               strlen(plotOutputFile),
-               strlen(ucdOutputRoot),
+               strlen(ofile),           // String lengths
+               strlen(pfile),
+               strlen(ucdroot),
                sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -426,7 +426,7 @@ PyObject * pypylith3d_autoprestr(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "asciiOutputFile:" << asciiOutputFile
+    << "ofile:" << ofile
     << journal::endl;
 
   // return
@@ -446,182 +446,182 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
   PyObject* pyA;                              // Sparse matrix arrays
   PyObject* pyRhs;
   PyObject* pySol;
-  PyObject* pyPointerToBextern;               // Force vectors
-  PyObject* pyPointerToBtraction;
-  PyObject* pyPointerToBgravity;
-  PyObject* pyPointerToBconcForce;
-  PyObject* pyPointerToBintern;
-  PyObject* pyPointerToBresid;
-  PyObject* pyPointerToBwink;
-  PyObject* pyPointerToBwinkx;
-  PyObject* pyPointerToDispVec;
-  PyObject* pyPointerToDprev;
-  PyObject* pyPointerToListArrayNforce;
-  PyObject* pyPointerToListArrayGrav;
-  PyObject* pyPointerToX;                     // Global arrays
-  PyObject* pyPointerToD;
-  PyObject* pyPointerToDeld;
-  PyObject* pyPointerToDcur;
-  PyObject* pyPointerToId;
-  PyObject* pyPointerToIwink;
-  PyObject* pyPointerToWink;
-  PyObject* pyPointerToListArrayNsysdat;
-  PyObject* pyPointerToListArrayIddmat;
-  PyObject* pyPointerToIbond;                 // Boundary condition arrays
-  PyObject* pyPointerToBond;
-  PyObject* pyPointerToDx;                    // Slippery node arrays
-  PyObject* pyPointerToDeldx;
-  PyObject* pyPointerToDxcur;
-  PyObject* pyPointerToDiforc;
-  PyObject* pyPointerToIdx;
-  PyObject* pyPointerToIwinkx;
-  PyObject* pyPointerToWinkx;
-  PyObject* pyPointerToIdslp;
-  PyObject* pyPointerToIpslp;
-  PyObject* pyPointerToIdhist;
-  PyObject* pyPointerToFault;                 // Split node arrays
-  PyObject* pyPointerToNfault;
-  PyObject* pyPointerToDfault;
-  PyObject* pyPointerToTfault;
-  PyObject* pyPointerToS;                     // Local stiffness matrix arrays
-  PyObject* pyPointerToStemp;
-  PyObject* pyPointerToState;                 // Element arrays
-  PyObject* pyPointerToDstate;
-  PyObject* pyPointerToState0;
-  PyObject* pyPointerToDmat;
-  PyObject* pyPointerToIen;
-  PyObject* pyPointerToLm;
-  PyObject* pyPointerToLmx;
-  PyObject* pyPointerToLmf;
-  PyObject* pyPointerToIvfamily;
-  PyObject* pyPointerToListArrayNpar;
-  PyObject* pyPointerToIelindx;
-  PyObject* pyPointerToTractionverts;         // Traction BC arrays
-  PyObject* pyPointerToTractionvals;
-  PyObject* pyPointerToGauss2d;
-  PyObject* pyPointerToSh2d;
-  PyObject* pyPointerToListArrayElementTypeInfo2d;
-  PyObject* pyPointerToListArrayPropertyList; // Material property arrays
-  PyObject* pyPointerToMaterialModelInfo;
-  PyObject* pyPointerToGauss;                 // Element type arrays
-  PyObject* pyPointerToSh;
-  PyObject* pyPointerToShj;
-  PyObject* pyPointerToListArrayElementTypeInfo;
-  PyObject* pyPointerToHistry;                // Time information
-  PyObject* pyPointerToListArrayRtimdat;
-  PyObject* pyPointerToListArrayNtimdat;
-  PyObject* pyPointerToListArrayNvisdat;
-  PyObject* pyPointerToMaxstp;
-  PyObject* pyPointerToDelt;
-  PyObject* pyPointerToAlfa;
-  PyObject* pyPointerToMaxit;
-  PyObject* pyPointerToNtdinit;
-  PyObject* pyPointerToLgdef;
-  PyObject* pyPointerToUtol;
-  PyObject* pyPointerToFtol;
-  PyObject* pyPointerToEtol;
-  PyObject* pyPointerToItmax;
-  PyObject* pyPointerToListArrayRgiter;       // Iterative solution information
-  PyObject* pyPointerToSkew;                  // Skew rotation information
-  PyObject* pyPointerToListArrayNcodat;       // Input/output information
-  PyObject* pyPointerToListArrayNunits;
-  PyObject* pyPointerToListArrayNprint;
-  PyObject* pyPointerToIstatout;
-  PyObject* pyPointerToNstatout;
-  char* asciiOutputFile;                      // Output file names
-  char* plotOutputFile;
-  char* ucdOutputRoot;
+  PyObject* py_bextern;               // Force vectors
+  PyObject* py_btraction;
+  PyObject* py_bgravity;
+  PyObject* py_bconcForce;
+  PyObject* py_bintern;
+  PyObject* py_bresid;
+  PyObject* py_bwink;
+  PyObject* py_bwinkx;
+  PyObject* py_dispVec;
+  PyObject* py_dprev;
+  PyObject* py_nforce;
+  PyObject* py_grav;
+  PyObject* py_x;                             // Global arrays
+  PyObject* py_d;
+  PyObject* py_deld;
+  PyObject* py_dcur;
+  PyObject* py_id;
+  PyObject* py_iwink;
+  PyObject* py_wink;
+  PyObject* py_nsysdat;
+  PyObject* py_iddmat;
+  PyObject* py_ibond;                 // Boundary condition arrays
+  PyObject* py_bond;
+  PyObject* py_dx;                    // Slippery node arrays
+  PyObject* py_deldx;
+  PyObject* py_dxcur;
+  PyObject* py_diforc;
+  PyObject* py_idx;
+  PyObject* py_iwinkx;
+  PyObject* py_winkx;
+  PyObject* py_idslp;
+  PyObject* py_ipslp;
+  PyObject* py_idhist;
+  PyObject* py_fault;                 // Split node arrays
+  PyObject* py_nfault;
+  PyObject* py_dfault;
+  PyObject* py_tfault;
+  PyObject* py_s;                     // Local stiffness matrix arrays
+  PyObject* py_stemp;
+  PyObject* py_state;                 // Element arrays
+  PyObject* py_dstate;
+  PyObject* py_state0;
+  PyObject* py_dmat;
+  PyObject* py_ien;
+  PyObject* py_lm;
+  PyObject* py_lmx;
+  PyObject* py_lmf;
+  PyObject* py_ivfamily;
+  PyObject* py_npar;
+  PyObject* py_ielindx;
+  PyObject* py_tractionverts;         // Traction BC arrays
+  PyObject* py_tractionvals;
+  PyObject* py_gauss2d;
+  PyObject* py_sh2d;
+  PyObject* py_infetype2d;
+  PyObject* py_prop; // Material property arrays
+  PyObject* py_infmatmod;
+  PyObject* py_gauss;                 // Element type arrays
+  PyObject* py_sh;
+  PyObject* py_shj;
+  PyObject* py_infetype;
+  PyObject* py_histry;                // Time information
+  PyObject* py_rtimdat;
+  PyObject* py_ntimdat;
+  PyObject* py_nvisdat;
+  PyObject* py_maxstp;
+  PyObject* py_delt;
+  PyObject* py_alfa;
+  PyObject* py_maxit;
+  PyObject* py_ntdinit;
+  PyObject* py_lgdef;
+  PyObject* py_utol;
+  PyObject* py_ftol;
+  PyObject* py_etol;
+  PyObject* py_itmax;
+  PyObject* py_rgiter;       // Iterative solution information
+  PyObject* py_skew;                  // Skew rotation information
+  PyObject* py_ncodat;       // Input/output information
+  PyObject* py_nunits;
+  PyObject* py_nprint;
+  PyObject* py_istatout;
+  PyObject* py_nstatout;
+  char* ofile;                      // Output file names
+  char* pfile;
+  char* ucdroot;
   int elasticStage, iterateEvent;             // PETSc logging
 
   int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOsssii:elastc",
 			    &pyA,                              // Sparse matrix arrays
 			    &pyRhs,
 			    &pySol,
-			    &pyPointerToBextern,               // Force vectors
-			    &pyPointerToBtraction,
-			    &pyPointerToBgravity,
-			    &pyPointerToBconcForce,
-			    &pyPointerToBintern,
-			    &pyPointerToBresid,
-			    &pyPointerToBwink,
-			    &pyPointerToBwinkx,
-			    &pyPointerToDispVec,
-			    &pyPointerToDprev,
-			    &pyPointerToListArrayNforce,
-			    &pyPointerToListArrayGrav,
-			    &pyPointerToX,                     // Global arrays
-			    &pyPointerToD,
-			    &pyPointerToDeld,
-			    &pyPointerToDcur,
-			    &pyPointerToId,
-			    &pyPointerToIwink,
-			    &pyPointerToWink,
-			    &pyPointerToListArrayNsysdat,
-			    &pyPointerToListArrayIddmat,
-			    &pyPointerToIbond,                 // Boundary condition arrays
-			    &pyPointerToBond,
-			    &pyPointerToDx,                    // Slippery node arrays
-			    &pyPointerToDeldx,
-			    &pyPointerToDxcur,
-			    &pyPointerToDiforc,
-			    &pyPointerToIdx,
-			    &pyPointerToIwinkx,
-			    &pyPointerToWinkx,
-			    &pyPointerToIdslp,
-			    &pyPointerToIpslp,
-			    &pyPointerToIdhist,
-			    &pyPointerToFault,                 // Split node arrays
-			    &pyPointerToNfault,
-			    &pyPointerToDfault,
-			    &pyPointerToTfault,
-			    &pyPointerToS,                     // Local stiffness matrix arrays
-			    &pyPointerToStemp,
-			    &pyPointerToState,                 // Element arrays
-			    &pyPointerToDstate,
-			    &pyPointerToState0,
-			    &pyPointerToDmat,
-			    &pyPointerToIen,
-			    &pyPointerToLm,
-			    &pyPointerToLmx,
-			    &pyPointerToLmf,
-			    &pyPointerToIvfamily,
-			    &pyPointerToListArrayNpar,
-                            &pyPointerToIelindx,
-                            &pyPointerToTractionverts,         // Traction BC arrays
-                            &pyPointerToTractionvals,
-                            &pyPointerToGauss2d,
-                            &pyPointerToSh2d,
-                            &pyPointerToListArrayElementTypeInfo2d,
-			    &pyPointerToListArrayPropertyList, // Material property arrays
-			    &pyPointerToMaterialModelInfo,
-			    &pyPointerToGauss,                 // Element type arrays
-			    &pyPointerToSh,
-			    &pyPointerToShj,
-			    &pyPointerToListArrayElementTypeInfo,
-			    &pyPointerToHistry,                // Time information
-			    &pyPointerToListArrayRtimdat,
-			    &pyPointerToListArrayNtimdat,
-			    &pyPointerToListArrayNvisdat,
-			    &pyPointerToMaxstp,
-			    &pyPointerToDelt,
-			    &pyPointerToAlfa,
-			    &pyPointerToMaxit,
-			    &pyPointerToNtdinit,
-			    &pyPointerToLgdef,
-			    &pyPointerToUtol,
-			    &pyPointerToFtol,
-			    &pyPointerToEtol,
-			    &pyPointerToItmax,
-			    &pyPointerToListArrayRgiter,       // Iterative solution information
-			    &pyPointerToSkew,                  // Skew rotation information
-			    &pyPointerToListArrayNcodat,       // Input/output information
-			    &pyPointerToListArrayNunits,
-			    &pyPointerToListArrayNprint,
-			    &pyPointerToIstatout,
-			    &pyPointerToNstatout,
-			    &asciiOutputFile,                  // Output file names
-			    &plotOutputFile,
-			    &ucdOutputRoot,
+			    &py_bextern,               // Force vectors
+			    &py_btraction,
+			    &py_bgravity,
+			    &py_bconcForce,
+			    &py_bintern,
+			    &py_bresid,
+			    &py_bwink,
+			    &py_bwinkx,
+			    &py_dispVec,
+			    &py_dprev,
+			    &py_nforce,
+			    &py_grav,
+			    &py_x,                             // Global arrays
+			    &py_d,
+			    &py_deld,
+			    &py_dcur,
+			    &py_id,
+			    &py_iwink,
+			    &py_wink,
+			    &py_nsysdat,
+			    &py_iddmat,
+			    &py_ibond,                 // Boundary condition arrays
+			    &py_bond,
+			    &py_dx,                    // Slippery node arrays
+			    &py_deldx,
+			    &py_dxcur,
+			    &py_diforc,
+			    &py_idx,
+			    &py_iwinkx,
+			    &py_winkx,
+			    &py_idslp,
+			    &py_ipslp,
+			    &py_idhist,
+			    &py_fault,                 // Split node arrays
+			    &py_nfault,
+			    &py_dfault,
+			    &py_tfault,
+			    &py_s,                     // Local stiffness matrix arrays
+			    &py_stemp,
+			    &py_state,                 // Element arrays
+			    &py_dstate,
+			    &py_state0,
+			    &py_dmat,
+			    &py_ien,
+			    &py_lm,
+			    &py_lmx,
+			    &py_lmf,
+			    &py_ivfamily,
+			    &py_npar,
+                            &py_ielindx,
+                            &py_tractionverts,         // Traction BC arrays
+                            &py_tractionvals,
+                            &py_gauss2d,
+                            &py_sh2d,
+                            &py_infetype2d,
+			    &py_prop, // Material property arrays
+			    &py_infmatmod,
+			    &py_gauss,                 // Element type arrays
+			    &py_sh,
+			    &py_shj,
+			    &py_infetype,
+			    &py_histry,                // Time information
+			    &py_rtimdat,
+			    &py_ntimdat,
+			    &py_nvisdat,
+			    &py_maxstp,
+			    &py_delt,
+			    &py_alfa,
+			    &py_maxit,
+			    &py_ntdinit,
+			    &py_lgdef,
+			    &py_utol,
+			    &py_ftol,
+			    &py_etol,
+			    &py_itmax,
+			    &py_rgiter,       // Iterative solution information
+			    &py_skew,                  // Skew rotation information
+			    &py_ncodat,       // Input/output information
+			    &py_nunits,
+			    &py_nprint,
+			    &py_istatout,
+			    &py_nstatout,
+			    &ofile,                  // Output file names
+			    &pfile,
+			    &ucdroot,
                             &elasticStage,                    // PETSc logging
                             &iterateEvent);
 
@@ -636,184 +636,184 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
   Mat      A = (Mat) PyCObject_AsVoidPtr(pyA);
   Vec      rhs = (Vec) PyCObject_AsVoidPtr(pyRhs);
   Vec      sol = (Vec) PyCObject_AsVoidPtr(pySol);
-  double*  pointerToBextern = (double*) PyCObject_AsVoidPtr(pyPointerToBextern);
-  double*  pointerToBtraction = (double*) PyCObject_AsVoidPtr(pyPointerToBtraction);
-  double*  pointerToBgravity = (double*) PyCObject_AsVoidPtr(pyPointerToBgravity);
-  double*  pointerToBconcForce = (double*) PyCObject_AsVoidPtr(pyPointerToBconcForce);
-  double*  pointerToBintern = (double*) PyCObject_AsVoidPtr(pyPointerToBintern);
-  double*  pointerToBresid = (double*) PyCObject_AsVoidPtr(pyPointerToBresid);
-  double*  pointerToBwink = (double*) PyCObject_AsVoidPtr(pyPointerToBwink);
-  double*  pointerToBwinkx = (double*) PyCObject_AsVoidPtr(pyPointerToBwinkx);
-  double*  pointerToDispVec = (double*) PyCObject_AsVoidPtr(pyPointerToDispVec);
-  double*  pointerToDprev = (double*) PyCObject_AsVoidPtr(pyPointerToDprev);
-  int*  pointerToListArrayNforce = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNforce);
-  double*  pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
-  double*  pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
-  double*  pointerToD = (double*) PyCObject_AsVoidPtr(pyPointerToD);
-  double*  pointerToDeld = (double*) PyCObject_AsVoidPtr(pyPointerToDeld);
-  double*  pointerToDcur = (double*) PyCObject_AsVoidPtr(pyPointerToDcur);
-  int*  pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
-  int*  pointerToIwink = (int*) PyCObject_AsVoidPtr(pyPointerToIwink);
-  double*  pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
-  int*  pointerToListArrayNsysdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNsysdat);
-  int*  pointerToListArrayIddmat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayIddmat);
-  int*  pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
-  double*  pointerToBond = (double*) PyCObject_AsVoidPtr(pyPointerToBond);
-  double*  pointerToDx = (double*) PyCObject_AsVoidPtr(pyPointerToDx);
-  double*  pointerToDeldx = (double*) PyCObject_AsVoidPtr(pyPointerToDeldx);
-  double*  pointerToDxcur = (double*) PyCObject_AsVoidPtr(pyPointerToDxcur);
-  double*  pointerToDiforc = (double*) PyCObject_AsVoidPtr(pyPointerToDiforc);
-  int*  pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
-  int*  pointerToIwinkx = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkx);
-  double*  pointerToWinkx = (double*) PyCObject_AsVoidPtr(pyPointerToWinkx);
-  int*  pointerToIdslp = (int*) PyCObject_AsVoidPtr(pyPointerToIdslp);
-  int*  pointerToIpslp = (int*) PyCObject_AsVoidPtr(pyPointerToIpslp);
-  int*  pointerToIdhist = (int*) PyCObject_AsVoidPtr(pyPointerToIdhist);
-  double*  pointerToFault = (double*) PyCObject_AsVoidPtr(pyPointerToFault);
-  int*  pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
-  double*  pointerToDfault = (double*) PyCObject_AsVoidPtr(pyPointerToDfault);
-  double*  pointerToTfault = (double*) PyCObject_AsVoidPtr(pyPointerToTfault);
-  double*  pointerToS = (double*) PyCObject_AsVoidPtr(pyPointerToS);
-  double*  pointerToStemp = (double*) PyCObject_AsVoidPtr(pyPointerToStemp);
-  double*  pointerToState = (double*) PyCObject_AsVoidPtr(pyPointerToState);
-  double*  pointerToDstate = (double*) PyCObject_AsVoidPtr(pyPointerToDstate);
-  double*  pointerToState0 = (double*) PyCObject_AsVoidPtr(pyPointerToState0);
-  double*  pointerToDmat = (double*) PyCObject_AsVoidPtr(pyPointerToDmat);
-  int*  pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int*  pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
-  int*  pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int*  pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
-  int*  pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
-  int*  pointerToListArrayNpar = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNpar);
-  int*  pointerToIelindx = (int*) PyCObject_AsVoidPtr(pyPointerToIelindx);
-  int*  pointerToTractionverts = (int*) PyCObject_AsVoidPtr(pyPointerToTractionverts);
-  double*  pointerToTractionvals = (double*) PyCObject_AsVoidPtr(pyPointerToTractionvals);
-  double*  pointerToGauss2d = (double*) PyCObject_AsVoidPtr(pyPointerToGauss2d);
-  double*  pointerToSh2d = (double*) PyCObject_AsVoidPtr(pyPointerToSh2d);
-  int*  pointerToListArrayElementTypeInfo2d = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayElementTypeInfo2d);
-  double*  pointerToListArrayPropertyList = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyList);
-  int*  pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
-  double*  pointerToGauss = (double*) PyCObject_AsVoidPtr(pyPointerToGauss);
-  double*  pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
-  double*  pointerToShj = (double*) PyCObject_AsVoidPtr(pyPointerToShj);
-  int*  pointerToListArrayElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayElementTypeInfo);
-  double*  pointerToHistry = (double*) PyCObject_AsVoidPtr(pyPointerToHistry);
-  double*  pointerToListArrayRtimdat = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRtimdat);
-  int*  pointerToListArrayNtimdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNtimdat);
-  int*  pointerToListArrayNvisdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNvisdat);
-  int*  pointerToMaxstp = (int*) PyCObject_AsVoidPtr(pyPointerToMaxstp);
-  double*  pointerToDelt = (double*) PyCObject_AsVoidPtr(pyPointerToDelt);
-  double*  pointerToAlfa = (double*) PyCObject_AsVoidPtr(pyPointerToAlfa);
-  int*  pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
-  int*  pointerToNtdinit = (int*) PyCObject_AsVoidPtr(pyPointerToNtdinit);
-  int*  pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
-  double*  pointerToUtol = (double*) PyCObject_AsVoidPtr(pyPointerToUtol);
-  double*  pointerToFtol = (double*) PyCObject_AsVoidPtr(pyPointerToFtol);
-  double*  pointerToEtol = (double*) PyCObject_AsVoidPtr(pyPointerToEtol);
-  int*  pointerToItmax = (int*) PyCObject_AsVoidPtr(pyPointerToItmax);
-  double*  pointerToListArrayRgiter = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRgiter);
-  double*  pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
-  int*  pointerToListArrayNcodat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNcodat);
-  int*  pointerToListArrayNunits = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNunits);
-  int*  pointerToListArrayNprint = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
-  int*  pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
-  int*  pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
+  double*  bextern = (double*) PyCObject_AsVoidPtr(py_bextern);
+  double*  btraction = (double*) PyCObject_AsVoidPtr(py_btraction);
+  double*  bgravity = (double*) PyCObject_AsVoidPtr(py_bgravity);
+  double*  bconcForce = (double*) PyCObject_AsVoidPtr(py_bconcForce);
+  double*  bintern = (double*) PyCObject_AsVoidPtr(py_bintern);
+  double*  bresid = (double*) PyCObject_AsVoidPtr(py_bresid);
+  double*  bwink = (double*) PyCObject_AsVoidPtr(py_bwink);
+  double*  bwinkx = (double*) PyCObject_AsVoidPtr(py_bwinkx);
+  double*  dispVec = (double*) PyCObject_AsVoidPtr(py_dispVec);
+  double*  dprev = (double*) PyCObject_AsVoidPtr(py_dprev);
+  int*  nforce = (int*) PyCObject_AsVoidPtr(py_nforce);
+  double*  grav = (double*) PyCObject_AsVoidPtr(py_grav);
+  double*  x = (double*) PyCObject_AsVoidPtr(py_x);
+  double*  d = (double*) PyCObject_AsVoidPtr(py_d);
+  double*  deld = (double*) PyCObject_AsVoidPtr(py_deld);
+  double*  dcur = (double*) PyCObject_AsVoidPtr(py_dcur);
+  int*  id = (int*) PyCObject_AsVoidPtr(py_id);
+  int*  iwink = (int*) PyCObject_AsVoidPtr(py_iwink);
+  double*  wink = (double*) PyCObject_AsVoidPtr(py_wink);
+  int*  nsysdat = (int*) PyCObject_AsVoidPtr(py_nsysdat);
+  int*  iddmat = (int*) PyCObject_AsVoidPtr(py_iddmat);
+  int*  ibond = (int*) PyCObject_AsVoidPtr(py_ibond);
+  double*  bond = (double*) PyCObject_AsVoidPtr(py_bond);
+  double*  dx = (double*) PyCObject_AsVoidPtr(py_dx);
+  double*  deldx = (double*) PyCObject_AsVoidPtr(py_deldx);
+  double*  dxcur = (double*) PyCObject_AsVoidPtr(py_dxcur);
+  double*  diforc = (double*) PyCObject_AsVoidPtr(py_diforc);
+  int*  idx = (int*) PyCObject_AsVoidPtr(py_idx);
+  int*  iwinkx = (int*) PyCObject_AsVoidPtr(py_iwinkx);
+  double*  winkx = (double*) PyCObject_AsVoidPtr(py_winkx);
+  int*  idslp = (int*) PyCObject_AsVoidPtr(py_idslp);
+  int*  ipslp = (int*) PyCObject_AsVoidPtr(py_ipslp);
+  int*  idhist = (int*) PyCObject_AsVoidPtr(py_idhist);
+  double*  fault = (double*) PyCObject_AsVoidPtr(py_fault);
+  int*  nfault = (int*) PyCObject_AsVoidPtr(py_nfault);
+  double*  dfault = (double*) PyCObject_AsVoidPtr(py_dfault);
+  double*  tfault = (double*) PyCObject_AsVoidPtr(py_tfault);
+  double*  s = (double*) PyCObject_AsVoidPtr(py_s);
+  double*  stemp = (double*) PyCObject_AsVoidPtr(py_stemp);
+  double*  state = (double*) PyCObject_AsVoidPtr(py_state);
+  double*  dstate = (double*) PyCObject_AsVoidPtr(py_dstate);
+  double*  state0 = (double*) PyCObject_AsVoidPtr(py_state0);
+  double*  dmat = (double*) PyCObject_AsVoidPtr(py_dmat);
+  int*  ien = (int*) PyCObject_AsVoidPtr(py_ien);
+  int*  lm = (int*) PyCObject_AsVoidPtr(py_lm);
+  int*  lmx = (int*) PyCObject_AsVoidPtr(py_lmx);
+  int*  lmf = (int*) PyCObject_AsVoidPtr(py_lmf);
+  int*  ivfamily = (int*) PyCObject_AsVoidPtr(py_ivfamily);
+  int*  npar = (int*) PyCObject_AsVoidPtr(py_npar);
+  int*  ielindx = (int*) PyCObject_AsVoidPtr(py_ielindx);
+  int*  tractionverts = (int*) PyCObject_AsVoidPtr(py_tractionverts);
+  double*  tractionvals = (double*) PyCObject_AsVoidPtr(py_tractionvals);
+  double*  gauss2d = (double*) PyCObject_AsVoidPtr(py_gauss2d);
+  double*  sh2d = (double*) PyCObject_AsVoidPtr(py_sh2d);
+  int*  infetype2d = (int*) PyCObject_AsVoidPtr(py_infetype2d);
+  double*  prop = (double*) PyCObject_AsVoidPtr(py_prop);
+  int*  infmatmod = (int*) PyCObject_AsVoidPtr(py_infmatmod);
+  double*  gauss = (double*) PyCObject_AsVoidPtr(py_gauss);
+  double*  sh = (double*) PyCObject_AsVoidPtr(py_sh);
+  double*  shj = (double*) PyCObject_AsVoidPtr(py_shj);
+  int*  infetype = (int*) PyCObject_AsVoidPtr(py_infetype);
+  double*  histry = (double*) PyCObject_AsVoidPtr(py_histry);
+  double*  rtimdat = (double*) PyCObject_AsVoidPtr(py_rtimdat);
+  int*  ntimdat = (int*) PyCObject_AsVoidPtr(py_ntimdat);
+  int*  nvisdat = (int*) PyCObject_AsVoidPtr(py_nvisdat);
+  int*  maxstp = (int*) PyCObject_AsVoidPtr(py_maxstp);
+  double*  delt = (double*) PyCObject_AsVoidPtr(py_delt);
+  double*  alfa = (double*) PyCObject_AsVoidPtr(py_alfa);
+  int*  maxit = (int*) PyCObject_AsVoidPtr(py_maxit);
+  int*  ntdinit = (int*) PyCObject_AsVoidPtr(py_ntdinit);
+  int*  lgdef = (int*) PyCObject_AsVoidPtr(py_lgdef);
+  double*  utol = (double*) PyCObject_AsVoidPtr(py_utol);
+  double*  ftol = (double*) PyCObject_AsVoidPtr(py_ftol);
+  double*  etol = (double*) PyCObject_AsVoidPtr(py_etol);
+  int*  itmax = (int*) PyCObject_AsVoidPtr(py_itmax);
+  double*  rgiter = (double*) PyCObject_AsVoidPtr(py_rgiter);
+  double*  skew = (double*) PyCObject_AsVoidPtr(py_skew);
+  int*  ncodat = (int*) PyCObject_AsVoidPtr(py_ncodat);
+  int*  nunits = (int*) PyCObject_AsVoidPtr(py_nunits);
+  int*  nprint = (int*) PyCObject_AsVoidPtr(py_nprint);
+  int*  istatout = (int*) PyCObject_AsVoidPtr(py_istatout);
+  int*  nstatout = (int*) PyCObject_AsVoidPtr(py_nstatout);
 
   elastc_f(&A,                                // Sparse matrix arrays
            &rhs,
 	   &sol,
-	   pointerToBextern,                  // Force vectors
-	   pointerToBtraction,
-	   pointerToBgravity,
-	   pointerToBconcForce,
-	   pointerToBintern,
-	   pointerToBresid,
-	   pointerToBwink,
-	   pointerToBwinkx,
-	   pointerToDispVec,
-	   pointerToDprev,
-	   pointerToListArrayNforce,
-	   pointerToListArrayGrav,
-	   pointerToX,                        // Global arrays
-	   pointerToD,
-	   pointerToDeld,
-	   pointerToDcur,
-	   pointerToId,
-	   pointerToIwink,
-	   pointerToWink,
-	   pointerToListArrayNsysdat,
-	   pointerToListArrayIddmat,
-	   pointerToIbond,                    // Boundary condition arrays
-	   pointerToBond,
-	   pointerToDx,                       // Slippery node arrays
-	   pointerToDeldx,
-	   pointerToDxcur,
-	   pointerToDiforc,
-	   pointerToIdx,
-	   pointerToIwinkx,
-	   pointerToWinkx,
-	   pointerToIdslp,
-	   pointerToIpslp,
-	   pointerToIdhist,
-	   pointerToFault,                    // Split node arrays
-	   pointerToNfault,
-	   pointerToDfault,
-	   pointerToTfault,
-	   pointerToS,                        // Local stiffness matrix arrays
-	   pointerToStemp,
-	   pointerToState,                    // Element arrays
-	   pointerToDstate,
-	   pointerToState0,
-	   pointerToDmat,
-	   pointerToIen,
-	   pointerToLm,
-	   pointerToLmx,
-	   pointerToLmf,
-	   pointerToIvfamily,
-	   pointerToListArrayNpar,
-	   pointerToIelindx,
-	   pointerToTractionverts,            // Traction BC arrays
-	   pointerToTractionvals,
-	   pointerToGauss2d,
-	   pointerToSh2d,
-	   pointerToListArrayElementTypeInfo2d,
-	   pointerToListArrayPropertyList,    // Material property arrays
-	   pointerToMaterialModelInfo,
-	   pointerToGauss,                    // Element type arrays
-	   pointerToSh,
-	   pointerToShj,
-	   pointerToListArrayElementTypeInfo,
-	   pointerToHistry,                   // Time information
-	   pointerToListArrayRtimdat,
-	   pointerToListArrayNtimdat,
-	   pointerToListArrayNvisdat,
-	   pointerToMaxstp,
-	   pointerToDelt,
-	   pointerToAlfa,
-	   pointerToMaxit,
-	   pointerToNtdinit,
-	   pointerToLgdef,
-	   pointerToUtol,
-	   pointerToFtol,
-	   pointerToEtol,
-	   pointerToItmax,
-	   pointerToListArrayRgiter,          // Iterative solution information
-	   pointerToSkew,                     // Skew rotation information
-	   pointerToListArrayNcodat,          // Input/output information
-	   pointerToListArrayNunits,
-	   pointerToListArrayNprint,
-	   pointerToIstatout,
-	   pointerToNstatout,
-	   asciiOutputFile,                   // Output file names
-	   plotOutputFile,
-	   ucdOutputRoot,
+	   bextern,                  // Force vectors
+	   btraction,
+	   bgravity,
+	   bconcForce,
+	   bintern,
+	   bresid,
+	   bwink,
+	   bwinkx,
+	   dispVec,
+	   dprev,
+	   nforce,
+	   grav,
+	   x,                                 // Global arrays
+	   d,
+	   deld,
+	   dcur,
+	   id,
+	   iwink,
+	   wink,
+	   nsysdat,
+	   iddmat,
+	   ibond,                    // Boundary condition arrays
+	   bond,
+	   dx,                       // Slippery node arrays
+	   deldx,
+	   dxcur,
+	   diforc,
+	   idx,
+	   iwinkx,
+	   winkx,
+	   idslp,
+	   ipslp,
+	   idhist,
+	   fault,                    // Split node arrays
+	   nfault,
+	   dfault,
+	   tfault,
+	   s,                        // Local stiffness matrix arrays
+	   stemp,
+	   state,                    // Element arrays
+	   dstate,
+	   state0,
+	   dmat,
+	   ien,
+	   lm,
+	   lmx,
+	   lmf,
+	   ivfamily,
+	   npar,
+	   ielindx,
+	   tractionverts,            // Traction BC arrays
+	   tractionvals,
+	   gauss2d,
+	   sh2d,
+	   infetype2d,
+	   prop,    // Material property arrays
+	   infmatmod,
+	   gauss,                    // Element type arrays
+	   sh,
+	   shj,
+	   infetype,
+	   histry,                   // Time information
+	   rtimdat,
+	   ntimdat,
+	   nvisdat,
+	   maxstp,
+	   delt,
+	   alfa,
+	   maxit,
+	   ntdinit,
+	   lgdef,
+	   utol,
+	   ftol,
+	   etol,
+	   itmax,
+	   rgiter,          // Iterative solution information
+	   skew,                     // Skew rotation information
+	   ncodat,          // Input/output information
+	   nunits,
+	   nprint,
+	   istatout,
+	   nstatout,
+	   ofile,                   // Output file names
+	   pfile,
+	   ucdroot,
            &elasticStage,
            &iterateEvent,
 	   &errorcode,                        // Error codes
 	   errorstring,
-	   strlen(asciiOutputFile),           // String lengths
-	   strlen(plotOutputFile),
-	   strlen(ucdOutputRoot),
+	   strlen(ofile),           // String lengths
+	   strlen(pfile),
+	   strlen(ucdroot),
 	   sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -824,7 +824,7 @@ PyObject * pypylith3d_elastc(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "asciiOutputFile:" << asciiOutputFile
+    << "ofile:" << ofile
     << journal::endl;
 
   // return
@@ -843,52 +843,52 @@ char pypylith3d_assign_wink__name__[] = "assign_wink";
 
 PyObject * pypylith3d_assign_wink(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToWinkdef;
-  PyObject* pyPointerToWink;
-  PyObject* pyPointerToIwinkdef;
-  PyObject* pyPointerToIwinkid;
-  PyObject* pyPointerToIwink;
-  PyObject* pyPointerToId;
-  int numberNodes;
-  int numberWinklerForces;
-  int numberWinklerEntries;
+  PyObject* py_winkdef;
+  PyObject* py_wink;
+  PyObject* py_iwinkdef;
+  PyObject* py_iwinkid;
+  PyObject* py_iwink;
+  PyObject* py_id;
+  int numnp;
+  int nwink;
+  int nwinke;
 
   int ok = PyArg_ParseTuple(args, "OOOOOOiii:assign_wink",
-			    &pyPointerToWinkdef,
-			    &pyPointerToWink,
-			    &pyPointerToIwinkdef,
-			    &pyPointerToIwinkid,
-			    &pyPointerToIwink,
-			    &pyPointerToId,
-			    &numberNodes,
-			    &numberWinklerForces,
-			    &numberWinklerEntries);
+			    &py_winkdef,
+			    &py_wink,
+			    &py_iwinkdef,
+			    &py_iwinkid,
+			    &py_iwink,
+			    &py_id,
+			    &numnp,
+			    &nwink,
+			    &nwinke);
 
   if (!ok) {
     return 0;
   }
 
-  double* pointerToWinkdef = (double*) PyCObject_AsVoidPtr(pyPointerToWinkdef);
-  double* pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
-  int* pointerToIwinkdef = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkdef);
-  int* pointerToIwinkid = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkid);
-  int* pointerToIwink = (int*) PyCObject_AsVoidPtr(pyPointerToIwink);
-  int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
+  double* winkdef = (double*) PyCObject_AsVoidPtr(py_winkdef);
+  double* wink = (double*) PyCObject_AsVoidPtr(py_wink);
+  int* iwinkdef = (int*) PyCObject_AsVoidPtr(py_iwinkdef);
+  int* iwinkid = (int*) PyCObject_AsVoidPtr(py_iwinkid);
+  int* iwink = (int*) PyCObject_AsVoidPtr(py_iwink);
+  int* id = (int*) PyCObject_AsVoidPtr(py_id);
 
-  assign_wink_f(pointerToWinkdef,
-		pointerToWink,
-		pointerToIwinkdef,
-		pointerToIwinkid,
-		pointerToIwink,
-		pointerToId,
-		&numberNodes,
-		&numberWinklerForces,
-		&numberWinklerEntries);
+  assign_wink_f(winkdef,
+		wink,
+		iwinkdef,
+		iwinkid,
+		iwink,
+		id,
+		&numnp,
+		&nwink,
+		&nwinke);
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberWinklerForces:" << numberWinklerForces
+    << "nwink:" << nwink
     << journal::endl;
 
   // return
@@ -904,55 +904,55 @@ char pypylith3d_create_id__name__[] = "create_id";
 
 PyObject * pypylith3d_create_id(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToId;
-  PyObject* pyPointerToIdx;
-  PyObject* pyPointerToIbond;
-  PyObject* pyPointerToNslip;
-  PyObject* pyPointerToIdslp;
-  int numberSlipperyNodeEntries;
-  int numberNodes;
+  PyObject* py_id;
+  PyObject* py_idx;
+  PyObject* py_ibond;
+  PyObject* py_nslip;
+  PyObject* py_idslp;
+  int numslp;
+  int numnp;
   int totalNumberSlipperyNodes;
 
   int ok = PyArg_ParseTuple(args, "OOOOOiii:create_id",
-			    &pyPointerToId,
-			    &pyPointerToIdx,
-			    &pyPointerToIbond,
-			    &pyPointerToNslip,
-			    &pyPointerToIdslp,
-			    &numberSlipperyNodeEntries,
-			    &numberNodes,
+			    &py_id,
+			    &py_idx,
+			    &py_ibond,
+			    &py_nslip,
+			    &py_idslp,
+			    &numslp,
+			    &numnp,
 			    &totalNumberSlipperyNodes);
 
   if (!ok) {
     return 0;
   }
 
-  int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
-  int* pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
-  int* pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
-  int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
-  int* pointerToIdslp = (int*) PyCObject_AsVoidPtr(pyPointerToIdslp);
-  int numberGlobalEquations = 0;
+  int* id = (int*) PyCObject_AsVoidPtr(py_id);
+  int* idx = (int*) PyCObject_AsVoidPtr(py_idx);
+  int* ibond = (int*) PyCObject_AsVoidPtr(py_ibond);
+  int* nslip = (int*) PyCObject_AsVoidPtr(py_nslip);
+  int* idslp = (int*) PyCObject_AsVoidPtr(py_idslp);
+  int neq = 0;
 
-  create_id_f(pointerToId,
-	  pointerToIdx,
-	  pointerToIbond,
-	  pointerToNslip,
-	  pointerToIdslp,
-	  &numberSlipperyNodeEntries,
-	  &numberNodes,
+  create_id_f(id,
+	  idx,
+	  ibond,
+	  nslip,
+	  idslp,
+	  &numslp,
+	  &numnp,
 	  &totalNumberSlipperyNodes,
-	  &numberGlobalEquations);
+	  &neq);
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberGlobalEquations:" << numberGlobalEquations
+    << "neq:" << neq
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i", numberGlobalEquations);
+  return Py_BuildValue("i", neq);
 }
 
 
@@ -963,36 +963,36 @@ char pypylith3d_id_split__name__[] = "id_split";
 
 PyObject * pypylith3d_id_split(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToNfault;
-  PyObject* pyPointerToIdftn;
-  int numberNodes;
-  int numberSplitNodeEntries;
+  PyObject* py_nfault;
+  PyObject* py_idftn;
+  int numnp;
+  int numfn;
   int totalNumberSplitNodes;
 
   int ok = PyArg_ParseTuple(args, "OOiii:id_split",
-			    &pyPointerToNfault,
-			    &pyPointerToIdftn,
-			    &numberNodes,
-			    &numberSplitNodeEntries,
+			    &py_nfault,
+			    &py_idftn,
+			    &numnp,
+			    &numfn,
 			    &totalNumberSplitNodes);
 
   if (!ok) {
     return 0;
   }
 
-  int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
-  int* pointerToIdftn = (int*) PyCObject_AsVoidPtr(pyPointerToIdftn);
+  int* nfault = (int*) PyCObject_AsVoidPtr(py_nfault);
+  int* idftn = (int*) PyCObject_AsVoidPtr(py_idftn);
 
-  id_split_f(pointerToNfault,
-	     pointerToIdftn,
-	     &numberNodes,
-	     &numberSplitNodeEntries,
+  id_split_f(nfault,
+	     idftn,
+	     &numnp,
+	     &numfn,
 	     &totalNumberSplitNodes);
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberSplitNodeEntries:" << numberSplitNodeEntries
+    << "numfn:" << numfn
     << journal::endl;
 
   // return
@@ -1008,60 +1008,60 @@ char pypylith3d_nfind__name__[] = "nfind";
 
 PyObject * pypylith3d_nfind(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToX;
-  PyObject* pyPointerToXtmp;
-  PyObject* pyPointerToIdslp;
-  PyObject* pyPointerToIpslp;
-  PyObject* pyPointerToItmp;
-  PyObject* pyPointerToItmp1;
-  PyObject* pyPointerToItmp2;
-  PyObject* pyPointerToNslip;
-  int numberSlipperyNodeEntries;
+  PyObject* py_x;
+  PyObject* py_xtmp;
+  PyObject* py_idslp;
+  PyObject* py_ipslp;
+  PyObject* py_itmp;
+  PyObject* py_itmp1;
+  PyObject* py_itmp2;
+  PyObject* py_nslip;
+  int numslp;
   int totalNumberSlipperyNodes;
-  int numberNodes;
+  int numnp;
 
   int ok = PyArg_ParseTuple(args, "OOOOOOOOiii:nfind",
-			    &pyPointerToX,
-			    &pyPointerToXtmp,
-			    &pyPointerToIdslp,
-			    &pyPointerToIpslp,
-			    &pyPointerToItmp,
-			    &pyPointerToItmp1,
-			    &pyPointerToItmp2,
-			    &pyPointerToNslip,
-			    &numberSlipperyNodeEntries,
+			    &py_x,
+			    &py_xtmp,
+			    &py_idslp,
+			    &py_ipslp,
+			    &py_itmp,
+			    &py_itmp1,
+			    &py_itmp2,
+			    &py_nslip,
+			    &numslp,
 			    &totalNumberSlipperyNodes,
-			    &numberNodes);
+			    &numnp);
 
   if (!ok) {
     return 0;
   }
 
-  double* pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
-  double* pointerToXtmp = (double*) PyCObject_AsVoidPtr(pyPointerToXtmp);
-  int* pointerToIdslp = (int*) PyCObject_AsVoidPtr(pyPointerToIdslp);
-  int* pointerToIpslp = (int*) PyCObject_AsVoidPtr(pyPointerToIpslp);
-  int* pointerToItmp = (int*) PyCObject_AsVoidPtr(pyPointerToItmp);
-  int* pointerToItmp1 = (int*) PyCObject_AsVoidPtr(pyPointerToItmp1);
-  int* pointerToItmp2 = (int*) PyCObject_AsVoidPtr(pyPointerToItmp2);
-  int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
+  double* x = (double*) PyCObject_AsVoidPtr(py_x);
+  double* xtmp = (double*) PyCObject_AsVoidPtr(py_xtmp);
+  int* idslp = (int*) PyCObject_AsVoidPtr(py_idslp);
+  int* ipslp = (int*) PyCObject_AsVoidPtr(py_ipslp);
+  int* itmp = (int*) PyCObject_AsVoidPtr(py_itmp);
+  int* itmp1 = (int*) PyCObject_AsVoidPtr(py_itmp1);
+  int* itmp2 = (int*) PyCObject_AsVoidPtr(py_itmp2);
+  int* nslip = (int*) PyCObject_AsVoidPtr(py_nslip);
 
-  nfind_f(pointerToX,
-	  pointerToXtmp,
-	  pointerToIdslp,
-	  pointerToIpslp,
-	  pointerToItmp,
-	  pointerToItmp1,
-	  pointerToItmp2,
-	  pointerToNslip,
-	  &numberSlipperyNodeEntries,
+  nfind_f(x,
+	  xtmp,
+	  idslp,
+	  ipslp,
+	  itmp,
+	  itmp1,
+	  itmp2,
+	  nslip,
+	  &numslp,
 	  &totalNumberSlipperyNodes,
-	  &numberNodes);
+	  &numnp);
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "pointerToX:" << pointerToX
+    << "x:" << x
     << journal::endl;
 
   // return
@@ -1077,25 +1077,25 @@ char pypylith3d_read_bc__name__[] = "read_bc";
 
 PyObject * pypylith3d_read_bc(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToBond;
-  double displacementScaleFactor;
-  double velocityScaleFactor;
-  double forceScaleFactor;
-  PyObject* pyPointerToIbond;
-  int numberNodes;
-  int numberBcEntries;
-  int f77FileInput;
+  PyObject* py_bond;
+  double dscale;
+  double vscale;
+  double fscale;
+  PyObject* py_ibond;
+  int numnp;
+  int numbc;
+  int kr;
   char* bcInputFile;
 
   int ok = PyArg_ParseTuple(args, "OdddOiiis:read_bc",
-			    &pyPointerToBond,
-			    &displacementScaleFactor,
-			    &velocityScaleFactor,
-			    &forceScaleFactor,
-			    &pyPointerToIbond,
-			    &numberNodes,
-			    &numberBcEntries,
-			    &f77FileInput,
+			    &py_bond,
+			    &dscale,
+			    &vscale,
+			    &fscale,
+			    &py_ibond,
+			    &numnp,
+			    &numbc,
+			    &kr,
 			    &bcInputFile);
 
   if (!ok) {
@@ -1105,19 +1105,19 @@ PyObject * pypylith3d_read_bc(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToBond = (double*) PyCObject_AsVoidPtr(pyPointerToBond);
-  int* pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
+  double* bond = (double*) PyCObject_AsVoidPtr(py_bond);
+  int* ibond = (int*) PyCObject_AsVoidPtr(py_ibond);
   int numberConcForces = 0;
 
-  read_bc_f(pointerToBond,
-	    &displacementScaleFactor,
-	    &velocityScaleFactor,
-	    &forceScaleFactor,
-	    pointerToIbond,
-	    &numberNodes,
-	    &numberBcEntries,
+  read_bc_f(bond,
+	    &dscale,
+	    &vscale,
+	    &fscale,
+	    ibond,
+	    &numnp,
+	    &numbc,
 	    &numberConcForces,
-	    &f77FileInput,
+	    &kr,
 	    bcInputFile,
 	    &errorcode,
 	    errorstring,
@@ -1131,7 +1131,7 @@ PyObject * pypylith3d_read_bc(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberBcEntries:" << numberBcEntries
+    << "numbc:" << numbc
     << journal::endl;
 
   // return
@@ -1147,23 +1147,23 @@ char pypylith3d_read_connect__name__[] = "read_connect";
 
 PyObject * pypylith3d_read_connect(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToIen;
-  PyObject* pyPointerToMat;
-  int numberVolumeElementNodes;
-  int numberVolumeElements;
-  int numberNodes;
-  int numberVolumeElementFamilies;
-  int f77FileInput;
+  PyObject* py_ien;
+  PyObject* py_mat;
+  int nen;
+  int numelv;
+  int numnp;
+  int nvfamilies;
+  int kr;
   char* connectivityInputFile;
 
   int ok = PyArg_ParseTuple(args, "OOiiiiis:read_connect",
-                            &pyPointerToIen,
-                            &pyPointerToMat,
-                            &numberVolumeElementNodes,
-                            &numberVolumeElements,
-                            &numberNodes,
-                            &numberVolumeElementFamilies,
-                            &f77FileInput,
+                            &py_ien,
+                            &py_mat,
+                            &nen,
+                            &numelv,
+                            &numnp,
+                            &nvfamilies,
+                            &kr,
                             &connectivityInputFile);
 
   if (!ok) {
@@ -1173,16 +1173,16 @@ PyObject * pypylith3d_read_connect(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int* pointerToMat = (int*) PyCObject_AsVoidPtr(pyPointerToMat);
+  int* ien = (int*) PyCObject_AsVoidPtr(py_ien);
+  int* mat = (int*) PyCObject_AsVoidPtr(py_mat);
 
-  read_connect_f(pointerToIen,
-		 pointerToMat,
-		 &numberVolumeElementNodes,
-                 &numberVolumeElements,
-                 &numberNodes,
-                 &numberVolumeElementFamilies,
-		 &f77FileInput,
+  read_connect_f(ien,
+		 mat,
+		 &nen,
+                 &numelv,
+                 &numnp,
+                 &nvfamilies,
+		 &kr,
 		 connectivityInputFile,
 		 &errorcode,
 		 errorstring,
@@ -1196,7 +1196,7 @@ PyObject * pypylith3d_read_connect(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberVolumeElementFamilies:" << numberVolumeElementFamilies
+    << "nvfamilies:" << nvfamilies
     << journal::endl;
 
   // return
@@ -1212,17 +1212,17 @@ char pypylith3d_read_coords__name__[] = "read_coords";
 
 PyObject * pypylith3d_read_coords(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToX;
-  double coordinateScaleFactor;
-  int numberNodes;
-  int f77FileInput;
+  PyObject* py_x;
+  double cscale;
+  int numnp;
+  int kr;
   char* coordinateInputFile;
 
   int ok = PyArg_ParseTuple(args, "Odiis:read_coords",
-			    &pyPointerToX,
-			    &coordinateScaleFactor,
-			    &numberNodes,
-			    &f77FileInput,
+			    &py_x,
+			    &cscale,
+			    &numnp,
+			    &kr,
 			    &coordinateInputFile);
 
   if (!ok) {
@@ -1232,12 +1232,12 @@ PyObject * pypylith3d_read_coords(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
+  double* x = (double*) PyCObject_AsVoidPtr(py_x);
 
-  read_coords_f(pointerToX,
-		&coordinateScaleFactor,
-		&numberNodes,
-		&f77FileInput,
+  read_coords_f(x,
+		&cscale,
+		&numnp,
+		&kr,
 		coordinateInputFile,
 		&errorcode,
 		errorstring,
@@ -1251,7 +1251,7 @@ PyObject * pypylith3d_read_coords(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "coordinateScaleFactor:" << coordinateScaleFactor
+    << "cscale:" << cscale
     << journal::endl;
 
   // return
@@ -1267,24 +1267,24 @@ char pypylith3d_read_diff__name__[] = "read_diff";
 
 PyObject * pypylith3d_read_diff(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToDiforc;
-  PyObject* pyPointerToNslip;
-  PyObject* pyPointerToIdhist;
-  int numberSlipperyNodeEntries;
-  int numberDifferentialForceEntries;
-  int numberNodes;
-  int f77FileInput;
-  char* differentialForceInputFile;
+  PyObject* py_diforc;
+  PyObject* py_nslip;
+  PyObject* py_idhist;
+  int numslp;
+  int numdif;
+  int numnp;
+  int kr;
+  char* difile;
 
   int ok = PyArg_ParseTuple(args, "OOOiiiis:read_diff",
-			    &pyPointerToDiforc,
-			    &pyPointerToNslip,
-			    &pyPointerToIdhist,
-			    &numberSlipperyNodeEntries,
-			    &numberDifferentialForceEntries,
-			    &numberNodes,
-			    &f77FileInput,
-			    &differentialForceInputFile);
+			    &py_diforc,
+			    &py_nslip,
+			    &py_idhist,
+			    &numslp,
+			    &numdif,
+			    &numnp,
+			    &kr,
+			    &difile);
 
   if (!ok) {
     return 0;
@@ -1293,21 +1293,21 @@ PyObject * pypylith3d_read_diff(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToDiforc = (double*) PyCObject_AsVoidPtr(pyPointerToDiforc);
-  int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
-  int* pointerToIdhist = (int*) PyCObject_AsVoidPtr(pyPointerToIdhist);
+  double* diforc = (double*) PyCObject_AsVoidPtr(py_diforc);
+  int* nslip = (int*) PyCObject_AsVoidPtr(py_nslip);
+  int* idhist = (int*) PyCObject_AsVoidPtr(py_idhist);
 
-  read_diff_f(pointerToDiforc,
-	      pointerToNslip,
-	      pointerToIdhist,
-	      &numberSlipperyNodeEntries,
-	      &numberDifferentialForceEntries,
-	      &numberNodes,
-	      &f77FileInput,
-	      differentialForceInputFile,
+  read_diff_f(diforc,
+	      nslip,
+	      idhist,
+	      &numslp,
+	      &numdif,
+	      &numnp,
+	      &kr,
+	      difile,
 	      &errorcode,
 	      errorstring,
-	      strlen(differentialForceInputFile),
+	      strlen(difile),
 	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -1317,7 +1317,7 @@ PyObject * pypylith3d_read_diff(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberDifferentialForceEntries:" << numberDifferentialForceEntries
+    << "numdif:" << numdif
     << journal::endl;
 
   // return
@@ -1333,22 +1333,22 @@ char pypylith3d_read_fuldat__name__[] = "read_fuldat";
 
 PyObject * pypylith3d_read_fuldat(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToIprint;
-  int numberFullOutputs;
-  int analysisTypeInt;
-  int numberCycles;
-  int totalNumberTimeSteps;
-  int f77FileInput;
-  char* fullOutputInputFile;
+  PyObject* py_iprint;
+  int icontr;
+  int icode;
+  int ncycle;
+  int lastep;
+  int kr;
+  char* fofile;
 
   int ok = PyArg_ParseTuple(args, "Oiiiiis:read_fuldat",
-			    &pyPointerToIprint,
-			    &numberFullOutputs,
-			    &analysisTypeInt,
-			    &numberCycles,
-			    &totalNumberTimeSteps,
-			    &f77FileInput,
-			    &fullOutputInputFile);
+			    &py_iprint,
+			    &icontr,
+			    &icode,
+			    &ncycle,
+			    &lastep,
+			    &kr,
+			    &fofile);
 
   if (!ok) {
     return 0;
@@ -1357,18 +1357,18 @@ PyObject * pypylith3d_read_fuldat(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToIprint = (int*) PyCObject_AsVoidPtr(pyPointerToIprint);
+  int* iprint = (int*) PyCObject_AsVoidPtr(py_iprint);
 
-  read_fuldat_f(pointerToIprint,
-		&numberFullOutputs,
-		&analysisTypeInt,
-		&numberCycles,
-		&totalNumberTimeSteps,
-		&f77FileInput,
-		fullOutputInputFile,
+  read_fuldat_f(iprint,
+		&icontr,
+		&icode,
+		&ncycle,
+		&lastep,
+		&kr,
+		fofile,
 		&errorcode,
 		errorstring,
-		strlen(fullOutputInputFile),
+		strlen(fofile),
 		sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -1378,7 +1378,7 @@ PyObject * pypylith3d_read_fuldat(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberFullOutputs:" << numberFullOutputs
+    << "icontr:" << icontr
     << journal::endl;
 
   // return
@@ -1394,20 +1394,20 @@ char pypylith3d_read_hist__name__[] = "read_hist";
 
 PyObject * pypylith3d_read_hist(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToHistry;
-  PyObject* pyPointerToTimes;
-  int numberLoadHistories;
-  int totalNumberTimeSteps;
-  int f77FileInput;
-  char* loadHistoryInputFile;
+  PyObject* py_histry;
+  PyObject* py_times;
+  int nhist;
+  int lastep;
+  int kr;
+  char* hfile;
 
   int ok = PyArg_ParseTuple(args, "OOiiis:read_hist",
-			    &pyPointerToHistry,
-			    &pyPointerToTimes,
-			    &numberLoadHistories,
-			    &totalNumberTimeSteps,
-			    &f77FileInput,
-			    &loadHistoryInputFile);
+			    &py_histry,
+			    &py_times,
+			    &nhist,
+			    &lastep,
+			    &kr,
+			    &hfile);
 
   if (!ok) {
     return 0;
@@ -1416,18 +1416,18 @@ PyObject * pypylith3d_read_hist(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToHistry = (double*) PyCObject_AsVoidPtr(pyPointerToHistry);
-  double* pointerToTimes = (double*) PyCObject_AsVoidPtr(pyPointerToTimes);
+  double* histry = (double*) PyCObject_AsVoidPtr(py_histry);
+  double* times = (double*) PyCObject_AsVoidPtr(py_times);
 
-  read_hist_f(pointerToHistry,
-	      pointerToTimes,
-	      &numberLoadHistories,
-	      &totalNumberTimeSteps,
-	      &f77FileInput,
-	      loadHistoryInputFile,
+  read_hist_f(histry,
+	      times,
+	      &nhist,
+	      &lastep,
+	      &kr,
+	      hfile,
 	      &errorcode,
 	      errorstring,
-	      strlen(loadHistoryInputFile),
+	      strlen(hfile),
 	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -1437,7 +1437,7 @@ PyObject * pypylith3d_read_hist(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberLoadHistories:" << numberLoadHistories
+    << "nhist:" << nhist
     << journal::endl;
 
   // return
@@ -1453,36 +1453,36 @@ PyObject * pypylith3d_read_hist(PyObject *, PyObject *args)
 
 // PyObject * pypylith3d_read_prestr(PyObject *, PyObject *args)
 // {
-  // PyObject* pyPointerToStn;
-  // PyObject* pyPointerToSt0;
-  // PyObject* pyPointerToListArrayPrscal;
+  // PyObject* py_stn;
+  // PyObject* py_st0;
+  // PyObject* py_prscal;
   // int numberStressComponents;
   // int numberGaussPoints;
   // int numberPrestressGaussPoints;
   // int numberElements;
   // int numberPrestressEntries;
-  // int prestressAutoComputeInt;
-  // int asciiOutputInt;
-  // int f77FileInput;
-  // int f77AsciiOutput;
+  // int ipstrs;
+  // int idout;
+  // int kr;
+  // int kw;
   // char* prestressInputFile;
-  // char* asciiOutputFile;
+  // char* ofile;
 
   // int ok = PyArg_ParseTuple(args, "OOOiiiiiiiiiss:read_prestr",
-			    // &pyPointerToStn,
-			    // &pyPointerToSt0,
-			    // &pyPointerToListArrayPrscal,
+			    // &py_stn,
+			    // &py_st0,
+			    // &py_prscal,
 			    // &numberStressComponents,
 			    // &numberGaussPoints,
 			    // &numberPrestressGaussPoints,
 			    // &numberElements,
 			    // &numberPrestressEntries,
-			    // &prestressAutoComputeInt,
-			    // &asciiOutputInt,
-			    // &f77FileInput,
-			    // &f77AsciiOutput,
+			    // &ipstrs,
+			    // &idout,
+			    // &kr,
+			    // &kw,
 			    // &prestressInputFile,
-			    // &asciiOutputFile);
+			    // &ofile);
 
   // if (!ok) {
     // return 0;
@@ -1491,27 +1491,27 @@ PyObject * pypylith3d_read_hist(PyObject *, PyObject *args)
   // int errorcode = 0;
   // const int maxsize = 4096;
   // char errorstring[maxsize];
-  // double* pointerToStn = (double*) PyCObject_AsVoidPtr(pyPointerToStn);
-  // double* pointerToSt0 = (double*) PyCObject_AsVoidPtr(pyPointerToSt0);
-  // double* pointerToListArrayPrscal = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPrscal);
+  // double* stn = (double*) PyCObject_AsVoidPtr(py_stn);
+  // double* st0 = (double*) PyCObject_AsVoidPtr(py_st0);
+  // double* prscal = (double*) PyCObject_AsVoidPtr(py_prscal);
 
-  // read_prestr_f(pointerToStn,
-		// pointerToSt0,
-		// pointerToListArrayPrscal,
+  // read_prestr_f(stn,
+		// st0,
+		// prscal,
 		// &numberStressComponents,
 		// &numberGaussPoints,
 		// &numberPrestressGaussPoints,
 		// &numberElements,
 		// &numberPrestressEntries,
-		// &prestressAutoComputeInt,
-		// &asciiOutputInt,
-		// &f77FileInput,
-		// &f77AsciiOutput,
+		// &ipstrs,
+		// &idout,
+		// &kr,
+		// &kw,
 		// &errorcode,
 		// prestressInputFile,
-		// asciiOutputFile,
+		// ofile,
 		// strlen(prestressInputFile),
-		// strlen(asciiOutputFile));
+		// strlen(ofile));
     
 // if(0 != exceptionhandler(errorcode, errorstring)) {
     // return 0;
@@ -1536,22 +1536,22 @@ char pypylith3d_read_skew__name__[] = "read_skew";
 
 PyObject * pypylith3d_read_skew(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToSkew;
-  double rotationScaleFactor;
-  int numberRotationEntries;
-  int numberNodes;
-  int autoRotateSlipperyNodesInt;
-  int f77FileInput;
-  char* rotationInputFile;
+  PyObject* py_skew;
+  double runits;
+  int numrot;
+  int numnp;
+  int iskopt;
+  int kr;
+  char* skfile;
 
   int ok = PyArg_ParseTuple(args, "Odiiiis:read_skew",
-			    &pyPointerToSkew,
-			    &rotationScaleFactor,
-			    &numberRotationEntries,
-			    &numberNodes,
-			    &autoRotateSlipperyNodesInt,
-			    &f77FileInput,
-			    &rotationInputFile);
+			    &py_skew,
+			    &runits,
+			    &numrot,
+			    &numnp,
+			    &iskopt,
+			    &kr,
+			    &skfile);
 
   if (!ok) {
     return 0;
@@ -1560,18 +1560,18 @@ PyObject * pypylith3d_read_skew(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
+  double* skew = (double*) PyCObject_AsVoidPtr(py_skew);
 
-  read_skew_f(pointerToSkew,
-	      &rotationScaleFactor,
-	      &numberRotationEntries,
-	      &numberNodes,
-	      &autoRotateSlipperyNodesInt,
-	      &f77FileInput,
-	      rotationInputFile,
+  read_skew_f(skew,
+	      &runits,
+	      &numrot,
+	      &numnp,
+	      &iskopt,
+	      &kr,
+	      skfile,
 	      &errorcode,
 	      errorstring,
-	      strlen(rotationInputFile),
+	      strlen(skfile),
 	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -1581,7 +1581,7 @@ PyObject * pypylith3d_read_skew(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberRotationEntries:" << numberRotationEntries
+    << "numrot:" << numrot
     << journal::endl;
 
   // return
@@ -1597,20 +1597,20 @@ char pypylith3d_read_slip__name__[] = "read_slip";
 
 PyObject * pypylith3d_read_slip(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToNslip;
-  int numberSlipperyNodeEntries;
-  int numberNodes;
-  int autoRotateSlipperyNodesInt;
-  int f77FileInput;
-  char* slipperyNodeInputFile;
+  PyObject* py_nslip;
+  int numslp;
+  int numnp;
+  int iskopt;
+  int kr;
+  char* slfile;
 
   int ok = PyArg_ParseTuple(args, "Oiiiis:read_slip",
-			    &pyPointerToNslip,
-			    &numberSlipperyNodeEntries,
-			    &numberNodes,
-			    &autoRotateSlipperyNodesInt,
-			    &f77FileInput,
-			    &slipperyNodeInputFile);
+			    &py_nslip,
+			    &numslp,
+			    &numnp,
+			    &iskopt,
+			    &kr,
+			    &slfile);
 
   if (!ok) {
     return 0;
@@ -1619,19 +1619,19 @@ PyObject * pypylith3d_read_slip(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
+  int* nslip = (int*) PyCObject_AsVoidPtr(py_nslip);
   int totalNumberSlipperyNodes = 0;
 
-  read_slip_f(pointerToNslip,
-	      &numberSlipperyNodeEntries,
+  read_slip_f(nslip,
+	      &numslp,
 	      &totalNumberSlipperyNodes,
-	      &numberNodes,
-	      &autoRotateSlipperyNodesInt,
-	      &f77FileInput,
-	      slipperyNodeInputFile,
+	      &numnp,
+	      &iskopt,
+	      &kr,
+	      slfile,
 	      &errorcode,
 	      errorstring,
-	      strlen(slipperyNodeInputFile),
+	      strlen(slfile),
 	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -1657,22 +1657,22 @@ char pypylith3d_read_split__name__[] = "read_split";
 
 PyObject * pypylith3d_read_split(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToFault;
-  PyObject* pyPointerToNfault;
-  int numberSplitNodeEntries;
-  int numberNodes;
-  int numberVolumeElements;
-  int f77FileInput;
-  char* splitNodeInputFile;
+  PyObject* py_fault;
+  PyObject* py_nfault;
+  int numfn;
+  int numnp;
+  int numelv;
+  int kr;
+  char* spfile;
 
   int ok = PyArg_ParseTuple(args, "OOiiiis:read_split",
-			    &pyPointerToFault,
-			    &pyPointerToNfault,
-			    &numberSplitNodeEntries,
-			    &numberNodes,
-			    &numberVolumeElements,
-			    &f77FileInput,
-			    &splitNodeInputFile);
+			    &py_fault,
+			    &py_nfault,
+			    &numfn,
+			    &numnp,
+			    &numelv,
+			    &kr,
+			    &spfile);
 
   if (!ok) {
     return 0;
@@ -1681,21 +1681,21 @@ PyObject * pypylith3d_read_split(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToFault = (double*) PyCObject_AsVoidPtr(pyPointerToFault);
-  int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
+  double* fault = (double*) PyCObject_AsVoidPtr(py_fault);
+  int* nfault = (int*) PyCObject_AsVoidPtr(py_nfault);
   int totalNumberSplitNodes = 0;
 
-  read_split_f(pointerToFault,
-	       pointerToNfault,
-	       &numberSplitNodeEntries,
+  read_split_f(fault,
+	       nfault,
+	       &numfn,
 	       &totalNumberSplitNodes,
-	       &numberNodes,
-	       &numberVolumeElements,
-	       &f77FileInput,
-	       splitNodeInputFile,
+	       &numnp,
+	       &numelv,
+	       &kr,
+	       spfile,
 	       &errorcode,
 	       errorstring,
-	       strlen(splitNodeInputFile),
+	       strlen(spfile),
 	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -1721,16 +1721,16 @@ char pypylith3d_read_stateout__name__[] = "read_stateout";
 
 PyObject * pypylith3d_read_stateout(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToIstatout;
-  PyObject* pyPointerToNstatout;
-  int f77FileInput;
-  char* stateVariableInputFile;
+  PyObject* py_istatout;
+  PyObject* py_nstatout;
+  int kr;
+  char* stfile;
 
   int ok = PyArg_ParseTuple(args, "OOis:read_stateout",
-			    &pyPointerToIstatout,
-			    &pyPointerToNstatout,
-			    &f77FileInput,
-			    &stateVariableInputFile);
+			    &py_istatout,
+			    &py_nstatout,
+			    &kr,
+			    &stfile);
 
   if (!ok) {
     return 0;
@@ -1739,16 +1739,16 @@ PyObject * pypylith3d_read_stateout(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
-  int* pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
+  int* istatout = (int*) PyCObject_AsVoidPtr(py_istatout);
+  int* nstatout = (int*) PyCObject_AsVoidPtr(py_nstatout);
 
-  read_stateout_f(pointerToIstatout,
-	          pointerToNstatout,
-	          &f77FileInput,
-	          stateVariableInputFile,
+  read_stateout_f(istatout,
+	          nstatout,
+	          &kr,
+	          stfile,
 	          &errorcode,
 	          errorstring,
-	          strlen(stateVariableInputFile),
+	          strlen(stfile),
 	          sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -1758,7 +1758,7 @@ PyObject * pypylith3d_read_stateout(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "pointerToIstatout:" << pointerToIstatout
+    << "istatout:" << istatout
     << journal::endl;
 
   // return
@@ -1774,39 +1774,39 @@ char pypylith3d_read_timdat__name__[] = "read_timdat";
 
 PyObject * pypylith3d_read_timdat(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToDelt;
-  PyObject* pyPointerToAlfa;
-  PyObject* pyPointerToUtol;
-  PyObject* pyPointerToFtol;
-  PyObject* pyPointerToEtol;
-  PyObject* pyPointerToTimes;
-  double timeScaleFactor;
-  PyObject* pyPointerToMaxstp;
-  PyObject* pyPointerToMaxit;
-  PyObject* pyPointerToNtdinit;
-  PyObject* pyPointerToLgdef;
-  PyObject* pyPointerToItmax;
-  int numberTimeStepGroups;
-  int totalNumberTimeSteps;
-  int f77FileInput;
+  PyObject* py_delt;
+  PyObject* py_alfa;
+  PyObject* py_utol;
+  PyObject* py_ftol;
+  PyObject* py_etol;
+  PyObject* py_times;
+  double tunits;
+  PyObject* py_maxstp;
+  PyObject* py_maxit;
+  PyObject* py_ntdinit;
+  PyObject* py_lgdef;
+  PyObject* py_itmax;
+  int nintg;
+  int lastep;
+  int kr;
   char* timeStepInputFile;
 
   int ok = PyArg_ParseTuple(args, "OOOOOOdOOOOOiiis:read_timdat",
-			    &pyPointerToDelt,
-			    &pyPointerToAlfa,
-			    &pyPointerToUtol,
-			    &pyPointerToFtol,
-			    &pyPointerToEtol,
-			    &pyPointerToTimes,
-			    &timeScaleFactor,
-			    &pyPointerToMaxstp,
-			    &pyPointerToMaxit,
-			    &pyPointerToNtdinit,
-			    &pyPointerToLgdef,
-			    &pyPointerToItmax,
-			    &numberTimeStepGroups,
-			    &totalNumberTimeSteps,
-			    &f77FileInput,
+			    &py_delt,
+			    &py_alfa,
+			    &py_utol,
+			    &py_ftol,
+			    &py_etol,
+			    &py_times,
+			    &tunits,
+			    &py_maxstp,
+			    &py_maxit,
+			    &py_ntdinit,
+			    &py_lgdef,
+			    &py_itmax,
+			    &nintg,
+			    &lastep,
+			    &kr,
 			    &timeStepInputFile);
 
   if (!ok) {
@@ -1816,33 +1816,33 @@ PyObject * pypylith3d_read_timdat(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToDelt = (double*) PyCObject_AsVoidPtr(pyPointerToDelt);
-  double* pointerToAlfa = (double*) PyCObject_AsVoidPtr(pyPointerToAlfa);
-  double* pointerToUtol = (double*) PyCObject_AsVoidPtr(pyPointerToUtol);
-  double* pointerToFtol = (double*) PyCObject_AsVoidPtr(pyPointerToFtol);
-  double* pointerToEtol = (double*) PyCObject_AsVoidPtr(pyPointerToEtol);
-  double* pointerToTimes = (double*) PyCObject_AsVoidPtr(pyPointerToTimes);
-  int* pointerToMaxstp = (int*) PyCObject_AsVoidPtr(pyPointerToMaxstp);
-  int* pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
-  int* pointerToNtdinit = (int*) PyCObject_AsVoidPtr(pyPointerToNtdinit);
-  int* pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
-  int* pointerToItmax = (int*) PyCObject_AsVoidPtr(pyPointerToItmax);
+  double* delt = (double*) PyCObject_AsVoidPtr(py_delt);
+  double* alfa = (double*) PyCObject_AsVoidPtr(py_alfa);
+  double* utol = (double*) PyCObject_AsVoidPtr(py_utol);
+  double* ftol = (double*) PyCObject_AsVoidPtr(py_ftol);
+  double* etol = (double*) PyCObject_AsVoidPtr(py_etol);
+  double* times = (double*) PyCObject_AsVoidPtr(py_times);
+  int* maxstp = (int*) PyCObject_AsVoidPtr(py_maxstp);
+  int* maxit = (int*) PyCObject_AsVoidPtr(py_maxit);
+  int* ntdinit = (int*) PyCObject_AsVoidPtr(py_ntdinit);
+  int* lgdef = (int*) PyCObject_AsVoidPtr(py_lgdef);
+  int* itmax = (int*) PyCObject_AsVoidPtr(py_itmax);
 
-  read_timdat_f(pointerToDelt,
-		pointerToAlfa,
-		pointerToUtol,
-		pointerToFtol,
-		pointerToEtol,
-		pointerToTimes,
-		&timeScaleFactor,
-		pointerToMaxstp,
-		pointerToMaxit,
-		pointerToNtdinit,
-		pointerToLgdef,
-		pointerToItmax,
-		&numberTimeStepGroups,
-		&totalNumberTimeSteps,
-		&f77FileInput,
+  read_timdat_f(delt,
+		alfa,
+		utol,
+		ftol,
+		etol,
+		times,
+		&tunits,
+		maxstp,
+		maxit,
+		ntdinit,
+		lgdef,
+		itmax,
+		&nintg,
+		&lastep,
+		&kr,
 		timeStepInputFile,
 		&errorcode,
 		errorstring,
@@ -1856,7 +1856,7 @@ PyObject * pypylith3d_read_timdat(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "totalNumberTimeSteps:" << totalNumberTimeSteps
+    << "lastep:" << lastep
     << journal::endl;
 
   // return
@@ -1872,21 +1872,21 @@ char pypylith3d_read_tractions__name__[] = "read_tractions";
 
 PyObject * pypylith3d_read_tractions(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToTractionverts;
-  PyObject* pyPointerToTractionvals;
-  double tractionScaleFactor;
-  int numberTractionBc;
+  PyObject* py_tractionverts;
+  PyObject* py_tractionvals;
+  double tscale;
+  int numtractions;
   int numberSurfaceElementNodes;
-  int f77FileInput;
+  int kr;
   char* tractionInputFile;
 
   int ok = PyArg_ParseTuple(args, "OOdiiis:read_tractions",
-			    &pyPointerToTractionverts,
-			    &pyPointerToTractionvals,
-			    &tractionScaleFactor,
-			    &numberTractionBc,
+			    &py_tractionverts,
+			    &py_tractionvals,
+			    &tscale,
+			    &numtractions,
 			    &numberSurfaceElementNodes,
-			    &f77FileInput,
+			    &kr,
 			    &tractionInputFile);
 
   if (!ok) {
@@ -1896,15 +1896,15 @@ PyObject * pypylith3d_read_tractions(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToTractionverts = (int*) PyCObject_AsVoidPtr(pyPointerToTractionverts);
-  double* pointerToTractionvals = (double*) PyCObject_AsVoidPtr(pyPointerToTractionvals);
+  int* tractionverts = (int*) PyCObject_AsVoidPtr(py_tractionverts);
+  double* tractionvals = (double*) PyCObject_AsVoidPtr(py_tractionvals);
 
-  read_tractions_f(pointerToTractionverts,
-		   pointerToTractionvals,
-		   &tractionScaleFactor,
-		   &numberTractionBc,
+  read_tractions_f(tractionverts,
+		   tractionvals,
+		   &tscale,
+		   &numtractions,
 		   &numberSurfaceElementNodes,
-		   &f77FileInput,
+		   &kr,
 		   tractionInputFile,
 		   &errorcode,
 		   errorstring,
@@ -1918,7 +1918,7 @@ PyObject * pypylith3d_read_tractions(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "tractionScaleFactor:" << tractionScaleFactor
+    << "tscale:" << tscale
     << journal::endl;
 
   // return
@@ -1934,24 +1934,24 @@ char pypylith3d_read_wink__name__[] = "read_wink";
 
 PyObject * pypylith3d_read_wink(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToWinkdef;
-  PyObject* pyPointerToListArrayWscal;
-  PyObject* pyPointerToIwinkdef;
-  PyObject* pyPointerToIwinkid;
-  int numberWinklerForces;
-  int numberWinklerEntries;
-  int f77FileInput;
-  char* winklerInputFile;
+  PyObject* py_winkdef;
+  PyObject* py_wscal;
+  PyObject* py_iwinkdef;
+  PyObject* py_iwinkid;
+  int nwink;
+  int nwinke;
+  int kr;
+  char* wfile;
 
   int ok = PyArg_ParseTuple(args, "OOOOiiis:read_wink",
-			    &pyPointerToWinkdef,
-			    &pyPointerToListArrayWscal,
-			    &pyPointerToIwinkdef,
-			    &pyPointerToIwinkid,
-			    &numberWinklerForces,
-			    &numberWinklerEntries,
-			    &f77FileInput,
-			    &winklerInputFile);
+			    &py_winkdef,
+			    &py_wscal,
+			    &py_iwinkdef,
+			    &py_iwinkid,
+			    &nwink,
+			    &nwinke,
+			    &kr,
+			    &wfile);
 
   if (!ok) {
     return 0;
@@ -1960,22 +1960,22 @@ PyObject * pypylith3d_read_wink(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToWinkdef = (double*) PyCObject_AsVoidPtr(pyPointerToWinkdef);
-  double* pointerToListArrayWscal = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayWscal);
-  int* pointerToIwinkdef = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkdef);
-  int* pointerToIwinkid = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkid);
+  double* winkdef = (double*) PyCObject_AsVoidPtr(py_winkdef);
+  double* wscal = (double*) PyCObject_AsVoidPtr(py_wscal);
+  int* iwinkdef = (int*) PyCObject_AsVoidPtr(py_iwinkdef);
+  int* iwinkid = (int*) PyCObject_AsVoidPtr(py_iwinkid);
 
-  read_wink_f(pointerToWinkdef,
-	      pointerToListArrayWscal,
-	      pointerToIwinkdef,
-	      pointerToIwinkid,
-	      &numberWinklerForces,
-	      &numberWinklerEntries,
-	      &f77FileInput,
-	      winklerInputFile,
+  read_wink_f(winkdef,
+	      wscal,
+	      iwinkdef,
+	      iwinkid,
+	      &nwink,
+	      &nwinke,
+	      &kr,
+	      wfile,
 	      &errorcode,
 	      errorstring,
-	      strlen(winklerInputFile),
+	      strlen(wfile),
 	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -1985,7 +1985,7 @@ PyObject * pypylith3d_read_wink(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberWinklerForces:" << numberWinklerForces
+    << "nwink:" << nwink
     << journal::endl;
 
   // return
@@ -2001,40 +2001,40 @@ char pypylith3d_sort_elements__name__[] = "sort_elements";
 
 PyObject * pypylith3d_sort_elements(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToIen;
-  PyObject* pyPointerToMat;
-  PyObject* pyPointerToMaterialModelInfo;
-  PyObject* pyPointerToVolumeElementFamilyList;
-  PyObject* pyPointerToIvfamily;
-  PyObject* pyPointerToIens;
-  PyObject* pyPointerToIvftmp;
-  PyObject* pyPointerToIndxiel;
-  PyObject* pyPointerToIelindx;
-  int numberVolumeElementNodes;
-  int numberVolumeElementGaussPoints;
-  int maxNumberVolumeElementFamilies;
-  int numberVolumeElementFamilies;
+  PyObject* py_ien;
+  PyObject* py_mat;
+  PyObject* py_infmatmod;
+  PyObject* py_volumeElementFamilyList;
+  PyObject* py_ivfamily;
+  PyObject* py_iens;
+  PyObject* py_ivftmp;
+  PyObject* py_indxiel;
+  PyObject* py_ielindx;
+  int nen;
+  int ngauss;
+  int maxvfamilies;
+  int nvfamilies;
   int prestressFlag;
-  int numberVolumeElements;
-  int numberNodes;
+  int numelv;
+  int numnp;
 
   int ok = PyArg_ParseTuple(args, "OOOOOOOOOiiiiiii:sort_elements",
-			    &pyPointerToIen,
-			    &pyPointerToMat,
-			    &pyPointerToMaterialModelInfo,
-			    &pyPointerToVolumeElementFamilyList,
-			    &pyPointerToIvfamily,
-			    &pyPointerToIens,
-			    &pyPointerToIvftmp,
-			    &pyPointerToIndxiel,
-			    &pyPointerToIelindx,
-			    &numberVolumeElementNodes,
-			    &numberVolumeElementGaussPoints,
-			    &maxNumberVolumeElementFamilies,
-			    &numberVolumeElementFamilies,
+			    &py_ien,
+			    &py_mat,
+			    &py_infmatmod,
+			    &py_volumeElementFamilyList,
+			    &py_ivfamily,
+			    &py_iens,
+			    &py_ivftmp,
+			    &py_indxiel,
+			    &py_ielindx,
+			    &nen,
+			    &ngauss,
+			    &maxvfamilies,
+			    &nvfamilies,
 			    &prestressFlag,
-			    &numberVolumeElements,
-			    &numberNodes);
+			    &numelv,
+			    &numnp);
 
   if (!ok) {
     return 0;
@@ -2043,35 +2043,35 @@ PyObject * pypylith3d_sort_elements(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int* pointerToMat = (int*) PyCObject_AsVoidPtr(pyPointerToMat);
-  int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
-  int* pointerToVolumeElementFamilyList = (int*) PyCObject_AsVoidPtr(pyPointerToVolumeElementFamilyList);
-  int* pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
-  int* pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
-  int* pointerToIvftmp = (int*) PyCObject_AsVoidPtr(pyPointerToIvftmp);
-  int* pointerToIndxiel = (int*) PyCObject_AsVoidPtr(pyPointerToIndxiel);
-  int* pointerToIelindx = (int*) PyCObject_AsVoidPtr(pyPointerToIelindx);
+  int* ien = (int*) PyCObject_AsVoidPtr(py_ien);
+  int* mat = (int*) PyCObject_AsVoidPtr(py_mat);
+  int* infmatmod = (int*) PyCObject_AsVoidPtr(py_infmatmod);
+  int* ivflist = (int*) PyCObject_AsVoidPtr(py_volumeElementFamilyList);
+  int* ivfamily = (int*) PyCObject_AsVoidPtr(py_ivfamily);
+  int* iens = (int*) PyCObject_AsVoidPtr(py_iens);
+  int* ivftmp = (int*) PyCObject_AsVoidPtr(py_ivftmp);
+  int* indxiel = (int*) PyCObject_AsVoidPtr(py_indxiel);
+  int* ielindx = (int*) PyCObject_AsVoidPtr(py_ielindx);
   int stateSize = 0;
   int state0Size = 0;
   int propertySize = 0;
 
-  sort_elements_f(pointerToIen,
-		  pointerToMat,
-		  pointerToMaterialModelInfo,
-		  pointerToVolumeElementFamilyList,
-		  pointerToIvfamily,
-		  pointerToIens,
-		  pointerToIvftmp,
-		  pointerToIndxiel,
-		  pointerToIelindx,
-		  &numberVolumeElementNodes,
-		  &numberVolumeElementGaussPoints,
-		  &maxNumberVolumeElementFamilies,
-		  &numberVolumeElementFamilies,
+  sort_elements_f(ien,
+		  mat,
+		  infmatmod,
+		  ivflist,
+		  ivfamily,
+		  iens,
+		  ivftmp,
+		  indxiel,
+		  ielindx,
+		  &nen,
+		  &ngauss,
+		  &maxvfamilies,
+		  &nvfamilies,
 		  &prestressFlag,
-		  &numberVolumeElements,
-		  &numberNodes,
+		  &numelv,
+		  &numnp,
 		  &stateSize,
 		  &state0Size,
 		  &propertySize,
@@ -2104,33 +2104,33 @@ char pypylith3d_sort_slip_nodes__name__[] = "sort_slip_nodes";
 
 PyObject * pypylith3d_sort_slip_nodes(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToNslip;
-  PyObject* pyPointerToIndxiel;
-  int numberSlipperyNodeEntries;
-  int numberVolumeElements;
+  PyObject* py_nslip;
+  PyObject* py_indxiel;
+  int numslp;
+  int numelv;
 
   int ok = PyArg_ParseTuple(args, "OOii:sort_slip_nodes",
-			    &pyPointerToNslip,
-			    &pyPointerToIndxiel,
-			    &numberSlipperyNodeEntries,
-			    &numberVolumeElements);
+			    &py_nslip,
+			    &py_indxiel,
+			    &numslp,
+			    &numelv);
 
   if (!ok) {
     return 0;
   }
 
-  int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
-  int* pointerToIndxiel = (int*) PyCObject_AsVoidPtr(pyPointerToIndxiel);
+  int* nslip = (int*) PyCObject_AsVoidPtr(py_nslip);
+  int* indxiel = (int*) PyCObject_AsVoidPtr(py_indxiel);
 
-  sort_slip_nodes_f(pointerToNslip,
-		    pointerToIndxiel,
-		    &numberSlipperyNodeEntries,
-		    &numberVolumeElements);
+  sort_slip_nodes_f(nslip,
+		    indxiel,
+		    &numslp,
+		    &numelv);
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberSlipperyNodeEntries:" << numberSlipperyNodeEntries
+    << "numslp:" << numslp
     << journal::endl;
 
   // return
@@ -2147,33 +2147,33 @@ char pypylith3d_sort_split_nodes__name__[] = "sort_split_nodes";
 
 PyObject * pypylith3d_sort_split_nodes(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToNfault;
-  PyObject* pyPointerToIndxiel;
-  int numberSplitNodeEntries;
-  int numberVolumeElements;
+  PyObject* py_nfault;
+  PyObject* py_indxiel;
+  int numfn;
+  int numelv;
 
   int ok = PyArg_ParseTuple(args, "OOii:sort_split_nodes",
-			    &pyPointerToNfault,
-			    &pyPointerToIndxiel,
-			    &numberSplitNodeEntries,
-			    &numberVolumeElements);
+			    &py_nfault,
+			    &py_indxiel,
+			    &numfn,
+			    &numelv);
 
   if (!ok) {
     return 0;
   }
 
-  int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
-  int* pointerToIndxiel = (int*) PyCObject_AsVoidPtr(pyPointerToIndxiel);
+  int* nfault = (int*) PyCObject_AsVoidPtr(py_nfault);
+  int* indxiel = (int*) PyCObject_AsVoidPtr(py_indxiel);
 
-  sort_split_nodes_f(pointerToNfault,
-		    pointerToIndxiel,
-		    &numberSplitNodeEntries,
-		    &numberVolumeElements);
+  sort_split_nodes_f(nfault,
+		    indxiel,
+		    &numfn,
+		    &numelv);
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberSplitNodeEntries:" << numberSplitNodeEntries
+    << "numfn:" << numfn
     << journal::endl;
 
   // return
@@ -2189,20 +2189,20 @@ char pypylith3d_cmp_stiffsz__name__[] = "cmp_stiffsz";
 
 PyObject * pypylith3d_cmp_stiffsz(PyObject *, PyObject *args)
 {
-  int numberGlobalEquations;
-  PyObject* pyPointerToLm;
-  PyObject* pyPointerToLmx;
-  int numberVolumeElements;
+  int neq;
+  PyObject* py_lm;
+  PyObject* py_lmx;
+  int numelv;
   int totalNumberSlipperyNodes;
-  int numberVolumeElementNodes;
+  int nen;
 
   int ok = PyArg_ParseTuple(args, "iOOiii:cmp_stiffsz",
-			    &numberGlobalEquations,
-			    &pyPointerToLm,
-			    &pyPointerToLmx,
-			    &numberVolumeElements,
+			    &neq,
+			    &py_lm,
+			    &py_lmx,
+			    &numelv,
 			    &totalNumberSlipperyNodes,
-			    &numberVolumeElementNodes);
+			    &nen);
 
   if (!ok) {
     return 0;
@@ -2211,17 +2211,17 @@ PyObject * pypylith3d_cmp_stiffsz(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
-  int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int workingArraySize = 0;
+  int* lm = (int*) PyCObject_AsVoidPtr(py_lm);
+  int* lmx = (int*) PyCObject_AsVoidPtr(py_lmx);
+  int iwork = 0;
 
-  cmp_stiffsz_f(&numberGlobalEquations,
-	   	pointerToLm,
-	   	pointerToLmx,
-	   	&numberVolumeElements,
-	   	&workingArraySize,
+  cmp_stiffsz_f(&neq,
+	   	lm,
+	   	lmx,
+	   	&numelv,
+	   	&iwork,
 	   	&totalNumberSlipperyNodes,
-	   	&numberVolumeElementNodes,
+	   	&nen,
 	   	&errorcode,
 	   	errorstring,
 	   	sizeof(errorstring));
@@ -2233,12 +2233,12 @@ PyObject * pypylith3d_cmp_stiffsz(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "workingArraySize:" << workingArraySize
+    << "iwork:" << iwork
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue("i", workingArraySize);
+  return Py_BuildValue("i", iwork);
 }
 
 
@@ -2250,29 +2250,29 @@ char pypylith3d_lnklst__name__[] = "lnklst";
 
 PyObject * pypylith3d_lnklst(PyObject *, PyObject *args)
 {
-  int numberGlobalEquations;
-  PyObject* pyPointerToLm;
-  PyObject* pyPointerToLmx;
-  int numberVolumeElements;
-  int numberVolumeElementNodes;
+  int neq;
+  PyObject* py_lm;
+  PyObject* py_lmx;
+  int numelv;
+  int nen;
   int numberVolumeElementEquations;
-  PyObject* pyPointerToIndx;
-  PyObject* pyPointerToLink;
-  PyObject* pyPointerToNbrs;
-  int workingArraySize;
+  PyObject* py_indx;
+  PyObject* py_link;
+  PyObject* py_nbrs;
+  int iwork;
   int totalNumberSlipperyNodes;
 
   int ok = PyArg_ParseTuple(args, "iOOiiiOOOii:lnklst",
-			    &numberGlobalEquations,
-			    &pyPointerToLm,
-			    &pyPointerToLmx,
-			    &numberVolumeElements,
-			    &numberVolumeElementNodes,
+			    &neq,
+			    &py_lm,
+			    &py_lmx,
+			    &numelv,
+			    &nen,
 			    &numberVolumeElementEquations,
-			    &pyPointerToIndx,
-			    &pyPointerToLink,
-			    &pyPointerToNbrs,
-			    &workingArraySize,
+			    &py_indx,
+			    &py_link,
+			    &py_nbrs,
+			    &iwork,
 			    &totalNumberSlipperyNodes);
 
   if (!ok) {
@@ -2282,24 +2282,24 @@ PyObject * pypylith3d_lnklst(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
-  int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int* pointerToIndx = (int*) PyCObject_AsVoidPtr(pyPointerToIndx);
-  int* pointerToLink = (int*) PyCObject_AsVoidPtr(pyPointerToLink);
-  int* pointerToNbrs = (int*) PyCObject_AsVoidPtr(pyPointerToNbrs);
+  int* lm = (int*) PyCObject_AsVoidPtr(py_lm);
+  int* lmx = (int*) PyCObject_AsVoidPtr(py_lmx);
+  int* indx = (int*) PyCObject_AsVoidPtr(py_indx);
+  int* link = (int*) PyCObject_AsVoidPtr(py_link);
+  int* nbrs = (int*) PyCObject_AsVoidPtr(py_nbrs);
   int stiffnessMatrixSize =0;
   int stiffnessOffDiagonalSize =0;
 
-  lnklst_f(&numberGlobalEquations,
-	   pointerToLm,
-	   pointerToLmx,
-	   &numberVolumeElements,
-	   &numberVolumeElementNodes,
+  lnklst_f(&neq,
+	   lm,
+	   lmx,
+	   &numelv,
+	   &nen,
 	   &numberVolumeElementEquations,
-	   pointerToIndx,
-	   pointerToLink,
-	   pointerToNbrs,
-	   &workingArraySize,
+	   indx,
+	   link,
+	   nbrs,
+	   &iwork,
 	   &stiffnessOffDiagonalSize,
 	   &stiffnessMatrixSize,
 	   &totalNumberSlipperyNodes,
@@ -2330,40 +2330,40 @@ char pypylith3d_local__name__[] = "local";
 
 PyObject * pypylith3d_local(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToId;
-  int numberNodes;
-  PyObject* pyPointerToIens;
-  PyObject* pyPointerToLm;
-  int numberVolumeElements;
-  int numberVolumeElementNodes;
+  PyObject* py_id;
+  int numnp;
+  PyObject* py_iens;
+  PyObject* py_lm;
+  int numelv;
+  int nen;
 
   int ok = PyArg_ParseTuple(args, "OiOOii:local",
-			    &pyPointerToId,
-			    &numberNodes,
-			    &pyPointerToIens,
-			    &pyPointerToLm,
-			    &numberVolumeElements,
-			    &numberVolumeElementNodes);
+			    &py_id,
+			    &numnp,
+			    &py_iens,
+			    &py_lm,
+			    &numelv,
+			    &nen);
 
   if (!ok) {
     return 0;
   }
 
-  int* pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
-  int* pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
-  int* pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
+  int* id = (int*) PyCObject_AsVoidPtr(py_id);
+  int* iens = (int*) PyCObject_AsVoidPtr(py_iens);
+  int* lm = (int*) PyCObject_AsVoidPtr(py_lm);
 
-  local_f(pointerToId,
-	  &numberNodes,
-	  pointerToIens,
-	  pointerToLm,
-	  &numberVolumeElements,
-	  &numberVolumeElementNodes);
+  local_f(id,
+	  &numnp,
+	  iens,
+	  lm,
+	  &numelv,
+	  &nen);
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberVolumeElements:" << numberVolumeElements
+    << "numelv:" << numelv
     << journal::endl;
 
   // return
@@ -2379,40 +2379,40 @@ char pypylith3d_localf__name__[] = "localf";
 
 PyObject * pypylith3d_localf(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToIens;
-  PyObject* pyPointerToLmf;
-  int numberVolumeElements;
-  PyObject* pyPointerToNfault;
-  int numberSplitNodeEntries;
-  int numberVolumeElementNodes;
+  PyObject* py_iens;
+  PyObject* py_lmf;
+  int numelv;
+  PyObject* py_nfault;
+  int numfn;
+  int nen;
 
   int ok = PyArg_ParseTuple(args, "OOiOii:localf",
-			    &pyPointerToIens,
-			    &pyPointerToLmf,
-			    &numberVolumeElements,
-			    &pyPointerToNfault,
-			    &numberSplitNodeEntries,
-			    &numberVolumeElementNodes);
+			    &py_iens,
+			    &py_lmf,
+			    &numelv,
+			    &py_nfault,
+			    &numfn,
+			    &nen);
 
   if (!ok) {
     return 0;
   }
 
-  int* pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
-  int* pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
-  int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
+  int* iens = (int*) PyCObject_AsVoidPtr(py_iens);
+  int* lmf = (int*) PyCObject_AsVoidPtr(py_lmf);
+  int* nfault = (int*) PyCObject_AsVoidPtr(py_nfault);
 
-  localf_f(pointerToIens,
-	   pointerToLmf,
-	   &numberVolumeElements,
-	   pointerToNfault,
-	   &numberSplitNodeEntries,
-	   &numberVolumeElementNodes);
+  localf_f(iens,
+	   lmf,
+	   &numelv,
+	   nfault,
+	   &numfn,
+	   &nen);
 		  
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberSplitNodeEntries:" << numberSplitNodeEntries
+    << "numfn:" << numfn
     << journal::endl;
 
   // return
@@ -2428,47 +2428,47 @@ char pypylith3d_localx__name__[] = "localx";
 
 PyObject * pypylith3d_localx(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToIdx;
-  int numberNodes;
-  PyObject* pyPointerToIens;
-  PyObject* pyPointerToLmx;
-  int numberVolumeElements;
-  PyObject* pyPointerToNslip;
-  int numberSlipperyNodeEntries;
-  int numberVolumeElementNodes;
+  PyObject* py_idx;
+  int numnp;
+  PyObject* py_iens;
+  PyObject* py_lmx;
+  int numelv;
+  PyObject* py_nslip;
+  int numslp;
+  int nen;
 
   int ok = PyArg_ParseTuple(args, "OiOOiOii:localx",
-			    &pyPointerToIdx,
-  			    &numberNodes,
-  			    &pyPointerToIens,
-  			    &pyPointerToLmx,
-  			    &numberVolumeElements,
-  			    &pyPointerToNslip,
-			    &numberSlipperyNodeEntries,
-  			    &numberVolumeElementNodes);
+			    &py_idx,
+  			    &numnp,
+  			    &py_iens,
+  			    &py_lmx,
+  			    &numelv,
+  			    &py_nslip,
+			    &numslp,
+  			    &nen);
 
   if (!ok) {
     return 0;
   }
 
-  int* pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
-  int* pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
-  int* pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
+  int* idx = (int*) PyCObject_AsVoidPtr(py_idx);
+  int* iens = (int*) PyCObject_AsVoidPtr(py_iens);
+  int* lmx = (int*) PyCObject_AsVoidPtr(py_lmx);
+  int* nslip = (int*) PyCObject_AsVoidPtr(py_nslip);
 
-  localx_f(pointerToIdx,
-	   &numberNodes,
-	   pointerToIens,
-	   pointerToLmx,
-	   &numberVolumeElements,
-	   pointerToNslip,
-	   &numberSlipperyNodeEntries,
-	   &numberVolumeElementNodes);
+  localx_f(idx,
+	   &numnp,
+	   iens,
+	   lmx,
+	   &numelv,
+	   nslip,
+	   &numslp,
+	   &nen);
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberVolumeElements:" << numberVolumeElements
+    << "numelv:" << numelv
     << journal::endl;
 
   // return
@@ -2484,57 +2484,57 @@ char pypylith3d_makemsr__name__[] = "makemsr";
 PyObject * pypylith3d_makemsr(PyObject *, PyObject *args)
 {
   PyObject* pyA;
-  PyObject* pyPointerToIndx;
-  PyObject* pyPointerToLink;
-  PyObject* pyPointerToNbrs;
-  int numberGlobalEquations;
+  PyObject* py_indx;
+  PyObject* py_link;
+  PyObject* py_nbrs;
+  int neq;
   int stiffnessMatrixSize;
-  int workingArraySize;
+  int iwork;
 
   int ok = PyArg_ParseTuple(args, "OOOOiii:makemsr",
                             &pyA,
-			    &pyPointerToIndx,
-			    &pyPointerToLink,
-			    &pyPointerToNbrs,
-			    &numberGlobalEquations,
+			    &py_indx,
+			    &py_link,
+			    &py_nbrs,
+			    &neq,
 			    &stiffnessMatrixSize,
-			    &workingArraySize);
+			    &iwork);
 
   if (!ok) {
     return 0;
   }
   Mat A = (Mat) PyCObject_AsVoidPtr(pyA);
-  int* pointerToIndx = (int*) PyCObject_AsVoidPtr(pyPointerToIndx);
-  int* pointerToLink = (int*) PyCObject_AsVoidPtr(pyPointerToLink);
-  int* pointerToNbrs = (int*) PyCObject_AsVoidPtr(pyPointerToNbrs);
-  int minimumNonzeroTermsPerRow = 0;
-  int maximumNonzeroTermsPerRow = 0;
-  double averageNonzeroTermsPerRow = 0.0;
+  int* indx = (int*) PyCObject_AsVoidPtr(py_indx);
+  int* link = (int*) PyCObject_AsVoidPtr(py_link);
+  int* nbrs = (int*) PyCObject_AsVoidPtr(py_nbrs);
+  int nmin = 0;
+  int nmax = 0;
+  double wavg = 0.0;
 
   makemsr_f(&A,
-	    pointerToIndx,
-	    pointerToLink,
-	    pointerToNbrs,
-	    &numberGlobalEquations,
+	    indx,
+	    link,
+	    nbrs,
+	    &neq,
 	    &stiffnessMatrixSize,
-	    &workingArraySize,
-	    &minimumNonzeroTermsPerRow,
-	    &maximumNonzeroTermsPerRow,
-	    &averageNonzeroTermsPerRow);
+	    &iwork,
+	    &nmin,
+	    &nmax,
+	    &wavg);
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "workingArraySize:" << workingArraySize
+    << "iwork:" << iwork
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
   // return Py_None;
   return Py_BuildValue("iid",
-		       minimumNonzeroTermsPerRow,
-		       maximumNonzeroTermsPerRow,
-		       averageNonzeroTermsPerRow);
+		       nmin,
+		       nmax,
+		       wavg);
 }
 
 
@@ -2549,92 +2549,92 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
   PyObject* pyA;                              // Sparse matrix arrays
   PyObject* pyRhs;
   PyObject* pySol;
-  PyObject* pyPointerToBextern;               // Force vectors
-  PyObject* pyPointerToBtraction;
-  PyObject* pyPointerToBgravity;
-  PyObject* pyPointerToBconcForce;
-  PyObject* pyPointerToBintern;
-  PyObject* pyPointerToBresid;
-  PyObject* pyPointerToBwink;
-  PyObject* pyPointerToBwinkx;
-  PyObject* pyPointerToDispVec;
-  PyObject* pyPointerToDprev;
-  PyObject* pyPointerToListArrayNforce;
-  PyObject* pyPointerToListArrayGrav;
-  PyObject* pyPointerToX;                     // Global arrays
-  PyObject* pyPointerToD;
-  PyObject* pyPointerToDeld;
-  PyObject* pyPointerToDcur;
-  PyObject* pyPointerToId;
-  PyObject* pyPointerToIwink;
-  PyObject* pyPointerToWink;
-  PyObject* pyPointerToListArrayNsysdat;
-  PyObject* pyPointerToListArrayIddmat;
-  PyObject* pyPointerToIbond;                 // Boundary condition arrays
-  PyObject* pyPointerToBond;
-  PyObject* pyPointerToDx;                    // Slippery node arrays
-  PyObject* pyPointerToDeldx;
-  PyObject* pyPointerToDxcur;
-  PyObject* pyPointerToDiforc;
-  PyObject* pyPointerToIdx;
-  PyObject* pyPointerToIwinkx;
-  PyObject* pyPointerToWinkx;
-  PyObject* pyPointerToIdslp;
-  PyObject* pyPointerToIpslp;
-  PyObject* pyPointerToIdhist;
-  PyObject* pyPointerToFault;                 // Split node arrays
-  PyObject* pyPointerToNfault;
-  PyObject* pyPointerToDfault;
-  PyObject* pyPointerToTfault;
-  PyObject* pyPointerToS;                     // Local stiffness matrix arrays
-  PyObject* pyPointerToStemp;
-  PyObject* pyPointerToState;                 // Element arrays
-  PyObject* pyPointerToDstate;
-  PyObject* pyPointerToState0;
-  PyObject* pyPointerToDmat;
-  PyObject* pyPointerToIen;
-  PyObject* pyPointerToLm;
-  PyObject* pyPointerToLmx;
-  PyObject* pyPointerToLmf;
-  PyObject* pyPointerToIvfamily;
-  PyObject* pyPointerToListArrayNpar;
-  PyObject* pyPointerToIelindx;
-  PyObject* pyPointerToTractionverts;         // Traction BC arrays
-  PyObject* pyPointerToTractionvals;
-  PyObject* pyPointerToGauss2d;
-  PyObject* pyPointerToSh2d;
-  PyObject* pyPointerToListArrayElementTypeInfo2d;
-  PyObject* pyPointerToListArrayPropertyList; // Material property arrays
-  PyObject* pyPointerToMaterialModelInfo;
-  PyObject* pyPointerToGauss;                 // Element type arrays
-  PyObject* pyPointerToSh;
-  PyObject* pyPointerToShj;
-  PyObject* pyPointerToListArrayElementTypeInfo;
-  PyObject* pyPointerToHistry;                // Time information
-  PyObject* pyPointerToListArrayRtimdat;
-  PyObject* pyPointerToListArrayNtimdat;
-  PyObject* pyPointerToListArrayNvisdat;
-  PyObject* pyPointerToMaxstp;
-  PyObject* pyPointerToDelt;
-  PyObject* pyPointerToAlfa;
-  PyObject* pyPointerToMaxit;
-  PyObject* pyPointerToNtdinit;
-  PyObject* pyPointerToLgdef;
-  PyObject* pyPointerToUtol;
-  PyObject* pyPointerToFtol;
-  PyObject* pyPointerToEtol;
-  PyObject* pyPointerToItmax;
-  PyObject* pyPointerToListArrayRgiter;       // Iterative solution information
-  PyObject* pyPointerToSkew;                  // Skew rotation information
-  PyObject* pyPointerToIprint;                // Input/output information
-  PyObject* pyPointerToListArrayNcodat;
-  PyObject* pyPointerToListArrayNunits;
-  PyObject* pyPointerToListArrayNprint;
-  PyObject* pyPointerToIstatout;
-  PyObject* pyPointerToNstatout;
-  char* asciiOutputFile;                      // Output file names
-  char* plotOutputFile;
-  char* ucdOutputRoot;
+  PyObject* py_bextern;               // Force vectors
+  PyObject* py_btraction;
+  PyObject* py_bgravity;
+  PyObject* py_bconcForce;
+  PyObject* py_bintern;
+  PyObject* py_bresid;
+  PyObject* py_bwink;
+  PyObject* py_bwinkx;
+  PyObject* py_dispVec;
+  PyObject* py_dprev;
+  PyObject* py_nforce;
+  PyObject* py_grav;
+  PyObject* py_x;                             // Global arrays
+  PyObject* py_d;
+  PyObject* py_deld;
+  PyObject* py_dcur;
+  PyObject* py_id;
+  PyObject* py_iwink;
+  PyObject* py_wink;
+  PyObject* py_nsysdat;
+  PyObject* py_iddmat;
+  PyObject* py_ibond;                 // Boundary condition arrays
+  PyObject* py_bond;
+  PyObject* py_dx;                    // Slippery node arrays
+  PyObject* py_deldx;
+  PyObject* py_dxcur;
+  PyObject* py_diforc;
+  PyObject* py_idx;
+  PyObject* py_iwinkx;
+  PyObject* py_winkx;
+  PyObject* py_idslp;
+  PyObject* py_ipslp;
+  PyObject* py_idhist;
+  PyObject* py_fault;                 // Split node arrays
+  PyObject* py_nfault;
+  PyObject* py_dfault;
+  PyObject* py_tfault;
+  PyObject* py_s;                     // Local stiffness matrix arrays
+  PyObject* py_stemp;
+  PyObject* py_state;                 // Element arrays
+  PyObject* py_dstate;
+  PyObject* py_state0;
+  PyObject* py_dmat;
+  PyObject* py_ien;
+  PyObject* py_lm;
+  PyObject* py_lmx;
+  PyObject* py_lmf;
+  PyObject* py_ivfamily;
+  PyObject* py_npar;
+  PyObject* py_ielindx;
+  PyObject* py_tractionverts;         // Traction BC arrays
+  PyObject* py_tractionvals;
+  PyObject* py_gauss2d;
+  PyObject* py_sh2d;
+  PyObject* py_infetype2d;
+  PyObject* py_prop; // Material property arrays
+  PyObject* py_infmatmod;
+  PyObject* py_gauss;                 // Element type arrays
+  PyObject* py_sh;
+  PyObject* py_shj;
+  PyObject* py_infetype;
+  PyObject* py_histry;                // Time information
+  PyObject* py_rtimdat;
+  PyObject* py_ntimdat;
+  PyObject* py_nvisdat;
+  PyObject* py_maxstp;
+  PyObject* py_delt;
+  PyObject* py_alfa;
+  PyObject* py_maxit;
+  PyObject* py_ntdinit;
+  PyObject* py_lgdef;
+  PyObject* py_utol;
+  PyObject* py_ftol;
+  PyObject* py_etol;
+  PyObject* py_itmax;
+  PyObject* py_rgiter;       // Iterative solution information
+  PyObject* py_skew;                  // Skew rotation information
+  PyObject* py_iprint;                // Input/output information
+  PyObject* py_ncodat;
+  PyObject* py_nunits;
+  PyObject* py_nprint;
+  PyObject* py_istatout;
+  PyObject* py_nstatout;
+  char* ofile;                      // Output file names
+  char* pfile;
+  char* ucdroot;
   int viscousStage;
   int iterateEvent;
 
@@ -2642,92 +2642,92 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
 			    &pyA,                              // Sparse matrix arrays
 			    &pyRhs,
 			    &pySol,
-			    &pyPointerToBextern,               // Force vectors
-			    &pyPointerToBtraction,
-			    &pyPointerToBgravity,
-			    &pyPointerToBconcForce,
-			    &pyPointerToBintern,
-			    &pyPointerToBresid,
-			    &pyPointerToBwink,
-			    &pyPointerToBwinkx,
-			    &pyPointerToDispVec,
-			    &pyPointerToDprev,
-			    &pyPointerToListArrayNforce,
-			    &pyPointerToListArrayGrav,
-			    &pyPointerToX,                     // Global arrays
-			    &pyPointerToD,
-			    &pyPointerToDeld,
-			    &pyPointerToDcur,
-			    &pyPointerToId,
-			    &pyPointerToIwink,
-			    &pyPointerToWink,
-			    &pyPointerToListArrayNsysdat,
-			    &pyPointerToListArrayIddmat,
-			    &pyPointerToIbond,                 // Boundary condition arrays
-			    &pyPointerToBond,
-			    &pyPointerToDx,                    // Slippery node arrays
-			    &pyPointerToDeldx,
-			    &pyPointerToDxcur,
-			    &pyPointerToDiforc,
-			    &pyPointerToIdx,
-			    &pyPointerToIwinkx,
-			    &pyPointerToWinkx,
-			    &pyPointerToIdslp,
-			    &pyPointerToIpslp,
-			    &pyPointerToIdhist,
-			    &pyPointerToFault,                 // Split node arrays
-			    &pyPointerToNfault,
-			    &pyPointerToDfault,
-			    &pyPointerToTfault,
-			    &pyPointerToS,                     // Local stiffness matrix arrays
-			    &pyPointerToStemp,
-			    &pyPointerToState,                 // Element arrays
-			    &pyPointerToDstate,
-			    &pyPointerToState0,
-			    &pyPointerToDmat,
-			    &pyPointerToIen,
-			    &pyPointerToLm,
-			    &pyPointerToLmx,
-			    &pyPointerToLmf,
-			    &pyPointerToIvfamily,
-			    &pyPointerToListArrayNpar,
-			    &pyPointerToIelindx,
-                            &pyPointerToTractionverts,         // Traction BC arrays
-                            &pyPointerToTractionvals,
-                            &pyPointerToGauss2d,
-                            &pyPointerToSh2d,
-                            &pyPointerToListArrayElementTypeInfo2d,
-			    &pyPointerToListArrayPropertyList, // Material property arrays
-			    &pyPointerToMaterialModelInfo,
-			    &pyPointerToGauss,                 // Element type arrays
-			    &pyPointerToSh,
-			    &pyPointerToShj,
-			    &pyPointerToListArrayElementTypeInfo,
-			    &pyPointerToHistry,                // Time information
-			    &pyPointerToListArrayRtimdat,
-			    &pyPointerToListArrayNtimdat,
-			    &pyPointerToListArrayNvisdat,
-			    &pyPointerToMaxstp,
-			    &pyPointerToDelt,
-			    &pyPointerToAlfa,
-			    &pyPointerToMaxit,
-			    &pyPointerToNtdinit,
-			    &pyPointerToLgdef,
-			    &pyPointerToUtol,
-			    &pyPointerToFtol,
-			    &pyPointerToEtol,
-			    &pyPointerToItmax,
-			    &pyPointerToListArrayRgiter,       // Iterative solution information
-			    &pyPointerToSkew,                  // Skew rotation information
-			    &pyPointerToIprint,                // Input/output information
-			    &pyPointerToListArrayNcodat,
-			    &pyPointerToListArrayNunits,
-			    &pyPointerToListArrayNprint,
-			    &pyPointerToIstatout,
-			    &pyPointerToNstatout,
-			    &asciiOutputFile,                  // Output file names
-			    &plotOutputFile,
-			    &ucdOutputRoot,
+			    &py_bextern,               // Force vectors
+			    &py_btraction,
+			    &py_bgravity,
+			    &py_bconcForce,
+			    &py_bintern,
+			    &py_bresid,
+			    &py_bwink,
+			    &py_bwinkx,
+			    &py_dispVec,
+			    &py_dprev,
+			    &py_nforce,
+			    &py_grav,
+			    &py_x,                             // Global arrays
+			    &py_d,
+			    &py_deld,
+			    &py_dcur,
+			    &py_id,
+			    &py_iwink,
+			    &py_wink,
+			    &py_nsysdat,
+			    &py_iddmat,
+			    &py_ibond,                 // Boundary condition arrays
+			    &py_bond,
+			    &py_dx,                    // Slippery node arrays
+			    &py_deldx,
+			    &py_dxcur,
+			    &py_diforc,
+			    &py_idx,
+			    &py_iwinkx,
+			    &py_winkx,
+			    &py_idslp,
+			    &py_ipslp,
+			    &py_idhist,
+			    &py_fault,                 // Split node arrays
+			    &py_nfault,
+			    &py_dfault,
+			    &py_tfault,
+			    &py_s,                     // Local stiffness matrix arrays
+			    &py_stemp,
+			    &py_state,                 // Element arrays
+			    &py_dstate,
+			    &py_state0,
+			    &py_dmat,
+			    &py_ien,
+			    &py_lm,
+			    &py_lmx,
+			    &py_lmf,
+			    &py_ivfamily,
+			    &py_npar,
+			    &py_ielindx,
+                            &py_tractionverts,         // Traction BC arrays
+                            &py_tractionvals,
+                            &py_gauss2d,
+                            &py_sh2d,
+                            &py_infetype2d,
+			    &py_prop, // Material property arrays
+			    &py_infmatmod,
+			    &py_gauss,                 // Element type arrays
+			    &py_sh,
+			    &py_shj,
+			    &py_infetype,
+			    &py_histry,                // Time information
+			    &py_rtimdat,
+			    &py_ntimdat,
+			    &py_nvisdat,
+			    &py_maxstp,
+			    &py_delt,
+			    &py_alfa,
+			    &py_maxit,
+			    &py_ntdinit,
+			    &py_lgdef,
+			    &py_utol,
+			    &py_ftol,
+			    &py_etol,
+			    &py_itmax,
+			    &py_rgiter,       // Iterative solution information
+			    &py_skew,                  // Skew rotation information
+			    &py_iprint,                // Input/output information
+			    &py_ncodat,
+			    &py_nunits,
+			    &py_nprint,
+			    &py_istatout,
+			    &py_nstatout,
+			    &ofile,                  // Output file names
+			    &pfile,
+			    &ucdroot,
                             &viscousStage,
                             &iterateEvent);
 
@@ -2741,187 +2741,187 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
   Mat      A = (Mat) PyCObject_AsVoidPtr(pyA);
   Vec      rhs = (Vec) PyCObject_AsVoidPtr(pyRhs);
   Vec      sol = (Vec) PyCObject_AsVoidPtr(pySol);
-  double*  pointerToBextern = (double*) PyCObject_AsVoidPtr(pyPointerToBextern);
-  double*  pointerToBtraction = (double*) PyCObject_AsVoidPtr(pyPointerToBtraction);
-  double*  pointerToBgravity = (double*) PyCObject_AsVoidPtr(pyPointerToBgravity);
-  double*  pointerToBconcForce = (double*) PyCObject_AsVoidPtr(pyPointerToBconcForce);
-  double*  pointerToBintern = (double*) PyCObject_AsVoidPtr(pyPointerToBintern);
-  double*  pointerToBresid = (double*) PyCObject_AsVoidPtr(pyPointerToBresid);
-  double*  pointerToBwink = (double*) PyCObject_AsVoidPtr(pyPointerToBwink);
-  double*  pointerToBwinkx = (double*) PyCObject_AsVoidPtr(pyPointerToBwinkx);
-  double*  pointerToDispVec = (double*) PyCObject_AsVoidPtr(pyPointerToDispVec);
-  double*  pointerToDprev = (double*) PyCObject_AsVoidPtr(pyPointerToDprev);
-  int*  pointerToListArrayNforce = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNforce);
-  double*  pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
-  double*  pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
-  double*  pointerToD = (double*) PyCObject_AsVoidPtr(pyPointerToD);
-  double*  pointerToDeld = (double*) PyCObject_AsVoidPtr(pyPointerToDeld);
-  double*  pointerToDcur = (double*) PyCObject_AsVoidPtr(pyPointerToDcur);
-  int*  pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
-  int*  pointerToIwink = (int*) PyCObject_AsVoidPtr(pyPointerToIwink);
-  double*  pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
-  int*  pointerToListArrayNsysdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNsysdat);
-  int*  pointerToListArrayIddmat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayIddmat);
-  int*  pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
-  double*  pointerToBond = (double*) PyCObject_AsVoidPtr(pyPointerToBond);
-  double*  pointerToDx = (double*) PyCObject_AsVoidPtr(pyPointerToDx);
-  double*  pointerToDeldx = (double*) PyCObject_AsVoidPtr(pyPointerToDeldx);
-  double*  pointerToDxcur = (double*) PyCObject_AsVoidPtr(pyPointerToDxcur);
-  double*  pointerToDiforc = (double*) PyCObject_AsVoidPtr(pyPointerToDiforc);
-  int*  pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
-  int*  pointerToIwinkx = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkx);
-  double*  pointerToWinkx = (double*) PyCObject_AsVoidPtr(pyPointerToWinkx);
-  int*  pointerToIdslp = (int*) PyCObject_AsVoidPtr(pyPointerToIdslp);
-  int*  pointerToIpslp = (int*) PyCObject_AsVoidPtr(pyPointerToIpslp);
-  int*  pointerToIdhist = (int*) PyCObject_AsVoidPtr(pyPointerToIdhist);
-  double*  pointerToFault = (double*) PyCObject_AsVoidPtr(pyPointerToFault);
-  int*  pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
-  double*  pointerToDfault = (double*) PyCObject_AsVoidPtr(pyPointerToDfault);
-  double*  pointerToTfault = (double*) PyCObject_AsVoidPtr(pyPointerToTfault);
-  double*  pointerToS = (double*) PyCObject_AsVoidPtr(pyPointerToS);
-  double*  pointerToStemp = (double*) PyCObject_AsVoidPtr(pyPointerToStemp);
-  double*  pointerToState = (double*) PyCObject_AsVoidPtr(pyPointerToState);
-  double*  pointerToDstate = (double*) PyCObject_AsVoidPtr(pyPointerToDstate);
-  double*  pointerToState0 = (double*) PyCObject_AsVoidPtr(pyPointerToState0);
-  double*  pointerToDmat = (double*) PyCObject_AsVoidPtr(pyPointerToDmat);
-  int*  pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int*  pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
-  int*  pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int*  pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
-  int*  pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
-  int*  pointerToListArrayNpar = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNpar);
-  int*  pointerToIelindx = (int*) PyCObject_AsVoidPtr(pyPointerToIelindx);
-  int*  pointerToTractionverts = (int*) PyCObject_AsVoidPtr(pyPointerToTractionverts);
-  double*  pointerToTractionvals = (double*) PyCObject_AsVoidPtr(pyPointerToTractionvals);
-  double*  pointerToGauss2d = (double*) PyCObject_AsVoidPtr(pyPointerToGauss2d);
-  double*  pointerToSh2d = (double*) PyCObject_AsVoidPtr(pyPointerToSh2d);
-  int*  pointerToListArrayElementTypeInfo2d = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayElementTypeInfo2d);
-  double*  pointerToListArrayPropertyList = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyList);
-  int*  pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
-  double*  pointerToGauss = (double*) PyCObject_AsVoidPtr(pyPointerToGauss);
-  double*  pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
-  double*  pointerToShj = (double*) PyCObject_AsVoidPtr(pyPointerToShj);
-  int*  pointerToListArrayElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayElementTypeInfo);
-  double*  pointerToHistry = (double*) PyCObject_AsVoidPtr(pyPointerToHistry);
-  double*  pointerToListArrayRtimdat = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRtimdat);
-  int*  pointerToListArrayNtimdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNtimdat);
-  int*  pointerToListArrayNvisdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNvisdat);
-  int*  pointerToMaxstp = (int*) PyCObject_AsVoidPtr(pyPointerToMaxstp);
-  double*  pointerToDelt = (double*) PyCObject_AsVoidPtr(pyPointerToDelt);
-  double*  pointerToAlfa = (double*) PyCObject_AsVoidPtr(pyPointerToAlfa);
-  int*  pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
-  int*  pointerToNtdinit = (int*) PyCObject_AsVoidPtr(pyPointerToNtdinit);
-  int*  pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
-  double*  pointerToUtol = (double*) PyCObject_AsVoidPtr(pyPointerToUtol);
-  double*  pointerToFtol = (double*) PyCObject_AsVoidPtr(pyPointerToFtol);
-  double*  pointerToEtol = (double*) PyCObject_AsVoidPtr(pyPointerToEtol);
-  int*  pointerToItmax = (int*) PyCObject_AsVoidPtr(pyPointerToItmax);
-  double*  pointerToListArrayRgiter = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRgiter);
-  double*  pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
-  int*  pointerToIprint = (int*) PyCObject_AsVoidPtr(pyPointerToIprint);
-  int*  pointerToListArrayNcodat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNcodat);
-  int*  pointerToListArrayNunits = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNunits);
-  int*  pointerToListArrayNprint = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
-  int*  pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
-  int*  pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
+  double*  bextern = (double*) PyCObject_AsVoidPtr(py_bextern);
+  double*  btraction = (double*) PyCObject_AsVoidPtr(py_btraction);
+  double*  bgravity = (double*) PyCObject_AsVoidPtr(py_bgravity);
+  double*  bconcForce = (double*) PyCObject_AsVoidPtr(py_bconcForce);
+  double*  bintern = (double*) PyCObject_AsVoidPtr(py_bintern);
+  double*  bresid = (double*) PyCObject_AsVoidPtr(py_bresid);
+  double*  bwink = (double*) PyCObject_AsVoidPtr(py_bwink);
+  double*  bwinkx = (double*) PyCObject_AsVoidPtr(py_bwinkx);
+  double*  dispVec = (double*) PyCObject_AsVoidPtr(py_dispVec);
+  double*  dprev = (double*) PyCObject_AsVoidPtr(py_dprev);
+  int*  nforce = (int*) PyCObject_AsVoidPtr(py_nforce);
+  double*  grav = (double*) PyCObject_AsVoidPtr(py_grav);
+  double*  x = (double*) PyCObject_AsVoidPtr(py_x);
+  double*  d = (double*) PyCObject_AsVoidPtr(py_d);
+  double*  deld = (double*) PyCObject_AsVoidPtr(py_deld);
+  double*  dcur = (double*) PyCObject_AsVoidPtr(py_dcur);
+  int*  id = (int*) PyCObject_AsVoidPtr(py_id);
+  int*  iwink = (int*) PyCObject_AsVoidPtr(py_iwink);
+  double*  wink = (double*) PyCObject_AsVoidPtr(py_wink);
+  int*  nsysdat = (int*) PyCObject_AsVoidPtr(py_nsysdat);
+  int*  iddmat = (int*) PyCObject_AsVoidPtr(py_iddmat);
+  int*  ibond = (int*) PyCObject_AsVoidPtr(py_ibond);
+  double*  bond = (double*) PyCObject_AsVoidPtr(py_bond);
+  double*  dx = (double*) PyCObject_AsVoidPtr(py_dx);
+  double*  deldx = (double*) PyCObject_AsVoidPtr(py_deldx);
+  double*  dxcur = (double*) PyCObject_AsVoidPtr(py_dxcur);
+  double*  diforc = (double*) PyCObject_AsVoidPtr(py_diforc);
+  int*  idx = (int*) PyCObject_AsVoidPtr(py_idx);
+  int*  iwinkx = (int*) PyCObject_AsVoidPtr(py_iwinkx);
+  double*  winkx = (double*) PyCObject_AsVoidPtr(py_winkx);
+  int*  idslp = (int*) PyCObject_AsVoidPtr(py_idslp);
+  int*  ipslp = (int*) PyCObject_AsVoidPtr(py_ipslp);
+  int*  idhist = (int*) PyCObject_AsVoidPtr(py_idhist);
+  double*  fault = (double*) PyCObject_AsVoidPtr(py_fault);
+  int*  nfault = (int*) PyCObject_AsVoidPtr(py_nfault);
+  double*  dfault = (double*) PyCObject_AsVoidPtr(py_dfault);
+  double*  tfault = (double*) PyCObject_AsVoidPtr(py_tfault);
+  double*  s = (double*) PyCObject_AsVoidPtr(py_s);
+  double*  stemp = (double*) PyCObject_AsVoidPtr(py_stemp);
+  double*  state = (double*) PyCObject_AsVoidPtr(py_state);
+  double*  dstate = (double*) PyCObject_AsVoidPtr(py_dstate);
+  double*  state0 = (double*) PyCObject_AsVoidPtr(py_state0);
+  double*  dmat = (double*) PyCObject_AsVoidPtr(py_dmat);
+  int*  ien = (int*) PyCObject_AsVoidPtr(py_ien);
+  int*  lm = (int*) PyCObject_AsVoidPtr(py_lm);
+  int*  lmx = (int*) PyCObject_AsVoidPtr(py_lmx);
+  int*  lmf = (int*) PyCObject_AsVoidPtr(py_lmf);
+  int*  ivfamily = (int*) PyCObject_AsVoidPtr(py_ivfamily);
+  int*  npar = (int*) PyCObject_AsVoidPtr(py_npar);
+  int*  ielindx = (int*) PyCObject_AsVoidPtr(py_ielindx);
+  int*  tractionverts = (int*) PyCObject_AsVoidPtr(py_tractionverts);
+  double*  tractionvals = (double*) PyCObject_AsVoidPtr(py_tractionvals);
+  double*  gauss2d = (double*) PyCObject_AsVoidPtr(py_gauss2d);
+  double*  sh2d = (double*) PyCObject_AsVoidPtr(py_sh2d);
+  int*  infetype2d = (int*) PyCObject_AsVoidPtr(py_infetype2d);
+  double*  prop = (double*) PyCObject_AsVoidPtr(py_prop);
+  int*  infmatmod = (int*) PyCObject_AsVoidPtr(py_infmatmod);
+  double*  gauss = (double*) PyCObject_AsVoidPtr(py_gauss);
+  double*  sh = (double*) PyCObject_AsVoidPtr(py_sh);
+  double*  shj = (double*) PyCObject_AsVoidPtr(py_shj);
+  int*  infetype = (int*) PyCObject_AsVoidPtr(py_infetype);
+  double*  histry = (double*) PyCObject_AsVoidPtr(py_histry);
+  double*  rtimdat = (double*) PyCObject_AsVoidPtr(py_rtimdat);
+  int*  ntimdat = (int*) PyCObject_AsVoidPtr(py_ntimdat);
+  int*  nvisdat = (int*) PyCObject_AsVoidPtr(py_nvisdat);
+  int*  maxstp = (int*) PyCObject_AsVoidPtr(py_maxstp);
+  double*  delt = (double*) PyCObject_AsVoidPtr(py_delt);
+  double*  alfa = (double*) PyCObject_AsVoidPtr(py_alfa);
+  int*  maxit = (int*) PyCObject_AsVoidPtr(py_maxit);
+  int*  ntdinit = (int*) PyCObject_AsVoidPtr(py_ntdinit);
+  int*  lgdef = (int*) PyCObject_AsVoidPtr(py_lgdef);
+  double*  utol = (double*) PyCObject_AsVoidPtr(py_utol);
+  double*  ftol = (double*) PyCObject_AsVoidPtr(py_ftol);
+  double*  etol = (double*) PyCObject_AsVoidPtr(py_etol);
+  int*  itmax = (int*) PyCObject_AsVoidPtr(py_itmax);
+  double*  rgiter = (double*) PyCObject_AsVoidPtr(py_rgiter);
+  double*  skew = (double*) PyCObject_AsVoidPtr(py_skew);
+  int*  iprint = (int*) PyCObject_AsVoidPtr(py_iprint);
+  int*  ncodat = (int*) PyCObject_AsVoidPtr(py_ncodat);
+  int*  nunits = (int*) PyCObject_AsVoidPtr(py_nunits);
+  int*  nprint = (int*) PyCObject_AsVoidPtr(py_nprint);
+  int*  istatout = (int*) PyCObject_AsVoidPtr(py_istatout);
+  int*  nstatout = (int*) PyCObject_AsVoidPtr(py_nstatout);
 
 
   viscos_f(&A,                            // 1: Sparse matrix arrays
 	   &rhs,
 	   &sol,
-	   pointerToBextern,                  // Force vectors
-	   pointerToBtraction,
-	   pointerToBgravity,
-	   pointerToBconcForce,
-	   pointerToBintern,
-	   pointerToBresid,
-	   pointerToBwink,                    // 10
-	   pointerToBwinkx,
-	   pointerToDispVec,
-	   pointerToDprev,
-	   pointerToListArrayNforce,
-	   pointerToListArrayGrav,
-	   pointerToX,                        // Global arrays
-	   pointerToD,
-	   pointerToDeld,
-	   pointerToDcur,
-	   pointerToId,                       // 20
-	   pointerToIwink,
-	   pointerToWink,
-	   pointerToListArrayNsysdat,
-	   pointerToListArrayIddmat,
-	   pointerToIbond,                    // Boundary condition arrays
-	   pointerToBond,
-	   pointerToDx,                       // Slippery node arrays
-	   pointerToDeldx,
-	   pointerToDxcur,
-	   pointerToDiforc,                   // 30
-	   pointerToIdx,
-	   pointerToIwinkx,
-	   pointerToWinkx,
-	   pointerToIdslp,
-	   pointerToIpslp,
-	   pointerToIdhist,
-	   pointerToFault,                    // Split node arrays
-	   pointerToNfault,
-	   pointerToDfault,
-	   pointerToTfault,                   // 40
-	   pointerToS,                        // Local stiffness matrix arrays
-	   pointerToStemp,
-	   pointerToState,                    // Element arrays
-	   pointerToDstate,
-	   pointerToState0,
-	   pointerToDmat,
-	   pointerToIen,
-	   pointerToLm,
-	   pointerToLmx,
-	   pointerToLmf,                      // 50
-	   pointerToIvfamily,
-	   pointerToListArrayNpar,
-	   pointerToIelindx,
-	   pointerToTractionverts,            // Traction BC arrays
-	   pointerToTractionvals,
-	   pointerToGauss2d,
-	   pointerToSh2d,
-	   pointerToListArrayElementTypeInfo2d,
-	   pointerToListArrayPropertyList,    // Material property arrays
-	   pointerToMaterialModelInfo,        // 60
-	   pointerToGauss,                    // Element type arrays
-	   pointerToSh,
-	   pointerToShj,
-	   pointerToListArrayElementTypeInfo,
-	   pointerToHistry,                   // Time information
-	   pointerToListArrayRtimdat,
-	   pointerToListArrayNtimdat,
-	   pointerToListArrayNvisdat,
-	   pointerToMaxstp,
-	   pointerToDelt,                     // 70
-	   pointerToAlfa,
-	   pointerToMaxit,
-	   pointerToNtdinit,
-	   pointerToLgdef,
-	   pointerToUtol,
-	   pointerToFtol,
-	   pointerToEtol,
-	   pointerToItmax,
-	   pointerToListArrayRgiter,          // Iterative solution information
-	   pointerToSkew,                     // 80: Skew rotation information
-	   pointerToIprint,                   // Input/output information
-	   pointerToListArrayNcodat,
-	   pointerToListArrayNunits,
-	   pointerToListArrayNprint,
-	   pointerToIstatout,
-	   pointerToNstatout,
-	   asciiOutputFile,                   // Output file names
-	   plotOutputFile,
-	   ucdOutputRoot,
+	   bextern,                  // Force vectors
+	   btraction,
+	   bgravity,
+	   bconcForce,
+	   bintern,
+	   bresid,
+	   bwink,                    // 10
+	   bwinkx,
+	   dispVec,
+	   dprev,
+	   nforce,
+	   grav,
+	   x,                                 // Global arrays
+	   d,
+	   deld,
+	   dcur,
+	   id,                       // 20
+	   iwink,
+	   wink,
+	   nsysdat,
+	   iddmat,
+	   ibond,                    // Boundary condition arrays
+	   bond,
+	   dx,                       // Slippery node arrays
+	   deldx,
+	   dxcur,
+	   diforc,                   // 30
+	   idx,
+	   iwinkx,
+	   winkx,
+	   idslp,
+	   ipslp,
+	   idhist,
+	   fault,                    // Split node arrays
+	   nfault,
+	   dfault,
+	   tfault,                   // 40
+	   s,                        // Local stiffness matrix arrays
+	   stemp,
+	   state,                    // Element arrays
+	   dstate,
+	   state0,
+	   dmat,
+	   ien,
+	   lm,
+	   lmx,
+	   lmf,                      // 50
+	   ivfamily,
+	   npar,
+	   ielindx,
+	   tractionverts,            // Traction BC arrays
+	   tractionvals,
+	   gauss2d,
+	   sh2d,
+	   infetype2d,
+	   prop,    // Material property arrays
+	   infmatmod,                         // 60
+	   gauss,                    // Element type arrays
+	   sh,
+	   shj,
+	   infetype,
+	   histry,                   // Time information
+	   rtimdat,
+	   ntimdat,
+	   nvisdat,
+	   maxstp,
+	   delt,                     // 70
+	   alfa,
+	   maxit,
+	   ntdinit,
+	   lgdef,
+	   utol,
+	   ftol,
+	   etol,
+	   itmax,
+	   rgiter,          // Iterative solution information
+	   skew,                     // 80: Skew rotation information
+	   iprint,                   // Input/output information
+	   ncodat,
+	   nunits,
+	   nprint,
+	   istatout,
+	   nstatout,
+	   ofile,                   // Output file names
+	   pfile,
+	   ucdroot,
 	   &viscousStage,                     // 90: PETSC logging
 	   &iterateEvent,
 	   &errorcode,                        // Error codes
 	   errorstring,
-	   strlen(asciiOutputFile),           // String lengths
-	   strlen(plotOutputFile),
-	   strlen(ucdOutputRoot),
+	   strlen(ofile),           // String lengths
+	   strlen(pfile),
+	   strlen(ucdroot),
 	   sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -2932,7 +2932,7 @@ PyObject * pypylith3d_viscos(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "asciiOutputFile:" << asciiOutputFile
+    << "ofile:" << ofile
     << journal::endl;
 
   // return
@@ -2950,92 +2950,92 @@ PyObject * pypylith3d_viscos_step(PyObject *, PyObject *args)
   PyObject* pyA;                              // Sparse matrix arrays
   PyObject* pyRhs;
   PyObject* pySol;
-  PyObject* pyPointerToBextern;               // Force vectors
-  PyObject* pyPointerToBtraction;
-  PyObject* pyPointerToBgravity;
-  PyObject* pyPointerToBconcForce;
-  PyObject* pyPointerToBintern;
-  PyObject* pyPointerToBresid;
-  PyObject* pyPointerToBwink;
-  PyObject* pyPointerToBwinkx;
-  PyObject* pyPointerToDispVec;
-  PyObject* pyPointerToDprev;
-  PyObject* pyPointerToListArrayNforce;
-  PyObject* pyPointerToListArrayGrav;
-  PyObject* pyPointerToX;                     // Global arrays
-  PyObject* pyPointerToD;
-  PyObject* pyPointerToDeld;
-  PyObject* pyPointerToDcur;
-  PyObject* pyPointerToId;
-  PyObject* pyPointerToIwink;
-  PyObject* pyPointerToWink;
-  PyObject* pyPointerToListArrayNsysdat;
-  PyObject* pyPointerToListArrayIddmat;
-  PyObject* pyPointerToIbond;                 // Boundary condition arrays
-  PyObject* pyPointerToBond;
-  PyObject* pyPointerToDx;                    // Slippery node arrays
-  PyObject* pyPointerToDeldx;
-  PyObject* pyPointerToDxcur;
-  PyObject* pyPointerToDiforc;
-  PyObject* pyPointerToIdx;
-  PyObject* pyPointerToIwinkx;
-  PyObject* pyPointerToWinkx;
-  PyObject* pyPointerToIdslp;
-  PyObject* pyPointerToIpslp;
-  PyObject* pyPointerToIdhist;
-  PyObject* pyPointerToFault;                 // Split node arrays
-  PyObject* pyPointerToNfault;
-  PyObject* pyPointerToDfault;
-  PyObject* pyPointerToTfault;
-  PyObject* pyPointerToS;                     // Local stiffness matrix arrays
-  PyObject* pyPointerToStemp;
-  PyObject* pyPointerToState;                 // Element arrays
-  PyObject* pyPointerToDstate;
-  PyObject* pyPointerToState0;
-  PyObject* pyPointerToDmat;
-  PyObject* pyPointerToIen;
-  PyObject* pyPointerToLm;
-  PyObject* pyPointerToLmx;
-  PyObject* pyPointerToLmf;
-  PyObject* pyPointerToIvfamily;
-  PyObject* pyPointerToListArrayNpar;
-  PyObject* pyPointerToIelindx;
-  PyObject* pyPointerToTractionverts;         // Traction BC arrays
-  PyObject* pyPointerToTractionvals;
-  PyObject* pyPointerToGauss2d;
-  PyObject* pyPointerToSh2d;
-  PyObject* pyPointerToListArrayElementTypeInfo2d;
-  PyObject* pyPointerToListArrayPropertyList; // Material property arrays
-  PyObject* pyPointerToMaterialModelInfo;
-  PyObject* pyPointerToGauss;                 // Element type arrays
-  PyObject* pyPointerToSh;
-  PyObject* pyPointerToShj;
-  PyObject* pyPointerToListArrayElementTypeInfo;
-  PyObject* pyPointerToHistry;                // Time information
-  PyObject* pyPointerToListArrayRtimdat;
-  PyObject* pyPointerToListArrayNtimdat;
-  PyObject* pyPointerToListArrayNvisdat;
-  PyObject* pyPointerToMaxstp;
-  PyObject* pyPointerToDelt;
-  PyObject* pyPointerToAlfa;
-  PyObject* pyPointerToMaxit;
-  PyObject* pyPointerToNtdinit;
-  PyObject* pyPointerToLgdef;
-  PyObject* pyPointerToUtol;
-  PyObject* pyPointerToFtol;
-  PyObject* pyPointerToEtol;
-  PyObject* pyPointerToItmax;
-  PyObject* pyPointerToListArrayRgiter;       // Iterative solution information
-  PyObject* pyPointerToSkew;                  // Skew rotation information
-  PyObject* pyPointerToIprint;                // Input/output information
-  PyObject* pyPointerToListArrayNcodat;
-  PyObject* pyPointerToListArrayNunits;
-  PyObject* pyPointerToListArrayNprint;
-  PyObject* pyPointerToIstatout;
-  PyObject* pyPointerToNstatout;
-  char* asciiOutputFile;                      // Output file names
-  char* plotOutputFile;
-  char* ucdOutputRoot;
+  PyObject* py_bextern;               // Force vectors
+  PyObject* py_btraction;
+  PyObject* py_bgravity;
+  PyObject* py_bconcForce;
+  PyObject* py_bintern;
+  PyObject* py_bresid;
+  PyObject* py_bwink;
+  PyObject* py_bwinkx;
+  PyObject* py_dispVec;
+  PyObject* py_dprev;
+  PyObject* py_nforce;
+  PyObject* py_grav;
+  PyObject* py_x;                             // Global arrays
+  PyObject* py_d;
+  PyObject* py_deld;
+  PyObject* py_dcur;
+  PyObject* py_id;
+  PyObject* py_iwink;
+  PyObject* py_wink;
+  PyObject* py_nsysdat;
+  PyObject* py_iddmat;
+  PyObject* py_ibond;                 // Boundary condition arrays
+  PyObject* py_bond;
+  PyObject* py_dx;                    // Slippery node arrays
+  PyObject* py_deldx;
+  PyObject* py_dxcur;
+  PyObject* py_diforc;
+  PyObject* py_idx;
+  PyObject* py_iwinkx;
+  PyObject* py_winkx;
+  PyObject* py_idslp;
+  PyObject* py_ipslp;
+  PyObject* py_idhist;
+  PyObject* py_fault;                 // Split node arrays
+  PyObject* py_nfault;
+  PyObject* py_dfault;
+  PyObject* py_tfault;
+  PyObject* py_s;                     // Local stiffness matrix arrays
+  PyObject* py_stemp;
+  PyObject* py_state;                 // Element arrays
+  PyObject* py_dstate;
+  PyObject* py_state0;
+  PyObject* py_dmat;
+  PyObject* py_ien;
+  PyObject* py_lm;
+  PyObject* py_lmx;
+  PyObject* py_lmf;
+  PyObject* py_ivfamily;
+  PyObject* py_npar;
+  PyObject* py_ielindx;
+  PyObject* py_tractionverts;         // Traction BC arrays
+  PyObject* py_tractionvals;
+  PyObject* py_gauss2d;
+  PyObject* py_sh2d;
+  PyObject* py_infetype2d;
+  PyObject* py_prop; // Material property arrays
+  PyObject* py_infmatmod;
+  PyObject* py_gauss;                 // Element type arrays
+  PyObject* py_sh;
+  PyObject* py_shj;
+  PyObject* py_infetype;
+  PyObject* py_histry;                // Time information
+  PyObject* py_rtimdat;
+  PyObject* py_ntimdat;
+  PyObject* py_nvisdat;
+  PyObject* py_maxstp;
+  PyObject* py_delt;
+  PyObject* py_alfa;
+  PyObject* py_maxit;
+  PyObject* py_ntdinit;
+  PyObject* py_lgdef;
+  PyObject* py_utol;
+  PyObject* py_ftol;
+  PyObject* py_etol;
+  PyObject* py_itmax;
+  PyObject* py_rgiter;       // Iterative solution information
+  PyObject* py_skew;                  // Skew rotation information
+  PyObject* py_iprint;                // Input/output information
+  PyObject* py_ncodat;
+  PyObject* py_nunits;
+  PyObject* py_nprint;
+  PyObject* py_istatout;
+  PyObject* py_nstatout;
+  char* ofile;                      // Output file names
+  char* pfile;
+  char* ucdroot;
   int viscousStage;
   int iterateEvent;
   int ntot, ltim, indexx, jcyc, i, j, skc, nfirst, nstep, lgdefp;
@@ -3046,92 +3046,92 @@ PyObject * pypylith3d_viscos_step(PyObject *, PyObject *args)
 			    &pyA,                              // Sparse matrix arrays
 			    &pyRhs,
 			    &pySol,
-			    &pyPointerToBextern,               // Force vectors
-			    &pyPointerToBtraction,
-			    &pyPointerToBgravity,
-			    &pyPointerToBconcForce,
-			    &pyPointerToBintern,
-			    &pyPointerToBresid,
-			    &pyPointerToBwink,
-			    &pyPointerToBwinkx,
-			    &pyPointerToDispVec,
-			    &pyPointerToDprev,
-			    &pyPointerToListArrayNforce,
-			    &pyPointerToListArrayGrav,
-			    &pyPointerToX,                     // Global arrays
-			    &pyPointerToD,
-			    &pyPointerToDeld,
-			    &pyPointerToDcur,
-			    &pyPointerToId,
-			    &pyPointerToIwink,
-			    &pyPointerToWink,
-			    &pyPointerToListArrayNsysdat,
-			    &pyPointerToListArrayIddmat,
-			    &pyPointerToIbond,                 // Boundary condition arrays
-			    &pyPointerToBond,
-			    &pyPointerToDx,                    // Slippery node arrays
-			    &pyPointerToDeldx,
-			    &pyPointerToDxcur,
-			    &pyPointerToDiforc,
-			    &pyPointerToIdx,
-			    &pyPointerToIwinkx,
-			    &pyPointerToWinkx,
-			    &pyPointerToIdslp,
-			    &pyPointerToIpslp,
-			    &pyPointerToIdhist,
-			    &pyPointerToFault,                 // Split node arrays
-			    &pyPointerToNfault,
-			    &pyPointerToDfault,
-			    &pyPointerToTfault,
-			    &pyPointerToS,                     // Local stiffness matrix arrays
-			    &pyPointerToStemp,
-			    &pyPointerToState,                 // Element arrays
-			    &pyPointerToDstate,
-			    &pyPointerToState0,
-			    &pyPointerToDmat,
-			    &pyPointerToIen,
-			    &pyPointerToLm,
-			    &pyPointerToLmx,
-			    &pyPointerToLmf,
-			    &pyPointerToIvfamily,
-			    &pyPointerToListArrayNpar,
-			    &pyPointerToIelindx,
-                            &pyPointerToTractionverts,         // Traction BC arrays
-                            &pyPointerToTractionvals,
-                            &pyPointerToGauss2d,
-                            &pyPointerToSh2d,
-                            &pyPointerToListArrayElementTypeInfo2d,
-			    &pyPointerToListArrayPropertyList, // Material property arrays
-			    &pyPointerToMaterialModelInfo,
-			    &pyPointerToGauss,                 // Element type arrays
-			    &pyPointerToSh,
-			    &pyPointerToShj,
-			    &pyPointerToListArrayElementTypeInfo,
-			    &pyPointerToHistry,                // Time information
-			    &pyPointerToListArrayRtimdat,
-			    &pyPointerToListArrayNtimdat,
-			    &pyPointerToListArrayNvisdat,
-			    &pyPointerToMaxstp,
-			    &pyPointerToDelt,
-			    &pyPointerToAlfa,
-			    &pyPointerToMaxit,
-			    &pyPointerToNtdinit,
-			    &pyPointerToLgdef,
-			    &pyPointerToUtol,
-			    &pyPointerToFtol,
-			    &pyPointerToEtol,
-			    &pyPointerToItmax,
-			    &pyPointerToListArrayRgiter,       // Iterative solution information
-			    &pyPointerToSkew,                  // Skew rotation information
-			    &pyPointerToIprint,                // Input/output information
-			    &pyPointerToListArrayNcodat,
-			    &pyPointerToListArrayNunits,
-			    &pyPointerToListArrayNprint,
-			    &pyPointerToIstatout,
-			    &pyPointerToNstatout,
-			    &asciiOutputFile,                  // Output file names
-			    &plotOutputFile,
-			    &ucdOutputRoot,
+			    &py_bextern,               // Force vectors
+			    &py_btraction,
+			    &py_bgravity,
+			    &py_bconcForce,
+			    &py_bintern,
+			    &py_bresid,
+			    &py_bwink,
+			    &py_bwinkx,
+			    &py_dispVec,
+			    &py_dprev,
+			    &py_nforce,
+			    &py_grav,
+			    &py_x,                             // Global arrays
+			    &py_d,
+			    &py_deld,
+			    &py_dcur,
+			    &py_id,
+			    &py_iwink,
+			    &py_wink,
+			    &py_nsysdat,
+			    &py_iddmat,
+			    &py_ibond,                 // Boundary condition arrays
+			    &py_bond,
+			    &py_dx,                    // Slippery node arrays
+			    &py_deldx,
+			    &py_dxcur,
+			    &py_diforc,
+			    &py_idx,
+			    &py_iwinkx,
+			    &py_winkx,
+			    &py_idslp,
+			    &py_ipslp,
+			    &py_idhist,
+			    &py_fault,                 // Split node arrays
+			    &py_nfault,
+			    &py_dfault,
+			    &py_tfault,
+			    &py_s,                     // Local stiffness matrix arrays
+			    &py_stemp,
+			    &py_state,                 // Element arrays
+			    &py_dstate,
+			    &py_state0,
+			    &py_dmat,
+			    &py_ien,
+			    &py_lm,
+			    &py_lmx,
+			    &py_lmf,
+			    &py_ivfamily,
+			    &py_npar,
+			    &py_ielindx,
+                            &py_tractionverts,         // Traction BC arrays
+                            &py_tractionvals,
+                            &py_gauss2d,
+                            &py_sh2d,
+                            &py_infetype2d,
+			    &py_prop, // Material property arrays
+			    &py_infmatmod,
+			    &py_gauss,                 // Element type arrays
+			    &py_sh,
+			    &py_shj,
+			    &py_infetype,
+			    &py_histry,                // Time information
+			    &py_rtimdat,
+			    &py_ntimdat,
+			    &py_nvisdat,
+			    &py_maxstp,
+			    &py_delt,
+			    &py_alfa,
+			    &py_maxit,
+			    &py_ntdinit,
+			    &py_lgdef,
+			    &py_utol,
+			    &py_ftol,
+			    &py_etol,
+			    &py_itmax,
+			    &py_rgiter,       // Iterative solution information
+			    &py_skew,                  // Skew rotation information
+			    &py_iprint,                // Input/output information
+			    &py_ncodat,
+			    &py_nunits,
+			    &py_nprint,
+			    &py_istatout,
+			    &py_nstatout,
+			    &ofile,                  // Output file names
+			    &pfile,
+			    &ucdroot,
                 &viscousStage,
                 &iterateEvent,
                             &ntot,
@@ -3158,89 +3158,89 @@ PyObject * pypylith3d_viscos_step(PyObject *, PyObject *args)
   Mat      A = (Mat) PyCObject_AsVoidPtr(pyA);
   Vec      rhs = (Vec) PyCObject_AsVoidPtr(pyRhs);
   Vec      sol = (Vec) PyCObject_AsVoidPtr(pySol);
-  double*  pointerToBextern = (double*) PyCObject_AsVoidPtr(pyPointerToBextern);
-  double*  pointerToBtraction = (double*) PyCObject_AsVoidPtr(pyPointerToBtraction);
-  double*  pointerToBgravity = (double*) PyCObject_AsVoidPtr(pyPointerToBgravity);
-  double*  pointerToBconcForce = (double*) PyCObject_AsVoidPtr(pyPointerToBconcForce);
-  double*  pointerToBintern = (double*) PyCObject_AsVoidPtr(pyPointerToBintern);
-  double*  pointerToBresid = (double*) PyCObject_AsVoidPtr(pyPointerToBresid);
-  double*  pointerToBwink = (double*) PyCObject_AsVoidPtr(pyPointerToBwink);
-  double*  pointerToBwinkx = (double*) PyCObject_AsVoidPtr(pyPointerToBwinkx);
-  double*  pointerToDispVec = (double*) PyCObject_AsVoidPtr(pyPointerToDispVec);
-  double*  pointerToDprev = (double*) PyCObject_AsVoidPtr(pyPointerToDprev);
-  int*  pointerToListArrayNforce = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNforce);
-  double*  pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
-  double*  pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
-  double*  pointerToD = (double*) PyCObject_AsVoidPtr(pyPointerToD);
-  double*  pointerToDeld = (double*) PyCObject_AsVoidPtr(pyPointerToDeld);
-  double*  pointerToDcur = (double*) PyCObject_AsVoidPtr(pyPointerToDcur);
-  int*  pointerToId = (int*) PyCObject_AsVoidPtr(pyPointerToId);
-  int*  pointerToIwink = (int*) PyCObject_AsVoidPtr(pyPointerToIwink);
-  double*  pointerToWink = (double*) PyCObject_AsVoidPtr(pyPointerToWink);
-  int*  pointerToListArrayNsysdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNsysdat);
-  int*  pointerToListArrayIddmat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayIddmat);
-  int*  pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
-  double*  pointerToBond = (double*) PyCObject_AsVoidPtr(pyPointerToBond);
-  double*  pointerToDx = (double*) PyCObject_AsVoidPtr(pyPointerToDx);
-  double*  pointerToDeldx = (double*) PyCObject_AsVoidPtr(pyPointerToDeldx);
-  double*  pointerToDxcur = (double*) PyCObject_AsVoidPtr(pyPointerToDxcur);
-  double*  pointerToDiforc = (double*) PyCObject_AsVoidPtr(pyPointerToDiforc);
-  int*  pointerToIdx = (int*) PyCObject_AsVoidPtr(pyPointerToIdx);
-  int*  pointerToIwinkx = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkx);
-  double*  pointerToWinkx = (double*) PyCObject_AsVoidPtr(pyPointerToWinkx);
-  int*  pointerToIdslp = (int*) PyCObject_AsVoidPtr(pyPointerToIdslp);
-  int*  pointerToIpslp = (int*) PyCObject_AsVoidPtr(pyPointerToIpslp);
-  int*  pointerToIdhist = (int*) PyCObject_AsVoidPtr(pyPointerToIdhist);
-  double*  pointerToFault = (double*) PyCObject_AsVoidPtr(pyPointerToFault);
-  int*  pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
-  double*  pointerToDfault = (double*) PyCObject_AsVoidPtr(pyPointerToDfault);
-  double*  pointerToTfault = (double*) PyCObject_AsVoidPtr(pyPointerToTfault);
-  double*  pointerToS = (double*) PyCObject_AsVoidPtr(pyPointerToS);
-  double*  pointerToStemp = (double*) PyCObject_AsVoidPtr(pyPointerToStemp);
-  double*  pointerToState = (double*) PyCObject_AsVoidPtr(pyPointerToState);
-  double*  pointerToDstate = (double*) PyCObject_AsVoidPtr(pyPointerToDstate);
-  double*  pointerToState0 = (double*) PyCObject_AsVoidPtr(pyPointerToState0);
-  double*  pointerToDmat = (double*) PyCObject_AsVoidPtr(pyPointerToDmat);
-  int*  pointerToIen = (int*) PyCObject_AsVoidPtr(pyPointerToIen);
-  int*  pointerToLm = (int*) PyCObject_AsVoidPtr(pyPointerToLm);
-  int*  pointerToLmx = (int*) PyCObject_AsVoidPtr(pyPointerToLmx);
-  int*  pointerToLmf = (int*) PyCObject_AsVoidPtr(pyPointerToLmf);
-  int*  pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
-  int*  pointerToListArrayNpar = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNpar);
-  int*  pointerToIelindx = (int*) PyCObject_AsVoidPtr(pyPointerToIelindx);
-  int*  pointerToTractionverts = (int*) PyCObject_AsVoidPtr(pyPointerToTractionverts);
-  double*  pointerToTractionvals = (double*) PyCObject_AsVoidPtr(pyPointerToTractionvals);
-  double*  pointerToGauss2d = (double*) PyCObject_AsVoidPtr(pyPointerToGauss2d);
-  double*  pointerToSh2d = (double*) PyCObject_AsVoidPtr(pyPointerToSh2d);
-  int*  pointerToListArrayElementTypeInfo2d = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayElementTypeInfo2d);
-  double*  pointerToListArrayPropertyList = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyList);
-  int*  pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
-  double*  pointerToGauss = (double*) PyCObject_AsVoidPtr(pyPointerToGauss);
-  double*  pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
-  double*  pointerToShj = (double*) PyCObject_AsVoidPtr(pyPointerToShj);
-  int*  pointerToListArrayElementTypeInfo = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayElementTypeInfo);
-  double*  pointerToHistry = (double*) PyCObject_AsVoidPtr(pyPointerToHistry);
-  double*  pointerToListArrayRtimdat = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRtimdat);
-  int*  pointerToListArrayNtimdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNtimdat);
-  int*  pointerToListArrayNvisdat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNvisdat);
-  int*  pointerToMaxstp = (int*) PyCObject_AsVoidPtr(pyPointerToMaxstp);
-  double*  pointerToDelt = (double*) PyCObject_AsVoidPtr(pyPointerToDelt);
-  double*  pointerToAlfa = (double*) PyCObject_AsVoidPtr(pyPointerToAlfa);
-  int*  pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
-  int*  pointerToNtdinit = (int*) PyCObject_AsVoidPtr(pyPointerToNtdinit);
-  int*  pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
-  double*  pointerToUtol = (double*) PyCObject_AsVoidPtr(pyPointerToUtol);
-  double*  pointerToFtol = (double*) PyCObject_AsVoidPtr(pyPointerToFtol);
-  double*  pointerToEtol = (double*) PyCObject_AsVoidPtr(pyPointerToEtol);
-  int*  pointerToItmax = (int*) PyCObject_AsVoidPtr(pyPointerToItmax);
-  double*  pointerToListArrayRgiter = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayRgiter);
-  double*  pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
-  int*  pointerToIprint = (int*) PyCObject_AsVoidPtr(pyPointerToIprint);
-  int*  pointerToListArrayNcodat = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNcodat);
-  int*  pointerToListArrayNunits = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNunits);
-  int*  pointerToListArrayNprint = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
-  int*  pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
-  int*  pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
+  double*  bextern = (double*) PyCObject_AsVoidPtr(py_bextern);
+  double*  btraction = (double*) PyCObject_AsVoidPtr(py_btraction);
+  double*  bgravity = (double*) PyCObject_AsVoidPtr(py_bgravity);
+  double*  bconcForce = (double*) PyCObject_AsVoidPtr(py_bconcForce);
+  double*  bintern = (double*) PyCObject_AsVoidPtr(py_bintern);
+  double*  bresid = (double*) PyCObject_AsVoidPtr(py_bresid);
+  double*  bwink = (double*) PyCObject_AsVoidPtr(py_bwink);
+  double*  bwinkx = (double*) PyCObject_AsVoidPtr(py_bwinkx);
+  double*  dispVec = (double*) PyCObject_AsVoidPtr(py_dispVec);
+  double*  dprev = (double*) PyCObject_AsVoidPtr(py_dprev);
+  int*  nforce = (int*) PyCObject_AsVoidPtr(py_nforce);
+  double*  grav = (double*) PyCObject_AsVoidPtr(py_grav);
+  double*  x = (double*) PyCObject_AsVoidPtr(py_x);
+  double*  d = (double*) PyCObject_AsVoidPtr(py_d);
+  double*  deld = (double*) PyCObject_AsVoidPtr(py_deld);
+  double*  dcur = (double*) PyCObject_AsVoidPtr(py_dcur);
+  int*  id = (int*) PyCObject_AsVoidPtr(py_id);
+  int*  iwink = (int*) PyCObject_AsVoidPtr(py_iwink);
+  double*  wink = (double*) PyCObject_AsVoidPtr(py_wink);
+  int*  nsysdat = (int*) PyCObject_AsVoidPtr(py_nsysdat);
+  int*  iddmat = (int*) PyCObject_AsVoidPtr(py_iddmat);
+  int*  ibond = (int*) PyCObject_AsVoidPtr(py_ibond);
+  double*  bond = (double*) PyCObject_AsVoidPtr(py_bond);
+  double*  dx = (double*) PyCObject_AsVoidPtr(py_dx);
+  double*  deldx = (double*) PyCObject_AsVoidPtr(py_deldx);
+  double*  dxcur = (double*) PyCObject_AsVoidPtr(py_dxcur);
+  double*  diforc = (double*) PyCObject_AsVoidPtr(py_diforc);
+  int*  idx = (int*) PyCObject_AsVoidPtr(py_idx);
+  int*  iwinkx = (int*) PyCObject_AsVoidPtr(py_iwinkx);
+  double*  winkx = (double*) PyCObject_AsVoidPtr(py_winkx);
+  int*  idslp = (int*) PyCObject_AsVoidPtr(py_idslp);
+  int*  ipslp = (int*) PyCObject_AsVoidPtr(py_ipslp);
+  int*  idhist = (int*) PyCObject_AsVoidPtr(py_idhist);
+  double*  fault = (double*) PyCObject_AsVoidPtr(py_fault);
+  int*  nfault = (int*) PyCObject_AsVoidPtr(py_nfault);
+  double*  dfault = (double*) PyCObject_AsVoidPtr(py_dfault);
+  double*  tfault = (double*) PyCObject_AsVoidPtr(py_tfault);
+  double*  s = (double*) PyCObject_AsVoidPtr(py_s);
+  double*  stemp = (double*) PyCObject_AsVoidPtr(py_stemp);
+  double*  state = (double*) PyCObject_AsVoidPtr(py_state);
+  double*  dstate = (double*) PyCObject_AsVoidPtr(py_dstate);
+  double*  state0 = (double*) PyCObject_AsVoidPtr(py_state0);
+  double*  dmat = (double*) PyCObject_AsVoidPtr(py_dmat);
+  int*  ien = (int*) PyCObject_AsVoidPtr(py_ien);
+  int*  lm = (int*) PyCObject_AsVoidPtr(py_lm);
+  int*  lmx = (int*) PyCObject_AsVoidPtr(py_lmx);
+  int*  lmf = (int*) PyCObject_AsVoidPtr(py_lmf);
+  int*  ivfamily = (int*) PyCObject_AsVoidPtr(py_ivfamily);
+  int*  npar = (int*) PyCObject_AsVoidPtr(py_npar);
+  int*  ielindx = (int*) PyCObject_AsVoidPtr(py_ielindx);
+  int*  tractionverts = (int*) PyCObject_AsVoidPtr(py_tractionverts);
+  double*  tractionvals = (double*) PyCObject_AsVoidPtr(py_tractionvals);
+  double*  gauss2d = (double*) PyCObject_AsVoidPtr(py_gauss2d);
+  double*  sh2d = (double*) PyCObject_AsVoidPtr(py_sh2d);
+  int*  infetype2d = (int*) PyCObject_AsVoidPtr(py_infetype2d);
+  double*  prop = (double*) PyCObject_AsVoidPtr(py_prop);
+  int*  infmatmod = (int*) PyCObject_AsVoidPtr(py_infmatmod);
+  double*  gauss = (double*) PyCObject_AsVoidPtr(py_gauss);
+  double*  sh = (double*) PyCObject_AsVoidPtr(py_sh);
+  double*  shj = (double*) PyCObject_AsVoidPtr(py_shj);
+  int*  infetype = (int*) PyCObject_AsVoidPtr(py_infetype);
+  double*  histry = (double*) PyCObject_AsVoidPtr(py_histry);
+  double*  rtimdat = (double*) PyCObject_AsVoidPtr(py_rtimdat);
+  int*  ntimdat = (int*) PyCObject_AsVoidPtr(py_ntimdat);
+  int*  nvisdat = (int*) PyCObject_AsVoidPtr(py_nvisdat);
+  int*  maxstp = (int*) PyCObject_AsVoidPtr(py_maxstp);
+  double*  delt = (double*) PyCObject_AsVoidPtr(py_delt);
+  double*  alfa = (double*) PyCObject_AsVoidPtr(py_alfa);
+  int*  maxit = (int*) PyCObject_AsVoidPtr(py_maxit);
+  int*  ntdinit = (int*) PyCObject_AsVoidPtr(py_ntdinit);
+  int*  lgdef = (int*) PyCObject_AsVoidPtr(py_lgdef);
+  double*  utol = (double*) PyCObject_AsVoidPtr(py_utol);
+  double*  ftol = (double*) PyCObject_AsVoidPtr(py_ftol);
+  double*  etol = (double*) PyCObject_AsVoidPtr(py_etol);
+  int*  itmax = (int*) PyCObject_AsVoidPtr(py_itmax);
+  double*  rgiter = (double*) PyCObject_AsVoidPtr(py_rgiter);
+  double*  skew = (double*) PyCObject_AsVoidPtr(py_skew);
+  int*  iprint = (int*) PyCObject_AsVoidPtr(py_iprint);
+  int*  ncodat = (int*) PyCObject_AsVoidPtr(py_ncodat);
+  int*  nunits = (int*) PyCObject_AsVoidPtr(py_nunits);
+  int*  nprint = (int*) PyCObject_AsVoidPtr(py_nprint);
+  int*  istatout = (int*) PyCObject_AsVoidPtr(py_istatout);
+  int*  nstatout = (int*) PyCObject_AsVoidPtr(py_nstatout);
 
   double gtol[4];
   if (PyList_Size(pyGtol) != 3) {
@@ -3258,92 +3258,92 @@ PyObject * pypylith3d_viscos_step(PyObject *, PyObject *args)
   viscos_step_f(&A,                            // 1: Sparse matrix arrays
 	   &rhs,
 	   &sol,
-	   pointerToBextern,                  // Force vectors
-	   pointerToBtraction,
-	   pointerToBgravity,
-	   pointerToBconcForce,
-	   pointerToBintern,
-	   pointerToBresid,
-	   pointerToBwink,                    // 10
-	   pointerToBwinkx,
-	   pointerToDispVec,
-	   pointerToDprev,
-	   pointerToListArrayNforce,
-	   pointerToListArrayGrav,
-	   pointerToX,                        // Global arrays
-	   pointerToD,
-	   pointerToDeld,
-	   pointerToDcur,
-	   pointerToId,                       // 20
-	   pointerToIwink,
-	   pointerToWink,
-	   pointerToListArrayNsysdat,
-	   pointerToListArrayIddmat,
-	   pointerToIbond,                    // Boundary condition arrays
-	   pointerToBond,
-	   pointerToDx,                       // Slippery node arrays
-	   pointerToDeldx,
-	   pointerToDxcur,
-	   pointerToDiforc,                   // 30
-	   pointerToIdx,
-	   pointerToIwinkx,
-	   pointerToWinkx,
-	   pointerToIdslp,
-	   pointerToIpslp,
-	   pointerToIdhist,
-	   pointerToFault,                    // Split node arrays
-	   pointerToNfault,
-	   pointerToDfault,
-	   pointerToTfault,                   // 40
-	   pointerToS,                        // Local stiffness matrix arrays
-	   pointerToStemp,
-	   pointerToState,                    // Element arrays
-	   pointerToDstate,
-	   pointerToState0,
-	   pointerToDmat,
-	   pointerToIen,
-	   pointerToLm,
-	   pointerToLmx,
-	   pointerToLmf,                      // 50
-	   pointerToIvfamily,
-	   pointerToListArrayNpar,
-		pointerToIelindx,
-		pointerToTractionverts,            // Traction BC arrays
-	   pointerToTractionvals,
-	   pointerToGauss2d,
-	   pointerToSh2d,
-	   pointerToListArrayElementTypeInfo2d,
-	   pointerToListArrayPropertyList,    // Material property arrays
-	   pointerToMaterialModelInfo,        // 60
-	   pointerToGauss,                    // Element type arrays
-	   pointerToSh,
-	   pointerToShj,
-	   pointerToListArrayElementTypeInfo,
-	   pointerToHistry,                   // Time information
-	   pointerToListArrayRtimdat,
-	   pointerToListArrayNtimdat,
-	   pointerToListArrayNvisdat,
-	   pointerToMaxstp,
-	   pointerToDelt,                     // 70
-	   pointerToAlfa,
-	   pointerToMaxit,
-	   pointerToNtdinit,
-	   pointerToLgdef,
-	   pointerToUtol,
-	   pointerToFtol,
-	   pointerToEtol,
-	   pointerToItmax,
-	   pointerToListArrayRgiter,          // Iterative solution information
-	   pointerToSkew,                     // 80: Skew rotation information
-	   pointerToIprint,                   // Input/output information
-	   pointerToListArrayNcodat,
-	   pointerToListArrayNunits,
-	   pointerToListArrayNprint,
-	   pointerToIstatout,
-	   pointerToNstatout,
-	   asciiOutputFile,                   // Output file names
-	   plotOutputFile,
-	   ucdOutputRoot,
+	   bextern,                  // Force vectors
+	   btraction,
+	   bgravity,
+	   bconcForce,
+	   bintern,
+	   bresid,
+	   bwink,                    // 10
+	   bwinkx,
+	   dispVec,
+	   dprev,
+	   nforce,
+	   grav,
+	   x,                                 // Global arrays
+	   d,
+	   deld,
+	   dcur,
+	   id,                       // 20
+	   iwink,
+	   wink,
+	   nsysdat,
+	   iddmat,
+	   ibond,                    // Boundary condition arrays
+	   bond,
+	   dx,                       // Slippery node arrays
+	   deldx,
+	   dxcur,
+	   diforc,                   // 30
+	   idx,
+	   iwinkx,
+	   winkx,
+	   idslp,
+	   ipslp,
+	   idhist,
+	   fault,                    // Split node arrays
+	   nfault,
+	   dfault,
+	   tfault,                   // 40
+	   s,                        // Local stiffness matrix arrays
+	   stemp,
+	   state,                    // Element arrays
+	   dstate,
+	   state0,
+	   dmat,
+	   ien,
+	   lm,
+	   lmx,
+	   lmf,                      // 50
+	   ivfamily,
+	   npar,
+		ielindx,
+		tractionverts,            // Traction BC arrays
+	   tractionvals,
+	   gauss2d,
+	   sh2d,
+	   infetype2d,
+	   prop,    // Material property arrays
+	   infmatmod,                         // 60
+	   gauss,                    // Element type arrays
+	   sh,
+	   shj,
+	   infetype,
+	   histry,                   // Time information
+	   rtimdat,
+	   ntimdat,
+	   nvisdat,
+	   maxstp,
+	   delt,                     // 70
+	   alfa,
+	   maxit,
+	   ntdinit,
+	   lgdef,
+	   utol,
+	   ftol,
+	   etol,
+	   itmax,
+	   rgiter,          // Iterative solution information
+	   skew,                     // 80: Skew rotation information
+	   iprint,                   // Input/output information
+	   ncodat,
+	   nunits,
+	   nprint,
+	   istatout,
+	   nstatout,
+	   ofile,                   // Output file names
+	   pfile,
+	   ucdroot,
 	   &viscousStage,                     // 90: PETSC logging
 	   &iterateEvent,
                 &ntot,
@@ -3361,9 +3361,9 @@ PyObject * pypylith3d_viscos_step(PyObject *, PyObject *args)
                 gtol,
 	   &errorcode,                        // Error codes
 	   errorstring,
-	   strlen(asciiOutputFile),           // String lengths
-	   strlen(plotOutputFile),
-	   strlen(ucdOutputRoot),
+	   strlen(ofile),           // String lengths
+	   strlen(pfile),
+	   strlen(ucdroot),
 	   sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -3382,17 +3382,17 @@ char pypylith3d_viscos_setup__name__[] = "viscos_setup";
 
 PyObject * pypylith3d_viscos_setup(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToListArrayNprint;
-  PyObject* pyPointerToListArrayNunits;
-  char* asciiOutputFile;                      // Output file names
-  char* plotOutputFile;
+  PyObject* py_nprint;
+  PyObject* py_nunits;
+  char* ofile;                      // Output file names
+  char* pfile;
   int viscousStage;
 
   int ok = PyArg_ParseTuple(args, "OOssi:viscos_setup",
-			    &pyPointerToListArrayNprint,
-			    &pyPointerToListArrayNunits,
-			    &asciiOutputFile,                  // Output file names
-                &plotOutputFile,
+			    &py_nprint,
+			    &py_nunits,
+			    &ofile,                  // Output file names
+                &pfile,
                 &viscousStage);
 
   if (!ok) {
@@ -3402,18 +3402,18 @@ PyObject * pypylith3d_viscos_setup(PyObject *, PyObject *args)
   int  errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int *pointerToListArrayNprint = (int *) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
-  int *pointerToListArrayNunits = (int *) PyCObject_AsVoidPtr(pyPointerToListArrayNunits);
+  int *nprint = (int *) PyCObject_AsVoidPtr(py_nprint);
+  int *nunits = (int *) PyCObject_AsVoidPtr(py_nunits);
 
-  viscos_setup_f(pointerToListArrayNprint,
-                 pointerToListArrayNunits,
-                 asciiOutputFile,                   // Output file names
-                 plotOutputFile,
+  viscos_setup_f(nprint,
+                 nunits,
+                 ofile,                   // Output file names
+                 pfile,
                  &viscousStage,                     // PETSC logging
                  &errorcode,                        // Error codes
                  errorstring,
-                 strlen(asciiOutputFile),           // String lengths
-                 strlen(plotOutputFile),
+                 strlen(ofile),           // String lengths
+                 strlen(pfile),
                  sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -3424,7 +3424,7 @@ PyObject * pypylith3d_viscos_setup(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "asciiOutputFile:" << asciiOutputFile
+    << "ofile:" << ofile
     << journal::endl;
 
   // return
@@ -3439,11 +3439,11 @@ char pypylith3d_viscos_cleanup__name__[] = "viscos_cleanup";
 
 PyObject * pypylith3d_viscos_cleanup(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToListArrayNtimdat;
-  PyObject* pyPointerToListArrayNprint;
-  PyObject* pyPointerToListArrayNunits;
+  PyObject* py_ntimdat;
+  PyObject* py_nprint;
+  PyObject* py_nunits;
 
-  int ok = PyArg_ParseTuple(args, "OOO:viscos_cleanup",&pyPointerToListArrayNtimdat, &pyPointerToListArrayNprint, &pyPointerToListArrayNunits);
+  int ok = PyArg_ParseTuple(args, "OOO:viscos_cleanup",&py_ntimdat, &py_nprint, &py_nunits);
 
   if (!ok) {
     return 0;
@@ -3452,13 +3452,13 @@ PyObject * pypylith3d_viscos_cleanup(PyObject *, PyObject *args)
   int  errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int *pointerToListArrayNtimdat = (int *) PyCObject_AsVoidPtr(pyPointerToListArrayNtimdat);
-  int *pointerToListArrayNprint = (int *) PyCObject_AsVoidPtr(pyPointerToListArrayNprint);
-  int *pointerToListArrayNunits  = (int *) PyCObject_AsVoidPtr(pyPointerToListArrayNunits);
+  int *ntimdat = (int *) PyCObject_AsVoidPtr(py_ntimdat);
+  int *nprint = (int *) PyCObject_AsVoidPtr(py_nprint);
+  int *nunits  = (int *) PyCObject_AsVoidPtr(py_nunits);
 
-  viscos_cleanup_f(pointerToListArrayNtimdat,
-                   pointerToListArrayNprint,
-                   pointerToListArrayNunits,
+  viscos_cleanup_f(ntimdat,
+                   nprint,
+                   nunits,
                    &errorcode,                        // Error codes
                    errorstring,
                    sizeof(errorstring));
@@ -3481,20 +3481,20 @@ char pypylith3d_write_bc__name__[] = "write_bc";
 
 PyObject * pypylith3d_write_bc(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToBond;
-  PyObject* pyPointerToIbond;
-  int numberNodes;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* asciiOutputFile;
+  PyObject* py_bond;
+  PyObject* py_ibond;
+  int numnp;
+  int kw;
+  int idout;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "OOiiis:write_bc",
-			    &pyPointerToBond,
-			    &pyPointerToIbond,
-			    &numberNodes,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &asciiOutputFile);
+			    &py_bond,
+			    &py_ibond,
+			    &numnp,
+			    &kw,
+			    &idout,
+			    &ofile);
 
   if (!ok) {
     return 0;
@@ -3503,18 +3503,18 @@ PyObject * pypylith3d_write_bc(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToBond = (double*) PyCObject_AsVoidPtr(pyPointerToBond);
-  int* pointerToIbond = (int*) PyCObject_AsVoidPtr(pyPointerToIbond);
+  double* bond = (double*) PyCObject_AsVoidPtr(py_bond);
+  int* ibond = (int*) PyCObject_AsVoidPtr(py_ibond);
 
-  write_bc_f(pointerToBond,
-	     pointerToIbond,
-	     &numberNodes,
-	     &f77AsciiOutput,
-	     &asciiOutputInt,
-	     asciiOutputFile,
+  write_bc_f(bond,
+	     ibond,
+	     &numnp,
+	     &kw,
+	     &idout,
+	     ofile,
 	     &errorcode,
 	     errorstring,
-	     strlen(asciiOutputFile),
+	     strlen(ofile),
 	     sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -3524,7 +3524,7 @@ PyObject * pypylith3d_write_bc(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberNodes:" << numberNodes
+    << "numnp:" << numnp
     << journal::endl;
 
   // return
@@ -3540,36 +3540,36 @@ char pypylith3d_write_connect__name__[] = "write_connect";
 
 PyObject * pypylith3d_write_connect(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToIens;
-  PyObject* pyPointerToIvfamily;
-  PyObject* pyPointerToIndxiel;
-  int numberVolumeElementNodes;
-  int numberVolumeElementGaussPoints;
-  int numberVolumeElements;
-  int volumeElementType;
-  int numberVolumeElementFamilies;
-  int f77AsciiOutput;
-  int f77PlotOutput;
-  int asciiOutputInt;
-  int plotOutputInt;
-  char* asciiOutputFile;
-  char* plotOutputFile;
+  PyObject* py_iens;
+  PyObject* py_ivfamily;
+  PyObject* py_indxiel;
+  int nen;
+  int ngauss;
+  int numelv;
+  int ietypev;
+  int nvfamilies;
+  int kw;
+  int kp;
+  int idout;
+  int idsk;
+  char* ofile;
+  char* pfile;
 
   int ok = PyArg_ParseTuple(args, "OOOiiiiiiiiiss:write_connect",
-                            &pyPointerToIens,
-                            &pyPointerToIvfamily,
-                            &pyPointerToIndxiel,
-                            &numberVolumeElementNodes,
-                            &numberVolumeElementGaussPoints,
-                            &numberVolumeElements,
-                            &volumeElementType,
-                            &numberVolumeElementFamilies,
-                            &f77AsciiOutput,
-                            &f77PlotOutput,
-                            &asciiOutputInt,
-                            &plotOutputInt,
-                            &asciiOutputFile,
-                            &plotOutputFile);
+                            &py_iens,
+                            &py_ivfamily,
+                            &py_indxiel,
+                            &nen,
+                            &ngauss,
+                            &numelv,
+                            &ietypev,
+                            &nvfamilies,
+                            &kw,
+                            &kp,
+                            &idout,
+                            &idsk,
+                            &ofile,
+                            &pfile);
 
   if (!ok) {
     return 0;
@@ -3578,28 +3578,28 @@ PyObject * pypylith3d_write_connect(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
-  int* pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
-  int* pointerToIndxiel = (int*) PyCObject_AsVoidPtr(pyPointerToIndxiel);
+  int* iens = (int*) PyCObject_AsVoidPtr(py_iens);
+  int* ivfamily = (int*) PyCObject_AsVoidPtr(py_ivfamily);
+  int* indxiel = (int*) PyCObject_AsVoidPtr(py_indxiel);
 
-  write_connect_f(pointerToIens,
-		  pointerToIvfamily,
-		  pointerToIndxiel,
-		  &numberVolumeElementNodes,
-		  &numberVolumeElementGaussPoints,
-		  &numberVolumeElements,
-		  &volumeElementType,
-		  &numberVolumeElementFamilies,
-		  &f77AsciiOutput,
-		  &f77PlotOutput,
-		  &asciiOutputInt,
-		  &plotOutputInt,
-		  asciiOutputFile,
-		  plotOutputFile,
+  write_connect_f(iens,
+		  ivfamily,
+		  indxiel,
+		  &nen,
+		  &ngauss,
+		  &numelv,
+		  &ietypev,
+		  &nvfamilies,
+		  &kw,
+		  &kp,
+		  &idout,
+		  &idsk,
+		  ofile,
+		  pfile,
 		  &errorcode,
 		  errorstring,
-		  strlen(asciiOutputFile),
-		  strlen(plotOutputFile),
+		  strlen(ofile),
+		  strlen(pfile),
 		  sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -3609,7 +3609,7 @@ PyObject * pypylith3d_write_connect(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberVolumeElements:" << numberVolumeElements
+    << "numelv:" << numelv
     << journal::endl;
 
   // return
@@ -3625,24 +3625,24 @@ char pypylith3d_write_coords__name__[] = "write_coords";
 
 PyObject * pypylith3d_write_coords(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToX;
-  int numberNodes;
-  int f77AsciiOutput;
-  int f77PlotOutput;
-  int asciiOutputInt;
-  int plotOutputInt;
-  char* asciiOutputFile;
-  char* plotOutputFile;
+  PyObject* py_x;
+  int numnp;
+  int kw;
+  int kp;
+  int idout;
+  int idsk;
+  char* ofile;
+  char* pfile;
 
   int ok = PyArg_ParseTuple(args, "Oiiiiiss:write_coords",
-			    &pyPointerToX,
-			    &numberNodes,
-			    &f77AsciiOutput,
-			    &f77PlotOutput,
-			    &asciiOutputInt,
-			    &plotOutputInt,
-			    &asciiOutputFile,
-			    &plotOutputFile);
+			    &py_x,
+			    &numnp,
+			    &kw,
+			    &kp,
+			    &idout,
+			    &idsk,
+			    &ofile,
+			    &pfile);
 
   if (!ok) {
     return 0;
@@ -3651,20 +3651,20 @@ PyObject * pypylith3d_write_coords(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
+  double* x = (double*) PyCObject_AsVoidPtr(py_x);
 
-  write_coords_f(pointerToX,
-		 &numberNodes,
-		 &f77AsciiOutput,
-		 &f77PlotOutput,
-		 &asciiOutputInt,
-		 &plotOutputInt,
-		 asciiOutputFile,
-		 plotOutputFile,
+  write_coords_f(x,
+		 &numnp,
+		 &kw,
+		 &kp,
+		 &idout,
+		 &idsk,
+		 ofile,
+		 pfile,
 		 &errorcode,
 		 errorstring,
-		 strlen(asciiOutputFile),
-		 strlen(plotOutputFile),
+		 strlen(ofile),
+		 strlen(pfile),
 		 sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -3674,7 +3674,7 @@ PyObject * pypylith3d_write_coords(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberNodes:" << numberNodes
+    << "numnp:" << numnp
     << journal::endl;
 
   // return
@@ -3690,26 +3690,26 @@ char pypylith3d_write_diff__name__[] = "write_diff";
 
 PyObject * pypylith3d_write_diff(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToDiforc;
-  PyObject* pyPointerToNslip;
-  PyObject* pyPointerToIdhist;
-  int numberSlipperyNodeEntries;
-  int numberDifferentialForceEntries;
-  int numberNodes;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* asciiOutputFile;
+  PyObject* py_diforc;
+  PyObject* py_nslip;
+  PyObject* py_idhist;
+  int numslp;
+  int numdif;
+  int numnp;
+  int kw;
+  int idout;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "OOOiiiiis:write_diff",
-			    &pyPointerToDiforc,
-			    &pyPointerToNslip,
-			    &pyPointerToIdhist,
-			    &numberSlipperyNodeEntries,
-			    &numberDifferentialForceEntries,
-			    &numberNodes,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &asciiOutputFile);
+			    &py_diforc,
+			    &py_nslip,
+			    &py_idhist,
+			    &numslp,
+			    &numdif,
+			    &numnp,
+			    &kw,
+			    &idout,
+			    &ofile);
 
   if (!ok) {
     return 0;
@@ -3718,22 +3718,22 @@ PyObject * pypylith3d_write_diff(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToDiforc = (double*) PyCObject_AsVoidPtr(pyPointerToDiforc);
-  int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
-  int* pointerToIdhist = (int*) PyCObject_AsVoidPtr(pyPointerToIdhist);
+  double* diforc = (double*) PyCObject_AsVoidPtr(py_diforc);
+  int* nslip = (int*) PyCObject_AsVoidPtr(py_nslip);
+  int* idhist = (int*) PyCObject_AsVoidPtr(py_idhist);
 
-  write_diff_f(pointerToDiforc,
-	       pointerToNslip,
-	       pointerToIdhist,
-	       &numberSlipperyNodeEntries,
-	       &numberDifferentialForceEntries,
-	       &numberNodes,
-	       &f77AsciiOutput,
-	       &asciiOutputInt,
-	       asciiOutputFile,
+  write_diff_f(diforc,
+	       nslip,
+	       idhist,
+	       &numslp,
+	       &numdif,
+	       &numnp,
+	       &kw,
+	       &idout,
+	       ofile,
 	       &errorcode,
 	       errorstring,
-	       strlen(asciiOutputFile),
+	       strlen(ofile),
 	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -3743,7 +3743,7 @@ PyObject * pypylith3d_write_diff(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberDifferentialForceEntries:" << numberDifferentialForceEntries
+    << "numdif:" << numdif
     << journal::endl;
 
   // return
@@ -3758,54 +3758,54 @@ char pypylith3d_write_element_info__name__[] = "write_element_info";
 
 PyObject * pypylith3d_write_element_info(PyObject *, PyObject *args)
 {
-  int numberVolumeElements;
-  int numberVolumeElementNodes;
-  int numberVolumeElementGaussPoints;
-  int volumeElementType;
-  int quadratureOrderInt;
-  int prestressAutoComputeInt;
-  int prestressAutoChangeElasticPropsInt;
-  double prestressAutoComputePoisson;
-  double prestressAutoComputeYoungs;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* asciiOutputFile;
+  int numelv;
+  int nen;
+  int ngauss;
+  int ietypev;
+  int intord;
+  int ipstrs;
+  int ipauto;
+  double tpois;
+  double tyoungs;
+  int kw;
+  int idout;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "iiiiiiiddiis:write_element_info",
-			    &numberVolumeElements,
-			    &numberVolumeElementNodes,
-			    &numberVolumeElementGaussPoints,
-			    &volumeElementType,
-			    &quadratureOrderInt,
-			    &prestressAutoComputeInt,
-			    &prestressAutoChangeElasticPropsInt,
-			    &prestressAutoComputePoisson,
-			    &prestressAutoComputeYoungs,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &asciiOutputFile);
+			    &numelv,
+			    &nen,
+			    &ngauss,
+			    &ietypev,
+			    &intord,
+			    &ipstrs,
+			    &ipauto,
+			    &tpois,
+			    &tyoungs,
+			    &kw,
+			    &idout,
+			    &ofile);
 
   if (!ok) {
     return 0;
   }
 
-  write_element_info_f(&numberVolumeElements,
-		       &numberVolumeElementNodes,
-		       &numberVolumeElementGaussPoints,
-		       &volumeElementType,
-		       &quadratureOrderInt,
-		       &prestressAutoComputeInt,
-		       &prestressAutoChangeElasticPropsInt,
-		       &prestressAutoComputePoisson,
-		       &prestressAutoComputeYoungs,
-		       &f77AsciiOutput,
-		       &asciiOutputInt,
-		       asciiOutputFile,strlen(asciiOutputFile));
+  write_element_info_f(&numelv,
+		       &nen,
+		       &ngauss,
+		       &ietypev,
+		       &intord,
+		       &ipstrs,
+		       &ipauto,
+		       &tpois,
+		       &tyoungs,
+		       &kw,
+		       &idout,
+		       ofile,strlen(ofile));
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberVolumeElements:" << numberVolumeElements
+    << "numelv:" << numelv
     << journal::endl;
 
   // return
@@ -3821,30 +3821,30 @@ char pypylith3d_write_fuldat__name__[] = "write_fuldat";
 
 PyObject * pypylith3d_write_fuldat(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToIprint;
-  int numberFullOutputs;
-  int analysisTypeInt;
-  int numberCycles;
-  int totalNumberTimeSteps;
-  int f77AsciiOutput;
-  int f77PlotOutput;
-  int asciiOutputInt;
-  int plotOutputInt;
-  char* asciiOutputFile;
-  char* plotOutputFile;
+  PyObject* py_iprint;
+  int icontr;
+  int icode;
+  int ncycle;
+  int lastep;
+  int kw;
+  int kp;
+  int idout;
+  int idsk;
+  char* ofile;
+  char* pfile;
 
   int ok = PyArg_ParseTuple(args, "Oiiiiiiiiss:write_fuldat",
-			    &pyPointerToIprint,
-			    &numberFullOutputs,
-			    &analysisTypeInt,
-			    &numberCycles,
-			    &totalNumberTimeSteps,
-			    &f77AsciiOutput,
-			    &f77PlotOutput,
-			    &asciiOutputInt,
-			    &plotOutputInt,
-			    &asciiOutputFile,
-			    &plotOutputFile);
+			    &py_iprint,
+			    &icontr,
+			    &icode,
+			    &ncycle,
+			    &lastep,
+			    &kw,
+			    &kp,
+			    &idout,
+			    &idsk,
+			    &ofile,
+			    &pfile);
 
   if (!ok) {
     return 0;
@@ -3853,23 +3853,23 @@ PyObject * pypylith3d_write_fuldat(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToIprint = (int*) PyCObject_AsVoidPtr(pyPointerToIprint);
+  int* iprint = (int*) PyCObject_AsVoidPtr(py_iprint);
 
-  write_fuldat_f(pointerToIprint,
-		 &numberFullOutputs,
-		 &analysisTypeInt,
-		 &numberCycles,
-		 &totalNumberTimeSteps,
-		 &f77AsciiOutput,
-		 &f77PlotOutput,
-		 &asciiOutputInt,
-		 &plotOutputInt,
-		 asciiOutputFile,
-		 plotOutputFile,
+  write_fuldat_f(iprint,
+		 &icontr,
+		 &icode,
+		 &ncycle,
+		 &lastep,
+		 &kw,
+		 &kp,
+		 &idout,
+		 &idsk,
+		 ofile,
+		 pfile,
 		 &errorcode,
 		 errorstring,
-		 strlen(asciiOutputFile),
-		 strlen(plotOutputFile),
+		 strlen(ofile),
+		 strlen(pfile),
 		 sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -3879,7 +3879,7 @@ PyObject * pypylith3d_write_fuldat(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberFullOutputs:" << numberFullOutputs
+    << "icontr:" << icontr
     << journal::endl;
 
   // return
@@ -3896,50 +3896,50 @@ char pypylith3d_write_global_info__name__[] = "write_global_info";
 PyObject * pypylith3d_write_global_info(PyObject *, PyObject *args)
 {
   char* title;
-  int asciiOutputInt;
-  int plotOutputInt;
-  int numberNodes;
-  int analysisTypeInt;
-  int debuggingOutputInt;
-  int f77AsciiOutput;
-  int f77PlotOutput;
-  char* asciiOutputFile;
-  char* plotOutputFile;
+  int idout;
+  int idsk;
+  int numnp;
+  int icode;
+  int idebug;
+  int kw;
+  int kp;
+  char* ofile;
+  char* pfile;
 
   int ok = PyArg_ParseTuple(args, "siiiiiiiss:write_global_info",
 			    &title,
-			    &asciiOutputInt,
-			    &plotOutputInt,
-			    &numberNodes,
-			    &analysisTypeInt,
-			    &debuggingOutputInt,
-			    &f77AsciiOutput,
-			    &f77PlotOutput,
-			    &asciiOutputFile,
-			    &plotOutputFile);
+			    &idout,
+			    &idsk,
+			    &numnp,
+			    &icode,
+			    &idebug,
+			    &kw,
+			    &kp,
+			    &ofile,
+			    &pfile);
 
   if (!ok) {
     return 0;
   }
 
   write_global_info_f(title,
-		      &asciiOutputInt,
-		      &plotOutputInt,
-		      &numberNodes,
-		      &analysisTypeInt,
-		      &debuggingOutputInt,
-		      &f77AsciiOutput,
-		      &f77PlotOutput,
-		      asciiOutputFile,
-		      plotOutputFile,
+		      &idout,
+		      &idsk,
+		      &numnp,
+		      &icode,
+		      &idebug,
+		      &kw,
+		      &kp,
+		      ofile,
+		      pfile,
 		      strlen(title),
-		      strlen(asciiOutputFile),
-		      strlen(plotOutputFile));
+		      strlen(ofile),
+		      strlen(pfile));
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "debuggingOutputInt:" << debuggingOutputInt
+    << "idebug:" << idebug
     << journal::endl;
 
   // return
@@ -3955,22 +3955,22 @@ char pypylith3d_write_hist__name__[] = "write_hist";
 
 PyObject * pypylith3d_write_hist(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToHistry;
-  PyObject* pyPointerToTimes;
-  int numberLoadHistories;
-  int totalNumberTimeSteps;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* asciiOutputFile;
+  PyObject* py_histry;
+  PyObject* py_times;
+  int nhist;
+  int lastep;
+  int kw;
+  int idout;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "OOiiiis:write_hist",
-			    &pyPointerToHistry,
-			    &pyPointerToTimes,
-			    &numberLoadHistories,
-			    &totalNumberTimeSteps,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &asciiOutputFile);
+			    &py_histry,
+			    &py_times,
+			    &nhist,
+			    &lastep,
+			    &kw,
+			    &idout,
+			    &ofile);
 
   if (!ok) {
     return 0;
@@ -3979,19 +3979,19 @@ PyObject * pypylith3d_write_hist(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToHistry = (double*) PyCObject_AsVoidPtr(pyPointerToHistry);
-  double* pointerToTimes = (double*) PyCObject_AsVoidPtr(pyPointerToTimes);
+  double* histry = (double*) PyCObject_AsVoidPtr(py_histry);
+  double* times = (double*) PyCObject_AsVoidPtr(py_times);
 
-  write_hist_f(pointerToHistry,
-	       pointerToTimes,
-	       &numberLoadHistories,
-	       &totalNumberTimeSteps,
-	       &f77AsciiOutput,
-	       &asciiOutputInt,
-	       asciiOutputFile,
+  write_hist_f(histry,
+	       times,
+	       &nhist,
+	       &lastep,
+	       &kw,
+	       &idout,
+	       ofile,
 	       &errorcode,
 	       errorstring,
-	       strlen(asciiOutputFile),
+	       strlen(ofile),
 	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -4001,7 +4001,7 @@ PyObject * pypylith3d_write_hist(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberLoadHistories:" << numberLoadHistories
+    << "nhist:" << nhist
     << journal::endl;
 
   // return
@@ -4017,32 +4017,32 @@ char pypylith3d_write_props__name__[] = "write_props";
 
 PyObject * pypylith3d_write_props(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToListArrayPropertyList;
-  PyObject* pyPointerToListArrayGrav;
-  PyObject* pyPointerToIvfamily;
-  PyObject* pyPointerToMaterialModelInfo;
-  int numberVolumeElementFamilies;
+  PyObject* py_prop;
+  PyObject* py_grav;
+  PyObject* py_ivfamily;
+  PyObject* py_infmatmod;
+  int nvfamilies;
   int propertySize;
-  int asciiOutputInt;
-  int plotOutputInt;
-  int f77AsciiOutput;
-  int f77PlotOutput;
-  char* asciiOutputFile;
-  char* plotOutputFile;
+  int idout;
+  int idsk;
+  int kw;
+  int kp;
+  char* ofile;
+  char* pfile;
 
   int ok = PyArg_ParseTuple(args, "OOOOiiiiiiss:write_props",
-			    &pyPointerToListArrayPropertyList,
-			    &pyPointerToListArrayGrav,
-			    &pyPointerToIvfamily,
-			    &pyPointerToMaterialModelInfo,
-			    &numberVolumeElementFamilies,
+			    &py_prop,
+			    &py_grav,
+			    &py_ivfamily,
+			    &py_infmatmod,
+			    &nvfamilies,
 			    &propertySize,
-			    &asciiOutputInt,
-			    &plotOutputInt,
-			    &f77AsciiOutput,
-			    &f77PlotOutput,
-			    &asciiOutputFile,
-			    &plotOutputFile);
+			    &idout,
+			    &idsk,
+			    &kw,
+			    &kp,
+			    &ofile,
+			    &pfile);
 
   if (!ok) {
     return 0;
@@ -4051,27 +4051,27 @@ PyObject * pypylith3d_write_props(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToListArrayPropertyList = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayPropertyList);
-  double* pointerToListArrayGrav = (double*) PyCObject_AsVoidPtr(pyPointerToListArrayGrav);
-  int* pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
-  int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
+  double* prop = (double*) PyCObject_AsVoidPtr(py_prop);
+  double* grav = (double*) PyCObject_AsVoidPtr(py_grav);
+  int* ivfamily = (int*) PyCObject_AsVoidPtr(py_ivfamily);
+  int* infmatmod = (int*) PyCObject_AsVoidPtr(py_infmatmod);
 
-  write_props_f(pointerToListArrayPropertyList,
-		pointerToListArrayGrav,
-		pointerToIvfamily,
-		pointerToMaterialModelInfo,
-		&numberVolumeElementFamilies,
+  write_props_f(prop,
+		grav,
+		ivfamily,
+		infmatmod,
+		&nvfamilies,
 		&propertySize,
-		&asciiOutputInt,
-		&plotOutputInt,
-		&f77AsciiOutput,
-		&f77PlotOutput,
-		asciiOutputFile,
-		plotOutputFile,
+		&idout,
+		&idsk,
+		&kw,
+		&kp,
+		ofile,
+		pfile,
 		&errorcode,
 		errorstring,
-		strlen(asciiOutputFile),
-		strlen(plotOutputFile),
+		strlen(ofile),
+		strlen(pfile),
 		sizeof(errorstring));
 
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -4081,7 +4081,7 @@ PyObject * pypylith3d_write_props(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberVolumeElementFamilies:" << numberVolumeElementFamilies
+    << "nvfamilies:" << nvfamilies
     << journal::endl;
 
   // return
@@ -4097,22 +4097,22 @@ char pypylith3d_write_skew__name__[] = "write_skew";
 
 PyObject * pypylith3d_write_skew(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToSkew;
-  int numberRotationEntries;
-  int autoRotateSlipperyNodesInt;
-  int numberNodes;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* asciiOutputFile;
+  PyObject* py_skew;
+  int numrot;
+  int iskopt;
+  int numnp;
+  int kw;
+  int idout;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "Oiiiiis:write_skew",
-			    &pyPointerToSkew,
-			    &numberRotationEntries,
-			    &autoRotateSlipperyNodesInt,
-			    &numberNodes,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &asciiOutputFile);
+			    &py_skew,
+			    &numrot,
+			    &iskopt,
+			    &numnp,
+			    &kw,
+			    &idout,
+			    &ofile);
 
   if (!ok) {
     return 0;
@@ -4121,18 +4121,18 @@ PyObject * pypylith3d_write_skew(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToSkew = (double*) PyCObject_AsVoidPtr(pyPointerToSkew);
+  double* skew = (double*) PyCObject_AsVoidPtr(py_skew);
 
-  write_skew_f(pointerToSkew,
-	       &numberRotationEntries,
-	       &autoRotateSlipperyNodesInt,
-	       &numberNodes,
-	       &f77AsciiOutput,
-	       &asciiOutputInt,
-	       asciiOutputFile,
+  write_skew_f(skew,
+	       &numrot,
+	       &iskopt,
+	       &numnp,
+	       &kw,
+	       &idout,
+	       ofile,
 	       &errorcode,
 	       errorstring,
-	       strlen(asciiOutputFile),
+	       strlen(ofile),
 	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -4142,7 +4142,7 @@ PyObject * pypylith3d_write_skew(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberRotationEntries:" << numberRotationEntries
+    << "numrot:" << numrot
     << journal::endl;
 
   // return
@@ -4158,26 +4158,26 @@ char pypylith3d_write_slip__name__[] = "write_slip";
 
 PyObject * pypylith3d_write_slip(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToNslip;
-  int numberSlipperyNodeEntries;
+  PyObject* py_nslip;
+  int numslp;
   int totalNumberSlipperyNodes;
-  int f77AsciiOutput;
-  int f77PlotOutput;
-  int asciiOutputInt;
-  int plotOutputInt;
-  char* asciiOutputFile;
-  char* plotOutputFile;
+  int kw;
+  int kp;
+  int idout;
+  int idsk;
+  char* ofile;
+  char* pfile;
 
   int ok = PyArg_ParseTuple(args, "Oiiiiiiss:write_slip",
-			    &pyPointerToNslip,
-			    &numberSlipperyNodeEntries,
+			    &py_nslip,
+			    &numslp,
 			    &totalNumberSlipperyNodes,
-			    &f77AsciiOutput,
-			    &f77PlotOutput,
-			    &asciiOutputInt,
-			    &plotOutputInt,
-			    &asciiOutputFile,
-			    &plotOutputFile);
+			    &kw,
+			    &kp,
+			    &idout,
+			    &idsk,
+			    &ofile,
+			    &pfile);
 
   if (!ok) {
     return 0;
@@ -4186,21 +4186,21 @@ PyObject * pypylith3d_write_slip(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToNslip = (int*) PyCObject_AsVoidPtr(pyPointerToNslip);
+  int* nslip = (int*) PyCObject_AsVoidPtr(py_nslip);
 
-  write_slip_f(pointerToNslip,
-	       &numberSlipperyNodeEntries,
+  write_slip_f(nslip,
+	       &numslp,
 	       &totalNumberSlipperyNodes,
-	       &f77AsciiOutput,
-	       &f77PlotOutput,
-	       &asciiOutputInt,
-	       &plotOutputInt,
-	       asciiOutputFile,
-	       plotOutputFile,
+	       &kw,
+	       &kp,
+	       &idout,
+	       &idsk,
+	       ofile,
+	       pfile,
 	       &errorcode,
 	       errorstring,
-	       strlen(asciiOutputFile),
-	       strlen(plotOutputFile),
+	       strlen(ofile),
+	       strlen(pfile),
 	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -4226,42 +4226,42 @@ char pypylith3d_write_sparse_info__name__[] = "write_sparse_info";
 
 PyObject * pypylith3d_write_sparse_info(PyObject *, PyObject *args)
 {
-  int numberGlobalEquations;
+  int neq;
   int stiffnessMatrixSize;
-  int minimumNonzeroTermsPerRow;
-  int maximumNonzeroTermsPerRow;
-  double averageNonzeroTermsPerRow;
-  int asciiOutputInt;
-  int f77AsciiOutput;
-  char* asciiOutputFile;
+  int nmin;
+  int nmax;
+  double wavg;
+  int idout;
+  int kw;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "iiiidiis:write_sparse_info",
-			    &numberGlobalEquations,
+			    &neq,
 			    &stiffnessMatrixSize,
-			    &minimumNonzeroTermsPerRow,
-			    &maximumNonzeroTermsPerRow,
-			    &averageNonzeroTermsPerRow,
-			    &asciiOutputInt,
-			    &f77AsciiOutput,
-			    &asciiOutputFile);
+			    &nmin,
+			    &nmax,
+			    &wavg,
+			    &idout,
+			    &kw,
+			    &ofile);
 
   if (!ok) {
     return 0;
   }
 
-  write_sparse_info_f(&numberGlobalEquations,
+  write_sparse_info_f(&neq,
 		      &stiffnessMatrixSize,
-		      &minimumNonzeroTermsPerRow,
-		      &maximumNonzeroTermsPerRow,
-		      &averageNonzeroTermsPerRow,
-		      &asciiOutputInt,
-		      &f77AsciiOutput,
-		      asciiOutputFile,strlen(asciiOutputFile));
+		      &nmin,
+		      &nmax,
+		      &wavg,
+		      &idout,
+		      &kw,
+		      ofile,strlen(ofile));
 		  
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "minimumNonzeroTermsPerRow:" << minimumNonzeroTermsPerRow
+    << "nmin:" << nmin
     << journal::endl;
 
   // return
@@ -4277,26 +4277,26 @@ char pypylith3d_write_split__name__[] = "write_split";
 
 PyObject * pypylith3d_write_split(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToFault;
-  PyObject* pyPointerToNfault;
-  int numberSplitNodeEntries;
-  int f77AsciiOutput;
-  int f77PlotOutput;
-  int asciiOutputInt;
-  int plotOutputInt;
-  char* asciiOutputFile;
-  char* plotOutputFile;
+  PyObject* py_fault;
+  PyObject* py_nfault;
+  int numfn;
+  int kw;
+  int kp;
+  int idout;
+  int idsk;
+  char* ofile;
+  char* pfile;
 
   int ok = PyArg_ParseTuple(args, "OOiiiiiss:write_split",
-			    &pyPointerToFault,
-			    &pyPointerToNfault,
-			    &numberSplitNodeEntries,
-			    &f77AsciiOutput,
-			    &f77PlotOutput,
-			    &asciiOutputInt,
-			    &plotOutputInt,
-			    &asciiOutputFile,
-			    &plotOutputFile);
+			    &py_fault,
+			    &py_nfault,
+			    &numfn,
+			    &kw,
+			    &kp,
+			    &idout,
+			    &idsk,
+			    &ofile,
+			    &pfile);
 
   if (!ok) {
     return 0;
@@ -4305,22 +4305,22 @@ PyObject * pypylith3d_write_split(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToFault = (double*) PyCObject_AsVoidPtr(pyPointerToFault);
-  int* pointerToNfault = (int*) PyCObject_AsVoidPtr(pyPointerToNfault);
+  double* fault = (double*) PyCObject_AsVoidPtr(py_fault);
+  int* nfault = (int*) PyCObject_AsVoidPtr(py_nfault);
 
-  write_split_f(pointerToFault,
-		pointerToNfault,
-		&numberSplitNodeEntries,
-		&f77AsciiOutput,
-		&f77PlotOutput,
-		&asciiOutputInt,
-		&plotOutputInt,
-		asciiOutputFile,
-		plotOutputFile,
+  write_split_f(fault,
+		nfault,
+		&numfn,
+		&kw,
+		&kp,
+		&idout,
+		&idsk,
+		ofile,
+		pfile,
 		&errorcode,
 		errorstring,
-		strlen(asciiOutputFile),
-		strlen(plotOutputFile),
+		strlen(ofile),
+		strlen(pfile),
 		sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -4330,7 +4330,7 @@ PyObject * pypylith3d_write_split(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberSplitNodeEntries:" << numberSplitNodeEntries
+    << "numfn:" << numfn
     << journal::endl;
 
   // return
@@ -4346,31 +4346,31 @@ char pypylith3d_write_split_plot__name__[] = "write_split_plot";
 
 PyObject * pypylith3d_write_split_plot(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToIdftn;
+  PyObject* py_idftn;
   int totalNumberSplitNodes;
-  int f77PlotOutput;
-  int plotOutputInt;
-  char* plotOutputFile;
+  int kp;
+  int idsk;
+  char* pfile;
 
   int ok = PyArg_ParseTuple(args, "Oiiis:write_split_plot",
-			    &pyPointerToIdftn,
+			    &py_idftn,
 			    &totalNumberSplitNodes,
-			    &f77PlotOutput,
-			    &plotOutputInt,
-			    &plotOutputFile);
+			    &kp,
+			    &idsk,
+			    &pfile);
 
   if (!ok) {
     return 0;
   }
 
-  int* pointerToIdftn = (int*) PyCObject_AsVoidPtr(pyPointerToIdftn);
+  int* idftn = (int*) PyCObject_AsVoidPtr(py_idftn);
 
-  write_split_plot_f(pointerToIdftn,
+  write_split_plot_f(idftn,
 		     &totalNumberSplitNodes,
-		     &f77PlotOutput,
-		     &plotOutputInt,
-		     plotOutputFile,
-		     strlen(plotOutputFile));
+		     &kp,
+		     &idsk,
+		     pfile,
+		     strlen(pfile));
     
 
   journal::debug_t debug("pylith3d");
@@ -4392,24 +4392,24 @@ char pypylith3d_write_stateout__name__[] = "write_stateout";
 
 PyObject * pypylith3d_write_stateout(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToIstatout;
-  PyObject* pyPointerToNstatout;
-  int f77AsciiOutput;
-  int f77PlotOutput;
-  int asciiOutputInt;
-  int plotOutputInt;
-  char* asciiOutputFile;
-  char* plotOutputFile;
+  PyObject* py_istatout;
+  PyObject* py_nstatout;
+  int kw;
+  int kp;
+  int idout;
+  int idsk;
+  char* ofile;
+  char* pfile;
 
   int ok = PyArg_ParseTuple(args, "OOiiiiss:write_stateout",
-			    &pyPointerToIstatout,
-			    &pyPointerToNstatout,
-			    &f77AsciiOutput,
-			    &f77PlotOutput,
-			    &asciiOutputInt,
-			    &plotOutputInt,
-			    &asciiOutputFile,
-			    &plotOutputFile);
+			    &py_istatout,
+			    &py_nstatout,
+			    &kw,
+			    &kp,
+			    &idout,
+			    &idsk,
+			    &ofile,
+			    &pfile);
 
   if (!ok) {
     return 0;
@@ -4418,21 +4418,21 @@ PyObject * pypylith3d_write_stateout(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
-  int* pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
+  int* istatout = (int*) PyCObject_AsVoidPtr(py_istatout);
+  int* nstatout = (int*) PyCObject_AsVoidPtr(py_nstatout);
 
-  write_stateout_f(pointerToIstatout,
-		   pointerToNstatout,
-		   &f77AsciiOutput,
-		   &f77PlotOutput,
-		   &asciiOutputInt,
-		   &plotOutputInt,
-		   asciiOutputFile,
-		   plotOutputFile,
+  write_stateout_f(istatout,
+		   nstatout,
+		   &kw,
+		   &kp,
+		   &idout,
+		   &idsk,
+		   ofile,
+		   pfile,
 		   &errorcode,
 		   errorstring,
-		   strlen(asciiOutputFile),
-		   strlen(plotOutputFile),
+		   strlen(ofile),
+		   strlen(pfile),
 		   sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -4442,7 +4442,7 @@ PyObject * pypylith3d_write_stateout(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "pointerToIstatout:" << pointerToIstatout
+    << "istatout:" << istatout
     << journal::endl;
 
   // return
@@ -4458,36 +4458,36 @@ char pypylith3d_write_strscomp__name__[] = "write_strscomp";
 
 PyObject * pypylith3d_write_strscomp(PyObject *, PyObject *args)
 {
-  double stressTolerance;
-  double minimumStrainPerturbation;
-  double initialStrainPerturbation;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* asciiOutputFile;
+  double stol;
+  double dtol;
+  double epert;
+  int kw;
+  int idout;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "dddiis:write_strscomp",
-			    &stressTolerance,
-			    &minimumStrainPerturbation,
-			    &initialStrainPerturbation,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &asciiOutputFile);
+			    &stol,
+			    &dtol,
+			    &epert,
+			    &kw,
+			    &idout,
+			    &ofile);
 
   if (!ok) {
     return 0;
   }
 
-  write_strscomp_f(&stressTolerance,
-		   &minimumStrainPerturbation,
-		   &initialStrainPerturbation,
-		   &f77AsciiOutput,
-		   &asciiOutputInt,
-		   asciiOutputFile,strlen(asciiOutputFile));
+  write_strscomp_f(&stol,
+		   &dtol,
+		   &epert,
+		   &kw,
+		   &idout,
+		   ofile,strlen(ofile));
 
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "initialStrainPerturbation:" << initialStrainPerturbation
+    << "epert:" << epert
     << journal::endl;
 
   // return
@@ -4503,31 +4503,31 @@ char pypylith3d_write_subiter__name__[] = "write_subiter";
 
 PyObject * pypylith3d_write_subiter(PyObject *, PyObject *args)
 {
-  int usePreviousDisplacementFlag;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* asciiOutputFile;
+  int nprevdflag;
+  int kw;
+  int idout;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "iiis:write_subiter",
-			    &usePreviousDisplacementFlag,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &asciiOutputFile);
+			    &nprevdflag,
+			    &kw,
+			    &idout,
+			    &ofile);
 
   if (!ok) {
     return 0;
   }
 
 
-  write_subiter_f(&usePreviousDisplacementFlag,
-		  &f77AsciiOutput,
-		  &asciiOutputInt,
-		  asciiOutputFile,strlen(asciiOutputFile));
+  write_subiter_f(&nprevdflag,
+		  &kw,
+		  &idout,
+		  ofile,strlen(ofile));
 		  
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "usePreviousDisplacementFlag:" << usePreviousDisplacementFlag
+    << "nprevdflag:" << nprevdflag
     << journal::endl;
 
   // return
@@ -4543,40 +4543,40 @@ char pypylith3d_write_timdat__name__[] = "write_timdat";
 
 PyObject * pypylith3d_write_timdat(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToDelt;
-  PyObject* pyPointerToAlfa;
-  PyObject* pyPointerToUtol;
-  PyObject* pyPointerToFtol;
-  PyObject* pyPointerToEtol;
-  PyObject* pyPointerToTimes;
-  PyObject* pyPointerToMaxstp;
-  PyObject* pyPointerToMaxit;
-  PyObject* pyPointerToNtdinit;
-  PyObject* pyPointerToLgdef;
-  PyObject* pyPointerToItmax;
-  int numberTimeStepGroups;
-  int totalNumberTimeSteps;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* asciiOutputFile;
+  PyObject* py_delt;
+  PyObject* py_alfa;
+  PyObject* py_utol;
+  PyObject* py_ftol;
+  PyObject* py_etol;
+  PyObject* py_times;
+  PyObject* py_maxstp;
+  PyObject* py_maxit;
+  PyObject* py_ntdinit;
+  PyObject* py_lgdef;
+  PyObject* py_itmax;
+  int nintg;
+  int lastep;
+  int kw;
+  int idout;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "OOOOOOOOOOOiiiis:write_timdat",
-			    &pyPointerToDelt,
-			    &pyPointerToAlfa,
-			    &pyPointerToUtol,
-			    &pyPointerToFtol,
-			    &pyPointerToEtol,
-			    &pyPointerToTimes,
-			    &pyPointerToMaxstp,
-			    &pyPointerToMaxit,
-			    &pyPointerToNtdinit,
-			    &pyPointerToLgdef,
-			    &pyPointerToItmax,
-			    &numberTimeStepGroups,
-			    &totalNumberTimeSteps,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &asciiOutputFile);
+			    &py_delt,
+			    &py_alfa,
+			    &py_utol,
+			    &py_ftol,
+			    &py_etol,
+			    &py_times,
+			    &py_maxstp,
+			    &py_maxit,
+			    &py_ntdinit,
+			    &py_lgdef,
+			    &py_itmax,
+			    &nintg,
+			    &lastep,
+			    &kw,
+			    &idout,
+			    &ofile);
 
   if (!ok) {
     return 0;
@@ -4585,37 +4585,37 @@ PyObject * pypylith3d_write_timdat(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToDelt = (double*) PyCObject_AsVoidPtr(pyPointerToDelt);
-  double* pointerToAlfa = (double*) PyCObject_AsVoidPtr(pyPointerToAlfa);
-  double* pointerToUtol = (double*) PyCObject_AsVoidPtr(pyPointerToUtol);
-  double* pointerToFtol = (double*) PyCObject_AsVoidPtr(pyPointerToFtol);
-  double* pointerToEtol = (double*) PyCObject_AsVoidPtr(pyPointerToEtol);
-  double* pointerToTimes = (double*) PyCObject_AsVoidPtr(pyPointerToTimes);
-  int* pointerToMaxstp = (int*) PyCObject_AsVoidPtr(pyPointerToMaxstp);
-  int* pointerToMaxit = (int*) PyCObject_AsVoidPtr(pyPointerToMaxit);
-  int* pointerToNtdinit = (int*) PyCObject_AsVoidPtr(pyPointerToNtdinit);
-  int* pointerToLgdef = (int*) PyCObject_AsVoidPtr(pyPointerToLgdef);
-  int* pointerToItmax = (int*) PyCObject_AsVoidPtr(pyPointerToItmax);
+  double* delt = (double*) PyCObject_AsVoidPtr(py_delt);
+  double* alfa = (double*) PyCObject_AsVoidPtr(py_alfa);
+  double* utol = (double*) PyCObject_AsVoidPtr(py_utol);
+  double* ftol = (double*) PyCObject_AsVoidPtr(py_ftol);
+  double* etol = (double*) PyCObject_AsVoidPtr(py_etol);
+  double* times = (double*) PyCObject_AsVoidPtr(py_times);
+  int* maxstp = (int*) PyCObject_AsVoidPtr(py_maxstp);
+  int* maxit = (int*) PyCObject_AsVoidPtr(py_maxit);
+  int* ntdinit = (int*) PyCObject_AsVoidPtr(py_ntdinit);
+  int* lgdef = (int*) PyCObject_AsVoidPtr(py_lgdef);
+  int* itmax = (int*) PyCObject_AsVoidPtr(py_itmax);
 
-  write_timdat_f(pointerToDelt,
-		 pointerToAlfa,
-		 pointerToUtol,
-		 pointerToFtol,
-		 pointerToEtol,
-		 pointerToTimes,
-		 pointerToMaxstp,
-		 pointerToMaxit,
-		 pointerToNtdinit,
-		 pointerToLgdef,
-		 pointerToItmax,
-		 &numberTimeStepGroups,
-		 &totalNumberTimeSteps,
-		 &f77AsciiOutput,
-		 &asciiOutputInt,
-		 asciiOutputFile,
+  write_timdat_f(delt,
+		 alfa,
+		 utol,
+		 ftol,
+		 etol,
+		 times,
+		 maxstp,
+		 maxit,
+		 ntdinit,
+		 lgdef,
+		 itmax,
+		 &nintg,
+		 &lastep,
+		 &kw,
+		 &idout,
+		 ofile,
 		 &errorcode,
 		 errorstring,
-		 strlen(asciiOutputFile),
+		 strlen(ofile),
 		 sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -4625,7 +4625,7 @@ PyObject * pypylith3d_write_timdat(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "totalNumberTimeSteps:" << totalNumberTimeSteps
+    << "lastep:" << lastep
     << journal::endl;
 
   // return
@@ -4641,22 +4641,22 @@ char pypylith3d_write_tractions__name__[] = "write_tractions";
 
 PyObject * pypylith3d_write_tractions(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToTractionverts;
-  PyObject* pyPointerToTractionvals;
-  int numberTractionBc;
+  PyObject* py_tractionverts;
+  PyObject* py_tractionvals;
+  int numtractions;
   int numberSurfaceElementNodes;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* asciiOutputFile;
+  int kw;
+  int idout;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "OOiiiis:write_tractions",
-			    &pyPointerToTractionverts,
-			    &pyPointerToTractionvals,
-			    &numberTractionBc,
+			    &py_tractionverts,
+			    &py_tractionvals,
+			    &numtractions,
 			    &numberSurfaceElementNodes,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &asciiOutputFile);
+			    &kw,
+			    &idout,
+			    &ofile);
 
   if (!ok) {
     return 0;
@@ -4665,19 +4665,19 @@ PyObject * pypylith3d_write_tractions(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int* pointerToTractionverts = (int*) PyCObject_AsVoidPtr(pyPointerToTractionverts);
-  double* pointerToTractionvals = (double*) PyCObject_AsVoidPtr(pyPointerToTractionvals);
+  int* tractionverts = (int*) PyCObject_AsVoidPtr(py_tractionverts);
+  double* tractionvals = (double*) PyCObject_AsVoidPtr(py_tractionvals);
 
-  write_tractions_f(pointerToTractionverts,
-		    pointerToTractionvals,
-		    &numberTractionBc,
+  write_tractions_f(tractionverts,
+		    tractionvals,
+		    &numtractions,
 		    &numberSurfaceElementNodes,
-		    &f77AsciiOutput,
-		    &asciiOutputInt,
-		    asciiOutputFile,
+		    &kw,
+		    &idout,
+		    ofile,
 		    &errorcode,
 		    errorstring,
-		    strlen(asciiOutputFile),
+		    strlen(ofile),
 		    sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -4687,7 +4687,7 @@ PyObject * pypylith3d_write_tractions(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberTractionBc:" << numberTractionBc
+    << "numtractions:" << numtractions
     << journal::endl;
 
   // return
@@ -4703,70 +4703,70 @@ char pypylith3d_write_ucd_mesh__name__[] = "write_ucd_mesh";
 
 PyObject * pypylith3d_write_ucd_mesh(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToX;
-  int numberNodes;
-  PyObject* pyPointerToIens;
-  PyObject* pyPointerToIvfamily;
-  int numberVolumeElements;
-  int numberVolumeElementFamilies;
-  PyObject* pyPointerToSh;
-  int numberVolumeElementNodes;
-  int numberVolumeElementGaussPoints;
-  int volumeElementType;
-  PyObject* pyPointerToIstatout;
-  PyObject* pyPointerToNstatout;
-  int f77UcdOutput;
-  int ucdOutputInt;
-  char* ucdOutputRoot;
+  PyObject* py_x;
+  int numnp;
+  PyObject* py_iens;
+  PyObject* py_ivfamily;
+  int numelv;
+  int nvfamilies;
+  PyObject* py_sh;
+  int nen;
+  int ngauss;
+  int ietypev;
+  PyObject* py_istatout;
+  PyObject* py_nstatout;
+  int kucd;
+  int iucd;
+  char* ucdroot;
 
   int ok = PyArg_ParseTuple(args, "OiOOiiOiiiOOiis:write_ucd_mesh",
-			    &pyPointerToX,
-			    &numberNodes,
-			    &pyPointerToIens,
-			    &pyPointerToIvfamily,
-			    &numberVolumeElements,
-			    &numberVolumeElementFamilies,
-			    &pyPointerToSh,
-			    &numberVolumeElementNodes,
-			    &numberVolumeElementGaussPoints,
-			    &volumeElementType,
-			    &pyPointerToIstatout,
-			    &pyPointerToNstatout,
-			    &f77UcdOutput,
-			    &ucdOutputInt,
-			    &ucdOutputRoot);
+			    &py_x,
+			    &numnp,
+			    &py_iens,
+			    &py_ivfamily,
+			    &numelv,
+			    &nvfamilies,
+			    &py_sh,
+			    &nen,
+			    &ngauss,
+			    &ietypev,
+			    &py_istatout,
+			    &py_nstatout,
+			    &kucd,
+			    &iucd,
+			    &ucdroot);
 
   if (!ok) {
     return 0;
   }
 
-  double* pointerToX = (double*) PyCObject_AsVoidPtr(pyPointerToX);
-  int* pointerToIens = (int*) PyCObject_AsVoidPtr(pyPointerToIens);
-  int* pointerToIvfamily = (int*) PyCObject_AsVoidPtr(pyPointerToIvfamily);
-  double* pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
-  int* pointerToIstatout = (int*) PyCObject_AsVoidPtr(pyPointerToIstatout);
-  int* pointerToNstatout = (int*) PyCObject_AsVoidPtr(pyPointerToNstatout);
+  double* x = (double*) PyCObject_AsVoidPtr(py_x);
+  int* iens = (int*) PyCObject_AsVoidPtr(py_iens);
+  int* ivfamily = (int*) PyCObject_AsVoidPtr(py_ivfamily);
+  double* sh = (double*) PyCObject_AsVoidPtr(py_sh);
+  int* istatout = (int*) PyCObject_AsVoidPtr(py_istatout);
+  int* nstatout = (int*) PyCObject_AsVoidPtr(py_nstatout);
 
-  write_ucd_mesh_f(pointerToX,
-		   &numberNodes,
-		   pointerToIens,
-		   pointerToIvfamily,
-		   &numberVolumeElements,
-		   &numberVolumeElementFamilies,
-		   pointerToSh,
-		   &numberVolumeElementNodes,
-		   &numberVolumeElementGaussPoints,
-		   &volumeElementType,
-		   pointerToIstatout,
-		   pointerToNstatout,
-		   &f77UcdOutput,
-		   &ucdOutputInt,
-		   ucdOutputRoot,strlen(ucdOutputRoot));
+  write_ucd_mesh_f(x,
+		   &numnp,
+		   iens,
+		   ivfamily,
+		   &numelv,
+		   &nvfamilies,
+		   sh,
+		   &nen,
+		   &ngauss,
+		   &ietypev,
+		   istatout,
+		   nstatout,
+		   &kucd,
+		   &iucd,
+		   ucdroot,strlen(ucdroot));
 		  
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberVolumeElements:" << numberVolumeElements
+    << "numelv:" << numelv
     << journal::endl;
 
   // return
@@ -4782,22 +4782,22 @@ char pypylith3d_write_wink__name__[] = "write_wink";
 
 PyObject * pypylith3d_write_wink(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToWinkdef;
-  PyObject* pyPointerToIwinkdef;
-  PyObject* pyPointerToIwinkid;
-  int numberWinklerEntries;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* asciiOutputFile;
+  PyObject* py_winkdef;
+  PyObject* py_iwinkdef;
+  PyObject* py_iwinkid;
+  int nwinke;
+  int kw;
+  int idout;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "OOOiiis:write_wink",
-			    &pyPointerToWinkdef,
-			    &pyPointerToIwinkdef,
-			    &pyPointerToIwinkid,
-			    &numberWinklerEntries,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &asciiOutputFile);
+			    &py_winkdef,
+			    &py_iwinkdef,
+			    &py_iwinkid,
+			    &nwinke,
+			    &kw,
+			    &idout,
+			    &ofile);
 
   if (!ok) {
     return 0;
@@ -4806,20 +4806,20 @@ PyObject * pypylith3d_write_wink(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToWinkdef = (double*) PyCObject_AsVoidPtr(pyPointerToWinkdef);
-  int* pointerToIwinkdef = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkdef);
-  int* pointerToIwinkid = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkid);
+  double* winkdef = (double*) PyCObject_AsVoidPtr(py_winkdef);
+  int* iwinkdef = (int*) PyCObject_AsVoidPtr(py_iwinkdef);
+  int* iwinkid = (int*) PyCObject_AsVoidPtr(py_iwinkid);
 
-  write_wink_f(pointerToWinkdef,
-	       pointerToIwinkdef,
-	       pointerToIwinkid,
-	       &numberWinklerEntries,
-	       &f77AsciiOutput,
-	       &asciiOutputInt,
-	       asciiOutputFile,
+  write_wink_f(winkdef,
+	       iwinkdef,
+	       iwinkid,
+	       &nwinke,
+	       &kw,
+	       &idout,
+	       ofile,
 	       &errorcode,
 	       errorstring,
-	       strlen(asciiOutputFile),
+	       strlen(ofile),
 	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -4829,7 +4829,7 @@ PyObject * pypylith3d_write_wink(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberWinklerEntries:" << numberWinklerEntries
+    << "nwinke:" << nwinke
     << journal::endl;
 
   // return
@@ -4845,22 +4845,22 @@ char pypylith3d_write_winkx__name__[] = "write_winkx";
 
 PyObject * pypylith3d_write_winkx(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToWinkxdef;
-  PyObject* pyPointerToIwinkxdef;
-  PyObject* pyPointerToIwinkxid;
-  int numberSlipperyWinklerEntries;
-  int f77AsciiOutput;
-  int asciiOutputInt;
-  char* asciiOutputFile;
+  PyObject* py_winkxdef;
+  PyObject* py_iwinkxdef;
+  PyObject* py_iwinkxid;
+  int nwinkxe;
+  int kw;
+  int idout;
+  char* ofile;
 
   int ok = PyArg_ParseTuple(args, "OOOiiis:write_winkx",
-			    &pyPointerToWinkxdef,
-			    &pyPointerToIwinkxdef,
-			    &pyPointerToIwinkxid,
-			    &numberSlipperyWinklerEntries,
-			    &f77AsciiOutput,
-			    &asciiOutputInt,
-			    &asciiOutputFile);
+			    &py_winkxdef,
+			    &py_iwinkxdef,
+			    &py_iwinkxid,
+			    &nwinkxe,
+			    &kw,
+			    &idout,
+			    &ofile);
 
   if (!ok) {
     return 0;
@@ -4869,20 +4869,20 @@ PyObject * pypylith3d_write_winkx(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  double* pointerToWinkxdef = (double*) PyCObject_AsVoidPtr(pyPointerToWinkxdef);
-  int* pointerToIwinkxdef = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkxdef);
-  int* pointerToIwinkxid = (int*) PyCObject_AsVoidPtr(pyPointerToIwinkxid);
+  double* winkxdef = (double*) PyCObject_AsVoidPtr(py_winkxdef);
+  int* iwinkxdef = (int*) PyCObject_AsVoidPtr(py_iwinkxdef);
+  int* iwinkxid = (int*) PyCObject_AsVoidPtr(py_iwinkxid);
 
-  write_winkx_f(pointerToWinkxdef,
-		pointerToIwinkxdef,
-		pointerToIwinkxid,
-		&numberSlipperyWinklerEntries,
-		&f77AsciiOutput,
-		&asciiOutputInt,
-		asciiOutputFile,
+  write_winkx_f(winkxdef,
+		iwinkxdef,
+		iwinkxid,
+		&nwinkxe,
+		&kw,
+		&idout,
+		ofile,
 		&errorcode,
 		errorstring,
-		strlen(asciiOutputFile),
+		strlen(ofile),
 		sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -4892,7 +4892,7 @@ PyObject * pypylith3d_write_winkx(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberSlipperyWinklerEntries:" << numberSlipperyWinklerEntries
+    << "nwinkxe:" << nwinkxe
     << journal::endl;
 
   // return
@@ -4908,17 +4908,17 @@ char pypylith3d_scan_bc__name__[] = "scan_bc";
 
 PyObject * pypylith3d_scan_bc(PyObject *, PyObject *args)
 {
-  int f77FileInput;
-  char* displacementUnits;
-  char* velocityUnits;
-  char* forceUnits;
+  int kr;
+  char* displacement_units;
+  char* velocity_units;
+  char* force_units;
   char* bcInputFile;
 
   int ok = PyArg_ParseTuple(args, (char *) "issss:scan_bc",
-			    &f77FileInput,
-			    &displacementUnits,
-			    &velocityUnits,
-			    &forceUnits,
+			    &kr,
+			    &displacement_units,
+			    &velocity_units,
+			    &force_units,
 			    &bcInputFile);
 
   if (!ok) {
@@ -4928,19 +4928,19 @@ PyObject * pypylith3d_scan_bc(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberBcEntries = 0;
+  int numbc = 0;
 
-  scan_bc_f(&numberBcEntries,
-	    &f77FileInput,
-	    displacementUnits,
-	    velocityUnits,
-	    forceUnits,
+  scan_bc_f(&numbc,
+	    &kr,
+	    displacement_units,
+	    velocity_units,
+	    force_units,
 	    bcInputFile,
 	    &errorcode,
 	    errorstring,
-	    strlen(displacementUnits),
-	    strlen(velocityUnits),
-	    strlen(forceUnits),
+	    strlen(displacement_units),
+	    strlen(velocity_units),
+	    strlen(force_units),
 	    strlen(bcInputFile),
 	    sizeof(errorstring));
 
@@ -4951,11 +4951,11 @@ PyObject * pypylith3d_scan_bc(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberBcEntries:" << numberBcEntries
+    << "numbc:" << numbc
     << journal::endl;
 
   // return
-  return Py_BuildValue((char *) "i", numberBcEntries);
+  return Py_BuildValue((char *) "i", numbc);
 }
 
 
@@ -4966,50 +4966,50 @@ char pypylith3d_scan_connect__name__[] = "scan_connect";
 
 PyObject * pypylith3d_scan_connect(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToListArrayNumberElementNodesBase;
-  PyObject* pyPointerToMaterialModelInfo;
-  PyObject* pyPointerToListArrayMaterialModel;
-  PyObject* pyPointerToVolumeElementFamilyList;
-  int maxNumberVolumeElementFamilies;
-  int numberMaterials;
-  int f77FileInput;
+  PyObject* py_numberElementNodesBase;
+  PyObject* py_infmatmod;
+  PyObject* py_infmat;
+  PyObject* py_volumeElementFamilyList;
+  int maxvfamilies;
+  int numat;
+  int kr;
   char* connectivityInputFile;
 
   int ok = PyArg_ParseTuple(args, (char *) "OOOOiiis:scan_connect",
-			    &pyPointerToListArrayNumberElementNodesBase,
-			    &pyPointerToMaterialModelInfo,
-                            &pyPointerToListArrayMaterialModel,
-			    &pyPointerToVolumeElementFamilyList,
-			    &maxNumberVolumeElementFamilies,
-			    &numberMaterials,
-			    &f77FileInput,
+			    &py_numberElementNodesBase,
+			    &py_infmatmod,
+                            &py_infmat,
+			    &py_volumeElementFamilyList,
+			    &maxvfamilies,
+			    &numat,
+			    &kr,
 			    &connectivityInputFile);
 
   if (!ok) {
     return 0;
   }
 
-  int* pointerToListArrayNumberElementNodesBase = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayNumberElementNodesBase);
-  int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
-  int* pointerToListArrayMaterialModel = (int*) PyCObject_AsVoidPtr(pyPointerToListArrayMaterialModel);
-  int* pointerToVolumeElementFamilyList = (int*) PyCObject_AsVoidPtr(pyPointerToVolumeElementFamilyList);
-  int numberVolumeElements = 0;
-  int numberVolumeElementFamilies = 0;
-  int volumeElementType = 0;
+  int* neni = (int*) PyCObject_AsVoidPtr(py_numberElementNodesBase);
+  int* infmatmod = (int*) PyCObject_AsVoidPtr(py_infmatmod);
+  int* infmat = (int*) PyCObject_AsVoidPtr(py_infmat);
+  int* ivflist = (int*) PyCObject_AsVoidPtr(py_volumeElementFamilyList);
+  int numelv = 0;
+  int nvfamilies = 0;
+  int ietypev = 0;
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
 
-  scan_connect_f(pointerToListArrayNumberElementNodesBase,
-		 pointerToMaterialModelInfo,
-		 pointerToListArrayMaterialModel,
-		 pointerToVolumeElementFamilyList,
-		 &maxNumberVolumeElementFamilies,
-		 &numberMaterials,
-		 &numberVolumeElements,
-		 &numberVolumeElementFamilies,
-		 &volumeElementType,
-		 &f77FileInput,
+  scan_connect_f(neni,
+		 infmatmod,
+		 infmat,
+		 ivflist,
+		 &maxvfamilies,
+		 &numat,
+		 &numelv,
+		 &nvfamilies,
+		 &ietypev,
+		 &kr,
 		 connectivityInputFile,
 		 &errorcode,
 		 errorstring,
@@ -5023,14 +5023,14 @@ PyObject * pypylith3d_scan_connect(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberVolumeElementFamilies:" << numberVolumeElementFamilies
+    << "nvfamilies:" << nvfamilies
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "iii", numberVolumeElements,
-		       numberVolumeElementFamilies,
-		       volumeElementType);
+  return Py_BuildValue((char *) "iii", numelv,
+		       nvfamilies,
+		       ietypev);
 }
 
 
@@ -5041,13 +5041,13 @@ char pypylith3d_scan_coords__name__[] = "scan_coords";
 
 PyObject * pypylith3d_scan_coords(PyObject *, PyObject *args)
 {
-  int f77FileInput;
-  char *coordinateUnits;
+  int kr;
+  char *coord_units;
   char *coordinateInputFile;
 
   int ok = PyArg_ParseTuple(args, (char *) "iss:scan_coords",
-			    &f77FileInput,
-			    &coordinateUnits,
+			    &kr,
+			    &coord_units,
 			    &coordinateInputFile);
 
   if (!ok) {
@@ -5057,15 +5057,15 @@ PyObject * pypylith3d_scan_coords(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberNodes = 0;
+  int numnp = 0;
 
-  scan_coords_f(&numberNodes,
-		&f77FileInput,
-		coordinateUnits,
+  scan_coords_f(&numnp,
+		&kr,
+		coord_units,
 		coordinateInputFile,
 		&errorcode,
 		errorstring,
-		strlen(coordinateUnits),
+		strlen(coord_units),
 		strlen(coordinateInputFile),
 		sizeof(errorstring));
     
@@ -5076,12 +5076,12 @@ PyObject * pypylith3d_scan_coords(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberNodes:" << numberNodes
+    << "numnp:" << numnp
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "i", numberNodes);
+  return Py_BuildValue((char *) "i", numnp);
 }
 
 
@@ -5092,14 +5092,14 @@ char pypylith3d_scan_diff__name__[] = "scan_diff";
 
 PyObject * pypylith3d_scan_diff(PyObject *, PyObject *args)
 {
-  int numberSlipperyNodeEntries;
-  int f77FileInput;
-  char* differentialForceInputFile;
+  int numslp;
+  int kr;
+  char* difile;
 
   int ok = PyArg_ParseTuple(args, (char *) "iis:scan_diff",
-			    &numberSlipperyNodeEntries,
-			    &f77FileInput,
-			    &differentialForceInputFile);
+			    &numslp,
+			    &kr,
+			    &difile);
 
   if (!ok) {
     return 0;
@@ -5108,15 +5108,15 @@ PyObject * pypylith3d_scan_diff(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberDifferentialForceEntries = 0;
+  int numdif = 0;
 
-  scan_diff_f(&numberSlipperyNodeEntries,
-	      &numberDifferentialForceEntries,
-	      &f77FileInput,
-	      differentialForceInputFile,
+  scan_diff_f(&numslp,
+	      &numdif,
+	      &kr,
+	      difile,
 	      &errorcode,
 	      errorstring,
-	      strlen(differentialForceInputFile),
+	      strlen(difile),
 	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -5126,12 +5126,12 @@ PyObject * pypylith3d_scan_diff(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberDifferentialForceEntries:" << numberDifferentialForceEntries
+    << "numdif:" << numdif
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "i", numberDifferentialForceEntries);
+  return Py_BuildValue((char *) "i", numdif);
 }
 
 
@@ -5142,16 +5142,16 @@ char pypylith3d_scan_fuldat__name__[] = "scan_fuldat";
 
 PyObject * pypylith3d_scan_fuldat(PyObject *, PyObject *args)
 {
-  int analysisTypeInt;
-  int totalNumberTimeSteps;
-  int f77FileInput;
-  char* fullOutputInputFile;
+  int icode;
+  int lastep;
+  int kr;
+  char* fofile;
 
   int ok = PyArg_ParseTuple(args, (char *) "iiis:scan_fuldat",
-			    &analysisTypeInt,
-			    &totalNumberTimeSteps,
-			    &f77FileInput,
-			    &fullOutputInputFile);
+			    &icode,
+			    &lastep,
+			    &kr,
+			    &fofile);
 
   if (!ok) {
     return 0;
@@ -5160,16 +5160,16 @@ PyObject * pypylith3d_scan_fuldat(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberFullOutputs = 0;
+  int icontr = 0;
 
-  scan_fuldat_f(&analysisTypeInt,
-		&totalNumberTimeSteps,
-		&numberFullOutputs,
-		&f77FileInput,
-		fullOutputInputFile,
+  scan_fuldat_f(&icode,
+		&lastep,
+		&icontr,
+		&kr,
+		fofile,
 		&errorcode,
 		errorstring,
-		strlen(fullOutputInputFile),
+		strlen(fofile),
 		sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -5179,12 +5179,12 @@ PyObject * pypylith3d_scan_fuldat(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberFullOutputs:" << numberFullOutputs
+    << "icontr:" << icontr
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "i", numberFullOutputs);
+  return Py_BuildValue((char *) "i", icontr);
 }
 
 
@@ -5195,12 +5195,12 @@ char pypylith3d_scan_hist__name__[] = "scan_hist";
 
 PyObject * pypylith3d_scan_hist(PyObject *, PyObject *args)
 {
-  int f77FileInput;
-  char* loadHistoryInputFile;
+  int kr;
+  char* hfile;
 
   int ok = PyArg_ParseTuple(args, (char *) "is:scan_hist",
-			    &f77FileInput,
-			    &loadHistoryInputFile);
+			    &kr,
+			    &hfile);
 
   if (!ok) {
     return 0;
@@ -5209,14 +5209,14 @@ PyObject * pypylith3d_scan_hist(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberLoadHistories = 0;
+  int nhist = 0;
 
-  scan_hist_f(&numberLoadHistories,
-	      &f77FileInput,
-	      loadHistoryInputFile,
+  scan_hist_f(&nhist,
+	      &kr,
+	      hfile,
 	      &errorcode,
 	      errorstring,
-	      strlen(loadHistoryInputFile),
+	      strlen(hfile),
 	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -5226,12 +5226,12 @@ PyObject * pypylith3d_scan_hist(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberLoadHistories:" << numberLoadHistories
+    << "nhist:" << nhist
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "i", numberLoadHistories);
+  return Py_BuildValue((char *) "i", nhist);
 }
 
 
@@ -5245,16 +5245,16 @@ PyObject * pypylith3d_scan_hist(PyObject *, PyObject *args)
   //   int numberStressComponents;
   //   int numberPrestressGaussPoints;
   //   int numberElements;
-  //   int prestressAutoComputeInt;
-  //   int f77FileInput;
+  //   int ipstrs;
+  //   int kr;
   //   char* prestressInputFile;
 
   //   int ok = PyArg_ParseTuple(args, "iiiiis:scan_prestr",
   // 			    &numberStressComponents,
   // 			    &numberPrestressGaussPoints,
   // 			    &numberElements,
-  // 			    &prestressAutoComputeInt,
-  // 			    &f77FileInput,
+  // 			    &ipstrs,
+  // 			    &kr,
   // 			    &prestressInputFile);
 
   //   if (!ok) {
@@ -5270,8 +5270,8 @@ PyObject * pypylith3d_scan_hist(PyObject *, PyObject *args)
   // 		&numberPrestressGaussPoints,
   // 		&numberPrestressEntries,
   // 		&numberElements,
-  // 		&prestressAutoComputeInt,
-  // 		&f77FileInput,
+  // 		&ipstrs,
+  // 		&kr,
   // 		&errorcode,
   // 		prestressInputFile,strlen(prestressInputFile));
     
@@ -5298,14 +5298,14 @@ char pypylith3d_scan_skew__name__[] = "scan_skew";
 
 PyObject * pypylith3d_scan_skew(PyObject *, PyObject *args)
 {
-  int f77FileInput;
-  char* rotationUnits;
-  char* rotationInputFile;
+  int kr;
+  char* rotation_units;
+  char* skfile;
 
   int ok = PyArg_ParseTuple(args, (char *) "iss:scan_skew",
-			    &f77FileInput,
-			    &rotationUnits,
-			    &rotationInputFile);
+			    &kr,
+			    &rotation_units,
+			    &skfile);
 
   if (!ok) {
     return 0;
@@ -5314,16 +5314,16 @@ PyObject * pypylith3d_scan_skew(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberRotationEntries = 0;
+  int numrot = 0;
 
-  scan_skew_f(&numberRotationEntries,
-	      &f77FileInput,
-	      rotationUnits,
-	      rotationInputFile,
+  scan_skew_f(&numrot,
+	      &kr,
+	      rotation_units,
+	      skfile,
 	      &errorcode,
 	      errorstring,
-	      strlen(rotationUnits),
-	      strlen(rotationInputFile),
+	      strlen(rotation_units),
+	      strlen(skfile),
 	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -5333,12 +5333,12 @@ PyObject * pypylith3d_scan_skew(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberRotationEntries:" << numberRotationEntries
+    << "numrot:" << numrot
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "i", numberRotationEntries);
+  return Py_BuildValue((char *) "i", numrot);
 }
 
 
@@ -5349,12 +5349,12 @@ char pypylith3d_scan_slip__name__[] = "scan_slip";
 
 PyObject * pypylith3d_scan_slip(PyObject *, PyObject *args)
 {
-  int f77FileInput;
-  char* slipperyNodeInputFile;
+  int kr;
+  char* slfile;
 
   int ok = PyArg_ParseTuple(args, (char *) "is:scan_slip",
-			    &f77FileInput,
-			    &slipperyNodeInputFile);
+			    &kr,
+			    &slfile);
 
   if (!ok) {
     return 0;
@@ -5363,14 +5363,14 @@ PyObject * pypylith3d_scan_slip(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberSlipperyNodeEntries = 0;
+  int numslp = 0;
 
-  scan_slip_f(&numberSlipperyNodeEntries,
-	      &f77FileInput,
-	      slipperyNodeInputFile,
+  scan_slip_f(&numslp,
+	      &kr,
+	      slfile,
 	      &errorcode,
 	      errorstring,
-	      strlen(slipperyNodeInputFile),
+	      strlen(slfile),
 	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -5380,12 +5380,12 @@ PyObject * pypylith3d_scan_slip(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberSlipperyNodeEntries:" << numberSlipperyNodeEntries
+    << "numslp:" << numslp
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "i", numberSlipperyNodeEntries);
+  return Py_BuildValue((char *) "i", numslp);
 }
 
 
@@ -5396,12 +5396,12 @@ char pypylith3d_scan_split__name__[] = "scan_split";
 
 PyObject * pypylith3d_scan_split(PyObject *, PyObject *args)
 {
-  int f77FileInput;
-  char* splitNodeInputFile;
+  int kr;
+  char* spfile;
 
   int ok = PyArg_ParseTuple(args, (char *) "is:scan_split",
-			    &f77FileInput,
-			    &splitNodeInputFile);
+			    &kr,
+			    &spfile);
 
   if (!ok) {
     return 0;
@@ -5410,14 +5410,14 @@ PyObject * pypylith3d_scan_split(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberSplitNodeEntries = 0;
+  int numfn = 0;
 
-  scan_split_f(&numberSplitNodeEntries,
-	       &f77FileInput,
-	       splitNodeInputFile,
+  scan_split_f(&numfn,
+	       &kr,
+	       spfile,
 	       &errorcode,
 	       errorstring,
-	       strlen(splitNodeInputFile),
+	       strlen(spfile),
 	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -5427,12 +5427,12 @@ PyObject * pypylith3d_scan_split(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberSplitNodeEntries:" << numberSplitNodeEntries
+    << "numfn:" << numfn
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "i", numberSplitNodeEntries);
+  return Py_BuildValue((char *) "i", numfn);
 }
 
 
@@ -5443,13 +5443,13 @@ char pypylith3d_scan_timdat__name__[] = "scan_timdat";
 
 PyObject * pypylith3d_scan_timdat(PyObject *, PyObject *args)
 {
-  int f77FileInput;
-  char* timeUnits;
+  int kr;
+  char* time_units;
   char* timeStepInputFile;
 
   int ok = PyArg_ParseTuple(args, (char *) "iss:scan_timdat",
-			    &f77FileInput,
-			    &timeUnits,
+			    &kr,
+			    &time_units,
 			    &timeStepInputFile);
 
   if (!ok) {
@@ -5459,17 +5459,17 @@ PyObject * pypylith3d_scan_timdat(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberTimeStepGroups = 0;
-  int totalNumberTimeSteps = 0;
+  int nintg = 0;
+  int lastep = 0;
 
-  scan_timdat_f(&totalNumberTimeSteps,
-		&numberTimeStepGroups,
-		&f77FileInput,
-		timeUnits,
+  scan_timdat_f(&lastep,
+		&nintg,
+		&kr,
+		time_units,
 		timeStepInputFile,
 		&errorcode,
 		errorstring,
-		strlen(timeUnits),
+		strlen(time_units),
 		strlen(timeStepInputFile),
 		sizeof(errorstring));
     
@@ -5480,13 +5480,13 @@ PyObject * pypylith3d_scan_timdat(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "totalNumberTimeSteps:" << totalNumberTimeSteps
+    << "lastep:" << lastep
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "ii", numberTimeStepGroups,
-		       totalNumberTimeSteps);
+  return Py_BuildValue((char *) "ii", nintg,
+		       lastep);
 }
 
 
@@ -5498,15 +5498,15 @@ char pypylith3d_scan_tractions__name__[] = "scan_tractions";
 
 PyObject * pypylith3d_scan_tractions(PyObject *, PyObject *args)
 {
-  int maxElementNodes2d;
-  int f77FileInput;
-  char *tractionUnits;
+  int nsnodesmax;
+  int kr;
+  char *traction_units;
   char *tractionInputFile;
 
   int ok = PyArg_ParseTuple(args, (char *) "iiss:scan_tractions",
-                            &maxElementNodes2d,
-			    &f77FileInput,
-			    &tractionUnits,
+                            &nsnodesmax,
+			    &kr,
+			    &traction_units,
 			    &tractionInputFile);
 
   if (!ok) {
@@ -5516,16 +5516,16 @@ PyObject * pypylith3d_scan_tractions(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberTractionBc = 0;
+  int numtractions = 0;
 
-  scan_tractions_f(&numberTractionBc,
-		   &maxElementNodes2d,
-		   &f77FileInput,
-		   tractionUnits,
+  scan_tractions_f(&numtractions,
+		   &nsnodesmax,
+		   &kr,
+		   traction_units,
 		   tractionInputFile,
 		   &errorcode,
 		   errorstring,
-		   strlen(tractionUnits),
+		   strlen(traction_units),
 		   strlen(tractionInputFile),
 		   sizeof(errorstring));
     
@@ -5536,12 +5536,12 @@ PyObject * pypylith3d_scan_tractions(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberTractionBc:" << numberTractionBc
+    << "numtractions:" << numtractions
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "i", numberTractionBc);
+  return Py_BuildValue((char *) "i", numtractions);
 }
 
 // Read winkler BC
@@ -5551,12 +5551,12 @@ char pypylith3d_scan_wink__name__[] = "scan_wink";
 
 PyObject * pypylith3d_scan_wink(PyObject *, PyObject *args)
 {
-  int f77FileInput;
-  char* winklerInputFile;
+  int kr;
+  char* wfile;
 
   int ok = PyArg_ParseTuple(args, (char *) "is:scan_wink",
-			    &f77FileInput,
-			    &winklerInputFile);
+			    &kr,
+			    &wfile);
 
   if (!ok) {
     return 0;
@@ -5565,16 +5565,16 @@ PyObject * pypylith3d_scan_wink(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberWinklerEntries = 0;
-  int numberWinklerForces = 0;
+  int nwinke = 0;
+  int nwink = 0;
 
-  scan_wink_f(&numberWinklerEntries,
-	      &numberWinklerForces,
-	      &f77FileInput,
-	      winklerInputFile,
+  scan_wink_f(&nwinke,
+	      &nwink,
+	      &kr,
+	      wfile,
 	      &errorcode,
 	      errorstring,
-	      strlen(winklerInputFile),
+	      strlen(wfile),
 	      sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -5584,13 +5584,13 @@ PyObject * pypylith3d_scan_wink(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberWinklerForces:" << numberWinklerForces
+    << "nwink:" << nwink
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "ii", numberWinklerEntries,
-	               numberWinklerForces);
+  return Py_BuildValue((char *) "ii", nwinke,
+	               nwink);
 }
 
 
@@ -5601,14 +5601,14 @@ char pypylith3d_scan_winkx__name__[] = "scan_winkx";
 
 PyObject * pypylith3d_scan_winkx(PyObject *, PyObject *args)
 {
-  int numberSlipperyNodeEntries;
-  int f77FileInput;
-  char* slipperyWinklerInputFile;
+  int numslp;
+  int kr;
+  char* wxfile;
 
   int ok = PyArg_ParseTuple(args, (char *) "iis:scan_winkx",
-			    &numberSlipperyNodeEntries,
-			    &f77FileInput,
-			    &slipperyWinklerInputFile);
+			    &numslp,
+			    &kr,
+			    &wxfile);
 
   if (!ok) {
     return 0;
@@ -5617,17 +5617,17 @@ PyObject * pypylith3d_scan_winkx(PyObject *, PyObject *args)
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
-  int numberSlipperyWinklerEntries = 0;
-  int numberSlipperyWinklerForces = 0;
+  int nwinkxe = 0;
+  int nwinkx = 0;
 
-  scan_winkx_f(&numberSlipperyNodeEntries,
-	       &numberSlipperyWinklerEntries,
-	       &numberSlipperyWinklerForces,
-	       &f77FileInput,
-	       slipperyWinklerInputFile,
+  scan_winkx_f(&numslp,
+	       &nwinkxe,
+	       &nwinkx,
+	       &kr,
+	       wxfile,
 	       &errorcode,
 	       errorstring,
-	       strlen(slipperyWinklerInputFile),
+	       strlen(wxfile),
 	       sizeof(errorstring));
     
   if(0 != exceptionhandler(errorcode, errorstring)) {
@@ -5637,13 +5637,13 @@ PyObject * pypylith3d_scan_winkx(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "numberSlipperyWinklerForces:" << numberSlipperyWinklerForces
+    << "nwinkx:" << nwinkx
     << journal::endl;
 
   // return
   Py_INCREF(Py_None);
-  return Py_BuildValue((char *) "ii", numberSlipperyWinklerEntries,
-		       numberSlipperyWinklerForces);
+  return Py_BuildValue((char *) "ii", nwinkxe,
+		       nwinkx);
 }
     
 
@@ -5654,23 +5654,23 @@ char pypylith3d_matmod_def__name__[] = "matmod_def";
 
 PyObject * pypylith3d_matmod_def(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToMaterialModelInfo;
+  PyObject* py_infmatmod;
 
   int ok = PyArg_ParseTuple(args, "O:matmod_def",
-			    &pyPointerToMaterialModelInfo);
+			    &py_infmatmod);
 
   if (!ok) {
     return 0;
   }
 
-  int* pointerToMaterialModelInfo = (int*) PyCObject_AsVoidPtr(pyPointerToMaterialModelInfo);
+  int* infmatmod = (int*) PyCObject_AsVoidPtr(py_infmatmod);
 
-  matmod_def_f(pointerToMaterialModelInfo);
+  matmod_def_f(infmatmod);
     
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "pointerToMaterialModelInfo:" << pointerToMaterialModelInfo
+    << "infmatmod:" << infmatmod
     << journal::endl;
 
   // return
@@ -5685,41 +5685,41 @@ char pypylith3d_preshape__name__[] = "preshape";
 
 PyObject * pypylith3d_preshape(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToSh;
-  PyObject* pyPointerToShj;
-  PyObject* pyPointerToGauss;
-  int quadratureOrderInt;
+  PyObject* py_sh;
+  PyObject* py_shj;
+  PyObject* py_gauss;
+  int intord;
   int elementType;
-  int numberVolumeElementNodes;
-  int numberVolumeElementGaussPoints;
+  int nen;
+  int ngauss;
 
   int ok = PyArg_ParseTuple(args, "OOOiiii:preshape",
-			    &pyPointerToSh,
-			    &pyPointerToShj,
-			    &pyPointerToGauss,
-			    &quadratureOrderInt,
+			    &py_sh,
+			    &py_shj,
+			    &py_gauss,
+			    &intord,
 			    &elementType,
-			    &numberVolumeElementNodes,
-			    &numberVolumeElementGaussPoints);
+			    &nen,
+			    &ngauss);
 
   if (!ok) {
     return 0;
   }
 
-  double* pointerToSh = (double*) PyCObject_AsVoidPtr(pyPointerToSh);
-  double* pointerToShj = (double*) PyCObject_AsVoidPtr(pyPointerToShj);
-  double* pointerToGauss = (double*) PyCObject_AsVoidPtr(pyPointerToGauss);
+  double* sh = (double*) PyCObject_AsVoidPtr(py_sh);
+  double* shj = (double*) PyCObject_AsVoidPtr(py_shj);
+  double* gauss = (double*) PyCObject_AsVoidPtr(py_gauss);
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
 
-  preshape_f(pointerToSh,
-	     pointerToShj,
-	     pointerToGauss,
-	     &quadratureOrderInt,
+  preshape_f(sh,
+	     shj,
+	     gauss,
+	     &intord,
 	     &elementType,
-	     &numberVolumeElementNodes,
-	     &numberVolumeElementGaussPoints,
+	     &nen,
+	     &ngauss,
 	     &errorcode,
 	     errorstring,
 	     sizeof(errorstring));
@@ -5731,7 +5731,7 @@ PyObject * pypylith3d_preshape(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "quadratureOrderInt:" << quadratureOrderInt
+    << "intord:" << intord
     << journal::endl;
 
   // return
@@ -5746,17 +5746,17 @@ char pypylith3d_preshape2d__name__[] = "preshape2d";
 
 PyObject * pypylith3d_preshape2d(PyObject *, PyObject *args)
 {
-  PyObject* pyPointerToSh2d;
-  PyObject* pyPointerToGauss2d;
-  int quadratureOrderInt;
+  PyObject* py_sh2d;
+  PyObject* py_gauss2d;
+  int intord;
   int elementType;
   int numberSurfaceElementNodes;
   int numberSurfaceElementGaussPoints;
 
   int ok = PyArg_ParseTuple(args, "OOiiii:preshape2d",
-			    &pyPointerToSh2d,
-			    &pyPointerToGauss2d,
-			    &quadratureOrderInt,
+			    &py_sh2d,
+			    &py_gauss2d,
+			    &intord,
 			    &elementType,
 			    &numberSurfaceElementNodes,
 			    &numberSurfaceElementGaussPoints);
@@ -5765,15 +5765,15 @@ PyObject * pypylith3d_preshape2d(PyObject *, PyObject *args)
     return 0;
   }
 
-  double* pointerToSh2d = (double*) PyCObject_AsVoidPtr(pyPointerToSh2d);
-  double* pointerToGauss2d = (double*) PyCObject_AsVoidPtr(pyPointerToGauss2d);
+  double* sh2d = (double*) PyCObject_AsVoidPtr(py_sh2d);
+  double* gauss2d = (double*) PyCObject_AsVoidPtr(py_gauss2d);
   int errorcode = 0;
   const int maxsize = 4096;
   char errorstring[maxsize];
 
-  preshape2d_f(pointerToSh2d,
-	       pointerToGauss2d,
-	       &quadratureOrderInt,
+  preshape2d_f(sh2d,
+	       gauss2d,
+	       &intord,
 	       &elementType,
 	       &numberSurfaceElementNodes,
 	       &numberSurfaceElementGaussPoints,
@@ -5788,7 +5788,7 @@ PyObject * pypylith3d_preshape2d(PyObject *, PyObject *args)
   journal::debug_t debug("pylith3d");
   debug
     << journal::at(__HERE__)
-    << "quadratureOrderInt:" << quadratureOrderInt
+    << "intord:" << intord
     << journal::endl;
 
   // return

@@ -78,27 +78,27 @@ class PyLith(PetscApplication):
     outputFileRoot.meta['tip'] = "Root output pathname for simulation (all output filenames derive from this)."
 
     # Output filenames (all are optional).
-    asciiOutputFile = OutputFile("asciiOutputFile",default="${outputFileRoot}.ascii")
-    asciiOutputFile.meta['tip'] = "Pathname for ascii output file (overrides default from outputFileRoot)."
+    ofile = OutputFile("asciiOutputFile",default="${outputFileRoot}.ascii")
+    ofile.meta['tip'] = "Pathname for ascii output file (overrides default from outputFileRoot)."
 
-    plotOutputFile = OutputFile("plotOutputFile",default="${outputFileRoot}.plot")
-    plotOutputFile.meta['tip'] = "Pathname for plot output file (overrides default from outputFileRoot)."
+    pfile = OutputFile("plotOutputFile",default="${outputFileRoot}.plot")
+    pfile.meta['tip'] = "Pathname for plot output file (overrides default from outputFileRoot)."
 
-    ucdOutputRoot = MacroString("ucdOutputRoot",default="${outputFileRoot}")
-    ucdOutputRoot.meta['tip'] = "Base name for UCD output files (overrides default from outputFileRoot)."
+    ucdroot = MacroString("ucdOutputRoot",default="${outputFileRoot}")
+    ucdroot.meta['tip'] = "Base name for UCD output files (overrides default from outputFileRoot)."
 
     # Required input files.
     coordinateInputFile = InputFile("coordinateInputFile",default="${inputFileRoot}.coord")
     coordinateInputFile.meta['tip'] = "Pathname for coordinate input file (overrides default from inputFileRoot)."
 
-    bcInputFile = InputFile("bcInputFile",default="${inputFileRoot}.bc")
-    bcInputFile.meta['tip'] = "Pathname for boundary condition input file (overrides default from inputFileRoot)."
+    bcfile = InputFile("bcInputFile",default="${inputFileRoot}.bc")
+    bcfile.meta['tip'] = "Pathname for boundary condition input file (overrides default from inputFileRoot)."
 
     timeStepInputFile = InputFile("timeStepInputFile",default="${inputFileRoot}.time")
     timeStepInputFile.meta['tip'] = "Pathname for time step definitions input file (overrides default from inputFileRoot)."
 
-    stateVariableInputFile = InputFile("stateVariableInputFile",default="${inputFileRoot}.statevar")
-    stateVariableInputFile.meta['tip'] = "Pathname for file defining which state variables to output (overrides default from inputFileRoot)."
+    stfile = InputFile("stateVariableInputFile",default="${inputFileRoot}.statevar")
+    stfile.meta['tip'] = "Pathname for file defining which state variables to output (overrides default from inputFileRoot)."
 
     materialPropertiesInputFile = InputFile("materialPropertiesInputFile",default="${inputFileRoot}.prop")
     materialPropertiesInputFile.meta['tip'] = "Pathname for file defining material properties (overrides default from inputFileRoot)."
@@ -107,29 +107,29 @@ class PyLith(PetscApplication):
     connectivityInputFile.meta['tip'] = "Pathname for connectivity input file (overrides default from inputFileRoot)."
 
     # This file is only required for time-dependent problems.
-    fullOutputInputFile = InputFile("fullOutputInputFile",default="${inputFileRoot}.fuldat")
-    fullOutputInputFile.meta['tip'] = "Pathname for file defining when to provide output (overrides default from inputFileRoot)."
+    fofile = InputFile("fullOutputInputFile",default="${inputFileRoot}.fuldat")
+    fofile.meta['tip'] = "Pathname for file defining when to provide output (overrides default from inputFileRoot)."
 
     # These files are optional unless generating Green's functions, in which case they are required.
     sampleLocationFile = InputFile("sampleLocationFile",default="${inputFileRoot}.sample")
     sampleLocationFile.meta['tip'] = "Pathname for Green's function sample locations (overrides default from inputFileRoot)."
 
-    splitNodeInputFile = InputFile("splitNodeInputFile",default="${inputFileRoot}.split")
-    splitNodeInputFile.meta['tip'] = "Pathname for split node input file (overrides default from inputFileRoot)."
+    spfile = InputFile("splitNodeInputFile",default="${inputFileRoot}.split")
+    spfile.meta['tip'] = "Pathname for split node input file (overrides default from inputFileRoot)."
 
     # Optional input files.
-    rotationInputFile = InputFile("rotationInputFile",default="${inputFileRoot}.skew")
-    rotationInputFile.meta['tip'] = "Pathname for skew rotations input file (overrides default from inputFileRoot)."
+    skfile = InputFile("rotationInputFile",default="${inputFileRoot}.skew")
+    skfile.meta['tip'] = "Pathname for skew rotations input file (overrides default from inputFileRoot)."
 
-    loadHistoryInputFile = InputFile("loadHistoryInputFile",default="${inputFileRoot}.hist")
-    loadHistoryInputFile.meta['tip'] = "Pathname for file defining load histories (overrides default from inputFileRoot)."
+    hfile = InputFile("loadHistoryInputFile",default="${inputFileRoot}.hist")
+    hfile.meta['tip'] = "Pathname for file defining load histories (overrides default from inputFileRoot)."
 
     tractionInputFile = InputFile("tractionInputFile",default="${inputFileRoot}.traction")
     tractionInputFile.meta['tip'] = "Pathname for traction BC input file (overrides default from inputFileRoot)."
 
     # Unused input files.
-    winklerInputFile = InputFile("winklerInputFile",default="${inputFileRoot}.wink")
-    winklerInputFile.meta['tip'] = "Pathname for Winkler force input file (overrides default from inputFileRoot)."
+    wfile = InputFile("winklerInputFile",default="${inputFileRoot}.wink")
+    wfile.meta['tip'] = "Pathname for Winkler force input file (overrides default from inputFileRoot)."
 
     materialHistoryInputFile = InputFile("materialHistoryInputFile",default="${inputFileRoot}.mhist")
     materialHistoryInputFile.meta['tip'] = "Pathname for file defining material histories (overrides default from inputFileRoot -- presently unused)."
@@ -137,14 +137,14 @@ class PyLith(PetscApplication):
     prestressInputFile = InputFile("prestressInputFile",default="${inputFileRoot}.prestr")
     prestressInputFile.meta['tip'] = "Pathname for prestress input file (overrides default from inputFileRoot -- presently unused)."
 
-    slipperyNodeInputFile = InputFile("slipperyNodeInputFile",default="${inputFileRoot}.slip")
-    slipperyNodeInputFile.meta['tip'] = "Pathname for slippery node input file (overrides default from inputFileRoot -- presently unused)."
+    slfile = InputFile("slipperyNodeInputFile",default="${inputFileRoot}.slip")
+    slfile.meta['tip'] = "Pathname for slippery node input file (overrides default from inputFileRoot -- presently unused)."
 
-    differentialForceInputFile = InputFile("differentialForceInputFile",default="${inputFileRoot}.diff")
-    differentialForceInputFile.meta['tip'] = "Pathname for file defining slippery node differential forces (overrides default from inputFileRoot -- presently unused)."
+    difile = InputFile("differentialForceInputFile",default="${inputFileRoot}.diff")
+    difile.meta['tip'] = "Pathname for file defining slippery node differential forces (overrides default from inputFileRoot -- presently unused)."
 
-    slipperyWinklerInputFile = InputFile("slipperyWinklerInputFile",default="${inputFileRoot}.winkx")
-    slipperyWinklerInputFile.meta['tip'] = "Pathname for file defining slippery node Winkler forces (overrides default from inputFileRoot -- presently unused)."
+    wxfile = InputFile("slipperyWinklerInputFile",default="${inputFileRoot}.winkx")
+    wxfile.meta['tip'] = "Pathname for file defining slippery node Winkler forces (overrides default from inputFileRoot -- presently unused)."
 
     # Output option flags.
     asciiOutput = pyre.str("asciiOutput",default="echo")
@@ -174,8 +174,8 @@ class PyLith(PetscApplication):
     debuggingOutput = pyre.bool("debuggingOutput",default=False)
     debuggingOutput.meta['tip'] = "Whether to produce debugging output."
 
-    numberCycles = pyre.int("numberCycles",default=1)
-    numberCycles.meta['tip'] = "Number of cycles of the given timestep definitions to perform (default=1)."
+    ncycle = pyre.int("numberCycles",default=1)
+    ncycle.meta['tip'] = "Number of cycles of the given timestep definitions to perform (default=1)."
 
     interpolateMesh = pyre.bool("interpolateMesh",default=False)
     interpolateMesh.meta['tip'] = "Create intermediate mesh entities, such as edges and faces."
@@ -200,11 +200,11 @@ class PyLith(PetscApplication):
     winklerScaleY = pyre.float("winklerScaleY", default=1.0)
     winklerScaleZ = pyre.float("winklerScaleZ", default=1.0)
 
-    stressTolerance = pyre.dimensional("stressTolerance", default=1.0e-12*Pa)
-    minimumStrainPerturbation = pyre.float("minimumStrainPerturbation", default=1.0e-7)
-    initialStrainPerturbation = pyre.float("initialStrainPerturbation", default=1.0e-1)
+    stol = pyre.dimensional("stressTolerance", default=1.0e-12*Pa)
+    dtol = pyre.float("minimumStrainPerturbation", default=1.0e-7)
+    epert = pyre.float("initialStrainPerturbation", default=1.0e-1)
 
-    usePreviousDisplacementFlag = pyre.int("usePreviousDisplacementFlag", default=0)
+    nprevdflag = pyre.int("usePreviousDisplacementFlag", default=0)
 
     quadratureOrder = pyre.str("quadratureOrder", default="Full")
     quadratureOrder.validator = pyre.choice(["Full", "Reduced", "Selective"])
@@ -215,8 +215,8 @@ class PyLith(PetscApplication):
 
     prestressAutoCompute = pyre.bool("prestressAutoCompute", default=False)
     prestressAutoChangeElasticProps = pyre.bool("prestressAutoChangeElasticProps", default=False)
-    prestressAutoComputePoisson = pyre.float("prestressAutoComputePoisson", default=0.49)
-    prestressAutoComputeYoungs = pyre.dimensional("prestressAutoComputeYoungs", default=1.0e30*Pa)
+    tpois = pyre.float("prestressAutoComputePoisson", default=0.49)
+    tyoungs = pyre.dimensional("prestressAutoComputeYoungs", default=1.0e30*Pa)
 
     prestressScaleXx = pyre.float("prestressScaleXx", default=1.0)
     prestressScaleYy = pyre.float("prestressScaleYy", default=1.0)
@@ -231,10 +231,10 @@ class PyLith(PetscApplication):
 
     f77StandardInput = pyre.int("f77StandardInput", default=5)
     f77StandardOutput = pyre.int("f77StandardOutput", default=6)
-    f77FileInput = pyre.int("f77FileInput", default=10)
-    f77AsciiOutput = pyre.int("f77AsciiOutput", default=11)
-    f77PlotOutput = pyre.int("f77PlotOutput", default=12)
-    f77UcdOutput = pyre.int("f77UcdOutput", default=13)
+    kr = pyre.int("f77FileInput", default=10)
+    kw = pyre.int("f77AsciiOutput", default=11)
+    kp = pyre.int("f77PlotOutput", default=12)
+    kucd = pyre.int("f77UcdOutput", default=13)
 
 
 
@@ -341,7 +341,7 @@ for() {
         if self.generateGreen:
             points      = self.readSamplePoints(self.macroString(self.metainventory.sampleLocationFile))
 
-        self.mesh = pylith3d.processMesh(self.macroString(self.metainventory.bcInputFile),
+        self.mesh = pylith3d.processMesh(self.macroString(self.metainventory.bcfile),
                                          self.macroString(self.metainventory.inputFileRoot),
                                          self.interpolateMesh,
                                          self.partitioner)
@@ -385,40 +385,40 @@ for() {
         
         Inventory = self.metainventory
 
-        self.asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
-        self.plotOutputFile              = outputFile(Inventory.plotOutputFile,             optional)
+        self.ofile                       = outputFile(Inventory.ofile,                      optional)
+        self.pfile                       = outputFile(Inventory.pfile,                      optional)
         self.coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
-        self.bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
-        self.winklerInputFile            = inputFile(Inventory.winklerInputFile,            unused)
-        self.rotationInputFile           = inputFile(Inventory.rotationInputFile,           optional)
+        self.bcfile                      = inputFile(Inventory.bcfile,                      required)
+        self.wfile                       = inputFile(Inventory.wfile,                       unused)
+        self.skfile                      = inputFile(Inventory.skfile,                      optional)
         self.timeStepInputFile           = inputFile(Inventory.timeStepInputFile,           required)
-        self.fullOutputInputFile         = inputFile(Inventory.fullOutputInputFile, self.analysisType == "fullSolution" and required or unused)
-        self.stateVariableInputFile      = inputFile(Inventory.stateVariableInputFile,      required)
-        self.loadHistoryInputFile        = inputFile(Inventory.loadHistoryInputFile,        optional)
+        self.fofile                      = inputFile(Inventory.fofile, self.analysisType == "fullSolution" and required or unused)
+        self.stfile                      = inputFile(Inventory.stfile,                      required)
+        self.hfile                       = inputFile(Inventory.hfile,                       optional)
         self.materialPropertiesInputFile = inputFile(Inventory.materialPropertiesInputFile, required)
         self.materialHistoryInputFile    = inputFile(Inventory.materialHistoryInputFile,    unused)
         self.connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
         self.prestressInputFile          = inputFile(Inventory.prestressInputFile,          unused)
         self.tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
-        self.splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile, self.generateGreen and required or optional)
+        self.spfile                      = inputFile(Inventory.spfile, self.generateGreen and required or optional)
         # Slippery nodes are not yet implemented in PyLith-0.8.
-        self.slipperyNodeInputFile       = inputFile(Inventory.slipperyNodeInputFile,       unused)
-        self.differentialForceInputFile  = inputFile(Inventory.differentialForceInputFile,  unused)
-        self.slipperyWinklerInputFile    = inputFile(Inventory.slipperyWinklerInputFile,    unused)
+        self.slfile                      = inputFile(Inventory.slfile,                      unused)
+        self.difile                      = inputFile(Inventory.difile,                      unused)
+        self.wxfile                      = inputFile(Inventory.wxfile,                      unused)
         self.sampleLocationFile          = inputFile(Inventory.sampleLocationFile, self.generateGreen and required or unused)
         # The call to glob() is somewhat crude -- basically, determine
         # if any files might be in the way.
-        self.ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
+        self.ucdroot                     = macroString(Inventory.ucdroot)
 
         if False: # broken
             from glob import glob
-            ucdFiles = ([self.ucdOutputRoot + ".mesh.inp",
-                         self.ucdOutputRoot + ".gmesh.inp",
-                         self.ucdOutputRoot + ".mesh.time.prest.inp",
-                         self.ucdOutputRoot + ".gmesh.time.prest.inp"]
-                        + glob(self.ucdOutputRoot + ".mesh.time.[0-9][0-9][0-9][0-9][0-9].inp")
-                        + glob(self.ucdOutputRoot + ".gmesh.time.[0-9][0-9][0-9][0-9][0-9].inp"))
-            item = Inventory.ucdOutputRoot
+            ucdFiles = ([self.ucdroot + ".mesh.inp",
+                         self.ucdroot + ".gmesh.inp",
+                         self.ucdroot + ".mesh.time.prest.inp",
+                         self.ucdroot + ".gmesh.time.prest.inp"]
+                        + glob(self.ucdroot + ".mesh.time.[0-9][0-9][0-9][0-9][0-9].inp")
+                        + glob(self.ucdroot + ".gmesh.time.[0-9][0-9][0-9][0-9][0-9].inp"))
+            item = Inventory.ucdroot
             for ucdFile in ucdFiles:
                 try:
                     stream = os.fdopen(os.open(ucdFile, os.O_WRONLY|os.O_CREAT|os.O_EXCL), "w")
@@ -452,23 +452,23 @@ for() {
         self.trace.log("Scanning ascii files to determine dimensions:")
 
         # Get base file names
-        self.asciiOutputFile             = outputFile(Inventory.asciiOutputFile,            optional)
-        self.plotOutputFile              = outputFile(Inventory.plotOutputFile,             optional)
-        self.ucdOutputRoot               = macroString(Inventory.ucdOutputRoot)
+        self.ofile                       = outputFile(Inventory.ofile,                      optional)
+        self.pfile                       = outputFile(Inventory.pfile,                      optional)
+        self.ucdroot                     = macroString(Inventory.ucdroot)
         self.coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
         self.connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
-        self.bcInputFile                 = inputFile(Inventory.bcInputFile,                 required)
-        self.splitNodeInputFile          = inputFile(Inventory.splitNodeInputFile,          optional)
+        self.bcfile                      = inputFile(Inventory.bcfile,                      required)
+        self.spfile                      = inputFile(Inventory.spfile,                      optional)
         self.tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
 
         # Create filenames for each process
-        for attr in ['asciiOutputFile',
-                     'plotOutputFile',
-                     'ucdOutputRoot',
+        for attr in ['ofile',
+                     'pfile',
+                     'ucdroot',
                      'coordinateInputFile',
                      'connectivityInputFile',
-                     'bcInputFile',
-                     'splitNodeInputFile',
+                     'bcfile',
+                     'spfile',
                      'tractionInputFile']:
             filename = getattr(self, attr)
             s = filename.split('.')
@@ -480,13 +480,13 @@ for() {
 
 
         # poor man's allocation
-        coordinateUnits = "coordinateUnitsInitial12345678"
-        displacementUnits = "displacementUnitsInitial123456"
-        velocityUnits = "velocityUnitsInitial1234567890"
-        forceUnits = "forceUnitsInitial1234567890123"
-        rotationUnits = "rotationUnitsInitial1234567890"
-        timeUnits = "timeUnitsInitial12345678901234"
-        tractionBcUnits = "tractionBcUnitsInitial12345678"
+        coord_units = "coordinateUnitsInitial12345678"
+        displacement_units = "displacementUnitsInitial123456"
+        velocity_units = "velocityUnitsInitial1234567890"
+        force_units = "forceUnitsInitial1234567890123"
+        rotation_units = "rotationUnitsInitial1234567890"
+        time_units = "timeUnitsInitial12345678901234"
+        traction_units = "tractionBcUnitsInitial12345678"
 
         # This is a test version where the geometry type is automatically
         # specified by using Pylith3d.  The geometry type is only used for
@@ -496,15 +496,14 @@ for() {
 
         # Invariant parameters related to element type
         self.maxElementEquations = constants.numberDegreesFreedom*constants.maxElementNodes
-        self.pointerToListArrayNumberElementNodesBase = pylith3d.intListToArray(
+        self.neni = pylith3d.intListToArray(
             [8, 7, 6, 5, 4, 20, 18, 15, 13, 10])
 
         # Invariant parameters related to material model
-        self.pointerToMaterialModelInfo = pylith3d.allocateInt(
+        self.infmatmod = pylith3d.allocateInt(
             6*constants.maxMaterialModels)
 
-        pylith3d.matmod_def(
-            self.pointerToMaterialModelInfo)
+        pylith3d.matmod_def(self.infmatmod)
 
         # Parameters derived from values in the inventory or the
         # category 2 parameters above.
@@ -514,81 +513,81 @@ for() {
             "elasticSolution": 2,
             "fullSolution":    3,
             }
-        self.analysisTypeInt = analysisTypeMap[self.analysisType]
+        self.icode = analysisTypeMap[self.analysisType]
 
         if self.prestressAutoCompute:
-            self.prestressAutoComputeInt = 1
+            self.ipstrs = 1
         else:
-            self.prestressAutoComputeInt = 0
+            self.ipstrs = 0
 
         if self.prestressAutoChangeElasticProps:
-            self.prestressAutoChangeElasticPropsInt = 1
+            self.ipauto = 1
         else:
-            self.prestressAutoChangeElasticPropsInt = 0
+            self.ipauto = 0
 
         # Parameters derived from the number of entries in a file.
-        self.numberNodes = pylith3d.scan_coords(
-            self.f77FileInput,
-            coordinateUnits,
+        self.numnp = pylith3d.scan_coords(
+            self.kr,
+            coord_units,
             self.coordinateInputFile)
 
-        self.coordinateScaleFactor = uparser.parse(string.strip(coordinateUnits)).value
+        self.cscale = uparser.parse(string.strip(coord_units)).value
 
-        self.numberBcEntries = pylith3d.scan_bc(
-            self.f77FileInput,
-            displacementUnits,
-            velocityUnits,
-            forceUnits,
-            self.bcInputFile)
+        self.numbc = pylith3d.scan_bc(
+            self.kr,
+            displacement_units,
+            velocity_units,
+            force_units,
+            self.bcfile)
 
-        if self.numberBcEntries > 0:
-            self.displacementScaleFactor = uparser.parse(string.strip(displacementUnits)).value
-            self.velocityScaleFactor = uparser.parse(string.strip(velocityUnits)).value
-            self.forceScaleFactor = uparser.parse(string.strip(forceUnits)).value
+        if self.numbc > 0:
+            self.dscale = uparser.parse(string.strip(displacement_units)).value
+            self.vscale = uparser.parse(string.strip(velocity_units)).value
+            self.fscale = uparser.parse(string.strip(force_units)).value
         else:
-            self.displacementScaleFactor = 0.0
-            self.velocityScaleFactor = 0.0
-            self.forceScaleFactor = 0.0
+            self.dscale = 0.0
+            self.vscale = 0.0
+            self.fscale = 0.0
 
         winklerInfo = pylith3d.scan_wink(
-            self.f77FileInput,
-            self.winklerInputFile)
-        self.numberWinklerEntries = winklerInfo[0]
-        self.numberWinklerForces = winklerInfo[1]
+            self.kr,
+            self.wfile)
+        self.nwinke = winklerInfo[0]
+        self.nwink = winklerInfo[1]
 
-        self.numberRotationEntries = pylith3d.scan_skew(
-            self.f77FileInput,
-            rotationUnits,
-            self.rotationInputFile)
+        self.numrot = pylith3d.scan_skew(
+            self.kr,
+            rotation_units,
+            self.skfile)
 
-        if self.numberRotationEntries != 0:
-            self.rotationScaleFactor = uparser.parse(string.strip(rotationUnits)).value
+        if self.numrot != 0:
+            self.runits = uparser.parse(string.strip(rotation_units)).value
         else:
-            self.rotationScaleFactor = 0.0
+            self.runits = 0.0
 
         timeStepInfo = pylith3d.scan_timdat(
-            self.f77FileInput,
-            timeUnits,
+            self.kr,
+            time_units,
             self.timeStepInputFile)
-        self.numberTimeStepGroups = timeStepInfo[0]
-        self.totalNumberTimeSteps = timeStepInfo[1]
+        self.nintg = timeStepInfo[0]
+        self.lastep = timeStepInfo[1]
 
-        self.timeScaleFactor = uparser.parse(string.strip(timeUnits)).value
+        self.tunits = uparser.parse(string.strip(time_units)).value
 
-        self.numberFullOutputs = pylith3d.scan_fuldat(
-            self.analysisTypeInt,
-            self.totalNumberTimeSteps,
-            self.f77FileInput,
-            self.fullOutputInputFile)
+        self.icontr = pylith3d.scan_fuldat(
+            self.icode,
+            self.lastep,
+            self.kr,
+            self.fofile)
 
-        self.numberLoadHistories = pylith3d.scan_hist(
-            self.f77FileInput,
-            self.loadHistoryInputFile)
+        self.nhist = pylith3d.scan_hist(
+            self.kr,
+            self.hfile)
 
-        self.numberMaterials = matinfo.readprop(self.materialPropertiesInputFile)
+        self.numat = matinfo.readprop(self.materialPropertiesInputFile)
 
         self.materialModel = matinfo.materialModel
-        self.pointerToListArrayPropertyList = pylith3d.doubleListToArray(
+        self.prop = pylith3d.doubleListToArray(
             matinfo.propertyList)
 
         self.scan_connect()
@@ -598,42 +597,42 @@ for() {
                 constants.stateVariableDimension,
                 self.numberPrestressGaussPoints,
                 self.numberElements,
-                self.prestressAutoComputeInt,
-                self.f77FileInput,
+                self.ipstrs,
+                self.kr,
                 self.prestressInputFile)
         else:
             self.numberPrestressEntries = 0
 
-        self.numberTractionBc = pylith3d.scan_tractions(
-            constants.maxElementNodes2d,
-            self.f77FileInput,
-            tractionBcUnits,
+        self.numtractions = pylith3d.scan_tractions(
+            constants.nsnodesmax,
+            self.kr,
+            traction_units,
             self.tractionInputFile)
 
-        if self.numberTractionBc != 0:
-            self.tractionBcScaleFactor = uparser.parse(string.strip(tractionBcUnits)).value
+        if self.numtractions != 0:
+            self.tscale = uparser.parse(string.strip(traction_units)).value
         else:
-            self.tractionBcScaleFactor = 0.0
+            self.tscale = 0.0
 
-        self.numberSplitNodeEntries = pylith3d.scan_split(
-            self.f77FileInput,
-            self.splitNodeInputFile)
+        self.numfn = pylith3d.scan_split(
+            self.kr,
+            self.spfile)
 
-        self.numberSlipperyNodeEntries = pylith3d.scan_slip(
-            self.f77FileInput,
-            self.slipperyNodeInputFile)
+        self.numslp = pylith3d.scan_slip(
+            self.kr,
+            self.slfile)
 
-        self.numberDifferentialForceEntries = pylith3d.scan_diff(
-            self.numberSlipperyNodeEntries,
-            self.f77FileInput,
-            self.differentialForceInputFile)
+        self.numdif = pylith3d.scan_diff(
+            self.numslp,
+            self.kr,
+            self.difile)
 
         slipperyWinklerInfo = pylith3d.scan_winkx(
-            self.numberSlipperyNodeEntries,
-            self.f77FileInput,
-            self.slipperyWinklerInputFile)
-        self.numberSlipperyWinklerEntries = slipperyWinklerInfo[0]
-        self.numberSlipperyWinklerForces = slipperyWinklerInfo[1]
+            self.numslp,
+            self.kr,
+            self.wxfile)
+        self.nwinkxe = slipperyWinklerInfo[0]
+        self.nwinkx = slipperyWinklerInfo[1]
 
         self.trace.log("Hello from pl3dscan.initialize (end)!")
 
@@ -641,31 +640,31 @@ for() {
 
 
     def scan_connect(self):
-        pointerToListArrayMaterialModel = pylith3d.intListToArray(
+        infmat = pylith3d.intListToArray(
             self.materialModel)
 
         # At present, we assume that the number of element families is equal to
         # the number of material types used, since only one volume element type at a
         # time is allowed.
-        self.maxNumberVolumeElementFamilies = constants.numberAllowedVolumeElementTypes* \
-                                               self.numberMaterials
+        self.maxvfamilies = constants.numberAllowedVolumeElementTypes* \
+                                               self.numat
 
-        self.pointerToVolumeElementFamilyList = pylith3d.allocateInt(
-            3*self.maxNumberVolumeElementFamilies)
+        self.ivflist = pylith3d.allocateInt(
+            3*self.maxvfamilies)
 
         volumeElementDimens = pylith3d.scan_connect(
-            self.pointerToListArrayNumberElementNodesBase,
-            self.pointerToMaterialModelInfo,
-            pointerToListArrayMaterialModel,
-            self.pointerToVolumeElementFamilyList,
-            self.maxNumberVolumeElementFamilies,
-	    self.numberMaterials,
-            self.f77FileInput,
+            self.neni,
+            self.infmatmod,
+            infmat,
+            self.ivflist,
+            self.maxvfamilies,
+	    self.numat,
+            self.kr,
             self.connectivityInputFile)
 
-        self.numberVolumeElements = volumeElementDimens[0]
-        self.numberVolumeElementFamilies = volumeElementDimens[1]
-        self.volumeElementType = volumeElementDimens[2]
+        self.numelv = volumeElementDimens[0]
+        self.nvfamilies = volumeElementDimens[1]
+        self.ietypev = volumeElementDimens[2]
 
         return
 
@@ -738,46 +737,46 @@ for() {
         # Initialize and define some integer parameters based on string
         # or logical parameters in python
 
-        self.quadratureOrderInt = 0
+        self.intord = 0
         if self.quadratureOrder == "Full":
-            self.quadratureOrderInt = 1
+            self.intord = 1
         elif self.quadratureOrder == "Reduced":
-            self.quadratureOrderInt = 2
+            self.intord = 2
         elif self.quadratureOrder == "Selective":
-            self.quadratureOrderInt = 3
+            self.intord = 3
         else:
-            self.quadratureOrderInt = 1
+            self.intord = 1
 
-        self.asciiOutputInt = 0
+        self.idout = 0
         if self.asciiOutput == "none":
-            self.asciiOutputInt = 0
+            self.idout = 0
         elif self.asciiOutput == "echo":
-            self.asciiOutputInt = 1
+            self.idout = 1
         else:
-            self.asciiOutputInt = 2
+            self.idout = 2
             
-        self.plotOutputInt = 0
+        self.idsk = 0
         if self.plotOutput == "none":
-            self.plotOutputInt = 0
+            self.idsk = 0
         elif self.plotOutput == "ascii":
-            self.plotOutputInt = 1
+            self.idsk = 1
         else:
-            self.plotOutputInt = 2
+            self.idsk = 2
 
         binIOError = None
         try:
-            pylith3d.try_binio(self.f77UcdOutput)
+            pylith3d.try_binio(self.kucd)
         except RuntimeError, binIOError:
-            self.ucdOutputInt = 1
+            self.iucd = 1
         else:
-            self.ucdOutputInt = 2
+            self.iucd = 2
         if self.ucdOutput == "none":
-            self.ucdOutputInt = 0
+            self.iucd = 0
         elif self.ucdOutput == "ascii":
-            self.ucdOutputInt = 1
+            self.iucd = 1
         elif self.ucdOutput == "binary":
             if binIOError is None:
-                self.ucdOutputInt = 2
+                self.iucd = 2
             else:
                 import journal
                 warning = journal.warning("pylith3d")
@@ -785,17 +784,17 @@ for() {
                 warning.line("Binary UCD output not supported for this Fortran compiler.")
                 warning.log(binIOError)
             
-        self.debuggingOutputInt = 0
+        self.idebug = 0
         if self.debuggingOutput:
-            self.debuggingOutputInt = 1
+            self.idebug = 1
         else:
-            self.debuggingOutputInt = 0
+            self.idebug = 0
 
-        self.autoRotateSlipperyNodesInt = 0
+        self.iskopt = 0
         if self.autoRotateSlipperyNodes:
-            self.autoRotateSlipperyNodesInt = 2
+            self.iskopt = 2
         else:
-            self.autoRotateSlipperyNodesInt = 1
+            self.iskopt = 1
 
         self.trace.log("Hello from pl3dsetup.initialize (end)!")
 
@@ -816,13 +815,13 @@ for() {
         eltype=ElementTypeDef()
 
         # Make lists that are used as arrays in the f77 function calls below.
-        pointerToListArrayWscal = pylith3d.doubleListToArray(
+        wscal = pylith3d.doubleListToArray(
             [self.winklerScaleX,
              self.winklerScaleY,
              self.winklerScaleZ])
 
         if prestress:
-            self.pointerToListArrayPrscal = pylith3d.doubleListToArray(
+            self.prscal = pylith3d.doubleListToArray(
                 [self.prestressScaleXx,
                  self.prestressScaleYy,
                  self.prestressScaleZz,
@@ -830,272 +829,272 @@ for() {
                  self.prestressScaleXz,
                  self.prestressScaleYz])
         
-        pointerToListArrayWxscal = pylith3d.doubleListToArray(
+        wxscal = pylith3d.doubleListToArray(
             [self.winklerSlipScaleX,
              self.winklerSlipScaleY,
              self.winklerSlipScaleZ])
 
         # Set up global integration info.
         eltype.getdef(
-            self.volumeElementType,
-            self.quadratureOrderInt)
+            self.ietypev,
+            self.intord)
 
-        self.pointerToSh = eltype.pointerToSh
-        self.pointerToSh2d = eltype.pointerToSh2d
-        self.pointerToShj = eltype.pointerToShj
-        self.pointerToGauss = eltype.pointerToGauss
-        self.pointerToGauss2d = eltype.pointerToGauss2d
-        self.numberVolumeElementNodes = eltype.numberVolumeElementNodes
-        self.numberVolumeElementGaussPoints = eltype.numberVolumeElementGaussPoints
-        self.numberVolumeElementEquations = eltype.numberVolumeElementEquations
-        self.numberSurfaceElementNodes = eltype.numberSurfaceElementNodes
-	self.connectivitySize = self.numberVolumeElements*self.numberVolumeElementNodes
-        self.pointerToListArrayElementTypeInfo = pylith3d.intListToArray(
+        self.sh = eltype.sh
+        self.sh2d = eltype.sh2d
+        self.shj = eltype.shj
+        self.gauss = eltype.gauss
+        self.gauss2d = eltype.gauss2d
+        self.nen = eltype.nen
+        self.ngauss = eltype.ngauss
+        self.nee = eltype.nee
+        self.nsnodes = eltype.nsnodes
+	self.connectivitySize = self.numelv*self.nen
+        self.infetype = pylith3d.intListToArray(
             eltype.elementTypeInfo)
-        self.pointerToListArrayElementTypeInfo2d = pylith3d.intListToArray(
+        self.infetype2d = pylith3d.intListToArray(
             eltype.elementTypeInfo2d)
 
         # Node-based info (coordinates, displacement arrays, BC, and skew BC).
-        self.pointerToX = pylith3d.allocateDouble(
-            constants.numberSpaceDimensions*self.numberNodes)
-        self.pointerToIbond = pylith3d.allocateInt(
-            constants.numberDegreesFreedom*self.numberNodes)
-        self.pointerToBond = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberNodes)
-        self.pointerToSkew = pylith3d.allocateDouble(
-            constants.numberSkewDimensions*self.numberNodes)
+        self.x = pylith3d.allocateDouble(
+            constants.numberSpaceDimensions*self.numnp)
+        self.ibond = pylith3d.allocateInt(
+            constants.numberDegreesFreedom*self.numnp)
+        self.bond = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numnp)
+        self.skew = pylith3d.allocateDouble(
+            constants.numberSkewDimensions*self.numnp)
 
         pylith3d.read_coords(
-            self.pointerToX,
-            self.coordinateScaleFactor,
-            self.numberNodes,
-            self.f77FileInput,
+            self.x,
+            self.cscale,
+            self.numnp,
+            self.kr,
             self.coordinateInputFile)
 
         self.numberConcForces = pylith3d.read_bc(
-            self.pointerToBond,
-            self.displacementScaleFactor,
-            self.velocityScaleFactor,
-            self.forceScaleFactor,
-            self.pointerToIbond,
-            self.numberNodes,
-            self.numberBcEntries,
-            self.f77FileInput,
-            self.bcInputFile)
+            self.bond,
+            self.dscale,
+            self.vscale,
+            self.fscale,
+            self.ibond,
+            self.numnp,
+            self.numbc,
+            self.kr,
+            self.bcfile)
 
         pylith3d.read_skew(
-            self.pointerToSkew,
-            self.rotationScaleFactor,
-            self.numberRotationEntries,
-            self.numberNodes,
-            self.autoRotateSlipperyNodesInt,
-            self.f77FileInput,
-            self.rotationInputFile)
+            self.skew,
+            self.runits,
+            self.numrot,
+            self.numnp,
+            self.iskopt,
+            self.kr,
+            self.skfile)
 
         # Allocate and read time step, time output, and load history info.
-        self.pointerToHistry = pylith3d.allocateDouble(
-            (self.totalNumberTimeSteps+1)*self.numberLoadHistories)
-        self.pointerToMaxstp = pylith3d.allocateInt(
-            self.numberTimeStepGroups)
-        self.pointerToDelt = pylith3d.allocateDouble(
-            self.numberTimeStepGroups)
-        self.pointerToAlfa = pylith3d.allocateDouble(
-            self.numberTimeStepGroups)
-        self.pointerToMaxit = pylith3d.allocateInt(
-            self.numberTimeStepGroups)
-        self.pointerToNtdinit = pylith3d.allocateInt(
-            self.numberTimeStepGroups)
-        self.pointerToLgdef = pylith3d.allocateInt(
-            self.numberTimeStepGroups)
-        self.pointerToUtol = pylith3d.allocateDouble(
-            self.numberTimeStepGroups)
-        self.pointerToFtol = pylith3d.allocateDouble(
-            self.numberTimeStepGroups)
-        self.pointerToEtol = pylith3d.allocateDouble(
-            self.numberTimeStepGroups)
-        self.pointerToItmax = pylith3d.allocateInt(
-            self.numberTimeStepGroups)
-        self.pointerToIprint = pylith3d.allocateInt(
-            self.numberFullOutputs)
+        self.histry = pylith3d.allocateDouble(
+            (self.lastep+1)*self.nhist)
+        self.maxstp = pylith3d.allocateInt(
+            self.nintg)
+        self.delt = pylith3d.allocateDouble(
+            self.nintg)
+        self.alfa = pylith3d.allocateDouble(
+            self.nintg)
+        self.maxit = pylith3d.allocateInt(
+            self.nintg)
+        self.ntdinit = pylith3d.allocateInt(
+            self.nintg)
+        self.lgdef = pylith3d.allocateInt(
+            self.nintg)
+        self.utol = pylith3d.allocateDouble(
+            self.nintg)
+        self.ftol = pylith3d.allocateDouble(
+            self.nintg)
+        self.etol = pylith3d.allocateDouble(
+            self.nintg)
+        self.itmax = pylith3d.allocateInt(
+            self.nintg)
+        self.iprint = pylith3d.allocateInt(
+            self.icontr)
 
         # Note that array Times is needed for output, if requested.
-        self.pointerToTimes = pylith3d.allocateDouble(
-            self.totalNumberTimeSteps+1)
-        self.pointerToIstatout = pylith3d.allocateInt(
+        self.times = pylith3d.allocateDouble(
+            self.lastep+1)
+        self.istatout = pylith3d.allocateInt(
             3*constants.maxStateVariables)
-        self.pointerToNstatout = pylith3d.allocateInt(3)
+        self.nstatout = pylith3d.allocateInt(3)
 
         pylith3d.read_timdat(
-            self.pointerToDelt,
-            self.pointerToAlfa,
-            self.pointerToUtol,
-            self.pointerToFtol,
-            self.pointerToEtol,
-            self.pointerToTimes,
-            self.timeScaleFactor,
-            self.pointerToMaxstp,
-            self.pointerToMaxit,
-            self.pointerToNtdinit,
-            self.pointerToLgdef,
-            self.pointerToItmax,
-            self.numberTimeStepGroups,
-            self.totalNumberTimeSteps,
-            self.f77FileInput,
+            self.delt,
+            self.alfa,
+            self.utol,
+            self.ftol,
+            self.etol,
+            self.times,
+            self.tunits,
+            self.maxstp,
+            self.maxit,
+            self.ntdinit,
+            self.lgdef,
+            self.itmax,
+            self.nintg,
+            self.lastep,
+            self.kr,
             self.timeStepInputFile)
 
         pylith3d.read_fuldat(
-            self.pointerToIprint,
-            self.numberFullOutputs,
-            self.analysisTypeInt,
-            self.numberCycles,
-            self.totalNumberTimeSteps,
-            self.f77FileInput,
-            self.fullOutputInputFile)
+            self.iprint,
+            self.icontr,
+            self.icode,
+            self.ncycle,
+            self.lastep,
+            self.kr,
+            self.fofile)
 
         pylith3d.read_stateout(
-            self.pointerToIstatout,
-            self.pointerToNstatout,
-            self.f77FileInput,
-            self.stateVariableInputFile)
+            self.istatout,
+            self.nstatout,
+            self.kr,
+            self.stfile)
 
         pylith3d.read_hist(
-            self.pointerToHistry,
-            self.pointerToTimes,
-            self.numberLoadHistories,
-            self.totalNumberTimeSteps,
-            self.f77FileInput,
-            self.loadHistoryInputFile)
+            self.histry,
+            self.times,
+            self.nhist,
+            self.lastep,
+            self.kr,
+            self.hfile)
 
         # Allocate and read info on connectivities and prestresses
-        self.pointerToIen = pylith3d.allocateInt(
-            self.numberVolumeElementNodes*self.numberVolumeElements)
-	self.pointerToMat = pylith3d.allocateInt(
-	    self.numberVolumeElements)
-        if self.numberPrestressEntries != 0 or self.prestressAutoComputeInt != 0:
+        self.ien = pylith3d.allocateInt(
+            self.nen*self.numelv)
+	self.mat = pylith3d.allocateInt(
+	    self.numelv)
+        if self.numberPrestressEntries != 0 or self.ipstrs != 0:
             self.prestressFlag = 1
         else:
             self.prestressFlag = 0
 
         pylith3d.read_connect(
-            self.pointerToIen,
-            self.pointerToMat,
-            self.numberVolumeElementNodes,
-            self.numberVolumeElements,
-            self.numberNodes,
-	    self.numberVolumeElementFamilies,
-            self.f77FileInput,
+            self.ien,
+            self.mat,
+            self.nen,
+            self.numelv,
+            self.numnp,
+	    self.nvfamilies,
+            self.kr,
             self.connectivityInputFile)
 
         if prestress:
             pylith3d.read_prestr(
-                self.pointerToStn,
-                self.pointerToSt0,
-                self.pointerToListArrayPrscal,
+                self.stn,
+                self.st0,
+                self.prscal,
                 self.numberStressComponents,
                 self.numberGaussPoints,
                 self.numberPrestressGaussPoints,
                 self.numberElements,
                 self.numberPrestressEntries,
-                self.prestressAutoComputeInt,
-                self.asciiOutputInt,
-                self.f77FileInput,
-                self.f77AsciiOutput,
+                self.ipstrs,
+                self.idout,
+                self.kr,
+                self.kw,
                 self.prestressInputFile,
-                self.asciiOutputFile)
+                self.ofile)
 
         # Read traction BC
-        self.pointerToTractionverts = pylith3d.allocateInt(
-            self.numberSurfaceElementNodes*self.numberTractionBc)
-        self.pointerToTractionvals = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberTractionBc)
+        self.tractionverts = pylith3d.allocateInt(
+            self.nsnodes*self.numtractions)
+        self.tractionvals = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numtractions)
 
         pylith3d.read_tractions(
-            self.pointerToTractionverts,
-            self.pointerToTractionvals,
-            self.tractionBcScaleFactor,
-            self.numberTractionBc,
-            self.numberSurfaceElementNodes,
-            self.f77FileInput,
+            self.tractionverts,
+            self.tractionvals,
+            self.tscale,
+            self.numtractions,
+            self.nsnodes,
+            self.kr,
             self.tractionInputFile)
 
         # Read split node info
-        self.pointerToNfault = pylith3d.allocateInt(
-            3*self.numberSplitNodeEntries)
-        self.pointerToFault = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberSplitNodeEntries)
+        self.nfault = pylith3d.allocateInt(
+            3*self.numfn)
+        self.fault = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numfn)
 
-        self.totalNumberSplitNodes = pylith3d.read_split(
-            self.pointerToFault,
-            self.pointerToNfault,
-            self.numberSplitNodeEntries,
-            self.numberNodes,
-            self.numberVolumeElements,
-            self.f77FileInput,
-            self.splitNodeInputFile)
+        self.numflt = pylith3d.read_split(
+            self.fault,
+            self.nfault,
+            self.numfn,
+            self.numnp,
+            self.numelv,
+            self.kr,
+            self.spfile)
 
         # Read slippery node info
         # Note that array Nslip is also required in functions sortmesh and sparsesetup
         # before it can be deallocated.
-        self.pointerToNslip = pylith3d.allocateInt(
-            constants.numberSlipDimensions*self.numberSlipperyNodeEntries)
-        self.pointerToIdhist = pylith3d.allocateInt(
-            self.numberNodes)
-        self.pointerToDiforc = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberNodes)
+        self.nslip = pylith3d.allocateInt(
+            constants.numberSlipDimensions*self.numslp)
+        self.idhist = pylith3d.allocateInt(
+            self.numnp)
+        self.diforc = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numnp)
 
-        self.totalNumberSlipperyNodes = pylith3d.read_slip(
-            self.pointerToNslip,
-            self.numberSlipperyNodeEntries,
-            self.numberNodes,
-            self.autoRotateSlipperyNodesInt,
-            self.f77FileInput,
-            self.slipperyNodeInputFile)
+        self.numsn = pylith3d.read_slip(
+            self.nslip,
+            self.numslp,
+            self.numnp,
+            self.iskopt,
+            self.kr,
+            self.slfile)
 
         pylith3d.read_diff(
-            self.pointerToDiforc,
-            self.pointerToNslip,
-            self.pointerToIdhist,
-            self.numberSlipperyNodeEntries,
-            self.numberDifferentialForceEntries,
-            self.numberNodes,
-            self.f77FileInput,
-            self.differentialForceInputFile)
+            self.diforc,
+            self.nslip,
+            self.idhist,
+            self.numslp,
+            self.numdif,
+            self.numnp,
+            self.kr,
+            self.difile)
         
         # Read Winkler forces and slippery Winkler forces.
         # All input is finished after this section.
-        self.pointerToIwinkdef = pylith3d.allocateInt(
-            constants.numberDegreesFreedom*self.numberWinklerEntries)
-        self.pointerToIwinkid = pylith3d.allocateInt(
-            self.numberWinklerEntries)
-        self.pointerToWinkdef = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberWinklerEntries)
+        self.iwinkdef = pylith3d.allocateInt(
+            constants.numberDegreesFreedom*self.nwinke)
+        self.iwinkid = pylith3d.allocateInt(
+            self.nwinke)
+        self.winkdef = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.nwinke)
 
-        self.pointerToIwinkxdef = pylith3d.allocateInt(
-            constants.numberDegreesFreedom*self.numberSlipperyWinklerEntries)
-        self.pointerToIwinkxid = pylith3d.allocateInt(
-            self.numberSlipperyWinklerEntries)
-        self.pointerToWinkxdef = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberSlipperyWinklerEntries)
-
-        pylith3d.read_wink(
-            self.pointerToWinkdef,
-            pointerToListArrayWscal,
-            self.pointerToIwinkdef,
-            self.pointerToIwinkid,
-            self.numberWinklerForces,
-            self.numberWinklerEntries,
-            self.f77FileInput,
-            self.winklerInputFile)
+        self.iwinkxdef = pylith3d.allocateInt(
+            constants.numberDegreesFreedom*self.nwinkxe)
+        self.iwinkxid = pylith3d.allocateInt(
+            self.nwinkxe)
+        self.winkxdef = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.nwinkxe)
 
         pylith3d.read_wink(
-            self.pointerToWinkxdef,
-            pointerToListArrayWxscal,
-            self.pointerToIwinkxdef,
-            self.pointerToIwinkxid,
-            self.numberSlipperyWinklerForces,
-            self.numberSlipperyWinklerEntries,
-            self.f77FileInput,
-            self.slipperyWinklerInputFile)
+            self.winkdef,
+            wscal,
+            self.iwinkdef,
+            self.iwinkid,
+            self.nwink,
+            self.nwinke,
+            self.kr,
+            self.wfile)
+
+        pylith3d.read_wink(
+            self.winkxdef,
+            wxscal,
+            self.iwinkxdef,
+            self.iwinkxid,
+            self.nwinkx,
+            self.nwinkxe,
+            self.kr,
+            self.wxfile)
 
         self.trace.log("Hello from pl3dsetup.read (end)!")
 
@@ -1110,79 +1109,79 @@ for() {
         print "Numbering global equations:"
 
         # Create Idftn array for split nodes.  This can be deallocated after meshwrite function has been called.
-        self.pointerToIdftn = pylith3d.allocateInt(
-            self.totalNumberSplitNodes)
+        self.idftn = pylith3d.allocateInt(
+            self.numflt)
 
         pylith3d.id_split(
-            self.pointerToNfault,
-            self.pointerToIdftn,
-            self.numberNodes,
-            self.numberSplitNodeEntries,
-            self.totalNumberSplitNodes)
+            self.nfault,
+            self.idftn,
+            self.numnp,
+            self.numfn,
+            self.numflt)
 
         # Determine global equations and store equation numbers in Id and Idx.
-        self.pointerToId = pylith3d.allocateInt(
-            constants.numberSpaceDimensions*self.numberNodes)
-        self.pointerToIdx = pylith3d.allocateInt(
-            constants.numberSpaceDimensions*self.numberNodes)
-        self.pointerToIdslp = pylith3d.allocateInt(
-            self.numberNodes)
+        self.id = pylith3d.allocateInt(
+            constants.numberSpaceDimensions*self.numnp)
+        self.idx = pylith3d.allocateInt(
+            constants.numberSpaceDimensions*self.numnp)
+        self.idslp = pylith3d.allocateInt(
+            self.numnp)
 
         # Number of equations
-        self.numberGlobalEquations = pylith3d.create_id(
-            self.pointerToId,
-            self.pointerToIdx,
-            self.pointerToIbond,
-            self.pointerToNslip,
-            self.pointerToIdslp,
-            self.numberSlipperyNodeEntries,
-            self.numberNodes,
-            self.totalNumberSlipperyNodes)
+        self.neq = pylith3d.create_id(
+            self.id,
+            self.idx,
+            self.ibond,
+            self.nslip,
+            self.idslp,
+            self.numslp,
+            self.numnp,
+            self.numsn)
 
-        self.pointerToIpslp = pylith3d.allocateInt(
-            constants.numberSlipNeighbors*self.totalNumberSlipperyNodes)
+        self.ipslp = pylith3d.allocateInt(
+            constants.numberSlipNeighbors*self.numsn)
 
         # If there are slippery nodes and the auto-rotation option is selected, find
         # neighboring nodes on the fault so that a best-fit plane can be determined at
         # each node.
-        if self.totalNumberSlipperyNodes != 0 and self.autoRotateSlipperyNodesInt ==  2:
+        if self.numsn != 0 and self.iskopt ==  2:
             self.nfind()
 
         # Assign appropriate equation numbers to Iwink array, and compact Wink
         # array to correspond to assigned BC.
-        self.pointerToWink = pylith3d.allocateDouble(
-            self.numberWinklerForces)
-        self.pointerToIwink = pylith3d.allocateInt(
-            2*self.numberWinklerForces)
+        self.wink = pylith3d.allocateDouble(
+            self.nwink)
+        self.iwink = pylith3d.allocateInt(
+            2*self.nwink)
 
         pylith3d.assign_wink(
-            self.pointerToWinkdef,
-            self.pointerToWink,
-            self.pointerToIwinkdef,
-            self.pointerToIwinkid,
-            self.pointerToIwink,
-            self.pointerToId,
-            self.numberNodes,
-            self.numberWinklerForces,
-            self.numberWinklerEntries)
+            self.winkdef,
+            self.wink,
+            self.iwinkdef,
+            self.iwinkid,
+            self.iwink,
+            self.id,
+            self.numnp,
+            self.nwink,
+            self.nwinke)
 
         # Assign appropriate equation numbers to Iwinkx array, and compact Winkx
         # array to correspond to assigned BC.
-        self.pointerToWinkx = pylith3d.allocateDouble(
-            self.numberSlipperyWinklerForces)
-        self.pointerToIwinkx = pylith3d.allocateInt(
-            2*self.numberSlipperyWinklerForces)
+        self.winkx = pylith3d.allocateDouble(
+            self.nwinkx)
+        self.iwinkx = pylith3d.allocateInt(
+            2*self.nwinkx)
 
         pylith3d.assign_wink(
-            self.pointerToWinkxdef,
-            self.pointerToWinkx,
-            self.pointerToIwinkxdef,
-            self.pointerToIwinkxid,
-            self.pointerToIwinkx,
-            self.pointerToIdx,
-            self.numberNodes,
-            self.numberSlipperyWinklerForces,
-            self.numberSlipperyWinklerEntries)
+            self.winkxdef,
+            self.winkx,
+            self.iwinkxdef,
+            self.iwinkxid,
+            self.iwinkx,
+            self.idx,
+            self.numnp,
+            self.nwinkx,
+            self.nwinkxe)
 
         self.trace.log("Hello from pl3dsetup.numberequations (end)!")
             
@@ -1191,27 +1190,27 @@ for() {
 
     def nfind(self):
         # Temporary arrays
-        pointerToXtmp = pylith3d.allocateDouble(
-            self.totalNumberSlipperyNodes)
-        pointerToItmp = pylith3d.allocateInt(
-            self.totalNumberSlipperyNodes)
-        pointerToItmp1 = pylith3d.allocateInt(
-            self.totalNumberSlipperyNodes)
-        pointerToItmp2 = pylith3d.allocateInt(
-            self.totalNumberSlipperyNodes)
+        xtmp = pylith3d.allocateDouble(
+            self.numsn)
+        itmp = pylith3d.allocateInt(
+            self.numsn)
+        itmp1 = pylith3d.allocateInt(
+            self.numsn)
+        itmp2 = pylith3d.allocateInt(
+            self.numsn)
 
         pylith3d.nfind(
-            self.pointerToX,
-            pointerToXtmp,
-            self.pointerToIdslp,
-            self.pointerToIpslp,
-            pointerToItmp,
-            pointerToItmp1,
-            pointerToItmp2,
-            self.pointerToNslip,
-            self.numberSlipperyNodeEntries,
-            self.totalNumberSlipperyNodes,
-            self.numberNodes)
+            self.x,
+            xtmp,
+            self.idslp,
+            self.ipslp,
+            itmp,
+            itmp1,
+            itmp2,
+            self.nslip,
+            self.numslp,
+            self.numsn,
+            self.numnp)
 
         return
 
@@ -1233,17 +1232,17 @@ for() {
 
         # Sort split node entries.
         pylith3d.sort_split_nodes(
-            self.pointerToNfault,
-            self.pointerToIndxiel,
-            self.numberSplitNodeEntries,
-            self.numberVolumeElements)
+            self.nfault,
+            self.indxiel,
+            self.numfn,
+            self.numelv)
 
         # Sort slippery node entries.
         pylith3d.sort_slip_nodes(
-            self.pointerToNslip,
-            self.pointerToIndxiel,
-            self.numberSlipperyNodeEntries,
-            self.numberVolumeElements)
+            self.nslip,
+            self.indxiel,
+            self.numslp,
+            self.numelv)
             
         self.trace.log("Hello from pl3dsetup.sortmesh (end)!")
 
@@ -1257,41 +1256,41 @@ for() {
         # The original element node array (Ien) and the associated
         # material type array (Mat) may be deallocated after sorting.
         
-        self.pointerToIens = pylith3d.allocateInt(
-            self.numberVolumeElementNodes*self.numberVolumeElements)
-        self.pointerToIvfamily = pylith3d.allocateInt(
-            6*self.numberVolumeElementFamilies)
+        self.iens = pylith3d.allocateInt(
+            self.nen*self.numelv)
+        self.ivfamily = pylith3d.allocateInt(
+            6*self.nvfamilies)
 
-        self.pointerToIndxiel = pylith3d.allocateInt(
-            self.numberVolumeElements)
+        self.indxiel = pylith3d.allocateInt(
+            self.numelv)
 
-        self.pointerToIelindx = pylith3d.allocateInt(
-            self.numberVolumeElements)
+        self.ielindx = pylith3d.allocateInt(
+            self.numelv)
 
-        pointerToIvftmp = pylith3d.allocateInt(
-            self.numberVolumeElementFamilies)
+        ivftmp = pylith3d.allocateInt(
+            self.nvfamilies)
 
 	self.elementSizeInfo = pylith3d.sort_elements(
-            self.pointerToIen,
-            self.pointerToMat,
-            self.pointerToMaterialModelInfo,
-            self.pointerToVolumeElementFamilyList,
-            self.pointerToIvfamily,
-            self.pointerToIens,
-            pointerToIvftmp,
-            self.pointerToIndxiel,
-            self.pointerToIelindx,
-            self.numberVolumeElementNodes,
-            self.numberVolumeElementGaussPoints,
-            self.maxNumberVolumeElementFamilies,
-            self.numberVolumeElementFamilies,
+            self.ien,
+            self.mat,
+            self.infmatmod,
+            self.ivflist,
+            self.ivfamily,
+            self.iens,
+            ivftmp,
+            self.indxiel,
+            self.ielindx,
+            self.nen,
+            self.ngauss,
+            self.maxvfamilies,
+            self.nvfamilies,
             self.prestressFlag,
-            self.numberVolumeElements,
-            self.numberNodes)
+            self.numelv,
+            self.numnp)
         
-        self.pointerToIen = None ### DEALLOC
-        self.pointerToMat = None ### DEALLOC
-        self.pointerToVolumeElementFamilyList = None ### DEALLOC
+        self.ien = None ### DEALLOC
+        self.mat = None ### DEALLOC
+        self.ivflist = None ### DEALLOC
 
         return
 
@@ -1311,101 +1310,101 @@ for() {
 
         # Arrays to map element equation numbers to global
         # Localize global equation numbers in element index arrays.
-        self.pointerToLm = pylith3d.allocateInt(
+        self.lm = pylith3d.allocateInt(
             constants.numberDegreesFreedom*self.connectivitySize)
-        self.pointerToLmx = pylith3d.allocateInt(
+        self.lmx = pylith3d.allocateInt(
             constants.numberDegreesFreedom*self.connectivitySize)
-        self.pointerToLmf = pylith3d.allocateInt(
+        self.lmf = pylith3d.allocateInt(
             self.connectivitySize)
 
         pylith3d.local(
-            self.pointerToId,
-            self.numberNodes,
-            self.pointerToIens,
-            self.pointerToLm,
-            self.numberVolumeElements,
-            self.numberVolumeElementNodes)
+            self.id,
+            self.numnp,
+            self.iens,
+            self.lm,
+            self.numelv,
+            self.nen)
 
         pylith3d.localf(
-            self.pointerToIens,
-            self.pointerToLmf,
-            self.numberVolumeElements,
-            self.pointerToNfault,
-            self.numberSplitNodeEntries,
-            self.numberVolumeElementNodes)
+            self.iens,
+            self.lmf,
+            self.numelv,
+            self.nfault,
+            self.numfn,
+            self.nen)
 
         pylith3d.localx(
-            self.pointerToIdx,
-            self.numberNodes,
-            self.pointerToIens,
-            self.pointerToLmx,
-            self.numberVolumeElements,
-            self.pointerToNslip,
-            self.numberSlipperyNodeEntries,
-            self.numberVolumeElementNodes)
+            self.idx,
+            self.numnp,
+            self.iens,
+            self.lmx,
+            self.numelv,
+            self.nslip,
+            self.numslp,
+            self.nen)
 
         # Keeping this for now as it may be wanted for output
-        # self.pointerToNslip = None ### DEALLOC
+        # self.nslip = None ### DEALLOC
 
         # Allocate and populate sparse matrix arrays.  Some of these are
         # temporary and are then deleted after use.
-        workingArraySize = pylith3d.cmp_stiffsz(
-            self.numberGlobalEquations,
-            self.pointerToLm,
-            self.pointerToLmx,
-            self.numberVolumeElements,
-            self.totalNumberSlipperyNodes,
-            self.numberVolumeElementNodes)
+        iwork = pylith3d.cmp_stiffsz(
+            self.neq,
+            self.lm,
+            self.lmx,
+            self.numelv,
+            self.numsn,
+            self.nen)
 
         # Temporary arrays
-        pointerToIndx = pylith3d.allocateInt(
-            self.numberGlobalEquations)
-        pointerToLink = pylith3d.allocateInt(
-            workingArraySize)
-        pointerToNbrs = pylith3d.allocateInt(
-            workingArraySize)
+        indx = pylith3d.allocateInt(
+            self.neq)
+        link = pylith3d.allocateInt(
+            iwork)
+        nbrs = pylith3d.allocateInt(
+            iwork)
 
         stiffnessMatrixInfo = pylith3d.lnklst(
-            self.numberGlobalEquations,
-            self.pointerToLm,
-            self.pointerToLmx,
-            self.numberVolumeElements,
-            self.numberVolumeElementNodes,
-            self.numberVolumeElementEquations,
-            pointerToIndx,
-            pointerToLink,
-            pointerToNbrs,
-            workingArraySize,
-            self.totalNumberSlipperyNodes)
+            self.neq,
+            self.lm,
+            self.lmx,
+            self.numelv,
+            self.nen,
+            self.nee,
+            indx,
+            link,
+            nbrs,
+            iwork,
+            self.numsn)
 
-        self.stiffnessMatrixSize = stiffnessMatrixInfo[0]
+        self.nnz = stiffnessMatrixInfo[0]
 
         self.A, self.rhs, self.sol = pylith3d.createPETScMat(self.mesh)
 
         stiffnessMatrixStats = pylith3d.makemsr(
             self.A,
-            pointerToIndx,
-            pointerToLink,
-            pointerToNbrs,
-            self.numberGlobalEquations,
-            self.stiffnessMatrixSize,
-            workingArraySize)
+            indx,
+            link,
+            nbrs,
+            self.neq,
+            self.nnz,
+            iwork)
 
-        self.minimumNonzeroTermsPerRow = stiffnessMatrixStats[0]
-        self.maximumNonzeroTermsPerRow = stiffnessMatrixStats[1]
-        self.averageNonzeroTermsPerRow = float(stiffnessMatrixStats[2])
+        self.nmin = stiffnessMatrixStats[0]
+        self.nmax = stiffnessMatrixStats[1]
+        self.wavg = float(stiffnessMatrixStats[2])
 
 	print ""
 	print ""
         print "Sparse matrix information:"
 	print ""
-        print "numberGlobalEquations:     %i" % self.numberGlobalEquations
-        print "workingArraySize:          %i" % workingArraySize
-        print "stiffnessMatrixSize:       %i" % (self.stiffnessMatrixSize-1)
+        print "numberGlobalEquations:     %i" % self.neq
+        print "workingArraySize:          %i" % iwork
+        print "stiffnessMatrixSize:       %i" % (self.nnz-1)
         print "stiffnessOffDiagonalSize:  %i" % stiffnessMatrixInfo[1]
-        print "minimumNonzeroTermsPerRow: %i" % self.minimumNonzeroTermsPerRow
-        print "maximumNonzeroTermsPerRow: %i" % self.maximumNonzeroTermsPerRow
-        print "averageNonzeroTermsPerRow: %g" % self.averageNonzeroTermsPerRow
+        print "minimumNonzeroTermsPerRow: %i" % self.nmin
+        print "maximumNonzeroTermsPerRow: %i" % self.nmax
+        print "averageNonzeroTermsPerRow: %g" % self.wavg
 	print ""
         
         self.trace.log("Hello from pl3dsetup.sparsesetup (end)!")
@@ -1421,7 +1420,7 @@ for() {
         print "Allocating remaining storage:"
         
         # Create necessary lists and convert them to arrays
-        self.pointerToListArrayGrav = pylith3d.doubleListToArray(
+        self.grav = pylith3d.doubleListToArray(
             [self.gravityX.value,
              self.gravityY.value,
              self.gravityZ.value])
@@ -1429,7 +1428,7 @@ for() {
         # Allocate memory for all additional arrays
 
         # Force vectors
-        if self.numberTractionBc != 0:
+        if self.numtractions != 0:
             tractionFlag = 1
         else:
             tractionFlag = 0
@@ -1437,7 +1436,7 @@ for() {
             gravityFlag = 1
         else:
             gravityFlag = 0
-        if self.numberConcForces != 0 or self.numberDifferentialForceEntries != 0:
+        if self.numberConcForces != 0 or self.numdif != 0:
             concForceFlag = 1
         else:
             concForceFlag = 0
@@ -1445,82 +1444,82 @@ for() {
             externFlag = 1
         else:
             externFlag = 0
-	if self.numberWinklerForces != 0:
+	if self.nwink != 0:
 	    winklerFlag = 1
         else:
             winklerFlag = 0
-	if self.numberSlipperyWinklerForces != 0:
+	if self.nwinkx != 0:
 	    slipperyWinklerFlag = 1
         else:
             slipperyWinklerFlag = 0
 
-        self.pointerToBextern = pylith3d.allocateDouble(
-            externFlag*self.numberGlobalEquations)
-        self.pointerToBtraction = pylith3d.allocateDouble(
-            tractionFlag*self.numberGlobalEquations)
-        self.pointerToBgravity = pylith3d.allocateDouble(
-            gravityFlag*self.numberGlobalEquations)
-        self.pointerToBconcForce = pylith3d.allocateDouble(
-            concForceFlag*self.numberGlobalEquations)
-        self.pointerToBwink = pylith3d.allocateDouble(
-            winklerFlag*self.numberGlobalEquations)
-        self.pointerToBwinkx = pylith3d.allocateDouble(
-            slipperyWinklerFlag*self.numberGlobalEquations)
-        self.pointerToBintern = pylith3d.allocateDouble(
-            self.numberGlobalEquations)
-        self.pointerToBresid = pylith3d.allocateDouble(
-            self.numberGlobalEquations)
-        self.pointerToDispVec = pylith3d.allocateDouble(
-            self.numberGlobalEquations)
-        self.pointerToDprev = pylith3d.allocateDouble(
-            self.usePreviousDisplacementFlag*self.numberGlobalEquations)
+        self.bextern = pylith3d.allocateDouble(
+            externFlag*self.neq)
+        self.btraction = pylith3d.allocateDouble(
+            tractionFlag*self.neq)
+        self.bgravity = pylith3d.allocateDouble(
+            gravityFlag*self.neq)
+        self.bconcForce = pylith3d.allocateDouble(
+            concForceFlag*self.neq)
+        self.bwink = pylith3d.allocateDouble(
+            winklerFlag*self.neq)
+        self.bwinkx = pylith3d.allocateDouble(
+            slipperyWinklerFlag*self.neq)
+        self.bintern = pylith3d.allocateDouble(
+            self.neq)
+        self.bresid = pylith3d.allocateDouble(
+            self.neq)
+        self.dispVec = pylith3d.allocateDouble(
+            self.neq)
+        self.dprev = pylith3d.allocateDouble(
+            self.nprevdflag*self.neq)
             
         # Displacement arrays
-        self.pointerToD = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberNodes)
-        self.pointerToDeld = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberNodes)
-        self.pointerToDcur = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberNodes)
+        self.d = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numnp)
+        self.deld = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numnp)
+        self.dcur = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numnp)
 
         # Slippery node arrays
-        self.pointerToDx = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberNodes)
-        self.pointerToDeldx = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberNodes)
-        self.pointerToDxcur = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberNodes)
+        self.dx = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numnp)
+        self.deldx = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numnp)
+        self.dxcur = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numnp)
 
         # Split node arrays
-        self.pointerToDfault = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberSplitNodeEntries)
-        self.pointerToTfault = pylith3d.allocateDouble(
-            constants.numberDegreesFreedom*self.numberSplitNodeEntries)
+        self.dfault = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numfn)
+        self.tfault = pylith3d.allocateDouble(
+            constants.numberDegreesFreedom*self.numfn)
 
         # Local stiffness matrix arrays
-        self.pointerToS = pylith3d.allocateDouble(
+        self.s = pylith3d.allocateDouble(
             self.maxElementEquations*self.maxElementEquations)
-        self.pointerToStemp = pylith3d.allocateDouble(
+        self.stemp = pylith3d.allocateDouble(
             self.maxElementEquations*self.maxElementEquations)
 
         # Element arrays
-        self.pointerToState = pylith3d.allocateDouble(
+        self.state = pylith3d.allocateDouble(
             self.stateSize)
-        self.pointerToDstate = pylith3d.allocateDouble(
+        self.dstate = pylith3d.allocateDouble(
             self.stateSize)
-        self.pointerToDmat = pylith3d.allocateDouble(
+        self.dmat = pylith3d.allocateDouble(
             constants.materialMatrixDimension*
-            self.numberVolumeElementGaussPoints*
-            self.numberVolumeElements)
-        self.pointerToListArrayIddmat = pylith3d.intListToArray( 
+            self.ngauss*
+            self.numelv)
+        self.iddmat = pylith3d.intListToArray( 
             constants.listIddmat)
-        self.pointerToState0 = pylith3d.allocateDouble(
+        self.state0 = pylith3d.allocateDouble(
             self.state0Size)
 
         # Create arrays from lists that will be needed for the solution
 
         # nforce array
-        self.pointerToListArrayNforce = pylith3d.intListToArray(
+        self.nforce = pylith3d.intListToArray(
             [externFlag,
              tractionFlag,
              gravityFlag,
@@ -1528,80 +1527,80 @@ for() {
              self.prestressFlag,
              winklerFlag,
              slipperyWinklerFlag,
-             self.usePreviousDisplacementFlag])
+             self.nprevdflag])
            
         # ncodat array
-        self.pointerToListArrayNcodat = pylith3d.intListToArray(
-            [self.analysisTypeInt,
-             self.debuggingOutputInt])
+        self.ncodat = pylith3d.intListToArray(
+            [self.icode,
+             self.idebug])
             
         # npar array
-        self.pointerToListArrayNpar = pylith3d.intListToArray(
-            [self.numberVolumeElements,
-             self.numberMaterials,
-             self.numberTractionBc,
-             self.numberSlipperyNodeEntries,
-             self.numberSplitNodeEntries,
-             self.prestressAutoComputeInt,
-             self.prestressAutoChangeElasticPropsInt,
+        self.npar = pylith3d.intListToArray(
+            [self.numelv,
+             self.numat,
+             self.numtractions,
+             self.numslp,
+             self.numfn,
+             self.ipstrs,
+             self.ipauto,
              self.stateSize,
              self.state0Size,
-             self.numberVolumeElementFamilies,
-             self.numberDifferentialForceEntries,
-             self.quadratureOrderInt])
+             self.nvfamilies,
+             self.numdif,
+             self.intord])
 
         # nprint array
-        self.pointerToListArrayNprint = pylith3d.intListToArray(
-            [self.numberFullOutputs,
-             self.asciiOutputInt,
-             self.plotOutputInt,
-             self.ucdOutputInt])
+        self.nprint = pylith3d.intListToArray(
+            [self.icontr,
+             self.idout,
+             self.idsk,
+             self.iucd])
 
         # nsysdat array
-        self.pointerToListArrayNsysdat = pylith3d.intListToArray(
-            [self.numberNodes,
-             self.numberGlobalEquations,
-             self.stiffnessMatrixSize,
-             self.numberRotationEntries,
+        self.nsysdat = pylith3d.intListToArray(
+            [self.numnp,
+             self.neq,
+             self.nnz,
+             self.numrot,
              self.numberPrestressEntries,
-             self.totalNumberSlipperyNodes,
-             self.totalNumberSplitNodes,
+             self.numsn,
+             self.numflt,
              self.propertySize,
-             self.numberWinklerForces,
-             self.numberSlipperyWinklerForces,
-             self.autoRotateSlipperyNodesInt])
+             self.nwink,
+             self.nwinkx,
+             self.iskopt])
 
         # nunits array
-        self.pointerToListArrayNunits = pylith3d.intListToArray(
+        self.nunits = pylith3d.intListToArray(
             [self.f77StandardInput,
              self.f77StandardOutput,
-             self.f77FileInput,
-             self.f77AsciiOutput,
-             self.f77PlotOutput,
-             self.f77UcdOutput])
+             self.kr,
+             self.kw,
+             self.kp,
+             self.kucd])
 
         # nvisdat array
-        self.pointerToListArrayNvisdat = pylith3d.intListToArray(
-            [self.numberCycles,
-             self.numberTimeStepGroups,
-             self.totalNumberTimeSteps,
-             self.numberLoadHistories])
+        self.nvisdat = pylith3d.intListToArray(
+            [self.ncycle,
+             self.nintg,
+             self.lastep,
+             self.nhist])
         
         # rgiter array
-        self.pointerToListArrayRgiter = pylith3d.doubleListToArray(
-            [self.stressTolerance.value,
-             self.minimumStrainPerturbation,
-             self.initialStrainPerturbation])
+        self.rgiter = pylith3d.doubleListToArray(
+            [self.stol.value,
+             self.dtol,
+             self.epert])
         
         # rtimdat array
-        self.pointerToListArrayRtimdat = pylith3d.doubleListToArray(
+        self.rtimdat = pylith3d.doubleListToArray(
             [0.0, # currentTimeStepSize
              0.0, # currentAlfaParameter
-             self.prestressAutoComputePoisson,
-             self.prestressAutoComputeYoungs.value])
+             self.tpois,
+             self.tyoungs.value])
 
         # ntimdat array
-        self.pointerToListArrayNtimdat = pylith3d.intListToArray(
+        self.ntimdat = pylith3d.intListToArray(
             [0, # currentTimeStep
              0, # currentIterationsBetweenReform
              0, # currentStepsBetweenReform
@@ -1631,279 +1630,279 @@ for() {
         # Write out global parameters
         pylith3d.write_global_info(
             self.title,
-            self.asciiOutputInt,
-            self.plotOutputInt,
-            self.numberNodes,
-            self.analysisTypeInt,
-            self.debuggingOutputInt,
-            self.f77AsciiOutput,
-            self.f77PlotOutput,
-            self.asciiOutputFile,
-            self.plotOutputFile)
+            self.idout,
+            self.idsk,
+            self.numnp,
+            self.icode,
+            self.idebug,
+            self.kw,
+            self.kp,
+            self.ofile,
+            self.pfile)
 
         # Write out nodal coordinates
         pylith3d.write_coords(
-            self.pointerToX,
-            self.numberNodes,
-            self.f77AsciiOutput,
-            self.f77PlotOutput,
-            self.asciiOutputInt,
-            self.plotOutputInt,
-            self.asciiOutputFile,
-            self.plotOutputFile)
+            self.x,
+            self.numnp,
+            self.kw,
+            self.kp,
+            self.idout,
+            self.idsk,
+            self.ofile,
+            self.pfile)
 
         # Write out nodal boundary condition info
         pylith3d.write_bc(
-            self.pointerToBond,
-            self.pointerToIbond,
-            self.numberNodes,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+            self.bond,
+            self.ibond,
+            self.numnp,
+            self.kw,
+            self.idout,
+            self.ofile)
 
         # Write out local coordinate rotations
         pylith3d.write_skew(
-            self.pointerToSkew,
-            self.numberRotationEntries,
-            self.autoRotateSlipperyNodesInt,
-            self.numberNodes,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+            self.skew,
+            self.numrot,
+            self.iskopt,
+            self.numnp,
+            self.kw,
+            self.idout,
+            self.ofile)
 
         # Write stress computation and subiteration parameters.
         pylith3d.write_strscomp(
-            self.stressTolerance.value,
-            self.minimumStrainPerturbation,
-            self.initialStrainPerturbation,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+            self.stol.value,
+            self.dtol,
+            self.epert,
+            self.kw,
+            self.idout,
+            self.ofile)
 
         pylith3d.write_subiter(
-            self.usePreviousDisplacementFlag,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+            self.nprevdflag,
+            self.kw,
+            self.idout,
+            self.ofile)
 
         # Write out time step information
         pylith3d.write_timdat(
-            self.pointerToDelt,
-            self.pointerToAlfa,
-            self.pointerToUtol,
-            self.pointerToFtol,
-            self.pointerToEtol,
-            self.pointerToTimes,
-            self.pointerToMaxstp,
-            self.pointerToMaxit,
-            self.pointerToNtdinit,
-            self.pointerToLgdef,
-            self.pointerToItmax,
-            self.numberTimeStepGroups,
-            self.totalNumberTimeSteps,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+            self.delt,
+            self.alfa,
+            self.utol,
+            self.ftol,
+            self.etol,
+            self.times,
+            self.maxstp,
+            self.maxit,
+            self.ntdinit,
+            self.lgdef,
+            self.itmax,
+            self.nintg,
+            self.lastep,
+            self.kw,
+            self.idout,
+            self.ofile)
 
         # Write out timesteps when full output is desired
         pylith3d.write_fuldat(
-            self.pointerToIprint,
-            self.numberFullOutputs,
-            self.analysisTypeInt,
-            self.numberCycles,
-            self.totalNumberTimeSteps,
-            self.f77AsciiOutput,
-            self.f77PlotOutput,
-            self.asciiOutputInt,
-            self.plotOutputInt,
-            self.asciiOutputFile,
-            self.plotOutputFile)
+            self.iprint,
+            self.icontr,
+            self.icode,
+            self.ncycle,
+            self.lastep,
+            self.kw,
+            self.kp,
+            self.idout,
+            self.idsk,
+            self.ofile,
+            self.pfile)
 
         # Write out state variables desired for output
         pylith3d.write_stateout(
-            self.pointerToIstatout,
-            self.pointerToNstatout,
-            self.f77AsciiOutput,
-            self.f77PlotOutput,
-            self.asciiOutputInt,
-            self.plotOutputInt,
-            self.asciiOutputFile,
-            self.plotOutputFile)
+            self.istatout,
+            self.nstatout,
+            self.kw,
+            self.kp,
+            self.idout,
+            self.idsk,
+            self.ofile,
+            self.pfile)
 
         # Write out load history information and deallocate Times array
         pylith3d.write_hist(
-            self.pointerToHistry,
-            self.pointerToTimes,
-            self.numberLoadHistories,
-            self.totalNumberTimeSteps,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+            self.histry,
+            self.times,
+            self.nhist,
+            self.lastep,
+            self.kw,
+            self.idout,
+            self.ofile)
 
-        self.pointerToTimes = None ### DEALLOC
+        self.times = None ### DEALLOC
 
         # Write element info
         pylith3d.write_element_info(
-            self.numberVolumeElements,
-            self.numberVolumeElementNodes,
-	    self.numberVolumeElementGaussPoints,
-            self.volumeElementType,
-            self.quadratureOrderInt,
-            self.prestressAutoComputeInt,
-            self.prestressAutoChangeElasticPropsInt,
-            self.prestressAutoComputePoisson,
-            self.prestressAutoComputeYoungs.value,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+            self.numelv,
+            self.nen,
+	    self.ngauss,
+            self.ietypev,
+            self.intord,
+            self.ipstrs,
+            self.ipauto,
+            self.tpois,
+            self.tyoungs.value,
+            self.kw,
+            self.idout,
+            self.ofile)
 
         # Write element node array and deallocate Indxiel
         pylith3d.write_connect(
-            self.pointerToIens,
-            self.pointerToIvfamily,
-            self.pointerToIndxiel,
-            self.numberVolumeElementNodes,
-	    self.numberVolumeElementGaussPoints,
-            self.numberVolumeElements,
-            self.volumeElementType,
-            self.numberVolumeElementFamilies,
-            self.f77AsciiOutput,
-            self.f77PlotOutput,
-            self.asciiOutputInt,
-            self.plotOutputInt,
-            self.asciiOutputFile,
-            self.plotOutputFile)
+            self.iens,
+            self.ivfamily,
+            self.indxiel,
+            self.nen,
+	    self.ngauss,
+            self.numelv,
+            self.ietypev,
+            self.nvfamilies,
+            self.kw,
+            self.kp,
+            self.idout,
+            self.idsk,
+            self.ofile,
+            self.pfile)
 
-        self.pointerToIndxiel = None ### DEALLOC
+        self.indxiel = None ### DEALLOC
 
         # Write material properties
         pylith3d.write_props(
-            self.pointerToListArrayPropertyList,
-            self.pointerToListArrayGrav,
-            self.pointerToIvfamily,
-            self.pointerToMaterialModelInfo,
-            self.numberVolumeElementFamilies,
+            self.prop,
+            self.grav,
+            self.ivfamily,
+            self.infmatmod,
+            self.nvfamilies,
             self.propertySize,
-            self.asciiOutputInt,
-            self.plotOutputInt,
-            self.f77AsciiOutput,
-            self.f77PlotOutput,
-            self.asciiOutputFile,
-            self.plotOutputFile)
+            self.idout,
+            self.idsk,
+            self.kw,
+            self.kp,
+            self.ofile,
+            self.pfile)
 
         # Write mesh info to UCD file, if requested
-        if self.ucdOutputInt >= 0:
+        if self.iucd >= 0:
             pylith3d.write_ucd_mesh(
-                self.pointerToX,
-                self.numberNodes,
-                self.pointerToIens,
-                self.pointerToIvfamily,
-                self.numberVolumeElements,
-                self.numberVolumeElementFamilies,
-                self.pointerToSh,
-                self.numberVolumeElementNodes,
-                self.numberVolumeElementGaussPoints,
-                self.volumeElementType,
-                self.pointerToIstatout,
-                self.pointerToNstatout,
-                self.f77UcdOutput,
-                self.ucdOutputInt,
-                self.ucdOutputRoot)
+                self.x,
+                self.numnp,
+                self.iens,
+                self.ivfamily,
+                self.numelv,
+                self.nvfamilies,
+                self.sh,
+                self.nen,
+                self.ngauss,
+                self.ietypev,
+                self.istatout,
+                self.nstatout,
+                self.kucd,
+                self.iucd,
+                self.ucdroot)
 
         # Write traction info
         pylith3d.write_tractions(
-            self.pointerToTractionverts,
-            self.pointerToTractionvals,
-            self.numberTractionBc,
-            self.numberSurfaceElementNodes,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+            self.tractionverts,
+            self.tractionvals,
+            self.numtractions,
+            self.nsnodes,
+            self.kw,
+            self.idout,
+            self.ofile)
     
         # Write split node info
         pylith3d.write_split(
-            self.pointerToFault,
-            self.pointerToNfault,
-            self.numberSplitNodeEntries,
-            self.f77AsciiOutput,
-            self.f77PlotOutput,
-            self.asciiOutputInt,
-            self.plotOutputInt,
-            self.asciiOutputFile,
-            self.plotOutputFile)
+            self.fault,
+            self.nfault,
+            self.numfn,
+            self.kw,
+            self.kp,
+            self.idout,
+            self.idsk,
+            self.ofile,
+            self.pfile)
 
         # Write slippery node info
         pylith3d.write_slip(
-            self.pointerToNslip,
-            self.numberSlipperyNodeEntries,
-            self.totalNumberSlipperyNodes,
-            self.f77AsciiOutput,
-            self.f77PlotOutput,
-            self.asciiOutputInt,
-            self.plotOutputInt,
-            self.asciiOutputFile,
-            self.plotOutputFile)
+            self.nslip,
+            self.numslp,
+            self.numsn,
+            self.kw,
+            self.kp,
+            self.idout,
+            self.idsk,
+            self.ofile,
+            self.pfile)
 
         # Write differential force info and deallocate Nslip
         pylith3d.write_diff(
-            self.pointerToDiforc,
-            self.pointerToNslip,
-            self.pointerToIdhist,
-            self.numberSlipperyNodeEntries,
-            self.numberDifferentialForceEntries,
-            self.numberNodes,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+            self.diforc,
+            self.nslip,
+            self.idhist,
+            self.numslp,
+            self.numdif,
+            self.numnp,
+            self.kw,
+            self.idout,
+            self.ofile)
 
-        self.pointerToNslip = None ### DEALLOC
+        self.nslip = None ### DEALLOC
 
         # Write split nodes to plot file, if requested and deallocate Idftn
         pylith3d.write_split_plot(
-            self.pointerToIdftn,
-            self.totalNumberSplitNodes,
-            self.f77PlotOutput,
-            self.plotOutputInt,
-            self.plotOutputFile)
+            self.idftn,
+            self.numflt,
+            self.kp,
+            self.idsk,
+            self.pfile)
 
-        self.pointerToIdftn = None ### DEALLOC
+        self.idftn = None ### DEALLOC
 
         # Write Winkler force info and deallocate definition arrays
         pylith3d.write_wink(
-            self.pointerToWinkdef,
-            self.pointerToIwinkdef,
-            self.pointerToIwinkid,
-            self.numberWinklerEntries,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+            self.winkdef,
+            self.iwinkdef,
+            self.iwinkid,
+            self.nwinke,
+            self.kw,
+            self.idout,
+            self.ofile)
 
-        self.pointerToWinkdef = None ### DEALLOC
-        self.pointerToIwinkdef = None ### DEALLOC
+        self.winkdef = None ### DEALLOC
+        self.iwinkdef = None ### DEALLOC
 
         # Write slippery node Winkler force info and deallocate definition arrays
         pylith3d.write_winkx(
-            self.pointerToWinkxdef,
-            self.pointerToIwinkxdef,
-            self.pointerToIwinkxid,
-            self.numberSlipperyWinklerEntries,
-            self.f77AsciiOutput,
-            self.asciiOutputInt,
-            self.asciiOutputFile)
+            self.winkxdef,
+            self.iwinkxdef,
+            self.iwinkxid,
+            self.nwinkxe,
+            self.kw,
+            self.idout,
+            self.ofile)
 
-        self.pointerToWinkxdef = None ### DEALLOC
-        self.pointerToIwinkxdef = None ### DEALLOC
+        self.winkxdef = None ### DEALLOC
+        self.iwinkxdef = None ### DEALLOC
 
         # Write sparse matrix info
         pylith3d.write_sparse_info(
-            self.numberGlobalEquations,
-            self.stiffnessMatrixSize,
-            self.minimumNonzeroTermsPerRow,
-            self.maximumNonzeroTermsPerRow,
-            self.averageNonzeroTermsPerRow,
-            self.asciiOutputInt,
-            self.f77AsciiOutput,
-            self.asciiOutputFile)
+            self.neq,
+            self.nnz,
+            self.nmin,
+            self.nmax,
+            self.wavg,
+            self.idout,
+            self.kw,
+            self.ofile)
 
         self.trace.log("Hello from pl3dsetup.meshwrite (end)!")
 
@@ -1917,93 +1916,95 @@ for() {
 
     def solveElastic(self):
         pylith3d.elastc(
-            self.A,self.rhs,self.sol,                          # sparse
-            self.pointerToBextern,                             # force
-            self.pointerToBtraction,
-            self.pointerToBgravity,
-            self.pointerToBconcForce,
-            self.pointerToBintern,
-            self.pointerToBresid,
-            self.pointerToBwink,
-            self.pointerToBwinkx,
-            self.pointerToDispVec,
-            self.pointerToDprev,
-            self.pointerToListArrayNforce,
-            self.pointerToListArrayGrav,
-            self.pointerToX,                                   # global
-            self.pointerToD,
-            self.pointerToDeld,
-            self.pointerToDcur,
-            self.pointerToId,
-            self.pointerToIwink,
-            self.pointerToWink,
-            self.pointerToListArrayNsysdat,
-            self.pointerToListArrayIddmat,
-            self.pointerToIbond,                               # BC
-            self.pointerToBond,
-            self.pointerToDx,                                  # slip
-            self.pointerToDeldx,
-            self.pointerToDxcur,
-            self.pointerToDiforc,
-            self.pointerToIdx,
-            self.pointerToIwinkx,
-            self.pointerToWinkx,
-            self.pointerToIdslp,
-            self.pointerToIpslp,
-            self.pointerToIdhist,
-            self.pointerToFault,                               # fault
-            self.pointerToNfault,
-            self.pointerToDfault,
-            self.pointerToTfault,
-            self.pointerToS,                                   # stiff
-            self.pointerToStemp,
-            self.pointerToState,                               # element
-            self.pointerToDstate,
-            self.pointerToState0,
-            self.pointerToDmat,
-            self.pointerToIens,
-            self.pointerToLm,
-            self.pointerToLmx,
-            self.pointerToLmf,
-            self.pointerToIvfamily,
-            self.pointerToListArrayNpar,
-            self.pointerToIelindx,
-            self.pointerToTractionverts,                       # traction
-            self.pointerToTractionvals,
-            self.pointerToGauss2d,
-            self.pointerToSh2d,
-            self.pointerToListArrayElementTypeInfo2d,
-            self.pointerToListArrayPropertyList,               # material
-            self.pointerToMaterialModelInfo,
-            self.pointerToGauss,                               # eltype
-            self.pointerToSh,
-            self.pointerToShj,
-            self.pointerToListArrayElementTypeInfo,
-            self.pointerToHistry,                              # timdat
-            self.pointerToListArrayRtimdat,
-            self.pointerToListArrayNtimdat,
-            self.pointerToListArrayNvisdat,
-            self.pointerToMaxstp,
-            self.pointerToDelt,
-            self.pointerToAlfa,
-            self.pointerToMaxit,
-            self.pointerToNtdinit,
-            self.pointerToLgdef,
-            self.pointerToUtol,
-            self.pointerToFtol,
-            self.pointerToEtol,
-            self.pointerToItmax,
-            self.pointerToListArrayRgiter,                     # stresscmp
-            self.pointerToSkew,                                # skew
-            self.pointerToListArrayNcodat,                     # ioinfo
-            self.pointerToListArrayNunits,
-            self.pointerToListArrayNprint,
-            self.pointerToIstatout,
-            self.pointerToNstatout,
-            self.asciiOutputFile,                              # files
-            self.plotOutputFile,
-            self.ucdOutputRoot,
-            self.elasticStage,                                 # PETSc logging
+            self.A,                # sparse
+            self.rhs,
+            self.sol,
+            self.bextern,          # force
+            self.btraction,
+            self.bgravity,
+            self.bconcForce,
+            self.bintern,
+            self.bresid,
+            self.bwink,
+            self.bwinkx,
+            self.dispVec,
+            self.dprev,
+            self.nforce,
+            self.grav,
+            self.x,                # global
+            self.d,
+            self.deld,
+            self.dcur,
+            self.id,
+            self.iwink,
+            self.wink,
+            self.nsysdat,
+            self.iddmat,
+            self.ibond,            # BC
+            self.bond,
+            self.dx,               # slip
+            self.deldx,
+            self.dxcur,
+            self.diforc,
+            self.idx,
+            self.iwinkx,
+            self.winkx,
+            self.idslp,
+            self.ipslp,
+            self.idhist,
+            self.fault,            # fault
+            self.nfault,
+            self.dfault,
+            self.tfault,
+            self.s,                # stiff
+            self.stemp,
+            self.state,            # element
+            self.dstate,
+            self.state0,
+            self.dmat,
+            self.iens,
+            self.lm,
+            self.lmx,
+            self.lmf,
+            self.ivfamily,
+            self.npar,
+            self.ielindx,
+            self.tractionverts,    # traction
+            self.tractionvals,
+            self.gauss2d,
+            self.sh2d,
+            self.infetype2d,
+            self.prop,             # material
+            self.infmatmod,
+            self.gauss,            # eltype
+            self.sh,
+            self.shj,
+            self.infetype,
+            self.histry,           # timdat
+            self.rtimdat,
+            self.ntimdat,
+            self.nvisdat,
+            self.maxstp,
+            self.delt,
+            self.alfa,
+            self.maxit,
+            self.ntdinit,
+            self.lgdef,
+            self.utol,
+            self.ftol,
+            self.etol,
+            self.itmax,
+            self.rgiter,           # stresscmp
+            self.skew,             # skew
+            self.ncodat,           # ioinfo
+            self.nunits,
+            self.nprint,
+            self.istatout,
+            self.nstatout,
+            self.ofile,            # files
+            self.pfile,
+            self.ucdroot,
+            self.elasticStage,     # PETSc logging
             self.iterateEvent)
         return
 
@@ -2032,95 +2033,97 @@ for() {
 
         # Compute gravitational prestresses, if requested.
         if self.analysisType == "elasticSolution" or self.analysisType == "fullSolution":
-            if self.prestressAutoComputeInt == 1:
+            if self.ipstrs == 1:
                 pylith3d.autoprestr(
-                    self.A,self.rhs,self.sol,                      # sparse
-                    self.pointerToBextern,                         # force
-                    self.pointerToBtraction,
-                    self.pointerToBgravity,
-                    self.pointerToBconcForce,
-                    self.pointerToBintern,
-                    self.pointerToBresid,
-                    self.pointerToBwink,
-                    self.pointerToBwinkx,
-                    self.pointerToDispVec,
-                    self.pointerToDprev,
-                    self.pointerToListArrayNforce,
-                    self.pointerToListArrayGrav,
-                    self.pointerToX,                               # global
-                    self.pointerToD,
-                    self.pointerToDeld,
-                    self.pointerToDcur,
-                    self.pointerToId,
-                    self.pointerToIwink,
-                    self.pointerToWink,
-                    self.pointerToListArrayNsysdat,
-                    self.pointerToListArrayIddmat,
-                    self.pointerToIbond,                           # BC
-                    self.pointerToBond,
-                    self.pointerToDx,                              # slip
-                    self.pointerToDeldx,
-                    self.pointerToDxcur,
-                    self.pointerToDiforc,
-                    self.pointerToIdx,
-                    self.pointerToIwinkx,
-                    self.pointerToWinkx,
-                    self.pointerToIdslp,
-                    self.pointerToIpslp,
-                    self.pointerToIdhist,
-                    self.pointerToFault,                           # split
-                    self.pointerToNfault,
-                    self.pointerToDfault,
-                    self.pointerToTfault,
-                    self.pointerToS,                               # stiff
-                    self.pointerToStemp,
-                    self.pointerToState,                           # element
-                    self.pointerToDstate,
-                    self.pointerToState0,
-                    self.pointerToDmat,
-                    self.pointerToIens,
-                    self.pointerToLm,
-                    self.pointerToLmx,
-                    self.pointerToLmf,
-                    self.pointerToIvfamily,
-                    self.pointerToListArrayNpar,
-                    self.pointerToIelindx,
-                    self.pointerToTractionverts,                   # traction
-                    self.pointerToTractionvals,
-                    self.pointerToGauss2d,
-                    self.pointerToSh2d,
-                    self.pointerToListArrayElementTypeInfo2d,
-                    self.pointerToListArrayPropertyList,           # material
-                    self.pointerToMaterialModelInfo,
-                    self.pointerToGauss,                           # eltype
-                    self.pointerToSh,
-                    self.pointerToShj,
-                    self.pointerToListArrayElementTypeInfo,
-                    self.pointerToHistry,                          # timdat
-                    self.pointerToListArrayRtimdat,
-                    self.pointerToListArrayNtimdat,
-                    self.pointerToListArrayNvisdat,
-                    self.pointerToMaxstp,
-                    self.pointerToDelt,
-                    self.pointerToAlfa,
-                    self.pointerToMaxit,
-                    self.pointerToNtdinit,
-                    self.pointerToLgdef,
-                    self.pointerToUtol,
-                    self.pointerToFtol,
-                    self.pointerToEtol,
-                    self.pointerToItmax,
-                    self.pointerToListArrayRgiter,                 # stresscmp
-                    self.pointerToSkew,                            # skew
-                    self.pointerToListArrayNcodat,                 # ioinfo
-                    self.pointerToListArrayNunits,
-                    self.pointerToListArrayNprint,
-                    self.pointerToIstatout,
-                    self.pointerToNstatout,
-                    self.asciiOutputFile,                          # files
-                    self.plotOutputFile,
-                    self.ucdOutputRoot,
-                    self.autoprestrStage,                          # PETSc logging
+                    self.A,                # sparse
+                    self.rhs,
+                    self.sol,
+                    self.bextern,          # force
+                    self.btraction,
+                    self.bgravity,
+                    self.bconcForce,
+                    self.bintern,
+                    self.bresid,
+                    self.bwink,
+                    self.bwinkx,
+                    self.dispVec,
+                    self.dprev,
+                    self.nforce,
+                    self.grav,
+                    self.x,                # global
+                    self.d,
+                    self.deld,
+                    self.dcur,
+                    self.id,
+                    self.iwink,
+                    self.wink,
+                    self.nsysdat,
+                    self.iddmat,
+                    self.ibond,            # BC
+                    self.bond,
+                    self.dx,               # slip
+                    self.deldx,
+                    self.dxcur,
+                    self.diforc,
+                    self.idx,
+                    self.iwinkx,
+                    self.winkx,
+                    self.idslp,
+                    self.ipslp,
+                    self.idhist,
+                    self.fault,            # split
+                    self.nfault,
+                    self.dfault,
+                    self.tfault,
+                    self.s,                # stiff
+                    self.stemp,
+                    self.state,            # element
+                    self.dstate,
+                    self.state0,
+                    self.dmat,
+                    self.iens,
+                    self.lm,
+                    self.lmx,
+                    self.lmf,
+                    self.ivfamily,
+                    self.npar,
+                    self.ielindx,
+                    self.tractionverts,    # traction
+                    self.tractionvals,
+                    self.gauss2d,
+                    self.sh2d,
+                    self.infetype2d,
+                    self.prop,             # material
+                    self.infmatmod,
+                    self.gauss,            # eltype
+                    self.sh,
+                    self.shj,
+                    self.infetype,
+                    self.histry,           # timdat
+                    self.rtimdat,
+                    self.ntimdat,
+                    self.nvisdat,
+                    self.maxstp,
+                    self.delt,
+                    self.alfa,
+                    self.maxit,
+                    self.ntdinit,
+                    self.lgdef,
+                    self.utol,
+                    self.ftol,
+                    self.etol,
+                    self.itmax,
+                    self.rgiter,           # stresscmp
+                    self.skew,             # skew
+                    self.ncodat,           # ioinfo
+                    self.nunits,
+                    self.nprint,
+                    self.istatout,
+                    self.nstatout,
+                    self.ofile,            # files
+                    self.pfile,
+                    self.ucdroot,
+                    self.autoprestrStage,  # PETSc logging
                     self.iterateEvent)
 
             # Perform elastic solution, if requested.
@@ -2129,20 +2132,20 @@ for() {
 
         # Perform time-dependent solution, if requested.
 
-        if self.analysisType == "fullSolution" and self.numberTimeStepGroups > 1:
+        if self.analysisType == "fullSolution" and self.nintg > 1:
             if self.pythonTimestep:
                 # Setup timestepping
                 #   Open output files
-                pylith3d.viscos_setup(self.pointerToListArrayNprint,
-                                      self.pointerToListArrayNunits,
-                                      self.asciiOutputFile,
-                                      self.plotOutputFile,
+                pylith3d.viscos_setup(self.nprint,
+                                      self.nunits,
+                                      self.ofile,
+                                      self.pfile,
                                       self.viscousStage)
-                numCycles         = pylith3d.intListRef(self.pointerToListArrayNvisdat, 0)
-                numTimeStepGroups = pylith3d.intListRef(self.pointerToListArrayNvisdat, 1)
-                numslp            = pylith3d.intListRef(self.pointerToListArrayNpar, 3)
-                iskopt            = pylith3d.intListRef(self.pointerToListArrayNsysdat, 10)
-                icontr            = pylith3d.intListRef(self.pointerToListArrayNprint, 0)
+                numCycles         = pylith3d.intListRef(self.nvisdat, 0)
+                numTimeStepGroups = pylith3d.intListRef(self.nvisdat, 1)
+                numslp            = pylith3d.intListRef(self.npar, 3)
+                iskopt            = pylith3d.intListRef(self.nsysdat, 10)
+                icontr            = pylith3d.intListRef(self.nprint, 0)
                 indexx            = 1 # Fortran index
                 totalSteps        = 0 # This is ntot
                 for cycle in range(numCycles):
@@ -2154,123 +2157,125 @@ for() {
 
                     for tsGroup in range(1, numTimeStepGroups):
                         # Define constants
-                        dt = pylith3d.doubleListRef(self.pointerToDelt, tsGroup) # This is deltp
-                        pylith3d.doubleListSet(self.pointerToListArrayRtimdat, 0, dt)
-                        alfap = pylith3d.doubleListRef(self.pointerToAlfa, tsGroup)
-                        pylith3d.doubleListSet(self.pointerToListArrayRtimdat, 1, alfap)
-                        pylith3d.intListSet(self.pointerToListArrayNtimdat, 0, timeStep)
-                        maxitp = pylith3d.intListRef(self.pointerToMaxit, tsGroup)
-                        pylith3d.intListSet(self.pointerToListArrayNtimdat, 1, maxitp)
-                        ntdinitp = pylith3d.intListRef(self.pointerToNtdinit, tsGroup)
-                        pylith3d.intListSet(self.pointerToListArrayNtimdat, 2, ntdinitp)
-                        lgdefp = pylith3d.intListRef(self.pointerToLgdef, tsGroup)
-                        pylith3d.intListSet(self.pointerToListArrayNtimdat, 3, lgdefp)
-                        itmaxp = pylith3d.intListRef(self.pointerToItmax, tsGroup)
-                        pylith3d.intListSet(self.pointerToListArrayNtimdat, 4, itmaxp)
-                        gtol = [pylith3d.doubleListRef(self.pointerToUtol, tsGroup),
-                                pylith3d.doubleListRef(self.pointerToFtol, tsGroup),
-                                pylith3d.doubleListRef(self.pointerToEtol, tsGroup)]
+                        dt = pylith3d.doubleListRef(self.delt, tsGroup) # This is deltp
+                        pylith3d.doubleListSet(self.rtimdat, 0, dt)
+                        alfap = pylith3d.doubleListRef(self.alfa, tsGroup)
+                        pylith3d.doubleListSet(self.rtimdat, 1, alfap)
+                        pylith3d.intListSet(self.ntimdat, 0, timeStep)
+                        maxitp = pylith3d.intListRef(self.maxit, tsGroup)
+                        pylith3d.intListSet(self.ntimdat, 1, maxitp)
+                        ntdinitp = pylith3d.intListRef(self.ntdinit, tsGroup)
+                        pylith3d.intListSet(self.ntimdat, 2, ntdinitp)
+                        lgdefp = pylith3d.intListRef(self.lgdef, tsGroup)
+                        pylith3d.intListSet(self.ntimdat, 3, lgdefp)
+                        itmaxp = pylith3d.intListRef(self.itmax, tsGroup)
+                        pylith3d.intListSet(self.ntimdat, 4, itmaxp)
+                        gtol = [pylith3d.doubleListRef(self.utol, tsGroup),
+                                pylith3d.doubleListRef(self.ftol, tsGroup),
+                                pylith3d.doubleListRef(self.etol, tsGroup)]
                         startStep     = nextStartStep + 1
-                        nextStartStep = startStep + pylith3d.intListRef(self.pointerToMaxstp, tsGroup) - 1
+                        nextStartStep = startStep + pylith3d.intListRef(self.maxstp, tsGroup) - 1
 
                         ltim = 1
 
                         for j in range(startStep, nextStartStep+1):
                             totalSteps += 1
                             timeStep   += 1
-                            pylith3d.intListSet(self.pointerToListArrayNtimdat, 0, timeStep)
+                            pylith3d.intListSet(self.ntimdat, 0, timeStep)
                             time += dt
                             skc   = (numslp != 0 and (iskopt == 2 or (iskopt <= 0 and abs(iskopt) == timeStep)))
 
                             pylith3d.viscos_step(
-                                self.A,self.rhs,self.sol,                          # sparse
-                                self.pointerToBextern,                             # force
-                                self.pointerToBtraction,
-                                self.pointerToBgravity,
-                                self.pointerToBconcForce,
-                                self.pointerToBintern,
-                                self.pointerToBresid,
-                                self.pointerToBwink,
-                                self.pointerToBwinkx,
-                                self.pointerToDispVec,
-                                self.pointerToDprev,
-                                self.pointerToListArrayNforce,
-                                self.pointerToListArrayGrav,
-                                self.pointerToX,                                   # global
-                                self.pointerToD,
-                                self.pointerToDeld,
-                                self.pointerToDcur,
-                                self.pointerToId,
-                                self.pointerToIwink,
-                                self.pointerToWink,
-                                self.pointerToListArrayNsysdat,
-                                self.pointerToListArrayIddmat,
-                                self.pointerToIbond,                               # BC
-                                self.pointerToBond,
-                                self.pointerToDx,                                  # slip
-                                self.pointerToDeldx,
-                                self.pointerToDxcur,
-                                self.pointerToDiforc,
-                                self.pointerToIdx,
-                                self.pointerToIwinkx,
-                                self.pointerToWinkx,
-                                self.pointerToIdslp,
-                                self.pointerToIpslp,
-                                self.pointerToIdhist,
-                                self.pointerToFault,                               # fault
-                                self.pointerToNfault,
-                                self.pointerToDfault,
-                                self.pointerToTfault,
-                                self.pointerToS,                                   # stiff
-                                self.pointerToStemp,
-                                self.pointerToState,                               # element
-                                self.pointerToDstate,
-                                self.pointerToState0,
-                                self.pointerToDmat,
-                                self.pointerToIens,
-                                self.pointerToLm,
-                                self.pointerToLmx,
-                                self.pointerToLmf,
-                                self.pointerToIvfamily,
-                                self.pointerToListArrayNpar,
-                                self.pointerToIelindx,
-                                self.pointerToTractionverts,                       # traction
-                                self.pointerToTractionvals,
-                                self.pointerToGauss2d,
-                                self.pointerToSh2d,
-                                self.pointerToListArrayElementTypeInfo2d,
-                                self.pointerToListArrayPropertyList,               # material
-                                self.pointerToMaterialModelInfo,
-                                self.pointerToGauss,                               # eltype
-                                self.pointerToSh,
-                                self.pointerToShj,
-                                self.pointerToListArrayElementTypeInfo,
-                                self.pointerToHistry,                              # timdat
-                                self.pointerToListArrayRtimdat,
-                                self.pointerToListArrayNtimdat,
-                                self.pointerToListArrayNvisdat,
-                                self.pointerToMaxstp,
-                                self.pointerToDelt,
-                                self.pointerToAlfa,
-                                self.pointerToMaxit,
-                                self.pointerToNtdinit,
-                                self.pointerToLgdef,
-                                self.pointerToUtol,
-                                self.pointerToFtol,
-                                self.pointerToEtol,
-                                self.pointerToItmax,
-                                self.pointerToListArrayRgiter,                     # stresscmp
-                                self.pointerToSkew,                                # skew
-                                self.pointerToIprint,                              # ioinfo
-                                self.pointerToListArrayNcodat,
-                                self.pointerToListArrayNunits,
-                                self.pointerToListArrayNprint,
-                                self.pointerToIstatout,
-                                self.pointerToNstatout,
-                                self.asciiOutputFile,                              # files
-                                self.plotOutputFile,
-                                self.ucdOutputRoot,
-                                self.viscousStage,                                 # PETSc logging
+                                self.A,                # sparse
+                                self.rhs,
+                                self.sol,
+                                self.bextern,          # force
+                                self.btraction,
+                                self.bgravity,
+                                self.bconcForce,
+                                self.bintern,
+                                self.bresid,
+                                self.bwink,
+                                self.bwinkx,
+                                self.dispVec,
+                                self.dprev,
+                                self.nforce,
+                                self.grav,
+                                self.x,                # global
+                                self.d,
+                                self.deld,
+                                self.dcur,
+                                self.id,
+                                self.iwink,
+                                self.wink,
+                                self.nsysdat,
+                                self.iddmat,
+                                self.ibond,            # BC
+                                self.bond,
+                                self.dx,               # slip
+                                self.deldx,
+                                self.dxcur,
+                                self.diforc,
+                                self.idx,
+                                self.iwinkx,
+                                self.winkx,
+                                self.idslp,
+                                self.ipslp,
+                                self.idhist,
+                                self.fault,            # fault
+                                self.nfault,
+                                self.dfault,
+                                self.tfault,
+                                self.s,                # stiff
+                                self.stemp,
+                                self.state,            # element
+                                self.dstate,
+                                self.state0,
+                                self.dmat,
+                                self.iens,
+                                self.lm,
+                                self.lmx,
+                                self.lmf,
+                                self.ivfamily,
+                                self.npar,
+                                self.ielindx,
+                                self.tractionverts,    # traction
+                                self.tractionvals,
+                                self.gauss2d,
+                                self.sh2d,
+                                self.infetype2d,
+                                self.prop,             # material
+                                self.infmatmod,
+                                self.gauss,            # eltype
+                                self.sh,
+                                self.shj,
+                                self.infetype,
+                                self.histry,           # timdat
+                                self.rtimdat,
+                                self.ntimdat,
+                                self.nvisdat,
+                                self.maxstp,
+                                self.delt,
+                                self.alfa,
+                                self.maxit,
+                                self.ntdinit,
+                                self.lgdef,
+                                self.utol,
+                                self.ftol,
+                                self.etol,
+                                self.itmax,
+                                self.rgiter,           # stresscmp
+                                self.skew,             # skew
+                                self.iprint,           # ioinfo
+                                self.ncodat,
+                                self.nunits,
+                                self.nprint,
+                                self.istatout,
+                                self.nstatout,
+                                self.ofile,            # files
+                                self.pfile,
+                                self.ucdroot,
+                                self.viscousStage,     # PETSc logging
                                 self.iterateEvent,
                                 totalSteps,
                                 ltim,
@@ -2286,104 +2291,106 @@ for() {
                                 lgdefp,
                                 gtol)
                             ltim = 0
-                            if (totalSteps == pylith3d.intListRef(self.pointerToIprint, indexx-1)):
+                            if (totalSteps == pylith3d.intListRef(self.iprint, indexx-1)):
                                 pylith3d.outputMesh(self.fileRoot+'.'+str(totalSteps), self.mesh, self.sol)
                                 indexx += 1
                             if (indexx > icontr): indexx = icontr
-                print " Total number of equilibrium iterations        =",pylith3d.intListRef(self.pointerToListArrayNtimdat, 5)
-                print " Total number of stiffness matrix reformations =",pylith3d.intListRef(self.pointerToListArrayNtimdat, 6)
-                print " Total number of displacement subiterations    =",pylith3d.intListRef(self.pointerToListArrayNtimdat, 7)
-                pylith3d.viscos_cleanup(self.pointerToListArrayNtimdat, self.pointerToListArrayNprint, self.pointerToListArrayNunits)
+                print " Total number of equilibrium iterations        =",pylith3d.intListRef(self.ntimdat, 5)
+                print " Total number of stiffness matrix reformations =",pylith3d.intListRef(self.ntimdat, 6)
+                print " Total number of displacement subiterations    =",pylith3d.intListRef(self.ntimdat, 7)
+                pylith3d.viscos_cleanup(self.ntimdat, self.nprint, self.nunits)
             else:
                 pylith3d.viscos(
-                    self.A,self.rhs,self.sol,                          # sparse
-                    self.pointerToBextern,                             # force
-                    self.pointerToBtraction,
-                    self.pointerToBgravity,
-                    self.pointerToBconcForce,
-                    self.pointerToBintern,
-                    self.pointerToBresid,
-                    self.pointerToBwink,
-                    self.pointerToBwinkx,
-                    self.pointerToDispVec,
-                    self.pointerToDprev,
-                    self.pointerToListArrayNforce,
-                    self.pointerToListArrayGrav,
-                    self.pointerToX,                                   # global
-                    self.pointerToD,
-                    self.pointerToDeld,
-                    self.pointerToDcur,
-                    self.pointerToId,
-                    self.pointerToIwink,
-                    self.pointerToWink,
-                    self.pointerToListArrayNsysdat,
-                    self.pointerToListArrayIddmat,
-                    self.pointerToIbond,                               # BC
-                    self.pointerToBond,
-                    self.pointerToDx,                                  # slip
-                    self.pointerToDeldx,
-                    self.pointerToDxcur,
-                    self.pointerToDiforc,
-                    self.pointerToIdx,
-                    self.pointerToIwinkx,
-                    self.pointerToWinkx,
-                    self.pointerToIdslp,
-                    self.pointerToIpslp,
-                    self.pointerToIdhist,
-                    self.pointerToFault,                               # fault
-                    self.pointerToNfault,
-                    self.pointerToDfault,
-                    self.pointerToTfault,
-                    self.pointerToS,                                   # stiff
-                    self.pointerToStemp,
-                    self.pointerToState,                               # element
-                    self.pointerToDstate,
-                    self.pointerToState0,
-                    self.pointerToDmat,
-                    self.pointerToIens,
-                    self.pointerToLm,
-                    self.pointerToLmx,
-                    self.pointerToLmf,
-                    self.pointerToIvfamily,
-                    self.pointerToListArrayNpar,
-                    self.pointerToIelindx,
-                    self.pointerToTractionverts,                       # traction
-                    self.pointerToTractionvals,
-                    self.pointerToGauss2d,
-                    self.pointerToSh2d,
-                    self.pointerToListArrayElementTypeInfo2d,
-                    self.pointerToListArrayPropertyList,               # material
-                    self.pointerToMaterialModelInfo,
-                    self.pointerToGauss,                               # eltype
-                    self.pointerToSh,
-                    self.pointerToShj,
-                    self.pointerToListArrayElementTypeInfo,
-                    self.pointerToHistry,                              # timdat
-                    self.pointerToListArrayRtimdat,
-                    self.pointerToListArrayNtimdat,
-                    self.pointerToListArrayNvisdat,
-                    self.pointerToMaxstp,
-                    self.pointerToDelt,
-                    self.pointerToAlfa,
-                    self.pointerToMaxit,
-                    self.pointerToNtdinit,
-                    self.pointerToLgdef,
-                    self.pointerToUtol,
-                    self.pointerToFtol,
-                    self.pointerToEtol,
-                    self.pointerToItmax,
-                    self.pointerToListArrayRgiter,                     # stresscmp
-                    self.pointerToSkew,                                # skew
-                    self.pointerToIprint,                              # ioinfo
-                    self.pointerToListArrayNcodat,
-                    self.pointerToListArrayNunits,
-                    self.pointerToListArrayNprint,
-                    self.pointerToIstatout,
-                    self.pointerToNstatout,
-                    self.asciiOutputFile,                              # files
-                    self.plotOutputFile,
-                    self.ucdOutputRoot,
-                    self.viscousStage,                                 # PETSc logging
+                    self.A,                # sparse
+                    self.rhs,
+                    self.sol,
+                    self.bextern,          # force
+                    self.btraction,
+                    self.bgravity,
+                    self.bconcForce,
+                    self.bintern,
+                    self.bresid,
+                    self.bwink,
+                    self.bwinkx,
+                    self.dispVec,
+                    self.dprev,
+                    self.nforce,
+                    self.grav,
+                    self.x,                # global
+                    self.d,
+                    self.deld,
+                    self.dcur,
+                    self.id,
+                    self.iwink,
+                    self.wink,
+                    self.nsysdat,
+                    self.iddmat,
+                    self.ibond,            # BC
+                    self.bond,
+                    self.dx,               # slip
+                    self.deldx,
+                    self.dxcur,
+                    self.diforc,
+                    self.idx,
+                    self.iwinkx,
+                    self.winkx,
+                    self.idslp,
+                    self.ipslp,
+                    self.idhist,
+                    self.fault,            # fault
+                    self.nfault,
+                    self.dfault,
+                    self.tfault,
+                    self.s,                # stiff
+                    self.stemp,
+                    self.state,            # element
+                    self.dstate,
+                    self.state0,
+                    self.dmat,
+                    self.iens,
+                    self.lm,
+                    self.lmx,
+                    self.lmf,
+                    self.ivfamily,
+                    self.npar,
+                    self.ielindx,
+                    self.tractionverts,    # traction
+                    self.tractionvals,
+                    self.gauss2d,
+                    self.sh2d,
+                    self.infetype2d,
+                    self.prop,             # material
+                    self.infmatmod,
+                    self.gauss,            # eltype
+                    self.sh,
+                    self.shj,
+                    self.infetype,
+                    self.histry,           # timdat
+                    self.rtimdat,
+                    self.ntimdat,
+                    self.nvisdat,
+                    self.maxstp,
+                    self.delt,
+                    self.alfa,
+                    self.maxit,
+                    self.ntdinit,
+                    self.lgdef,
+                    self.utol,
+                    self.ftol,
+                    self.etol,
+                    self.itmax,
+                    self.rgiter,           # stresscmp
+                    self.skew,             # skew
+                    self.iprint,           # ioinfo
+                    self.ncodat,
+                    self.nunits,
+                    self.nprint,
+                    self.istatout,
+                    self.nstatout,
+                    self.ofile,            # files
+                    self.pfile,
+                    self.ucdroot,
+                    self.viscousStage,     # PETSc logging
                     self.iterateEvent)
         pylith3d.destroyPETScMat(self.A,self.rhs,self.sol)
 

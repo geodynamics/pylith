@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine read_fuldat(iprint,icontr,icode,ncycle,lastep,kr,
-     & fdfile,ierr,errstrng)
+     & fofile,ierr,errstrng)
 c
 c........reads data on time steps where full outputs are desired
 c
@@ -49,7 +49,7 @@ c...  subroutine arguments
 c
       integer icontr,icode,ncycle,lastep,kr,ierr
       integer iprint(icontr)
-      character fdfile*(*),errstrng*(*)
+      character fofile*(*),errstrng*(*)
 c
 c...  local variables
 c
@@ -60,7 +60,7 @@ c
 c...  read time steps at which a full output is desired
 c
       if(lastep.ne.izero.and.icode.eq.ithree) then
-        open(kr,file=fdfile,status="old",err=20)
+        open(kr,file=fofile,status="old",err=20)
         call pskip(kr)
         do i=1,icontr
           read(kr,*,err=30,end=30) iprint(i)
