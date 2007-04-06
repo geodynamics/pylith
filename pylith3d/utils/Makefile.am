@@ -10,6 +10,7 @@ bin_PROGRAMS = \
 	faultslip \
 	fixbc \
 	makeucd \
+	prescomp \
 	pylith2ucd \
 	readnetgen \
 	readucd2 \
@@ -27,6 +28,7 @@ faultcalc2_SOURCES = faultcalc2.f
 faultslip_SOURCES = faultslip.f
 fixbc_SOURCES = fixbc.f
 makeucd_SOURCES = makeucd.f
+prescomp_SOURCES = prescomp.f
 pylith2ucd_SOURCES = pylith2ucd.f
 readnetgen_SOURCES = readnetgen.f
 readucd2_SOURCES = readucd2.f
