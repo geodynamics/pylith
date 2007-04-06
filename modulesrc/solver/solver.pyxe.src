@@ -117,10 +117,10 @@ cdef class Solver:
       assert(0 != scatterVptr);
       assert(0 != meshVptr);
       assert(0 != fieldVptr);
-      ALE::Obj<ALE::Field::Mesh>* mesh =
-        (ALE::Obj<ALE::Field::Mesh>*) meshVptr;
-      ALE::Obj<ALE::Field::Mesh::real_section_type>* field =
-        (ALE::Obj<ALE::Field::Mesh::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<ALE::Mesh::real_section_type>* field =
+        (ALE::Obj<ALE::Mesh::real_section_type>*) fieldVptr;
       VecScatter scatter;
       PetscErrorCode err = MeshCreateGlobalScatter(*mesh, *field, &scatter);
       if (err) {
@@ -179,7 +179,7 @@ cdef class SolverLinear(Solver):
     """
     # create shim for method 'solve'
     #embed{ int SolverLinear_solve(void* objVptr, void* fieldOutVptr, void* jacobianVptr, void* fieldInVptr, void* scatterVptr)
-    typedef ALE::Field::Mesh::real_section_type real_section_type;
+    typedef ALE::Mesh::real_section_type real_section_type;
     try {
       assert(0 != objVptr);
       assert(0 != fieldOutVptr);

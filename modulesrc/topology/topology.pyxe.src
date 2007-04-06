@@ -39,7 +39,7 @@ cdef void MeshPtr_destructor(void* obj):
   Destroy Petsc Mesh.
   """
   #embed{ void MeshPtr_destructor_cpp(void* pObj)
-  ALE::Obj<ALE::Field::Mesh>* pMesh = (ALE::Obj<ALE::Field::Mesh>*) pObj;
+  ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pObj;
   delete pMesh;
   #}embed
   MeshPtr_destructor_cpp(obj)
@@ -74,7 +74,7 @@ cdef class Mesh:
     #embed{ void* MeshPtr_constructor()
     void* result = 0;
     try {
-      result = (void*)(new ALE::Obj<ALE::Field::Mesh>);
+      result = (void*)(new ALE::Obj<ALE::Mesh>);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -97,11 +97,11 @@ cdef class Mesh:
     """
     # create shim for getRealSection
     #embed{ void* Mesh_getRealSection(void* pObj, char* label)
-    typedef ALE::Field::Mesh::real_section_type real_section_type;
+    typedef ALE::Mesh::real_section_type real_section_type;
     
     void* result = 0;
     try {
-      ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) pObj;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) pObj;
       assert(0 != mesh);
       const ALE::Obj<real_section_type>& section =
         (*mesh)->getRealSection(label);
@@ -127,11 +127,11 @@ cdef class Mesh:
     """
     # create shim for createRealSection
     #embed{ void* Mesh_createRealSection(void* pObj, char* label, int fiberDim)
-    typedef ALE::Field::Mesh::real_section_type real_section_type;
+    typedef ALE::Mesh::real_section_type real_section_type;
     
     void* result = 0;
     try {
-      ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) pObj;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) pObj;
       assert(0 != mesh);
       const ALE::Obj<real_section_type>& section =
         (*mesh)->getRealSection(label);
@@ -160,11 +160,11 @@ cdef class Mesh:
     """
     # create shim for MeshCreateMatrix
     #embed{ void* Mesh_createMatrix(void* objVptr, void* fieldVptr)
-    typedef ALE::Field::Mesh::real_section_type real_section_type;
+    typedef ALE::Mesh::real_section_type real_section_type;
     
     void* result = 0;
     try {
-      ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) objVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
       assert(0 != mesh);
       assert(!mesh->isNull());
       const ALE::Obj<real_section_type>* field =
@@ -206,7 +206,7 @@ cdef class Mesh:
       # create shim for method 'debug'
       #embed{ void Mesh_debug_set(void* objVptr, int value)
       try {
-        ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) objVptr;
+        ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
         assert(0 != mesh);
         assert(!mesh->isNull());
         (*mesh)->setDebug(value);
@@ -228,7 +228,7 @@ cdef class Mesh:
       #embed{ int Mesh_debug_get(void* objVptr)
       int result = 0;
       try {
-        ALE::Obj<ALE::Field::Mesh>* mesh = (ALE::Obj<ALE::Field::Mesh>*) objVptr;
+        ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
         assert(0 != mesh);
         assert(!mesh->isNull());
         result = (*mesh)->debug();
@@ -250,7 +250,7 @@ def zeroRealSection(section):
   """
   # create shim for zero section
   #embed{ void* Section_zero(void* pObj)
-  typedef ALE::Field::Mesh::real_section_type real_section_type;
+  typedef ALE::Mesh::real_section_type real_section_type;
   
   try {
     ALE::Obj<real_section_type>* section =

@@ -47,9 +47,7 @@ namespace spatialdata {
 
 /// Namespace for spatialdata package
 namespace ALE {
-  namespace Field {
-    class Mesh;
-  }
+  class Mesh;
   template<class T> class Obj;
 } // ALE
 
@@ -111,7 +109,7 @@ public :
    * @param cs Coordinate system associated with mesh
    * @param quadrature Quadrature for finite-element integration
    */
-  void initialize(const ALE::Obj<ALE::Field::Mesh>& mesh,
+  void initialize(const ALE::Obj<ALE::Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
 		  pylith::feassemble::Quadrature* quadrature);
   

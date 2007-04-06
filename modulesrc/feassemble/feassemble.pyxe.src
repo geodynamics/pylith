@@ -450,8 +450,8 @@ cdef class IntegratorExplicit(Integrator):
     """
     # create shim for method 'integrateConstant'
     #embed{ void IntegratorExplicit_integrateConstant(void* objVptr, void* fieldOutVptr, void* fieldInTVptr, void* fieldInTmdtVptr, void* meshVptr)
-    typedef ALE::Field::Mesh Mesh;
-    typedef ALE::Field::Mesh::real_section_type real_section_type;
+    typedef ALE::Mesh Mesh;
+    typedef ALE::Mesh::real_section_type real_section_type;
 
     try {
       assert(0 != objVptr);
@@ -499,8 +499,8 @@ cdef class IntegratorExplicit(Integrator):
     """
     # create shim for method 'integrateJacobian'
     #embed{ void IntegratorExplicit_integrateJacobian(void* objVptr, void* matVptr, void* fieldInVptr, void* meshVptr)
-    typedef ALE::Field::Mesh Mesh;
-    typedef ALE::Field::Mesh::real_section_type real_section_type;
+    typedef ALE::Mesh Mesh;
+    typedef ALE::Mesh::real_section_type real_section_type;
 
     try {
       assert(0 != objVptr);

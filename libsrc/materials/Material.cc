@@ -60,7 +60,7 @@ pylith::materials::Material::Material(const Material& m) :
 // ----------------------------------------------------------------------
 // Get physical property parameters from database.
 void
-pylith::materials::Material::initialize(const ALE::Obj<ALE::Field::Mesh>& mesh,
+pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 					const spatialdata::geocoords::CoordSys* cs,
 					pylith::feassemble::Quadrature* quadrature)
 { // initialize
@@ -68,14 +68,14 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Field::Mesh>& mesh,
   assert(0 != cs);
   assert(0 != quadrature);
 
-  typedef ALE::Field::Mesh::real_section_type real_section_type;
+  typedef ALE::Mesh::real_section_type real_section_type;
 
   // Get cells associated with material
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
-  const ALE::Obj<ALE::Field::Mesh::label_sequence>& cells = 
+  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
     mesh->getLabelStratum("material-id", _id);
-  const ALE::Field::Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Mesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Check to make sure we have cells
   if (0 == cells->size()) {
@@ -113,7 +113,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Field::Mesh>& mesh,
   double** cellData = (numParams > 0) ? new double*[numParams] : 0;
   for (int iParam = 0; iParam < numParams; ++iParam)
     cellData[iParam] = (numQuadPts > 0) ? new double[numQuadPts] : 0;
-  for (ALE::Field::Mesh::label_sequence::iterator cellIter=cells->begin();
+  for (ALE::Mesh::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell

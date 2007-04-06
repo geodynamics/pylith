@@ -46,7 +46,7 @@ class pylith::feassemble::Quadrature
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public :
 
-  typedef ALE::Field::Mesh        Mesh;
+  typedef ALE::Mesh               Mesh;
   typedef Mesh::real_section_type real_section_type;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
