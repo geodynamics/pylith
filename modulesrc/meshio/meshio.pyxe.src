@@ -71,7 +71,7 @@ cdef class MeshIO:
     try {
       assert(0 != pObj);
       assert(0 != pMeshObj);
-      ALE::Obj<ALE::Field::Mesh>* pMesh = (ALE::Obj<ALE::Field::Mesh>*) pMeshObj;
+      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
       ((pylith::meshio::MeshIO*) pObj)->read(pMesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -95,7 +95,7 @@ cdef class MeshIO:
     # create shim for method 'write'
     #embed{ void MeshIO_write(void* pObj, void* pMeshObj)
     try {
-      ALE::Obj<ALE::Field::Mesh>* pMesh = (ALE::Obj<ALE::Field::Mesh>*) pMeshObj;
+      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
       ((pylith::meshio::MeshIO*) pObj)->write(pMesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,

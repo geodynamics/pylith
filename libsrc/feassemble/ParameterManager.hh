@@ -42,7 +42,7 @@ class pylith::feassemble::ParameterManager
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public :
 
-  typedef ALE::Field::Mesh        Mesh;
+  typedef ALE::Mesh               Mesh;
   typedef Mesh::point_type        point_type;
   typedef Mesh::real_section_type real_section_type;
 

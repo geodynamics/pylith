@@ -41,7 +41,7 @@ class pylith::materials::ElasticMaterial : public Material
   // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
 public :
 
-  typedef ALE::Field::Mesh        Mesh;
+  typedef ALE::Mesh               Mesh;
   typedef Mesh::real_section_type real_section_type;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////

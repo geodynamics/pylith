@@ -86,14 +86,14 @@ pylith::meshio::MeshIO::_buildMesh(const double* coordinates,
   
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
-  ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, meshDim, 
-						    numCells, 
-						    const_cast<int*>(cells), 
-						    numVertices, 
-						    _interpolate, numCorners);
+  ALE::SieveBuilder<Mesh>::buildTopology(sieve, meshDim, 
+                                         numCells, 
+                                         const_cast<int*>(cells), 
+                                         numVertices, 
+                                         _interpolate, numCorners);
   mesh->setSieve(sieve);
   mesh->stratify();
-  ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, coordinates);
+  ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, coordinates);
 } // _buildMesh
 
 // ----------------------------------------------------------------------
