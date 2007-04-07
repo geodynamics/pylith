@@ -160,22 +160,6 @@ class Explicit(Formulation):
     return
 
 
-  def _calcConstant(self):
-    """
-    Compute residual, {b(t)}.
-    """
-    self._info.log("WARNING: Explicit::calcConstant() not implemented.")
-    return
-
-
-  def _calcJacobian(self):
-    """
-    Compute Jacobian, [A(t)].
-    """
-    self._info.log("WARNING: Explicit::calcJacobian() not implemented.")
-    return
-
-
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def pde_formulation():

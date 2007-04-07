@@ -86,7 +86,7 @@ cdef class Solver:
         PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
         throw std::runtime_error("Could not create KSP object.");
       } // if
-      err = KSPSetFromOptions(*ksp);
+      //err = KSPSetFromOptions(*ksp);
       if (err) {
         PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
         throw std::runtime_error("Could not set KSP options.");
@@ -208,6 +208,7 @@ cdef class SolverLinear(Solver):
       
       err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldIn)->size(),
                                   (*fieldIn)->restrict(), &localVec);CHKERRQ(err);
+      err = VecDuplicate(localVec, &vecIn); CHKERRQ(err);
       err = VecScatterBegin(localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD,
                             scatter);CHKERRQ(err);
       err = VecScatterEnd(localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD,
@@ -215,6 +216,7 @@ cdef class SolverLinear(Solver):
       err = VecDestroy(localVec); CHKERRQ(err);
       err = KSPSetOperators(*ksp, *jacobian, *jacobian,
                             DIFFERENT_NONZERO_PATTERN); CHKERRQ(err);
+      err = VecDuplicate(vecIn, &vecOut); CHKERRQ(err);
       err = KSPSolve(*ksp, vecIn, vecOut); CHKERRQ(err);
       err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldOut)->size(),
                                 (*fieldOut)->restrict(), &localVec);CHKERRQ(err);
@@ -232,10 +234,6 @@ cdef class SolverLinear(Solver):
     } // try/catch      
     #}embed
 
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'pylith::topology::Mesh'."
     cdef void* fieldOutVptr
     cdef void* jacobianVptr
     cdef void* fieldInVptr
