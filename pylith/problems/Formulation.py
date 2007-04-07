@@ -83,22 +83,6 @@ class Formulation(Component):
     return
 
 
-  def _calcResidual(self):
-    """
-    Compute residual, {b(t)}.
-    """
-    raise NotImplementedError("Please implement calcResidual().")
-    return
-
-
-  def _calcJacobian(self):
-    """
-    Compute Jacobian, [A(t)].
-    """
-    raise NotImplementedError("Please implement calcJacobian().")
-    return
-
-
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def pde_formulation():
