@@ -47,7 +47,7 @@ pylith::materials::TestElasticMaterial::testClone(void)
 void
 pylith::materials::TestElasticMaterial::testCalcDensity(void)
 { // testCalcDensity
-  typedef ALE::Field::Mesh Mesh;
+  typedef ALE::Mesh Mesh;
   typedef Mesh::sieve_type sieve_type;
   typedef Mesh::real_section_type real_section_type;
 
@@ -67,11 +67,11 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
     ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
     const bool interpolate = false;
-    ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
+    ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
 	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
     mesh->setSieve(sieve);
     mesh->stratify();
-    ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, vertCoords);
+    ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
   } // create mesh
 
   // Get cells associated with material
@@ -133,7 +133,7 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
 void
 pylith::materials::TestElasticMaterial::testCalcStress(void)
 { // testCalcProperties
-  typedef ALE::Field::Mesh Mesh;
+  typedef ALE::Mesh Mesh;
   typedef Mesh::sieve_type sieve_type;
   typedef Mesh::real_section_type real_section_type;
 
@@ -153,11 +153,11 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
     ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
     const bool interpolate = false;
-    ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
+    ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
 	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
     mesh->setSieve(sieve);
     mesh->stratify();
-    ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, vertCoords);
+    ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
   } // create mesh
 
   // Get cells associated with material
@@ -224,7 +224,7 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
 void
 pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 { // testCalcDerivElastic
-  typedef ALE::Field::Mesh Mesh;
+  typedef ALE::Mesh Mesh;
   typedef Mesh::sieve_type sieve_type;
   typedef Mesh::real_section_type real_section_type;
 
@@ -244,11 +244,11 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
     ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
     const bool interpolate = false;
-    ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
+    ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
 	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
     mesh->setSieve(sieve);
     mesh->stratify();
-    ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, vertCoords);
+    ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
   } // create mesh
 
   // Get cells associated with material
