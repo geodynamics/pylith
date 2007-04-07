@@ -75,7 +75,7 @@ pylith::materials::TestMaterial::testLabel(void)
 void
 pylith::materials::TestMaterial::testInitialize(void)
 { // testInitialize
-  typedef ALE::Field::Mesh Mesh;
+  typedef ALE::Mesh Mesh;
   typedef Mesh::sieve_type sieve_type;
   typedef Mesh::label_type label_type;
   typedef Mesh::real_section_type real_section_type;
@@ -97,11 +97,12 @@ pylith::materials::TestMaterial::testInitialize(void)
     ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
     const bool interpolate = false;
-    ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
-	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
+    ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
+					 const_cast<int*>(cells), numVertices,
+					   interpolate, numCorners);
     mesh->setSieve(sieve);
     mesh->stratify();
-    ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, vertCoords);
+    ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
 
   } // create mesh
 

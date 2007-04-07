@@ -23,7 +23,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <Mesh.hh>
+#include <petscmesh.h>
 
 /// Namespace for pylith package
 namespace pylith {
@@ -39,7 +39,7 @@ class pylith::meshio::TestMeshIO : public CppUnit::TestFixture
   // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
 public :
 
-  typedef ALE::Field::Mesh Mesh;
+  typedef ALE::Mesh Mesh;
   typedef Mesh::sieve_type sieve_type;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////

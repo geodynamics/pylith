@@ -76,7 +76,7 @@ public :
    * @param data Integrator data
    */
   static 
-  ALE::Obj<ALE::Field::Mesh>
+  ALE::Obj<ALE::Mesh>
   _setupMesh(const IntegratorData& data);
 }; // _TestIntegrator
 
@@ -89,7 +89,7 @@ pylith::feassemble::TestIntegrator::_testIntegrateAction(Integrator* integrator,
 { // _testIntegrateAction
   CPPUNIT_ASSERT(false);
 
-  typedef ALE::Field::Mesh        Mesh;
+  typedef ALE::Mesh        Mesh;
   typedef Mesh::real_section_type real_section_type;
 
   ALE::Obj<Mesh> mesh = _TestIntegrator::_setupMesh(data);
@@ -148,7 +148,7 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
 { // _testIntegrate
   CPPUNIT_ASSERT(false);
 
-  typedef ALE::Field::Mesh        Mesh;
+  typedef ALE::Mesh Mesh;
   typedef Mesh::real_section_type real_section_type;
 
   journal::debug_t debug("TestIntegrator");
@@ -255,8 +255,8 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
 ALE::Obj<ALE::Mesh>
 pylith::feassemble::_TestIntegrator::_setupMesh(const IntegratorData& data)
 { // _setupMesh
-  typedef ALE::Field::Mesh Mesh;
-  typedef Meh::sieve_type  sieve_type;
+  typedef ALE::Mesh Mesh;
+  typedef Mesh::sieve_type sieve_type;
 
   const int cellDim = data.cellDim;
   const int numCorners = data.numCorners;
@@ -272,11 +272,11 @@ pylith::feassemble::_TestIntegrator::_setupMesh(const IntegratorData& data)
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
   const bool interpolate = false;
-  ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
+  ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
 	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
   mesh->setSieve(sieve);
   mesh->stratify();
-  ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, vertCoords);
+  ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
 
   return mesh;
 } // _setupMesh

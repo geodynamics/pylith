@@ -14,16 +14,14 @@
 
 #include "TestMeshIO.hh" // Implementation of class methods
 
-#include <Mesh.hh>
-
 #include "data/MeshData.hh"
 
 // ----------------------------------------------------------------------
 // Get simple mesh for testing I/O.
-ALE::Obj<ALE::Field::Mesh>*
+ALE::Obj<ALE::Mesh>*
 pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
 { // createMesh
-  typedef ALE::Field::Mesh Mesh;
+  typedef ALE::Mesh Mesh;
   typedef Mesh::sieve_type sieve_type;
   typedef Mesh::label_type label_type;
 
@@ -49,11 +47,12 @@ pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
   const bool interpolate = false;
-  ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
-	       const_cast<int*>(cells), numVertices, interpolate, numCorners);
+  ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
+					 const_cast<int*>(cells), numVertices,
+					 interpolate, numCorners);
   mesh->setSieve(sieve);
   mesh->stratify();
-  ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, vertCoords);
+  ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
 
   const ALE::Obj<Mesh::label_sequence>& cellsMesh = mesh->heightStratum(0);
 
@@ -75,7 +74,7 @@ void
 pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
 				      const MeshData& data)
 { // checkVals
-  typedef ALE::Field::Mesh::label_type label_type;
+  typedef ALE::Mesh::label_type label_type;
 
   // Check mesh dimension
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());

@@ -232,17 +232,17 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(
 		    cellDim, numCorners, numQuadPts, spaceDim);
 
   // Create mesh with test cell
-  typedef ALE::Field::Mesh Mesh;
-  typedef ALE::Field::Mesh::sieve_type sieve_type;
+  typedef ALE::Mesh Mesh;
+  typedef ALE::Mesh::sieve_type sieve_type;
   ALE::Obj<Mesh> mesh = new Mesh(PETSC_COMM_WORLD, cellDim);
   ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
 
   const bool interpolate = false;
-  ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
+  ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
 		     (int*) cells, numVertices, interpolate, numCorners);
   mesh->setSieve(sieve);
   mesh->stratify();
-  ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, vertCoords);
+  ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
   
   // Check values from computeGeometry()
   const ALE::Obj<Mesh::label_sequence>& elements = mesh->heightStratum(0);
