@@ -10,43 +10,43 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/ElasticIsotropic1D.h
+/** @file libsrc/materials/ElasticStrain1D.h
  *
- * @brief C++ ElasticIsotropic1D object
+ * @brief C++ ElasticStrain1D object
  *
- * 1-D, isotropic, linear elastic material. The physical properties
- * are specified using density and compressional-wave speed. The
- * physical properties are stored internally using density and lambda
- * + 2 mu, which are directly related to the elasticity constants used
- * in the finite-element integration.
+ * 1-D, linear elastic material with axial strain. The physical
+ * properties are specified using density and compressional-wave
+ * speed. The physical properties are stored internally using density
+ * and lambda + 2 mu, which are directly related to the elasticity
+ * constants used in the finite-element integration.
  */
 
-#if !defined(pylith_materials_elasticisotropic1d_hh)
-#define pylith_materials_elasticisotropic1d_hh
+#if !defined(pylith_materials_elasticstrain1d_hh)
+#define pylith_materials_elasticstrain1d_hh
 
 #include "ElasticMaterial.hh"
 
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
-    class ElasticIsotropic1D;
-    class TestElasticIsotropic1D; // unit testing
+    class ElasticStrain1D;
+    class TestElasticStrain1D; // unit testing
   } // materials
 } // pylith
 
-/// 3-D, isotropic, linear elastic material.
-class pylith::materials::ElasticIsotropic1D : public ElasticMaterial
-{ // class ElasticIsotropic1D
-  friend class TestElasticIsotropic1D; // unit testing
+/// 3-D, linear elastic material with axial strain.
+class pylith::materials::ElasticStrain1D : public ElasticMaterial
+{ // class ElasticStrain1D
+  friend class TestElasticStrain1D; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor
-  ElasticIsotropic1D(void);
+  ElasticStrain1D(void);
 
   /// Destructor
-  ~ElasticIsotropic1D(void);
+  ~ElasticStrain1D(void);
 
   /** Create a pointer to a copy of this.
    *
@@ -81,7 +81,7 @@ protected :
    *
    * @param m Material to copy
    */
-  ElasticIsotropic1D(const ElasticIsotropic1D& m);
+  ElasticStrain1D(const ElasticStrain1D& m);
 
   /** Get names of values expected to be in database of parameters for
    *  physical properties.
@@ -124,65 +124,61 @@ protected :
 		       const double* dbValues,
 		       const int numValues) const;
 
-  /** Compute density at locations from parameters.
+  /** Compute density from parameters.
    *
-   * Results are stored in _density.
-   *
-   * Index into parameters = iLoc*numParameters + iParam
-   *
+   * @param density Array for density
+   * @param size Size of array for density
    * @param parameters Parameters at location
    * @param numParameters Number of parameters
-   * @param numLocs Number of locations
    */
-  void _calcDensity(const double* parameters,
-		    const int numParameters,
-		    const int numLocs);
+  void _calcDensity(double* const density,
+		    const int size,
+		    const double* parameters,
+		    const int numParameters);
 
-  /** Compute stress tensor at locations from parameters.
+  /** Compute stress tensor from parameters.
    *
-   * Results are stored in _stress.
-   *
-   * Index into parameters = iLoc*numParameters + iParam
-   *
-   * @param parameters Parameters at location
-   * @param numParameters Number of parameters
-   * @param totalStrain Total strain at locations
-   * @param numLocs Number of locations
-   * @param spaceDim Spatial dimension for locations.
-   */
-  void _calcStress(const double* parameters,
-		   const int numParameters,
-		   const double* totalStrain,
-		   const int numLocs,
-		   const int spaceDim);
-
-  /** Compute derivatives of elasticity matrix at locations from parameters.
-   *
-   * Results are stored in _elasticConsts.
-   *
+   * @param stress Array for stress tensor
+   * @param size Size of array for stress tensor
    * @param parameters Parameters at locations.
    * @param numParameters Number of parameters.
    * @param totalStrain Total strain at locations.
-   * @param numLocs Number of locations.
    * @param spaceDim Spatial dimension for locations.
    */
-  void _calcElasticConsts(const double* parameters,
+  void _calcStress(double* const stress,
+		   const int size,
+		   const double* parameters,
+		   const int numParameters,
+		   const double* totalStrain,
+		   const int spaceDim);
+
+  /** Compute derivatives of elasticity matrix from parameters.
+   *
+   * @param elasticConsts Array for elastic constants
+   * @param size Size of array
+   * @param parameters Parameters at locations.
+   * @param numParameters Number of parameters.
+   * @param totalStrain Total strain at locations.
+   * @param spaceDim Spatial dimension for locations.
+   */
+  void _calcElasticConsts(double* const elasticConsts,
+			  const int size,
+			  const double* parameters,
 			  const int numParameters,
 			  const double* totalStrain,
-			  const int numLocs,
 			  const int spaceDim);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
   /// Not implemented
-  const ElasticIsotropic1D& operator=(const ElasticIsotropic1D& m);
+  const ElasticStrain1D& operator=(const ElasticStrain1D& m);
 
-}; // class ElasticIsotropic1D
+}; // class ElasticStrain1D
 
-#include "ElasticIsotropic1D.icc" // inline methods
+#include "ElasticStrain1D.icc" // inline methods
 
-#endif // pylith_materials_elasticisotropic1d_hh
+#endif // pylith_materials_elasticstrain1d_hh
 
 
 // End of file 

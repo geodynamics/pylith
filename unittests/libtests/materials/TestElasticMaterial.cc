@@ -335,19 +335,14 @@ pylith::materials::TestElasticMaterial::_testCalcDensity(
 					ElasticMaterial* material,
 					const ElasticMaterialData& data) const
 { // _testCalcDensity
-  const int numQuadPts = data.numLocs;
-  material->initCellData(numQuadPts);
-  material->_calcDensity(data.parameterData, data.numParameters, data.numLocs);
+  double density = 0;
+  material->_calcDensity(&density, 1, data.parameterData, data.numParameters);
   const double* densityE = data.density;
-  const double* density = material->_density;
   
-  CPPUNIT_ASSERT(0 != density);
   CPPUNIT_ASSERT(0 != densityE);
 
   const double tolerance = 1.0e-06;
-  const double size = numQuadPts;
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density[i]/densityE[i], tolerance);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density/densityE[0], tolerance);
 } // _testCalcDensity
 
 // ----------------------------------------------------------------------
@@ -357,18 +352,17 @@ pylith::materials::TestElasticMaterial::_testCalcStress(
 				       ElasticMaterial* material,
 				       const ElasticMaterialData& data) const
 { // _testCalcElasticConsts
-  const int numQuadPts = data.numLocs;
-  material->initCellData(numQuadPts);
-  material->_calcStress(data.parameterData, data.numParameters, data.strain, 
-			data.numLocs, data.dimension);
+  const int size = material->stressSize();
+  double* stress = (size > 0) ? new double[size] : 0;
+  material->_calcStress(stress, size, 
+			data.parameterData, data.numParameters, 
+			data.strain, data.dimension);
   const double* stressE = data.stress;
-  const double* stress = material->_stress;
   
   CPPUNIT_ASSERT(0 != stress);
   CPPUNIT_ASSERT(0 != stressE);
 
   const double tolerance = 1.0e-06;
-  const double size = numQuadPts * material->stressSize();
   for (int i=0; i < size; ++i)
     if (fabs(stressE[i]) > tolerance)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, stress[i]/stressE[i], 
@@ -376,6 +370,7 @@ pylith::materials::TestElasticMaterial::_testCalcStress(
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(stressE[i], stress[i],
 				   tolerance);
+  delete[] stress; stress = 0;
 } // _testCalcStress
 
 // ----------------------------------------------------------------------
@@ -385,18 +380,17 @@ pylith::materials::TestElasticMaterial::_testCalcElasticConsts(
 				       ElasticMaterial* material,
 				       const ElasticMaterialData& data) const
 { // _testCalcElasticConsts
-  const int numQuadPts = data.numLocs;
-  material->initCellData(numQuadPts);
-  material->_calcElasticConsts(data.parameterData, data.numParameters, 
-			       data.strain, data.numLocs, data.dimension);
+  const int size = material->numElasticConsts();
+  double* elasticConsts = (size > 0) ? new double[size] : 0;
+  material->_calcElasticConsts(elasticConsts, size,
+			       data.parameterData, data.numParameters, 
+			       data.strain, data.dimension);
   const double* elasticConstsE = data.elasticConsts;
-  const double* elasticConsts = material->_elasticConsts;
   
   CPPUNIT_ASSERT(0 != elasticConsts);
   CPPUNIT_ASSERT(0 != elasticConstsE);
 
   const double tolerance = 1.0e-06;
-  const double size = numQuadPts * material->numElasticConsts();
   for (int i=0; i < size; ++i)
     if (fabs(elasticConstsE[i]) > tolerance)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, elasticConsts[i]/elasticConstsE[i], 
@@ -404,6 +398,7 @@ pylith::materials::TestElasticMaterial::_testCalcElasticConsts(
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(elasticConstsE[i], elasticConsts[i],
 				   tolerance);
+  delete[] elasticConsts; elasticConsts = 0;
 } // _testCalcElasticConsts
 
 

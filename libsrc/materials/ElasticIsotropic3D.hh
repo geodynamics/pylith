@@ -125,53 +125,50 @@ protected :
 		       const double* dbValues,
 		       const int numValues) const;
 
-  /** Compute density at locations from parameters.
+  /** Compute density from parameters.
    *
-   * Results are stored in _density.
-   *
-   * Index into parameters = iLoc*numParameters + iParam
-   *
+   * @param density Array for density
+   * @param size Size of array for density
    * @param parameters Parameters at location
    * @param numParameters Number of parameters
-   * @param numLocs Number of locations
    */
-  void _calcDensity(const double* parameters,
-		    const int numParameters,
-		    const int numLocs);
+  void _calcDensity(double* const density,
+		    const int size,
+		    const double* parameters,
+		    const int numParameters);
 
-  /** Compute stress tensor at locations from parameters.
+  /** Compute stress tensor from parameters.
    *
-   * Results are stored in _stress.
-   *
-   * Index into parameters = iLoc*numParameters + iParam
-   *
-   * @param parameters Parameters at location
-   * @param numParameters Number of parameters
-   * @param totalStrain Total strain at locations
-   * @param numLocs Number of locations
-   * @param spaceDim Spatial dimension for locations.
-   */
-  void _calcStress(const double* parameters,
-		   const int numParameters,
-		   const double* totalStrain,
-		   const int numLocs,
-		   const int spaceDim);
-
-  /** Compute derivatives of elasticity matrix at locations from parameters.
-   *
-   * Results are stored in _elasticConsts.
-   *
+   * @param stress Array for stress tensor
+   * @param size Size of array for stress tensor
    * @param parameters Parameters at locations.
    * @param numParameters Number of parameters.
    * @param totalStrain Total strain at locations.
-   * @param numLocs Number of locations.
    * @param spaceDim Spatial dimension for locations.
    */
-  void _calcElasticConsts(const double* parameters,
+  void _calcStress(double* const stress,
+		   const int size,
+		   const double* parameters,
+		   const int numParameters,
+		   const double* totalStrain,
+		   const int spaceDim);
+
+  /** Compute derivatives of elasticity matrix from parameters.
+   *
+   * @param elasticConsts Array for elastic constants
+   * @param size Size of array
+   * @param parameters Parameters at locations.
+   * @param numParameters Number of parameters.
+   * @param totalStrain Total strain at locations.
+   * @param spaceDim Spatial dimension for locations.
+   */
+  void _calcElasticConsts(double* const elasticConsts,
+			  const int size,
+			  const double* parameters,
 			  const int numParameters,
 			  const double* totalStrain,
-			  const int numLocs,
 			  const int spaceDim);
+
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
