@@ -15,19 +15,20 @@ Error checking
 
 0. Update unit testing.
 
-  a. Update Material tests.
-  b.  Add unit tests for ElasticIsotropic1D, ElasticPlaneStrain, 
-    ElasticPlaneStress.
-  c. Update MeshIOAscii tests (groups of vertices and cells)
+  a.  Add unit tests for ElasticStrain1D, ElasticStress1D,
+      ElasticPlaneStrain, ElasticPlaneStress.
+  b. Update MeshIOAscii tests (groups of vertices and cells)
 
-1. Finish implementing ExplicitElasticity
-   d. unit tests at C++ level
-   e. unit tests at Python level
+1. Finish implementing ExplicitElasticity and Explicit
+   a. Double check loops for calcConstant() and calcJacobian()
+   b. Create complete test (1 time step)
 
-2. Finish implementing Python Formulation
-   (e.g., Explicit) with initialization of solid element families.
-   a. Python object
-   b. unit tests at Python level
+2. Start implementing faults
+   a. Create Faults object
+   b. Add creation of cohesive elements
+   c. Start implementing integrator for faults
+   d. Create unit tests at C++ level
+   e. Create unit tests at Python level
 
 ======================================================================
 SECONDARY PRIORITIES
