@@ -62,7 +62,8 @@ pylith::materials::ElasticMaterial::calcDensity(
   double* paramsCell = 0;
   _getParameters(&paramsCell, cell, numQuadPts);
   const int numParams = _numParameters();
-  _calcDensity(paramsCell, numParams, numQuadPts);
+  for (int iQuad=0, indexP=0; iQuad < numQuadPts; ++iQuad, indexP+=numParams)
+    _calcDensity(&_density[iQuad], 1, &paramsCell[indexP], numParams);
   delete[] paramsCell; paramsCell = 0;
 
   return _density;
@@ -71,11 +72,10 @@ pylith::materials::ElasticMaterial::calcDensity(
 // ----------------------------------------------------------------------
 // Compute stress tensor for cell at quadrature points.
 const double*
-pylith::materials::ElasticMaterial::calcStress(
-				     const Mesh::point_type& cell,
-				     const double* totalStrain,
-				     const int numQuadPts,
-				     const int spaceDim)
+pylith::materials::ElasticMaterial::calcStress(const Mesh::point_type& cell,
+					       const double* totalStrain,
+					       const int numQuadPts,
+					       const int spaceDim)
 { // calcStress
   assert(0 != totalStrain);
   assert(0 != _stress);
@@ -86,7 +86,13 @@ pylith::materials::ElasticMaterial::calcStress(
   double* paramsCell = 0;
   _getParameters(&paramsCell, cell, numQuadPts);
   const int numParams = _numParameters();
-  _calcStress(paramsCell, numParams, totalStrain, numQuadPts, spaceDim);
+  const int stressOffset = stressSize();
+  for (int iQuad=0, iStress=0, indexP=0; 
+       iQuad < numQuadPts;
+       ++iQuad, iStress+=stressOffset, indexP+=numParams)
+    _calcStress(&_stress[iStress], stressOffset, 
+		&paramsCell[indexP], numParams, 
+		&totalStrain[iStress], spaceDim);
   delete[] paramsCell; paramsCell = 0;
 
   return _stress;
@@ -110,7 +116,14 @@ pylith::materials::ElasticMaterial::calcDerivElastic(
   double* paramsCell = 0;
   _getParameters(&paramsCell, cell, numQuadPts);
   const int numParams = _numParameters();
-  _calcElasticConsts(paramsCell, numParams, totalStrain, numQuadPts, spaceDim);
+  const int stressOffset = stressSize();
+  const int constOffset = numElasticConsts();
+  for (int iQuad=0, iStress=0, iConst=0, indexP=0;
+       iQuad < numQuadPts;
+       ++iQuad, iStress+=stressOffset, iConst += constOffset, indexP+=numParams)
+    _calcElasticConsts(&_elasticConsts[iConst], constOffset, 
+		       &paramsCell[indexP], numParams, 
+		       &totalStrain[iStress], spaceDim);
   delete[] paramsCell; paramsCell = 0;
 
   return _elasticConsts;

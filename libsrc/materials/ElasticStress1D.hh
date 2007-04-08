@@ -10,44 +10,44 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/ElasticPlaneStrain.h
+/** @file libsrc/materials/ElasticStress1D.h
  *
- * @brief C++ ElasticPlaneStrain object
+ * @brief C++ ElasticStress1D object
  *
- * 2-D, isotropic, linear elastic material for plane strain. The
- * physical properties are specified using density, shear-wave speed,
- * and compressional-wave speed. The physical properties are stored
- * internally using density, lambda, and mu, which are directly
+ * 1-D, linear elastic material with axial stress. The physical
+ * properties are specified using density, shear-wave speed, and
+ * compressional-wave speed. The physical properties are stored
+ * internally using density, mu, and lambda, which are directly
  * related to the elasticity constants used in the finite-element
  * integration.
  */
 
-#if !defined(pylith_materials_elasticplanestrain_hh)
-#define pylith_materials_elasticplanestrain_hh
+#if !defined(pylith_materials_elasticstress1d_hh)
+#define pylith_materials_elasticstress1d_hh
 
 #include "ElasticMaterial.hh"
 
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
-    class ElasticPlaneStrain;
-    class TestElasticPlaneStrain; // unit testing
+    class ElasticStress1D;
+    class TestElasticStress1D; // unit testing
   } // materials
 } // pylith
 
-/// 3-D, isotropic, linear elastic material.
-class pylith::materials::ElasticPlaneStrain : public ElasticMaterial
-{ // class ElasticPlaneStrain
-  friend class TestElasticPlaneStrain; // unit testing
+/// 1-D, linear elastic material with axial stres.
+class pylith::materials::ElasticStress1D : public ElasticMaterial
+{ // class ElasticStress1D
+  friend class TestElasticStress1D; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor
-  ElasticPlaneStrain(void);
+  ElasticStress1D(void);
 
   /// Destructor
-  ~ElasticPlaneStrain(void);
+  ~ElasticStress1D(void);
 
   /** Create a pointer to a copy of this.
    *
@@ -82,7 +82,7 @@ protected :
    *
    * @param m Material to copy
    */
-  ElasticPlaneStrain(const ElasticPlaneStrain& m);
+  ElasticStress1D(const ElasticStress1D& m);
 
   /** Get names of values expected to be in database of parameters for
    *  physical properties.
@@ -173,13 +173,13 @@ protected :
 private :
 
   /// Not implemented
-  const ElasticPlaneStrain& operator=(const ElasticPlaneStrain& m);
+  const ElasticStress1D& operator=(const ElasticStress1D& m);
 
-}; // class ElasticPlaneStrain
+}; // class ElasticStress1D
 
-#include "ElasticPlaneStrain.icc" // inline methods
+#include "ElasticStress1D.icc" // inline methods
 
-#endif // pylith_materials_elasticplanestrain_hh
+#endif // pylith_materials_elasticstress1d_hh
 
 
 // End of file 

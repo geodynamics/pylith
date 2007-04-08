@@ -14,8 +14,10 @@ subpackage = materials
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	ElasticIsotropic1D.hh \
-	ElasticIsotropic1D.icc \
+	ElasticStrain1D.hh \
+	ElasticStrain1D.icc \
+	ElasticStress1D.hh \
+	ElasticStress1D.icc \
 	ElasticIsotropic3D.hh \
 	ElasticIsotropic3D.icc \
 	ElasticMaterial.hh \

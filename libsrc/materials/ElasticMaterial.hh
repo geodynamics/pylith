@@ -41,7 +41,7 @@ class pylith::materials::ElasticMaterial : public Material
   // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
 public :
 
-  typedef ALE::Mesh               Mesh;
+  typedef ALE::Mesh Mesh;
   typedef Mesh::real_section_type real_section_type;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -168,51 +168,51 @@ protected :
    */
   ElasticMaterial(const ElasticMaterial& m);
 
-  /** Compute density at locations from parameters.
+  /** Compute density from parameters.
    *
-   * Results are stored in _density.
-   *
+   * @param density Array for density
+   * @param size Size of array for density
    * @param parameters Parameters at location
    * @param numParameters Number of parameters
-   * @param numLocs Number of locations
    */
   virtual
-  void _calcDensity(const double* parameters,
-		    const int numParameters,
-		    const int numLocs) = 0;
+  void _calcDensity(double* const density,
+		    const int size,
+		    const double* parameters,
+		    const int numParameters) = 0;
 
-  /** Compute stress density at locations from parameters.
+  /** Compute stress tensor from parameters.
    *
-   * Results are stored in _stress.
-   *
+   * @param stress Array for stress tensor
+   * @param size Size of array for stress tensor
    * @param parameters Parameters at locations.
    * @param numParameters Number of parameters.
    * @param totalStrain Total strain at locations.
-   * @param numLocs Number of locations.
    * @param spaceDim Spatial dimension for locations.
    */
   virtual
-  void _calcStress(const double* parameters,
+  void _calcStress(double* const stress,
+		   const int size,
+		   const double* parameters,
 		   const int numParameters,
 		   const double* totalStrain,
-		   const int numLocs,
 		   const int spaceDim) = 0;
 
-  /** Compute derivatives of elasticity matrix at locations from parameters.
+  /** Compute derivatives of elasticity matrix from parameters.
    *
-   * Results are stored in _elasticConsts.
-   *
+   * @param elasticConsts Array for elastic constants
+   * @param size Size of array
    * @param parameters Parameters at locations.
    * @param numParameters Number of parameters.
    * @param totalStrain Total strain at locations.
-   * @param numLocs Number of locations.
    * @param spaceDim Spatial dimension for locations.
    */
   virtual
-  void _calcElasticConsts(const double* parameters,
+  void _calcElasticConsts(double* const elasticConsts,
+			  const int size,
+			  const double* parameters,
 			  const int numParameters,
 			  const double* totalStrain,
-			  const int numLocs,
 			  const int spaceDim) = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
@@ -221,34 +221,15 @@ private :
   /// Not implemented
   const ElasticMaterial& operator=(const ElasticMaterial& m);
 
-  // PROTECTED MEMBERS //////////////////////////////////////////////////
-protected :
-
-  /** Density value at quadrature points for current cell.
-   *
-   * size = numQuadPts
-   * index = iQuadPt
-   */
-  double* _density;
-
-  /** Array of stress tensor at quadrature points for current cell.
-   *
-   * size = stressSize*numQuadPts
-   * index = iQuadPt*stressSize+iStress
-   */
-  double* _stress;
-
-  /** Array of elasticity constants at quadrature points for current cell.
-   *
-   * size = numElasticConsts*numQuadPts
-   * index = iQuadPt*numElasticConsts+iConstant
-   */
-  double* _elasticConsts;
-
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
   /** Get parameters for cell.
+   *
+   * Parameters are returned in paramsCells.
+   *
+   * size = numQuadPts * numParams
+   * index = iQuad*numParams + iParam
    *
    * @param paramsCell Array of parameters for cell
    * @param cell Finite-element cell
@@ -257,6 +238,30 @@ private :
   void _getParameters(double** paramsCells,
 		      const Mesh::point_type& cell,
 		      const int numQuadPts);
+
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  /** Density value at quadrature points for current cell.
+   *
+   * size = numQuadPts
+   * index = iQuadPt
+   */
+  double* _density;
+
+  /** Stress tensor at quadrature points for current cell.
+   *
+   * size = stressSize*numQuadPts
+   * index = iQuadPt*stressSize+iStress
+   */
+  double* _stress;
+
+  /** Elasticity matrix at quadrature points for current cell.
+   *
+   * size = numElasticConsts*numQuadPts
+   * index = iQuadPt*numElasticConsts+iConstant
+   */
+  double* _elasticConsts;
 
 }; // class ElasticMaterial
 

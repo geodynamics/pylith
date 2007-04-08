@@ -10,15 +10,15 @@
 // ----------------------------------------------------------------------
 //
 
-#if !defined(pylith_materials_elasticisotropic1d_hh)
-#error "ElasticIsotropic1D.icc can only be included from ElasticIsotropic1D.hh"
+#if !defined(pylith_materials_elasticstrain1d_hh)
+#error "ElasticStrain1D.icc can only be included from ElasticStrain1D.hh"
 #endif
 
 // Create a pointer to a copy of this.
 inline
 pylith::materials::ElasticMaterial*
-pylith::materials::ElasticIsotropic1D::clone(void) const {
-  return new ElasticIsotropic1D(*this);
+pylith::materials::ElasticStrain1D::clone(void) const {
+  return new ElasticStrain1D(*this);
 }
 
 
