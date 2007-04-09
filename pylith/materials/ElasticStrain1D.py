@@ -10,9 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/materials/ElasticIsotropic1D.py
+## @file pylith/materials/ElasticStrain1D.py
 ##
-## @brief Python object implementing 1-D isotropic linear elastic material.
+## @brief Python object implementing 1-D linear elastic material with
+## axial strain.
 ##
 ## Factory: material.
 
@@ -21,22 +22,22 @@ from Material import Material
 import pylith.materials.materials as bindings
 
 
-# ElasticIsotropic1D class
-class ElasticIsotropic1D(Material):
+# ElasticStrain1D class
+class ElasticStrain1D(Material):
   """
-  Python object implementing 1-D isotropic linear elastic material.
+  Python object implementing 1-D linear elastic material with axial strain.
 
   Factory: material.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="elasticisotropic1d"):
+  def __init__(self, name="elasticstrain1d"):
     """
     Constructor.
     """
     Material.__init__(self, name)
-    self.cppHandle = bindings.ElasticIsotropic1D()
+    self.cppHandle = bindings.ElasticStrain1D()
     return
 
 
@@ -44,9 +45,9 @@ class ElasticIsotropic1D(Material):
 
 def material():
   """
-  Factory associated with ElasticIsotropic1D.
+  Factory associated with ElasticStrain1D.
   """
-  return ElasticIsotropic1D()
+  return ElasticStrain1D()
 
 
 # End of file 
