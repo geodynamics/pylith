@@ -123,9 +123,9 @@ c
 c...  compute cross product to get normal.
 c     If nvert == 4, the average of 2 vectors is used.
 c
-      call cross(x(1,ivert(1)),x(1,ivert(2)),x(1,ivert(3)),pvec)
+      call cross(x(1,ivert(3)),x(1,ivert(2)),x(1,ivert(1)),pvec)
       if(nvert.eq.4) then
-        call cross(x(1,ivert(3)),x(1,ivert(4)),x(1,ivert(1)),v)
+        call cross(x(1,ivert(1)),x(1,ivert(4)),x(1,ivert(3)),v)
         do i=1,nsd
           pvec(i)=0.5d0*(pvec(i)+v(i))
         end do
