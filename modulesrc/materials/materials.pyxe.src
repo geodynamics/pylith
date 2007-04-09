@@ -13,7 +13,8 @@
 #header{
 #include "pylith/materials/Material.hh"
 #include "pylith/materials/ElasticMaterial.hh"
-#include "pylith/materials/ElasticIsotropic1D.hh"
+#include "pylith/materials/ElasticStrain1D.hh"
+#include "pylith/materials/ElasticStress1D.hh"
 #include "pylith/materials/ElasticIsotropic3D.hh"
 #include "pylith/materials/ElasticPlaneStrain.hh"
 #include "pylith/materials/ElasticPlaneStress.hh"
@@ -223,17 +224,17 @@ cdef class ElasticMaterial(Material):
 
 
 # ----------------------------------------------------------------------
-cdef class ElasticIsotropic1D(ElasticMaterial):
+cdef class ElasticStrain1D(ElasticMaterial):
 
   def __init__(self):
     """
     Constructor.
     """
     # create shim for constructor
-    #embed{ void* ElasticIsotropic1D_constructor()
+    #embed{ void* ElasticStrain1D_constructor()
     void* result = 0;
     try {
-      result = (void*)(new pylith::materials::ElasticIsotropic1D);
+      result = (void*)(new pylith::materials::ElasticStrain1D);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -245,7 +246,35 @@ cdef class ElasticIsotropic1D(ElasticMaterial):
     #}embed
 
     ElasticMaterial.__init__(self)
-    self.thisptr = ElasticIsotropic1D_constructor()
+    self.thisptr = ElasticStrain1D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class ElasticStress1D(ElasticMaterial):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* ElasticStress1D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::materials::ElasticStress1D);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    ElasticMaterial.__init__(self)
+    self.thisptr = ElasticStress1D_constructor()
     self.handle = self._createHandle()
     return
 
