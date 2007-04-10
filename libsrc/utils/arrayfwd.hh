@@ -11,17 +11,19 @@
 //
 
 /**
- * @file pylith/utils/stlfwd.hh
+ * @file pylith/utils/arrayfwd.hh
  *
- * @brief Forward declarations for C++ STL objects.
+ * @brief Forward declarations for PyLith array objects.
+ *
+ * These are generally just forward declarations for C++ STL objects.
  *
  * For simple types (i.e., int and double) std::valarray provides some
  * features that std::vector does not have, such as operating on the
  * whole array at once.
  */
 
-#if !defined(pylith_utils_stlfwd_hh)
-#define pylith_utils_stlfwd_hh
+#if !defined(pylith_utils_arrayfwd_hh)
+#define pylith_utils_arrayfwd_hh
 
 /// Forward declaration of STL vector
 namespace std {
@@ -50,6 +52,6 @@ namespace pylith {
 } // pylith
 
 
-#endif // pylith_utils_stlfwd_hh
+#endif // pylith_utils_arrayfwd_hh
 
 // End of file

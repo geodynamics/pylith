@@ -14,7 +14,8 @@
 
 #include "ElasticStress1D.hh" // implementation of object methods
 
-#include <valarray> // USES std::valarray (double_array)
+#include "pylith/utils/array.hh" // USES double_array
+
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------

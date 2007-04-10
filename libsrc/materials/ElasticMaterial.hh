@@ -23,7 +23,7 @@
 #include "Material.hh" // ISA Material
 
 #include <petscmesh.h> // USES Mesh
-#include "pylith/utils/stlfwd.hh" // USES double_array
+#include "pylith/utils/arrayfwd.hh" // USES double_array
 #include <vector> // USES std::vector
 
 /// Namespace for pylith package
@@ -63,14 +63,19 @@ public :
   virtual
   ElasticMaterial* clone(void) const = 0;
 
-  /** Compute density for cell at quadrature points.
+  /** Initialize arrays holding cell data.
    *
-   * @param cell Finite-element cell
+   * @param cell Finite element cell
+   * @param numQuadPts Number of quadrature points
+   */
+  void initCellData(const Mesh::point_type& cell,
+		    const int numQuadPts);
+
+  /** Compute density for cell at quadrature points.
    *
    * @returns Array of density values at cell's quadrature points.
    */
-  const std::vector<double_array>&
-  calcDensity(const Mesh::point_type& cell);
+  const std::vector<double_array>& calcDensity(void);
   
   /** Get stress tensor at quadrature points.
    *
@@ -85,15 +90,13 @@ public :
    * Order of elasticity constants for 1-D:
    *  0: S11
    *
-   * @param cell Finite-element cell
    * @param totalStrain Total strain tensor at quadrature points
    *    [numQuadPts][tensorSize]
    *
    * @returns Array of stresses at cell's quadrature points.
    */
   const std::vector<double_array>&
-  calcStress(const Mesh::point_type& cell,
-	     const std::vector<double_array>& totalStrain);
+  calcStress(const std::vector<double_array>& totalStrain);
 
   /** Compute derivative of elasticity matrix for cell at quadrature points.
    *
@@ -115,19 +118,11 @@ public :
    * Order of elasticity constants for 1-D:
    *  0: C1111
    *
-   * @param cell Finite-element cell
    * @param totalStrain Total strain tensor at quadrature points
    *    [numQuadPts][tensorSize]
    */
   const std::vector<double_array>&
-  calcDerivElastic(const Mesh::point_type& cell,
-		   const std::vector<double_array>& totalStrain);
-
-  /** Initialize arrays holding cell data.
-   *
-   * @param numQuadPts Number of quadrature points
-   */
-  void initCellData(const int numQuadPts);
+  calcDerivElastic(const std::vector<double_array>& totalStrain);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

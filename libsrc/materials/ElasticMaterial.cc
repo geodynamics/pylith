@@ -15,10 +15,10 @@
 #include "ElasticMaterial.hh" // implementation of object methods
 
 #include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
+#include "pylith/utils/array.hh" // USES double_array
 
 #include <petscmesh.h> // USES Mesh
 
-#include <valarray> // USES std::valarray (double_array)
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -45,10 +45,8 @@ pylith::materials::ElasticMaterial::ElasticMaterial(const ElasticMaterial& m) :
 // ----------------------------------------------------------------------
 // Compute density for cell at quadrature points.
 const std::vector<pylith::double_array>&
-pylith::materials::ElasticMaterial::calcDensity(const Mesh::point_type& cell)
+pylith::materials::ElasticMaterial::calcDensity(void)
 { // calcDensity
-  _getParameters(cell);
-
   const int numQuadPts = _numQuadPts;
   assert(_paramsCell.size() == numQuadPts);
   assert(_density.size() == numQuadPts);
@@ -62,11 +60,9 @@ pylith::materials::ElasticMaterial::calcDensity(const Mesh::point_type& cell)
 // ----------------------------------------------------------------------
 // Compute stress tensor for cell at quadrature points.
 const std::vector<pylith::double_array>&
-pylith::materials::ElasticMaterial::calcStress(const Mesh::point_type& cell,
+pylith::materials::ElasticMaterial::calcStress(
 			         const std::vector<double_array>& totalStrain)
 { // calcStress
-  _getParameters(cell);
-  
   const int numQuadPts = _numQuadPts;
   assert(_paramsCell.size() == numQuadPts);
   assert(totalStrain.size() == numQuadPts);
@@ -82,11 +78,8 @@ pylith::materials::ElasticMaterial::calcStress(const Mesh::point_type& cell,
 // Compute derivative of elasticity matrix for cell at quadrature points.
 const std::vector<pylith::double_array>&
 pylith::materials::ElasticMaterial::calcDerivElastic(
-					     const Mesh::point_type& cell,
 				const std::vector<double_array>& totalStrain)
 { // calcDerivElastic
-  _getParameters(cell);
-
   const int numQuadPts = _numQuadPts;
   assert(_paramsCell.size() == numQuadPts);
   assert(totalStrain.size() == numQuadPts);
@@ -102,7 +95,8 @@ pylith::materials::ElasticMaterial::calcDerivElastic(
 // ----------------------------------------------------------------------
 // Initialize arrays holding cell data.
 void
-pylith::materials::ElasticMaterial::initCellData(const int numQuadPts)
+pylith::materials::ElasticMaterial::initCellData(const Mesh::point_type& cell,
+						 const int numQuadPts)
 { // initCellData
   if (_numQuadPts != numQuadPts) {
     _numQuadPts = numQuadPts;
@@ -118,6 +112,8 @@ pylith::materials::ElasticMaterial::initCellData(const int numQuadPts)
       _elasticConsts[iQuad].resize(_numElasticConsts());
     } // for
   } // if
+
+  _getParameters(cell);
 } // initCellData
 
 

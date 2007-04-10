@@ -20,7 +20,7 @@
 #if !defined(pylith_materials_material_hh)
 #define pylith_materials_material_hh
 
-#include "pylith/utils/stlfwd.hh"
+#include "pylith/utils/arrayfwd.hh"
 #include <string> // HASA std::string
 
 /// Namespace for pylith package

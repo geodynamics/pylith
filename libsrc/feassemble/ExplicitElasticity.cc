@@ -16,11 +16,11 @@
 
 #include "Quadrature.hh" // USES Quadrature
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
+#include "pylith/utils/array.hh" // USES double_array
 
 #include "petscmat.h" // USES PetscMat
 #include "spatialdata/spatialdb/SpatialDB.hh"
 
-#include <valarray> // USES std::valarray (double_array)
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
@@ -95,13 +95,15 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 
   // Allocate vector for cell values (if necessary)
   _initCellVector();
-  _material->initCellData(numQuadPts);
 
   for (Mesh::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell
     _quadrature->computeGeometry(mesh, coordinates, *cellIter);
+
+    // Set cell data in material
+    _material->initCellData(*cellIter, numQuadPts);
 
     // Reset element vector to zero
     _resetCellVector();
@@ -121,7 +123,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 
     // Compute action for inertial terms
     const std::vector<double_array>& density = 
-      _material->calcDensity(*cellIter);
+      _material->calcDensity();
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = 
 	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad][0] / dt2;
@@ -165,7 +167,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 	  totalStrain[iQuad][0] += basisDeriv[iQ+iBasis] * dispTCell[iBasis];
       } // for
       const std::vector<double_array>& stress = 
-	_material->calcStress(*cellIter, totalStrain);
+	_material->calcStress(totalStrain);
 
       // Compute elastic action
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -199,7 +201,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 	} // for
       } // for
       const std::vector<double_array>& stress = 
-	_material->calcStress(*cellIter, totalStrain);
+	_material->calcStress(totalStrain);
 
       // Compute elastic action
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -245,7 +247,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 	} // for
       } // for
       const std::vector<double_array>& stress = 
-	_material->calcStress(*cellIter, totalStrain);
+	_material->calcStress(totalStrain);
 
       // Compute elastic action
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -311,13 +313,15 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
 
   // Allocate vector for cell values (if necessary)
   _initCellMatrix();
-  _material->initCellData(numQuadPts);
 
   for (Mesh::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell
     _quadrature->computeGeometry(mesh, coordinates, *cellIter);
+
+    // Set cell data in material
+    _material->initCellData(*cellIter, numQuadPts);
 
     // Reset element vector to zero
     _resetCellMatrix();
@@ -327,8 +331,7 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
     const double* jacobianDet = _quadrature->jacobianDet();
 
     // Get material physical properties at quadrature points for this cell
-    const std::vector<double_array>& density = 
-      _material->calcDensity(*cellIter);
+    const std::vector<double_array>& density = _material->calcDensity();
 
     // Compute Jacobian for cell
 

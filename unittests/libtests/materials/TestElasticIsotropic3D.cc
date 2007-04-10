@@ -14,8 +14,9 @@
 
 #include "TestElasticIsotropic3D.hh" // Implementation of class methods
 
-#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "data/ElasticIsotropic3DData.hh" // USES ElasticIsotropic3DData
+
+#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticIsotropic3D );

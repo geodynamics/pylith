@@ -16,13 +16,11 @@
 
 #include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
 #include "pylith/feassemble/Quadrature.hh" // USES ParameterManager
+#include "pylith/utils/array.hh" // USES double_array, std::vector
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include <petscmesh.h> // USES Mesh
-
-#include <vector> // USES std::vector
-#include <valarray> // USES std::valarray (double_array)
 
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
