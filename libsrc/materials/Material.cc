@@ -114,7 +114,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   double_array paramData(numParams);
   std::vector<double_array> cellData(numParams);
   for (int iParam = 0; iParam < numParams; ++iParam)
-    cellData[iParam] = double_array(numQuadPts);
+    cellData[iParam].resize(numQuadPts);
   for (ALE::Mesh::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
        ++cellIter) {
