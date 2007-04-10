@@ -62,7 +62,6 @@ def getStepFiles(step):
     fragments = [ [root1], [".0"],
                   [".coord", ".connect", ".split", ".bc",
                    ".ascii", ".vtk"] ]
-                   
     files['output'] += assembleStrings(fragments)
     
     fragments = [ [root1], [".0"],
