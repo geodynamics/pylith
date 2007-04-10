@@ -14,18 +14,19 @@
 
 #include "TestMaterial.hh" // Implementation of class methods
 
-#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "data/MaterialData.hh" // USES MaterialData
+
+#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
+#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
 
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
-#include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
 
 #include <petscmesh.h> // USES PETSc Mesh
 
-#include <valarray> // USES std::valarray (double_array)
 #include <math.h> // USES assert()
 
 // ----------------------------------------------------------------------

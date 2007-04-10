@@ -42,7 +42,6 @@ class pylith::materials::TestElasticMaterial : public TestMaterial
   CPPUNIT_TEST( testCalcDensity );
   CPPUNIT_TEST( testCalcStress );
   CPPUNIT_TEST( testCalcDerivElastic );
-  CPPUNIT_TEST( testInitCellData );
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -59,9 +58,6 @@ public :
 
   /// Test calcDerivElastic()
   void testCalcDerivElastic(void);
-
-  /// Test _initCellData()
-  void testInitCellData(void);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

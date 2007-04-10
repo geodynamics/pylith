@@ -14,13 +14,12 @@
 
 #include "TestElasticMaterial.hh" // Implementation of class methods
 
-#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "data/ElasticMaterialData.hh" // USES ElasticMaterialData
 #include "data/ElasticIsotropic3DData.hh" // USES ElasticIsotropic3DData
 
+#include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
+#include "pylith/utils/array.hh" // USES double_array
 #include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
-
-#include <valarray> // USES std::valarray (double_array)
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticMaterial );
@@ -118,8 +117,8 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   cellData[1] = data.parameterData[5];
   parameterLambda->updateAddPoint(*cellIter, cellData);
 
-  material.initCellData(numQuadPts);
-  const std::vector<double_array>& density = material.calcDensity(*cellIter);
+  material.initCellData(*cellIter, numQuadPts);
+  const std::vector<double_array>& density = material.calcDensity();
 
   const double tolerance = 1.0e-06;
   const double* densityE = data.density;
@@ -223,9 +222,8 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
       strain[iQuad][iStrain] = data.strain[i];
   } // for
 
-  material.initCellData(numQuadPts);
-  const std::vector<double_array>& stress = 
-    material.calcStress(*cellIter, strain);
+  material.initCellData(*cellIter, numQuadPts);
+  const std::vector<double_array>& stress = material.calcStress(strain);
 
   const double tolerance = 1.0e-06;
   const double* stressE = data.stress;
@@ -338,9 +336,9 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
       strain[iQuad][iStrain] = data.strain[i];
   } // for
 
-  material.initCellData(numQuadPts);
+  material.initCellData(*cellIter, numQuadPts);
   const std::vector<double_array>& elasticConsts = 
-    material.calcDerivElastic(*cellIter, strain);
+    material.calcDerivElastic(strain);
 
   const double tolerance = 1.0e-06;
   const double* elasticConstsE = data.elasticConsts;
@@ -361,22 +359,6 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   } // for
 } // testCalcDerivElastic
     
-// ----------------------------------------------------------------------
-// Test initCellData()
-void
-pylith::materials::TestElasticMaterial::testInitCellData(void)
-{ // testInitCellData
-  ElasticIsotropic3D material;
-
-  CPPUNIT_ASSERT(0 == material._density.size());
-  CPPUNIT_ASSERT(0 == material._elasticConsts.size());
-  const int numQuadPts = 4;
-  material.initCellData(numQuadPts);
-  CPPUNIT_ASSERT(numQuadPts == material._density.size());
-  CPPUNIT_ASSERT(numQuadPts == material._stress.size());
-  CPPUNIT_ASSERT(numQuadPts == material._elasticConsts.size());
-} // testInitCellData
-
 // ----------------------------------------------------------------------
 // Test _calcDensity()
 void
