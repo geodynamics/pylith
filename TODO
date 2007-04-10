@@ -21,6 +21,7 @@ Error checking
 
 1. Finish implementing ExplicitElasticity and Explicit
    a. Double check loops for calcConstant() and calcJacobian()
+   b. Make sure memory allocation/deallocation is outside loop over cells
    b. Create complete test (1 time step)
 
 2. Start implementing faults
