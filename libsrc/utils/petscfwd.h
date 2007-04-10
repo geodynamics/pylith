@@ -11,13 +11,13 @@
 //
 
 /**
- * @file pylith/utils/petscfwd.hh
+ * @file pylith/utils/petscfwd.h
  *
  * @brief Forward declarations for Petsc objects.
  */
 
-#if !defined(pylith_feassemble_petscfwd_hh)
-#define pylith_feassemble_petscfwd_hh
+#if !defined(pylith_utils_petscfwd_h)
+#define pylith_utils_petscfwd_h
 
 
 /// forward declaration for PETSc Mat
@@ -33,6 +33,6 @@ typedef struct _p_ISLocalToGlobalMapping* PetscISLocalToGlobalMapping;
 typedef int PetscErrorCode;
 
 
-#endif
+#endif // pylith_utils_petscfwd_h
 
 // End of file

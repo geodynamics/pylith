@@ -20,6 +20,7 @@
 #if !defined(pylith_materials_material_hh)
 #define pylith_materials_material_hh
 
+#include "pylith/utils/stlfwd.hh"
 #include <string> // HASA std::string
 
 /// Namespace for pylith package
@@ -160,10 +161,8 @@ protected :
    * @param numValues Number of database values
    */
   virtual
-  void _dbToParameters(double* paramVals,
-		       const int numParams,
-		       const double* dbValues,
-		       const int numValues) const = 0;
+  void _dbToParameters(double_array* const paramVals,
+		       const double_array& dbValues) const = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

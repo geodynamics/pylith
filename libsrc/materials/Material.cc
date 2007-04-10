@@ -21,6 +21,9 @@
 
 #include <petscmesh.h> // USES Mesh
 
+#include <vector> // USES std::vector
+#include <valarray> // USES std::valarray (double_array)
+
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -92,8 +95,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int numParams = _numParameters();
   const char** paramNames = _parameterNames();
 
-  ALE::Obj<real_section_type>* paramSections = 
-    (numParams > 0) ? new ALE::Obj<real_section_type>[numParams] : 0;
+  std::vector<ALE::Obj<real_section_type> > paramSections(numParams);
   
   for (int iParam=0; iParam < numParams; ++iParam) {
     _parameters->addReal(paramNames[iParam]);
@@ -108,11 +110,11 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   _db->queryVals(_dbValues(), numValues);
   
   // Loop over cells
-  double* queryData = (numValues > 0) ? new double[numValues] : 0;
-  double* paramData = (numParams > 0) ? new double[numParams] : 0;
-  double** cellData = (numParams > 0) ? new double*[numParams] : 0;
+  double_array queryData(numValues);
+  double_array paramData(numParams);
+  std::vector<double_array> cellData(numParams);
   for (int iParam = 0; iParam < numParams; ++iParam)
-    cellData[iParam] = (numQuadPts > 0) ? new double[numQuadPts] : 0;
+    cellData[iParam] = double_array(numQuadPts);
   for (ALE::Mesh::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
        ++cellIter) {
@@ -126,7 +128,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     for (int iQuadPt=0, index=0; 
 	 iQuadPt < numQuadPts; 
 	 ++iQuadPt, index+=spaceDim) {
-      const int err = _db->query(queryData, numValues, &quadPts[index],
+      const int err = _db->query(&queryData[0], numValues, &quadPts[index],
 				 spaceDim, cs);
       if (err) {
 	std::ostringstream msg;
@@ -136,32 +138,17 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	  msg << "  " << quadPts[index+spaceDim];
 	msg << ") in material " << _label << "\n"
 	    << "using spatial database " << _db->label() << ".";
-
-	// Cleanup, then throw exception
-	for (int iParam=0; iParam < numParams; ++iParam) {
-	  delete[] cellData[iParam]; cellData[iParam] = 0;
-	} // for
-	delete[] cellData; cellData = 0;
-	delete[] queryData; queryData = 0;
-	delete[] paramData; paramData = 0;
 	throw std::runtime_error(msg.str());
       } // if
-      _dbToParameters(paramData, numParams, queryData, numValues);
+      _dbToParameters(&paramData, queryData);
 
       for (int iParam=0; iParam < numParams; ++iParam)
 	cellData[iParam][iQuadPt] = paramData[iParam];
     } // for
     // Assemble cell contribution into fields
     for (int iParam=0; iParam < numParams; ++iParam)
-      mesh->updateAdd(paramSections[iParam], *cellIter, cellData[iParam]);
+      mesh->updateAdd(paramSections[iParam], *cellIter, &cellData[iParam][0]);
   } // for
-  for (int iParam=0; iParam < numParams; ++iParam) {
-    delete[] cellData[iParam]; cellData[iParam] = 0;
-  } // for
-  delete[] cellData; cellData = 0;
-  delete[] queryData; queryData = 0;
-  delete[] paramData; paramData = 0;
-  delete[] paramSections; paramSections = 0;
 
   // Close database
   _db->close();

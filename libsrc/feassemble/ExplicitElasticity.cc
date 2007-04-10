@@ -20,6 +20,7 @@
 #include "petscmat.h" // USES PetscMat
 #include "spatialdata/spatialdb/SpatialDB.hh"
 
+#include <valarray> // USES std::valarray (double_array)
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
@@ -119,10 +120,11 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
     // Compute action for cell
 
     // Compute action for inertial terms
-    const double* density = _material->calcDensity(*cellIter, numQuadPts);
+    const std::vector<double_array>& density = 
+      _material->calcDensity(*cellIter);
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = 
-	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
+	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad][0] / dt2;
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
         const int iBlock = iBasis * spaceDim;
         const double valI = wt*basis[iQ+iBasis];
@@ -154,62 +156,57 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
     // Compute action for elastic terms
     if (1 == cellDim) {
       // Compute total strains
-      const int stressSize = _material->stressSize();
-      assert(1 == stressSize);
-      const int strainSize = stressSize * numQuadPts;
-      double* totalStrain = (strainSize > 0) ? new double[strainSize] : 0;
-      memset(totalStrain, 0, strainSize*sizeof(double));
+      const int tensorSize = 1;
+      std::vector<double_array> totalStrain(numQuadPts);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	totalStrain[iQuad].resize(tensorSize);
+	totalStrain[iQuad] *= 0.0;
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis)
-	  totalStrain[iQuad] += basisDeriv[iQ+iBasis] * dispTCell[iBasis];
+	  totalStrain[iQuad][0] += basisDeriv[iQ+iBasis] * dispTCell[iBasis];
       } // for
-      const double* stress = 
-	_material->calcStress(*cellIter, totalStrain, numQuadPts, 
-			      spaceDim);
+      const std::vector<double_array>& stress = 
+	_material->calcStress(*cellIter, totalStrain);
 
       // Compute elastic action
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-	const int iStress = iQuad*stressSize;
-	const double s11 = stress[iStress  ];
+	const double s11 = stress[iQuad][0];
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	  const int iBlock = iBasis * spaceDim;
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
 	  _cellVector[iBlock  ] -= N1*s11;
 	} // for
       } // for
-      delete[] totalStrain; totalStrain = 0;
       PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*5));
       if (err)
 	throw std::runtime_error("Logging PETSc flops failed.");
+
     } else if (2 == cellDim) {
       // Compute total strains
-      const int stressSize = _material->stressSize();
-      assert(3 == stressSize);
-      const int strainSize = stressSize * numQuadPts;
-      double* totalStrain = (strainSize > 0) ? new double[strainSize] : 0;
-      memset(totalStrain, 0, strainSize*sizeof(double));
+      const int tensorSize = 3;
+      std::vector<double_array> totalStrain(numQuadPts);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	totalStrain[iQuad].resize(tensorSize);
+	totalStrain[iQuad] *= 0.0;
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  totalStrain[iQuad  ] += 
+	  totalStrain[iQuad][0] += 
 	    basisDeriv[iQ+iBasis  ] * dispTCell[iBasis  ];
-	  totalStrain[iQuad+1] += 
+	  totalStrain[iQuad][1] += 
 	    basisDeriv[iQ+iBasis+1] * dispTCell[iBasis+1];
-	  totalStrain[iQuad+2] += 
+	  totalStrain[iQuad][2] += 
 	    0.5 * (basisDeriv[iQ+iBasis+1] * dispTCell[iBasis  ] +
 		   basisDeriv[iQ+iBasis  ] * dispTCell[iBasis+1]);
 	} // for
       } // for
-      const double* stress = 
-	_material->calcStress(*cellIter, totalStrain, numQuadPts, 
-			      spaceDim);
+      const std::vector<double_array>& stress = 
+	_material->calcStress(*cellIter, totalStrain);
+
       // Compute elastic action
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-	const int iStress = iQuad*stressSize;
-	const double s11 = stress[iStress  ];
-	const double s22 = stress[iStress+1];
-	const double s12 = stress[iStress+2];
+	const double s11 = stress[iQuad][0];
+	const double s22 = stress[iQuad][1];
+	const double s12 = stress[iQuad][2];
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	  const int iBlock = iBasis * spaceDim;
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
@@ -221,44 +218,44 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
       err = PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
       if (err)
 	throw std::runtime_error("Logging PETSc flops failed.");
+
     } else if (3 == cellDim) {
       // Compute total strains
-      const int stressSize = _material->stressSize();
-      assert(6 == stressSize);
-      const int strainSize = stressSize*numQuadPts;
-      double* totalStrain = (strainSize > 0) ? new double[strainSize] : 0;
-      memset(totalStrain, 0, strainSize*sizeof(double));
+      const int tensorSize = 6;
+      std::vector<double_array> totalStrain(numQuadPts);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	totalStrain[iQuad].resize(tensorSize);
+	totalStrain[iQuad] *= 0.0;
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  totalStrain[iQuad  ] += 
+	  totalStrain[iQuad][0] += 
 	    basisDeriv[iQ+iBasis  ] * dispTCell[iBasis  ];
-	  totalStrain[iQuad+1] += 
+	  totalStrain[iQuad][1] += 
 	    basisDeriv[iQ+iBasis+1] * dispTCell[iBasis+1];
-	  totalStrain[iQuad+2] += 
+	  totalStrain[iQuad][2] += 
 	    basisDeriv[iQ+iBasis+2] * dispTCell[iBasis+2];
-	  totalStrain[iQuad+3] += 
+	  totalStrain[iQuad][3] += 
 	    0.5 * (basisDeriv[iQ+iBasis+1] * dispTCell[iBasis  ] +
 		   basisDeriv[iQ+iBasis  ] * dispTCell[iBasis+1]);
-	  totalStrain[iQuad+4] += 
+	  totalStrain[iQuad][4] += 
 	    0.5 * (basisDeriv[iQ+iBasis+2] * dispTCell[iBasis+1] +
 		   basisDeriv[iQ+iBasis+1] * dispTCell[iBasis+2]);
-	  totalStrain[iQuad+5] += 
+	  totalStrain[iQuad][5] += 
 	    0.5 * (basisDeriv[iQ+iBasis+2] * dispTCell[iBasis  ] +
 		   basisDeriv[iQ+iBasis  ] * dispTCell[iBasis+2]);
 	} // for
       } // for
-      const double* stress = 
-	_material->calcStress(*cellIter, totalStrain, numQuadPts, spaceDim);
+      const std::vector<double_array>& stress = 
+	_material->calcStress(*cellIter, totalStrain);
+
       // Compute elastic action
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
-	const int iStress = iQuad*stressSize;
-	const double s11 = stress[iStress  ];
-	const double s22 = stress[iStress+1];
-	const double s33 = stress[iStress+2];
-	const double s12 = stress[iStress+3];
-	const double s23 = stress[iStress+4];
-	const double s13 = stress[iStress+5];
+	const double s11 = stress[iQuad][0];
+	const double s22 = stress[iQuad][1];
+	const double s33 = stress[iQuad][2];
+	const double s12 = stress[iQuad][3];
+	const double s23 = stress[iQuad][4];
+	const double s13 = stress[iQuad][5];
 
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	  const int iBlock = iBasis * spaceDim;
@@ -330,14 +327,15 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
     const double* jacobianDet = _quadrature->jacobianDet();
 
     // Get material physical properties at quadrature points for this cell
-    const double* density = _material->calcDensity(*cellIter, numQuadPts);
+    const std::vector<double_array>& density = 
+      _material->calcDensity(*cellIter);
 
     // Compute Jacobian for cell
 
     // Compute Jacobian for inertial terms
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = 
-	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad] / dt2;
+	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad][0] / dt2;
       for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
         const double valI = wt*basis[iQ+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
