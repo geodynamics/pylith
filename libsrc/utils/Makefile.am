@@ -14,7 +14,8 @@ subpackage = utils
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	petscfwd.h
+	petscfwd.h \
+	stlfwd.hh
 
 noinst_HEADERS = 
 

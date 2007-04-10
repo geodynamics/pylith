@@ -25,6 +25,7 @@
 
 #include <petscmesh.h> // USES PETSc Mesh
 
+#include <valarray> // USES std::valarray (double_array)
 #include <math.h> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -197,22 +198,20 @@ pylith::materials::TestMaterial::_testDBToParameters(Material* material,
 { // _testDBToParameters
   CPPUNIT_ASSERT(0 != material);
   
-  const int numDBValues = data.numDBValues;
-  double* const dbData = data.dbData;
+  double_array dbData(data.numDBValues);
+  for (int i=0; i < data.numDBValues; ++i)
+    dbData[i] = data.dbData[i];
+
   const int numParameters = data.numParameters;
   double* const parameterDataE = data.parameterData;
 
-  double* parameterData = (numParameters > 0) ? new double[numParameters] : 0;
-  material->_dbToParameters(parameterData, numParameters,
-			    dbData, numDBValues);
+  double_array parameterData(numParameters);
+  material->_dbToParameters(&parameterData, dbData);
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < numParameters; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
-				 parameterData[i]/parameterDataE[i],
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, parameterData[i]/parameterDataE[i],
 				 tolerance);
-
-  delete[] parameterData; parameterData = 0;
 } // _testDBToParameters
 
 // ----------------------------------------------------------------------

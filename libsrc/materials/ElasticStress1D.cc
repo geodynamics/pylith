@@ -14,6 +14,7 @@
 
 #include "ElasticStress1D.hh" // implementation of object methods
 
+#include <valarray> // USES std::valarray (double_array)
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -30,7 +31,7 @@ namespace pylith {
 class pylith::materials::_ElasticStress1D {
 public:
   /// Number of entries in stress tensor.
-  static const int stressSize;
+  static const int tensorSize;
 
   /// Number of entries in derivative of elasticity matrix.
   static const int numElasticConsts;
@@ -54,7 +55,7 @@ public:
   static const int pidLambda;
 }; // _ElasticStress1D
 
-const int pylith::materials::_ElasticStress1D::stressSize = 1;
+const int pylith::materials::_ElasticStress1D::tensorSize = 1;
 const int pylith::materials::_ElasticStress1D::numElasticConsts = 1;
 const int pylith::materials::_ElasticStress1D::numDBValues = 3;
 const char* pylith::materials::_ElasticStress1D::namesDBValues[] =
@@ -91,22 +92,6 @@ pylith::materials::ElasticStress1D::ElasticStress1D(
 } // copy constructor
 
 // ----------------------------------------------------------------------
-// Get number of entries in stress tensor.
-int
-pylith::materials::ElasticStress1D::stressSize(void) const
-{ // stressSize
-  return _ElasticStress1D::stressSize;
-} // stressSize
-
-// ----------------------------------------------------------------------
-// Get number of elastic constants for material.
-int
-pylith::materials::ElasticStress1D::numElasticConsts(void) const
-{ // numElasticConsts
-  return _ElasticStress1D::numElasticConsts;
-} // numElasticConsts
-
-// ----------------------------------------------------------------------
 // Get names of values expected to be in database of parameters for
 const char**
 pylith::materials::ElasticStress1D::_dbValues(void) const
@@ -141,15 +126,14 @@ pylith::materials::ElasticStress1D::_numParameters(void) const
 // ----------------------------------------------------------------------
 // Compute parameters from values in spatial database.
 void
-pylith::materials::ElasticStress1D::_dbToParameters(double* paramVals,
-						       const int numParams,
-						       const double* dbValues,
-						       const int numValues) const
+pylith::materials::ElasticStress1D::_dbToParameters(double_array* const paramVals,
+					   const double_array& dbValues) const
 { // computeParameters
   assert(0 != paramVals);
+  const int numParams = paramVals->size();
   assert(_ElasticStress1D::numParameters == numParams);
-  assert(0 != dbValues);
-  assert(_ElasticStress1D::numDBValues == numValues);
+  const int numDBValues = dbValues.size();
+  assert(_ElasticStress1D::numDBValues == numDBValues);
 
   const double density = dbValues[_ElasticStress1D::didDensity];
   const double vs = dbValues[_ElasticStress1D::didVs];
@@ -158,71 +142,78 @@ pylith::materials::ElasticStress1D::_dbToParameters(double* paramVals,
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
 
-  paramVals[_ElasticStress1D::pidDensity] = density;
-  paramVals[_ElasticStress1D::pidMu] = mu;
-  paramVals[_ElasticStress1D::pidLambda] = lambda;
+  (*paramVals)[_ElasticStress1D::pidDensity] = density;
+  (*paramVals)[_ElasticStress1D::pidMu] = mu;
+  (*paramVals)[_ElasticStress1D::pidLambda] = lambda;
 } // computeParameters
+
+// ----------------------------------------------------------------------
+// Get number of entries in stress tensor.
+int
+pylith::materials::ElasticStress1D::_tensorSize(void) const
+{ // _tensorSize
+  return _ElasticStress1D::tensorSize;
+} // _tensorSize
+
+// ----------------------------------------------------------------------
+// Get number of elastic constants for material.
+int
+pylith::materials::ElasticStress1D::_numElasticConsts(void) const
+{ // _numElasticConsts
+  return _ElasticStress1D::numElasticConsts;
+} // _numElasticConsts
 
 // ----------------------------------------------------------------------
 // Compute density at location from parameters.
 void
-pylith::materials::ElasticStress1D::_calcDensity(double* const density,
-						    const int size,
-						    const double* parameters,
-						    const int numParameters)
+pylith::materials::ElasticStress1D::_calcDensity(double_array* const density,
+					      const double_array& parameters)
 { // _calcDensity
   assert(0 != density);
-  assert(1 == size);
-  assert(0 != parameters);
+  assert(1 == density->size());
+  assert(_ElasticStress1D::numParameters == parameters.size());
 
-  *density = parameters[_ElasticStress1D::pidDensity];
+  (*density)[0] = parameters[_ElasticStress1D::pidDensity];
 } // _calcDensity
 
 // ----------------------------------------------------------------------
 // Compute stress tensor at location from parameters.
 void
-pylith::materials::ElasticStress1D::_calcStress(double* const stress,
-						   const int size,
-						   const double* parameters,
-						   const int numParameters,
-						   const double* totalStrain,
-						   const int spaceDim)
+pylith::materials::ElasticStress1D::_calcStress(double_array* const stress,
+					       const double_array& parameters,
+					       const double_array& totalStrain)
 { // _calcStress
   assert(0 != stress);
-  assert(_ElasticStress1D::stressSize == size);
-  assert(0 != parameters);
-  assert(_ElasticStress1D::numParameters == numParameters);
-  assert(spaceDim == _dimension);
+  assert(_ElasticStress1D::tensorSize == stress->size());
+  assert(_ElasticStress1D::numParameters == parameters.size());
+  assert(_ElasticStress1D::tensorSize == totalStrain.size());
 
   const double density = parameters[_ElasticStress1D::pidDensity];
   const double mu = parameters[_ElasticStress1D::pidMu];
   const double lambda = parameters[_ElasticStress1D::pidLambda];
 
   const double e11 = totalStrain[0];
-  stress[0] = mu * (3.0*lambda+2.0*mu) / (lambda + mu) * e11;
+  (*stress)[0] = mu * (3.0*lambda+2.0*mu) / (lambda + mu) * e11;
 } // _calcStress
 
 // ----------------------------------------------------------------------
 // Compute derivative of elasticity matrix at location from parameters.
 void
-pylith::materials::ElasticStress1D::_calcElasticConsts(double* const elasticConsts,
-						       const int size,
-						       const double* parameters,
-						       const int numParameters,
-						       const double* totalStrain,
-						       const int spaceDim)
+pylith::materials::ElasticStress1D::_calcElasticConsts(
+				       double_array* const elasticConsts,
+				       const double_array& parameters,
+				       const double_array& totalStrain)
 { // _calcElasticConsts
   assert(0 != elasticConsts);
-  assert(_ElasticStress1D::numElasticConsts == size);
-  assert(0 != parameters);
-  assert(_ElasticStress1D::numParameters == numParameters);
-  assert(spaceDim == _dimension);
+  assert(_ElasticStress1D::numElasticConsts == elasticConsts->size());
+  assert(_ElasticStress1D::numParameters == parameters.size());
+  assert(_ElasticStress1D::tensorSize == totalStrain.size());
  
   const double density = parameters[_ElasticStress1D::pidDensity];
   const double mu = parameters[_ElasticStress1D::pidMu];
   const double lambda = parameters[_ElasticStress1D::pidLambda];
 
-  elasticConsts[0] = mu * (3.0*lambda+2.0*mu) / (lambda + mu);
+  (*elasticConsts)[0] = mu * (3.0*lambda+2.0*mu) / (lambda + mu);
 } // _calcElasticConsts
 
 
