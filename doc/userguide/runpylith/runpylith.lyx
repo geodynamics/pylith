@@ -1,4 +1,4 @@
-#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -177,18 +177,22 @@ xx.ext
  is the original filename.
  This procedure is applied to files with the following extensions:
 \family typewriter
- coord, connect, split, 
+ coord, connect, split, bc
 \family default
-and 
+, and 
 \family typewriter
-bc
+traction
 \family default
 .
+ The remaining files provide information common to all processors, and thus
+ do not require separate files for each processor.
 \end_layout
 
 \begin_layout Standard
-The remaining files provide information common to all processors.
- As a result, the user must create copies of each one for each of the processors.
+In some cases, a user may want to run the same simulation using different
+ numbers of processors.
+ In this case, iAs a result, the user must create copies of each one for
+ each of the processors.
  By default PyLith expects the names of these files to follow the same form,
  
 \family typewriter
@@ -213,7 +217,7 @@ runbm.py
  command-line argument.
  See section\InsetSpace ~
 
-\begin_inset LatexCommand \ref{sec:commandline:args}
+\begin_inset LatexCommand \ref{sec:setting:parameters}
 
 \end_inset
 
@@ -292,9 +296,17 @@ Optional Input Files
 The optional input files are only read when a file exists matching the name
  of an input file PyLith expects to read.
  Note that explicit filenames for each of the files can be specified using
- command-line arguments as discussed in section\InsetSpace ~
+ command-line arguments, with 
+\family typewriter
+.cfg
+\family default
+ files, or with 
+\family typewriter
+.pml
+\family default
+ files, as discussed in section\InsetSpace ~
 
-\begin_inset LatexCommand \ref{sec:commandline:args}
+\begin_inset LatexCommand \ref{sec:setting:parameters}
 
 \end_inset
 
@@ -327,6 +339,17 @@ xx.split
 
 \family typewriter
 \color black
+xx.traction
+\family default
+\color none
+ Traction boundary condition information.
+ 
+\end_layout
+
+\begin_layout Description
+
+\family typewriter
+\color black
 xx.skew
 \family default
 \color none
@@ -343,6 +366,10 @@ xx.keyval
 \color none
  File for changing default parameters.
  
+\shape italic
+\color inherit
+Now considered obsolete.
+ Use .cfg file instead.
 \end_layout
 
 \begin_layout Description
@@ -355,7 +382,7 @@ xx.wink
  Winkler spring element boundary condition information.
  
 \emph on
- Not yet tested.
+ Not yet implemented.
 
 \emph default
  
@@ -378,11 +405,11 @@ Not yet tested.
 \end_layout
 
 \begin_layout Section
-Command-line Arguments
+Setting Parameters for PyLith
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \label{sec:commandline:args}
+\begin_inset LatexCommand \label{sec:setting:parameters}
 
 \end_inset
 

@@ -1,4 +1,4 @@
-#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -571,7 +571,7 @@ Warning:
 The convergence criteria depend on the type of solution and material models.
  The time step for a linear elastic problem is much different than that
  for a nonlinear or time-dependent problem.
- 
+ The example below is appropriate for a linear elastic problem.
 \end_layout
 
 \begin_layout LyX-Code
@@ -869,6 +869,10 @@ xx.connect.
 \end_layout
 
 \begin_layout LyX-Code
+#
+\end_layout
+
+\begin_layout LyX-Code
 #   Isotropic linear maxwell viscoelastic
 \end_layout
 
@@ -890,6 +894,170 @@ xx.connect.
 
 \begin_layout LyX-Code
 #     viscosity
+\end_layout
+
+\begin_layout LyX-Code
+#     endMaterial ='True' (flag indicating end of material)
+\end_layout
+
+\begin_layout LyX-Code
+#
+\end_layout
+
+\begin_layout LyX-Code
+#   Isotropic linear maxwell viscoelastic (ESF formulation)
+\end_layout
+
+\begin_layout LyX-Code
+#     materialType ='IsotropicLinearMaxwellViscoelasticESF'
+\end_layout
+
+\begin_layout LyX-Code
+#     density
+\end_layout
+
+\begin_layout LyX-Code
+#     youngsModulus
+\end_layout
+
+\begin_layout LyX-Code
+#     poissonsRatio
+\end_layout
+
+\begin_layout LyX-Code
+#     viscosity
+\end_layout
+
+\begin_layout LyX-Code
+#     endMaterial ='True' (flag indicating end of material)
+\end_layout
+
+\begin_layout LyX-Code
+#
+\end_layout
+
+\begin_layout LyX-Code
+#   Isotropic linear generalized maxwell viscoelastic
+\end_layout
+
+\begin_layout LyX-Code
+#   (3 Maxwell models in parallel)
+\end_layout
+
+\begin_layout LyX-Code
+#     materialType ='IsotropicLinearMaxwellViscoelastic'
+\end_layout
+
+\begin_layout LyX-Code
+#     density
+\end_layout
+
+\begin_layout LyX-Code
+#     youngsModulus
+\end_layout
+
+\begin_layout LyX-Code
+#     poissonsRatio
+\end_layout
+
+\begin_layout LyX-Code
+#     shearRatio1
+\end_layout
+
+\begin_layout LyX-Code
+#     viscosity1
+\end_layout
+
+\begin_layout LyX-Code
+#     shearRatio2
+\end_layout
+
+\begin_layout LyX-Code
+#     viscosity2
+\end_layout
+
+\begin_layout LyX-Code
+#     shearRatio3
+\end_layout
+
+\begin_layout LyX-Code
+#     viscosity3
+\end_layout
+
+\begin_layout LyX-Code
+#     endMaterial ='True' (flag indicating end of material)
+\end_layout
+
+\begin_layout LyX-Code
+#
+\end_layout
+
+\begin_layout LyX-Code
+#   Isotropic power-law maxwell viscoelastic
+\end_layout
+
+\begin_layout LyX-Code
+#     materialType ='IsotropicPowerLawMaxwellViscoelastic'
+\end_layout
+
+\begin_layout LyX-Code
+#     density
+\end_layout
+
+\begin_layout LyX-Code
+#     youngsModulus
+\end_layout
+
+\begin_layout LyX-Code
+#     poissonsRatio
+\end_layout
+
+\begin_layout LyX-Code
+#     powerLawExponent
+\end_layout
+
+\begin_layout LyX-Code
+#     viscosityCoefficient
+\end_layout
+
+\begin_layout LyX-Code
+#     endMaterial ='True' (flag indicating end of material)
+\end_layout
+
+\begin_layout LyX-Code
+#
+\end_layout
+
+\begin_layout LyX-Code
+#   Isotropic power-law maxwell viscoelastic
+\end_layout
+
+\begin_layout LyX-Code
+#   (Zienkiewicz and Taylor formulation)
+\end_layout
+
+\begin_layout LyX-Code
+#     materialType ='IsotropicPowerLawMaxwellViscoelasticZT'
+\end_layout
+
+\begin_layout LyX-Code
+#     density
+\end_layout
+
+\begin_layout LyX-Code
+#     youngsModulus
+\end_layout
+
+\begin_layout LyX-Code
+#     poissonsRatio
+\end_layout
+
+\begin_layout LyX-Code
+#     powerLawExponent
+\end_layout
+
+\begin_layout LyX-Code
+#     viscosityCoefficient
 \end_layout
 
 \begin_layout LyX-Code
@@ -1393,6 +1561,16 @@ The applied coordinate rotations apply to all boundary conditions associated
  that lies at an angle to the global coordinates.
 \end_layout
 
+\begin_layout Quote
+
+\series bold
+\color red
+Note: 
+\series default
+\color none
+Coordinate rotations have not yet been implemented for PyLith.
+\end_layout
+
 \begin_layout LyX-Code
 # File containing local nodal coordinates.
 \end_layout
@@ -1490,6 +1668,18 @@ The
 xx.keyval
 \family default
  file specifies some simple parameter settings.
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Note: 
+\series default
+\color none
+The xx.keyval file is now obsolete (although it may still be used if desired).
+ All parameter settings may now be made in xx.cfg (config) files, as described
+ in 
 \end_layout
 
 \begin_layout Subsubsection
