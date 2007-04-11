@@ -1,4 +1,4 @@
-#LyX 1.4.1 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -41,7 +41,7 @@ PyLith Software License
 \end_layout
 
 \begin_layout Standard
-Copyright (C) 2004-2006 Rensselaer Polytechnic Institute
+Copyright (C) 2004-2007 Rensselaer Polytechnic Institute
 \end_layout
 
 \begin_layout Standard
