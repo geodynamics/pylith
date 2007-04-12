@@ -47,7 +47,7 @@ public :
    *
    * @returns Number of vertices
    */
-  static int numCorners(const Quadrature& q);
+  static int numBasis(const Quadrature& q);
 
   /** Get number of quadrature points.
    *

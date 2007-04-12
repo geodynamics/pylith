@@ -38,11 +38,11 @@ const pylith::feassemble::Quadrature* q =
 return pylith::feassemble::TestQuadrature::cellDim(*q);
 #}embed
 
-# create shim for TestQuadrature::numCorners
-#embed{ int TestQuadrature_numCorners(void* obj)
+# create shim for TestQuadrature::numBasis
+#embed{ int TestQuadrature_numBasis(void* obj)
 const pylith::feassemble::Quadrature* q =
   (pylith::feassemble::Quadrature*) obj;
-return pylith::feassemble::TestQuadrature::numCorners(*q);
+return pylith::feassemble::TestQuadrature::numBasis(*q);
 #}embed
 
 # create shim for TestQuadrature::numQuadPts
@@ -64,7 +64,7 @@ return pylith::feassemble::TestQuadrature::spaceDim(*q);
 const pylith::feassemble::Quadrature* q =
   (pylith::feassemble::Quadrature*) obj;
 const int size = TestQuadrature_numQuadPts(obj) *
-                 TestQuadrature_numCorners(obj);
+                 TestQuadrature_numBasis(obj);
 double* vals = (size > 0) ? new double[size] : 0;
 const double* basis = pylith::feassemble::TestQuadrature::basis(*q);
 memcpy(vals, basis, size*sizeof(double));
@@ -76,7 +76,7 @@ return vals;
 const pylith::feassemble::Quadrature* q =
   (pylith::feassemble::Quadrature*) obj;
 const int size = TestQuadrature_numQuadPts(obj) *
-                 TestQuadrature_numCorners(obj) *
+                 TestQuadrature_numBasis(obj) *
                  TestQuadrature_cellDim(obj);
 double* vals = (size > 0) ? new double[size] : 0;
 const double* basisDeriv = pylith::feassemble::TestQuadrature::basisDeriv(*q);
@@ -120,13 +120,13 @@ def basis(qhandle):
   qptr = ptrFromHandle(qhandle)
 
   cdef int numQuadPts
-  cdef int numCorners
+  cdef int numBasis
   numQuadPts = TestQuadrature_numQuadPts(qptr)
-  numCorners = TestQuadrature_numCorners(qptr)
+  numBasis = TestQuadrature_numBasis(qptr)
 
   cdef double* values
   values = TestQuadrature_basis(qptr)
-  dims = [numQuadPts, numCorners]
+  dims = [numQuadPts, numBasis]
   valuesObj = PyCObject_FromVoidPtr(values, NULL)
   return spatialdata.utils.simplearray.SimpleCppArray(valuesObj, dims, "double")
   
@@ -144,15 +144,15 @@ def basisDeriv(qhandle):
   qptr = ptrFromHandle(qhandle)
 
   cdef int numQuadPts
-  cdef int numCorners
+  cdef int numBasis
   cdef int cellDim
   numQuadPts = TestQuadrature_numQuadPts(qptr)
-  numCorners = TestQuadrature_numCorners(qptr)
+  numBasis = TestQuadrature_numBasis(qptr)
   cellDim = TestQuadrature_cellDim(qptr)
 
   cdef double* values
   values = TestQuadrature_basisDeriv(qptr)
-  dims = [numQuadPts, numCorners, cellDim]
+  dims = [numQuadPts, numBasis, cellDim]
   valuesObj = PyCObject_FromVoidPtr(values, NULL)
   return spatialdata.utils.simplearray.SimpleCppArray(valuesObj, dims,
                                                       "double")

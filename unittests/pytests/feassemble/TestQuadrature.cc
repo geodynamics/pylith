@@ -22,7 +22,7 @@ pylith::feassemble::TestQuadrature::testClone(void)
   // Semi-random values manually set to check cloning
   const double minJacobian = 1.0;
   const int cellDim = 1;
-  const int numCorners = 2;
+  const int numBasis = 2;
   const int numQuadPts = 1;
   const int spaceDim = 1;
   const double basis[] = { 0.2, 0.4 };
@@ -38,7 +38,7 @@ pylith::feassemble::TestQuadrature::testClone(void)
   Quadrature1D qOrig;
   qOrig._minJacobian = minJacobian;
   qOrig._cellDim = cellDim;
-  qOrig._numCorners = numCorners;
+  qOrig._numBasis = numBasis;
   qOrig._numQuadPts = numQuadPts;
   qOrig._spaceDim = spaceDim;
 
@@ -82,17 +82,17 @@ pylith::feassemble::TestQuadrature::testClone(void)
 
   CPPUNIT_ASSERT_EQUAL(minJacobian, qCopy->_minJacobian);
   CPPUNIT_ASSERT_EQUAL(cellDim, qCopy->_cellDim);
-  CPPUNIT_ASSERT_EQUAL(numCorners, qCopy->_numCorners);
+  CPPUNIT_ASSERT_EQUAL(numBasis, qCopy->_numBasis);
   CPPUNIT_ASSERT_EQUAL(numQuadPts, qCopy->_numQuadPts);
   CPPUNIT_ASSERT_EQUAL(spaceDim, qCopy->_spaceDim);
 
   CPPUNIT_ASSERT(0 != qCopy->_basis);
-  size = numCorners * numQuadPts;
+  size = numBasis * numQuadPts;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(basis[i], qCopy->_basis[i]);
 
   CPPUNIT_ASSERT(0 != qCopy->_basisDeriv);
-  size = numCorners * numQuadPts * spaceDim;
+  size = numBasis * numQuadPts * spaceDim;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(basisDeriv[i], qCopy->_basisDeriv[i]);
 
@@ -140,7 +140,7 @@ pylith::feassemble::TestQuadrature::testInitialize(void)
 { // initialize
   
   const int cellDim = 1;
-  const int numCorners = 2;
+  const int numBasis = 2;
   const int numQuadPts = 1;
   const int spaceDim = 1;
   const double basis[] = { 0.5, 0.5 };
@@ -151,18 +151,18 @@ pylith::feassemble::TestQuadrature::testInitialize(void)
 
   Quadrature1D q;
   q.initialize(basis, basisDeriv, quadPtsRef, quadWts,
-	       cellDim, numCorners, numQuadPts, spaceDim);
+	       cellDim, numBasis, numQuadPts, spaceDim);
   
   CPPUNIT_ASSERT_EQUAL(cellDim, q._cellDim);
-  CPPUNIT_ASSERT_EQUAL(numCorners, q._numCorners);
+  CPPUNIT_ASSERT_EQUAL(numBasis, q._numBasis);
   CPPUNIT_ASSERT_EQUAL(numQuadPts, q._numQuadPts);
   CPPUNIT_ASSERT_EQUAL(spaceDim, q._spaceDim);
 
-  int size = numCorners * numQuadPts;
+  int size = numBasis * numQuadPts;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(basis[i], q._basis[i]);
 
-  size = numCorners * numQuadPts * spaceDim;
+  size = numBasis * numQuadPts * spaceDim;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(basisDeriv[i], q._basisDeriv[i]);
 
@@ -189,7 +189,7 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(
 					    const QuadratureData& data) const
 { // testComputeGeometry
   const int cellDim = data.cellDim;
-  const int numCorners = data.numCorners;
+  const int numBasis = data.numBasis;
   const int numQuadPts = data.numQuadPts;
   const int spaceDim = data.spaceDim;
   const double* basis = data.basis;
@@ -221,7 +221,7 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(
 
   pQuad->minJacobian(minJacobian);
   pQuad->initialize(basis, basisDeriv, quadPtsRef, quadWts,
-		    cellDim, numCorners, numQuadPts, spaceDim);
+		    cellDim, numBasis, numQuadPts, spaceDim);
 
   // Create mesh with test cell
   typedef ALE::Field::Mesh mesh;
@@ -231,7 +231,7 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(
 
   const bool interpolate = false;
   ALE::New::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
-		     (int*) cells, numVertices, interpolate, numCorners);
+		     (int*) cells, numVertices, interpolate, numBasis);
   mesh->setSieve(sieve);
   mesh->stratify();
   ALE::New::SieveBuilder<Mesh>::buildCoordinatesNew(mesh, spaceDim, vertCoords);
