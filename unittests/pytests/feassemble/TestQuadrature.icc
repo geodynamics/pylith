@@ -22,8 +22,8 @@ pylith::feassemble::TestQuadrature::cellDim(const Quadrature& q) {
 
 // Get number of vertices in cell.
 int
-pylith::feassemble::TestQuadrature::numCorners(const Quadrature& q) {
-  return q._numCorners;
+pylith::feassemble::TestQuadrature::numBasis(const Quadrature& q) {
+  return q._numBasis;
 }
 
 // Get number of quadrature points.
@@ -41,25 +41,25 @@ pylith::feassemble::TestQuadrature::spaceDim(const Quadrature& q) {
 // Get basis functions evaluated at quadrature points.
 const double*
 pylith::feassemble::TestQuadrature::basis(const Quadrature& q) {
-  return q._basis;
+  return &q._basis[0];
 }
 
 // Get derivatives of basis functions evaluated at quadrature points.
 const double*
 pylith::feassemble::TestQuadrature::basisDeriv(const Quadrature& q) {
-  return q._basisDeriv;
+  return &q._basisDeriv[0];
 }
 
 // Get coordinates of quadrature points
 const double*
 pylith::feassemble::TestQuadrature::quadPtsRef(const Quadrature& q) {
-  return q._quadPtsRef;
+  return &q._quadPtsRef[0];
 }
 
 // Get weights of quadrature points
 const double*
 pylith::feassemble::TestQuadrature::quadWts(const Quadrature& q) {
-  return q._quadWts;
+  return &q._quadWts[0];
 }
 
 #endif
