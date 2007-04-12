@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -230,9 +230,10 @@ where
 \end_inset
 
  are the inelastic strains, with the difference being the elastic strains.
- In our actual computations, we use a formulation that decomposes the stresses
- into the deviatoric and volumetric parts, using ideas based on the "effective
- stress function" 
+ In our actual computations, we use several different formulations, depending
+ on the constitutive relation.
+ One such formulation decomposes the stresses into the deviatoric and volumetric
+ parts, using ideas based on the "effective stress function" 
 \begin_inset LatexCommand \cite{Kojic:Bathe:1987}
 
 \end_inset
@@ -240,6 +241,12 @@ where
 .
  This allows the time integration of stresses to be performed in terms of
  a single parameter related to the second deviatoric stress invariant.
+ We also use viscoelastic formulations based on those of 
+\begin_inset LatexCommand \cite{Zienkiewicz:Taylor:2000}
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
@@ -306,6 +313,25 @@ PETSc includes interfaces for Fortran, C, and C++ for nearly all of the
  Many settings and options can be controlled with PETSc-specific command-line
  arguments, including selection of preconditions, solvers, and generation
  of performance logs.
+\end_layout
+
+\begin_layout Standard
+PyLith 0.8 and the upcoming PyLith 1.0 make use of a new aspect of PETSc known
+ as 
+\family typewriter
+Sieve
+\family default
+, which is still under active development.
+ 
+\family typewriter
+Sieve
+\family default
+ is a new method for representing computational meshes, and it greatly simplifie
+s the task of code parallelization.
+ Sieve also provides a number of other useful features, such as the ability
+ to grab 'sections' of a mesh that share common characteristics, such as
+ elements of the same material type or nodes to which boundary conditions
+ have been applied.
 \end_layout
 
 \begin_layout Subsection
