@@ -64,7 +64,7 @@ class QuadratureApp(Script):
 
     # Reference cell information
     self.cellDim = None
-    self.numCorners = None
+    self.numBasis = None
     self.numQuadPts = None
     self.quadPtsRef = None
     self.quadWts = None
@@ -133,8 +133,8 @@ class QuadratureApp(Script):
                         format="%d")
     self.data.addScalar(vtype="int", name="_cellDim", value=self.cellDim,
                         format="%d")
-    self.data.addScalar(vtype="int", name="_numCorners", value=
-                        self.numCorners,
+    self.data.addScalar(vtype="int", name="_numBasis", value=
+                        self.numBasis,
                         format="%d")
     self.data.addScalar(vtype="int", name="_numQuadPts",
                         value=self.numQuadPts,

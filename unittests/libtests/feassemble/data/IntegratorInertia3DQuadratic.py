@@ -56,7 +56,7 @@ class IntegratorInertia3DQuadratic(IntegratorInertia):
                                   [ 1.1, -0.8,  0.7]],
                                  dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
-                              dtype=numpy.Int32)
+                              dtype=numpy.int32)
     self.fieldIn = numpy.array( [[1.2], [1.5], [0.3],
                                  [0.8], [0.9], [1.4],
                                  [0.7], [0.2], [0.8],

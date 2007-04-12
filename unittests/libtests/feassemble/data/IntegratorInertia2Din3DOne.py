@@ -49,7 +49,7 @@ class IntegratorInertia2Din3DOne(IntegratorInertia):
                                   [ 3.0,  0.5,  0.0],
                                   [-1.0,  2.0,  4.0]],
                                  dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.Int32)
+    self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.int32)
     self.fieldIn = numpy.array( [[1.2], [0.1], [-0.3],
                                  [0.5], [-0.3], [1.2],
                                  [1.1], [0.5], [0.8]], dtype=numpy.float64)

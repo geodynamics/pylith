@@ -23,7 +23,7 @@ const int pylith::feassemble::QuadratureData2Din3DLinearXZ::_numCells = 1;
 
 const int pylith::feassemble::QuadratureData2Din3DLinearXZ::_cellDim = 2;
 
-const int pylith::feassemble::QuadratureData2Din3DLinearXZ::_numCorners = 3;
+const int pylith::feassemble::QuadratureData2Din3DLinearXZ::_numBasis = 3;
 
 const int pylith::feassemble::QuadratureData2Din3DLinearXZ::_numQuadPts = 1;
 
@@ -69,7 +69,7 @@ const double pylith::feassemble::QuadratureData2Din3DLinearXZ::_jacobianDet[] = 
 };
 
 const double pylith::feassemble::QuadratureData2Din3DLinearXZ::_jacobianInv[] = {
- -1.00000000e+00,  0.00000000e+00,
+ -1.00000000e+00, -0.00000000e+00,
   0.00000000e+00,  0.00000000e+00,
   0.00000000e+00,  1.00000000e+00,
 };
@@ -80,7 +80,7 @@ pylith::feassemble::QuadratureData2Din3DLinearXZ::QuadratureData2Din3DLinearXZ(v
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  numCorners = _numCorners;
+  numBasis = _numBasis;
   numQuadPts = _numQuadPts;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);

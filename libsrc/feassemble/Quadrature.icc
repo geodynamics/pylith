@@ -30,42 +30,42 @@ pylith::feassemble::Quadrature::minJacobian(const double min) {
 
 // Get basis fns evaluated at quadrature points.
 inline
-const double*
+const pylith::double_array&
 pylith::feassemble::Quadrature::basis(void) const {
   return _basis;
 }
 
 // Get derivatives of basis fns evaluated at quadrature points.
 inline
-const double*
+const pylith::double_array&
 pylith::feassemble::Quadrature::basisDeriv(void) const {
   return _basisDeriv;
 }
 
 // Get coordinates of quadrature points in cell (NOT reference cell).
 inline
-const double*
+const pylith::double_array&
 pylith::feassemble::Quadrature::quadPts(void) const {
   return _quadPts;
 }
 
 // Get weights of quadrature points.
 inline
-const double*
+const pylith::double_array&
 pylith::feassemble::Quadrature::quadWts(void) const {
   return _quadWts;
 }
 
 // Get Jacobian inverses evaluated at quadrature points.
 inline
-const double*
+const pylith::double_array&
 pylith::feassemble::Quadrature::jacobianInv(void) const {
   return _jacobianInv;
 }
 
 // Get determinants of Jacobian evaluated at quadrature points.
 inline
-const double*
+const pylith::double_array&
 pylith::feassemble::Quadrature::jacobianDet(void) const {
   return _jacobianDet;
 }
@@ -77,11 +77,11 @@ pylith::feassemble::Quadrature::cellDim(void) const {
   return _cellDim;
 }
 
-// Get number of vertices in cell.
+// Get number of basis functions for cell.
 inline
 int
-pylith::feassemble::Quadrature::numCorners(void) const {
-  return _numCorners;
+pylith::feassemble::Quadrature::numBasis(void) const {
+  return _numBasis;
 }
 
 // Get number of quadrature points.

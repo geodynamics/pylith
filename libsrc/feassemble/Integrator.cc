@@ -66,7 +66,7 @@ void
 pylith::feassemble::Integrator::_initCellVector(void)
 { // _initCellVector
   assert(0 != _quadrature);
-  const int size = _quadrature->spaceDim() * _quadrature->numCorners();
+  const int size = _quadrature->spaceDim() * _quadrature->numBasis();
   if (0 == _cellVector)
     _cellVector = (size > 0) ? new real_section_type::value_type[size] : 0;
   for (int i=0; i < size; ++i)
@@ -79,7 +79,7 @@ void
 pylith::feassemble::Integrator::_resetCellVector(void)
 { // _resetCellVector
   assert(0 != _quadrature);
-  const int size = _quadrature->spaceDim() * _quadrature->numCorners();
+  const int size = _quadrature->spaceDim() * _quadrature->numBasis();
   for (int i=0; i < size; ++i)
     _cellVector[i] = 0.0;
 } // _resetCellVector
@@ -91,8 +91,8 @@ pylith::feassemble::Integrator::_initCellMatrix(void)
 { // _initCellMatrix
   assert(0 != _quadrature);
   const int size =
-    _quadrature->spaceDim() * _quadrature->numCorners() *
-    _quadrature->spaceDim() * _quadrature->numCorners();
+    _quadrature->spaceDim() * _quadrature->numBasis() *
+    _quadrature->spaceDim() * _quadrature->numBasis();
   if (0 == _cellMatrix)
     _cellMatrix = (size > 0) ? new real_section_type::value_type[size] : 0;
   for (int i=0; i < size; ++i)
@@ -106,8 +106,8 @@ pylith::feassemble::Integrator::_resetCellMatrix(void)
 { // _resetCellMatrix
   assert(0 != _quadrature);
   const int size =
-    _quadrature->spaceDim() * _quadrature->numCorners() *
-    _quadrature->spaceDim() * _quadrature->numCorners();
+    _quadrature->spaceDim() * _quadrature->numBasis() *
+    _quadrature->spaceDim() * _quadrature->numBasis();
   for (int i=0; i < size; ++i)
     _cellMatrix[i] = 0.0;
 } // _resetCellMatrix

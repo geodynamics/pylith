@@ -22,6 +22,8 @@
 #if !defined(pylith_utils_array_hh)
 #define pylith_utils_array_hh
 
+#include "arrayfwd.hh"
+
 #include <vector>
 #include <valarray>
 

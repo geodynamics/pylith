@@ -88,13 +88,30 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double* quadWts = _quadrature->quadWts();
-  const int numBasis = _quadrature->numCorners();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
 
   // Allocate vector for cell values (if necessary)
   _initCellVector();
+
+  // Allocate vector for total strain
+  int tensorSize = 0;
+  if (1 == cellDim)
+    tensorSize = 1;
+  else if (2 == cellDim)
+    tensorSize = 3;
+  else if (3 == cellDim)
+    tensorSize = 6;
+  else
+    throw std::logic_error("Tensor size not implemented for given cellDim.");
+  std::vector<double_array> totalStrain(numQuadPts);
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    totalStrain[iQuad].resize(tensorSize);
+    totalStrain[iQuad] = 0.0;
+  } // for
 
   for (Mesh::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
@@ -115,9 +132,9 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
       mesh->restrict(dispTmdt, *cellIter);
 
     // Get cell geometry information that depends on cell
-    const double* basis = _quadrature->basis();
-    const double* basisDeriv = _quadrature->basisDeriv();
-    const double* jacobianDet = _quadrature->jacobianDet();
+    const double_array& basis = _quadrature->basis();
+    const double_array& basisDeriv = _quadrature->basisDeriv();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
 
     // Compute action for cell
 
@@ -127,16 +144,14 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = 
 	quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad][0] / dt2;
-      for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-        const int iBlock = iBasis * spaceDim;
-        const double valI = wt*basis[iQ+iBasis];
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+        const double valI = wt*basis[iQuad*numBasis+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-          const int jBlock = jBasis * spaceDim;
-          const double valIJ = valI * basis[iQ+jBasis];
+          const double valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
-            _cellVector[iBlock+iDim] += 
-	      valIJ * (2.0 * dispTCell[jBlock+iDim] - 
-		       dispTmdtCell[jBlock+iDim]);
+            _cellVector[iBasis*spaceDim+iDim] += 
+	      valIJ * (2.0 * dispTCell[jBasis*spaceDim+iDim] - 
+		       dispTmdtCell[jBasis*spaceDim+iDim]);
         } // for
       } // for
     } // for
@@ -157,15 +172,10 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 
     // Compute action for elastic terms
     if (1 == cellDim) {
-      // Compute total strains
-      const int tensorSize = 1;
-      std::vector<double_array> totalStrain(numQuadPts);
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	totalStrain[iQuad].resize(tensorSize);
-	totalStrain[iQuad] *= 0.0;
-	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis)
-	  totalStrain[iQuad][0] += basisDeriv[iQ+iBasis] * dispTCell[iBasis];
-      } // for
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+	for (int iBasis=0; iBasis < numBasis; ++iBasis)
+	  totalStrain[iQuad][0] += 
+	    basisDeriv[iQuad*numBasis+iBasis] * dispTCell[iBasis];
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
@@ -173,9 +183,9 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
 	const double s11 = stress[iQuad][0];
-	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
+	for (int iBasis=0; iBasis < numBasis; ++iBasis) {
 	  const int iBlock = iBasis * spaceDim;
-	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
+	  const double N1 = wt*basisDeriv[iQuad*numBasis+iBasis*cellDim  ];
 	  _cellVector[iBlock  ] -= N1*s11;
 	} // for
       } // for
@@ -185,11 +195,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 
     } else if (2 == cellDim) {
       // Compute total strains
-      const int tensorSize = 3;
-      std::vector<double_array> totalStrain(numQuadPts);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	totalStrain[iQuad].resize(tensorSize);
-	totalStrain[iQuad] *= 0.0;
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	  totalStrain[iQuad][0] += 
 	    basisDeriv[iQ+iBasis  ] * dispTCell[iBasis  ];
@@ -202,7 +208,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
       } // for
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
-
+      
       // Compute elastic action
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
@@ -220,14 +226,10 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
       err = PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
       if (err)
 	throw std::runtime_error("Logging PETSc flops failed.");
-
+      
     } else if (3 == cellDim) {
       // Compute total strains
-      const int tensorSize = 6;
-      std::vector<double_array> totalStrain(numQuadPts);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	totalStrain[iQuad].resize(tensorSize);
-	totalStrain[iQuad] *= 0.0;
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	  totalStrain[iQuad][0] += 
 	    basisDeriv[iQ+iBasis  ] * dispTCell[iBasis  ];
@@ -307,8 +309,8 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
-  const double* quadWts = _quadrature->quadWts();
-  const int numBasis = _quadrature->numCorners();
+  const double_array& quadWts = _quadrature->quadWts();
+  const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
   // Allocate vector for cell values (if necessary)
@@ -327,8 +329,8 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
     _resetCellMatrix();
 
     // Get cell geometry information that depends on cell
-    const double* basis = _quadrature->basis();
-    const double* jacobianDet = _quadrature->jacobianDet();
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
 
     // Get material physical properties at quadrature points for this cell
     const std::vector<double_array>& density = _material->calcDensity();

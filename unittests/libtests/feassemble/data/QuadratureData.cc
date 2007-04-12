@@ -19,7 +19,7 @@ pylith::feassemble::QuadratureData::QuadratureData(void) :
   spaceDim(0),
   numCells(0),
   cellDim(0),
-  numCorners(0),
+  numBasis(0),
   numQuadPts(0),
   vertices(0),
   cells(0),

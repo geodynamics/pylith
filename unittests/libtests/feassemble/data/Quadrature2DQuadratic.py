@@ -95,7 +95,7 @@ class Quadrature2DQuadratic(QuadratureApp):
     self.spaceDim = 2
     self.numCells = 1
     self.cellDim = 2
-    self.numCorners = 6
+    self.numBasis = 6
     self.numQuadPts = 3
     
     self.quadPtsRef = numpy.array( [[2.0/3.0, 1.0/6.0],
@@ -111,7 +111,7 @@ class Quadrature2DQuadratic(QuadratureApp):
                                   [+0.25, +0.35],
                                   [-1.25, -0.25]],
                                  dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1, 2, 3, 4, 5]], dtype=numpy.Int32)
+    self.cells = numpy.array( [[0, 1, 2, 3, 4, 5]], dtype=numpy.int32)
     
     return
 
@@ -121,10 +121,10 @@ class Quadrature2DQuadratic(QuadratureApp):
     Calculate basis functions and their derivatives at quadrature points.
     """
 
-    self.basis = numpy.zeros( (self.numQuadPts, self.numCorners),
+    self.basis = numpy.zeros( (self.numQuadPts, self.numBasis),
                               dtype=numpy.float64)
     self.basisDeriv = numpy.zeros( (self.numQuadPts,
-                                    self.numCorners, self.cellDim),
+                                    self.numBasis, self.cellDim),
                                    dtype=numpy.float64)
 
     iQuad = 0
@@ -132,7 +132,7 @@ class Quadrature2DQuadratic(QuadratureApp):
       # Basis functions at quadrature points
       basis = numpy.array([N0(q), N1(q), N2(q), N3(q), N4(q), N5(q)],
                           dtype=numpy.float64)
-      self.basis[iQuad] = basis.reshape( (self.numCorners,) )
+      self.basis[iQuad] = basis.reshape( (self.numBasis,) )
 
       # Derivatives of basis functions at quadrature points
       deriv = numpy.array([[N0p(q), N0q(q)],
@@ -142,7 +142,7 @@ class Quadrature2DQuadratic(QuadratureApp):
                            [N4p(q), N4q(q)],
                            [N5p(q), N5q(q)]],
                           dtype=numpy.float64)      
-      self.basisDeriv[iQuad] = deriv.reshape((self.numCorners, self.cellDim))
+      self.basisDeriv[iQuad] = deriv.reshape((self.numBasis, self.cellDim))
 
       iQuad += 1
     return

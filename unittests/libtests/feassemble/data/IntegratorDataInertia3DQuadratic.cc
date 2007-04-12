@@ -23,7 +23,7 @@ const int pylith::feassemble::IntegratorDataInertia3DQuadratic::_numCells = 1;
 
 const int pylith::feassemble::IntegratorDataInertia3DQuadratic::_cellDim = 3;
 
-const int pylith::feassemble::IntegratorDataInertia3DQuadratic::_numCorners = 10;
+const int pylith::feassemble::IntegratorDataInertia3DQuadratic::_numBasis = 10;
 
 const int pylith::feassemble::IntegratorDataInertia3DQuadratic::_numQuadPts = 4;
 
@@ -464,7 +464,7 @@ pylith::feassemble::IntegratorDataInertia3DQuadratic::IntegratorDataInertia3DQua
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  numCorners = _numCorners;
+  numBasis = _numBasis;
   numQuadPts = _numQuadPts;
   fiberDim = _fiberDim;
   vertices = const_cast<double*>(_vertices);

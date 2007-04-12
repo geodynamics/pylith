@@ -23,7 +23,7 @@ const int pylith::feassemble::IntegratorDataInertia2Din3DThree::_numCells = 2;
 
 const int pylith::feassemble::IntegratorDataInertia2Din3DThree::_cellDim = 2;
 
-const int pylith::feassemble::IntegratorDataInertia2Din3DThree::_numCorners = 3;
+const int pylith::feassemble::IntegratorDataInertia2Din3DThree::_numBasis = 3;
 
 const int pylith::feassemble::IntegratorDataInertia2Din3DThree::_numQuadPts = 1;
 
@@ -136,7 +136,7 @@ pylith::feassemble::IntegratorDataInertia2Din3DThree::IntegratorDataInertia2Din3
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  numCorners = _numCorners;
+  numBasis = _numBasis;
   numQuadPts = _numQuadPts;
   fiberDim = _fiberDim;
   vertices = const_cast<double*>(_vertices);
