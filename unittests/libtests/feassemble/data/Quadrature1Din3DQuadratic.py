@@ -40,14 +40,14 @@ class Quadrature1Din3DQuadratic(Quadrature1DQuadratic):
     self.spaceDim = 3
     self.numCells = 1
     self.cellDim = 1
-    self.numCorners = 3
+    self.numBasis = 3
     self.numQuadPts = 2
     
     self.vertices = numpy.array( [[1.0, -1.5, -2.0],
                                   [0.3, 0.3, 0.8],
                                   [-0.5, 2.0, 3.0]],
                                  dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.Int32)
+    self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.int32)
     
     return
 

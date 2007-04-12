@@ -40,7 +40,7 @@ class Quadrature2Din3DQuadratic(Quadrature2DQuadratic):
     self.spaceDim = 3
     self.numCells = 1
     self.cellDim = 2
-    self.numCorners = 6
+    self.numBasis = 6
     self.numQuadPts = 3
     
     self.vertices = numpy.array( [[ 2.0, -0.5, -0.5],
@@ -50,7 +50,7 @@ class Quadrature2Din3DQuadratic(Quadrature2DQuadratic):
                                   [ 0.1,  1.4,  0.9],
                                   [ 0.8, -0.3,  0.7]],
                                  dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1, 2, 3, 4, 5]], dtype=numpy.Int32)
+    self.cells = numpy.array( [[0, 1, 2, 3, 4, 5]], dtype=numpy.int32)
     
     return
 

@@ -89,7 +89,7 @@ class Quadrature3DLinear(QuadratureApp):
     self.spaceDim = 3
     self.numCells = 1
     self.cellDim = 3
-    self.numCorners = 4
+    self.numBasis = 4
     self.numQuadPts = 1
     
     self.quadPtsRef = numpy.array( [[1.0/4.0, 1.0/4.0, 1.0/4.0]],
@@ -99,7 +99,7 @@ class Quadrature3DLinear(QuadratureApp):
                                   [ 2.0, -0.5, -0.4],
                                   [ 1.0, -0.1, -0.3],
                                   [-0.2,  0.5,  2.0]], dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1, 2, 3]], dtype=numpy.Int32)
+    self.cells = numpy.array( [[0, 1, 2, 3]], dtype=numpy.int32)
     return
   
 
@@ -108,17 +108,17 @@ class Quadrature3DLinear(QuadratureApp):
     Calculate basis functions and their derivatives at quadrature points.
     """
 
-    self.basis = numpy.zeros( (self.numQuadPts, self.numCorners),
+    self.basis = numpy.zeros( (self.numQuadPts, self.numBasis),
                               dtype=numpy.float64)
     self.basisDeriv = numpy.zeros( (self.numQuadPts,
-                                    self.numCorners, self.cellDim),
+                                    self.numBasis, self.cellDim),
                                    dtype=numpy.float64)
 
     iQuad = 0
     for q in self.quadPtsRef:
       # Basis functions at quadrature points
       basis = numpy.array([N0(q), N1(q), N2(q), N3(q)], dtype=numpy.float64)
-      self.basis[iQuad] = basis.reshape( (self.numCorners,) )
+      self.basis[iQuad] = basis.reshape( (self.numBasis,) )
 
       # Derivatives of basis functions at quadrature points
       deriv = numpy.array([[N0p(q), N0q(q), N0r(q)],
@@ -126,7 +126,7 @@ class Quadrature3DLinear(QuadratureApp):
                            [N2p(q), N2q(q), N2r(q)],
                            [N3p(q), N3q(q), N3r(q)]],
                           dtype=numpy.float64)      
-      self.basisDeriv[iQuad] = deriv.reshape((self.numCorners, self.cellDim))
+      self.basisDeriv[iQuad] = deriv.reshape((self.numBasis, self.cellDim))
 
       iQuad += 1
     return

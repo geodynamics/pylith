@@ -38,7 +38,7 @@ public:
   int spaceDim; ///< Number of dimensions in vertex coordinates
   int numCells; ///< Number of cells
   int cellDim; ///< Number of dimensions associated with cell
-  int numCorners; ///< Number of vertices in cell
+  int numBasis; ///< Number of vertices in cell
   int numQuadPts; ///< Number of quadrature points
   int fiberDim; ///< Number of values per vertex in field
 

@@ -45,7 +45,7 @@ private:
 
   static const int _cellDim;
 
-  static const int _numCorners;
+  static const int _numBasis;
 
   static const int _numQuadPts;
 

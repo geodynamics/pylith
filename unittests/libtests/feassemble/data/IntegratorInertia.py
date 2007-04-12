@@ -62,12 +62,12 @@ class IntegratorInertia(IntegratorApp):
     self.valsLumped = numpy.zeros( (self.fiberDim*self.numVertices,),
                                    dtype=numpy.float64)
 
-    n = numpy.zeros( (self.fiberDim, self.fiberDim*self.numCorners),
+    n = numpy.zeros( (self.fiberDim, self.fiberDim*self.numBasis),
                      dtype=numpy.float64)
     
     for cell in self.cells:
-      cellMatrix = numpy.zeros( (self.fiberDim*self.numCorners,
-                                 self.fiberDim*self.numCorners),
+      cellMatrix = numpy.zeros( (self.fiberDim*self.numBasis,
+                                 self.fiberDim*self.numBasis),
                                 dtype=numpy.float64)
 
       vertices = self.vertices[cell, :]
@@ -76,7 +76,7 @@ class IntegratorInertia(IntegratorApp):
       density = 1.0
       for iQuad in xrange(self.numQuadPts):
         n *= 0.0
-        for iBasis in xrange(self.numCorners):
+        for iBasis in xrange(self.numBasis):
           for iDim in xrange(self.fiberDim):
             n[iDim, iBasis*self.fiberDim+iDim] = self.basis[iQuad, iBasis]
 
@@ -97,8 +97,8 @@ class IntegratorInertia(IntegratorApp):
     (nrows, ncols) = matrix.shape
     lumped = numpy.zeros( (ncols), dtype=numpy.float64)
     
-    for iVertex in xrange(self.numCorners):
-      i = numpy.asarray(range(self.numCorners))
+    for iVertex in xrange(self.numBasis):
+      i = numpy.asarray(range(self.numBasis))
       for iDim in xrange(self.fiberDim):
         iR = iVertex * self.fiberDim + iDim
         indices = self.fiberDim * i + iDim

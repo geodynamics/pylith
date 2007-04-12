@@ -23,7 +23,7 @@ const int pylith::feassemble::QuadratureData2Din3DLinearYZ::_numCells = 1;
 
 const int pylith::feassemble::QuadratureData2Din3DLinearYZ::_cellDim = 2;
 
-const int pylith::feassemble::QuadratureData2Din3DLinearYZ::_numCorners = 3;
+const int pylith::feassemble::QuadratureData2Din3DLinearYZ::_numBasis = 3;
 
 const int pylith::feassemble::QuadratureData2Din3DLinearYZ::_numQuadPts = 1;
 
@@ -80,7 +80,7 @@ pylith::feassemble::QuadratureData2Din3DLinearYZ::QuadratureData2Din3DLinearYZ(v
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  numCorners = _numCorners;
+  numBasis = _numBasis;
   numQuadPts = _numQuadPts;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);

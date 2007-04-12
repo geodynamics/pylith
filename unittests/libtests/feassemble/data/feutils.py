@@ -50,7 +50,7 @@ def calculateJacobian(quadrature, vertices):
       jacobianDet[iQuad] = det
 
       if 1 == quadrature.cellDim:
-        jacobianInv[iQuad] = 1.0 / j
+        jacobianInv[iQuad] = 1.0 / j.transpose()
       elif 2 == quadrature.cellDim:
         minJacobian = 1.0e-06
         jj01 = j[:,[0,1]]

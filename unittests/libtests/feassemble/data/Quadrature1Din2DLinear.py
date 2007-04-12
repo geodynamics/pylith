@@ -40,12 +40,12 @@ class Quadrature1Din2DLinear(Quadrature1DLinear):
     self.spaceDim = 2
     self.numCells = 1
     self.cellDim = 1
-    self.numCorners = 2
+    self.numBasis = 2
     self.numQuadPts = 1
     
     self.vertices = numpy.array( [[-0.2, -0.5], [0.7, 0.3]],
                                  dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1]], dtype=numpy.Int32)
+    self.cells = numpy.array( [[0, 1]], dtype=numpy.int32)
     return
   
 

@@ -45,12 +45,6 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(
 { // computeGeometry
   assert(1 == _cellDim);
   assert(2 == _spaceDim);
-  assert(0 != _basisDeriv);
-  assert(0 != _quadPtsRef);
-  assert(0 != _quadPts);
-  assert(0 != _quadWts);
-  assert(0 != _jacobian);
-  assert(0 != _jacobianInv);
 
   _resetGeometry();
 
@@ -66,44 +60,41 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(
     // Compute coordinates of quadrature point in cell
     // x = sum[i=0,n-1] (Ni * xi)
     // y = sum[i=0,n-1] (Ni * yi)
-    for (int iVertex=0, iB=iQuadPt*_numCorners;
-	 iVertex < _numCorners;
-	 ++iVertex) {
-      const double basis = _basis[iB+iVertex];
-      for (int iDim=0, iQ=iQuadPt*_spaceDim, iV=iVertex*_spaceDim;
-	   iDim < _spaceDim;
-	   ++iDim)
-	_quadPts[iQ+iDim] +=  basis * vertCoords[iV+iDim];
+    for (int iBasis=0; iBasis < _numBasis; ++iBasis) {
+      const double basis = _basis[iQuadPt*_numBasis+iBasis];
+      for (int iDim=0; iDim < _spaceDim; ++iDim)
+	_quadPts[iQuadPt*_spaceDim+iDim] +=
+	  basis * vertCoords[iBasis*_spaceDim+iDim];
     } // for
     
     // Compute Jacobian at quadrature point
     // J = [dx/dp dy/dp]
     // dx/dp = sum[i=0,n-1] (dNi/dp * xi)
     // dy/dp = sum[i=0,n-1] (dNi/dp * yi)
-    for (int iVertex=0, iB=iQuadPt*_numCorners;
-	 iVertex < _numCorners;
-	 ++iVertex) {
-      const double deriv = _basisDeriv[iB+iVertex];
-      for (int iDim=0, iJ=iQuadPt*_spaceDim, iV=iVertex*_spaceDim;
-	   iDim < _spaceDim;
-	   ++iDim)
-	_jacobian[iJ+iDim] += deriv * vertCoords[iV+iDim];
+    for (int iBasis=0; iBasis < _numBasis; ++iBasis) {
+      const double deriv = _basisDeriv[iQuadPt*_numBasis+iBasis];
+      for (int iDim=0; iDim < _spaceDim; ++iDim)
+	_jacobian[iQuadPt*_spaceDim+iDim] += 
+	  deriv * vertCoords[iBasis*_spaceDim+iDim];
     } // for
 
     // Compute determinant of Jacobian at quadrature point
     // |J| = sqrt(J transpose(J))
     double det = 0.0;
-    for (int iDim=0, iJ=iQuadPt*_spaceDim; iDim < _spaceDim; ++iDim)
-      det += _jacobian[iJ+iDim]*_jacobian[iJ+iDim];
+    for (int iDim=0; iDim < _spaceDim; ++iDim)
+      det += _jacobian[iQuadPt*_spaceDim+iDim] * 
+	_jacobian[iQuadPt*_spaceDim+iDim];
     det = sqrt(det);
     _checkJacobianDet(det);
     _jacobianDet[iQuadPt] = det;
 
     // Compute inverse of Jacobian at quadrature point
     // Jinv = 1.0/[J]
-    for (int iDim=0, iJ=iQuadPt*_spaceDim; iDim < _spaceDim; ++iDim)
-      _jacobianInv[iJ+iDim] = 1.0/_jacobian[iJ+iDim];
+    for (int iDim=0; iDim < _spaceDim; ++iDim)
+      _jacobianInv[iQuadPt*_spaceDim+iDim] = 
+	1.0 / _jacobian[iQuadPt*_spaceDim+iDim];
   } // for
 } // computeGeometry
+
 
 // End of file 

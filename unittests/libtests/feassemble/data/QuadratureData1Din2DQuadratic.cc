@@ -23,7 +23,7 @@ const int pylith::feassemble::QuadratureData1Din2DQuadratic::_numCells = 1;
 
 const int pylith::feassemble::QuadratureData1Din2DQuadratic::_cellDim = 1;
 
-const int pylith::feassemble::QuadratureData1Din2DQuadratic::_numCorners = 3;
+const int pylith::feassemble::QuadratureData1Din2DQuadratic::_numBasis = 3;
 
 const int pylith::feassemble::QuadratureData1Din2DQuadratic::_numQuadPts = 2;
 
@@ -91,7 +91,7 @@ pylith::feassemble::QuadratureData1Din2DQuadratic::QuadratureData1Din2DQuadratic
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  numCorners = _numCorners;
+  numBasis = _numBasis;
   numQuadPts = _numQuadPts;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);

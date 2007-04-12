@@ -19,7 +19,7 @@ pylith::feassemble::IntegratorData::IntegratorData(void) :
   spaceDim(0),
   numCells(0),
   cellDim(0),
-  numCorners(0),
+  numBasis(0),
   numQuadPts(0),
   fiberDim(0),
   vertices(0),

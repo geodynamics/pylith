@@ -31,7 +31,9 @@
 #if !defined(pylith_feassemble_quadrature_hh)
 #define pylith_feassemble_quadrature_hh
 
-#include <Mesh.hh>
+#include <petscmesh.h>
+
+#include "pylith/utils/array.hh" // HASA double_array
 
 namespace pylith {
   namespace feassemble {
@@ -46,7 +48,7 @@ class pylith::feassemble::Quadrature
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public :
 
-  typedef ALE::Mesh               Mesh;
+  typedef ALE::Mesh Mesh;
   typedef Mesh::real_section_type real_section_type;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
@@ -70,16 +72,16 @@ public :
    *   N0Qp0, N1Qp0, ...
    *   N0Qp1, N1Qp1, ...
    *   ...
-   *   size = numQuadPts * numCorners
-   *   index = iQuadPt*numCorners + iBasis
+   *   size = numQuadPts * numBasis
+   *   index = iQuadPt*numBasis + iBasis
    *
    * @param basisDeriv Array of basis function derivaties evaluated 
    *   at quadrature pts
    *   N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
    *   N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
    *   ...
-   *   size = numCorners * numQuadPts * cellDim
-   *   index = iQuadPt*numCorners*cellDim + iBasis*cellDim + iDim
+   *   size = numBasis * numQuadPts * cellDim
+   *   index = iQuadPt*numBasis*cellDim + iBasis*cellDim + iDim
    *
    * @param quadPts Array of coordinates of quadrature points in 
    *   reference cell
@@ -93,7 +95,7 @@ public :
    *   index = iQuadPt
    *
    * @param cellDim Number of dimensions in reference cell
-   * @param numCorners Number of vertices in a cell
+   * @param numBasis Number of vertices in a cell
    * @param numQuadPts Number of quadrature points
    * @param spaceDim Number of dimensions in coordinates of cell vertices
    */
@@ -102,7 +104,7 @@ public :
 		  const double* quadPtsRef,
 		  const double* quadWts,
 		  const int cellDim,
-		  const int numCorners,
+		  const int numBasis,
 		  const int numQuadPts,
 		  const int spaceDim);
 
@@ -122,38 +124,38 @@ public :
    *
    * @returns Array of basis fns evaluated at quadrature points
    */
-  const double* basis(void) const;
+  const double_array& basis(void) const;
 
   /** Get derivatives of basis fns evaluated at quadrature points.
    *
    * @returns Array of derivatives of basis fns evaluated at
    * quadrature points
    */
-  const double* basisDeriv(void) const;
+  const double_array& basisDeriv(void) const;
 
   /** Get coordinates of quadrature points in cell (NOT reference cell).
    *
    * @returns Array of coordinates of quadrature points in cell
    */
-  const double* quadPts(void) const;
+  const double_array& quadPts(void) const;
 
   /** Get weights of quadrature points.
    *
    * @returns Weights of quadrature points
    */
-  const double* quadWts(void) const;
+  const double_array& quadWts(void) const;
 
   /** Get Jacobian inverses evaluated at quadrature points.
    *
    * @returns Array of Jacobian inverses evaluated at quadrature points.
    */
-  const double* jacobianInv(void) const;
+  const double_array& jacobianInv(void) const;
 
   /** Get determinants of Jacobian evaluated at quadrature points.
    *
    * @returns Array of determinants of Jacobian evaluated at quadrature pts
    */
-  const double* jacobianDet(void) const;
+  const double_array& jacobianDet(void) const;
 
   /** Get number of dimensions in reference cell.
    *
@@ -161,11 +163,11 @@ public :
    */
   int cellDim(void) const;
 
-  /** Get number of vertices in cell.
+  /** Get number of basis functions for cell.
    *
-   * @returns Number of vertices in cell
+   * @returns Number of basis functions for cell
    */
-  int numCorners(void) const;
+  int numBasis(void) const;
 
   /** Get number of quadrature points.
    *
@@ -186,7 +188,7 @@ public :
    */
   virtual 
   void computeGeometry(const ALE::Obj<Mesh>& mesh,
-               const ALE::Obj<real_section_type>& coordinates,
+		       const ALE::Obj<real_section_type>& coordinates,
 		       const Mesh::point_type& cell) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
@@ -219,20 +221,20 @@ protected :
    * N0Qp0, N1Qp0, ...
    * N0Qp1, N1Qp1, ...
    *
-   * size = numQuadPts * numCorners
-   * index = iQuadPt*numCorners + iBasis
+   * size = numQuadPts * numBasis
+   * index = iQuadPt*numBasis + iBasis
    */
-  double* _basis;
+  double_array _basis;
 
   /** Array of basis function derivatives evaluated at the quadrature points.
    *
    * N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
    * N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
    *
-   * size = numQuadPts * numCorners * cellDim
-   * index = iQuadPt*numCorners*cellDim + iBasis*cellDim + iDim
+   * size = numQuadPts * numBasis * cellDim
+   * index = iQuadPt*numBasis*cellDim + iBasis*cellDim + iDim
    */
-  double* _basisDeriv;
+  double_array _basisDeriv;
 
   /** Array of coordinates of quadrature points in reference cell.
    *
@@ -244,7 +246,7 @@ protected :
    * size = numQuadPts * cellDim
    * index = iQuadPts*cellDim + iDim
    */
-  double* _quadPtsRef;
+  double_array _quadPtsRef;
 
   /** Array of coordinates of quadrature points in cell (NOT reference cell).
    *
@@ -254,7 +256,7 @@ protected :
    * size = numQuadPts * spaceDim
    * index = iQuadPts*spaceDim + iDim
    */
-  double* _quadPts;
+  double_array _quadPts;
 
   /** Array of weights of quadrature points.
    *
@@ -262,7 +264,7 @@ protected :
    * size = numQuadPts
    * index = iQuadPt
    */
-  double* _quadWts;
+  double_array _quadWts;
 
   /** Array of Jacobian evaluated at quadrature points.
    *
@@ -273,7 +275,7 @@ protected :
    * size = numQuadPts*cellDim*spaceDim
    * index = iQuadPt*cellDim*spaceDim + iRow*spaceDim + iCol
    */
-  double* _jacobian;
+  double_array _jacobian;
 
   /** Array of Jacobian inverses evaluated at quadrature points.
    *
@@ -284,7 +286,7 @@ protected :
    * size = numQuadPts*spaceDim*cellDim
    * index = iQuadPt*spaceDim*cellDim + iRow*cellDim + iCol
    */
-  double* _jacobianInv;
+  double_array _jacobianInv;
 
   /** Array of determinant of Jacobian evaluated at quadrature points.
    *
@@ -293,10 +295,10 @@ protected :
    * size = numQuadPts
    * index = iQuadPt
    */
-  double* _jacobianDet;
+  double_array _jacobianDet;
 
   int _cellDim; ///< Number of dimensions in reference cell
-  int _numCorners; ///< Number of vertices in cell
+  int _numBasis; ///< Number of basis functions for cell
   int _numQuadPts; ///< Number of quadrature points
   int _spaceDim; ///< Number of dimensions in coordinates of cell vertices
 

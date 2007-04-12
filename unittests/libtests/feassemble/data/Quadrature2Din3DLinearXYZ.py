@@ -40,14 +40,14 @@ class Quadrature2Din3DLinearXYZ(Quadrature2DLinear):
     self.spaceDim = 3
     self.numCells = 1
     self.cellDim = 2
-    self.numCorners = 3
+    self.numBasis = 3
     self.numQuadPts = 1
     
     self.vertices = numpy.array( [[ 0.5, -2.0, -0.5],
                                   [ 3.0,  0.5,  0.0],
                                   [-1.0,  2.0,  4.0]],
                                  dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.Int32)
+    self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.int32)
     return
   
 

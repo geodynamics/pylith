@@ -26,7 +26,7 @@ pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
   typedef Mesh::label_type label_type;
 
   // buildTopology() requires zero based index
-  assert(true == data.useIndexZero);
+  CPPUNIT_ASSERT(true == data.useIndexZero);
 
   const int cellDim = data.cellDim;
   const int numCorners = data.numCorners;

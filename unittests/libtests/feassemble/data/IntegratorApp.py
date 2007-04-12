@@ -59,7 +59,7 @@ class IntegratorApp(Script):
     self.spaceDim = None
     self.numCells = None
     self.cellDim = None
-    self.numCorners = None
+    self.numBasis = None
     self.numQuadPts = None
     self.fiberDim = None
 
@@ -106,7 +106,7 @@ class IntegratorApp(Script):
     q = self.quadrature
     q.calculateBasis()
     self.spaceDim = q.spaceDim
-    self.numCorners = q.numCorners
+    self.numBasis = q.numBasis
     self.cellDim = q.cellDim
     self.numQuadPts = q.numQuadPts
     self.basis = q.basis
@@ -142,8 +142,8 @@ class IntegratorApp(Script):
                         format="%d")
     self.data.addScalar(vtype="int", name="_cellDim", value=self.cellDim,
                         format="%d")
-    self.data.addScalar(vtype="int", name="_numCorners", value=
-                        self.numCorners,
+    self.data.addScalar(vtype="int", name="_numBasis", value=
+                        self.numBasis,
                         format="%d")
     self.data.addScalar(vtype="int", name="_numQuadPts",
                         value=self.numQuadPts,

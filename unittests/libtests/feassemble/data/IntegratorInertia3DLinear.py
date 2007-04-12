@@ -48,7 +48,7 @@ class IntegratorInertia3DLinear(IntegratorInertia):
                                   [ 2.0, -0.5, -0.4],
                                   [ 1.0, -0.1, -0.3],
                                   [-0.2,  0.5,  2.0]], dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1, 2, 3]], dtype=numpy.Int32)
+    self.cells = numpy.array( [[0, 1, 2, 3]], dtype=numpy.int32)
     self.fieldIn = numpy.array( [[ 1.2], [ 0.1], [-0.3],
                                  [ 0.2], [-0.8], [ 1.2],
                                  [ 1.3], [-0.2], [ 1.7],

@@ -161,7 +161,7 @@ class Quadrature3DQuadratic(QuadratureApp):
     self.spaceDim = 3
     self.numCells = 1
     self.cellDim = 3
-    self.numCorners = 10
+    self.numBasis = 10
     self.numQuadPts = 4
 
     # These are just approximate points used to test the quadrature routine
@@ -185,7 +185,7 @@ class Quadrature3DQuadratic(QuadratureApp):
                                   [ 1.1, -0.8,  0.7]],
                                  dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
-                              dtype=numpy.Int32)
+                              dtype=numpy.int32)
     
     return
 
@@ -195,10 +195,10 @@ class Quadrature3DQuadratic(QuadratureApp):
     Calculate basis functions and their derivatives at quadrature points.
     """
 
-    self.basis = numpy.zeros( (self.numQuadPts, self.numCorners),
+    self.basis = numpy.zeros( (self.numQuadPts, self.numBasis),
                               dtype=numpy.float64)
     self.basisDeriv = numpy.zeros( (self.numQuadPts,
-                                    self.numCorners, self.cellDim),
+                                    self.numBasis, self.cellDim),
                                    dtype=numpy.float64)
 
     iQuad = 0
@@ -207,7 +207,7 @@ class Quadrature3DQuadratic(QuadratureApp):
       basis = numpy.array([N0(q), N1(q), N2(q), N3(q), N4(q),
                            N5(q), N6(q), N7(q), N8(q), N9(q)],
                           dtype=numpy.float64)
-      self.basis[iQuad] = basis.reshape( (self.numCorners,) )
+      self.basis[iQuad] = basis.reshape( (self.numBasis,) )
 
       # Derivatives of basis functions at quadrature points
       deriv = numpy.array([[N0p(q), N0q(q), N0r(q)],
@@ -221,7 +221,7 @@ class Quadrature3DQuadratic(QuadratureApp):
                            [N8p(q), N8q(q), N8r(q)],
                            [N9p(q), N9q(q), N9r(q)]],
                           dtype=numpy.float64)      
-      self.basisDeriv[iQuad] = deriv.reshape((self.numCorners, self.cellDim))
+      self.basisDeriv[iQuad] = deriv.reshape((self.numBasis, self.cellDim))
 
       iQuad += 1
     return

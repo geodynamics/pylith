@@ -45,12 +45,6 @@ pylith::feassemble::Quadrature2D::computeGeometry(
 { // computeGeometry
   assert(2 == _cellDim);
   assert(2 == _spaceDim);
-  assert(0 != _basisDeriv);
-  assert(0 != _quadPtsRef);
-  assert(0 != _quadPts);
-  assert(0 != _quadWts);
-  assert(0 != _jacobian);
-  assert(0 != _jacobianInv);
 
   _resetGeometry();
 
@@ -66,14 +60,11 @@ pylith::feassemble::Quadrature2D::computeGeometry(
     // Compute coordinates of quadrature point in cell
     // x = sum[i=0,n-1] (Ni * xi)
     // y = sum[i=0,n-1] (Ni * yi)
-    for (int iVertex=0, iB=iQuadPt*_numCorners;
-	 iVertex < _numCorners;
-	 ++iVertex) {
-      const double basis = _basis[iB+iVertex];
-      for (int iDim=0, iQ=iQuadPt*_spaceDim, iV=iVertex*_spaceDim;
-	   iDim < _spaceDim;
-	   ++iDim)
-	_quadPts[iQ+iDim] +=  basis * vertCoords[iV+iDim];
+    for (int iBasis=0; iBasis < _numBasis; ++iBasis) {
+      const double basis = _basis[iQuadPt*_numBasis+iBasis];
+      for (int iDim=0; iDim < _spaceDim; ++iDim)
+	_quadPts[iQuadPt*_spaceDim+iDim] += 
+	  basis * vertCoords[iBasis*_spaceDim+iDim];
     } // for
     
     // Compute Jacobian at quadrature point
@@ -83,16 +74,13 @@ pylith::feassemble::Quadrature2D::computeGeometry(
     // dy/dp = sum[i=0,n-1] (dNi/dp * yi)
     // dx/dq = sum[i=0,n-1] (dNi/dq * xi)
     // dy/dq = sum[i=0,n-1] (dNi/dq * yi)
-    for (int iVertex=0; iVertex < _numCorners; ++iVertex)
-      for (int iRow=0, 
-	     iB=iQuadPt*_numCorners*_spaceDim+iVertex*_cellDim;
-	   iRow < _cellDim;
-	   ++iRow) {
-	const double deriv = _basisDeriv[iB+iRow];
-	for (int iCol=0, iJ=iQuadPt*_cellDim*_spaceDim + iRow*_spaceDim;
-	     iCol < _spaceDim;
-	     ++iCol)
-	  _jacobian[iJ+iCol] += deriv * vertCoords[iVertex*_spaceDim+iCol];
+    for (int iBasis=0; iBasis < _numBasis; ++iBasis)
+      for (int iRow=0; iRow < _cellDim; ++iRow) {
+	const double deriv = 
+	  _basisDeriv[iQuadPt*_numBasis*_spaceDim+iBasis*_cellDim+iRow];
+	for (int iCol=0; iCol < _spaceDim; ++iCol)
+	  _jacobian[iQuadPt*_cellDim*_spaceDim+iRow*_spaceDim+iCol] +=
+	    deriv * vertCoords[iBasis*_spaceDim+iCol];
       } // for
   
     // Compute determinant of Jacobian at quadrature point
@@ -116,5 +104,6 @@ pylith::feassemble::Quadrature2D::computeGeometry(
     _jacobianInv[i11] = _jacobian[i00] / det;
   } // for
 } // computeGeometry
+
 
 // End of file 

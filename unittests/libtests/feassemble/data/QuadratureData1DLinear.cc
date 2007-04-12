@@ -23,7 +23,7 @@ const int pylith::feassemble::QuadratureData1DLinear::_numCells = 1;
 
 const int pylith::feassemble::QuadratureData1DLinear::_cellDim = 1;
 
-const int pylith::feassemble::QuadratureData1DLinear::_numCorners = 2;
+const int pylith::feassemble::QuadratureData1DLinear::_numBasis = 2;
 
 const int pylith::feassemble::QuadratureData1DLinear::_numQuadPts = 1;
 
@@ -76,7 +76,7 @@ pylith::feassemble::QuadratureData1DLinear::QuadratureData1DLinear(void)
   spaceDim = _spaceDim;
   numCells = _numCells;
   cellDim = _cellDim;
-  numCorners = _numCorners;
+  numBasis = _numBasis;
   numQuadPts = _numQuadPts;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
