@@ -35,6 +35,7 @@ public :
 public:
 
   int dimension; ///< Number of dimensions
+  int numLocs; ///< Number of locations
 
   int numDBValues; ///< Number of database values
   int numParameters; ///< Number of parameters
@@ -42,8 +43,8 @@ public:
   char** dbValues; ///< Aray of names of database values;
   char** parameterNames; //< Array of names of parameters
 
-  double* dbData; ///< Array of database values
-  double* parameterData; ///< Array of parameter values
+  double* dbData; ///< Array of database values at locations
+  double* parameterData; ///< Array of parameter values at locations
 };
 
 #endif // pylith_materials_materialdata_hh

@@ -32,11 +32,21 @@ if [ $1 == "elastic" ] || [ $1 == "all" ]; then
     --data.object=ElasticPlaneStrainData \
     --data.parent=ElasticMaterialData
 
+  python ElasticPlaneStress.py \
+    --data.namespace=pylith,materials \
+    --data.object=ElasticPlaneStressData \
+    --data.parent=ElasticMaterialData
+
   # 1-D ----------------------------------------------------------------
 
   python ElasticStrain1D.py \
     --data.namespace=pylith,materials \
     --data.object=ElasticStrain1DData \
+    --data.parent=ElasticMaterialData
+
+  python ElasticStress1D.py \
+    --data.namespace=pylith,materials \
+    --data.object=ElasticStress1DData \
     --data.parent=ElasticMaterialData
 
 fi

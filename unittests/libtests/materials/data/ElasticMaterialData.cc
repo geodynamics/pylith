@@ -13,7 +13,6 @@
 #include "ElasticMaterialData.hh"
 
 pylith::materials::ElasticMaterialData::ElasticMaterialData(void) :
-  numLocs(0),
   density(0),
   strain(0),
   stress(0),

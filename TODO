@@ -11,22 +11,17 @@ Error checking
 
   add isNull() assertions before using ALE::Obj.
 
-  add check to material::initialize material dimension must match cell dimension
+  add check to material::initialize: material dimension must match
+  cell dimension
 
 0. Update unit testing.
-
-  a.  Add unit tests for ElasticStrain1D, ElasticStress1D,
-      ElasticPlaneStrain, ElasticPlaneStress.
-
-      Need to check parameters for multiple locations or get rid of
-      multiple locations in test data.
 
   b. Update MeshIOAscii tests (groups of vertices and cells)
 
 1. Finish implementing ExplicitElasticity and Explicit
    a. Double check loops for calcConstant() and calcJacobian()
    b. Make sure memory allocation/deallocation is outside loop over cells
-   b. Create complete test (1 time step)
+   b. Create unit test (construction of constant term and Jacobian)
 
 2. Start implementing faults
    a. Create Faults object
