@@ -36,8 +36,6 @@ public:
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-  int numLocs; ///< Number of locations
-
   double* density; ///< Density at locations
   double* strain; ///< Strain at locations
   double* stress; ///< Stress at locations

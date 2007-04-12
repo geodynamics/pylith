@@ -25,7 +25,9 @@ testmaterials_SOURCES = \
 	TestElasticMaterial.cc \
 	TestElasticIsotropic3D.cc \
 	TestElasticPlaneStrain.cc \
+	TestElasticPlaneStress.cc \
 	TestElasticStrain1D.cc \
+	TestElasticStress1D.cc \
 	test_materials.cc
 
 noinst_HEADERS = \
@@ -37,14 +39,18 @@ testmaterials_SOURCES += \
 	data/ElasticMaterialData.cc \
 	data/ElasticIsotropic3DData.cc \
 	data/ElasticPlaneStrainData.cc \
-	data/ElasticStrain1DData.cc
+	data/ElasticPlaneStressData.cc \
+	data/ElasticStrain1DData.cc \
+	data/ElasticStress1DData.cc
 
 noinst_HEADERS += \
 	data/MaterialData.hh \
 	data/ElasticMaterialData.hh \
 	data/ElasticIsotropic3DData.hh \
 	data/ElasticPlaneStrainData.hh \
+	data/ElasticPlaneStressData.hh \
 	data/ElasticStrain1DData.hh \
+	data/ElasticStress1DData.hh \
 	data/header.hh
 
 testmaterials_LDFLAGS = $(PETSC_LIB)

@@ -199,20 +199,25 @@ pylith::materials::TestMaterial::_testDBToParameters(Material* material,
 { // _testDBToParameters
   CPPUNIT_ASSERT(0 != material);
   
-  double_array dbData(data.numDBValues);
-  for (int i=0; i < data.numDBValues; ++i)
-    dbData[i] = data.dbData[i];
+  const int numLocs = data.numLocs;
+  const int numDBValues = data.numDBValues;
+  double_array dbData(numDBValues);
 
-  const int numParameters = data.numParameters;
-  double* const parameterDataE = data.parameterData;
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    for (int i=0; i < numDBValues; ++i)
+      dbData[i] = data.dbData[iLoc*numDBValues+i];
 
-  double_array parameterData(numParameters);
-  material->_dbToParameters(&parameterData, dbData);
+    const int numParameters = data.numParameters;
+    double* const parameterDataE = &data.parameterData[iLoc*numParameters];
 
-  const double tolerance = 1.0e-06;
-  for (int i=0; i < numParameters; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, parameterData[i]/parameterDataE[i],
-				 tolerance);
+    double_array parameterData(numParameters);
+    material->_dbToParameters(&parameterData, dbData);
+
+    const double tolerance = 1.0e-06;
+    for (int i=0; i < numParameters; ++i)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, parameterData[i]/parameterDataE[i],
+				   tolerance);
+  } // for
 } // _testDBToParameters
 
 // ----------------------------------------------------------------------

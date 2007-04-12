@@ -62,6 +62,18 @@ class TestApp(Script):
     from TestElasticIsotropic3D import TestElasticIsotropic3D
     suite.addTest(unittest.makeSuite(TestElasticIsotropic3D))
 
+    from TestElasticPlaneStrain import TestElasticPlaneStrain
+    suite.addTest(unittest.makeSuite(TestElasticPlaneStrain))
+
+    from TestElasticPlaneStress import TestElasticPlaneStress
+    suite.addTest(unittest.makeSuite(TestElasticPlaneStress))
+
+    from TestElasticStrain1D import TestElasticStrain1D
+    suite.addTest(unittest.makeSuite(TestElasticStrain1D))
+
+    from TestElasticStress1D import TestElasticStress1D
+    suite.addTest(unittest.makeSuite(TestElasticStress1D))
+
     return suite
 
 
