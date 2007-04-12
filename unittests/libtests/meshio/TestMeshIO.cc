@@ -14,6 +14,8 @@
 
 #include "TestMeshIO.hh" // Implementation of class methods
 
+#include "pylith/meshio/MeshIO.hh" // USES MeshIO
+
 #include "data/MeshData.hh"
 
 // ----------------------------------------------------------------------
@@ -152,5 +154,34 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
 
   // :TODO: Check groups of vertices
 } // checkVals
+
+// ----------------------------------------------------------------------
+// Test debug()
+void
+pylith::meshio::TestMeshIO::_testDebug(MeshIO& iohandler)
+{ // testDebug
+  bool debug = false;
+  iohandler.debug(debug);
+  CPPUNIT_ASSERT_EQUAL(debug, iohandler.debug());
+  
+  debug = true;
+  iohandler.debug(debug);
+  CPPUNIT_ASSERT_EQUAL(debug, iohandler.debug());  
+} // testDebug
+
+// ----------------------------------------------------------------------
+// Test interpolate()
+void
+pylith::meshio::TestMeshIO::_testInterpolate(MeshIO& iohandler)
+{ // testInterpolate
+  bool interpolate = false;
+  iohandler.interpolate(interpolate);
+  CPPUNIT_ASSERT_EQUAL(interpolate, iohandler.interpolate());
+  
+  interpolate = true;
+  iohandler.interpolate(interpolate);
+  CPPUNIT_ASSERT_EQUAL(interpolate, iohandler.interpolate());  
+} // testInterpolate
+
 
 // End of file 

@@ -38,6 +38,7 @@ class MeshGenerator(Component):
     ##
     ## \b Properties
     ## @li \b debug Debugging flag for mesh.
+    ## @li \b interpolate Build intermediate mesh topology elements (if true)
     ##
     ## \b Facilities
     ## @li None
@@ -47,6 +48,9 @@ class MeshGenerator(Component):
     debug = pyre.inventory.bool("debug", default=False)
     debug.meta['tip'] = "Debugging flag for mesh."
 
+    interpolate = pyre.inventory.bool("interpolate", default=False)
+    interpolate.meta['tip'] = "Build intermediate mesh topology elements"
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -55,6 +59,8 @@ class MeshGenerator(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="mesh_generator")
+    self.debug = False
+    self.interpolate = False
     return
 
 
@@ -74,6 +80,7 @@ class MeshGenerator(Component):
     """
     Component._configure(self)
     self.debug = self.inventory.debug
+    self.interpolate = self.inventory.interpolate
     return
 
 

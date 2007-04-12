@@ -39,6 +39,18 @@ public :
   /// Destructor
   virtual ~MeshIO(void);
 
+  /** Set debug flag for mesh.
+   *
+   * @param flag True to print debugging information.
+   */
+  void debug(const bool flag);
+
+  /** Get debug flag for mesh.
+   *
+   * @returns True if debugging is on.
+   */
+  bool debug(void) const;
+
   /** Set flag associated with building intermediate mesh topology
    *  elements.
    *
@@ -187,6 +199,7 @@ protected :
 private :
 
   bool _useIndexZero; ///< Flag indicating if indicates start at 0 (T) or 1 (F)
+  bool _debug; ///< True to turn of mesh debugging output
   bool _interpolate; ///< True if building intermediate topology elements
 
   ALE::Obj<Mesh>* _mesh; ///< Pointer to PETSc mesh object

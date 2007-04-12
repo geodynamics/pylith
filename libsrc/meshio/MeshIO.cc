@@ -22,6 +22,7 @@
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
   _useIndexZero(true),
+  _debug(false),
   _interpolate(false),
   _mesh(0)
 { // constructor
@@ -81,19 +82,19 @@ pylith::meshio::MeshIO::_buildMesh(const double* coordinates,
   assert(0 != _mesh);
 
   *_mesh = new Mesh(PETSC_COMM_WORLD, meshDim);
-  ALE::Obj<Mesh>& mesh = *_mesh;
-  mesh.addRef();
-  
-  ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
+  assert(!_mesh->isNull());
+  (*_mesh)->setDebug(_debug);
+
+  ALE::Obj<sieve_type> sieve = new sieve_type((*_mesh)->comm());
 
   ALE::SieveBuilder<Mesh>::buildTopology(sieve, meshDim, 
                                          numCells, 
                                          const_cast<int*>(cells), 
                                          numVertices, 
                                          _interpolate, numCorners);
-  mesh->setSieve(sieve);
-  mesh->stratify();
-  ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, coordinates);
+  (*_mesh)->setSieve(sieve);
+  (*_mesh)->stratify();
+  ALE::SieveBuilder<Mesh>::buildCoordinates(*_mesh, spaceDim, coordinates);
 } // _buildMesh
 
 // ----------------------------------------------------------------------

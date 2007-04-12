@@ -14,6 +14,7 @@ SUBDIRS = \
 	feassemble \
 	materials \
 	meshio \
+	topology \
 	utils
 
 # End of file 

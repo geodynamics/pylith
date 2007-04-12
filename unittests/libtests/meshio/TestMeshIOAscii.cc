@@ -23,8 +23,6 @@
 #include "data/MeshData2Din3D.hh"
 #include "data/MeshData3D.hh"
 
-#include <assert.h> // USES assert()
-
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestMeshIOAscii );
 
@@ -35,6 +33,24 @@ pylith::meshio::TestMeshIOAscii::testConstructor(void)
 { // testConstructor
   MeshIOAscii iohandler;
 } // testConstructor
+
+// ----------------------------------------------------------------------
+// Test debug()
+void
+pylith::meshio::TestMeshIOAscii::testDebug(void)
+{ // testDebug
+  MeshIOAscii iohandler;
+  _testDebug(iohandler);
+} // testDebug
+
+// ----------------------------------------------------------------------
+// Test interpolate()
+void
+pylith::meshio::TestMeshIOAscii::testInterpolate(void)
+{ // testInterpolate
+  MeshIOAscii iohandler;
+  _testInterpolate(iohandler);
+} // testInterpolate
 
 // ----------------------------------------------------------------------
 // Test filename()

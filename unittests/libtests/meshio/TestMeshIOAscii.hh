@@ -38,6 +38,8 @@ class pylith::meshio::TestMeshIOAscii : public TestMeshIO
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestMeshIOAscii );
   CPPUNIT_TEST( testConstructor );
+  CPPUNIT_TEST( testDebug );
+  CPPUNIT_TEST( testInterpolate );
   CPPUNIT_TEST( testFilename );
   CPPUNIT_TEST( testWriteRead1D );
   CPPUNIT_TEST( testWriteRead1Din2D );
@@ -52,6 +54,12 @@ public :
 
   /// Test constructor
   void testConstructor(void);
+
+  /// Test debug()
+  void testDebug(void);
+
+  /// Test interpolate()
+  void testInterpolate(void);
 
   /// Test filename()
   void testFilename(void);

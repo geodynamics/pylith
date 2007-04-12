@@ -153,6 +153,42 @@ cdef class MeshIO:
       return MeshIO_interpolate_get(self.thisptr)
 
 
+  property debug:
+    def __set__(self, flag):
+      """Set debug."""
+      # create shim for method 'debug'
+      #embed{ void MeshIO_debug_set(void* pObj, int flag)
+      try {
+        ((pylith::meshio::MeshIO*) pObj)->debug(flag);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      MeshIO_debug_set(self.thisptr, flag)
+
+    def __get__(self):
+      """Get debug."""
+      # create shim for method 'debug'
+      #embed{ int MeshIO_debug_get(void* pObj)
+      int result = 0;
+      try {
+        result = ((pylith::meshio::MeshIO*) pObj)->debug();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return MeshIO_debug_get(self.thisptr)
+
+
 # ----------------------------------------------------------------------
 cdef class MeshIOAscii(MeshIO):
 

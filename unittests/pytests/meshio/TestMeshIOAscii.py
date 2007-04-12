@@ -15,6 +15,7 @@
 ## @brief Unit testing of Python MeshIOAscii object.
 
 import unittest
+
 from pylith.meshio.MeshIOAscii import MeshIOAscii
 
 # ----------------------------------------------------------------------
@@ -28,7 +29,7 @@ class TestMeshIOAscii(unittest.TestCase):
     Test constructor.
     """
     iohandler = MeshIOAscii()
-    self.failIf(None == iohandler.cppHandle)
+    self.assertNotEqual(None, iohandler.cppHandle)
     return
 
 
@@ -36,10 +37,10 @@ class TestMeshIOAscii(unittest.TestCase):
     """
     Test filename().
     """
-    filename = "hi.txt"
     iohandler = MeshIOAscii()
-    iohandler.filename = filename
-    self.assertEqual(filename, iohandler.filename)
+    value = "hi.txt"
+    iohandler.filename = value
+    self.assertEqual(value, iohandler.filename)
     return
 
 
@@ -47,14 +48,14 @@ class TestMeshIOAscii(unittest.TestCase):
     """
     Test write() and read().
     """
+    iohandler = MeshIOAscii()
     filenameIn = "data/mesh2Din3D.txt"
     filenameOut = "data/mesh2Din3D_test.txt"
     
     from spatialdata.geocoords.CSCart import CSCart
-    iohandler = MeshIOAscii()
     iohandler.filename = filenameIn
     iohandler.coordsys = CSCart()
-    mesh = iohandler.read()
+    mesh = iohandler.read(debug=False, interpolate=False)
     iohandler.filename = filenameOut
     iohandler.write(mesh)
 

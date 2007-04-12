@@ -28,6 +28,20 @@ pylith::meshio::MeshIO::useIndexZero(const bool flag) {
   _useIndexZero = flag;
 }
 
+// Set debug flag for mesh.
+inline
+void
+pylith::meshio::MeshIO::debug(const bool flag) {
+  _debug = flag;
+}
+
+// Get debug flag for mesh.
+inline
+bool
+pylith::meshio::MeshIO::debug(void) const {
+  return _debug;
+}
+
 // Set flag associated with building intermediate mesh topology
 inline
 void

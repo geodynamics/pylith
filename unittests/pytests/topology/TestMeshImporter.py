@@ -10,32 +10,25 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/meshio/TestMeshIO.py
+## @file unittests/pytests/topology/TestMeshImporter.py
 
-## @brief Unit testing of MeshIO object.
+## @brief Unit testing of MeshImporter object.
 
 import unittest
 
+from pylith.topology.MeshImporter import MeshImporter
+
 # ----------------------------------------------------------------------
-class TestMeshIO(unittest.TestCase):
+class TestMeshImporter(unittest.TestCase):
   """
   Unit testing of MeshIO object.
   """
-  
 
-  def test_interpolate(self):
+  def test_constructor(self):
     """
-    Test interpolate access.
+    Test constructor.
     """
-    from pylith.meshio.MeshIO import MeshIO
-    iohandler = MeshIO()
-
-    value = False # default is False
-    self.assertEqual(value, iohandler.interpolate)
-
-    value = True
-    iohandler.interpolate = value
-    self.assertEqual(value, iohandler.interpolate)
+    importer = MeshImporter()
     return
 
 
