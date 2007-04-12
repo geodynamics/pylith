@@ -12,6 +12,3 @@ OPTIONAL DEPENDENCIES
 cppunit
 doxygen
 
-FUTURE DEPENDENCIES??
-
-petsc2py (http://cheeseshop.python.org/pypi/petsc4py)

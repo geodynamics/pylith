@@ -17,6 +17,10 @@ Error checking
 
   a.  Add unit tests for ElasticStrain1D, ElasticStress1D,
       ElasticPlaneStrain, ElasticPlaneStress.
+
+      Need to check parameters for multiple locations or get rid of
+      multiple locations in test data.
+
   b. Update MeshIOAscii tests (groups of vertices and cells)
 
 1. Finish implementing ExplicitElasticity and Explicit
