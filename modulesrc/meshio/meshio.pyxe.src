@@ -67,12 +67,12 @@ cdef class MeshIO:
     Read mesh from file.
     """
     # create shim for method 'read'
-    #embed{ void MeshIO_read(void* pObj, void* pMeshObj)
+    #embed{ void MeshIO_read(void* objVptr, void* meshVptr)
     try {
-      assert(0 != pObj);
-      assert(0 != pMeshObj);
-      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
-      ((pylith::meshio::MeshIO*) pObj)->read(pMesh);
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::meshio::MeshIO*) objVptr)->read(pMesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -93,10 +93,11 @@ cdef class MeshIO:
     Read write to file.
     """
     # create shim for method 'write'
-    #embed{ void MeshIO_write(void* pObj, void* pMeshObj)
+    #embed{ void MeshIO_write(void* objVptr, void* meshVptr)
     try {
-      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) pMeshObj;
-      ((pylith::meshio::MeshIO*) pObj)->write(pMesh);
+      assert(0 != objVptr);
+      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::meshio::MeshIO*) objVptr)->write(pMesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -121,9 +122,10 @@ cdef class MeshIO:
     def __set__(self, flag):
       """Set interpolate."""
       # create shim for method 'interpolate'
-      #embed{ void MeshIO_interpolate_set(void* pObj, int flag)
+      #embed{ void MeshIO_interpolate_set(void* objVptr, int flag)
       try {
-        ((pylith::meshio::MeshIO*) pObj)->interpolate(flag);
+        assert(0 != objVptr);
+        ((pylith::meshio::MeshIO*) objVptr)->interpolate(flag);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -137,10 +139,11 @@ cdef class MeshIO:
     def __get__(self):
       """Get interpolate."""
       # create shim for method 'interpolate'
-      #embed{ int MeshIO_interpolate_get(void* pObj)
+      #embed{ int MeshIO_interpolate_get(void* objVptr)
       int result = 0;
       try {
-        result = ((pylith::meshio::MeshIO*) pObj)->interpolate();
+        assert(0 != objVptr);
+        result = ((pylith::meshio::MeshIO*) objVptr)->interpolate();
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -157,9 +160,10 @@ cdef class MeshIO:
     def __set__(self, flag):
       """Set debug."""
       # create shim for method 'debug'
-      #embed{ void MeshIO_debug_set(void* pObj, int flag)
+      #embed{ void MeshIO_debug_set(void* objVptr, int flag)
       try {
-        ((pylith::meshio::MeshIO*) pObj)->debug(flag);
+        assert(0 != objVptr);
+        ((pylith::meshio::MeshIO*) objVptr)->debug(flag);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -173,10 +177,11 @@ cdef class MeshIO:
     def __get__(self):
       """Get debug."""
       # create shim for method 'debug'
-      #embed{ int MeshIO_debug_get(void* pObj)
+      #embed{ int MeshIO_debug_get(void* objVptr)
       int result = 0;
       try {
-        result = ((pylith::meshio::MeshIO*) pObj)->debug();
+        assert(0 != objVptr);
+        result = ((pylith::meshio::MeshIO*) objVptr)->debug();
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -199,6 +204,7 @@ cdef class MeshIOAscii(MeshIO):
     void* result = 0;
     try {
       result = (void*)(new pylith::meshio::MeshIOAscii);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -219,9 +225,10 @@ cdef class MeshIOAscii(MeshIO):
     def __set__(self, name):
       """Set filename."""
       # create shim for method 'filename'
-      #embed{ void MeshIOAscii_filename_set(void* pObj, char* name)
+      #embed{ void MeshIOAscii_filename_set(void* objVptr, char* name)
       try {
-        ((pylith::meshio::MeshIOAscii*) pObj)->filename(name);
+        assert(0 != objVptr);
+        ((pylith::meshio::MeshIOAscii*) objVptr)->filename(name);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -235,10 +242,12 @@ cdef class MeshIOAscii(MeshIO):
     def __get__(self):
       """Get filename."""
       # create shim for method 'filename'
-      #embed{ char* MeshIOAscii_filename_get(void* pObj)
+      #embed{ char* MeshIOAscii_filename_get(void* objVptr)
       char* result = 0;
       try {
-        result = (char*) ((pylith::meshio::MeshIOAscii*) pObj)->filename();
+        assert(0 != objVptr);
+        result = (char*) ((pylith::meshio::MeshIOAscii*) objVptr)->filename();
+        assert(0 != result);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
