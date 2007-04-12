@@ -2,17 +2,12 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Error checking
-
-  add isNull() assertions before using ALE::Obj.
-
 0. Update unit testing.
 
   b. Update MeshIOAscii tests (groups of vertices and cells)
 
 1. Finish implementing ExplicitElasticity and Explicit
    a. Double check loops for calcConstant() and calcJacobian()
-   b. Make sure memory allocation/deallocation is outside loop over cells
    b. Create unit test (construction of constant term and Jacobian)
 
 2. Start implementing faults

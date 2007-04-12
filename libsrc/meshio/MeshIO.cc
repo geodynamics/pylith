@@ -41,6 +41,7 @@ int
 pylith::meshio::MeshIO::getMeshDim(void) const
 { // getMeshDim
   assert(0 != _mesh);
+  assert(!_mesh->isNull());
   return (*_mesh)->getDimension();
 } // getMeshDim
 
@@ -82,6 +83,7 @@ pylith::meshio::MeshIO::_buildMesh(const double* coordinates,
   assert(0 != _mesh);
 
   *_mesh = new Mesh(PETSC_COMM_WORLD, meshDim);
+  _mesh->addRef();
   assert(!_mesh->isNull());
   (*_mesh)->setDebug(_debug);
 
@@ -105,12 +107,13 @@ pylith::meshio::MeshIO::_getVertices(double** pCoordinates,
 				     int* pSpaceDim) const
 { // _getVertices
   assert(0 != _mesh);
-  ALE::Obj<Mesh>& mesh = *_mesh;
-  mesh.addRef();
+  assert(!_mesh->isNull());
 
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  const ALE::Obj<Mesh::label_sequence>& vertices = (*_mesh)->depthStratum(0);
+  assert(!vertices.isNull());
   const ALE::Obj<Mesh::real_section_type>& coordsField =
-    mesh->getRealSection("coordinates");
+    (*_mesh)->getRealSection("coordinates");
+  assert(!coordsField.isNull());
 
   const int numVertices = vertices->size();
   const int spaceDim = 
@@ -149,19 +152,20 @@ pylith::meshio::MeshIO::_getCells(int** pCells,
 				  int* pMeshDim) const
 { // _getCells
   assert(0 != _mesh);
-  ALE::Obj<Mesh>& mesh = *_mesh;
-  mesh.addRef();
+  assert(!_mesh->isNull());
 
-  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const ALE::Obj<sieve_type>& sieve = (*_mesh)->getSieve();
+  assert(!sieve.isNull());
+  const ALE::Obj<Mesh::label_sequence>& cells = (*_mesh)->heightStratum(0);
+  assert(!cells.isNull());
 
-  const int meshDim = mesh->getDimension();
+  const int meshDim = (*_mesh)->getDimension();
   const int numCells = cells->size();
   const int numCorners = sieve->nCone(*cells->begin(), 
-				      mesh->depth())->size();
+				      (*_mesh)->depth())->size();
 
   const ALE::Obj<Mesh::numbering_type>& vNumbering = 
-    mesh->getFactory()->getLocalNumbering(mesh, 0);
+    (*_mesh)->getFactory()->getLocalNumbering(*_mesh, 0);
 
   int* cellsArray = 0;
   const int size = numCells * numCorners;
@@ -199,10 +203,10 @@ pylith::meshio::MeshIO::_setMaterials(const int* materialIds,
 				      const int numCells)
 { // _setMaterials
   assert(0 != _mesh);
-  ALE::Obj<Mesh>& mesh = *_mesh;
-  mesh.addRef();
+  assert(!_mesh->isNull());
   
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const ALE::Obj<Mesh::label_sequence>& cells = (*_mesh)->heightStratum(0);
+  assert(!cells.isNull());
 
   if (cells->size() != numCells) {
     std::ostringstream msg;
@@ -212,13 +216,13 @@ pylith::meshio::MeshIO::_setMaterials(const int* materialIds,
     throw std::runtime_error(msg.str());
   } // if
 
-  const ALE::Obj<label_type>& labelMaterials = mesh->createLabel("material-id");
+  const ALE::Obj<label_type>& labelMaterials = (*_mesh)->createLabel("material-id");
   
   int i = 0;
   for(Mesh::label_sequence::iterator e_iter = cells->begin();
       e_iter != cells->end();
       ++e_iter)
-    mesh->setValue(labelMaterials, *e_iter, materialIds[i++]);
+    (*_mesh)->setValue(labelMaterials, *e_iter, materialIds[i++]);
 } // _setMaterials
 
 // ----------------------------------------------------------------------
@@ -228,10 +232,10 @@ pylith::meshio::MeshIO::_getMaterials(int** pMaterialIds,
 				      int* pNumCells) const
 { // _getMaterials
   assert(0 != _mesh);
-  ALE::Obj<Mesh>& mesh = *_mesh;
-  mesh.addRef();
+  assert(!_mesh->isNull());
 
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const ALE::Obj<Mesh::label_sequence>& cells = (*_mesh)->heightStratum(0);
+  assert(!cells.isNull());
   const int numCells = cells->size();
 
   int* materialsArray = 0;
@@ -239,7 +243,8 @@ pylith::meshio::MeshIO::_getMaterials(int** pMaterialIds,
   if (0 != pMaterialIds && size > 0) {
     materialsArray = new int[size];
   
-    const ALE::Obj<label_type>& labelMaterials = mesh->getLabel("material-id");
+    const ALE::Obj<label_type>& labelMaterials =
+      (*_mesh)->getLabel("material-id");
     const int idDefault = 0;
 
     int i = 0;
@@ -247,7 +252,7 @@ pylith::meshio::MeshIO::_getMaterials(int** pMaterialIds,
 	e_iter != cells->end();
 	++e_iter)
       materialsArray[i++] = 
-	mesh->getValue(labelMaterials, *e_iter, idDefault);
+	(*_mesh)->getValue(labelMaterials, *e_iter, idDefault);
   } // if  
 
   if (0 != pMaterialIds)
@@ -265,23 +270,23 @@ pylith::meshio::MeshIO::_buildGroup(const std::string& name,
 				   const int* points)
 { // _buildMesh
   assert(0 != _mesh);
+  assert(!_mesh->isNull());
 
-  ALE::Obj<Mesh>& mesh = *_mesh;
-  mesh.addRef();
-
-  const ALE::Obj<Mesh::int_section_type>& groupField = mesh->getIntSection(name);
+  const ALE::Obj<Mesh::int_section_type>& groupField =
+    (*_mesh)->getIntSection(name);
+  assert(!groupField.isNull());
 
   if (CELL == type) {
     for(int i = 0; i < numPoints; ++i) {
       groupField->setFiberDimension(points[i], 1);
     }
   } else if (VERTEX == type) {
-    const int numCells = mesh->heightStratum(0)->size();
+    const int numCells = (*_mesh)->heightStratum(0)->size();
     for(int i = 0; i < numPoints; ++i) {
       groupField->setFiberDimension(points[i]+numCells, 1);
     }
   } // if
-  mesh->allocate(groupField);
+  (*_mesh)->allocate(groupField);
 } // _buildMesh
 
 // ----------------------------------------------------------------------
@@ -296,34 +301,42 @@ pylith::meshio::MeshIO::_getGroups() const
 // Get group entities
 void
 pylith::meshio::MeshIO::_getGroup(const char *name,
-                      PointType& type,
-                      int& numPoints,
-				      int *points[]) const
+				  PointType& type,
+				  int& numPoints,
+				  int *points[]) const
 { // _getMaterials
   assert(0 != _mesh);
-  ALE::Obj<Mesh>& mesh = *_mesh;
-  mesh.addRef();
+  assert(!_mesh->isNull());
+  assert(0 != points);
 
-  const ALE::Obj<Mesh::int_section_type>&   groupField = mesh->getIntSection(name);
-  const Mesh::int_section_type::chart_type& chart      = groupField->getChart();
-  const Mesh::point_type                    firstPoint = *chart.begin();
-  ALE::Obj<Mesh::numbering_type>            numbering;
+  const ALE::Obj<Mesh::int_section_type>& groupField =
+    (*_mesh)->getIntSection(name);
+  assert(!groupField.isNull());
+  const Mesh::int_section_type::chart_type& chart =
+    groupField->getChart();
+  const Mesh::point_type firstPoint = *chart.begin();
+  ALE::Obj<Mesh::numbering_type> numbering;
 
-  if (mesh->height(firstPoint) == 0) {
-    type      = CELL;
-    numbering = mesh->getFactory()->getNumbering(mesh, mesh->depth());
+  if ((*_mesh)->height(firstPoint) == 0) {
+    type = CELL;
+    numbering = (*_mesh)->getFactory()->getNumbering(*_mesh, 
+						     (*_mesh)->depth());
   } else {
-    type      = VERTEX;
-    numbering = mesh->getFactory()->getNumbering(mesh, 0);
-  }
+    type = VERTEX;
+    numbering = (*_mesh)->getFactory()->getNumbering(*_mesh, 0);
+  } // if/else
   numPoints = chart.size();
   int *indices = new int[numPoints];
-  int  i       = 0;
+  int i = 0;
 
-  for(Mesh::int_section_type::chart_type::iterator c_iter = chart.begin(); c_iter != chart.end(); ++c_iter) {
+  for(Mesh::int_section_type::chart_type::iterator c_iter = chart.begin();
+      c_iter != chart.end();
+      ++c_iter) {
+    assert(!numbering.isNull());
     indices[i++] = numbering->getIndex(*c_iter);
   }
   *points = indices;
 } // _getMaterials
+
 
 // End of file 

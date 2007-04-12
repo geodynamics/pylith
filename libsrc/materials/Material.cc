@@ -68,6 +68,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   assert(0 != _db);
   assert(0 != cs);
   assert(0 != quadrature);
+  assert(!mesh.isNull());
 
   typedef ALE::Mesh::real_section_type real_section_type;
 
@@ -76,6 +77,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     mesh->getRealSection("coordinates");
   const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
     mesh->getLabelStratum("material-id", _id);
+  assert(!cells.isNull());
   const ALE::Mesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Check to make sure we have cells
@@ -87,6 +89,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
   // Create sections to hold parameters for physical properties
   delete _parameters; _parameters = new feassemble::ParameterManager(mesh);
+  assert(0 != _parameters);
   const int numQuadPts = quadrature->numQuadPts();
   const int fiberDim = numQuadPts; // number of values in field per cell
 
@@ -98,6 +101,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   for (int iParam=0; iParam < numParams; ++iParam) {
     _parameters->addReal(paramNames[iParam]);
     paramSections[iParam] = _parameters->getReal(paramNames[iParam]);
+    assert(!paramSections[iParam].isNull());
     paramSections[iParam]->setFiberDimension(cells, fiberDim);
     mesh->allocate(paramSections[iParam]);
   } // for

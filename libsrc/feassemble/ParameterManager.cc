@@ -37,6 +37,8 @@ pylith::feassemble::ParameterManager::~ParameterManager(void)
 void
 pylith::feassemble::ParameterManager::addReal(const char* name)
 { // addReal
+  assert(!_mesh.isNull());
+
   map_real_type::iterator iter = _real.find(name);
   if (iter != _real.end()) {
     std::ostringstream msg;
