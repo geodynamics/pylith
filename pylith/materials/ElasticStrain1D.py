@@ -38,6 +38,7 @@ class ElasticStrain1D(Material):
     """
     Material.__init__(self, name)
     self.cppHandle = bindings.ElasticStrain1D()
+    self.dimension = self.cppHandle.dimension
     return
 
 

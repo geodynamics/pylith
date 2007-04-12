@@ -16,6 +16,8 @@
 
 import unittest
 
+from pylith.materials.ElasticStress1D import ElasticStress1D
+
 # ----------------------------------------------------------------------
 class TestElasticStress1D(unittest.TestCase):
   """
@@ -26,10 +28,18 @@ class TestElasticStress1D(unittest.TestCase):
     """
     Test constructor.
     """
-    from pylith.materials.ElasticStress1D import ElasticStress1D
     material = ElasticStress1D()
 
     self.assertNotEqual(None, material.cppHandle)
+    return
+
+
+  def test_dimension(self):
+    """
+    Test dimension().
+    """
+    material = ElasticStress1D()
+    self.assertEqual(1, material.dimension)
     return
 
 

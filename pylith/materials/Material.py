@@ -82,6 +82,7 @@ class Material(Component):
     """
     Component.__init__(self, name, facility="material")
     self.cppHandle = None
+    self.dimension = None
     return
 
 
@@ -90,6 +91,18 @@ class Material(Component):
     Initialize material property manager.
     """
     self._info.log("Initializing material '%s'." % self.label)
+
+    if self.dimension != self.quadrature.cell.cellDim:
+      raise ValueError, \
+            "Quadrature is incompatible with material.\n" \
+            "Dimensions for quadrature: %d, dimensions for material: %d" % \
+            (self.quadrature.cell.cellDim, self.dimension)
+    if self.dimension != mesh.dimension():
+      raise ValueError, \
+            "Material is incompatible with mesh.\n" \
+            "Dimensions for mesh: %d, dimensions for material: %d" % \
+            (mesh.dimension(), self.dimension)
+
     self.db.initialize()
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label

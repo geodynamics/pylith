@@ -211,6 +211,29 @@ cdef class Material:
       Material_label_set(self.thisptr, value)
 
 
+  property dimension:
+    def __get__(self):
+      """
+      Get dimension associated with material.
+      """
+      # create shim for method 'dimension'
+      #embed{ int Material_dimension_get(void* pObj)
+      int result = 0;
+      try {
+        assert(0 != pObj);
+        result = ((pylith::materials::Material*) pObj)->dimension();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return Material_dimension_get(self.thisptr)
+
+
 # ----------------------------------------------------------------------
 cdef class ElasticMaterial(Material):
 

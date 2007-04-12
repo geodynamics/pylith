@@ -55,6 +55,15 @@ class Mesh(Component):
     return
   
 
+  def dimension(self):
+    """
+    Get dimension of mesh.
+    """
+    dim = None
+    if not self.cppHandle is None:
+      dim = self.cppHandle.dimension
+    return dim
+
   def distribute(self):
     """
     Distribute mesh across processors.
