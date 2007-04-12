@@ -29,6 +29,8 @@
 namespace pylith {
   namespace meshio {
     class TestMeshIO;
+    class MeshIO;
+
     class MeshData;
   } // meshio
 } // pylith
@@ -60,6 +62,21 @@ public :
    */
   void checkVals(const ALE::Obj<Mesh>& mesh,
 		 const MeshData& data);
+
+  // PROTECTED METHODS //////////////////////////////////////////////////
+protected :
+
+  /** Test debug().
+   *
+   * @param iohandler MeshIO object.
+   */
+  void _testDebug(MeshIO& iohandler);
+
+  /** Test interpolate().
+   *
+   * @param iohandler MeshIO object.
+   */
+  void _testInterpolate(MeshIO& iohandler);
 
 }; // class TestMeshIO
 

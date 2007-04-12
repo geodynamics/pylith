@@ -10,9 +10,9 @@
 # ======================================================================
 #
 
-## @file unittests/meshio/testmeshio.py
+## @file unittests/topology/testdriver.py
 
-## @brief Python application for testing meshio code.
+## @brief Python application for testing topology code.
 
 from pyre.applications.Script import Script
 
@@ -37,11 +37,7 @@ class TestApp(Script):
     """
     Run the application.
     """
-    from pylith.utils.PetscManager import PetscManager
-    manager = PetscManager()
-    manager.initialize()
     unittest.TextTestRunner(verbosity=2).run(self._suite())
-    manager.finalize()
     return
 
 
@@ -54,8 +50,14 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
-    from TestMeshIOAscii import TestMeshIOAscii
-    suite.addTest(unittest.makeSuite(TestMeshIOAscii))
+    from TestMesh import TestMesh
+    suite.addTest(unittest.makeSuite(TestMesh))
+
+    from TestMeshGenerator import TestMeshGenerator
+    suite.addTest(unittest.makeSuite(TestMeshGenerator))
+
+    from TestMeshImporter import TestMeshImporter
+    suite.addTest(unittest.makeSuite(TestMeshImporter))
 
     return suite
 

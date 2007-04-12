@@ -34,6 +34,7 @@ class Mesh(Component):
     import pylith.topology.topology as bindings
     self.cppHandle = bindings.Mesh()
     self.coordsys = None
+    self.debug = False
     return
 
 

@@ -63,7 +63,7 @@ class TestMaterial(unittest.TestCase):
     importer = MeshIOAscii()
     importer.filename = "data/twoelems.mesh"
     importer.coordsys = cs
-    mesh = importer.read()
+    mesh = importer.read(debug=False, interpolate=False)
     
     material.initialize(mesh)
 

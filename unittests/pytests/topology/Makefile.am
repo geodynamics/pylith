@@ -10,17 +10,17 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = meshio
+subpackage = topology
 include $(top_srcdir)/subpackage.am
-
-SUBDIRS = data
 
 TESTS = testdriver.py
 
 check_SCRIPTS = testdriver.py
 
 noinst_PYTHON = \
-	TestMeshIOAscii.py
+	TestMesh.py \
+	TestMeshGenerator.py \
+	TestMeshImporter.py
 
 
 # End of file 

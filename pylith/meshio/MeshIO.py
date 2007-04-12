@@ -24,30 +24,6 @@ class MeshIO(Component):
   Python abstract base class for finite-element mesh I/O.
   """
 
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(Component.Inventory):
-    """
-    Python object for managing MeshIO facilities and properties.
-
-    Factory: mesh.
-    """
-
-    ## @class Inventory
-    ## Python object for managing MeshIO facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b interpolate Build intermediate mesh topology elements (if true)
-    ##
-    ## \b Facilities
-    ## @li None
-
-    import pyre.inventory
-
-    interpolate = pyre.inventory.bool("interpolate", default=False)
-    interpolate.meta['tip'] = "Build intermediate mesh topology elements"
-
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="meshio"):
@@ -56,25 +32,33 @@ class MeshIO(Component):
     """
     Component.__init__(self, name, facility="mesh_io")
     self.cppHandle = None
-    self.interpolate = False
     self.coordsys = None
     return
 
 
-  def read(self):
+  def read(self, debug, interpolate):
     """
     Read finite-element mesh and store in Sieve mesh object.
 
     @returns PETSc mesh object containing finite-element mesh
     """
     self._info.log("Reading finite-element mesh")
+
+    # Set flags
     self._sync()
-    from pylith.topology.Mesh import Mesh
-    mesh = Mesh()
+    self.cppHandle.debug = debug
+    self.cppHandle.interpolate = interpolate
+
+    # Initialize coordinate system
     if self.coordsys is None:
       raise ValueError, "Coordinate system for mesh is unknown."
     self.coordsys.initialize()
+
+    from pylith.topology.Mesh import Mesh
+    mesh = Mesh()
     mesh.initialize(self.coordsys)
+
+    # Read mesh
     self.cppHandle.read(mesh.cppHandle)
     return mesh
 
@@ -98,7 +82,6 @@ class MeshIO(Component):
     Set members based using inventory.
     """
     Component._configure(self)
-    self.interpolate = self.inventory.interpolate
     return
 
 
@@ -106,8 +89,7 @@ class MeshIO(Component):
     """
     Force synchronization between Python and C++.
     """
-    self.cppHandle.interpolate = self.interpolate
     return
-  
+
 
 # End of file 
