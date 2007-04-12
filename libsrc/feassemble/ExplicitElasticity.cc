@@ -68,6 +68,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 			      const ALE::Obj<Mesh>& mesh)
 { // integrateConstant
   assert(0 != _quadrature);
+  assert(0 != _material);
   assert(!b.isNull());
   assert(!dispT.isNull());
   assert(!dispTmdt.isNull());
@@ -75,6 +76,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 
   // Get information about section
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  assert(!cells.isNull());
   const Mesh::label_sequence::iterator  cellsEnd = cells->end();
 
   const ALE::Obj<real_section_type>& coordinates = 
@@ -290,12 +292,14 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
 			     const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
   assert(0 != _quadrature);
+  assert(0 != _material);
   assert(0 != mat);
   assert(!dispT.isNull());
   assert(!mesh.isNull());
 
   // Get information about section
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  assert(!cells.isNull());
   const Mesh::label_sequence::iterator  cellsEnd = cells->end();
 
   const ALE::Obj<real_section_type>& coordinates = 

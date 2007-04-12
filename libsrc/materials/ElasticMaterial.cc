@@ -122,6 +122,8 @@ pylith::materials::ElasticMaterial::initCellData(const Mesh::point_type& cell,
 void
 pylith::materials::ElasticMaterial::_getParameters(const Mesh::point_type& cell)
 { // _getParameters
+  assert(0 != _parameters);
+
   const int numQuadPts = _numQuadPts;
   assert(_paramsCell.size() == numQuadPts);
   
@@ -131,6 +133,7 @@ pylith::materials::ElasticMaterial::_getParameters(const Mesh::point_type& cell)
   for (int iParam=0; iParam < numParams; ++iParam) {
     const ALE::Obj<real_section_type> parameter = 
       _parameters->getReal(paramNames[iParam]);
+    assert(!parameter.isNull());
     
     assert(parameter->getFiberDimension(cell) == numQuadPts);
     const real_section_type::value_type* parameterCell =
