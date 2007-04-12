@@ -75,18 +75,18 @@ cdef class Material:
     database.
     """
     # create shim for method 'initialize'
-    #embed{ void Material_initialize(void* pObj, void* meshObj, void* csObj, void* qObj)
+    #embed{ void Material_initialize(void* objVptr, void* meshVptr, void* csVptr, void* qVptr)
     try {
-      assert(0 != pObj);
-      assert(0 != meshObj);
-      assert(0 != csObj);
-      assert(0 != qObj);
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshObj;
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      assert(0 != csVptr);
+      assert(0 != qVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
-        (spatialdata::geocoords::CoordSys*) csObj;
+        (spatialdata::geocoords::CoordSys*) csVptr;
       pylith::feassemble::Quadrature* quadrature =
-        (pylith::feassemble::Quadrature*) qObj;
-      ((pylith::materials::Material*) pObj)->initialize(*mesh, cs, quadrature);
+        (pylith::feassemble::Quadrature*) qVptr;
+      ((pylith::materials::Material*) objVptr)->initialize(*mesh, cs, quadrature);
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -126,13 +126,13 @@ cdef class Material:
       Set database for physical property parameters.
       """
       # create shim for method 'db'
-      #embed{ void Material_db_set(void* pObj, void* dbObj)
+      #embed{ void Material_db_set(void* objVptr, void* dbVptr)
       try {
-        assert(0 != pObj);
-        assert(0 != dbObj);
+        assert(0 != objVptr);
+        assert(0 != dbVptr);
         spatialdata::spatialdb::SpatialDB* db =
-          (spatialdata::spatialdb::SpatialDB*) dbObj;
-        ((pylith::materials::Material*) pObj)->db(db);
+          (spatialdata::spatialdb::SpatialDB*) dbVptr;
+        ((pylith::materials::Material*) objVptr)->db(db);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -154,10 +154,10 @@ cdef class Material:
       Set identifier of material.
       """
       # create shim for method 'id'
-      #embed{ void Material_id_set(void* pObj, int value)
+      #embed{ void Material_id_set(void* objVptr, int value)
       try {
-        assert(0 != pObj);
-        ((pylith::materials::Material*) pObj)->id(value);
+        assert(0 != objVptr);
+        ((pylith::materials::Material*) objVptr)->id(value);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -173,11 +173,11 @@ cdef class Material:
       Get identifier of material.
       """
       # create shim for method 'id'
-      #embed{ int Material_id_get(void* pObj)
+      #embed{ int Material_id_get(void* objVptr)
       int result = 0;
       try {
-        assert(0 != pObj);
-        result = ((pylith::materials::Material*) pObj)->id();
+        assert(0 != objVptr);
+        result = ((pylith::materials::Material*) objVptr)->id();
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -196,10 +196,10 @@ cdef class Material:
       Set label of material.
       """
       # create shim for method 'label'
-      #embed{ void Material_label_set(void* pObj, char* value)
+      #embed{ void Material_label_set(void* objVptr, char* value)
       try {
-        assert(0 != pObj);
-        ((pylith::materials::Material*) pObj)->label(value);
+        assert(0 != objVptr);
+        ((pylith::materials::Material*) objVptr)->label(value);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -217,11 +217,11 @@ cdef class Material:
       Get dimension associated with material.
       """
       # create shim for method 'dimension'
-      #embed{ int Material_dimension_get(void* pObj)
+      #embed{ int Material_dimension_get(void* objVptr)
       int result = 0;
       try {
-        assert(0 != pObj);
-        result = ((pylith::materials::Material*) pObj)->dimension();
+        assert(0 != objVptr);
+        result = ((pylith::materials::Material*) objVptr)->dimension();
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -258,6 +258,7 @@ cdef class ElasticStrain1D(ElasticMaterial):
     void* result = 0;
     try {
       result = (void*)(new pylith::materials::ElasticStrain1D);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -286,6 +287,7 @@ cdef class ElasticStress1D(ElasticMaterial):
     void* result = 0;
     try {
       result = (void*)(new pylith::materials::ElasticStress1D);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -314,6 +316,7 @@ cdef class ElasticPlaneStrain(ElasticMaterial):
     void* result = 0;
     try {
       result = (void*)(new pylith::materials::ElasticPlaneStrain);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -342,6 +345,7 @@ cdef class ElasticPlaneStress(ElasticMaterial):
     void* result = 0;
     try {
       result = (void*)(new pylith::materials::ElasticPlaneStress);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -370,6 +374,7 @@ cdef class ElasticIsotropic3D(ElasticMaterial):
     void* result = 0;
     try {
       result = (void*)(new pylith::materials::ElasticIsotropic3D);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));

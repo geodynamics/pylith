@@ -49,9 +49,9 @@ cdef void Quadrature_destructor(void* obj):
   Destroy Quadrature object.
   """
   # create shim for destructor
-  #embed{ void Quadrature_destructor_cpp(void* pObj)
+  #embed{ void Quadrature_destructor_cpp(void* objVptr)
   pylith::feassemble::Quadrature* pQ =
-    (pylith::feassemble::Quadrature*) pObj;
+    (pylith::feassemble::Quadrature*) objVptr;
   delete pQ;
   #}embed
   Quadrature_destructor_cpp(obj)
@@ -62,9 +62,9 @@ cdef void Integrator_destructor(void* obj):
   Destroy Integrator object.
   """
   # create shim for destructor
-  #embed{ void Integrator_destructor_cpp(void* pObj)
+  #embed{ void Integrator_destructor_cpp(void* objVptr)
   pylith::feassemble::Integrator* pQ =
-    (pylith::feassemble::Integrator*) pObj;
+    (pylith::feassemble::Integrator*) objVptr;
   delete pQ;
   #}embed
   Integrator_destructor_cpp(obj)
@@ -104,9 +104,9 @@ cdef class Quadrature:
     @param spaceDim Number of dimensions associated with cell vertices
     """
     # create shim for method 'initialize'
-    #embed{ void Quadrature_initialize(void* pObj, double* basis, double* basisDeriv, double* quadPts, double* quadWts, int cellDim, int numCorners, int numQuadPts, int spaceDim)
+    #embed{ void Quadrature_initialize(void* objVptr, double* basis, double* basisDeriv, double* quadPts, double* quadWts, int cellDim, int numCorners, int numQuadPts, int spaceDim)
     try {
-      ((pylith::feassemble::Quadrature*) pObj)->initialize(basis, basisDeriv,
+      ((pylith::feassemble::Quadrature*) objVptr)->initialize(basis, basisDeriv,
                                                            quadPts, quadWts,
                                                            cellDim, numCorners,
                                                            numQuadPts, spaceDim);
@@ -193,9 +193,10 @@ cdef class Quadrature:
     def __set__(self, value):
       """Set minimum allowable Jacobian."""
       # create shim for method 'minJacobian'
-      #embed{ void Quadrature_minJacobian_set(void* pObj, double value)
+      #embed{ void Quadrature_minJacobian_set(void* objVptr, double value)
       try {
-        ((pylith::feassemble::Quadrature*) pObj)->minJacobian(value);
+        assert(0 != objVptr);
+        ((pylith::feassemble::Quadrature*) objVptr)->minJacobian(value);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -209,10 +210,11 @@ cdef class Quadrature:
     def __get__(self):
       """Get minimum allowable Jacobian."""
       # create shim for method 'minJacobian'
-      #embed{ double Quadrature_minJacobian_get(void* pObj)
+      #embed{ double Quadrature_minJacobian_get(void* objVptr)
       double result = 0;
       try {
-        result = ((pylith::feassemble::Quadrature*) pObj)->minJacobian();
+        assert(0 != objVptr);
+        result = ((pylith::feassemble::Quadrature*) objVptr)->minJacobian();
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -235,6 +237,7 @@ cdef class Quadrature1D(Quadrature):
     void* result = 0;
     try {
       result = (void*)(new pylith::feassemble::Quadrature1D);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -261,6 +264,7 @@ cdef class Quadrature1Din2D(Quadrature):
     void* result = 0;
     try {
       result = (void*)(new pylith::feassemble::Quadrature1Din2D);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -287,6 +291,7 @@ cdef class Quadrature1Din3D(Quadrature):
     void* result = 0;
     try {
       result = (void*)(new pylith::feassemble::Quadrature1Din3D);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -313,6 +318,7 @@ cdef class Quadrature2D(Quadrature):
     void* result = 0;
     try {
       result = (void*)(new pylith::feassemble::Quadrature2D);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -339,6 +345,7 @@ cdef class Quadrature2Din3D(Quadrature):
     void* result = 0;
     try {
       result = (void*)(new pylith::feassemble::Quadrature2Din3D);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -365,6 +372,7 @@ cdef class Quadrature3D(Quadrature):
     void* result = 0;
     try {
       result = (void*)(new pylith::feassemble::Quadrature3D);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -411,13 +419,12 @@ cdef class Integrator:
       Set quadrature.
       """
       # create shim for method 'quadrature'
-      #embed{ void Integrator_quadrature_set(void* pObj, void* qObj)
+      #embed{ void Integrator_quadrature_set(void* objVptr, void* qVptr)
       try {
-        assert(0 != pObj);
-        assert(0 != qObj);
+        assert(0 != objVptr);
         pylith::feassemble::Quadrature* quadrature =
-          (pylith::feassemble::Quadrature*) qObj;
-        ((pylith::feassemble::Integrator*) pObj)->quadrature(quadrature);
+          (pylith::feassemble::Quadrature*) qVptr;
+        ((pylith::feassemble::Integrator*) objVptr)->quadrature(quadrature);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -540,10 +547,10 @@ cdef class IntegratorExplicit(Integrator):
       Set timeStep.
       """
       # create shim for method 'timeStep'
-      #embed{ void IntegratorExplicit_timeStep_set(void* pObj, double dt)
+      #embed{ void IntegratorExplicit_timeStep_set(void* objVptr, double dt)
       try {
-        assert(0 != pObj);
-        ((pylith::feassemble::IntegratorExplicit*) pObj)->timeStep(dt);
+        assert(0 != objVptr);
+        ((pylith::feassemble::IntegratorExplicit*) objVptr)->timeStep(dt);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -567,6 +574,7 @@ cdef class ExplicitElasticity(IntegratorExplicit):
     void* result = 0;
     try {
       result = (void*)(new pylith::feassemble::ExplicitElasticity);
+      assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -589,13 +597,12 @@ cdef class ExplicitElasticity(IntegratorExplicit):
       Set material.
       """
       # create shim for method 'material'
-      #embed{ void ExplicitElasticity_material_set(void* pObj, void* mObj)
+      #embed{ void ExplicitElasticity_material_set(void* objVptr, void* mVptr)
       try {
-        assert(0 != pObj);
-        assert(0 != mObj);
+        assert(0 != objVptr);
         pylith::materials::ElasticMaterial* material =
-          (pylith::materials::ElasticMaterial*) mObj;
-        ((pylith::feassemble::ExplicitElasticity*) pObj)->material(material);
+          (pylith::materials::ElasticMaterial*) mVptr;
+        ((pylith::feassemble::ExplicitElasticity*) objVptr)->material(material);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
