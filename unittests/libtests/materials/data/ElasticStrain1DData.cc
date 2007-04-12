@@ -43,7 +43,7 @@ const double pylith::materials::ElasticStrain1DData::_dbData[] = {
 const double pylith::materials::ElasticStrain1DData::_parameterData[] = {
   2.50000000e+03,
   6.25000000e+10,
-  2.80000000e+03,
+  2.00000000e+03,
   1.80000000e+10,
 };
 
