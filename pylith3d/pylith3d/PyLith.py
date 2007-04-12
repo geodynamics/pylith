@@ -289,41 +289,92 @@ class PyLith(PetscApplication):
         # Beginning of loop that loops over split node sets, creating
         # an 'impulse' for each one and outputting response values.
         # Below at present is a quasi-C version of the needed code.
-SectionReal splitField;
 
-# Need bindings for this
-ierr = MeshGetSectionPair(mesh, "split", &splitField);
-// Loop over split nodes
-for() {
-  // Loop over elements
-  for() {
-# Need bindings for this
-    ierr = SectionPairSetFiberDimension(splitField, e, 1);
-  }
-# Need bindings for this
-  ierr = SectionPairAllocate(splitField);
-  // Loop over elements
-  for() {
-    PetscPair value;
+        splitField = None
+        m = None
 
-    value.i = node;
-    value.x = ;
-    value.y = ;
-    value.z = ;
-# Need bindings for this
-    ierr = SectionPairUpdate(splitField, e, &value);
-# Major problem right now:  This just updates PETSc/Sieve's copy of splitField.
-# It does not change the values within PyLith, which have been read from
-# per-process input files.
-  }
-  // Solve
-        pl3drun.solveElastic()
-# Need bindings for this
-  ierr = SectionPairClear(splitField);
-}
-"""
-        values = self.interpolatePoints(points)
-        self.outputSampleValues(self.fileRoot+'.output', values)
+        # Need bindings for these
+        pylith3d.meshGetSectionPair(mesh, "split", splitField)
+        pylith3d.meshGetMesh(self.mesh, m)
+
+        # This is incorrect, but I need something like:
+        topology = getTopology(m)
+        patch = 0
+        eNumbering = pylith3d.getLocalNumbering(topology, patch, ??)
+        vNumbering = pylith3d.getLocalNumbering(topology, patch, 0)
+
+
+        # Need to loop over global nodes
+        for node in ??:
+            # Need integer and double lists to hold split node info
+            faultind = []
+            faultvals = []
+            indfault = None
+            valfault = None
+        
+            # Need to find elements in the split node 'patch' that contain node.
+            numSet = 0
+            for elem in ??:
+                # Not sure if this does what I want
+                if (pylith3d.sieve.baseContains(elem)):
+                    # This is totally wrong, but I need to get local element and node numbers,
+                    # along with values
+                    numSet += 1
+                    faultind += [eNumbering.getIndex(elem)]
+                    faultind += [vNumbering.getIndex(node)]
+
+                    # Need to look up how to get field values
+                    faultvals += [value.x, value.y, value.z]
+
+                    # Create arrays to send to fortran code
+                    indfault = intListToArray(faultind)
+                    valfault = doubleListToArray(faultvals)
+
+            # Call fortran routine to set specified split values and clear the rest
+            pylith3d.setsplit(self.nfault, self.fault, numfn, indfault, valfault, numSet)
+            # Solve
+            pylith3d.solveElastic()
+            values = self.interpolatePoints(points)
+            self.outputSampleValues(self.fileRoot+'.output', values)
+        return
+                    
+        
+        
+                    SectionReal splitField;
+                    
+                    # Need bindings for this
+                    ierr = MeshGetSectionPair(mesh, "split", &splitField);
+                    // Loop over split nodes
+                    for() {
+                    // Loop over elements
+                    for() {
+                    # Need bindings for this
+                    ierr = SectionPairSetFiberDimension(splitField, e, 1);
+                    }
+                    # Need bindings for this
+                    ierr = SectionPairAllocate(splitField);
+                    // Loop over elements
+                    for() {
+                    PetscPair value;
+
+                    value.i = node;
+                    value.x = ;
+                    value.y = ;
+                    value.z = ;
+                    # Need bindings for this
+                    ierr = SectionPairUpdate(splitField, e, &value);
+                    # Major problem right now:  This just updates PETSc/Sieve's copy of splitField.
+                    # It does not change the values within PyLith, which have been read from
+                    # per-process input files.
+                    }
+                    // Solve
+                    pl3drun.solveElastic()
+                    # Need bindings for this
+                    ierr = SectionPairClear(splitField);
+                    }
+                    values = self.interpolatePoints(points)
+                    self.outputSampleValues(self.fileRoot+'.output', values)
+                    """
         return
 
 
