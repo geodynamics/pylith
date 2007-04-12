@@ -29,8 +29,8 @@ class TestMaterial(unittest.TestCase):
     WARNING: This is not a rigorous test of initialize() because we
     don't verify the results.
     """
-    from pylith.materials.ElasticIsotropic3D import ElasticIsotropic3D
-    material = ElasticIsotropic3D()
+    from pylith.materials.ElasticStrain1D import ElasticStrain1D
+    material = ElasticStrain1D()
 
     from pylith.feassemble.quadrature.Quadrature1D import Quadrature1D
     quadrature = Quadrature1D()

@@ -56,8 +56,12 @@ class TestMeshIOAscii(unittest.TestCase):
     iohandler.filename = filenameIn
     iohandler.coordsys = CSCart()
     mesh = iohandler.read(debug=False, interpolate=False)
+
+    self.assertEqual(2, mesh.dimension())
+
     iohandler.filename = filenameOut
     iohandler.write(mesh)
+
 
     fileE = open(filenameIn, "r")
     linesE = fileE.readlines()

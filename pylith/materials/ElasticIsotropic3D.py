@@ -38,6 +38,7 @@ class ElasticIsotropic3D(Material):
     Material.__init__(self, name)
     import pylith.materials.materials as bindings
     self.cppHandle = bindings.ElasticIsotropic3D()
+    self.dimension = self.cppHandle.dimension
     return
 
 

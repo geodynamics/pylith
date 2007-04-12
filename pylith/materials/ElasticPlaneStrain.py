@@ -39,6 +39,7 @@ class ElasticPlaneStrain(Material):
     """
     Material.__init__(self, name)
     self.cppHandle = bindings.ElasticPlaneStrain()
+    self.dimension = self.cppHandle.dimension
     return
 
 

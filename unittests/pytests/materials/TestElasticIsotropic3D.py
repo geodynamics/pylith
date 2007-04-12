@@ -16,6 +16,8 @@
 
 import unittest
 
+from pylith.materials.ElasticIsotropic3D import ElasticIsotropic3D
+
 # ----------------------------------------------------------------------
 class TestElasticIsotropic3D(unittest.TestCase):
   """
@@ -30,6 +32,15 @@ class TestElasticIsotropic3D(unittest.TestCase):
     material = ElasticIsotropic3D()
 
     self.assertNotEqual(None, material.cppHandle)
+    return
+
+
+  def test_dimension(self):
+    """
+    Test dimension().
+    """
+    material = ElasticIsotropic3D()
+    self.assertEqual(3, material.dimension)
     return
 
 
