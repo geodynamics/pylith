@@ -16,6 +16,8 @@
 
 #include "pylith/meshio/MeshIOAscii.hh"
 
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+
 #include "data/MeshData1D.hh"
 #include "data/MeshData1Din2D.hh"
 #include "data/MeshData1Din3D.hh"

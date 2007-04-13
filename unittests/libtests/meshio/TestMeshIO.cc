@@ -15,6 +15,8 @@
 #include "TestMeshIO.hh" // Implementation of class methods
 
 #include "pylith/meshio/MeshIO.hh" // USES MeshIO
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/utils/array.hh" // USES int_array
 
 #include "data/MeshData.hh"
 
@@ -23,10 +25,6 @@
 ALE::Obj<ALE::Mesh>*
 pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
 { // createMesh
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::sieve_type sieve_type;
-  typedef Mesh::label_type label_type;
-
   // buildTopology() requires zero based index
   CPPUNIT_ASSERT(true == data.useIndexZero);
 
@@ -58,7 +56,8 @@ pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
 
   const ALE::Obj<Mesh::label_sequence>& cellsMesh = mesh->heightStratum(0);
 
-  const ALE::Obj<label_type>& labelMaterials = mesh->createLabel("material-id");
+  const ALE::Obj<Mesh::label_type>& labelMaterials = 
+    mesh->createLabel("material-id");
   
   int i = 0;
   for(Mesh::label_sequence::iterator e_iter = 
@@ -76,8 +75,6 @@ void
 pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
 				      const MeshData& data)
 { // checkVals
-  typedef ALE::Mesh::label_type label_type;
-
   // Check mesh dimension
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
 
@@ -136,12 +133,12 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
   } // for
 
   // check materials
-  const int size = numCells;
-  int* materialIds = (size > 0) ? new int[size] : 0;
-  const ALE::Obj<label_type>& labelMaterials = 
+  const ALE::Obj<Mesh::label_type>& labelMaterials = 
     mesh->getLabel("material-id");
   const int idDefault = -999;
 
+  const int size = numCells;
+  int_array materialIds(size);
   i = 0;
   for(Mesh::label_sequence::iterator e_iter = cells->begin();
       e_iter != cells->end();
@@ -150,7 +147,6 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
   
   for (int iCell=0; iCell < numCells; ++iCell)
     CPPUNIT_ASSERT_EQUAL(data.materialIds[iCell], materialIds[iCell]);
-  delete[] materialIds; materialIds = 0;
 
   // :TODO: Check groups of vertices
 } // checkVals

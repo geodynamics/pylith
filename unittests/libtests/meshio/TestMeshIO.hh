@@ -23,7 +23,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <petscmesh.h>
+#include "pylith/utils/sievefwd.hh" // USES PETSc Mesh
 
 /// Namespace for pylith package
 namespace pylith {
@@ -38,11 +38,6 @@ namespace pylith {
 /// C++ unit testing for TestMeshIO
 class pylith::meshio::TestMeshIO : public CppUnit::TestFixture
 { // class TestMeshIO
-  // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
-public :
-
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::sieve_type sieve_type;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
@@ -53,14 +48,14 @@ public :
    *
    * @returns PETSc mesh
    */
-  ALE::Obj<Mesh>* createMesh(const MeshData& data);
+  ALE::Obj<ALE::Mesh>* createMesh(const MeshData& data);
 
   /** Check values in mesh against data.
    *
    * @param mesh PETSc mesh
    * @param data Mesh data
    */
-  void checkVals(const ALE::Obj<Mesh>& mesh,
+  void checkVals(const ALE::Obj<ALE::Mesh>& mesh,
 		 const MeshData& data);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
