@@ -23,6 +23,11 @@ pylith::meshio::MeshData::MeshData(void) :
   vertices(0),
   cells(0),
   materialIds(0),
+  groups(0),
+  groupSizes(0),
+  groupNames(0),
+  groupTypes(0),
+  numGroups(0),
   useIndexZero(true)
 { // constructor
 } // constructor
@@ -32,5 +37,6 @@ pylith::meshio::MeshData::MeshData(void) :
 pylith::meshio::MeshData::~MeshData(void)
 { // destructor
 } // destructor
+
 
 // End of file

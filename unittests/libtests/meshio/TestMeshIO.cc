@@ -20,6 +20,9 @@
 
 #include "data/MeshData.hh"
 
+#include <strings.h> // USES strcasecmp()
+#include <stdexcept> // USES std::logic_error
+
 // ----------------------------------------------------------------------
 // Get simple mesh for testing I/O.
 ALE::Obj<ALE::Mesh>*
@@ -28,45 +31,68 @@ pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
   // buildTopology() requires zero based index
   CPPUNIT_ASSERT(true == data.useIndexZero);
 
-  const int cellDim = data.cellDim;
-  const int numCorners = data.numCorners;
-  const int spaceDim = data.spaceDim;
-  const int numVertices = data.numVertices;
-  const int numCells = data.numCells;
-  const double* vertCoords = data.vertices;
-  const int* cells = data.cells;
-  const int* materialIds = data.materialIds;
-  CPPUNIT_ASSERT(0 != vertCoords);
-  CPPUNIT_ASSERT(0 != cells);
-  CPPUNIT_ASSERT(0 != materialIds);
+  CPPUNIT_ASSERT(0 != data.vertices);
+  CPPUNIT_ASSERT(0 != data.cells);
+  CPPUNIT_ASSERT(0 != data.materialIds);
+  if (data.numGroups > 0) {
+    CPPUNIT_ASSERT(0 != data.groups);
+    CPPUNIT_ASSERT(0 != data.groupSizes);
+    CPPUNIT_ASSERT(0 != data.groupNames);
+    CPPUNIT_ASSERT(0 != data.groupTypes);
+  } // if
 
-  ALE::Obj<Mesh>* meshHandle = new ALE::Obj<Mesh>;
-  *meshHandle = new Mesh(PETSC_COMM_WORLD, cellDim);
-  ALE::Obj<Mesh> mesh = *meshHandle;
-  mesh.addRef();
-  ALE::Obj<sieve_type> sieve = new sieve_type(mesh->comm());
+  ALE::Obj<Mesh>* mesh = new ALE::Obj<Mesh>;
+  CPPUNIT_ASSERT(0 != mesh);
+  *mesh = new Mesh(PETSC_COMM_WORLD, data.cellDim);
+  CPPUNIT_ASSERT(!mesh->isNull());
+  ALE::Obj<sieve_type> sieve = new sieve_type((*mesh)->comm());
+  CPPUNIT_ASSERT(!sieve.isNull());
 
+  // Cells and vertices
   const bool interpolate = false;
-  ALE::SieveBuilder<Mesh>::buildTopology(sieve, cellDim, numCells,
-					 const_cast<int*>(cells), numVertices,
-					 interpolate, numCorners);
-  mesh->setSieve(sieve);
-  mesh->stratify();
-  ALE::SieveBuilder<Mesh>::buildCoordinates(mesh, spaceDim, vertCoords);
+  ALE::SieveBuilder<Mesh>::buildTopology(sieve, data.cellDim, data.numCells,
+			      const_cast<int*>(data.cells), data.numVertices,
+					 interpolate, data.numCorners);
+  (*mesh)->setSieve(sieve);
+  (*mesh)->stratify();
+  ALE::SieveBuilder<Mesh>::buildCoordinates(*mesh, data.spaceDim, 
+					    data.vertices);
 
-  const ALE::Obj<Mesh::label_sequence>& cellsMesh = mesh->heightStratum(0);
-
+  // Material ids
+  const ALE::Obj<Mesh::label_sequence>& cells = (*mesh)->heightStratum(0);
+  CPPUNIT_ASSERT(!cells.isNull());
   const ALE::Obj<Mesh::label_type>& labelMaterials = 
-    mesh->createLabel("material-id");
-  
+    (*mesh)->createLabel("material-id");
+  CPPUNIT_ASSERT(!labelMaterials.isNull());
   int i = 0;
-  for(Mesh::label_sequence::iterator e_iter = 
-	cellsMesh->begin();
-      e_iter != cellsMesh->end();
+  for(Mesh::label_sequence::iterator e_iter=cells->begin(); 
+      e_iter != cells->end();
       ++e_iter)
-    mesh->setValue(labelMaterials, *e_iter, materialIds[i++]);
+    (*mesh)->setValue(labelMaterials, *e_iter, data.materialIds[i++]);
 
-  return meshHandle;
+  // Groups
+  for (int iGroup=0, index=0; iGroup < data.numGroups; ++iGroup) {
+    const ALE::Obj<int_section_type>& groupField = 
+      (*mesh)->getIntSection(data.groupNames[iGroup]);
+    CPPUNIT_ASSERT(!groupField.isNull());
+
+    MeshIO::GroupPtType type;
+    const int numPoints = data.groupSizes[iGroup];
+    if (0 == strcasecmp("cell", data.groupTypes[iGroup])) {
+      type = MeshIO::CELL;
+      for(int i=0; i < numPoints; ++i)
+	groupField->setFiberDimension(data.groups[index++], 1);
+    } else if (0 == strcasecmp("vertex", data.groupTypes[iGroup])) {
+      type = MeshIO::VERTEX;
+      const int numCells = (*mesh)->heightStratum(0)->size();
+      for(int i=0; i < numPoints; ++i)
+	groupField->setFiberDimension(data.groups[index++]+numCells, 1);
+    } else
+      throw std::logic_error("Could not parse group type.");
+    (*mesh)->allocate(groupField);
+  } // for
+
+  return mesh;
 } // createMesh
 
 // ----------------------------------------------------------------------
@@ -136,7 +162,6 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
   const ALE::Obj<Mesh::label_type>& labelMaterials = 
     mesh->getLabel("material-id");
   const int idDefault = -999;
-
   const int size = numCells;
   int_array materialIds(size);
   i = 0;
@@ -148,7 +173,43 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
   for (int iCell=0; iCell < numCells; ++iCell)
     CPPUNIT_ASSERT_EQUAL(data.materialIds[iCell], materialIds[iCell]);
 
-  // :TODO: Check groups of vertices
+  // Check groups
+  const ALE::Obj<std::set<std::string> >& groupNames = 
+    mesh->getIntSections();
+  int iGroup = 0;
+  int index = 0;
+  for (std::set<std::string>::const_iterator name=groupNames->begin();
+       name != groupNames->end();
+       ++name, ++iGroup) {
+    const ALE::Obj<int_section_type>& groupField = mesh->getIntSection(*name);
+    CPPUNIT_ASSERT(!groupField.isNull());
+    const int_section_type::chart_type& chart = groupField->getChart();
+    const Mesh::point_type firstPoint = *chart.begin();
+    ALE::Obj<Mesh::numbering_type> numbering;
+    std::string groupType = "";
+    if (mesh->height(firstPoint) == 0) {
+      groupType = "cell";
+      numbering = mesh->getFactory()->getNumbering(mesh, mesh->depth());
+    } else {
+      groupType = "vertex";
+      numbering = mesh->getFactory()->getNumbering(mesh, 0);
+    } // if/else
+    const int numPoints = chart.size();
+    int_array points(numPoints);
+    int i = 0;
+    for(int_section_type::chart_type::iterator c_iter = chart.begin();
+	c_iter != chart.end();
+	++c_iter) {
+      CPPUNIT_ASSERT(!numbering.isNull());
+      points[i++] = numbering->getIndex(*c_iter);
+    } // for
+    
+    CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), *name);
+    CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);
+    CPPUNIT_ASSERT_EQUAL(data.groupSizes[iGroup], numPoints);
+    for (int i=0; i < numPoints; ++i)
+      CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[i]);
+  } // for
 } // checkVals
 
 // ----------------------------------------------------------------------

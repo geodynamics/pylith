@@ -46,6 +46,12 @@ private:
   static const int _cells[]; ///< Pointer to indices of vertices in cells
   static const int _materialIds[]; ///< Pointer to cell material identifiers
 
+  static const int _groups[]; ///< Groups of points
+  static const int _groupSizes[]; ///< Sizes of groups
+  static const char* _groupNames[]; ///< Array of group names
+  static const char* _groupTypes[]; ///< Array of group types
+  static const int _numGroups; ///< Number of groups
+
   static const bool _useIndexZero; ///< First vertex is 0 if true, 1 if false
 
 };
