@@ -70,8 +70,6 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   assert(0 != quadrature);
   assert(!mesh.isNull());
 
-  typedef ALE::Mesh::real_section_type real_section_type;
-
   // Get cells associated with material
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");

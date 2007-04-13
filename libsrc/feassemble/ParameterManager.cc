@@ -21,7 +21,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ParameterManager::ParameterManager(
-					  const ALE::Obj<Mesh>& mesh) :
+						const ALE::Obj<Mesh>& mesh) :
   _mesh(mesh)
 { // constructor
 } // constructor
@@ -54,7 +54,7 @@ pylith::feassemble::ParameterManager::addReal(const char* name)
 
 // ----------------------------------------------------------------------
 // Get parameter.
-const ALE::Obj<pylith::feassemble::ParameterManager::Mesh::real_section_type>&
+const ALE::Obj<pylith::real_section_type>&
 pylith::feassemble::ParameterManager::getReal(const char* name)
 { // getReal
   map_real_type::const_iterator iter = _real.find(name);

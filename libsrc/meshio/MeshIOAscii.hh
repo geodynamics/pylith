@@ -63,14 +63,14 @@ private :
   /** Read mesh vertices.
    *
    * @param filein Input stream
-   * @param pCoordinates Pointer to array of vertex coordinates
-   * @param pNumVertices Pointer to number of vertices
-   * @param pSpaceDim Pointer to dimension of coordinates vector space
+   * @param coordinates Pointer to array of vertex coordinates
+   * @param numVertices Pointer to number of vertices
+   * @param spaceDim Pointer to dimension of coordinates vector space
    */
   void _readVertices(std::istream& filein,
-		     double** pCoordinates,
-		     int* pNumVertices,
-		     int* pSpaceDim) const;
+		     double_array* coordinates,
+		     int* numVertices,
+		     int* spaceDim) const;
   
   /** Write mesh vertices.
    *
@@ -87,10 +87,10 @@ private :
    * @param pNumCorners Pointer to number of corners
    */
   void _readCells(std::istream& filein,
-		  int** pCells,
-		  int** pMaterialIds,
-		  int* pNumCells,
-		  int* pNumCorners) const;
+		  int_array* pCells,
+		  int_array* pMaterialIds,
+		  int* numCells,
+		  int* numCorners) const;
   
   /** Write mesh cells.
    *
@@ -107,18 +107,17 @@ private :
    * @param mesh The mesh
    */
   void _readGroup(std::istream& filein,
-                  std::string& name,
-                  pylith::meshio::MeshIO::PointType& type,
-                  int& numPoints, int *points[]) const;
+		  int_array* points,
+                  GroupPtType* type,
+                  std::string* name) const;
   
   /** Write a point group.
    *
    * @param fileout Output stream
-   * @param mesh The mesh
    * @param name The group name
    */
   void _writeGroup(std::ostream& fileout,
-          const char *name) const;
+		   const char* name) const;
 
   // PRIVATE MEMBERS ----------------------------------------------------
 private :
