@@ -14,12 +14,16 @@
 
 #include "MeshIOAscii.hh" // implementation of class methods
 
+#include "pylith/utils/array.hh" // USES double_array, int_array, string_vector
+#include "pylith/utils/sievetypes.hh" // USES PETSc mesh
+
 #include <fstream> // USES std::ifstream, std::ofstream
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <assert.h> // USES assert()
 #include <iomanip> // USES setw(), setiosflags(), resetiosflags()
 
+// ----------------------------------------------------------------------
 const char* pylith::meshio::MeshIOAscii::groupTypeNames[] = 
   {"vertices", "cells"};
 
@@ -46,9 +50,9 @@ pylith::meshio::MeshIOAscii::_read(void)
   int numVertices = 0;
   int numCells = 0;
   int numCorners = 0;
-  double* coordinates = 0;
-  int* cells = 0;
-  int* materialIds = 0;
+  double_array coordinates;
+  int_array cells;
+  int_array materialIds;
   
   std::ifstream filein(_filename.c_str());
   if (!filein.is_open() || !filein.good()) {
@@ -97,17 +101,16 @@ pylith::meshio::MeshIOAscii::_read(void)
       readCells = true;
     } else if (0 == strcasecmp(token.c_str(), "group")) {
       std::string name;
-      pylith::meshio::MeshIO::PointType type;
-      int  numPoints;
-      int *points;
+      GroupPtType type;
+      int numPoints = 0;
+      int_array points;
 
       if (!builtMesh)
         throw std::runtime_error("Both 'vertices' and 'cells' must "
 				 "precede any groups in mesh file.");
       filein.ignore(maxIgnore, '{');
-      _readGroup(filein, name, type, numPoints, &points);
-      _buildGroup(name, type, numPoints, points);
-      delete [] points;
+      _readGroup(filein, &points, &type, &name);
+      _setGroup(name, type, points);
     } else {
       std::ostringstream msg;
       msg << "Could not parse '" << token << "' into a mesh setting.";
@@ -118,10 +121,7 @@ pylith::meshio::MeshIOAscii::_read(void)
       // Can now build mesh
       _buildMesh(coordinates, numVertices, spaceDim,
 		 cells, numCells, numCorners, meshDim);
-      _setMaterials(materialIds, numCells);
-      delete[] coordinates; coordinates = 0;
-      delete[] cells; cells = 0;
-      delete[] materialIds; materialIds = 0;
+      _setMaterials(materialIds);
       builtMesh = true;
     } // if
 
@@ -150,11 +150,12 @@ pylith::meshio::MeshIOAscii::_write(void) const
 
   _writeVertices(fileout);
   _writeCells(fileout);
-  ALE::Obj<std::set<std::string> > groups = _getGroups();
 
-  for(std::set<std::string>::const_iterator name = groups->begin(); name != groups->end(); ++name) {
-    _writeGroup(fileout, name->c_str());
-  }
+  string_vector groups;
+  _getGroupNames(&groups);
+  const int numGroups = groups.size();
+  for (int i=0; i < numGroups; ++i)
+    _writeGroup(fileout, groups[i].c_str());
 
   fileout << "}\n";
   fileout.close();
@@ -164,13 +165,13 @@ pylith::meshio::MeshIOAscii::_write(void) const
 // Read mesh vertices.
 void
 pylith::meshio::MeshIOAscii::_readVertices(std::istream& filein,
-					   double** pCoordinates,
-					   int* pNumVertices, 
-					   int* pNumDims) const
+					   double_array* coordinates,
+					   int* numVertices, 
+					   int* numDims) const
 { // _readVertices
-  double* coordinates = 0;
-  int numDims = 0;
-  int numVertices = 0;
+  assert(0 != coordinates);
+  assert(0 != numVertices);
+  assert(0 != numDims);
 
   std::string token;
   const int maxIgnore = 1024;
@@ -178,12 +179,12 @@ pylith::meshio::MeshIOAscii::_readVertices(std::istream& filein,
   while (filein.good() && token != "}") {
     if (0 == strcasecmp(token.c_str(), "dimension")) {
       filein.ignore(maxIgnore, '=');
-      filein >> numDims;
+      filein >> *numDims;
     } else if (0 == strcasecmp(token.c_str(), "count")) {
       filein.ignore(maxIgnore, '=');
-      filein >> numVertices;
+      filein >> *numVertices;
     } else if (0 == strcasecmp(token.c_str(), "coordinates")) {
-      const int size = numVertices*numDims;
+      const int size = (*numVertices) * (*numDims);
       if (0 == size) {
 	const char* msg = 
 	  "Tokens 'dimension' and 'count' must precede 'coordinates'.";
@@ -191,13 +192,12 @@ pylith::meshio::MeshIOAscii::_readVertices(std::istream& filein,
       } // if
       
       filein.ignore(maxIgnore, '{');
-      delete[] coordinates; coordinates = new double[size];
-      assert(0 != coordinates);
+      coordinates->resize(size);
       int label;
-      for (int iVertex=0, i=0; iVertex < numVertices; ++iVertex) {
+      for (int iVertex=0, i=0; iVertex < *numVertices; ++iVertex) {
 	filein >> label;
-	for (int iDim=0; iDim < numDims; ++iDim)
-	  filein >> coordinates[i++];
+	for (int iDim=0; iDim < *numDims; ++iDim)
+	  filein >> (*coordinates)[i++];
       } // for
       filein.ignore(maxIgnore, '}');
     } else {
@@ -209,13 +209,6 @@ pylith::meshio::MeshIOAscii::_readVertices(std::istream& filein,
   } // while
   if (!filein.good())
     throw std::runtime_error("I/O error while parsing vertices settings.");
-
-  if (0 != pCoordinates)
-    *pCoordinates = coordinates;
-  if (0 != pNumVertices)
-    *pNumVertices = numVertices;
-  if (0 != pNumDims)
-    *pNumDims = numDims;
 } // _readVertices
 
 // ----------------------------------------------------------------------
@@ -225,7 +218,7 @@ pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const
 { // _writeVertices
   int spaceDim = 0;
   int numVertices = 0;
-  double* coordinates = 0;
+  double_array coordinates;
   _getVertices(&coordinates, &numVertices, &spaceDim);
 
   fileout
@@ -246,23 +239,22 @@ pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const
   fileout
     << "    }\n"
     << "  }\n";
-
-  delete[] coordinates; coordinates = 0;
 } // _writeVertices
   
 // ----------------------------------------------------------------------
 // Read mesh cells.
 void
 pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
-					int** pCells,
-					int** pMaterialIds,
-					int* pNumCells, 
-					int* pNumCorners) const
+					int_array* cells,
+					int_array* materialIds,
+					int* numCells, 
+					int* numCorners) const
 { // _readCells
-  int* cells = 0;
-  int* materialIds = 0;
-  int numCells = 0;
-  int numCorners = 0;
+  assert(0 != cells);
+  assert(0 != materialIds);
+  assert(0 != numCells);
+  assert(0 != numCorners);
+
   int dimension = 0;
 
   std::string token;
@@ -271,12 +263,12 @@ pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
   while (filein.good() && token != "}") {
     if (0 == strcasecmp(token.c_str(), "num-corners")) {
       filein.ignore(maxIgnore, '=');
-      filein >> numCorners;
+      filein >> *numCorners;
     } else if (0 == strcasecmp(token.c_str(), "count")) {
       filein.ignore(maxIgnore, '=');
-      filein >> numCells;
+      filein >> *numCells;
     } else if (0 == strcasecmp(token.c_str(), "simplices")) {
-      const int size = numCells*numCorners;
+      const int size = (*numCells) * (*numCorners);
       if (0 == size) {
 	const char* msg = 
 	  "Tokens 'num-corners' and 'count' must precede 'cells'.";
@@ -284,36 +276,34 @@ pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
       } // if
       
       filein.ignore(maxIgnore, '{');
-      delete[] cells; cells = new int[size];
-      assert(0 != cells);
+      cells->resize(size);
       int label;
-      for (int iCell=0, i=0; iCell < numCells; ++iCell) {
+      for (int iCell=0, i=0; iCell < *numCells; ++iCell) {
 	filein >> label;
-	for (int iCorner=0; iCorner < numCorners; ++iCorner)
-	  filein >> cells[i++];
+	for (int iCorner=0; iCorner < *numCorners; ++iCorner)
+	  filein >> (*cells)[i++];
       } // for
       if (!useIndexZero()) {
 	// if files begins with index 1, then decrement to index 0
 	// for compatibility with Sieve
 	for (int i=0; i < size; ++i)
-	  --cells[i];
+	  --(*cells)[i];
       } // if
       
       filein.ignore(maxIgnore, '}');
     } else if (0 == strcasecmp(token.c_str(), "material-ids")) {
-      if (0 == numCells) {
+      if (0 == *numCells) {
 	const char* msg =
 	  "Token 'count' must precede 'material-ids'.";
 	throw std::runtime_error(msg);
       } // if
-      const int size = numCells;
+      const int size = *numCells;
       filein.ignore(maxIgnore, '{');
-      delete[] materialIds; materialIds = new int[size];
-      assert(0 != materialIds);
+      materialIds->resize(size);
       int label = 0;
-      for (int iCell=0; iCell < numCells; ++iCell) {
+      for (int iCell=0; iCell < *numCells; ++iCell) {
 	filein >> label;
-	filein >> materialIds[iCell];
+	filein >> (*materialIds)[iCell];
       } // for
       filein.ignore(maxIgnore, '}');
     } else {
@@ -327,21 +317,11 @@ pylith::meshio::MeshIOAscii::_readCells(std::istream& filein,
     throw std::runtime_error("I/O error while parsing cells settings.");
 
   // If no materials given, assign each cell material identifier of 0
-  if (0 == materialIds && numCells > 0) {
-    const int size = numCells;
-    materialIds = new int[size];
-    for (int i=0; i < size; ++i)
-      materialIds[i] = 0;
+  if (0 == materialIds->size() && *numCells > 0) {
+    const int size = *numCells;
+    materialIds->resize(size);
+    (*materialIds) = 0;
   } // if
-
-  if (0 != pCells)
-    *pCells = cells;
-  if (0 != pNumCells)
-    *pNumCells = numCells;
-  if (0 != pNumCorners)
-    *pNumCorners = numCorners;
-  if (0 != pMaterialIds)
-    *pMaterialIds = materialIds;
 } // _readCells
 
 // ----------------------------------------------------------------------
@@ -352,7 +332,7 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
   int meshDim = 0;
   int numCells = 0;
   int numCorners = 0;
-  int* cells = 0;
+  int_array cells;
   _getCells(&cells, &numCells, &numCorners, &meshDim);
   
   fileout
@@ -367,45 +347,37 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
       fileout << std::setw(8) << cells[i++];
     fileout << "\n";
   } // for
-  fileout
-    << "    }\n";
-  delete[] cells; cells = 0;
+  fileout << "    }\n";
 
   // Write material identifiers
-  int* materialIds = 0;
-  _getMaterials(&materialIds, &numCells);
-  assert( (0 != materialIds && 0 < numCells) ||
-	  (0 == materialIds && 0 == numCells) );
-  fileout
-    << "    material-ids = {\n";
+  int_array materialIds;
+  _getMaterials(&materialIds);
+  assert(numCells == materialIds.size());
+  fileout << "    material-ids = {\n";
   for(int iCell=0, i=0; iCell < numCells; ++iCell) {
     fileout << "      " << std::setw(8) << iCell;
     fileout << std::setw(4) << materialIds[iCell] << "\n";
   } // for
-  fileout
-    << "    }\n";  
-  delete[] materialIds; materialIds = 0;
+  fileout << "    }\n";  
 
-  fileout
-    << "  }\n";
+  fileout << "  }\n";
 } // _writeCells
 
 // ----------------------------------------------------------------------
 // Read mesh group.
 void
 pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
-             std::string& name,
-             pylith::meshio::MeshIO::PointType& type,
-             int& numPoints,
-             int *points[]) const
+					int_array* points,
+					GroupPtType* type,
+					std::string* name) const
 { // _readGroup
   assert(0 != points);
-
-  int* indices = 0; // Indices of entities in group
+  assert(0 != type);
+  assert(0 != name);
 
   std::string token;
   const int maxIgnore = 1024;
-  numPoints = -1;
+  int numPoints = -1;
   filein >> token;
   while (filein.good() && token != "}") {
     if (0 == strcasecmp(token.c_str(), "name")) {
@@ -413,20 +385,20 @@ pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
       filein >> std::ws;
       char buffer[maxIgnore];
       filein.get(buffer, maxIgnore, '\n');
-      name = buffer;
+      *name = buffer;
     } else if (0 == strcasecmp(token.c_str(), "type")) {
       std::string typeName;
       filein.ignore(maxIgnore, '=');
       filein >> typeName;
-      if (typeName == groupTypeNames[VERTEX]) {
-        type = VERTEX;
-      } else if (typeName == groupTypeNames[CELL]) {
-        type = CELL;
-      } else {
+      if (typeName == groupTypeNames[VERTEX])
+        *type = VERTEX;
+      else if (typeName == groupTypeNames[CELL])
+        *type = CELL;
+      else {
         std::ostringstream msg;
         msg << "Invalid point type " << typeName << ".";
         throw std::runtime_error(msg.str());
-      }
+      } // else
     } else if (0 == strcasecmp(token.c_str(), "count")) {
       filein.ignore(maxIgnore, '=');
       filein >> numPoints;
@@ -436,11 +408,10 @@ pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
         msg << "Tokens 'count' must precede 'indices'.";
         throw std::runtime_error(msg.str());
       } // if
-      
       filein.ignore(maxIgnore, '{');
-      delete[] indices; indices = (numPoints > 0) ? new int[numPoints] : 0;
+      points->resize(numPoints);
       for (int i=0; i < numPoints; ++i)
-        filein >> indices[i];
+        filein >> (*points)[i];
       filein.ignore(maxIgnore, '}');
     } else {
       std::ostringstream msg;
@@ -451,7 +422,6 @@ pylith::meshio::MeshIOAscii::_readGroup(std::istream& filein,
   } // while
   if (!filein.good())
     throw std::runtime_error("I/O error while parsing group settings.");
-  *points = indices;
 } // _readGroup
 
 // ----------------------------------------------------------------------
@@ -460,20 +430,20 @@ void
 pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
 					 const char* name) const
 { // _writeGroup
-  pylith::meshio::MeshIO::PointType type;
-  int numPoints;
-  int *points;
+  int_array points;
+  GroupPtType type;
+  _getGroup(&points, &type, name);
 
-  _getGroup(name, type, numPoints, &points);
+  const int numPoints = points.size();
   fileout
     << "  group = {\n"
     << "    name = " << name << "\n"
     << "    type = " << groupTypeNames[type] << "\n"
     << "    count = " << numPoints << "\n"
     << "    indices = {\n";
-  for(int i = 0; i < numPoints; ++i) {
+  for(int i=0; i < numPoints; ++i)
     fileout << "      " << points[i] << "\n";
-  }
+
   fileout
     << "    }\n"
     << "  }\n";

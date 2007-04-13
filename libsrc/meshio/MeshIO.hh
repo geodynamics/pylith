@@ -13,7 +13,10 @@
 #if !defined(pylith_meshio_meshio_hh)
 #define pylith_meshio_meshio_hh
 
-#include <Mesh.hh> // PETSc Mesh
+#include "pylith/utils/arrayfwd.hh" // USES double_array, int_array,
+                                    // string_vector
+
+#include "pylith/utils/sievefwd.hh" // USES ALE::Obj, ALE::Mesh
 
 namespace pylith {
   namespace meshio {
@@ -23,16 +26,15 @@ namespace pylith {
 
 class pylith::meshio::MeshIO
 { // MeshIO
+
 // PUBLIC TYPEDEFS //////////////////////////////////////////////////////
 public :
-  typedef ALE::Mesh        Mesh;
-  typedef Mesh::sieve_type sieve_type;
-  typedef Mesh::label_type label_type;
-  
+
+  /// Type of points in a group.
+  typedef enum { VERTEX, CELL } GroupPtType;
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
-  typedef enum {VERTEX, CELL} PointType;
-
   /// Constructor
   MeshIO(void);
 
@@ -69,13 +71,13 @@ public :
    *
    * @param mesh Pointer to PETSc mesh object
    */
-  void read(ALE::Obj<Mesh>* mesh);
+  void read(ALE::Obj<ALE::Mesh>* mesh);
 
   /** Write mesh to file.
    *
    * @param mesh Pointer to PETSc mesh object
    */
-  void write(ALE::Obj<Mesh>* mesh);
+  void write(ALE::Obj<ALE::Mesh>* mesh);
 
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
@@ -116,10 +118,10 @@ protected :
    * @param numCorners Number of vertices per cell
    * @param meshDim Dimension of cells in mesh
    */
-  void _buildMesh(const double* coordinates,
+  void _buildMesh(const double_array& coordinates,
 		  const int numVertices,
 		  const int spaceDim,
-		  const int* cells,
+		  const int_array& cells,
 		  const int numCells,
 		  const int numCorners,
 		  const int meshDim);
@@ -128,72 +130,65 @@ protected :
    *
    * Method caller is responsible for memory management.
    *
-   * @param pCoordinates Pointer to array of vertex coordinates
-   * @param pNumVertices Pointer to number of vertices
-   * @param pSpaceDim Poiner to dimension of vector space for coordinates
+   * @param coordinates Pointer to array of vertex coordinates
+   * @param numVertices Pointer to number of vertices
+   * @param spaceDim Poiner to dimension of vector space for coordinates
    */
-  void _getVertices(double** pCoordinates,
-		    int* pNumVertices,
-		    int* pSpaceDim) const;
+  void _getVertices(double_array* coordinates,
+		    int* numVertices,
+		    int* spaceDim) const;
 
   /** Get information about cells in mesh.
    *
    * Method caller is responsible for memory management.
    *
-   * @param pCells Pointer to array of indicates of vertices in each cell
-   * @param pNumCells Pointer to number of cells in mesh
-   * @param pNumCorners Pointer to number of vertices in each cell
-   * @param pMeshDim Pointer to number of dimensions associated with cell
+   * @param cells Pointer to array of indicates of vertices in each cell
+   * @param numCells Pointer to number of cells in mesh
+   * @param numCorners Pointer to number of vertices in each cell
+   * @param meshDim Pointer to number of dimensions associated with cell
    */
-  void _getCells(int** pCells,
-		 int* pNumCells,
-		 int* pNumCorners,
-		 int* pMeshDim) const;
+  void _getCells(int_array* cells,
+		 int* numCells,
+		 int* numCorners,
+		 int* meshDim) const;
 
   /** Tag cells in mesh with material identifiers.
    *
    * @param materialIds Material identifiers [numCells]
-   * @param numCells Number of cells
    */
-  void _setMaterials(const int* materialIds,
-		     const int numCells);
+  void _setMaterials(const int_array& materialIds);
 
   /** Get material identifiers for cells.
    *
    * @param materialIds Material identifiers [numCells]
-   * @param numCells Number of cells
    */
-  void _getMaterials(int** pMaterialIds,
-		     int* pNumCells) const;
+  void _getMaterials(int_array* pMaterialIds) const;
 
   /** Build a point group
    *
    * @param name The group name
    * @param type The point type, e.g. VERTEX, CELL
-   * @param numPoints The number of points
-   * @param points An array of the points
+   * @param points An array of the points in the group.
    */
-  void _buildGroup(const std::string& name,
-                   const PointType type,
-                   const int numPoints,
-				   const int* points);
+  void _setGroup(const std::string& name,
+		 const GroupPtType type,
+		 const int_array& points);
 
-  /** Return all group names
+  /** Get names of all groups in mesh.
    *
+   * @returns Array of group names.
    */
-  ALE::Obj<std::set<std::string> > _getGroups() const;
+  void _getGroupNames(string_vector* names) const;
 
   /** Return a point group
    *
-   * @param name The group name
+   * @param points An array of the points in the group
    * @param type The point type, e.g. VERTEX, CELL
-   * @param numPoints The number of points
-   * @param points An array of the points
+   * @param name The group name
    */
-  void _getGroup(const char *name,
-                 PointType& type,
-                 int& numPoints,
-                 int *points[]) const;
+  void _getGroup(int_array* points,
+		 GroupPtType* type,
+		 const char *name) const;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
@@ -202,7 +197,7 @@ private :
   bool _debug; ///< True to turn of mesh debugging output
   bool _interpolate; ///< True if building intermediate topology elements
 
-  ALE::Obj<Mesh>* _mesh; ///< Pointer to PETSc mesh object
+  ALE::Obj<ALE::Mesh>* _mesh; ///< Pointer to PETSc mesh object
 
 }; // MeshIO
 

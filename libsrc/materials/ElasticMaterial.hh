@@ -22,8 +22,8 @@
 
 #include "Material.hh" // ISA Material
 
-#include <petscmesh.h> // USES Mesh
 #include "pylith/utils/arrayfwd.hh" // USES double_array
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 #include <vector> // USES std::vector
 
 /// Namespace for pylith package
@@ -39,12 +39,6 @@ namespace pylith {
 class pylith::materials::ElasticMaterial : public Material
 { // class ElasticMaterial
   friend class TestElasticMaterial; ///< unit testing
-
-  // PUBLIC TYPEDEFS ////////////////////////////////////////////////////
-public :
-
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::real_section_type real_section_type;
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :

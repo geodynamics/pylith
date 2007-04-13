@@ -26,7 +26,7 @@
 #include <map> // HASA std::map
 #include <string> // USES std::string
 
-#include <petscmesh.h> // USES Mesh
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
 namespace pylith {
   namespace feassemble {
@@ -38,13 +38,6 @@ namespace pylith {
 class pylith::feassemble::ParameterManager
 { // ParameterManager
   friend class TestParameterManager; // unit testing
-
-// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
-public :
-
-  typedef ALE::Mesh               Mesh;
-  typedef Mesh::point_type        point_type;
-  typedef Mesh::real_section_type real_section_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -80,7 +73,6 @@ private :
 private :
 
   typedef std::map< std::string, ALE::Obj<real_section_type> > map_real_type;
-
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

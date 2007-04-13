@@ -31,9 +31,8 @@
 #if !defined(pylith_feassemble_quadrature_hh)
 #define pylith_feassemble_quadrature_hh
 
-#include <petscmesh.h>
-
 #include "pylith/utils/array.hh" // HASA double_array
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
 namespace pylith {
   namespace feassemble {
@@ -44,12 +43,6 @@ namespace pylith {
 class pylith::feassemble::Quadrature
 { // Quadrature
   friend class TestQuadrature; // unit testing
-
-// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
-public :
-
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::real_section_type real_section_type;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :

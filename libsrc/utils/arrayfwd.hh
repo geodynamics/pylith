@@ -25,6 +25,8 @@
 #if !defined(pylith_utils_arrayfwd_hh)
 #define pylith_utils_arrayfwd_hh
 
+#include <string> // USES std::string
+
 /// Forward declaration of STL vector
 namespace std {
   // std::vector
@@ -42,6 +44,9 @@ namespace pylith {
 
   /// Alias for std::vector<double>
   typedef std::vector<double, std::allocator<double> > double_vector;
+
+  /// Alias for std::vector<std::string>
+  typedef std::vector<std::string, std::allocator<std::string> > string_vector;
 
   /// Alias for std::valarray<int>
   typedef std::valarray<int> int_array;

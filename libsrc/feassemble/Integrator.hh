@@ -24,7 +24,7 @@
 #if !defined(pylith_feassemble_integrator_hh)
 #define pylith_feassemble_integrator_hh
 
-#include <petscmesh.h> // USES Mesh
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
 namespace pylith {
   namespace feassemble {
@@ -39,13 +39,6 @@ namespace pylith {
 class pylith::feassemble::Integrator
 { // Integrator
   friend class TestIntegrator; // unit testing
-
-// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
-public :
-
-  typedef ALE::Mesh               Mesh;
-  typedef Mesh::point_type        point_type;
-  typedef Mesh::real_section_type real_section_type;
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
