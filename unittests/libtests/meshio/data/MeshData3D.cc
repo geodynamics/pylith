@@ -47,6 +47,25 @@ const int pylith::meshio::MeshData3D::_materialIds[] = {
   1, 0
 };
 
+const int pylith::meshio::MeshData3D::_numGroups = 2;
+
+const int pylith::meshio::MeshData3D::_groupSizes[] = 
+  { 5, 2, 4 };
+
+const int pylith::meshio::MeshData3D::_groups[] = {
+  0, 4, 6, 7, 10,
+  0, 1,
+  0, 4, 12, 13
+};
+
+const char* pylith::meshio::MeshData3D::_groupNames[] = {
+  "group A", "group B", "group C"
+};
+
+const char* pylith::meshio::MeshData3D::_groupTypes[] = {
+  "vertex", "cell", "vertex"
+};
+
 const bool pylith::meshio::MeshData3D::_useIndexZero = true;
 
 pylith::meshio::MeshData3D::MeshData3D(void)
@@ -59,6 +78,11 @@ pylith::meshio::MeshData3D::MeshData3D(void)
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
   materialIds = const_cast<int*>(_materialIds);
+  groups = const_cast<int*>(_groups);
+  groupSizes = const_cast<int*>(_groupSizes);
+  groupNames = const_cast<char**>(_groupNames);
+  groupTypes = const_cast<char**>(_groupTypes);
+  numGroups = _numGroups;
   useIndexZero = _useIndexZero;
 } // constructor
 

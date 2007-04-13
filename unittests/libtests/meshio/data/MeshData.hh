@@ -44,10 +44,13 @@ public:
   int* cells; ///< Pointer to indices of vertices in cells
   int* materialIds; ///< Pointer to cell material identifiers
 
-  bool useIndexZero; ///< Indices start with 0 if true, 1 if false
+  int* groups; ///< Array of pointers to indices of points in groups
+  int* groupSizes; ///< Array of sizes of each group
+  char** groupNames; ///< Array of group names
+  char** groupTypes; ///< Array of group types
+  int numGroups; ///< Number of groups
 
-  // :TODO:
-  // Add groups of vertices
+  bool useIndexZero; ///< Indices start with 0 if true, 1 if false
 
 };
 
