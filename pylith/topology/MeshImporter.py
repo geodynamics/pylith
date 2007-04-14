@@ -59,11 +59,12 @@ class MeshImporter(MeshGenerator):
     return
 
 
-  def create(self):
+  def create(self, faults):
     """
     Hook for creating mesh.
     """
     mesh = self.importer.read(self.debug, self.interpolate)
+    self._adjustTopology(mesh, faults)
     return mesh
 
 

@@ -1,0 +1,46 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_faults_fault_hh)
+#error "Fault.icc can only be included from Fault.hh"
+#endif
+
+// Set identifier of fault.
+inline
+void
+pylith::faults::Fault::id(const int value) {
+  _id = value;
+}
+
+// Get identifier of fault.
+inline
+int
+pylith::faults::Fault::id(void) const {
+  return _id;
+}
+
+// Set name of fault.
+inline
+void
+pylith::faults::Fault::label(const char* value) {
+  _label = value;
+}
+
+// Get label of fault.
+inline
+const std::string&
+pylith::faults::Fault::label(void) const {
+  return _label;
+}
+
+
+// End of file 

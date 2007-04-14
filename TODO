@@ -2,36 +2,45 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-0. Update unit testing.
-
-  b. Update MeshIOAscii tests (groups of vertices and cells)
-
-1. Finish implementing ExplicitElasticity and Explicit
-   a. Double check loops for calcConstant() and calcJacobian()
-   b. Create unit test (construction of constant term and Jacobian)
-
-2. Start implementing faults
+0. Start implementing faults
    a. Create Faults object
    b. Add creation of cohesive elements
    c. Start implementing integrator for faults
    d. Create unit tests at C++ level
    e. Create unit tests at Python level
 
+1. Finish implementing ExplicitElasticity and Explicit
+   a. Double check loops for calcConstant() and calcJacobian()
+   b. Create unit test (construction of constant term and Jacobian)
+
+2. Implement HDF5 output
+
+3. Implement PML boundary conditions
+
+4. Create suite of simple full test cases
+
 ======================================================================
 SECONDARY PRIORITIES
 ======================================================================
 
-1. Implement MeshIOHDF5 & HDF5
-   a. C++ objects
-   b. unit tests at C++ level
-   c. Python object (MeshIOHDF5)
-   d. bindings
-   e. unit tests at Python level
-
-2. Implement MeshIOCubit
+1. Implement MeshIOCubit
    a. C++ objects
    b. unit tests at C++ level
    c. Python object (MeshIOCubit)
+   d. bindings
+   e. unit tests at Python level
+
+2. Implement MeshIOLagrit
+   a. C++ objects
+   b. unit tests at C++ level
+   c. Python object (MeshIOLagrit)
+   d. bindings
+   e. unit tests at Python level
+
+3. Implement MeshIOHDF5 & HDF5
+   a. C++ objects
+   b. unit tests at C++ level
+   c. Python object (MeshIOHDF5)
    d. bindings
    e. unit tests at Python level
 

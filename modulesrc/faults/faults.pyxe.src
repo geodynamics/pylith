@@ -1,0 +1,199 @@
+# -*- Pyrex -*-
+#
+# ======================================================================
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# {LicenseText}
+#
+# ======================================================================
+#
+
+#header{
+#include "pylith/faults/Fault.hh"
+#include "pylith/faults/FaultCohesive.hh"
+#include "pylith/faults/FaultCohesiveKin.hh"
+
+#include <assert.h>
+#include <stdexcept>
+#include <Python.h>
+#}header
+
+# ----------------------------------------------------------------------
+cdef extern from "Python.h":
+  object PyCObject_FromVoidPtr(void*, void (*destruct)(void*))
+  void* PyCObject_AsVoidPtr(object)
+
+cdef void* ptrFromHandle(obj):
+  """Extract pointer from PyCObject."""
+  return PyCObject_AsVoidPtr(obj.handle)
+
+cdef extern from "stdlib.h":
+  ctypedef unsigned long size_t
+  void* malloc(size_t size)
+  void free(void* mem)
+
+cdef void Fault_destructor(void* obj):
+  """
+  Destroy Fault object.
+  """
+  # create shim for destructor
+  #embed{ void Fault_destructor_cpp(void* objVptr)
+  pylith::faults::Fault* pM = (pylith::faults::Fault*) objVptr;
+  delete pM;
+  #}embed
+  Fault_destructor_cpp(obj)
+  return
+
+
+# ----------------------------------------------------------------------
+cdef class Fault:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_faults_Fault"
+    return
+
+
+  def adjustTopology(self, mesh):
+    """
+    Adjust mesh topology for fault implementation.
+    """
+    # create shim for method 'adjustTopology'
+    #embed{ void Fault_adjustTopology(void* objVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::faults::Fault*) objVptr)->adjustTopology(mesh);
+    } catch (const std::exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.what()));
+    } catch (...) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    Fault_adjustTopology(self.thisptr, ptrFromHandle(mesh))
+    return
+
+
+  def _createHandle(self):
+    """
+    Wrap pointer to C++ object in PyCObject.
+    """
+    return PyCObject_FromVoidPtr(self.thisptr, Fault_destructor)
+
+
+  property id:
+    def __set__(self, value):
+      """
+      Set identifier of material.
+      """
+      # create shim for method 'id'
+      #embed{ void Fault_id_set(void* objVptr, int value)
+      try {
+        assert(0 != objVptr);
+        ((pylith::faults::Fault*) objVptr)->id(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      Fault_id_set(self.thisptr, value)
+
+    def __get__(self):
+      """
+      Get identifier of material.
+      """
+      # create shim for method 'id'
+      #embed{ int Fault_id_get(void* objVptr)
+      int result = 0;
+      try {
+        assert(0 != objVptr);
+        result = ((pylith::faults::Fault*) objVptr)->id();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return Fault_id_get(self.thisptr)
+
+
+  property label:
+    def __set__(self, value):
+      """
+      Set label of material.
+      """
+      # create shim for method 'label'
+      #embed{ void Fault_label_set(void* objVptr, char* value)
+      try {
+        assert(0 != objVptr);
+        ((pylith::faults::Fault*) objVptr)->label(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      Fault_label_set(self.thisptr, value)
+
+
+# ----------------------------------------------------------------------
+cdef class FaultCohesive(Fault):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    Fault.__init__(self)
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class FaultCohesiveKin(FaultCohesive):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* FaultCohesiveKin_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::faults::FaultCohesiveKin);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    FaultCohesive.__init__(self)
+    self.thisptr = FaultCohesiveKin_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# End of file 

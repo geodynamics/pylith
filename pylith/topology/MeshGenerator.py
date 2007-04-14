@@ -64,7 +64,7 @@ class MeshGenerator(Component):
     return
 
 
-  def create(self):
+  def create(self, faults):
     """
     Hook for creating mesh.
     """
@@ -83,5 +83,15 @@ class MeshGenerator(Component):
     self.interpolate = self.inventory.interpolate
     return
 
+
+  def _adjustTopology(self, mesh, faults):
+    """
+    Adjust topology for fault implementation.
+    """
+    if not faults is None:
+      for fault in faults:
+        fault.adjustTopology(mesh)
+    return
+  
 
 # End of file 

@@ -20,7 +20,7 @@
 ## properties and a quadrature scheme with the material. Thus,
 ## applying different quadrature schemes within a region with the same
 ## physical property database requires two "materials", which can use
-## the same database.  a material.
+## the same database.
 ##
 ## Factory: material
 
@@ -35,7 +35,7 @@ class Material(Component):
   properties and a quadrature scheme with the material. Thus, applying
   different quadrature schemes within a region with the same physical
   property database requires two 'materials', which can use the same
-  database.  a material.
+  database.
   """
 
   # INVENTORY //////////////////////////////////////////////////////////

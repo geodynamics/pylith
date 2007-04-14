@@ -46,10 +46,10 @@ class EqDeformation(TimeDependent):
 
     import pyre.inventory
 
-    #from Faults import Faults
-    #faults = pyre.inventory.facility("faults", family="faults",
-    #                                 factory=Faults)
-    #faults.meta['tip'] = "Faults or interior slip surfaces."
+    from pylith.faults.FaultsBin import FaultsBin
+    faults = pyre.inventory.facility("faults", family="faults",
+                                     factory=FaultsBin)
+    faults.meta['tip'] = "Faults or interior slip surfaces."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ class EqDeformation(TimeDependent):
           "EqDeformation::checkpoint() not implemented."
 
     # Save state of children
-    #self.faults.checkpoint()
+    self.faults.checkpoint()
     return
   
 
@@ -84,7 +84,7 @@ class EqDeformation(TimeDependent):
     Set members based using inventory.
     """
     TimeDependent._configure(self)
-    #self.faults = self.inventory.faults
+    self.faults = self.inventory.faults
     return
 
 

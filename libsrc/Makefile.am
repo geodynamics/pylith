@@ -13,6 +13,7 @@
 SUBDIRS = \
 	utils \
 	feassemble \
+	faults \
 	materials \
 	meshio \
 	topology
@@ -20,6 +21,9 @@ SUBDIRS = \
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
+	faults/Fault.cc \
+	faults/FaultCohesive.cc \
+	faults/FaultCohesiveKin.cc \
 	feassemble/ExplicitElasticity.cc \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorExplicit.cc \

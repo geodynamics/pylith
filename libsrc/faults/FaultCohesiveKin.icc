@@ -1,0 +1,25 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_faults_faultcohesivekin_hh)
+#error "Fault.icc can only be included from FaultCohesiveKin.hh"
+#endif
+
+// Create copy of fault.
+inline
+pylith::faults::Fault*
+pylith::faults::FaultCohesiveKin::clone(void) const {
+  return new FaultCohesiveKin(*this);
+} // clone
+
+
+// End of file 

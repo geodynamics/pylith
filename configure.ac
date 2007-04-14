@@ -145,11 +145,13 @@ AC_CONFIG_FILES([Makefile
 		pylith/Makefile
                 libsrc/Makefile
                 libsrc/feassemble/Makefile
+		libsrc/faults/Makefile
                 libsrc/materials/Makefile
                 libsrc/meshio/Makefile
 		libsrc/utils/Makefile
 		libsrc/topology/Makefile
                 modulesrc/Makefile
+                modulesrc/faults/Makefile
                 modulesrc/feassemble/Makefile
                 modulesrc/materials/Makefile
                 modulesrc/meshio/Makefile
