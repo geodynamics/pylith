@@ -21,7 +21,7 @@
 from FaultCohesive import FaultCohesive
 
 # FaultCohesiveKin class
-class FaultCohesiveKin(Fault):
+class FaultCohesiveKin(FaultCohesive):
   """
   Python object for a fault surface with kinematic (prescribed) slip
   implemented with cohesive elements.

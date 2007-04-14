@@ -10,13 +10,19 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	faults \
-	feassemble \
-	materials \
-	meshio \
-	topology \
-	utils
+subpackage = faults
+include $(top_srcdir)/subpackage.am
+
+SUBDIRS = data
+
+TESTS = testfaults.py
+
+check_SCRIPTS = testfaults.py
+
+noinst_PYTHON = \
+	TestFault.py \
+	TestFaultCohesive.py \
+	TestFaultCohesiveKin.py
 
 
 # End of file 
