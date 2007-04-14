@@ -14,6 +14,13 @@
 
 #include "FaultCohesive.hh" // implementation of object methods
 
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "src/dm/mesh/meshpylith.h" // USES ALE::PyLith::Builder
+
+#include <assert.h> // USES assert()
+#include <sstream> // USES std::ostringstream
+#include <stdexcept> // USES std::runtime_error
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesive::FaultCohesive(void)
@@ -38,6 +45,34 @@ pylith::faults::FaultCohesive::FaultCohesive(const FaultCohesive& f) :
 void
 pylith::faults::FaultCohesive::adjustTopology(ALE::Obj<ALE::Mesh>* mesh) const
 { // adjustTopology
+  assert(0 != mesh);
+  assert("" != label());
+
+  // Get group of vertices associated with fault
+  const ALE::Obj<int_section_type>& groupField = 
+    (*mesh)->getIntSection(label());
+  assert(!groupField.isNull());
+  const int_section_type::chart_type& chart = groupField->getChart();
+  const Mesh::point_type firstPoint = *chart.begin();
+  ALE::Obj<Mesh::numbering_type> numbering;
+  if ((*mesh)->height(firstPoint) == 0) {
+    std::ostringstream msg;
+    msg << "Group associated with fault '" << label() << "' must contain "
+	<< "vertices, not cells.";
+    throw std::runtime_error(msg.str());
+  } else
+    numbering = (*mesh)->getFactory()->getNumbering(*mesh, 0);
+
+  // Create set with vertices on fault
+  std::set<Mesh::point_type> points; // Vertices on fault
+  const int numCells = (*mesh)->heightStratum(0)->size();
+  for(int_section_type::chart_type::iterator c_iter = chart.begin();
+      c_iter != chart.end();
+      ++c_iter) {
+    assert(!numbering.isNull());
+    points.insert(numbering->getIndex(*c_iter)+numCells);
+  } // for
+  ALE::PyLith::Builder::createCohesiveElements(*mesh, points);
 } // adjustTopology
 
 

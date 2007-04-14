@@ -16,8 +16,8 @@
  * cohesive elements.
  */
 
-#if !defined(pylith_faults_faultcphesivekin_hh)
-#define pylith_faults_faultchesivekin_hh
+#if !defined(pylith_faults_faultcohesivekin_hh)
+#define pylith_faults_faultcohesivekin_hh
 
 #include "FaultCohesive.hh"
 
@@ -70,6 +70,8 @@ private :
 private :
 
 }; // class FaultCohesiveKin
+
+#include "FaultCohesiveKin.icc" // inline methods
 
 #endif // pylith_faults_faultcohesivekin_hh
 
