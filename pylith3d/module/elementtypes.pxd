@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
@@ -29,43 +28,19 @@
 #
 
 
-# Parameters that are invariant for this geometry type
-numberSpaceDimensions = 3
-numberDegreesFreedom = 3
-stateVariableDimension = 6
-materialMatrixDimension = 21
-numberSkewDimensions = 2
-numberSlipDimensions = 5
-numberSlipNeighbors = 4
-
-# self.listIddmat = [
-#     1, 2, 3, 4, 5, 6,
-#     2, 7, 8, 9,10,11,
-#     3, 8,12,13,14,15,
-#     4, 9,13,16,17,18,
-#     5,10,14,17,19,20,
-#     6,11,15,18,20,21]
-# Changed this to correspond to BLAS packed symmetric matrix format.
-listIddmat = [
-     1, 2, 4, 7,11,16,
-     2, 3, 5, 8,12,17,
-     4, 5, 6, 9,13,18,
-     7, 8, 9,10,14,19,
-    11,12,13,14,15,20,
-    16,17,18,19,20,21]
+cdef extern from "elementtypes.h":
+    
+    struct ElementType:
+        int nodes
+        int fullGauss
+        int reducedGauss
+        int nodes2d
+        int fullGauss2d
+        int reducedGauss2d
 
 
-# Invariant parameters related to element type
-maxElementNodes = 20
-nsnodesmax = 4
+    extern ElementType elementTypes[]
+    extern int numElementTypes
 
 
-# Invariant parameters related to material model
-maxMaterialModels = 20
-maxStateVariables = 30
-
-
-numberAllowedVolumeElementTypes = 1
-
-
-# end of file 
+# end of file

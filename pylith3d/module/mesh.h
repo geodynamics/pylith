@@ -31,30 +31,34 @@
 #if !defined(pypylith3d_mesh_h)
 #define pypylith3d_mesh_h
 
-// process mesh
-extern char pypylith3d_processMesh__name__[];
-extern char pypylith3d_processMesh__doc__[];
-extern "C"
-PyObject * pypylith3d_processMesh(PyObject *, PyObject *);
 
-// create a PETSc Mat
-extern char pypylith3d_createPETScMat__name__[];
-extern char pypylith3d_createPETScMat__doc__[];
-extern "C"
-PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *);
+#include <Python.h>
 
-// destroy a PETSc Mat
-extern char pypylith3d_destroyPETScMat__name__[];
-extern char pypylith3d_destroyPETScMat__doc__[];
-extern "C"
-PyObject * pypylith3d_destroyPETScMat(PyObject *, PyObject *);
 
-// output a PETSc Mesh and Fields
-extern char pypylith3d_outputMesh__name__[];
-extern char pypylith3d_outputMesh__doc__[];
-extern "C"
-PyObject * pypylith3d_outputMesh(PyObject *, PyObject *);
+struct PyMeshObject;
+
+
+namespace PyLithMeshLib {
+
+    namespace Mesh {
+
+        // process mesh
+        PyObject *_processMesh(PyMeshObject *self);
+
+        // create a PETSc Mat
+        PyObject *_createMat(PyMeshObject *self);
+
+        // destroy a PETSc Mat
+        PyObject *_destroyMat(PyMeshObject *self);
+
+        // output a PETSc Mesh and Fields
+        PyObject *_outputMesh(PyMeshObject *self, char *fileRoot);
+
+    }
+
+}
+
 
 #endif
 
-// End of file
+// end of file

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
@@ -29,24 +28,30 @@
 #
 
 
-from pyre.inventory.odb.Registry import Registry
-from pyre.odb.fs.CodecODB import CodecODB
-from KeyValParser import KeyValParser
+cdef enum:
+    
+    
+    # Parameters that are invariant for this geometry type
+    numberSpaceDimensions = 3
+    numberDegreesFreedom = 3
+    stateVariableDimension = 6
+    materialMatrixDimension = 21
+    numberSkewDimensions = 2
+    numberSlipDimensions = 5
+    numberSlipNeighbors = 4
 
 
-class CodecKeyVal(CodecODB):
-
-    def __init__(self):
-        CodecODB.__init__(self, encoding='keyval')
-        return
-
-    def _decode(self, shelf):
-        stream = open(shelf.name, 'r')
-        parser = KeyValParser()
-        inventory = parser.parse(stream)
-        shelf['inventory'] = inventory
-        shelf._frozen = True
-        return
+    # Invariant parameters related to element type
+    maxElementNodes = 20
+    nsnodesmax = 4
 
 
-# End of file 
+    # Invariant parameters related to material model
+    maxMaterialModels = 20
+    maxStateVariables = 30
+
+
+    numberAllowedVolumeElementTypes = 1
+
+
+# end of file 

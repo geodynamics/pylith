@@ -28,27 +28,24 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#include <portinfo>
+#include "config.h"
 #include <Python.h>
 
-#include "exceptionhandler.h"
-
-int
-exceptionhandler(const int errorcode, 
-		 const char* errorstring)
+extern "C" PyObject *exceptionhandler(int errorcode, char* errorstring)
 {
   // Generate python exceptions from error codes
 
-  const int maxsize = 4096;
-  char errormsg[maxsize];
+  const int errorstring_size = 4096;
+  char errormsg[errorstring_size];
 
   if (errorcode == 0) {
-    return 0;
+    Py_INCREF(Py_None);
+    return Py_None;
   }
 
   // copy string to 'errormsg', trim spaces, and null-terminate
-  char *dest = errormsg + maxsize;
-  const char *src = errorstring + maxsize;
+  char *dest = errormsg + errorstring_size;
+  const char *src = errorstring + errorstring_size;
   while (dest > errormsg && (*--dest = *--src) == ' ')
     ;
   dest[1] = '\0';
@@ -105,10 +102,7 @@ exceptionhandler(const int errorcode,
   
   PyErr_Format(exception, format, errormsg);
   
-  return errorcode;
+  return 0;
 }
     
-// version
-// $Id: exceptionhandler.cc,v 1.3 2005/03/31 23:27:57 willic3 Exp $
-
-// End of file
+// end of file

@@ -1,6 +1,5 @@
-// -*- C++ -*-
-// 
-//  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 //  PyLith by Charles A. Williams, Brad Aagaard, and Matt Knepley
 //
@@ -25,52 +24,29 @@
 //  OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
 //  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-//  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
 
-#include <portinfo>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#include <Python.h>
+    typedef struct ElementType {
+        int nodes;
+        int fullGauss;
+        int reducedGauss;
+        int nodes2d;
+        int fullGauss2d;
+        int reducedGauss2d;
+    } ElementType;
 
-#include "pylith3dmodule.h"
-#include "exceptions.h"
-#include "bindings.h"
+
+    extern ElementType elementTypes[];
+    extern int numElementTypes;
 
 
-char pypylith3d_module__doc__[] = "";
-
-void pypylith3d_init(const char *name)
-{
-  // create the module and add the functions
-  PyObject * m = Py_InitModule4(
-				(char *)name, pypylith3d_methods,
-				pypylith3d_module__doc__, 0, PYTHON_API_VERSION);
-
-  // get its dictionary
-  PyObject * d = PyModule_GetDict(m);
-
-  // check for errors
-  if (PyErr_Occurred()) {
-    Py_FatalError("can't initialize module pylith3d");
-  }
-
-  // install the module exceptions
-  pypylith3d_runtimeError = PyErr_NewException("pylith3d.runtime", 0, 0);
-  PyDict_SetItemString(d, "RuntimeException", pypylith3d_runtimeError);
-
-  return;
+#ifdef __cplusplus
 }
+#endif
 
-// Initialization function for the module (*must* be called initpylith3d)
-extern "C"
-void
-initpylith3d()
-{
-  pypylith3d_init("pylith3d");
-  return;
-}
-
-// version
-// $Id: pylith3dmodule.cc,v 1.2 2005/03/31 23:27:57 willic3 Exp $
-
-// End of file
+// end of file

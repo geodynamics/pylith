@@ -1,4 +1,3 @@
-#!@INTERPRETER@
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
@@ -28,31 +27,48 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-# 
+
+cdef extern from "const.h":
+    ctypedef char const_char # Pyrex v0.9.5 doesn't support 'const'
 
 
-__requires__ = "PyLith"
+cdef extern from "petsc.h":
+    ctypedef int PetscErrorCode
+    ctypedef int PetscEvent
+    ctypedef int PetscCookie
+    ctypedef int PetscInt
+    PetscErrorCode PetscInitialize(int *, char ***, const_char *, const_char *)
+    PetscErrorCode PetscFinalize()
 
-# main
 
-if __name__ == "__main__":
-    
-    # re-create the PYTHONPATH at 'configure' time
-    import os.path, sys, site
-    path = '@PYTHONPATH@'.split(':')
-    path.reverse()
-    for directory in path:
-        if directory:
-            directory = os.path.abspath(directory)
-            sys.path.insert(1, directory)
-            site.addsitedir(directory)
+cdef extern from "petscerror.h":
+    PetscErrorCode PetscErrorMessage(int, const_char **, char **)
 
-    from pylith3d import PyLithApp
-    from pyre.applications import start
-    start(applicationClass=PyLithApp)
-    
 
-# version
-__id__ = "$Id: pylith3dapp.py,v 1.2 2005/03/11 02:30:46 willic3 Exp $"
+cdef extern from "petscvec.h":
+    struct _p_Vec
+    ctypedef _p_Vec *Vec
 
-#  End of file 
+
+cdef extern from "petscmat.h":
+    struct _p_Mat
+    ctypedef _p_Mat *Mat
+
+
+cdef extern from "petscmeshfwd.h": # for compilation speed
+    struct _p_Mesh
+    ctypedef _p_Mesh *Mesh
+    PetscErrorCode MeshDestroy(Mesh)
+
+
+cdef extern from "petsclog.h":
+    PetscErrorCode PetscLogStageRegister(int *, char *)
+    PetscErrorCode PetscLogEventRegister(PetscEvent *, char *, PetscCookie)
+
+
+cdef extern from "petscsnes.h":
+    enum:
+        KSP_COOKIE
+
+
+# end of file

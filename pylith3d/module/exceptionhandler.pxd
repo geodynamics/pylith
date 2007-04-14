@@ -1,6 +1,5 @@
-#!@INTERPRETER@
-#
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# 
+#  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 #  PyLith by Charles A. Williams, Brad Aagaard, and Matt Knepley
 #
@@ -25,34 +24,12 @@
 #  OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
 #  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
-
+#  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 
 
+cdef enum:
+    errorstring_size = 4096
 
-__requires__ = "PyLith"
+cdef extern object exceptionhandler(int errorcode, char *errorstring)
 
-# main
-
-if __name__ == "__main__":
-    
-    # re-create the PYTHONPATH at 'configure' time
-    import os.path, sys, site
-    path = '@PYTHONPATH@'.split(':')
-    path.reverse()
-    for directory in path:
-        if directory:
-            directory = os.path.abspath(directory)
-            sys.path.insert(1, directory)
-            site.addsitedir(directory)
-
-    from pylith3d import PyLithApp
-    from pyre.applications import start
-    start(applicationClass=PyLithApp)
-    
-
-# version
-__id__ = "$Id: pylith3dapp.py,v 1.2 2005/03/11 02:30:46 willic3 Exp $"
-
-#  End of file 
+# end of file

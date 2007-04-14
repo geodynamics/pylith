@@ -30,7 +30,6 @@
 
 #include <Python.h>
 #include <stdio.h>
-#include "pylith3dmodule.h"
 
 #define COMMAND \
 "import sys; " \
@@ -47,15 +46,15 @@
 /* include the implementation of _mpi */
 #include "mpi/_mpi.c"
 
-static void init_builtin_pylith3d()
-{
-    pypylith3d_init("builtin_pylith3d");
-    return;
+extern "C" {
+    void initPyLithLib();
+    void initPyLithMeshLib();
 }
 
 struct _inittab inittab[] = {
     { "_mpi", init_mpi },
-    { "builtin_pylith3d", init_builtin_pylith3d },
+    { "PyLithLib", initPyLithLib },
+    { "PyLithMeshLib", initPyLithMeshLib },
     { 0, 0 }
 };
 
