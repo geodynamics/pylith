@@ -28,16 +28,13 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#if !defined(pypylith3d_bindings_h)
-#define pypylith3d_bindings_h
+#if !defined(pypylith3d_const_h)
+#define pypylith3d_const_h
 
-// the method table
 
-extern struct PyMethodDef pypylith3d_methods[];
+typedef const char const_char;
+
 
 #endif
 
-// version
-// $Id: bindings.h,v 1.2 2005/03/31 23:27:58 willic3 Exp $
-
-// End of file
+// end of file

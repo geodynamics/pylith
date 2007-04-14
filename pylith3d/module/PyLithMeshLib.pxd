@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
@@ -29,36 +28,30 @@
 #
 
 
-from pyre.inventory.odb.Registry import Registry
-import pyre.parsing.locators as locators
+cimport petsc
 
 
-class KeyValParser:
+# C interface of PyLithMeshLib
+
+cdef public class Mesh [object PyMeshObject, type PyMesh_Type]:
 
 
-    def parse(self, stream):
-        registry = Registry("root")
-        node = registry.getNode("pylith3d")
-        node = node.getNode("scanner")
-        lineNumber = 1
-        for line in stream:
-            locator = locators.file(stream.name, lineNumber)
-            self.parseLine(line, node, locator)
-            lineNumber = lineNumber + 1
-        return registry
+    cdef petsc.Mesh mesh
+    
+    cdef petsc.Mat A
+    cdef petsc.Vec rhs, sol
+
+    cdef char *meshInputFile
+    cdef char *meshBcFile
+    cdef int   interpolateMesh
+    cdef char *partitioner
+
+    cdef object _meshInputFile, _meshBcFile, _partitioner
 
 
-    def parseLine(self, line, registry, locator):
-        comment = line.find('#')
-        line = line[:comment]
-        if line:
-            split = line.split('=')
-            key = split[0].strip()
-            value = "true"
-            if len(split) > 1:
-                value = '='.join(split[1:]).strip()
-            registry.setProperty(key, value, locator)
-        return
+    cdef createMat(self)
+    cdef destroyMat(self)
+    cdef outputMesh(self, fileRoot)
 
 
-# End of file 
+# end of file

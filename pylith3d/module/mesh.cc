@@ -28,23 +28,26 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include "mesh.h"
+
+#include "config.h"
+
 #include <Distribution.hh>
 #include <petscmesh.h>
 #include <src/dm/mesh/meshpylith.h>
 #include <petscmat.h>
-#include <portinfo>
 #include "journal/debug.h"
 
 #include <Python.h>
 
-#include "mesh.h"
-#include "exceptionhandler.h"
 #include <stdio.h>
 #include <string.h>
 
+#include "PyLithMeshLib.h"
+
 #undef __FUNCT__
 #define __FUNCT__ "IgnoreComments_PyLith"
-PetscErrorCode IgnoreComments_PyLith(char *buf, PetscInt bufSize, FILE *f)
+static PetscErrorCode IgnoreComments_PyLith(char *buf, PetscInt bufSize, FILE *f)
 {
   PetscFunctionBegin;
   while((fgets(buf, bufSize, f) != NULL) && ((buf[0] == '#') || (buf[0] == '\0'))) {}
@@ -53,7 +56,7 @@ PetscErrorCode IgnoreComments_PyLith(char *buf, PetscInt bufSize, FILE *f)
 
 #undef __FUNCT__
 #define __FUNCT__ "ReadBoundary_PyLith"
-PetscErrorCode ReadBoundary_PyLith(const char *baseFilename, PetscTruth useZeroBase, PetscInt *numBoundaryVertices, PetscInt *numBoundaryComponents, PetscInt **boundaryVertices, PetscScalar **boundaryValues)
+static PetscErrorCode ReadBoundary_PyLith(const char *baseFilename, PetscTruth useZeroBase, PetscInt *numBoundaryVertices, PetscInt *numBoundaryComponents, PetscInt **boundaryVertices, PetscScalar **boundaryValues)
 {
   FILE          *f;
   PetscInt       maxVerts= 1024, vertexCount = 0;
@@ -130,7 +133,7 @@ PetscErrorCode ReadBoundary_PyLith(const char *baseFilename, PetscTruth useZeroB
 
 #undef __FUNCT__
 #define __FUNCT__ "WriteBoundary_PyLith"
-PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, const ALE::Obj<ALE::Mesh>& mesh)
+static PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, const ALE::Obj<ALE::Mesh>& mesh)
 {
   ALE::Mesh::foliated_section_type::patch_type      patch      = 0;
   const ALE::Obj<ALE::Mesh::numbering_type>&        vNumbering = mesh->getFactory()->getLocalNumbering(mesh->getTopology(), patch, 0);
@@ -202,29 +205,12 @@ PetscErrorCode WriteBoundary_PyLith(const char *baseFilename, const ALE::Obj<ALE
 
 // Process mesh
 
-PetscErrorCode MeshView_Sieve(const ALE::Obj<ALE::Mesh>& mesh, PetscViewer viewer);
-
-char pypylith3d_processMesh__doc__[] = "";
-char pypylith3d_processMesh__name__[] = "processMesh";
-
-PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
+PyObject *PyLithMeshLib::Mesh::_processMesh(PyMeshObject *self)
 {
-  char *meshInputFile;
-  char  *meshBcFile;
-  int   interpolateMesh;
-  char* partitioner;
-
-  int ok = PyArg_ParseTuple(args, (char *) "ssis:processMesh", &meshBcFile, &meshInputFile, &interpolateMesh, &partitioner);
-
-  if (!ok) {
-    return 0;
-  }
-
   using ALE::Obj;
   journal::debug_t  debug("pylith3d");
   MPI_Comm          comm = PETSC_COMM_WORLD;
   PetscMPIInt       rank;
-  Mesh              mesh;
   Obj<ALE::Mesh>    m;
   PetscViewer       viewer;
   PetscInt         *boundaryVertices;
@@ -234,15 +220,15 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   PetscErrorCode    ierr;
 
   ierr = MPI_Comm_rank(comm, &rank);
-  ierr = MeshCreatePyLith(comm, 3, meshInputFile, PETSC_FALSE, (PetscTruth) interpolateMesh, &mesh);
-  ierr = MeshGetMesh(mesh, m);
+  ierr = MeshCreatePyLith(comm, 3, self->meshInputFile, PETSC_FALSE, (PetscTruth) self->interpolateMesh, &self->mesh);
+  ierr = MeshGetMesh(self->mesh, m);
   m->setDebug(debugFlag);
   int numElements = m->getTopology()->heightStratum(0, 0)->size();
-  debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << meshInputFile << journal::endl;
-  m = ALE::New::Distribution<ALE::Mesh::topology_type>::distributeMesh(m, partitioner);
-  ierr = MeshSetMesh(mesh, m);
+  debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << self->meshInputFile << journal::endl;
+  m = ALE::New::Distribution<ALE::Mesh::topology_type>::distributeMesh(m, self->partitioner);
+  ierr = MeshSetMesh(self->mesh, m);
   debug << journal::at(__HERE__) << "[" << rank << "]Distributed PETSc Mesh"  << journal::endl;
-  ierr = ReadBoundary_PyLith(meshBcFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
+  ierr = ReadBoundary_PyLith(self->meshBcFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
 
   const Obj<ALE::Mesh::foliated_section_type>& boundaries = m->getBoundariesNew();
   ALE::Mesh::foliated_section_type::patch_type patch      = 0;
@@ -284,7 +270,7 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   if (refineMesh) {
     double refinementLimit = 2.4e4*2.4e4*2.4e4*0.01*0.5;
     bool   interpolate     = true;
-    mesh = ALE::Generator::refine(mesh, refinementLimit, interpolate);
+    self->mesh = ALE::Generator::refine(self->mesh, refinementLimit, interpolate);
   }
 #endif
 
@@ -292,13 +278,13 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
   ierr = PetscViewerSetType(viewer, PETSC_VIEWER_ASCII);
   ierr = PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_PYLITH_LOCAL);
   ierr = PetscViewerFileSetMode(viewer, FILE_MODE_READ);
-  ierr = PetscExceptionTry1(PetscViewerFileSetName(viewer, meshInputFile), PETSC_ERR_FILE_OPEN);
+  ierr = PetscExceptionTry1(PetscViewerFileSetName(viewer, self->meshInputFile), PETSC_ERR_FILE_OPEN);
   if (PetscExceptionValue(ierr)) {
     /* this means that a caller above me has also tryed this exception so I don't handle it here, pass it up */
   } else if (PetscExceptionCaught(ierr, PETSC_ERR_FILE_OPEN)) {
     ierr = 0;
   } 
-  ierr = MeshView(mesh, viewer);
+  ierr = MeshView(self->mesh, viewer);
   ierr = PetscViewerDestroy(viewer);
 
   char           bcFilename[2048];
@@ -306,23 +292,23 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 
   sprintf(suff, "%s%d%s", ".", rank, ".bc");
 
-  int slen = std::strlen(meshBcFile);
-  std::strncpy(bcFilename, meshBcFile, slen-3);
-  // ierr = PetscStrcpy(bcFilename, meshBcFile.substr(0,slen-4));
+  int slen = std::strlen(self->meshBcFile);
+  std::strncpy(bcFilename, self->meshBcFile, slen-3);
+  // ierr = PetscStrcpy(bcFilename, self->meshBcFile.substr(0,slen-4));
   ierr = PetscStrcat(bcFilename, suff);
 
   debug << journal::at(__HERE__) << "[" << rank << "]Output new PyLith mesh into: " << bcFilename << journal::endl;
 
-  ierr = WriteBoundary_PyLith(meshBcFile, m);
+  ierr = WriteBoundary_PyLith(self->meshBcFile, m);
   debug << journal::at(__HERE__) << "[" << rank << "]Wrote PyLith boundary conditions"  << journal::endl;
 
   const Obj<ALE::Mesh::topology_type::label_sequence>& vertices = m->getTopology()->depthStratum(0, 0);
   SectionReal                       section;
   Obj<ALE::Mesh::real_section_type> s;
 
-  ierr = MeshGetSectionReal(mesh, "default", &section);
+  ierr = MeshGetSectionReal(self->mesh, "default", &section);
   ierr = PetscObjectSetName((PetscObject) section, "displacement");
-  ierr = MeshSetSectionReal(mesh, section);
+  ierr = MeshSetSectionReal(self->mesh, section);
   ierr = SectionRealGetSection(section, s);
   s->setFiberDimensionByDepth(0, 0, 3);
   for(ALE::Mesh::topology_type::label_sequence::iterator v_iter = vertices->begin(); v_iter != vertices->end(); ++v_iter) {
@@ -344,76 +330,61 @@ PyObject * pypylith3d_processMesh(PyObject *, PyObject *args)
 
   m->getFactory()->constructInverseOrder(m->getFactory()->getLocalNumbering(m->getTopology(), 0, m->getTopology()->depth()));
 
-  // return
-  PyObject *pyMesh = PyCObject_FromVoidPtr(mesh, NULL);
-  //PyObject *pyMesh = PyCObject_FromVoidPtr(mesh.ptr(), NULL);
-  //mesh.int_allocator->del(mesh.refCnt);
-  //mesh.refCnt = NULL;
-  return pyMesh;
+  Py_INCREF(Py_None);
+  return Py_None;
 }
 
 // Create a PETSc Mat
-char pypylith3d_createPETScMat__doc__[] = "";
-char pypylith3d_createPETScMat__name__[] = "createPETScMat";
 
-PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
+PyObject *PyLithMeshLib::Mesh::_createMat(PyMeshObject *self)
 {
   using ALE::Obj;
-  PyObject *pyMesh, *pyA, *pyRhs, *pySol;
   MPI_Comm comm = PETSC_COMM_WORLD;
-  Mat      A;
-  Vec      rhs, sol;
   PetscErrorCode ierr;
 
-  int ok = PyArg_ParseTuple(args, (char *) "O:createPETScMat", &pyMesh);
-  if (!ok) {
-    return 0;
-  }
-
-  Mesh mesh = (Mesh) PyCObject_AsVoidPtr(pyMesh);
   Obj<ALE::Mesh> m;
 
-  ierr = MeshGetMesh(mesh, m);
+  ierr = MeshGetMesh(self->mesh, m);
   const ALE::Obj<ALE::Mesh::order_type>& offsets = m->getFactory()->getGlobalOrder(m->getTopology(), 0, "displacement", m->getRealSection("displacement")->getAtlas());
   int localSize = offsets->getLocalSize();
   int globalSize = offsets->getGlobalSize();
 
-  if (MatCreate(comm, &A)) {
+  if (MatCreate(comm, &self->A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Mat");
     return 0;
   }
-  if (MatSetSizes(A, localSize, localSize, globalSize, globalSize)) {
+  if (MatSetSizes(self->A, localSize, localSize, globalSize, globalSize)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Mat");
     return 0;
   }
-  if (VecCreate(comm, &rhs)) {
+  if (VecCreate(comm, &self->rhs)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Rhs");
     return 0;
   }
-  if (VecSetSizes(rhs, localSize, globalSize)) {
+  if (VecSetSizes(self->rhs, localSize, globalSize)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not set sizes for PETSc Rhs");
     return 0;
   }
-  if (VecSetFromOptions(rhs)) {
+  if (VecSetFromOptions(self->rhs)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not set options for PETSc Rhs");
     return 0;
   }
-  if (VecDuplicate(rhs, &sol)) {
+  if (VecDuplicate(self->rhs, &self->sol)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not create PETSc Sol");
     return 0;
   }
 
-  ierr = PetscObjectCompose((PetscObject) A, "mesh", (PetscObject) mesh);
+  ierr = PetscObjectCompose((PetscObject) self->A, "mesh", (PetscObject) self->mesh);
 
   VecScatter injection = NULL;
-  ierr = MeshGetGlobalScatter(mesh, &injection);
-  ierr = PetscObjectCompose((PetscObject) rhs, "mesh",      (PetscObject) mesh);
-  ierr = PetscObjectCompose((PetscObject) rhs, "injection", (PetscObject) injection);
-  ierr = PetscObjectCompose((PetscObject) sol, "mesh",      (PetscObject) mesh);
-  ierr = PetscObjectCompose((PetscObject) sol, "injection", (PetscObject) injection);
+  ierr = MeshGetGlobalScatter(self->mesh, &injection);
+  ierr = PetscObjectCompose((PetscObject) self->rhs, "mesh",      (PetscObject) self->mesh);
+  ierr = PetscObjectCompose((PetscObject) self->rhs, "injection", (PetscObject) injection);
+  ierr = PetscObjectCompose((PetscObject) self->sol, "mesh",      (PetscObject) self->mesh);
+  ierr = PetscObjectCompose((PetscObject) self->sol, "injection", (PetscObject) injection);
 
-  ierr = MatSetFromOptions(A);
-  ierr = preallocateMatrix(m->getTopology(), m->getRealSection("displacement")->getAtlas(), m->getFactory()->getGlobalOrder(m->getTopology(), 0, "displacement", m->getRealSection("displacement")->getAtlas()), A);
+  ierr = MatSetFromOptions(self->A);
+  ierr = preallocateMatrix(m->getTopology(), m->getRealSection("displacement")->getAtlas(), m->getFactory()->getGlobalOrder(m->getTopology(), 0, "displacement", m->getRealSection("displacement")->getAtlas()), self->A);
 
   journal::debug_t debug("pylith3d");
   debug
@@ -421,44 +392,31 @@ PyObject * pypylith3d_createPETScMat(PyObject *, PyObject *args)
     << "Created PETSc Mat: " << localSize << " " << globalSize
     << journal::endl;
 
-  // return Py_None;
-  pyA = PyCObject_FromVoidPtr(A, NULL);
-  pyRhs = PyCObject_FromVoidPtr(rhs, NULL);
-  pySol = PyCObject_FromVoidPtr(sol, NULL);
-  return Py_BuildValue((char *) "NNN", pyA, pyRhs, pySol);
+  Py_INCREF(Py_None);
+  return Py_None;
 }
 
 // Destroy a PETSc Mat
 
-char pypylith3d_destroyPETScMat__doc__[] = "";
-char pypylith3d_destroyPETScMat__name__[] = "destroyPETScMat";
-
-PyObject * pypylith3d_destroyPETScMat(PyObject *, PyObject *args)
+PyObject *PyLithMeshLib::Mesh::_destroyMat(PyMeshObject *self)
 {
-  PyObject *pyA,*pyRhs, *pySol;
-  Mat A;
-  Vec rhs, sol;
-
-  int ok = PyArg_ParseTuple(args, (char *) "OOO:destroyPETScMat", &pyA, &pyRhs, &pySol);
-  if (!ok) {
-    return 0;
-  }
-
-  A = (Mat) PyCObject_AsVoidPtr(pyA);
-  if (MatDestroy(A)) {
+  if (MatDestroy(self->A)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not destroy PETSc Mat");
     return 0;
   }
-  rhs = (Vec) PyCObject_AsVoidPtr(pyRhs);
-  if (VecDestroy(rhs)) {
+  self->A = 0;
+  
+  if (VecDestroy(self->rhs)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not destroy PETSc Rhs");
     return 0;
   }
-  sol = (Vec) PyCObject_AsVoidPtr(pySol);
-  if (VecDestroy(sol)) {
+  self->rhs = 0;
+  
+  if (VecDestroy(self->sol)) {
     PyErr_SetString(PyExc_RuntimeError, "Could not destroy PETSc Sol");
     return 0;
   }
+  self->sol = 0;
 
   journal::debug_t debug("pylith3d");
   debug
@@ -466,7 +424,6 @@ PyObject * pypylith3d_destroyPETScMat(PyObject *, PyObject *args)
     << "Destroyed PETSc Mat"
     << journal::endl;
 
-  // return Py_None;
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -541,47 +498,35 @@ PetscErrorCode createFullDisplacement(Mesh mesh, SectionReal *fullDisplacement) 
   PetscFunctionReturn(0);
 }
 
-char pypylith3d_outputMesh__doc__[] = "";
-char pypylith3d_outputMesh__name__[] = "outputMesh";
-
-PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
+PyObject *PyLithMeshLib::Mesh::_outputMesh(PyMeshObject *self, char *fileRoot)
 {
   using ALE::Obj;
-  PyObject *pyMesh, *pySol;
-  char     *meshBaseFile;
 
-  int ok = PyArg_ParseTuple(args, (char *) "sOO:outputMesh", &meshBaseFile, &pyMesh, &pySol);
-  if (!ok) {
-    return 0;
-  }
-
-  Mesh           mesh = (Mesh) PyCObject_AsVoidPtr(pyMesh);
-  Vec            sol  = (Vec)  PyCObject_AsVoidPtr(pySol);
   MPI_Comm       comm;
   SectionReal    displacement, fullDisplacement;
-  std::string    filename(meshBaseFile);
+  std::string    filename(fileRoot);
   PetscViewer    viewer;
   //Vec       partition;
   PetscTruth     hasMaterial;
   PetscErrorCode ierr;
 
-  ierr = PetscObjectGetComm((PetscObject) mesh, &comm);
-  ierr = MeshGetSectionReal(mesh, "displacement", &displacement);
-  ierr = updateDisplacement(displacement, sol);
-  ierr = createFullDisplacement(mesh, &fullDisplacement);
+  ierr = PetscObjectGetComm((PetscObject) self->mesh, &comm);
+  ierr = MeshGetSectionReal(self->mesh, "displacement", &displacement);
+  ierr = updateDisplacement(displacement, self->sol);
+  ierr = createFullDisplacement(self->mesh, &fullDisplacement);
   ierr = PetscViewerCreate(comm, &viewer);
   ierr = PetscViewerSetType(viewer, PETSC_VIEWER_ASCII);
   ierr = PetscViewerSetFormat(viewer, PETSC_VIEWER_ASCII_VTK);
   filename += ".vtk";
   ierr = PetscViewerFileSetName(viewer, filename.c_str());
-  ierr = MeshView(mesh, viewer);
+  ierr = MeshView(self->mesh, viewer);
   ierr = SectionRealView(fullDisplacement, viewer);
-  ierr = MeshHasSectionInt(mesh, "material", &hasMaterial);
+  ierr = MeshHasSectionInt(self->mesh, "material", &hasMaterial);
   if (hasMaterial) {
     SectionInt material;
 
     ierr = PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_VTK_CELL);
-    ierr = MeshGetSectionInt(mesh, "material", &material);
+    ierr = MeshGetSectionInt(self->mesh, "material", &material);
     ierr = SectionIntView(material, viewer);
     ierr = PetscViewerPopFormat(viewer);
     ierr = SectionIntDestroy(material);
@@ -597,73 +542,9 @@ PyObject * pypylith3d_outputMesh(PyObject *, PyObject *args)
     << "Output PETSc Mesh and Solution"
     << journal::endl;
 
-  // return Py_None;
   Py_INCREF(Py_None);
   return Py_None;
 }
 
-#if 0
-#include "Numeric/arrayobject.h"
-
-char pypylith3d_interpolatePoints__doc__[] = "";
-char pypylith3d_interpolatePoints__name__[] = "interpolatePoints";
-
-PyObject * pypylith3d_interpolatePoints(PyObject *, PyObject *args)
-{
-  using ALE::Obj;
-  PyObject      *pyMesh, *pySol;
-  PyArrayObject *pyPoints;
-
-  int ok = PyArg_ParseTuple(args, (char *) "OOO!:interpolatePoints", &pyMesh, &pySol, &PyArray_Type, &pyPoints);
-  if (!ok) {
-    return 0;
-  }
-  if ((pyPoints->nd != 2) || (pyPoints->descr->type_num != PyArray_DOUBLE)) {
-    PyErr_SetString(PyExc_ValueError, "points must be a 2d array with double values");
-    return 0;
-  }
-  if (pyPoints->dimensions[1] != 3) {
-    PyErr_SetString(PyExc_ValueError, "points must be a 3d");
-    return 0;
-  }
-  if ((pyPoints->strides[0] != 3 * sizeof(double)) || (pyPoints->strides[1] != sizeof(double))) {
-    PyErr_SetString(PyExc_ValueError, "points must be a contiguous array");
-    return 0;
-  }
-
-  Mesh           mesh = (Mesh) PyCObject_AsVoidPtr(pyMesh);
-  Vec            sol  = (Vec)  PyCObject_AsVoidPtr(pySol);
-  SectionReal    displacement, fullDisplacement;
-  const int      numPoints = pyPoints->dimensions[0];
-  double        *values;
-  PetscErrorCode ierr;
-
-  ierr = MeshGetSectionReal(mesh, "displacement", &displacement);
-  ierr = updateDisplacement(displacement, sol);
-  ierr = createFullDisplacement(mesh, &fullDisplacement);
-  ierr = MeshInterpolatePoints(mesh, fullDisplacement, numPoints, (double *) pyPoints->data, &values);
-  ierr = SectionRealDestroy(displacement);
-  ierr = PetscFree(values);
-
-  int            dims[2]  = {numPoints, 3};
-  PyArrayObject *pyValues = (PyArrayObject *) PyArray_FromDims(2, dims, PyArray_DOUBLE);
-  double        *data     = (double *) pyValues->data;
-
-  for(int p = 0; p < numPoints; ++p) {
-    for(int d = 0; d < 3; d++) {
-      data[p*3+d] = values[p*3+d];
-    }
-  }
-
-  ierr = PetscFree(values);
-  journal::debug_t debug("pylith3d");
-  debug
-    << journal::at(__HERE__)
-    << "Interpolated points"
-    << journal::endl;
-
-  return Py_BuildValue((char *) "N", pyValues);
-}
-#endif
 
 // End of file

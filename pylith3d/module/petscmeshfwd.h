@@ -28,12 +28,18 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
-#include <portinfo>
-#include <Python.h>
+#if !defined(pypylith3d_petscmeshfwd_h)
+#define pypylith3d_petscmeshfwd_h
 
-PyObject *pypylith3d_runtimeError = 0;
-    
-// version
-// $Id: exceptions.cc,v 1.2 2005/03/31 23:27:57 willic3 Exp $
 
-// End of file
+#include <petsc.h>
+
+
+typedef struct _p_Mesh *Mesh;
+
+PetscErrorCode MeshDestroy(Mesh);
+
+
+#endif
+
+// end of file

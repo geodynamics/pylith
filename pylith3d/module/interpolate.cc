@@ -28,17 +28,17 @@
 //  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 
 
+#include "config.h"
+
 #include <Distribution.hh>
 #include <petscmesh.h>
 #include <src/dm/mesh/meshpylith.h>
 #include <petscmat.h>
-#include <portinfo>
 #include "journal/debug.h"
 
 #include <Python.h>
 
 #include "interpolate.h"
-#include "exceptionhandler.h"
 #include <stdio.h>
 #include <string.h>
 

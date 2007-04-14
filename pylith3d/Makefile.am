@@ -20,8 +20,6 @@ endif
 
 # pylith3d
 nobase_pyexec_PYTHON = \
-	pylith3d/constants.py \
-	pylith3d/ElementTypeDef.py \
 	pylith3d/__init__.py \
 	pylith3d/KeywordValueParse.py \
 	pylith3d/MaterialModel/__init__.py \
@@ -33,13 +31,14 @@ nobase_pyexec_PYTHON = \
 	pylith3d/MaterialModel/IsotropicPowerLawMaxwellViscoelasticZT.py \
 	pylith3d/MaterialModel/MaterialModel.py \
 	pylith3d/Materials.py \
-	pylith3d/PyLith.py
+	pylith3d/PyLithApp.py
 
 # pypylith3d (libpylith3d + pylith3dmodule + embedded Python interpreter)
 INCLUDES = -I$(top_srcdir)/pylith3d/module $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 pypylith3d_SOURCES = pypylith3d.cc
 pypylith3d_LDADD = \
-	$(top_builddir)/pylith3d/module/libpylith3dmodule.a \
+	$(top_builddir)/pylith3d/module/libPyLithLibmodule.a \
+	$(top_builddir)/pylith3d/module/libPyLithMeshLibmodule.a \
 	$(top_builddir)/pylith3d/libpylith3d/libpylith3d.a
 pypylith3d$(EXEEXT): $(pypylith3d_OBJECTS) $(pypylith3d_DEPENDENCIES) 
 	@rm -f pypylith3d$(EXEEXT)
@@ -55,7 +54,8 @@ pypylith3d$(EXEEXT): $(pypylith3d_OBJECTS) $(pypylith3d_DEPENDENCIES)
 mpipypylith3d_SOURCES = pypylith3d.cc
 mpipypylith3d_CXXFLAGS = -DUSE_MPI
 mpipypylith3d_LDADD = \
-	$(top_builddir)/pylith3d/module/libpylith3dmodule.a \
+	$(top_builddir)/pylith3d/module/libPyLithLibmodule.a \
+	$(top_builddir)/pylith3d/module/libPyLithMeshLibmodule.a \
 	$(top_builddir)/pylith3d/libpylith3d/libpylith3d.a
 mpipypylith3d$(EXEEXT): $(mpipypylith3d_OBJECTS) $(mpipypylith3d_DEPENDENCIES) 
 	@rm -f mpipypylith3d$(EXEEXT)
