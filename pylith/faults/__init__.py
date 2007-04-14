@@ -1,4 +1,4 @@
-# -*- Makefile -*-
+#!/usr/bin/env python
 #
 # ----------------------------------------------------------------------
 #
@@ -10,14 +10,14 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	faults \
-	feassemble \
-	materials \
-	meshio \
-	solver \
-	topology \
-	utils
+## @file pylith/faults/__init__.py
+##
+## @brief Python PyLith faults module initialization
+
+__all__ = ['FaultsBin',
+           'Fault',
+           'FaultCohesive',
+           'FaultCohesiveKin']
 
 
-# End of file 
+# End of file

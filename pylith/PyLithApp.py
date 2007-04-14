@@ -79,11 +79,18 @@ class PyLithApp(Application):
     """
     Run the application.
     """
-
     self.petsc.initialize()
-    mesh = self.mesher.create()
+
+    # Create mesh (adjust to account for faults if necessary)
+    faults = None
+    if faults in dir(self.problem):
+      faults = self.problem.faults
+    mesh = self.mesher.create(faults)
+
+    # Initialize problem and then run
     self.problem.initialize(mesh.distribute())
     self.problem.run(self)
+    
     self.petsc.finalize()
     return
   

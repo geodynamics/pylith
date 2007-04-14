@@ -1,0 +1,115 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+/** @file libsrc/faults/Fault.hh
+ *
+ * @brief C++ abstract base class for Fault object.
+ *
+ * Interface definition for fault.
+ */
+
+#if !defined(pylith_faults_fault_hh)
+#define pylith_faults_fault_hh
+
+#include "pylith/utils/sievefwd.hh"
+#include <string> // HASA std::string
+
+/// Namespace for pylith package
+namespace pylith {
+  namespace faults {
+    class Fault;
+    class TestFault; // unit testing
+  } // faults
+} // pylith
+
+/// C++ abstract base class for Fault object.
+class pylith::faults::Fault
+{ // class Fault
+  friend class TestFault; // unit testing
+
+  // PUBLIC METHODS /////////////////////////////////////////////////////
+public :
+
+  /// Default constructor.
+  Fault(void);
+
+  /// Destructor.
+  virtual
+  ~Fault(void);
+
+  /** Create copy of fault.
+   *
+   * @returns Copy of fault.
+   */
+  virtual
+  Fault* clone(void) const = 0;
+
+  /** Set identifier of fault.
+   *
+   * @param value Fault identifier
+   */
+  void id(const int value);
+
+  /** Get identifier of fault.
+   *
+   * @returns Fault identifier
+   */
+  int id(void) const;
+
+  /** Set label of fault.
+   *
+   * @param value Label of fault
+   */
+  void label(const char* value);
+
+  /** Get label of fault.
+   *
+   * @returns Label of fault
+   */
+  const std::string& label(void) const;
+
+  /** Adjust mesh topology for fault implementation.
+   *
+   * @param mesh PETSc mesh
+   */
+  virtual
+  void adjustTopology(ALE::Obj<ALE::Mesh>* mesh) const = 0;
+
+  // PROTECTED METHODS //////////////////////////////////////////////////
+protected :
+
+  /** Copy constructor.
+   *
+   * @param m Fault to copy
+   */
+  Fault(const Fault& m);
+
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
+
+  /// Not implemented
+  const Fault& operator=(const Fault& m);
+
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  int _id; ///< Fault identifier
+  std::string _label; ///< Label of fault
+
+}; // class Fault
+
+#include "Fault.icc" // inline methods
+
+#endif // pylith_faults_fault_hh
+
+
+// End of file 

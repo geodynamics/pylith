@@ -13,6 +13,12 @@
 nobase_pkgpyexec_PYTHON = \
 	PyLithApp.py \
 	__init__.py \
+	faults/__init__.py \
+	faults/FaultsBin.py \
+	faults/Fault.py \
+	faults/FaultCohesive.py \
+	faults/FaultCohesiveKin.py \
+	faults/SingleFault.py \
 	feassemble/__init__.py \
 	feassemble/ExplicitElasticity.py \
 	feassemble/FIATCell.py \
