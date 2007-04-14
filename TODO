@@ -2,6 +2,14 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+Cleanup
+
+  Use pylith/utils/sievefwd.hh and pylith/utils/sievetypes.hh in unit
+  tests. Remove typedefs when possible (take advantage of typedefs in
+  seivefwd.hh).
+
+  Use MeshIOAscii to get mesh information into Python tests?
+
 0. Start implementing faults
    a. Create Faults object
    b. Add creation of cohesive elements
@@ -37,7 +45,7 @@ SECONDARY PRIORITIES
    d. bindings
    e. unit tests at Python level
 
-3. Implement MeshIOHDF5 & HDF5
+3. Implement MeshIOHDF5 & HDF5 (helper class)
    a. C++ objects
    b. unit tests at C++ level
    c. Python object (MeshIOHDF5)

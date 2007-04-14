@@ -161,11 +161,14 @@ AC_CONFIG_FILES([Makefile
 		applications/Makefile
 		unittests/Makefile
 		unittests/libtests/Makefile
+		unittests/libtests/faults/Makefile
 		unittests/libtests/feassemble/Makefile
 		unittests/libtests/materials/Makefile
 		unittests/libtests/materials/data/Makefile
 		unittests/libtests/meshio/Makefile
 		unittests/pytests/Makefile
+		unittests/pytests/faults/Makefile
+		unittests/pytests/faults/data/Makefile
 		unittests/pytests/feassemble/Makefile
 		unittests/pytests/materials/Makefile
 		unittests/pytests/materials/data/Makefile
