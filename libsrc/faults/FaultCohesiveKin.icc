@@ -11,7 +11,7 @@
 //
 
 #if !defined(pylith_faults_faultcohesivekin_hh)
-#error "Fault.icc can only be included from FaultCohesiveKin.hh"
+#error "FaultCohesiveKin.icc can only be included from FaultCohesiveKin.hh"
 #endif
 
 // Create copy of fault.
