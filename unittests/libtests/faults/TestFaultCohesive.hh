@@ -53,11 +53,7 @@ public :
 public :
 
   /// Test adjustTopology().
-  void _testAdjustTopologyLine(const FaultData& data);
-
-  /// Create mesh.
-  void _createMesh(ALE::Obj<ALE::Mesh>* mesh,
-		   const FaultData& data);
+  void _testAdjustTopology(const char* filename);
 
 }; // class TestFaultCohesive
 

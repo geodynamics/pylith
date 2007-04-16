@@ -162,6 +162,7 @@ AC_CONFIG_FILES([Makefile
 		unittests/Makefile
 		unittests/libtests/Makefile
 		unittests/libtests/faults/Makefile
+		unittests/libtests/faults/data/Makefile
 		unittests/libtests/feassemble/Makefile
 		unittests/libtests/materials/Makefile
 		unittests/libtests/materials/data/Makefile
