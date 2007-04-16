@@ -364,7 +364,7 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
     
     // Assemble cell contribution into field
     const ALE::Obj<Mesh::order_type>& globalOrder = 
-      mesh->getFactory()->getGlobalOrder(mesh, "default", dispT->getAtlas());
+      mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
 
     err = updateOperator(*mat, mesh, dispT, globalOrder,
 			 *cellIter, _cellMatrix, ADD_VALUES);
