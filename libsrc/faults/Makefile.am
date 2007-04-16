@@ -14,6 +14,7 @@ subpackage = faults
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	CohesiveTopology.hh \
 	Fault.hh \
 	Fault.icc \
 	FaultCohesive.hh \

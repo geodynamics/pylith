@@ -19,6 +19,9 @@
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+
+#include <stdexcept> // TEMPORARY
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
@@ -28,29 +31,30 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyLine(void)
 { // testAdjustTopologyLine
-  //FaultDataLine data;
-  //_testAdjustTopologyLine(data);
+  const char* filename = "data/meshTet4A_orig.txt";
+  _testAdjustTopology(filename);
 } // testAdjustTopologyLine
 
 // ----------------------------------------------------------------------
 // Test adjustTopology().
 void
-pylith::faults::TestFaultCohesive::_testAdjustTopologyLine(
-						      const FaultData& data)
-{ // _testAdjustTopologyLine
-  //ALE::Obj<ALE::Mesh> mesh(new ALE::Mesh);
-  //_createMesh(&mesh, data);
+pylith::faults::TestFaultCohesive::_testAdjustTopology(const char* filename)
+{ // _testAdjustTopology
+  ALE::Obj<ALE::Mesh> mesh;
+  meshio::MeshIOAscii iohandler;
+  iohandler.filename(filename);
+  iohandler.debug(true);
+  iohandler.interpolate(true);
+  iohandler.read(&mesh);
 
   FaultCohesiveKin fault;
-} // _testAdjustTopologyLine
+  fault.id(0);
+  fault.label("fault");
+  fault.adjustTopology(&mesh);
 
-// ----------------------------------------------------------------------
-// Create mesh.
-void
-pylith::faults::TestFaultCohesive::_createMesh(ALE::Obj<ALE::Mesh>* mesh,
-					       const FaultData& data)
-{ // _createMesh
-} // _createMesh
+  mesh->view("Mesh");
 
+  throw std::logic_error("Unit test not fully implemented.");
+} // _testAdjustTopology
 
 // End of file 

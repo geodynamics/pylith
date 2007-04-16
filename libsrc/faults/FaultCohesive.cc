@@ -14,8 +14,9 @@
 
 #include "FaultCohesive.hh" // implementation of object methods
 
+#include "CohesiveTopology.hh" // USES CohesiveTopology::create()
+
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
-#include "src/dm/mesh/meshpylith.h" // USES ALE::PyLith::Builder
 
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -72,7 +73,7 @@ pylith::faults::FaultCohesive::adjustTopology(ALE::Obj<ALE::Mesh>* mesh) const
     assert(!numbering.isNull());
     points.insert(numbering->getIndex(*c_iter)+numCells);
   } // for
-  ALE::PyLith::Builder::createCohesiveElements(*mesh, points);
+  CohesiveTopology::create(*mesh, points);
 } // adjustTopology
 
 

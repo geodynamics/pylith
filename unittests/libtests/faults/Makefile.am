@@ -13,7 +13,7 @@
 subpackage = faults
 include $(top_srcdir)/subpackage.am
 
-#SUBDIRS = data
+SUBDIRS = data
 
 TESTS = testfaults
 
