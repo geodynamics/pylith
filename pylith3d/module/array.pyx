@@ -34,58 +34,108 @@ cdef extern from "stdlib.h":
     void free(void *)
 
 
+cdef int memoryUsage
+
+
 cdef class IntArray:
     
     cdef int len
     cdef int *ptr
-    cdef int *_rawptr
     
-    def __new__(self, unsigned int len):
-        self.len = len
-        self._rawptr = <int *>malloc(sizeof(int) * (len + 2))
-        if self._rawptr is NULL:
+    def __new__(self, l):
+        cdef object init
+        cdef long int size
+        if isinstance(l, int):
+            self.len = l
+        else:
+            self.len = len(l)
+            init = l
+        size = sizeof(int) * self.len
+        self.ptr = <int *>malloc(size)
+        if self.ptr is NULL:
             raise MemoryError("malloc failed")
-        self._rawptr[0] = 0xdeadbeef
-        self._rawptr[len + 1] = 0xdeadbeef
-        self.ptr = self._rawptr + 1
+        global memoryUsage
+        memoryUsage = memoryUsage + size
+        if init:
+            for i from 0 <= i < self.len:
+                self.ptr[i] = init[i]
         return
 
     def __dealloc__(self):
-        if (self._rawptr[0] != 0xdeadbeef or
-            self._rawptr[self.len + 1] != 0xdeadbeef):
-            print "memory corrupted"
-        free(self._rawptr)
-        self._rawptr = NULL
+        free(self.ptr)
         self.ptr = NULL
+        global memoryUsage
+        memoryUsage = memoryUsage - (sizeof(int) * self.len)
         return
+
+    cdef asList(self):
+        return listFromIntArray(self.ptr, self.len)
 
 
 cdef class DoubleArray:
     
     cdef int len
     cdef double *ptr
-    cdef double *_rawptr
-    cdef double guard
     
-    def __new__(self, unsigned int len):
-        self.len = len
-        self._rawptr = <double *>malloc(sizeof(double) * (len + 2))
-        if self._rawptr is NULL:
+    def __new__(self, l):
+        cdef object init
+        cdef long int size
+        if isinstance(l, int):
+            self.len = l
+        else:
+            self.len = len(l)
+            init = l
+        size = sizeof(double) * self.len
+        self.ptr = <double *>malloc(size)
+        if self.ptr is NULL:
             raise MemoryError("malloc failed")
-        self.guard = 3.14159
-        self._rawptr[0] = self.guard
-        self._rawptr[len + 1] = self.guard
-        self.ptr = self._rawptr + 1
+        global memoryUsage
+        memoryUsage = memoryUsage + size
+        if init:
+            for i from 0 <= i < self.len:
+                self.ptr[i] = init[i]
         return
 
     def __dealloc__(self):
-        if (self._rawptr[0] != self.guard or
-            self._rawptr[self.len + 1] != self.guard):
-            print "memory corrupted"
-        free(self._rawptr)
-        self._rawptr = NULL
+        free(self.ptr)
         self.ptr = NULL
+        global memoryUsage
+        memoryUsage = memoryUsage - (sizeof(double) * self.len)
         return
+
+    cdef asList(self):
+        return listFromDoubleArray(self.ptr, self.len)
+
+
+# utilities
+
+
+cdef setIntArrayFromList(int *array, int dim, aList):
+    assert(len(aList) == dim)
+    for i from 0 <= i < dim:
+        array[i] = aList[i]
+    return
+
+
+cdef listFromIntArray(int *array, int dim):
+    aList = []
+    for i from 0 <= i < dim:
+        aList.append(array[i])
+    return aList
+
+
+cdef setDoubleArrayFromList(double *array, int dim, aList):
+    assert(len(aList) == dim)
+    for i from 0 <= i < dim:
+        array[i] = aList[i]
+    return
+
+
+cdef listFromDoubleArray(double *array, int dim):
+    aList = []
+    for i from 0 <= i < dim:
+        aList.append(array[i])
+    return aList
 
 
 # end of file
