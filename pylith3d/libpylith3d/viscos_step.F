@@ -46,7 +46,7 @@ c
      & rgiter,                                                          ! stresscmp
      & skew,                                                            ! skew
      & iprint,ncodat,nunits,nprint,istatout,nstatout,                   ! ioinfo
-     & ofile,pfile,ucdroot,                                             ! files
+     & ucdroot,                                                         ! files
      & viscousStage, iterateEvent,                                      ! PETSc logging
      & ntot,pyltim,indexx,jcyc,i,j,pyskc,nfirst,pynstep,time,           ! New args
      & pydeltp,lgdefp,gtol,                                             !   more new args
@@ -109,7 +109,7 @@ c
       double precision histry(*),delt(*),alfa(*),utol(*),ftol(*),etol(*)
       double precision skew(*)
       double precision time, pydeltp
-      character ofile*(*),pfile*(*),ucdroot*(*),errstrng*(*)
+      character ucdroot*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c

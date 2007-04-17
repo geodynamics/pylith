@@ -50,6 +50,7 @@ sources = \
 	elementtypes.pxd \
 	exceptionhandler.cc \
 	exceptionhandler.pxd \
+	f77io.pyx \
 	PyLithLib.cc \
 	setup.pyx
 
@@ -70,6 +71,7 @@ mesh.cc: PyLithMeshLib.h
 
 
 PYREX_FLAGS = -I$(srcdir) -I$(top_srcdir)/pylith3d/libpylith3d
+
 pyxincludes = \
 	$(srcdir)/constants.pxd \
 	$(srcdir)/elementtypes.pxd \
@@ -78,16 +80,21 @@ pyxincludes = \
 	$(srcdir)/PyLithMeshLib.pxd \
 	$(srcdir)/array.pyx \
 	$(srcdir)/exceptionhandler.pxd \
+	$(srcdir)/f77io.pyx \
 	$(srcdir)/setup.pyx
+
+meshpyxincludes = \
+	$(srcdir)/PyLithMeshLib.pxd \
+	$(srcdir)/petsc.pxd
 
 
 PyLithLib.cc: $(srcdir)/PyLithLib.pyx $(pyxincludes)
 	pyrexc $(PYREX_FLAGS) $< -o PyLithLib.cc
 
-PyLithMeshLib.cc: $(srcdir)/PyLithMeshLib.pyx $(srcdir)/petsc.pxd
+PyLithMeshLib.cc: $(srcdir)/PyLithMeshLib.pyx $(meshpyxincludes)
 	pyrexc $(PYREX_FLAGS) $< -o PyLithMeshLib.cc
 
-PyLithMeshLib.h: PyLithMeshLib.pxd
+PyLithMeshLib.h: PyLithMeshLib.cc
 
 EXTRA_DIST = \
 	$(srcdir)/PyLithLib.pyx \

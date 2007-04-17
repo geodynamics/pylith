@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_stateout(istatout,nstatout,kw,kp,idout,idsk,
-     & ofile,pfile,ierr,errstrng)
+     & ierr,errstrng)
 c
 c...     writes integer array indicating which state variables
 c        to output.
@@ -77,7 +77,7 @@ c...  subroutine arguments
 c
       integer kw,kp,idout,idsk,ierr
       integer istatout(nstatesmax,3),nstatout(3)
-      character ofile*(*),pfile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -96,9 +96,6 @@ c
 c...  output results, if desired
 c
       if(idout.gt.izero) then
-        call open_append(kw,ofile,"old","",
-     &                   ierr,errstrng,"write_stateout")
-        if(ierr.ne.izero) return
         write(kw,700,err=50)
         if(nstatout(1).ne.izero) then
           write(kw,730,err=50) (labels(istatout(i,1)),i=1,nstatout(1))
@@ -111,24 +108,15 @@ c
           write(kw,730,err=50) 
      &     (labels(2*nstatesmax+istatout(i,3)),i=1,nstatout(3))
         end if
-        close(kw)
       end if
       if(idsk.eq.ione) then
-        call open_append(kp,pfile,"old","",
-     &                   ierr,errstrng,"write_stateout")
-        if(ierr.ne.izero) return
         do i=1,3
           write(kp,810,err=50) nstatout(i),
      &     (istatout(j,i),j=1,nstatout(i))
         end do
-        close(kp)
       end if
       if(idsk.eq.itwo) then
-        call open_append(kp,pfile,"old","unformatted",
-     &                   ierr,errstrng,"write_stateout")
-        if(ierr.ne.izero) return
         write(kp,err=50) istatout
-        close(kp)
       end if
 c
 c...  normal return
@@ -140,8 +128,6 @@ c
  50   continue
         ierr=4
         errstrng="write_stateout"
-        if(idout.gt.izero) close(kw)
-        if(idsk.gt.izero) close(kp)
         return
 c
  700  format(//,

@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_props(prop,grav,ivfamily,infmatmod,nvfamilies,
-     & npropsz,idout,idsk,kw,kp,ofile,pfile,ierr,errstrng)
+     & npropsz,idout,idsk,kw,kp,ierr,errstrng)
 c
 c...  program to print properties for each material type.
 c
@@ -46,7 +46,7 @@ c
       integer nvfamilies,npropsz,idout,idsk,kw,kp,ierr
       integer ivfamily(6,nvfamilies),infmatmod(6,nmatmodmax)
       double precision prop(npropsz),grav(ndof)
-      character ofile*(*),pfile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -72,19 +72,12 @@ c
 c...  open output files and output number of materials
 c
       if(idout.gt.izero) then
-        call open_append(kw,ofile,"old","",ierr,errstrng,"write_props")
-        if(ierr.ne.izero) return
         write(kw,1000,err=20) numat
       end if
       if(idsk.eq.ione) then
-        call open_append(kp,pfile,"old","",ierr,errstrng,"write_props")
-        if(ierr.ne.izero) return
         write(kp,"(i5)",err=20) numat
       end if
       if(idsk.eq.itwo) then
-        call open_append(kp,pfile,"old","unformatted",
-     &                   ierr,errstrng,"write_props")
-        if(ierr.ne.izero) return
         write(kp,err=20) numat
       end if
 c
@@ -170,8 +163,6 @@ c
 c
 c...  normal return
 c
-      if(idout.gt.izero) close(kw)
-      if(idsk.gt.izero) close(kp)
       return
 c
 c...  error writing to output file
@@ -179,8 +170,6 @@ c
  20   continue
         ierr=4
         errstrng="write_props"
-        if(idout.gt.izero) close(kw)
-        if(idsk.gt.izero) close(kp)
         return
 c
  1000 format(1x,///,

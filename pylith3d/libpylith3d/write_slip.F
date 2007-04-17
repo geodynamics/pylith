@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_slip(nslip,numslp,numsn,kw,kp,idout,idsk,
-     & ofile,pfile,ierr,errstrng)
+     & ierr,errstrng)
 c
 c...  prints data on free slip interfaces
 c
@@ -49,7 +49,7 @@ c...  subroutine arguments
 c
       integer numslp,numsn,kw,kp,idout,idsk,ierr
       integer nslip(nsdim,numslp)
-      character ofile*(*),pfile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -69,21 +69,6 @@ c
 c...  open input file
 c
       ierr=0
-c
-c...  open output files
-c
-      if(idout.gt.izero) then
-        call open_append(kw,ofile,"old","",ierr,errstrng,"write_slip")
-        if(ierr.ne.izero) return
-      end if
-      if(idsk.eq.ione) then
-        call open_append(kp,pfile,"old","",ierr,errstrng,"write_slip")
-        if(ierr.ne.izero) return
-      else if(idsk.eq.itwo) then
-        call open_append(kp,pfile,"old","unformatted",
-     &                   ierr,errstrng,"write_slip")
-        if(ierr.ne.izero) return
-      end if
 c
 c...  loop over slippery node entries, and output results if desired
 c
@@ -106,8 +91,6 @@ c
       if(idsk.eq.itwo.and.numslp.ne.izero) write(kp) nslip
       if(idsk.eq.ione) write(kp,"(i7)",err=60) numsn
       if(idsk.eq.itwo) write(kp,err=60) numsn
-      if(idout.gt.izero) close(kw)
-      if(idsk.gt.izero) close(kp)
 c
 c...  normal return
 c
@@ -118,8 +101,6 @@ c
  60   continue
         ierr=4
         errstrng="write_slip"
-        if(idout.gt.izero) close(kw)
-        if(idsk.gt.izero) close(kp)
         return
 c
  1000 format(//

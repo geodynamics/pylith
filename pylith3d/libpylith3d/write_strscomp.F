@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_strscomp(stol,dtol,epert,kw,idout,ofile)
+      subroutine write_strscomp(stol,dtol,epert,kw,idout)
 c
 c...subroutine to write parameters controlling the stress integration
 c
@@ -38,14 +38,11 @@ c...  subroutine arguments
 c
       double precision stol,dtol,epert
       integer kw,idout
-      character ofile*(*)
 c
 c...  echo input to output file
 c
       if(idout.gt.0) then
-        call open_append_stop(kw,ofile,"old","","write_strscomp")
         write(kw,700) stol,dtol,epert
-        close(kw)
       end if
 c
 700   format(///' s t r e s s   i n t e g r a t i o n   ',

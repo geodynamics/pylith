@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_tractions(tractionverts,tractionvals,
-     & numtractions,nsnodes,kw,idout,ofile,ierr,errstrng)
+     & numtractions,nsnodes,kw,idout,ierr,errstrng)
 c
 c        program to print the traction BC info.
 c
@@ -51,7 +51,7 @@ c
       integer numtractions,nsnodes,kw,idout,ierr
       integer tractionverts(nsnodes,numtractions)
       double precision tractionvals(ndof,numtractions)
-      character ofile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  local constants
 c
@@ -70,9 +70,6 @@ c
 c
 c...  write traction BC to ascii output file, if desired
 c
-      call open_append(kw,ofile,"old","",ierr,errstrng,
-     & "write_tractions")
-      if(ierr.ne.izero) return
       write(kw,1000,err=50)
       if(nsnodes.eq.3) then
         do i=1,numtractions
@@ -85,7 +82,6 @@ c
      &    (tractionverts(j,i),j=1,nsnodes),(tractionvals(j,i),j=1,ndof)
         end do
       end if
-      close(kw)
 c
 c...  normal return
 c
@@ -96,7 +92,6 @@ c
 50    continue
         ierr=4
         errstrng="write_tractions"
-        close(kw)
         return
 c
  1000 format(1x,///,

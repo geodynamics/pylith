@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_global_info(title,idout,idsk,numnp,
-     & icode,idebug,kw,kp,ofile,pfile)
+     & icode,idebug,kw,kp)
 c
 c...subroutine to write global control parameters
 c
@@ -43,25 +43,18 @@ c
 c...  subroutine arguments
 c
       integer idout,idsk,numnp,icode,idebug,kw,kp
-      character title*(*),ofile*(*),pfile*(*)
+      character title*(*)
 c
       if(idout.gt.izero) then
-        call open_append_stop(kw,ofile,"replace","","write_global_info")
         write(kw,500)
         write(kw,1000) title,idout,idsk,ngem,numnp,nsd,ndof,icode,idebug
-        close(kw)
       end if
       if(idsk.eq.ione) then
-        call open_append_stop(kp,pfile,"replace","","write_global_info")
         write(kp,2000) title
         write(kp,3000) ngem,numnp,nsd,ndof,nstr
-        close(kp)
       else if(idsk.eq.itwo) then
-        call open_append_stop(kp,pfile,"replace","unformatted",
-     &                        "write_global_info")
         write(kp) title
         write(kp) ngem,numnp,nsd,ndof,nstr
-        close(kp)
       end if
 c
       return

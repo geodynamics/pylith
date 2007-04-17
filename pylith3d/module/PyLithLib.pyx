@@ -40,6 +40,7 @@ cimport PyLithMeshLib
 # Pyrex code inlined in this module
 include "array.pyx"
 include "exceptionhandler.pxd"
+include "f77io.pyx"
 include "setup.pyx"
 
 
@@ -216,13 +217,37 @@ cdef class PyLith:
         self.sortmesh()
         self.sparsesetup()
         self.allocateremaining()
-        self.meshwrite()
 
-        if self.generateGreen:
-            self.greenFunction(points)
+        #
+        # open output files
+        #
+
+        # xxx.ascii
+        f77open(self.kw, self.ofile)
+
+        # xxx.plot
+        if self.idsk == 0:
+            pass
+        elif self.idsk == 1:
+            f77open(self.kp, self.pfile)
+        elif self.idsk == 2:
+            f77open(self.kp, self.pfile, form="unformatted")
         else:
-            self.runSimulation()
-        
+            raise ValueError("idsk (%d) is not in [0, 1, 2]" % idsk)
+
+        try:
+            self.meshwrite()
+
+            if self.generateGreen:
+                self.greenFunction(points)
+            else:
+                self.runSimulation()
+
+        finally:
+            # close output files
+            f77close(self.kw)
+            if self.idsk != 0: f77close(self.kp)
+
         return
 
 
@@ -643,7 +668,7 @@ cdef class PyLith:
             )
 
         # Parameters derived from the number of entries in a file.
-        
+
         cdef char coord_units[30]
         libpylith3d.scan_coords(
             &self.numnp,  # intent(out)
@@ -657,7 +682,7 @@ cdef class PyLith:
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
         coord_units[sizeof(coord_units)-1] = 0   # null-terminate
-        
+
         self.cscale = uparser.parse(str(coord_units).strip()).value
 
         cdef char displacement_units[30]
@@ -730,7 +755,7 @@ cdef class PyLith:
             self.timeStepInputFile,
             &errorcode,
             errorstring,
-            len(time_units),
+            sizeof(time_units),
             len(self.timeStepInputFile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
@@ -1080,8 +1105,7 @@ cdef class PyLith:
 #                 self.idout,
 #                 self.kr,
 #                 self.kw,
-#                 self.prestressInputFile,
-#                 self.ofile)
+#                 self.prestressInputFile)
             pass
 
         # Read traction BC
@@ -1875,11 +1899,7 @@ cdef class PyLith:
             &self.idebug,
             &self.kw,
             &self.kp,
-            self.ofile,
-            self.pfile,
-            len(self.title),
-            len(self.ofile),
-            len(self.pfile))
+            len(self.title))
 
         # Write out nodal coordinates
         libpylith3d.write_coords(
@@ -1889,12 +1909,8 @@ cdef class PyLith:
             &self.kp,
             &self.idout,
             &self.idsk,
-            self.ofile,
-            self.pfile,
             &errorcode,
             errorstring,
-            len(self.ofile),
-            len(self.pfile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -1905,10 +1921,8 @@ cdef class PyLith:
             &self.numnp,
             &self.kw,
             &self.idout,
-            self.ofile,
             &errorcode,
             errorstring,
-            len(self.ofile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -1920,10 +1934,8 @@ cdef class PyLith:
             &self.numnp,
             &self.kw,
             &self.idout,
-            self.ofile,
             &errorcode,
             errorstring,
-            len(self.ofile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -1933,16 +1945,12 @@ cdef class PyLith:
             &self.dtol,
             &self.epert,
             &self.kw,
-            &self.idout,
-            self.ofile,
-            len(self.ofile))
+            &self.idout)
 
         libpylith3d.write_subiter(
             &self.nprevdflag,
             &self.kw,
-            &self.idout,
-            self.ofile,
-            len(self.ofile))
+            &self.idout)
 
         # Write out time step information
         libpylith3d.write_timdat(
@@ -1961,10 +1969,8 @@ cdef class PyLith:
             &self.lastep,
             &self.kw,
             &self.idout,
-            self.ofile,
             &errorcode,
             errorstring,
-            len(self.ofile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -1979,12 +1985,8 @@ cdef class PyLith:
             &self.kp,
             &self.idout,
             &self.idsk,
-            self.ofile,
-            self.pfile,
             &errorcode,
             errorstring,
-            len(self.ofile),
-            len(self.pfile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -1996,12 +1998,8 @@ cdef class PyLith:
             &self.kp,
             &self.idout,
             &self.idsk,
-            self.ofile,
-            self.pfile,
             &errorcode,
             errorstring,
-            len(self.ofile),
-            len(self.pfile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -2013,10 +2011,8 @@ cdef class PyLith:
             &self.lastep,
             &self.kw,
             &self.idout,
-            self.ofile,
             &errorcode,
             errorstring,
-            len(self.ofile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -2034,9 +2030,7 @@ cdef class PyLith:
             &self.tpois,
             &self.tyoungs,
             &self.kw,
-            &self.idout,
-            self.ofile,
-            len(self.ofile))
+            &self.idout)
 
         # Write element node array and deallocate 'indxiel'
         libpylith3d.write_connect(
@@ -2052,12 +2046,8 @@ cdef class PyLith:
             &self.kp,
             &self.idout,
             &self.idsk,
-            self.ofile,
-            self.pfile,
             &errorcode,
             errorstring,
-            len(self.ofile),
-            len(self.pfile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -2075,12 +2065,8 @@ cdef class PyLith:
             &self.idsk,
             &self.kw,
             &self.kp,
-            self.ofile,
-            self.pfile,
             &errorcode,
             errorstring,
-            len(self.ofile),
-            len(self.pfile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -2112,10 +2098,8 @@ cdef class PyLith:
             &self.nsnodes,
             &self.kw,
             &self.idout,
-            self.ofile,
             &errorcode,
             errorstring,
-            len(self.ofile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
    
@@ -2128,12 +2112,8 @@ cdef class PyLith:
             &self.kp,
             &self.idout,
             &self.idsk,
-            self.ofile,
-            self.pfile,
             &errorcode,
             errorstring,
-            len(self.ofile),
-            len(self.pfile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -2146,12 +2126,8 @@ cdef class PyLith:
             &self.kp,
             &self.idout,
             &self.idsk,
-            self.ofile,
-            self.pfile,
             &errorcode,
             errorstring,
-            len(self.ofile),
-            len(self.pfile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -2165,10 +2141,8 @@ cdef class PyLith:
             &self.numnp,
             &self.kw,
             &self.idout,
-            self.ofile,
             &errorcode,
             errorstring,
-            len(self.ofile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -2179,9 +2153,7 @@ cdef class PyLith:
             self.idftn.ptr,
             &self.numflt,
             &self.kp,
-            &self.idsk,
-            self.pfile,
-            len(self.pfile))
+            &self.idsk)
 
         self.idftn = None ### DEALLOC
 
@@ -2193,10 +2165,8 @@ cdef class PyLith:
             &self.nwinke,
             &self.kw,
             &self.idout,
-            self.ofile,
             &errorcode,
             errorstring,
-            len(self.ofile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -2211,10 +2181,8 @@ cdef class PyLith:
             &self.nwinkxe,
             &self.kw,
             &self.idout,
-            self.ofile,
             &errorcode,
             errorstring,
-            len(self.ofile),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
 
@@ -2229,9 +2197,7 @@ cdef class PyLith:
             &self.nmax,
             &self.wavg,
             &self.idout,
-            &self.kw,
-            self.ofile,
-            len(self.ofile))
+            &self.kw)
 
         self.trace.log("Hello from pl3dsetup.meshwrite (end)!")
 
@@ -2335,15 +2301,11 @@ cdef class PyLith:
             self.nprint,
             self.istatout,
             self.nstatout,
-            self.ofile,            # files
-            self.pfile,
-            self.ucdroot,
+            self.ucdroot,          # files
             &self.elasticStage,    # PETSc logging
             &self.iterateEvent,
             &errorcode,
             errorstring,
-            len(self.ofile),
-            len(self.pfile),
             len(self.ucdroot),
             sizeof(errorstring))
         exceptionhandler(errorcode, errorstring)
@@ -2352,6 +2314,9 @@ cdef class PyLith:
 
     cdef interpolatePoints(self, points):
         return self._mesh.interpolatePoints(points)
+
+    cdef viscos_setup(self):
+        return
 
     cdef runSimulation(self):
         # First define all of the lists that maintain variable values.  The
@@ -2464,15 +2429,11 @@ cdef class PyLith:
                     self.nprint,
                     self.istatout,
                     self.nstatout,
-                    self.ofile,            # files
-                    self.pfile,
-                    self.ucdroot,
+                    self.ucdroot,          # files
                     &self.autoprestrStage, # PETSc logging
                     &self.iterateEvent,
                     &errorcode,
                     errorstring,
-                    len(self.ofile),
-                    len(self.pfile),
                     len(self.ucdroot),
                     sizeof(errorstring))
                 exceptionhandler(errorcode, errorstring)
@@ -2496,20 +2457,7 @@ cdef class PyLith:
         
         if self.icode == 3 and self.nintg > 1:
             if self.pythonTimestep:
-                # Setup timestepping
-                #   Open output files
-                libpylith3d.viscos_setup(
-                    self.nprint,
-                    self.nunits,
-                    self.ofile,
-                    self.pfile,
-                    &self.viscousStage,
-                    &errorcode,
-                    errorstring,
-                    len(self.ofile),
-                    len(self.pfile),
-                    sizeof(errorstring))
-                exceptionhandler(errorcode, errorstring)
+                PetscLogStagePush(self.viscousStage)
                 
                 numCycles         = self.nvisdat[0]
                 numTimeStepGroups = self.nvisdat[1]
@@ -2644,10 +2592,8 @@ cdef class PyLith:
                                 self.nprint,
                                 self.istatout,
                                 self.nstatout,
-                                self.ofile,            # files
-                                self.pfile,
-                                self.ucdroot,
-                                &self.viscousStage,     # PETSc logging
+                                self.ucdroot,          # files
+                                &self.viscousStage,    # PETSc logging
                                 &self.iterateEvent,
                                 &totalSteps,
                                 &ltim,
@@ -2664,8 +2610,6 @@ cdef class PyLith:
                                 gtol,
                                 &errorcode,
                                 errorstring,
-                                len(self.ofile),
-                                len(self.pfile),
                                 len(self.ucdroot),
                                 sizeof(errorstring))
                             exceptionhandler(errorcode, errorstring)
@@ -2688,6 +2632,8 @@ cdef class PyLith:
                     errorstring,
                     sizeof(errorstring))
                 exceptionhandler(errorcode, errorstring)
+                
+                PetscLogStagePop()
                 
             else:
                 
@@ -2778,15 +2724,11 @@ cdef class PyLith:
                     self.nprint,
                     self.istatout,
                     self.nstatout,
-                    self.ofile,            # files
-                    self.pfile,
-                    self.ucdroot,
+                    self.ucdroot,          # files
                     &self.viscousStage,    # PETSc logging
                     &self.iterateEvent,
                     &errorcode,
                     errorstring,
-                    len(self.ofile),
-                    len(self.pfile),
                     len(self.ucdroot),
                     sizeof(errorstring))
                 exceptionhandler(errorcode, errorstring)

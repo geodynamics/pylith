@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_skew(skew,numrot,iskopt,numnp,kw,idout,ofile,
+      subroutine write_skew(skew,numrot,iskopt,numnp,kw,idout,
      & ierr,errstrng)
 c
 c        program to print the array "skew" that specifies
@@ -53,7 +53,7 @@ c...  subroutine arguments
 c
       integer numrot,iskopt,numnp,kw,idout,ierr
       double precision skew(nskdim,numnp)
-      character ofile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  local constants
 c
@@ -74,8 +74,6 @@ c
 c
 c...  write skew BC to ascii output file, if desired
 c
-      call open_append(kw,ofile,"old","",ierr,errstrng,"write_skew")
-      if(ierr.ne.izero) return
       write(kw,1000,err=50) iskopt,(label(i),i=1,nskdim)
       write(kw,1050,err=50)
       do i=1,numnp
@@ -85,7 +83,6 @@ c
         end do
         if(nonzed) write(kw,2000,err=50) i,(skew(j,i),j=1,nskdim)
       end do
-      close(kw)
 c
 c...  normal return
 c
@@ -96,7 +93,6 @@ c
 50    continue
         ierr=4
         errstrng="write_skew"
-        close(kw)
         return
 c
  1000 format(1x,///,

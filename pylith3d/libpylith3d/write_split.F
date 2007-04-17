@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_split(fault,nfault,numfn,kw,kp,
-     & idout,idsk,ofile,pfile,ierr,errstrng)
+     & idout,idsk,ierr,errstrng)
 c
 c...  prints data on split nodes
 c
@@ -56,7 +56,7 @@ c
       integer numfn,kw,kp,idout,idsk,ierr
       integer nfault(3,numfn)
       double precision fault(ndof,numfn)
-      character ofile*(*),pfile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  intrinsic functions
 c
@@ -65,21 +65,6 @@ c
 c...  local variables
 c
       integer i,j,npage
-c
-c...  open output files
-c
-      if(idout.gt.izero) then
-        call open_append(kw,ofile,"old","",ierr,errstrng,"write_split")
-        if(ierr.ne.izero) return
-      end if
-      if(idsk.eq.ione) then
-        call open_append(kp,pfile,"old","",ierr,errstrng,"write_split")
-        if(ierr.ne.izero) return
-      else if(idsk.eq.itwo) then
-        call open_append(kp,pfile,"old","unformatted",
-     &                   ierr,errstrng,"write_split")
-        if(ierr.ne.izero) return
-      end if
 c
 c...  output results if requested
 c
@@ -97,8 +82,6 @@ c
       end if
       if(idsk.eq.itwo.and.numfn.ne.izero) write(kp,err=60) nfault
       if(idsk.eq.itwo.and.numfn.ne.izero) write(kp,err=60) fault
-      if(idout.gt.izero) close(kw)
-      if(idsk.gt.izero) close(kp)
 c
 c...  normal return
 c
@@ -109,8 +92,6 @@ c
  60   continue
         ierr=4
         errstrng="write_split"
-        if(idsk.gt.izero) close(kp)
-        if(idout.gt.izero) close(kw)
         return
 c
  3000 format(1x///1x,'s p l i t  n o d e   d a t a'//

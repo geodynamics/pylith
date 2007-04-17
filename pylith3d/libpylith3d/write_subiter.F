@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_subiter(nprevdflag,kw,idout,ofile)
+      subroutine write_subiter(nprevdflag,kw,idout)
 c
 c...subroutine to write parameters controlling the subiteration
 c   process
@@ -38,14 +38,11 @@ c
 c...  subroutine arguments
 c
       integer nprevdflag,kw,idout
-      character ofile*(*)
 c
 c...  local variables
 c
       if(idout.gt.0) then
-        call open_append_stop(kw,ofile,"old","","write_subiter")
         write(kw,700) nprevdflag
-        close(kw)
       end if
 c
       return

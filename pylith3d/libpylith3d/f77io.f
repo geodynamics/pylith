@@ -28,36 +28,38 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_split_plot(idftn,numflt,kp,idsk)
-c
-c...  subroutine to write out each split node.
+      subroutine f77open(u,ios,fin,sta,acc,fm,rl)
 c
       include "implicit.inc"
 c
 c...  subroutine arguments
 c
-      integer numflt,kp,idsk
-      integer idftn(numflt)
+      integer u,ios,rl
+      character fin*(*),sta*(*),acc*(*),fm*(*)
 c
-c...  local variables
-c
-      integer i
-c
-c...  write results to plot file, if requested
-c
-      if(idsk.eq.1) then
-        write(kp,"(i7)") numflt
-      else if(idsk.eq.2) then
-        write(kp) numflt
-        if(numflt.ne.0) write(kp) (idftn(i),i=1,numflt)
+      if(rl.eq.0) then
+        open(u,iostat=ios,file=fin,status=sta,access=acc,form=fm)
+      else
+        open(u,iostat=ios,file=fin,status=sta,access=acc,form=fm,
+     & recl=rl)
       end if
 c
       return
       end
 c
-c version
-c $Id: write_split_plot.F,v 1.1 2005/08/05 19:58:06 willic3 Exp $
 c
-c Generated automatically by Fortran77Mill on Wed May 21 14:15:03 2003
+c
+      subroutine f77close(u,ios)
+c
+      include "implicit.inc"
+c
+c...  subroutine arguments
+c
+      integer u,ios
+c
+      close(u,iostat=ios)
+c
+      return
+      end
 c
 c End of file 

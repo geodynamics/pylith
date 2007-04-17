@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_bc(bond,ibond,numnp,kw,idout,ofile,ierr,errstrng)
+      subroutine write_bc(bond,ibond,numnp,kw,idout,ierr,errstrng)
 c
 c...  subroutine to write boundary conditions to ascii output file.
 c
@@ -50,7 +50,7 @@ c
       integer numnp,kw,idout,ierr
       integer ibond(ndof,numnp)
       double precision bond(ndof,numnp)
-      character ofile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -79,8 +79,6 @@ c
 c
 c...  output BC to ascii file, if requested
 c
-      call open_append(kw,ofile,"old","",ierr,errstrng,"write_bc")
-      if(ierr.ne.izero) return
       write(kw,1000) (labeld(i),i=1,ndof)
       write(kw,2000)
       nlines=0
@@ -105,7 +103,6 @@ c
      &     i=1,ndof)
         end if
       end do
-      close(kw)
 c
 c...  normal return
 c
@@ -116,7 +113,6 @@ c
 20    continue
         ierr=4
         errstrng="write_bc"
-        close(kw)
         return
 c
 1000  format(1x,///,'  n o d a l   f o r c e s   a n d   d i s p l a',

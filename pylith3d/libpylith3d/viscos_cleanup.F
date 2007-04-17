@@ -32,11 +32,6 @@ c
      & ntimdat,nprint,nunits,                                           ! timdat
      & ierr,errstrng)                                                   ! errcode
 c
-c     PETSC includes
-c
-#include "finclude/petsc.h"
-#include "finclude/petsclog.h"
-c
 c...  parameter definitions
 c
       include "nconsts.inc"
@@ -58,16 +53,13 @@ c
       include "nprint_def.inc"
       include "nunits_def.inc"
 c
-c...  close units
+c...  write output, if requested
 c
       if(idout.gt.ione) write(kw,800) ntimdat(6),ntimdat(7),ntimdat(8)
-      if(idout.gt.ione) close(kw)
-      close(kp)
 c
  800  format(/," Total number of equilibrium iterations        = ",i7,/,
      &         " Total number of stiffness matrix reformations = ",i7,/,
      &         " Total number of displacement subiterations    = ",i7)
-      call PetscLogStagePop(ierr)
       return
       end
 c

@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_coords(x,numnp,kw,kp,idout,idsk,ofile,pfile,
+      subroutine write_coords(x,numnp,kw,kp,idout,idsk,
      & ierr,errstrng)
 c
 c...  subroutine to write nodal coordinates to plot and/or ascii files.
@@ -51,7 +51,7 @@ c...  subroutine arguments
 c
       integer numnp,kw,kp,idout,idsk,ierr
       double precision x(nsd,numnp)
-      character ofile*(*),pfile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -72,33 +72,21 @@ c
 c...  output coordinates to plot file, if requested
 c
       if(idsk.eq.1) then
-        call open_append(kp,pfile,"old","",
-     &                   ierr,errstrng,"write_coords")
-        if(ierr.ne.izero) return
         do i=1,numnp
           write(kp,"(i7,3(1pe16.8))",err=60) i,(x(j,i),j=1,nsd)
         end do
-        close(kp)
       else if(idsk.eq.2) then
-        call open_append(kp,pfile,"old","unformatted",
-     &                   ierr,errstrng,"write_coords")
-        if(ierr.ne.izero) return
         write(kp,err=60) x
-        close(kp)
       end if
 c
 c...  output coordinates to human-readable file
 c
       if(idout.gt.izero) then
-        call open_append(kw,ofile,"old","",
-     &                   ierr,errstrng,"write_coords")
-        if(ierr.ne.izero) return
         do i=1,numnp
           if(i.eq.1.or.mod(i,npage).eq.0) write(kw,1000)
      &     (labelc(j),j=1,nsd)
           write(kw,"(6x,i7,10x,3(1pe20.8))",err=60) i,(x(j,i),j=1,nsd)
         end do
-        close(kw)
       end if
 c
 c...  normal return
@@ -110,8 +98,6 @@ c
  60   continue
         ierr=4
         errstrng="write_coords"
-        if(idout.gt.izero) close(kw)
-        if(idsk.gt.izero) close(kp)
         return
 c
 1000  format(1x,///,' n o d a l   c o o r d i n a t e   d a t a',///,

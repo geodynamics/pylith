@@ -28,8 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine write_sparse_info(neq,nnz,nmin,nmax,wavg,idout,kw,
-     & ofile)
+      subroutine write_sparse_info(neq,nnz,nmin,nmax,wavg,idout,kw)
 c
 c...subroutine to write global control parameters
 c
@@ -39,14 +38,11 @@ c...  subroutine arguments
 c
       integer neq,nnz,nmin,nmax,idout,kw
       double precision wavg
-      character ofile*(*)
 c
 cdebug      write(6,*) "Hello from write_sparse_info_f!"
 c
       if(idout.gt.0) then
-        call open_append_stop(kw,ofile,"old","","write_sparse_info")
         write(kw,3000) neq,nnz-1,nmin,nmax,wavg
-        close(kw)
       end if
 c
       return

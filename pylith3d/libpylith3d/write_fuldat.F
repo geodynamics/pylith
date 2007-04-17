@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_fuldat(iprint,icontr,icode,ncycle,lastep,kw,kp,
-     & idout,idsk,ofile,pfile,ierr,errstrng)
+     & idout,idsk,ierr,errstrng)
 c
 c...  writes data on time steps where full outputs are desired
 c
@@ -48,7 +48,7 @@ c...  subroutine arguments
 c
       integer icontr,icode,ncycle,lastep,kw,kp,idout,idsk,ierr
       integer iprint(icontr)
-      character ofile*(*),pfile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  local variables
 c
@@ -58,18 +58,6 @@ c
 c
 c...  output results, if desired
 c
-      if(idout.gt.izero) then
-        call open_append(kw,ofile,"old","",ierr,errstrng,"write_fuldat")
-        if(ierr.ne.izero) return
-      end if
-      if(idsk.eq.ione) then
-        call open_append(kp,pfile,"old","",ierr,errstrng,"write_fuldat")
-        if(ierr.ne.izero) return
-      else if(idsk.eq.itwo) then
-        call open_append(kp,pfile,"old","unformatted",
-     &                   ierr,errstrng,"write_fuldat")
-        if(ierr.ne.izero) return
-      end if
       if(icode.ne.itwo.and.idout.gt.izero) write(kw,1000,err=50)  ncycle
       i1=0
       if((icode.eq.itwo).or.(icontr.eq.izero)) then
@@ -95,8 +83,6 @@ c
      &     j=1,nrem)
         end if
       end if
-      if(idout.gt.izero) close(kw)
-      if(idsk.gt.izero) close(kp)
 c
 c...  normal return
 c
@@ -107,8 +93,6 @@ c
  50   continue
         ierr=4
         errstrng="write_fuldat"
-        if(idout.gt.izero) close(kw)
-        if(idsk.gt.izero) close(kp)
         return
 c
 1000  format(//5x,
