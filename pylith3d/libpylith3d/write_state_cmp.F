@@ -120,7 +120,7 @@ c
             call get_state(state(1,l,ielf),dstate(1,l,ielf),sout,nstate)
             call daxpy(nstatesmax,delti,sout(nstatesmax+ione),ione,
      &       sout(2*nstatesmax+ione),ione)
-            write(kw,720) ielgp,l,(sout(istatoutc(j)),j=1,nstatestot)
+            write(kw,710) ielgp,l,(sout(istatoutc(j)),j=1,nstatestot)
           end do
           ielgp=ielgp+ione
         end do
