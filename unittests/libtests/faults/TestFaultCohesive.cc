@@ -31,6 +31,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyLine(void)
 { // testAdjustTopologyLine
+  // Also have "data/meshTri3A_orig.txt"
   const char* filename = "data/meshTet4A_orig.txt";
   _testAdjustTopology(filename);
 } // testAdjustTopologyLine

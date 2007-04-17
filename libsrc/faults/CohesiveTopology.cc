@@ -56,7 +56,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
     for(sieve_type::traits::supportSequence::iterator c_iter = cBegin;
 	c_iter != cEnd;
 	++c_iter) {
-      const unsigned int faceSize = 3; //_numFaceVertices(*c_iter, mesh);
+      const unsigned int faceSize = _numFaceVertices(*c_iter, mesh);
 
       if (debug)
 	std::cout << "  Checking cell " << *c_iter << std::endl;
@@ -109,7 +109,6 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
       } // if
     } // for
   } // for
-  faultSieve->view("Fault sieve");
   fault->setSieve(faultSieve);
   fault->stratify();
   faultCells.clear();
@@ -119,7 +118,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
   // Add new shadow vertices
   const ALE::Obj<Mesh::label_sequence>& fVertices = fault->depthStratum(0);
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  Mesh::point_type newVertex = *vertices->begin() + vertices->size();
+  Mesh::point_type newPoint = sieve->base()->size() + sieve->cap()->size();
   std::map<int,int> vertexRenumber;
   
   for(Mesh::label_sequence::iterator v_iter = fVertices->begin();
@@ -128,7 +127,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
     if (debug) 
       std::cout << "Duplicating " << *v_iter << " to "
 		<< vertexRenumber[*v_iter] << std::endl;
-    vertexRenumber[*v_iter] = newVertex++;
+    vertexRenumber[*v_iter] = newPoint++;
   } // for
 
   // Split the mesh along the fault sieve and create cohesive elements
@@ -137,7 +136,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
   
   for(Mesh::label_sequence::iterator f_iter = faces->begin();
       f_iter != faces->end();
-      ++f_iter) {
+      ++f_iter, ++newPoint) {
     if (debug)
       std::cout << "Considering fault face " << *f_iter << std::endl;
     const ALE::Obj<sieve_type::traits::supportSequence>& cells =
@@ -168,7 +167,28 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
 	++v_iter) {
       sieve->addArrow(*v_iter, cell, color++);
     } // for
+    // Adding cohesive cell (not interpolated)
+    const ALE::Obj<sieve_type::traits::coneSequence>& fCone  = faultSieve->cone(*f_iter);
+    const sieve_type::traits::coneSequence::iterator  fBegin = fCone->begin();
+    const sieve_type::traits::coneSequence::iterator  fEnd   = fCone->end();
+    color = 0;
+
+	if (debug)
+	  std::cout << "  Creating cohesive cell " << newPoint << std::endl;
+    for(sieve_type::traits::coneSequence::iterator v_iter = fBegin; v_iter != fEnd;
+        ++v_iter) {
+      if (debug)
+        std::cout << "    vertex " << *v_iter << std::endl;
+      sieve->addArrow(*v_iter, newPoint, color++);
+    }
+    for(sieve_type::traits::coneSequence::iterator v_iter = fBegin; v_iter != fEnd;
+        ++v_iter) {
+      if (debug)
+        std::cout << "    vertex " << vertexRenumber[*v_iter] << std::endl;
+      sieve->addArrow(vertexRenumber[*v_iter], newPoint, color++);
+    }
   } // for
+  mesh->view("Mesh with Cohesive Elements");
 
   // Fix coordinates
   const ALE::Obj<real_section_type>& coordinates = 
