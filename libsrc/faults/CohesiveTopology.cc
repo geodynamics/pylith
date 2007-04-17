@@ -16,6 +16,8 @@
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
+#include <assert.h> // USES assert()
+
 // ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
