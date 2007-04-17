@@ -222,7 +222,8 @@ cdef class PyLith:
         #
 
         # xxx.ascii
-        f77open(self.kw, self.ofile)
+        if self.idout != 0:
+            f77open(self.kw, self.ofile)
 
         # xxx.plot
         if self.idsk == 0:
@@ -244,7 +245,7 @@ cdef class PyLith:
 
         finally:
             # close output files
-            f77close(self.kw)
+            if self.idout != 0: f77close(self.kw)
             if self.idsk != 0: f77close(self.kp)
 
         return

@@ -382,8 +382,8 @@ class PyLithApp(PetscApplication):
         
         Inventory = self.metainventory
 
-        self.ofile                       = outputFile(Inventory.ofile,                      optional)
-        self.pfile                       = outputFile(Inventory.pfile,                      optional)
+        self.ofile                       = outputFile(Inventory.ofile, self.idout == "none" and unused or required)
+        self.pfile                       = outputFile(Inventory.pfile, self.idsk == "none" and unused or required)
         self.coordinateInputFile         = inputFile(Inventory.coordinateInputFile,         required)
         self.bcfile                      = inputFile(Inventory.bcfile,                      required)
         self.wfile                       = inputFile(Inventory.wfile,                       unused)
