@@ -18,7 +18,7 @@ main(int argc,
   } // if
 
   try {
-    typedef ALE::Field::Mesh Mesh;
+    typedef ALE::Mesh Mesh;
     ALE::Obj<Mesh> mesh;
 
     pylith::meshio::MeshIOAscii iohandler;

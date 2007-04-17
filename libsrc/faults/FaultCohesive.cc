@@ -54,15 +54,6 @@ pylith::faults::FaultCohesive::adjustTopology(ALE::Obj<ALE::Mesh>* mesh) const
     (*mesh)->getIntSection(label());
   assert(!groupField.isNull());
   const int_section_type::chart_type& chart = groupField->getChart();
-  const Mesh::point_type firstPoint = *chart.begin();
-  ALE::Obj<Mesh::numbering_type> numbering;
-  if ((*mesh)->height(firstPoint) == 0) {
-    std::ostringstream msg;
-    msg << "Group associated with fault '" << label() << "' must contain "
-	<< "vertices, not cells.";
-    throw std::runtime_error(msg.str());
-  } else
-    numbering = (*mesh)->getFactory()->getNumbering(*mesh, 0);
 
   // Create set with vertices on fault
   std::set<Mesh::point_type> points; // Vertices on fault
@@ -70,8 +61,8 @@ pylith::faults::FaultCohesive::adjustTopology(ALE::Obj<ALE::Mesh>* mesh) const
   for(int_section_type::chart_type::iterator c_iter = chart.begin();
       c_iter != chart.end();
       ++c_iter) {
-    assert(!numbering.isNull());
-    points.insert(numbering->getIndex(*c_iter)+numCells);
+    assert(!(*mesh)->depth(*c_iter));
+    points.insert(*c_iter);
   } // for
   CohesiveTopology::create(*mesh, points);
 } // adjustTopology
