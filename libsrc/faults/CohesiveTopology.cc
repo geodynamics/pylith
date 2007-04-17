@@ -24,6 +24,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
 			      const std::set<Mesh::point_type>& faultVertices)
 { // create
   typedef std::vector<Mesh::point_type> PointArray;
+  typedef ALE::SieveAlg<Mesh> sieveAlg;
 
   const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
   const ALE::Obj<Mesh> fault = new Mesh(mesh->comm(), mesh->debug());
@@ -34,7 +35,6 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
   const std::set<Mesh::point_type>::const_iterator fvEnd = 
     faultVertices.end();
 
-  // There should be logic here to determine this
   int f = sieve->base()->size() + sieve->cap()->size();
   int debug = mesh->debug();
   ALE::Obj<PointArray> face = new PointArray();
@@ -44,16 +44,14 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
   for(std::set<int>::const_iterator fv_iter = fvBegin;
       fv_iter != fvEnd;
       ++fv_iter) {
-    const ALE::Obj<sieve_type::traits::supportSequence>& cells =
-      sieve->support(*fv_iter);
-    const sieve_type::traits::supportSequence::iterator cBegin =
-      cells->begin();
-    const sieve_type::traits::supportSequence::iterator cEnd =
-      cells->end();
+    const ALE::Obj<sieveAlg::supportArray>& cells =
+      sieveAlg::nSupport(mesh, *fv_iter, mesh->depth());
+    const sieveAlg::supportArray::iterator cBegin = cells->begin();
+    const sieveAlg::supportArray::iterator cEnd   = cells->end();
     
     if (debug)
       std::cout << "Checking fault vertex " << *fv_iter << std::endl;
-    for(sieve_type::traits::supportSequence::iterator c_iter = cBegin;
+    for(sieveAlg::supportArray::iterator c_iter = cBegin;
 	c_iter != cEnd;
 	++c_iter) {
       const unsigned int faceSize = _numFaceVertices(*c_iter, mesh);
@@ -62,13 +60,13 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
 	std::cout << "  Checking cell " << *c_iter << std::endl;
       if (faultCells.find(*c_iter) != faultCells.end())
 	continue;
-      const ALE::Obj<sieve_type::traits::coneSequence>& cone =
-	sieve->cone(*c_iter);
-      const sieve_type::traits::coneSequence::iterator  vBegin = cone->begin();
-      const sieve_type::traits::coneSequence::iterator  vEnd = cone->end();
+      const ALE::Obj<sieveAlg::coneArray>& cone =
+        sieveAlg::nCone(mesh, *c_iter, mesh->height());
+      const sieveAlg::coneArray::iterator vBegin = cone->begin();
+      const sieveAlg::coneArray::iterator vEnd   = cone->end();
       
       face->clear();
-      for(sieve_type::traits::coneSequence::iterator v_iter = vBegin;
+      for(sieveAlg::coneArray::iterator v_iter = vBegin;
 	  v_iter != vEnd;
 	  ++v_iter) {
 	if (faultVertices.find(*v_iter) != fvEnd) {
