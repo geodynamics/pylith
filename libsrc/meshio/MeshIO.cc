@@ -99,7 +99,8 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
                                          numCells, 
                                          const_cast<int*>(&cells[0]), 
                                          numVertices, 
-                                         _interpolate, numCorners);
+                                         _interpolate, numCorners, -1,
+                                         (*_mesh)->getArrowSection("orientation"));
   (*_mesh)->setSieve(sieve);
   (*_mesh)->stratify();
   ALE::SieveBuilder<Mesh>::buildCoordinates(*_mesh, spaceDim, &coordinates[0]);

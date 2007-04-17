@@ -35,7 +35,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
     faultVertices.end();
 
   // There should be logic here to determine this
-  int f = 0;
+  int f = sieve->base()->size() + sieve->cap()->size();
   int debug = mesh->debug();
   ALE::Obj<PointArray> face = new PointArray();
   std::set<Mesh::point_type> faultCells;
@@ -109,6 +109,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
       } // if
     } // for
   } // for
+  faultSieve->view("Fault sieve");
   fault->setSieve(faultSieve);
   fault->stratify();
   faultCells.clear();
