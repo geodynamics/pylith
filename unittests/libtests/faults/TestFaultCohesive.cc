@@ -44,7 +44,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(const char* filename)
   meshio::MeshIOAscii iohandler;
   iohandler.filename(filename);
   iohandler.debug(true);
-  iohandler.interpolate(true);
+  iohandler.interpolate(false);
   iohandler.read(&mesh);
 
   FaultCohesiveKin fault;
