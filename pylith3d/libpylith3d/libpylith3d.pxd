@@ -135,15 +135,11 @@ cdef extern void autoprestr "FC_FUNC(autoprestr, AUTOPRESTR)" (
     int *,
     int *,
     char *,           # files
-    char *,
-    char *,
     int *,            # PETSc logging
     int *,
     int *,            # error codes
     char *,
     size_t,           # string lengths
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void cmp_stiffsz "FC_FUNC_(cmp_stiffsz, CMP_STIFFSZ)" (
@@ -256,16 +252,31 @@ cdef extern void elastc "FC_FUNC(elastc, ELASTC)" (
     int *,
     int *,
     char *,            # files
-    char *,
-    char *,
     int *,             # PETSc logging
     int *,
     int *,             # error codes
     char *,
     size_t,            # string lengths
-    size_t,
-    size_t,
     size_t) except *
+
+cdef extern void f77close "FC_FUNC(f77close, F77CLOSE)" (
+    int *,
+    int *
+    ) except *
+
+cdef extern void f77open "FC_FUNC(f77open, F77OPEN)" (
+    int *,
+    int *,
+    char *,
+    char *,
+    char *,
+    char *,
+    int *,
+    size_t,
+    size_t,
+    size_t,
+    size_t
+    ) except *
 
 cdef extern void id_split "FC_FUNC_(id_split, ID_SPLIT)" (
     int *,
@@ -857,27 +868,19 @@ cdef extern void viscos "FC_FUNC(viscos, VISCOS)" (
     int *,
     int *,
     char *,            # files
-    char *,
-    char *,
     int *,             # 90: PETSC logging
     int *,
     int *,             # error codes
     char *,
     size_t,            # string lengths
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void viscos_setup "FC_FUNC_(viscos_setup, VISCOS_SETUP)" (
     int *,
     int *,
-    char *,
-    char *,
     int *,
     int *,
     char *,
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void viscos_step "FC_FUNC_(viscos_step, VISCOS_STEP)" (
@@ -968,8 +971,6 @@ cdef extern void viscos_step "FC_FUNC_(viscos_step, VISCOS_STEP)" (
     int *,
     int *,
     char *,            # files
-    char *,
-    char *,
     int *,             # 90: PETSC logging
     int *,
     int *,
@@ -988,8 +989,6 @@ cdef extern void viscos_step "FC_FUNC_(viscos_step, VISCOS_STEP)" (
     int *,             # error codes
     char *,
     size_t,            # string lengths
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void viscos_cleanup "FC_FUNC_(viscos_cleanup, VISCOS_CLEANUP)" (
@@ -1006,10 +1005,8 @@ cdef extern void write_bc "FC_FUNC_(write_bc, WRITE_BC)" (
     int *,
     int *,
     int *,
-    char *,
     int *,
     char *,
-    size_t,
     size_t) except *
 
 cdef extern void write_connect "FC_FUNC_(write_connect, WRITE_CONNECT)" (
@@ -1025,12 +1022,8 @@ cdef extern void write_connect "FC_FUNC_(write_connect, WRITE_CONNECT)" (
     int *,
     int *,
     int *,
-    char *,
-    char *,
     int *,
     char *,
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void write_coords "FC_FUNC_(write_coords, WRITE_COORDS)" (
@@ -1040,12 +1033,8 @@ cdef extern void write_coords "FC_FUNC_(write_coords, WRITE_COORDS)" (
     int *,
     int *,
     int *,
-    char *,
-    char *,
     int *,
     char *,
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void write_diff "FC_FUNC_(write_diff, WRITE_DIFF)" (
@@ -1057,10 +1046,8 @@ cdef extern void write_diff "FC_FUNC_(write_diff, WRITE_DIFF)" (
     int *,
     int *,
     int *,
-    char *,
     int *,
     char *,
-    size_t,
     size_t) except *
 
 cdef extern void write_element_info "FC_FUNC_(write_element_info, WRITE_ELEMENT_INFO)" (
@@ -1074,9 +1061,7 @@ cdef extern void write_element_info "FC_FUNC_(write_element_info, WRITE_ELEMENT_
     double *,
     double *,
     int *,
-    int *,
-    char *,
-    size_t) except *
+    int *) except *
 
 cdef extern void write_fuldat "FC_FUNC_(write_fuldat, WRITE_FULDAT)" (
     int *,
@@ -1088,12 +1073,8 @@ cdef extern void write_fuldat "FC_FUNC_(write_fuldat, WRITE_FULDAT)" (
     int *,
     int *,
     int *,
-    char *,
-    char *,
     int *,
     char *,
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void write_global_info "FC_FUNC_(write_global_info, WRITE_GLOBAL_INFO)" (
@@ -1105,10 +1086,6 @@ cdef extern void write_global_info "FC_FUNC_(write_global_info, WRITE_GLOBAL_INF
     int *,
     int *,
     int *,
-    char *,
-    char *,
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void write_hist "FC_FUNC_(write_hist, WRITE_HIST)" (
@@ -1118,10 +1095,8 @@ cdef extern void write_hist "FC_FUNC_(write_hist, WRITE_HIST)" (
     int *,
     int *,
     int *,
-    char *,
     int *,
     char *,
-    size_t,
     size_t) except *
 
 cdef extern void write_props "FC_FUNC_(write_props, WRITE_PROPS)" (
@@ -1135,12 +1110,8 @@ cdef extern void write_props "FC_FUNC_(write_props, WRITE_PROPS)" (
     int *,
     int *,
     int *,
-    char *,
-    char *,
     int *,
     char *,
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void write_skew "FC_FUNC_(write_skew, WRITE_SKEW)" (
@@ -1150,10 +1121,8 @@ cdef extern void write_skew "FC_FUNC_(write_skew, WRITE_SKEW)" (
     int *,
     int *,
     int *,
-    char *,
     int *,
     char *,
-    size_t,
     size_t) except *
 
 cdef extern void write_slip "FC_FUNC_(write_slip, WRITE_SLIP)" (
@@ -1164,12 +1133,8 @@ cdef extern void write_slip "FC_FUNC_(write_slip, WRITE_SLIP)" (
     int *,
     int *,
     int *,
-    char *,
-    char *,
     int *,
     char *,
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void write_sparse_info "FC_FUNC_(write_sparse_info, WRITE_SPARSE_INFO)" (
@@ -1179,9 +1144,7 @@ cdef extern void write_sparse_info "FC_FUNC_(write_sparse_info, WRITE_SPARSE_INF
     int *,
     double *,
     int *,
-    int *,
-    char *,
-    size_t) except *
+    int *) except *
 
 cdef extern void write_split "FC_FUNC_(write_split, WRITE_SPLIT)" (
     double *,
@@ -1191,21 +1154,15 @@ cdef extern void write_split "FC_FUNC_(write_split, WRITE_SPLIT)" (
     int *,
     int *,
     int *,
-    char *,
-    char *,
     int *,
     char *,
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void write_split_plot "FC_FUNC_(write_split_plot, WRITE_SPLIT_PLOT)" (
     int *,
     int *,
     int *,
-    int *,
-    char *,
-    size_t) except *
+    int *) except *
 
 cdef extern void write_stateout "FC_FUNC_(write_stateout, WRITE_STATEOUT)" (
     int *,
@@ -1214,12 +1171,8 @@ cdef extern void write_stateout "FC_FUNC_(write_stateout, WRITE_STATEOUT)" (
     int *,
     int *,
     int *,
-    char *,
-    char *,
     int *,
     char *,
-    size_t,
-    size_t,
     size_t) except *
 
 cdef extern void write_strscomp "FC_FUNC_(write_strscomp, WRITE_STRSCOMP)" (
@@ -1227,16 +1180,12 @@ cdef extern void write_strscomp "FC_FUNC_(write_strscomp, WRITE_STRSCOMP)" (
     double *,
     double *,
     int *,
-    int *,
-    char *,
-    size_t) except *
+    int *) except *
 
 cdef extern void write_subiter "FC_FUNC_(write_subiter, WRITE_SUBITER)" (
     int *,
     int *,
-    int *,
-    char *,
-    size_t) except *
+    int *) except *
 
 cdef extern void write_tractions "FC_FUNC_(write_tractions, WRITE_TRACTIONS)" (
     int *,
@@ -1245,10 +1194,8 @@ cdef extern void write_tractions "FC_FUNC_(write_tractions, WRITE_TRACTIONS)" (
     int *,
     int *,
     int *,
-    char *,
     int *,
     char *,
-    size_t,
     size_t) except *
 
 cdef extern void write_timdat "FC_FUNC_(write_timdat, WRITE_TIMDAT)" (
@@ -1267,10 +1214,8 @@ cdef extern void write_timdat "FC_FUNC_(write_timdat, WRITE_TIMDAT)" (
     int *,
     int *,
     int *,
-    char *,
     int *,
     char *,
-    size_t,
     size_t) except *
 
 cdef extern void write_ucd_mesh "FC_FUNC_(write_ucd_mesh, WRITE_UCD_MESH)" (
@@ -1298,10 +1243,8 @@ cdef extern void write_wink "FC_FUNC_(write_wink, WRITE_WINK)" (
     int *,
     int *,
     int *,
-    char *,
     int *,
     char *,
-    size_t,
     size_t) except *
 
 cdef extern void write_winkx "FC_FUNC_(write_winkx, WRITE_WINKX)" (
@@ -1311,10 +1254,8 @@ cdef extern void write_winkx "FC_FUNC_(write_winkx, WRITE_WINKX)" (
     int *,
     int *,
     int *,
-    char *,
     int *,
     char *,
-    size_t,
     size_t) except *
 
 

@@ -46,7 +46,7 @@ c
      & rgiter,                                                          ! stresscmp
      & skew,                                                            ! skew
      & iprint,ncodat,nunits,nprint,istatout,nstatout,                   ! ioinfo
-     & ofile,pfile,ucdroot,                                             ! files
+     & ucdroot,                                                         ! files
      & viscousStage, iterateEvent,                                      ! PETSc logging
      & ierr,errstrng)                                                   ! errcode
 c
@@ -105,7 +105,7 @@ c
       double precision gauss(*),sh(*),shj(*)
       double precision histry(*),delt(*),alfa(*),utol(*),ftol(*),etol(*)
       double precision skew(*)
-      character ofile*(*),pfile*(*),ucdroot*(*),errstrng*(*)
+      character ucdroot*(*),errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -151,25 +151,9 @@ c
       include "nprint_def.inc"
       include "rtimdat_def.inc"
       include "rgiter_def.inc"
-c
-c...  open output files for appending, if necessary
-c
 cdebug      write(6,*) "Hello from viscos_f!"
 c
       call PetscLogStagePush(viscousStage, ierr)
-c
-      if(idout.gt.ione) then
-        call open_append(kw,ofile,"old","",ierr,errstrng,"viscos")
-        if(ierr.ne.izero) return
-      end if
-      if(idsk.eq.ione) then
-        call open_append(kp,pfile,"old","",ierr,errstrng,"viscos")
-        if(ierr.ne.izero) return
-      else if(idsk.eq.itwo) then
-        call open_append(kp,pfile,"old","unformatted",
-     &                   ierr,errstrng,"viscos")
-        if(ierr.ne.izero) return
-      end if
 c
 c...  signal user that viscous computation is begun
 c
@@ -656,8 +640,6 @@ c
       end do
       write(kto,800) ntimdat(6),ntimdat(7),ntimdat(8)
       if(idout.gt.ione) write(kw,800) ntimdat(6),ntimdat(7),ntimdat(8)
-      if(idout.gt.ione) close(kw)
-      close(kp)
 c
  650  format(//,"Reforming the stiffness matrix:",/)
  700  format('STEP ',i7)

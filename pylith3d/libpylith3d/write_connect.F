@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_connect(iens,ivfamily,indxiel,nen,ngauss,numelv,
-     & ietypev,nvfamilies,kw,kp,idout,idsk,ofile,pfile,ierr,errstrng)
+     & ietypev,nvfamilies,kw,kp,idout,idsk,ierr,errstrng)
 c
 c      this subroutine writes the element node array, as well as
 c      material model and element type.
@@ -53,7 +53,7 @@ c...  subroutine arguments
 c
       integer nen,ngauss,numelv,ietypev,nvfamilies,kw,kp,idout,idsk,ierr
       integer iens(nen,numelv),ivfamily(6,nvfamilies),indxiel(numelv)
-      character ofile*(*),pfile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  local variables
 c
@@ -74,9 +74,6 @@ c
 c...  output plot info, if desired
 c
       if(idsk.eq.ione) then
-        call open_append(kp,pfile,"old","",
-     &                   ierr,errstrng,"write_connect")
-        if(ierr.ne.izero) return
         write(kp,1000,err=50) numelv,ietypev,nen,ngauss
         ielg=izero
         do ifam=1,nvfamilies
@@ -90,23 +87,15 @@ c
      &       (iens(j,ielg),j=1,nen)
           end do
         end do
-        close(kp)
       else if(idsk.eq.itwo) then
-        call open_append(kp,pfile,"old","unformatted",
-     &                   ierr,errstrng,"write_connect")
-        if(ierr.ne.izero) return
         write(kp,err=50) numelv,ietypev,nen,ngauss
         write(kp,err=50) ivfamily
         write(kp,err=50) iens
-        close(kp)
       end if
 c
 c...  output ascii info, if desired
 c
       if(idout.gt.izero) then
-        call open_append(kw,ofile,"old","",
-     &                   ierr,errstrng,"write_connect")
-        if(ierr.ne.izero) return
         npage=50
         ielg=izero
         do ifam=1,nvfamilies
@@ -125,7 +114,6 @@ c
           end do
         end do
         write(kw,4000)
-        close(kw)
       end if
 c
 c...  normal return
@@ -137,8 +125,6 @@ c
  50   continue
         ierr=4
         errstrng="write_connect"
-        if(idout.gt.izero) close(kw)
-        if(idsk.gt.izero) close(kp)
         return
 c
 1000  format(30i7)

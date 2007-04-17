@@ -81,7 +81,6 @@ CIT_CHECK_LIB_PETSC_SIEVE
 CIT_HEADER_PETSC
 
 # Checks for typedefs, structures, and compiler characteristics.
-CIT_FC_OPEN_APPEND
 CIT_FC_STREAM_IO
 
 # Checks for library functions.

@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_winkx(winkxdef,iwinkxdef,iwinkxid,nwinkxe,kw,
-     & idout,ofile,ierr,errstrng)
+     & idout,ierr,errstrng)
 c
 c..  program for printing data on winkler restoring forces
 c
@@ -60,7 +60,7 @@ c
       integer nwinkxe,kw,idout,ierr
       integer iwinkxdef(ndof,nwinkxe),iwinkxid(nwinkxe)
       double precision winkxdef(ndof,nwinkxe)
-      character ofile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -82,9 +82,6 @@ c...  open output file
 c
       ierr=izero
       if(idout.eq.izero.or.nwinkxe.eq.izero) return
-      call open_append(kw,ofile,"old","",
-     &                 ierr,errstrng,"write_winkx")
-      if(ierr.ne.izero) return
 c
 c...  loop over winkler forces and output results
 c
@@ -100,7 +97,6 @@ c
         nlines=nlines+1
         write(kw,2020,err=50) n,(winkxdef(j,i),iwinkxdef(j,i),j=1,ndof)
       end do
-      close(kw)
 c
 c...  normal return
 c
@@ -111,7 +107,6 @@ c
  50   continue
         ierr=4
         errstrng="write_winkx"
-        close(kw)
         return
 c
  2005 format(/)

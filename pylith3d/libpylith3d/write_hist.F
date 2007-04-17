@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_hist(histry,times,nhist,lastep,kw,idout,
-     & ofile,ierr,errstrng)
+     & ierr,errstrng)
 c
 c       writes load histories to the output file.
 c
@@ -49,7 +49,7 @@ c...  subroutine arguments
 c
       integer nhist,lastep,kw,idout,ierr
       double precision histry(nhist,lastep+1),times(lastep+1)
-      character ofile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  local constants
 c
@@ -67,10 +67,7 @@ c
 c
       ierr=izero
       if(idout.eq.izero) return
-      call open_append(kw,ofile,"old","",ierr,errstrng,"write_hist")
-      if(ierr.ne.izero) return
       write(kw,1000,err=70) nhist
-      if(nhist.eq.izero) close(kw)
       if(nhist.eq.izero) return
 c
 c...  write load histories
@@ -99,7 +96,6 @@ c
      &     '|',(star(l),l=1,nstars)
         end do
       end do
-      close(kw)
 c
 c...  normal return
 c
@@ -110,7 +106,6 @@ c
  60   continue
         ierr=2
         errstrng="write_hist"
-        close(kw)
         return
 c
 c...  error writing to output file
@@ -118,7 +113,6 @@ c
  70   continue
         ierr=4
         errstrng="write_hist"
-        close(kw)
         return
 c
 1000  format(///' l o a d   h i s t o r y   f a c t o r s'///,

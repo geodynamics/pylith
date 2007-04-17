@@ -125,4 +125,32 @@ cdef petsc.PetscEvent PetscLogEventRegister(name, petsc.PetscCookie cookie):
     return event
 
 
+cdef PetscLogStagePush(int stage):
+    cdef int errnum
+    cdef petsc.const_char *text
+    cdef char *specific
+
+    errnum = petsc.PetscLogStagePush(stage)
+    if errnum != 0:
+        petsc.PetscErrorMessage(errnum, &text, &specific)
+        raise RuntimeError("PetscLogStagePush: error %d: %s (%s)" %
+                           (errnum, <char*>text, specific))
+
+    return
+
+
+cdef PetscLogStagePop():
+    cdef int errnum
+    cdef petsc.const_char *text
+    cdef char *specific
+    
+    errnum = petsc.PetscLogStagePop()
+    if errnum != 0:
+        petsc.PetscErrorMessage(errnum, &text, &specific)
+        raise RuntimeError("PetscLogStagePop: error %d: %s (%s)" %
+                           (errnum, <char*>text, specific))
+    
+    return
+
+
 # end of file

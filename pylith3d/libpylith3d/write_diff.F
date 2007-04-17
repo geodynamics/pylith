@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_diff(diforc,nslip,idhist,numslp,numdif,numnp,
-     & kw,idout,ofile,ierr,errstrng)
+     & kw,idout,ierr,errstrng)
 c
 c...  prints differential forces applied to slippery nodes
 c
@@ -51,7 +51,7 @@ c
       integer numslp,numdif,numnp,kw,idout,ierr
       integer nslip(nsdim,numslp),idhist(numnp)
       double precision diforc(ndof,numnp)
-      character ofile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  included dimension and type statements
 c
@@ -79,8 +79,6 @@ c...  loop over differential forces and output results, if desired
 c
       nlines=izero
       npage=50
-      call open_append(kw,ofile,"old","",ierr,errstrng,"write_diff")
-      if(ierr.ne.izero) return
       do i=1,numnp
         nonzed=.false.
         do j=1,ndof
@@ -95,7 +93,6 @@ c
           write(kw,7000,err=50) i,idhist(i),(diforc(j,i),j=1,ndof)
         end if
       end do
-      close(kw)
 c
 c...  normal return
 c
@@ -106,7 +103,6 @@ c
  50   continue
         ierr=4
         errstrng="write_diff"
-        close(kw)
         return
 c
  6000 format(//' differential forces on slippery nodes'//

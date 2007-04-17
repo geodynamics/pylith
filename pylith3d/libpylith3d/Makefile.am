@@ -53,6 +53,7 @@ sources = \
 	elas_strs_cmp_ss.f \
 	elas_strs_mat_cmp_ss.F \
 	elastc.F \
+	f77io.f \
 	fill.f \
 	fmin.f \
 	formdf_ss.f \
@@ -126,7 +127,6 @@ sources = \
 	newt.f \
 	nfind.f \
 	nnblnk.f \
-	open_append.F \
 	open_ucd.F \
 	plinhex.f \
 	plinhex2d.f \
@@ -203,7 +203,6 @@ sources = \
 	update_state_cmp.f \
 	update_state_drv.f \
 	viscos.F \
-	viscos_setup.F \
 	viscos_step.F \
 	viscos_cleanup.F \
 	winklf.f \

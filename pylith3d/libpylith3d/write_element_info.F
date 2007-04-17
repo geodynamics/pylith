@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_element_info(numelv,nen,ngauss,ietypev,intord,
-     & ipstrs,ipauto,tpois,tyoungs,kw,idout,ofile)
+     & ipstrs,ipauto,tpois,tyoungs,kw,idout)
 c
 c...subroutine to write element and prestress parameters
 c
@@ -43,7 +43,6 @@ c...  subroutine arguments
 c
       integer numelv,nen,ngauss,ietypev,intord,ipstrs,ipauto,kw,idout
       double precision tpois,tyoungs
-      character ofile*(*)
 c
 c...  included dimension and type statements
 c
@@ -63,10 +62,8 @@ c
 c...  echo input to output file
 c
       if(idout.eq.izero) return
-      call open_append_stop(kw,ofile,"old","","write_element_info")
       write(kw,700) elmlbl,numelv,nen,ngauss,ietypev,intorder(intord),
      & ipstrs,ipauto,tpois,tyoungs
-      close(kw)
 c
 700   format(1x,///,
      &' e l e m e n t    s y s t e m   d a t a',///,5x,

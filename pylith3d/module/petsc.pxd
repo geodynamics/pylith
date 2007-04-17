@@ -64,6 +64,8 @@ cdef extern from "petscmeshfwd.h": # for compilation speed
 cdef extern from "petsclog.h":
     PetscErrorCode PetscLogStageRegister(int *, char *)
     PetscErrorCode PetscLogEventRegister(PetscEvent *, char *, PetscCookie)
+    PetscErrorCode PetscLogStagePush(int stage)
+    PetscErrorCode PetscLogStagePop()
 
 
 cdef extern from "petscsnes.h":

@@ -29,7 +29,7 @@ c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
       subroutine write_timdat(delt,alfa,utol,ftol,etol,times,maxstp,
-     & maxit,ntdinit,lgdef,itmax,nintg,lastep,kw,idout,ofile,
+     & maxit,ntdinit,lgdef,itmax,nintg,lastep,kw,idout,
      & ierr,errstrng)
 c
 c...program to write time step data
@@ -53,7 +53,7 @@ c
       integer itmax(nintg)
       double precision delt(nintg),alfa(nintg),utol(nintg),ftol(nintg)
       double precision etol(nintg),times(lastep+1)
-      character ofile*(*),errstrng*(*)
+      character errstrng*(*)
 c
 c...  intrinsic functions
 c
@@ -70,8 +70,6 @@ c
 c
 c...  echo input to file
 c
-      call open_append(kw,ofile,"old","",ierr,errstrng,"write_timdat")
-      if(ierr.ne.izero) return
       write(kw,1000,err=50)
       do i=1,nintg
           write(kw,2000,err=50) i,maxstp(i),delt(i),alfa(i),maxit(i),
@@ -91,7 +89,6 @@ c
           write(kw,4000,err=50) nstep,ii,times(nc)
         end do
       end do
-      close(kw)
 c
 c...  normal return
 c
@@ -102,7 +99,6 @@ c
  50   continue
         ierr=4
         errstrng="write_timdat"
-        close(kw)
         return
 c
 1000  format(///,' t i m e   s t e p   i n f o r m a t i o n',//,
