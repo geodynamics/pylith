@@ -136,35 +136,39 @@ cdef class PyLith:
 
     property grav: # gravityX, gravityY, gravityZ in m/(s*s)
         def __set__(self, gravity):
-            cdef int dim
-            dim = sizeof(self._grav)/sizeof(self._grav[0])
-            assert(len(gravity) == dim)
-            for i from 0 <= i < dim:
-                self._grav[i] = gravity[i]
+            setDoubleArrayFromList(&self._grav[0],
+                                   sizeof(self._grav)/sizeof(self._grav[0]),
+                                   gravity)
+        def __get__(self):
+            return listFromDoubleArray(&self._grav[0],
+                                       sizeof(self._grav)/sizeof(self._grav[0]))
 
     property prscal: # prestressScale{Xx,Yy,Zz,Xy,Xz,Yz}
         def __set__(self, prestressScale):
-            cdef int dim
-            dim = sizeof(self._prscal)/sizeof(self._prscal[0])
-            assert(len(prestressScale) == dim)
-            for i from 0 <= i < dim:
-                self._prscal[i] = prestressScale[i]
+            setDoubleArrayFromList(&self._prscal[0],
+                                   sizeof(self._prscal)/sizeof(self._prscal[0]),
+                                   prestressScale)
+        def __get__(self):
+            return listFromDoubleArray(&self._prscal[0],
+                                       sizeof(self._prscal)/sizeof(self._prscal[0]))
 
     property wscal: # winklerScaleX, winklerScaleY, winklerScaleZ
         def __set__(self, winklerScale):
-            cdef int dim
-            dim = sizeof(self._wscal)/sizeof(self._wscal[0])
-            assert(len(winklerScale) == dim)
-            for i from 0 <= i < dim:
-                self._wscal[i] = winklerScale[i]
+            setDoubleArrayFromList(&self._wscal[0],
+                                   sizeof(self._wscal)/sizeof(self._wscal[0]),
+                                   winklerScale)
+        def __get__(self):
+            return listFromDoubleArray(&self._wscal[0],
+                                       sizeof(self._wscal)/sizeof(self._wscal[0]))
     
     property wxscal: # winklerSlipScaleX, winklerSlipScaleY, winklerSlipScaleZ
         def __set__(self, winklerSlipScale):
-            cdef int dim
-            dim = sizeof(self._wxscal)/sizeof(self._wxscal[0])
-            assert(len(winklerSlipScale) == dim)
-            for i from 0 <= i < dim:
-                self._wxscal[i] = winklerSlipScale[i]
+            setDoubleArrayFromList(&self._wxscal[0],
+                                   sizeof(self._wxscal)/sizeof(self._wxscal[0]),
+                                   winklerSlipScale)
+        def __get__(self):
+            return listFromDoubleArray(&self._wxscal[0],
+                                       sizeof(self._wxscal)/sizeof(self._wxscal[0]))
 
     #
     # materialPropertiesInputFile    iii.prop
@@ -174,20 +178,15 @@ cdef class PyLith:
     
     property prop:
         def __set__(self, propertyList):
-            cdef int nprops
-            nprops = len(propertyList)
-            self._prop = DoubleArray(nprops)
-            for i from 0 <= i < nprops:
-                self._prop.ptr[i] = propertyList[i]
+            self._prop = DoubleArray(propertyList)
+        def __get__(self):
+            return self._prop.asList()
 
     property infmat:
         def __set__(self, materialModel):
-            cdef int ninfmats
-            ninfmats = len(materialModel)
-            self._infmat = IntArray(ninfmats)
-            for i from 0 <= i < ninfmats:
-                self._infmat.ptr[i] = materialModel[i]
-
+            self._infmat = IntArray(materialModel)
+        def __get__(self):
+            return self._infmat.asList()
 
     # Unit numbers for Fortran I/O.
     cdef public int   kti             # f77StandardInput
@@ -2312,11 +2311,10 @@ cdef class PyLith:
             
         return
 
+
     cdef interpolatePoints(self, points):
         return self._mesh.interpolatePoints(points)
 
-    cdef viscos_setup(self):
-        return
 
     cdef runSimulation(self):
         # First define all of the lists that maintain variable values.  The
@@ -2332,13 +2330,12 @@ cdef class PyLith:
         
         print "Beginning problem solution."
 
-        if False: # Temporarily out-of-order
-            # Output approximate memory usage
-            self.memorySizeMB =0.0
-            self.memorySizeMB=self.memorySize/(1024.0*1024.0)
-
-            print ""
-            print "Approximate memory allocation for f77 arrays (MB): %g" % self.memorySizeMB
+        # Output approximate memory usage
+        global memoryUsage
+        memoryUsageMB = float(memoryUsage) / (1024.0 * 1024.0)
+        print
+        print "Approximate memory allocation for f77 arrays: %g MB" % memoryUsageMB
+        print
 
         # Compute gravitational prestresses, if requeste
         if self.icode == 2 or self.icode == 3:  # elasticSolution or fullSolution
