@@ -2443,7 +2443,7 @@ cdef class PyLith:
         # Perform time-dependent solution, if requested.
 
         cdef int numCycles, numTimeStepGroups, numslp
-        cdef int iskopt, icontr, indexx, totalSteps
+        cdef int iskopt, icontr, indexx, ntot
         
         cdef int nextStartStep, timeStep, startStep
         cdef double time
@@ -2451,7 +2451,7 @@ cdef class PyLith:
         cdef int maxitp, ntdinitp, lgdefp, itmaxp
         cdef double dt, alfap, gtol[3]
 
-        cdef int ltim, cycle, tsGroup, j, skc
+        cdef int ltim, cycle, tsGroup, j, skc, fulout
         
         if self.icode == 3 and self.nintg > 1:
             if self.pythonTimestep:
@@ -2463,7 +2463,7 @@ cdef class PyLith:
                 iskopt            = self.nsysdat[10]
                 icontr            = self.nprint[0]
                 indexx            = 1 # Fortran index
-                totalSteps        = 0 # This is ntot
+                ntot              = 0
                 
                 for cycle from 0 <= cycle < numCycles:
                     
@@ -2497,11 +2497,12 @@ cdef class PyLith:
                         ltim = 1
 
                         for j from startStep <= j < nextStartStep+1:
-                            totalSteps = totalSteps + 1
+                            ntot = ntot + 1
                             timeStep   = timeStep  + 1
                             self.ntimdat[0] = timeStep
                             time = time + dt
                             skc   = (numslp != 0 and (iskopt == 2 or (iskopt <= 0 and abs(iskopt) == timeStep)))
+                            fulout = 0
 
                             libpylith3d.viscos_step(
                                 &self._mesh.A,         # sparse
@@ -2593,7 +2594,7 @@ cdef class PyLith:
                                 self.ucdroot,          # files
                                 &self.viscousStage,    # PETSc logging
                                 &self.iterateEvent,
-                                &totalSteps,
+                                &ntot,
                                 &ltim,
                                 &indexx,
                                 &cycle,
@@ -2602,6 +2603,7 @@ cdef class PyLith:
                                 &skc,
                                 &startStep,
                                 &timeStep,
+                                &fulout,
                                 &time,
                                 &dt,
                                 &lgdefp,
@@ -2613,10 +2615,11 @@ cdef class PyLith:
                             exceptionhandler(errorcode, errorstring)
                             
                             ltim = 0
-                            if (totalSteps == self.iprint.ptr[indexx-1]):
-                                self._mesh.outputMesh(self.fileRoot+'.'+str(totalSteps))
-                                indexx = indexx +  1
-                            if (indexx > icontr): indexx = icontr
+                            if fulout:
+                                self._mesh.outputMesh(self.fileRoot+'.'+str(ntot))
+                            if indexx > icontr:
+                                indexx = icontr
+
 
                 print " Total number of equilibrium iterations        =",self.ntimdat[5]
                 print " Total number of stiffness matrix reformations =",self.ntimdat[6]

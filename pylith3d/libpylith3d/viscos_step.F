@@ -48,8 +48,8 @@ c
      & iprint,ncodat,nunits,nprint,istatout,nstatout,                   ! ioinfo
      & ucdroot,                                                         ! files
      & viscousStage, iterateEvent,                                      ! PETSc logging
-     & ntot,pyltim,indexx,jcyc,i,j,pyskc,nfirst,pynstep,time,           ! New args
-     & pydeltp,lgdefp,gtol,                                             !   more new args
+     & ntot,pyltim,indexx,jcyc,i,j,pyskc,nfirst,pynstep,fulout,         ! New args
+     & time,pydeltp,lgdefp,gtol,                                        !   more new args
      & ierr,errstrng)                                                   ! errcode
 c
 c...subroutine to solve the time dependent problem and perform the
@@ -94,6 +94,7 @@ c
       integer iprint(*)
       integer istatout(*),nstatout(*)
       integer ntot, pyltim, indexx, jcyc, i, j, pyskc, nfirst, pynstep
+      integer fulout
       double precision bextern(*),btraction(*),bgravity(*),bconcforce(*)
       double precision bintern(*),bresid(*),bwink(*),bwinkx(*)
       double precision dispvec(*),dprev(*),grav(*)
@@ -141,7 +142,7 @@ cdebug      integer idb
       integer iprestress
       integer nen,ngauss,nee,nec
       double precision tminmax
-      logical reform,skc,ltim,fulout,unlck,unlckf
+      logical reform,skc,ltim,unlck,unlckf
 c
 c...  included variable definitions
 c
@@ -155,6 +156,7 @@ c
       include "nprint_def.inc"
       include "rtimdat_def.inc"
       include "rgiter_def.inc"
+c
 c
 c     Outside loops
 c
@@ -214,16 +216,16 @@ c
       ntimdat(9)=ireform
 cdebug            write(6,*) "ntdinitp,reform,ireform,ltim:",
 cdebug     &       ntdinitp,reform,ireform,ltim
-      fulout=.false.
-      if(ntot.eq.iprint(indexx)) fulout=.true.
+      fulout=izero
+      if(ntot.eq.iprint(indexx)) fulout=ione
 c
       if(idout.gt.ione) write(kw,1000) time,ntot,jcyc
 C***********************************
-      if(fulout.and.idsk.eq.ione) write(kp,700) ntot
+      if(fulout.eq.ione.and.idsk.eq.ione) write(kp,700) ntot
 C***********************************
-      if(fulout.and.idsk.eq.ione) write(kp,4000) time
-      if(fulout.and.idsk.eq.itwo) write(kp) ntot
-      if(fulout.and.idsk.eq.itwo) write(kp) time
+      if(fulout.eq.ione.and.idsk.eq.ione) write(kp,4000) time
+      if(fulout.eq.ione.and.idsk.eq.itwo) write(kp) ntot
+      if(fulout.eq.ione.and.idsk.eq.itwo) write(kp) time
       write(kto,5000) time,ntot,lastep*ncycle
       call flush(kto)
 c*            call flush(kw)
@@ -577,7 +579,7 @@ c
 c
 c...  print displacements at all nodes when requested.
 c
-      if(fulout) then
+      if(fulout.eq.ione) then
          call printd(d,deld,deltp,idslp,numnp,numnp,ione,
      &        idout,idsk,kto,kw,kp)
          call write_ucd_node_vals(d,deld,tfault,dfault,nfault,
@@ -593,7 +595,7 @@ c
 c
 c...  print stresses and strains in all elements when requested
 c
-      if(fulout) then
+      if(fulout.eq.ione) then
          call write_state_drv(
      &        state,dstate,ivfamily,nvfamilies,numelv,nstatesz, ! elemnt
      &        infmatmod,        ! materl
@@ -603,7 +605,7 @@ c
      &        idout,idsk,iucd,kw,kp,kucd,ucdroot,iprestress, ! ioinfo
      &        ierr,errstrng)    ! errcode
       end if
-      if(fulout) indexx=indexx+1
+      if(fulout.eq.ione) indexx=indexx+1
 c
  650  format(//,"Reforming the stiffness matrix:",/)
  700  format('STEP ',i7)
