@@ -973,6 +973,7 @@ cdef extern void viscos_step "FC_FUNC_(viscos_step, VISCOS_STEP)" (
     char *,            # files
     int *,             # 90: PETSC logging
     int *,
+    int *,             # New args
     int *,
     int *,
     int *,
