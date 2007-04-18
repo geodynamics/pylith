@@ -141,10 +141,7 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
 				      mesh->depth())->size();
   CPPUNIT_ASSERT_EQUAL(data.numCorners, numCorners);
 
-  const ALE::Obj<Mesh::numbering_type>& vNumbering = 
-    mesh->getFactory()->getLocalNumbering(mesh, 0);
-
-  const int offset = (data.useIndexZero) ? 0 : 1;
+  const int offset = (data.useIndexZero) ? numCells : numCells-1;
   i = 0;
   for(Mesh::label_sequence::iterator e_iter = cells->begin();
       e_iter != cells->end();
@@ -154,8 +151,7 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
     for(sieve_type::traits::coneSequence::iterator c_iter = cone->begin();
 	c_iter != cone->end();
 	++c_iter)
-      CPPUNIT_ASSERT_EQUAL(data.cells[i++], 
-			   vNumbering->getIndex(*c_iter) + offset);
+      CPPUNIT_ASSERT_EQUAL(data.cells[i++], *c_iter-offset);
   } // for
 
   // check materials
@@ -185,24 +181,16 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
     CPPUNIT_ASSERT(!groupField.isNull());
     const int_section_type::chart_type& chart = groupField->getChart();
     const Mesh::point_type firstPoint = *chart.begin();
-    ALE::Obj<Mesh::numbering_type> numbering;
-    std::string groupType = "";
-    if (mesh->height(firstPoint) == 0) {
-      groupType = "cell";
-      numbering = mesh->getFactory()->getNumbering(mesh, mesh->depth());
-    } else {
-      groupType = "vertex";
-      numbering = mesh->getFactory()->getNumbering(mesh, 0);
-    } // if/else
+    std::string groupType = 
+      (mesh->height(firstPoint) == 0) ? "cell" : "vertex";
     const int numPoints = chart.size();
     int_array points(numPoints);
     int i = 0;
+    const int offset = ("vertex" == groupType) ? numCells : 0;
     for(int_section_type::chart_type::iterator c_iter = chart.begin();
 	c_iter != chart.end();
-	++c_iter) {
-      CPPUNIT_ASSERT(!numbering.isNull());
-      points[i++] = numbering->getIndex(*c_iter);
-    } // for
+	++c_iter)
+      points[i++] = *c_iter - offset;
     
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), *name);
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);

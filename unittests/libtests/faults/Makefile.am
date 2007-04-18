@@ -30,9 +30,13 @@ noinst_HEADERS = \
 	TestFault.hh
 
 # Source files associated with testing data
-testfaults_SOURCES +=
+testfaults_SOURCES += \
+	data/CohesiveData.cc \
+	data/CohesiveData1D.cc
 
-noinst_HEADERS +=
+noinst_HEADERS += \
+	data/CohesiveData.hh \
+	data/CohesiveData1D.hh
 
 testfaults_LDFLAGS = $(PETSC_LIB)
 

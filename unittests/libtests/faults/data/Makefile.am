@@ -11,9 +11,9 @@
 #
 
 noinst_DATA = \
-	meshLine_orig.txt \
-	meshTri3A_orig.txt \
-	meshTet4A_orig.txt
+	meshLine.txt \
+	meshTri3A.txt \
+	meshTet4A.txt
 
 noinst_TMP =
 
