@@ -36,7 +36,6 @@ pylith::meshio::MeshIO::MeshIO(void) :
 // Destructor
 pylith::meshio::MeshIO::~MeshIO(void)
 { // destructor
-  assert(0 == _mesh);
 } // destructor
   
 // ----------------------------------------------------------------------

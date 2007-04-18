@@ -30,7 +30,7 @@ namespace pylith {
   namespace faults {
     class Fault;
     class TestFaultCohesive;
-    class FaultData;
+    class CohesiveData;
   } // faults
 } // pylith
 
@@ -53,7 +53,7 @@ public :
 public :
 
   /// Test adjustTopology().
-  void _testAdjustTopology(const char* filename);
+  void _testAdjustTopology(const CohesiveData& data);
 
 }; // class TestFaultCohesive
 

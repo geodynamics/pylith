@@ -30,4 +30,13 @@ mesh = {
       1
     }
   }
+  group = {
+    name = output
+    type = vertices
+    count = 2
+    indices = {
+      0
+      1
+    }
+  }
 }
