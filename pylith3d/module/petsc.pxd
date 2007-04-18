@@ -58,7 +58,6 @@ cdef extern from "petscmat.h":
 cdef extern from "petscmeshfwd.h": # for compilation speed
     struct _p_Mesh
     ctypedef _p_Mesh *Mesh
-    PetscErrorCode MeshDestroy(Mesh)
 
 
 cdef extern from "petsclog.h":

@@ -51,6 +51,9 @@ namespace PyLithMeshLib {
         // destroy a PETSc Mat
         PyObject *_destroyMat(PyMeshObject *self);
 
+        // destroy a PETSc Mesh
+        PyObject *_destroyMesh(PyMeshObject *self);
+
         // output a PETSc Mesh and Fields
         PyObject *_outputMesh(PyMeshObject *self, char *fileRoot);
 

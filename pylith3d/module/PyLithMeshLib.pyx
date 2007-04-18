@@ -77,8 +77,7 @@ cdef public class Mesh [object PyMeshObject, type PyMesh_Type]:
         if self.A is not NULL:
             _destroyMat(self)
         if self.mesh is not NULL:
-            petsc.MeshDestroy(self.mesh)
-            self.mesh = NULL
+            _destroyMesh(self)
         return
 
 
@@ -101,6 +100,7 @@ cdef extern from "mesh.h":
     cdef extern object _processMesh "PyLithMeshLib::Mesh::_processMesh" (Mesh self)
     cdef extern object _createMat   "PyLithMeshLib::Mesh::_createMat "  (Mesh self)
     cdef extern object _destroyMat  "PyLithMeshLib::Mesh::_destroyMat"  (Mesh self)
+    cdef extern object _destroyMesh "PyLithMeshLib::Mesh::_destroyMesh" (Mesh self)
     cdef extern object _outputMesh  "PyLithMeshLib::Mesh::_outputMesh"  (Mesh self, char *fileRoot)
 
 
