@@ -32,12 +32,7 @@
 #define pypylith3d_petscmeshfwd_h
 
 
-#include <petsc.h>
-
-
 typedef struct _p_Mesh *Mesh;
-
-PetscErrorCode MeshDestroy(Mesh);
 
 
 #endif

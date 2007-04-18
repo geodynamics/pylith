@@ -428,6 +428,18 @@ PyObject *PyLithMeshLib::Mesh::_destroyMat(PyMeshObject *self)
   return Py_None;
 }
 
+PyObject *PyLithMeshLib::Mesh::_destroyMesh(PyMeshObject *self)
+    
+{
+    if (MeshDestroy(self->mesh)) {
+        PyErr_SetString(PyExc_RuntimeError, "Could not destroy PETSc Mesh");
+        return 0;
+    }
+    self->mesh = 0;
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 PetscErrorCode updateDisplacement(SectionReal displacement, Vec sol) {
   VecScatter     injection;
   Vec            lv;
