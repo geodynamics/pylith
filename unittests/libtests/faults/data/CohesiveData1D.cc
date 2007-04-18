@@ -10,6 +10,14 @@
 // ======================================================================
 //
 
+/* Original mesh
+ *
+ *   0 -------- 1 -------- 2
+ *
+ * After adding cohesive elements
+ *   0 -------- 1 -- 3 -------- 2
+ */
+
 #include "CohesiveData1D.hh"
 
 const int pylith::faults::CohesiveData1D::_numVertices = 3;
@@ -40,7 +48,7 @@ const int pylith::faults::CohesiveData1D::_cells[] = {
 
 const int pylith::faults::CohesiveData1D::_materialIds[] = {
   0,  0,
-  2
+  1
 };
 
 const int pylith::faults::CohesiveData1D::_numGroups = 2;
