@@ -87,7 +87,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(const CohesiveData& data)
   iohandler.read(&mesh);
 
   FaultCohesiveKin fault;
-  fault.id(0);
+  fault.id(1);
   fault.label("fault");
   fault.adjustTopology(&mesh);
 
