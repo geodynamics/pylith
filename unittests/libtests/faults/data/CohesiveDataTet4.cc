@@ -12,32 +12,15 @@
 
 /* Original mesh
  *
- *              1
- *             /|\
- *            / | \
- *           /  |  \
- *          /   |   \
- *         0    |    3
- *          \   |   /
- *           \  |  /
- *            \ | /
- *             \|/
- *              2
+ * 0   1,2,3  4
  *
+ *     ^^^^^ Face in x-y plane
  *
  * After adding cohesive elements
  *
- *              1 -- 4
- *             /|    |\
- *            / |    | \
- *           /  |    |  \
- *          /   |    |   \
- *         0    |    |    3
- *          \   |    |   /
- *           \  |    |  /
- *            \ |    | /
- *             \|    |/
- *              2 -- 5
+ * 0   1,2,3  5,6,7   4
+ *
+ *     ^^^^^^^^^^^^ Cohesive element in x-y plane.
  */
 
 #include "CohesiveDataTet4.hh"
