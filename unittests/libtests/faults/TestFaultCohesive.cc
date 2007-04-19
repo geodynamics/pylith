@@ -22,6 +22,7 @@
 
 #include "data/CohesiveDataLine2.hh" // USES CohesiveDataLine2
 #include "data/CohesiveDataTri3.hh" // USES CohesiveDataTri3
+#include "data/CohesiveDataQuad4.hh" // USES CohesiveDataQuad4
 #include "data/CohesiveDataTet4.hh" // USES CohesiveDataTet4
 
 
@@ -45,6 +46,15 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3(void)
   CohesiveDataTri3 data;
   _testAdjustTopology(data);
 } // testAdjustTopologyTri3
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D quadrilateral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4(void)
+{ // testAdjustTopologyQuad4
+  CohesiveDataQuad4 data;
+  _testAdjustTopology(data);
+} // testAdjustTopologyQuad4
 
 // ----------------------------------------------------------------------
 // Test adjustTopology() with 3-D tetrahedral element.

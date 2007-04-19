@@ -13,6 +13,7 @@
 noinst_DATA = \
 	meshLine.txt \
 	meshTri3A.txt \
+	meshQuad4A.txt \
 	meshTet4A.txt
 
 noinst_TMP =
