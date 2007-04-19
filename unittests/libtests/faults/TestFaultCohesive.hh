@@ -44,6 +44,7 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyTri3 );
   CPPUNIT_TEST( testAdjustTopologyQuad4 );
   CPPUNIT_TEST( testAdjustTopologyTet4 );
+  CPPUNIT_TEST( testAdjustTopologyHex8 );
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -60,6 +61,9 @@ public :
 
   /// Test adjustTopology() with 3-D tetrahedral element.
   void testAdjustTopologyTet4(void);
+
+  /// Test adjustTopology() with 3-D hexahedral element.
+  void testAdjustTopologyHex8(void);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 public :

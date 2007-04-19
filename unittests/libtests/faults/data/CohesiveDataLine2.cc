@@ -12,10 +12,12 @@
 
 /* Original mesh
  *
- *   0 -------- 1 -------- 2
+ *   Cells are 0-1, vertices are 2-4.
+ *
+ *   2 -------- 3 -------- 4
  *
  * After adding cohesive elements
- *   0 -------- 1 -- 3 -------- 2
+ *   2 -------- 3 -- 5 -------- 4
  */
 
 #include "CohesiveDataLine2.hh"
@@ -42,9 +44,9 @@ const int pylith::faults::CohesiveDataLine2::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataLine2::_cells[] = {
-       0,  1,
-       3,  2,
-       1,  3,
+       2,  3,
+       5,  4,
+       3,  5,
 };
 
 const int pylith::faults::CohesiveDataLine2::_materialIds[] = {
@@ -55,11 +57,11 @@ const int pylith::faults::CohesiveDataLine2::_materialIds[] = {
 const int pylith::faults::CohesiveDataLine2::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataLine2::_groupSizes[] = 
-  { 1, 2 };
+  { 2, 3 };
 
 const int pylith::faults::CohesiveDataLine2::_groups[] = {
-  1,
-  0, 1
+  3, 5,
+  2, 3, 5
 };
 
 const char* pylith::faults::CohesiveDataLine2::_groupNames[] = {
