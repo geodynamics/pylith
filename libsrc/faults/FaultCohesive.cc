@@ -54,7 +54,7 @@ pylith::faults::FaultCohesive::adjustTopology(ALE::Obj<ALE::Mesh>* mesh) const
     (*mesh)->getIntSection(label());
   assert(!groupField.isNull());
 
-  CohesiveTopology::create(*mesh, groupField);
+  CohesiveTopology::create(*mesh, groupField, id());
 } // adjustTopology
 
 

@@ -21,7 +21,8 @@
 // ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
-                     const ALE::Obj<Mesh::int_section_type>& groupField)
+					 const ALE::Obj<Mesh::int_section_type>& groupField,
+					 const int materialId)
 { // create
   typedef std::vector<Mesh::point_type> PointArray;
   typedef ALE::SieveAlg<Mesh> sieveAlg;
