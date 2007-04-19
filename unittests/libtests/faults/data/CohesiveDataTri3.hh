@@ -10,28 +10,28 @@
 // ======================================================================
 //
 
-#if !defined(pylith_faults_cohesivedata1d_hh)
-#define pylith_faults_cohesivedata1d_hh
+#if !defined(pylith_faults_cohesivedatatri3_hh)
+#define pylith_faults_cohesivedatatri3_hh
 
 #include "CohesiveData.hh"
 
 namespace pylith {
   namespace faults {
-     class CohesiveData1D;
+     class CohesiveDataTri3;
   } // pylith
 } // faults
 
-class pylith::faults::CohesiveData1D : public CohesiveData
+class pylith::faults::CohesiveDataTri3 : public CohesiveData
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public: 
 
   /// Constructor
-  CohesiveData1D(void);
+  CohesiveDataTri3(void);
 
   /// Destructor
-  ~CohesiveData1D(void);
+  ~CohesiveDataTri3(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -55,6 +55,6 @@ private:
   static const char* _filename; ///< Filename of input mesh
 };
 
-#endif // pylith_faults_cohesivedata1d_hh
+#endif // pylith_faults_cohesivedatatri3_hh
 
 // End of file

@@ -14,15 +14,16 @@
 
 #include "TestFaultCohesive.hh" // Implementation of class methods
 
-#include "data/CohesiveData1D.hh" // USES CohesiveData1D
-
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 #include "pylith/utils/array.hh" // USES int_array
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
-#include <stdexcept> // TEMPORARY
+#include "data/CohesiveDataLine2.hh" // USES CohesiveDataLine2
+#include "data/CohesiveDataTri3.hh" // USES CohesiveDataTri3
+#include "data/CohesiveDataTet4.hh" // USES CohesiveDataTet4
+
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
@@ -30,11 +31,29 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
 // ----------------------------------------------------------------------
 // Test adjustTopology() with 1-D line element.
 void
-pylith::faults::TestFaultCohesive::testAdjustTopologyLine(void)
-{ // testAdjustTopologyLine
-  CohesiveData1D data;
+pylith::faults::TestFaultCohesive::testAdjustTopologyLine2(void)
+{ // testAdjustTopologyLine2
+  CohesiveDataLine2 data;
   _testAdjustTopology(data);
-} // testAdjustTopologyLine
+} // testAdjustTopologyLine2
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D triangular element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTri3(void)
+{ // testAdjustTopologyTri3
+  CohesiveDataTri3 data;
+  _testAdjustTopology(data);
+} // testAdjustTopologyTri3
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D tetrahedral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTet4(void)
+{ // testAdjustTopologyTet4
+  CohesiveDataTet4 data;
+  _testAdjustTopology(data);
+} // testAdjustTopologyTet4
 
 // ----------------------------------------------------------------------
 // Test adjustTopology().
@@ -75,13 +94,12 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(const CohesiveData& data)
       coordsField->restrictPoint(*v_iter);
     const double tolerance = 1.0e-06;
     for (int iDim=0; iDim < spaceDim; ++iDim)
-      if (data.vertices[i] < 1.0) {
+      if (data.vertices[i] < 1.0)
         CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i++], vertexCoords[iDim],
 				   tolerance);
-      } else {
+      else
         CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vertexCoords[iDim]/data.vertices[i++],
 				   tolerance);
-      }
   } // for
 
   // check cells

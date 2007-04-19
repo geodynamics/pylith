@@ -32,11 +32,15 @@ noinst_HEADERS = \
 # Source files associated with testing data
 testfaults_SOURCES += \
 	data/CohesiveData.cc \
-	data/CohesiveData1D.cc
+	data/CohesiveDataLine2.cc \
+	data/CohesiveDataTri3.cc \
+	data/CohesiveDataTet4.cc
 
 noinst_HEADERS += \
 	data/CohesiveData.hh \
-	data/CohesiveData1D.hh
+	data/CohesiveDataLine2.hh \
+	data/CohesiveDataTri3.hh \
+	data/CohesiveDataTet4.hh
 
 testfaults_LDFLAGS = $(PETSC_LIB)
 

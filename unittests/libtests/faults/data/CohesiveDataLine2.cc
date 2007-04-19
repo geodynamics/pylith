@@ -18,60 +18,61 @@
  *   0 -------- 1 -- 3 -------- 2
  */
 
-#include "CohesiveData1D.hh"
+#include "CohesiveDataLine2.hh"
 
-const int pylith::faults::CohesiveData1D::_numVertices = 3;
+const int pylith::faults::CohesiveDataLine2::_numVertices = 4;
 
-const int pylith::faults::CohesiveData1D::_spaceDim = 1;
+const int pylith::faults::CohesiveDataLine2::_spaceDim = 1;
 
-const int pylith::faults::CohesiveData1D::_numCells = 3;
+const int pylith::faults::CohesiveDataLine2::_numCells = 3;
 
-const int pylith::faults::CohesiveData1D::_cellDim = 1;
+const int pylith::faults::CohesiveDataLine2::_cellDim = 1;
 
-const double pylith::faults::CohesiveData1D::_vertices[] = {
+const double pylith::faults::CohesiveDataLine2::_vertices[] = {
   -1.0,
    0.0,
-   1.0
+   1.0,
+   0.0
 };
 
-const int pylith::faults::CohesiveData1D::_numCorners[] = {
+const int pylith::faults::CohesiveDataLine2::_numCorners[] = {
   2,
   2,
   2
 };
 
-const int pylith::faults::CohesiveData1D::_cells[] = {
+const int pylith::faults::CohesiveDataLine2::_cells[] = {
        0,  1,
        3,  2,
        1,  3,
 };
 
-const int pylith::faults::CohesiveData1D::_materialIds[] = {
+const int pylith::faults::CohesiveDataLine2::_materialIds[] = {
   0,  0,
   1
 };
 
-const int pylith::faults::CohesiveData1D::_numGroups = 2;
+const int pylith::faults::CohesiveDataLine2::_numGroups = 2;
 
-const int pylith::faults::CohesiveData1D::_groupSizes[] = 
+const int pylith::faults::CohesiveDataLine2::_groupSizes[] = 
   { 1, 2 };
 
-const int pylith::faults::CohesiveData1D::_groups[] = {
+const int pylith::faults::CohesiveDataLine2::_groups[] = {
   1,
   0, 1
 };
 
-const char* pylith::faults::CohesiveData1D::_groupNames[] = {
+const char* pylith::faults::CohesiveDataLine2::_groupNames[] = {
   "fault", "output"
 };
 
-const char* pylith::faults::CohesiveData1D::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataLine2::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveData1D::_filename = "data/meshLine.txt";
+const char* pylith::faults::CohesiveDataLine2::_filename = "data/meshLine.txt";
 
-pylith::faults::CohesiveData1D::CohesiveData1D(void)
+pylith::faults::CohesiveDataLine2::CohesiveDataLine2(void)
 { // constructor
   numVertices = _numVertices;
   spaceDim = _spaceDim;
@@ -89,7 +90,7 @@ pylith::faults::CohesiveData1D::CohesiveData1D(void)
   filename = const_cast<char*>(_filename);
 } // constructor
 
-pylith::faults::CohesiveData1D::~CohesiveData1D(void)
+pylith::faults::CohesiveDataLine2::~CohesiveDataLine2(void)
 {}
 
 
