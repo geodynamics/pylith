@@ -186,6 +186,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
       sieve->addArrow(vertexRenumber[*v_iter], newPoint, color++);
     }
   } // for
+  mesh->stratify();
   mesh->view("Mesh with Cohesive Elements");
 
   // Fix coordinates
