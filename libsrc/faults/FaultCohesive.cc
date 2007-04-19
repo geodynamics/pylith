@@ -53,18 +53,8 @@ pylith::faults::FaultCohesive::adjustTopology(ALE::Obj<ALE::Mesh>* mesh) const
   const ALE::Obj<int_section_type>& groupField = 
     (*mesh)->getIntSection(label());
   assert(!groupField.isNull());
-  const int_section_type::chart_type& chart = groupField->getChart();
 
-  // Create set with vertices on fault
-  std::set<Mesh::point_type> points; // Vertices on fault
-  const int numCells = (*mesh)->heightStratum(0)->size();
-  for(int_section_type::chart_type::iterator c_iter = chart.begin();
-      c_iter != chart.end();
-      ++c_iter) {
-    assert(!(*mesh)->depth(*c_iter));
-    points.insert(*c_iter);
-  } // for
-  CohesiveTopology::create(*mesh, points);
+  CohesiveTopology::create(*mesh, groupField);
 } // adjustTopology
 
 

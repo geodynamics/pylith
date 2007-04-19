@@ -21,10 +21,22 @@
 // ----------------------------------------------------------------------
 void
 pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
-			      const std::set<Mesh::point_type>& faultVertices)
+                     const ALE::Obj<Mesh::int_section_type>& groupField)
 { // create
   typedef std::vector<Mesh::point_type> PointArray;
   typedef ALE::SieveAlg<Mesh> sieveAlg;
+
+  // Create set with vertices on fault
+  const int_section_type::chart_type& chart = groupField->getChart();
+  std::set<Mesh::point_type> faultVertices; // Vertices on fault
+
+  const int numCells = mesh->heightStratum(0)->size();
+  for(int_section_type::chart_type::iterator c_iter = chart.begin();
+      c_iter != chart.end();
+      ++c_iter) {
+    assert(!mesh->depth(*c_iter));
+    faultVertices.insert(*c_iter);
+  } // for
 
   const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
   const ALE::Obj<Mesh> fault = new Mesh(mesh->comm(), mesh->debug());
@@ -121,11 +133,12 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
   
   for(Mesh::label_sequence::iterator v_iter = fVertices->begin();
       v_iter != fVertices->end();
-      ++v_iter) {
+      ++v_iter, ++newPoint) {
     if (debug) 
       std::cout << "Duplicating " << *v_iter << " to "
 		<< vertexRenumber[*v_iter] << std::endl;
-    vertexRenumber[*v_iter] = newPoint++;
+    vertexRenumber[*v_iter] = newPoint;
+    groupField->setFiberDimension(newPoint, 1);
   } // for
 
   // Split the mesh along the fault sieve and create cohesive elements
