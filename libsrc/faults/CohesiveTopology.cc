@@ -200,7 +200,8 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
     }
   } // for
   mesh->stratify();
-  mesh->view("Mesh with Cohesive Elements");
+  if (debug)
+    mesh->view("Mesh with Cohesive Elements");
 
   // Fix coordinates
   const ALE::Obj<real_section_type>& coordinates = 

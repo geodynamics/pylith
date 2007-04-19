@@ -24,7 +24,7 @@
 #include "data/CohesiveDataTri3.hh" // USES CohesiveDataTri3
 #include "data/CohesiveDataQuad4.hh" // USES CohesiveDataQuad4
 #include "data/CohesiveDataTet4.hh" // USES CohesiveDataTet4
-
+#include "data/CohesiveDataHex8.hh" // USES CohesiveDataHex8
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
@@ -66,6 +66,15 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4(void)
 } // testAdjustTopologyTet4
 
 // ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D hexahedral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyHex8(void)
+{ // testAdjustTopologyHex8
+  CohesiveDataHex8 data;
+  _testAdjustTopology(data);
+} // testAdjustTopologyHex8
+
+// ----------------------------------------------------------------------
 // Test adjustTopology().
 void
 pylith::faults::TestFaultCohesive::_testAdjustTopology(const CohesiveData& data)
@@ -73,7 +82,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(const CohesiveData& data)
   ALE::Obj<ALE::Mesh> mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
-  iohandler.debug(true);
+  iohandler.debug(false);
   iohandler.interpolate(false);
   iohandler.read(&mesh);
 
@@ -81,8 +90,6 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(const CohesiveData& data)
   fault.id(0);
   fault.label("fault");
   fault.adjustTopology(&mesh);
-
-  mesh->view("Mesh");
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
 
@@ -119,19 +126,19 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(const CohesiveData& data)
   const int numCells = cells->size();
   CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
 
+  int iCell = 0;
   i = 0;
-  const int offset = numCells;
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
     const int numCorners = sieve->nCone(*c_iter, mesh->depth())->size();
-    CPPUNIT_ASSERT_EQUAL(data.numCorners[i], numCorners);
+    CPPUNIT_ASSERT_EQUAL(data.numCorners[iCell++], numCorners);
     const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
       sieve->cone(*c_iter);
     for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
 	v_iter != cone->end();
 	++v_iter)
-      CPPUNIT_ASSERT_EQUAL(data.cells[i++], *v_iter - offset);
+      CPPUNIT_ASSERT_EQUAL(data.cells[i++], *v_iter);
   } // for
 
   // check materials
@@ -166,11 +173,10 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(const CohesiveData& data)
     const int numPoints = chart.size();
     int_array points(numPoints);
     int i = 0;
-    const int offset = ("vertex" == groupType) ? numCells : 0;
     for(int_section_type::chart_type::iterator c_iter = chart.begin();
 	c_iter != chart.end();
 	++c_iter)
-      points[i++] = *c_iter - offset;
+      points[i++] = *c_iter;
 
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), *name);
     CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);

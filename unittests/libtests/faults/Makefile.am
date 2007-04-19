@@ -35,6 +35,7 @@ testfaults_SOURCES += \
 	data/CohesiveDataLine2.cc \
 	data/CohesiveDataTri3.cc \
 	data/CohesiveDataQuad4.cc \
+	data/CohesiveDataHex8.cc \
 	data/CohesiveDataTet4.cc
 
 noinst_HEADERS += \
@@ -42,6 +43,7 @@ noinst_HEADERS += \
 	data/CohesiveDataLine2.hh \
 	data/CohesiveDataTri3.hh \
 	data/CohesiveDataQuad4.hh \
+	data/CohesiveDataHex8.hh \
 	data/CohesiveDataTet4.hh
 
 testfaults_LDFLAGS = $(PETSC_LIB)

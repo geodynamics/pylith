@@ -12,32 +12,36 @@
 
 /* Original mesh
  *
- *              1
+ * Cells are 0-1, vertices are 2-5.
+ *
+ *              3
  *             /|\
  *            / | \
  *           /  |  \
  *          /   |   \
- *         0    |    3
+ *         2    |    5
  *          \   |   /
  *           \  |  /
  *            \ | /
  *             \|/
- *              2
+ *              4
  *
  *
  * After adding cohesive elements
  *
- *              1 -- 4
+ * Cells are 0-1, 8, vertices are 2-7.
+ *
+ *              3 -- 6
  *             /|    |\
  *            / |    | \
  *           /  |    |  \
  *          /   |    |   \
- *         0    |    |    3
+ *         2    |    |    5
  *          \   |    |   /
  *           \  |    |  /
  *            \ |    | /
  *             \|    |/
- *              2 -- 5
+ *              4 -- 7
  */
 
 #include "CohesiveDataTri3.hh"
@@ -66,9 +70,9 @@ const int pylith::faults::CohesiveDataTri3::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataTri3::_cells[] = {
-  0,  2,  1,
-  4,  5,  3,
-  1,  2,  4, 5
+  2,  4,  3,
+  6,  7,  5,
+  3,  4,  6, 7
 };
 
 const int pylith::faults::CohesiveDataTri3::_materialIds[] = {
@@ -79,11 +83,11 @@ const int pylith::faults::CohesiveDataTri3::_materialIds[] = {
 const int pylith::faults::CohesiveDataTri3::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataTri3::_groupSizes[] = 
-  { 2, 3 };
+  { 4, 5 };
 
 const int pylith::faults::CohesiveDataTri3::_groups[] = {
-  1, 2,
-  1, 2, 3
+  3, 4, 6, 7,
+  3, 4, 5, 6, 7
 };
 
 const char* pylith::faults::CohesiveDataTri3::_groupNames[] = {
