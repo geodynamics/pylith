@@ -144,6 +144,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
 
   // Split the mesh along the fault sieve and create cohesive elements
   const ALE::Obj<Mesh::label_sequence>& faces = fault->depthStratum(1);
+  const ALE::Obj<Mesh::label_type>& material = mesh->getLabel("material-id");
   PointArray newVertices;
   
   for(Mesh::label_sequence::iterator f_iter = faces->begin();
@@ -199,6 +200,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
         std::cout << "    vertex " << vertexRenumber[*v_iter] << std::endl;
       sieve->addArrow(vertexRenumber[*v_iter], newPoint, color++);
     }
+    mesh->setValue(material, newPoint, materialId);
   } // for
   mesh->stratify();
   if (debug)
