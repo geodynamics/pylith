@@ -225,7 +225,7 @@ PyObject *PyLithMeshLib::Mesh::_processMesh(PyMeshObject *self)
   m->setDebug(debugFlag);
   int numElements = m->getTopology()->heightStratum(0, 0)->size();
   debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << self->meshInputFile << journal::endl;
-  m = ALECompat::New::Distribution<ALE::Mesh::topology_type>::distributeMesh(m, self->partitioner);
+  m = ALECompat::New::Distribution<ALECompat::Mesh::topology_type>::distributeMesh(m, self->partitioner);
   ierr = MeshCompatSetMesh(self->mesh, m);
   debug << journal::at(__HERE__) << "[" << rank << "]Distributed PETSc Mesh"  << journal::endl;
   ierr = ReadBoundary_PyLith(self->meshBcFile, PETSC_FALSE, &numBoundaryVertices, &numBoundaryComponents, &boundaryVertices, &boundaryValues);
@@ -312,7 +312,6 @@ PyObject *PyLithMeshLib::Mesh::_processMesh(PyMeshObject *self)
   if (m->debug()) {
     s->view("Displacement field");
   }
-  ierr = SectionRealDestroy(section);
   debug << journal::at(__HERE__) << "[" << rank << "]Created displacement Field"  << journal::endl;
 
   m->getFactory()->constructInverseOrder(m->getFactory()->getLocalNumbering(m->getTopology(), 0, m->getTopology()->depth()));
@@ -331,7 +330,7 @@ PyObject *PyLithMeshLib::Mesh::_createMat(PyMeshObject *self)
 
   Obj<ALECompat::Mesh> m;
 
-  ierr = MeshGetMesh(self->mesh, m);
+  ierr = MeshCompatGetMesh(self->mesh, m);
   const ALE::Obj<ALECompat::Mesh::order_type>& offsets = m->getFactory()->getGlobalOrder(m->getTopology(), 0, "displacement", m->getRealSection("displacement")->getAtlas());
   int localSize = offsets->getLocalSize();
   int globalSize = offsets->getGlobalSize();
