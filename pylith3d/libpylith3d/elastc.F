@@ -187,16 +187,14 @@ c*      call flush(kto)
       ntimdat(6)=nittot
       nrftot=izero
       ntimdat(7)=nrftot
-      ndtot=izero
-      ntimdat(8)=ndtot
-      ntimdat(9)=ireform
+      ntimdat(8)=ireform
       iprestress=izero
 cdebug      write(6,*) "Before const:"
       call const(maxstp,delt,alfa,maxit,ntdinit,lgdef,utol,ftol,
      & etol,itmax,nintg,igroup,naxstp,nfirst,rtimdat,deltp,alfap,
      & ntimdat,nstep,maxitp,ntdinitp,lgdefp,itmaxp,gtol)
 cdebug      write(6,*) "After const:"
-cdebug      write(6,*) "ireform,ntimdat(9):",ireform,ntimdat(9)
+cdebug      write(6,*) "ireform,ntimdat(8):",ireform,ntimdat(8)
       if(skc) then
         call skclear(idslp,skew,numsn,numnp)
         call skcomp(x,d,skew,idslp,ipslp,ipstrs,numsn,numnp,nstep,
@@ -583,16 +581,15 @@ c
 cdebug      write(6,*) "After write_state:"
 c
       if(nintg.eq.1) then
-        write(kto,800) ntimdat(6),ntimdat(7),ntimdat(8)
-        if(idout.gt.0) write(kw,800) ntimdat(6),ntimdat(7),ntimdat(8)
+        write(kto,800) ntimdat(6),ntimdat(7)
+        if(idout.gt.0) write(kw,800) ntimdat(6),ntimdat(7)
       end if
 c
 600   format(//,'Beginning elastic solution:',/)
 650   format(//,"Reforming the stiffness matrix:",/)
 700   format('STEP ',i5)
 800   format(/," Total number of equilibrium iterations        = ",i7,/,
-     &         " Total number of stiffness matrix reformations = ",i7,/,
-     &         " Total number of displacement subiterations    = ",i7)
+     &         " Total number of stiffness matrix reformations = ",i7)
       call PetscLogStagePop(ierr)
       return
       end

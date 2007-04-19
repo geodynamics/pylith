@@ -42,8 +42,7 @@ c
       itmaxp=ntimdat(5)
       nittot=ntimdat(6)
       nrftot=ntimdat(7)
-      ndtot=ntimdat(8)
-      ireform=ntimdat(9)
+      ireform=ntimdat(8)
 c
 c version
 c $Id: ntimdat_def.inc,v 1.4 2004/07/21 15:24:20 willic3 Exp $
