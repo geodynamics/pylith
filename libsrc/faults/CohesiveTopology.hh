@@ -42,7 +42,7 @@ public :
    */
   static
   void create(const ALE::Obj<Mesh>& mesh,
-	      const std::set<Mesh::point_type>& faultVertices);
+              const ALE::Obj<Mesh::int_section_type>& groupField);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
