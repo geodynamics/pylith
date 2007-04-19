@@ -70,10 +70,6 @@ sideways false
 status open
 
 \begin_layout Standard
- 
-\end_layout
-
-\begin_layout Standard
 \align center
 \begin_inset Graphics
 	filename figs/tet4.eps
@@ -106,10 +102,6 @@ placement htbp
 wide false
 sideways false
 status open
-
-\begin_layout Standard
- 
-\end_layout
 
 \begin_layout Standard
 \align center
@@ -191,20 +183,14 @@ traction
 \begin_layout Standard
 In some cases, a user may want to run the same simulation using different
  numbers of processors.
- In this case, iAs a result, the user must create copies of each one for
- each of the processors.
- By default PyLith expects the names of these files to follow the same form,
- 
-\family typewriter
-xx.PROC.ext
-\family default
-.
+ In this case, users may wish to provide distinctive sets of filenames to
+ distinguish between the different runs.
  Setting up this naming scheme is most easily done using symbolic links
  or copying files to local directories on each machine using a shell script
  that starts a simulation.
  See 
 \family typewriter
-runbm.py
+mklinks.py
 \family default
  in section\InsetSpace ~
 
@@ -214,7 +200,7 @@ runbm.py
 
  for a simple example.
  You can also choose your own filename template by setting the appropriate
- command-line argument.
+ parameters.
  See section\InsetSpace ~
 
 \begin_inset LatexCommand \ref{sec:setting:parameters}
@@ -343,7 +329,6 @@ xx.traction
 \family default
 \color none
  Traction boundary condition information.
- 
 \end_layout
 
 \begin_layout Description
@@ -355,6 +340,9 @@ xx.skew
 \color none
  Local coordinate rotation information for boundary conditions.
  
+\shape italic
+\color inherit
+Not yet implemented.
 \end_layout
 
 \begin_layout Description
@@ -395,7 +383,7 @@ xx.wink
 xx.hist
 \family default
 \color none
- Time histories for split node and Winkler boundary conditions (if necessary).
+ Time histories for split nodes and boundary conditions (if necessary).
   
 \emph on
 Not yet tested.
@@ -417,72 +405,17 @@ Setting Parameters for PyLith
 \end_layout
 
 \begin_layout Standard
-In general, PyLith's command-line arguments fall into three categories:
- MPI settings, Pyre properties and facilities, and PETSc settings.
-\end_layout
-
-\begin_layout Standard
-If using the MPICH implementation of the Message Passing Interface (MPI),
- as is done for the CIG distributed binaries, the synopsis for running PyLith
- is 
-\newline
-
-\newline
-
+There are several methods for setting input parameters for pylith3dapp.py:
+ via the command line, or by using a configuration file in 
 \family typewriter
- $ mpirun {-np 
-\emph on
-NPROCS
-\emph default
-} pylith3dapp.py 
-\emph on
-[PyLith settings]
-\emph default
- 
-\emph on
-[PETSc settings]
-\end_layout
-
-\begin_layout Subsection
-MPI Settings
-\end_layout
-
-\begin_layout Quote
-
-\series bold
-\color red
-Warning:
-\series default
-\color none
- This section applies only to PyLith compiled using the MPICH implementation
- of the Message Passing Interface (MPI).
- 
-\end_layout
-
-\begin_layout Standard
-The MPI settings define how many processors are used and other parallel
- processing parameters.
- The number of processors is specified using 
-\family typewriter
-\color black
--np NPROCS
+.cfg
 \family default
-\color none
-, where 
+ or 
 \family typewriter
-\color black
-NPROCS
+.pml
 \family default
-\color none
- corresponds to the number of processors.
-\end_layout
-
-\begin_layout Subsection
-Properties and Facilities
-\end_layout
-
-\begin_layout Standard
-PyLith gathers many simulation parameters and settings using Pyre properties
+ format.
+ PyLith gathers many simulation parameters and settings using Pyre properties
  and facilities.
  Properties correspond to simple settings in the form of strings, integers,
  and real numbers.
@@ -493,16 +426,66 @@ PyLith gathers many simulation parameters and settings using Pyre properties
  never need to change any of the facilities from the defaults.
 \end_layout
 
+\begin_layout Subsection
+Using the Command Line
+\end_layout
+
 \begin_layout Standard
-In the current version of PyLith, all of the properties are associated with
- the scanner component.
+Pyre uses the following syntax to change properties from the command line.
+ To change the value of a property of a component, use:
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+--[component].[property]=[value]
+\end_layout
+
+\begin_layout Standard
+Each component is attached to a facility, so the option above can also be
+ written as: 
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+--[facility].[property]=[value]
+\end_layout
+
+\begin_layout Standard
+Each facility has a default component attached to it.
+ A different component can be attached to a facility by:
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+--[facility]=[new_component] 
+\end_layout
+
+\begin_layout Standard
+In general, PyLith's command-line arguments fall into three categories:
+ MPI settings, Pyre/PyLith properties and facilities, and PETSc settings.
+ You can get more information on the available options by typing
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+$ pylith3dapp.py --help
+\end_layout
+
+\begin_layout Standard
+All PyLith-related properties are associated with the 
+\family typewriter
+pylith3d
+\family default
+ component.
  You can get a list of all of these properties along with a description
  of what they do by running PyLith with the 
 \family typewriter
-\color black
---scanner.help-properties
+--pylith3d.help-properties
 \family default
-\color none
  command-line argument.
 \end_layout
 
@@ -518,19 +501,15 @@ status open
 
 \family typewriter
 \color black
-$ mpirun\InsetSpace ~
-\InsetSpace ~
- -np 
-\emph on
-1
-\emph default
- \InsetSpace ~
-\InsetSpace ~
-pylith3dapp.py --scanner.help-properties --scanner.asciiOutput=
+$ pylith3dapp.py --pylith3d.help-properties --pylith3d.fileRoot=
+\shape italic
+test
+\shape default
+ --pylith3d.asciiOutput=
 \emph on
 none
 \emph default
- --scanner.title=
+ --pylith3d.title=
 \emph on
 "My simulation"
 \emph default
@@ -538,7 +517,7 @@ none
 \end_layout
 
 \begin_layout Caption
-Setting scanner properties from the command line.
+Setting pylith properties from the command line.
 \end_layout
 
 \end_inset
@@ -547,6 +526,187 @@ Setting scanner properties from the command line.
 \end_layout
 
 \begin_layout Subsection
+Using a 
+\family typewriter
+.cfg
+\family default
+ File
+\end_layout
+
+\begin_layout Standard
+Entering all those parameters via the command line involves the risk of
+ typographical errors, which can lead to undesired results.
+ You may find it easier to write a brief 
+\family typewriter
+.cfg
+\family default
+ input file that contains the parameters.
+ This file has a format similar to a Windows INI file.
+ The file is composed of one or more sections which are formatted as follows:
+\end_layout
+
+\begin_layout LyX-Code
+[pylith3d.component1.component2]
+\end_layout
+
+\begin_layout LyX-Code
+# this is a comment
+\end_layout
+
+\begin_layout LyX-Code
+property1 = value1
+\end_layout
+
+\begin_layout LyX-Code
+property2 = value2 ; this is another comment
+\end_layout
+
+\begin_layout Standard
+We strongly recommend that you use 
+\family typewriter
+.cfg
+\family default
+ files for your work.
+ The files are syntax-colored by the vim editor.
+\end_layout
+
+\begin_layout Subsection
+Using a 
+\family typewriter
+.pml
+\family default
+ File
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+.pml
+\family default
+ file is an XML file that specifies parameter values in a highly structured
+ format.
+ It is composed of nested sections which are formatted as follows:
+\end_layout
+
+\begin_layout LyX-Code
+<component name='component1'>
+\end_layout
+
+\begin_layout LyX-Code
+    <component name='component2'>
+\end_layout
+
+\begin_layout LyX-Code
+        <property name='property1'>value1</property>
+\end_layout
+
+\begin_layout LyX-Code
+        <property name='property2'>value2</property>
+\end_layout
+
+\begin_layout LyX-Code
+    </component>
+\end_layout
+
+\begin_layout LyX-Code
+</component>
+\end_layout
+
+\begin_layout Standard
+XML files are intended to be read and written by machines, not edited manually
+ by humans.
+ The 
+\family typewriter
+.pml
+\family default
+ file format is intended for applications in which PyLith input files are
+ generated by another program, e.g., a GUI, web application, or a high-level
+ structured editor.
+ This file fomat will not be discussed further here.
+ But if you are interested in using 
+\family typewriter
+.pml
+\family default
+ files, note that 
+\family typewriter
+.pml
+\family default
+ files and 
+\family typewriter
+.cfg
+\family default
+ files can be used interchangeably; in the following discussion, a file
+ with a 
+\family typewriter
+.pml
+\family default
+ extension can be substituted anywhere a 
+\family typewriter
+.cfg
+\family default
+ file can be used.
+\end_layout
+
+\begin_layout Subsection
+Specification and Placement of Configuration Files
+\end_layout
+
+\begin_layout Standard
+Configuration files may be specified on the command line:
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith3dapp.py example.cfg
+\end_layout
+
+\begin_layout Standard
+In addition, the Pyre framework searches for configuration files named 
+\family typewriter
+pylith3d.cfg
+\family default
+ in several predefined locations.
+ You may put settings in any or all of these locations, depending on the
+ scope you want the settings to have:
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+PREFIX/etc/pylith3d.cfg
+\family default
+, for system-wide settings;
+\end_layout
+
+\begin_layout Enumerate
+
+\family typewriter
+$HOME/.pyre/pylith3d/pylith3d.cfg
+\family default
+, for user settings and preferences;
+\end_layout
+
+\begin_layout Enumerate
+the current directory (
+\family typewriter
+./pylith3d.cfg
+\family default
+), for local overrides.
+ 
+\end_layout
+
+\begin_layout Standard
+Parameters given directly on the command line will override any input contained
+ in a configuration file.
+ Configuration files given on the command line override all others.
+ The 
+\family typewriter
+pylith3d.cfg
+\family default
+ files placed in (3) will override those in (2), (2) overrides (1), and
+ (1) overrides only the built-in defaults.
+\end_layout
+
+\begin_layout Standard
 PETSc Settings
 \end_layout
 
@@ -568,10 +728,6 @@ placement htbp
 wide false
 sideways false
 status open
-
-\begin_layout Standard
- 
-\end_layout
 
 \begin_layout Standard
 \align center
