@@ -240,7 +240,7 @@ c
             end if
             reform=reform.or.ltim
             if(reform) ireform=ione
-            ntimdat(9)=ireform
+            ntimdat(8)=ireform
 cdebug            write(6,*) "ntdinitp,reform,ireform,ltim:",
 cdebug     &       ntdinitp,reform,ireform,ltim
             fulout=.false.
@@ -638,14 +638,13 @@ c
           end do
         end do
       end do
-      write(kto,800) ntimdat(6),ntimdat(7),ntimdat(8)
-      if(idout.gt.ione) write(kw,800) ntimdat(6),ntimdat(7),ntimdat(8)
+      write(kto,800) ntimdat(6),ntimdat(7)
+      if(idout.gt.ione) write(kw,800) ntimdat(6),ntimdat(7)
 c
  650  format(//,"Reforming the stiffness matrix:",/)
  700  format('STEP ',i7)
  800  format(/," Total number of equilibrium iterations        = ",i7,/,
-     &         " Total number of stiffness matrix reformations = ",i7,/,
-     &         " Total number of displacement subiterations    = ",i7)
+     &         " Total number of stiffness matrix reformations = ",i7)
  1000 format(////' output which follows is at time= ',1pe15.8/
      & ' step # ',i7,' in cycle # ',i7//)
  2000 format(/'Time-dependent solution is begun:'/)

@@ -55,11 +55,10 @@ c
 c
 c...  write output, if requested
 c
-      if(idout.gt.ione) write(kw,800) ntimdat(6),ntimdat(7),ntimdat(8)
+      if(idout.gt.ione) write(kw,800) ntimdat(6),ntimdat(7)
 c
  800  format(/," Total number of equilibrium iterations        = ",i7,/,
-     &         " Total number of stiffness matrix reformations = ",i7,/,
-     &         " Total number of displacement subiterations    = ",i7)
+     &         " Total number of stiffness matrix reformations = ",i7)
       return
       end
 c

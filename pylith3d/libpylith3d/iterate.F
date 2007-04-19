@@ -190,7 +190,7 @@ c
         reform=reform.or.(mod(iter,maxitp).eq.0)
         ireform=0
         if(reform) ireform=1
-        ntimdat(9)=ireform
+        ntimdat(8)=ireform
         used=nstep.gt.0.and.nprevdflag.eq.1.and.iter.eq.1
         if(iter.gt.1) fulout=.false.
 c

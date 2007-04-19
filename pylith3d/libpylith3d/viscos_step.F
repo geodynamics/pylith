@@ -213,7 +213,7 @@ c
       end if
       reform=reform.or.ltim
       if(reform) ireform=ione
-      ntimdat(9)=ireform
+      ntimdat(8)=ireform
 cdebug            write(6,*) "ntdinitp,reform,ireform,ltim:",
 cdebug     &       ntdinitp,reform,ireform,ltim
       fulout=izero

@@ -35,12 +35,12 @@ c     any 'def' header files.
 c
 c...  arrays containing parameters
 c
-      integer ntimdat(9)
+      integer ntimdat(8)
 c
 c...  scalar parameters associated with arrays
 c
       integer nstep,maxitp,ntdinitp,lgdefp,itmaxp,nittot,nrftot,
-     & ndtot,ireform
+     & ireform
 c
 c version
 c $Id: ntimdat_dim.inc,v 1.4 2004/07/21 15:25:26 willic3 Exp $
