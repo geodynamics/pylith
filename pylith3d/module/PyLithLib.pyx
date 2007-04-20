@@ -445,7 +445,7 @@ cdef class PyLith:
     cdef int nvisdat[4]
     cdef double rgiter[3]
     cdef double rtimdat[4]
-    cdef int ntimdat[9]
+    cdef int ntimdat[8]
     
 
     def __new__(self):
@@ -1854,11 +1854,11 @@ cdef class PyLith:
         cdef int *ntimdat
         cdef int nstep, maxitp, ntdinitp
         cdef int lgdefp, itmaxp, nittot
-        cdef int nrftot, ndtot , ireform
+        cdef int nrftot, ireform
         ntimdat = &self.ntimdat[0] - 1 # convert to one-based
         nstep  = 0; maxitp = 0; ntdinitp = 0
         lgdefp = 0; itmaxp = 0; nittot   = 0
-        nrftot = 0; ndtot  = 0; ireform  = 0
+        nrftot = 0; ireform  = 0
         ntimdat[1] = nstep
         ntimdat[2] = maxitp
         ntimdat[3] = ntdinitp
@@ -1866,9 +1866,8 @@ cdef class PyLith:
         ntimdat[5] = itmaxp
         ntimdat[6] = nittot
         ntimdat[7] = nrftot
-        ntimdat[8] = ndtot
-        ntimdat[9] = ireform
-        assert( 9 == sizeof(self.ntimdat)/sizeof(self.ntimdat[0]))
+        ntimdat[8] = ireform
+        assert( 8 == sizeof(self.ntimdat)/sizeof(self.ntimdat[0]))
 
         self.trace.log("Hello from pl3dsetup.allocateremaining (end)!")
 
@@ -2623,7 +2622,6 @@ cdef class PyLith:
 
                 print " Total number of equilibrium iterations        =",self.ntimdat[5]
                 print " Total number of stiffness matrix reformations =",self.ntimdat[6]
-                print " Total number of displacement subiterations    =",self.ntimdat[7]
                 
                 libpylith3d.viscos_cleanup(
                     self.ntimdat,
