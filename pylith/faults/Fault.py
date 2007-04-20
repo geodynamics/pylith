@@ -97,8 +97,8 @@ class Fault(Component):
             "Dimensions for quadrature: %d, dimensions for surface: 2" % \
             self.quadrature.cell.cellDim
 
-    #self.cppHandle.id = self.id
-    #self.cppHandle.label = self.label
+    self.cppHandle.id = self.id
+    self.cppHandle.label = self.label
     #self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
     #                          self.quadrature.cppHandle)
     return

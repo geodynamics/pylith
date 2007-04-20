@@ -10,40 +10,33 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/faults/FaultCohesive.py
+## @file pylith/faults/BruneSlipFn.py
 ##
-
-## @brief Python abstract base class for a fault surface implemented
-## with cohesive elements.
+## @brief Python object for slip time function that follows the
+## integral of Brune's (1970) far-field time function.
 ##
-## Factory: fault
+## Factory: slip_time_fn
 
-from Fault import Fault
+from SlipTimeFn import SlipTimeFn
 
-# FaultCohesive class
-class FaultCohesive(Fault):
+# BruneSlipFn class
+class BruneSlipFn(SlipTimeFn):
   """
-  Python abstract base class for a fault surface implemeted with
-  cohesive elements.
+  Python object for slip time function that follows the integral of
+  Brune's (1970) far-field time function.
 
-  Factory: fault
+  Factory: slip_time_fn
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="faultcohesive"):
+  def __init__(self, name="bruneslipfn"):
     """
     Constructor.
     """
-    Fault.__init__(self, name)
-    return
-
-
-  def initialize(self, mesh):
-    """
-    Initialize cohesive elements.
-    """
-    Fault.initialize(self, mesh)
+    SlipTimeFn.__init__(self, name)
+    import pylith.faults.faults as bindings
+    self.cppHandle = bindings.BruneSlipFn()
     return
 
 
@@ -53,7 +46,7 @@ class FaultCohesive(Fault):
     """
     Setup members using inventory.
     """
-    Fault._configure(self)
+    SlipTimeFn._configure(self)
     return
 
   

@@ -14,6 +14,8 @@
 #include "pylith/faults/Fault.hh"
 #include "pylith/faults/FaultCohesive.hh"
 #include "pylith/faults/FaultCohesiveKin.hh"
+#include "pylith/faults/SlipTimeFn.hh"
+#include "pylith/faults/BruneSlipFn.hh"
 
 #include <assert.h>
 #include <stdexcept>
@@ -44,6 +46,18 @@ cdef void Fault_destructor(void* obj):
   delete pM;
   #}embed
   Fault_destructor_cpp(obj)
+  return
+
+cdef void SlipTimeFn_destructor(void* obj):
+  """
+  Destroy SlipTimeFn object.
+  """
+  # create shim for destructor
+  #embed{ void SlipTimeFn_destructor_cpp(void* objVptr)
+  pylith::faults::SlipTimeFn* f = (pylith::faults::SlipTimeFn*) objVptr;
+  delete f;
+  #}embed
+  SlipTimeFn_destructor_cpp(obj)
   return
 
 
@@ -192,6 +206,59 @@ cdef class FaultCohesiveKin(FaultCohesive):
 
     FaultCohesive.__init__(self)
     self.thisptr = FaultCohesiveKin_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class SlipTimeFn:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_faults_SlipTimeFn"
+    return
+
+
+  def _createHandle(self):
+    """
+    Wrap pointer to C++ object in PyCObject.
+    """
+    return PyCObject_FromVoidPtr(self.thisptr, SlipTimeFn_destructor)
+
+
+# ----------------------------------------------------------------------
+cdef class BruneSlipFn(SlipTimeFn):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* BruneSlipFn_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::faults::BruneSlipFn);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    SlipTimeFn.__init__(self)
+    self.thisptr = BruneSlipFn_constructor()
     self.handle = self._createHandle()
     return
 
