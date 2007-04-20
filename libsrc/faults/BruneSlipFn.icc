@@ -1,0 +1,45 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_faults_bruneslipfn_hh)
+#error "BruneSlipFn.icc can only be included from BruneSlipFn.hh"
+#endif
+
+#include <math.h> // USES exp()
+#include <assert.h> // USES assert()
+
+// Create copy of fault.
+inline
+pylith::faults::SlipTimeFn*
+pylith::faults::BruneSlipFn::clone(void) const {
+  return new BruneSlipFn(*this);
+} // clone
+
+// Compute slip using slip time function.
+inline
+double
+pylith::faults::BruneSlipFn::compute(const double t,
+				     const double finalSlip,
+				     const double peakRate) const {
+  double slip = 0.0;
+  if (t > 0) {
+    assert(peakRate > 0.0);
+    const double tau = 
+      // prevent 0 == tau when 0 == finalSlip 
+      (finalSlip > 0.0) ? finalSlip / (exp(1.0) * peakRate) : 0.1;
+    slip = 1.0 - exp(-t/tau) * (1.0 + t/tau);
+  } // if
+  return slip;
+} // compute
+
+
+// End of file 

@@ -17,7 +17,9 @@
 __all__ = ['FaultsBin',
            'Fault',
            'FaultCohesive',
-           'FaultCohesiveKin']
+           'FaultCohesiveKin',
+           'SlipTimeFn',
+           'BruneSlipFn']
 
 
 # End of file

@@ -10,40 +10,31 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/faults/FaultCohesive.py
+## @file pylith/faults/SlipTimeFn.py
 ##
 
-## @brief Python abstract base class for a fault surface implemented
-## with cohesive elements.
+## @brief Python abstract base class for kinematic slip time function.
 ##
-## Factory: fault
+## Factory: slip_time_fn
 
-from Fault import Fault
+from pyre.components.Component import Component
 
-# FaultCohesive class
-class FaultCohesive(Fault):
+# SlipTimeFn class
+class SlipTimeFn(Component):
   """
-  Python abstract base class for a fault surface implemeted with
-  cohesive elements.
+  Python abstract base class for kinematic slip time function.
 
-  Factory: fault
+  Factory: slip_time_fn
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="faultcohesive"):
+  def __init__(self, name="sliptimefn"):
     """
     Constructor.
     """
-    Fault.__init__(self, name)
-    return
-
-
-  def initialize(self, mesh):
-    """
-    Initialize cohesive elements.
-    """
-    Fault.initialize(self, mesh)
+    Component.__init__(self, name, facility="sliptimefn")
+    self.cppHandle = None
     return
 
 
@@ -53,7 +44,7 @@ class FaultCohesive(Fault):
     """
     Setup members using inventory.
     """
-    Fault._configure(self)
+    Component._configure(self)
     return
 
   

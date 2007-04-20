@@ -14,12 +14,15 @@ subpackage = faults
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	BruneSlipFn.hh \
+	BruneSlipFn.icc \
 	CohesiveTopology.hh \
 	Fault.hh \
 	Fault.icc \
 	FaultCohesive.hh \
 	FaultCohesiveKin.hh \
-	FaultCohesiveKin.icc
+	FaultCohesiveKin.icc \
+	SlipTimeFn.hh
 
 noinst_HEADERS =
 

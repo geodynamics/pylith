@@ -21,10 +21,12 @@ SUBDIRS = \
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
+	faults/BruneSlipFn.cc \
 	faults/CohesiveTopology.cc \
 	faults/Fault.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \
+	faults/SlipTimeFn.cc \
 	feassemble/ExplicitElasticity.cc \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorExplicit.cc \
