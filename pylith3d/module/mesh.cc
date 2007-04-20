@@ -363,7 +363,7 @@ PyObject *PyLithMeshLib::Mesh::_createMat(PyMeshObject *self)
   ierr = PetscObjectCompose((PetscObject) self->A, "mesh", (PetscObject) self->mesh);
 
   VecScatter injection = NULL;
-  ierr = MeshGetGlobalScatter(self->mesh, &injection);
+  ierr = MeshCompatGetGlobalScatter(self->mesh, &injection);
   ierr = PetscObjectCompose((PetscObject) self->rhs, "mesh",      (PetscObject) self->mesh);
   ierr = PetscObjectCompose((PetscObject) self->rhs, "injection", (PetscObject) injection);
   ierr = PetscObjectCompose((PetscObject) self->sol, "mesh",      (PetscObject) self->mesh);
