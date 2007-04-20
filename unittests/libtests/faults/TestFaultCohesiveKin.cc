@@ -36,6 +36,7 @@ pylith::faults::TestFaultCohesiveKin::testClone(void)
   
   CPPUNIT_ASSERT_EQUAL(id, faultCopy->id());
   CPPUNIT_ASSERT_EQUAL(label, faultCopy->label());
+  delete faultCopy; faultCopy = 0;
 } // testClone
 
 
