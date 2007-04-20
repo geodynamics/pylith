@@ -129,6 +129,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
   // Add new shadow vertices
   const ALE::Obj<Mesh::label_sequence>& fVertices = fault->depthStratum(0);
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  const ALE::Obj<std::set<std::string> >& groupNames = mesh->getIntSections();
   Mesh::point_type newPoint = sieve->base()->size() + sieve->cap()->size();
   std::map<int,int> vertexRenumber;
   
@@ -139,7 +140,15 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
       std::cout << "Duplicating " << *v_iter << " to "
 		<< vertexRenumber[*v_iter] << std::endl;
     vertexRenumber[*v_iter] = newPoint;
-    groupField->setFiberDimension(newPoint, 1);
+
+    for(std::set<std::string>::const_iterator name = groupNames->begin();
+       name != groupNames->end(); ++name) {
+      const ALE::Obj<int_section_type>& group = mesh->getIntSection(*name);
+
+      if (group->hasPoint(*v_iter)) {
+        group->setFiberDimension(newPoint, 1);
+      }
+    } // for
   } // for
 
   // Split the mesh along the fault sieve and create cohesive elements
