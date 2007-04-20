@@ -517,7 +517,7 @@ class PyLithApp(PetscApplication):
             finish = now()
             usertime = finish - start
             print "Total user time:  %g" % usertime
-
+        self.pylith.mesh = None
         return
 
 
