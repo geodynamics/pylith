@@ -184,7 +184,6 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(const CohesiveData& data)
     for (int i=0; i < numPoints; ++i)
       CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[i]);
   } // for
-  
 } // _testAdjustTopology
 
 // End of file 
