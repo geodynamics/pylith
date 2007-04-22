@@ -68,7 +68,8 @@ class Mesh(Component):
     """
     Distribute mesh across processors.
     """
-    self._info.log("WARNING: Mesh::distribute() not implemented.")
+    self._info.log("WARNING: Mesh::distribute() not tested.")
+    self.cppHandle.distribute()
     return self
 
 
