@@ -64,13 +64,14 @@ class Mesh(Component):
       dim = self.cppHandle.dimension
     return dim
 
-  def distribute(self):
+  def distribute(self, partitioner=None):
     """
     Distribute mesh across processors.
     """
     self._info.log("WARNING: Mesh::distribute() not tested.")
-    self.cppHandle.distribute()
-    return self
+    mesh = Mesh()
+    self.cppHandle.distribute(mesh.cppHandle, partitioner=partitioner)
+    return mesh
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////

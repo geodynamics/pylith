@@ -65,6 +65,7 @@ class MeshImporter(MeshGenerator):
     """
     mesh = self.importer.read(self.debug, self.interpolate)
     self._adjustTopology(mesh, faults)
+    mesh.distribute(self.partitioner)
     return mesh
 
 
