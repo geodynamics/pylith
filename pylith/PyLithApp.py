@@ -88,7 +88,7 @@ class PyLithApp(Application):
     mesh = self.mesher.create(faults)
 
     # Initialize problem and then run
-    self.problem.initialize(mesh.distribute())
+    self.problem.initialize(mesh)
     self.problem.run(self)
     
     self.petsc.finalize()

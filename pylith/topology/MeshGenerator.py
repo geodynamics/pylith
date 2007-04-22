@@ -39,6 +39,7 @@ class MeshGenerator(Component):
     ## \b Properties
     ## @li \b debug Debugging flag for mesh.
     ## @li \b interpolate Build intermediate mesh topology elements (if true)
+    ## @li \b partitioner Name of mesh partitioner {"parmetis", "chaco"}
     ##
     ## \b Facilities
     ## @li None
@@ -50,6 +51,11 @@ class MeshGenerator(Component):
 
     interpolate = pyre.inventory.bool("interpolate", default=False)
     interpolate.meta['tip'] = "Build intermediate mesh topology elements"
+
+    partitioner = pyre.inventory.str("partitioner", default="chaco",
+                                      validator=pyre.inventory.choice(["chaco",
+                                                                       "parmetis"]))
+    partitioner.meta['tip'] = "Name of mesh partitioner."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -81,6 +87,7 @@ class MeshGenerator(Component):
     Component._configure(self)
     self.debug = self.inventory.debug
     self.interpolate = self.inventory.interpolate
+    self.partitioner = self.inventory.partitioner
     return
 
 
