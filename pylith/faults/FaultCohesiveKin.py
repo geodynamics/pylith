@@ -43,33 +43,14 @@ class FaultCohesiveKin(FaultCohesive):
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b slip Spatial database of final slip
-    ## @li \b slip_rate Spatial database of peak slip rate
-    ## @li \b slip_time Spatial database of slip initiation time
-    ## @li \b slip_function Analytical form for slip time function
+    ## @li \b eq_src Kinematic earthquake source information.
 
     import pyre.inventory
 
-    from spatialdata.spatialdb.SimpleDB import SimpleDB
-
-    slip = pyre.inventory.facility("slip", family="spatial_database",
-                                   factory=SimpleDB, args=["slip"])
-    slip.meta['tip'] = "Spatial database of final slip."
-
-    slipRate = pyre.inventory.facility("slip_rate", family="spatial_database",
-                                       factory=SimpleDB,
-                                       args=["slip rate"])
-    slipRate.meta['tip'] = "Spatial database of peak slip rate."
-
-    slipTime = pyre.inventory.facility("slip_time", family="spatial_database",
-                                       factory=SimpleDB,
-                                       args=["slip time"])
-    slipTime.meta['tip'] = "Spatial database of slip initiation time."
-
-    from BruneSlipFn import BruneSlipFn
-    slipFn = pyre.inventory.facility("slip_function", family="slip_time_fn",
-                                     factory=BruneSlipFn)
-    slipFn.meta['tip'] = "Analytical form for slip time function."
+    from EqKinSrc import EqKinSrc
+    eqSrc = pyre.inventory.facility("eq_src", family="eq_kinematic_src",
+                                    factory=EqKinSrc)
+    eqSrc.meta['tip'] = "Kinematic earthquake source information."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -90,8 +71,6 @@ class FaultCohesiveKin(FaultCohesive):
     """
     FaultCohesive.initialize(self, mesh)
     self.slip.initialize()
-    self.slipRate.initialize()
-    self.slipTime.initialize()
     return
 
 
@@ -102,10 +81,7 @@ class FaultCohesiveKin(FaultCohesive):
     Setup members using inventory.
     """
     FaultCohesive._configure(self)
-    slip = self.inventory.slip
-    slipRate = self.inventory.slipRate
-    slipTime = self.inventory.slipTime
-    slipFn = self.inventory.slipFn
+    eqSrc = self.inventory.eqSrc
     return
 
   

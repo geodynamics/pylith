@@ -28,6 +28,32 @@ class BruneSlipFn(SlipTimeFn):
   Factory: slip_time_fn
   """
 
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(SlipTimeFn.Inventory):
+    """
+    Python object for managing BruneSlipFn facilities and properties.
+    """
+    
+    ## @class Inventory
+    ## Python object for managing BruneSlipFn facilities and properties.
+    ##
+    ## \b Properties
+    ## @li None
+    ##
+    ## \b Facilities
+    ## @li \b slip_rate Spatial database of peak slip rate
+
+    import pyre.inventory
+
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+
+    slipRate = pyre.inventory.facility("slip_rate", family="spatial_database",
+                                       factory=SimpleDB,
+                                       args=["slip rate"])
+    slipRate.meta['tip'] = "Spatial database of peak slip rate."
+
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="bruneslipfn"):
@@ -47,7 +73,17 @@ class BruneSlipFn(SlipTimeFn):
     Setup members using inventory.
     """
     SlipTimeFn._configure(self)
+    self.slipRate = self.inventory.slipRate
     return
 
   
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def slip_time_fn():
+  """
+  Factory associated with BruneSlipFn.
+  """
+  return slip_time_fn()
+
+
 # End of file 

@@ -12,32 +12,31 @@
 
 #include <portinfo>
 
-#include "FaultCohesiveKin.hh" // implementation of object methods
+#include "EqKinSrc.hh" // implementation of object methods
 
-#include "EqKinSrc.hh" // USES EqKinSrc
+#include "SlipTimeFn.hh" // USES SlipTimeFn
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
-  _eqsrc(0)
+pylith::faults::EqKinSrc::EqKinSrc(void) :
+  _slipfn(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
+pylith::faults::EqKinSrc::~EqKinSrc(void)
 { // destructor
-  delete _eqsrc; _eqsrc = 0;
+  delete _slipfn; _slipfn = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::faults::FaultCohesiveKin::FaultCohesiveKin(const FaultCohesiveKin& f) :
-  FaultCohesive(f),
-  _eqsrc(0)
+pylith::faults::EqKinSrc::EqKinSrc(const EqKinSrc& s) :
+  _slipfn(0)
 { // copy constructor
-  if (0 != f._eqsrc)
-    _eqsrc = new EqKinSrc(*f._eqsrc);
+  if (0 != s._slipfn)
+    _slipfn = s._slipfn->clone();
 } // copy constructor
 
 

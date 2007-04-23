@@ -11,8 +11,16 @@ Cleanup
   Use MeshIOAscii to get mesh information into Python tests?
 
 0. Start implementing faults
-   b. Add creation of cohesive elements
+   a. Add creation of cohesive elements
+     Add tests for interpolated meshes
+
+   b. Implement slip time function
+     Similar to material. Set up parameters using spatial databases.
+
    c. Start implementing integrator for faults
+     Initialize - calculate orientation
+     How do we create kinematic source
+
    d. Create unit tests at C++ level
    e. Create unit tests at Python level
 
