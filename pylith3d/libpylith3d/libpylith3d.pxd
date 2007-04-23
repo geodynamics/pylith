@@ -709,6 +709,7 @@ cdef extern void scan_tractions "FC_FUNC_(scan_tractions, SCAN_TRACTIONS)" (
     int *,
     int *,
     int *,
+    int *,
     char *,
     char *,
     int *,
