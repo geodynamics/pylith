@@ -85,6 +85,7 @@ extern "C" PyObject *exceptionhandler(int errorcode, char* errorstring)
     case 118: exception = PyExc_ValueError; format = "%s: Triangular matrix not positive definite."; break;
     case 119: exception = PyExc_ValueError; format = "%s: Diagonal of factored triangular matrix is zero."; break;
     case 120: exception = PyExc_ValueError; format = "%s: Maximum iterations exceeded in Newton-Raphson."; break;
+    case 121: exception = PyExc_ValueError; format = "%s: Unsupported element type for traction BC."; break;
     // MemoryErrors
     case 300: exception = PyExc_MemoryError; format = "%s: Insufficient memory assigned."; break;
     // binary I/O
