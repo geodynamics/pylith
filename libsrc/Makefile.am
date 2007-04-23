@@ -23,6 +23,7 @@ lib_LTLIBRARIES = libpylith.la
 libpylith_la_SOURCES = \
 	faults/BruneSlipFn.cc \
 	faults/CohesiveTopology.cc \
+	faults/EqKinSrc.cc \
 	faults/Fault.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \

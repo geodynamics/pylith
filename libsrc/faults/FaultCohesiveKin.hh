@@ -26,6 +26,8 @@ namespace pylith {
   namespace faults {
     class FaultCohesiveKin;
     class TestFaultCohesiveKin; // unit testing
+
+    class EqKinSrc; // HOLDSA EqKinSrc
   } // faults
 } // pylith
 
@@ -68,6 +70,8 @@ private :
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  EqKinSrc* _eqsrc; ///< Kinematic earthquake source information
 
 }; // class FaultCohesiveKin
 

@@ -15,6 +15,7 @@ nobase_pkgpyexec_PYTHON = \
 	__init__.py \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \
+	faults/EqKinSrc.py \
 	faults/FaultsBin.py \
 	faults/Fault.py \
 	faults/FaultCohesive.py \

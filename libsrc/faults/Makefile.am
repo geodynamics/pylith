@@ -17,6 +17,7 @@ subpkginclude_HEADERS = \
 	BruneSlipFn.hh \
 	BruneSlipFn.icc \
 	CohesiveTopology.hh \
+	EqKinSrc.hh \
 	Fault.hh \
 	Fault.icc \
 	FaultCohesive.hh \
