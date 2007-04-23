@@ -813,6 +813,7 @@ cdef class PyLith:
             &self.numtractions,  # intent(out)
             &nsnodesmax,
             &self.kr,
+	    &self.ietypev,
             traction_units,      # intent(out)
             self.tractionInputFile,
             &errorcode,
