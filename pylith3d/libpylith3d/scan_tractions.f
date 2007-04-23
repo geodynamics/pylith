@@ -28,7 +28,7 @@ c
 c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 c
 c
-      subroutine scan_tractions(numtractions,nsnodesmax,kr,
+      subroutine scan_tractions(numtractions,nsnodesmax,kr,ietypev,
      & traction_units,tfile,ierr,errstrng)
 c
 c...  subroutine to perform an initial scan of the traction BC input
@@ -50,7 +50,7 @@ c
 c
 c...  subroutine arguments
 c
-      integer numtractions,nsnodesmax,kr,ierr
+      integer numtractions,nsnodesmax,kr,ietypev,ierr
       character traction_units*(*),tfile*(*),errstrng*(*)
 c
 c...  local constants
@@ -91,25 +91,18 @@ c    comment.
 c
       call pskip(kr)
 c
-c...  for now, determine number of vertices per face by evaluating read
-c     errors
+c...  for now, determine number of vertices per face by determining
+c     element type
 c
-      read(kr,*,end=10,err=31) (tractionverts(i),i=1,4),
-     & (tractionvals(i),i=1,ndof)
-      numverts=4
-      go to 33
- 31   continue
-        backspace(kr)
-        read(kr,*,end=10,err=32) (tractionverts(i),i=1,3),
-     &   (tractionvals(i),i=1,ndof)
+      if(ietypev.eq.1) then
+        numverts=4
+      else if(ietypev.eq.31) then
         numverts=3
-        go to 33
- 32   continue
-        ierr=106
+      else
+        ierr=121
         errstrng="scan_tractions"
         return
- 33   continue
-        backspace(kr)
+      end if
  40   continue
         read(kr,*,end=10,err=30) (tractionverts(i),i=1,numverts),
      &   (tractionvals(i),i=1,ndof)
