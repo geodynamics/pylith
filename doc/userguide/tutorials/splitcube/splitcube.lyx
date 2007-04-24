@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -726,15 +726,60 @@ splitcube.statevar
 \family default
  we choose to include total stress, total strain, incremental stress, and
  incremental strain in the output.
- 
+ In addition to the 
+\family typewriter
+splitcube.*
+\family default
+ files, the step above will also download 
+\family typewriter
+pylith3d.cfg
+\family default
+, a configuration file that sets the parameters necessary to run PyLith
+ on a single processor.
+ You may wish to examine this file to see how various parameters are set.
+ Another file, 
+\family typewriter
+mklinks.py
+\family default
+, is also downloaded.
+ This is explained in step 3 below.
 \end_layout
 
 \begin_layout Enumerate
+Since we want to run the same simulation using either one or two processors,
+ we need unique filenames for each case so that files do not get overwritten
+ or mixed up with each other.
+ This is accomplished with the 
+\family typewriter
+mklinks.py
+\family default
+ utility code, which creates the necessary symbolic links:
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ ./mklinks.py
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
 Run the simulation by executing 
 \family typewriter
-runbm.py -n 1
+pylith3dapp.py
 \family default
-, where the 1 refers to the number of processors.
+.
+ The 
+\family typewriter
+pylith3dapp.py
+\family default
+ code is the main script for running the code, and it automatically picks
+ up the parameter settings defined in 
+\family typewriter
+pylith3d.cfg
+\family default
+.
+ Since the number of processors is not defined in this file, it automatically
+ uses the default value of one.
 \end_layout
 
 \begin_deeper
@@ -751,24 +796,26 @@ splitcube.ascii
  You can check to make sure your input is digested correctly by examining
  this file.
  For large problems, this file can become quite large.
- You can suppress creation of this file using the command line argument
- 
+ You can suppress creation of this file by setting 
 \family typewriter
---scanner.asciiOutput=none
+asciioutput=none
 \family default
- flag.
+ in 
+\family typewriter
+pylith3d.cfg
+\family default
+.
  On the other hand, for debugging purposes in small problems, you may wish
  to output everything, including the computed results, in this file using
  
 \family typewriter
---scanner.asciiOutput=full
+asciiOutput=full
 \family default
 .
- 
 \end_layout
 
 \begin_layout LyX-Code
-$ ./runbm.py -n 1 
+$ pylith3dapp.py 
 \end_layout
 
 \end_deeper
@@ -837,38 +884,42 @@ $ ./tutor.py -m retrieve -s viz1
 \end_deeper
 \begin_layout Enumerate
 PyLith does not write complete UCD files.
- So the first step is to combine the mesh topology information with the
- output at a given time step into a complete UCD file.
- For example, use 
-\family typewriter
-cat
-\family default
- to merge the nodal coordinates file (
+ So the first step is to combine the mesh topology information (contained
+ in 
 \family typewriter
 splitcube_1.0.mesh.inp
 \family default
-) and the nodal displacements at time step 10 file (
+) with the output at a given time step (contained in 
 \family typewriter
 splitcube_1.0.mesh.time.00000.inp
 \family default
-) into 
+ and 
 \family typewriter
-splitcube_1.0.mesh.t00000.inp
+splitcube_1.0.gmesh.time.00000.inp
 \family default
-.
+) into a complete UCD file.
+ This is accomplished using the 
+\family typewriter
+makeucd
+\family default
+ utility code (included in the PyLith package).
+ In addition to combining the topology information with time step output,
+ this utility also allows the option of outputting Gauss point values (stress,
+ strain, etc.) at nodes or at Gauss points.
+ A summary of usage may be obtained by typing 
+\family typewriter
+makeucd
+\family default
+ with no arguments.
 \end_layout
 
 \begin_deeper
 \begin_layout LyX-Code
-$ cat splitcube_1.0.mesh.inp splitcube_1.0.mesh.time.00000.inp 
-\begin_inset Formula $\backslash$
-\end_inset
-
-
-\end_layout
-
-\begin_layout LyX-Code
-> splitcube_1.0.mesh.t00000.inp
+$ makeucd m=splitcube_1.0.mesh.inp o=splitcube_1.0.mesh.t0.inp 
+\backslash
+ p=splitcube_1.0.mesh.time.00000.inp 
+\backslash
+ g=splitcube_1.0.gmesh.time.00000.inp
 \end_layout
 
 \end_deeper
@@ -891,7 +942,11 @@ $ paraview
 
 \end_deeper
 \begin_layout Enumerate
-Load the UCD file that you have just created by selecting 
+Load the UCD file that you have just created (
+\family typewriter
+splitcube_1.0.mesh.t0.inp
+\family default
+) by selecting 
 \family sans
 File
 \color black
@@ -1119,27 +1174,73 @@ $ ./tutor.py -m retrieve -s run2
 
 \end_deeper
 \begin_layout Enumerate
-The parameter files are the same as those in the single processor run.
- The 
+The parameter files are the same as those in the single processor run, and
+ the 
 \family typewriter
-runbm.py
+mklinks.py
 \family default
- script will automatically take care of duplicating these files so that
- there is one for each processor.
- 
-\end_layout
-
-\begin_layout Enumerate
-Run the simulation by executing 
+ utility has already created the necessary symbolic links.
+ The only change is the addition of the file 
 \family typewriter
-runbm.py -n 2
+pylith3d-np2.cfg
 \family default
-, where the 2 refers to the number of processors.
+.
+ If you compare this to the original 
+\family typewriter
+pylith3d.cfg
+\family default
+, you will see that the main differences are changing 
+\family typewriter
+fileRoot
+\family default
+ from 
+\family typewriter
+splitcube_1
+\family default
+ to 
+\family typewriter
+splitcube_2
+\family default
+, and a section that specifies what launcher to use (
+\family typewriter
+mpiexec -np 2
+\family default
+ in this case).
 \end_layout
 
 \begin_deeper
 \begin_layout LyX-Code
-$ ./runbm.py -n 2
+[pylith3d.launcher] 
+\end_layout
+
+\begin_layout LyX-Code
+# Specify multi-processor run
+\end_layout
+
+\begin_layout LyX-Code
+command = mpiexec -np 2
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Run the simulation by executing 
+\family typewriter
+pylith3dapp.py pylith3d-np2.cfg
+\family default
+, where the variables set in 
+\family typewriter
+pylith3d.cfg
+\family default
+ are now superseded by those specified in the command-line 
+\family typewriter
+.cfg
+\family default
+ file.
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+$ pylith3dapp.py pylith3d-np2.cfg
 \end_layout
 
 \end_deeper
@@ -1180,34 +1281,26 @@ As in the case of the single processor run, the first step is to combine
  Because PyLith writes the output from each processor into a different file,
  we must run 
 \family typewriter
-cat
+makeucd
 \family default
  twice to create UCD files for each processor.
 \end_layout
 
 \begin_deeper
 \begin_layout LyX-Code
-$ cat splitcube_2.0.mesh.inp splitcube_2.0.mesh.time.00000.inp 
-\begin_inset Formula $\backslash$
-\end_inset
-
-
+$ makeucd m=splitcube_2.0.mesh.inp o=splitcube_2.0.mesh.t0.inp 
+\backslash
+ p=splitcube_2.0.mesh.split.time.00000.inp 
+\backslash
+ g=splitcube_2.0.gmesh.time.00000.inp
 \end_layout
 
 \begin_layout LyX-Code
-> splitcube_2.0.mesh.t00000.inp
-\end_layout
-
-\begin_layout LyX-Code
-$ cat splitcube_2.1.mesh.inp splitcube_2.1.mesh.time.00000.inp 
-\begin_inset Formula $\backslash$
-\end_inset
-
-
-\end_layout
-
-\begin_layout LyX-Code
-> splitcube_2.1.mesh.t00000.inp
+$ makeucd m=splitcube_2.1.mesh.inp o=splitcube_2.1.mesh.t0.inp 
+\backslash
+ p=splitcube_2.1.mesh.split.time.00000.inp 
+\backslash
+ g=splitcube_2.1.gmesh.time.00000.inp
 \end_layout
 
 \end_deeper
