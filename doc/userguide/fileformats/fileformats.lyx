@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -1683,7 +1683,7 @@ The xx.keyval file is now obsolete (although it may still be used if desired).
 \end_layout
 
 \begin_layout Subsubsection
-Winkler forces
+Winkler Forces
 \end_layout
 
 \begin_layout Standard
