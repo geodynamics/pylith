@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -207,25 +207,30 @@ preview false
 \begin_layout Bibliography
 
 \bibitem {Williams:etal:2005}
-Williams, C.
- A., B.
- Aagaard, M.
- G.
+Williams, C.A., B.
+ Aagaard, M.G.
  Knepley (2005), Development of software for studying earthquakes across
  multiple spatial and temporal scales by coupling quasi-static and dynamic
- simulations, Eos Trans.
- AGU, 86 (52), Fall Meet.
+ simulations, 
+\emph on
+Eos Trans.
+ AGU
+\emph default
+, 86(52), Fall Meet.
  Suppl., Abstract S53A-1072.
 \end_layout
 
 \begin_layout Bibliography
 
 \bibitem {Williams:2006}
-Williams, C.
- A.
+Williams, C.A.
  (2006), Development of a package for modeling stress in the lithosphere,
- Eos Trans.
- AGU, 87(36), Jt.
+ 
+\emph on
+Eos Trans.
+ AGU,
+\emph default
+ 87(36), Jt.
  Assem.
  Suppl., Abstract T24A-01 Invited.
 \end_layout
@@ -250,10 +255,8 @@ Int.
 \begin_layout Bibliography
 
 \bibitem [4]{Zienkiewicz:Taylor:2000}
-Zienkiewicz, O.
- C.
- and R.
- L.
+Zienkiewicz, O.C.
+ and R.L.
  Taylor (2000), 
 \shape italic
 The Finite Element Method, Fifth Edition, Volume 2: Solid Mechanics

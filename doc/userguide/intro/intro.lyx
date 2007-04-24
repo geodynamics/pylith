@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -68,9 +68,12 @@ This first version of PyLith is a direct descendant of Lithomop and marks
 This release of PyLith offers both tetrahedral and hexahedral linear elements,
  the use of traction boundary conditions, load histories for split nodes,
  a number of new material models, including power-law Maxwell and generalized
- Maxwell (3 Maxwell models in parallel), the use of .cfg files for setting
- simulation parameters, much simpler top-level code structure, and several
- bug fixes.
+ Maxwell (3 Maxwell models in parallel), the use of 
+\family typewriter
+.cfg
+\family default
+ files for setting simulation parameters, much simpler top-level code structure,
+ and several bug fixes.
 \end_layout
 
 \begin_layout Standard
@@ -78,7 +81,7 @@ PyLith is currently being rewritten from scratch to create a much more modular,
  powerful simulation package.
  This new code will include earthquake dynamics (both rupture propagation
  and seismic wave propagation).
- A beta release is expected in early 2007.
+ A beta release is expected in Spring 2007.
 \end_layout
 
 \begin_layout Section
@@ -92,7 +95,7 @@ ce only enters through the constitutive relationships and the loading conditions
  only formulation available at present.
  If a large deformation solution is desired, interested users may contact
  
-\begin_inset LatexCommand \htmlurl[Charles Williams]{willic3@rpi.edu}
+\begin_inset LatexCommand \url[Charles Williams]{willic3@rpi.edu}
 
 \end_inset
 
@@ -181,7 +184,7 @@ The
 \begin_inset Formula $f_{i}^{S_{f}}$
 \end_inset
 
-are the components of the surface tractions, and the 
+ are the components of the surface tractions, and the 
 \begin_inset Formula $u_{i}^{S_{u}}$
 \end_inset
 
@@ -241,7 +244,7 @@ where
  In our actual computations, we use several different formulations, depending
  on the constitutive relation.
  One such formulation decomposes the stresses into the deviatoric and volumetric
- parts, using ideas based on the "effective stress function" 
+ parts, using ideas based on the ``effective stress function'' 
 \begin_inset LatexCommand \cite{Kojic:Bathe:1987}
 
 \end_inset
@@ -249,7 +252,8 @@ where
 .
  This allows the time integration of stresses to be performed in terms of
  a single parameter related to the second deviatoric stress invariant.
- We also use viscoelastic formulations based on those of 
+ We also use viscoelastic formulations based on those of Zienkiewicz and
+ Taylor 
 \begin_inset LatexCommand \cite{Zienkiewicz:Taylor:2000}
 
 \end_inset
@@ -341,9 +345,9 @@ s the task of code parallelization.
 Sieve
 \family default
  also provides a number of other useful features, such as the ability to
- grab 'sections' of a mesh that share common characteristics, such as elements
- of the same material type or nodes to which boundary conditions have been
- applied.
+ grab ``sections'' of a mesh that share common characteristics, such as
+ elements of the same material type or nodes to which boundary conditions
+ have been applied.
 \end_layout
 
 \begin_layout Subsection
@@ -372,8 +376,8 @@ Design Patterns
 et al
 \shape default
 .
- condense the concept of a framework concept down to, "When you use a framework,
- you reuse the main body and write the code it calls." In the context of
+ condense the concept of a framework concept down to, ``When you use a framework
+, you reuse the main body and write the code it calls.'' In the context of
  frameworks and object-oriented programming, Pyre can be thought of as a
  collection of classes and the way their instances interact.
  Programming applications based on Pyre will look similar to those written
