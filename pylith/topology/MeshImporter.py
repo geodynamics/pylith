@@ -69,6 +69,13 @@ class MeshImporter(MeshGenerator):
     return mesh
 
 
+  def createCubeBoundary(self):
+    """
+    Hook for creating cube boundary.
+    """
+    return self.importer.createCubeBoundary(self.debug)
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
