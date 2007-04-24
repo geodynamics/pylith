@@ -46,11 +46,38 @@ public :
    */
 
   static
-  void calcTotalStrain(std::vector<double_array>* strain,
-		       const double_array& basisDeriv,
-		       const double* disp,
-		       const int dimension,
-		       const int numBasis);
+  void calcTotalStrain1D(std::vector<double_array>* strain,
+			 const double_array& basisDeriv,
+			 const double* disp,
+			 const int numBasis);
+
+  /** Compute total strain in at quadrature points of a cell.
+   *
+   * @param strain Strain tensor at quadrature points.
+   * @param basisDeriv Derivatives of basis functions at quadrature points.
+   * @param disp Displacement at vertices of cell.
+   * @param numBasis Number of basis functions for cell.
+   */
+
+  static
+  void calcTotalStrain2D(std::vector<double_array>* strain,
+			 const double_array& basisDeriv,
+			 const double* disp,
+			 const int numBasis);
+
+  /** Compute total strain in at quadrature points of a cell.
+   *
+   * @param strain Strain tensor at quadrature points.
+   * @param basisDeriv Derivatives of basis functions at quadrature points.
+   * @param disp Displacement at vertices of cell.
+   * @param numBasis Number of basis functions for cell.
+   */
+
+  static
+  void calcTotalStrain3D(std::vector<double_array>* strain,
+			 const double_array& basisDeriv,
+			 const double* disp,
+			 const int numBasis);
 
 }; // IntegratorElasticity
 
