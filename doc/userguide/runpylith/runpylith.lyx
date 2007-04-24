@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -47,7 +47,7 @@ Supported Finite Elements
 \begin_layout Standard
 PyLith currently only supports the 4-node linear tetrahedral and 8-node
  linear hexahedral elements.
- The node ordering must follow the convention shown in figures\InsetSpace ~
+ The node ordering must follow the convention shown in Figures\InsetSpace ~
 
 \begin_inset LatexCommand \ref{fig:tet4}
 
@@ -309,7 +309,7 @@ xx.fuldat
 Time steps for which full output is requested.
  
 \shape italic
-\color inherit
+\color default
 Required for time-dependent problems.
 \end_layout
 
@@ -527,7 +527,7 @@ none
 \end_layout
 
 \begin_layout Caption
-Setting pylith properties from the command line.
+Setting PyLith properties from the command line.
 \end_layout
 
 \end_inset
@@ -752,9 +752,9 @@ status open
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="1.3in">
-<column alignment="left" valignment="top" leftline="true" width="1.3in">
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="4in">
+<column alignment="left" valignment="top" leftline="true" width="1in">
+<column alignment="center" valignment="middle" leftline="true" width="1in">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="3.1in">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
