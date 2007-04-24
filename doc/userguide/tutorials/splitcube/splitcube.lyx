@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -89,7 +89,11 @@ The model domain is a cube with edges 1 km long (0 km
 \begin_inset Formula $\leq$
 \end_inset
 
- y 
+ 
+\begin_inset Formula $y$
+\end_inset
+
+ 
 \begin_inset Formula $\leq$
 \end_inset
 
@@ -97,7 +101,11 @@ The model domain is a cube with edges 1 km long (0 km
 \begin_inset Formula $\leq$
 \end_inset
 
- z 
+ 
+\begin_inset Formula $z$
+\end_inset
+
+ 
 \begin_inset Formula $\leq$
 \end_inset
 
@@ -128,7 +136,11 @@ The strike-slip fault dips at an angle of 90 degrees.
 \begin_inset Formula $x<0.5$
 \end_inset
 
- km and a y-displacement of 1.0 m for 
+ km and a 
+\begin_inset Formula $y$
+\end_inset
+
+-displacement of 1.0 m for 
 \begin_inset Formula $x>0.5$
 \end_inset
 
@@ -167,7 +179,7 @@ Workflow
 
 \begin_layout Standard
 The complete workflow used to create the input files for this tutorial is
- shown in figure\InsetSpace ~
+ shown in Figure\InsetSpace ~
 
 \begin_inset LatexCommand \ref{fig:splitcube:workflow}
 
@@ -198,7 +210,7 @@ status open
 \end_layout
 
 \begin_layout Caption
-Workflow for setting up input files for example with simple strike-slip
+Workflow for setting up input files for an example with simple strike-slip
  fault.
 \end_layout
 
@@ -216,7 +228,7 @@ Workflow for setting up input files for example with simple strike-slip
 \end_layout
 
 \begin_layout Subsection
-Download and unpack
+Download and Unpack
 \end_layout
 
 \begin_layout Standard
@@ -316,7 +328,7 @@ TIP:
 tutor.py
 \family default
 \color none
- in mode "clean" with step "all" to clear out all old tutorial files.
+ in mode ``clean'' with step ``all'' to clear out all old tutorial files.
  
 \end_layout
 
@@ -333,7 +345,7 @@ $ ./tutor.py -m clean -s all
 \end_layout
 
 \begin_layout Subsection
-Generate the mesh
+Generate the Mesh
 \end_layout
 
 \begin_layout Standard
@@ -360,7 +372,8 @@ splitcube/workarea
 tutor.py
 \family default
 \color none
- for step "mesh" with mode "retrieve" to fetch the geometry file for 
+ for step ``mesh'' with mode ``retrieve'' to fetch the geometry file for
+ 
 \family typewriter
 \color black
 NETGEN
@@ -373,7 +386,7 @@ NETGEN
 tutor.py
 \family default
 \color none
- for this step with mode "clean" to clean out old files.
+ for this step with mode ``clean'' to clean out old files.
 \end_layout
 
 \begin_deeper
@@ -469,8 +482,7 @@ Export the mesh to a file named
 splitcube.netgen
 \family default
 \color none
-, making sure the export filetype is "Neutral format".
- 
+, making sure the export filetype is ``Neutral format.'' 
 \end_layout
 
 \begin_layout Enumerate
@@ -483,7 +495,7 @@ NETGEN
 \end_layout
 
 \begin_layout Subsection
-Set up simulation input files
+Set Up Simulation Input Files
 \end_layout
 
 \begin_layout Standard
@@ -496,7 +508,7 @@ Run
 \family typewriter
 tutor.py
 \family default
- for step "setup" with mode "retrieve" to fetch files from the archive.
+ for step ``setup'' with mode ``retrieve'' to fetch files from the archive.
 \end_layout
 
 \begin_deeper
@@ -542,7 +554,7 @@ readnetgen
 NETGEN
 \family default
  output file into PyLith compatible input files.
- It will ask for a root filename, enter 
+ It will ask for a root file name; enter 
 \family typewriter
 splitcube
 \family default
@@ -681,7 +693,7 @@ NETGEN
 
 \end_deeper
 \begin_layout Subsection
-Run the simulation on one processor
+Run the Simulation on One Processor
 \end_layout
 
 \begin_layout Standard
@@ -693,8 +705,8 @@ Run
 \family typewriter
 tutor.py
 \family default
- for step "run1" with mode "retrieve" to fetch some parameter files from
- the archive.
+ for step ``run1'' with mode ``retrieve'' to fetch some parameter files
+ from the archive.
 \end_layout
 
 \begin_deeper
@@ -747,7 +759,7 @@ mklinks.py
 
 \begin_layout Enumerate
 Since we want to run the same simulation using either one or two processors,
- we need unique filenames for each case so that files do not get overwritten
+ we need unique file names for each case so that files do not get overwritten
  or mixed up with each other.
  This is accomplished with the 
 \family typewriter
@@ -798,7 +810,7 @@ splitcube.ascii
  For large problems, this file can become quite large.
  You can suppress creation of this file by setting 
 \family typewriter
-asciioutput=none
+asciiOutput=none
 \family default
  in 
 \family typewriter
@@ -836,7 +848,7 @@ raggedbottom
 \end_layout
 
 \begin_layout Subsection
-Visualize the single processor run
+Visualize the Single Processor Run
 \end_layout
 
 \begin_layout Standard
@@ -852,13 +864,15 @@ Now it is time to visualize the results of the simulation.
 AVS
 \family default
 , e.g., 
-\family typewriter
-ParaView
-\family default
+\begin_inset LatexCommand \htmlurl[ParaView]{www.ParaView.org}
+
+\end_inset
+
  and 
-\family typewriter
-Iris Explorer
-\family default
+\begin_inset LatexCommand \htmlurl[Iris Explorer]{www.nag.co.uk/welcome_iec.asp}
+
+\end_inset
+
 .
  We will use the open-source application 
 \family typewriter
@@ -872,8 +886,8 @@ If necessary, run
 \family typewriter
 tutor.py
 \family default
- for step "viz1" with mode "retrieve" to fetch the simulation output from
- the archive.
+ for step ``viz1'' with mode ``retrieve'' to fetch the simulation output
+ from the archive.
 \end_layout
 
 \begin_deeper
@@ -917,6 +931,8 @@ makeucd
 \begin_layout LyX-Code
 $ makeucd m=splitcube_1.0.mesh.inp o=splitcube_1.0.mesh.t0.inp 
 \backslash
+
+\newline
  p=splitcube_1.0.mesh.time.00000.inp 
 \backslash
  g=splitcube_1.0.gmesh.time.00000.inp
@@ -946,7 +962,12 @@ Load the UCD file that you have just created (
 \family typewriter
 splitcube_1.0.mesh.t0.inp
 \family default
-) by selecting 
+):
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Select 
 \family sans
 File
 \color black
@@ -959,19 +980,48 @@ File
 Open Data
 \family default
 .
- Select the file in the dialog box and then click the 
+ 
+\end_layout
+
+\begin_layout Enumerate
+
+\color none
+Highlight the file in the dialog box and then click the 
 \family sans
 Open
 \family default
  button.
- Click the 
+ 
+\end_layout
+
+\begin_layout Enumerate
+
+\color none
+Click the 
 \family sans
 Accept
 \family default
  button.
- You should see a color rendering of the x displacements.
- Because the x displacements are negligible, change the rendering to the
- y displacements by selecting the 
+ You should see a color rendering of the 
+\begin_inset Formula $x$
+\end_inset
+
+ displacements.
+ 
+\end_layout
+
+\begin_layout Enumerate
+
+\color none
+Because the 
+\begin_inset Formula $x$
+\end_inset
+
+ displacements are negligible, change the rendering to the 
+\begin_inset Formula $y$
+\end_inset
+
+ displacements by selecting the 
 \family sans
 Display
 \family default
@@ -984,8 +1034,14 @@ Point XDispl
 Point YDispl
 \family default
 .
- You can use the mouse to rotate, translate, and zoom.
- Your image should look similar to the one in figure\InsetSpace ~
+ 
+\end_layout
+
+\begin_layout Enumerate
+
+\color none
+You can use the mouse to rotate, translate, and zoom.
+ Your image should look similar to the one in Figure\InsetSpace ~
 
 \begin_inset LatexCommand \ref{fig:splitcube:ydisp:t0}
 
@@ -994,7 +1050,6 @@ Point YDispl
 .
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
 \begin_inset Float figure
 placement H
@@ -1017,8 +1072,12 @@ status open
 \end_layout
 
 \begin_layout Caption
-ParaView rendering of displacement in y-direction at time step 0 (elastic
- solution to the imposed dislocation) for the simple strike-slip example.
+ParaView rendering of displacement in 
+\begin_inset Formula $y$
+\end_inset
+
+-direction at time step 0 (elastic solution to the imposed dislocation)
+ for the simple strike-slip example.
 \end_layout
 
 \begin_layout Standard
@@ -1047,9 +1106,18 @@ Display
 
 \begin_layout Enumerate
 Let's show the displacements as vectors.
- Click on the calculator icon, and add the three displacement components
- together.
- Enter 
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Click on the calculator icon, and add the three displacement components
+ together:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Enter 
 \family typewriter
 XDispl*iHat + YDispl*jHat + ZDispl*kHat 
 \family default
@@ -1058,7 +1126,11 @@ in the
 Calculator
 \family default
  box.
- Note the variable names are available by clicking on the 
+ 
+\end_layout
+
+\begin_layout Enumerate
+Note the variable names are available by clicking on the 
 \family sans
 scalars
 \family default
@@ -1075,26 +1147,51 @@ jHat
 kHat
 \family default
  buttons are on the right side of the top row.
- Click on the 
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Click on the 
 \family sans
 Accept
 \family default
  button.
- To show the dataset as vectors, click on the 
+ 
+\end_layout
+
+\begin_layout Enumerate
+To show the dataset as vectors, click on the 
 \family sans
 glyph
 \family default
  button (looks like several dots) in the toolbar.
- After clicking the 
+ 
+\end_layout
+
+\begin_layout Enumerate
+After clicking the 
 \family sans
 Accept
 \family default
  button, you should have a vector plot.
- You can turn on/off other datasets by clicking on the eye icon to the left
+ 
+\end_layout
+
+\begin_layout Enumerate
+You can turn on/off other datasets by clicking on the eye icon to the left
  of the dataset name.
- If you color the surfaces using the x-displacements field while also making
- the displacement vectors visible (colored using property), you should see
- an image similar to the one in figure\InsetSpace ~
+ 
+\end_layout
+
+\begin_layout Enumerate
+If you color the surfaces using the 
+\begin_inset Formula $x$
+\end_inset
+
+-displacements field while also making the displacement vectors visible
+ (colored using property), you should see an image similar to the one in
+ Figure\InsetSpace ~
 
 \begin_inset LatexCommand \ref{fig:splitcube:ydisp:vec:t0}
 
@@ -1103,17 +1200,12 @@ Accept
 .
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
 \begin_inset Float figure
 placement H
 wide false
 sideways false
 status open
-
-\begin_layout Standard
- 
-\end_layout
 
 \begin_layout Standard
 \align center
@@ -1126,9 +1218,12 @@ status open
 \end_layout
 
 \begin_layout Caption
-ParaView rendering of displacement in y-direction and displacement vectors
- at time step 0 (elastic solution to the imposed dislocation) for the simple
- strike-slip example.
+ParaView rendering of displacement in 
+\begin_inset Formula $y$
+\end_inset
+
+-direction and displacement vectors at time step 0 (elastic solution to
+ the imposed dislocation) for the simple strike-slip example.
 \end_layout
 
 \begin_layout Standard
@@ -1146,12 +1241,12 @@ ParaView rendering of displacement in y-direction and displacement vectors
 
 \end_deeper
 \begin_layout Subsection
-Run the simulation on two processors
+Run the Simulation on Two Processors
 \end_layout
 
 \begin_layout Standard
 In this step we will run the simulation on two processors.
- Even if your machine only has one processor, a "multiprocessor" job will
+ Even if your machine only has one processor, a ``multiprocessor'' job will
  run as multiple processes on the single processor.
  In such cases, the job will run slower than the single processor run, but
  the two processes will behave independently as if they are on different
@@ -1163,8 +1258,8 @@ Run
 \family typewriter
 tutor.py
 \family default
- for step "run2" with mode "retrieve" to make sure all parameter files are
- available.
+ for step ``run2'' with mode ``retrieve'' to make sure all parameter files
+ are available.
 \end_layout
 
 \begin_deeper
@@ -1225,7 +1320,11 @@ command = mpiexec -np 2
 \begin_layout Enumerate
 Run the simulation by executing 
 \family typewriter
-pylith3dapp.py pylith3d-np2.cfg
+pylith3dapp.py
+\family default
+ 
+\family typewriter
+pylith3d-np2.cfg
 \family default
 , where the variables set in 
 \family typewriter
@@ -1245,7 +1344,7 @@ $ pylith3dapp.py pylith3d-np2.cfg
 
 \end_deeper
 \begin_layout Subsection
-Visualize the two processor run
+Visualize the Two Processor Run
 \end_layout
 
 \begin_layout Standard
@@ -1264,8 +1363,8 @@ If necessary, run
 \family typewriter
 tutor.py
 \family default
- for step "viz2" with mode "retrieve" to fetch the simulation output from
- the archive.
+ for step ``viz2'' with mode ``retrieve'' to fetch the simulation output
+ from the archive.
 \end_layout
 
 \begin_deeper
@@ -1290,16 +1389,24 @@ makeucd
 \begin_layout LyX-Code
 $ makeucd m=splitcube_2.0.mesh.inp o=splitcube_2.0.mesh.t0.inp 
 \backslash
+
+\newline
  p=splitcube_2.0.mesh.split.time.00000.inp 
 \backslash
+
+\newline
  g=splitcube_2.0.gmesh.time.00000.inp
 \end_layout
 
 \begin_layout LyX-Code
 $ makeucd m=splitcube_2.1.mesh.inp o=splitcube_2.1.mesh.t0.inp 
 \backslash
+
+\newline
  p=splitcube_2.1.mesh.split.time.00000.inp 
 \backslash
+
+\newline
  g=splitcube_2.1.gmesh.time.00000.inp
 \end_layout
 
