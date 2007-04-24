@@ -75,6 +75,32 @@ class MeshIO(Component):
     return
 
 
+  def createCubeBoundary(self, debug):
+    """
+    Create cube boundary mesh and store in Sieve mesh object.
+
+    @returns PETSc mesh object containing cube boundary mesh
+    """
+    self._info.log("Creating cube boundary mesh")
+
+    # Set flags
+    ##self._sync()
+    self.cppHandle.debug = debug
+
+    # Initialize coordinate system
+    ##if self.coordsys is None:
+    ##  raise ValueError, "Coordinate system for mesh is unknown."
+    ##self.coordsys.initialize()
+
+    from pylith.topology.Mesh import Mesh
+    mesh = Mesh()
+    ##mesh.initialize(self.coordsys)
+
+    # Create boundary
+    self.cppHandle.createCubeBoundary(mesh.cppHandle)
+    return mesh
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):

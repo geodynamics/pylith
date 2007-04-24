@@ -57,6 +57,10 @@ class MeshGenerator(Component):
                                                                        "parmetis"]))
     partitioner.meta['tip'] = "Name of mesh partitioner."
 
+    from pylith.meshio.MeshIOAscii import MeshIOAscii
+    importer = pyre.inventory.facility("importer", factory=MeshIOAscii)
+    importer.meta['tip'] = "Mesh importer."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -70,12 +74,19 @@ class MeshGenerator(Component):
     return
 
 
-  def create(self, faults):
+  def create(self, boundary, faults = None):
     """
     Hook for creating mesh.
     """
     raise NotImplementedError, "MeshGenerator::create() not implemented."
     return
+
+
+  def createCubeBoundary(self):
+    """
+    Returns a Mesh that is the boundary of the unit cube
+    """
+    return self.inventory.importer.createCubeBoundary(self.debug)
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -88,6 +99,7 @@ class MeshGenerator(Component):
     self.debug = self.inventory.debug
     self.interpolate = self.inventory.interpolate
     self.partitioner = self.inventory.partitioner
+    self.importer    = self.inventory.importer
     return
 
 
@@ -97,7 +109,7 @@ class MeshGenerator(Component):
     """
     if not faults is None:
       for fault in faults:
-        fault.adjustTopology(mesh)
+        mesh.adjustTopology(fault)
     return
   
 

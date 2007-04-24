@@ -62,4 +62,15 @@ class TestMeshGenerator(unittest.TestCase):
     return
 
 
+  def test_distribution(self):
+    """
+    Test mesh distribution
+    """
+    generator = MeshGenerator()
+    generator.interpolate = True
+    generator.create(generator.createCubeBoundary())
+    self.assertEqual(True, generator.interpolate)
+    return
+
+
 # End of file 

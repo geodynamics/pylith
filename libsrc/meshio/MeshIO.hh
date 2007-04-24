@@ -79,6 +79,12 @@ public :
    */
   void write(ALE::Obj<ALE::Mesh>* mesh);
 
+  /** Create cube boundary mesh.
+   *
+   * @param mesh Pointer to PETSc mesh object
+   */
+  void createCubeBoundary(ALE::Obj<ALE::Mesh>* mesh);
+
 // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected :
 
