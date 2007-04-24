@@ -123,6 +123,7 @@ class PyLithApp(PetscApplication):
     ksp_view           = PetscProperty(default="true")
     ksp_rtol           = PetscProperty(default="1.0e-9")
     log_summary        = PetscProperty(default="true")
+    partitioner        = PetscProperty(default="chaco")
     pc_type            = PetscProperty(default="bjacobi")
     sub_pc_type        = PetscProperty(default="ilu")
     start_in_debugger  = PetscProperty()
