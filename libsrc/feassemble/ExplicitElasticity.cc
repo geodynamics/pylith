@@ -176,8 +176,8 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
     // Compute action for elastic terms
     if (1 == cellDim) {
       // Compute stresses
-      IntegratorElasticity::calcTotalStrain(&totalStrain, basisDeriv,
-					    dispTCell, cellDim, numBasis);
+      IntegratorElasticity::calcTotalStrain1D(&totalStrain, basisDeriv,
+					      dispTCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
@@ -197,8 +197,8 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 
     } else if (2 == cellDim) {
       // Compute stresses
-      IntegratorElasticity::calcTotalStrain(&totalStrain, basisDeriv,
-					    dispTCell, cellDim, numBasis);
+      IntegratorElasticity::calcTotalStrain2D(&totalStrain, basisDeriv,
+					      dispTCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
       
@@ -222,8 +222,8 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
       
     } else if (3 == cellDim) {
       // Compute stresses
-      IntegratorElasticity::calcTotalStrain(&totalStrain, basisDeriv,
-					    dispTCell, cellDim, numBasis);
+      IntegratorElasticity::calcTotalStrain3D(&totalStrain, basisDeriv,
+					      dispTCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
