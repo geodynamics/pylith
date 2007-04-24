@@ -69,7 +69,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   // Get fault vertices
   const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
 
-  // Create sections for fields
+  // Create and allocate sections for parameters
   delete _parameters; 
   _parameters = new feassemble::ParameterManager(faultMesh);
   if (0 == _parameters)
@@ -82,33 +82,25 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   const ALE::Obj<real_section_type>& finalSlip = 
     _parameters->getReal("final slip");
   assert(!finalSlip.isNull());
+  finalSlip->setFiberDimension(faultMesh->depthStratum(0), 3);
+  faultMesh->allocate(finalSlip);
 
   // Parameter: slip initiation time
   _parameters->addReal("slip time");
   const ALE::Obj<real_section_type>& slipTime = 
     _parameters->getReal("slip time");
   assert(!slipTime.isNull());
+  slipTime->setFiberDimension(faultMesh->depthStratum(0), 1);
+  faultMesh->allocate(slipTime);
 
   // Parameter: peak slip rate
   _parameters->addReal("peak rate");
   const ALE::Obj<real_section_type>& peakRate = 
     _parameters->getReal("peak rate");
   assert(!peakRate.isNull());
-  
-  // Allocate parameters
-  const Mesh::label_sequence::iterator vBegin = vertices->begin();
-  const Mesh::label_sequence::iterator vEnd = vertices->end();
-  for (Mesh::label_sequence::iterator v_iter=vBegin;
-       v_iter != vEnd;
-       ++v_iter) {
-    finalSlip->setFiberDimension(*v_iter, 3);
-    slipTime->setFiberDimension(*v_iter, 1);
-    peakRate->setFiberDimension(*v_iter, 1);
-  } // for
-  faultMesh->allocate(finalSlip);
-  faultMesh->allocate(slipTime);
+  peakRate->setFiberDimension(faultMesh->depthStratum(0), 1);
   faultMesh->allocate(peakRate);
-
+  
   // Open databases and set query values
   _dbFinalSlip->open();
   const char* slipValues[] = {"strike-slip", "dip-slip", "fault-opening"};
@@ -132,6 +124,8 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   double slipData[3];
   double slipTimeData;
   double peakRateData;
+  const Mesh::label_sequence::iterator vBegin = vertices->begin();
+  const Mesh::label_sequence::iterator vEnd = vertices->end();
   for (Mesh::label_sequence::iterator v_iter=vBegin; 
        v_iter != vEnd;
        ++v_iter) {
@@ -179,10 +173,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   _dbPeakRate->close();
 
   // Allocate slip field
-  for (Mesh::label_sequence::iterator v_iter=vBegin;
-       v_iter != vEnd;
-       ++v_iter)
-    _slipField->setFiberDimension(*v_iter, 3);
+  _slipField->setFiberDimension(faultMesh->depthStratum(0), 3);
   faultMesh->allocate(_slipField);
 } // initialize
 
