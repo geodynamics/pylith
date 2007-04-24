@@ -97,6 +97,16 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
 
+  /** :TODO:
+   *
+   * If cellDim and spaceDim are different, we need to transform
+   * displacements into cellDim, compute action, and transform result
+   * back into spaceDim. We get this information from the Jacobian and
+   * inverse of the Jacobian.
+   */
+  if (cellDim != spaceDim)
+    throw std::logic_error("Not implemented yet.");
+
   // Allocate vector for cell values (if necessary)
   _initCellVector();
 
@@ -163,16 +173,6 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
     if (err)
       throw std::runtime_error("Logging PETSc flops failed.");
     
-    /** :TODO:
-     *
-     * If cellDim and spaceDim are different, we need to transform
-     * displacements into cellDim, compute action, and transform
-     * result back into spaceDim. Can we get this from the inverse of
-     * the Jacobian?
-     */
-    if (cellDim != spaceDim)
-      throw std::logic_error("Not implemented yet.");
-
     // Compute action for elastic terms
     if (1 == cellDim) {
       // Compute stresses
