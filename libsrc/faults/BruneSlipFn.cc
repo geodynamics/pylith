@@ -70,7 +70,8 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
 
   // Create sections for fields
-  delete _parameters; _parameters = new feassemble::ParameterManager(mesh);
+  delete _parameters; 
+  _parameters = new feassemble::ParameterManager(faultMesh);
   if (0 == _parameters)
     throw std::runtime_error("Could not create manager for parameters of "
 			     "Brune slip time function.");
@@ -104,9 +105,9 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
     slipTime->setFiberDimension(*v_iter, 1);
     peakRate->setFiberDimension(*v_iter, 1);
   } // for
-  mesh->allocate(finalSlip);
-  mesh->allocate(slipTime);
-  mesh->allocate(peakRate);
+  faultMesh->allocate(finalSlip);
+  faultMesh->allocate(slipTime);
+  faultMesh->allocate(peakRate);
 
   // Open databases and set query values
   _dbFinalSlip->open();
@@ -182,7 +183,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
        v_iter != vEnd;
        ++v_iter)
     _slipField->setFiberDimension(*v_iter, 3);
-  mesh->allocate(_slipField);
+  faultMesh->allocate(_slipField);
 } // initialize
 
 // ----------------------------------------------------------------------
