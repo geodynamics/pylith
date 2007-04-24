@@ -322,7 +322,7 @@ For quantities evaluated over a specific time period, we represent the initial
 \end_layout
 
 \begin_layout Subsection
-Generalized constitutive relation
+Generalized Constitutive Relation
 \end_layout
 
 \begin_layout Standard
@@ -430,7 +430,7 @@ and
 \end_layout
 
 \begin_layout Subsection
-Linear Maxwell viscoelastic material
+Linear Maxwell Viscoelastic Material
 \end_layout
 
 \begin_layout Standard
@@ -494,7 +494,7 @@ In this case it is possible to solve directly for the deviatoric stresses,
 \end_layout
 
 \begin_layout Subsubsection
-Tangent stress-strain relation
+Tangent Stress-Strain Relation
 \end_layout
 
 \begin_layout Standard
@@ -733,7 +733,7 @@ Equation
 \end_layout
 
 \begin_layout Subsubsection
-Tangent stress-strain relation
+Tangent Stress-Strain Relation
 \end_layout
 
 \begin_layout Standard
@@ -879,7 +879,7 @@ where we have neglected the changes in
 \end_layout
 
 \begin_layout Subsubsection
-Derivative of effective stress function
+Derivative of Effective Stress Function
 \end_layout
 
 \begin_layout Standard
