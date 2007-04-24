@@ -118,6 +118,10 @@ c
 c...  read error
 c
  30   continue
+c
+c...  handle case of an empty file (no EOF), otherwise return an error
+c
+        if(numtractions.eq.izero) return
         ierr=3
         close(kr)
         errstrng="scan_tractions"
