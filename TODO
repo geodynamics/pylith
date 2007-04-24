@@ -28,6 +28,8 @@ Cleanup
    a. Double check loops for calcConstant() and calcJacobian()
    b. Create unit test (construction of constant term and Jacobian)
 
+   c. Add unit test for IntegratorElasticity::calcTotalStrain
+
 2. Implement HDF5 output
 
 3. Implement PML boundary conditions

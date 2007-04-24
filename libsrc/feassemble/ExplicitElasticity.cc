@@ -15,6 +15,7 @@
 #include "ExplicitElasticity.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
+#include "IntegratorElasticity.hh" // USES IntegratorElasticity
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -174,10 +175,9 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 
     // Compute action for elastic terms
     if (1 == cellDim) {
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-	for (int iBasis=0; iBasis < numBasis; ++iBasis)
-	  totalStrain[iQuad][0] += 
-	    basisDeriv[iQuad*numBasis+iBasis] * dispTCell[iBasis];
+      // Compute stresses
+      IntegratorElasticity::calcTotalStrain(&totalStrain, basisDeriv,
+					    dispTCell, cellDim, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
@@ -196,18 +196,9 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 	throw std::runtime_error("Logging PETSc flops failed.");
 
     } else if (2 == cellDim) {
-      // Compute total strains
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  totalStrain[iQuad][0] += 
-	    basisDeriv[iQ+iBasis  ] * dispTCell[iBasis  ];
-	  totalStrain[iQuad][1] += 
-	    basisDeriv[iQ+iBasis+1] * dispTCell[iBasis+1];
-	  totalStrain[iQuad][2] += 
-	    0.5 * (basisDeriv[iQ+iBasis+1] * dispTCell[iBasis  ] +
-		   basisDeriv[iQ+iBasis  ] * dispTCell[iBasis+1]);
-	} // for
-      } // for
+      // Compute stresses
+      IntegratorElasticity::calcTotalStrain(&totalStrain, basisDeriv,
+					    dispTCell, cellDim, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
       
@@ -230,26 +221,9 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 	throw std::runtime_error("Logging PETSc flops failed.");
       
     } else if (3 == cellDim) {
-      // Compute total strains
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  totalStrain[iQuad][0] += 
-	    basisDeriv[iQ+iBasis  ] * dispTCell[iBasis  ];
-	  totalStrain[iQuad][1] += 
-	    basisDeriv[iQ+iBasis+1] * dispTCell[iBasis+1];
-	  totalStrain[iQuad][2] += 
-	    basisDeriv[iQ+iBasis+2] * dispTCell[iBasis+2];
-	  totalStrain[iQuad][3] += 
-	    0.5 * (basisDeriv[iQ+iBasis+1] * dispTCell[iBasis  ] +
-		   basisDeriv[iQ+iBasis  ] * dispTCell[iBasis+1]);
-	  totalStrain[iQuad][4] += 
-	    0.5 * (basisDeriv[iQ+iBasis+2] * dispTCell[iBasis+1] +
-		   basisDeriv[iQ+iBasis+1] * dispTCell[iBasis+2]);
-	  totalStrain[iQuad][5] += 
-	    0.5 * (basisDeriv[iQ+iBasis+2] * dispTCell[iBasis  ] +
-		   basisDeriv[iQ+iBasis  ] * dispTCell[iBasis+2]);
-	} // for
-      } // for
+      // Compute stresses
+      IntegratorElasticity::calcTotalStrain(&totalStrain, basisDeriv,
+					    dispTCell, cellDim, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
