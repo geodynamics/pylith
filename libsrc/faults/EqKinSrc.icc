@@ -1,0 +1,25 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_faults_eqkinsrc_hh)
+#error "EqKinSrc.icc can only be included from EqKinSrc.hh"
+#endif
+
+// Create copy of fault.
+inline
+pylith::faults::EqKinSrc*
+pylith::faults::EqKinSrc::clone(void) const {
+  return new EqKinSrc(*this);
+} // clone
+
+
+// End of file 

@@ -60,7 +60,7 @@ public :
    */
   const ALE::Obj<real_section_type>& getReal(const char* name);
 
-// PRIVATE METHODS //////////////////////////////////////////////////////
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
   /// Not implemented

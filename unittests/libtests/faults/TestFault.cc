@@ -46,6 +46,7 @@ pylith::faults::TestFault::testLabel(void)
   CPPUNIT_ASSERT_EQUAL(label, fault.label());
 } // testLabel
     
+#if 0
 // ----------------------------------------------------------------------
 // Test initialize()
 void
@@ -53,6 +54,7 @@ pylith::faults::TestFault::testInitialize(void)
 { // testInitialize
   throw std::logic_error("Need to implement test.");
 } // testInitialize
+#endif
 
 
 // End of file 

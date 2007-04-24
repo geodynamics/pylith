@@ -53,6 +53,12 @@ public :
    */
   Fault* clone(void) const;  
 
+  /** Set kinematic earthquake source.
+   *
+   * @param src Kinematic earthquake source.
+   */
+  void eqsrc(EqKinSrc* src);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 

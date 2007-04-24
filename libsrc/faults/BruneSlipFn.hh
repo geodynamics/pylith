@@ -34,12 +34,19 @@ namespace pylith {
   } // faults
 } // pylith
 
+/// Namespace for spatialdata package
+namespace spatialdata {
+  namespace spatialdb {
+    class SpatialDB;
+  } // spatialdb
+} // spatialdata
+
 /// C++ implementation of Brune slip time function.
 class pylith::faults::BruneSlipFn : public SlipTimeFn
 { // class BruneSlipFn
   friend class TestBruneSlipFn; // unit testing
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
+// PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
   /// Default constructor.
@@ -55,19 +62,43 @@ public :
    */
   SlipTimeFn* clone(void) const;  
 
-  /** Compute slip using slip time function.
+  /** Set spatial database for final slip.
    *
-   * @param t Time relative to slip starting time at point
-   * @param finalSlip Final slip at point
-   * @param peakRate Peak slip rate at point
-   *
-   * @returns Slip at point at time t
+   * @param db Spatial database
    */
-  double compute(const double t,
-		 const double finalSlip,
-		 const double peakRate) const;
+  void dbFinalSlip(spatialdata::spatialdb::SpatialDB* const db);
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
+  /** Set spatial database for slip initiation time.
+   *
+   * @param db Spatial database
+   */
+  void dbSlipTime(spatialdata::spatialdb::SpatialDB* const db);
+
+  /** Set spatial database for peak slip rate.
+   *
+   * @param db Spatial database
+   */
+  void dbPeakRate(spatialdata::spatialdb::SpatialDB* const db);
+
+  /** Initialize slip time function.
+   *
+   * @param dbSlip Spatial database for slip.
+   * @param dbSlipTime Spatial database for slip initiation time.
+   * @param dbPeakRate Spatial database for peak slip rate.
+   */
+  void initialize(const ALE::Obj<Mesh>& mesh,
+		  const spatialdata::geocoords::CoordSys* cs,
+		  const std::set<Mesh::point_type>& vertices);
+
+  /** Get slip on fault surface at time t.
+   *
+   * @param t Time t.
+   * @param vertices Vertices on fault surface.
+   */
+  const ALE::Obj<real_section_type>& slip(const double t,
+				 const std::set<Mesh::point_type>& vertices);
+
+// PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
   /** Copy constructor.
@@ -76,13 +107,43 @@ protected :
    */
   BruneSlipFn(const BruneSlipFn& m);
 
-  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
   /// Not implemented
   const BruneSlipFn& operator=(const BruneSlipFn& f);
 
-}; // class FaultCohesiveKin
+// PRIVATE METHODS //////////////////////////////////////////////////////
+private :
+
+  /** Compute slip using slip time function.
+   *
+   * @param t Time relative to slip starting time at point
+   * @param finalSlip Final slip at point
+   * @param peakRate Peak slip rate at point
+   *
+   * @returns Slip at point at time t
+   */
+  static
+  double _slip(const double t,
+	       const double finalSlip,
+	       const double peakRate);
+
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
+
+  ALE::Obj<real_section_type> _slipField; ///< Slip field on fault surface
+
+  /// Spatial database for final slip
+  spatialdata::spatialdb::SpatialDB* _dbFinalSlip;
+
+  /// Spatial database for slip time
+  spatialdata::spatialdb::SpatialDB* _dbSlipTime;
+
+   /// Spatial database for peak slip rate
+  spatialdata::spatialdb::SpatialDB* _dbPeakRate;
+
+}; // class BruneSlipFn
 
 #include "BruneSlipFn.icc" // inline methods
 

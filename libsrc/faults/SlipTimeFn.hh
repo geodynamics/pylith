@@ -20,13 +20,26 @@
 #if !defined(pylith_faults_sliptimefn_hh)
 #define pylith_faults_sliptimefn_hh
 
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
     class SlipTimeFn;
     class TestSlipTimeFn; // unit testing
   } // faults
+
+  namespace feassemble {
+    class ParameterManager; // HOLDSA ParameterManager
+  } // feassemble
 } // pylith
+
+/// Namespace for spatialdata package
+namespace spatialdata {
+  namespace geocoords {
+    class CoordSys;
+  } // geocoords
+} // spatialdata
 
 /// C++ abstract base class for Fault object.
 class pylith::faults::SlipTimeFn
@@ -50,18 +63,25 @@ public :
   virtual
   SlipTimeFn* clone(void) const = 0;
 
-  /** Compute slip using slip time function.
+  /** Initialize slip time function.
    *
-   * @param t Time relative to slip starting time at point
-   * @param finalSlip Final slip at point
-   * @param peakRate Peak slip rate at point
-   *
-   * @returns Slip at point at time t
+   * @param dbSlip Spatial database for slip.
+   * @param dbSlipTime Spatial database for slip initiation time.
+   * @param dbPeakRate Spatial database for peak slip rate.
    */
   virtual
-  double compute(const double t,
-		 const double finalSlip,
-		 const double peakRate) const = 0;
+  void initialize(const ALE::Obj<Mesh>& mesh,
+		  const spatialdata::geocoords::CoordSys* cs,
+		  const std::set<Mesh::point_type>& vertices) = 0;
+
+  /** Get slip on fault surface at time t.
+   *
+   * @param t Time t.
+   * @param vertices Vertices on fault surface.
+   */
+  virtual
+  const ALE::Obj<real_section_type>& slip(const double t,
+			      const std::set<Mesh::point_type>& vertices) = 0;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -77,6 +97,12 @@ private :
 
   /// Not implemented
   const SlipTimeFn& operator=(const SlipTimeFn& f);
+
+  // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected :
+
+  /// Parameters for slip time function
+  feassemble::ParameterManager* _parameters;
 
 }; // class SlipTimeFn
 
