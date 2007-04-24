@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -61,7 +61,11 @@ The model domain is a cube with edges 24 km long (0 km
 \begin_inset Formula $\leq$
 \end_inset
 
- x 
+ 
+\begin_inset Formula $x$
+\end_inset
+
+ 
 \begin_inset Formula $\leq$
 \end_inset
 
@@ -69,7 +73,11 @@ The model domain is a cube with edges 24 km long (0 km
 \begin_inset Formula $\leq$
 \end_inset
 
- y 
+ 
+\begin_inset Formula $y$
+\end_inset
+
+ 
 \begin_inset Formula $\leq$
 \end_inset
 
@@ -77,7 +85,11 @@ The model domain is a cube with edges 24 km long (0 km
 \begin_inset Formula $\leq$
 \end_inset
 
- z 
+ 
+\begin_inset Formula $z$
+\end_inset
+
+ 
 \begin_inset Formula $\leq$
 \end_inset
 
@@ -86,7 +98,11 @@ The model domain is a cube with edges 24 km long (0 km
 \begin_inset Formula $\leq$
 \end_inset
 
- z 
+ 
+\begin_inset Formula $z$
+\end_inset
+
+ 
 \begin_inset Formula $\leq$
 \end_inset
 
@@ -94,7 +110,11 @@ The model domain is a cube with edges 24 km long (0 km
 \begin_inset Formula $\leq$
 \end_inset
 
- z 
+ 
+\begin_inset Formula $z$
+\end_inset
+
+ 
 \begin_inset Formula $<$
 \end_inset
 
@@ -122,13 +142,24 @@ The model domain is a cube with edges 24 km long (0 km
 
 \begin_layout Standard
 The reverse fault dips at an angle of 45 degrees.
- The top of the fault sits at x = 4 km with the bottom of the fault at x
+ The top of the fault sits at 
+\begin_inset Formula $x$
+\end_inset
+
+ = 4 km with the bottom of the fault at 
+\begin_inset Formula $x$
+\end_inset
+
  = 20 km.
  The fault surface is confined to the region 0 km 
 \begin_inset Formula $\leq$
 \end_inset
 
- y 
+ 
+\begin_inset Formula $y$
+\end_inset
+
+ 
 \begin_inset Formula $\leq$
 \end_inset
 
@@ -136,7 +167,11 @@ The reverse fault dips at an angle of 45 degrees.
 \begin_inset Formula $\leq$
 \end_inset
 
- z 
+ 
+\begin_inset Formula $z$
+\end_inset
+
+ 
 \begin_inset Formula $\leq$
 \end_inset
 
@@ -145,16 +180,39 @@ The reverse fault dips at an angle of 45 degrees.
 \begin_inset Formula $\leq$
 \end_inset
 
- z and y 
+ 
+\begin_inset Formula $z$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ 
 \begin_inset Formula $\leq$
 \end_inset
 
-12 km with a linear taper to 0 at z = -16 km and y = 16 km.
+ 12 km with a linear taper to 0 at 
+\begin_inset Formula $z$
+\end_inset
+
+ = -16 km and 
+\begin_inset Formula $y$
+\end_inset
+
+ = 16 km.
 \end_layout
 
 \begin_layout Standard
-The plane y = 0 is a plane of symmetry, so the y-DOF displacements on this
- face are zero.
+The plane 
+\begin_inset Formula $y$
+\end_inset
+
+ = 0 is a plane of symmetry, so the 
+\begin_inset Formula $y$
+\end_inset
+
+-DOF displacements on this face are zero.
  The boundary conditions on the other lateral faces and bottom of the mesh
  are the displacements from the analytical elastic solution.
  These displacements are held fixed through time.
@@ -192,7 +250,7 @@ Workflow
 
 \begin_layout Standard
 The complete workflow used to create the input files for this tutorial is
- shown in figure\InsetSpace ~
+ shown in Figure\InsetSpace ~
 
 \begin_inset LatexCommand \ref{fig:bmrsnog:workflow}
 
@@ -225,7 +283,7 @@ status open
 \end_layout
 
 \begin_layout Caption
-Workflow for setting up input files for benchmark with reverse slip and
+Workflow for setting up input files for a benchmark with reverse slip and
  no gravity.
 \end_layout
 
@@ -243,7 +301,7 @@ Workflow for setting up input files for benchmark with reverse slip and
 \end_layout
 
 \begin_layout Subsection
-Download and unpack
+Download and Unpack
 \end_layout
 
 \begin_layout Standard
@@ -266,9 +324,9 @@ $ tar -zxvf pylith-0.8.2_tutorials.tgz
 
 \end_deeper
 \begin_layout Enumerate
-Go to the
+Go to the 
 \family typewriter
- tutorials/reversenog
+tutorials/reversenog
 \family default
  directory.
  The 
@@ -327,7 +385,7 @@ TIP:
 \family typewriter
 tutor.py
 \family default
- in mode "clean" with step "all" to clear out all old tutorial files.
+ in mode ``clean'' with step ``all'' to clear out all old tutorial files.
  
 \end_layout
 
@@ -344,7 +402,7 @@ $ ./tutor.py -m clean -s all
 \end_layout
 
 \begin_layout Subsection
-Generate the mesh
+Generate the Mesh
 \end_layout
 
 \begin_layout Standard
@@ -365,7 +423,8 @@ reversenog/workarea
 \family typewriter
 tutor.py
 \family default
- for step "mesh" with mode "retrieve" to fetch the geometry file for 
+ for step ``mesh'' with mode ``retrieve'' to fetch the geometry file for
+ 
 \family typewriter
 NETGEN
 \family default
@@ -374,7 +433,7 @@ NETGEN
 \family typewriter
 tutor.py
 \family default
- for this step with mode "clean" to clean out old files.
+ for this step with mode ``clean" to clean out old files.
 \end_layout
 
 \begin_deeper
@@ -449,8 +508,7 @@ Export the mesh to a file named
 \family typewriter
 bmrsnog.netgen
 \family default
-, making sure the export filetype is "Neutral format".
- 
+, making sure the export filetype is ``Neutral format.'' 
 \end_layout
 
 \begin_layout Enumerate
@@ -463,7 +521,7 @@ NETGEN
 \end_layout
 
 \begin_layout Subsection
-Set up simulation input files
+Set Up Simulation Input Files
 \end_layout
 
 \begin_layout Standard
@@ -476,7 +534,7 @@ Run
 \family typewriter
 tutor.py
 \family default
- for step "setup" with mode "retrieve" to fetch files from the archive.
+ for step ``setup'' with mode ``retrieve'' to fetch files from the archive.
 \end_layout
 
 \begin_deeper
@@ -530,7 +588,7 @@ readnetgen
 NETGEN
 \family default
  output file into PyLith compatible input files.
- It will ask for a root filename; enter 
+ It will ask for a root file name; enter 
 \family typewriter
 bmrsnog
 \family default
@@ -651,9 +709,9 @@ bmrsnog.aux
  file (which contains precomputed displacements for the external boundaries
  for the mesh produced from the 
 \family typewriter
-bmrsnog.geo 
+bmrsnog.geo
 \family default
-geometry).
+ geometry).
 \end_layout
 
 \begin_deeper
@@ -688,7 +746,7 @@ NETGEN
 
 \end_deeper
 \begin_layout Subsection
-Run the simulation on one processor
+Run the Simulation on One Processor
 \end_layout
 
 \begin_layout Standard
@@ -700,8 +758,8 @@ Run
 \family typewriter
 tutor.py
 \family default
- for step "run1" with mode "retrieve" to fetch some parameter files from
- the archive.
+ for step ``run1'' with mode ``retrieve'' to fetch some parameter files
+ from the archive.
 \end_layout
 
 \begin_deeper
@@ -754,7 +812,7 @@ mklinks.py
 
 \begin_layout Enumerate
 Since we want to run the same simulation using either one or two processors,
- we need unique filenames for each case so that files do not get overwritten
+ we need unique file names for each case so that files do not get overwritten
  or mixed up with each other.
  This is accomplished with the 
 \family typewriter
@@ -805,7 +863,7 @@ bmrsnog.ascii
  For large problems, this file can be quite large.
  You can suppress creation of this file by setting 
 \family typewriter
-asciioutput=none
+asciiOutput=none
 \family default
  in 
 \family typewriter
@@ -827,7 +885,7 @@ $ pylith3dapp.py
 
 \end_deeper
 \begin_layout Subsection
-Visualize the single processor run
+Visualize the Single Processor Run
 \end_layout
 
 \begin_layout Standard
@@ -843,13 +901,15 @@ Now it is time to visualize the results of the simulation.
 AVS
 \family default
 , e.g., 
-\family typewriter
-ParaView
-\family default
+\begin_inset LatexCommand \htmlurl[ParaView]{www.ParaView.org}
+
+\end_inset
+
  and 
-\family typewriter
-Iris Explorer
-\family default
+\begin_inset LatexCommand \htmlurl[Iris Explorer]{www.nag.co.uk/welcome_iec.asp}
+
+\end_inset
+
 .
  We will use the open-source application 
 \family typewriter
@@ -863,8 +923,8 @@ If necessary, run
 \family typewriter
 tutor.py
 \family default
- for step "viz1" with mode "retrieve" to fetch the simulation output from
- the archive.
+ for step ``viz1'' with mode ``retrieve'' to fetch the simulation output
+ from the archive.
 \end_layout
 
 \begin_deeper
@@ -908,13 +968,11 @@ makeucd
 \begin_layout LyX-Code
 $ makeucd m=bmrsnog_1.0.mesh.inp o=bmrsnog_1.0.mesh.t10.inp 
 \backslash
+
+\newline
  p=bmrsnog_1.0.mesh.time.00010.inp 
 \backslash
-
-\end_layout
-
-\begin_layout LyX-Code
-g=bmrsnog_1.0.gmesh.time.00010.inp
+ g=bmrsnog_1.0.gmesh.time.00010.inp
 \end_layout
 
 \end_deeper
@@ -941,7 +999,12 @@ Load the UCD file that you just created (
 \family typewriter
 bmrsnog_1.0.mesh.t10.inp
 \family default
-) by selecting 
+):
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Select 
 \family sans
 File 
 \begin_inset Formula $\triangleright$
@@ -950,19 +1013,39 @@ File
  Open Data
 \family default
 .
- Select the file in the dialog box and then click the 
+ 
+\end_layout
+
+\begin_layout Enumerate
+Highlight the file in the dialog box and then click the 
 \family sans
 Open
 \family default
  button.
- Click the 
+ 
+\end_layout
+
+\begin_layout Enumerate
+Click the 
 \family sans
 Accept
 \family default
  button.
- You should see a color rendering of the x displacements.
- You can use the mouse to rotate, translate, and zoom.
- Your image should look similar to the one in figure\InsetSpace ~
+ 
+\end_layout
+
+\begin_layout Enumerate
+You should see a color rendering of the 
+\begin_inset Formula $x$
+\end_inset
+
+ displacements.
+ 
+\end_layout
+
+\begin_layout Enumerate
+You can use the mouse to rotate, translate, and zoom.
+ Your image should look similar to the one in Figure\InsetSpace ~
 
 \begin_inset LatexCommand \ref{fig:ParaView-rendering-of}
 
@@ -972,17 +1055,12 @@ Accept
  
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
 \begin_inset Float figure
 placement H
 wide false
 sideways false
 status open
-
-\begin_layout Standard
- 
-\end_layout
 
 \begin_layout Standard
 \align center
@@ -999,8 +1077,12 @@ status open
 
 \end_inset
 
-ParaView rendering of displacement in x-direction at time step 10 (1 year
- after imposed dislocation) for the reverse slip without gravity benchmark.
+ParaView rendering of displacement in 
+\begin_inset Formula $x$
+\end_inset
+
+-direction at time step 10 (1 year after imposed dislocation) for the reverse
+ slip without gravity benchmark.
 \end_layout
 
 \end_inset
@@ -1021,9 +1103,19 @@ Display
 
 \begin_layout Enumerate
 Let's show the displacements as vectors.
- Click on the calculator icon, and add the three displacement components
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Click on the calculator icon, and add the three displacement components
  together.
- Enter 
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Enter 
 \family typewriter
 XDispl*iHat+YDispl*jHat+ZDispl*kHat
 \family default
@@ -1032,7 +1124,11 @@ XDispl*iHat+YDispl*jHat+ZDispl*kHat
 Calculator
 \family default
  box.
- Note the variable names are available by clicking on the 
+ 
+\end_layout
+
+\begin_layout Enumerate
+Note the variable names are available by clicking on the 
 \family sans
 scalars
 \family default
@@ -1049,26 +1145,51 @@ jHat
 kHat
 \family default
  buttons are on the right side of the top row.
- Click on the 
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Click on the 
 \family sans
 Accept
 \family default
  button.
- To show the dataset as vectors, click on the 
+ 
+\end_layout
+
+\begin_layout Enumerate
+To show the dataset as vectors, click on the 
 \family sans
 glyph
 \family default
  button (looks like several dots) in the toolbar.
- After clicking the 
+ 
+\end_layout
+
+\begin_layout Enumerate
+After clicking the 
 \family sans
 Accept
 \family default
  button, you should have a vector plot.
- You can turn on/off other datasets by clicking on the eye icon to the left
+ 
+\end_layout
+
+\begin_layout Enumerate
+You can turn on/off other datasets by clicking on the eye icon to the left
  of the dataset name.
- If you color the surfaces using the x-displacements field while also making
- the displacement vectors visible (colored using property), you should see
- an image similar to the one in figure\InsetSpace ~
+ 
+\end_layout
+
+\begin_layout Enumerate
+If you color the surfaces using the 
+\begin_inset Formula $x$
+\end_inset
+
+-displacements field while also making the displacement vectors visible
+ (colored using property), you should see an image similar to the one in
+ Figure\InsetSpace ~
 
 \begin_inset LatexCommand \ref{fig:ParaView-rendering-of2}
 
@@ -1077,7 +1198,6 @@ Accept
 .
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
 \begin_inset Float figure
 placement H
@@ -1104,9 +1224,12 @@ status open
 
 \end_inset
 
-ParaView rendering of displacement in x-direction and displacement vectors
- at time step 10 (1 year after imposed dislocation) for the reverse slip
- without gravity benchmark.
+ParaView rendering of displacement in 
+\begin_inset Formula $x$
+\end_inset
+
+-direction and displacement vectors at time step 10 (1 year after imposed
+ dislocation) for the reverse slip without gravity benchmark.
 \end_layout
 
 \end_inset
@@ -1116,12 +1239,12 @@ ParaView rendering of displacement in x-direction and displacement vectors
 
 \end_deeper
 \begin_layout Subsection
-Run the simulation on two processors
+Run the Simulation on Two Processors
 \end_layout
 
 \begin_layout Standard
 In this step we will run the simulation on two processors.
- Even if your machine only has one processor, a "multprocessor" job will
+ Even if your machine only has one processor, a ``multprocessor'' job will
  run as multiple processes on the single processor.
  In such cases, the job will run slightly slower than the single processor
  run, but the two processes will behave independently as if they are on
@@ -1133,8 +1256,8 @@ Run
 \family typewriter
 tutor.py
 \family default
- for step "run2" with mode "retrieve" to make sure all parameter files are
- available.
+ for step ``run2'' with mode ``retrieve'' to make sure all parameter files
+ are available.
 \end_layout
 
 \begin_deeper
@@ -1215,7 +1338,7 @@ $ pylith3dapp.py pylith3d-np2.cfg
 
 \end_deeper
 \begin_layout Subsection
-Visualize the two processor run
+Visualize the Two Processor Run
 \end_layout
 
 \begin_layout Standard
@@ -1234,8 +1357,8 @@ If necessary, run
 \family typewriter
 tutor.py
 \family default
- for step "viz2" with mode "retrieve" to fetch the simulation output from
- the archive.
+ for step ``viz2'' with mode ``retrieve'' to fetch the simulation output
+ from the archive.
 \end_layout
 
 \begin_deeper
@@ -1260,25 +1383,25 @@ makeucd
 \begin_layout LyX-Code
 $ makeucd m=bmrsnog_2.0.mesh.inp o=bmrsnog_2.0.mesh.t10.inp 
 \backslash
+
+\newline
  p=bmrsnog_2.0.mesh.time.00010.inp 
 \backslash
 
-\end_layout
-
-\begin_layout LyX-Code
-g=bmrsnog_2.0.gmesh.time.00010.inp
+\newline
+ g=bmrsnog_2.0.gmesh.time.00010.inp
 \end_layout
 
 \begin_layout LyX-Code
 $ makeucd m=bmrsnog_2.1.mesh.inp o=bmrsnog_2.1.mesh.t10.inp 
 \backslash
+
+\newline
  p=bmrsnog_2.1.mesh.time.00010.inp 
 \backslash
 
-\end_layout
-
-\begin_layout LyX-Code
-g=bmrsnog_2.1.gmesh.time.00010.inp
+\newline
+ g=bmrsnog_2.1.gmesh.time.00010.inp
 \end_layout
 
 \end_deeper
