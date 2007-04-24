@@ -17,6 +17,7 @@ subpkginclude_HEADERS = \
 	ExplicitElasticity.hh \
 	ExplicitElasticity.icc \
 	Integrator.hh \
+	IntegratorElasticity.hh \
 	IntegratorExplicit.hh \
 	Quadrature.hh \
 	Quadrature.icc \

@@ -30,6 +30,7 @@ libpylith_la_SOURCES = \
 	faults/SlipTimeFn.cc \
 	feassemble/ExplicitElasticity.cc \
 	feassemble/Integrator.cc \
+	feassemble/IntegratorElasticity.cc \
 	feassemble/IntegratorExplicit.cc \
 	feassemble/Quadrature.cc \
 	feassemble/Quadrature1D.cc \
