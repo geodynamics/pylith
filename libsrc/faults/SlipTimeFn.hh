@@ -65,23 +65,23 @@ public :
 
   /** Initialize slip time function.
    *
-   * @param dbSlip Spatial database for slip.
-   * @param dbSlipTime Spatial database for slip initiation time.
-   * @param dbPeakRate Spatial database for peak slip rate.
+   * @param mesh Finite-element mesh.
+   * @param faultMesh Fault finite-element mesh.
+   * @param cs Coordinate system for mesh
    */
   virtual
   void initialize(const ALE::Obj<Mesh>& mesh,
-		  const spatialdata::geocoords::CoordSys* cs,
-		  const std::set<Mesh::point_type>& vertices) = 0;
+		  const ALE::Obj<Mesh>& faultMesh,
+		  const spatialdata::geocoords::CoordSys* cs) = 0;
 
   /** Get slip on fault surface at time t.
    *
    * @param t Time t.
-   * @param vertices Vertices on fault surface.
+   * @param mesh Fault finite-element mesh.
    */
   virtual
   const ALE::Obj<real_section_type>& slip(const double t,
-			      const std::set<Mesh::point_type>& vertices) = 0;
+					  const ALE::Obj<Mesh>& faultMesh) = 0;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

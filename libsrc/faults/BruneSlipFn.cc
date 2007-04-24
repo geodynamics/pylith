@@ -56,14 +56,18 @@ pylith::faults::BruneSlipFn::BruneSlipFn(const BruneSlipFn& f) :
 // Initialize slip time function.
 void
 pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
-				   const spatialdata::geocoords::CoordSys* cs,
-				   const std::set<Mesh::point_type>& vertices)
+					const ALE::Obj<Mesh>& faultMesh,
+					const spatialdata::geocoords::CoordSys* cs)
 { // initialize
   assert(!mesh.isNull());
+  assert(!faultMesh.isNull());
   assert(0 != cs);
   assert(0 != _dbFinalSlip);
   assert(0 != _dbSlipTime);
   assert(0 != _dbPeakRate);
+
+  // Get fault vertices
+  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
 
   // Create sections for fields
   delete _parameters; _parameters = new feassemble::ParameterManager(mesh);
@@ -91,9 +95,9 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   assert(!peakRate.isNull());
   
   // Allocate parameters
-  const std::set<Mesh::point_type>::const_iterator vBegin = vertices.begin();
-  const std::set<Mesh::point_type>::const_iterator vEnd = vertices.end();
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vBegin;
+  const Mesh::label_sequence::iterator vBegin = vertices->begin();
+  const Mesh::label_sequence::iterator vEnd = vertices->end();
+  for (Mesh::label_sequence::iterator v_iter=vBegin;
        v_iter != vEnd;
        ++v_iter) {
     finalSlip->setFiberDimension(*v_iter, 3);
@@ -127,7 +131,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   double slipData[3];
   double slipTimeData;
   double peakRateData;
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vBegin;
+  for (Mesh::label_sequence::iterator v_iter=vBegin; 
        v_iter != vEnd;
        ++v_iter) {
     // Get coordinates of vertex
@@ -174,7 +178,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   _dbPeakRate->close();
 
   // Allocate slip field
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vBegin;
+  for (Mesh::label_sequence::iterator v_iter=vBegin;
        v_iter != vEnd;
        ++v_iter)
     _slipField->setFiberDimension(*v_iter, 3);
@@ -185,11 +189,15 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
 // Get slip on fault surface at time t.
 const ALE::Obj<pylith::real_section_type>&
 pylith::faults::BruneSlipFn::slip(const double t,
-				  const std::set<Mesh::point_type>& vertices)
+				  const ALE::Obj<Mesh>& faultMesh)
 { // slip
   assert(0 != _parameters);
   assert(!_slipField.isNull());
   
+  // Get fault vertices
+  const ALE::Obj<Mesh::label_sequence>& vertices = faultMesh->depthStratum(0);
+
+  // Get parameters
   const ALE::Obj<real_section_type>& finalSlip = 
     _parameters->getReal("final slip");
   assert(!finalSlip.isNull());
@@ -203,9 +211,9 @@ pylith::faults::BruneSlipFn::slip(const double t,
   assert(!peakRate.isNull());
 
   double slipValues[3];
-  const std::set<Mesh::point_type>::const_iterator vBegin = vertices.begin();
-  const std::set<Mesh::point_type>::const_iterator vEnd = vertices.end();
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vBegin;
+  const Mesh::label_sequence::iterator vBegin = vertices->begin();
+  const Mesh::label_sequence::iterator vEnd = vertices->end();
+  for (Mesh::label_sequence::iterator v_iter=vBegin;
        v_iter != vEnd;
        ++v_iter) {
     // Get values of parameters at vertex

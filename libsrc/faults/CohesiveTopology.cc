@@ -20,10 +20,13 @@
 
 // ----------------------------------------------------------------------
 void
-pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
+pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
+					 const ALE::Obj<Mesh>& mesh,
 					 const ALE::Obj<Mesh::int_section_type>& groupField,
 					 const int materialId)
 { // create
+  assert(0 != fault);
+
   typedef std::vector<Mesh::point_type> PointArray;
   typedef ALE::SieveAlg<Mesh> sieveAlg;
 
@@ -40,7 +43,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
   } // for
 
   const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  const ALE::Obj<Mesh> fault = new Mesh(mesh->comm(), mesh->debug());
+  *fault = new Mesh(mesh->comm(), mesh->debug());
   const ALE::Obj<sieve_type> faultSieve = new sieve_type(sieve->comm(), 
 						    sieve->debug());
   const std::set<Mesh::point_type>::const_iterator fvBegin = 
@@ -120,14 +123,14 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
       } // if
     } // for
   } // for
-  fault->setSieve(faultSieve);
-  fault->stratify();
+  (*fault)->setSieve(faultSieve);
+  (*fault)->stratify();
   faultCells.clear();
   if (debug)
-    fault->view("Fault mesh");
+    (*fault)->view("Fault mesh");
 
   // Add new shadow vertices
-  const ALE::Obj<Mesh::label_sequence>& fVertices = fault->depthStratum(0);
+  const ALE::Obj<Mesh::label_sequence>& fVertices = (*fault)->depthStratum(0);
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
   const ALE::Obj<std::set<std::string> >& groupNames = mesh->getIntSections();
   Mesh::point_type newPoint = sieve->base()->size() + sieve->cap()->size();
@@ -152,7 +155,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
   } // for
 
   // Split the mesh along the fault sieve and create cohesive elements
-  const ALE::Obj<Mesh::label_sequence>& faces = fault->depthStratum(1);
+  const ALE::Obj<Mesh::label_sequence>& faces = (*fault)->depthStratum(1);
   const ALE::Obj<Mesh::label_type>& material = mesh->getLabel("material-id");
   PointArray newVertices;
   
@@ -218,7 +221,7 @@ pylith::faults::CohesiveTopology::create(const ALE::Obj<Mesh>& mesh,
   // Fix coordinates
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
-  const ALE::Obj<Mesh::label_sequence>& fVertices2 = fault->depthStratum(0);
+  const ALE::Obj<Mesh::label_sequence>& fVertices2 = (*fault)->depthStratum(0);
 
   for(Mesh::label_sequence::iterator v_iter = fVertices2->begin();
       v_iter != fVertices2->end();
