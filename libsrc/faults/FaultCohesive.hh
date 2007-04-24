@@ -21,6 +21,8 @@
 
 #include "Fault.hh"
 
+#include "pylith/utils/sievefwd.hh" // HOLDSA PETSc Mesh
+
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
@@ -68,6 +70,8 @@ private :
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  ALE::Obj<ALE::Mesh>* _faultMesh;
 
 }; // class FaultCohesive
 
