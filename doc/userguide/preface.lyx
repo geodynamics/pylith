@@ -71,9 +71,13 @@ Citation
 \end_layout
 
 \begin_layout Standard
-The Computational Infrastructure for Geodynamics (CIG) is making this source
- code available to you at no cost in hopes that the software will enhance
- your research in geophysics.
+The 
+\begin_inset LatexCommand \htmlurl[Computational Infrastructure for Geodynamics (CIG)]{geodynamics.org}
+
+\end_inset
+
+ is making this source code available to you at no cost in hopes that the
+ software will enhance your research in geophysics.
  A number of individuals have contributed a significant portion of their
  careers toward the development of this software.
  It is essential that you recognize these individuals in the normal scientific
@@ -116,19 +120,28 @@ Support
 \end_layout
 
 \begin_layout Standard
-Current PyLith development is supported by the Southern California Earthquake
- Center, the National Science Foundation, the CIG, and internal U.S.
- Geological Survey funding.
+Current PyLith development is supported by the 
+\begin_inset LatexCommand \htmlurl[Southern California Earthquake Center]{www.scec.org}
+
+\end_inset
+
+, the 
+\begin_inset LatexCommand \htmlurl[National Science Foundation]{www.nsf.gov}
+
+\end_inset
+
+, the CIG, and internal 
+\begin_inset LatexCommand \htmlurl[U.S. Geological Survey]{www.usgs.gov}
+
+\end_inset
+
+ funding.
  Pyre development is funded by the 
 \begin_inset LatexCommand \htmlurl[Department of Energy's]{www.doe.gov/engine/content.do}
 
 \end_inset
 
- Advanced Simulation and Computing program and the 
-\begin_inset LatexCommand \htmlurl[National Science Foundation's]{www.nsf.gov}
-
-\end_inset
-
+ Advanced Simulation and Computing program and the National Science Foundation's
  Information Technology Research (ITR) program.
 \end_layout
 
