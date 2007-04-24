@@ -62,7 +62,15 @@ This first version of PyLith is a direct descendant of Lithomop and marks
  code for simulating static and quasi-static crustal deformation.
  The major new features present in Lithomop included dynamic memory allocation
  and the use of the Pyre simulation framework and PETSc solvers.
- 
+\end_layout
+
+\begin_layout Standard
+This release of PyLith offers both tetrahedral and hexahedral linear elements,
+ the use of traction boundary conditions, load histories for split nodes,
+ a number of new material models, including power-law Maxwell and generalized
+ Maxwell (3 Maxwell models in parallel), the use of .cfg files for setting
+ simulation parameters, much simpler top-level code structure, and several
+ bug fixes.
 \end_layout
 
 \begin_layout Standard
@@ -328,10 +336,14 @@ Sieve
 \family default
  is a new method for representing computational meshes, and it greatly simplifie
 s the task of code parallelization.
- Sieve also provides a number of other useful features, such as the ability
- to grab 'sections' of a mesh that share common characteristics, such as
- elements of the same material type or nodes to which boundary conditions
- have been applied.
+ 
+\family typewriter
+Sieve
+\family default
+ also provides a number of other useful features, such as the ability to
+ grab 'sections' of a mesh that share common characteristics, such as elements
+ of the same material type or nodes to which boundary conditions have been
+ applied.
 \end_layout
 
 \begin_layout Subsection
