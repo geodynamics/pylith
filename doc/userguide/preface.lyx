@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -81,12 +81,34 @@ The Computational Infrastructure for Geodynamics (CIG) is making this source
  acknowledgements in talks and publications.
  At this time there are no refereed journal articles discussing the design
  and implementation of PyLith, so we request that you cite two AGU meeting
- abstracts associated with PyLith, 
-\begin_inset LatexCommand \cite{Williams:etal:2005,Williams:2006}
+ abstracts associated with PyLith:
+\end_layout
 
-\end_inset
+\begin_layout Itemize
+Williams, C.A., B.
+ Aagaard, M.G.
+ Knepley (2005), Development of software for studying earthquakes across
+ multiple spatial and temporal scales by coupling quasi-static and dynamic
+ simulations, 
+\emph on
+Eos Trans.
+ AGU
+\emph default
+, 86(52), Fall Meet.
+ Suppl., Abstract S53A-1072.
+\end_layout
 
-.
+\begin_layout Itemize
+Williams, C.A.
+ (2006), Development of a package for modeling stress in the lithosphere,
+ 
+\emph on
+Eos Trans.
+ AGU
+\emph default
+, 87(36), Jt.
+ Assem.
+ Suppl., Abstract T24A-01 Invited.
 \end_layout
 
 \begin_layout Section
@@ -117,7 +139,7 @@ Request for Comments
 \begin_layout Standard
 Your suggestions and corrections can only improve this documentation.
  Please report any errors, inaccuracies, or typos to 
-\begin_inset LatexCommand \htmlurl[Sue Kientz]{sue@geodynamics.org}
+\begin_inset LatexCommand \url[Sue Kientz]{sue@geodynamics.org}
 
 \end_inset
 

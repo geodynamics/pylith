@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -152,9 +152,9 @@ PyLith gets its input from a variety of files.
 \begin_layout Standard
 The first step in the simulation process involves partitioning the mesh
  among the processors.
- In this phase, PyLith reads in the entire mesh and then writes out processor
- specific pieces with one file for each processor.
- The filenames for these follow the convention 
+ In this phase, PyLith reads in the entire mesh and then writes out processor-sp
+ecific pieces with one file for each processor.
+ The file names for these follow the convention 
 \family typewriter
 xx.PROC.ext
 \family default
@@ -166,7 +166,7 @@ PROC
 \family typewriter
 xx.ext
 \family default
- is the original filename.
+ is the original file name.
  This procedure is applied to files with the following extensions:
 \family typewriter
  coord, connect, split, bc
@@ -183,8 +183,8 @@ traction
 \begin_layout Standard
 In some cases, a user may want to run the same simulation using different
  numbers of processors.
- In this case, users may wish to provide distinctive sets of filenames to
- distinguish between the different runs.
+ In this case, users may wish to provide distinctive sets of file names
+ to distinguish between the different runs.
  Setting up this naming scheme is most easily done using symbolic links
  or copying files to local directories on each machine using a shell script
  that starts a simulation.
@@ -192,16 +192,16 @@ In some cases, a user may want to run the same simulation using different
 \family typewriter
 mklinks.py
 \family default
- in section\InsetSpace ~
+ in Section\InsetSpace ~
 
 \begin_inset LatexCommand \ref{sec:Tutorial-Using-Reverse-Slip}
 
 \end_inset
 
  for a simple example.
- You can also choose your own filename template by setting the appropriate
+ You can also choose your own file-name template by setting the appropriate
  parameters.
- See section\InsetSpace ~
+ See Section\InsetSpace ~
 
 \begin_inset LatexCommand \ref{sec:setting:parameters}
 
@@ -281,7 +281,7 @@ Optional Input Files
 \begin_layout Standard
 The optional input files are only read when a file exists matching the name
  of an input file PyLith expects to read.
- Note that explicit filenames for each of the files can be specified using
+ Note that explicit file names for each of the files can be specified using
  command-line arguments, with 
 \family typewriter
 .cfg
@@ -290,7 +290,7 @@ The optional input files are only read when a file exists matching the name
 \family typewriter
 .pml
 \family default
- files, as discussed in section\InsetSpace ~
+ files, as discussed in Section\InsetSpace ~
 
 \begin_inset LatexCommand \ref{sec:setting:parameters}
 
@@ -341,7 +341,7 @@ xx.skew
  Local coordinate rotation information for boundary conditions.
  
 \shape italic
-\color inherit
+\color default
 Not yet implemented.
 \end_layout
 
@@ -355,9 +355,13 @@ xx.keyval
  File for changing default parameters.
  
 \shape italic
-\color inherit
+\color default
 Now considered obsolete.
- Use .cfg file instead.
+ Use 
+\family typewriter
+.cfg
+\family default
+ file instead.
 \end_layout
 
 \begin_layout Description
@@ -405,8 +409,11 @@ Setting Parameters for PyLith
 \end_layout
 
 \begin_layout Standard
-There are several methods for setting input parameters for pylith3dapp.py:
- via the command line, or by using a configuration file in 
+There are several methods for setting input parameters for 
+\family typewriter
+pylith3dapp.py
+\family default
+: via the command line, or by using a configuration file in 
 \family typewriter
 .cfg
 \family default
@@ -490,14 +497,16 @@ pylith3d
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
 placement H
 wide false
 sideways false
 status open
 
-\begin_layout Standard
-\align left
+\begin_layout Quote
+\noindent
 
 \family typewriter
 \color black
@@ -706,14 +715,14 @@ pylith3d.cfg
  (1) overrides only the built-in defaults.
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection
 PETSc Settings
 \end_layout
 
 \begin_layout Standard
 PyLith relies on PETSc for the linear algebra computations.
  Many PETSc options can be set using command-line arguments.
- The ones of primary interest in the case of PyLith are shown in table\InsetSpace ~
+ The ones of primary interest in the case of PyLith are shown in Table\InsetSpace ~
 
 \begin_inset LatexCommand \ref{tab:Useful-command-line-arguments}
 
@@ -734,9 +743,9 @@ status open
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="2">
 <features>
-<column alignment="left" valignment="top" width="1.75in">
-<column alignment="left" valignment="top" width="4in">
-<row>
+<column alignment="left" valignment="top" leftline="true" width="1.75in">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="4in">
+<row topline="true" bottomline="true">
 <cell alignment="left" valignment="top" usebox="none">
 \begin_inset Text
 
@@ -760,7 +769,7 @@ Description
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row topline="true" bottomline="true">
 <cell alignment="left" valignment="top" topline="true" usebox="none">
 \begin_inset Text
 
@@ -783,7 +792,7 @@ Print logging objects and events
 \end_inset
 </cell>
 </row>
-<row>
+<row bottomline="true">
 <cell alignment="left" valignment="top" usebox="none">
 \begin_inset Text
 
@@ -810,7 +819,7 @@ Set preconditioner type to block Jacobi.
 \end_inset
 </cell>
 </row>
-<row>
+<row bottomline="true">
 <cell alignment="left" valignment="top" usebox="none">
 \begin_inset Text
 
@@ -839,7 +848,7 @@ Set preconditioner to incomplete factorization for each block.
 \end_inset
 </cell>
 </row>
-<row>
+<row bottomline="true">
 <cell alignment="left" valignment="top" usebox="none">
 \begin_inset Text
 
@@ -874,7 +883,7 @@ Dump preconditioned residual norm to stdout.
 \end_inset
 </cell>
 </row>
-<row>
+<row bottomline="true">
 <cell alignment="left" valignment="top" usebox="none">
 \begin_inset Text
 
@@ -898,7 +907,7 @@ Print linear solver parameters.
 \end_inset
 </cell>
 </row>
-<row>
+<row bottomline="true">
 <cell alignment="left" valignment="top" usebox="none">
 \begin_inset Text
 
@@ -946,14 +955,18 @@ Useful command-line arguments for setting PETSc options.
 \end_layout
 
 \begin_layout Section
-Setting Pyre properties using pml files
+Setting Pyre properties using 
+\family typewriter
+.pml
+\family default
+ files
 \end_layout
 
 \begin_layout Standard
 PyLith's Pyre properties can also be set using 
 \family typewriter
 \color black
-pml
+.pml
 \family default
 \color none
  files.
