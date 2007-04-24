@@ -173,6 +173,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   _dbPeakRate->close();
 
   // Allocate slip field
+  _slipField = new real_section_type(faultMesh->comm(), faultMesh->debug());
   _slipField->setFiberDimension(faultMesh->depthStratum(0), 3);
   faultMesh->allocate(_slipField);
 } // initialize
