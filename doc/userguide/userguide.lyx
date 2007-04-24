@@ -96,9 +96,6 @@ frontmatter
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
 \begin_inset LatexCommand \tableofcontents{}
 
 \end_inset
@@ -115,8 +112,7 @@ frontmatter
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \input{preface.lyx}
-preview true
+\begin_inset FloatList table
 
 \end_inset
 
@@ -124,6 +120,12 @@ preview true
 \end_layout
 
 \begin_layout Standard
+\begin_inset Include \input{preface.lyx}
+preview false
+
+\end_inset
+
+
 \begin_inset ERT
 status collapsed
 
@@ -240,7 +242,7 @@ Eos Trans.
 \bibitem {Kojic:Bathe:1987}
 Kojic, M.
  and K.-J.
- Bathe (1987), The 'Effective Stress-Function' Algorithm for Thermo-Elasto-Plast
+ Bathe (1987), The `Effective Stress-Function' Algorithm for Thermo-Elasto-Plast
 icity and Creep, 
 \emph on
 Int.
