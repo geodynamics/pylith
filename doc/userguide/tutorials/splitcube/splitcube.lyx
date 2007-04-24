@@ -234,7 +234,7 @@ Download the
 
 \begin_deeper
 \begin_layout LyX-Code
-$ tar -zxvf pylith-0.8.1_tutorials.tgz
+$ tar -zxvf pylith-0.8.2_tutorials.tgz
 \end_layout
 
 \end_deeper
