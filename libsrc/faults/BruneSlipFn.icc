@@ -24,12 +24,33 @@ pylith::faults::BruneSlipFn::clone(void) const {
   return new BruneSlipFn(*this);
 } // clone
 
+// Set spatial database for final slip.
+inline
+void
+pylith::faults::BruneSlipFn::dbFinalSlip(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbFinalSlip = db;
+} // dbFinalSlip
+
+// Set spatial database for slip initiation time.
+inline
+void
+pylith::faults::BruneSlipFn::dbSlipTime(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbSlipTime = db;
+} // dbSlipTime
+
+// Set spatial database for peak slip rate.
+inline
+void
+pylith::faults::BruneSlipFn::dbPeakRate(spatialdata::spatialdb::SpatialDB* const db) {
+  _dbPeakRate = db;
+} // dbPeakRate
+
 // Compute slip using slip time function.
 inline
 double
-pylith::faults::BruneSlipFn::compute(const double t,
-				     const double finalSlip,
-				     const double peakRate) const {
+pylith::faults::BruneSlipFn::_slip(const double t,
+				   const double finalSlip,
+				   const double peakRate) {
   double slip = 0.0;
   if (t > 0) {
     assert(peakRate > 0.0);
@@ -39,7 +60,7 @@ pylith::faults::BruneSlipFn::compute(const double t,
     slip = 1.0 - exp(-t/tau) * (1.0 + t/tau);
   } // if
   return slip;
-} // compute
+} // _slip
 
 
 // End of file 

@@ -37,8 +37,16 @@ pylith::faults::FaultCohesiveKin::FaultCohesiveKin(const FaultCohesiveKin& f) :
   _eqsrc(0)
 { // copy constructor
   if (0 != f._eqsrc)
-    _eqsrc = new EqKinSrc(*f._eqsrc);
+    _eqsrc = f._eqsrc->clone();
 } // copy constructor
+
+// ----------------------------------------------------------------------
+// Set kinematic earthquake source.
+void
+pylith::faults::FaultCohesiveKin::eqsrc(EqKinSrc* src)
+{ // eqsrc
+  delete _eqsrc; _eqsrc = (0 != src) ? src->clone() : 0;
+} // eqsrc
 
 
 // End of file 
