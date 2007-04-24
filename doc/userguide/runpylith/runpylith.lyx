@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -308,6 +308,9 @@ xx.fuldat
 \color none
 Time steps for which full output is requested.
  
+\shape italic
+\color inherit
+Required for time-dependent problems.
 \end_layout
 
 \begin_layout Description
@@ -341,7 +344,6 @@ xx.skew
  Local coordinate rotation information for boundary conditions.
  
 \shape italic
-\color default
 Not yet implemented.
 \end_layout
 
@@ -355,7 +357,6 @@ xx.keyval
  File for changing default parameters.
  
 \shape italic
-\color default
 Now considered obsolete.
  Use 
 \family typewriter
@@ -721,7 +722,11 @@ PETSc Settings
 
 \begin_layout Standard
 PyLith relies on PETSc for the linear algebra computations.
- Many PETSc options can be set using command-line arguments.
+ Many PETSc options can be set in 
+\family typewriter
+.cfg
+\family default
+ files.
  The ones of primary interest in the case of PyLith are shown in Table\InsetSpace ~
 
 \begin_inset LatexCommand \ref{tab:Useful-command-line-arguments}
@@ -729,6 +734,10 @@ PyLith relies on PETSc for the linear algebra computations.
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Standard
@@ -741,73 +750,203 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="2">
+<lyxtabular version="3" rows="7" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="1.75in">
+<column alignment="left" valignment="top" leftline="true" width="1.3in">
+<column alignment="left" valignment="top" leftline="true" width="1.3in">
 <column alignment="left" valignment="top" leftline="true" rightline="true" width="4in">
 <row topline="true" bottomline="true">
-<cell alignment="left" valignment="top" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
 
 \series bold
-Argument 
+Property
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="left" valignment="top" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
 
 \series bold
-Description 
+Default Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Description
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true" bottomline="true">
-<cell alignment="left" valignment="top" topline="true" usebox="none">
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
 
 \family typewriter
-\color black
--log_summary 
+log_summary
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="left" valignment="top" topline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
-Print logging objects and events 
+
+\shape italic
+true
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Print logging objects and events.
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row bottomline="true">
-<cell alignment="left" valignment="top" usebox="none">
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
 
 \family typewriter
-\color black
--pc_type 
-\emph on
+ksp_monitor
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\shape italic
+true
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Dump preconditioned residual norm to stdout.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+ksp_view
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\shape italic
+true
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Print linear solver parameters.
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+ksp_rtol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\shape italic
+1.0e-09
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Convergence tolerance for relative decrease in residual norm.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+pc_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\shape italic
 bjacobi
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="left" valignment="top" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
@@ -819,116 +958,35 @@ Set preconditioner type to block Jacobi.
 \end_inset
 </cell>
 </row>
-<row bottomline="true">
-<cell alignment="left" valignment="top" usebox="none">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
 
 \family typewriter
-\color black
--sub_pc_type 
-\emph on
-ilu
-\emph default
- 
+sub_pc_type
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="left" valignment="top" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\shape italic
+ilu
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
 Set preconditioner to incomplete factorization for each block.
  See PETSc documentation for a list of all preconditioners.
- 
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row bottomline="true">
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-\color black
--ksp_monitor 
-\emph on
-stdout
-\emph default
- 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Dump preconditioned residual norm to stdout.
- If only 
-\family typewriter
-\color black
--ksp_monitor
-\family default
-\color none
- is given, the default is to use stdout.
- 
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row bottomline="true">
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-\color black
--ksp_view
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Print linear solver parameters.
- 
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row bottomline="true">
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-\color black
--ksp_rtol 
-\emph on
-1.0e-09
-\emph default
- 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Tolerance for relative decrease in residual norm 
 \end_layout
 
 \end_inset
@@ -954,27 +1012,8 @@ Useful command-line arguments for setting PETSc options.
 
 \end_layout
 
-\begin_layout Section
-Setting Pyre properties using 
-\family typewriter
-.pml
-\family default
- files
-\end_layout
-
 \begin_layout Standard
-PyLith's Pyre properties can also be set using 
-\family typewriter
-\color black
-.pml
-\family default
-\color none
- files.
- These are XML files that follow a special Pyre XML schema.
-\end_layout
 
-\begin_layout Standard
-ADD STUFF HERE 
 \end_layout
 
 \end_body
