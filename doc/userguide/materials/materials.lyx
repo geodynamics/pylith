@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -41,7 +41,8 @@ Material Models
 \end_layout
 
 \begin_layout Standard
-There are six material models presently available in PyLith.
+There are six material models presently available in PyLith, as shown in
+ TABLEREF and FIGUREREF.
 \end_layout
 
 \begin_layout Standard
@@ -57,11 +58,23 @@ status open
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="2">
+<lyxtabular version="3" rows="7" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="0">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="3.5in">
+<column alignment="left" valignment="top" leftline="true" width="0.68in">
+<column alignment="left" valignment="top" leftline="true" width="2.85in">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
 <row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Model Number
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -90,6 +103,15 @@ Description
 \begin_inset Text
 
 \begin_layout Standard
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
 IsotropicLinearElastic
 \end_layout
 
@@ -106,6 +128,15 @@ Isotropic linear elastic material
 </cell>
 </row>
 <row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+5
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -130,6 +161,15 @@ Isotropic Maxwell material with linear viscous rheology
 \begin_inset Text
 
 \begin_layout Standard
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
 IsotropicLinearGenMaxwellViscoelastic
 \end_layout
 
@@ -146,6 +186,15 @@ Generalized model consisting of 3 Maxwell models in parallel
 </cell>
 </row>
 <row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+7
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -170,6 +219,15 @@ Isotropic Maxwell material with power-law viscous rheology
 \begin_inset Text
 
 \begin_layout Standard
+8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
 IsotropicLinearMaxwellViscoelasticESF
 \end_layout
 
@@ -187,6 +245,15 @@ Another linear Maxwell model formulated with an Effective Stress Function
 </cell>
 </row>
 <row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+9
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -231,43 +298,63 @@ Note that there are two formulations for two of the material models (linear
  It is likely that the performance of each formulation will depend on the
  loading conditions, so users may wish to try different formulations for
  each particular problem.
+ The model number is not generally needed by the user, but may be of interest
+ when examining the material property routines.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Spring-dashpot 1D representations of the material models available in PyLith.
+ The top model is a linear elastic model, the middle model is a Maxwell
+ model, and the bottom model is a generalized Maxwell model.
+\begin_inset Graphics
+	filename figs/pylith-materials.eps
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
-Effective Stress Function Formulation for Viscoelastic Materials
-\end_layout
-
-\begin_layout Subsection
 Definitions
 \end_layout
 
 \begin_layout Standard
-In the following sections, we use a combination of vector/tensor and index
- notation.
- Vectors and tensors are shown in bold font, and we use the common convention
- where repeated indices indicate summation over the number of degrees of
- freedom.
+In the following sections, we use a combination of vector and index notation,
+ and our notation conventions are shown in Table TABLEREF.
+ When using index notation, we use the common convention where repeated
+ indices indicate summation over the range of the index.
  We also make frequent use of the scalar inner product.
  The scalar inner product of two second-order tensors may be written
 \begin_inset Formula \begin{gather}
-\boldsymbol{a}\bullet\boldsymbol{b}=a_{ij}b_{ij}\,.\label{eq:1}\end{gather}
+\underline{a}\cdot\underline{b}=a_{ij}b_{ij}\,.\label{eq:1}\end{gather}
 
 \end_inset
 
 Although the general constitutive relations are formulated in terms of the
- stress and strain, we make use of the deviatoric stress and strain in our
- formulation.
+ stress and strain, we frequently make use of the deviatoric stress and
+ strain in our formulation.
  We first define the mean stress, 
-\begin_inset Formula $\sigma_{m}$
+\begin_inset Formula $P$
 \end_inset
 
 , and mean strain, 
-\begin_inset Formula $\epsilon_{m}$
+\begin_inset Formula $\theta$
 \end_inset
 
 :
 \begin_inset Formula \begin{gather}
-\sigma_{m}=\frac{\sigma_{ii}}{3}\,,\,\,\,\,\epsilon_{m}=\frac{\epsilon_{ii}}{3}\,,\label{eq:2}\end{gather}
+P=\frac{\sigma_{ii}}{3}\,,\,\,\,\,\theta=\frac{\epsilon_{ii}}{3}\,,\label{eq:2}\end{gather}
 
 \end_inset
 
@@ -282,7 +369,7 @@ where the
  represent the trace of the stress and strain tensors, respectively.
  We then define the deviatoric components of stress and strain as
 \begin_inset Formula \begin{gather}
-S_{ij}=\sigma_{ij}-\sigma_{m}\delta_{ij}\,,\,\,\,\, e_{ij}^{\prime}=\epsilon_{ij}-\epsilon_{m}\delta_{ij}\,,\label{eq:3}\end{gather}
+S_{ij}=\sigma_{ij}-P\delta_{ij}\,,\,\,\,\, e_{ij}^{\prime}=\epsilon_{ij}-\theta\delta_{ij}\,,\label{eq:3}\end{gather}
 
 \end_inset
 
@@ -305,12 +392,37 @@ where
 
 , as
 \begin_inset Formula \begin{gather}
-\overline{\sigma}=\sqrt{\frac{3}{2}S\bullet\boldsymbol{S}}\,\,\nonumber \\
-\sqrt{J_{2}^{\prime}}=\sqrt{\frac{1}{2}\boldsymbol{S}\bullet\boldsymbol{S}}\,.\label{eq:4}\\
-\overline{e}=\sqrt{\frac{2}{3}\boldsymbol{e}^{\prime}\bullet\boldsymbol{e}^{\prime}}\,\,\nonumber \end{gather}
+\overline{\sigma}=\sqrt{\frac{3}{2}\underline{S}\cdot\underline{S}}\,\,\nonumber \\
+\sqrt{J_{2}^{\prime}}=\sqrt{\frac{1}{2}\underline{S}\cdot\underline{S}}\,.\label{eq:4}\\
+\overline{e}=\sqrt{\frac{2}{3}\underline{e^{\prime}}\cdot\underline{e^{\prime}}}\,\,\nonumber \end{gather}
 
 \end_inset
 
+Due to the symmetry of the stress and strain tensors, it is somethimes convenien
+t to represent them as vectors:
+\begin_inset Formula \begin{gather}
+\overrightarrow{\sigma^{T}}=\left[\begin{array}{cccccc}
+\sigma_{11} & \sigma_{22} & \sigma_{33} & \sigma_{12} & \sigma_{23} & \sigma_{31}\end{array}\right]\nonumber \\
+\overrightarrow{\epsilon^{T}}=\left[\begin{array}{cccccc}
+\epsilon_{11} & \epsilon_{22} & \epsilon_{33} & \gamma_{12} & \gamma_{23} & \gamma_{31}\end{array}\right]\:.\label{eq:5}\end{gather}
+
+\end_inset
+
+Note the use of engineering strain measures (
+\begin_inset Formula $\gamma_{ij}$
+\end_inset
+
+) in 
+\begin_inset LatexCommand \ref{eq:5}
+
+\end_inset
+
+.
+ This simplifies some of the equations when representing stress and strain
+ as vectors.
+\end_layout
+
+\begin_layout Standard
 For quantities evaluated over a specific time period, we represent the initial
  time as a prefixed subscript and the end time as a prefixed superscript.
  In cases where the initial time does not appear, it is understood to be
@@ -321,80 +433,257 @@ For quantities evaluated over a specific time period, we represent the initial
 .
 \end_layout
 
-\begin_layout Subsection
-Generalized Constitutive Relation
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Index notation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Vector notation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $a_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\overrightarrow{a}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Vector field a.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $a_{ij}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\underline{a}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Second order tensor field a.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Isotropic Elastic Material
 \end_layout
 
 \begin_layout Standard
-For viscoelastic materials, the basic element stress-strain relationship
- for time 
-\begin_inset Formula $t+\Delta t$
+The generalized form of Hooke's law relating stress and strain for linear
+ elastic materials is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\sigma_{ij}=C_{ijkl}\epsilon_{kl}\:.\label{eq:6}\end{gather}
+
 \end_inset
 
- may be written
+due to symmetry considerations, however, the 81 components of the elasticity
+ matrix are reduced to 21 independent components for the most general case
+ of anisotropic elasticity.
+ For the case of isotropic elasticity, the number of independent components
+ is further reduced to 2.
+ Representing the stress and strain in terms of vectors and considering
+ initial stresses, the constitutive relation may be written
 \begin_inset Formula \begin{gather}
-\Prefix{}^{{t+\Delta t}}{\boldsymbol{\sigma}}=\boldsymbol{D}\Prefix^{{t+\Delta t}}{\boldsymbol{\epsilon}}+\Prefix^{{I}}{\boldsymbol{\sigma}}=\Prefix^{{t+\Delta t}}{_{\,\,\,\,\,\,\,\,\,\, I}\boldsymbol{\sigma}}+\Prefix^{{I}}{\boldsymbol{\sigma}}\,,\label{eq:5}\end{gather}
+\overrightarrow{\sigma}=\underline{D}\overrightarrow{\epsilon}+^{I}\overrightarrow{\sigma}\:,\label{eq:7}\end{gather}
 
 \end_inset
 
 where 
-\begin_inset Formula $^{t+\Delta t}\boldsymbol{\varepsilon}$
+\begin_inset Formula $^{I}\overrightarrow{\sigma}$
 \end_inset
 
- is the total strain at time 
-\begin_inset Formula $t+\Delta t$
+ is the initial stress existing in the material, and the stress-strain matrix,
+ 
+\begin_inset Formula $\underline{D}$
 \end_inset
 
-, 
-\begin_inset Formula $\Prefix^{{I}}{\sigma}$
+, may be written in terms of Young's modulus (
+\begin_inset Formula $E$
 \end_inset
 
- is the initial stress, and 
-\begin_inset Formula $\boldsymbol{D}$
+) and Poisson's ratio, 
+\begin_inset Formula $\nu$
 \end_inset
 
- is the stress-strain constitutive matrix.
- We assume incompressible viscous flow, so that volumetric stress is purely
- elastic, and we may divide the stress-strain relationship into volumetric
- and deviatoric parts.
- In terms of the deviatoric stress, 
+:
+\begin_inset Formula \begin{gather}
+\underline{D}=\frac{E\left(1-\nu\right)}{\left(1+\nu\right)\left(1-2\nu\right)}\left[\begin{array}{cccccc}
+1 & \frac{\nu}{1-\nu} & \frac{\nu}{1-\nu} & 0 & 0 & 0\\
+\frac{\nu}{1-\nu} & 1 & \frac{\nu}{1-\nu} & 0 & 0 & 0\\
+\frac{\nu}{1-\nu} & \frac{\nu}{1-\nu} & 1 & 0 & 0 & 0\\
+0 & 0 & 0 & \frac{1-2\nu}{2\left(1-\nu\right)} & 0 & 0\\
+0 & 0 & 0 & 0 & \frac{1-2\nu}{2\left(1-\nu\right)} & 0\\
+0 & 0 & 0 & 0 & 0 & \frac{1-2\nu}{2\left(1-\nu\right)}\end{array}\right]\:.\label{eq:8}\end{gather}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Effective Stress Formulations for Viscoelastic Materials
 \end_layout
 
 \begin_layout Standard
+For the viscoelastic materials considered here, the viscous volumetric strains
+ are zero (incompressible flow), and it is convenient to separate the general
+ stress-strain relationship at time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+ into deviatoric and volumetric parts:
 \begin_inset Formula \begin{gather}
-\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{E}{1+\mathrm{\nu}}(\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime}}-\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{C}})+\Prefix^{{I}}{\boldsymbol{S}}\,,\label{eq:6}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left(^{t+\Delta t}\underline{e}^{\prime}-^{t+\Delta t}\underline{e}^{C}\right)+^{I}\underline{S}\nonumber \\
+^{t+\Delta t}P=\frac{E}{1-2\nu}^{t+\Delta t}\theta+^{I}P\:,\label{eq:9}\end{gather}
 
 \end_inset
 
 where 
-\begin_inset Formula $\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{C}}$
+\begin_inset Formula $^{t+\Delta t}\underline{e}^{\prime}$
 \end_inset
 
- is the creep strain at time 
+ is the total deviatoric strain, 
+\begin_inset Formula $^{t+\Delta t}\underline{e}^{C}$
+\end_inset
+
+ is the total viscous strain, is the initial deviatoric stress, 
+\begin_inset Formula $^{t+\Delta t}P$
+\end_inset
+
+ is the pressure, and 
+\begin_inset Formula $^{t+\Delta t}\theta$
+\end_inset
+
+ is the mean strain evaluated at time 
 \begin_inset Formula $t+\Delta t$
 \end_inset
 
 .
- Equation 
-\begin_inset LatexCommand \ref{eq:6}
+ The initial deviatoric stress and initial pressure are given by 
+\begin_inset Formula $^{I}\underline{S}$
+\end_inset
+
+ and 
+\begin_inset Formula $^{I}P$
+\end_inset
+
+, respectively.
+ The topmost equation in 
+\begin_inset LatexCommand \ref{eq:9}
 
 \end_inset
 
  may also be written as
 \begin_inset Formula \begin{gather}
-\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{E}{1+\mathrm{\nu}}(\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\boldsymbol{\Delta}\boldsymbol{e}^{C})+\Prefix^{{I}}{\boldsymbol{S}}\,,\label{eq:7}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\mathrm{\nu}}(^{t+\Delta t}\underline{e}^{\prime\prime}-\underline{\Delta e}^{C})+^{I}\underline{S}\,,\label{eq:10}\end{gather}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{gather}
-\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}=\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime}}-\Prefix^{{t}}{\boldsymbol{e}^{C}}\,\,,\,\,\,\boldsymbol{\Delta}\boldsymbol{e}^{C}=\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{C}}-\Prefix^{{t}}{\boldsymbol{e}^{C}}\,.\label{eq:8}\end{gather}
+^{t+\Delta t}\underline{e}^{\prime\prime}=^{t+\Delta t}\underline{e}^{\prime}-^{t}\underline{e}^{C}\,\,,\,\,\,\underline{\Delta e}^{C}=^{t+\Delta t}\underline{e}^{C}-^{t}\underline{e}^{C}\,.\label{eq:11}\end{gather}
 
 \end_inset
 
 The creep strain increment is approximated using
 \begin_inset Formula \begin{gather}
-\boldsymbol{\Delta}\boldsymbol{e}^{C}=\Delta t\Prefix^{{\tau}}{\gamma}\Prefix^{{\tau}}{\boldsymbol{S}}\,,\label{eq:9}\end{gather}
+\underline{\Delta e}^{C}=\Delta t^{\tau}\gamma^{\tau}\underline{S}\,,\label{eq:12}\end{gather}
 
 \end_inset
 
@@ -404,25 +693,25 @@ where, using the
 
 -method of time integration,
 \begin_inset Formula \begin{gather}
-\Prefix^{{\tau}}{\boldsymbol{S}}=(1-\alpha)\Prefix^{{t}}{_{I}\boldsymbol{S}}+\alpha\Prefix^{{t+\Delta t}}{_{\,\,\,\,\,\,\,\,\,\, I}\boldsymbol{S}}+^{I}\boldsymbol{S}=(1-\alpha)\Prefix^{{t}}{\boldsymbol{S}}+\alpha\Prefix^{{t+\Delta t}}{\boldsymbol{S}}\,\,,\label{eq:10}\end{gather}
+^{\tau}\underline{S}=(1-\alpha)_{I}^{t}\underline{S}+\alpha_{I}^{t+\Delta t}\underline{S}+^{I}\underline{S}=(1-\alpha)^{t}\underline{S}+\alpha^{t+\Delta t}\underline{S}\,\,,\label{eq:13}\end{gather}
 
 \end_inset
 
 and
 \begin_inset Formula \begin{gather}
-\Prefix^{{\tau}}{\gamma}=\frac{3\Delta\overline{e}^{C}}{2\Delta t\Prefix^{{\tau}}{\overline{\sigma}}}\,\,,\label{eq:11}\end{gather}
+^{\tau}\gamma=\frac{3\Delta\overline{e}^{C}}{2\Delta t^{\tau}\overline{\sigma}}\,\,,\label{eq:14}\end{gather}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{gather}
-\Delta\overline{e}^{C}=\sqrt{\frac{2}{3}\boldsymbol{\Delta}\boldsymbol{e}^{C}\bullet\boldsymbol{\Delta}\boldsymbol{e}^{C}}\label{eq:12}\end{gather}
+\Delta\overline{e}^{C}=\sqrt{\frac{2}{3}\underline{\Delta e}^{C}\cdot\underline{\Delta e}^{C}}\label{eq:15}\end{gather}
 
 \end_inset
 
 and
 \begin_inset Formula \begin{gather}
-\Prefix^{{\tau}}{\overline{\sigma}}=(1-\alpha)\Prefix^{{t}}{_{I}\overline{\sigma}}+\alpha\Prefix^{{t+\Delta t}}{_{\,\,\,\,\,\,\,\,\,\, I}\overline{\sigma}}+\Prefix^{{I}}{\overline{\sigma}}=\sqrt{3\Prefix^{{\tau}}{J_{2}^{\prime}}}\,\,.\label{eq:13}\end{gather}
+^{\tau}\overline{\sigma}=(1-\alpha)_{I}^{t}\overline{\sigma}+\alpha_{I}^{t+\Delta t}\overline{\sigma}+^{I}\overline{\sigma}=\sqrt{3^{\tau}J_{2}^{\prime}}\,\,.\label{eq:16}\end{gather}
 
 \end_inset
 
