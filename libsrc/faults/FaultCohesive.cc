@@ -17,6 +17,7 @@
 #include "CohesiveTopology.hh" // USES CohesiveTopology::create()
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/utils/array.hh" // USES double_array
 
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -40,6 +41,7 @@ pylith::faults::FaultCohesive::~FaultCohesive(void)
 // Copy constructor.
 pylith::faults::FaultCohesive::FaultCohesive(const FaultCohesive& f) :
   Fault(f),
+  Integrator(f),
   _faultMesh(new ALE::Obj<ALE::Mesh>)
 { // copy constructor
   *_faultMesh = *f._faultMesh;
@@ -48,7 +50,7 @@ pylith::faults::FaultCohesive::FaultCohesive(const FaultCohesive& f) :
 // ----------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.
 void
-pylith::faults::FaultCohesive::adjustTopology(ALE::Obj<ALE::Mesh>* mesh) const
+pylith::faults::FaultCohesive::adjustTopology(ALE::Obj<ALE::Mesh>* mesh)
 { // adjustTopology
   assert(0 != mesh);
   assert("" != label());
@@ -60,6 +62,23 @@ pylith::faults::FaultCohesive::adjustTopology(ALE::Obj<ALE::Mesh>* mesh) const
 
   CohesiveTopology::create(_faultMesh, *mesh, groupField, id());
 } // adjustTopology
+
+// ----------------------------------------------------------------------
+// Initialize fault. Determine orientation and setup boundary
+void
+pylith::faults::FaultCohesive::initialize(ALE::Obj<ALE::Mesh>* mesh,
+					  const double_array& upDir)
+{ // initialize
+  assert(0 != mesh);
+  assert(0 != _quadrature);
+  
+  if (3 != upDir.size())
+    throw std::runtime_error("Up direction for fault orientation must be "
+			     "a vector with 3 components.");
+  
+  
+  
+} // initialize
 
 
 // End of file 
