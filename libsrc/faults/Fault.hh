@@ -20,7 +20,9 @@
 #if !defined(pylith_faults_fault_hh)
 #define pylith_faults_fault_hh
 
-#include "pylith/utils/sievefwd.hh"
+#include "pylith/utils/sievefwd.hh" // USES PETSc Mesh
+#include "pylith/utils/arrayfwd.hh" // USES double_array
+
 #include <string> // HASA std::string
 
 /// Namespace for pylith package
@@ -82,7 +84,19 @@ public :
    * @param mesh PETSc mesh
    */
   virtual
-  void adjustTopology(ALE::Obj<ALE::Mesh>* mesh) const = 0;
+  void adjustTopology(ALE::Obj<ALE::Mesh>* mesh) = 0;
+
+  /** Initialize fault. Determine orientation and setup boundary
+   * condition parameters.
+   *
+   * @param mesh PETSc mesh
+   * @param upDir Direction perpendicular to along-strike direction that is 
+   *   not collinear with fault normal (usually "up" direction but could 
+   *   be up-dip direction).
+   */
+  virtual
+  void initialize(ALE::Obj<ALE::Mesh>* mesh,
+		  const double_array& upDir) = 0;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

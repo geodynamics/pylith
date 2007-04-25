@@ -4,6 +4,11 @@ MAIN PRIORITIES (Brad)
 
 Cleanup
 
+  Add check in MeshIO to make sure cell dimension matches space
+  dimension. We don't have enough information to determine the fault
+  orientation information for a cell in a higher
+  dimension coordinate space.
+
   Use pylith/utils/sievefwd.hh and pylith/utils/sievetypes.hh in unit
   tests. Remove typedefs when possible (take advantage of typedefs in
   seivefwd.hh).
