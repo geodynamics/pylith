@@ -66,8 +66,21 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     throw std::runtime_error("Up direction for fault orientation must be "
 			     "a vector with 3 components.");
   
-  
-  
+  // Allocate section for orientation information
+
+  // Loop over cells
+  //   Compute cell geometry at vertices
+  //   Compute weighted orientation of face at vertices (using geometry info)
+  //   Update weighted orientations (wt is |J|)
+
+  // Assemble orientation information
+
+  // Loop over vertices
+  //   Make orientation information unit magnitude
+
+  // Create list of constraint vertices
+
+  // Only store orientation information at constraint vertices
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -78,6 +91,10 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 				const ALE::Obj<real_section_type>& disp,
 				const ALE::Obj<Mesh>& mesh)
 { // integrateResidual
+
+  // Subtract constraint forces (which are in disp at the constraint
+  // DOF) to residual; contributions are at DOF of normal vertices (i and j)
+
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -88,15 +105,31 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 				    const ALE::Obj<real_section_type>& dispT,
 				    const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
+
+  // Add constraint information to Jacobian matrix; these are the
+  // direction cosines. Entries are associated with vertices ik, jk,
+  // ki, and kj.
+
 } // integrateJacobian
   
 // ----------------------------------------------------------------------
 // Set field.
 void
 pylith::faults::FaultCohesiveKin::setField(
+				     const double t,
 				     const ALE::Obj<real_section_type>& disp,
 				     const ALE::Obj<Mesh>& mesh)
 { // setField
+  typedef std::vector<Mesh::point_type>::const_iterator vert_iterator;
+
+  assert(0 != _eqsrc);
+
+  const ALE::Obj<real_section_type>& slip = _eqsrc->slip(t, _constraintVert);
+  assert(!slip.isNull());
+  const vert_iterator vBegin = _constraintVert.begin();
+  const vert_iterator vEnd = _constraintVert.end();
+  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter)
+    disp->updatePoint(*v_iter, slip->restrictPoint(*v_iter));
 } // setField
 
 
