@@ -4,10 +4,14 @@ MAIN PRIORITIES (Brad)
 
 Cleanup
 
-  Add check in MeshIO to make sure cell dimension matches space
-  dimension. We don't have enough information to determine the fault
-  orientation information for a cell in a higher
-  dimension coordinate space.
+  Add check at beginning of simulation to make sure cell dimension
+  matches space dimension. We don't have enough information to
+  determine the fault orientation information for a cell in a higher
+  dimension coordinate space. We also haven't implemented the
+  elasticity stuff for lower dimension cells in a higher
+  dimensions. Since Sieve can handle lower order meshes in higher
+  dimensions, we probably want to allow it in MeshIO, just not in the
+  simulation where we don't support it.
 
   Use pylith/utils/sievefwd.hh and pylith/utils/sievetypes.hh in unit
   tests. Remove typedefs when possible (take advantage of typedefs in
@@ -16,22 +20,32 @@ Cleanup
   Use MeshIOAscii to get mesh information into Python tests?
 
 0. Start implementing faults
-   a. Add creation of cohesive elements
-     Add tests for interpolated meshes
+   a. Add creation of cohesive cells
+     i. Add tests for interpolated meshes and constrained cohesive cells.
 
    b. Implement slip time function
-     Similar to material. Set up parameters using spatial databases.
-
+     i. Add Python
+     ii. Add unit tests
    c. Start implementing integrator for faults
-     Initialize - calculate orientation
-     How do we create kinematic source
-
-   d. Create unit tests at C++ level
-   e. Create unit tests at Python level
+     i. Update Reference cell
+       (1) Compute basis and basisDeriv at vertices
+       (2) Add unit tests
+     ii. Update Quadrature
+       (1) Add basis and basisDeriv at vertices to Quadrature
+       (2) Add computeGeometryQuad/computeGeometryVert to Quadrature
+       (3) Add unit tests
+     iii. FaultCohesive
+       (1) orientXD
+       (2) Unit tests
+     iv. FaultCohesiveKin
+       (1) initialize(), setField(), integrateResidual(), integrateJacobian()
+       (2) Add Python unit tests
+       (3) Add C++ unit tests
 
 1. Finish implementing ExplicitElasticity and Explicit
-   a. Double check loops for calcConstant() and calcJacobian()
-   b. Create unit test (construction of constant term and Jacobian)
+   a. Replace integrateConstant() with integrateResidual()
+   a. Double check loops for integrateResidual() and integrateJacobian()
+   b. Create unit test (construction of residual term and Jacobian)
 
    c. Add unit test for IntegratorElasticity::calcTotalStrain
 
@@ -115,7 +129,7 @@ THINGS WE NEED SIEVE TO DO (Matt)
   Outputs:
     * PETSc Mesh on each processor (restricted to processor)
 
-  Note: Called from topology.Mesh.py (need Python bindings for Sieve function).
+  [DONE]
 
 4. Global refinement of mesh.
 

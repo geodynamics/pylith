@@ -84,7 +84,7 @@ public :
    * @param mesh PETSc mesh
    */
   virtual
-  void adjustTopology(ALE::Obj<ALE::Mesh>* mesh) = 0;
+  void adjustTopology(const ALE::Obj<ALE::Mesh>& mesh) = 0;
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
@@ -95,7 +95,7 @@ public :
    *   be up-dip direction).
    */
   virtual
-  void initialize(ALE::Obj<ALE::Mesh>* mesh,
+  void initialize(const ALE::Obj<ALE::Mesh>& mesh,
 		  const double_array& upDir) = 0;
 
   // PROTECTED METHODS //////////////////////////////////////////////////

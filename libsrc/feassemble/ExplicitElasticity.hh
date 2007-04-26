@@ -95,7 +95,7 @@ public :
   void material(const materials::ElasticMaterial* m);
 
   /** Integrate constant term (b) for dynamic elasticity term 
-   * for 3-D finite elements.
+   * for finite elements.
    *
    * Compute b = 2/(dt*dt)[M]{u(t) - 1/(dt*dt)[M]{u(t-dt)} - [K]{u(t)}, where
    * [M] = density * [N]^T [N]
