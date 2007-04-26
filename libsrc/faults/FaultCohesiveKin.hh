@@ -59,6 +59,45 @@ public :
    */
   void eqsrc(EqKinSrc* src);
 
+  /** Initialize fault. Determine orientation and setup boundary
+   * condition parameters.
+   *
+   * @param mesh PETSc mesh
+   * @param upDir Direction perpendicular to along-strike direction that is 
+   *   not collinear with fault normal (usually "up" direction but could 
+   *   be up-dip direction).
+   */
+  void initialize(const ALE::Obj<ALE::Mesh>& mesh,
+		  const double_array& upDir);
+
+  /** Integrate contribution of cohesive cells to residual term.
+   *
+   * @param residual Residual field (output)
+   * @param disp Displacement field at time t
+   * @param mesh Finite-element mesh
+   */
+  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+			 const ALE::Obj<real_section_type>& disp,
+			 const ALE::Obj<Mesh>& mesh);
+
+  /** Compute Jacobian matrix (A) associated with operator.
+   *
+   * @param mat Sparse matrix
+   * @param disp Displacement field
+   * @param mesh Finite-element mesh
+   */
+  void integrateJacobian(PetscMat* mat,
+			 const ALE::Obj<real_section_type>& dispT,
+			 const ALE::Obj<Mesh>& mesh);
+  
+  /** Set field.
+   *
+   * @param disp Displacement field
+   * @param mesh Finite-element mesh
+   */
+  void setField(const ALE::Obj<real_section_type>& disp,
+		const ALE::Obj<Mesh>& mesh);
+  
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
