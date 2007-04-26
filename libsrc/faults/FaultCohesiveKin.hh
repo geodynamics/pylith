@@ -12,8 +12,18 @@
 
 /** @file libsrc/faults/FaultCohesiveKin.hh
  *
- * @brief C++ abstract base class for a fault surface implemented with
- * cohesive elements.
+ * @brief C++ object implementing a fault surface with a kinematic
+ * earthquake source.
+ *
+ * Fault boundary condition is specified using Lagrange
+ * multipliers. The constraints are associated with "constraint"
+ * vertices which sit between the pair of vertices on each side of the
+ * fault. 
+ *
+ * The ordering of vertices in a cohesive cell is the vertices on the
+ * POSITIVE/NEGATIVE (CHECK WHICH IT IS) side of the fault, the
+ * corresponding entries on the other side of the fault, and then the
+ * corresponding constraint vertices.
  */
 
 #if !defined(pylith_faults_faultcohesivekin_hh)
@@ -92,10 +102,12 @@ public :
   
   /** Set field.
    *
+   * @param t Current time
    * @param disp Displacement field
    * @param mesh Finite-element mesh
    */
-  void setField(const ALE::Obj<real_section_type>& disp,
+  void setField(const double t,
+		const ALE::Obj<real_section_type>& disp,
 		const ALE::Obj<Mesh>& mesh);
   
   // PROTECTED METHODS //////////////////////////////////////////////////
@@ -117,6 +129,9 @@ private :
 private :
 
   EqKinSrc* _eqsrc; ///< Kinematic earthquake source information
+
+  /// Fault vertices associated with constraints
+  std::vector<Mesh::point_type> _constraintVert;
 
 }; // class FaultCohesiveKin
 

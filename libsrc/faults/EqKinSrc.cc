@@ -52,23 +52,24 @@ pylith::faults::EqKinSrc::slipfn(SlipTimeFn* slipfn)
 // ----------------------------------------------------------------------
 // Initialize slip time function.
 void
-pylith::faults::EqKinSrc::initialize(const ALE::Obj<Mesh>& mesh,
-				     const ALE::Obj<Mesh>& faultMesh,
-				     
-				   const spatialdata::geocoords::CoordSys* cs)
+pylith::faults::EqKinSrc::initialize(
+			      const ALE::Obj<Mesh>& mesh,
+			      const ALE::Obj<Mesh>& faultMesh,
+			      const std::vector<Mesh::point_type>& vertices,
+			      const spatialdata::geocoords::CoordSys* cs)
 { // initialize
   assert(0 != _slipfn);
-  _slipfn->initialize(mesh, faultMesh, cs);
+  _slipfn->initialize(mesh, faultMesh, vertices, cs);
 } // initialize
 
 // ----------------------------------------------------------------------
 // Get slip on fault surface at time t.
 const ALE::Obj<pylith::real_section_type>&
 pylith::faults::EqKinSrc::slip(const double t,
-			       const ALE::Obj<Mesh>& faultMesh)
+			       const std::vector<Mesh::point_type>& vertices)
 { // slip
   assert(0 != _slipfn);
-  return _slipfn->slip(t, faultMesh);
+  return _slipfn->slip(t, vertices);
 } // slip
 
 

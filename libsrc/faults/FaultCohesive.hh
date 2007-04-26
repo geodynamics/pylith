@@ -92,11 +92,13 @@ public :
   
   /** Set field.
    *
+   * @param t Current time
    * @param disp Displacement field
    * @param mesh Finite-element mesh
    */
   virtual
-  void setField(const ALE::Obj<real_section_type>& disp,
+  void setField(const double t,
+		const ALE::Obj<real_section_type>& disp,
 		const ALE::Obj<Mesh>& mesh) = 0;
   
   // PROTECTED METHODS //////////////////////////////////////////////////
@@ -124,11 +126,13 @@ protected :
    * @param upDir Direction perpendicular to along-strike direction that is 
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction).
+   * @param numLocs Number of locations where values are given.
    */
-  void orient1D(double_array* orientation,
-		const double_array& jacobian,
-		const double_array& jacobianDet,
-		const double_array& upDir);
+  void _orient1D(double_array* orientation,
+		 const double_array& jacobian,
+		 const double_array& jacobianDet,
+		 const double_array& upDir,
+		 const int numLocs);
 		
   /** Compute weighted orientation of fault for cohesive cell between
    * 2-D elements. Orientation is either at vertices or quadrature
@@ -146,11 +150,13 @@ protected :
    * @param upDir Direction perpendicular to along-strike direction that is 
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction).
+   * @param numLocs Number of locations where values are given.
    */
-  void orient2D(double_array* orientation,
-		const double_array& jacobian,
-		const double_array& jacobianDet,
-		const double_array& upDir);
+  void _orient2D(double_array* orientation,
+		 const double_array& jacobian,
+		 const double_array& jacobianDet,
+		 const double_array& upDir,
+		 const int numLocs);
 		
   /** Compute weighted orientation of fault for cohesive cell between
    * 3-D elements. Orientation is either at vertices or quadrature
@@ -168,11 +174,13 @@ protected :
    * @param upDir Direction perpendicular to along-strike direction that is 
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction).
+   * @param numLocs Number of locations where values are given.
    */
-  void orient3D(double_array* orientation,
-		const double_array& jacobian,
-		const double_array& jacobianDet,
-		const double_array& upDir);
+  void _orient3D(double_array* orientation,
+		 const double_array& jacobian,
+		 const double_array& jacobianDet,
+		 const double_array& upDir,
+		 const int numLocs);
 		
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
