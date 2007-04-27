@@ -588,20 +588,25 @@ where
 \begin_inset Formula $^{I}\overrightarrow{\sigma}$
 \end_inset
 
- is the initial stress existing in the material, and the stress-strain matrix,
- 
-\begin_inset Formula $\underline{D}$
-\end_inset
-
-, may be written in terms of Young's modulus (
+ is the initial stress existing in the material.
+ This model may be characterized by two parameters: the Young's modulus
+ (
 \begin_inset Formula $E$
 \end_inset
 
-) and Poisson's ratio, 
+) and Poisson's ratio (
 \begin_inset Formula $\nu$
 \end_inset
 
-:
+).
+ In terms of these two parameters, the stress-strain matrix, 
+\begin_inset Formula $\underline{D}$
+\end_inset
+
+, may be written:
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula \begin{gather}
 \underline{D}=\frac{E\left(1-\nu\right)}{\left(1+\nu\right)\left(1-2\nu\right)}\left[\begin{array}{cccccc}
 1 & \frac{\nu}{1-\nu} & \frac{\nu}{1-\nu} & 0 & 0 & 0\\
@@ -723,51 +728,65 @@ Linear Maxwell Viscoelastic Material
 \end_layout
 
 \begin_layout Standard
-For a linear Maxwell viscoelastic material the creep strain increment is
+A linear Maxwell viscoelastic material may be characterized by the same
+ elastic parameters as an isotropic elastic material (
+\begin_inset Formula $E$
+\end_inset
+
+ and 
+\begin_inset Formula $\nu$
+\end_inset
+
+), as well as the viscosity, 
+\begin_inset Formula $\eta$
+\end_inset
+
+.
+ The creep strain increment is
 \begin_inset Formula \begin{gather}
-\boldsymbol{\Delta}\boldsymbol{e}^{C}=\frac{\Delta t\Prefix^{{\tau}}{\boldsymbol{S}}}{2\eta}\,\,.\label{eq:14}\end{gather}
+\underline{\Delta e}^{C}=\frac{\Delta t^{\tau}\underline{S}}{2\eta}\,\,.\label{eq:17}\end{gather}
 
 \end_inset
 
 Therefore,
 \begin_inset Formula \begin{gather}
-\Delta\overline{e}^{C}=\frac{\Delta t\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}{\sqrt{3\eta}}=\frac{\Delta t\Prefix^{{\tau}}{\overline{\sigma}}}{3\eta}\,,\,\mathrm{and}\,\Prefix^{{\tau}}{\gamma}=\frac{1}{2\eta}\,\,.\label{eq:15}\end{gather}
+\Delta\overline{e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}}{\sqrt{3\eta}}=\frac{\Delta t^{\tau}\overline{\sigma}}{3\eta}\,,\,\mathrm{and}\,^{\tau}\gamma=\frac{1}{2\eta}\,\,.\label{eq:18}\end{gather}
 
 \end_inset
 
 Substituting 
-\begin_inset LatexCommand \ref{eq:10}
+\begin_inset LatexCommand \ref{eq:13}
 
 \end_inset
 
 , 
-\begin_inset LatexCommand \ref{eq:14}
+\begin_inset LatexCommand \ref{eq:17}
 
 \end_inset
 
 , and 
-\begin_inset LatexCommand \ref{eq:15}
+\begin_inset LatexCommand \ref{eq:18}
 
 \end_inset
 
  into 
-\begin_inset LatexCommand \ref{eq:7}
+\begin_inset LatexCommand \ref{eq:10}
 
 \end_inset
 
 , we obtain
 \begin_inset Formula \begin{gather}
-\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{E}{1+\nu}\left\{ \Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\frac{\Delta t}{2\eta}\left[(1-\alpha)\Prefix^{{t}}{\boldsymbol{S}}+\alpha\Prefix^{{t+\Delta t}}{\boldsymbol{S}}\right]\right\} +\Prefix^{{I}}{\boldsymbol{S}}\,\,.\label{eq:16}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime\prime}-\frac{\Delta t}{2\eta}\left[(1-\alpha)^{t}\underline{S}+\alpha^{t+\Delta t}\underline{S}\right]\right\} +^{I}\underline{S}\,\,.\label{eq:19}\end{gather}
 
 \end_inset
 
 Solving for 
-\begin_inset Formula $\Prefix^{{t+\Delta t}}{\boldsymbol{S}}$
+\begin_inset Formula $^{t+\Delta t}\underline{S}$
 \end_inset
 
 ,
 \begin_inset Formula \begin{gather}
-\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{1}{\frac{1+\mathrm{\nu}}{E}+\frac{\alpha\Delta t}{2\eta}}\left[\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\frac{\Delta t}{2\eta}(1-\alpha)\Prefix^{{t}}{\boldsymbol{S}}+\frac{1+\mathrm{\nu}}{E}\Prefix^{{I}}{\boldsymbol{S}}\right]\,\,.\label{eq:17}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{\frac{1+\mathrm{\nu}}{E}+\frac{\alpha\Delta t}{2\eta}}\left[^{t+\Delta t}\underline{e}^{\prime\prime}-\frac{\Delta t}{2\eta}(1-\alpha)^{t}\underline{S}+\frac{1+\mathrm{\nu}}{E}\,^{I}\underline{S}\right]\,\,.\label{eq:20}\end{gather}
 
 \end_inset
 
@@ -775,7 +794,7 @@ In this case it is possible to solve directly for the deviatoric stresses,
  and the effective stress function approach is not needed.
  To obtain the total stress, we simply use
 \begin_inset Formula \begin{gather}
-\Prefix^{{t+\Delta t}}{\sigma_{ij}}=\Prefix^{{t+\Delta t}}{S_{ij}}+\frac{\mathit{E}}{1-2\nu}\Prefix^{{t+\Delta t}}{e_{m}}\delta_{ij}+\Prefix^{{I}}{\sigma_{m}}\delta_{ij}\,\,.\label{eq:18}\end{gather}
+^{t+\Delta t}\sigma_{ij}=^{t+\Delta t}S_{ij}+\frac{\mathit{E}}{1-2\nu}\,^{t+\Delta t}\theta\delta_{ij}+^{I}P\delta_{ij}\,\,.\label{eq:21}\end{gather}
 
 \end_inset
 
@@ -792,38 +811,38 @@ It is now necessary to provide a relationship for the viscoelastic tangent
  If we use vectors composed of the stresses and tensor strains, this relationshi
 p is
 \begin_inset Formula \begin{gather}
-\boldsymbol{C}^{VE}=\frac{\partial\Prefix^{{t+\Delta t}}{\boldsymbol{\sigma}}}{\partial\Prefix^{{t+\Delta t}}{\boldsymbol{\epsilon}}}\,\,.\label{eq:19}\end{gather}
+\underline{C}^{VE}=\frac{\partial^{t+\Delta t}\overrightarrow{\sigma}}{\partial^{t+\Delta t}\overrightarrow{\epsilon}}\,\,.\label{eq:22}\end{gather}
 
 \end_inset
 
 In terms of the vectors, we have
 \begin_inset Formula \begin{gather}
-\Prefix^{{t+\Delta t}}{\sigma_{i}}=\Prefix^{{t+\Delta t}}{S_{i}}+\Prefix^{{t+\Delta t}}{\sigma_{m}}\,\,;\,\,\, i=1,2,3\nonumber \\
-\Prefix^{{t+\Delta t}}{\sigma_{i}}=\Prefix^{{t+\Delta t}}{S_{i}}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, i=4,5,6\label{eq:20}\end{gather}
+^{t+\Delta t}\sigma_{i}=^{t+\Delta t}S_{i}+^{t+\Delta t}P\,\,;\,\,\, i=1,2,3\nonumber \\
+^{t+\Delta t}\sigma_{i}=^{t+\Delta t}S_{i}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, i=4,5,6\label{eq:23}\end{gather}
 
 \end_inset
 
 Therefore,
 \begin_inset Formula \begin{gather}
-C_{ij}^{VE}=C_{ij}^{'}+\frac{E}{3(1-2\mathrm{v})}\,;\,\,1\leq i,j\leq3\,\,.\nonumber \\
-C_{ij}^{VE}=C_{ij}^{'}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise}\label{eq:21}\end{gather}
+C_{ij}^{VE}=C_{ij}^{\prime}+\frac{E}{3(1-2\mathrm{v})}\,;\,\,1\leq i,j\leq3\,\,.\nonumber \\
+C_{ij}^{VE}=C_{ij}^{\prime}\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise}\label{eq:24}\end{gather}
 
 \end_inset
 
 Using the chain rule,
 \begin_inset Formula \begin{gather}
-\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{\epsilon_{j}}}=\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}\frac{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}{\partial\Prefix^{{t+\Delta t}}{e_{l}^{\prime}}}\frac{\partial\Prefix^{{t+\Delta t}}{e_{l}^{\prime}}}{\partial\Prefix^{{t+\Delta t}}{\epsilon_{j}}}\,\,.\label{eq:22}\end{gather}
+\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}\epsilon_{j}}=\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{\prime\prime}}\frac{\partial^{t+\Delta t}e_{k}^{\prime\prime}}{\partial^{t+\Delta t}e_{l}^{\prime}}\frac{\partial^{t+\Delta t}e_{l}^{\prime}}{\partial^{t+\Delta t}\epsilon_{j}}\,\,.\label{eq:25}\end{gather}
 
 \end_inset
 
 From 
-\begin_inset LatexCommand \ref{eq:8}
+\begin_inset LatexCommand \ref{eq:11}
 
 \end_inset
 
 , we obtain
 \begin_inset Formula \begin{gather}
-\frac{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}{\partial\Prefix^{{t+\Delta t}}{e_{l}^{\prime}}}=\delta_{kl}\,\,,\label{eq:23}\end{gather}
+\frac{\partial^{t+\Delta t}e_{k}^{\prime\prime}}{\partial^{t+\Delta t}e_{l}^{\prime}}=\delta_{kl}\,\,,\label{eq:26}\end{gather}
 
 \end_inset
 
@@ -834,27 +853,27 @@ and from
 
 :
 \begin_inset Formula \begin{gather}
-\frac{\partial\Prefix^{{t+\Delta t}}{e_{l}^{\prime}}}{\partial\Prefix^{{t+\Delta t}}{e_{j}}}=\frac{1}{3}\left[\begin{array}{ccc}
+\frac{\partial^{t+\Delta t}e_{l}^{\prime}}{\partial^{t+\Delta t}e_{j}}=\frac{1}{3}\left[\begin{array}{ccc}
 2 & -1 & -1\\
 -1 & 2 & -1\\
 -1 & -1 & 2\end{array}\right];\,\,1\leq l,j\leq3\nonumber \\
-\frac{\partial\Prefix^{{t+\Delta t}}{e_{l}^{\prime}}}{\partial\Prefix^{{t+\Delta t}}{\epsilon_{j}}}=\delta_{lj}\,\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise}\label{eq:24}\end{gather}
+\frac{\partial^{t+\Delta t}e_{l}^{\prime}}{\partial^{t+\Delta t}\epsilon_{j}}=\delta_{lj}\,\,;\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\textrm{otherwise}\label{eq:27}\end{gather}
 
 \end_inset
 
 Finally, from 
-\begin_inset LatexCommand \ref{eq:17}
+\begin_inset LatexCommand \ref{eq:19}
 
 \end_inset
 
 , we have
 \begin_inset Formula \begin{gather}
-\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=\frac{\delta_{ik}}{\frac{1+\nu}{E}+\frac{\alpha\Delta t}{2\eta}}\,\,.\label{eq:25}\end{gather}
+\frac{\partial^{t+\Delta t}S_{i}}{\partial^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\delta_{ik}}{\frac{1+\nu}{E}+\frac{\alpha\Delta t}{2\eta}}\,\,.\label{eq:28}\end{gather}
 
 \end_inset
 
 From 
-\begin_inset LatexCommand \ref{eq:21}
+\begin_inset LatexCommand \ref{eq:24}
 
 \end_inset
 
@@ -872,7 +891,7 @@ C_{ij}^{VE}=\frac{E}{3(1-2\nu)}\left[\begin{array}{cccccc}
 -1 & -1 & 2 & 0 & 0 & 0\\
 0 & 0 & 0 & 3 & 0 & 0\\
 0 & 0 & 0 & 0 & 3 & 0\\
-0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:26}\end{gather}
+0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:29}\end{gather}
 
 \end_inset
 
@@ -900,7 +919,7 @@ C_{ij}^{VE}=\frac{E}{3(1-2\mathrm{v})}\left[\begin{array}{cccccc}
 -1 & -1 & 2 & 0 & 0 & 0\\
 0 & 0 & 0 & \frac{3}{2} & 0 & 0\\
 0 & 0 & 0 & 0 & \frac{3}{2} & 0\\
-0 & 0 & 0 & 0 & 0 & \frac{3}{2}\end{array}\right]\,.\label{eq:27}\end{gather}
+0 & 0 & 0 & 0 & 0 & \frac{3}{2}\end{array}\right]\,.\label{eq:30}\end{gather}
 
 \end_inset
 
@@ -912,13 +931,13 @@ To check the results we make sure that the regular elastic constitutive
  goes to infinity.
 \begin_inset Formula \begin{gather}
 C_{11}^{E}=\frac{E(1-\nu)}{(1+\nu)(1-2\nu)}\,\,\nonumber \\
-C_{12}^{E}=\frac{E\nu}{(1+\nu)(1-2\nu)}\,.\label{eq:28}\\
+C_{12}^{E}=\frac{E\nu}{(1+\nu)(1-2\nu)}\,.\label{eq:31}\\
 C_{44}^{E}=\frac{E}{2(1+\nu)}\,\,\nonumber \end{gather}
 
 \end_inset
 
 This is consistent with the regular elasticity matrix, and equation 
-\begin_inset LatexCommand \ref{eq:27}
+\begin_inset LatexCommand \ref{eq:30}
 
 \end_inset
 
