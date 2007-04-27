@@ -132,6 +132,15 @@ private :
   /// Not implemented
   const FaultCohesiveKin& operator=(const FaultCohesiveKin& m);
 
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /** Get size (fiber dimension) of orientation information.
+   *
+   * @returns Size of orientation information.
+   */
+  int _orientationSize(void) const;
+
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 

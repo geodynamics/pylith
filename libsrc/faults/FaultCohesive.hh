@@ -197,8 +197,8 @@ private :
   /// Not implemented
   const FaultCohesive& operator=(const FaultCohesive& m);
 
-  // PRIVATE MEMBERS ////////////////////////////////////////////////////
-private :
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
 
   ALE::Obj<ALE::Mesh>* _faultMesh;
 

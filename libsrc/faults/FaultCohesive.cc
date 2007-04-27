@@ -120,6 +120,7 @@ pylith::faults::FaultCohesive::_orient3D(double_array* orientation,
   const int jacobianSize = 6;
   assert(numLocs*jacobianSize == jacobian.size());
   assert(numLocs == jacobianDet.size());
+  assert(3 == upDir.size());
 
   const int cellDim = 2;
   const int spaceDim = 3;
