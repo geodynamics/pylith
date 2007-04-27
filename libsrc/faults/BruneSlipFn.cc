@@ -15,6 +15,7 @@
 #include "BruneSlipFn.hh" // implementation of object methods
 
 #include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
+#include "pylith/utils/array.hh" // USES double_array
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -70,6 +71,8 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   assert(0 != _dbSlipTime);
   assert(0 != _dbPeakRate);
 
+  const int spaceDim = cs->spaceDim();
+
   // Create and allocate sections for parameters
   delete _parameters; 
   _parameters = new feassemble::ParameterManager(faultMesh);
@@ -83,7 +86,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   const ALE::Obj<real_section_type>& finalSlip = 
     _parameters->getReal("final slip");
   assert(!finalSlip.isNull());
-  finalSlip->setFiberDimension(faultMesh->depthStratum(0), 3);
+  finalSlip->setFiberDimension(faultMesh->depthStratum(0), spaceDim);
   faultMesh->allocate(finalSlip);
 
   // Parameter: slip initiation time
@@ -104,8 +107,23 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   
   // Open databases and set query values
   _dbFinalSlip->open();
-  const char* slipValues[] = {"strike-slip", "dip-slip", "fault-opening"};
-  _dbFinalSlip->queryVals(slipValues, 3);
+  switch (spaceDim) {
+  case 1 : {
+    const char* slipValues[] = {"slip"};
+    _dbFinalSlip->queryVals(slipValues, 1);
+  } // case 1
+  case 2 : {
+    const char* slipValues[] = {"slip", "fault-opening"};
+    _dbFinalSlip->queryVals(slipValues, 2);
+  } // case 2
+  case 3 : {
+    const char* slipValues[] = {"left-lateral-slip", "reverse-slip", 
+				"fault-opening"};
+    _dbFinalSlip->queryVals(slipValues, 3);
+  } // case 3
+  default :
+    assert(0);
+  } // switch
 
   _dbSlipTime->open();
   const char* slipTimeValues[] = {"slip-time"};
@@ -119,10 +137,9 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  const int spaceDim = cs->spaceDim();
 
   // Query databases for parameters
-  double slipData[3];
+  double_array slipData(spaceDim);
   double slipTimeData;
   double peakRateData;
   const vert_iterator vBegin = vertices.begin();
@@ -132,7 +149,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
     const real_section_type::value_type* vCoords = 
       coordinates->restrictPoint(*v_iter);
     
-    int err = _dbFinalSlip->query(&slipData[0], 3, vCoords, spaceDim, cs);
+    int err = _dbFinalSlip->query(&slipData[0], spaceDim, vCoords, spaceDim, cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find final slip at (";
@@ -173,7 +190,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
 
   // Allocate slip field
   _slipField = new real_section_type(faultMesh->comm(), faultMesh->debug());
-  _slipField->setFiberDimension(faultMesh->depthStratum(0), 3);
+  _slipField->setFiberDimension(faultMesh->depthStratum(0), spaceDim);
   faultMesh->allocate(_slipField);
 } // initialize
 
@@ -201,11 +218,12 @@ pylith::faults::BruneSlipFn::slip(const double t,
     _parameters->getReal("peak rate");
   assert(!peakRate.isNull());
 
-  double slipValues[3];
+  double_array slipValues(3);
   const vert_iterator vBegin = vertices.begin();
   const vert_iterator vEnd = vertices.end();
   for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
     // Get values of parameters at vertex
+    const int numSlipValues = finalSlip->getFiberDimension(*v_iter);
     const real_section_type::value_type* vFinalSlip = 
       finalSlip->restrictPoint(*v_iter);
     const real_section_type::value_type* vSlipTime = 
@@ -213,14 +231,14 @@ pylith::faults::BruneSlipFn::slip(const double t,
     const real_section_type::value_type* vPeakRate = 
       peakRate->restrictPoint(*v_iter);
 
-    const double vFinalSlipMag = sqrt(vFinalSlip[0]*vFinalSlip[0] +
-				      vFinalSlip[1]*vFinalSlip[1] +
-				      vFinalSlip[2]*vFinalSlip[2]);
+    double vFinalSlipMag = 0.0;
+    for (int iSlip=0; iSlip < numSlipValues; ++iSlip)
+      vFinalSlipMag += vFinalSlip[iSlip]*vFinalSlip[iSlip];
+    vFinalSlipMag = sqrt(vFinalSlipMag);
     const double vSlip = _slip(t-vSlipTime[0], vFinalSlipMag, vPeakRate[0]);
     const double scale = vSlip / vFinalSlipMag;
-    slipValues[0] = scale * vFinalSlip[0];
-    slipValues[1] = scale * vFinalSlip[1];
-    slipValues[2] = scale * vFinalSlip[2];
+    for (int iSlip=0; iSlip < numSlipValues; ++iSlip)
+      slipValues[iSlip] = scale * vFinalSlip[iSlip];
 
     // Update field
     _slipField->updatePoint(*v_iter, &slipValues[0]);
