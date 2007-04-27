@@ -47,12 +47,10 @@ class FIATCell(ReferenceCell):
     quadrature = self._setupQuadrature()
     basisFns = self._setupBasisFns()
     vertices = self._setupVertices()
-    print "VERTICES:",vertices
     
     # Evaluate basis functions at vertices
     basis = numpy.array(basisFns.tabulate(vertices)).transpose()
     self.basisVert = numpy.reshape(basis.flatten(), basis.shape)
-    print "BASIS VERT:",self.basisVert
 
     # Evaluate derivatives of basis functions at vertices
     import FIAT.shapes
