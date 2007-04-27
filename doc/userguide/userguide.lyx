@@ -229,9 +229,9 @@ Williams, C.A., B.
  simulations, 
 \emph on
 Eos Trans.
- AGU
+ AGU, 86
 \emph default
-, 86(52), Fall Meet.
+(52), Fall Meet.
  Suppl., Abstract S53A-1072.
 \end_layout
 
@@ -245,7 +245,11 @@ Williams, C.A.
 Eos Trans.
  AGU,
 \emph default
- 87(36), Jt.
+ 
+\emph on
+87
+\emph default
+(36), Jt.
  Assem.
  Suppl., Abstract T24A-01 Invited.
 \end_layout
@@ -262,9 +266,13 @@ Int.
  J.
  Num.
  Meth.
- Eng.
+ Eng
 \emph default
-, 24, 1509-1532.
+.
+\emph on
+, 24
+\emph default
+, 1509-1532.
 \end_layout
 
 \begin_layout Bibliography
