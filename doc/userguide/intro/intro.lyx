@@ -365,6 +365,37 @@ Pyre is an object-oriented environment capable of specifying and launching
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename figs/pyre_overview.eps
+	scale 75
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Caption
+Pyre Architecture.
+ The integration framework is a set of cooperating abstract services.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Pyre is a framework, a combination of software and design philosophy that
  promotes the reuse of code.
  In their canonical software design book, 
@@ -407,38 +438,6 @@ tion, reasonable defaults, consistency checks of input, good diagnostics,
  easy access to remote facilities, and status monitoring.
  Target features for developers include easy access to user input, a shorter
  development cycle, and good debugging support.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement htbp
-wide false
-sideways false
-status open
-
-\begin_layout Standard
- 
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename figs/pyre_overview.eps
-	scale 75
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Caption
-Pyre Architecture.
- The integration framework is a set of cooperating abstract services.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section

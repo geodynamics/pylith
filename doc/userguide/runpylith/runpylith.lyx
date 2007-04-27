@@ -63,13 +63,16 @@ PyLith currently only supports the 4-node linear tetrahedral and 8-node
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
-placement htbp
+placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
+\noindent
 \align center
 \begin_inset Graphics
 	filename figs/tet4.eps
@@ -97,11 +100,13 @@ Linear tetrahedral finite element.
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
-placement htbp
+placement t
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \align center
@@ -309,7 +314,6 @@ xx.fuldat
 Time steps for which full output is requested.
  
 \shape italic
-\color default
 Required for time-dependent problems.
 \end_layout
 
@@ -716,33 +720,11 @@ pylith3d.cfg
  (1) overrides only the built-in defaults.
 \end_layout
 
-\begin_layout Subsection
-PETSc Settings
-\end_layout
-
 \begin_layout Standard
-PyLith relies on PETSc for the linear algebra computations.
- Many PETSc options can be set in 
-\family typewriter
-.cfg
-\family default
- files.
- The ones of primary interest in the case of PyLith are shown in Table\InsetSpace ~
-
-\begin_inset LatexCommand \ref{tab:Useful-command-line-arguments}
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
+\noindent
+\align center
 \begin_inset Float table
-placement htbp
+placement H
 wide false
 sideways false
 status open
@@ -752,9 +734,9 @@ status open
 \begin_inset Tabular
 <lyxtabular version="3" rows="7" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="1in">
-<column alignment="center" valignment="middle" leftline="true" width="1in">
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="3.1in">
+<column alignment="left" valignment="top" leftline="true" width="0.9in">
+<column alignment="center" valignment="middle" leftline="true" width="0.8in">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="4in">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -1010,6 +992,26 @@ Useful command-line arguments for setting PETSc options.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+PETSc Settings
+\end_layout
+
+\begin_layout Standard
+PyLith relies on PETSc for the linear algebra computations.
+ Many PETSc options can be set in 
+\family typewriter
+.cfg
+\family default
+ files.
+ The ones of primary interest in the case of PyLith are shown in Table\InsetSpace ~
+
+\begin_inset LatexCommand \ref{tab:Useful-command-line-arguments}
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard

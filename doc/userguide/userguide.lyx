@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -139,6 +139,19 @@ mainmatter
 \end_inset
 
 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+raggedbottom
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -269,9 +282,8 @@ The Finite Element Method, Fifth Edition, Volume 2: Solid Mechanics
 \begin_layout Bibliography
 
 \bibitem [5]{Taylor:2003}
-Taylor, R.
- L.
- (2003), 'FEAP--A Finite Element Analysis Program', 
+Taylor, R.L.
+ (2003), `FEAP--A Finite Element Analysis Program', 
 \shape italic
 Version 7.5 Theory Manual
 \shape default

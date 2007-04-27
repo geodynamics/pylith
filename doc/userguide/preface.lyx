@@ -46,9 +46,8 @@ About This Document
 
 \begin_layout Standard
 This document is organized into two parts.
- Part I begins with an introduction to PyLith and discusses how to run the
- software.
- Part II provides appendices and references.
+ The first part begins with an introduction to PyLith and discusses how
+ to run the software; the second part provides appendices and references.
 \end_layout
 
 \begin_layout Section

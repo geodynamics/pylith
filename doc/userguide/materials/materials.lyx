@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -42,12 +42,12 @@ Material Models
 
 \begin_layout Standard
 There are six material models presently available in PyLith, as shown in
- 
+ Table 
 \begin_inset LatexCommand \ref{tab:Material-models-available}
 
 \end_inset
 
- and 
+ and Figure 
 \begin_inset LatexCommand \ref{fig:Material-models}
 
 \end_inset
@@ -71,7 +71,7 @@ There are six material models presently available in PyLith, as shown in
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \noindent
@@ -314,10 +314,13 @@ Material models available in PyLith.
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
+placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Caption
 \begin_inset LatexCommand \label{fig:Material-models}
@@ -327,6 +330,11 @@ status open
 Spring-dashpot 1D representations of the material models available in PyLith.
  The top model is a linear elastic model, the middle model is a Maxwell
  model, and the bottom model is a generalized Maxwell model.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
 \begin_inset Graphics
 	filename figs/pylith-materials.eps
 
@@ -346,7 +354,7 @@ Definitions
 
 \begin_layout Standard
 In the following sections, we use a combination of vector and index notation,
- and our notation conventions are shown in 
+ and our notation conventions are shown in Table 
 \begin_inset LatexCommand \ref{tab:Mathematical-notation}
 
 \end_inset
@@ -418,8 +426,8 @@ where
 
 \end_inset
 
-Due to the symmetry of the stress and strain tensors, it is somethimes convenien
-t to represent them as vectors:
+Due to the symmetry of the stress and strain tensors, it is sometimes convenient
+ to represent them as vectors:
 \begin_inset Formula \begin{gather}
 \overrightarrow{\sigma^{T}}=\left[\begin{array}{cccccc}
 \sigma_{11} & \sigma_{22} & \sigma_{33} & \sigma_{12} & \sigma_{23} & \sigma_{31}\end{array}\right]\nonumber \\
@@ -432,7 +440,7 @@ Note the use of engineering strain measures (
 \begin_inset Formula $\gamma_{ij}$
 \end_inset
 
-) in 
+) in equation 
 \begin_inset LatexCommand \ref{eq:5}
 
 \end_inset
@@ -454,17 +462,17 @@ For quantities evaluated over a specific time period, we represent the initial
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float table
+placement H
 wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{tab:Mathematical-notation}
-
-\end_inset
-
-Mathematical notation used in this section.
+\begin_layout Standard
+\noindent
+\align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="3">
 <features>
@@ -577,6 +585,14 @@ Second order tensor field a.
 
 \end_layout
 
+\begin_layout Caption
+\begin_inset LatexCommand \label{tab:Mathematical-notation}
+
+\end_inset
+
+Mathematical notation used in this section.
+\end_layout
+
 \end_inset
 
 
@@ -597,7 +613,7 @@ The generalized form of Hooke's law relating stress and strain for linear
 
 \end_inset
 
-due to symmetry considerations, however, the 81 components of the elasticity
+Due to symmetry considerations, however, the 81 components of the elasticity
  matrix are reduced to 21 independent components for the most general case
  of anisotropic elasticity.
  For the case of isotropic elasticity, the number of independent components
@@ -672,7 +688,7 @@ where
 \begin_inset Formula $^{t+\Delta t}\underline{e}^{C}$
 \end_inset
 
- is the total viscous strain, is the initial deviatoric stress, 
+ is the total viscous strain, 
 \begin_inset Formula $^{t+\Delta t}P$
 \end_inset
 
@@ -694,7 +710,7 @@ where
 \end_inset
 
 , respectively.
- The topmost equation in 
+ The topmost equation in equation 
 \begin_inset LatexCommand \ref{eq:9}
 
 \end_inset
@@ -779,7 +795,7 @@ Therefore,
 
 \end_inset
 
-Substituting 
+Substituting equations 
 \begin_inset LatexCommand \ref{eq:13}
 
 \end_inset
@@ -860,7 +876,7 @@ Using the chain rule,
 
 \end_inset
 
-From 
+From equation 
 \begin_inset LatexCommand \ref{eq:11}
 
 \end_inset
@@ -871,7 +887,7 @@ From
 
 \end_inset
 
-and from 
+and from equation 
 \begin_inset LatexCommand \ref{eq:3}
 
 \end_inset
@@ -886,7 +902,7 @@ and from
 
 \end_inset
 
-Finally, from 
+Finally, from equation 
 \begin_inset LatexCommand \ref{eq:19}
 
 \end_inset
@@ -897,7 +913,7 @@ Finally, from
 
 \end_inset
 
-From 
+From equation 
 \begin_inset LatexCommand \ref{eq:24}
 
 \end_inset
@@ -971,7 +987,7 @@ This is consistent with the regular elasticity matrix, and equation
 \end_layout
 
 \begin_layout Subsection
-Power-law Maxwell viscoelastic material
+Power-law Maxwell Viscoelastic Material
 \end_layout
 
 \begin_layout Standard
@@ -984,11 +1000,11 @@ A power-law Maxwell viscoelastic material may be parameterized with the
 \begin_inset Formula $\nu$
 \end_inset
 
-, the viscosity coefficient, 
+, the viscosity coefficient 
 \begin_inset Formula $\eta$
 \end_inset
 
-, and the power-law exponent, 
+, and the power-law exponent 
 \begin_inset Formula $n$
 \end_inset
 
@@ -1005,7 +1021,7 @@ Therefore,
 
 \end_inset
 
-substituting 
+substituting equations 
 \begin_inset LatexCommand \ref{eq:13}
 
 \end_inset
@@ -1057,14 +1073,14 @@ Equation
 
 \end_inset
 
- is a function of a single unknown - the second deviatoric stress invariant
+ is a function of a single unknown -- the second deviatoric stress invariant
  at time 
 \begin_inset Formula $t+\Delta t$
 \end_inset
 
- - and may be solved by bisection or by Newton's method.
+ -- and may be solved by bisection or by Newton's method.
  Once this parameter has been found, the deviatoric stresses for the current
- time step may be found from 
+ time step may be found from equations 
 \begin_inset LatexCommand \ref{eq:34}
 
 \end_inset
@@ -1074,7 +1090,7 @@ Equation
 
 \end_inset
 
-, and the total stresses may be found from 
+, and the total stresses may be found from equation 
 \begin_inset LatexCommand \ref{eq:21}
 
 \end_inset
@@ -1094,7 +1110,7 @@ We proceed as for the linear case, but the evaluation of the first derivative
 \end_inset
 
  is more complicated.
- We begin by rewriting 
+ We begin by rewriting equation 
 \begin_inset LatexCommand \ref{eq:35}
 
 \end_inset
@@ -1113,12 +1129,12 @@ a_{E}=\frac{1+\nu}{E}\,.\label{eq:39}\end{gather}
 
 The derivative is then
 \begin_inset Formula \begin{gather}
-\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{1}{a_{E}+\alpha\Delta t^{\tau}\gamma}\nonumber \\
+\frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{1}{a_{E}+\alpha\Delta t^{\tau}\gamma}\nonumber \\
 \left\langle \delta_{ik}-\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\left\{ \Delta t\left(1-\alpha\right)^{t}S_{i}+\frac{\alpha\Delta t}{a_{E}+\alpha\Delta t^{\tau}\gamma}\left[^{t+\Delta t}e_{i}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}+a_{E}\,^{I}S_{i}\right]\right\} \right\rangle \,.\label{eq:40}\end{gather}
 
 \end_inset
 
-From 
+From equation 
 \begin_inset LatexCommand \ref{eq:33}
 
 \end_inset
@@ -1135,7 +1151,7 @@ We first note that
 
 \end_inset
 
- which allows us to rewrite 
+ which allows us to rewrite equation 
 \begin_inset LatexCommand \ref{eq:36}
 
 \end_inset
@@ -1170,7 +1186,7 @@ Note that for a linear material
 \end_inset
 
 , this derivative is zero.
- This relation may be used in 
+ This relation may be used in equation 
 \begin_inset LatexCommand \ref{eq:40}
 
 \end_inset
@@ -1234,7 +1250,7 @@ Derivative of Effective Stress Function
 
 \begin_layout Standard
 To compute the zero of the effective stress function using Newton's method,
- we require the derivative of 
+ we require the derivative of equation 
 \begin_inset LatexCommand \ref{eq:36}
 
 \end_inset
@@ -1254,7 +1270,8 @@ Generalized Maxwell Viscoelastic Model
 
 \begin_layout Standard
 The generalized Maxwell viscoelastic model consists of a number of Maxwell
- linear viscoelastic models in parallel with a spring, as shown in 
+ linear viscoelastic models in parallel with a spring, as shown in Figure
+ 
 \begin_inset LatexCommand \ref{fig:Material-models}
 
 \end_inset
@@ -1264,12 +1281,13 @@ The generalized Maxwell viscoelastic model consists of a number of Maxwell
  A number of common material models may be obtained from this model by setting
  the shear moduli of various springs to zero, such as the Maxwell model,
  the Kelvin model, and the standard linear solid.
- We follow formulations similar to those used by 
+ We follow formulations similar to those used by Zienkiewicz and Taylor
+ 
 \begin_inset LatexCommand \cite{Zienkiewicz:Taylor:2000}
 
 \end_inset
 
- and 
+ and Taylor 
 \begin_inset LatexCommand \cite{Taylor:2003}
 
 \end_inset
@@ -1367,7 +1385,7 @@ where
 \begin_inset Formula $\mu\left(t\right)$
 \end_inset
 
-is the shear relaxation modulus function.
+ is the shear relaxation modulus function.
  Using linearity and superposition for an arbitrary state of strain yields
  an integral equation:
 \end_layout
@@ -1396,7 +1414,7 @@ where
 
 \end_inset
 
-With the form in 
+With the form in equation 
 \begin_inset LatexCommand \ref{eq:54}
 
 \end_inset
@@ -1439,7 +1457,7 @@ The first term is zero, the second term includes a jump term associated
 \end_inset
 
  at time zero, and the last term covers the subsequent history of strain.
- Applying this separation to 
+ Applying this separation to equation 
 \begin_inset LatexCommand \ref{eq:53}
 
 \end_inset
@@ -1457,7 +1475,7 @@ where we have left the sign off of the lower limit on the integral.
 \end_layout
 
 \begin_layout Standard
-Substituting 
+Substituting equation 
 \begin_inset LatexCommand \ref{eq:54}
 
 \end_inset
@@ -1544,7 +1562,7 @@ Approximating the strain rate as constant over each time step, the solution
 \end_inset
 
 The approximation is singular for zero time steps, but a series expansion
- may be used for small time step sizes:
+ may be used for small time-step sizes:
 \end_layout
 
 \begin_layout Standard
@@ -1581,7 +1599,8 @@ In addition to the volumetric contribution to the tangent constitutive matrix,
 
 \end_inset
 
-where the second derivative on the right may be easily deduced from 
+where the second derivative on the right may be easily deduced from equation
+ 
 \begin_inset LatexCommand \ref{eq:3}
 
 \end_inset
@@ -1601,7 +1620,7 @@ where
 \end_inset
 
  is the identity matrix.
- From 
+ From equations 
 \begin_inset LatexCommand \ref{eq:64}
 
 \end_inset
