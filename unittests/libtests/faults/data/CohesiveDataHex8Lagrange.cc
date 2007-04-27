@@ -28,17 +28,17 @@
  *
  */
 
-#include "CohesiveLagrangeDataHex8.hh"
+#include "CohesiveDataHex8Lagrange.hh"
 
-const int pylith::faults::CohesiveLagrangeDataHex8::_numVertices = 20;
+const int pylith::faults::CohesiveDataHex8Lagrange::_numVertices = 20;
 
-const int pylith::faults::CohesiveLagrangeDataHex8::_spaceDim = 3;
+const int pylith::faults::CohesiveDataHex8Lagrange::_spaceDim = 3;
 
-const int pylith::faults::CohesiveLagrangeDataHex8::_numCells = 3;
+const int pylith::faults::CohesiveDataHex8Lagrange::_numCells = 3;
 
-const int pylith::faults::CohesiveLagrangeDataHex8::_cellDim = 3;
+const int pylith::faults::CohesiveDataHex8Lagrange::_cellDim = 3;
 
-const double pylith::faults::CohesiveLagrangeDataHex8::_vertices[] = {
+const double pylith::faults::CohesiveDataHex8Lagrange::_vertices[] = {
   -2.0, -1.0, -1.0,
   -2.0,  1.0, -1.0,
   -2.0, -1.0,  1.0,
@@ -61,44 +61,44 @@ const double pylith::faults::CohesiveLagrangeDataHex8::_vertices[] = {
    0.0,  1.0,  1.0
 };
 
-const int pylith::faults::CohesiveLagrangeDataHex8::_numCorners[] = {
+const int pylith::faults::CohesiveDataHex8Lagrange::_numCorners[] = {
   8,
   8,
   12
 };
 
-const int pylith::faults::CohesiveLagrangeDataHex8::_cells[] = {
+const int pylith::faults::CohesiveDataHex8Lagrange::_cells[] = {
   2,  4,  5,  3,  6,  8,  9,  7,
  14, 18, 20, 16, 10, 12, 13, 11,
   6,  8,  9,  7, 14, 18, 20, 16, 15, 19, 21, 17
 };
 
-const int pylith::faults::CohesiveLagrangeDataHex8::_materialIds[] = {
+const int pylith::faults::CohesiveDataHex8Lagrange::_materialIds[] = {
   0,  0,
   1
 };
 
-const int pylith::faults::CohesiveLagrangeDataHex8::_numGroups = 2;
+const int pylith::faults::CohesiveDataHex8Lagrange::_numGroups = 2;
 
-const int pylith::faults::CohesiveLagrangeDataHex8::_groupSizes[] = 
+const int pylith::faults::CohesiveDataHex8Lagrange::_groupSizes[] = 
   { 12, 10 };
 
-const int pylith::faults::CohesiveLagrangeDataHex8::_groups[] = {
+const int pylith::faults::CohesiveDataHex8Lagrange::_groups[] = {
   6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 20, 21,
   4, 5, 8, 9, 12, 13, 18, 19, 20, 21
 };
 
-const char* pylith::faults::CohesiveLagrangeDataHex8::_groupNames[] = {
+const char* pylith::faults::CohesiveDataHex8Lagrange::_groupNames[] = {
   "fault", "output"
 };
 
-const char* pylith::faults::CohesiveLagrangeDataHex8::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataHex8Lagrange::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveLagrangeDataHex8::_filename = "data/meshHex8A.txt";
+const char* pylith::faults::CohesiveDataHex8Lagrange::_filename = "data/meshHex8A.txt";
 
-pylith::faults::CohesiveLagrangeDataHex8::CohesiveLagrangeDataHex8(void)
+pylith::faults::CohesiveDataHex8Lagrange::CohesiveDataHex8Lagrange(void)
 { // constructor
   numVertices = _numVertices;
   spaceDim = _spaceDim;
@@ -116,7 +116,7 @@ pylith::faults::CohesiveLagrangeDataHex8::CohesiveLagrangeDataHex8(void)
   filename = const_cast<char*>(_filename);
 } // constructor
 
-pylith::faults::CohesiveLagrangeDataHex8::~CohesiveLagrangeDataHex8(void)
+pylith::faults::CohesiveDataHex8Lagrange::~CohesiveDataHex8Lagrange(void)
 {}
 
 

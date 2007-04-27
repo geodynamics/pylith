@@ -20,17 +20,17 @@
  *   2 -------- 3 -6- 5 -------- 4
  */
 
-#include "CohesiveLagrangeDataLine2.hh"
+#include "CohesiveDataLine2Lagrange.hh"
 
-const int pylith::faults::CohesiveLagrangeDataLine2::_numVertices = 5;
+const int pylith::faults::CohesiveDataLine2Lagrange::_numVertices = 5;
 
-const int pylith::faults::CohesiveLagrangeDataLine2::_spaceDim = 1;
+const int pylith::faults::CohesiveDataLine2Lagrange::_spaceDim = 1;
 
-const int pylith::faults::CohesiveLagrangeDataLine2::_numCells = 3;
+const int pylith::faults::CohesiveDataLine2Lagrange::_numCells = 3;
 
-const int pylith::faults::CohesiveLagrangeDataLine2::_cellDim = 1;
+const int pylith::faults::CohesiveDataLine2Lagrange::_cellDim = 1;
 
-const double pylith::faults::CohesiveLagrangeDataLine2::_vertices[] = {
+const double pylith::faults::CohesiveDataLine2Lagrange::_vertices[] = {
   -1.0,
    0.0,
    1.0,
@@ -38,44 +38,44 @@ const double pylith::faults::CohesiveLagrangeDataLine2::_vertices[] = {
    0.0
 };
 
-const int pylith::faults::CohesiveLagrangeDataLine2::_numCorners[] = {
+const int pylith::faults::CohesiveDataLine2Lagrange::_numCorners[] = {
   2,
   2,
   3
 };
 
-const int pylith::faults::CohesiveLagrangeDataLine2::_cells[] = {
+const int pylith::faults::CohesiveDataLine2Lagrange::_cells[] = {
        2,  3,
        5,  4,
        3,  5,  6
 };
 
-const int pylith::faults::CohesiveLagrangeDataLine2::_materialIds[] = {
+const int pylith::faults::CohesiveDataLine2Lagrange::_materialIds[] = {
   0,  0,
   1
 };
 
-const int pylith::faults::CohesiveLagrangeDataLine2::_numGroups = 2;
+const int pylith::faults::CohesiveDataLine2Lagrange::_numGroups = 2;
 
-const int pylith::faults::CohesiveLagrangeDataLine2::_groupSizes[] = 
+const int pylith::faults::CohesiveDataLine2Lagrange::_groupSizes[] = 
   { 3, 4 };
 
-const int pylith::faults::CohesiveLagrangeDataLine2::_groups[] = {
+const int pylith::faults::CohesiveDataLine2Lagrange::_groups[] = {
   3, 5, 6,
   2, 3, 5, 6
 };
 
-const char* pylith::faults::CohesiveLagrangeDataLine2::_groupNames[] = {
+const char* pylith::faults::CohesiveDataLine2Lagrange::_groupNames[] = {
   "fault", "output"
 };
 
-const char* pylith::faults::CohesiveLagrangeDataLine2::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataLine2Lagrange::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveLagrangeDataLine2::_filename = "data/meshLine.txt";
+const char* pylith::faults::CohesiveDataLine2Lagrange::_filename = "data/meshLine.txt";
 
-pylith::faults::CohesiveLagrangeDataLine2::CohesiveLagrangeDataLine2(void)
+pylith::faults::CohesiveDataLine2Lagrange::CohesiveDataLine2Lagrange(void)
 { // constructor
   numVertices = _numVertices;
   spaceDim = _spaceDim;
@@ -93,7 +93,7 @@ pylith::faults::CohesiveLagrangeDataLine2::CohesiveLagrangeDataLine2(void)
   filename = const_cast<char*>(_filename);
 } // constructor
 
-pylith::faults::CohesiveLagrangeDataLine2::~CohesiveLagrangeDataLine2(void)
+pylith::faults::CohesiveDataLine2Lagrange::~CohesiveDataLine2Lagrange(void)
 {}
 
 
