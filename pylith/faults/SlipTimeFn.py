@@ -29,13 +29,13 @@ class SlipTimeFn(Component):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(SlipTimeFn.Inventory):
+  class Inventory(Component.Inventory):
     """
-    Python object for managing BruneSlipFn facilities and properties.
+    Python object for managing Component facilities and properties.
     """
     
     ## @class Inventory
-    ## Python object for managing BruneSlipFn facilities and properties.
+    ## Python object for managing Component facilities and properties.
     ##
     ## \b Properties
     ## @li None

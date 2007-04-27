@@ -31,13 +31,7 @@ Cleanup
    c. Start implementing integrator for faults
 
      i. Update Reference cell
-       (1) Compute basis and basisDeriv at vertices
-       (2) Add unit tests
-
-     ii. Update Quadrature
-       (1) Add basis and basisDeriv at vertices to Quadrature
-       (2) Add computeGeometryQuad/computeGeometryVert to Quadrature
-       (3) Add unit tests
+       (1) Get vertices from FIAT [requested Matt fix]
 
      iii. FaultCohesive
        (1) Unit tests
