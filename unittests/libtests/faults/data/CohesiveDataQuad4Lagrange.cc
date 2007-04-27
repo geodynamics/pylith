@@ -41,17 +41,17 @@
  *       2 -------- 4 --9-- 8 -------- 6
  */
 
-#include "CohesiveLagrangeDataQuad4.hh"
+#include "CohesiveDataQuad4Lagrange.hh"
 
-const int pylith::faults::CohesiveLagrangeDataQuad4::_numVertices = 10;
+const int pylith::faults::CohesiveDataQuad4Lagrange::_numVertices = 10;
 
-const int pylith::faults::CohesiveLagrangeDataQuad4::_spaceDim = 2;
+const int pylith::faults::CohesiveDataQuad4Lagrange::_spaceDim = 2;
 
-const int pylith::faults::CohesiveLagrangeDataQuad4::_numCells = 3;
+const int pylith::faults::CohesiveDataQuad4Lagrange::_numCells = 3;
 
-const int pylith::faults::CohesiveLagrangeDataQuad4::_cellDim = 2;
+const int pylith::faults::CohesiveDataQuad4Lagrange::_cellDim = 2;
 
-const double pylith::faults::CohesiveLagrangeDataQuad4::_vertices[] = {
+const double pylith::faults::CohesiveDataQuad4Lagrange::_vertices[] = {
   -2.0, -1.0,
   -2.0,  1.0,
    0.0, -1.0,
@@ -64,44 +64,44 @@ const double pylith::faults::CohesiveLagrangeDataQuad4::_vertices[] = {
    0.0,  1.0,
 };
 
-const int pylith::faults::CohesiveLagrangeDataQuad4::_numCorners[] = {
+const int pylith::faults::CohesiveDataQuad4Lagrange::_numCorners[] = {
   4,
   4,
   6
 };
 
-const int pylith::faults::CohesiveLagrangeDataQuad4::_cells[] = {
+const int pylith::faults::CohesiveDataQuad4Lagrange::_cells[] = {
   2,  4,  5,  3,
   6,  7, 10,  8,
   4,  5,  8, 10,  9, 11
 };
 
-const int pylith::faults::CohesiveLagrangeDataQuad4::_materialIds[] = {
+const int pylith::faults::CohesiveDataQuad4Lagrange::_materialIds[] = {
   0,  0,
   1
 };
 
-const int pylith::faults::CohesiveLagrangeDataQuad4::_numGroups = 2;
+const int pylith::faults::CohesiveDataQuad4Lagrange::_numGroups = 2;
 
-const int pylith::faults::CohesiveLagrangeDataQuad4::_groupSizes[] = 
+const int pylith::faults::CohesiveDataQuad4Lagrange::_groupSizes[] = 
   { 6, 5 };
 
-const int pylith::faults::CohesiveLagrangeDataQuad4::_groups[] = {
+const int pylith::faults::CohesiveDataQuad4Lagrange::_groups[] = {
   4, 5, 8, 9, 10, 11,
   3, 5, 7, 10, 11
 };
 
-const char* pylith::faults::CohesiveLagrangeDataQuad4::_groupNames[] = {
+const char* pylith::faults::CohesiveDataQuad4Lagrange::_groupNames[] = {
   "fault", "output"
 };
 
-const char* pylith::faults::CohesiveLagrangeDataQuad4::_groupTypes[] = {
+const char* pylith::faults::CohesiveDataQuad4Lagrange::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveLagrangeDataQuad4::_filename = "data/meshQuad4A.txt";
+const char* pylith::faults::CohesiveDataQuad4Lagrange::_filename = "data/meshQuad4A.txt";
 
-pylith::faults::CohesiveLagrangeDataQuad4::CohesiveLagrangeDataQuad4(void)
+pylith::faults::CohesiveDataQuad4Lagrange::CohesiveDataQuad4Lagrange(void)
 { // constructor
   numVertices = _numVertices;
   spaceDim = _spaceDim;
@@ -119,7 +119,7 @@ pylith::faults::CohesiveLagrangeDataQuad4::CohesiveLagrangeDataQuad4(void)
   filename = const_cast<char*>(_filename);
 } // constructor
 
-pylith::faults::CohesiveLagrangeDataQuad4::~CohesiveLagrangeDataQuad4(void)
+pylith::faults::CohesiveDataQuad4Lagrange::~CohesiveDataQuad4Lagrange(void)
 {}
 
 

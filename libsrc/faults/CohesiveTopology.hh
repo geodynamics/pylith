@@ -41,12 +41,15 @@ public :
    * @param faultVertices Vertices assocated with faces of cells defining 
    *   fault surface
    * @param materialId Material id for cohesive elements.
+   * @param constraintCell True if creating cells constrained with 
+   *   Lagrange multipliers that require extra vertices, false otherwise
    */
   static
   void create(ALE::Obj<Mesh>* fault,
               const ALE::Obj<Mesh>& mesh,
               const ALE::Obj<Mesh::int_section_type>& groupField,
-	      const int materialId);
+	      const int materialId,
+	      const bool constraintCell =false);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :

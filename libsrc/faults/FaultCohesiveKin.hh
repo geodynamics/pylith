@@ -119,6 +119,13 @@ protected :
    */
   FaultCohesiveKin(const FaultCohesiveKin& m);
 
+  /** Cohesive cells use Lagrange multiplier constraints?
+   *
+   * @returns True if implementation using Lagrange multiplier
+   * constraints, false otherwise.
+   */
+  bool _useLagrangeConstraints(void) const;
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 

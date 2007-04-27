@@ -10,28 +10,28 @@
 // ======================================================================
 //
 
-#if !defined(pylith_faults_cohesivelagrangedataline2_hh)
-#define pylith_faults_cohesivelagrangedataline2_hh
+#if !defined(pylith_faults_cohesivedatahex8lagrange_hh)
+#define pylith_faults_cohesivedatahex8lagrange_hh
 
 #include "CohesiveData.hh"
 
 namespace pylith {
   namespace faults {
-     class CohesiveLagrangeDataLine2;
+     class CohesiveDataHex8Lagrange;
   } // pylith
 } // faults
 
-class pylith::faults::CohesiveLagrangeDataLine2 : public CohesiveData
+class pylith::faults::CohesiveDataHex8Lagrange : public CohesiveData
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public: 
 
   /// Constructor
-  CohesiveLagrangeDataLine2(void);
+  CohesiveDataHex8Lagrange(void);
 
   /// Destructor
-  ~CohesiveLagrangeDataLine2(void);
+  ~CohesiveDataHex8Lagrange(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
@@ -55,6 +55,6 @@ private:
   static const char* _filename; ///< Filename of input mesh
 };
 
-#endif // pylith_faults_cohesivelagrangedataline2_hh
+#endif // pylith_faults_cohesivedatahex8lagrange_hh
 
 // End of file

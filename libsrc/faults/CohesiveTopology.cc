@@ -23,7 +23,8 @@ void
 pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
 					 const ALE::Obj<Mesh>& mesh,
 					 const ALE::Obj<Mesh::int_section_type>& groupField,
-					 const int materialId)
+					 const int materialId,
+					 const bool constraintCell)
 { // create
   assert(0 != fault);
 
@@ -33,7 +34,6 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   // Create set with vertices on fault
   const int_section_type::chart_type& chart = groupField->getChart();
   std::set<Mesh::point_type> faultVertices; // Vertices on fault
-  bool useLagrangeMultipliers = true;
 
   const int numCells = mesh->heightStratum(0)->size();
   for(int_section_type::chart_type::iterator c_iter = chart.begin();
@@ -151,12 +151,12 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
 
       if (group->hasPoint(*v_iter)) {
         group->setFiberDimension(newPoint, 1);
-        if (useLagrangeMultipliers) {
+        if (constraintCell) {
           group->setFiberDimension(newPoint+1, 1);
         }
       }
     } // for
-    if (useLagrangeMultipliers) newPoint++;
+    if (constraintCell) newPoint++;
   } // for
 
   // Split the mesh along the fault sieve and create cohesive elements
@@ -217,7 +217,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
         std::cout << "    shadow vertex " << vertexRenumber[*v_iter] << std::endl;
       sieve->addArrow(vertexRenumber[*v_iter], newPoint, color++);
     }
-    if (useLagrangeMultipliers) {
+    if (constraintCell) {
       for(sieve_type::traits::coneSequence::iterator v_iter = fBegin; v_iter != fEnd;
           ++v_iter) {
         if (debug)
@@ -241,7 +241,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
       ++v_iter) {
     coordinates->addPoint(vertexRenumber[*v_iter],
 			  coordinates->getFiberDimension(*v_iter));
-    if (useLagrangeMultipliers) {
+    if (constraintCell) {
       coordinates->addPoint(vertexRenumber[*v_iter]+1,
 			  coordinates->getFiberDimension(*v_iter));
     }
@@ -252,7 +252,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
       ++v_iter) {
     coordinates->updatePoint(vertexRenumber[*v_iter], 
 			     coordinates->restrictPoint(*v_iter));
-    if (useLagrangeMultipliers) {
+    if (constraintCell) {
       coordinates->updatePoint(vertexRenumber[*v_iter]+1,
 			     coordinates->restrictPoint(*v_iter));
     }

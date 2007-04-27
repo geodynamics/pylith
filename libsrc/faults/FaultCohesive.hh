@@ -110,6 +110,14 @@ protected :
    */
   FaultCohesive(const FaultCohesive& m);
 
+  /** Cohesive cells use Lagrange multiplier constraints?
+   *
+   * @returns True if implementation using Lagrange multiplier
+   * constraints, false otherwise.
+   */
+  virtual
+  bool _useLagrangeConstraints(void) const = 0;
+
   /** Compute weighted orientation of fault for cohesive cell between
    * 1-D elements. Orientation is either at vertices or quadrature
    * points, depending on whether the arguments have been evaluated at

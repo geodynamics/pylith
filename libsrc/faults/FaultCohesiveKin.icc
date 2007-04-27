@@ -21,5 +21,12 @@ pylith::faults::FaultCohesiveKin::clone(void) const {
   return new FaultCohesiveKin(*this);
 } // clone
 
+// Cohesive cells use Lagrange multiplier constraints?
+inline
+bool
+pylith::faults::FaultCohesiveKin::_useLagrangeConstraints(void) const {
+  return true;
+} // useLagrangeConstraints
+
 
 // End of file 

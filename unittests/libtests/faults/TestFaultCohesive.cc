@@ -21,15 +21,16 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "data/CohesiveDataLine2.hh" // USES CohesiveDataLine2
-#include "data/CohesiveLagrangeDataLine2.hh" // USES CohesiveLagrangeDataLine2
 #include "data/CohesiveDataTri3.hh" // USES CohesiveDataTri3
-#include "data/CohesiveLagrangeDataTri3.hh" // USES CohesiveLagrangeDataTri3
 #include "data/CohesiveDataQuad4.hh" // USES CohesiveDataQuad4
-#include "data/CohesiveLagrangeDataQuad4.hh" // USES CohesiveLagrangeDataQuad4
 #include "data/CohesiveDataTet4.hh" // USES CohesiveDataTet4
-#include "data/CohesiveLagrangeDataTet4.hh" // USES CohesiveLagrangeDataTet4
 #include "data/CohesiveDataHex8.hh" // USES CohesiveDataHex8
-#include "data/CohesiveLagrangeDataHex8.hh" // USES CohesiveLagrangeDataHex8
+
+#include "data/CohesiveDataLine2Lagrange.hh" // USES CohesiveDataLine2Lagrange
+#include "data/CohesiveDataTri3Lagrange.hh" // USES CohesiveDataTri3Lagrange
+#include "data/CohesiveDataQuad4Lagrange.hh" // USES CohesiveDataQuad4Lagrange
+#include "data/CohesiveDataTet4Lagrange.hh" // USES CohesiveDataTet4Lagrange
+#include "data/CohesiveDataHex8Lagrange.hh" // USES CohesiveDataHex8Lagrange
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
@@ -39,8 +40,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyLine2(void)
 { // testAdjustTopologyLine2
-  /// CohesiveDataLine2 data;
-  CohesiveLagrangeDataLine2 data;
+  CohesiveDataLine2 data;
   _testAdjustTopology(data);
 } // testAdjustTopologyLine2
 
@@ -49,8 +49,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyLine2(void)
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyTri3(void)
 { // testAdjustTopologyTri3
-  ///CohesiveDataTri3 data;
-  CohesiveLagrangeDataTri3 data;
+  CohesiveDataTri3 data;
   _testAdjustTopology(data);
 } // testAdjustTopologyTri3
 
@@ -59,8 +58,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3(void)
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4(void)
 { // testAdjustTopologyQuad4
-  ///CohesiveDataQuad4 data;
-  CohesiveLagrangeDataQuad4 data;
+  CohesiveDataQuad4 data;
   _testAdjustTopology(data);
 } // testAdjustTopologyQuad4
 
@@ -69,8 +67,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4(void)
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyTet4(void)
 { // testAdjustTopologyTet4
-  ///CohesiveDataTet4 data;
-  CohesiveLagrangeDataTet4 data;
+  CohesiveDataTet4 data;
   _testAdjustTopology(data);
 } // testAdjustTopologyTet4
 
@@ -79,10 +76,59 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4(void)
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyHex8(void)
 { // testAdjustTopologyHex8
-  ///CohesiveDataHex8 data;
-  CohesiveLagrangeDataHex8 data;
+  CohesiveDataHex8 data;
   _testAdjustTopology(data);
 } // testAdjustTopologyHex8
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 1-D line element for Lagrange
+// multipliers.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyLine2Lagrange(void)
+{ // testAdjustTopologyLine2Lagrange
+  CohesiveDataLine2Lagrange data;
+  _testAdjustTopology(data);
+} // testAdjustTopologyLine2Lagrange
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D triangular element for Lagrange
+// multipliers.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTri3Lagrange(void)
+{ // testAdjustTopologyTri3Lagrange
+  CohesiveDataTri3Lagrange data;
+  _testAdjustTopology(data);
+} // testAdjustTopologyTri3Lagrange
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D quadrilateral element for Lagrange
+// multipliers.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4Lagrange(void)
+{ // testAdjustTopologyQuad4Lagrange
+  CohesiveDataQuad4Lagrange data;
+  _testAdjustTopology(data);
+} // testAdjustTopologyQuad4Lagrange
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D tetrahedral element for Lagrange
+// multipliers.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTet4Lagrange(void)
+{ // testAdjustTopologyTet4Lagrange
+  CohesiveDataTet4Lagrange data;
+  _testAdjustTopology(data);
+} // testAdjustTopologyTet4Lagrange
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D hexahedral element for Lagrange
+// multipliers.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyHex8Lagrange(void)
+{ // testAdjustTopologyHex8Lagrange
+  CohesiveDataHex8Lagrange data;
+  _testAdjustTopology(data);
+} // testAdjustTopologyHex8Lagrange
 
 // ----------------------------------------------------------------------
 // Test adjustTopology().
