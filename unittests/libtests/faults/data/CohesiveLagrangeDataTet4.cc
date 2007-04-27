@@ -1,0 +1,113 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+/* Original mesh
+ *
+ * Cells are 0-1, vertices are 2-6.
+ *
+ * 2   3,4,5  6
+ *
+ *     ^^^^^ Face in x-y plane
+ *
+ * After adding cohesive elements
+ *
+ * Cells are 0-1,10, vertices are 2-9.
+ *
+ * 2   3,4,5  7,9,11   6
+ *             8,10,12
+ *     ^^^^^^^^^^^^ Cohesive element in x-y plane.
+ */
+
+#include "CohesiveLagrangeDataTet4.hh"
+
+const int pylith::faults::CohesiveLagrangeDataTet4::_numVertices = 11;
+
+const int pylith::faults::CohesiveLagrangeDataTet4::_spaceDim = 3;
+
+const int pylith::faults::CohesiveLagrangeDataTet4::_numCells = 3;
+
+const int pylith::faults::CohesiveLagrangeDataTet4::_cellDim = 3;
+
+const double pylith::faults::CohesiveLagrangeDataTet4::_vertices[] = {
+  -1.0,  0.0,  0.0,
+   0.0, -1.0,  0.0,
+   0.0,  0.0,  1.0,
+   0.0,  1.0,  0.0,
+   1.0,  0.0,  0.0,
+   0.0, -1.0,  0.0,
+   0.0, -1.0,  0.0,
+   0.0,  0.0,  1.0,
+   0.0,  0.0,  1.0,
+   0.0,  1.0,  0.0,
+   0.0,  1.0,  0.0
+};
+
+const int pylith::faults::CohesiveLagrangeDataTet4::_numCorners[] = {
+  4,
+  4,
+  9
+};
+
+const int pylith::faults::CohesiveLagrangeDataTet4::_cells[] = {
+  3,  4,  5,  2,
+  7, 11,  9,  6,
+  3,  4,  5,  7,  9, 11,  8, 10, 12
+};
+
+const int pylith::faults::CohesiveLagrangeDataTet4::_materialIds[] = {
+  0,  0,
+  1
+};
+
+const int pylith::faults::CohesiveLagrangeDataTet4::_numGroups = 2;
+
+const int pylith::faults::CohesiveLagrangeDataTet4::_groupSizes[] = 
+  { 9, 7 };
+
+const int pylith::faults::CohesiveLagrangeDataTet4::_groups[] = {
+  3, 4, 5, 7, 8, 9, 10, 11, 12,
+  2, 4, 5, 9, 10, 11, 12
+};
+
+const char* pylith::faults::CohesiveLagrangeDataTet4::_groupNames[] = {
+  "fault", "output"
+};
+
+const char* pylith::faults::CohesiveLagrangeDataTet4::_groupTypes[] = {
+  "vertex", "vertex"
+};
+
+const char* pylith::faults::CohesiveLagrangeDataTet4::_filename = "data/meshTet4A.txt";
+
+pylith::faults::CohesiveLagrangeDataTet4::CohesiveLagrangeDataTet4(void)
+{ // constructor
+  numVertices = _numVertices;
+  spaceDim = _spaceDim;
+  numCells = _numCells;
+  cellDim = _cellDim;
+  vertices = const_cast<double*>(_vertices);
+  numCorners = const_cast<int*>(_numCorners);
+  cells = const_cast<int*>(_cells);
+  materialIds = const_cast<int*>(_materialIds);
+  groups = const_cast<int*>(_groups);
+  groupSizes = const_cast<int*>(_groupSizes);
+  groupNames = const_cast<char**>(_groupNames);
+  groupTypes = const_cast<char**>(_groupTypes);
+  numGroups = _numGroups;
+  filename = const_cast<char*>(_filename);
+} // constructor
+
+pylith::faults::CohesiveLagrangeDataTet4::~CohesiveLagrangeDataTet4(void)
+{}
+
+
+// End of file
