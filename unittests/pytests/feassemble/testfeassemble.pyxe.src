@@ -59,27 +59,27 @@ const pylith::feassemble::Quadrature* q =
 return pylith::feassemble::TestQuadrature::spaceDim(*q);
 #}embed
 
-# create shim for TestQuadrature::basis
-#embed{ double* TestQuadrature_basis(void* obj)
+# create shim for TestQuadrature::basisQuad
+#embed{ double* TestQuadrature_basisQuad(void* obj)
 const pylith::feassemble::Quadrature* q =
   (pylith::feassemble::Quadrature*) obj;
 const int size = TestQuadrature_numQuadPts(obj) *
                  TestQuadrature_numBasis(obj);
 double* vals = (size > 0) ? new double[size] : 0;
-const double* basis = pylith::feassemble::TestQuadrature::basis(*q);
+const double* basis = pylith::feassemble::TestQuadrature::basisQuad(*q);
 memcpy(vals, basis, size*sizeof(double));
 return vals;
 #}embed
 
-# create shim for TestQuadrature::basisDeriv
-#embed{ double* TestQuadrature_basisDeriv(void* obj)
+# create shim for TestQuadrature::basisDerivQuad
+#embed{ double* TestQuadrature_basisDerivQuad(void* obj)
 const pylith::feassemble::Quadrature* q =
   (pylith::feassemble::Quadrature*) obj;
 const int size = TestQuadrature_numQuadPts(obj) *
                  TestQuadrature_numBasis(obj) *
                  TestQuadrature_cellDim(obj);
 double* vals = (size > 0) ? new double[size] : 0;
-const double* basisDeriv = pylith::feassemble::TestQuadrature::basisDeriv(*q);
+const double* basisDeriv = pylith::feassemble::TestQuadrature::basisDerivQuad(*q);
 memcpy(vals, basisDeriv, size*sizeof(double));
 return vals;
 #}embed
@@ -108,9 +108,9 @@ return vals;
 #}embed
 
 # ----------------------------------------------------------------------
-def basis(qhandle):
+def basisQuad(qhandle):
   """
-  Call TestQuadrature::basis().
+  Call TestQuadrature::basisQuad().
   """
   if not qhandle.name == "pylith_feassemble_Quadrature":
     raise TypeError, \
@@ -125,16 +125,16 @@ def basis(qhandle):
   numBasis = TestQuadrature_numBasis(qptr)
 
   cdef double* values
-  values = TestQuadrature_basis(qptr)
+  values = TestQuadrature_basisQuad(qptr)
   dims = [numQuadPts, numBasis]
   valuesObj = PyCObject_FromVoidPtr(values, NULL)
   return spatialdata.utils.simplearray.SimpleCppArray(valuesObj, dims, "double")
   
 
 # ----------------------------------------------------------------------
-def basisDeriv(qhandle):
+def basisDerivQuad(qhandle):
   """
-  Call TestQuadrature::basisDeriv().
+  Call TestQuadrature::basisDerivQuad().
   """
   if not qhandle.name == "pylith_feassemble_Quadrature":
     raise TypeError, \
@@ -151,7 +151,7 @@ def basisDeriv(qhandle):
   cellDim = TestQuadrature_cellDim(qptr)
 
   cdef double* values
-  values = TestQuadrature_basisDeriv(qptr)
+  values = TestQuadrature_basisDerivQuad(qptr)
   dims = [numQuadPts, numBasis, cellDim]
   valuesObj = PyCObject_FromVoidPtr(values, NULL)
   return spatialdata.utils.simplearray.SimpleCppArray(valuesObj, dims,

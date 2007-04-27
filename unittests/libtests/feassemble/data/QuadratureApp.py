@@ -66,16 +66,21 @@ class QuadratureApp(Script):
     self.cellDim = None
     self.numBasis = None
     self.numQuadPts = None
+
     self.quadPtsRef = None
     self.quadWts = None
-    self.basis = None
-    self.basisDeriv = None
+    self.basisVert = None
+    self.basisDerivVert = None
+    self.basisQuad = None
+    self.basisDerivQuad = None
 
     # Computed quadrature information
     self.quadPts = None
-    self.jacobian = None
-    self.jacobianDet = None
-    self.jacobianInv = None
+    self.jacobianVert = None
+    self.jacobianDetVert = None
+    self.jacobianQuad = None
+    self.jacobianDetQuad = None
+    self.jacobianInvQuad = None
     return
 
 
@@ -83,32 +88,52 @@ class QuadratureApp(Script):
     """
     Run the application.
     """
-    self.calculateBasis()
-    self.calculateJacobian()
+    self.calculateBasisVert()
+    self.calculateJacobianVert()
+
+    self.calculateBasisQuad()
+    self.calculateJacobianQuad()
 
     # Quadrature points in cell
-    self.quadPts = numpy.dot(self.basis, self.vertices)
+    self.quadPts = numpy.dot(self.basisQuad, self.vertices)
 
     self._initData()
     self.data.write(self.name)
     return
   
 
-  def calculateBasis(self):
+  def calculateBasisVert(self):
+    """
+    Calculate basis functions and derivatives at vertoces.
+    """
+    raise NotImplementedError
+
+
+  def calculateBasisQuad(self):
     """
     Calculate basis functions and derivatives at quadrature points.
     """
     raise NotImplementedError
 
 
-  def calculateJacobian(self):
+  def calculateJacobianVert(self):
+    """
+    Calculate Jacobian and its determinant at vertices.
+    """
+    import feutils
+    (self.jacobianVert, self.jacobianDetVert) = \
+                        feutils.calculateJacobianVert(self, self.vertices)
+    return
+
+
+  def calculateJacobianQuad(self):
     """
     Calculate Jacobian, its determinant, and its inverse at quadrature
     pts plus coordinates of quadrature points in the cell.
     """
     import feutils
-    (self.jacobian, self.jacobianInv, self.jacobianDet) = \
-                    feutils.calculateJacobian(self, self.vertices)
+    (self.jacobianQuad, self.jacobianInvQuad, self.jacobianDetQuad) = \
+                    feutils.calculateJacobianQuad(self, self.vertices)
     return
 
 
@@ -150,24 +175,37 @@ class QuadratureApp(Script):
                        format="%16.8e", ncols=self.cellDim)
     self.data.addArray(vtype="double", name="_quadWts", values=self.quadWts,
                        format="%16.8e", ncols=self.numQuadPts)
-    
-    self.data.addArray(vtype="double", name="_basis", values=self.basis,
-                       format="%16.8e", ncols=self.cellDim)
-    self.data.addArray(vtype="double", name="_basisDeriv",
-                       values=self.basisDeriv,
-                       format="%16.8e", ncols=self.cellDim)
     self.data.addArray(vtype="double", name="_quadPts",
                        values=self.quadPts,
                        format="%16.8e", ncols=self.spaceDim)
-    
-    self.data.addArray(vtype="double", name="_jacobian",
-                       values=self.jacobian,
+        
+    self.data.addArray(vtype="double", name="_basisVert",
+                       values=self.basisVert,
+                       format="%16.8e", ncols=self.cellDim)
+    self.data.addArray(vtype="double", name="_basisDerivVert",
+                       values=self.basisDerivVert,
+                       format="%16.8e", ncols=self.cellDim)
+    self.data.addArray(vtype="double", name="_jacobianVert",
+                       values=self.jacobianVert,
                        format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="double", name="_jacobianDet",
-                       values=self.jacobianDet,
+    self.data.addArray(vtype="double", name="_jacobianDetVert",
+                       values=self.jacobianDetVert,
+                       format="%16.8e", ncols=self.numVertices)
+
+    self.data.addArray(vtype="double", name="_basisQuad",
+                       values=self.basisQuad,
+                       format="%16.8e", ncols=self.cellDim)
+    self.data.addArray(vtype="double", name="_basisDerivQuad",
+                       values=self.basisDerivQuad,
+                       format="%16.8e", ncols=self.cellDim)
+    self.data.addArray(vtype="double", name="_jacobianQuad",
+                       values=self.jacobianQuad,
+                       format="%16.8e", ncols=self.spaceDim)
+    self.data.addArray(vtype="double", name="_jacobianDetQuad",
+                       values=self.jacobianDetQuad,
                        format="%16.8e", ncols=self.numQuadPts)
-    self.data.addArray(vtype="double", name="_jacobianInv",
-                       values=self.jacobianInv,
+    self.data.addArray(vtype="double", name="_jacobianInvQuad",
+                       values=self.jacobianInvQuad,
                        format="%16.8e", ncols=self.cellDim)
       
     return

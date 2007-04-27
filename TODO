@@ -25,10 +25,6 @@ Cleanup
         Double check consistency in ordering of vertices (positive/negative).
 
    b. Implement slip time function
-     i. Allow 1-D, 2-D, or 3-D specification of slip.
-        1-D uses "slip"
-        2-D uses "slip", "fault-opening"
-        3-D uses "left-lateral", "reverse", "fault-opening"
      ii. Add Python
      iii. Add unit tests
 

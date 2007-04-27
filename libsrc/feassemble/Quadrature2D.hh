@@ -44,14 +44,25 @@ public :
   /// Create a copy of this object.
   Quadrature* clone(void) const;
 
-  /** Compute geometric quantities for a cell.
+  /** Compute geometric quantities for a cell at vertices.
    *
+   * @param mesh Finite-element mesh
    * @param coordinates Section containing vertex coordinates
    * @param cell Finite-element cell
    */
-  void computeGeometry(const ALE::Obj<Mesh>& mesh,
-		       const ALE::Obj<real_section_type>& coordinates,
-		       const Mesh::point_type& cell);
+  void computeGeometryVert(const ALE::Obj<Mesh>& mesh,
+			   const ALE::Obj<real_section_type>& coordinates,
+			   const Mesh::point_type& cell);
+
+  /** Compute geometric quantities for a cell at quadrature points.
+   *
+   * @param mesh Finite-element mesh
+   * @param coordinates Section containing vertex coordinates
+   * @param cell Finite-element cell
+   */
+  void computeGeometryQuad(const ALE::Obj<Mesh>& mesh,
+			   const ALE::Obj<real_section_type>& coordinates,
+			   const Mesh::point_type& cell);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

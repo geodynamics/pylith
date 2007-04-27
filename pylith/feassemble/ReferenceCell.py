@@ -36,8 +36,11 @@ class ReferenceCell(Component):
     """
     Component.__init__(self, name, facility="reference_cell")
 
-    self.basis = None # numpy array w/basis fns at quad pts
-    self.basisDeriv = None # numpy array w/basis fn derivs at quad pts
+    self.basisVert = None # numpy array w/basis fns at vertices
+    self.basisDerivVert = None # numpy array w/basis fn derivs at vertices
+    self.basisQuad = None # numpy array w/basis fns at quad pts
+    self.basisDerivQuad = None # numpy array w/basis fn derivs at quad pts
+
     self.quadPts = None # numpy array w/coordinates of quad pts
     self.quadWts = None # numpy array w/wts of quad pts
 

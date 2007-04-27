@@ -61,17 +61,29 @@ public :
    */
   static int spaceDim(const Quadrature& q);
 
+  /** Get basis functions evaluated at vertices.
+   *
+   * @returns Array of basis functions evaluated at vertices
+   */
+  static const double* basisVert(const Quadrature& q);
+
+  /** Get derivatives of basis functions evaluated at vertices.
+   *
+   * @returns Array of derivatives of basis fns evaluated at vertices
+   */
+  static const double* basisDerivVert(const Quadrature& q);
+
   /** Get basis functions evaluated at quadrature points.
    *
    * @returns Array of basis functions evaluated at quadrature points
    */
-  static const double* basis(const Quadrature& q);
+  static const double* basisQuad(const Quadrature& q);
 
   /** Get derivatives of basis functions evaluated at quadrature points.
    *
    * @returns Array of derivatives of basis fns evaluated at quad pts
    */
-  static const double* basisDeriv(const Quadrature& q);
+  static const double* basisDerivQuad(const Quadrature& q);
 
   /** Get coordinates of quadrature points in reference cell.
    *

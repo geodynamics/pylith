@@ -41,7 +41,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearXYZ(void)
   Quadrature2Din3D q;
   QuadratureData2Din3DLinearXYZ data;
 
-  _testComputeGeometry(&q, data);
+  _testComputeGeometryVert(&q, data);
+  _testComputeGeometryQuad(&q, data);
 } // testLinearXYZ
 
 // ----------------------------------------------------------------------
@@ -52,7 +53,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearXY(void)
   Quadrature2Din3D q;
   QuadratureData2Din3DLinearXY data;
 
-  _testComputeGeometry(&q, data);
+  _testComputeGeometryVert(&q, data);
+  _testComputeGeometryQuad(&q, data);
 } // testLinearXY
 
 // ----------------------------------------------------------------------
@@ -63,7 +65,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearYZ(void)
   Quadrature2Din3D q;
   QuadratureData2Din3DLinearYZ data;
 
-  _testComputeGeometry(&q, data);
+  _testComputeGeometryVert(&q, data);
+  _testComputeGeometryQuad(&q, data);
 } // testLinearYZ
 
 // ----------------------------------------------------------------------
@@ -74,7 +77,8 @@ pylith::feassemble::TestQuadrature2Din3D::testLinearXZ(void)
   Quadrature2Din3D q;
   QuadratureData2Din3DLinearXZ data;
 
-  _testComputeGeometry(&q, data);
+  _testComputeGeometryVert(&q, data);
+  _testComputeGeometryQuad(&q, data);
 } // testLinearXZ
 
 // ----------------------------------------------------------------------
@@ -85,7 +89,8 @@ pylith::feassemble::TestQuadrature2Din3D::testQuadratic(void)
   Quadrature2Din3D q;
   QuadratureData2Din3DQuadratic data;
 
-  _testComputeGeometry(&q, data);
+  _testComputeGeometryVert(&q, data);
+  _testComputeGeometryQuad(&q, data);
 } // testQuadratic
 
 // End of file 

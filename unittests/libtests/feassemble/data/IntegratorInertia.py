@@ -72,7 +72,7 @@ class IntegratorInertia(IntegratorApp):
 
       vertices = self.vertices[cell, :]
       (jacobian, jacobianInv, jacobianDet) = \
-                 feutils.calculateJacobian(self.quadrature, vertices)
+                 feutils.calculateJacobianQuad(self.quadrature, vertices)
       density = 1.0
       for iQuad in xrange(self.numQuadPts):
         n *= 0.0

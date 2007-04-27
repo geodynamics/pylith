@@ -18,7 +18,35 @@
 import numpy
 
 # ----------------------------------------------------------------------
-def calculateJacobian(quadrature, vertices):
+def calculateJacobianVert(quadrature, vertices):
+  """
+  Calculate jacobian and its determinant at vertices.
+
+  @param quadrature Quadrature information
+  @param vertices Coordinates of cell's vertices
+  """
+  jacobian = numpy.zeros( (quadrature.numBasis,
+                           quadrature.cellDim, quadrature.spaceDim),
+                          dtype=numpy.float64)
+  jacobianDet = numpy.zeros( (quadrature.numBasis,), dtype=numpy.float64)
+    
+  for iVertex in xrange(quadrature.numBasis):
+    # Jacobian
+    deriv = quadrature.basisDerivVert[iVertex]
+    j = numpy.dot(deriv.transpose(), vertices)
+    jacobian[iVertex] = j
+
+    # Determinant of Jacobian
+    if quadrature.spaceDim == quadrature.cellDim:
+      jacobianDet[iVertex] = numpy.linalg.det(j)
+    else:
+      det = numpy.linalg.det(numpy.dot(j, j.transpose()))**0.5
+      jacobianDet[iVertex] = det
+  return (jacobian, jacobianDet)
+    
+
+# ----------------------------------------------------------------------
+def calculateJacobianQuad(quadrature, vertices):
   """
   Calculate jacobian, its determinant, and its inverse at quadrature
   points for a given cell.
@@ -37,7 +65,7 @@ def calculateJacobian(quadrature, vertices):
   iQuad = 0
   for q in quadrature.quadPtsRef:
     # Jacobian at quadrature points
-    deriv = quadrature.basisDeriv[iQuad]
+    deriv = quadrature.basisDerivQuad[iQuad]
     j = numpy.dot(deriv.transpose(), vertices)
     jacobian[iQuad] = j
 

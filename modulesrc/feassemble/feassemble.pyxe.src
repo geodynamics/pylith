@@ -88,28 +88,35 @@ cdef class Quadrature:
     return
 
 
-  def initialize(self, basis, basisDeriv, quadPts, quadWts,
-                 cellDim, numCorners, numQuadPts, spaceDim):
+  def initialize(self,
+                 basisVert, basisDerivVert,
+                 basisQuad, basisDerivQuad,
+                 quadPts, quadWts,
+                 cellDim, numBasis, numQuadPts, spaceDim):
     """
     Set basis functions and their derivatives, and coordinates and
     weights of quadrature points.
 
-    @param basis Basis functions evaluated at the quadrature points
-    @param basisDeriv Basis function derivatives evaluated at quad pts
+    @param basisVert Basis functions evaluated at the vertices
+    @param basisDerivVert Basis function derivatives evaluated at vertices
+    @param basisQuad Basis functions evaluated at the quadrature points
+    @param basisDerivQuad Basis function derivatives evaluated at quad pts
     @param quadPts Coordinates of quadrature points in reference cell
     @param quadWts Weights of quadrature points
     @param cellDim Dimension of reference cell
-    @param numCorners Number of vertices in reference cell
+    @param numBasis Number of vertices in reference cell
     @param numQuadPts Number of quadrature points
     @param spaceDim Number of dimensions associated with cell vertices
     """
     # create shim for method 'initialize'
-    #embed{ void Quadrature_initialize(void* objVptr, double* basis, double* basisDeriv, double* quadPts, double* quadWts, int cellDim, int numCorners, int numQuadPts, int spaceDim)
+    #embed{ void Quadrature_initialize(void* objVptr, double* basisVert, double* basisDerivVert, double* basisQuad, double* basisDerivQuad, double* quadPts, double* quadWts, int cellDim, int numBasis, int numQuadPts, int spaceDim)
     try {
-      ((pylith::feassemble::Quadrature*) objVptr)->initialize(basis, basisDeriv,
-                                                           quadPts, quadWts,
-                                                           cellDim, numCorners,
-                                                           numQuadPts, spaceDim);
+      ((pylith::feassemble::Quadrature*) objVptr)->initialize(
+                                         basisVert, basisDerivVert,
+                                         basisQuad, basisDerivQuad,
+                                         quadPts, quadWts,
+                                         cellDim, numBasis,
+                                         numQuadPts, spaceDim);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -121,30 +128,57 @@ cdef class Quadrature:
 
     import spatialdata.utils.simplearray
 
-    # basis
-    basis = spatialdata.utils.simplearray.objAsSimpleArray(basis)
-    if not basis.isCompatible(nd=2, simpletype="double",
-                              contiguous=True, notswapped=True):
-      raise TypeError, \
-            "Argument 'basis' must be a contiguous, 2-D array " \
-            "of type double."
-    if numQuadPts != basis.shape[0] or numCorners != basis.shape[1]:
-      raise TypeError, \
-            "Shape of argument 'basis' must be (numQuadPts, numCorners)."
+    numVertices = numBasis
 
-    # basisDeriv
-    basisDeriv = spatialdata.utils.simplearray.objAsSimpleArray(basisDeriv)
-    if not basisDeriv.isCompatible(nd=3, simpletype="double",
-                                   contiguous=True, notswapped=True):
+    # basisVert
+    basisVert = spatialdata.utils.simplearray.objAsSimpleArray(basisVert)
+    if not basisVert.isCompatible(nd=2, simpletype="double",
+                                  contiguous=True, notswapped=True):
       raise TypeError, \
-            "Argument 'basisDeriv' must be a contiguous, 3-D array " \
+            "Argument 'basisVert' must be a contiguous, 2-D array " \
             "of type double."
-    if numQuadPts != basisDeriv.shape[0] or \
-           numCorners != basisDeriv.shape[1] or \
-           cellDim != basisDeriv.shape[2]:
+    if numVertices != basisVert.shape[0] or numBasis != basisVert.shape[1]:
       raise TypeError, \
-            "Shape of argument 'basisDeriv' must be (numQuadPts, " \
-            "numCorners, cellDim)."
+            "Shape of argument 'basisVert' must be (numVertices, numBasis)."
+
+    # basisDerivVert
+    basisDerivVert = spatialdata.utils.simplearray.objAsSimpleArray(basisDerivVert)
+    if not basisDerivVert.isCompatible(nd=3, simpletype="double",
+                                       contiguous=True, notswapped=True):
+      raise TypeError, \
+            "Argument 'basisDerivVert' must be a contiguous, 3-D array " \
+            "of type double."
+    if numVertices != basisDerivVert.shape[0] or \
+           numBasis != basisDerivVert.shape[1] or \
+           cellDim != basisDerivVert.shape[2]:
+      raise TypeError, \
+            "Shape of argument 'basisDerivVert' must be (numVertices, " \
+            "numBasis, cellDim)."
+
+    # basisQuad
+    basisQuad = spatialdata.utils.simplearray.objAsSimpleArray(basisQuad)
+    if not basisQuad.isCompatible(nd=2, simpletype="double",
+                                  contiguous=True, notswapped=True):
+      raise TypeError, \
+            "Argument 'basisQuad' must be a contiguous, 2-D array " \
+            "of type double."
+    if numQuadPts != basisQuad.shape[0] or numBasis != basisQuad.shape[1]:
+      raise TypeError, \
+            "Shape of argument 'basisQuad' must be (numQuadPts, numBasis)."
+
+    # basisDerivQuad
+    basisDerivQuad = spatialdata.utils.simplearray.objAsSimpleArray(basisDerivQuad)
+    if not basisDerivQuad.isCompatible(nd=3, simpletype="double",
+                                       contiguous=True, notswapped=True):
+      raise TypeError, \
+            "Argument 'basisDerivQuad' must be a contiguous, 3-D array " \
+            "of type double."
+    if numQuadPts != basisDerivQuad.shape[0] or \
+           numBasis != basisDerivQuad.shape[1] or \
+           cellDim != basisDerivQuad.shape[2]:
+      raise TypeError, \
+            "Shape of argument 'basisDerivQuad' must be (numQuadPts, " \
+            "numBasis, cellDim)."
 
     # quadPts
     quadPts = spatialdata.utils.simplearray.objAsSimpleArray(quadPts)
@@ -168,18 +202,24 @@ cdef class Quadrature:
       raise TypeError, \
             "Shape of argument 'quadWts' must be (numQuadPts)."
 
-    cdef double* basisCpp
-    cdef double* basisDerivCpp
+    cdef double* basisCppVert
+    cdef double* basisDerivCppVert
+    cdef double* basisCppQuad
+    cdef double* basisDerivCppQuad
     cdef double* quadPtsCpp
     cdef double* quadWtsCpp
-    basisCpp = <double*> PyCObject_AsVoidPtr(basis.data)
-    basisDerivCpp = <double*> PyCObject_AsVoidPtr(basisDeriv.data)
+    basisCppVert = <double*> PyCObject_AsVoidPtr(basisVert.data)
+    basisDerivCppVert = <double*> PyCObject_AsVoidPtr(basisDerivVert.data)
+    basisCppQuad = <double*> PyCObject_AsVoidPtr(basisQuad.data)
+    basisDerivCppQuad = <double*> PyCObject_AsVoidPtr(basisDerivQuad.data)
     quadPtsCpp = <double*> PyCObject_AsVoidPtr(quadPts.data)
     quadWtsCpp = <double*> PyCObject_AsVoidPtr(quadWts.data)
 
-    Quadrature_initialize(self.thisptr, basisCpp, basisDerivCpp,
+    Quadrature_initialize(self.thisptr,
+                          basisCppVert, basisDerivCppVert,
+                          basisCppQuad, basisDerivCppQuad,
                           quadPtsCpp, quadWtsCpp,
-                          cellDim, numCorners,
+                          cellDim, numBasis,
                           numQuadPts, spaceDim)
     return
 

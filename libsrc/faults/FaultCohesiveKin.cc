@@ -66,7 +66,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     throw std::runtime_error("Up direction for fault orientation must be "
 			     "a vector with 3 components.");
   
-  // Allocate section for orientation information
+  // Allocate section for orientation information (all vertices)
 
   // Loop over cells
   //   Compute cell geometry at vertices

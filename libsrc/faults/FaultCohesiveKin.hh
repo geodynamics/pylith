@@ -137,6 +137,10 @@ private :
 
   EqKinSrc* _eqsrc; ///< Kinematic earthquake source information
 
+  /// Orientation of fault surface at vertices (fiber dimension is
+  /// nonzero only at constraint vertices)
+  ALE::Obj<real_section_type> _orientation;
+
   /// Fault vertices associated with constraints
   std::vector<Mesh::point_type> _constraintVert;
 

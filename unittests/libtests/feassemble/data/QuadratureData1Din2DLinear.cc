@@ -44,29 +44,52 @@ const double pylith::feassemble::QuadratureData1Din2DLinear::_quadWts[] = {
   2.00000000e+00,
 };
 
-const double pylith::feassemble::QuadratureData1Din2DLinear::_basis[] = {
-  5.00000000e-01,
-  5.00000000e-01,
-};
-
-const double pylith::feassemble::QuadratureData1Din2DLinear::_basisDeriv[] = {
- -5.00000000e-01,
-  5.00000000e-01,
-};
-
 const double pylith::feassemble::QuadratureData1Din2DLinear::_quadPts[] = {
   2.50000000e-01, -1.00000000e-01,
 };
 
-const double pylith::feassemble::QuadratureData1Din2DLinear::_jacobian[] = {
+const double pylith::feassemble::QuadratureData1Din2DLinear::_basisVert[] = {
+  1.00000000e+00,
+  0.00000000e+00,
+  0.00000000e+00,
+  1.00000000e+00,
+};
+
+const double pylith::feassemble::QuadratureData1Din2DLinear::_basisDerivVert[] = {
+ -5.00000000e-01,
+  5.00000000e-01,
+ -5.00000000e-01,
+  5.00000000e-01,
+};
+
+const double pylith::feassemble::QuadratureData1Din2DLinear::_jacobianVert[] = {
+  4.50000000e-01,  4.00000000e-01,
   4.50000000e-01,  4.00000000e-01,
 };
 
-const double pylith::feassemble::QuadratureData1Din2DLinear::_jacobianDet[] = {
+const double pylith::feassemble::QuadratureData1Din2DLinear::_jacobianDetVert[] = {
+  6.02079729e-01,  6.02079729e-01,
+};
+
+const double pylith::feassemble::QuadratureData1Din2DLinear::_basisQuad[] = {
+  5.00000000e-01,
+  5.00000000e-01,
+};
+
+const double pylith::feassemble::QuadratureData1Din2DLinear::_basisDerivQuad[] = {
+ -5.00000000e-01,
+  5.00000000e-01,
+};
+
+const double pylith::feassemble::QuadratureData1Din2DLinear::_jacobianQuad[] = {
+  4.50000000e-01,  4.00000000e-01,
+};
+
+const double pylith::feassemble::QuadratureData1Din2DLinear::_jacobianDetQuad[] = {
   6.02079729e-01,
 };
 
-const double pylith::feassemble::QuadratureData1Din2DLinear::_jacobianInv[] = {
+const double pylith::feassemble::QuadratureData1Din2DLinear::_jacobianInvQuad[] = {
   2.22222222e+00,
   2.50000000e+00,
 };
@@ -83,12 +106,16 @@ pylith::feassemble::QuadratureData1Din2DLinear::QuadratureData1Din2DLinear(void)
   cells = const_cast<int*>(_cells);
   quadPtsRef = const_cast<double*>(_quadPtsRef);
   quadWts = const_cast<double*>(_quadWts);
-  basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
   quadPts = const_cast<double*>(_quadPts);
-  jacobian = const_cast<double*>(_jacobian);
-  jacobianDet = const_cast<double*>(_jacobianDet);
-  jacobianInv = const_cast<double*>(_jacobianInv);
+  basisVert = const_cast<double*>(_basisVert);
+  basisDerivVert = const_cast<double*>(_basisDerivVert);
+  jacobianVert = const_cast<double*>(_jacobianVert);
+  jacobianDetVert = const_cast<double*>(_jacobianDetVert);
+  basisQuad = const_cast<double*>(_basisQuad);
+  basisDerivQuad = const_cast<double*>(_basisDerivQuad);
+  jacobianQuad = const_cast<double*>(_jacobianQuad);
+  jacobianDetQuad = const_cast<double*>(_jacobianDetQuad);
+  jacobianInvQuad = const_cast<double*>(_jacobianInvQuad);
 } // constructor
 
 pylith::feassemble::QuadratureData1Din2DLinear::~QuadratureData1Din2DLinear(void)
