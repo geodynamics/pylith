@@ -119,7 +119,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell
-    quadrature->computeGeometry(mesh, coordinates, *cellIter);
+    quadrature->computeGeometryQuad(mesh, coordinates, *cellIter);
 
     const double_array& quadPts = quadrature->quadPts();
     const int spaceDim = quadrature->spaceDim();

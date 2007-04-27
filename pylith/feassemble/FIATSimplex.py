@@ -108,6 +108,14 @@ class FIATSimplex(FIATCell):
     return Lagrange(self._getShape(), self.degree).function_space()
 
 
+  def _setupVertices(self):
+    """
+    Setup vertices for reference cell.
+    """
+    import FIAT.shapes
+    return FIAT.shapes.vertices[self._getShape()].values()
+
+
   def _getShape(self):
     """
     Parse string into FIAT shape.

@@ -105,7 +105,7 @@ pylith::feassemble::ImplicitElasticity::integrateConstant(
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell
-    _quadrature->computeGeometry(mesh, coordinates, *cellIter);
+    _quadrature->computeGeometryQuad(mesh, coordinates, *cellIter);
 
     // Set cell data in material
     _material->initCellData(*cellIter, numQuadPts);
@@ -114,8 +114,8 @@ pylith::feassemble::ImplicitElasticity::integrateConstant(
     _resetCellVector();
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
+    const double_array& basis = _quadrature->basisQuad();
+    const double_array& jacobianDet = _quadrature->jacobianDetQuad();
 
     // Get density at quadrature points for this cell
     const std::vector<double_array>& density = _material->calcDensity();
@@ -204,7 +204,7 @@ pylith::feassemble::ImplicitElasticity::integrateResidual(
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell
-    _quadrature->computeGeometry(mesh, coordinates, *cellIter);
+    _quadrature->computeGeometryQuad(mesh, coordinates, *cellIter);
 
     // Set cell data in material
     _material->initCellData(*cellIter, numQuadPts);
@@ -217,9 +217,9 @@ pylith::feassemble::ImplicitElasticity::integrateResidual(
       mesh->restrict(dispT, *cellIter);
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& basisDeriv = _quadrature->basisDeriv();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
+    const double_array& basis = _quadrature->basisQuad();
+    const double_array& basisDeriv = _quadrature->basisDerivQuad();
+    const double_array& jacobianDet = _quadrature->jacobianDetQuad();
 
     if (cellDim != spaceDim)
       throw std::logic_error("Not implemented yet.");
@@ -368,6 +368,10 @@ pylith::feassemble::ImplicitElasticity::integrateJacobian(
   const double_array& quadWts = _quadrature->quadWts();
   const int numBasis = _quadrature->numCorners();
   const int spaceDim = _quadrature->spaceDim();
+  
+  // Compute Jacobian for cell, specific for each geometry type
+  if (cellDim != spaceDim)
+    throw std::logic_error("Not implemented yet.")
 
   // Allocate vector for cell values (if necessary)
   _initCellMatrix();
@@ -377,7 +381,7 @@ pylith::feassemble::ImplicitElasticity::integrateJacobian(
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell
-    _quadrature->computeGeometry(mesh, coordinates, *cellIter);
+    _quadrature->computeGeometryQuad(mesh, coordinates, *cellIter);
 
     // Set cell data in material
     _material->initCellData(*cellIter, numQuadPts);
@@ -386,13 +390,9 @@ pylith::feassemble::ImplicitElasticity::integrateJacobian(
     _resetCellMatrix();
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& basisDeriv = _quadrature->basisDeriv();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
-
-    // Compute Jacobian for cell, specific for each geometry type
-    if (cellDim != spaceDim)
-      throw std::logic_error("Not implemented yet.")
+    const double_array& basis = _quadrature->basisQuad();
+    const double_array& basisDeriv = _quadrature->basisDerivQuad();
+    const double_array& jacobianDet = _quadrature->jacobianDetQuad();
 
 	// Need to finish fixing from here***************************
     // 1D Case

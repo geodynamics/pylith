@@ -25,12 +25,16 @@ pylith::feassemble::QuadratureData::QuadratureData(void) :
   cells(0),
   quadPtsRef(0),
   quadWts(0),
-  basis(0),
-  basisDeriv(0),
-  jacobian(0),
-  jacobianDet(0),
-  jacobianInv(0),
-  quadPts(0)
+  quadPts(0),
+  basisVert(0),
+  basisDerivVert(0),
+  jacobianVert(0),
+  jacobianDetVert(0),
+  basisQuad(0),
+  basisDerivQuad(0),
+  jacobianQuad(0),
+  jacobianDetQuad(0),
+  jacobianInvQuad(0)
 { // constructor
 } // constructor
 

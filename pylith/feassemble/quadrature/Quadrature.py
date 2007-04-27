@@ -87,7 +87,9 @@ class Quadrature(Component):
 
 
     self._info.log("Initializing C++ quadrature.")
-    self.cppHandle.initialize(c.basis, c.basisDeriv, c.quadPts, c.quadWts,
+    self.cppHandle.initialize(c.basisVert, c.basisDerivVert,
+                              c.basisQuad, c.basisDerivQuad,
+                              c.quadPts, c.quadWts,
                               c.cellDim, c.numCorners, c.numQuadPts,
                               self.spaceDim)
     return

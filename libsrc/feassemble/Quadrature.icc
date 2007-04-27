@@ -28,20 +28,6 @@ pylith::feassemble::Quadrature::minJacobian(const double min) {
   _minJacobian = min;
 }
 
-// Get basis fns evaluated at quadrature points.
-inline
-const pylith::double_array&
-pylith::feassemble::Quadrature::basis(void) const {
-  return _basis;
-}
-
-// Get derivatives of basis fns evaluated at quadrature points.
-inline
-const pylith::double_array&
-pylith::feassemble::Quadrature::basisDeriv(void) const {
-  return _basisDeriv;
-}
-
 // Get coordinates of quadrature points in cell (NOT reference cell).
 inline
 const pylith::double_array&
@@ -56,18 +42,67 @@ pylith::feassemble::Quadrature::quadWts(void) const {
   return _quadWts;
 }
 
-// Get Jacobian inverses evaluated at quadrature points.
+// Get basis fns evaluated at vertices.
 inline
 const pylith::double_array&
-pylith::feassemble::Quadrature::jacobianInv(void) const {
-  return _jacobianInv;
+pylith::feassemble::Quadrature::basisVert(void) const {
+  return _basisVert;
+}
+
+// Get derivatives of basis fns evaluated at vertices.
+inline
+const pylith::double_array&
+pylith::feassemble::Quadrature::basisDerivVert(void) const {
+  return _basisDerivVert;
+}
+
+// Get Jacobians evaluated at vertices.
+inline
+const pylith::double_array&
+pylith::feassemble::Quadrature::jacobianVert(void) const {
+  return _jacobianVert;
+}
+
+// Get determinants of Jacobian evaluated at vertices.
+inline
+const pylith::double_array&
+pylith::feassemble::Quadrature::jacobianDetVert(void) const {
+  return _jacobianDetVert;
+}
+
+// Get basis fns evaluated at quadrature points.
+inline
+const pylith::double_array&
+pylith::feassemble::Quadrature::basisQuad(void) const {
+  return _basisQuad;
+}
+
+// Get derivatives of basis fns evaluated at quadrature points.
+inline
+const pylith::double_array&
+pylith::feassemble::Quadrature::basisDerivQuad(void) const {
+  return _basisDerivQuad;
+}
+
+// Get Jacobians evaluated at quadrature points.
+inline
+const pylith::double_array&
+pylith::feassemble::Quadrature::jacobianQuad(void) const {
+  return _jacobianQuad;
 }
 
 // Get determinants of Jacobian evaluated at quadrature points.
 inline
 const pylith::double_array&
-pylith::feassemble::Quadrature::jacobianDet(void) const {
-  return _jacobianDet;
+pylith::feassemble::Quadrature::jacobianDetQuad(void) const {
+  return _jacobianDetQuad;
+}
+
+// Get Jacobian inverses evaluated at quadrature points.
+inline
+const pylith::double_array&
+pylith::feassemble::Quadrature::jacobianInvQuad(void) const {
+  return _jacobianInvQuad;
 }
 
 // Get number of dimensions in reference cell.
