@@ -21,7 +21,7 @@
 ##
 ## Factory: eq_kinematic_src
 
-from Component import Component
+from pyre.components.Component import Component
 
 # EqKinSrc class
 class EqKinSrc(Component):
