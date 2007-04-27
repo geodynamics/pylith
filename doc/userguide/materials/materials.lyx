@@ -950,68 +950,85 @@ Power-law Maxwell viscoelastic material
 \end_layout
 
 \begin_layout Standard
-For a power-law Maxwell viscoelastic material, the creep strain increment
- is
+A power-law Maxwell viscoelastic material may be parameterized with the
+ elastic parameters 
+\begin_inset Formula $E$
+\end_inset
+
+ and 
+\begin_inset Formula $\nu$
+\end_inset
+
+, the viscosity coefficient, 
+\begin_inset Formula $\eta$
+\end_inset
+
+, and the power-law exponent, 
+\begin_inset Formula $n$
+\end_inset
+
+.
+ The creep strain increment is approximated as
 \begin_inset Formula \begin{gather}
-\boldsymbol{\Delta}\boldsymbol{e}^{C}=\frac{\Delta t\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n-1}\Prefix^{{\tau}}{\boldsymbol{S}}}{2\eta^{n}}=\frac{\Delta t\Prefix^{{\tau}}{\overline{\sigma}^{n-1}}\Prefix^{{\tau}}{\boldsymbol{S}}}{2\sqrt{3}\eta^{n}}\,.\label{eq:29}\end{gather}
+\underline{\Delta e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}\,^{\tau}\underline{S}}{2\eta^{n}}=\frac{\Delta t^{\tau}\overline{\sigma}^{n-1}\,^{\tau}\underline{S}}{2\sqrt{3}\eta^{n}}\,.\label{eq:32}\end{gather}
 
 \end_inset
 
 Therefore,
 \begin_inset Formula \begin{gather}
-\Delta\bar{e}^{C}=\frac{\Delta t\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n}}{\sqrt{3}\eta^{n}}=\frac{\Delta t\Prefix^{{\tau}}{\overline{\sigma}^{n}}}{\sqrt{3}^{n+1}\eta^{n}}\,,\,\textrm{and}\,\Prefix^{{\tau}}{\gamma}=\frac{\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n-1}}{2\eta^{n}}\,.\label{eq:30}\end{gather}
+\Delta\bar{e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}^{n}}{\sqrt{3}\eta^{n}}=\frac{\Delta t^{\tau}\overline{\sigma}^{n}}{\sqrt{3}^{n+1}\eta^{n}}\,,\,\textrm{and}\,^{\tau}\gamma=\frac{\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}}{2\eta^{n}}\,.\label{eq:33}\end{gather}
 
 \end_inset
 
 substituting 
-\begin_inset LatexCommand \ref{eq:10}
+\begin_inset LatexCommand \ref{eq:13}
 
 \end_inset
 
 , 
-\begin_inset LatexCommand \ref{eq:29}
+\begin_inset LatexCommand \ref{eq:32}
 
 \end_inset
 
 , and 
-\begin_inset LatexCommand \ref{eq:30}
+\begin_inset LatexCommand \ref{eq:33}
 
 \end_inset
 
  into 
-\begin_inset LatexCommand \ref{eq:7}
+\begin_inset LatexCommand \ref{eq:10}
 
 \end_inset
 
 , we obtain:
 \begin_inset Formula \begin{gather}
-\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{E}{1+\nu}\left\{ \Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\Delta t\Prefix^{{\tau}}{\gamma}\left[\left(1-\alpha\right)\Prefix^{{t}}{\boldsymbol{S}}+\alpha\Prefix^{{t+\Delta t}}{\boldsymbol{S}}\right]\right\} +\Prefix^{{I}}{\boldsymbol{S}}\,,\label{eq:31}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{E}{1+\nu}\left\{ ^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left[\left(1-\alpha\right)^{t}\underline{S}+\alpha{}^{t+\Delta t}\underline{S}\right]\right\} +^{I}\underline{S}\,,\label{eq:34}\end{gather}
 
 \end_inset
 
 which may be rewritten:
 \begin_inset Formula \begin{gather}
-\Prefix^{{t+\Delta t}}{\boldsymbol{S}}\left(\frac{1+\nu}{E}+\alpha\Delta t\Prefix^{{\tau}}{\gamma}\right)=\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\Delta t\Prefix^{{\tau}}{\gamma}\left(1-\alpha\right)\Prefix^{{t}}{\boldsymbol{S}}+\frac{1+\nu}{E}\Prefix^{{I}}{\boldsymbol{S}}\,.\label{eq:32}\end{gather}
+^{t+\Delta t}\underline{S}\left(\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\right)={}^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+\frac{1+\nu}{E}\,^{I}\underline{S}\,.\label{eq:35}\end{gather}
 
 \end_inset
 
 Taking the scalar inner product of both sides we obtain:
 \begin_inset Formula \begin{gather}
-a^{2}\,\,\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}-b+c\Prefix^{{\tau}}{\gamma}-d^{2}\Prefix^{{\tau}}{\gamma^{2}}=F=0\,,\label{eq:33}\end{gather}
+a^{2}\,\,{}^{t+\Delta t}J_{2}^{\prime}-b+c^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=F=0\,,\label{eq:36}\end{gather}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{gather}
-a=\frac{1+\nu}{E}+\alpha\Delta t\Prefix^{{\tau}}{\gamma}\,\,\nonumber \\
-b=\frac{1}{2}\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}\bullet\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}+\frac{1+\nu}{E}\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}\bullet\Prefix^{{I}}{\boldsymbol{S}}+\left(\frac{1+\nu}{E}\right)^{2}\Prefix^{{I}}{J_{2}^{\prime}}\,.\label{eq:34}\\
-c=\Delta t\left(1-\alpha\right)\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}\bullet\Prefix^{{t}}{\boldsymbol{S}}+\Delta t\left(1-\alpha\right)\frac{1+\nu}{E}\Prefix^{{t}}{\boldsymbol{S}}\bullet\Prefix^{{I}}{\boldsymbol{S}}\,\,\nonumber \\
-d=\Delta t\left(1-\alpha\right)\sqrt{\Prefix^{{t}}{J_{2}^{\prime}}}\,\,\nonumber \end{gather}
+a=\frac{1+\nu}{E}+\alpha\Delta t^{\tau}\gamma\,\,\nonumber \\
+b=\frac{1}{2}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot{}^{t+\Delta t}\underline{e}^{\prime\prime}+\frac{1+\nu}{E}{}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot^{I}\underline{S}+\left(\frac{1+\nu}{E}\right)^{2}\,^{I}J_{2}^{\prime}\,.\label{eq:37}\\
+c=\Delta t\left(1-\alpha\right){}^{t+\Delta t}\underline{e}^{\prime\prime}\cdot^{t}\underline{S}+\Delta t\left(1-\alpha\right)\frac{1+\nu}{E}\,^{t}\underline{S}\cdot^{I}\underline{S}\,\,\nonumber \\
+d=\Delta t\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\,\,\nonumber \end{gather}
 
 \end_inset
 
 Equation 
-\begin_inset LatexCommand \ref{eq:33}
+\begin_inset LatexCommand \ref{eq:36}
 
 \end_inset
 
@@ -1023,17 +1040,17 @@ Equation
  - and may be solved by bisection or by Newton's method.
  Once this parameter has been found, the deviatoric stresses for the current
  time step may be found from 
-\begin_inset LatexCommand \ref{eq:31}
+\begin_inset LatexCommand \ref{eq:34}
 
 \end_inset
 
  and 
-\begin_inset LatexCommand \ref{eq:30}
+\begin_inset LatexCommand \ref{eq:33}
 
 \end_inset
 
 , and the total stresses may be found from 
-\begin_inset LatexCommand \ref{eq:18}
+\begin_inset LatexCommand \ref{eq:21}
 
 \end_inset
 
@@ -1047,79 +1064,79 @@ Tangent Stress-Strain Relation
 \begin_layout Standard
 We proceed as for the linear case, but the evaluation of the first derivative
  in equation 
-\begin_inset LatexCommand \ref{eq:22}
+\begin_inset LatexCommand \ref{eq:25}
 
 \end_inset
 
  is more complicated.
  We begin by rewriting 
-\begin_inset LatexCommand \ref{eq:32}
+\begin_inset LatexCommand \ref{eq:35}
 
 \end_inset
 
  as
 \begin_inset Formula \begin{gather}
-\Prefix^{{t+\Delta t}}{\boldsymbol{S}}=\frac{1}{\left(a_{E}+\alpha\Delta t\Prefix^{{\tau}}{\gamma}\right)}\left[\Prefix^{{t+\Delta t}}{\boldsymbol{e}^{\prime\prime}}-\Delta t\Prefix^{{\tau}}{\gamma}\left(1-\alpha\right)\Prefix^{{t}}{\boldsymbol{S}}+a_{E}\Prefix^{{I}}{\boldsymbol{S}}\right]\,,\label{eq:35}\end{gather}
+^{t+\Delta t}\underline{S}=\frac{1}{\left(a_{E}+\alpha\Delta t^{\tau}\gamma\right)}\left[^{t+\Delta t}\underline{e}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}\underline{S}+a_{E}\,^{I}\underline{S}\right]\,,\label{eq:38}\end{gather}
 
 \end_inset
 
 where
 \begin_inset Formula \begin{gather}
-a_{E}=\frac{1+\nu}{E}\,.\label{eq:36}\end{gather}
+a_{E}=\frac{1+\nu}{E}\,.\label{eq:39}\end{gather}
 
 \end_inset
 
 The derivative is then
 \begin_inset Formula \begin{gather}
-\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=\frac{1}{a_{E}+\alpha\Delta t\Prefix^{{\tau}}{\gamma}}\nonumber \\
-\left\langle \delta_{ik}-\frac{\partial\Prefix^{{\tau}}{\gamma}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}\left\{ \Delta t\left(1-\alpha\right)\Prefix^{{t}}{S_{i}}+\frac{\alpha\Delta t}{a_{E}+\alpha\Delta t\Prefix^{{\tau}}{\gamma}}\left[\Prefix^{{t+\Delta t}}{e_{i}^{\prime\prime}}-\Delta t\Prefix^{{\tau}}{\gamma}\left(1-\alpha\right)\Prefix^{{t}}{S_{i}}+a_{E}\Prefix^{{I}}{S_{i}}\right]\right\} \right\rangle \,.\label{eq:37}\end{gather}
+\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{1}{a_{E}+\alpha\Delta t^{\tau}\gamma}\nonumber \\
+\left\langle \delta_{ik}-\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\left\{ \Delta t\left(1-\alpha\right)^{t}S_{i}+\frac{\alpha\Delta t}{a_{E}+\alpha\Delta t^{\tau}\gamma}\left[^{t+\Delta t}e_{i}^{\prime\prime}-\Delta t^{\tau}\gamma\left(1-\alpha\right)^{t}S_{i}+a_{E}\,^{I}S_{i}\right]\right\} \right\rangle \,.\label{eq:40}\end{gather}
 
 \end_inset
 
 From 
-\begin_inset LatexCommand \ref{eq:30}
+\begin_inset LatexCommand \ref{eq:33}
 
 \end_inset
 
 ,
 \begin_inset Formula \begin{gather}
-\frac{\partial\Prefix^{{\tau}}{\gamma}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=\frac{\left(n-1\right)\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n-2}}{2\eta^{n}}\frac{\partial\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=K_{1}\frac{\partial\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}\,.\label{eq:38}\end{gather}
+\frac{\partial^{\tau}\gamma}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=K_{1}\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\,.\label{eq:41}\end{gather}
 
 \end_inset
 
 We first note that
 \begin_inset Formula \begin{gather}
-\sqrt{\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}}=\frac{1}{\alpha}\left[\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}-\left(1-\alpha\right)\sqrt{\Prefix^{{t}}{J_{2}^{\prime}}}\right]\,,\label{eq:39}\end{gather}
+\sqrt{^{t+\Delta t}J_{2}^{\prime}}=\frac{1}{\alpha}\left[\sqrt{^{\tau}J_{2}^{\prime}}-\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]\,,\label{eq:42}\end{gather}
 
 \end_inset
 
-which allows us to rewrite 
-\begin_inset LatexCommand \ref{eq:33}
+ which allows us to rewrite 
+\begin_inset LatexCommand \ref{eq:36}
 
 \end_inset
 
  as
 \begin_inset Formula \begin{gather}
-\frac{a^{2}}{\alpha^{2}}\left[\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}-\left(1-\alpha\right)\sqrt{\Prefix^{{t}}{J_{2}^{\prime}}}\right]^{2}-b+c\Prefix^{{\tau}}{\gamma}-d^{2}\Prefix^{{\tau}}{\gamma^{2}}=\frac{a^{2}}{\alpha^{2}}K_{2}^{2}-b+c\Prefix^{{\tau}}{\gamma}-d^{2}\Prefix^{{\tau}}{\gamma^{2}}=F=0\,.\label{eq:40}\end{gather}
+\frac{a^{2}}{\alpha^{2}}\left[\sqrt{^{\tau}J_{2}^{\prime}}-\left(1-\alpha\right)\sqrt{^{t}J_{2}^{\prime}}\right]^{2}-b+c\,^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=\frac{a^{2}}{\alpha^{2}}K_{2}^{2}-b+c\,^{\tau}\gamma-d^{2}\,^{\tau}\gamma^{2}=F=0\,.\label{eq:43}\end{gather}
 
 \end_inset
 
 The derivatives of this function are
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}=\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\Prefix^{{\tau}}{\gamma}\right)\nonumber \\
-\frac{\partial F}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=-\delta_{ik}\left[\frac{\Prefix^{{t+\Delta t}}{e_{i}^{\prime\prime}}}{2}\right]+a_{E}\Prefix^{{I}}{S_{i}}-\Delta t\left(1-\alpha\right)\Prefix^{{t}}{S_{i}}\Prefix^{{\tau}}{\gamma}\,.\label{eq:41}\end{gather}
+\frac{\partial F}{\partial\sqrt{^{\tau}J_{2}^{\prime}}}=\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)\nonumber \\
+\frac{\partial F}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=-\delta_{ik}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}\right]+a_{E}\,^{I}S_{i}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\,.\label{eq:44}\end{gather}
 
 \end_inset
 
 Then using the quotient rule for derivatives,
 \begin_inset Formula \begin{gather}
-\frac{\partial\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=\frac{\delta_{ik}\left[\frac{\Prefix^{{t+\Delta t}}{e_{i}^{\prime\prime}}}{2}+a_{E}\Prefix^{{I}}{S_{i}}-\Delta t\left(1-\alpha\right)\Prefix^{{t}}{S_{i}}\Prefix^{{\tau}}{\gamma}\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\Prefix^{{\tau}}{\gamma}\right)}\,.\label{eq:42}\end{gather}
+\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}=\frac{\delta_{ik}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}\,^{I}S_{i}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:45}\end{gather}
 
 \end_inset
 
 This yields
 \begin_inset Formula \begin{gather}
-\frac{\partial\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}=\frac{\delta_{ik}K_{1}\left[\frac{\Prefix^{{t+\Delta t}}{e_{i}^{\prime\prime}}}{2}+a_{E}\Prefix^{{I}}{S_{i}}-\Delta t\left(1-\alpha\right)\Prefix^{{t}}{S_{i}}\Prefix^{{\tau}}{\gamma}\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\Prefix^{{\tau}}{\gamma}\right)}\,.\label{eq:43}\end{gather}
+\frac{\partial\sqrt{^{\tau}J_{2}^{\prime}}}{\partial{}^{t+\Delta t}e_{j}^{\prime\prime}}=\frac{\delta_{ik}K_{1}\left[\frac{^{t+\Delta t}e_{i}^{\prime\prime}}{2}+a_{E}\,^{I}S_{i}-\Delta t\left(1-\alpha\right)^{t}S_{i}\,^{\tau}\gamma\right]}{\frac{2aK_{2}}{\alpha^{2}}\left(\alpha\Delta tK_{1}K_{2}+a\right)+K_{1}\left(c-2d^{2}\,^{\tau}\gamma\right)}\,.\label{eq:46}\end{gather}
 
 \end_inset
 
@@ -1129,18 +1146,18 @@ Note that for a linear material
 
 , this derivative is zero.
  This relation may be used in 
-\begin_inset LatexCommand \ref{eq:37}
+\begin_inset LatexCommand \ref{eq:40}
 
 \end_inset
 
 .
  Then, using equations 
-\begin_inset LatexCommand \ref{eq:21}
+\begin_inset LatexCommand \ref{eq:24}
 
 \end_inset
 
  through 
-\begin_inset LatexCommand \ref{eq:24}
+\begin_inset LatexCommand \ref{eq:27}
 
 \end_inset
 
@@ -1152,13 +1169,13 @@ C_{ij}^{VE}=\frac{E}{3\left(1-2\nu\right)}\left[\begin{array}{cccccc}
 1 & 1 & 1 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0\\
 0 & 0 & 0 & 0 & 0 & 0\\
-0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3}\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}\left[\begin{array}{cccccc}
+0 & 0 & 0 & 0 & 0 & 0\end{array}\right]+\frac{1}{3}\frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\left[\begin{array}{cccccc}
 2 & -1 & -1 & 0 & 0 & 0\\
 -1 & 2 & -1 & 0 & 0 & 0\\
 -1 & -1 & 2 & 0 & 0 & 0\\
 0 & 0 & 0 & 3 & 0 & 0\\
 0 & 0 & 0 & 0 & 3 & 0\\
-0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:44}\end{gather}
+0 & 0 & 0 & 0 & 0 & 3\end{array}\right]\,.\label{eq:47}\end{gather}
 
 \end_inset
 
@@ -1167,16 +1184,16 @@ As for the linear case, we use an altered version of the matrix appropriate
  At the beginning of a time step, the strains have not yet been computed,
  and we use the following approximation:
 \begin_inset Formula \begin{gather}
-\frac{\partial\Prefix^{{t+\Delta t}}{S_{i}}}{\partial\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}}\approx\frac{\delta_{ik}}{a_{E}+\Delta t\Prefix^{{\tau}}{\gamma}}\,,\label{eq:45}\end{gather}
+\frac{\partial{}^{t+\Delta t}S_{i}}{\partial{}^{t+\Delta t}e_{k}^{\prime\prime}}\approx\frac{\delta_{ik}}{a_{E}+\Delta t^{\tau}\gamma}\,,\label{eq:48}\end{gather}
 
 \end_inset
 
 where we have neglected the changes in 
-\begin_inset Formula $\Prefix^{{\tau}}{\gamma}$
+\begin_inset Formula $^{\tau}\gamma$
 \end_inset
 
  due to changes in 
-\begin_inset Formula $\Prefix^{{t+\Delta t}}{e_{k}^{\prime\prime}}$
+\begin_inset Formula $^{t+\Delta t}e_{k}^{\prime\prime}$
 \end_inset
 
 , and we have used a value of 
@@ -1193,13 +1210,13 @@ Derivative of Effective Stress Function
 \begin_layout Standard
 To compute the zero of the effective stress function using Newton's method,
  we require the derivative of 
-\begin_inset LatexCommand \ref{eq:33}
+\begin_inset LatexCommand \ref{eq:36}
 
 \end_inset
 
 , which may be written:
 \begin_inset Formula \begin{gather}
-\frac{\partial F}{\partial\sqrt{\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}}}=2a^{2}\sqrt{\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}}+\frac{\alpha\left(n-1\right)\sqrt{\Prefix^{{\tau}}{J_{2}^{\prime}}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t\Prefix^{{t+\Delta t}}{J_{2}^{\prime}}+c-2d^{2}\Prefix^{{\tau}}{\gamma}\right)\,.\label{eq:46}\end{gather}
+\frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:49}\end{gather}
 
 \end_inset
 
