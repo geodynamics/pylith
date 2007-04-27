@@ -1636,5 +1636,92 @@ The complete deviatoric tangent relation is then
 
 \end_layout
 
+\begin_layout Section
+Power-Law Maxwell Model (Zienkiewicz and Taylor Formulation)
+\end_layout
+
+\begin_layout Standard
+This material model is identical to the previous power-law model, formulated
+ in terms of the creep strain rate:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{\dot{\epsilon}}^{C}=\underline{\beta}\left(\underline{\sigma},\underline{\epsilon}^{C}\right)=\frac{\sqrt{^{\tau}J_{2}^{\prime}}^{n-1}\,^{\tau}\underline{S}}{2\eta^{n}}\,.\label{eq:73}\end{gather}
+
+\end_inset
+
+The stress and creep strain at time step 
+\begin_inset Formula $n+1$
+\end_inset
+
+ are given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{\sigma}_{n+1}=\underline{D}\left(\underline{\epsilon}_{n+1}-\underline{\epsilon}_{n+1}^{C}\right)+^{I}\underline{\sigma}\nonumber \\
+\underline{\epsilon}_{n+1}^{C}=\underline{\epsilon}_{n}^{C}+\Delta t\underline{\beta}_{n+\theta}\,,\label{eq:74}\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula \begin{gather}
+\underline{\beta}_{n+\theta}=\left(1-\theta\right)\underline{\beta}_{n}+\theta\underline{\beta}_{n+1}\,,\label{eq:75}\end{gather}
+
+\end_inset
+
+and 
+\begin_inset Formula $\underline{D}$
+\end_inset
+
+ is the elasticity matrix.
+ This can be arranged into a simple nonlinear equation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{R}_{n+1}\equiv\underline{\epsilon}_{n+1}-\underline{D}^{-1}\left(\underline{\sigma}_{n+1}-^{I}\underline{\sigma}\right)-\underline{\epsilon}_{n}^{C}-\Delta t\underline{\beta}_{n+\theta}=\underline{0}\,.\label{eq:76}\end{gather}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The equations may be solved iteratively using a Newton-Raphson procedure.
+ Given an increment of strain determined from the current displacements
+ and an initial guess for the stress, an iterative procedure may be written
+ as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{R}^{i+1}=\underline{0}=\underline{R}^{i}-\left(\underline{D}^{-1}+\Delta t\underline{C}_{n+1}\right)d\underline{\sigma}_{n+1}^{i}\,,\label{eq:77}\end{gather}
+
+\end_inset
+
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{C}_{n+1}=\frac{\partial\underline{\beta}}{\partial\underline{\sigma}}\Biggl\|_{n+\theta}=\theta\frac{\partial\underline{\beta}}{\partial\underline{\sigma}}\Biggl\|_{n+1}\,.\label{eq:78}\end{gather}
+
+\end_inset
+
+These stresses are obtained using the iterative procedure, and the tangent
+ matrix is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{D}_{n+1}^{*}\equiv\left[\underline{D}^{-1}+\Delta\underline{C}_{n+1}\right]^{-1}\,.\label{eq:79}\end{gather}
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
