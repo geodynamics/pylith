@@ -42,7 +42,26 @@ Material Models
 
 \begin_layout Standard
 There are six material models presently available in PyLith, as shown in
- TABLEREF and FIGUREREF.
+ 
+\begin_inset LatexCommand \ref{tab:Material-models-available}
+
+\end_inset
+
+ and 
+\begin_inset LatexCommand \ref{fig:Material-models}
+
+\end_inset
+
+.
+ Note that there are two formulations for two of the material models (linear
+ and power-law Maxwell viscoelastic).
+ The alternate formulations are still being evaluated, and at present it
+ is still unclear which formulations are most effective.
+ It is likely that the performance of each formulation will depend on the
+ loading conditions, so users may wish to try different formulations for
+ each particular problem.
+ The model number is not generally needed by the user, but may be of interest
+ when examining the material property routines.
 \end_layout
 
 \begin_layout Standard
@@ -282,6 +301,10 @@ Another power-law Maxwell model using a formulation based on that of Zienkiewicz
 \end_layout
 
 \begin_layout Caption
+\begin_inset LatexCommand \label{tab:Material-models-available}
+
+\end_inset
+
 Material models available in PyLith.
 \end_layout
 
@@ -291,24 +314,16 @@ Material models available in PyLith.
 \end_layout
 
 \begin_layout Standard
-Note that there are two formulations for two of the material models (linear
- and power-law Maxwell viscoelastic).
- The alternate formulations are still being evaluated, and at present it
- is still unclear which formulations are most effective.
- It is likely that the performance of each formulation will depend on the
- loading conditions, so users may wish to try different formulations for
- each particular problem.
- The model number is not generally needed by the user, but may be of interest
- when examining the material property routines.
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
 status open
 
 \begin_layout Caption
+\begin_inset LatexCommand \label{fig:Material-models}
+
+\end_inset
+
 Spring-dashpot 1D representations of the material models available in PyLith.
  The top model is a linear elastic model, the middle model is a Maxwell
  model, and the bottom model is a generalized Maxwell model.
@@ -331,7 +346,12 @@ Definitions
 
 \begin_layout Standard
 In the following sections, we use a combination of vector and index notation,
- and our notation conventions are shown in Table TABLEREF.
+ and our notation conventions are shown in 
+\begin_inset LatexCommand \ref{tab:Mathematical-notation}
+
+\end_inset
+
+.
  When using index notation, we use the common convention where repeated
  indices indicate summation over the range of the index.
  We also make frequent use of the scalar inner product.
@@ -440,6 +460,11 @@ sideways false
 status open
 
 \begin_layout Caption
+\begin_inset LatexCommand \label{tab:Mathematical-notation}
+
+\end_inset
+
+Mathematical notation used in this section.
 \begin_inset Tabular
 <lyxtabular version="3" rows="3" columns="3">
 <features>
@@ -1217,6 +1242,394 @@ To compute the zero of the effective stress function using Newton's method,
 , which may be written:
 \begin_inset Formula \begin{gather}
 \frac{\partial F}{\partial\sqrt{^{t+\Delta t}J_{2}^{\prime}}}=2a^{2}\sqrt{^{t+\Delta t}J_{2}^{\prime}}+\frac{\alpha\left(n-1\right)\sqrt{^{\tau}J_{2}^{\prime}}^{n-2}}{2\eta^{n}}\left(2a\alpha\Delta t{}^{t+\Delta t}J_{2}^{\prime}+c-2d^{2}\,^{\tau}\gamma\right)\,.\label{eq:49}\end{gather}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Generalized Maxwell Viscoelastic Model
+\end_layout
+
+\begin_layout Standard
+The generalized Maxwell viscoelastic model consists of a number of Maxwell
+ linear viscoelastic models in parallel with a spring, as shown in 
+\begin_inset LatexCommand \ref{fig:Material-models}
+
+\end_inset
+
+.
+ In the specific model available in PyLith 0.8.2, we specify 3 Maxwell models.
+ A number of common material models may be obtained from this model by setting
+ the shear moduli of various springs to zero, such as the Maxwell model,
+ the Kelvin model, and the standard linear solid.
+ We follow formulations similar to those used by 
+\begin_inset LatexCommand \cite{Zienkiewicz:Taylor:2000}
+
+\end_inset
+
+ and 
+\begin_inset LatexCommand \cite{Taylor:2003}
+
+\end_inset
+
+.
+ In this formulation, we specify the total shear modulus of the model (
+\begin_inset Formula $\mu_{tot}$
+\end_inset
+
+) by specifying the Young's modulus and Poisson's ratio.
+ We then specify the fractional shear modulus for each Maxwell element spring
+ in the model.
+ It is not necessary to specify the fractional modulus for 
+\begin_inset Formula $\mu_{0}$
+\end_inset
+
+, since this is obtained by subtracting the sum of the other ratios from
+ 1.
+ Note that the sum of all these fractions must equal 1.
+ We use a similar formulation for the first instance of our linear Maxwell
+ viscoelastic model (Model 5), but in that case 
+\begin_inset Formula $\mu_{0}$
+\end_inset
+
+ is always zero and we only use a single Maxwell model.
+\end_layout
+
+\begin_layout Subsection
+Constitutive Relation
+\end_layout
+
+\begin_layout Standard
+As for our other viscoelastic models, the volumetric strain is completely
+ elastic, and the viscoelastic deformation may be expressed purely in terms
+ of the deviatoric components:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{S}=2\mu_{tot}\left(\mu_{0}\underline{e}+\sum_{i=1}^{N}\mu_{i}\underline{q}^{i}\right)\,,\label{eq:50}\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $N$
+\end_inset
+
+ is the number of Maxwell models and the variable 
+\begin_inset Formula $\underline{q}^{i}$
+\end_inset
+
+ follows the evolution equations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{\dot{q}}^{i}+\frac{1}{\lambda_{i}}\underline{q}^{i}=\underline{\dot{e}}.\label{eq:51}\end{gather}
+
+\end_inset
+
+The 
+\begin_inset Formula $\lambda_{i}$
+\end_inset
+
+ are the relaxation times for each Maxwell model.
+\end_layout
+
+\begin_layout Standard
+An alternative to the differential equation form above is an integral equation
+ form expressed in terms of the relaxation modulus function.
+ This function is defined in terms of an idealized experiment in which,
+ at time labeled zero (
+\begin_inset Formula $t=0$
+\end_inset
+
+), a specimen is subjected to a constant strain, 
+\begin_inset Formula $\underline{e}_{0}$
+\end_inset
+
+, and the stress response, 
+\begin_inset Formula $\underline{S}\left(t\right)$
+\end_inset
+
+, is measured.
+ For a linear material we obtain:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{S}\left(t\right)=2\mu\left(t\right)\underline{e}_{0}\,,\label{eq:52}\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $\mu\left(t\right)$
+\end_inset
+
+is the shear relaxation modulus function.
+ Using linearity and superposition for an arbitrary state of strain yields
+ an integral equation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{S}\left(t\right)=\intop_{-\infty}^{t}\mu\left(t-\tau\right)\underline{\dot{e}}\, d\tau\,.\label{eq:53}\end{gather}
+
+\end_inset
+
+If we assume the modulus function in Prony series form we obtain
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\mu\left(t\right)=\mu_{tot}\left(\mu_{0}+\sum_{i=1}^{N}\mu_{i}\exp\frac{-t}{\lambda_{i}}\right)\,,\label{eq:54}\end{gather}
+
+\end_inset
+
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\mu_{0}+\sum_{i=1}^{N}\mu_{i}=1\,.\label{eq:55}\end{gather}
+
+\end_inset
+
+With the form in 
+\begin_inset LatexCommand \ref{eq:54}
+
+\end_inset
+
+, the integral equation form is identical to the differential equation form.
+\end_layout
+
+\begin_layout Standard
+Considering a single Maxwell model, the relaxation modulus function is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\mu\left(t\right)=\mu_{tot}\left(\mu_{0}+\mu_{1}\exp\frac{-t}{\lambda_{1}}\right)\,,\label{eq:56}\end{gather}
+
+\end_inset
+
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\mu_{0}+\mu_{1}=1\,.\label{eq:57}\end{gather}
+
+\end_inset
+
+If we assume the material is undisturbed until a strain is suddenly applied
+ at time zero, we can divide the integral into
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\intop_{-\infty}^{t}\left(\cdot\right)\, d\tau=\intop_{-\infty}^{0^{-}}\left(\cdot\right)\, d\tau+\intop_{0^{-}}^{0^{+}}\left(\cdot\right)\, d\tau+\intop_{0^{+}}^{t}\left(\cdot\right)\, d\tau\,.\label{eq:58}\end{gather}
+
+\end_inset
+
+The first term is zero, the second term includes a jump term associated
+ with 
+\begin_inset Formula $\underline{e}_{0}$
+\end_inset
+
+ at time zero, and the last term covers the subsequent history of strain.
+ Applying this separation to 
+\begin_inset LatexCommand \ref{eq:53}
+
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{S}\left(t\right)=2\mu\left(t\right)\underline{e}_{0}+2\int_{0}^{t}\mu\left(t-\tau\right)\underline{\dot{e}}\left(\tau\right)\, d\tau\,,\label{eq:59}\end{gather}
+
+\end_inset
+
+where we have left the sign off of the lower limit on the integral.
+\end_layout
+
+\begin_layout Standard
+Substituting 
+\begin_inset LatexCommand \ref{eq:54}
+
+\end_inset
+
+ into 
+\begin_inset LatexCommand \ref{eq:59}
+
+\end_inset
+
+, we obtain
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{S}\left(t\right)=2\mu\left[\mu_{0}\underline{e}\left(t\right)+\mu_{1}\exp\frac{-t}{\lambda_{1}}\left(\underline{e}_{0}+\intop_{0}^{t}\exp\frac{t}{\lambda_{1}}\underline{\dot{e}}\left(\tau\right)\, d\tau\right)\right]\,.\label{eq:60}\end{gather}
+
+\end_inset
+
+We then split the integral into two ranges: from 0 to 
+\begin_inset Formula $t_{n}$
+\end_inset
+
+, and from 
+\begin_inset Formula $t_{n}$
+\end_inset
+
+ to 
+\begin_inset Formula $t$
+\end_inset
+
+, and define the integral as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{i}^{1}\left(t\right)=\intop_{0}^{t}\exp\frac{\tau}{\lambda_{1}}\underline{\dot{e}}\left(\tau\right)\, d\tau\,.\label{eq:61}\end{gather}
+
+\end_inset
+
+The integral then becomes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{i}^{1}\left(t\right)=\underline{i}^{1}\left(t_{n}\right)+\intop_{t_{n}}^{t}\exp\frac{\tau}{\lambda_{1}}\underline{\dot{e}}\left(\tau\right)\, d\tau\,.\label{eq:62}\end{gather}
+
+\end_inset
+
+Including the negative exponential multiplier:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{h}^{1}\left(t\right)=\exp\frac{-t}{\lambda_{1}}\underline{i}^{1}\,.\label{eq:63}\end{gather}
+
+\end_inset
+
+Then
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{h}^{1}\left(t\right)=\exp\frac{-\Delta t}{\lambda_{1}}\underline{h}_{n}^{1}+\Delta\underline{h}\,,\label{eq:64}\end{gather}
+
+\end_inset
+
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\Delta\underline{h}=\exp\frac{-t}{\lambda_{1}}\intop_{t_{n}}^{t}\exp\frac{\tau}{\lambda_{1}}\underline{\dot{e}}\left(\tau\right)\, d\tau\,.\label{eq:65}\end{gather}
+
+\end_inset
+
+Approximating the strain rate as constant over each time step, the solution
+ may be found as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\Delta\underline{h}=\frac{\lambda_{1}}{\Delta t}\left(1-\exp\frac{-\Delta t}{\lambda_{1}}\right)\left(\underline{e}-\underline{e}_{n}\right)=\Delta h\left(\underline{e}-\underline{e}_{n}\right)\,.\label{eq:66}\end{gather}
+
+\end_inset
+
+The approximation is singular for zero time steps, but a series expansion
+ may be used for small time step sizes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\Delta h\approx1-\frac{1}{2}\left(\frac{\Delta t}{\lambda_{1}}\right)+\frac{1}{3!}\left(\frac{\Delta t}{\lambda_{1}}\right)^{2}-\frac{1}{4!}\left(\frac{\Delta t}{\lambda_{1}}\right)^{3}+\cdots\,.\label{eq:67}\end{gather}
+
+\end_inset
+
+This converges with only a few terms.
+ With this formulation, the constitutive relation now has the simple form:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{S}\left(t\right)=2\mu_{tot}\left(\mu_{0}\underline{e}\left(t\right)+\mu_{1}\underline{h}^{1}\left(t\right)\right)\,.\label{eq:68}\end{gather}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Tangent Stress-Strain Relation
+\end_layout
+
+\begin_layout Standard
+In addition to the volumetric contribution to the tangent constitutive matrix,
+ we require the deviatoric part:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\frac{\partial\underline{S}}{\partial\underline{\epsilon}}=\frac{\partial\underline{S}}{\partial\underline{e}}\frac{\partial\underline{e}}{\partial\underline{\epsilon}}\,,\label{eq:69}\end{gather}
+
+\end_inset
+
+where the second derivative on the right may be easily deduced from 
+\begin_inset LatexCommand \ref{eq:3}
+
+\end_inset
+
+.
+ The other derivative is given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\frac{\partial\underline{S}}{\partial\underline{e}}=2\mu_{tot}\left[\mu_{0}\underline{I}+\mu_{1}\frac{\partial\underline{h}^{1}}{\partial\underline{e}}\right]\,,\label{eq:70}\end{gather}
+
+\end_inset
+
+where 
+\begin_inset Formula $\underline{I}$
+\end_inset
+
+ is the identity matrix.
+ From 
+\begin_inset LatexCommand \ref{eq:64}
+
+\end_inset
+
+ through 
+\begin_inset LatexCommand \ref{eq:66}
+
+\end_inset
+
+, the derivative inside the brackets is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\frac{\partial\underline{h}^{1}}{\partial\underline{e}}=\Delta h\left(\Delta t\right)\underline{I}\,.\label{eq:71}\end{gather}
+
+\end_inset
+
+
+\begin_inset Formula $ $
+\end_inset
+
+The complete deviatoric tangent relation is then
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\frac{\partial\underline{S}}{\partial\underline{\epsilon}}=2\mu_{tot}\left[\mu_{0}+\mu_{1}\Delta h\left(\Delta t\right)\right]\frac{\partial\underline{e}}{\partial\underline{\epsilon}}\,.\label{eq:72}\end{gather}
 
 \end_inset
 
