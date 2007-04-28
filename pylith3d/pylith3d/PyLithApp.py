@@ -617,6 +617,10 @@ class PyLithApp(PetscApplication):
         return self.ioFileStream(item, os.O_RDONLY, "r", category, context)[1]
     
     def outputFile(self, item, category, context):
+        if True:
+            # This function is out-of-order.
+            value = self.macroString(item)
+            return value
         value, stream = self.ioFileStream(item, os.O_WRONLY|os.O_CREAT|os.O_EXCL, "w", category, context)
         if stream is not None:
             stream.close()
