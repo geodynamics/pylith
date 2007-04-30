@@ -181,8 +181,8 @@ C++ Compiler
 \begin_layout Standard
 A C++ compiler is required for building PETSc's Sieve component and the
  PyLith components that interface with Sieve.
- The C++ compiler is also used to compile the bindings which connect the
- high-level Python code with the low-level Fortran code.
+ The C++ compiler is also used to compile the layer which connects the high-leve
+l Python code with the low-level Fortran code.
 \end_layout
 
 \begin_layout Standard
@@ -239,7 +239,7 @@ configure
 
 \color red
 Warning:
-\color default
+\color none
  On 64-bit machines, Python 2.4 or later is required.
  Python 2.3 contains a bug which prevents installation on 64-bit hardware.
 \end_layout
@@ -380,7 +380,7 @@ PETSc
 
 \begin_layout Standard
 PyLith requires PETSc -- including PETSc's new Sieve component.
- Sieve is still under development; as of this writing, it is only available
+ Sieve is still under development; as of this writing, Sieve is only available
  in the development version of PETSc.
 \end_layout
 
@@ -408,7 +408,20 @@ Installing PETSc
 \end_layout
 
 \begin_layout Standard
-[TODO: write about installing PETSc]
+To install PETSc, you will download and unpack the 
+\family typewriter
+petsc-dev
+\family default
+ tarball, run a Python configure script (
+\family typewriter
+config/configure.py
+\family default
+), set a pair of environment variables, and finally build PETSc from source
+ by running 
+\family typewriter
+make
+\family default
+.
 \end_layout
 
 \begin_layout Quote
@@ -425,9 +438,9 @@ both
 \family default
  and 
 \family typewriter
-make_
+make_log_
 \emph on
-PETSC_ARCH
+$PETSC_ARCH
 \family default
 \emph default
  to 
@@ -439,36 +452,85 @@ PETSC_ARCH
 \end_layout
 
 \begin_layout Standard
-If you have an MPI implementation installed on your workstation, you can
- use it or let PETSc download and install one for you.
- If you are installing on a cluster, you should configure PETSc to use an
- existing MPI library installed by the system administrators.
+For detailed information on installing PETSc, see 
+\begin_inset LatexCommand \htmlurl[the PETSc Installation Docs]{http://www-unix.mcs.anl.gov/petsc/petsc-as/documentation/installation.html}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Downloading and Unpacking 
+\family typewriter
+petsc-dev
 \end_layout
 
 \begin_layout Standard
-If you have an architecture-optimized version of BLAS/LAPACK, you should
- use those instead of asking PETSc to download and build one for you.
- In some cases, PETSc will find known optimized implementations of BLAS/LAPACK
- (e.g., vecLib on Mac OS X).
+The development version of PETSc is called 
+\family typewriter
+petsc-dev
+\family default
+.
+ Download the nightly tarball snapshot of 
+\family typewriter
+petsc-dev
+\family default
+ from the 
+\begin_inset LatexCommand \htmlurl[the PETSc Developers Site]{http://www-unix.mcs.anl.gov/petsc/petsc-as/developers/}
+
+\end_inset
+
+.
+ Unpack it using the 
+\family typewriter
+tar
+\family default
+ command: 
 \end_layout
 
-\begin_layout Enumerate
-Configure PETSc.
+\begin_layout LyX-Code
+$ tar xzf petsc-dev.tar.gz
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
-Run 
+If you don't have GNU Tar, try the following command instead: 
+\end_layout
+
+\begin_layout LyX-Code
+$ gunzip -c petsc-dev.tar.gz | tar xf -
+\end_layout
+
+\begin_layout Standard
+After unpacking, a directory called 
 \family typewriter
-config/configure.py
+petsc-dev
 \family default
- with the appropriate arguments to configure PETSc for your computer.
- Run 
+ will be visible in your working directory.
+\end_layout
+
+\begin_layout Subsection
+Configuring PETSc
+\end_layout
+
+\begin_layout Standard
+Navigate to the directory containing the PETSc source:
+\end_layout
+
+\begin_layout Quote
+
 \family typewriter
-config/configure.py --help
+$ cd petsc-dev
+\end_layout
+
+\begin_layout Standard
+To configure PETSc, run 
+\family typewriter
+./config/configure.py
 \family default
- to see the long list of possible options.
- Building PETSc for use with PyLith requires the following arguments:
+ with the appropriate arguments to configure PETSc for your system.
+ At a minimum, configuring PETSc for use with PyLith requires the following
+ arguments:
 \end_layout
 
 \begin_layout LyX-Code
@@ -486,21 +548,217 @@ config/configure.py --help
 \begin_layout LyX-Code
 
 \family typewriter
---download-boost=1
+--with-sieve=1
 \end_layout
 
-\begin_layout LyX-Code
+\begin_layout Standard
+You will need to specify additional options; the specific set of options
+ you will use depends upon the libraries and compilers available on your
+ system.
+ See the examples below.
+\end_layout
 
+\begin_layout Quote
+
+\series bold
+TIP:
+\series default
+ Run 
 \family typewriter
---with-sieve=1
+./config/configure.py --help
+\family default
+ to see the long list of all possible options.
+\end_layout
+
+\begin_layout Standard
+Building PETSc with Sieve requires the following external libraries:
+\end_layout
+
+\begin_layout Itemize
+an MPI library
+\end_layout
+
+\begin_layout Itemize
+BLAS/LAPACK
+\end_layout
+
+\begin_layout Itemize
+Boost
+\end_layout
+
+\begin_layout Itemize
+Chaco
+\end_layout
+
+\begin_layout Standard
+You can instruct PETSc to download and install any or all of these libraries
+ for you.
+\end_layout
+
+\begin_layout Standard
+If you have an MPI implementation installed on your workstation, you can
+ use it or let PETSc download and install one for you.
+ If you are installing on a cluster, you should configure PETSc to use an
+ existing MPI library installed by the system administrators.
+\end_layout
+
+\begin_layout Standard
+If you have an architecture-optimized version of BLAS/LAPACK, you should
+ use those instead of asking PETSc to download and build one for you.
+ In some cases, PETSc will find known optimized implementations of BLAS/LAPACK
+ (e.g., vecLib on Mac OS X).
 \end_layout
 
 \begin_layout Standard
 Be sure to include flags indicating where MPI and BLAS/LAPACK are if you
  want to use a preinstalled implementation.
  If not, be sure to tell PETSc to download those packages.
- If you do not want to build PETSc using the gnu compilers, be sure to let
+ If you do not want to build PETSc using the GNU compilers, be sure to let
  PETSc know which compilers you want to use instead.
+\end_layout
+
+\begin_layout Subsubsection
+PETSc Configuration Examples
+\end_layout
+
+\begin_layout Standard
+In our first example, we configure PETSc on a Linux workstation.
+ BLAS and LAPACK are preinstalled under 
+\family typewriter
+/usr/lib
+\family default
+; PETSc finds these system libraries automatically.
+ We happen to have MPICH already installed; 
+\family typewriter
+mpicc
+\family default
+ and other related MPI commands are accessible via our 
+\family typewriter
+PATH
+\family default
+, so PETSc finds our MPICH installation automatically as well.
+ However, we don't have Boost or Chaco installed, so we instruct PETSc to
+ download these packages for us.
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+$ ls -1 /usr/lib/libblas.so /usr/lib/liblapack.so
+\newline
+/usr/lib/libblas.so
+\newline
+/usr/lib/liblap
+ack.so
+\newline
+$ which mpicc
+\newline
+/opt/mpich/bin/mpicc
+\newline
+$ ./config/configure.py 
+\backslash
+
+\newline
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+--with-sieve=1 
+\backslash
+
+\newline
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+--with-clanguage=C++ 
+\backslash
+
+\newline
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+--with-boost=1 --download-boost=1 
+\backslash
+
+\newline
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+--with-chaco=1 --download-chaco=1
+\end_layout
+
+\begin_layout Standard
+Next, we configure PETSc on a 64-bit Linux cluster.
+ We use an existing MPI implementation installed by the system administrators.
+ BLAS/LAPACK is missing, so we instruct PETSc to download it, in addition
+ to Boost and Chaco.
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+$ ./config/configure.py 
+\backslash
+
+\newline
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+--with-sieve=1 
+\backslash
+
+\newline
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+--with-clanguage=C++ 
+\backslash
+
+\newline
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+--with-mpi-dir=/opt/mpich/myrinet_mx2g/intel 
+\backslash
+
+\newline
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+--download-f-blas-lapack=1
+\family default
+ 
+\family typewriter
+
+\backslash
+
+\newline
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+--with-boost=1 --download-boost=1 
+\backslash
+
+\newline
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+--with-chaco=1 --download-chaco=1
+\end_layout
+
+\begin_layout Subsubsection
+Running 
+\family typewriter
+configure.py
 \end_layout
 
 \begin_layout Standard
@@ -509,38 +767,110 @@ After several minutes, the configure script should finish and display the
  Check to make sure these match your expectations before continuing.
 \end_layout
 
-\end_deeper
-\begin_layout Enumerate
-Set the 
+\begin_layout Subsection
+Setting PETSC Environment Variables
+\end_layout
+
+\begin_layout Standard
+Before building PETSc, set the 
 \family typewriter
-\emph on
 PETSC_DIR
 \family default
-\emph default
  and 
 \family typewriter
-\emph on
 PETSC_ARCH
 \family default
-\emph default
  environment variables.
- 
+ Upon completion, the configure script displays instructions for setting
+ these two variables:
+\end_layout
+
+\begin_layout Quote
+
 \family typewriter
-\emph on
-PETSC_DIR
-\family default
-\emph default
- corresponds to the top-level directory in the PETSc source tree and 
+**
+\end_layout
+
+\begin_layout Quote
+
 \family typewriter
-\emph on
+** Before running "make" your PETSC_ARCH must be specified with:
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+** ** setenv PETSC_ARCH linux-gnu-cxx-debug (csh/tcsh)
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+** ** PETSC_ARCH=linux-gnu-cxx-debug; export PETSC_ARCH (sh/bash)
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+**
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+**
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+** Before running "make" your PETSC_DIR must be specified with:
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+** ** setenv PETSC_DIR /scratch/petsc-dev (csh/tcsh)
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+** ** PETSC_DIR=/scratch/petsc-dev; export PETSC_DIR (sh/bash)
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+**
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+**
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
 PETSC_ARCH
 \family default
-\emph default
- is a tag for this configuration of PETSc (e.g., 
+ is a tag identifying this configuration of PETSc (e.g., 
 \family typewriter
 linux_gcc-4.0_debug, darwin_gcc-3.4_opt
 \family default
 , etc).
+ 
+\family typewriter
+PETSC_DIR
+\family default
+ is set to the full path of the top-level directory in the PETSc source
+ tree (the 
+\family typewriter
+petsc-dev
+\family default
+ directory).
  You will want to set these environment variables in your 
 \family typewriter
 .bashrc
@@ -552,44 +882,46 @@ linux_gcc-4.0_debug, darwin_gcc-3.4_opt
 , or similar file.
 \end_layout
 
-\begin_deeper
-\begin_layout LyX-Code
+\begin_layout Subsection
+Building PETSc
+\end_layout
 
+\begin_layout Standard
+After setting 
 \family typewriter
-$ export PETSC_DIR=
-\emph on
-replace_with_absolute_path
-\emph default
-/petsc-dev
-\end_layout
-
-\begin_layout LyX-Code
-
+PETSC_DIR
+\family default
+ and 
 \family typewriter
-$ export PETSC_ARCH=
-\emph on
-replace_with_PETSc_arch_tag
+PETSC_ARCH
+\family default
+, run 
+\family typewriter
+make
+\family default
+ to build PETSc:
 \end_layout
 
-\end_deeper
-\begin_layout Enumerate
-Build PETSc.
- 
-\end_layout
-
-\begin_deeper
-\begin_layout LyX-Code
+\begin_layout Quote
 
 \family typewriter
 $ make
 \end_layout
 
-\end_deeper
-\begin_layout Enumerate
-Test PETSc installation.
+\begin_layout Subsection
+Testing the PETSc Installation
 \end_layout
 
-\begin_deeper
+\begin_layout Standard
+Optionally, you may test your PETSc installation:
+\end_layout
+
+\begin_layout Quote
+
+\family typewriter
+$ make test
+\end_layout
+
 \begin_layout Standard
 One of the tests will attempt to display some X windows.
  If X windows is not available from the shell in which you run 
@@ -599,13 +931,6 @@ make test
 , then that test will fail.
 \end_layout
 
-\begin_layout LyX-Code
-
-\family typewriter
-$ make test
-\end_layout
-
-\end_deeper
 \begin_layout Section
 Installing PyLith
 \end_layout
