@@ -87,17 +87,17 @@ public :
 
   /** Integrate constant part of RHS for 3-D finite elements.
    * Includes only body forces at present.
+   * We have not yet figured out where grav section is coming from, so it
+   * is not being passed in as it was originally.
    *
    *
    * @param b Constant field (output)
    * @param dispT Displacement field at time t
-   * @param grav Gravity vector for cell
-   * @param coordinates Field of cell vertex coordinates
+   * @param mesh Mesh object
    */
   void integrateConstant(const ALE::Obj<real_section_type>& b,
 			 const ALE::Obj<real_section_type>& dispT,
-			 const ALE::Obj<real_section_type>& grav,
-			 const ALE::Obj<real_section_type>& coordinates);
+			 const ALE::Obj<Mesh>& mesh);
 
   /** Integrate residual part of RHS for 3-D finite elements.
    * Includes element internal force contribution.
@@ -105,21 +105,21 @@ public :
    *
    * @param b Residual field (output)
    * @param dispT Displacement field at time t
-   * @param coordinates Field of cell vertex coordinates
+   * @param mesh Mesh object
    */
   void integrateResidual(const ALE::Obj<real_section_type>& b,
 			 const ALE::Obj<real_section_type>& dispT,
-			 const ALE::Obj<real_section_type>& coordinates);
+			 const ALE::Obj<Mesh>& mesh);
 
   /** Compute Jacobian matrix (A) associated with operator.
    *
    * @param mat Sparse matrix
    * @param dispT Displacement at time t
-   * @param coordinates Field of cell vertex coordinates
+   * @param mesh Mesh object
    */
   void integrateJacobian(PetscMat* mat,
 			 const ALE::Obj<real_section_type>& dispT,
-			 const ALE::Obj<real_section_type>& coordinates);
+			 const ALE::Obj<Mesh>& mesh);
   
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
