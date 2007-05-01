@@ -44,6 +44,7 @@ AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) $(PETSC_SIEVE_FLAGS)
 
 sources = \
 	array.pyx \
+	const.h \
 	constants.pxd \
 	elementtypes.cc \
 	elementtypes.h \
@@ -51,14 +52,18 @@ sources = \
 	exceptionhandler.cc \
 	exceptionhandler.pxd \
 	f77io.pyx \
+	petscmeshfwd.h \
 	PyLithLib.cc \
+	PyLithLib.pyx \
 	setup.pyx
 
 meshsources = \
 	mesh.cc \
 	mesh.h \
 	PyLithMeshLib.cc \
-	PyLithMeshLib.pxd
+	PyLithMeshLib.h \
+	PyLithMeshLib.pxd \
+	PyLithMeshLib.pyx
 
 if ENABLE_GREENSFNS
 meshsources += interpolate.cc \
@@ -87,6 +92,8 @@ meshpyxincludes = \
 	$(srcdir)/PyLithMeshLib.pxd \
 	$(srcdir)/petsc.pxd
 
+EXTRA_DIST = $(pyxincludes) $(meshpyxincludes)
+
 
 PyLithLib.cc: $(srcdir)/PyLithLib.pyx $(pyxincludes)
 	pyrexc $(PYREX_FLAGS) $< -o PyLithLib.cc
@@ -95,12 +102,6 @@ PyLithMeshLib.cc: $(srcdir)/PyLithMeshLib.pyx $(meshpyxincludes)
 	pyrexc $(PYREX_FLAGS) $< -o PyLithMeshLib.cc
 
 PyLithMeshLib.h: PyLithMeshLib.cc
-
-EXTRA_DIST = \
-	$(srcdir)/PyLithLib.pyx \
-	$(srcdir)/PyLithMeshLib.pyx \
-	PyLithLib.h \
-	PyLithMeshLib.h
 
 
 ## end of Makefile.am
