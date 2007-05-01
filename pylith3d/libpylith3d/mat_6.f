@@ -132,7 +132,7 @@ c
         return
 c
  700  format(/,5x,"Material number:       ",i7,/,5x,
-     &            "Material type:         ",a37,/,5x,
+     &            "Material type:         ",a49,/,5x,
      &            "Number of properties:  ",i7,/)
  710  format(15x,a15,3x,1pe15.8)
 c
