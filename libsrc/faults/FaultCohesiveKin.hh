@@ -151,7 +151,7 @@ private :
   ALE::Obj<real_section_type> _orientation;
 
   /// Fault vertices associated with constraints
-  std::vector<Mesh::point_type> _constraintVert;
+  std::set<Mesh::point_type> _constraintVert;
 
 }; // class FaultCohesiveKin
 

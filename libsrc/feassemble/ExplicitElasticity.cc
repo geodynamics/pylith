@@ -336,7 +336,7 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
     if (err)
       throw std::runtime_error("Logging PETSc flops failed.");
     
-    // Assemble cell contribution into field
+    // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 
       mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
 

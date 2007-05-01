@@ -58,11 +58,11 @@ pylith::faults::BruneSlipFn::BruneSlipFn(const BruneSlipFn& f) :
 void
 pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
 					const ALE::Obj<Mesh>& faultMesh,
-					const std::vector<Mesh::point_type>& vertices,
+					const std::set<Mesh::point_type>& vertices,
 
 					const spatialdata::geocoords::CoordSys* cs)
 { // initialize
-  typedef std::vector<Mesh::point_type>::const_iterator vert_iterator;  
+  typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
 
   assert(!mesh.isNull());
   assert(!faultMesh.isNull());
@@ -198,9 +198,9 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
 // Get slip on fault surface at time t.
 const ALE::Obj<pylith::real_section_type>&
 pylith::faults::BruneSlipFn::slip(const double t,
-				const std::vector<Mesh::point_type>& vertices)
+				const std::set<Mesh::point_type>& vertices)
 { // slip
-  typedef std::vector<Mesh::point_type>::const_iterator vert_iterator;  
+  typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
 
   assert(0 != _parameters);
   assert(!_slipField.isNull());

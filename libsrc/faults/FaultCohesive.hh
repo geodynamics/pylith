@@ -101,6 +101,16 @@ public :
 		const ALE::Obj<real_section_type>& disp,
 		const ALE::Obj<Mesh>& mesh) = 0;
   
+  // PROTECTED TYPEDEFS /////////////////////////////////////////////////
+protected :
+
+  /// Function type for orientation methods.
+  typedef void (*orient_fn_type)(double_array*, 
+				 const double_array&,
+				 const double_array&,
+				 const double_array&,
+				 const int);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -136,6 +146,7 @@ protected :
    *   be up-dip direction).
    * @param numLocs Number of locations where values are given.
    */
+  static
   void _orient1D(double_array* orientation,
 		 const double_array& jacobian,
 		 const double_array& jacobianDet,
@@ -160,6 +171,7 @@ protected :
    *   be up-dip direction).
    * @param numLocs Number of locations where values are given.
    */
+  static 
   void _orient2D(double_array* orientation,
 		 const double_array& jacobian,
 		 const double_array& jacobianDet,
@@ -184,6 +196,7 @@ protected :
    *   be up-dip direction).
    * @param numLocs Number of locations where values are given.
    */
+  static
   void _orient3D(double_array* orientation,
 		 const double_array& jacobian,
 		 const double_array& jacobianDet,
