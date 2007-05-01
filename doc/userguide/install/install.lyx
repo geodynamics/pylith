@@ -785,7 +785,62 @@ $ ./config/configure.py
 \end_layout
 
 \begin_layout Standard
-In our next example, we configure PETSc on a 64-bit Linux cluster.
+In our next example, we configure PETSc on a Mac OS X machine.
+ We have installed Apple's Xcode and the G95 Fortran compiler.
+ However, we don't have anything else preinstalled, so we instruct PETSc
+ to download almost everything else, including MPICH.
+ Intentionally, we don't specify anything about BLAS/LAPACK: PETSc automatically
+ finds vecLib, which is built-in to Mac OS X.
+\end_layout
+
+\begin_layout LyX-Code
+$ ./config/configure.py 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --with-sieve=1 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --with-clanguage=C++ 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --with-fc=g95 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --with-boost=1 --download-boost=1 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --with-chaco=1 --download-chaco=1 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --with-mpi=1 --download-mpich=1 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --with-x=0
+\end_layout
+
+\begin_layout Standard
+In our final example, we configure PETSc on a 64-bit Linux cluster.
  We use an existing MPI implementation installed by the system administrators.
  BLAS/LAPACK is missing, so we instruct PETSc to download it, in addition
  to Boost and Chaco.
@@ -1699,9 +1754,7 @@ The configure script will automatically select the appropriate C++ and Fortran
 Warning:
 \series default
 \color none
- Manually specifing the C++ or Fortran compiler 
-\color default
-(using 
+ Manually specifing the C++ or Fortran compiler (using 
 \family typewriter
 CXX
 \family default
@@ -1709,19 +1762,15 @@ CXX
 \family typewriter
 FC
 \family default
-) 
-\color none
-is not recommended.
+) is not recommended.
  Different Fortran compilers tend to be incompatible with one another.
  With C++, even different versions of the same compiler can be incompatible.
  Therefore, PyLith must be built using the same C++ and Fortran compilers
  used to configure and build PETSc.
  It is best to let PyLith's 
 \family typewriter
-\color default
 configure
 \family default
-\color none
  script handle this automatically.
 \end_layout
 
