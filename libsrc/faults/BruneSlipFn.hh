@@ -89,7 +89,7 @@ public :
    */
   void initialize(const ALE::Obj<Mesh>& mesh,
 		  const ALE::Obj<Mesh>& faultMesh,
-		  const std::vector<Mesh::point_type>& vertices,
+		  const std::set<Mesh::point_type>& vertices,
 		  const spatialdata::geocoords::CoordSys* cs);
 
   /** Get slip on fault surface at time t.
@@ -98,7 +98,7 @@ public :
    * @param vertices Vertices where slip will be prescribed.
    */
   const ALE::Obj<real_section_type>& slip(const double t,
-			      const std::vector<Mesh::point_type>& vertices);
+			      const std::set<Mesh::point_type>& vertices);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :

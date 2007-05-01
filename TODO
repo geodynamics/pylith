@@ -31,7 +31,7 @@ Cleanup
    c. Start implementing integrator for faults
 
      i. Update Reference cell
-       (1) Get vertices from FIAT [requested Matt fix]
+       (1) Improve how we get Jacobian at vertices of cell
 
      iii. FaultCohesive
        (1) Unit tests
