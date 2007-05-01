@@ -49,7 +49,66 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-[TODO: write new intro]
+Installing PyLith is a three-stage process:
+\end_layout
+
+\begin_layout Itemize
+Install the development version of PETSc (Section 
+\begin_inset LatexCommand \vref{sec:Installing-PETSc}
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Install PyLith (Section 
+\begin_inset LatexCommand \vref{sec:Installing-PyLith}
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Itemize
+Configure Pyre to launch parallel runs of PyLith (Section 
+\begin_inset LatexCommand \vref{sec:Pyre-Configuration}
+
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+Each stage is substantially faster and easier than the one before it.
+ In fact, after successfully installing PETSc, you are close to being done.
+ So review the section 
+\begin_inset LatexCommand \ref{sec:System-Requirements}
+
+\end_inset
+
+ to make sure you have the required tools at hand; and then proceed fearlessly,
+ dear reader, to the section 
+\begin_inset LatexCommand \ref{sec:Installing-PETSc}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Advanced users and software developers may be interested in downloading
+ the latest PyLith and PETSc source code directly from the source code repositor
+ies, instead of using the prepared source packages; see Section 
+\begin_inset LatexCommand \ref{sec:Software-Repository}
+
+\end_inset
+
+ later in this chapter.
+\end_layout
+
+\begin_layout Standard
+PyLith is developed and tested on Linux and Mac OS X.
 \end_layout
 
 \begin_layout Section
@@ -113,6 +172,10 @@ Issues
 \end_layout
 
 \begin_layout Section
+\begin_inset LatexCommand \label{sec:System-Requirements}
+
+\end_inset
+
 System Requirements
 \end_layout
 
@@ -161,8 +224,8 @@ g77
 \family typewriter
 g95
 \family default
-; the G95 project offers binaries for a variety of systems, which makes
- it an attractive option for Mac OS X users.
+; the G95 project offers pre-built binaries for a variety of systems, which
+ makes it an attractive option for Mac OS X users.
 \end_layout
 
 \begin_layout Standard
@@ -232,7 +295,10 @@ PyLith's high-level user interface code is written in Python, utilizing
 configure
 \family default
  script automatically downloads Pythia directly from CIG.
- Pythia (and therefore PyLith) requires Python 2.3 or later.
+\end_layout
+
+\begin_layout Standard
+Pythia (and therefore PyLith) requires Python 2.3 or later.
 \end_layout
 
 \begin_layout Quote
@@ -510,7 +576,7 @@ petsc-dev
 \end_layout
 
 \begin_layout Subsection
-Configuring PETSc
+PETSc Configuration
 \end_layout
 
 \begin_layout Standard
@@ -546,6 +612,10 @@ To configure PETSc, run
 \end_layout
 
 \begin_layout LyX-Code
+--with-chaco=1
+\end_layout
+
+\begin_layout LyX-Code
 
 \family typewriter
 --with-sieve=1
@@ -553,8 +623,7 @@ To configure PETSc, run
 
 \begin_layout Standard
 You will need to specify additional options; the specific set of options
- you will use depends upon the libraries and compilers available on your
- system.
+ you will use depends upon the libraries and compilers you have available.
  See the examples below.
 \end_layout
 
@@ -597,7 +666,7 @@ You can instruct PETSc to download and install any or all of these libraries
 
 \begin_layout Standard
 If you have an MPI implementation installed on your workstation, you can
- use it or let PETSc download and install one for you.
+ use it; or, let PETSc download and install one for you.
  If you are installing on a cluster, you should configure PETSc to use an
  existing MPI library installed by the system administrators.
 \end_layout
@@ -636,123 +705,148 @@ mpicc
 \family typewriter
 PATH
 \family default
-, so PETSc finds our MPICH installation automatically as well.
+, so PETSc finds our MPICH installation automatically.
  However, we don't have Boost or Chaco installed, so we instruct PETSc to
  download these packages for us.
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
 $ ls -1 /usr/lib/libblas.so /usr/lib/liblapack.so
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 /usr/lib/libblas.so
-\newline
-/usr/lib/liblap
-ack.so
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+/usr/lib/liblapack.so
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ which mpicc
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 /opt/mpich/bin/mpicc
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+$
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ ./config/configure.py 
 \backslash
 
-\newline
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
---with-sieve=1 
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+    --with-sieve=1 
 \backslash
 
-\newline
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
---with-clanguage=C++ 
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+    --with-clanguage=C++ 
 \backslash
 
-\newline
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
---with-boost=1 --download-boost=1 
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+    --with-boost=1 --download-boost=1 
 \backslash
 
-\newline
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
---with-chaco=1 --download-chaco=1
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+    --with-chaco=1 --download-chaco=1
 \end_layout
 
 \begin_layout Standard
-Next, we configure PETSc on a 64-bit Linux cluster.
+In our next example, we configure PETSc on a 64-bit Linux cluster.
  We use an existing MPI implementation installed by the system administrators.
  BLAS/LAPACK is missing, so we instruct PETSc to download it, in addition
  to Boost and Chaco.
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
 $ ./config/configure.py 
 \backslash
 
-\newline
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
---with-sieve=1 
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+    --with-sieve=1 
 \backslash
 
-\newline
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
---with-clanguage=C++ 
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+    --with-clanguage=C++ 
 \backslash
 
-\newline
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
---with-mpi-dir=/opt/mpich/myrinet_mx2g/intel 
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+    --with-mpi-dir=/opt/mpich/myrinet_mx2g/intel 
 \backslash
 
-\newline
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
---download-f-blas-lapack=1
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+    --download-f-blas-lapack=1
 \family default
  
 \family typewriter
 
 \backslash
 
-\newline
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
---with-boost=1 --download-boost=1 
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+    --with-boost=1 --download-boost=1 
 \backslash
 
-\newline
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
-\InsetSpace ~
---with-chaco=1 --download-chaco=1
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+    --with-chaco=1 --download-chaco=1
 \end_layout
 
 \begin_layout Subsubsection
@@ -785,67 +879,67 @@ PETSC_ARCH
  these two variables:
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
 **
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
 ** Before running "make" your PETSC_ARCH must be specified with:
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
 ** ** setenv PETSC_ARCH linux-gnu-cxx-debug (csh/tcsh)
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
 ** ** PETSC_ARCH=linux-gnu-cxx-debug; export PETSC_ARCH (sh/bash)
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
 **
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
 **
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
 ** Before running "make" your PETSC_DIR must be specified with:
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
-** ** setenv PETSC_DIR /scratch/petsc-dev (csh/tcsh)
+** ** setenv PETSC_DIR /opt/petsc-dev (csh/tcsh)
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
-** ** PETSC_DIR=/scratch/petsc-dev; export PETSC_DIR (sh/bash)
+** ** PETSC_DIR=/opt/petsc-dev; export PETSC_DIR (sh/bash)
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
 **
 \end_layout
 
-\begin_layout Quote
+\begin_layout LyX-Code
 
 \family typewriter
 **
@@ -856,11 +950,7 @@ PETSC_ARCH
 \family typewriter
 PETSC_ARCH
 \family default
- is a tag identifying this configuration of PETSc (e.g., 
-\family typewriter
-linux_gcc-4.0_debug, darwin_gcc-3.4_opt
-\family default
-, etc).
+ is a tag identifying this configuration of PETSc.
  
 \family typewriter
 PETSC_DIR
@@ -932,11 +1022,79 @@ make test
 \end_layout
 
 \begin_layout Section
+\begin_inset LatexCommand \label{sec:Installing-PyLith}
+
+\end_inset
+
 Installing PyLith
 \end_layout
 
 \begin_layout Standard
-[TODO: write about installing PyLith]
+To install PyLith, you follow the procedure that is commonly used with other
+ open source software packages.
+ First, download the source package available at the 
+\begin_inset LatexCommand \htmlurl[Geodynamics Software Packages web page]{www.geodynamics.org/cig/software/packages}
+
+\end_inset
+
+.
+ After unpacking the source, you run a prepackaged shell script to configure
+ PyLith for your system.
+ Finally, you use the 
+\family typewriter
+make
+\family default
+ utility to build and install PyLith from source.
+ 
+\end_layout
+
+\begin_layout Subsection
+Downloading and Unpacking the PyLith Source
+\end_layout
+
+\begin_layout Standard
+Download PyLith from the 
+\begin_inset LatexCommand \htmlurl[Geodynamics website]{www.geodynamics.org}
+
+\end_inset
+
+.
+ Click the 
+\family sans
+software
+\family default
+ tab at the top of the page.
+ Then click 
+\family sans
+Software Packages
+\family default
+, then 
+\family sans
+Short-Term Crustal Dynamics
+\family default
+.
+ Once you click the PyLith link, download the source archive and unpack
+ it using the 
+\family typewriter
+tar
+\family default
+ command: 
+\end_layout
+
+\begin_layout LyX-Code
+$ tar xzf pylith3d-0.8.2.tar.gz
+\end_layout
+
+\begin_layout Standard
+If you don't have GNU Tar, try the following command instead: 
+\end_layout
+
+\begin_layout LyX-Code
+$ gunzip -c pylith3d-0.8.2.tar.gz | tar xf -
+\end_layout
+
+\begin_layout Subsection
+PyLith Installation Procedure
 \end_layout
 
 \begin_layout Quote
@@ -963,11 +1121,11 @@ make.log
 \family typewriter
 make.log
 \family default
- file, run 
+ file, redirect the output of 
 \family typewriter
 make
 \family default
- via 
+ to a file: 
 \family typewriter
 make 
 \begin_inset Formula $>$
@@ -979,66 +1137,1084 @@ make
  
 \end_layout
 
-\begin_layout Enumerate
-Configure PyLith.
-\end_layout
-
-\begin_deeper
 \begin_layout Standard
-Run 
-\family typewriter
-configure
-\family default
- with the appropriate arguments.
- Run 
-\family typewriter
-configure --help
-\family default
- to see a list of possible options.
- You may want to specify compilers and/or an install location.
+After unpacking the source, use the following procedure to install PyLith:
 \end_layout
 
-\begin_layout LyX-Code
-
+\begin_layout Enumerate
+Navigate (i.e., 
 \family typewriter
-$ cd pylith-0.8
+cd
+\family default
+) to the directory containing the PyLith source
+\family typewriter
+.
+\newline
+
+\newline
+$ cd pylith3d-0.8.2
 \end_layout
 
-\begin_layout LyX-Code
-
+\begin_layout Enumerate
+Type .
 \family typewriter
+/configure
+\family default
+ to configure the package for your system
+\family typewriter
+.
+\newline
+
+\newline
 $ ./configure
 \end_layout
 
-\end_deeper
 \begin_layout Enumerate
-Build PyLith.
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-Run 
+Type 
 \family typewriter
 make
 \family default
- and 
+ to build the package.
+\family typewriter
+
+\newline
+
+\newline
+$ make
+\end_layout
+
+\begin_layout Standard
+If you are content to run PyLith from the build directory, then you are
+ done.
+ Upon successful completion, the 
+\family typewriter
+make
+\family default
+ command creates a script called 
+\family typewriter
+pylith3dapp.py
+\family default
+ in the 
+\family typewriter
+pylith3d
+\family default
+ subdirectory; this is the script you will use to run PyLith.
+ You may wish to add the 
+\family typewriter
+pylith3d
+\family default
+ directory to your 
+\family typewriter
+PATH
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+For more details about 
+\family typewriter
+configure
+\family default
+, see section 
+\begin_inset LatexCommand \ref{sec:Configuration}
+
+\end_inset
+
+ below.
+\end_layout
+
+\begin_layout Subsubsection
+Installing PyLith to a Secondary Location
+\end_layout
+
+\begin_layout Standard
+Optionally, after building PyLith, you can install it in a secondary location
+ using the 
 \family typewriter
 make install
+\family default
+ command.
+\end_layout
+
+\begin_layout Quotation
+
+\series bold
+Note:
+\series default
+ The following is not recommended if you plan on modifying the PyLith source.
+\end_layout
+
+\begin_layout Standard
+By default, PyLith is configured to install under 
+\family typewriter
+/usr/local
+\family default
+, which requires that you become 
+\family typewriter
+root
+\family default
+ before issuing the 
+\family typewriter
+make install
+\family default
+ command.
 \end_layout
 
 \begin_layout LyX-Code
 
 \family typewriter
+$ su
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+Password:
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+# make install
+\end_layout
+
+\begin_layout Standard
+To install as an ordinary user instead of 
+\family typewriter
+root
+\family default
+, give 
+\family typewriter
+configure
+\family default
+ the 
+\family typewriter
+--prefix
+\family default
+ option, specifying a directory to which you have write access:
+\end_layout
+
+\begin_layout LyX-Code
+$ cd 
+\family typewriter
+pylith3d-0.8.2
+\end_layout
+
+\begin_layout LyX-Code
+$ ./configure --prefix=$HOME/cig
+\end_layout
+
+\begin_layout LyX-Code
 $ make
 \end_layout
 
 \begin_layout LyX-Code
-
-\family typewriter
 $ make install
 \end_layout
 
-\end_deeper
+\begin_layout Standard
+The above commands will install PyLith under 
+\family typewriter
+$HOME/cig
+\family default
+.
+ Afterwards, you may wish to add 
+\family typewriter
+PREFIX/bin
+\family default
+ (
+\family typewriter
+$HOME/cig/bin
+\family default
+, in this example) to your 
+\family typewriter
+PATH
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+After running 
+\family typewriter
+make install
+\family default
+, you may (if desired) run 
+\family typewriter
+make clean
+\family default
+ in the build directory to save disk space.
+ You are also free to delete the source/build directory altogether.
+ (Note that 
+\family typewriter
+make install
+\family default
+ installs the examples under 
+\family typewriter
+PREFIX/share/pylith3d/examples
+\family default
+.)
+\end_layout
+
+\begin_layout Subsection
+\begin_inset LatexCommand \label{sec:Configuration}
+
+\end_inset
+
+PyLith Configuration
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+configure
+\family default
+ script checks for various system features.
+ As it runs, it prints messages informing you of which features it is checking
+ for.
+ Upon successful completion, it generates a 
+\family typewriter
+Makefile
+\family default
+ in each source directory of the package.
+ It also generates a 
+\family typewriter
+config.h
+\family default
+ header file, which contains system-dependent definitions.
+ 
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+configure
+\family default
+ script will attempt to guess the correct values of various installation
+ parameters.
+ In the event that the default values used by 
+\family typewriter
+configure
+\family default
+ are incorrect for your system, or 
+\family typewriter
+configure
+\family default
+ is unable to guess the value of a certain parameter, you may have to specify
+ the correct value by hand.
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+Important:
+\series default
+ If the 
+\family typewriter
+configure
+\family default
+ script fails, and you don't know what went wrong, examine the log file
+ 
+\family typewriter
+config.log
+\family default
+.
+ This file contains a detailed transcript of all the checks 
+\family typewriter
+configure
+\family default
+ performed.
+ Most importantly, it includes the error output (if any) from your compiler.
+ When seeking help for 
+\family typewriter
+configure
+\family default
+ failures on the 
+\begin_inset LatexCommand \htmlurl[CIG Short-Term Crustal Dynamics Mailing List]{cig-short@geodynamics.org}
+
+\end_inset
+
+, please send 
+\family typewriter
+config.log
+\family default
+ as an attachment.
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+configure
+\family default
+ script will automatically check for needed Python dependencies, including
+ the Pythia package (which includes the Pyre framework).
+ If necessary, 
+\family typewriter
+configure
+\family default
+ will download missing Python packages from the Internet.
+\end_layout
+
+\begin_layout Standard
+PyLith v0.8.2 requires Pythia v0.8.1.3 or later, which 
+\family typewriter
+configure
+\family default
+ downloads directly from CIG.
+ (Pythia v0.8.1.x is distinct from Pythia v0.8, which you may have installed
+ previously.) Pythia v0.8.1.x is pure Python, and resides in a file or directory
+ with the extension 
+\family typewriter
+.egg
+\family default
+ (e.g., 
+\family typewriter
+pythia-0.8.1.3.egg
+\family default
+).
+ The 
+\family typewriter
+configure
+\family default
+ script may download other 
+\family typewriter
+.egg
+\family default
+ packages, in addition to Pythia.
+ These are Python packages which are required (either directly or indirectly)
+ by PyLith.
+\end_layout
+
+\begin_layout Subsubsection
+Configure Usage
+\end_layout
+
+\begin_layout Standard
+For a detailed list of 
+\family typewriter
+configure
+\family default
+ variables and options, give 
+\family typewriter
+configure
+\family default
+ the 
+\family typewriter
+--help
+\family default
+ option:
+\end_layout
+
+\begin_layout LyX-Code
+$ ./configure --help
+\end_layout
+
+\begin_layout Standard
+The following is a summary of the variables and options that are important
+ when installing PyLith.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Environment Variables
+\end_layout
+
+\begin_layout Standard
+Environment variables may be specified as arguments to 
+\family typewriter
+configure
+\family default
+, e.g.,
+\end_layout
+
+\begin_layout LyX-Code
+$ ./configure PYTHON=/usr/bin/python2.4
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="1in">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="3.5in">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Variable
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+PYTHON
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Python interpreter.
+ This is useful if you have Python installed in a non-standard location,
+ e.g.,
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\InsetSpace ~
+\InsetSpace ~
+./configure 
+\backslash
+
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+PYTHON=/opt/python2.3/bin/python
+\family default
+ 
+\end_layout
+
+\begin_layout Standard
+By default, 
+\family typewriter
+configure
+\family default
+ will search for a suitable Python interpreter using your 
+\family typewriter
+PATH
+\family default
+ environment variable.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+PETSC_DIR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+PETSc installation/build directory.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+PETSC_ARCH
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+(optional) PETSc configuration tag.
+ If not specified, 
+\family typewriter
+configure
+\family default
+ will pick a default configuration.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+The configure script will automatically select the appropriate C++ and Fortran
+ compilers using information from the PETSc configuration.
+\end_layout
+
+\begin_layout Quote
+
+\series bold
+\color red
+Warning:
+\series default
+\color none
+ Manually specifing the C++ or Fortran compiler 
+\color default
+(using 
+\family typewriter
+CXX
+\family default
+ or 
+\family typewriter
+FC
+\family default
+) 
+\color none
+is not recommended.
+ Different Fortran compilers tend to be incompatible with one another.
+ With C++, even different versions of the same compiler can be incompatible.
+ Therefore, PyLith must be built using the same C++ and Fortran compilers
+ used to configure and build PETSc.
+ It is best to let PyLith's 
+\family typewriter
+\color default
+configure
+\family default
+\color none
+ script handle this automatically.
+\end_layout
+
+\begin_layout Section
+\begin_inset LatexCommand \label{sec:Pyre-Configuration}
+
+\end_inset
+
+Pyre Configuration
+\end_layout
+
+\begin_layout Standard
+Pyre is automatically downloaded by PyLith's configure script as a part
+ of the Pythia package.
+ Pythia is pure Python, so it requires no special configuration to build
+ or install.
+\end_layout
+
+\begin_layout Standard
+However, Pyre manages the launching of parallel runs of PyLith under MPI,
+ and the scheduling of PyLith jobs when used with a batch system.
+ Therefore, before running PyLith, you must create a small configuration
+ file which instructs Pyre how to launch and schedule PyLith runs on your
+ system.
+\end_layout
+
+\begin_layout Subsection
+Pyre Configuration on a Personal Computer
+\end_layout
+
+\begin_layout Standard
+On a workstation or laptop, there is no job scheduler or communication network
+ between compute nodes.
+ In this scenario, Pyre is trivial to configure.
+ Simply create the file 
+\family typewriter
+~/.pyre/pylith3d/pylith3d.cfg
+\family default
+ with the following contents:
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+[pylith3d.launcher]
+\end_layout
+
+\begin_layout LyX-Code
+command = mpiexec -np ${nodes}
+\end_layout
+
+\begin_layout Standard
+The only trick is to specify the right command for your MPI implementation.
+ Specify the 
+\family typewriter
+mpiexec
+\family default
+ command if you are using MPICH2 (which will be the case if you instructed
+ PETSc to download MPICH for you).
+\end_layout
+
+\begin_layout Standard
+If you are using MPICH1, enter the following instead:
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
+[pylith3d.launcher]
+\end_layout
+
+\begin_layout LyX-Code
+command = mpirun -np ${nodes}
+\end_layout
+
+\begin_layout Standard
+See the documentation for your MPI implementation if you are unsure of the
+ command to specify.
+\end_layout
+
+\begin_layout Subsection
+Pyre Configuration on a Cluster
+\end_layout
+
+\begin_layout Standard
+If you are installing PyLith on a cluster with a batch system, you can configure
+ Pyre such that the 
+\family typewriter
+pylith3dapp.py
+\family default
+ command automatically submits jobs to the batch queue.
+ Pyre contains support for the LSF, PBS, and Globus batch systems.
+\end_layout
+
+\begin_layout Standard
+The command to submit a batch job depends upon the particular batch system
+ used.
+ Further, the command used in a batch script to launch an MPI program varies
+ from one cluster to the next.
+ This command can vary between two clusters, even if the clusters use the
+ same batch system! On some systems, 
+\family typewriter
+mpirun
+\family default
+ is invoked directly from the batch script.
+ On others, a special wrapper is used instead.
+\end_layout
+
+\begin_layout Standard
+Properly configured, Pyre can handle job submissions automatically, insulating
+ users from the details of the batch system and the site configuration.
+ This feature has the most value when the system administrator installs
+ a global Pyre configuration file on the cluster (under 
+\family typewriter
+/etc/pythia-0.8
+\family default
+), for the benefit of all users and all Pyre-based applications.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset LatexCommand \label{sub:Launchers-and-Schedulers}
+
+\end_inset
+
+Launchers and Schedulers
+\end_layout
+
+\begin_layout Standard
+If you have used one of the batch systems, you will know that the batch
+ system requires you to write a script to launch a job.
+ Fortunately, launching a parallel PyLith job is simplified by Pyre's 
+\family typewriter
+launcher
+\family default
+ and 
+\family typewriter
+scheduler
+\family default
+ facilities.
+ Many properties associated with 
+\family typewriter
+launcher
+\family default
+ and 
+\family typewriter
+scheduler
+\family default
+ are pertinent to the cluster you are on, and are best customized in a configura
+tion file.
+ Your personal PyLith configuration file (
+\family typewriter
+~/.pyre/pylith3d/pylith3d.cfg
+\family default
+) is suitable for this purpose.
+ On a cluster, the ideal setup is to install a system-wide configuration
+ file under 
+\family typewriter
+/etc/pythia-0.8
+\family default
+, for the benefit of all users.
+\end_layout
+
+\begin_layout Standard
+Pyre's 
+\family typewriter
+scheduler
+\family default
+ facility is used to specify the type of batch system you are using (if
+ any):
+\end_layout
+
+\begin_layout LyX-Code
+[pylith3d]
+\end_layout
+
+\begin_layout LyX-Code
+scheduler = lsf
+\end_layout
+
+\begin_layout Standard
+The valid values for 
+\family typewriter
+scheduler
+\family default
+ are 
+\family typewriter
+lsf
+\family default
+, 
+\family typewriter
+pbs
+\family default
+, 
+\family typewriter
+globus
+\family default
+, and 
+\family typewriter
+none
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Pyre's 
+\family typewriter
+launcher
+\family default
+ facility is used to specify which MPI implementation you are using:
+\end_layout
+
+\begin_layout LyX-Code
+[pylith3d]
+\end_layout
+
+\begin_layout LyX-Code
+launcher = mpich
+\end_layout
+
+\begin_layout Standard
+The valid values for 
+\family typewriter
+launcher
+\family default
+ include 
+\family typewriter
+mpich
+\family default
+ and 
+\family typewriter
+lam-mpi
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+You may find the 
+\family typewriter
+dry
+\family default
+ option useful while debugging the 
+\family typewriter
+launcher
+\family default
+ and 
+\family typewriter
+scheduler
+\family default
+ configuration.
+ To debug the scheduler configuration, use the 
+\family typewriter
+--scheduler.dry
+\family default
+ option:
+\end_layout
+
+\begin_layout LyX-Code
+pylith3dapp.py --scheduler.dry
+\end_layout
+
+\begin_layout Standard
+This option will cause PyLith to perform a ``dry run,'' dumping the batch
+ script to the console, instead of actually submitting it for execution
+ (the output is only meaningful if you're using a batch system).
+ Likewise, to debug the launcher configuration, use the 
+\family typewriter
+--launcher.dry
+\family default
+ option:
+\end_layout
+
+\begin_layout LyX-Code
+pylith3dapp.py --launcher.dry
+\end_layout
+
+\begin_layout Standard
+This option will cause PyLith to print the 
+\family typewriter
+mpirun
+\family default
+ command, instead of actually executing it.
+ (If you're using a batch system, a job will be submitted for execution;
+ when it runs, PyLith will simply print the 
+\family typewriter
+mpirun
+\family default
+ command, and the job will immediately terminate.)
+\end_layout
+
+\begin_layout Subsubsection
+Running without a Batch System
+\end_layout
+
+\begin_layout Standard
+On a cluster without a batch system, you need to explicitly specify the
+ machines on which the job will run.
+ Supposing the machines on your cluster are named n001, n002, \SpecialChar \ldots{}
+, etc., but
+ you want to run the job on machines n001, n003, n004, and n005 (maybe n002
+ is down for the moment).
+ To run an example, create a file named 
+\family typewriter
+mymachines.cfg
+\family default
+ which specifies the machines to use:
+\end_layout
+
+\begin_layout LyX-Code
+[pylith3d.launcher]
+\end_layout
+
+\begin_layout LyX-Code
+nodegen = n%03d
+\end_layout
+
+\begin_layout LyX-Code
+nodelist = [1,3-5]
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+nodegen
+\family default
+ property is a printf-style format string, used in conjunction with 
+\family typewriter
+nodelist
+\family default
+ to generate the list of machine names.
+ The 
+\family typewriter
+nodelist
+\family default
+ property is a comma-separated list of machine names in square brackets.
+\end_layout
+
+\begin_layout Standard
+Now, invoke the following:
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith3dapp.py example.cfg mymachines.cfg
+\end_layout
+
+\begin_layout Standard
+This strategy gives you the flexibility to create an assortment of 
+\family typewriter
+.cfg
+\family default
+ files (with one 
+\family typewriter
+.cfg
+\family default
+ file for each machine list) which can be easily paired with different parameter
+ files.
+\end_layout
+
+\begin_layout Standard
+If your machine list does not change often, you may find it more convenient
+ to specify default values for 
+\family typewriter
+nodegen
+\family default
+ and 
+\family typewriter
+nodelist
+\family default
+ in 
+\family typewriter
+~/.pyre/pylith3d/pylith3d.cfg
+\family default
+ (which is read automatically).
+ Then, you can run any simulation with no additional arguments:
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith3dapp.py example.cfg
+\end_layout
+
+\begin_layout Quote
+
+\color red
+Warning: 
+\color none
+This assumes your machine list has enough nodes for the simulation in question.
+\end_layout
+
+\begin_layout Standard
+You will notice that a machine file 
+\family typewriter
+mpirun.nodes
+\family default
+ is generated.
+ It will contain a list of the nodes where PyLith has run.
+\end_layout
+
+\begin_layout Subsubsection
+Using a Batch System
+\end_layout
+
+\begin_layout Standard
+The settings which are important when using a batch system are summarized
+ in the sample configuration file which follows.
+\end_layout
+
+\begin_layout LyX-Code
+[pylith3d]
+\end_layout
+
+\begin_layout LyX-Code
+scheduler = lsf    ; the type of the installed batch system
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylith3d.lsf]
+\end_layout
+
+\begin_layout LyX-Code
+bsub-options = [-a mpich_gm]    ; special options for 'bsub'
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylith3d.launcher]
+\end_layout
+
+\begin_layout LyX-Code
+command = mpirun.lsf    ; 'mpirun' command to use on our cluster
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylith3d.job]
+\end_layout
+
+\begin_layout LyX-Code
+queue = normal    ; default queue for jobs
+\end_layout
+
+\begin_layout Standard
+These settings are usually placed in 
+\family typewriter
+~/.pyre/pylith3d/pylith3d.cfg
+\family default
+ or in a system-wide configuration file.
+ They can be overridden on the command line, where one typically specifies
+ the job name and the allotted time for the job:
+\end_layout
+
+\begin_layout LyX-Code
+$ pylith3dapp.py example1.cfg --job.queue=debug 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --job.name=example1 --job.walltime=5*minute 
+\backslash
+
+\end_layout
+
+\begin_layout LyX-Code
+    --nodes=4
+\end_layout
+
+\begin_layout Standard
+The number of processors to allocate for the job is given using the 
+\family typewriter
+nodes
+\family default
+ parameter.
+\end_layout
+
+\begin_layout Standard
+For more information on configuring Pyre for your batch system, see CIG's
+ 
+\begin_inset LatexCommand \htmlurl[Pythia page]{www.geodynamics.org/cig/software/packages/cs/pythia}
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Section
 \begin_inset LatexCommand \label{sec:Software-Repository}
 
@@ -1054,6 +2230,7 @@ The PyLith source code is available via the
 \end_inset
 
 .
+ The PETSc source code is available via a Mecurial repository.
  This allows users to view the revision history of the code and check out
  the most recent development version of the software.
 \end_layout
@@ -1100,7 +2277,7 @@ GNU Autotools (Autoconf, Automake, and Libtool)
 \end_layout
 
 \begin_layout Itemize
-Pyrex
+Pyrex (v0.9.5.1 or later)
 \end_layout
 
 \begin_layout Subsubsection
@@ -1159,7 +2336,35 @@ Pyrex
 \end_layout
 
 \begin_layout Standard
-[TODO: write about Pyrex]
+The software layer which connects PyLith's high-level Python code with its
+ low-level Fortran code is written in a language called 
+\emph on
+Pyrex
+\emph default
+.
+ Pyrex is a Python-like language for writing native Python extension modules.
+ To download Pyrex, visit 
+\begin_inset LatexCommand \htmlurl[the Pyrex web site]{http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/}
+
+\end_inset
+
+.
+ After installing Pyrex, make sure the 
+\family typewriter
+pyrexc
+\family default
+ command is accessible via your 
+\family typewriter
+PATH
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+The Pyrex compiler generates C code as its output.
+ Due to PETSc-related C/C++ linkage issues, the PyLith build system compiles
+ this generated C code using the C++ compiler.
+ For this reason and others, PyLith requires Pyrex v0.9.5.1 or later.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1240,20 +2445,34 @@ In the future, you will likely want to update the PETSc source tree to include
 
 \family typewriter
 $ cd petsc-dev
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ hg pull
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ hg update
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ cd python/BuildSystem
-\newline
+\end_layout
+
+\begin_layout LyX-Code
+
+\family typewriter
 $ hg pull
-\newline
+\end_layout
+
+\begin_layout LyX-Code
 $ hg update
-\family default
-
-\newline
-
 \end_layout
 
 \begin_layout Subsection
@@ -1362,7 +2581,7 @@ pylith-0.8
  directory, you must generate the necessary files using the GNU tools.
  The easiest way to do this is to run 
 \family typewriter
-autoreconf -i
+autoreconf -if
 \family default
 :
 \end_layout
@@ -1372,7 +2591,7 @@ $ cd pylith-0.8
 \end_layout
 
 \begin_layout LyX-Code
-$ autoreconf -i
+$ autoreconf -if
 \end_layout
 
 \begin_layout LyX-Code
@@ -1406,6 +2625,16 @@ Makefile.in
 Makefile.am
 \family default
  in each source directory.
+ After running 
+\family typewriter
+autoreconf
+\family default
+, install PyLith as described in the section 
+\begin_inset LatexCommand \ref{sec:Installing-PyLith}
+
+\end_inset
+
+ earlier in this chapter.
 \end_layout
 
 \begin_layout LyX-Code
