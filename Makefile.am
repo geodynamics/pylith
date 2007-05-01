@@ -5,6 +5,10 @@ ACLOCAL_AMFLAGS = -I ./m4
 
 SUBDIRS = pylith3d
 
+EXTRA_DIST = \
+	setup.py \
+	archimedes/__init__.py
+
 install-data-hook:
 	top_builddir=`$(am__cd) $(top_builddir) && pwd` && \
 		cd $(top_srcdir) && \

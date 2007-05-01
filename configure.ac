@@ -5,7 +5,7 @@
 AC_PREREQ(2.59)
 AC_INIT([PyLith3D], [0.8.2], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
-AC_CONFIG_SRCDIR([pylith3d/applications/pylith3dapp.py])
+AC_CONFIG_SRCDIR([pylith3d/pylith3dapp.py.in])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign])
@@ -87,6 +87,7 @@ CIT_FC_STREAM_IO
 
 AC_CONFIG_FILES([Makefile
                  pylith3d/Makefile
+                 pylith3d/examples/Makefile
                  pylith3d/libpylith3d/Makefile
                  pylith3d/module/Makefile
 		 pylith3d/utils/Makefile])

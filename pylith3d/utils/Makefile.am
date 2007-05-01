@@ -35,3 +35,22 @@ readucd2_SOURCES = readucd2.f
 readucd3_SOURCES = readucd3.f
 scalecoord_SOURCES = scalecoord.f
 scaleucd_SOURCES = scaleucd.f
+
+EXTRA_DIST = \
+	addflt.f \
+	blockrot2.par \
+	blockrot3.par \
+	faultcalc.par \
+	faultslip.par \
+	fixqt.f \
+	lh2qh.f \
+	lt2qt.f \
+	README.utils \
+	readnetgen.par \
+	readucd2.par \
+	readucd3.par \
+	readucd.f \
+	tetcmp.f \
+	ucd3d.f
+
+# end of file
