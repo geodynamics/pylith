@@ -126,7 +126,7 @@ Requesting Help
 
 \begin_layout Standard
 The 
-\begin_inset LatexCommand \htmlurl[CIG Short-Term Crustal Dynamics Mailing List]{cig-short@geodynamics.org}
+\begin_inset LatexCommand \url[CIG Short-Term Crustal Dynamics Mailing List]{cig-short@geodynamics.org}
 
 \end_inset
 
@@ -289,7 +289,7 @@ Python
 PyLith's high-level user interface code is written in Python, utilizing
  the Pyre framework.
  Pyre is included in the Python package known as Pythia.
- PyLith requires Pythia v0.8.1.3 or later; but you need not install Pythia
+ PyLith requires Pythia v0.8.1.3 or later, but you need not install Pythia
  because PyLith's 
 \family typewriter
 configure
@@ -312,7 +312,11 @@ Warning:
 
 \begin_layout Standard
 Your system may already have a suitable Python interpreter installed.
- To check, type the 'python' command:
+ To check, type the `
+\family typewriter
+python
+\family default
+' command:
 \end_layout
 
 \begin_layout LyX-Code
@@ -343,8 +347,11 @@ python-dev
 \family default
 ) in addition to the core Python package -- even if you don't plan on doing
  any Python software development.
- The development package contains the Python include files, which are necessary
- for building PyLith.
+ The development package contains the Python 
+\family typewriter
+include
+\family default
+ files, which are necessary for building PyLith.
 \end_layout
 
 \begin_layout Standard
@@ -510,7 +517,7 @@ $PETSC_ARCH
 \family default
 \emph default
  to 
-\begin_inset LatexCommand \htmlurl[PETSc Maintenance Mailing List]{petsc-maint@mcs.anl.gov}
+\begin_inset LatexCommand \url[PETSc Maintenance Mailing List]{petsc-maint@mcs.anl.gov}
 
 \end_inset
 
@@ -666,7 +673,7 @@ You can instruct PETSc to download and install any or all of these libraries
 
 \begin_layout Standard
 If you have an MPI implementation installed on your workstation, you can
- use it; or, let PETSc download and install one for you.
+ use it, or let PETSc download and install one for you.
  If you are installing on a cluster, you should configure PETSc to use an
  existing MPI library installed by the system administrators.
 \end_layout
@@ -1167,7 +1174,7 @@ config.log
 make.log
 \family default
  files to the 
-\begin_inset LatexCommand \htmlurl[CIG Short-Term Crustal Dynamics Mailing List]{cig-short@geodynamics.org}
+\begin_inset LatexCommand \url[CIG Short-Term Crustal Dynamics Mailing List]{cig-short@geodynamics.org}
 
 \end_inset
 
@@ -1270,7 +1277,7 @@ For more details about
 \family typewriter
 configure
 \family default
-, see section 
+, see Section 
 \begin_inset LatexCommand \ref{sec:Configuration}
 
 \end_inset
@@ -1484,7 +1491,7 @@ configure
 configure
 \family default
  failures on the 
-\begin_inset LatexCommand \htmlurl[CIG Short-Term Crustal Dynamics Mailing List]{cig-short@geodynamics.org}
+\begin_inset LatexCommand \url[CIG Short-Term Crustal Dynamics Mailing List]{cig-short@geodynamics.org}
 
 \end_inset
 
@@ -1704,7 +1711,7 @@ PETSc installation/build directory.
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -1754,7 +1761,7 @@ The configure script will automatically select the appropriate C++ and Fortran
 Warning:
 \series default
 \color none
- Manually specifing the C++ or Fortran compiler (using 
+ Manually specifying the C++ or Fortran compiler (using 
 \family typewriter
 CXX
 \family default
@@ -2279,7 +2286,7 @@ The PyLith source code is available via the
 \end_inset
 
 .
- The PETSc source code is available via a Mecurial repository.
+ The PETSc source code is available via a Mercurial repository.
  This allows users to view the revision history of the code and check out
  the most recent development version of the software.
 \end_layout
@@ -2334,7 +2341,7 @@ Subversion
 \end_layout
 
 \begin_layout Standard
-To check-out the PyLith source, you must have a Subversion client installed.
+To check out the PyLith source, you must have a Subversion client installed.
  To check, type 
 \family typewriter
 svn
@@ -2369,7 +2376,7 @@ Mercurial
 \end_layout
 
 \begin_layout Standard
-To check-out the PETSc source, you must have Mercurial 0.9 or later installed.
+To check out the PETSc source, you must have Mercurial 0.9 or later installed.
  You will likely have to build Mercurial from source, but this is a very
  easy task that takes only a couple of minutes.
  To learn how to download and install Mercurial, visit 
@@ -2454,7 +2461,8 @@ Downloading the PETSc Source using Mercurial
 \end_layout
 
 \begin_layout Standard
-Pull the source code from ANL and place the source tree in a suitable location.
+Pull the source code from Argonne National Laboratory (ANL) and place the
+ source tree in a suitable location.
  The steps below will create a 
 \family typewriter
 petsc-dev
@@ -2478,10 +2486,6 @@ $ cd petsc-dev/python
 
 \family typewriter
 $ hg clone http://mercurial.mcs.anl.gov/petsc/BuildSystem BuildSystem
-\end_layout
-
-\begin_layout LyX-Code
-
 \end_layout
 
 \begin_layout Standard
@@ -2529,7 +2533,7 @@ Downloading the PyLith Source using Subversion
 \end_layout
 
 \begin_layout Standard
-To check-out the latest version of PyLith, use the 
+To check out the latest version of PyLith, use the 
 \family typewriter
 svn checkout
 \family default
@@ -2606,7 +2610,7 @@ $
 \end_layout
 
 \begin_layout Standard
-You are now ready to install PETSc as described in the section 
+You are now ready to install PETSc as described in Section 
 \begin_inset LatexCommand \ref{sec:Installing-PETSc}
 
 \end_inset
@@ -2678,7 +2682,7 @@ Makefile.am
 \family typewriter
 autoreconf
 \family default
-, install PyLith as described in the section 
+, install PyLith as described in Section 
 \begin_inset LatexCommand \ref{sec:Installing-PyLith}
 
 \end_inset
