@@ -14,7 +14,7 @@ setup(
     packages = find_packages("pylith3d"),
     
     install_requires = [
-    'pythia[mpi] >= 0.8.1.3b2, < 0.8.2a',
+    'pythia[mpi] >= 0.8.1.3b5, < 0.8.2a',
     ],
 
     author = 'Charles A. Williams, Brad Aagaard, and Matt Knepley',

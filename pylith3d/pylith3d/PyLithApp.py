@@ -112,22 +112,10 @@ class PyLithApp(PetscApplication):
     #
 
     import pyre.inventory as pyre
-    from cig.cs.petsc import PetscProperty
 
     MacroString = pyre.str
     OutputFile = pyre.str
     InputFile = pyre.str
-
-    # declare PETSc options that are of interest to PyLith
-    ksp_monitor        = PetscProperty(default="true")
-    ksp_view           = PetscProperty(default="true")
-    ksp_rtol           = PetscProperty(default="1.0e-9")
-    log_summary        = PetscProperty(default="true")
-    partitioner        = PetscProperty(default="chaco")
-    pc_type            = PetscProperty(default="bjacobi")
-    sub_pc_type        = PetscProperty(default="ilu")
-    start_in_debugger  = PetscProperty()
-    debugger_pause     = PetscProperty()
 
     # Title
     title = pyre.str("title", default="PyLith-0.8 Simulation")
@@ -349,10 +337,23 @@ class PyLithApp(PetscApplication):
     import PyLithLib as petsc
 
 
-    # Use PETSc-style command line parsing.
-    from cig.cs.petsc import PetscCommandlineParser as CommandlineParser
-
-
+    def _defaults(self):
+        super(PyLithApp, self)._defaults()
+        
+        # Set defaults for PETSc options.  These can be overridden in a .cfg file
+        # or from the command line using the "petsc" component.
+        self.setPetscDefaults(dict(
+            ksp_monitor        = "true",
+            ksp_view           = "true",
+            ksp_rtol           = "1.0e-9",
+            log_summary        = "true",
+            partitioner        = "chaco",
+            pc_type            = "bjacobi",
+            sub_pc_type        = "ilu",
+        ))
+        
+        return
+    
     # hack to recognize old 'pl3dscan.xxx' and 'scanner.xxx' options
     def applyConfiguration(self, context=None):
         # this mimics the standard Pyre order:  <component-name>.xxx overrides <facility-name>.xxx
