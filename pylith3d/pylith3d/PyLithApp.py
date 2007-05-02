@@ -354,16 +354,6 @@ class PyLithApp(PetscApplication):
         
         return
     
-    # hack to recognize old 'pl3dscan.xxx' and 'scanner.xxx' options
-    def applyConfiguration(self, context=None):
-        # this mimics the standard Pyre order:  <component-name>.xxx overrides <facility-name>.xxx
-        for alias in ["scanner", "pl3dscan"]:
-            node = self.inventory._priv_registry.extractNode(alias)
-            if node:
-                node.name = self.name
-                self.updateConfiguration(node)
-        return super(PyLithApp, self).applyConfiguration(context)
-
 
     def _validate(self, context):
 
