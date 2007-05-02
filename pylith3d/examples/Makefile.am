@@ -19,39 +19,39 @@ nobase_dist_examples_DATA = \
 	bm2/bm2.time \
 	bm2/pylith3d.cfg \
 	linhex/bm1/bm1.bc \
+	linhex/bm1/bm1.cfg \
 	linhex/bm1/bm1.connect \
 	linhex/bm1/bm1.coord \
 	linhex/bm1/bm1.fuldat \
 	linhex/bm1/bm1.hist \
-	linhex/bm1/bm1.keyval \
 	linhex/bm1/bm1.prop \
 	linhex/bm1/bm1.statevar \
 	linhex/bm1/bm1.time \
 	linhex/bm1a/bm1a.bc \
+	linhex/bm1a/bm1a.cfg \
 	linhex/bm1a/bm1a.connect \
 	linhex/bm1a/bm1a.coord \
 	linhex/bm1a/bm1a.fuldat \
 	linhex/bm1a/bm1a.hist \
-	linhex/bm1a/bm1a.keyval \
 	linhex/bm1a/bm1a.prop \
 	linhex/bm1a/bm1a.statevar \
 	linhex/bm1a/bm1a.time \
 	linhex/bm2a/bm2a.bc \
+	linhex/bm2a/bm2a.cfg \
 	linhex/bm2a/bm2a.connect \
 	linhex/bm2a/bm2a.coord \
 	linhex/bm2a/bm2a.fuldat \
 	linhex/bm2a/bm2a.hist \
-	linhex/bm2a/bm2a.keyval \
 	linhex/bm2a/bm2a.prop \
 	linhex/bm2a/bm2a.time \
-	linhex/patchtest/pt-bbar.keyval \
+	linhex/patchtest/pt-bbar.cfg \
 	linhex/patchtest/pt-incomp.prop \
-	linhex/patchtest/pt-red.keyval \
+	linhex/patchtest/pt-red.cfg \
 	linhex/patchtest/pt1.bc \
+	linhex/patchtest/pt1.cfg \
 	linhex/patchtest/pt1.connect \
 	linhex/patchtest/pt1.coord \
 	linhex/patchtest/pt1.fuldat \
-	linhex/patchtest/pt1.keyval \
 	linhex/patchtest/pt1.prop \
 	linhex/patchtest/pt1.statevar \
 	linhex/patchtest/pt1.time \
@@ -75,60 +75,60 @@ nobase_dist_examples_DATA = \
 	linhex/patchtest/runtests-red-comp.com \
 	linhex/patchtest/runtests-red-incomp.com \
 	linhex/powertest/powertest.bc \
+	linhex/powertest/powertest.cfg \
 	linhex/powertest/powertest.connect \
 	linhex/powertest/powertest.coord \
 	linhex/powertest/powertest.fuldat \
 	linhex/powertest/powertest.hist \
-	linhex/powertest/powertest.keyval \
 	linhex/powertest/powertest.prop \
 	linhex/powertest/powertest.statevar \
 	linhex/powertest/powertest.time \
 	linhex/powertestesf/powertestesf.bc \
+	linhex/powertestesf/powertestesf.cfg \
 	linhex/powertestesf/powertestesf.connect \
 	linhex/powertestesf/powertestesf.coord \
 	linhex/powertestesf/powertestesf.fuldat \
 	linhex/powertestesf/powertestesf.hist \
-	linhex/powertestesf/powertestesf.keyval \
 	linhex/powertestesf/powertestesf.prop \
 	linhex/powertestesf/powertestesf.statevar \
 	linhex/powertestesf/powertestesf.time \
 	linhex/ps1/README \
 	linhex/ps1/README.elas-tests \
 	linhex/ps1/README.vis-tests \
-	linhex/ps1/elas-test1/ps1.keyval \
+	linhex/ps1/elas-test1/ps1.cfg \
 	linhex/ps1/elas-test1/ps1.prop \
 	linhex/ps1/elas-test1/ps1.time \
-	linhex/ps1/elas-test10/ps1.keyval \
+	linhex/ps1/elas-test10/ps1.cfg \
 	linhex/ps1/elas-test10/ps1.prop \
 	linhex/ps1/elas-test10/ps1.time \
-	linhex/ps1/elas-test11/ps1.keyval \
+	linhex/ps1/elas-test11/ps1.cfg \
 	linhex/ps1/elas-test11/ps1.prop \
 	linhex/ps1/elas-test11/ps1.time \
-	linhex/ps1/elas-test12/ps1.keyval \
+	linhex/ps1/elas-test12/ps1.cfg \
 	linhex/ps1/elas-test12/ps1.prop \
 	linhex/ps1/elas-test12/ps1.time \
-	linhex/ps1/elas-test2/ps1.keyval \
+	linhex/ps1/elas-test2/ps1.cfg \
 	linhex/ps1/elas-test2/ps1.prop \
 	linhex/ps1/elas-test2/ps1.time \
-	linhex/ps1/elas-test3/ps1.keyval \
+	linhex/ps1/elas-test3/ps1.cfg \
 	linhex/ps1/elas-test3/ps1.prop \
 	linhex/ps1/elas-test3/ps1.time \
-	linhex/ps1/elas-test4/ps1.keyval \
+	linhex/ps1/elas-test4/ps1.cfg \
 	linhex/ps1/elas-test4/ps1.prop \
 	linhex/ps1/elas-test4/ps1.time \
-	linhex/ps1/elas-test5/ps1.keyval \
+	linhex/ps1/elas-test5/ps1.cfg \
 	linhex/ps1/elas-test5/ps1.prop \
 	linhex/ps1/elas-test5/ps1.time \
-	linhex/ps1/elas-test6/ps1.keyval \
+	linhex/ps1/elas-test6/ps1.cfg \
 	linhex/ps1/elas-test6/ps1.prop \
 	linhex/ps1/elas-test6/ps1.time \
-	linhex/ps1/elas-test7/ps1.keyval \
+	linhex/ps1/elas-test7/ps1.cfg \
 	linhex/ps1/elas-test7/ps1.prop \
 	linhex/ps1/elas-test7/ps1.time \
-	linhex/ps1/elas-test8/ps1.keyval \
+	linhex/ps1/elas-test8/ps1.cfg \
 	linhex/ps1/elas-test8/ps1.prop \
 	linhex/ps1/elas-test8/ps1.time \
-	linhex/ps1/elas-test9/ps1.keyval \
+	linhex/ps1/elas-test9/ps1.cfg \
 	linhex/ps1/elas-test9/ps1.prop \
 	linhex/ps1/elas-test9/ps1.time \
 	linhex/ps1/ps1.bc \
@@ -137,47 +137,47 @@ nobase_dist_examples_DATA = \
 	linhex/ps1/ps1.fuldat \
 	linhex/ps1/ps1.statevar \
 	linhex/ps1/test.sh.in \
-	linhex/ps1/vis-test1/ps1.keyval \
+	linhex/ps1/vis-test1/ps1.cfg \
 	linhex/ps1/vis-test1/ps1.prop \
 	linhex/ps1/vis-test1/ps1.time \
-	linhex/ps1/vis-test10/ps1.keyval \
+	linhex/ps1/vis-test10/ps1.cfg \
 	linhex/ps1/vis-test10/ps1.prop \
 	linhex/ps1/vis-test10/ps1.time \
-	linhex/ps1/vis-test11/ps1.keyval \
+	linhex/ps1/vis-test11/ps1.cfg \
 	linhex/ps1/vis-test11/ps1.prop \
 	linhex/ps1/vis-test11/ps1.time \
-	linhex/ps1/vis-test12/ps1.keyval \
+	linhex/ps1/vis-test12/ps1.cfg \
 	linhex/ps1/vis-test12/ps1.prop \
 	linhex/ps1/vis-test12/ps1.time \
-	linhex/ps1/vis-test2/ps1.keyval \
+	linhex/ps1/vis-test2/ps1.cfg \
 	linhex/ps1/vis-test2/ps1.prop \
 	linhex/ps1/vis-test2/ps1.time \
-	linhex/ps1/vis-test3/ps1.keyval \
+	linhex/ps1/vis-test3/ps1.cfg \
 	linhex/ps1/vis-test3/ps1.prop \
 	linhex/ps1/vis-test3/ps1.time \
-	linhex/ps1/vis-test4/ps1.keyval \
+	linhex/ps1/vis-test4/ps1.cfg \
 	linhex/ps1/vis-test4/ps1.prop \
 	linhex/ps1/vis-test4/ps1.time \
-	linhex/ps1/vis-test5/ps1.keyval \
+	linhex/ps1/vis-test5/ps1.cfg \
 	linhex/ps1/vis-test5/ps1.prop \
 	linhex/ps1/vis-test5/ps1.time \
-	linhex/ps1/vis-test6/ps1.keyval \
+	linhex/ps1/vis-test6/ps1.cfg \
 	linhex/ps1/vis-test6/ps1.prop \
 	linhex/ps1/vis-test6/ps1.time \
-	linhex/ps1/vis-test7/ps1.keyval \
+	linhex/ps1/vis-test7/ps1.cfg \
 	linhex/ps1/vis-test7/ps1.prop \
 	linhex/ps1/vis-test7/ps1.time \
-	linhex/ps1/vis-test8/ps1.keyval \
+	linhex/ps1/vis-test8/ps1.cfg \
 	linhex/ps1/vis-test8/ps1.prop \
 	linhex/ps1/vis-test8/ps1.time \
-	linhex/ps1/vis-test9/ps1.keyval \
+	linhex/ps1/vis-test9/ps1.cfg \
 	linhex/ps1/vis-test9/ps1.prop \
 	linhex/ps1/vis-test9/ps1.time \
 	linhex/slip1/slip1.bc \
+	linhex/slip1/slip1.cfg \
 	linhex/slip1/slip1.connect \
 	linhex/slip1/slip1.coord \
 	linhex/slip1/slip1.fuldat \
-	linhex/slip1/slip1.keyval \
 	linhex/slip1/slip1.prop \
 	linhex/slip1/slip1.slip \
 	linhex/slip1/slip1.statevar \
@@ -189,10 +189,10 @@ nobase_dist_examples_DATA = \
 	linhex/splittest/runsplittest-test.sh \
 	linhex/splittest/runsplittest.sh \
 	linhex/splittest/splittest.bc \
+	linhex/splittest/splittest.cfg \
 	linhex/splittest/splittest.connect \
 	linhex/splittest/splittest.coord \
 	linhex/splittest/splittest.fuldat \
-	linhex/splittest/splittest.keyval \
 	linhex/splittest/splittest.prop \
 	linhex/splittest/splittest.split \
 	linhex/splittest/splittest.statevar \
@@ -200,11 +200,11 @@ nobase_dist_examples_DATA = \
 	linhex/splittest/test.sh \
 	linhex/timeslip1/test.sh \
 	linhex/timeslip1/timeslip1.bc \
+	linhex/timeslip1/timeslip1.cfg \
 	linhex/timeslip1/timeslip1.connect \
 	linhex/timeslip1/timeslip1.coord \
 	linhex/timeslip1/timeslip1.fuldat \
 	linhex/timeslip1/timeslip1.hist \
-	linhex/timeslip1/timeslip1.keyval \
 	linhex/timeslip1/timeslip1.prop \
 	linhex/timeslip1/timeslip1.slip \
 	linhex/timeslip1/timeslip1.statevar \
@@ -317,11 +317,11 @@ nobase_dist_examples_DATA = \
 	lintet/patchtest/runtests-red-incomp.com \
 	lintet/powertest/ESF.cfg \
 	lintet/powertest/powertest.bc \
+	lintet/powertest/powertest.cfg \
 	lintet/powertest/powertest.connect \
 	lintet/powertest/powertest.coord \
 	lintet/powertest/powertest.fuldat \
 	lintet/powertest/powertest.hist \
-	lintet/powertest/powertest.keyval \
 	lintet/powertest/powertest.prop \
 	lintet/powertest/powertest.statevar \
 	lintet/powertest/powertest.time \
@@ -385,9 +385,9 @@ nobase_dist_examples_DATA = \
 	quadhex/bm1a/bm1a.time \
 	quadhex/bm1a/pylith3d.cfg \
 	quadhex/bm1a/test.sh \
-	quadhex/patchtest/pt-bbar.keyval \
+	quadhex/patchtest/pt-bbar.cfg \
 	quadhex/patchtest/pt-incomp.prop \
-	quadhex/patchtest/pt-red.keyval \
+	quadhex/patchtest/pt-red.cfg \
 	quadhex/patchtest/pt1.bc \
 	quadhex/patchtest/pt1.connect \
 	quadhex/patchtest/pt1.coord \
@@ -425,9 +425,9 @@ nobase_dist_examples_DATA = \
 	quadtet/bm1a/bm1a.time \
 	quadtet/bm1a/pylith3d.cfg \
 	quadtet/bm1a/test.sh \
-	quadtet/patchtest/pt-bbar.keyval \
+	quadtet/patchtest/pt-bbar.cfg \
 	quadtet/patchtest/pt-incomp.prop \
-	quadtet/patchtest/pt-red.keyval \
+	quadtet/patchtest/pt-red.cfg \
 	quadtet/patchtest/pt1.bc \
 	quadtet/patchtest/pt1.connect \
 	quadtet/patchtest/pt1.coord \
