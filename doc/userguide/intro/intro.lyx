@@ -373,21 +373,18 @@ wide false
 sideways false
 status collapsed
 
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Graphics
-	filename figs/pyre_overview.eps
-	scale 75
-
-\end_inset
-
- 
-\end_layout
-
 \begin_layout Caption
 Pyre Architecture.
  The integration framework is a set of cooperating abstract services.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename figs/pyre_overview.png
+
+\end_inset
+
+
 \end_layout
 
 \end_inset

@@ -41,6 +41,22 @@ Material Models
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+raggedbottom
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 There are six material models presently available in PyLith, as shown in
  Table 
 \begin_inset LatexCommand \ref{tab:Material-models-available}
@@ -62,6 +78,7 @@ There are six material models presently available in PyLith, as shown in
  each particular problem.
  The model number is not generally needed by the user, but may be of interest
  when examining the material property routines.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -320,9 +337,10 @@ Material models available in PyLith.
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Caption
+\noindent
 \begin_inset LatexCommand \label{fig:Material-models}
 
 \end_inset
@@ -337,6 +355,7 @@ Spring-dashpot 1D representations of the material models available in PyLith.
 \align center
 \begin_inset Graphics
 	filename figs/pylith-materials.eps
+	width 50page%
 
 \end_inset
 
