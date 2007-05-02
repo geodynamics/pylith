@@ -354,8 +354,8 @@ Spring-dashpot 1D representations of the material models available in PyLith.
 \noindent
 \align center
 \begin_inset Graphics
-	filename figs/pylith-materials.eps
-	width 50page%
+	filename figs/pylith-materials.ai
+	scale 95
 
 \end_inset
 
