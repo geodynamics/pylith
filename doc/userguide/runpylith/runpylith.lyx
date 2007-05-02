@@ -355,24 +355,6 @@ Not yet implemented.
 
 \family typewriter
 \color black
-xx.keyval
-\family default
-\color none
- File for changing default parameters.
- 
-\shape italic
-Now considered obsolete.
- Use 
-\family typewriter
-.cfg
-\family default
- file instead.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-\color black
 xx.wink
 \family default
 \color none
