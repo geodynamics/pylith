@@ -27,7 +27,6 @@ nobase_dist_examples_DATA = \
 	linhex/bm1/bm1.prop \
 	linhex/bm1/bm1.statevar \
 	linhex/bm1/bm1.time \
-	linhex/bm1/runex.py \
 	linhex/bm1a/bm1a.bc \
 	linhex/bm1a/bm1a.connect \
 	linhex/bm1a/bm1a.coord \
@@ -37,7 +36,6 @@ nobase_dist_examples_DATA = \
 	linhex/bm1a/bm1a.prop \
 	linhex/bm1a/bm1a.statevar \
 	linhex/bm1a/bm1a.time \
-	linhex/bm1a/runex.py \
 	linhex/bm2a/bm2a.bc \
 	linhex/bm2a/bm2a.connect \
 	linhex/bm2a/bm2a.coord \
@@ -46,7 +44,6 @@ nobase_dist_examples_DATA = \
 	linhex/bm2a/bm2a.keyval \
 	linhex/bm2a/bm2a.prop \
 	linhex/bm2a/bm2a.time \
-	linhex/bm2a/runex.py \
 	linhex/patchtest/pt-bbar.keyval \
 	linhex/patchtest/pt-incomp.prop \
 	linhex/patchtest/pt-red.keyval \
@@ -86,8 +83,6 @@ nobase_dist_examples_DATA = \
 	linhex/powertest/powertest.prop \
 	linhex/powertest/powertest.statevar \
 	linhex/powertest/powertest.time \
-	linhex/powertest/runex-debug.py \
-	linhex/powertest/runex.py \
 	linhex/powertestesf/powertestesf.bc \
 	linhex/powertestesf/powertestesf.connect \
 	linhex/powertestesf/powertestesf.coord \
@@ -97,8 +92,6 @@ nobase_dist_examples_DATA = \
 	linhex/powertestesf/powertestesf.prop \
 	linhex/powertestesf/powertestesf.statevar \
 	linhex/powertestesf/powertestesf.time \
-	linhex/powertestesf/runex-debug.py \
-	linhex/powertestesf/runex.py \
 	linhex/ps1/README \
 	linhex/ps1/README.elas-tests \
 	linhex/ps1/README.vis-tests \
