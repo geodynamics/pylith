@@ -10,20 +10,19 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/MeshIOAscii.py
+## @file pyre/meshio/MeshIOLagrit.py
 ##
 ## @brief Python object for reading/writing finite-element mesh from
-## simple ASCII file.
+## LaGriT.
 ##
 ## Factory: mesh_io
 
 from MeshIO import MeshIO
 
-# MeshIOAscii class
-class MeshIOAscii(MeshIO):
+# MeshIOLagrit class
+class MeshIOLagrit(MeshIO):
   """
-  Python object for reading/writing finite-element mesh from simple
-  ASCII file.
+  Python object for reading/writing finite-element mesh from LaGriT.
 
   Factory: mesh_io
   """
@@ -32,22 +31,31 @@ class MeshIOAscii(MeshIO):
 
   class Inventory(MeshIO.Inventory):
     """
-    Python object for managing MeshIOAscii facilities and properties.
+    Python object for managing MeshIOLagrit facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing MeshIOAscii facilities and properties.
+    ## Python object for managing MeshIOLagrit facilities and properties.
     ##
     ## \b Properties
-    ## @li \b filename Name of mesh file
+    ## @li \b filename_gmv Name of mesh GMV file.
+    ## @li \b filename_pset Name of mesh PSET file.
+    ## @li \b flip_endian Flip endian type when reading/writing binary files.
     ##
     ## \b Facilities
     ## @li coordsys Coordinate system associated with mesh.
 
     import pyre.inventory
 
-    filename = pyre.inventory.str("filename", default="")
-    filename.meta['tip'] = "Name of mesh file"
+    filenameGmv = pyre.inventory.str("filename_gmv", default="mesh.gmv")
+    filenameGmv.meta['tip'] = "Name of mesh GMV file."
+
+    filenamePset = pyre.inventory.str("filename_pset", default="mesh.pset")
+    filenamePset.meta['tip'] = "Name of mesh PSET file."
+
+    flipEndian = pyre.inventory.bool("flip_endian", default=False)
+    flipEndian.meta['tip'] = "Flip endian type when reading/writing binary " \
+                             "files."
 
     from spatialdata.geocoords.CSCart import CSCart
     coordsys = pyre.inventory.facility("coordsys", family="coordsys",
@@ -57,13 +65,13 @@ class MeshIOAscii(MeshIO):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="meshioascii"):
+  def __init__(self, name="meshiogmv"):
     """
     Constructor.
     """
     MeshIO.__init__(self, name)
     import pylith.meshio.meshio as bindings
-    self.cppHandle = bindings.MeshIOAscii()
+    self.cppHandle = bindings.MeshIOLagrit()
     return
 
 
@@ -74,7 +82,8 @@ class MeshIOAscii(MeshIO):
     Set members based using inventory.
     """
     MeshIO._configure(self)
-    self.filename = self.inventory.filename
+    self.filenameGmv = self.inventory.filenameGmv
+    self.filenamePset = self.inventory.filenamePset
     self.coordsys = self.inventory.coordsys
     return
 
@@ -84,7 +93,8 @@ class MeshIOAscii(MeshIO):
     Force synchronization between Python and C++.
     """
     MeshIO._sync(self)
-    self.cppHandle.filename = self.filename
+    self.cppHandle.filenameGmv = self.filenameGmv
+    self.cppHandle.filenamePset = self.filenamePset
     return
   
 
@@ -92,9 +102,9 @@ class MeshIOAscii(MeshIO):
 
 def mesh_io():
   """
-  Factory associated with MeshIOAscii.
+  Factory associated with MeshIOLagrit.
   """
-  return MeshIOAscii()
+  return MeshIOLagrit()
 
 
 # End of file 

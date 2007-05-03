@@ -15,7 +15,6 @@
 #include "MeshIOAscii.hh" // implementation of class methods
 
 #include "pylith/utils/array.hh" // USES double_array, int_array, string_vector
-#include "pylith/utils/sievetypes.hh" // USES PETSc mesh
 
 #include <fstream> // USES std::ifstream, std::ofstream
 #include <stdexcept> // USES std::runtime_error

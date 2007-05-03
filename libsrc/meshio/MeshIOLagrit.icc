@@ -1,0 +1,75 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_meshio_meshiolagrit_hh)
+#error "MeshIOLagrit.icc must be included only from MeshIOLagrit.icc"
+#else
+
+// Set filename for mesh GMV file.
+inline
+void
+pylith::meshio::MeshIOLagrit::filenameGmv(const char* name) {
+  _filenameGmv = name;
+}
+
+// Get filename of mesh GMV file.
+inline
+const char* 
+pylith::meshio::MeshIOLagrit::filenameGmv(void) const {
+  return _filenameGmv.c_str();
+}
+
+// Set filename for mesh PSET file.
+inline
+void
+pylith::meshio::MeshIOLagrit::filenamePset(const char* name) {
+  _filenamePset = name;
+}
+
+// Get filename of mesh PSET file.
+inline
+const char* 
+pylith::meshio::MeshIOLagrit::filenamePset(void) const {
+  return _filenamePset.c_str();
+}
+
+// Set flag to write ASCII or binary files.
+inline
+void
+pylith::meshio::MeshIOLagrit::writerAscii(const bool flag) {
+  _writeAscii = flag;
+}
+
+// Get flag for writing ASCII or binary files.
+inline
+bool
+pylith::meshio::MeshIOLagrit::writeAscii(void) const {
+  return _writeAscii;
+}
+
+// Set flag to flip endian type when reading/writing from binary files.
+inline
+void
+pylith::meshio::MeshIOLagrit::flipEndian(const bool flag) {
+  _flipEndian = flag;
+}
+
+// Get flag for flipping endian type when reading/writing from binary files.
+inline
+bool
+pylith::meshio::MeshIOLagrit::flipEndian(void) const {
+  return _flipEndian;
+}
+
+#endif
+
+// End of file

@@ -47,13 +47,18 @@ libpylith_la_SOURCES = \
 	materials/ElasticMaterial.cc \
 	materials/ElasticPlaneStrain.cc \
 	materials/ElasticPlaneStress.cc \
+	meshio/GMVFile.cc \
+	meshio/GMVFileAscii.cc \
+	meshio/GMVFileBinary.cc \
 	meshio/MeshIO.cc \
-	meshio/MeshIOAscii.cc
+	meshio/MeshIOAscii.cc \
+	meshio/MeshIOLagrit.cc \
+	utils/Endian.cc
 
 
 INCLUDES = -I$(top_builddir)/include
 INCLUDES += $(PETSC_INCLUDE)
 
-AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS)
+AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_SIEVE_FLAGS)
 
 # End of file 

@@ -37,14 +37,13 @@ Cleanup
        (1) Unit tests
 
      iv. FaultCohesiveKin
-       (1) initialize(), integrateResidual(), integrateJacobian()
        (2) Add Python unit tests
        (3) Add C++ unit tests
 
 1. Finish implementing ExplicitElasticity and Explicit
    a. Replace integrateConstant() with integrateResidual()
 
-     {f}-[A]{u} {u} is "guess" (zero for explicit)
+     {f}-[A]{u}, {u} is "guess" (zero for explicit)
 
    a. Double check loops for integrateResidual() and integrateJacobian()
    b. Create unit test (construction of residual term and Jacobian)

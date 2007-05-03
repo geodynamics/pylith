@@ -51,6 +51,9 @@ namespace pylith {
   /// Alias for std::valarray<int>
   typedef std::valarray<int> int_array;
 
+  /// Alias for std::valarray<float>
+  typedef std::valarray<float> float_array;
+
   /// Alias for std::valarray<double>
   typedef std::valarray<double> double_array;
 

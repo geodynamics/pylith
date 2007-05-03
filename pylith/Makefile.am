@@ -48,6 +48,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/MaterialsBin.py \
 	meshio/MeshIO.py \
 	meshio/MeshIOAscii.py \
+	meshio/MeshIOLagrit.py \
 	meshio/__init__.py \
 	problems/__init__.py \
 	problems/EqDeformation.py \
