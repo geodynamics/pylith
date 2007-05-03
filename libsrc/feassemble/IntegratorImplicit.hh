@@ -85,7 +85,7 @@ public :
   void integrateConstant(const ALE::Obj<real_section_type>& fieldOut,
 			 const ALE::Obj<real_section_type>& fieldInT,
 			 const ALE::Obj<real_section_type>& fieldInTmdt,
-			 const ALE::Obj<real_section_type>& coordinates) = 0;
+			 const ALE::Obj<Mesh>& mesh) = 0;
 
   /** Compute Jacobian matrix (A) associated with operator.
    *
@@ -96,7 +96,7 @@ public :
   virtual 
   void integrateJacobian(PetscMat* mat,
 			 const ALE::Obj<real_section_type>& fieldIn,
-			 const ALE::Obj<real_section_type>& coordinates) = 0;
+			 const ALE::Obj<Mesh>& mesh) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
