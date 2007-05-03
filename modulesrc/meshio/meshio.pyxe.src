@@ -13,6 +13,7 @@
 #header{
 #include "pylith/meshio/MeshIO.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
+#include "pylith/meshio/MeshIOLagrit.hh"
 
 #include <stdexcept>
 #include <assert.h>
@@ -284,6 +285,149 @@ cdef class MeshIOAscii(MeshIO):
       return result;
       #}embed
       return MeshIOAscii_filename_get(self.thisptr)
+
+
+# ----------------------------------------------------------------------
+cdef class MeshIOLagrit(MeshIO):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* MeshIOLagrit_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::meshio::MeshIOLagrit);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    MeshIO.__init__(self)
+    self.thisptr = MeshIOLagrit_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+  property filenameGmv:
+    def __set__(self, name):
+      """Set filename."""
+      # create shim for method 'filenameGmv'
+      #embed{ void MeshIOLagrit_filenameGmv_set(void* objVptr, char* name)
+      try {
+        assert(0 != objVptr);
+        ((pylith::meshio::MeshIOLagrit*) objVptr)->filenameGmv(name);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      MeshIOLagrit_filenameGmv_set(self.thisptr, name)
+
+    def __get__(self):
+      """Get filename."""
+      # create shim for method 'filenameGmv'
+      #embed{ char* MeshIOLagrit_filenameGmv_get(void* objVptr)
+      char* result = 0;
+      try {
+        assert(0 != objVptr);
+        result = (char*) ((pylith::meshio::MeshIOLagrit*) objVptr)->filenameGmv();
+        assert(0 != result);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return MeshIOLagrit_filenameGmv_get(self.thisptr)
+
+
+  property filenamePset:
+    def __set__(self, name):
+      """Set filename."""
+      # create shim for method 'filenamePset'
+      #embed{ void MeshIOLagrit_filenamePset_set(void* objVptr, char* name)
+      try {
+        assert(0 != objVptr);
+        ((pylith::meshio::MeshIOLagrit*) objVptr)->filenamePset(name);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      MeshIOLagrit_filenamePset_set(self.thisptr, name)
+
+    def __get__(self):
+      """Get filename."""
+      # create shim for method 'filenamePset'
+      #embed{ char* MeshIOLagrit_filenamePset_get(void* objVptr)
+      char* result = 0;
+      try {
+        assert(0 != objVptr);
+        result = (char*) ((pylith::meshio::MeshIOLagrit*) objVptr)->filenamePset();
+        assert(0 != result);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return MeshIOLagrit_filenamePset_get(self.thisptr)
+
+
+  property flipEndian:
+    def __set__(self, flag):
+      """Set flip endian flag."""
+      # create shim for method 'flipEndian'
+      #embed{ void MeshIOLagrit_flipEndian_set(void* objVptr, int flag)
+      try {
+        assert(0 != objVptr);
+        ((pylith::meshio::MeshIOLagrit*) objVptr)->flipEndian(flag);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      MeshIOLagrit_flipEndian_set(self.thisptr, flag)
+
+    def __get__(self):
+      """Get flip endian flag."""
+      # create shim for method 'flipEndian'
+      #embed{ int MeshIOLagrit_flipEndian_get(void* objVptr)
+      int result = 0;
+      try {
+        assert(0 != objVptr);
+        result = ((pylith::meshio::MeshIOLagrit*) objVptr)->flipEndian();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return MeshIOLagrit_flipEndian_get(self.thisptr)
 
 
 # End of file 

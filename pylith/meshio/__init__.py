@@ -15,7 +15,8 @@
 ## @brief Python PyLith meshio module initialization
 
 __all__ = ['MeshIO',
-           'MeshIOAscii']
+           'MeshIOAscii',
+           'MeshIOLagrit']
 
 
 # End of file

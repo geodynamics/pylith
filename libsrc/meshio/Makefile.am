@@ -17,9 +17,15 @@ subpkginclude_HEADERS = \
 	MeshIO.hh \
 	MeshIO.icc \
 	MeshIOAscii.hh \
-	MeshIOAscii.icc
+	MeshIOAscii.icc \
+	MeshIOLagrit.hh \
+	MeshIOLagrit.icc
 
-noinst_HEADERS =
+noinst_HEADERS = \
+	GMVFile.hh \
+	GMVFileAscii.hh \
+	GMVFileAscii.icc \
+	GMVFileBinary.hh
 
 # export
 clean-local: clean-subpkgincludeHEADERS
