@@ -1,1 +1,1 @@
-time pylith3dapp.py --pl3dscan.fileRoot=bm1/bm1 --pl3dscan.keywordEqualsValueFile=bm2/bm2.keyval --pl3dscan.bcInputFile=bm2/bm2.bc --pl3dscan.timeStepInputFile=bm2/bm2.time --pl3dscan.asciiOutputFile=bm2/bm2.ascii --pl3dscan.plotOutputFile=bm2/bm2.plot
+time pylith3dapp.py --fileRoot=bm1/bm1 --keywordEqualsValueFile=bm2/bm2.keyval --bcInputFile=bm2/bm2.bc --timeStepInputFile=bm2/bm2.time --asciiOutputFile=bm2/bm2.ascii --plotOutputFile=bm2/bm2.plot

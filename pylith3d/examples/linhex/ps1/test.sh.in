@@ -2,6 +2,6 @@
 
 common="linhex/ps1"
 
-pylith3dapp.py --pl3dscan.fileRoot=@fileRoot@ --pl3dscan.coordinateInputFile=$common/ps1.coord --pl3dscan.bcInputFile=$common/ps1.bc --pl3dscan.stateVariableInputFile=$common/ps1.statevar --pl3dscan.connectivityInputFile=$common/ps1.connect --pl3dscan.fullOutputInputFile=$common/ps1.fuldat
+pylith3dapp.py --fileRoot=@fileRoot@ --coordinateInputFile=$common/ps1.coord --bcInputFile=$common/ps1.bc --stateVariableInputFile=$common/ps1.statevar --connectivityInputFile=$common/ps1.connect --fullOutputInputFile=$common/ps1.fuldat
 
 # end of file

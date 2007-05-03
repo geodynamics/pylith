@@ -6,9 +6,9 @@
 # ======================================================================
 
 # Do not use pythonTimestep for now until all the bugs are worked out.
-#pyts="-pl3dscan.pythonTimestep=1"
+#pyts="-pythonTimestep=1"
 
 set -x
-pylith3dapp.py -pl3dscan.asciiOutput=full -pl3dscan.ucdOutput=ascii $pyts
+pylith3dapp.py -asciiOutput=full -ucdOutput=ascii $pyts
 
 # end of file

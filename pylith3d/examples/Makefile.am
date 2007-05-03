@@ -67,7 +67,6 @@ nobase_dist_examples_DATA = \
 	linhex/patchtest/pt7.bc \
 	linhex/patchtest/pt8.bc \
 	linhex/patchtest/pt9.bc \
-	linhex/patchtest/runpt1.sh \
 	linhex/patchtest/runtests-bbar-comp.com \
 	linhex/patchtest/runtests-bbar-incomp.com \
 	linhex/patchtest/runtests-full-comp.com \
@@ -184,10 +183,6 @@ nobase_dist_examples_DATA = \
 	linhex/slip1/slip1.time \
 	linhex/slip1/slip1.winkx \
 	linhex/slip1/test.sh \
-	linhex/splittest/runsplittest-debug.sh \
-	linhex/splittest/runsplittest-lithomop.sh \
-	linhex/splittest/runsplittest-test.sh \
-	linhex/splittest/runsplittest.sh \
 	linhex/splittest/splittest.bc \
 	linhex/splittest/splittest.cfg \
 	linhex/splittest/splittest.connect \
@@ -239,7 +234,6 @@ nobase_dist_examples_DATA = \
 	lintet/bm1a/bm1a.time \
 	lintet/bm1a/pylith3d.cfg \
 	lintet/bm1a/runbm1a-debug.sh \
-	lintet/bm1a/runbm1a-lithomop.sh \
 	lintet/bm1a/runbm1a-test.sh \
 	lintet/bm1a/runbm1a.sh \
 	lintet/bm1a/test.sh \
@@ -253,7 +247,6 @@ nobase_dist_examples_DATA = \
 	lintet/bm1b/bm1b.time \
 	lintet/bm1b/pylith3d.cfg \
 	lintet/bm1b/runbm1b-debug.sh \
-	lintet/bm1b/runbm1b-lithomop.sh \
 	lintet/bm1b/runbm1b-test.sh \
 	lintet/bm1b/runbm1b.sh \
 	lintet/bm1b/test.sh \
@@ -267,7 +260,6 @@ nobase_dist_examples_DATA = \
 	lintet/bm1c/bm1c.time \
 	lintet/bm1c/pylith3d.cfg \
 	lintet/bm1c/runbm1c-debug.sh \
-	lintet/bm1c/runbm1c-lithomop.sh \
 	lintet/bm1c/runbm1c-test.sh \
 	lintet/bm1c/runbm1c.sh \
 	lintet/bm2a/bm2a.bc \
@@ -284,7 +276,6 @@ nobase_dist_examples_DATA = \
 	lintet/bm5/bm5.time \
 	lintet/bm5/pylith3d.cfg \
 	lintet/bm5/runbm5-debug.sh \
-	lintet/bm5/runbm5-lithomop.sh \
 	lintet/bm5/runbm5-test.sh \
 	lintet/bm5/runbm5.sh \
 	lintet/bm5/test.sh \

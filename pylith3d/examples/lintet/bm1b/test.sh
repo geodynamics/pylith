@@ -1,5 +1,5 @@
 #!/bin/sh
 
-pylith3dapp.py -pl3dscan.fileRoot=lintet/bm1b/bm1b -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-9
+pylith3dapp.py -fileRoot=lintet/bm1b/bm1b -petsc.log_summary -petsc.pc_type=ilu -petsc.ksp_monitor -petsc.ksp_view -petsc.ksp_rtol=1e-9
 
 # end of file
