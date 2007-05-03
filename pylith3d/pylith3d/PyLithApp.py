@@ -363,6 +363,7 @@ class PyLithApp(PetscApplication):
         #
         
         inputFile = lambda item, category: self.inputFile(item, category, context)
+        inputFileStream = lambda item, category: self.inputFileStream(item, category, context)
         outputFile = lambda item, category:  self.outputFile(item, category, context)
         macroString = self.macroString
 
@@ -387,7 +388,7 @@ class PyLithApp(PetscApplication):
         self.materialHistoryInputFile    = inputFile(Inventory.materialHistoryInputFile,    unused)
         self.connectivityInputFile       = inputFile(Inventory.connectivityInputFile,       required)
         self.prestressInputFile          = inputFile(Inventory.prestressInputFile,          unused)
-        self.tractionInputFile           = inputFile(Inventory.tractionInputFile,           optional)
+        self.tractionInputFile, traction = inputFileStream(Inventory.tractionInputFile,     optional)
         self.spfile                      = inputFile(Inventory.spfile, self.generateGreen and required or optional)
         # Slippery nodes are not yet implemented in PyLith-0.8.
         self.slfile                      = inputFile(Inventory.slfile,                      unused)
@@ -398,6 +399,13 @@ class PyLithApp(PetscApplication):
         # if any files might be in the way.
         self.ucdroot                     = macroString(Inventory.ucdroot)
 
+        if traction:
+            if self.partitioner == "parmetis":
+                context.error(ValueError("ParMETIS partitioning is broken for traction BC"),
+                              items=[Inventory.tractionInputFile,
+                                     Inventory.partitioner])
+            traction.close()
+        
         if False: # broken
             from glob import glob
             ucdFiles = ([self.ucdroot + ".mesh.inp",
@@ -604,7 +612,7 @@ class PyLithApp(PetscApplication):
         return value
     
     def inputFileStream(self, item, category, context):
-        return self.ioFileStream(item, os.O_RDONLY, "r", category, context)[1]
+        return self.ioFileStream(item, os.O_RDONLY, "r", category, context)
     
     def outputFile(self, item, category, context):
         if True:
