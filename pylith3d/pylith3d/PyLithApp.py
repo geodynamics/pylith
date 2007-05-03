@@ -347,7 +347,6 @@ class PyLithApp(PetscApplication):
             ksp_view           = "true",
             ksp_rtol           = "1.0e-9",
             log_summary        = "true",
-            partitioner        = "chaco",
             pc_type            = "bjacobi",
             sub_pc_type        = "ilu",
         ))
