@@ -7,6 +7,6 @@
 # ======================================================================
 
 set -x
-pylith3dapp.py -pl3dscan.asciiOutput=full -pl3dscan.ucdOutput=ascii $pyts
+pylith3dapp.py -asciiOutput=full -ucdOutput=ascii $pyts
 
 # end of file

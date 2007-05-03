@@ -1,5 +1,5 @@
 #!/bin/sh
 
-pylith3dapp.py -typos=relaxed -pl3dscan.fileRoot=linhex/timeslip1/timeslip1 -pl3dscan.asciiOutput=full -pl3dscan.autoRotateSlipperyNodes=False -log_summary -petsc_solver 1 -pc_type ilu -ksp_monitor -ksp_view -ksp_rtol 1e-09
+pylith3dapp.py -typos=relaxed -fileRoot=linhex/timeslip1/timeslip1 -asciiOutput=full -autoRotateSlipperyNodes=False -petsc.log_summary -petsc.pc_type=ilu -petsc.ksp_monitor -petsc.ksp_view -petsc.ksp_rtol=1e-09
 
 # end of file
