@@ -1,7 +1,12 @@
-PyLith NEWS -- history of user-visible changes.  2006-09-26
+PyLith NEWS -- history of user-visible changes.  2007-05-04
 
 Please report bugs at <http://geodynamics.org/roundup>.
 Send questions to cig-short@geodynamics.org.
+
+
+Version 0.8.2
+
+* Numerous enhancements.  See the file ChangeLog for details.
 
 
 Version 0.8.1

@@ -10,8 +10,6 @@ language tools:
 * A Fortran compiler.  Both older Fortran-77 and modern Fortran-9x
   compilers will work.
 
-* A C compiler.
-
 * A C++ compiler.
 
 * Python 2.3 or later; see <http://www.python.org/>.
@@ -19,81 +17,71 @@ language tools:
 If you are using a modern UN*X system, there is a good chance that all
 of the above tools are already installed.
 
-In addition, PyLith v0.8.1 requires the following software packages:
+In addition, PyLith v0.8.2 requires the following software packages:
 
-* An MPI library.  Both PETSc and Pythia (detailed below)
-  should be configured to use MPI.  A popular choice is MPICH:
+* An MPI library.  PETSc must be configured to use MPI.  A popular
+  choice is MPICH:
 
     <http://www-unix.mcs.anl.gov/mpi/mpich>
 
   MPICH is recommended by the PETSc installation instructions; in
   fact, PETSc's `configure.py' can automatically download and install
-  MPICH for you (`--download-mpich=yes').
+  MPICH for you (`--download-mpich=1').
 
-* The development version of PETSc, which you can download using
-  Mercurial:
+* The development version of PETSc.  You can download the nightly
+  tarball snapshot:
 
-    hg clone http://mercurial.mcs.anl.gov/petsc/petsc-dev
+    ftp://info.mcs.anl.gov/pub/petsc/petsc-dev.tar.gz
+
+  Or, check-out the source using Mercurial:
+
+    hg clone http://petsc.cs.iit.edu/petsc/petsc-dev
     cd petsc-dev/python
-    hg clone http://mercurial.mcs.anl.gov/petsc/BuildSystem
+    hg clone http://petsc.cs.iit.edu/petsc/BuildSystem BuildSystem
 
-  As of this writing, the latest source code revision is r9506.
   Mercurial may be obtained here:
 
     <http://www.selenic.com/mercurial/>
 
   PETSc must be configured with the Sieve package (--with-sieve=1).
   This, in turn, requires that it be built with a C++ compiler
-  (--with-clanguage=C++) and that you have Boost headers installed:
-
-    <http://www.boost.org/>
-
-  Use '--with-boost-dir=' to specify the full path to Boost's parent
-  directory.  You will also need Chaco (--with-chaco=1
+  (--with-clanguage=C++) and Boost (--with-boost=1
+  --download-boost=1).  You will also need Chaco (--with-chaco=1
   --download-chaco=1).
 
   For more information about installing PETSc, see the MCS web site at
   Argonne National Laboratory:
 
-    <http://www-unix.mcs.anl.gov/petsc/petsc-2>
+    <http://www.mcs.anl.gov/petsc>
 
-* Pythia version 0.8.  The easiest way to install Pythia is to
-  download the GNU-style `pythia-0.8.tar.gz' source package from the
-  CIG web site under `Software -> Software Packages -> Pythia':
+* Pythia version 0.8.1.3 or later.  PyLith's 'configure' script will
+  download and install Pythia for you.
+
+  General information about Pythia can be found at the CIG website:
 
     <http://www.geodynamics.org/cig/software/packages/pythia>
 
-  General information about Pythia can be found at the Pyre project
-  page:
-
-    <http://www.cacr.caltech.edu/projects/pyre>
-
-Note that releases of both PETSc and Pythia are generally not
-backwards-compatible with prior versions.  Therefore, you must install
-PETSc r9506 (or perhaps the equivalent final release) and Pythia v0.8
-specifically; future versions of PETSc and Pythia would not be
-expected to work with PyLith v0.8.1.
+Note that releases of PETSc are generally not backwards-compatible
+with prior versions.  Therefore, you must install the development
+version PETSc from May 2007 (or perhaps the equivalent release
+version, when it becomes available); future versions of PETSc would
+not be expected to work with PyLith v0.8.2.
 
 Installing PyLith
 =================
 
 To install PyLith, perform the following:
 
-   gunzip -c pylith3d-0.8.1.tar.gz | tar xf -
-   cd pylith3d-0.8.1
+   gunzip -c pylith3d-0.8.2.tar.gz | tar xf -
+   cd pylith3d-0.8.2
    ./configure
    make
-   make install
+   make install # optional
 
 If you will be running `make install' as a non-root user, specify a
 prefix when running `configure'; e.g.,
 
    ./configure --prefix=$HOME/pylith3d
-
-After installing, you may optionally run `make check' to run the
-examples.  However, `check' takes a long time; instead, you may
-perform `cd pylith3d/examples; make quickcheck' to run only a
-handful of short examples.
 
 More information about `configure' and the build system may be found
 under "Generic GNU Installation Instructions", below.
@@ -112,11 +100,10 @@ for the top-level script `pylith3dapp.py'.  If you prefer to extend
 Python rather than embedding it -- instead creating a dynamic
 extension module (`pylith3dmodule.so') which is loaded by the
 standard Python interpreter -- give PyLith's `configure' the
-`--without-embedding' option.  However, this is not guaranteed to work
+`--disable-embedding' option.  However, this is not guaranteed to work
 properly unless you installed MPI as a shared library.
 
-PyLith v0.8.1 was tested on Linux (x86), Mac OS X (PowerPC), and
-Windows NT/2000/XP (Cygwin 1.5.19-4).
+PyLith v0.8.2 was tested on Linux (x86) and Mac OS X (PowerPC).
 
 Generic GNU Installation Instructions
 *************************************

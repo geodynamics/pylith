@@ -1,3 +1,1566 @@
+2007-05-04 20:46  leif
+
+	* [r6786] Updated Makefile.
+
+2007-05-04 20:26  willic3
+
+	* [r6785] Removed parmetis .cfg file from tractest, since it won't
+	  work, but added one for splittest. Viscosity values for
+	  powertest have been changed.
+
+2007-05-04 03:00  leif
+
+	* [r6783] Updated 'setup.py'.
+
+2007-05-03 20:13  leif
+
+	* [r6765] ParMETIS partitioning is broken for traction BC; fail
+	  with an error message when partitioner=parmetis and there is a
+	  .traction file.
+
+2007-05-03 15:46  willic3
+
+	* [r6764] Moved partitioner parameter to pylith3d list rather than
+	  pylith3d.petsc. Added a Chaco .cfg file for testing, even though
+	  this is already the default.
+
+2007-05-03 15:42  willic3
+
+	* [r6763] Removed partitioner from PETSc arguments.
+
+2007-05-03 00:05  leif
+
+	* [r6760] Using a Perl script, updated all shell scripts to use
+	  the new property/facility/component layout. Removed shell
+	  scripts that still used 'mpiexec' or had 'lithomop' in the
+	  filename.
+
+2007-05-02 20:25  leif
+
+	* [r6757] Removed kludgey support for old 'pl3dscan.xxx' and
+	  'scanner.xxx' options.
+
+2007-05-02 20:09  leif
+
+	* [r6756] Updated all *.cfg files to use the new
+	  property/facility/component layout.
+
+2007-05-02 19:29  sue
+
+	* [r6754] image prob solved using .ai image version
+
+2007-05-02 19:20  sue
+
+	* [r6753] working image problem; pdf pg 62, figure b.1, runs off
+	  page bottom no matter what I do. still troubleshooting
+
+2007-05-02 18:26  sue
+
+	* [r6752] working image problem
+
+2007-05-02 17:18  sue
+
+	* [r6751] minor edits
+
+2007-05-02 06:55  leif
+
+	* [r6750] Updated PyLith for Pythia v0.8.1.3b5.
+	  PetscCommandlineParser and PetscProperty are no longer
+	  supported. Use Pyre command line syntax. Use the "petsc"
+	  facility/component ("petsc.xxx=yyy") to set PETSc options.
+
+2007-05-02 02:45  leif
+
+	* [r6748] Removed quotes around quadratureOrder values;
+	  prestressAutoChangeElasticProperties ->
+	  prestressAutoChangeElasticProps.
+
+2007-05-02 02:28  leif
+
+	* [r6747] Mechanically converted remaining *.keyval files to *.cfg
+	  files: keyval=`find . -name \*.keyval` for kv in $keyval; do
+	  cfg=`dirname $kv`/`basename $kv .keyval`.cfg; svn cp $kv $cfg ;
+	  echo "[pylith3d]" > $cfg; cat $kv >> $cfg ; svn rm $kv ; done
+
+2007-05-02 02:04  leif
+
+	* [r6746] Removed all references to *.keyval files from the
+	  manual; they are no longer read by PyLith.
+
+2007-05-02 01:31  leif
+
+	* [r6745] Removed remaining 'runex' scripts, to avoid confusion.
+
+2007-05-01 22:04  leif
+
+	* [r6743] Build fixes: install pylith3dapp.py ~ install examples ~
+	  allow tarball to work without Pyrex installed ~ made sure
+	  tarball is complete. Unfortunately, "make distcheck" does not
+	  work, due to an egg-related issue.
+
+2007-05-01 20:27  sue
+
+	* [r6741] a few edits; more tomorrow
+
+2007-05-01 18:55  leif
+
+	* [r6739] Added one more PETSc config example.
+
+2007-05-01 16:17  willic3
+
+	* [r6736] Minor format fix when writing out material model name.
+
+2007-05-01 03:31  leif
+
+	* [r6735] Final draft of installation chapter.
+
+2007-04-30 23:19  leif
+
+	* [r6732] Wrote PETSc installation section.
+
+2007-04-28 01:15  leif
+
+	* [r6725] Temporarily disabled outputFile(). Without ${rank} in
+	  the filenames, there is a race condition revolving around O_EXCL
+	  with more than one processor.
+
+2007-04-27 23:09  leif
+
+	* [r6723] Initial rewrite of installation chapter.
+
+2007-04-27 23:03  sue
+
+	* [r6722] made journal no. standard format
+
+2007-04-27 22:52  sue
+
+	* [r6721] various edits, spacing fixes, image positioning, and
+	  long lines running off the page fixed
+
+2007-04-27 21:47  willic3
+
+	* [r6720] Finished draft of materials. It's a little sketchy
+	  toward the end.
+
+2007-04-27 20:49  willic3
+
+	* [r6718] Added another reference to userguide. Material models
+	  are complete through generalized Maxwell. Still need Z&T
+	  formulation for power-law Maxwell.
+
+2007-04-27 03:27  willic3
+
+	* [r6706] Mostly finished through power-law ESF.
+
+2007-04-27 01:05  willic3
+
+	* [r6704] More work on materials. Nearly finished fixing things
+	  through ESF formulation of linear Maxwell. Table and figure
+	  references still need fixing. Still to do: Power-law ESF
+	  Generalized Maxwell Power-law Maxwell using Z&T formulation
+
+2007-04-26 00:11  sue
+
+	* [r6688] small changes
+
+2007-04-25 21:31  willic3
+
+	* [r6687] Completely reworking materials section: Adding figure of
+	  material models. Changing layout. Changing equations to be
+	  consistent with what we're doing for 1.0. Adding new material
+	  models. Section is still incomplete. I need to finish fixing
+	  after the first subsection in the ESF section.
+
+2007-04-25 02:42  willic3
+
+	* [r6681] Multiprocessor .cfg file.
+
+2007-04-24 22:42  sue
+
+	* [r6678] finished up standardizing subheader format
+
+2007-04-24 22:36  sue
+
+	* [r6677] standardized subsection headers in install file
+
+2007-04-24 22:33  sue
+
+	* [r6676] fixed spacing in table and other minor edits
+
+2007-04-24 22:05  sue
+
+	* [r6670] edits to tutorials incl standardizing quote marks and
+	  subsection titles, and fixing over long lines
+
+2007-04-24 21:48  willic3
+
+	* [r6664] Modified .cfg file to let ParMetis be the partitioner.
+
+2007-04-24 21:44  willic3
+
+	* [r6663] Handled case where file could be empty due to
+	  partitioning.
+
+2007-04-24 21:43  willic3
+
+	* [r6662] Added 'partitioner' as a PETSc option of interest to
+	  PyLith.
+
+2007-04-24 21:15  willic3
+
+	* [r6660] Fixed end of section and created a revised table of
+	  PETSc settings.
+
+2007-04-24 20:38  sue
+
+	* [r6659] fixed problem with preface in preview mode in file
+	  userguide.lyx which was causing lyx program to hang when edited,
+	  e.g., turned off preview mode
+
+2007-04-24 20:17  willic3
+
+	* [r6658] Updated reversenog tutorial for new utilities, new usage
+	  of .cfg files, etc.
+
+2007-04-24 20:16  sue
+
+	* [r6657] various edits, incl. resized table in Materials and
+	  changed quotes to match other manuals
+
+2007-04-24 19:40  willic3
+
+	* [r6655] Forgot to change version number.
+
+2007-04-24 19:37  willic3
+
+	* [r6654] Updated splitcube tutorial for new utilities, new usage
+	  of .cfg files, etc.
+
+2007-04-24 15:50  willic3
+
+	* [r6647] Updated features for current version.
+
+2007-04-23 03:04  willic3
+
+	* [r6631] Changed method for determining how many vertices per
+	  face for traction BC.
+
+2007-04-23 03:02  willic3
+
+	* [r6630] Changed method for determining how many vertices per
+	  face for traction BC.
+
+2007-04-20 20:33  willic3
+
+	* [r6624] Updated .cfg files.
+
+2007-04-20 20:24  willic3
+
+	* [r6623] Deleted old shell scripts and added a couple of new .cfg
+	  files.
+
+2007-04-20 19:34  knepley
+
+	* [r6622] Small fixes
+
+2007-04-20 17:36  willic3
+
+	* [r6620] Added .cfg file to launch multi-processor job. Removed
+	  launcher info from pylith3d.cfg specific to Matt's setup.
+
+2007-04-20 17:19  willic3
+
+	* [r6619] Put in changes to ntimdat array (removal of ndtot) that
+	  had been done for fortran code.
+
+2007-04-20 15:37  knepley
+
+	* [r6617] Minimally running 0.8 with new PETSc
+
+2007-04-19 20:08  knepley
+
+	* [r6609] Fixed compile bug with new PETSc
+
+2007-04-19 17:09  knepley
+
+	* [r6607] Trial integration into mainline
+
+2007-04-19 04:11  willic3
+
+	* [r6605] Updated vistest examples for current code (no more
+	  scanner), and fixed some timestep stuff.
+
+2007-04-19 02:33  willic3
+
+	* [r6604] Removed ndtot, which was no longer being used, along
+	  with corresponding entry in the ntimdat array.
+
+2007-04-19 00:02  willic3
+
+	* [r6600] Checked in current version of documentation, which still
+	  needs work.
+
+2007-04-18 18:43  leif
+
+	* [r6596] Creating my own forward declarations of "petscmesh.h"
+	  functions turns out to be a bad idea, because such functions can
+	  have different linkage (C or C+) depending upon how PETSC was
+	  configured.
+
+2007-04-18 00:38  leif
+
+	* [r6595] Fixed VTK output.
+
+2007-04-17 23:13  leif
+
+	* [r6594] Don't open xxx.ascii file when 'asciiOutput' is set to
+	  'none'. Corrected "category" for output files.
+
+2007-04-17 18:47  leif
+
+	* [r6591] Re-implemented memory-usage-report feature, but this
+	  time with only a few lines of code. Factored-out
+	  Python-list-to-C-array code. Added __get__() methods so that
+	  public list/array properties are readable as well as writeable.
+
+2007-04-17 17:53  willic3
+
+	* [r6587] Fixed incorrect format statement number.
+
+2007-04-17 04:37  leif
+
+	* [r6586] Open output files once at the beginning of the run, and
+	  close them once at the end (instead of repeatedly opening and
+	  appending to them). This change elminates the need for the
+	  CIT_FC_OPEN_APPEND Autoconf test and the FORTRAN_POSITION_APPEND
+	  and FORTRAN_ACCESS_APPEND preprocessor macros. It also (quite
+	  incidentally) made the Fortran routine viscos_setup() redundant.
+	  Also, I fixed a bug I introduced. In the Pyrex call to
+	  scan_timdat(), I wrote "len(time_units)" instead of
+	  "sizeof(time_units)". D'oh! Mostly, the Pyrex calls are a
+	  transcription/merging of the old C++ bindings into the Python
+	  code, so hopefully this is the only bug of its kind.
+
+2007-04-14 02:02  leif
+
+	* [r6570] Eliminated the bindings by converting the bulk of the
+	  Python code to Pyrex.
+
+2007-04-12 17:30  willic3
+
+	* [r6555] More changes to documentation.
+
+2007-04-12 17:29  willic3
+
+	* [r6554] Did a little more on Green's functions, but it is
+	  commented out because it still doesn't work.
+
+2007-04-11 20:20  willic3
+
+	* [r6546] Started making changes for 0.8.2. There is still a fair
+	  bit to do.
+
+2007-04-10 21:26  willic3
+
+	* [r6540] Altered to use pythonTimestep and minor fix to time step
+	  info.
+
+2007-04-10 21:14  willic3
+
+	* [r6539] Updated tutorial to use *.cfg files and new methods of
+	  dealing with filenames.
+
+2007-04-10 20:25  willic3
+
+	* [r6538] Updated tutorial to use *.cfg files and new ways of
+	  dealing with filenames.
+
+2007-04-09 18:03  willic3
+
+	* [r6531] Fixed direction of normal (it was backwards).
+
+2007-04-06 20:06  willic3
+
+	* [r6514] Added new 'prescomp' code to source list.
+
+2007-04-06 20:05  willic3
+
+	* [r6513] Simple utility code to compute boundary-normal tractions
+	  (pressures) over a specified set of faces.
+
+2007-04-05 21:54  leif
+
+	* [r6509] Renamed almost all the variables in the Python code and
+	  in the C++ bindings such that the variable names are consistent
+	  with the Fortran code. E.g., rotationUnits -> rotation_units,
+	  numberRotationEntries -> numrot. This makes the code much easier
+	  to understand and much easier to follow as control flows from
+	  Python through C++ into Fortran, and back again. For instance,
+	  if I grep for 'numrot' (actually I use 'gid' from the 'mkid'
+	  package), I now get matches in the Python and C++ code, and I
+	  can easily see that 'numrot' is defined as the return value of
+	  scan_skew(). Sample matches from the output of "gid numrot": #
+	  ---- snip ---- PyLith.py:558: self.numrot = pylith3d.scan_skew(
+	  # [...] ../module/libpylith3d.cc:5319: scan_skew_f(&numrot,
+	  ../module/libpylith3d.cc:5336: << "numrot:" << numrot
+	  ../module/libpylith3d.cc:5341: return Py_BuildValue((char *)
+	  "i", numrot); # [...] ../libpylith3d/scan_skew.f:31: subroutine
+	  scan_skew(numrot,kr,rotation_units,skfile,ierr, # [...] # ----
+	  snip ---- The light is so much better now!
+
+2007-04-04 20:28  willic3
+
+	* [r6508] Minor optimization.
+
+2007-03-30 21:05  leif
+
+	* [r6475] Merged all the Fortran bindings into a single file, in
+	  preparation for the next step.
+
+2007-03-30 18:22  leif
+
+	* [r6473] Removed 'unused' files.
+
+2007-03-27 22:33  willic3
+
+	* [r6444] Made some changes related to generating Green's
+	  functions.
+
+2007-03-27 20:51  sue
+
+	* [r6435] standardized typefaces on cover
+
+2007-03-27 02:24  leif
+
+	* [r6415] Cleaning, step 10: Removed *all* instance variables used
+	  as temporaries, and *all* unused instance variables. If an
+	  instance variable was only used in a single function (but was
+	  more than a mere temporary), I changed it to an ordinary local
+	  variable. I found all these ill-begotten instance variables with
+	  the help of some introspective scaffolding (__getattribute__,
+	  __settattr__). Refactored/tweaked some code so that temporary
+	  arrays are automatically deallocated (without the goofy "xxx =
+	  None").
+
+2007-03-26 23:19  leif
+
+	* [r6414] Cleaning, step 9: Removed 'memorySize' computations.
+	  Maintaining a manual tally such as this one is a tedius and
+	  error-prone way to keep track of memory usage. (I promise to
+	  re-implement this feature later.) Also, I temporarily labeled
+	  all the explicit deallocations, so I can grep for them later.
+
+2007-03-26 22:51  leif
+
+	* [r6413] Cleaning, step 8: Eliminated more redundant variable
+	  initializations. Specifically, the (now former) PyLith
+	  convention self.pointerToX = None # ...later... self.pointerToX
+	  = pylith3d.allocateDouble(...) is meaningless in Python.
+	  Variables do not need to be declared or initialized in Python.
+	  Rest assured that any attempt to read 'pointerToX' before it is
+	  defined will result in an attribute error.
+
+2007-03-24 19:07  leif
+
+	* [r6389] Fixed Makefile.
+
+2007-03-24 01:21  leif
+
+	* [r6387] Cleaning, step 7 {in initialize()}: Eliminated redundant
+	  variable initializations. Moved constants to 'constants.py'.
+	  Eliminated instance variables used as temporaries. Eliminated
+	  unused variables.
+
+2007-03-23 23:39  leif
+
+	* [r6383] Cleaning, step 6: Moved all properties out of the nested
+	  Inventory class. They are now properties of the PyLith
+	  application itself. CIG-Pyre automatically makes such properties
+	  accessible as "self.xxx" (which is much less verbose than
+	  "self.inventory.xxx"). This eliminates the especially tiresome
+	  "self.xxx = self.inventory.xxx" mantra.
+
+2007-03-23 22:48  leif
+
+	* [r6382] Cleaning, step 5: Merged Application and Pylith3d_scan
+	  into a new class, PyLith. (Removing meaningless Component
+	  structure... done.) There is now a single, top-level component
+	  (the PyLith application class). However, this isn't a
+	  user-visible change (yet), as I added a hack so that old
+	  'pl3dscan.xxx' and 'scanner.xxx' options still work.
+
+2007-03-23 21:26  leif
+
+	* [r6379] Cleaning, step 4: Merged GreenFunctionApp with
+	  Application. (Removing meaningless Component structure... 90%
+	  complete...)
+
+2007-03-23 21:00  leif
+
+	* [r6377] Cleaning, step 3: Merged Pylith3d_run with
+	  Pylith3d_scan. (Removing meaningless Component structure... 66%
+	  complete...)
+
+2007-03-23 20:40  leif
+
+	* [r6375] Cleaning, step 2: Merged Pylith3d_setup with
+	  Pylith3d_scan. (Removing meaningless Component structure...)
+
+2007-03-23 20:21  leif
+
+	* [r6373] Cleaning, step 1: removed the leading underscore on
+	  instance variables in Pylith3d_scan, so that they will match the
+	  identifiers used elsewhere in the code. (I'm tired of mold...)
+
+2007-03-23 20:14  willic3
+
+	* [r6372] Incomplete and non-functional version of Greeen function
+	  application. Some C code needs to be converted to Python, and
+	  some logic still needs to be worked out.
+
+2007-03-23 17:42  leif
+
+	* [r6369] Utilize the new _validate() hook in pythia v0.8.1.3b2,
+	  which PyLith-0.8 now requires. Help and command-completion now
+	  works.
+
+2007-03-22 21:04  willic3
+
+	* [r6355] Added sampleLocationFile to inventory for sample
+	  locations of Green's functions. Setup is kludgy right now,
+	  because file is listed as 'optional'. It should actually be
+	  listed as 'required' if Green's functions are being computed,
+	  but I don't have a way of signaling that right now.
+
+2007-03-22 18:13  willic3
+
+	* [r6351] Removed debugging statements.
+
+2007-03-21 21:38  willic3
+
+	* [r6338] Directory containing simple tests for all of the
+	  viscoelastic models presently available. The default model is a
+	  linear Maxwell model based on the Zienkiewiecz & Taylor
+	  formulation. Other models are obtained simply by putting the
+	  appropriate *.cfg file on the command-line.
+
+2007-03-21 20:23  willic3
+
+	* [r6337] Changed call to processMesh so we're now sending it the
+	  base bcInputFile rather than the outputFileRoot.
+
+2007-03-21 20:18  willic3
+
+	* [r6336] Made some changes so the per-processor BC filenames are
+	  based on the global BC filename. For everything to be
+	  consistent, this should also be done for coordinates,
+	  connectivities, split nodes, and tractions. That would involve
+	  changes to PETSc, however.
+
+2007-03-21 18:37  leif
+
+	* [r6333] Avoid (r)partition, which is new in Python 2.5.
+
+2007-03-21 17:56  willic3
+
+	* [r6332] Altered output of BC so that the filenames are based in
+	  the inputFileRoot basename. Now that I think of it, I should add
+	  a new argument so it is based on bcInputFile.
+
+2007-03-21 17:53  willic3
+
+	* [r6331] Made some changes to get things working in parallel
+	  again.
+
+2007-03-19 17:01  willic3
+
+	* [r6290] Updated makefile for new file names.
+
+2007-03-19 16:59  willic3
+
+	* [r6289] Fixed all material models to conform to new arrangement,
+	  and added some documentation strings. Also replaced
+	  commented-out print statements with journal calls.
+
+2007-03-19 16:56  willic3
+
+	* [r6288] Completely rearranged material models to correspond with
+	  current preferred methods, although more testing is needed. Also
+	  removed Numerical Recipes linear algebra routines and replaced
+	  them with LAPACK calls.
+
+2007-03-19 16:50  willic3
+
+	* [r6287] Parameters for material model 9 (power-law viscoelastic
+	  using Zienkiewicz & Taylor formulation).
+
+2007-03-15 19:39  willic3
+
+	* [r6263] Added exception for case where maximum number of
+	  Newton-Raphson iterations is exceeded.
+
+2007-03-15 19:38  willic3
+
+	* [r6262] Major fixes to Newton-Raphson solution for power-law.
+
+2007-03-10 21:12  willic3
+
+	* [r6220] Updated code to deal with multiple element types.
+
+2007-03-09 21:58  willic3
+
+	* [r6215] Traction test for hexahedral elements.
+
+2007-03-08 22:48  leif
+
+	* [r6205] Fixed the makefile I broke.
+
+2007-03-08 00:12  leif
+
+	* [r6185] Removed support for .keyval files (this is a bit
+	  premature, since I still haven't finished updating the
+	  examples). Moved PETSc/Pyre integration stuff into the
+	  framework. PyLith v0.8 now requires Pythia v0.8.1.3b1. Re-run
+	  'configure' to get it.
+
+2007-03-06 02:32  willic3
+
+	* [r6178] Temporarily added Numerical Recipes-derived routines for
+	  LU decomposition and backsubstitution. This should be replaced
+	  with LAPACK calls to routines that take advantage of matrix
+	  symmetry and packed storage.
+
+2007-03-02 19:06  willic3
+
+	* [r6161] New and altered routines for new method of dealing with
+	  power-law rheology. Things should compile, but testing/debugging
+	  is needed.
+
+2007-02-28 01:54  leif
+
+	* [r6127] Updated about half of the PyLith examples to use *.cfg
+	  files instead of *.keyval files. The other half is linhex/*,
+	  which I will update later.
+
+2007-02-14 00:27  leif
+
+	* [r6017] Reverted unintentional check-in of
+	  ComponentHarness-related changes.
+
+2007-02-14 00:23  leif
+
+	* [r6016] Ripped-out calls to PetscCommSynchronizeTags, per Matt's
+	  instructions. The function no longer exists in the development
+	  version of PETSc: changeset: 10000:21bdefd4c2d2 user:
+	  bsmith@barry-smiths-computer.local date: Fri Feb 9 19:34:16 2007
+	  -0600 summary: removed PetscCommSynchronizeTags and
+	  PetscCommCheckTags
+
+2007-02-12 20:06  willic3
+
+	* [r6010] Fixed 2D Jacobian determinant (needed square root).
+	  Fixed problem where element contributions were replacing
+	  traction vector contents rather than updating them.
+
+2007-02-12 20:05  willic3
+
+	* [r6009] Fixed BC to give constant stress throughout cube. Fixed
+	  incorrect node position.
+
+2007-02-12 17:15  willic3
+
+	* [r6008] Made nodal spacing more regular so it is easier to
+	  figure out what areas should be.
+
+2007-02-12 17:14  willic3
+
+	* [r6007] This file must have been added accidentally, and has
+	  been deleted.
+
+2007-02-05 17:27  willic3
+
+	* [r5964] Fixed error in updating viscous strain.
+
+2007-02-03 03:27  leif
+
+	* [r5962] Added a "keyval codec" so that *.keyval files can be
+	  processed by the Pyre framework. Keyval parameters are now
+	  ordinary Inventory items, so they can also be set from the
+	  command line or a .cfg file. Another advantage of this is error
+	  reporting: try inserting a bogus key or value into a '.keyval'
+	  file. I still haven't got the implementation exactly right,
+	  however: with this change, errors in .cfg files (for example)
+	  are reported twice. Since the filename of the .keyval file is
+	  itself a Pyre property, this creates order-of-initialization
+	  problems which exceed the limitations of the Pyre framework. I
+	  have one or two ideas about how to fix this, but they are still
+	  in the oven, only half-baked...
+
+2007-02-01 20:26  willic3
+
+	* [r5948] Added *.cfg file specifically for debugging to make life
+	  easier.
+
+2007-02-01 17:03  willic3
+
+	* [r5947] Fixed mistake in units for viscosityCoefficient.
+
+2007-02-01 16:29  willic3
+
+	* [r5946] Fixed stupid typo.
+
+2007-02-01 16:11  willic3
+
+	* [r5945] Removed old run scripts and replaced them with *.cfg
+	  files. Fixed time stepping and added option for running
+	  power-law example using older ESF-based solution method. At
+	  present, PyLith is no longer able to parse the material
+	  properties files correctly. I'm not sure why.
+
+2007-01-30 21:28  leif
+
+	* [r5936] Moved Python egg stuff into our Autoconf macro library.
+
+2007-01-30 20:50  willic3
+
+	* [r5932] Removed python run script, which isn't really necessary
+	  with the new *.cfg files.
+
+2007-01-30 20:45  willic3
+
+	* [r5931] Initial version of *.cfg file for tractest example. This
+	  is about the simplest possible file, with nothing related to
+	  MPI, etc.
+
+2007-01-27 20:28  willic3
+
+	* [r5920] Fixed parsing of units.
+
+2007-01-27 17:52  willic3
+
+	* [r5919] Added new utility to alter boundary conditions along
+	  specified line segments, and added it to the Makefile. This
+	  utility is somewhat specific to the CFEM benchmarks, but may
+	  have some other uses.
+
+2007-01-27 00:19  leif
+
+	* [r5918] Removed extraneous quotes around 'traction_units' in the
+	  lintet/tractest example (I'm not sure how this ever worked).
+
+2007-01-26 16:20  willic3
+
+	* [r5907] Fixed logic for getting minimum value for a point.
+
+2007-01-26 15:13  willic3
+
+	* [r5906] Added faultbm.f to utilities.
+
+2007-01-26 15:12  willic3
+
+	* [r5905] Initial version of code to calculate fault BC for CFEM
+	  benchmarks. I need to test it.
+
+2007-01-26 03:02  leif
+
+	* [r5900] Removed unused files.
+
+2007-01-24 03:18  leif
+
+	* [r5882] Perform I/O file checks earlier, in _configure(), so
+	  that errors are caught before launching. Also, turned the error
+	  message into a 'journal' log message.
+
+2007-01-24 00:44  leif
+
+	* [r5879] Cleanly separate input files from output files by giving
+	  their filenames different roots. This allows PyLith to read
+	  input files directly, instead of relying upon symlinks.
+
+2007-01-22 15:47  willic3
+
+	* [r5853] Fixed incorrect call to td_matinit.
+
+2007-01-19 21:47  leif
+
+	* [r5840] Added 'sys.executable' to the arguments for
+	  PetscInitialize(), so that -start_in_debugger works. Also,
+	  recognize -debugger_pause (the default is too short on my
+	  system).
+
+2007-01-19 00:35  leif
+
+	* [r5834] Fix for "Fortran 77 source seen but `F77' is undefined"
+	  error with Automake 1.10.
+
+2007-01-18 16:49  willic3
+
+	* [r5826] New example to test ESF version of power-law rheology.
+
+2007-01-18 16:46  willic3
+
+	* [r5825] Corrected time info for double precision. Removed gdb
+	  history file that had accidentally been committed.
+
+2007-01-18 16:41  willic3
+
+	* [r5824] Starting the process of revising benchmarks. Old Make.mm
+	  and test.sh files have been removed and replaced by runex.py
+	  script to run the benchmark. Time information has been corrected
+	  to yield correct viscoelastic solution. Files originally used
+	  from bm1a have been copied over to make this a standalone
+	  example. The time info needs to be tested to see if it is
+	  overkill.
+
+2007-01-18 16:30  willic3
+
+	* [r5823] Starting the process of revising benchmarks. Old Make.mm
+	  and test.sh files have been removed and replaced by runex.py
+	  script to run the benchmark. Time information has been corrected
+	  to yield correct viscoelastic solution.
+
+2007-01-18 16:25  willic3
+
+	* [r5822] Starting the process of revising benchmarks. Old Make.mm
+	  and test.sh files have been removed and replaced by runex.py
+	  script to run the benchmark. Time information has been corrected
+	  to yield correct viscoelastic solution.
+
+2007-01-18 15:21  willic3
+
+	* [r5821] Added descriptions to stdout info.
+
+2007-01-17 22:24  willic3
+
+	* [r5804] Fixed incorrect routine calls.
+
+2007-01-17 21:59  willic3
+
+	* [r5803] Fixed incorrect calls.
+
+2007-01-17 21:09  willic3
+
+	* [r5801] Fixed incorrect call to td_strs_1.
+
+2007-01-17 20:29  willic3
+
+	* [r5800] Fixed time stepping so viscous solution is correct.
+
+2007-01-12 21:34  willic3
+
+	* [r5784] Added new material model.
+
+2007-01-12 21:30  willic3
+
+	* [r5783] Added new material model to hold original ESF-based
+	  power-law model.
+
+2007-01-12 21:24  willic3
+
+	* [r5782] Added exceptions for problems with Cholesky inversion.
+
+2007-01-12 21:23  willic3
+
+	* [r5781] Update all material model routines and associated
+	  drivers to make use of iteration counter, which is useful for
+	  some material models. Added option to tangent computation
+	  routines to let them know whether tangent is being computed
+	  using current stresses or stresses from previous time step.
+	  Fixed test makefile to add top-level PETSc directory to include
+	  path.
+
+2007-01-12 21:20  willic3
+
+	* [r5780] Replaced original power-law model (model 6) with new
+	  implementation and moved original implementation to material
+	  model 9.
+
+2007-01-12 21:19  willic3
+
+	* [r5779] New implementation of Maxwell power-law material model,
+	  using formulation based on Zienkiewicz & Taylor rather than
+	  original ESF-based version. Routines compile but have not yet
+	  been tested.
+
+2007-01-12 21:17  willic3
+
+	* [r5778] This material model now corresponds to the original
+	  ESF-version of the Maxwell power-law model.
+
+2007-01-10 03:19  leif
+
+	* [r5751] Tied PyLith's configuration even more closely to
+	  PETSc's: use 'petscconf' to determine both CXX and the MPI
+	  flags. I'm not sure why this 'configure' script didn't grab MPI
+	  configuration from PETSc. But, I remember why it didn't grab CXX
+	  from PETSc: Lithomop didn't require PETSc to be configured with
+	  C++, so it couldn't assume that 'petscconf' defined CXX. Now,
+	  with the addition of the Sieve dependency, it can be assumed
+	  that 'petscconf' defines CXX. It is almost certainly an error to
+	  configure PyLith with a C++ compiler different from the one used
+	  to configure PETSc; this change avoids that potential mistake.
+	  This change also avoids confusing 'configure' error messages
+	  about MPIINCLUDES and MPILIBS, which aren't relevant to PyLith
+	  -- PyLith should simply be configured with the MPI library
+	  defined by the PETSc configuration.
+
+2007-01-10 00:45  leif
+
+	* [r5746] Use CIG-Pythia's 'launcher' and 'scheduler' facilities.
+	  Users no longer execute 'mpirun'. Instead, they execute
+	  'pylith3dapp.py' directly, and the framework re-executes PyLith
+	  under 'mpirun' automatically. On a cluster with a scheduler
+	  (PBS, LSF, ...) the framework automatically generates a batch
+	  script and submits a job to the queue. One uses
+	  "--launcher.nodes=XXX" to specify the number of processors.
+	  Currently, the framework defaults to MPICH1 with no scheduler;
+	  using PBS, LSF, MPICH2, LAM/MPI, etc. may require additional
+	  configuration, which is beyond the scope of this log comment.
+	  This change breaks the "--disable-embedding" configuration. I
+	  will revisit this later.
+
+2007-01-09 03:02  leif
+
+	* [r5698] Transformed "Hello" print statements into 'journal' log
+	  messages. Made MaterialModel subclasses call
+	  MaterialModel.__init__(). Nuked gratuitous use of 'exec'.
+
+2007-01-08 23:27  leif
+
+	* [r5696] Issue32: "make install" is now optional. Users can now
+	  simply "configure", "make", and then add the "pylith3d"
+	  subdirectory of the source/build directory to their PATH. In
+	  this mode, changes to C++ simply require a "make" from the
+	  top-level directory. Changes to the Python code do not require
+	  you to run "make" at all -- simply re-run 'pylith3dapp.py'.
+	  Also: Changed the 'configure' option '--with-embedding' to
+	  '--enable-embedding', for consistency with CitcomS. Note: when
+	  configured with '--disable-embedding', "make install" is NOT
+	  optional. This is because the PyLith extension module has the
+	  same name as the top-level package ('pylith3d'). The extension
+	  module must be installed under the package directory in order
+	  for everything to work. There are two possible fixes: 1) tweak
+	  the build so that 'pylith3dmodule.so' lands under 'pylith3d'; or
+	  2) rename the extension module.
+
+2007-01-06 02:11  leif
+
+	* [r5688] Implemented strict command-line processing. Previously,
+	  Pyre-based PyLith command-line options and PETSc options were
+	  mixed together. This caused Pyre to issue warnings about the
+	  unrecognized PETSc options, and PETSc to warn about the
+	  unrecognized Pyre options. (Pyre errors were degraded to
+	  warnings by giving "--typos=relaxed" as a matter for course.)
+	  Now, PETSc and Pyre options are cleanly separated. (The use of
+	  "--typos=relaxed" is discouraged.) This is implemented as
+	  follows: PETSc options are designated explicitly using a 'petsc'
+	  dummy facility+component, which allows passing arbitrary options
+	  to PETSc: "--petsc.xxx". In addition,
+	  commonly-used/highly-relevant PETSc options are listed in
+	  PyLith's inventory; so, for example, on can give "-log_summary"
+	  instead of "-petsc.log_summary" (either one will work). Finally,
+	  PyLith overrides the standard Pyre CommandlineParser with
+	  PetscCommandlineParser, which mimics PETSc's command-line
+	  processing logic. This lets one write "-ksp_rtol 1e-09" (as is
+	  customary) instead of "-ksp_rtol=1e-09". ~~~ Also:
+	  PetscInitialize() was being called twice; I removed the second
+	  occurance. The binding for PetscInitialize() was free()ing the
+	  'argv' passed to PETSc; this is potentially dangerous since
+	  PETSc maintains a reference to this block, so now the 'argv' is
+	  not freed.
+
+2007-01-05 01:15  leif
+
+	* [r5637] Transitioned PyLith v0.8 to the egg-based "CIG Edition"
+	  of Pythia.
+
+2006-12-15 00:55  leif
+
+	* [r5600] Replaced lnblnk with len_trim for portability (ifort has
+	  only the latter).
+
+2006-12-06 21:25  willic3
+
+	* [r5485] Changed integer output format to allow larger values for
+	  ASCII UCD files.
+
+2006-12-06 20:59  willic3
+
+	* [r5483] Updated code to allow coordinate ranges to be specified.
+	  Nodes outside those ranges get no slip.
+
+2006-12-04 21:31  willic3
+
+	* [r5439] Added an extra field to ivfamily so we can output
+	  material ID rather than material model, which is much more
+	  useful.
+
+2006-12-04 21:30  willic3
+
+	* [r5438] Added an extra field to ivfamily so that we can output
+	  material ID rather than material type, which is much more useful.
+
+2006-12-04 18:44  sue
+
+	* [r5433] copied materials.lyx custom preamble line to
+	  userguide.lyx to solve pdf generation problem
+
+2006-11-30 01:53  willic3
+
+	* [r5384] Forgot to put in slip scaling earlier.
+
+2006-11-30 01:44  willic3
+
+	* [r5383] Finished fixing Makefile.am.
+
+2006-11-30 01:29  willic3
+
+	* [r5382] Added new code to compute split node entries given
+	  LaGriT auxiliary fault files plus UCD file specifying slip
+	  values. Also added associated parameter file.
+
+2006-11-29 22:47  willic3
+
+	* [r5381] Quick and dirty code to compute fault slip using a
+	  combination of LaGriT auxiliary fault info files and UCD files
+	  containing slip values. Code needs testing (hasn't even been
+	  compiled yet).
+
+2006-11-29 19:14  willic3
+
+	* [r5378] Added ESF version of Maxwell model.
+
+2006-11-29 18:03  willic3
+
+	* [r5373] Fixed error in computation of tangent matrix.
+
+2006-11-29 03:35  willic3
+
+	* [r5372] Changed old ESF-based Maxwell model to correspond to a
+	  new material model.
+
+2006-11-29 03:33  willic3
+
+	* [r5371] Changed name of compdq function to avoid conflicts with
+	  other material models that might use the same (or similar)
+	  function.
+
+2006-11-29 03:32  willic3
+
+	* [r5370] Added python module for new material model.
+
+2006-11-29 03:28  willic3
+
+	* [r5369] Instead of replacing Maxwell model with new method, keep
+	  old one as a different material model.
+
+2006-11-28 22:14  willic3
+
+	* [r5367] Initial version of linear Maxwell model that uses Prony
+	  series approach rather than ESF. This hasn't been tested yet and
+	  I may revert back to the previous version, depending on how
+	  tests go.
+
+2006-11-22 02:06  willic3
+
+	* [r5341] Altered relaxation time to be consistent with uniaxial
+	  test problem.
+
+2006-11-21 22:20  willic3
+
+	* [r5337] Changed relaxation time definitions, but still not sure
+	  it's correct.
+
+2006-11-21 21:41  willic3
+
+	* [r5336] Fixed errors in computation of tangent stress-strain
+	  matrix.
+
+2006-11-17 22:36  willic3
+
+	* [r5319] Fixed some bugs, mostly related to intializing viscous
+	  strain variables. Test based on bm1 seems to work OK. Need to do
+	  a shear test to make sure I haven't mixed up engineering/tensor
+	  strain.
+
+2006-11-17 19:52  willic3
+
+	* [r5316] New generalized Maxwell model, consisting of 3 Maxwell
+	  models in parallel with a spring. Still needs testing.
+
+2006-11-16 21:08  willic3
+
+	* [r5305] Increased maximum number of state variables for a model
+	  to 30.
+	* [r5304] More work on generalized Maxwell model. Still need to
+	  finish mat_7.f.
+
+2006-11-16 20:36  willic3
+
+	* [r5303] For now, let the number of state variables be 30 for the
+	  current formulation using 3 Maxwell models in parallel
+	  (Zienkiewicz and Taylor formulation). I may switch to the Simo
+	  and Hughes formulation later, since this appears to only require
+	  one additional state variable per Maxwell element (rather than
+	  6).
+
+2006-11-15 20:08  willic3
+
+	* [r5275] Changed parameter definitions and temporarily altered
+	  things so the number of Maxwell elements is fixed at 3.
+
+2006-11-15 20:07  willic3
+
+	* [r5274] Added python file for generalized Maxwell model.
+
+2006-11-15 20:06  willic3
+
+	* [r5273] Added new exception if sum of shear ratios is incorrect.
+
+2006-11-15 20:05  willic3
+
+	* [r5272] Updated definitions for generalized Maxwell model.
+
+2006-11-15 20:04  willic3
+
+	* [r5271] Initial incomplete set of routines for generalized
+	  Maxwell model. Things should be OK through matinit computation.
+	  I still need to finish the rest of it.
+
+2006-11-14 21:22  willic3
+
+	* [r5265] Added generalized Maxwell model to list.
+
+2006-11-14 21:21  willic3
+
+	* [r5264] Initial python code to describe a Generalized Maxwell
+	  model, which consists of a series of linear Maxwell models in
+	  parallel. The standard linear solid can also be obtained as a
+	  special case.
+
+2006-11-13 15:39  willic3
+
+	* [r5247] Minor fix to blockrot3.f. Updated blockrot3.par to be
+	  consistent with dipblock4-sin example. Added readucd3.par
+	  parameter file for new readucd3.f code. Added readucd3.f to
+	  Makefile.am.
+
+2006-11-10 22:16  willic3
+
+	* [r5236] New code to deal with new LaGriT method for flagging
+	  boundaries. This version does not deal with faults, since the
+	  plan now is to use other codes to do this that no longer require
+	  global mesh info to use the new LaGriT fault description files.
+
+2006-11-09 14:11  willic3
+
+	* [r5214] Fixed silly mistake in computation of tangent matrix.
+
+2006-11-04 01:01  leif
+
+	* [r5176] Fix for issue62: "PETSc autoconf macro CIT_PETSC_SIEVE
+	  out of date". Also, use AC_HELP_STRING.
+
+2006-11-03 01:57  willic3
+
+	* [r5173] Put in same fix Matt did for matinit_drv.F, syncing tags
+	  before assembly.
+
+2006-11-03 01:31  knepley
+
+	* [r5172] Sync tags before assembly
+
+2006-11-02 18:42  brad
+
+	* [r5171] Added 2 more bc to keep block from rotating.
+
+2006-11-02 17:06  brad
+
+	* [r5170] Added use of SIEVE_FLAGS and PETSC_LIB in module
+	  Makefile. Temporarily hardwired setting SIEVE_FLAGS in
+	  configure.ac (real solution is to get value from petscconf in
+	  m4/cit_petsc.m4, which Leif will add when he has time).
+
+2006-10-30 21:35  knepley
+
+	* [r5118] Fixed preallocateMatrix() call
+
+2006-10-30 15:17  willic3
+
+	* [r5116] Updated blockrot utility to use new LaGriT fault
+	  definition format. Hopefully, this is the final version.
+
+2006-10-26 19:53  willic3
+
+	* [r5102] Fixed routine so BC arrays are zeroed out before
+	  returning even when there are no BC entries.
+
+2006-10-26 19:43  willic3
+
+	* [r5101] Fixed routine to pass up error codes from stress_drv and
+	  stress_mat_drv.
+
+2006-10-26 19:42  willic3
+
+	* [r5100] Fixed stupid bug when computing current stress estimate.
+	  Fixed problem when I was not transferring current stress
+	  estimate to the necessary temporary variable. Fixed root-finding
+	  tolerance to be a function of the current stress estimate.
+	  Otherwise, the tolerance was typically too small.
+
+2006-10-26 19:39  willic3
+
+	* [r5099] Cleaned up code with some parentheses and a few other
+	  fixes to avoid ambiguity.
+	* [r5098] Cleaned up viscous stress computation and fixed some
+	  potential bugs.
+
+2006-10-26 19:33  willic3
+
+	* [r5097] Updated run scripts to pay attention to .keyval files.
+
+2006-10-26 18:47  brad
+
+	* [r5096] Partial fix to bug where PyLith can't handle cases where
+	  processors don't have BCs. BC file is now empty when there are
+	  no BCs as opposed to creating BC file with header. Still dies
+	  later on for this case. Created bctest which exposes remaining
+	  problems with this case.
+
+2006-10-26 17:39  willic3
+
+	* [r5095] Altered BC routines so they will not return an error if
+	  there are no BC defined for a process.
+
+2006-10-26 17:03  knepley
+
+	* [r5094] Fixed problem with BC - Was figuring numElements
+	  incorrectly
+
+2006-10-25 14:19  willic3
+
+	* [r5092] New power-law rheology test for linear hexes, for
+	  comparison with results from TECTON and TEKTON.
+
+2006-10-25 14:15  willic3
+
+	* [r5091] Removed obsolete loop, since slippery nodes are not
+	  presently available.
+
+2006-10-25 14:12  willic3
+
+	* [r5090] Added power-law Maxwell definitions.
+
+2006-10-25 14:11  willic3
+
+	* [r5089] Fixed string returned on error.
+
+2006-10-25 14:10  willic3
+
+	* [r5088] Minor efficiency change, but it chould be significant
+	  since this routine is used many times.
+	* [r5087] Numerous bug fixes and efficiency improvements. Also
+	  made much more use of parentheses in long expressions, since
+	  some were not being evaluated correctly. At some point, I need
+	  to determine whether the evaluations were consistent with
+	  fortran standards or are a result of using g95.
+
+2006-10-25 14:05  willic3
+
+	* [r5086] Put in return for case where root-finding algorithm
+	  finds the exact root (to machine precision) during function
+	  evaluation. Original algorithm did not seem to detect this case
+	  and took many more iterations to converge.
+
+2006-10-25 00:36  brad
+
+	* [r5084] Green's functions stuff is turned on with
+	  --enable-greensfns argument to configure. Still need to add test
+	  for Numeric/arrayobject.h to configure.ac.
+
+2006-10-25 00:30  brad
+
+	* [r5082] Moved interpolatePoints from scanner.cc to
+	  interpolate.cc. Green's functions stuff is turned on with
+	  --enable-greensfns argument to configure. Still need to add test
+	  for Numeric/arrayobject.h to configure.ac.
+
+2006-10-23 16:55  willic3
+
+	* [r5079] Added power-law rheology.
+
+2006-10-23 15:08  willic3
+
+	* [r5077] Added python module for power-law rheology.
+
+2006-10-23 14:56  willic3
+
+	* [r5076] Fixed silly error in derivative of effective stress
+	  function to be used for Newton's method (equation 46).
+
+2006-10-20 20:20  willic3
+
+	* [r5073] Completely reworked materials chapter, and added
+	  equations for power-law Maxwell rheology. I need to double-check
+	  the equations and cross-referencing.
+
+2006-10-16 19:55  knepley
+
+	* [r5054] Added Green Function application: - Needs to be updated
+	  to run multiple problems Put in interpolation
+
+2006-10-16 00:13  knepley
+
+	* [r5053] Finally running with new PETSc
+
+2006-10-15 23:27  willic3
+
+	* [r5052] Added new routines rtsafe.f and zbrac.f.
+
+2006-10-15 23:24  knepley
+
+	* [r5051] This compiles, but has link errors
+
+2006-10-13 22:41  sue
+
+	* [r4991] added pdf manual
+
+2006-10-13 20:24  sue
+
+	* [r4990] went over all urls to remove http since not needed
+
+2006-10-13 19:30  sue
+
+	* [r4989] added latex feature to put urls in parentheses
+
+2006-10-13 19:29  sue
+
+	* [r4988] miniscule punc. and typos fixed; added feature to put
+	  urls in parentheses)
+
+2006-10-13 18:29  willic3
+
+	* [r4987] Definitions for Maxwell power-law material.
+
+2006-10-13 18:27  willic3
+
+	* [r4986] Initial test for power-law rheology. I may need to alter
+	  the viscosity coefficient to get anything interesting.
+
+2006-10-13 16:43  willic3
+
+	* [r4985] Updated all routine for computation of Maxwell time.
+
+2006-10-13 02:22  willic3
+
+	* [r4964] Nearly finished. Still need to finish Maxwell time
+	  computations.
+
+2006-10-13 00:25  sue
+
+	* [r4963] small typos corrected
+
+2006-10-12 21:07  willic3
+
+	* [r4960] Added error return.
+
+2006-10-12 21:06  willic3
+
+	* [r4959] More effective stress function stuff. Still need to
+	  finish tangent matrix.
+
+2006-10-11 23:25  sue
+
+	* [r4954] correct a few typos and format
+
+2006-10-11 19:02  willic3
+
+	* [r4788] More progress with effective stress formulation.
+
+2006-10-11 00:53  willic3
+
+	* [r4784] Added more stuff for power-law (initialization of
+	  material matrix at the beginning of a time step.
+
+2006-10-11 00:13  sue
+
+	* [r4783] updated cover per brad and added layered psd cover file
+
+2006-10-10 20:55  willic3
+
+	* [r4779] Updated to compute Maxwell time from elastic solution
+	  for consistency with other rheologies. More changes will be
+	  needed, primarily in fixing the calling routines.
+
+2006-10-10 20:53  willic3
+
+	* [r4778] Started updating these routines for power-law Maxwell
+	  viscoelastic rheology. Additional changes will be needed. Also,
+	  all other material models will need to be updated to the new
+	  calling conventions.
+
+2006-10-10 15:38  willic3
+
+	* [r4774] Added new errors related to root bracketing/finding.
+
+2006-10-10 15:36  willic3
+
+	* [r4773] Initial version of a root finding routine modified from
+	  Numerical Recipes. This will be needed for power-law rheology.
+
+2006-10-10 15:35  willic3
+
+	* [r4772] Initial version of a root bracketing routine modified
+	  from Numerical Recipes. This will be needed for power-law
+	  rheology.
+
+2006-10-10 15:20  willic3
+
+	* [r4770] Added some new exceptions related to root
+	  bracketing/finding.
+
+2006-10-06 23:22  brad
+
+	* [r4729] Increased resolution of sample images. Removed
+	  superfluous print statement in tutor.
+
+2006-10-06 23:02  baagaard
+
+	* [r4728] Removed obsolete xml (docbook) file.
+
+2006-10-06 23:00  baagaard
+
+	* [r4727] Updated user guide to 0.8.1. Fixed size of tutorial
+	  figures. Removed obsolete xml (docbook) and tex (latex) files.
+
+2006-10-06 22:46  brad
+
+	* [r4726] Replaced figures with higher resolution versions.
+
+2006-10-05 00:25  baagaard
+
+	* [r4707] Updated to reflect inclusion of readnetgen and faultcalc
+	  in bin directory. Updated estimate for 1.0.
+
+2006-10-04 18:35  willic3
+
+	* [r4696] Fixed incorrect error return for scan_tractions
+	  (tractions are optional). Fixed read_tractions to return with no
+	  error when there are no tractions.
+
+2006-10-04 18:33  willic3
+
+	* [r4694] Fixed argument lists and inventory for traction BC.
+
+2006-10-04 16:05  willic3
+
+	* [r4691] Fixed bindings for scan_tractions and read_tractions,
+	  which had been commented out.
+
+2006-10-04 15:53  willic3
+
+	* [r4690] Fixed name from scan_traction to scan_tractions.
+
+2006-10-03 16:36  willic3
+
+	* [r4682] Added missing entries for write_tractions and preshape2d.
+
+2006-10-02 20:55  knepley
+
+	* [r4676] Fixed setup.cc Upgraded to new PETSc Sieve interface
+
+2006-09-29 01:57  willic3
+
+	* [r4665] Removed obsolete sources.
+
+2006-09-29 01:49  willic3
+
+	* [r4664] Updated makefile for new sources.
+
+2006-09-28 21:35  willic3
+
+	* [r4663] Updated all bindings for traction BC.
+
+2006-09-28 21:20  willic3
+
+	* [r4662] Routine to write out traction BC.
+
+2006-09-28 21:07  willic3
+
+	* [r4661] Updated call to write_tractions.
+
+2006-09-28 20:49  willic3
+
+	* [r4660] Added bindings for preshape2d.
+
+2006-09-28 20:38  willic3
+
+	* [r4659] Updated to reflect changes in read_tractions.
+
+2006-09-28 20:36  willic3
+
+	* [r4658] Updated bindings to reflect change in argument list for
+	  scan_tractions.
+	* [r4657] Get degrees of freedom from parameter include file
+	  rather than being passed in.
+
+2006-09-28 20:34  willic3
+
+	* [r4656] Added routine to read traction BC. Time histories should
+	  be added later.
+
+2006-09-28 20:32  willic3
+
+	* [r4655] Added bindings for read_tractions.
+
+2006-09-28 20:12  willic3
+
+	* [r4654] Fixed call to scan_tractions.
+
+2006-09-28 20:09  willic3
+
+	* [r4653] Put in bindings for scan_tractions.
+
+2006-09-28 20:08  willic3
+
+	* [r4652] Initial version of routine to scan traction BC. Once
+	  things are working OK, we should add time histories.
+
+2006-09-28 16:01  willic3
+
+	* [r4644] Updated all routines for traction BC.
+
+2006-09-27 21:11  willic3
+
+	* [r4638] This obsolete routine has been replaced by the routines
+	  traction_drv and traction_cmp_ss.
+
+2006-09-27 21:09  willic3
+
+	* [r4637] This obsolete routine has been superceded by the
+	  traction_drv and traction_cmp_ss routines.
+
+2006-09-27 21:08  willic3
+
+	* [r4636] Altered arguments lists to be consistent with
+	  computation routine.
+
+2006-09-27 21:07  willic3
+
+	* [r4635] Initial version of routine to compute contributions to
+	  global load vector for tractions applied to a given face. This
+	  version does not include load histories and assumes a constant
+	  value applied over the entire face.
+
+2006-09-27 20:08  willic3
+
+	* [r4632] Initial version of routine to compute Jacobian for a 2D
+	  surface in 3D.
+
+2006-09-26 22:18  leif
+
+	* [r4627] Updated info files.
+
 2006-09-26 21:56  leif
 
 	* [r4626] Version 0.8.1a -> 0.8.1.
