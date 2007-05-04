@@ -15,5 +15,5 @@ density          = 3000.0*kg/m**3		#  Density
 youngsModulus    = 7.5e10*Pa			#  Young's modulus
 poissonsRatio    = 0.25				#  Poisson's ratio
 powerLawExponent = 3.50				#  Exponent
-viscosityCoefficient = 1.42746527e12*s*Pa**3.5    # EMHU
+viscosityCoefficient = 1.0e10*s*Pa**3.5          # EMHU
 endMaterial	 = True
