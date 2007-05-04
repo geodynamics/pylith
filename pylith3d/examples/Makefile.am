@@ -322,6 +322,7 @@ nobase_dist_examples_DATA = \
 	lintet/splittest/fixsplit.f \
 	lintet/splittest/pylith3d-debug.cfg \
 	lintet/splittest/pylith3d-np2.cfg \
+	lintet/splittest/pylith3d-parmetis.cfg \
 	lintet/splittest/pylith3d.cfg \
 	lintet/splittest/splittest-test1.bc \
 	lintet/splittest/splittest-test2.bc \
@@ -335,7 +336,6 @@ nobase_dist_examples_DATA = \
 	lintet/splittest/splittest.time \
 	lintet/tractest/pylith3d-debug.cfg \
 	lintet/tractest/pylith3d-np2.cfg \
-	lintet/tractest/pylith3d-parmetis.cfg \
 	lintet/tractest/pylith3d.cfg \
 	lintet/tractest/tractest.bc \
 	lintet/tractest/tractest.connect \
