@@ -21,11 +21,21 @@ subpkginclude_HEADERS = \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc
 
+if ENABLE_CUBIT
+  subpkginclude_HEADERS += \
+	MeshIOCubit.hh \
+	MeshIOCubit.icc
+endif
+
 noinst_HEADERS = \
+	BinaryIO.hh \
 	GMVFile.hh \
 	GMVFileAscii.hh \
 	GMVFileAscii.icc \
-	GMVFileBinary.hh
+	GMVFileBinary.hh \
+	PsetFile.hh \
+	PsetFileAscii.hh \
+	PsetFileBinary.hh
 
 # export
 clean-local: clean-subpkgincludeHEADERS

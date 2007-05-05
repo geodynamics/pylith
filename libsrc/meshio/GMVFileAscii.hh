@@ -27,8 +27,8 @@ namespace pylith {
 class pylith::meshio::GMVFileAscii : public GMVFile
 { // GMVFileAscii
 
+// PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
-  // PUBLIC METHODS ///////////////////////////////////////////////
 
   /** Constructor with name of GMV file.
    *
@@ -84,8 +84,8 @@ public :
 	     const int numCells,
 	     const int numCorners);
 
+// PRIVATE METHODS //////////////////////////////////////////////////////
  private :
-  // PRIVATE METHODS //////////////////////////////////////////////
   
   /** Read header.
    *
@@ -148,8 +148,8 @@ public :
 		      const int numVertices,
 		      const int numCells);
 
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
-  // PRIVATE METHODS //////////////////////////////////////////////
   
   /** Header in ascii GMV file */
   static const char* _HEADER;

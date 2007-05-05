@@ -12,6 +12,8 @@
 
 #include "GMVFileBinary.hh" // implementation of class methods
 
+#include "BinaryIO.hh" // USES readString()
+
 #include "pylith/utils/array.hh" // USES double_array, int_array
 #include "pylith/utils/Endian.hh" // USES Endian
 
@@ -19,10 +21,9 @@
 
 #include <fstream> // USES std::ifstream
 #include <iomanip> // USES std::setw()
-#include <string> // USES std::string
+#include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::exception
-#include <iostream> // USES std::cout
 
 // ----------------------------------------------------------------------
 const char* pylith::meshio::GMVFileBinary::_HEADER = "gmvinputieee    ";
@@ -127,7 +128,7 @@ pylith::meshio::GMVFileBinary::write(const double_array& coordinates,
 void
 pylith::meshio::GMVFileBinary::_readHeader(std::ifstream& fin)
 { // _readHeader
-  std::string header = _readString(fin, strlen(_HEADER));
+  std::string header = BinaryIO::readString(fin, strlen(_HEADER));
   std::string headerE = _HEADER;
   headerE = headerE.substr(0, headerE.find_first_of(" "));
   if (headerE != header) {
@@ -156,8 +157,8 @@ pylith::meshio::GMVFileBinary::_readVertices(std::ifstream& fin,
 
   fin.read((char*) numVertices, sizeof(int));
   if (_flipEndian)
-    utils::Endian::swapByteOrder((char*) numVertices, 1, sizeof(int));
-      
+    BinaryIO::swapByteOrder((char*) numVertices, 1, sizeof(int));
+  assert(*numVertices > 0);
   info << "Reading " << *numVertices << " nodes." << journal::endl;
 
   const int size = (*numVertices) * (*spaceDim);
@@ -165,7 +166,7 @@ pylith::meshio::GMVFileBinary::_readVertices(std::ifstream& fin,
 
   fin.read((char*) &buffer[0], size*sizeof(float));
   if (_flipEndian)
-    utils::Endian::swapByteOrder((char*) &buffer[0], size, sizeof(float));
+    BinaryIO::swapByteOrder((char*) &buffer[0], size, sizeof(float));
 
   coordinates->resize(size);
   // switch from column major to row major order
@@ -191,7 +192,7 @@ pylith::meshio::GMVFileBinary::_readCells(std::ifstream& fin,
 
   fin.read((char*) numCells, sizeof(int));
   if (_flipEndian)
-    utils::Endian::swapByteOrder((char*) numCells, 1, sizeof(int));
+    BinaryIO::swapByteOrder((char*) numCells, 1, sizeof(int));
   info << "Reading " << *numCells << " cells." << journal::endl;
   std::string cellString = "";
   for (int iCell=0; iCell < *numCells; ++iCell) {
@@ -202,7 +203,7 @@ pylith::meshio::GMVFileBinary::_readCells(std::ifstream& fin,
     cellStringCur[stringLen] = '\0';
     fin.read((char*) &numCornersCur, sizeof(int));
     if (_flipEndian)
-      utils::Endian::swapByteOrder((char*) numCornersCur, 1, sizeof(int));
+      BinaryIO::swapByteOrder((char*) numCornersCur, 1, sizeof(int));
     if (0 != *numCorners) {
       if (cellStringCur != cellString) {
 	std::ostringstream msg;
@@ -222,7 +223,7 @@ pylith::meshio::GMVFileBinary::_readCells(std::ifstream& fin,
 	     sizeof(int)*numCornersCur);
   } // for
   if (_flipEndian)
-    utils::Endian::swapByteOrder((char*) &(*cells)[0], 
+    BinaryIO::swapByteOrder((char*) &(*cells)[0], 
 				 (*numCells)*(*numCorners), sizeof(int));
   info << "Done." << journal::endl;
 } // readCells
@@ -237,7 +238,7 @@ pylith::meshio::GMVFileBinary::_readVariables(std::ifstream& fin,
   info << "Reading variables..." << journal::endl;
   
   const int varNameLen = 8;
-  std::string varName = _readString(fin, varNameLen);
+  std::string varName = BinaryIO::readString(fin, varNameLen);
   while("endvars" != varName && !fin.eof() && fin.good()) {
     int varType = 0;
     fin.read((char*) &varType, sizeof(int));
@@ -248,10 +249,10 @@ pylith::meshio::GMVFileBinary::_readVariables(std::ifstream& fin,
       float_array vals(numCells);
       fin.read((char*) &vals[0], sizeof(float)*numCells);
     } // else
-    varName = _readString(fin, varNameLen);
+    varName = BinaryIO::readString(fin, varNameLen);
   } // while
 
-  std::cout << "Done." << std::endl;
+  info << "Done." << journal::endl;
 } // _readVariables
 
 // ----------------------------------------------------------------------
@@ -264,7 +265,7 @@ pylith::meshio::GMVFileBinary::_readFlags(std::ifstream& fin,
   info << "Reading flags..." << journal::endl;
 
   const int varNameLen = 8;
-  std::string varName = _readString(fin, varNameLen);
+  std::string varName = BinaryIO::readString(fin, varNameLen);
   while("endflag" != varName && !fin.eof() && fin.good()) {
     int numFlags = 0;
     fin.read((char*) &numFlags, sizeof(int));
@@ -272,7 +273,7 @@ pylith::meshio::GMVFileBinary::_readFlags(std::ifstream& fin,
     fin.read((char*) &varType, sizeof(int));
     for (int iFlag=0; iFlag < numFlags; ++iFlag) {
       const int flagNameLen = 8;
-      std::string flagName = _readString(fin, flagNameLen);
+      std::string flagName = BinaryIO::readString(fin, flagNameLen);
     } // for
     if (1 == varType) { // flag associated with vertices
       int_array buffer(numVertices);
@@ -281,10 +282,10 @@ pylith::meshio::GMVFileBinary::_readFlags(std::ifstream& fin,
       int_array buffer(numVertices);
       fin.read((char*) &buffer[0], sizeof(int)*numCells);
     } // else
-    varName = _readString(fin, varNameLen);
+    varName = BinaryIO::readString(fin, varNameLen);
   } // while
   
-  std::cout << "Done." << std::endl;
+  info << "Done." << journal::endl;
 } // _readFlags
 
 // ----------------------------------------------------------------------
@@ -306,42 +307,22 @@ pylith::meshio::GMVFileBinary::_readMaterials(std::ifstream& fin,
 
   for (int iMat=0; iMat < numMaterials; ++iMat) {
     const int nameLen = 8;
-    std::string name = _readString(fin, nameLen);
+    std::string name = BinaryIO::readString(fin, nameLen);
   } // for
 
   if (0 == dataType) { // materials associated with cells
     materialIds->resize(numCells);
     fin.read((char*) &(*materialIds)[0], sizeof(int)*numCells);
     if (_flipEndian)
-      utils::Endian::swapByteOrder((char*) &(*materialIds)[0], numCells,
+      BinaryIO::swapByteOrder((char*) &(*materialIds)[0], numCells,
 				   sizeof(int));
   } else { // materials associated with vertices
     int_array buffer(numVertices);
     fin.read((char*) &buffer[0], sizeof(int)*numVertices);
   } // else
 
-  std::cout << "Done." << std::endl;
+  info << "Done." << journal::endl;
 } // _readMaterials
-
-// ----------------------------------------------------------------------
-// Read fixed length string from file.
-std::string
-pylith::meshio::GMVFileBinary::_readString(std::ifstream& fin,
-					   const int numChars)
-{ // _readString
-  char* buffer = (numChars > 0) ? new char[numChars+1] : 0;
-  fin.read(buffer, sizeof(char)*numChars);
-  buffer[numChars] = '\0';
-
-  // get string from buffer
-  std::string bufstring(buffer);
-  delete[] buffer; buffer = 0;
-
-  // remove whitespace
-  const int iLast = bufstring.find_first_of(" ");
-
-  return bufstring.substr(0, iLast);
-} // _readString
 
 
 // End of file 

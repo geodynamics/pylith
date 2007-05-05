@@ -47,13 +47,21 @@ libpylith_la_SOURCES = \
 	materials/ElasticMaterial.cc \
 	materials/ElasticPlaneStrain.cc \
 	materials/ElasticPlaneStress.cc \
+	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
 	meshio/GMVFileAscii.cc \
 	meshio/GMVFileBinary.cc \
 	meshio/MeshIO.cc \
 	meshio/MeshIOAscii.cc \
 	meshio/MeshIOLagrit.cc \
-	utils/Endian.cc
+	meshio/PsetFile.cc \
+	meshio/PsetFileAscii.cc \
+	meshio/PsetFileBinary.cc
+
+if ENABLE_CUBIT
+  libpylith_la_SOURCES += \
+	meshio/MeshIOCubit.cc
+endif
 
 
 INCLUDES = -I$(top_builddir)/include

@@ -1,0 +1,33 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_meshio_meshiocubit_hh)
+#error "MeshIOCubit.icc must be included only from MeshIOCubit.icc"
+#else
+
+// Set filename for CUBIT file.
+inline
+void
+pylith::meshio::MeshIOCubit::filename(const char* name) {
+  _filename = name;
+}
+
+// Get filename of CUBIT file.
+inline
+const char* 
+pylith::meshio::MeshIOCubit::filename(void) const {
+  return _filename.c_str();
+}
+
+#endif
+
+// End of file

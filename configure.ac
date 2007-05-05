@@ -36,6 +36,14 @@ AC_ARG_ENABLE([testing],
 	[enable_testing=no])
 AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 
+# CUBIT I/O w/netcdf
+AC_ARG_ENABLE([cubit],
+    [AC_HELP_STRING([--enable-cubit],
+        [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=no@:>@])],
+	[enable_cubit=yes],
+	[enable_cubit=no])
+AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
+
 # DOCUMENTATION w/doxygen
 AC_ARG_ENABLE([documentation],
     [AC_HELP_STRING([--enable-documentation],
@@ -101,6 +109,23 @@ if test "$enable_testing" = "yes" ; then
     [AC_MSG_RESULT(yes)],
     [AC_MSG_RESULT(no)
      AC_MSG_ERROR([CppUnit library not found; try LDFLAGS="-L<CppUnit lib dir>"])
+  ])
+fi
+
+# CUBIT (netcdf)
+if test "$enable_cubit" = "yes" ; then
+  AC_LANG(C++)
+  AC_CHECK_HEADER([netcdfcpp.h], [], [
+    AC_MSG_ERROR([netcdf C++ header not found; try CPPFLAGS="-I<netcdf include dir>"])
+  ])
+  AC_MSG_CHECKING([for NcFile in -lnetcdfc++])
+  AC_REQUIRE_CPP
+  AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM([[#include <netcdfcpp.h>]],
+	             [[NcFile ncfile("filename");]])],
+    [AC_MSG_RESULT(yes)],
+    [AC_MSG_RESULT(no)
+     AC_MSG_ERROR([netcdfc++ library not found; try LDFLAGS="-L<netcdf lib dir>"])
   ])
 fi
 

@@ -50,11 +50,22 @@ Cleanup
 
    c. Add unit test for IntegratorElasticity::calcTotalStrain
 
-2. Implement HDF5 output
+2. Implement MeshIOLagrit
+   b. unit tests at C++ level
+     BinaryIO
+     GMVFileAscii
+     GMVFileBinary
+     PsetFileAscii
+     PsetFileBinary
+     MeshIOLagrit
+   e. unit tests at Python level
+     MeshIOLagrit
 
-3. Implement PML boundary conditions
+3. Implement HDF5 output
 
-4. Create suite of simple full test cases
+4. Implement PML boundary conditions
+
+5. Create suite of simple full test cases
 
 ======================================================================
 SECONDARY PRIORITIES
@@ -67,14 +78,7 @@ SECONDARY PRIORITIES
    d. bindings
    e. unit tests at Python level
 
-2. Implement MeshIOLagrit
-   a. C++ objects
-   b. unit tests at C++ level
-   c. Python object (MeshIOLagrit)
-   d. bindings
-   e. unit tests at Python level
-
-3. Implement MeshIOHDF5 & HDF5 (helper class)
+2. Implement MeshIOHDF5 & HDF5 (helper class)
    a. C++ objects
    b. unit tests at C++ level
    c. Python object (MeshIOHDF5)
@@ -85,7 +89,12 @@ SECONDARY PRIORITIES
 UNRESOLVED ISSUES
 ======================================================================
 
-1. Integration of nemesis (pylithic.py as mpi/python application) [Leif?]
+0. Basis functions for Lagrange elements (quad4, hex8, plus quadratic cells)
+   [Matt]
+
+1. How to get orientation of faces at vertices? [discuss with Matt]
+
+2. Integration of nemesis (pylithic.py as mpi/python application) [Leif?]
 
 ======================================================================
 THINGS WE NEED SIEVE TO DO (Matt)
@@ -163,6 +172,4 @@ THINGS WE NEED SIEVE TO DO (Matt)
 ======================================================================
 QUESTIONS FOR LEIF
 ======================================================================
-
-How do we trap C++ exceptions in Pyrex?
 

@@ -18,10 +18,9 @@
 
 #include <fstream> // USES std::ifstream
 #include <iomanip> // USES std::setw()
-#include <string> // USES std::string
+#include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::exception
-#include <iostream> // USES std::cout
 
 // ----------------------------------------------------------------------
 const char* pylith::meshio::GMVFileAscii::_HEADER = "gmvinput ascii";

@@ -25,7 +25,8 @@ namespace pylith {
 
 class pylith::meshio::MeshIOLagrit : public MeshIO
 { // MeshIOLagrit
-// PUBLIC METHODS -------------------------------------------------------
+
+// PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
@@ -82,7 +83,7 @@ public :
    */
   bool flipEndian(void) const;
 
-// PROTECTED METHODS ----------------------------------------------------
+// PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
   /// Write mesh
@@ -91,52 +92,10 @@ protected :
   /// Read mesh
   void _read(void);
 
-// PRIVATE METHODS ------------------------------------------------------
+// PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
-  /** Header in ascii GMV file */
-  static const char* GMVASCIIHEADER;
-
-  /** Header in binary GMV file */
-  static const char* GMVBINARYHEADER;
-
-  /** Is GMV file an ASCII file?
-   *
-   * @returns true if GMV file is ASCII, false if binary
-   */
-  bool _isGmvAscii(void) const;
-
-  /// Read ASCII GMV file.
-  void _readGmvAscii(void);
-
-  /// Read binary GMV file.
-  void _readGmvBinary(void);
-
-  /// Write ASCII GMV file.
-  void _writeGmvAscii(void) const;
-
-  /// Read binary GMV file.
-  void _writeGmvBinary(void) const;
-
-  /** Is PSET file an ASCII file?
-   *
-   * @returns true if PSET file is ASCII, false if binary
-   */
-  bool _isPsetAscii(void) const;
-
-  /// Read ASCII PSET file.
-  void _readPsetAscii(void);
-
-  /// Read binary PSET file.
-  void _readPsetBinary(void);
-
-  /// Write ASCII PSET file.
-  void _writePsetAscii(void) const;
-
-  /// Write binary PSET file.
-  void _writePsetBinary(void) const;
-
-  // PRIVATE MEMBERS ----------------------------------------------------
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
   std::string _filenameGmv; ///< Name of GMV file

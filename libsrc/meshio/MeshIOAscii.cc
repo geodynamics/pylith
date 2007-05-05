@@ -16,11 +16,13 @@
 
 #include "pylith/utils/array.hh" // USES double_array, int_array, string_vector
 
+#include "journal/info.h" // USES journal::info_t
+
+#include <iomanip> // USES setw(), setiosflags(), resetiosflags()
+#include <assert.h> // USES assert()
 #include <fstream> // USES std::ifstream, std::ofstream
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
-#include <assert.h> // USES assert()
-#include <iomanip> // USES setw(), setiosflags(), resetiosflags()
 
 // ----------------------------------------------------------------------
 const char* pylith::meshio::MeshIOAscii::groupTypeNames[] = 

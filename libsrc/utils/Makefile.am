@@ -14,7 +14,6 @@ subpackage = utils
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	Endian.hh \
 	array.hh \
 	arrayfwd.hh \
 	petscfwd.h \
