@@ -16,8 +16,11 @@
 
 #include "GMVFileAscii.hh" // USES GMVFileAscii
 #include "GMVFileBinary.hh" // USES GMVFileBinary
+#include "PsetFileAscii.hh" // USES PsetFileAscii
 
 #include "pylith/utils/array.hh" // USES double_array, int_array
+
+#include <stdexcept> // TEMPORARY
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -62,15 +65,28 @@ pylith::meshio::MeshIOLagrit::_read(void)
   _setMaterials(materialIds);
 
 #if 0
-  if (PsetFile::_isPsetAscii(_filenamePset)) {
-    PsetFileAscii filein(_filenamePset);
-    filein.read();
+  std::vector<PsetFile::Pset> groups;
+  if (PsetFile::isAscii(_filenamePset.c_str())) {
+    PsetFileAscii filein(_filenamePset.c_str());
+    filein.read(&groups);
   } else {
-    PsetFileBinary filein(_filenamePset);
-    filein.read();
+    PsetFileBinary filein(_filenamePset.c_str());
+    filein.read(&groups);
   } // if/else
+  GroupPtType type = VERTEX;
+  const int numGroups = groups.size();
+  for (int iGroup=0; iGroup < numGroups; ++iGroup)
+    _setGroup(groups[iGroup].name, type, groups[iGroup].points);
 #endif
 } // _read
+
+// ----------------------------------------------------------------------
+// Pickle mesh
+void
+pylith::meshio::MeshIOLagrit::_write(void) const
+{ // _write
+  throw std::logic_error("MeshIOLagrit::_write not implemented.");
+} // _write
 
   
 // End of file 

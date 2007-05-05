@@ -151,15 +151,6 @@ private :
 		      const int numVertices,
 		      const int numCells);
 
-  /** Read fixed length string from file.
-   *
-   * @param fin Input file stream
-   * @param numChars Number of characters in string.
-   */
-  static
-  std::string _readString(std::ifstream& fin,
-			  const int numChars);
-  
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
   

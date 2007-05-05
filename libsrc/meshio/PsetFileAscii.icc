@@ -1,0 +1,28 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_meshio_psetfileascii_hh)
+#error "PsetFileAscii.icc must be included only from PsetFileAscii.icc"
+#else
+
+// ----------------------------------------------------------------
+// Get header.
+inline
+const char*
+pylith::meshio::PsetFileAscii::header(void)
+{ // header
+  return _HEADER;
+} // header
+
+#endif
+
+// End of file
