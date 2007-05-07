@@ -29,9 +29,11 @@ libpylith_la_SOURCES = \
 	faults/FaultCohesiveKin.cc \
 	faults/SlipTimeFn.cc \
 	feassemble/ExplicitElasticity.cc \
+	feassemble/ImplicitElasticity.cc \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorElasticity.cc \
 	feassemble/IntegratorExplicit.cc \
+	feassemble/IntegratorImplicit.cc \
 	feassemble/Quadrature.cc \
 	feassemble/Quadrature1D.cc \
 	feassemble/Quadrature1Din2D.cc \

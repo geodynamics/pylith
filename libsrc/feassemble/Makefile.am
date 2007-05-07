@@ -16,9 +16,12 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	ExplicitElasticity.hh \
 	ExplicitElasticity.icc \
+	ImplicitElasticity.hh \
+	ImplicitElasticity.icc \
 	Integrator.hh \
 	IntegratorElasticity.hh \
 	IntegratorExplicit.hh \
+	IntegratorImplicit.hh \
 	Quadrature.hh \
 	Quadrature.icc \
 	Quadrature1D.hh \
