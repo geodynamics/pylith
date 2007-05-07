@@ -398,9 +398,8 @@ pylith::feassemble::ImplicitElasticity::integrateJacobian(
 					      dispTCell, numBasis);
 
       // Get "elasticity" matrix at quadrature points for this cell
-      const double_array& elasticConsts = _material->calcDerivElastic(&totalStrain);
-      const int numElasticConsts = _material->_numElasticConsts();
-      assert(1 == numElasticConsts);
+      const std::vector<double_array>& elasticConsts = 
+	_material->calcDerivElastic(totalStrain);
 
       // Compute Jacobian for consistent tangent matrix
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -409,7 +408,7 @@ pylith::feassemble::ImplicitElasticity::integrateJacobian(
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
 	  const int iBlock = iBasis * spaceDim;
 	  const double valI = wt*basisDeriv[iQ+iBasis]*C1111;
-	  for (int jBasis=0; jBasis < numBasis; ++jBasis] {
+	  for (int jBasis=0; jBasis < numBasis; ++jBasis) {
 	    const int jBlock = jBasis * spaceDim;
 	    const double valIJ = valI * basisDeriv[iQ+jBasis];
 	    _cellMatrix[iBlock+jBlock] += valIJ;
@@ -428,9 +427,8 @@ pylith::feassemble::ImplicitElasticity::integrateJacobian(
 					      dispTCell, numBasis);
 
       // Get "elasticity" matrix at quadrature points for this cell
-      const double_array& elasticConsts = _material->calcDerivElastic(&totalStrain);
-      const int numElasticConsts = _material->_numElasticConsts();
-      assert(6 == numElasticConsts);
+      const std::vector<double_array>& elasticConsts = 
+	_material->calcDerivElastic(totalStrain);
 
       // Compute Jacobian for consistent tangent matrix
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -440,7 +438,7 @@ pylith::feassemble::ImplicitElasticity::integrateJacobian(
         const double C1112 = elasticConsts[iQuad][2];
         const double C2222 = elasticConsts[iQuad][3];
         const double C2212 = elasticConsts[iQuad][4];
-        const double C1212 = elasticConsts[iQuad][5];
+	const double C1212 = elasticConsts[iQuad][5];
         for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
           const int iBlock = iBasis * spaceDim;
           const double Nip = wt*basisDeriv[iQ+iBasis*cellDim  ];
@@ -473,13 +471,12 @@ pylith::feassemble::ImplicitElasticity::integrateJacobian(
     // 3D Case
     } else if (3 == cellDim) {
       // Compute strains
-      IntegratorElasticity::calcTotalStrain2D(&totalStrain, basisDeriv,
+      IntegratorElasticity::calcTotalStrain3D(&totalStrain, basisDeriv,
 					      dispTCell, numBasis);
 
       // Get "elasticity" matrix at quadrature points for this cell
-      const double_array& elasticConsts = _material->calcDerivElastic(&totalStrain);
-      const int numElasticConsts = _material->_numElasticConsts();
-      assert(21 == numElasticConsts);
+      const std::vector<double_array>& elasticConsts = 
+	_material->calcDerivElastic(totalStrain);
 
       // Compute Jacobian for consistent tangent matrix
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {

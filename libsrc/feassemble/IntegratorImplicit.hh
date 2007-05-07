@@ -78,13 +78,22 @@ public :
    *
    * @param fieldOut Constant field (output)
    * @param fieldInT Input field at time t
-   * @param fieldInTmdt Input field at time t-dt
-   * @param coordinates Field of cell vertex coordinates
+   * @param mesh Mesh object
    */
   virtual 
   void integrateConstant(const ALE::Obj<real_section_type>& fieldOut,
 			 const ALE::Obj<real_section_type>& fieldInT,
-			 const ALE::Obj<real_section_type>& fieldInTmdt,
+			 const ALE::Obj<Mesh>& mesh) = 0;
+
+  /** Integrate residual for quasi-static finite elements.
+   *
+   * @param fieldOut Constant field (output)
+   * @param fieldInT Input field at time t
+   * @param mesh Mesh object
+   */
+  virtual 
+  void integrateResidual(const ALE::Obj<real_section_type>& fieldOut,
+			 const ALE::Obj<real_section_type>& fieldInT,
 			 const ALE::Obj<Mesh>& mesh) = 0;
 
   /** Compute Jacobian matrix (A) associated with operator.
