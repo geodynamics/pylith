@@ -15,7 +15,6 @@
 #include "BinaryIO.hh" // USES readString()
 
 #include "pylith/utils/array.hh" // USES double_array, int_array
-#include "pylith/utils/Endian.hh" // USES Endian
 
 #include "journal/info.h" // USES journal::info_t
 
