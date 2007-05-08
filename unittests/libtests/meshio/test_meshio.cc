@@ -10,7 +10,10 @@
 // ----------------------------------------------------------------------
 //
 
-#include "petsc.h"
+#include <portinfo>
+
+#include <petsc.h>
+#include <Python.h>
 
 #include <cppunit/extensions/TestFactoryRegistry.h>
 
@@ -23,6 +26,8 @@
 
 #include <stdlib.h> // USES abort()
 
+#include "journal/info.h"
+
 int
 main(int argc,
      char* argv[])
@@ -33,6 +38,12 @@ main(int argc,
     // Initialize PETSc
     PetscErrorCode err = PetscInitialize(&argc, &argv, PETSC_NULL, PETSC_NULL);
     CHKERRQ(err);
+
+    // Initialize Python
+    Py_Initialize();
+
+    journal::info_t info("meshiocubit");
+    //info.activate();
 
     // Create event manager and test controller
     CppUnit::TestResult controller;
@@ -52,6 +63,9 @@ main(int argc,
     // Print tests
     CppUnit::TextOutputter outputter(&result, std::cerr);
     outputter.write();
+
+    // Finalize Python
+    Py_Finalize();
 
     // Finalize PETSc
     err = PetscFinalize();
