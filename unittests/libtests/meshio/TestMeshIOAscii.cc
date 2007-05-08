@@ -132,7 +132,7 @@ void
 pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
 						const char* filename)
 { // _testWriteRead
-  ALE::Obj<Mesh>* meshOut = createMesh(data);
+  ALE::Obj<Mesh>* meshOut = _createMesh(data);
 
   // Write mesh
   MeshIOAscii iohandler;
@@ -145,7 +145,7 @@ pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
   iohandler.read(&meshIn);
 
   // Make sure meshIn matches data
-  checkVals(meshIn, data);
+  _checkVals(meshIn, data);
 } // _testWriteRead
 
 // End of file 

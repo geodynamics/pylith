@@ -26,8 +26,8 @@
 // ----------------------------------------------------------------------
 // Get simple mesh for testing I/O.
 ALE::Obj<ALE::Mesh>*
-pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
-{ // createMesh
+pylith::meshio::TestMeshIO::_createMesh(const MeshData& data)
+{ // _createMesh
   // buildTopology() requires zero based index
   CPPUNIT_ASSERT(true == data.useIndexZero);
 
@@ -93,14 +93,14 @@ pylith::meshio::TestMeshIO::createMesh(const MeshData& data)
   } // for
 
   return mesh;
-} // createMesh
+} // _createMesh
 
 // ----------------------------------------------------------------------
 // Check values in mesh against data.
 void
-pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
-				      const MeshData& data)
-{ // checkVals
+pylith::meshio::TestMeshIO::_checkVals(const ALE::Obj<Mesh>& mesh,
+				       const MeshData& data)
+{ // _checkVals
   // Check mesh dimension
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
 
@@ -109,6 +109,8 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
   const ALE::Obj<Mesh::real_section_type>& coordsField =
     mesh->getRealSection("coordinates");
   const int numVertices = vertices->size();
+  CPPUNIT_ASSERT(!vertices.isNull());
+  CPPUNIT_ASSERT(!coordsField.isNull());
   CPPUNIT_ASSERT_EQUAL(data.numVertices, numVertices);
   CPPUNIT_ASSERT_EQUAL(data.spaceDim, 
 		       coordsField->getFiberDimension(*vertices->begin()));
@@ -120,6 +122,7 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
       ++v_iter) {
     const Mesh::real_section_type::value_type *vertexCoords = 
       coordsField->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != vertexCoords);
     const double tolerance = 1.0e-06;
     for (int iDim=0; iDim < spaceDim; ++iDim)
       if (data.vertices[i] < 1.0) {
@@ -198,13 +201,13 @@ pylith::meshio::TestMeshIO::checkVals(const ALE::Obj<Mesh>& mesh,
     for (int i=0; i < numPoints; ++i)
       CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[i]);
   } // for
-} // checkVals
+} // _checkVals
 
 // ----------------------------------------------------------------------
 // Test debug()
 void
 pylith::meshio::TestMeshIO::_testDebug(MeshIO& iohandler)
-{ // testDebug
+{ // _testDebug
   bool debug = false;
   iohandler.debug(debug);
   CPPUNIT_ASSERT_EQUAL(debug, iohandler.debug());
@@ -212,13 +215,13 @@ pylith::meshio::TestMeshIO::_testDebug(MeshIO& iohandler)
   debug = true;
   iohandler.debug(debug);
   CPPUNIT_ASSERT_EQUAL(debug, iohandler.debug());  
-} // testDebug
+} // _testDebug
 
 // ----------------------------------------------------------------------
 // Test interpolate()
 void
 pylith::meshio::TestMeshIO::_testInterpolate(MeshIO& iohandler)
-{ // testInterpolate
+{ // _testInterpolate
   bool interpolate = false;
   iohandler.interpolate(interpolate);
   CPPUNIT_ASSERT_EQUAL(interpolate, iohandler.interpolate());
@@ -226,7 +229,7 @@ pylith::meshio::TestMeshIO::_testInterpolate(MeshIO& iohandler)
   interpolate = true;
   iohandler.interpolate(interpolate);
   CPPUNIT_ASSERT_EQUAL(interpolate, iohandler.interpolate());  
-} // testInterpolate
+} // _testInterpolate
 
 
 // End of file 

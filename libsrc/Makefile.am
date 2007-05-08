@@ -65,7 +65,6 @@ if ENABLE_CUBIT
 	meshio/MeshIOCubit.cc
 endif
 
-
 INCLUDES = -I$(top_builddir)/include
 INCLUDES += $(PETSC_INCLUDE)
 

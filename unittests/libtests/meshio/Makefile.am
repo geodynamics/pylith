@@ -13,6 +13,8 @@
 subpackage = meshio
 include $(top_srcdir)/subpackage.am
 
+SUBDIRS = data
+
 TESTS = testmeshio
 
 check_PROGRAMS = testmeshio
@@ -21,11 +23,13 @@ check_PROGRAMS = testmeshio
 testmeshio_SOURCES = \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
+	TestMeshIOCubit.cc \
 	test_meshio.cc
 
 noinst_HEADERS = \
 	TestMeshIO.hh \
-	TestMeshIOAscii.hh
+	TestMeshIOAscii.hh \
+	TestMeshIOCubit.hh
 
 # Source files associated with testing data
 testmeshio_SOURCES += \
@@ -35,7 +39,9 @@ testmeshio_SOURCES += \
 	data/MeshData1Din2D.cc \
 	data/MeshData2D.cc \
 	data/MeshData2Din3D.cc \
-	data/MeshData3D.cc
+	data/MeshData3D.cc \
+	data/MeshDataCubitHex.cc \
+	data/MeshDataCubitTet.cc
 
 noinst_HEADERS += \
 	data/MeshData.hh \
@@ -44,15 +50,22 @@ noinst_HEADERS += \
 	data/MeshData1Din2D.hh \
 	data/MeshData2D.hh \
 	data/MeshData2Din3D.hh \
-	data/MeshData3D.hh
+	data/MeshData3D.hh \
+	data/MeshDataCubitHex.hh \
+	data/MeshDataCubitTet.hh
 
-testmeshio_LDFLAGS = $(PETSC_LIB)
+testmeshio_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
 
 AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
 
 testmeshio_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/libpylith.la
+
+if ENABLE_CUBIT
+  testmeshio_LDADD += -lnetcdf_c++ -lnetcdf
+endif
+
 
 noinst_tmp = \
 	mesh1D.txt \
