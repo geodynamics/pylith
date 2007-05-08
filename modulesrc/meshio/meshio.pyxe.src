@@ -13,6 +13,7 @@
 #header{
 #include "pylith/meshio/MeshIO.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
+#include "pylith/meshio/MeshIOCubit.hh"
 #include "pylith/meshio/MeshIOLagrit.hh"
 
 #include <stdexcept>
@@ -286,6 +287,72 @@ cdef class MeshIOAscii(MeshIO):
       #}embed
       return MeshIOAscii_filename_get(self.thisptr)
 
+
+# ----------------------------------------------------------------------
+cdef class MeshIOCubit(MeshIO):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* MeshIOCubit_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::meshio::MeshIOCubit);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    MeshIO.__init__(self)
+    self.thisptr = MeshIOCubit_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+  property filename:
+    def __set__(self, name):
+      """Set filename."""
+      # create shim for method 'filename'
+      #embed{ void MeshIOCubit_filename_set(void* objVptr, char* name)
+      try {
+        assert(0 != objVptr);
+        ((pylith::meshio::MeshIOCubit*) objVptr)->filename(name);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      MeshIOCubit_filename_set(self.thisptr, name)
+
+    def __get__(self):
+      """Get filename."""
+      # create shim for method 'filename'
+      #embed{ char* MeshIOCubit_filename_get(void* objVptr)
+      char* result = 0;
+      try {
+        assert(0 != objVptr);
+        result = (char*) ((pylith::meshio::MeshIOCubit*) objVptr)->filename();
+        assert(0 != result);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return MeshIOCubit_filename_get(self.thisptr)
+    
 
 # ----------------------------------------------------------------------
 cdef class MeshIOLagrit(MeshIO):

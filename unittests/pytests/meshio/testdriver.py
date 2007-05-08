@@ -57,6 +57,12 @@ class TestApp(Script):
     from TestMeshIOAscii import TestMeshIOAscii
     suite.addTest(unittest.makeSuite(TestMeshIOAscii))
 
+    from TestMeshIOCubit import TestMeshIOCubit
+    suite.addTest(unittest.makeSuite(TestMeshIOCubit))
+
+    from TestMeshIOLagrit import TestMeshIOLagrit
+    suite.addTest(unittest.makeSuite(TestMeshIOLagrit))
+
     return suite
 
 

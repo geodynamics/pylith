@@ -10,19 +10,19 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pyre/meshio/MeshIOLagrit.py
+## @file pyre/meshio/MeshIOCubit.py
 ##
 ## @brief Python object for reading/writing finite-element mesh from
-## LaGriT.
+## Cubit.
 ##
 ## Factory: mesh_io
 
 from MeshIO import MeshIO
 
-# MeshIOLagrit class
-class MeshIOLagrit(MeshIO):
+# MeshIOCubit class
+class MeshIOCubit(MeshIO):
   """
-  Python object for reading/writing finite-element mesh from LaGriT.
+  Python object for reading/writing finite-element mesh from Cubit.
 
   Factory: mesh_io
   """
@@ -31,31 +31,22 @@ class MeshIOLagrit(MeshIO):
 
   class Inventory(MeshIO.Inventory):
     """
-    Python object for managing MeshIOLagrit facilities and properties.
+    Python object for managing MeshIOCubit facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing MeshIOLagrit facilities and properties.
+    ## Python object for managing MeshIOCubit facilities and properties.
     ##
     ## \b Properties
-    ## @li \b filename_gmv Name of mesh GMV file.
-    ## @li \b filename_pset Name of mesh PSET file.
-    ## @li \b flip_endian Flip endian type when reading/writing binary files.
+    ## @li \b filename Name of Cubit Exodus file.
     ##
     ## \b Facilities
     ## @li coordsys Coordinate system associated with mesh.
 
     import pyre.inventory
 
-    filenameGmv = pyre.inventory.str("filename_gmv", default="mesh.gmv")
-    filenameGmv.meta['tip'] = "Name of mesh GMV file."
-
-    filenamePset = pyre.inventory.str("filename_pset", default="mesh.pset")
-    filenamePset.meta['tip'] = "Name of mesh PSET file."
-
-    flipEndian = pyre.inventory.bool("flip_endian", default=False)
-    flipEndian.meta['tip'] = "Flip endian type when reading/writing binary " \
-                             "files."
+    filename = pyre.inventory.str("filename", default="mesh.exo")
+    filename.meta['tip'] = "Name of Cubit Exodus file."
 
     from spatialdata.geocoords.CSCart import CSCart
     coordsys = pyre.inventory.facility("coordsys", family="coordsys",
@@ -65,13 +56,13 @@ class MeshIOLagrit(MeshIO):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="meshiolagrit"):
+  def __init__(self, name="meshiocubit"):
     """
     Constructor.
     """
     MeshIO.__init__(self, name)
     import pylith.meshio.meshio as bindings
-    self.cppHandle = bindings.MeshIOLagrit()
+    self.cppHandle = bindings.MeshIOCubit()
     return
 
 
@@ -82,8 +73,7 @@ class MeshIOLagrit(MeshIO):
     Set members based using inventory.
     """
     MeshIO._configure(self)
-    self.filenameGmv = self.inventory.filenameGmv
-    self.filenamePset = self.inventory.filenamePset
+    self.filename = self.inventory.filename
     self.coordsys = self.inventory.coordsys
     return
 
@@ -93,8 +83,7 @@ class MeshIOLagrit(MeshIO):
     Force synchronization between Python and C++.
     """
     MeshIO._sync(self)
-    self.cppHandle.filenameGmv = self.filenameGmv
-    self.cppHandle.filenamePset = self.filenamePset
+    self.cppHandle.filename = self.filename
     return
   
 
@@ -102,9 +91,9 @@ class MeshIOLagrit(MeshIO):
 
 def mesh_io():
   """
-  Factory associated with MeshIOLagrit.
+  Factory associated with MeshIOCubit.
   """
-  return MeshIOLagrit()
+  return MeshIOCubit()
 
 
 # End of file 

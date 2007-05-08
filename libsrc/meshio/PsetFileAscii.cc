@@ -143,6 +143,8 @@ pylith::meshio::PsetFileAscii::_readPset(std::ifstream& fin,
   for (int i=0; i < size; ++i)
     fin >> group->points[i];
 
+  group->points -= 1; // use zero base
+
   info << "Done." << journal::endl;
 } // _readPset
 
@@ -161,7 +163,7 @@ pylith::meshio::PsetFileAscii::_writePset(std::ofstream& fout,
 
   const int numCols = 10;
   for (int i=0, iCol=0; i < size; ++i) {
-    fout << std::setw(8) << group.points[i];
+    fout << std::setw(8) << 1+group.points[i];
     if (++iCol == numCols) {
       fout << std::endl;
       iCol = 0;

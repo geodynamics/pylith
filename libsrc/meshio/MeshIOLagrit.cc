@@ -17,6 +17,7 @@
 #include "GMVFileAscii.hh" // USES GMVFileAscii
 #include "GMVFileBinary.hh" // USES GMVFileBinary
 #include "PsetFileAscii.hh" // USES PsetFileAscii
+#include "PsetFileBinary.hh" // USES PsetFileBinary
 
 #include "pylith/utils/array.hh" // USES double_array, int_array
 
@@ -64,20 +65,18 @@ pylith::meshio::MeshIOLagrit::_read(void)
 	     cells, numCells, numCorners, meshDim);
   _setMaterials(materialIds);
 
-#if 0
   std::vector<PsetFile::Pset> groups;
   if (PsetFile::isAscii(_filenamePset.c_str())) {
     PsetFileAscii filein(_filenamePset.c_str());
     filein.read(&groups);
   } else {
-    PsetFileBinary filein(_filenamePset.c_str());
+    PsetFileBinary filein(_filenamePset.c_str(), _flipEndian);
     filein.read(&groups);
   } // if/else
   GroupPtType type = VERTEX;
   const int numGroups = groups.size();
   for (int iGroup=0; iGroup < numGroups; ++iGroup)
     _setGroup(groups[iGroup].name, type, groups[iGroup].points);
-#endif
 } // _read
 
 // ----------------------------------------------------------------------

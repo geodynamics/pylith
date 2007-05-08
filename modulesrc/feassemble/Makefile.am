@@ -26,6 +26,10 @@ feassemblemodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	$(PETSC_LIB)
 
+if ENABLE_CUBIT
+  feassemblemodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 feassemble.pyx feassemble_embed.cpp  feassemble_embed.h: feassemble.pyxe

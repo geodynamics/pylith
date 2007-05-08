@@ -32,6 +32,9 @@ int
 main(int argc,
      char* argv[])
 { // main
+  //journal::info_t info("meshiocubit");
+  //info.activate();
+
   CppUnit::TestResultCollector result;
 
   try {
@@ -41,9 +44,6 @@ main(int argc,
 
     // Initialize Python
     Py_Initialize();
-
-    journal::info_t info("meshiocubit");
-    //info.activate();
 
     // Create event manager and test controller
     CppUnit::TestResult controller;

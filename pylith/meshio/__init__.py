@@ -16,6 +16,7 @@
 
 __all__ = ['MeshIO',
            'MeshIOAscii',
+           'MeshIOCubit',
            'MeshIOLagrit']
 
 
