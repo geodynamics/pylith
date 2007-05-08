@@ -20,7 +20,9 @@ TESTS = testdriver.py
 check_SCRIPTS = testdriver.py
 
 noinst_PYTHON = \
-	TestMeshIOAscii.py
+	TestMeshIOAscii.py \
+	TestMeshIOCubit.py \
+	TestMeshIOLagrit.py
 
 
 # End of file 

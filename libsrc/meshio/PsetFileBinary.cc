@@ -66,11 +66,12 @@ pylith::meshio::PsetFileBinary::read(std::vector<Pset>* groups)
 
   // Read number of psets
   int numGroups = 0;
-  fin.read((char*) numGroups, sizeof(int));
+  fin.read((char*) &numGroups, sizeof(int));
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) &numGroups, 1, sizeof(int));
   assert(numGroups >= 0);
   groups->resize(numGroups);
+  std::string extra = BinaryIO::readString(fin, 8);
 
   // Read groups
   info << "Reading " << numGroups << " point sets from file." << journal::endl;
@@ -114,6 +115,8 @@ pylith::meshio::PsetFileBinary::write(const std::vector<Pset>& groups)
 void
 pylith::meshio::PsetFileBinary::_readHeader(std::ifstream& fin)
 { // _readHeader
+  std::string extra = BinaryIO::readString(fin, 4); // Read superfluous 4 bytes
+
   std::string header = BinaryIO::readString(fin, strlen(_HEADER));
   std::string headerE = _HEADER;
   headerE = headerE.substr(0, headerE.find_first_of(" "));
@@ -151,17 +154,20 @@ pylith::meshio::PsetFileBinary::_readPset(std::ifstream& fin,
 
   int size = 0;
   fin.read((char*) &size, sizeof(int));
+  std::string extra = BinaryIO::readString(fin, 8);
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) &size, 1, sizeof(size));
   assert(size >= 0);
-
   info << "Reading point set '" << group->name << "' with " << size
        << " points." << journal::endl;
 
   group->points.resize(size);
   fin.read((char*) &group->points[0], size*sizeof(int));
+  extra = BinaryIO::readString(fin, 8);
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) &group->points[0], size, sizeof(int));
+
+  group->points -= 1; // use zero base
 
   info << "Done." << journal::endl;
 } // _readPset
@@ -189,6 +195,7 @@ pylith::meshio::PsetFileBinary::_writePset(std::ofstream& fout,
   fout.write((char*) &sizeIO, sizeof(int));
 
   int_array pointsIO(group.points);
+  pointsIO += 1; // switch from zero base to one base
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) &pointsIO[0], size, sizeof(int));
   fout.write((char*) &pointsIO[0], size*sizeof(int));

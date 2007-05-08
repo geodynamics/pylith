@@ -26,6 +26,10 @@ meshiomodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	$(PETSC_LIB)
 
+if ENABLE_CUBIT
+  meshiomodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 PYREX_INCLUDES = -I$(top_srcdir)/modulesrc/topology

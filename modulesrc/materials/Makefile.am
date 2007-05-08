@@ -26,6 +26,10 @@ materialsmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	$(PETSC_LIB)
 
+if ENABLE_CUBIT
+  materialsmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 materials.pyx materials_embed.cpp  materials_embed.h: materials.pyxe

@@ -26,6 +26,10 @@ topologymodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	$(PETSC_LIB)
 
+if ENABLE_CUBIT
+  topologymodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 topology.pyx topology_embed.cpp  topology_embed.h: topology.pyxe

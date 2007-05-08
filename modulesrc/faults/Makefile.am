@@ -26,6 +26,10 @@ faultsmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	$(PETSC_LIB)
 
+if ENABLE_CUBIT
+  faultsmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 faults.pyx faults_embed.cpp  faults_embed.h: faults.pyxe

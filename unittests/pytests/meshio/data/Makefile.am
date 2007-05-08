@@ -11,10 +11,17 @@
 #
 
 noinst_DATA = \
-	mesh2Din3D.txt
+	mesh2Din3D.txt \
+	cube2_ascii.gmv \
+	cube2_ascii.pset \
+	cube2.txt \
+	twohex8.exo \
+	twohex8.txt
 
 noinst_TMP = \
-	mesh2Din3D_test.txt
+	cube2_test.txt \
+	mesh2Din3D_test.txt \
+	twohex8_test.txt
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/unittests/pytests/meshio/data

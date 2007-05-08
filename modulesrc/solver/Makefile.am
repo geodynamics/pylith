@@ -26,6 +26,10 @@ solvermodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	$(PETSC_LIB)
 
+if ENABLE_CUBIT
+  solvermodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 solver.pyx solver_embed.cpp  solver_embed.h: solver.pyxe

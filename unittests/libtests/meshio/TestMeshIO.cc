@@ -175,6 +175,10 @@ pylith::meshio::TestMeshIO::_checkVals(const ALE::Obj<Mesh>& mesh,
   // Check groups
   const ALE::Obj<std::set<std::string> >& groupNames = 
     mesh->getIntSections();
+  if (data.numGroups > 0) {
+    CPPUNIT_ASSERT(!groupNames.isNull());
+    CPPUNIT_ASSERT_EQUAL(data.numGroups, int(groupNames->size()));
+  } // if
   int iGroup = 0;
   int index = 0;
   for (std::set<std::string>::const_iterator name=groupNames->begin();
