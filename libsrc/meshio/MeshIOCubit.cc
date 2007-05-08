@@ -16,7 +16,7 @@
 
 #include "pylith/utils/array.hh" // USES double_array, int_array, string_vector
 
-#include "journal/info.h" // USES journal::info_t
+//#include "journal/info.h" // USES journal::info_t
 
 #include <netcdfcpp.h> // USES netcdf
 
@@ -115,13 +115,13 @@ pylith::meshio::MeshIOCubit::_readVertices(NcFile& ncfile,
   assert(0 != numVertices);
   assert(0 != numDims);
 
-  journal::info_t info("meshiocubit");
+  //journal::info_t info("meshiocubit");
     
   NcDim* num_nodes = ncfile.get_dim("num_nodes");
   if (0 == num_nodes)
     throw std::runtime_error("Could not get dimension 'num_nodes'.");
   *numVertices = num_nodes->size();
-  info << "Reading " << *numVertices << " vertices." << journal::endl;
+  //info << "Reading " << *numVertices << " vertices." << journal::endl;
 
   NcVar* coord = ncfile.get_var("coord");
   if (0 == coord)
@@ -137,12 +137,18 @@ pylith::meshio::MeshIOCubit::_readVertices(NcFile& ncfile,
   *numDims = space_dim->size();
 
   assert((*numVertices)*(*numDims) == size);
-  coordinates->resize(size);
   long* counts = coord->edges();
-  bool ok = coord->get(&(*coordinates)[0], counts);
+  double_array buffer(size);
+  bool ok = coord->get(&buffer[0], counts);
   delete[] counts; counts = 0;
   if (!ok)
     throw std::runtime_error("Could not get coordinate values.");
+
+  coordinates->resize(size);
+  for (int iVertex=0; iVertex < *numVertices; ++iVertex)
+    for (int iDim=0; iDim < *numDims; ++iDim)
+      (*coordinates)[iVertex*(*numDims)+iDim] = 
+	buffer[iDim*(*numVertices)+iVertex];
 } // _readVertices
 
 // ----------------------------------------------------------------------
@@ -159,7 +165,7 @@ pylith::meshio::MeshIOCubit::_readCells(NcFile& ncfile,
   assert(0 != numCells);
   assert(0 != numCorners);
 
-  journal::info_t info("meshiocubit");
+  //journal::info_t info("meshiocubit");
 
   NcDim* num_elem = ncfile.get_dim("num_elem");
   if (0 == num_elem)
@@ -170,8 +176,8 @@ pylith::meshio::MeshIOCubit::_readCells(NcFile& ncfile,
     throw std::runtime_error("Could not get dimension 'num_el_blk'.");
   const int numMaterials = num_el_blk->size();
 
-  info << "Reading " << numCells << " cells in " << numMaterials 
-       << " blocks." << journal::endl;
+  //info << "Reading " << numCells << " cells in " << numMaterials 
+  //     << " blocks." << journal::endl;
 
   NcVar* eb_prop1 = ncfile.get_var("eb_prop1");
   if (0 == eb_prop1) 
@@ -220,11 +226,12 @@ pylith::meshio::MeshIOCubit::_readCells(NcFile& ncfile,
       throw std::runtime_error("Could not get cell values.");
 	
     for (int i=0; i < blockSize; ++i)
-      materialIds[index+i] = blockIds[iMaterial];
+      (*materialIds)[index+i] = blockIds[iMaterial];
     
     index += blockSize;
   } // for
-  cells -= 1; // use zero index
+
+  *cells -= 1; // use zero index
 } // _readCells
 
 // ----------------------------------------------------------------------
@@ -232,13 +239,13 @@ pylith::meshio::MeshIOCubit::_readCells(NcFile& ncfile,
 void
 pylith::meshio::MeshIOCubit::_readGroups(NcFile& ncfile)
 { // _readGroups
-  journal::info_t info("meshiocubit");
+  //journal::info_t info("meshiocubit");
 
   NcDim* num_node_sets = ncfile.get_dim("num_node_sets");
   if (0 == num_node_sets)
     throw std::runtime_error("Could not get dimension 'num_node_sets'.");
   const int numGroups = num_node_sets->size();
-  info << "Found " << numGroups << " node sets." << journal::endl;
+  //info << "Found " << numGroups << " node sets." << journal::endl;
       
   NcVar* ns_prop1 = ncfile.get_var("ns_prop1");
   if (0 == ns_prop1) 
@@ -257,8 +264,8 @@ pylith::meshio::MeshIOCubit::_readGroups(NcFile& ncfile)
     if (0 == node_ns)
       throw std::runtime_error("Could not get node set.");
     const int size = node_ns->num_vals();
-    info << "Reading node set " << ids[iGroup] << " with "
-	 << size << " nodes." << journal::endl;
+    //info << "Reading node set " << ids[iGroup] << " with "
+    //<< size << " nodes." << journal::endl;
 
     points.resize(size);
     long* counts = node_ns->edges();
@@ -267,10 +274,12 @@ pylith::meshio::MeshIOCubit::_readGroups(NcFile& ncfile)
     if (!ok)
       throw std::runtime_error("Could not get node set.");
     std::sort(&points[0], &points[size]);
+    points -= 1; // use zero index
 
     GroupPtType type = VERTEX;
-    std::string name = "";
-    _setGroup(name, type, points);
+    std::ostringstream name;
+    name << ids[iGroup];
+    _setGroup(name.str().c_str(), type, points);
   } // for  
 } // _readGroups
 

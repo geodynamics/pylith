@@ -39,8 +39,8 @@ namespace pylith {
 class pylith::meshio::TestMeshIO : public CppUnit::TestFixture
 { // class TestMeshIO
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+// PROTECTED METHODS ////////////////////////////////////////////////////
+protected :
 
   /** Get simple mesh for testing I/O.
    *
@@ -48,18 +48,15 @@ public :
    *
    * @returns PETSc mesh
    */
-  ALE::Obj<ALE::Mesh>* createMesh(const MeshData& data);
+  ALE::Obj<ALE::Mesh>* _createMesh(const MeshData& data);
 
   /** Check values in mesh against data.
    *
    * @param mesh PETSc mesh
    * @param data Mesh data
    */
-  void checkVals(const ALE::Obj<ALE::Mesh>& mesh,
-		 const MeshData& data);
-
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
+  void _checkVals(const ALE::Obj<ALE::Mesh>& mesh,
+		  const MeshData& data);
 
   /** Test debug().
    *
