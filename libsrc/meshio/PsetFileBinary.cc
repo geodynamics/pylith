@@ -142,11 +142,13 @@ pylith::meshio::PsetFileBinary::_readPset(std::ifstream& fin,
 
   journal::info_t info("psetfile");
 
+  group->name = BinaryIO::readString(fin, 32);
+
   int id = 0;
   fin.read((char*) &id, sizeof(int));
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) &id, 1, sizeof(id));
-  group->name = BinaryIO::readString(fin, 8);
+
   int size = 0;
   fin.read((char*) &size, sizeof(int));
   if (_flipEndian)
@@ -174,12 +176,12 @@ pylith::meshio::PsetFileBinary::_writePset(std::ofstream& fout,
   info << "Writing point set '" << group.name << "' with " << size
        << " points." << journal::endl;
 
+  fout.write((char*) group.name.c_str(), 32);
+
   int id = group.id;
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) &id, 1, sizeof(id));
   fout.write((char*) &id, sizeof(int));
-
-  fout.write((char*) group.name.c_str(), 8);
 
   int sizeIO = size;
   if (_flipEndian)

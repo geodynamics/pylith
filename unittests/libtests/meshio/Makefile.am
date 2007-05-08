@@ -24,12 +24,14 @@ testmeshio_SOURCES = \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOCubit.cc \
+	TestMeshIOLagrit.cc \
 	test_meshio.cc
 
 noinst_HEADERS = \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
-	TestMeshIOCubit.hh
+	TestMeshIOCubit.hh \
+	TestMeshIOLagrit.hh
 
 # Source files associated with testing data
 testmeshio_SOURCES += \
@@ -41,7 +43,8 @@ testmeshio_SOURCES += \
 	data/MeshData2Din3D.cc \
 	data/MeshData3D.cc \
 	data/MeshDataCubitHex.cc \
-	data/MeshDataCubitTet.cc
+	data/MeshDataCubitTet.cc \
+	data/MeshDataLagritTet.cc
 
 noinst_HEADERS += \
 	data/MeshData.hh \
@@ -52,7 +55,8 @@ noinst_HEADERS += \
 	data/MeshData2Din3D.hh \
 	data/MeshData3D.hh \
 	data/MeshDataCubitHex.hh \
-	data/MeshDataCubitTet.hh
+	data/MeshDataCubitTet.hh \
+	data/MeshDataLagritTet.hh
 
 testmeshio_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
 

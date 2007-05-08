@@ -1,0 +1,170 @@
+* -*- LaGriT -*-
+*
+* ----------------------------------------------------------------------
+*
+*                           Brad T. Aagaard
+*                        U.S. Geological Survey
+*
+* <LicenseText>
+*
+* ----------------------------------------------------------------------
+*
+* Mesh a double cube using tetrahedral elements.
+* (2 cubes with a fault separating them)
+* Domain is 2m x 1m x 1m
+*   x: -1.0m to 1.0m
+*   y: -0.5m to 0.5m
+*   z: -0.5m to 0.5m
+*
+* Domain is constructed with the region command after constructing the
+* boundaries of the domain using the surface command with the plane
+* attribue (construct the 3-D domain from boundary surfaces).
+*
+* ----------------------------------------------------------------------
+* CREATE GEOMETRY
+* ----------------------------------------------------------------------
+*
+* Create a mesh object and name it cubemesh
+cmo / create / cubemesh /
+*
+* Create boundary surfaces.
+surface / surf_xm / reflect / plane / &
+   -1.0  0.0  0.0 / &
+   -1.0  0.0  1.0 / &
+   -1.0  1.0  0.0
+surface / surf_xp / reflect / plane / &
+    1.0  0.0  0.0 / &
+    1.0  1.0  0.0 / &
+    1.0  0.0  1.0
+surface / surf_zp / reflect / plane / &
+    0.0  0.0  0.5 / &
+    0.0  1.0  0.5 / &
+   -1.0  1.0  0.5
+surface / surf_zm / reflect / plane / &
+    0.0  0.0 -0.5 / &
+   -1.0  0.0 -0.5 / &
+    0.0  1.0 -0.5
+surface / surf_ym / reflect / plane / &
+    0.0 -0.5  0.0 / &
+    0.0 -0.5  1.0 / &
+   -1.0 -0.5  0.0
+surface / surf_yp / reflect / plane / &
+    0.0  0.5  0.0 / &
+   -1.0  0.5  0.0 / &
+    0.0  0.5  1.0
+*
+* Create fault plane
+surface / surf_fault / intrface / plane / &
+  0.0  0.0  0.0 / &
+  0.0  1.0  0.0 / &
+  0.0  0.0  1.0 /
+*
+* Create regions
+region / region_p / le surf_xp  &
+  and ge surf_fault &
+  and le surf_ym &
+  and le surf_yp &
+  and le surf_zm &
+  and le surf_zp /
+region / region_m / lt surf_fault  &
+  and le surf_xm &
+  and le surf_ym &
+  and le surf_yp &
+  and le surf_zm &
+  and le surf_zp /
+*
+* Create material regions
+mregion / material_p / le surf_xp  &
+  and gt surf_fault &
+  and le surf_ym &
+  and le surf_yp &
+  and le surf_zm &
+  and le surf_zp /
+mregion / material_m / lt surf_fault  &
+  and le surf_xm &
+  and le surf_ym &
+  and le surf_yp &
+  and le surf_zm &
+  and le surf_zp /
+*
+* ----------------------------------------------------------------------
+* CREATE MESH
+* ----------------------------------------------------------------------
+*
+define / dx / 1.0
+define / nx / 3
+define / ny / 2
+
+* Create points for ray shooting
+createpts / xyz / nx,ny,1 / &
+  -1.0  -0.5  1.1 / &
+   1.0   0.5  1.1 / &
+  1,1,0 /
+pset / rayend / seq / 0,0,0
+regnpts / region_p / dx / pset,get,rayend / xyz / &
+  0.0  0.0  -1.0 / &
+  0.0  1.0  -1.0 / &
+  1.0  0.0  -1.0 / &
+  0,0
+regnpts / region_m / dx / pset,get,rayend / xyz / &
+  0.0  0.0  -1.0 / &
+  0.0  1.0  -1.0 / &
+  1.0  0.0  -1.0 / &
+  0,0
+cmo/setatt//itp/pset,get,rayend/dud
+pset / rayend / delete
+*
+* Remove duplicate points
+filter / 1,0,0 / 0.01
+rmpoint / compress
+*
+* Set node type and material
+setpts
+*
+* Connect the points into a Delaunay tetrahedral mesh
+connect
+*
+* Set elements to tetrahedra
+settets / geometry
+resetpts/cell_color
+*
+* Remove parent/child hierarchy
+resetpts
+rmpoint / compress
+*
+* ----------------------------------------------------------------------
+* IDENTIFY GROUPS
+* ----------------------------------------------------------------------
+*
+* Identify nodes on fault surface
+pset / fault / surface / surf_fault /
+pset / fault / list
+*
+* Identify nodes on boundaries
+pset / xm / surface / surf_xm /
+pset / xm / list
+pset / xp / surface / surf_xp /
+pset / xp / list
+pset / ym / surface / surf_ym /
+pset / ym / list
+pset / yp / surface / surf_yp /
+pset / yp / list
+pset / zm / surface / surf_zm /
+pset / zm / list
+pset / zp / surface / surf_zp /
+pset / zp / list
+*
+* ----------------------------------------------------------------------
+* WRITE MESH
+* ----------------------------------------------------------------------
+*
+* Write mesh to file
+cmo / setatt / cubemesh / ipolydat / no
+dump / gmv / cube2_ascii.gmv / / ascii
+dump / gmv / cube2_binary.gmv / / binary
+
+pset / -all- / write / cube2_ascii.pset / ascii
+pset / -all- / write / cube2_binary.pset / binary
+
+* ======================================================================
+finish
