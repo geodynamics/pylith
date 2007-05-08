@@ -163,6 +163,7 @@ pylith::meshio::GMVFileAscii::_readVertices(std::ifstream& fin,
   info << "Done." << journal::endl;
 } // readVertices
 
+#include <iostream>
 // ----------------------------------------------------------------------
 void
 pylith::meshio::GMVFileAscii::_readCells(std::ifstream& fin,
@@ -176,6 +177,8 @@ pylith::meshio::GMVFileAscii::_readCells(std::ifstream& fin,
 
   journal::info_t info("gmvfile");
 
+  *numCorners = 0;
+
   fin >> *numCells;
   std::string cellString = "";
   info << "Reading " << numCells << " cells." << journal::endl;
@@ -184,7 +187,7 @@ pylith::meshio::GMVFileAscii::_readCells(std::ifstream& fin,
     int numCornersCur = 0;
     fin >> cellStringCur;
     fin >> numCornersCur;
-    if (0 != numCorners) {
+    if (0 != *numCorners) {
       if (cellStringCur != cellString) {
 	std::ostringstream msg;
 	msg 
@@ -201,7 +204,18 @@ pylith::meshio::GMVFileAscii::_readCells(std::ifstream& fin,
     } // if/else
     for (int iCorner=0; iCorner < *numCorners; ++iCorner)
       fin >> (*cells)[iCell*(*numCorners)+iCorner];
+    fin >> std::ws;
   } // for
+
+  *cells -= 1; // use zero base
+
+  if (cellString == "tet")
+    // reverse order
+    for (int iCell=0; iCell < *numCells; ++iCell) {
+      const int tmp = (*cells)[iCell*(*numCorners)+1];
+      (*cells)[iCell*(*numCorners)+1] = (*cells)[iCell*(*numCorners)+2];
+      (*cells)[iCell*(*numCorners)+2] = tmp;
+    } // for
 
   info << "Done." << journal::endl;
 } // readCells

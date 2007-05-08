@@ -80,8 +80,9 @@ pylith::meshio::GMVFileBinary::read(double_array* coordinates,
 
   _readHeader(fin);
 
-  std::string token;
-  while (fin >> token) {
+  const int tokenLen = 8;
+  std::string token = BinaryIO::readString(fin, tokenLen);
+  while (!fin.eof() && fin.good()) {
     if (token == "nodes")
       _readVertices(fin, coordinates, numVertices, spaceDim);
     else if (token == "cells")
@@ -92,6 +93,7 @@ pylith::meshio::GMVFileBinary::read(double_array* coordinates,
       _readFlags(fin, *numVertices, *numCells);
     else if (token == "material")
       _readMaterials(fin, materialIds, *numVertices, *numCells);
+    token = BinaryIO::readString(fin, tokenLen);
   } // while
 
   assert(coordinates->size() == (*numVertices) * (*spaceDim));
@@ -174,7 +176,7 @@ pylith::meshio::GMVFileBinary::_readVertices(std::ifstream& fin,
       (*coordinates)[iVertex*(*spaceDim)+iDim] = buffer[i++];
   
   info << "Done." << journal::endl;
-} // _readNodes
+} // _readVertices
 
 // ----------------------------------------------------------------------
 void
@@ -182,7 +184,7 @@ pylith::meshio::GMVFileBinary::_readCells(std::ifstream& fin,
 					  int_array* cells,
 					  int* numCells,
 					  int* numCorners)
-{ // readCells
+{ // _readCells
   assert(0 != cells);
   assert(0 != numCells);
   assert(0 != numCorners);
@@ -223,9 +225,20 @@ pylith::meshio::GMVFileBinary::_readCells(std::ifstream& fin,
   } // for
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) &(*cells)[0], 
-				 (*numCells)*(*numCorners), sizeof(int));
+			    (*numCells)*(*numCorners), sizeof(int));
+
+  *cells -= 1; // use zero base
+  
+  if (cellString == "tet")
+    // reverse order
+    for (int iCell=0; iCell < *numCells; ++iCell) {
+      const int tmp = (*cells)[iCell*(*numCorners)+1];
+      (*cells)[iCell*(*numCorners)+1] = (*cells)[iCell*(*numCorners)+2];
+      (*cells)[iCell*(*numCorners)+2] = tmp;
+    } // for
+
   info << "Done." << journal::endl;
-} // readCells
+} // _readCells
 
 // ----------------------------------------------------------------------
 void

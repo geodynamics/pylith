@@ -11,6 +11,10 @@
 #
 
 noinst_DATA = \
+	cube2_ascii.gmv \
+	cube2_ascii.pset \
+	cube2_binary.gmv \
+	cube2_binary.pset \
 	twohex8.exo \
 	twotet4.exo
 
