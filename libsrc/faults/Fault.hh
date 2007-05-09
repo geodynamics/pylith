@@ -33,6 +33,13 @@ namespace pylith {
   } // faults
 } // pylith
 
+/// Namespace for spatialdata package
+namespace spatialdata {
+  namespace geocoords {
+    class CoordSys;
+  } // geocoords
+} // spatialdata
+
 /// C++ abstract base class for Fault object.
 class pylith::faults::Fault
 { // class Fault
@@ -90,12 +97,14 @@ public :
    * condition parameters.
    *
    * @param mesh PETSc mesh
+   * @param cs Coordinate system for mesh
    * @param upDir Direction perpendicular to along-strike direction that is 
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction).
    */
   virtual
   void initialize(const ALE::Obj<ALE::Mesh>& mesh,
+		  const spatialdata::geocoords::CoordSys* cs,
 		  const double_array& upDir) = 0;
 
   // PROTECTED METHODS //////////////////////////////////////////////////

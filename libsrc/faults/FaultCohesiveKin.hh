@@ -73,11 +73,13 @@ public :
    * condition parameters.
    *
    * @param mesh PETSc mesh
+   * @param cs Coordinate system for mesh
    * @param upDir Direction perpendicular to along-strike direction that is 
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction).
    */
   void initialize(const ALE::Obj<ALE::Mesh>& mesh,
+		  const spatialdata::geocoords::CoordSys* cs,
 		  const double_array& upDir);
 
   /** Integrate contribution of cohesive cells to residual term.
