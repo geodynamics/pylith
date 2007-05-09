@@ -25,7 +25,7 @@
 #include <stdexcept> // USES std::exception
 
 // ----------------------------------------------------------------------
-const char* pylith::meshio::PsetFileBinary::_HEADER = "pset binary";
+const char* pylith::meshio::PsetFileBinary::_HEADER = "pset unformatted";
 
 // ----------------------------------------------------------------------
 // Constructor with name of Pset file.
