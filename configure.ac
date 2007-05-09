@@ -40,7 +40,8 @@ AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 AC_ARG_ENABLE([cubit],
     [AC_HELP_STRING([--enable-cubit],
         [enable reading/writing Cubit EXODUS files (requires netcdf) @<:@default=no@:>@])],
-	[enable_cubit=yes],
+	[enable_cubit=yes
+	CXXFLAGS="-DENABLE_CUBIT $CXXFLAGS"; export CXXFLAGS],
 	[enable_cubit=no])
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
 

@@ -13,8 +13,11 @@
 #header{
 #include "pylith/meshio/MeshIO.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
-#include "pylith/meshio/MeshIOCubit.hh"
 #include "pylith/meshio/MeshIOLagrit.hh"
+
+#if defined(ENABLE_CUBIT)
+#include "pylith/meshio/MeshIOCubit.hh"
+#endif
 
 #include <stdexcept>
 #include <assert.h>
@@ -295,6 +298,7 @@ cdef class MeshIOCubit(MeshIO):
     """Constructor."""
     # create shim for constructor
     #embed{ void* MeshIOCubit_constructor()
+    #if defined(ENABLE_CUBIT)
     void* result = 0;
     try {
       result = (void*)(new pylith::meshio::MeshIOCubit);
@@ -307,6 +311,10 @@ cdef class MeshIOCubit(MeshIO):
                       "Caught unknown C++ exception.");
     } // try/catch
     return result;
+    #else
+    throw std::logic_error("Not configured to use CUBIT.");
+    return 0;
+    #endif
     #}embed
 
     MeshIO.__init__(self)
@@ -320,6 +328,7 @@ cdef class MeshIOCubit(MeshIO):
       """Set filename."""
       # create shim for method 'filename'
       #embed{ void MeshIOCubit_filename_set(void* objVptr, char* name)
+      #if defined(ENABLE_CUBIT)
       try {
         assert(0 != objVptr);
         ((pylith::meshio::MeshIOCubit*) objVptr)->filename(name);
@@ -330,6 +339,9 @@ cdef class MeshIOCubit(MeshIO):
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
       } // try/catch
+      #else
+      throw std::logic_error("Not configured to use CUBIT.");
+      #endif
       #}embed
       MeshIOCubit_filename_set(self.thisptr, name)
 
@@ -337,6 +349,7 @@ cdef class MeshIOCubit(MeshIO):
       """Get filename."""
       # create shim for method 'filename'
       #embed{ char* MeshIOCubit_filename_get(void* objVptr)
+      #if defined(ENABLE_CUBIT)
       char* result = 0;
       try {
         assert(0 != objVptr);
@@ -350,9 +363,12 @@ cdef class MeshIOCubit(MeshIO):
                         "Caught unknown C++ exception.");
       } // try/catch
       return result;
+      #else
+      throw std::logic_error("Not configured to use CUBIT.");
+      return 0;
+      #endif
       #}embed
       return MeshIOCubit_filename_get(self.thisptr)
-    
 
 # ----------------------------------------------------------------------
 cdef class MeshIOLagrit(MeshIO):
