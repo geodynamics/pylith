@@ -56,18 +56,6 @@ public :
    */
   void adjustTopology(const ALE::Obj<ALE::Mesh>& mesh);
 
-  /** Initialize fault. Determine orientation and setup boundary
-   * condition parameters.
-   *
-   * @param mesh PETSc mesh
-   * @param upDir Direction perpendicular to along-strike direction that is 
-   *   not collinear with fault normal (usually "up" direction but could 
-   *   be up-dip direction).
-   */
-  virtual
-  void initialize(const ALE::Obj<ALE::Mesh>& mesh,
-		  const double_array& upDir) = 0;
-
   /** Integrate contribution of cohesive cells to residual term.
    *
    * @param residual Residual field (output)

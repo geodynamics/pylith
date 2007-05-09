@@ -59,10 +59,12 @@ pylith::faults::FaultCohesiveKin::eqsrc(EqKinSrc* src)
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
+					     const spatialdata::geocoords::CoordSys* cs,
 					     const double_array& upDir)
 { // initialize
   assert(0 != _quadrature);
   assert(0 != _faultMesh);
+  assert(0 != _eqsrc);
   assert(!_faultMesh->isNull());
   
   if (3 != upDir.size())
@@ -210,6 +212,8 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       orientation->restrictPoint(*v_iter);
     _orientation->updatePoint(*v_iter, vertexOrient);
   } // for
+  
+  _eqsrc->initialize(mesh, *_faultMesh, setVert, cs);
 } // initialize
 
 // ----------------------------------------------------------------------

@@ -17,6 +17,8 @@
 #include "pylith/faults/SlipTimeFn.hh"
 #include "pylith/faults/BruneSlipFn.hh"
 
+#include "pylith/utils/array.hh"
+
 #include <assert.h>
 #include <stdexcept>
 #include <Python.h>
@@ -97,6 +99,53 @@ cdef class Fault:
     } // try/catch
     #}embed
     Fault_adjustTopology(self.thisptr, ptrFromHandle(mesh))
+    return
+
+
+  def initialize(self, mesh, cs, upDir):
+    """
+    Initialize fault.
+    """
+    # create shim for method 'initialize'
+    #embed{ void Fault_initialize(void* objVptr, void* meshVptr, void* csVptr, double* upDirPtr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      assert(0 != csVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      spatialdata::geocoords::CoordSys* cs =
+        (spatialdata::geocoords::CoordSys*) csVptr;
+      pylith::double_array upDir(3);
+      upDir[0] = upDirPtr[0];
+      upDir[1] = upDirPtr[1];
+      upDir[2] = upDirPtr[2];
+      ((pylith::faults::Fault*) objVptr)->initialize(*mesh, cs, upDir);
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    if not cs.name == "spatialdata_geocoords_CoordSys":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'spatialdata::geocoords::CoordSys'."
+    if 3 != len(upDir):
+      raise TypeError, \
+            "Argument must be a 3 vector (list)."
+    cdef double upDirCpp[3]
+    upDirCpp[0] = upDir[0]
+    upDirCpp[1] = upDir[1]
+    upDirCpp[2] = upDir[2]    
+    Fault_initialize(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs),
+                     upDirCpp)
     return
 
 

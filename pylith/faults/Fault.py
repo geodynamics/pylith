@@ -112,7 +112,7 @@ class Fault(Component):
 
   def initialize(self, mesh):
     """
-    Initialize material property manager.
+    Initialize fault.
     """
     self._info.log("Initializing fault '%s'." % self.label)
 
