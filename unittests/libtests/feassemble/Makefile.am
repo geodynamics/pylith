@@ -99,12 +99,17 @@ noinst_HEADERS += \
 	data/QuadratureData3DLinear.hh \
 	data/QuadratureData3DQuadratic.hh
 
-testfeassemble_LDFLAGS = $(PETSC_LIB)
+testfeassemble_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
 
 AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
 
 testfeassemble_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/libpylith.la
+
+if ENABLE_CUBIT
+  testfeassemble_LDADD += -lnetcdf_c++ -lnetcdf
+endif
+
 
 # End of file 

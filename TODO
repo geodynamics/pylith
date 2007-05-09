@@ -53,17 +53,11 @@ Cleanup
 2. Implement MeshIOLagrit
    b. unit tests at C++ level
      BinaryIO
-     GMVFileAscii
-     GMVFileBinary
-     PsetFileAscii
-     PsetFileBinary
-     MeshIOLagrit
-   e. unit tests at Python level
-     MeshIOLagrit
+     Check unit tests on big endian machine.
 
 3. Implement HDF5 output
 
-4. Implement PML boundary conditions
+4. Implement absorbing boundary conditions
 
 5. Create suite of simple full test cases
 
@@ -71,14 +65,7 @@ Cleanup
 SECONDARY PRIORITIES
 ======================================================================
 
-1. Implement MeshIOCubit
-   a. C++ objects
-   b. unit tests at C++ level
-   c. Python object (MeshIOCubit)
-   d. bindings
-   e. unit tests at Python level
-
-2. Implement MeshIOHDF5 & HDF5 (helper class)
+1. Implement MeshIOHDF5 & HDF5 (helper class)
    a. C++ objects
    b. unit tests at C++ level
    c. Python object (MeshIOHDF5)

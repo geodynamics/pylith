@@ -45,7 +45,7 @@ class EqKinSrc(Component):
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b slip_function Analytical form for slip time function
+    ## @li \b slip_function Slip time history function.
 
     import pyre.inventory
 
@@ -65,11 +65,11 @@ class EqKinSrc(Component):
     return
 
 
-  def initialize(self, mesh):
+  def initialize(self):
     """
-    Initialize cohesive elements.
+    Initialize.
     """
-    Component.initialize(self, mesh)
+    self.slipFn.initialize()
     return
 
 

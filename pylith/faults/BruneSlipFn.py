@@ -42,11 +42,22 @@ class BruneSlipFn(SlipTimeFn):
     ## @li None
     ##
     ## \b Facilities
+    ## @li \b slip Spatial database of final slip
+    ## @li \b slip_time Spatial database of slip initiation time
     ## @li \b slip_rate Spatial database of peak slip rate
 
     import pyre.inventory
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
+
+    slip = pyre.inventory.facility("slip", family="spatial_database",
+                                   factory=SimpleDB, args=["slip"])
+    slip.meta['tip'] = "Spatial database of slip."
+
+    slipTime = pyre.inventory.facility("slip_time", family="spatial_database",
+                                       factory=SimpleDB,
+                                       args=["slip time"])
+    slipTime.meta['tip'] = "Spatial database of slip initiation time."
 
     slipRate = pyre.inventory.facility("slip_rate", family="spatial_database",
                                        factory=SimpleDB,
@@ -66,6 +77,22 @@ class BruneSlipFn(SlipTimeFn):
     return
 
 
+  def initialize(self):
+    """
+    Initialize.
+    """
+    SlipTimeFn.initialize(self)
+
+    self.slip.initialize()
+    self.slipTime.initialize()
+    self.slipRate.initialize()
+
+    self.cppHandle.dbSlip = self.slip.cppHandle
+    self.cppHandle.dbSlipTime = self.slipTime.cppHandle
+    self.cppHandle.dbSlipRate = self.slipRate.cppHandle
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
@@ -73,6 +100,8 @@ class BruneSlipFn(SlipTimeFn):
     Setup members using inventory.
     """
     SlipTimeFn._configure(self)
+    self.slip = self.inventory.slip
+    self.slipTime = self.inventory.slipTime
     self.slipRate = self.inventory.slipRate
     return
 
