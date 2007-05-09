@@ -26,6 +26,7 @@ pylith::feassemble::IntegratorElasticity::calcTotalStrain1D(
 					    const int numBasis)
 { // calcTotalStrain1D
   assert(0 != strain);
+  assert(0 != disp);
   
   const int dimension = 1;
   const int numQuadPts = strain->size();
@@ -49,6 +50,7 @@ pylith::feassemble::IntegratorElasticity::calcTotalStrain2D(
 					    const int numBasis)
 { // calcTotalStrain2D
   assert(0 != strain);
+  assert(0 != disp);
   
   const int dimension = 2;
   const int numQuadPts = strain->size();
@@ -58,11 +60,11 @@ pylith::feassemble::IntegratorElasticity::calcTotalStrain2D(
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     assert(3 == (*strain)[iQuad].size());
     for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-      strain[iQuad][0] += 
+      (*strain)[iQuad][0] += 
 	basisDeriv[iQ+iBasis  ] * disp[iBasis  ];
-      strain[iQuad][1] += 
+      (*strain)[iQuad][1] += 
 	basisDeriv[iQ+iBasis+1] * disp[iBasis+1];
-      strain[iQuad][2] += 
+      (*strain)[iQuad][2] += 
 	0.5 * (basisDeriv[iQ+iBasis+1] * disp[iBasis  ] +
 	       basisDeriv[iQ+iBasis  ] * disp[iBasis+1]);
     } // for
@@ -78,6 +80,7 @@ pylith::feassemble::IntegratorElasticity::calcTotalStrain3D(
 					    const int numBasis)
 { // calcTotalStrain3D
   assert(0 != strain);
+  assert(0 != disp);
 
   const int dimension = 3;
   const int numQuadPts = strain->size();
@@ -87,19 +90,19 @@ pylith::feassemble::IntegratorElasticity::calcTotalStrain3D(
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     assert(6 == (*strain)[iQuad].size());
     for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-      strain[iQuad][0] += 
+      (*strain)[iQuad][0] += 
 	basisDeriv[iQ+iBasis  ] * disp[iBasis  ];
-      strain[iQuad][1] += 
+      (*strain)[iQuad][1] += 
 	basisDeriv[iQ+iBasis+1] * disp[iBasis+1];
-      strain[iQuad][2] += 
+      (*strain)[iQuad][2] += 
 	basisDeriv[iQ+iBasis+2] * disp[iBasis+2];
-      strain[iQuad][3] += 
+      (*strain)[iQuad][3] += 
 	0.5 * (basisDeriv[iQ+iBasis+1] * disp[iBasis  ] +
 	       basisDeriv[iQ+iBasis  ] * disp[iBasis+1]);
-      strain[iQuad][4] += 
+      (*strain)[iQuad][4] += 
 	0.5 * (basisDeriv[iQ+iBasis+2] * disp[iBasis+1] +
 	       basisDeriv[iQ+iBasis+1] * disp[iBasis+2]);
-      strain[iQuad][5] += 
+      (*strain)[iQuad][5] += 
 	0.5 * (basisDeriv[iQ+iBasis+2] * disp[iBasis  ] +
 	       basisDeriv[iQ+iBasis  ] * disp[iBasis+2]);
     } // for
