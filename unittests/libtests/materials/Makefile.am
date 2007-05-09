@@ -53,7 +53,7 @@ noinst_HEADERS += \
 	data/ElasticStress1DData.hh \
 	data/header.hh
 
-testmaterials_LDFLAGS = $(PETSC_LIB)
+testmaterials_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
 
 AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
 
@@ -61,6 +61,10 @@ testmaterials_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata
+
+if ENABLE_CUBIT
+  testmaterials_LDADD += -lnetcdf_c++ -lnetcdf
+endif
 
 
 # End of file 

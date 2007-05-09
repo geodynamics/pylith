@@ -69,8 +69,8 @@ class FaultCohesiveKin(FaultCohesive):
     """
     Initialize cohesive elements.
     """
+    self.eqSrc.initialize()
     FaultCohesive.initialize(self, mesh)
-    self.slip.initialize()
     return
 
 

@@ -22,6 +22,23 @@
 
 from pyre.components.Component import Component
 
+# Validator for up-direction
+def validateUpDir(value):
+  """
+  Validate up-direction.
+  """
+  msg = "Up-direction must be a 3 component vector (list)."
+  if not isinstance(value, list):
+    raise ValueError(msg)
+  if 3 != len(list):
+    raise ValueError(msg)
+  try:
+    nums = map(float, value)
+  except:
+    raise ValueError(msg)
+  return value
+
+
 # Fault class
 class Fault(Component):
   """
@@ -46,6 +63,8 @@ class Fault(Component):
     ## \b Properties
     ## @li \b id Fault identifier
     ## @li \b name Name of fault
+    ## @li \b up-dir Up-dip or up direction
+    ##   (perpendicular to along-strike and not collinear with fault normal)
     ##
     ## \b Facilities
     ## @li \b quadrature Quadrature object for numerical integration
@@ -58,6 +77,12 @@ class Fault(Component):
 
     label = pyre.inventory.str("label", default="")
     label.meta['tip'] = "Name of material."
+
+    upDir = pyre.inventory.list("up-dir", default=[0, 0, 1],
+                                validator=validateUpDir)
+    upDir.meta['tip'] = "Up-dip or up direction " \
+                        "(perpendicular to along-strike and not collinear " \
+                        "with fault normal)."
 
     from pylith.feassemble.quadrature.Quadrature import Quadrature
     quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
@@ -99,8 +124,8 @@ class Fault(Component):
 
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
-    #self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
-    #                          self.quadrature.cppHandle)
+    self.cppHandle.quadrature = self.quadrature.cppHandle
+    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle)
     return
 
 
