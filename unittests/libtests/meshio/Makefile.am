@@ -23,14 +23,12 @@ check_PROGRAMS = testmeshio
 testmeshio_SOURCES = \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
-	TestMeshIOCubit.cc \
 	TestMeshIOLagrit.cc \
 	test_meshio.cc
 
 noinst_HEADERS = \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
-	TestMeshIOCubit.hh \
 	TestMeshIOLagrit.hh
 
 # Source files associated with testing data
@@ -69,6 +67,8 @@ testmeshio_LDADD = \
 	$(top_builddir)/libsrc/libpylith.la
 
 if ENABLE_CUBIT
+  testmeshio_SOURCES += TestMeshIOCubit.cc
+  noinst_HEADERS += TestMeshIOCubit.hh
   testmeshio_LDADD += -lnetcdf_c++ -lnetcdf
 endif
 
