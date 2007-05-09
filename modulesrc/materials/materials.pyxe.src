@@ -71,7 +71,7 @@ cdef class Material:
 
   def initialize(self, mesh, cs, quadrature):
     """
-    Initialzie material by getting physical property parameters from
+    Initialize material by getting physical property parameters from
     database.
     """
     # create shim for method 'initialize'
