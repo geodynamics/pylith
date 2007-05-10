@@ -17,12 +17,6 @@
 #include <fstream> // USES std::ifstream
 #include <assert.h> // USES assert()
 
-#if defined(WORDS_BIGENDIAN)
-#define NATIVE_BIG_ENDIAN
-#else
-#define NATIVE_LITTLE_ENDIAN
-#endif
-
 // ----------------------------------------------------------------------
 // Read fixed length string from file.
 std::string
