@@ -73,19 +73,6 @@ pylith::meshio::MeshIO::write(ALE::Obj<Mesh>* mesh)
 } // write
 
 // ----------------------------------------------------------------------
-// Create cube boundary mesh.
-void 
-pylith::meshio::MeshIO::createCubeBoundary(ALE::Obj<Mesh>* mesh)
-{ // read
-  double lower[3] = {0.0, 0.0, 0.0};
-  double upper[3] = {1.0, 1.0, 1.0};
-  int    faces[3] = {1, 1, 1};
-
-  *mesh = ALE::MeshBuilder::createCubeBoundary(PETSC_COMM_WORLD, lower, upper, faces, _debug);
-  mesh->addRef();
-} // createCubeBoundary
-
-// ----------------------------------------------------------------------
 // Set vertices in mesh.
 void
 pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,

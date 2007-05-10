@@ -12,6 +12,7 @@
 
 #header{
 #include <Mesh.hh>
+#include <Generator.hh>
 #include <Distribution.hh>
 #include <petscmesh.h>
 #include "pylith/utils/petscfwd.h"
@@ -61,6 +62,61 @@ cdef void PetscMat_destructor(void* obj):
   #}embed
   PetscMat_destructor_cpp(obj)
   return
+
+# ----------------------------------------------------------------------
+cdef class MeshGenerator:
+
+  def createCubeBoundary(self, debug = 0):
+    """
+    Returns a Mesh that is the boundary of the unit cube
+    """
+    # create shim for method 'read'
+    #embed{ void MeshGenerator_createCubeBoundary(int debug, void* meshVptr)
+    try {
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* pMesh   = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      const double lower[3] = {0.0, 0.0, 0.0};
+      const double upper[3] = {1.0, 1.0, 1.0};
+      const int    faces[3] = {1, 1, 1};
+      *pMesh = ALE::MeshBuilder::createCubeBoundary(PETSC_COMM_WORLD, lower, upper, faces, debug);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    mesh = Mesh()
+    MeshGenerator_createCubeBoundary(debug, ptrFromHandle(mesh))
+    return mesh
+
+  def generateMesh(self, meshBd):
+    """
+    Generate a Mesh from a boundary
+    """
+    # create shim for method 'read'
+    #embed{ void MeshGenerator_generateMesh(void* meshBdVptr, void* meshVptr)
+    try {
+      assert(0 != meshBdVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* pMeshBd = (ALE::Obj<ALE::Mesh>*) meshBdVptr;
+      ALE::Obj<ALE::Mesh>* pMesh   = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      *pMesh = ALE::Generator::generateMesh(*pMeshBd);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if meshBd.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    mesh = Mesh()
+    MeshGenerator_generateMesh(ptrFromHandle(meshBd), ptrFromHandle(mesh))
+    return mesh
 
 # ----------------------------------------------------------------------
 cdef class Mesh:
