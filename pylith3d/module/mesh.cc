@@ -434,8 +434,8 @@ PetscErrorCode updateDisplacement(SectionReal displacement, Vec sol) {
   PetscFunctionBegin;
   ierr = SectionRealGetLocalVector(displacement, &lv);CHKERRQ(ierr);
   ierr = PetscObjectQuery((PetscObject) sol, "injection", (PetscObject *) &injection);CHKERRQ(ierr);
-  ierr = VecScatterBegin(sol, lv, INSERT_VALUES, SCATTER_REVERSE, injection);CHKERRQ(ierr);
-  ierr = VecScatterEnd(sol, lv, INSERT_VALUES, SCATTER_REVERSE, injection);CHKERRQ(ierr);
+  ierr = VecScatterBegin(injection, sol, lv, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
+  ierr = VecScatterEnd(injection, sol, lv, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
   ierr = VecDestroy(lv);CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
