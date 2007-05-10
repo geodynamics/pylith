@@ -127,12 +127,12 @@ pylith::faults::FaultCohesive::_orient3D(double_array* orientation,
   const int cellDim = 2;
   const int spaceDim = 3;
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
-    const double j00 = jacobian[iLoc*spaceDim  ];
-    const double j10 = jacobian[iLoc*spaceDim+1];
-    const double j20 = jacobian[iLoc*spaceDim+2];
-    const double j01 = jacobian[iLoc*spaceDim+3];
-    const double j11 = jacobian[iLoc*spaceDim+4];
-    const double j21 = jacobian[iLoc*spaceDim+5];
+    const double j00 = jacobian[iLoc*spaceDim*cellDim  ];
+    const double j10 = jacobian[iLoc*spaceDim*cellDim+1];
+    const double j20 = jacobian[iLoc*spaceDim*cellDim+2];
+    const double j01 = jacobian[iLoc*spaceDim*cellDim+3];
+    const double j11 = jacobian[iLoc*spaceDim*cellDim+4];
+    const double j21 = jacobian[iLoc*spaceDim*cellDim+5];
 
     // Compute normal using Jacobian
     double r0 =  j10*j21 - j20*j11;
