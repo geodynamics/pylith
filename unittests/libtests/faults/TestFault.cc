@@ -17,7 +17,6 @@
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
 #include <string> // USES std::string
-#include <stdexcept> // USES std::logic_error TEMPORARY
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFault );
@@ -46,15 +45,5 @@ pylith::faults::TestFault::testLabel(void)
   CPPUNIT_ASSERT_EQUAL(label, fault.label());
 } // testLabel
     
-#if 0
-// ----------------------------------------------------------------------
-// Test initialize()
-void
-pylith::faults::TestFault::testInitialize(void)
-{ // testInitialize
-  throw std::logic_error("Need to implement test.");
-} // testInitialize
-#endif
-
 
 // End of file 

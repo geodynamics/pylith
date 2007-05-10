@@ -41,20 +41,23 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestFaultCohesive );
 
-#if 0
-  // awaiting FaultCohesiveDyn implementation
   CPPUNIT_TEST( testAdjustTopologyLine2 );
   CPPUNIT_TEST( testAdjustTopologyTri3 );
   CPPUNIT_TEST( testAdjustTopologyQuad4 );
   CPPUNIT_TEST( testAdjustTopologyTet4 );
   CPPUNIT_TEST( testAdjustTopologyHex8 );
-#endif
 
   CPPUNIT_TEST( testAdjustTopologyLine2Lagrange );
   CPPUNIT_TEST( testAdjustTopologyTri3Lagrange );
   CPPUNIT_TEST( testAdjustTopologyQuad4Lagrange );
   CPPUNIT_TEST( testAdjustTopologyTet4Lagrange );
   CPPUNIT_TEST( testAdjustTopologyHex8Lagrange );
+
+  CPPUNIT_TEST( testOrientationSize );
+
+  CPPUNIT_TEST( testOrient1D );
+  CPPUNIT_TEST( testOrient2D );
+  CPPUNIT_TEST( testOrient3D );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -96,11 +99,28 @@ public :
   /// multipliers.
   void testAdjustTopologyHex8Lagrange(void);
 
+  /// Test _orientationSize().
+  void testOrientationSize(void);
+
+  /// Test _orient1D().
+  void testOrient1D(void);
+
+  /// Test _orient2D().
+  void testOrient2D(void);
+
+  /// Test _orient3D().
+  void testOrient3D(void);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 public :
 
-  /// Test adjustTopology().
-  void _testAdjustTopology(const CohesiveData& data);
+  /** Test adjustTopology().
+   *
+   * @param fault Fault for cohesive elements.
+   * @param data Cohesive element data.
+   */
+  void _testAdjustTopology(Fault* fault,
+			   const CohesiveData& data);
 
 }; // class TestFaultCohesive
 

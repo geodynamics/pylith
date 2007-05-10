@@ -21,6 +21,8 @@ subpkginclude_HEADERS = \
 	Fault.hh \
 	Fault.icc \
 	FaultCohesive.hh \
+	FaultCohesiveDyn.hh \
+	FaultCohesiveDyn.icc \
 	FaultCohesiveKin.hh \
 	FaultCohesiveKin.icc \
 	SlipTimeFn.hh

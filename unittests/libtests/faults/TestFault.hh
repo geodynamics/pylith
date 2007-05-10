@@ -39,9 +39,6 @@ class pylith::faults::TestFault : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestFault );
   CPPUNIT_TEST( testID );
   CPPUNIT_TEST( testLabel );
-#if 0
-  CPPUNIT_TEST( testInitialize );
-#endif
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -52,11 +49,6 @@ public :
 
   /// Test label()
   void testLabel(void);
-
-#if 0
-  /// Test initialize()
-  void testInitialize(void);
-#endif
 
 }; // class TestFault
 
