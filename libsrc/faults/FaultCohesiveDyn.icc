@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_faults_faultcohesivedyn_hh)
+#error "FaultCohesiveDyn.icc can only be included from FaultCohesiveDyn.hh"
+#endif
+
+// Create copy of fault.
+inline
+pylith::faults::Fault*
+pylith::faults::FaultCohesiveDyn::clone(void) const {
+  return new FaultCohesiveDyn(*this);
+} // clone
+
+// Cohesive cells use Lagrange multiplier constraints?
+inline
+bool
+pylith::faults::FaultCohesiveDyn::_useLagrangeConstraints(void) const {
+  return false;
+} // useLagrangeConstraints
+
+
+// End of file 

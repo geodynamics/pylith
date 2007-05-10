@@ -20,25 +20,62 @@ Cleanup
   Use MeshIOAscii to get mesh information into Python tests?
 
 0. Implement faults for kinematic source
-   a. Add creation of cohesive cells
-     i. Add tests for interpolated meshes and constrained cohesive cells.
+   a. Creation of cohesive cells
+     i. Add tests for interpolated meshes.
         Double check consistency in ordering of vertices (positive/negative).
 
-   b. Implement slip time function
-     ii. Add Python
-     iii. Add unit tests
+   b. Implement integrator for faults
 
-   c. Start implementing integrator for faults
+     i. FaultCohesive
+       (1) C++ Unit tests
+         _orient1D()
+         _orient2D()
+         _orient3D()
+       (2) Python unit tests
+	 constructor
+         initialize()
 
-     i. Update Reference cell
-       (1) Improve how we get Jacobian at vertices of cell
+     ii. EqKinSrc
+       (1) C++ unit tests
+         constructor
+         clone()
+         slipfn()
+         initialize()
+         slip()
+       (2) Python unit tests
+         constructor
+         initialize()
 
-     iii. FaultCohesive
-       (1) Unit tests
+     iii. BruneSlipFn
+       (1) C++ unit tests
+         constructor
+         clone()
+         dbFinalSlip()
+         dbSlipTime()
+         dbPeakRate()
+         initialize()
+         slip()
+         _slip()
+       (2) Python unit tests
+         constructor
+         initialize()
 
      iv. FaultCohesiveKin
-       (2) Add Python unit tests
-       (3) Add C++ unit tests
+       (1) C++ unit tests
+         constructor
+         clone()
+         eqsrc()
+         initialize()
+         integrateResidual()
+         integrateJacobian()
+         setField()
+         _useLagrangeConstraint()
+       (2) Python unit tests
+         constructor
+         initialize()
+
+     v. Update Reference cell
+       (1) Improve how we get Jacobian at vertices of cell
 
 1. Finish implementing ExplicitElasticity and Explicit
    a. Replace integrateConstant() with integrateResidual()

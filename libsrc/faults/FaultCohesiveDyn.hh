@@ -10,64 +10,50 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/FaultCohesiveKin.hh
+/** @file libsrc/faults/FaultCohesiveDyn.hh
  *
- * @brief C++ implementation for a fault surface with kinematic
- * (prescribed) slip implemented with cohesive elements.
- *
- * Fault boundary condition is specified using Lagrange
- * multipliers. The constraints are associated with "constraint"
- * vertices which sit between the pair of vertices on each side of the
- * fault. 
+ * @brief C++ implementation for a fault surface with spontaneous
+ * (dynamic) slip implemented with cohesive elements.
  *
  * The ordering of vertices in a cohesive cell is the vertices on the
- * POSITIVE/NEGATIVE (CHECK WHICH IT IS) side of the fault, the
- * corresponding entries on the other side of the fault, and then the
- * corresponding constraint vertices.
+ * POSITIVE/NEGATIVE (CHECK WHICH IT IS) side of the fault and then the
+ * corresponding entries on the other side of the fault.
  */
 
-#if !defined(pylith_faults_faultcohesivekin_hh)
-#define pylith_faults_faultcohesivekin_hh
+#if !defined(pylith_faults_faultcohesivedyn_hh)
+#define pylith_faults_faultcohesivedyn_hh
 
 #include "FaultCohesive.hh"
 
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class FaultCohesiveKin;
-    class TestFaultCohesiveKin; // unit testing
-
-    class EqKinSrc; // HOLDSA EqKinSrc
+    class FaultCohesiveDyn;
+    class TestFaultCohesiveDyn; // unit testing
   } // faults
 } // pylith
 
-/// C++ implementation for a fault surface with kinematic (prescribed)
-/// slip implemented with cohesive elements.
-class pylith::faults::FaultCohesiveKin : public FaultCohesive
-{ // class FaultCohesiveKin
-  friend class TestFaultCohesiveKin; // unit testing
+/// @brief C++ implementation for a fault surface with spontaneous
+/// (dynamic) slip implemented with cohesive elements.
+class pylith::faults::FaultCohesiveDyn : public FaultCohesive
+{ // class FaultCohesiveDyn
+  friend class TestFaultCohesiveDyn; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor.
-  FaultCohesiveKin(void);
+  FaultCohesiveDyn(void);
 
   /// Destructor.
   virtual
-  ~FaultCohesiveKin(void);
+  ~FaultCohesiveDyn(void);
 
   /** Create copy of fault.
    *
    * @returns Copy of fault.
    */
   Fault* clone(void) const;  
-
-  /** Set kinematic earthquake source.
-   *
-   * @param src Kinematic earthquake source.
-   */
-  void eqsrc(EqKinSrc* src);
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
@@ -119,7 +105,7 @@ protected :
    *
    * @param m Fault to copy
    */
-  FaultCohesiveKin(const FaultCohesiveKin& m);
+  FaultCohesiveDyn(const FaultCohesiveDyn& m);
 
   /** Cohesive cells use Lagrange multiplier constraints?
    *
@@ -132,25 +118,20 @@ protected :
 private :
 
   /// Not implemented
-  const FaultCohesiveKin& operator=(const FaultCohesiveKin& m);
+  const FaultCohesiveDyn& operator=(const FaultCohesiveDyn& m);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
-
-  EqKinSrc* _eqsrc; ///< Kinematic earthquake source information
 
   /// Orientation of fault surface at vertices (fiber dimension is
   /// nonzero only at constraint vertices)
   ALE::Obj<real_section_type> _orientation;
 
-  /// Fault vertices associated with constraints
-  std::set<Mesh::point_type> _constraintVert;
+}; // class FaultCohesiveDyn
 
-}; // class FaultCohesiveKin
+#include "FaultCohesiveDyn.icc" // inline methods
 
-#include "FaultCohesiveKin.icc" // inline methods
-
-#endif // pylith_faults_faultcohesivekin_hh
+#endif // pylith_faults_faultcohesivedyn_hh
 
 
 // End of file 

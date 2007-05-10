@@ -16,6 +16,8 @@
 
 #include "CohesiveTopology.hh" // USES CohesiveTopology::create()
 
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -169,6 +171,17 @@ pylith::faults::FaultCohesive::_orient3D(double_array* orientation,
     (*orientation)[iLoc*orientSize+8] =  r2*wt;
   } // for
 } // _orient3D
+
+// ----------------------------------------------------------------------
+// Get size (fiber dimension) of orientation information.
+int 
+pylith::faults::FaultCohesive::_orientationSize(void) const
+{ // _orientationSize
+  assert(0 != _quadrature);
+
+  const int size = _quadrature->cellDim()*_quadrature->spaceDim();
+  return size;
+} // _orientationSize
 
 
 // End of file 

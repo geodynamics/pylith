@@ -12,9 +12,7 @@
 
 #include <portinfo>
 
-#include "FaultCohesiveKin.hh" // implementation of object methods
-
-#include "EqKinSrc.hh" // USES EqKinSrc
+#include "FaultCohesiveDyn.hh" // implementation of object methods
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/utils/array.hh" // USES double_array
@@ -25,53 +23,40 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
-  _eqsrc(0)
+pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(void)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
+pylith::faults::FaultCohesiveDyn::~FaultCohesiveDyn(void)
 { // destructor
-  delete _eqsrc; _eqsrc = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
 // Copy constructor.
-pylith::faults::FaultCohesiveKin::FaultCohesiveKin(const FaultCohesiveKin& f) :
-  FaultCohesive(f),
-  _eqsrc(0)
+pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(const FaultCohesiveDyn& f) :
+  FaultCohesive(f)
 { // copy constructor
-  if (0 != f._eqsrc)
-    _eqsrc = f._eqsrc->clone();
 } // copy constructor
-
-// ----------------------------------------------------------------------
-// Set kinematic earthquake source.
-void
-pylith::faults::FaultCohesiveKin::eqsrc(EqKinSrc* src)
-{ // eqsrc
-  delete _eqsrc; _eqsrc = (0 != src) ? src->clone() : 0;
-} // eqsrc
 
 // ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
 void
-pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
+pylith::faults::FaultCohesiveDyn::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 					     const spatialdata::geocoords::CoordSys* cs,
 					     const double_array& upDir)
 { // initialize
   assert(0 != _quadrature);
   assert(0 != _faultMesh);
-  assert(0 != _eqsrc);
   assert(!_faultMesh->isNull());
   
   if (3 != upDir.size())
     throw std::runtime_error("Up direction for fault orientation must be "
 			     "a vector with 3 components.");
 
-  // Allocate section for orientation at all fault vertices
+#if 0
+  // Allocate section for orientation at quadrature points
   ALE::Obj<real_section_type> orientation = 
     new real_section_type((*_faultMesh)->comm(), (*_faultMesh)->debug());
   assert(!orientation.isNull());
@@ -212,18 +197,18 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       orientation->restrictPoint(*v_iter);
     _orientation->updatePoint(*v_iter, vertexOrient);
   } // for
-  
-  _eqsrc->initialize(mesh, *_faultMesh, setVert, cs);
+#endif
 } // initialize
 
 // ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term.
 void
-pylith::faults::FaultCohesiveKin::integrateResidual(
+pylith::faults::FaultCohesiveDyn::integrateResidual(
 				const ALE::Obj<real_section_type>& residual,
 				const ALE::Obj<real_section_type>& disp,
 				const ALE::Obj<Mesh>& mesh)
 { // integrateResidual
+#if 0
   // Subtract constraint forces (which are disp at the constraint
   // DOF) to residual; contributions are at DOF of normal vertices (i and j)
 
@@ -262,109 +247,27 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     // Update residual
     mesh->updateAdd(residual, *c_iter, _cellVector);
   } // for
+#endif
 } // integrateResidual
 
 // ----------------------------------------------------------------------
 // Compute Jacobian matrix (A) associated with operator.
 void
-pylith::faults::FaultCohesiveKin::integrateJacobian(
+pylith::faults::FaultCohesiveDyn::integrateJacobian(
 				    PetscMat* mat,
 				    const ALE::Obj<real_section_type>& dispT,
 				    const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
-
-  // Add constraint information to Jacobian matrix; these are the
-  // direction cosines. Entries are associated with vertices ik, jk,
-  // ki, and kj.
-
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    (*_faultMesh)->heightStratum(0);
-  const Mesh::label_sequence::iterator cBegin = cells->begin();
-  const Mesh::label_sequence::iterator cEnd = cells->end();
-
-  // Allocate matrix for cell values (if necessary)
-  _initCellMatrix();
-
-  const int numVertices = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  for (Mesh::label_sequence::iterator c_iter=cBegin;
-       c_iter != cEnd;
-       ++c_iter) {
-    _resetCellMatrix();
-
-    // Get orientations at cells vertices (only valid at constraint vertices)
-    const real_section_type::value_type* cellOrientation = 
-      mesh->restrict(_orientation, *c_iter);
-
-    const int numConstraintVert = numVertices / 3;
-    assert(numVertices == numConstraintVert * 3);
-    const int orientationSize = _orientationSize();
-    for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
-      // Get orientations at constraint vertex
-      const real_section_type::value_type* constraintOrient = 
-	&cellOrientation[iConstraint*orientationSize];
-
-      // Blocks in cell matrix associated with normal cohesive
-      // vertices i and j and constraint vertex k
-      const int iBasis = 3*iConstraint;
-      const int jBasis = 3*iConstraint + 1;
-      const int kBasis = 3*iConstraint + 2;
-
-      // Entries associated with constraint forces applied at node i
-      for (int iDim=0; iDim < spaceDim; ++iDim)
-	for (int kDim=0; kDim < spaceDim; ++kDim) {
-	  const int row = iBasis*spaceDim+iDim;
-	  const int col = kBasis*spaceDim+kDim;
-	  _cellMatrix[row*numVertices*spaceDim+col] =
-	    constraintOrient[iDim*spaceDim+kDim];
-	  _cellMatrix[col*numVertices*spaceDim+row] =
-	    _cellMatrix[row*numVertices*spaceDim+col]; // symmetric
-	} // for
-
-      // Entries associated with constraint forces applied at node j
-      for (int jDim=0; jDim < spaceDim; ++jDim)
-	for (int kDim=0; kDim < spaceDim; ++kDim) {
-	  const int row = jBasis*spaceDim+jDim;
-	  const int col = kBasis*spaceDim+kDim;
-	  _cellMatrix[row*numVertices*spaceDim+col] =
-	    -constraintOrient[jDim*spaceDim+kDim];
-	  _cellMatrix[col*numVertices*spaceDim+row] =
-	    _cellMatrix[row*numVertices*spaceDim+col]; // symmetric
-	} // for
-    } // for
-    PetscErrorCode err = 
-      PetscLogFlops(numConstraintVert*spaceDim*spaceDim*4);
-    if (err)
-      throw std::runtime_error("Logging PETSc flops failed.");
-
-    // Assemble cell contribution into PETSc Matrix
-    const ALE::Obj<Mesh::order_type>& globalOrder = 
-      mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
-    err = updateOperator(*mat, mesh, dispT, globalOrder,
-			 *c_iter, _cellMatrix, ADD_VALUES);
-    if (err)
-      throw std::runtime_error("Update to PETSc Mat failed.");
-  } // for
 } // integrateJacobian
   
 // ----------------------------------------------------------------------
 // Set field.
 void
-pylith::faults::FaultCohesiveKin::setField(
+pylith::faults::FaultCohesiveDyn::setField(
 				     const double t,
 				     const ALE::Obj<real_section_type>& disp,
 				     const ALE::Obj<Mesh>& mesh)
 { // setField
-  typedef std::set<Mesh::point_type>::const_iterator vert_iterator;
-
-  assert(0 != _eqsrc);
-
-  const ALE::Obj<real_section_type>& slip = _eqsrc->slip(t, _constraintVert);
-  assert(!slip.isNull());
-  const vert_iterator vBegin = _constraintVert.begin();
-  const vert_iterator vEnd = _constraintVert.end();
-  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter)
-    disp->updatePoint(*v_iter, slip->restrictPoint(*v_iter));
 } // setField
 
 

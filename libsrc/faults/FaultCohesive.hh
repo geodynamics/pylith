@@ -191,6 +191,11 @@ protected :
 		 const double_array& upDir,
 		 const int numLocs);
 		
+  /** Get size (fiber dimension) of orientation information.
+   *
+   * @returns Size of orientation information.
+   */
+  int _orientationSize(void) const;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

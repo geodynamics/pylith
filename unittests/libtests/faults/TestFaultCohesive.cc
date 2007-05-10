@@ -15,10 +15,12 @@
 #include "TestFaultCohesive.hh" // Implementation of class methods
 
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultsCohesiveKin
+#include "pylith/faults/FaultCohesiveDyn.hh" // USES FaultsCohesiveDyn
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
-#include "pylith/utils/array.hh" // USES int_array
+#include "pylith/utils/array.hh" // USES int_array, double_array
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/feassemble/Quadrature2Din3D.hh" // USES Quadrature2Din3D
 
 #include "data/CohesiveDataLine2.hh" // USES CohesiveDataLine2
 #include "data/CohesiveDataTri3.hh" // USES CohesiveDataTri3
@@ -32,6 +34,8 @@
 #include "data/CohesiveDataTet4Lagrange.hh" // USES CohesiveDataTet4Lagrange
 #include "data/CohesiveDataHex8Lagrange.hh" // USES CohesiveDataHex8Lagrange
 
+#include <stdexcept> // TEMPORARY
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
 
@@ -41,7 +45,8 @@ void
 pylith::faults::TestFaultCohesive::testAdjustTopologyLine2(void)
 { // testAdjustTopologyLine2
   CohesiveDataLine2 data;
-  _testAdjustTopology(data);
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
 } // testAdjustTopologyLine2
 
 // ----------------------------------------------------------------------
@@ -50,7 +55,8 @@ void
 pylith::faults::TestFaultCohesive::testAdjustTopologyTri3(void)
 { // testAdjustTopologyTri3
   CohesiveDataTri3 data;
-  _testAdjustTopology(data);
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
 } // testAdjustTopologyTri3
 
 // ----------------------------------------------------------------------
@@ -59,7 +65,8 @@ void
 pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4(void)
 { // testAdjustTopologyQuad4
   CohesiveDataQuad4 data;
-  _testAdjustTopology(data);
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
 } // testAdjustTopologyQuad4
 
 // ----------------------------------------------------------------------
@@ -68,7 +75,8 @@ void
 pylith::faults::TestFaultCohesive::testAdjustTopologyTet4(void)
 { // testAdjustTopologyTet4
   CohesiveDataTet4 data;
-  _testAdjustTopology(data);
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
 } // testAdjustTopologyTet4
 
 // ----------------------------------------------------------------------
@@ -77,7 +85,8 @@ void
 pylith::faults::TestFaultCohesive::testAdjustTopologyHex8(void)
 { // testAdjustTopologyHex8
   CohesiveDataHex8 data;
-  _testAdjustTopology(data);
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
 } // testAdjustTopologyHex8
 
 // ----------------------------------------------------------------------
@@ -87,7 +96,8 @@ void
 pylith::faults::TestFaultCohesive::testAdjustTopologyLine2Lagrange(void)
 { // testAdjustTopologyLine2Lagrange
   CohesiveDataLine2Lagrange data;
-  _testAdjustTopology(data);
+  FaultCohesiveKin fault;
+  _testAdjustTopology(&fault, data);
 } // testAdjustTopologyLine2Lagrange
 
 // ----------------------------------------------------------------------
@@ -97,7 +107,8 @@ void
 pylith::faults::TestFaultCohesive::testAdjustTopologyTri3Lagrange(void)
 { // testAdjustTopologyTri3Lagrange
   CohesiveDataTri3Lagrange data;
-  _testAdjustTopology(data);
+  FaultCohesiveKin fault;
+  _testAdjustTopology(&fault, data);
 } // testAdjustTopologyTri3Lagrange
 
 // ----------------------------------------------------------------------
@@ -107,7 +118,8 @@ void
 pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4Lagrange(void)
 { // testAdjustTopologyQuad4Lagrange
   CohesiveDataQuad4Lagrange data;
-  _testAdjustTopology(data);
+  FaultCohesiveKin fault;
+  _testAdjustTopology(&fault, data);
 } // testAdjustTopologyQuad4Lagrange
 
 // ----------------------------------------------------------------------
@@ -117,7 +129,8 @@ void
 pylith::faults::TestFaultCohesive::testAdjustTopologyTet4Lagrange(void)
 { // testAdjustTopologyTet4Lagrange
   CohesiveDataTet4Lagrange data;
-  _testAdjustTopology(data);
+  FaultCohesiveKin fault;
+  _testAdjustTopology(&fault, data);
 } // testAdjustTopologyTet4Lagrange
 
 // ----------------------------------------------------------------------
@@ -127,13 +140,137 @@ void
 pylith::faults::TestFaultCohesive::testAdjustTopologyHex8Lagrange(void)
 { // testAdjustTopologyHex8Lagrange
   CohesiveDataHex8Lagrange data;
-  _testAdjustTopology(data);
+  FaultCohesiveKin fault;
+  _testAdjustTopology(&fault, data);
 } // testAdjustTopologyHex8Lagrange
+
+// ----------------------------------------------------------------------
+// Test _orientationSize().
+void
+pylith::faults::TestFaultCohesive::testOrientationSize(void)
+{ // testOrientationSize
+  const int cellDim = 2;
+  const int spaceDim = 3;
+  const int numBasis = 1;
+  const int numQuadPts = 1;
+  const double basisVert[] = { 0.5, 0.3, 0.7 };
+  const double basisDerivVert[] = { -0.5, 0.5, -0.4 };
+  const double basisQuad[] = { 0.5, 0.5, 0.4 };
+  const double basisDerivQuad[] = { 0.5, 0.3, -0.4 };
+  const double quadPtsRef[] = { 0.0, 3.0 };
+  const double quadWts[] = { 2.0 };
+  const double minJacobian = 1.0;
+
+  feassemble::Quadrature2Din3D q;
+  q.initialize(basisVert, basisDerivVert, 
+	       basisQuad, basisDerivQuad, quadPtsRef, quadWts,
+	       cellDim, numBasis, numQuadPts, spaceDim);
+
+  FaultCohesiveKin fault;
+  fault.quadrature(&q);
+  CPPUNIT_ASSERT_EQUAL(cellDim*spaceDim, fault._orientationSize());
+} // testOrientationSize
+
+// ----------------------------------------------------------------------
+// Test _orient1D().
+void
+pylith::faults::TestFaultCohesive::testOrient1D(void)
+{ // testOrient1D
+  const int numLocs = 3;
+  double_array jacobian;
+  double_array jacobianDet;
+  double_array upDir;
+  double_array orientation(numLocs);
+  
+  FaultCohesive::_orient1D(&orientation, 
+			   jacobian, jacobianDet, upDir, numLocs);
+
+  const int size = orientation.size();
+  CPPUNIT_ASSERT_EQUAL(numLocs, size);
+  const double tolerance = 1.0e-6;
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, orientation[i], tolerance);
+} // testOrient1D
+
+// ----------------------------------------------------------------------
+// Test _orient2D().
+void
+pylith::faults::TestFaultCohesive::testOrient2D(void)
+{ // testOrient2D
+  const int numLocs = 2;
+  const int spaceDim = 2;
+  const int orientSize = 4;
+
+  const double jacobianVals[] = {
+    -1.0, 2.0,
+    -0.5, 1.0
+  };
+  double_array jacobian(jacobianVals, numLocs*spaceDim*(spaceDim-1));
+  double_array jacobianDet;
+  double_array upDir;
+  double_array orientation(numLocs*orientSize);
+  
+  const double orientationE[] = {
+    -1.0, 2.0,  2.0, 1.0,
+    -0.5, 1.0,  1.0, 0.5
+  };
+
+  FaultCohesive::_orient2D(&orientation, 
+			   jacobian, jacobianDet, upDir, numLocs);
+
+  const int size = orientation.size();
+  CPPUNIT_ASSERT_EQUAL(numLocs*orientSize, size);
+  const double tolerance = 1.0e-6;
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[i], orientation[i], tolerance);
+} // testOrient2D
+
+// ----------------------------------------------------------------------
+// Test _orient3D().
+void
+pylith::faults::TestFaultCohesive::testOrient3D(void)
+{ // testOrient3D
+  const int numLocs = 2;
+  const int spaceDim = 3;
+  const int orientSize = 9;
+
+  const double jacobianVals[] = {
+    2.0, 1.0, 0.5,   -0.5, -0.2, 2.0,
+  };
+  double_array jacobian(jacobianVals, numLocs*spaceDim*(spaceDim-1));
+  const double jacobianDetVals[] = {
+    1.3, 0.7
+  };
+  double_array jacobianDet(jacobianDetVals, numLocs);
+  const double upDirVals[] = { 0.0, 0.0, 1.0 };
+  double_array upDir(upDirVals, 3);
+  double_array orientation(numLocs*orientSize);
+  
+  const double orientationE[] = {
+    1.1654847299258313, -0.012145479112634533, 0.57575848378190342, 
+    0.57588657243394026, 0.024580136299379406, -1.1652255028919474, 
+    0.0, 1.2997108540889502, 0.027417070656281111,
+    
+    -0.063065020894967128, 0.68889496382717197, -0.10698846644884991, 
+    -0.6957991174916025, -0.0688894963827172, -0.033433895765265592, 
+    -0.043432605694620839, 0.10333424457407581, 0.69096717914882233
+  };
+
+  FaultCohesive::_orient3D(&orientation, 
+			   jacobian, jacobianDet, upDir, numLocs);
+
+  const int size = orientation.size();
+  CPPUNIT_ASSERT_EQUAL(numLocs*orientSize, size);
+  const double tolerance = 1.0e-6;
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[i], orientation[i], tolerance);
+} // testOrient3D
 
 // ----------------------------------------------------------------------
 // Test adjustTopology().
 void
-pylith::faults::TestFaultCohesive::_testAdjustTopology(const CohesiveData& data)
+pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
+						      const CohesiveData& data)
 { // _testAdjustTopology
   ALE::Obj<ALE::Mesh> mesh;
   meshio::MeshIOAscii iohandler;
@@ -142,10 +279,10 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(const CohesiveData& data)
   iohandler.interpolate(false);
   iohandler.read(&mesh);
 
-  FaultCohesiveKin fault;
-  fault.id(1);
-  fault.label("fault");
-  fault.adjustTopology(mesh);
+  CPPUNIT_ASSERT(0 != fault);
+  fault->id(1);
+  fault->label("fault");
+  fault->adjustTopology(mesh);
 
   CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
 
