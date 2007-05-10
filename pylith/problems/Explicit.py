@@ -67,36 +67,34 @@ class Explicit(Formulation):
     return
 
 
-  def initialize(self, mesh, materialsBin, spaceDim, dt):
+  def elasticityIntegrator(self):
     """
-    Create explicit integrators for each element family.
+    Get integrator for elastic material.
     """
     from pylith.feassemble.ExplicitElasticity import ExplicitElasticity
-    
-    self._info.log("Initializing integrators.")
+    return ExplicitElasticity()
+
+
+  def initialize(self, mesh, materials, boundaryConditions, dimension, dt):
+    """
+    Initialize problem for explicit time integration.
+    """
     self.integrators = []
-    for material in materialsBin.materials:
-      if material.quadrature.spaceDim != spaceDim:
-        raise ValueError, \
-              "Spatial dimension of problem is '%d' but quadrature " \
-              "for material '%s' is for spatial dimension '%d'." % \
-              (spaceDim, material.label, material.quadrature.spaceDim)
-      integrator = ExplicitElasticity()
-      integrator.setMesh(mesh)
-      integrator.initQuadrature(material.quadrature)
-      integrator.initMaterial(mesh, material)
-      integrator.timeStep(dt)
-      self.integrators.append(integrator)
+    Formulation.initialize(self, mesh, materials, boundaryConditions,
+                           dimension, dt)
+
+    self._info.log("Initializing integrators.")
 
     self._info.log("Creating fields and matrices.")
-    self.dispT = mesh.cppHandle.createRealSection("dispT", spaceDim)
-    self.dispTmdt = mesh.cppHandle.createRealSection("dispTmdt", spaceDim)
-    self.dispTpdt = mesh.cppHandle.createRealSection("dispTpdt", spaceDim)
-    self.constant = mesh.cppHandle.createRealSection("constant", spaceDim)
+    self.dispT = mesh.cppHandle.createRealSection("dispT", dimension)
+    self.dispTmdt = mesh.cppHandle.createRealSection("dispTmdt", dimension)
+    self.dispTpdt = mesh.cppHandle.createRealSection("dispTpdt", dimension)
+    self.constant = mesh.cppHandle.createRealSection("constant", dimension)
     self.jacobian = mesh.cppHandle.createMatrix(self.constant)
 
     self._info.log("Integrating Jacobian of operator.")
     for integrator in self.integrators:
+      integrator.timeStep(dt)
       integrator.integrateJacobian(self.jacobian, self.dispT)
     import pylith.utils.petsc as petsc
     petsc.mat_assemble(self.jacobian)

@@ -50,10 +50,10 @@ class Problem(Component):
                                         factory=Homogeneous)
     materials.meta['tip'] = "Materials in problem."
 
-    #from BoundaryConditions import BoundaryConditions
-    #bc = pyre.inventory.facility("bc", familty="bc",
-    #                             factory=BoundaryConditions)
-    #bc.meta['tip'] = "Boundary conditions."
+    from BoundaryConditions import BoundaryConditions
+    bc = pyre.inventory.facility("bc", family="bc",
+                                 factory=BoundaryConditions)
+    bc.meta['tip'] = "Boundary conditions."
   
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ class Problem(Component):
     """
     Component._configure(self)
     self.materials = self.inventory.materials
-    #self.bc = self.inventory.bc
+    self.bc = self.inventory.bc
     return
 
 

@@ -64,11 +64,29 @@ class Formulation(Component):
     return
 
 
-  def initialize(self, mesh, materials, dimension, dt):
+  def initialize(self, mesh, materials, boundaryConditions, dimension, dt):
     """
     Create integrators for each element family.
     """
-    raise NotImplementedError, "initialize() not implemented."
+    self._info.log("Initializing integrators.")
+    self.integrators = []
+
+    for material in materials.materials:
+      if material.quadrature.spaceDim != dimension:
+        raise ValueError, \
+              "Spatial dimension of problem is '%d' but quadrature " \
+              "for material '%s' is for spatial dimension '%d'." % \
+              (dimension, material.label, material.quadrature.spaceDim)
+      integrator = self.elasticityIntegrator()
+      integrator.setMesh(mesh)
+      integrator.initQuadrature(material.quadrature)
+      integrator.initMaterial(mesh, material)
+      self.integrators.append(integrator)
+
+    for bc in boundaryConditions.bc:
+      integrator = bc
+      integrator.initialize(mesh)
+      self.integrators.append(integrator)
     return
 
 
