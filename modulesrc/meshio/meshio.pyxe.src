@@ -118,32 +118,6 @@ cdef class MeshIO:
     return
 
 
-  def createCubeBoundary(self, mesh):
-    """
-    Read mesh from file.
-    """
-    # create shim for method 'read'
-    #embed{ void MeshIO_createCubeBoundary(void* objVptr, void* meshVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::meshio::MeshIO*) objVptr)->createCubeBoundary(pMesh);
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    if mesh.name != "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type 'Mesh'."
-    MeshIO_createCubeBoundary(self.thisptr, ptrFromHandle(mesh))
-    return
-
-
   def _createHandle(self):
     """Wrap pointer to C++ object in PyCObject."""
     return PyCObject_FromVoidPtr(self.thisptr, MeshIO_destructor)
