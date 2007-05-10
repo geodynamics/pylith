@@ -43,7 +43,7 @@ pylith::meshio::GMVFileBinary::~GMVFileBinary(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Read ASCII GMV file.
+// Read binary GMV file.
 void
 pylith::meshio::GMVFileBinary::read(double_array* coordinates,
 				    int_array* cells,
@@ -71,7 +71,7 @@ pylith::meshio::GMVFileBinary::read(double_array* coordinates,
   if (!(fin.is_open() && fin.good())) {
     std::ostringstream msg;
     msg
-      << "Could not open ASCII GMV file '" << _filename
+      << "Could not open binary GMV file '" << _filename
       << "' for reading.";
     throw std::runtime_error(msg.str());
   } // if
@@ -102,7 +102,7 @@ pylith::meshio::GMVFileBinary::read(double_array* coordinates,
 } // read
 
 // ----------------------------------------------------------------------
-// Write ASCII GMV file.
+// Write binary GMV file.
 void
 pylith::meshio::GMVFileBinary::write(const double_array& coordinates,
 				     const int_array& cells,
@@ -141,6 +141,7 @@ pylith::meshio::GMVFileBinary::_readHeader(std::ifstream& fin)
   } // if
 } // _readHeader
 
+#include <iostream>
 // ----------------------------------------------------------------------
 void
 pylith::meshio::GMVFileBinary::_readVertices(std::ifstream& fin,
@@ -204,7 +205,7 @@ pylith::meshio::GMVFileBinary::_readCells(std::ifstream& fin,
     cellStringCur[stringLen] = '\0';
     fin.read((char*) &numCornersCur, sizeof(int));
     if (_flipEndian)
-      BinaryIO::swapByteOrder((char*) numCornersCur, 1, sizeof(int));
+      BinaryIO::swapByteOrder((char*) &numCornersCur, 1, sizeof(int));
     if (0 != *numCorners) {
       if (cellStringCur != cellString) {
 	std::ostringstream msg;
@@ -254,6 +255,8 @@ pylith::meshio::GMVFileBinary::_readVariables(std::ifstream& fin,
   while("endvars" != varName && !fin.eof() && fin.good()) {
     int varType = 0;
     fin.read((char*) &varType, sizeof(int));
+    if (_flipEndian)
+      BinaryIO::swapByteOrder((char*) &varType, 1, sizeof(varType));
     if (1 == varType) { // variable/attribute associated with vertices
       float_array vals(numVertices);
       fin.read((char*) &vals[0], sizeof(float)*numVertices);
@@ -281,8 +284,12 @@ pylith::meshio::GMVFileBinary::_readFlags(std::ifstream& fin,
   while("endflag" != varName && !fin.eof() && fin.good()) {
     int numFlags = 0;
     fin.read((char*) &numFlags, sizeof(int));
+    if (_flipEndian)
+      BinaryIO::swapByteOrder((char*) &numFlags, 1, sizeof(numFlags));
     int varType = 0;
     fin.read((char*) &varType, sizeof(int));
+    if (_flipEndian)
+      BinaryIO::swapByteOrder((char*) &varType, 1, sizeof(varType));
     for (int iFlag=0; iFlag < numFlags; ++iFlag) {
       const int flagNameLen = 8;
       std::string flagName = BinaryIO::readString(fin, flagNameLen);
@@ -314,8 +321,12 @@ pylith::meshio::GMVFileBinary::_readMaterials(std::ifstream& fin,
 
   int numMaterials = 0;
   fin.read((char*) &numMaterials, sizeof(int));
+  if (_flipEndian)
+    BinaryIO::swapByteOrder((char*) &numMaterials, 1, sizeof(numMaterials));
   int dataType = 0;
   fin.read((char*) &dataType, sizeof(int));
+  if (_flipEndian)
+    BinaryIO::swapByteOrder((char*) &dataType, 1, sizeof(dataType));
 
   for (int iMat=0; iMat < numMaterials; ++iMat) {
     const int nameLen = 8;
