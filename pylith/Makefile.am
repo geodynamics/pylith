@@ -13,6 +13,10 @@
 nobase_pkgpyexec_PYTHON = \
 	PyLithApp.py \
 	__init__.py \
+	bc/__init__.py \
+	bc/BCIntegrator.py \
+	bc/BoundaryCondition.py \
+	bc/Dirichlet.py \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \
 	faults/EqKinSrc.py \
@@ -52,6 +56,9 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/MeshIOLagrit.py \
 	meshio/__init__.py \
 	problems/__init__.py \
+	problems/BCPrism.py \
+	problems/BCQuadrilateral.py \
+	problems/BoundaryConditions.py \
 	problems/EqDeformation.py \
 	problems/Explicit.py \
 	problems/Formulation.py \
