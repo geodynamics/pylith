@@ -223,6 +223,8 @@ PyObject *PyLithMeshLib::Mesh::_processMesh(PyMeshObject *self)
   ierr = MeshCompatCreatePyLith(comm, 3, self->meshInputFile, PETSC_FALSE, (PetscTruth) self->interpolateMesh, &self->mesh);
   ierr = MeshCompatGetMesh(self->mesh, m);
   m->setDebug(debugFlag);
+  //m->getTopology()->setDebug(debugFlag);
+  //m->getTopology()->getPatch(0)->setDebug(debugFlag);
   int numElements = m->getTopology()->heightStratum(0, 0)->size();
   debug << journal::at(__HERE__) << "[" << rank << "]Created new PETSc Mesh for " << self->meshInputFile << journal::endl;
   m = ALECompat::New::Distribution<ALECompat::Mesh::topology_type>::distributeMesh(m, self->partitioner);
@@ -432,7 +434,7 @@ PetscErrorCode updateDisplacement(SectionReal displacement, Vec sol) {
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
-  ierr = SectionRealGetLocalVector(displacement, &lv);CHKERRQ(ierr);
+  ierr = SectionRealCreateLocalVector(displacement, &lv);CHKERRQ(ierr);
   ierr = PetscObjectQuery((PetscObject) sol, "injection", (PetscObject *) &injection);CHKERRQ(ierr);
   ierr = VecScatterBegin(injection, sol, lv, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
   ierr = VecScatterEnd(injection, sol, lv, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
