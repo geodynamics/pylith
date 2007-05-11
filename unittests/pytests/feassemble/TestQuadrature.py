@@ -44,9 +44,6 @@ def N2(p):
 def N2p(p):
   return -2.0*p
 
-def verticesRef():
-  return [-1.0, 1.0, 0.0]
-
 # ----------------------------------------------------------------------
 class TestQuadrature(unittest.TestCase):
   """
@@ -78,28 +75,16 @@ class TestQuadrature(unittest.TestCase):
                             dtype=numpy.float64 )
     quadWtsE = numpy.array( [1.0, 1.0], dtype=numpy.float64 )
 
-    # Compute basis functions and derivatives at vertices
-    basisVertE = numpy.zeros( (3, 3), dtype=numpy.float64)
-    basisDerivVertE = numpy.zeros( (3, 3, 1), dtype=numpy.float64)
-    iVertex = 0
-    for v in verticesRef():
-      basisVertE[iVertex] = numpy.array([N0(v), N1(v), N2(v)],
-                                        dtype=numpy.float64).reshape( (3,) )
-      deriv = numpy.array([[N0p(v)], [N1p(v)], [N2p(v)]],
-                          dtype=numpy.float64)      
-      basisDerivVertE[iVertex] = deriv.reshape((3, 1))
-      iVertex += 1
-
     # Compute basis functions and derivatives at quadrature points
-    basisQuadE = numpy.zeros( (2, 3), dtype=numpy.float64)
-    basisDerivQuadE = numpy.zeros( (2, 3, 1), dtype=numpy.float64)
+    basisE = numpy.zeros( (2, 3), dtype=numpy.float64)
+    basisDerivE = numpy.zeros( (2, 3, 1), dtype=numpy.float64)
     iQuad = 0
     for q in quadPtsE:
-      basisQuadE[iQuad] = numpy.array([N0(q), N1(q), N2(q)],
-                                      dtype=numpy.float64).reshape( (3,) )
+      basisE[iQuad] = numpy.array([N0(q), N1(q), N2(q)],
+                                  dtype=numpy.float64).reshape( (3,) )
       deriv = numpy.array([[N0p(q)], [N1p(q)], [N2p(q)]],
                           dtype=numpy.float64)      
-      basisDerivQuadE[iQuad] = deriv.reshape((3, 1))
+      basisDerivE[iQuad] = deriv.reshape((3, 1))
       iQuad += 1
 
     quadrature = Quadrature1D()
@@ -110,17 +95,11 @@ class TestQuadrature(unittest.TestCase):
     from pylith.utils.testarray import test_double
     import pylith.feassemble.testfeassemble as testmodule
 
-    basisVert = testmodule.basisVert(quadrature.cppHandle)
-    test_double(self, basisVertE, basisVert)
+    basis = testmodule.basis(quadrature.cppHandle)
+    test_double(self, basisE, basis)
 
-    basisDerivVert = testmodule.basisDerivVert(quadrature.cppHandle)
-    test_double(self, basisDerivVertE, basisDerivVert)
-
-    basisQuad = testmodule.basisQuad(quadrature.cppHandle)
-    test_double(self, basisQuadE, basisQuad)
-
-    basisDerivQuad = testmodule.basisDerivQuad(quadrature.cppHandle)
-    test_double(self, basisDerivQuadE, basisDerivQuad)
+    basisDeriv = testmodule.basisDeriv(quadrature.cppHandle)
+    test_double(self, basisDerivE, basisDeriv)
 
     quadWts = testmodule.quadWts(quadrature.cppHandle)
     test_double(self, quadWtsE, quadWts)

@@ -66,7 +66,7 @@ class FIATSimplex(FIATCell):
     degree = pyre.inventory.int("degree", default=1)
     degree.meta['tip'] = "Degree of finite-element cell."
 
-    order = pyre.inventory.int("quad_order", default=3)
+    order = pyre.inventory.int("quad_order", default=-1)
     order.meta['tip'] = "Order of quadrature rule."
     
 
@@ -89,6 +89,8 @@ class FIATSimplex(FIATCell):
     self.shape = self.inventory.shape
     self.degree = self.inventory.degree
     self.order = self.inventory.order
+    if self.order == -1:
+      self.order = 2*self.degree+1    
     return
 
 
@@ -97,7 +99,8 @@ class FIATSimplex(FIATCell):
     Setup quadrature rule for reference cell.
     """
     import FIAT.quadrature
-    return FIAT.quadrature.make_quadrature(self._getShape(), self.order)
+    return FIAT.quadrature.make_quadrature_by_degree(self._getShape(),
+                                                     self.order)
 
 
   def _setupBasisFns(self):
@@ -106,14 +109,6 @@ class FIATSimplex(FIATCell):
     """
     from FIAT.Lagrange import Lagrange
     return Lagrange(self._getShape(), self.degree).function_space()
-
-
-  def _setupVertices(self):
-    """
-    Setup vertices for reference cell.
-    """
-    import FIAT.shapes
-    return FIAT.shapes.vertices[self._getShape()].values()
 
 
   def _getShape(self):

@@ -38,8 +38,7 @@ pylith::feassemble::TestQuadrature1D::testLinear(void)
   Quadrature1D q;
   QuadratureData1DLinear data;
 
-  _testComputeGeometryVert(&q, data);
-  _testComputeGeometryQuad(&q, data);
+  _testComputeGeometry(&q, data);
 } // testLinear
 
 // ----------------------------------------------------------------------
@@ -50,8 +49,7 @@ pylith::feassemble::TestQuadrature1D::testQuadratic(void)
   Quadrature1D q;
   QuadratureData1DQuadratic data;
 
-  _testComputeGeometryVert(&q, data);
-  _testComputeGeometryQuad(&q, data);
+  _testComputeGeometry(&q, data);
 } // testQuadratic
 
 

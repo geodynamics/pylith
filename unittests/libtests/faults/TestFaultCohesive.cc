@@ -153,17 +153,14 @@ pylith::faults::TestFaultCohesive::testOrientationSize(void)
   const int spaceDim = 3;
   const int numBasis = 1;
   const int numQuadPts = 1;
-  const double basisVert[] = { 0.5, 0.3, 0.7 };
-  const double basisDerivVert[] = { -0.5, 0.5, -0.4 };
-  const double basisQuad[] = { 0.5, 0.5, 0.4 };
-  const double basisDerivQuad[] = { 0.5, 0.3, -0.4 };
+  const double basis[] = { 0.5, 0.5, 0.4 };
+  const double basisDeriv[] = { 0.5, 0.3, -0.4 };
   const double quadPtsRef[] = { 0.0, 3.0 };
   const double quadWts[] = { 2.0 };
   const double minJacobian = 1.0;
 
   feassemble::Quadrature2Din3D q;
-  q.initialize(basisVert, basisDerivVert, 
-	       basisQuad, basisDerivQuad, quadPtsRef, quadWts,
+  q.initialize(basis, basisDeriv, quadPtsRef, quadWts,
 	       cellDim, numBasis, numQuadPts, spaceDim);
 
   FaultCohesiveKin fault;

@@ -15,6 +15,9 @@ b#!/usr/bin/env python
 ## @brief Python object for managing basis functions and quadrature
 ## rules of a Lagrange reference finite-element cell using FIAT.
 ##
+## The basis functions are constructed from the tensor product of 1-D
+## Lagrance reference cells.
+##
 ## Factory: reference_cell.
 
 from FIATCell import FIATCell
@@ -60,8 +63,8 @@ class FIATLagrange(FIATCell):
     degree = pyre.inventory.int("degree", default=1)
     degree.meta['tip'] = "Degree of finite-element cell."
 
-    quadOrder = pyre.inventory.int("quad_order", default=-1)
-    quadOrder.meta['tip'] = "Order of quadrature rule."
+    order = pyre.inventory.int("quad_order", default=-1)
+    order.meta['tip'] = "Order of quadrature rule."
     
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -85,16 +88,19 @@ class FIATLagrange(FIATCell):
     FIATCell._configure(self)
     self.cellDim = self.inventory.dimension
     self.degree = self.inventory.degree
-    self.quadOrder = self.inventory.quadOrder
+    self.order = self.inventory.order
+
+    # CHANGE TO BE LINE/QUADRILATERAL/HEXEHEDRAL
     if self.cellDim == 1:
       self.shape = FIAT.shapes.LINE
     elif self.cellDim == 2:
       self.shape = FIAT.shapes.TRIANGLE
     elif self.cellDim == 3:
       self.shape = FIAT.shapes.TETRAHEDRON
-    if self.quadOrder == -1:
-      self.quadOrder = 2*self.degree+1
-    self.numCorners = self.cellDim+1
+    # END CHANGE
+
+    if self.order == -1:
+      self.order = 2*self.degree+1
     return
 
 
@@ -102,11 +108,7 @@ class FIATLagrange(FIATCell):
     """
     Setup quadrature rule for reference cell.
     """
-    import FIAT.quadrature
-    self.quadrature = FIAT.quadrature.make_quadrature_by_degree(shape, self.quadOrder)
-    self.numQuadPts = len(quadrature.get_points())
-    self.quadPts = quadrature.get_points()
-    self.quadWts = quadrature.get_weights()
+    # :TODO: ADD STUFF HERE
     return
 
 
@@ -116,13 +118,9 @@ class FIATLagrange(FIATCell):
     """
     from FIAT.Lagrange import Lagrange
 
-    self.element = Lagrange(self.shape, self.degree)
-    points = self.quadrature.get_points()
-    basis = self.element.function_space()
-    self.numBasisFuncs = len(basis)
-    self.basis = numpy.transpose(basis.tabulate(points))
-    self.basisDeriv = numpy.transpose([basis.deriv_all(d).tabulate(points) for d in range(self.cellDim)])
+    # :TODO: ADD STUFF HERE
     return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

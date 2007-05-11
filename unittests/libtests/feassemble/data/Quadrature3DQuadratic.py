@@ -140,17 +140,6 @@ def N9q(p):
 def N9r(p):
   return 4.0*p[0]
 
-def verticesRef():
-  return [ [0.0, 0.0, 0.0],
-           [1.0, 0.0, 0.0],
-           [0.0, 1.0, 0.0],
-           [0.0, 0.0, 1.0],
-           [0.5, 0.0, 0.0],
-           [0.0, 0.5, 0.0],
-           [0.0, 0.0, 0.5],
-           [0.5, 0.5, 0.0],
-           [0.0, 0.5, 0.5],
-           [0.5, 0.0, 0.5] ]
 
 # ----------------------------------------------------------------------
 
@@ -202,52 +191,14 @@ class Quadrature3DQuadratic(QuadratureApp):
     return
 
 
-  def calculateBasisVert(self):
-    """
-    Calculate basis functions and their derivatives at vertices.
-    """
-
-    self.basisVert = numpy.zeros( (self.numBasis, self.numBasis),
-                                  dtype=numpy.float64)
-    self.basisDerivVert = numpy.zeros( (self.numBasis,
-                                        self.numBasis, self.cellDim),
-                                       dtype=numpy.float64)
-
-    iVertex = 0
-    for v in verticesRef():
-      # Basis functions at vertices
-      basis = numpy.array([N0(v), N1(v), N2(v), N3(v), N4(v),
-                           N5(v), N6(v), N7(v), N8(v), N9(v)],
-                          dtype=numpy.float64)
-      self.basisVert[iVertex] = basis.reshape( (self.numBasis,) )
-
-      # Derivatives of basis functions at vertices
-      deriv = numpy.array([[N0p(v), N0q(v), N0r(v)],
-                           [N1p(v), N1q(v), N1r(v)],
-                           [N2p(v), N2q(v), N2r(v)],
-                           [N3p(v), N3q(v), N3r(v)],
-                           [N4p(v), N4q(v), N4r(v)],
-                           [N5p(v), N5q(v), N5r(v)],
-                           [N6p(v), N6q(v), N6r(v)],
-                           [N7p(v), N7q(v), N7r(v)],
-                           [N8p(v), N8q(v), N8r(v)],
-                           [N9p(v), N9q(v), N9r(v)]],
-                          dtype=numpy.float64)      
-      self.basisDerivVert[iVertex] = deriv.reshape((self.numBasis,
-                                                    self.cellDim))
-
-      iVertex += 1
-    return
-    
-
-  def calculateBasisQuad(self):
+  def calculateBasis(self):
     """
     Calculate basis functions and their derivatives at quadrature points.
     """
 
-    self.basisQuad = numpy.zeros( (self.numQuadPts, self.numBasis),
+    self.basis = numpy.zeros( (self.numQuadPts, self.numBasis),
                               dtype=numpy.float64)
-    self.basisDerivQuad = numpy.zeros( (self.numQuadPts,
+    self.basisDeriv = numpy.zeros( (self.numQuadPts,
                                     self.numBasis, self.cellDim),
                                    dtype=numpy.float64)
 
@@ -257,7 +208,7 @@ class Quadrature3DQuadratic(QuadratureApp):
       basis = numpy.array([N0(q), N1(q), N2(q), N3(q), N4(q),
                            N5(q), N6(q), N7(q), N8(q), N9(q)],
                           dtype=numpy.float64)
-      self.basisQuad[iQuad] = basis.reshape( (self.numBasis,) )
+      self.basis[iQuad] = basis.reshape( (self.numBasis,) )
 
       # Derivatives of basis functions at quadrature points
       deriv = numpy.array([[N0p(q), N0q(q), N0r(q)],
@@ -271,7 +222,7 @@ class Quadrature3DQuadratic(QuadratureApp):
                            [N8p(q), N8q(q), N8r(q)],
                            [N9p(q), N9q(q), N9r(q)]],
                           dtype=numpy.float64)      
-      self.basisDerivQuad[iQuad] = deriv.reshape((self.numBasis, self.cellDim))
+      self.basisDeriv[iQuad] = deriv.reshape((self.numBasis, self.cellDim))
 
       iQuad += 1
     return

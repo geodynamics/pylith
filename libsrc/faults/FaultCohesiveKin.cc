@@ -116,11 +116,10 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   for (Mesh::label_sequence::iterator c_iter=cBegin;
        c_iter != cEnd;
        ++c_iter) {
-    // Compute cell geometry at vertices
-    _quadrature->computeGeometryVert(*_faultMesh, coordinates, *c_iter);
-
-    const double_array& jacobian = _quadrature->jacobianVert();
-    const double_array& jacobianDet = _quadrature->jacobianDetVert();
+    // Compute Jacobian at vertices
+    // STUFF GOES HERE
+    double_array jacobian;
+    double_array jacobianDet;
 
     // Compute weighted orientation of face at vertices (using geometry info)
     orientFn(&cellOrientation, jacobian, jacobianDet, upDir, numVertices);

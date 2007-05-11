@@ -43,15 +43,11 @@ pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
   _quadPtsRef(q._quadPtsRef),
   _quadPts(q._quadPts),
   _quadWts(q._quadWts),
-  _basisVert(q._basisVert),
-  _basisDerivVert(q._basisDerivVert),
-  _jacobianVert(q._jacobianVert),
-  _jacobianDetVert(q._jacobianDetVert),
-  _basisQuad(q._basisQuad),
-  _basisDerivQuad(q._basisDerivQuad),
-  _jacobianQuad(q._jacobianQuad),
-  _jacobianInvQuad(q._jacobianInvQuad),
-  _jacobianDetQuad(q._jacobianDetQuad),
+  _basis(q._basis),
+  _basisDeriv(q._basisDeriv),
+  _jacobian(q._jacobian),
+  _jacobianInv(q._jacobianInv),
+  _jacobianDet(q._jacobianDet),
   _cellDim(q._cellDim),
   _numBasis(q._numBasis),
   _numQuadPts(q._numQuadPts),
@@ -63,10 +59,8 @@ pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
 // Set basis functions and their derivatives and coordinates and
 //   weights of the quadrature points.
 void
-pylith::feassemble::Quadrature::initialize(const double* basisVert,
-					   const double* basisDerivVert,
-					   const double* basisQuad,
-					   const double* basisDerivQuad,
+pylith::feassemble::Quadrature::initialize(const double* basis,
+					   const double* basisDeriv,
 					   const double* quadPtsRef,
 					   const double* quadWts,
 					   const int cellDim,
@@ -74,10 +68,8 @@ pylith::feassemble::Quadrature::initialize(const double* basisVert,
 					   const int numQuadPts,
 					   const int spaceDim)
 { // initialize
-  if (0 == basisVert ||
-      0 == basisDerivVert ||
-      0 == basisQuad ||
-      0 == basisDerivQuad ||
+  if (0 == basis ||
+      0 == basisDeriv ||
       0 == quadPtsRef ||
       0 == quadWts ||
       cellDim < 1 || cellDim > 3 ||
@@ -89,10 +81,8 @@ pylith::feassemble::Quadrature::initialize(const double* basisVert,
 	<< "their derivatives, and coordinates and weights of quadrature\n"
 	<< "points must all be specified.\n"
 	<< "Values:\n"
-	<< "  basis pointer (vertices): " << basisVert << "\n"
-	<< "  basis derivatites pointer (vertices): " << basisDerivVert << "\n"
-	<< "  basis pointer (quad pts): " << basisQuad << "\n"
-	<< "  basis derivatites pointer (quad pts): " << basisDerivQuad << "\n"
+	<< "  basis pointer (quad pts): " << basis << "\n"
+	<< "  basis derivatites pointer (quad pts): " << basisDeriv << "\n"
 	<< "  quadrature points pointer: " << quadPtsRef << "\n"
 	<< "  quadrature weights pointer: " << quadWts << "\n"
 	<< "  space dimension: " << spaceDim << "\n"
@@ -101,27 +91,16 @@ pylith::feassemble::Quadrature::initialize(const double* basisVert,
 	<< "  dimension of coordinate space: " << spaceDim << "\n";
     throw std::runtime_error(msg.str());
   } // if
-  const int numVertices = numBasis;
 
-  int size = numBasis * numVertices;
-  _basisVert.resize(size);
+  int size = numBasis * numQuadPts;
+  _basis.resize(size);
   for (int i=0; i < size; ++i)
-    _basisVert[i] = basisVert[i];
-
-  size = numBasis * numVertices * cellDim;
-  _basisDerivVert.resize(size);
-  for (int i=0; i < size; ++i)
-    _basisDerivVert[i] = basisDerivVert[i];
-
-  size = numBasis * numQuadPts;
-  _basisQuad.resize(size);
-  for (int i=0; i < size; ++i)
-    _basisQuad[i] = basisQuad[i];
+    _basis[i] = basis[i];
 
   size = numBasis * numQuadPts * cellDim;
-  _basisDerivQuad.resize(size);
+  _basisDeriv.resize(size);
   for (int i=0; i < size; ++i)
-    _basisDerivQuad[i] = basisDerivQuad[i];
+    _basisDeriv[i] = basisDeriv[i];
 
   size = numQuadPts * cellDim;
   _quadPtsRef.resize(size);
@@ -139,19 +118,13 @@ pylith::feassemble::Quadrature::initialize(const double* basisVert,
   _spaceDim = spaceDim;
 
   // Allocate for Jacobian and its inverse
-  size = numVertices * cellDim * spaceDim;
-  _jacobianVert.resize(size);
-
   size = numQuadPts * cellDim * spaceDim;
-  _jacobianQuad.resize(size);
-  _jacobianInvQuad.resize(size);
+  _jacobian.resize(size);
+  _jacobianInv.resize(size);
 
   // Allocate for Jacobian determinant
-  size = numVertices;
-  _jacobianDetVert.resize(size);
-
   size = numQuadPts;
-  _jacobianDetQuad.resize(size);
+  _jacobianDet.resize(size);
 
   // Allocate for quad pts
   size = numQuadPts*spaceDim;
@@ -163,11 +136,9 @@ pylith::feassemble::Quadrature::initialize(const double* basisVert,
 void
 pylith::feassemble::Quadrature::_resetGeometry(void)
 { // _resetGeometry
-  _jacobianVert = 0.0;
-  _jacobianDetVert = 0.0;
-  _jacobianQuad = 0.0;
-  _jacobianDetQuad = 0.0;
-  _jacobianInvQuad = 0.0;
+  _jacobian = 0.0;
+  _jacobianDet = 0.0;
+  _jacobianInv = 0.0;
   _quadPts = 0.0;
 } // _resetGeometry
 

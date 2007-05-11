@@ -48,16 +48,11 @@ public:
   double* quadWts; ///< Weights of quadrature points
   double* quadPts; ///< Coordinates of quad pts in cell
 
-  double* basisVert; ///< Basis fns at vertices
-  double* basisDerivVert; ///< Derivatices of basis fns at vertices
-  double* jacobianVert; ///< Jacobian at vertices
-  double* jacobianDetVert; ///< Determinant at vertices
-
-  double* basisQuad; ///< Basis fns at quadrature points
-  double* basisDerivQuad; ///< Derivatices of basis fns at quad pts
-  double* jacobianQuad; ///< Jacobian at quadrature points
-  double* jacobianDetQuad; ///< Determinant of quadrature points
-  double* jacobianInvQuad; ///< Inverse of Jacobian at quadruature points
+  double* basis; ///< Basis fns at quadrature points
+  double* basisDeriv; ///< Derivatices of basis fns at quad pts
+  double* jacobian; ///< Jacobian at quadrature points
+  double* jacobianDet; ///< Determinant of quadrature points
+  double* jacobianInv; ///< Inverse of Jacobian at quadruature points
 
 };
 

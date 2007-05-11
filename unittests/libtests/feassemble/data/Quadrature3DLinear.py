@@ -68,12 +68,6 @@ def N3q(p):
 def N3r(p):
   return 1.0
 
-def verticesRef():
-  return [ [0.0, 0.0, 0.0],
-           [1.0, 0.0, 0.0],
-           [0.0, 1.0, 0.0],
-           [0.0, 0.0, 1.0] ]
-
 
 # ----------------------------------------------------------------------
 
@@ -110,44 +104,14 @@ class Quadrature3DLinear(QuadratureApp):
     return
   
 
-  def calculateBasisVert(self):
-    """
-    Calculate basis functions and their derivatives at vertices.
-    """
-
-    self.basisVert = numpy.zeros( (self.numBasis, self.numBasis),
-                                  dtype=numpy.float64)
-    self.basisDerivVert = numpy.zeros( (self.numBasis,
-                                        self.numBasis, self.cellDim),
-                                       dtype=numpy.float64)
-
-    iVertex = 0
-    for v in verticesRef():
-      # Basis functions at vertices
-      basis = numpy.array([N0(v), N1(v), N2(v), N3(v)], dtype=numpy.float64)
-      self.basisVert[iVertex] = basis.reshape( (self.numBasis,) )
-
-      # Derivatives of basis functions at vertices
-      deriv = numpy.array([[N0p(v), N0q(v), N0r(v)],
-                           [N1p(v), N1q(v), N1r(v)],
-                           [N2p(v), N2q(v), N2r(v)],
-                           [N3p(v), N3q(v), N3r(v)]],
-                          dtype=numpy.float64)      
-      self.basisDerivVert[iVertex] = deriv.reshape((self.numBasis,
-                                                    self.cellDim))
-
-      iVertex += 1
-    return
-    
-
-  def calculateBasisQuad(self):
+  def calculateBasis(self):
     """
     Calculate basis functions and their derivatives at quadrature points.
     """
 
-    self.basisQuad = numpy.zeros( (self.numQuadPts, self.numBasis),
+    self.basis = numpy.zeros( (self.numQuadPts, self.numBasis),
                               dtype=numpy.float64)
-    self.basisDerivQuad = numpy.zeros( (self.numQuadPts,
+    self.basisDeriv = numpy.zeros( (self.numQuadPts,
                                     self.numBasis, self.cellDim),
                                    dtype=numpy.float64)
 
@@ -155,7 +119,7 @@ class Quadrature3DLinear(QuadratureApp):
     for q in self.quadPtsRef:
       # Basis functions at quadrature points
       basis = numpy.array([N0(q), N1(q), N2(q), N3(q)], dtype=numpy.float64)
-      self.basisQuad[iQuad] = basis.reshape( (self.numBasis,) )
+      self.basis[iQuad] = basis.reshape( (self.numBasis,) )
 
       # Derivatives of basis functions at quadrature points
       deriv = numpy.array([[N0p(q), N0q(q), N0r(q)],
@@ -163,7 +127,7 @@ class Quadrature3DLinear(QuadratureApp):
                            [N2p(q), N2q(q), N2r(q)],
                            [N3p(q), N3q(q), N3r(q)]],
                           dtype=numpy.float64)      
-      self.basisDerivQuad[iQuad] = deriv.reshape((self.numBasis, self.cellDim))
+      self.basisDeriv[iQuad] = deriv.reshape((self.numBasis, self.cellDim))
 
       iQuad += 1
     return

@@ -38,9 +38,6 @@ def N2(p):
 def N2p(p):
   return +0.5*(1.0+p) + 0.5*p
 
-def verticesRef():
-  return [-1.0, 0.0, 1.0]
-
 # ----------------------------------------------------------------------
 
 # Quadrature1DQuadratic class
@@ -78,54 +75,27 @@ class Quadrature1DQuadratic(QuadratureApp):
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
   
-  def calculateBasisVert(self):
-    """
-    Calculate basis functions and their derivatives at vertices.
-    """
-
-    self.basisVert = numpy.zeros( (self.numBasis, self.numBasis),
-                                  dtype=numpy.float64)
-    self.basisDerivVert = numpy.zeros( (self.numBasis,
-                                        self.numBasis, self.cellDim),
-                                       dtype=numpy.float64)
-
-    iVertex = 0
-    for v in verticesRef():
-      # Basis functions at vertices
-      basis = numpy.array([N0(v), N1(v), N2(v)], dtype=numpy.float64)
-      self.basisVert[iVertex] = basis.reshape( (self.numBasis,) )
-
-      # Derivatives of basis functions at vertices
-      deriv = numpy.array([[N0p(v)], [N1p(v)], [N2p(v)]],
-                          dtype=numpy.float64)      
-      self.basisDerivVert[iVertex] = deriv.reshape((self.numBasis,
-                                                    self.cellDim))
-
-      iVertex += 1
-    return
-    
-
-  def calculateBasisQuad(self):
+  def calculateBasis(self):
     """
     Calculate basis functions and their derivatives at quadrature points.
     """
 
-    self.basisQuad = numpy.zeros( (self.numQuadPts, self.numBasis),
-                                  dtype=numpy.float64)
-    self.basisDerivQuad = numpy.zeros( (self.numQuadPts,
-                                        self.numBasis, self.cellDim),
-                                       dtype=numpy.float64)
+    self.basis = numpy.zeros( (self.numQuadPts, self.numBasis),
+                              dtype=numpy.float64)
+    self.basisDeriv = numpy.zeros( (self.numQuadPts,
+                                    self.numBasis, self.cellDim),
+                                   dtype=numpy.float64)
 
     iQuad = 0
     for q in self.quadPtsRef:
       # Basis functions at quadrature points
       basis = numpy.array([N0(q), N1(q), N2(q)], dtype=numpy.float64)
-      self.basisQuad[iQuad] = basis.reshape( (self.numBasis,) )
+      self.basis[iQuad] = basis.reshape( (self.numBasis,) )
 
       # Derivatives of basis functions at quadrature points
       deriv = numpy.array([[N0p(q)], [N1p(q)], [N2p(q)]],
                           dtype=numpy.float64)      
-      self.basisDerivQuad[iQuad] = deriv.reshape((self.numBasis, self.cellDim))
+      self.basisDeriv[iQuad] = deriv.reshape((self.numBasis, self.cellDim))
 
       iQuad += 1
     return

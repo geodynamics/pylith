@@ -130,7 +130,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell
-    _quadrature->computeGeometryQuad(mesh, coordinates, *cellIter);
+    _quadrature->computeGeometry(mesh, coordinates, *cellIter);
 
     // Set cell data in material
     _material->initCellData(*cellIter, numQuadPts);
@@ -145,9 +145,9 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
       mesh->restrict(dispTmdt, *cellIter);
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basisQuad();
-    const double_array& basisDeriv = _quadrature->basisDerivQuad();
-    const double_array& jacobianDet = _quadrature->jacobianDetQuad();
+    const double_array& basis = _quadrature->basis();
+    const double_array& basisDeriv = _quadrature->basisDeriv();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
 
     // Compute action for cell
 
@@ -298,7 +298,7 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
        cellIter != cellsEnd;
        ++cellIter) {
     // Compute geometry information for current cell
-    _quadrature->computeGeometryQuad(mesh, coordinates, *cellIter);
+    _quadrature->computeGeometry(mesh, coordinates, *cellIter);
 
     // Set cell data in material
     _material->initCellData(*cellIter, numQuadPts);
@@ -307,8 +307,8 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
     _resetCellMatrix();
 
     // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basisQuad();
-    const double_array& jacobianDet = _quadrature->jacobianDetQuad();
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
 
     // Get material physical properties at quadrature points for this cell
     const std::vector<double_array>& density = _material->calcDensity();
