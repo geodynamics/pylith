@@ -60,7 +60,8 @@ libpylith_la_SOURCES = \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
-	meshio/SolutionIO.cc
+	meshio/SolutionIO.cc \
+	meshio/SolutionIOVTK.cc
 
 if ENABLE_CUBIT
   libpylith_la_SOURCES += \

@@ -14,6 +14,8 @@
 #include "pylith/meshio/MeshIO.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
 #include "pylith/meshio/MeshIOLagrit.hh"
+#include "pylith/meshio/SolutionIO.hh"
+#include "pylith/meshio/SolutionIOVTK.hh"
 
 #if defined(ENABLE_CUBIT)
 #include "pylith/meshio/MeshIOCubit.hh"
@@ -44,10 +46,22 @@ cdef void MeshIO_destructor(void* obj):
   """
   # create shim for destructor
   #embed{ void MeshIO_destructor_cpp(void* pObj)
-  pylith::meshio::MeshIO* pMesh = (pylith::meshio::MeshIO*) pObj;
-  delete pMesh;
+  pylith::meshio::MeshIO* io = (pylith::meshio::MeshIO*) pObj;
+  delete io;
   #}embed
   MeshIO_destructor_cpp(obj)
+  return
+
+cdef void SolutionIO_destructor(void* obj):
+  """
+  Destroy SolutionIO object.
+  """
+  # create shim for destructor
+  #embed{ void SolutionIO_destructor_cpp(void* pObj)
+  pylith::meshio::SolutionIO* io = (pylith::meshio::SolutionIO*) pObj;
+  delete io;
+  #}embed
+  SolutionIO_destructor_cpp(obj)
   return
 
 # ----------------------------------------------------------------------
@@ -76,8 +90,8 @@ cdef class MeshIO:
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::meshio::MeshIO*) objVptr)->read(pMesh);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::meshio::MeshIO*) objVptr)->read(mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -101,8 +115,8 @@ cdef class MeshIO:
     #embed{ void MeshIO_write(void* objVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
-      ALE::Obj<ALE::Mesh>* pMesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::meshio::MeshIO*) objVptr)->write(pMesh);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::meshio::MeshIO*) objVptr)->write(mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -485,6 +499,228 @@ cdef class MeshIOLagrit(MeshIO):
       return result;
       #}embed
       return MeshIOLagrit_flipEndian_get(self.thisptr)
+
+
+# ----------------------------------------------------------------------
+cdef class SolutionIO:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_meshio_SolutionIO"
+    return
+
+
+  def open(self, mesh):
+    """
+    Open solution files.
+    """
+    # create shim for method 'open'
+    #embed{ void SolutionIO_open(void* objVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::meshio::SolutionIO*) objVptr)->open(*mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    SolutionIO_open(self.thisptr, ptrFromHandle(mesh))
+    return
+
+
+  def close(self):
+    """
+    Close solution files.
+    """
+    # create shim for method 'close'
+    #embed{ void SolutionIO_close(void* objVptr)
+    try {
+      assert(0 != objVptr);
+      ((pylith::meshio::SolutionIO*) objVptr)->close();
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    SolutionIO_close(self.thisptr)
+    return
+
+
+  def writeTopology(self, mesh, cs):
+    """
+    Write solution topology to file.
+    """
+    # create shim for method 'writeTopology'
+    #embed{ void SolutionIO_writeTopology(void* objVptr, void* meshVptr, void* csVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      assert(0 != csVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      spatialdata::geocoords::CoordSys* cs =
+        (spatialdata::geocoords::CoordSys*) csVptr;
+      ((pylith::meshio::SolutionIO*) objVptr)->writeTopology(*mesh, cs);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    if not cs.name == "spatialdata_geocoords_CoordSys":
+      raise TypeError, \
+            "Argument must be extension module type 'CoordSys'."
+    SolutionIO_writeTopology(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs))
+    return
+
+
+  def writeField(self, t, field, name, mesh):
+    """
+    Write solution field to file.
+    """
+    # create shim for method 'writeField'
+    #embed{ void SolutionIO_writeField(void* objVptr, double t, void* fieldVptr, char* name, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != name);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field =
+        (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::meshio::SolutionIO*) objVptr)->writeField(t, *field, name,
+                                                          *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    cdef void* fieldVptr
+    fieldVptr = PyCObject_AsVoidPtr(field)
+    SolutionIO_writeField(self.thisptr, t, fieldVptr, name, ptrFromHandle(mesh))
+    return
+
+
+  def _createHandle(self):
+    """Wrap pointer to C++ object in PyCObject."""
+    return PyCObject_FromVoidPtr(self.thisptr, SolutionIO_destructor)
+
+
+  property coordsys:
+    def __set__(self, cs):
+      """Set coordinate system."""
+      # create shim for method 'coordsys'
+      #embed{ void SolutionIO_coordsys_set(void* objVptr, void* csVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != csVptr);
+        spatialdata::geocoords::CoordSys* cs =
+          (spatialdata::geocoords::CoordSys*) csVptr;
+        ((pylith::meshio::SolutionIO*) objVptr)->coordsys(cs);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      SolutionIO_coordsys_set(self.thisptr, ptrFromHandle(cs))
+
+
+# ----------------------------------------------------------------------
+cdef class SolutionIOVTK(SolutionIO):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* SolutionIOVTK_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::meshio::SolutionIOVTK);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    SolutionIO.__init__(self)
+    self.thisptr = SolutionIOVTK_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+  property filename:
+    def __set__(self, name):
+      """Set filename."""
+      # create shim for method 'filename'
+      #embed{ void SolutionIOVTK_filename_set(void* objVptr, char* name)
+      try {
+        assert(0 != objVptr);
+        ((pylith::meshio::SolutionIOVTK*) objVptr)->filename(name);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      SolutionIOVTK_filename_set(self.thisptr, name)
+
+    def __get__(self):
+      """Get filename."""
+      # create shim for method 'filename'
+      #embed{ char* SolutionIOVTK_filename_get(void* objVptr)
+      char* result = 0;
+      try {
+        assert(0 != objVptr);
+        result = (char*) ((pylith::meshio::SolutionIOVTK*) objVptr)->filename();
+        assert(0 != result);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return SolutionIOVTK_filename_get(self.thisptr)
 
 
 # End of file 

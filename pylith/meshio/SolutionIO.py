@@ -27,7 +27,7 @@ class SolutionIO(Component):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(SolutionIO.Inventory):
+  class Inventory(Component.Inventory):
     """
     Python object for managing SolutionIOVTK facilities and properties.
     """
@@ -61,21 +61,43 @@ class SolutionIO(Component):
     return
 
 
-  def write(self, t, fields, mesh):
+  def open(self, mesh):
     """
-    Write solution at time t to file.
+    Open files for solution.
     """
-    self._info.log("Writing solution information.")
+    self._info.log("Opening files for output of solution.")
 
     # Set flags
     self._sync()
 
     # Initialize coordinate system
     if self.coordsys is None:
-      raise ValueError, "Coordinate system for mesh is unknown."
+      raise ValueError, "Coordinate system for output is unknown."
     self.coordsys.initialize()
 
-    #self.cppHandle.write(t, fields, mesh.cppHandle)
+    assert(cppHandle != None)
+    self.cppHandle.open(mesh.cppHandle)
+    return
+
+
+  def writeTopology(self, mesh):
+    """
+    Write solution topology to file.
+    """
+    self._info.log("Writing solution topology.")
+
+    assert(cppHandle != None)
+    self.cppHandle.write(mesh.cppHandle, mesh.coordsys.cppHandle)
+    return
+
+
+  def writeField(self, t, field, name, mesh):
+    """
+    Write solution field at time t to file.
+    """
+    self._info.log("Writing solution field '%s'." % name)
+
+    self.cppHandle.write(t, field, name, mesh.cppHandle)
     return
 
 
@@ -94,7 +116,7 @@ class SolutionIO(Component):
     """
     Force synchronization between Python and C++.
     """
-    #self.cppHandle.coordsys = self.coordsys
+    self.cppHandle.coordsys = self.coordsys
     return
 
 
