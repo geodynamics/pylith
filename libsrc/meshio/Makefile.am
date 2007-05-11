@@ -19,7 +19,8 @@ subpkginclude_HEADERS = \
 	MeshIOAscii.hh \
 	MeshIOAscii.icc \
 	MeshIOLagrit.hh \
-	MeshIOLagrit.icc
+	MeshIOLagrit.icc \
+	SolutionIO.hh
 
 if ENABLE_CUBIT
   subpkginclude_HEADERS += \
