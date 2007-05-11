@@ -50,11 +50,13 @@ nobase_pkgpyexec_PYTHON = \
 	materials/Homogeneous.py \
 	materials/Material.py \
 	materials/MaterialsBin.py \
+	meshio/__init__.py \
 	meshio/MeshIO.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOCubit.py \
 	meshio/MeshIOLagrit.py \
-	meshio/__init__.py \
+	meshio/SolutionIO.py \
+	meshio/SolutionIOVTK.py \
 	problems/__init__.py \
 	problems/BCPrism.py \
 	problems/BCQuadrilateral.py \
