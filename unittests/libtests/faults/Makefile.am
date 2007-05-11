@@ -21,13 +21,17 @@ check_PROGRAMS = testfaults
 
 # Primary source files
 testfaults_SOURCES = \
+	TestBruneSlipFn.cc \
 	TestFault.cc \
 	TestFaultCohesive.cc \
 	TestFaultCohesiveKin.cc \
 	test_faults.cc
 
 noinst_HEADERS = \
-	TestFault.hh
+	TestBruneSlipFn.hh \
+	TestFault.hh \
+	TestFaultCohesive.hh \
+	TestFaultCohesiveKin.hh
 
 # Source files associated with testing data
 testfaults_SOURCES += \
