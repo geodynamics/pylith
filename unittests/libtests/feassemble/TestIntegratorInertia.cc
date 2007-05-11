@@ -48,9 +48,6 @@ pylith::feassemble::TestIntegratorInertia::_testIntegrateLumped(
   CPPUNIT_ASSERT(false);
 
 #if 0
-  typedef ALE::Mesh::real_section_type real_section_type;
-  typedef ALE::Mesh::topology_type topology_type;
-
   ALE::Obj<ALE::Mesh> mesh = _TestIntegratorInertia::_setupMesh(data);
   const ALE::Mesh::int_section_type::patch_type patch = 0;
 
@@ -106,9 +103,6 @@ pylith::feassemble::TestIntegratorInertia::_testIntegrateLumped(
 ALE::Obj<ALE::Mesh>
 pylith::feassemble::_TestIntegratorInertia::_setupMesh(const IntegratorData& data)
 { // _setupMesh
-  typedef ALE::Mesh::topology_type topology_type;
-  typedef topology_type::sieve_type sieve_type;
-
   const int cellDim = data.cellDim;
   const int numCorners = data.numCorners;
   const int spaceDim = data.spaceDim;

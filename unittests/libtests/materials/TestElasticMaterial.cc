@@ -48,10 +48,6 @@ pylith::materials::TestElasticMaterial::testClone(void)
 void
 pylith::materials::TestElasticMaterial::testCalcDensity(void)
 { // testCalcDensity
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::sieve_type sieve_type;
-  typedef Mesh::real_section_type real_section_type;
-
   ALE::Obj<Mesh> mesh;
   { // create mesh
     const int cellDim = 1;
@@ -133,10 +129,6 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
 void
 pylith::materials::TestElasticMaterial::testCalcStress(void)
 { // testCalcProperties
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::sieve_type sieve_type;
-  typedef Mesh::real_section_type real_section_type;
-
   ALE::Obj<Mesh> mesh;
   { // create mesh
     const int cellDim = 1;
@@ -247,10 +239,6 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
 void
 pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
 { // testCalcDerivElastic
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::sieve_type sieve_type;
-  typedef Mesh::real_section_type real_section_type;
-
   ALE::Obj<Mesh> mesh;
   { // create mesh
     const int cellDim = 1;

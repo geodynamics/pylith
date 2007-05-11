@@ -89,9 +89,6 @@ pylith::feassemble::TestIntegrator::_testIntegrateAction(Integrator* integrator,
 { // _testIntegrateAction
   CPPUNIT_ASSERT(false);
 
-  typedef ALE::Mesh        Mesh;
-  typedef Mesh::real_section_type real_section_type;
-
   ALE::Obj<Mesh> mesh = _TestIntegrator::_setupMesh(data);
 
   // Fiber dimension (number of values in field per vertex) for fields
@@ -147,9 +144,6 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
 					  const IntegratorData& data) const
 { // _testIntegrate
   CPPUNIT_ASSERT(false);
-
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::real_section_type real_section_type;
 
   journal::debug_t debug("TestIntegrator");
 
@@ -255,9 +249,6 @@ pylith::feassemble::TestIntegrator::_testIntegrate(Integrator* integrator,
 ALE::Obj<ALE::Mesh>
 pylith::feassemble::_TestIntegrator::_setupMesh(const IntegratorData& data)
 { // _setupMesh
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::sieve_type sieve_type;
-
   const int cellDim = data.cellDim;
   const int numCorners = data.numCorners;
   const int spaceDim = data.spaceDim;
