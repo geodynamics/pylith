@@ -57,7 +57,7 @@ pylith::faults::BruneSlipFn::_slip(const double t,
     const double tau = 
       // prevent 0 == tau when 0 == finalSlip 
       (finalSlip > 0.0) ? finalSlip / (exp(1.0) * peakRate) : 0.1;
-    slip = 1.0 - exp(-t/tau) * (1.0 + t/tau);
+    slip = finalSlip * (1.0 - exp(-t/tau) * (1.0 + t/tau));
   } // if
   return slip;
 } // _slip
