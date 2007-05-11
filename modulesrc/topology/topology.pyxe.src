@@ -119,6 +119,40 @@ cdef class MeshGenerator:
     return mesh
 
 # ----------------------------------------------------------------------
+cdef class MeshDistributor:
+
+  def distributeMesh(self, mesh, partitioner = None):
+    """
+    Distribute a Mesh
+    """
+    # create shim for method 'read'
+    #embed{ void MeshDistributor_distributeMesh(void* meshVptr, char *partitioner, void* newMeshVptr)
+    try {
+      assert(0 != meshVptr);
+      assert(0 != newMeshVptr);
+      ALE::Obj<ALE::Mesh>* pMesh    = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<ALE::Mesh>* pNewMesh = (ALE::Obj<ALE::Mesh>*) newMeshVptr;
+      if (!strlen(partitioner)) {
+        *pNewMesh = ALE::Distribution<ALE::Mesh>::distributeMesh(*pMesh);
+      } else {
+        *pNewMesh = ALE::Distribution<ALE::Mesh>::distributeMesh(*pMesh, 0, partitioner);
+      }
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    newMesh = Mesh()
+    MeshDistributor_distributeMesh(ptrFromHandle(mesh), partitioner, ptrFromHandle(newMesh))
+    return newMesh
+
+# ----------------------------------------------------------------------
 cdef class Mesh:
 
   cdef void* thisptr # Pointer to C++ object

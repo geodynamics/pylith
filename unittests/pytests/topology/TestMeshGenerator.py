@@ -17,6 +17,7 @@
 import unittest
 
 from pylith.topology.MeshGenerator import MeshGenerator
+from pylith.topology.MeshDistributor import MeshDistributor
 
 # ----------------------------------------------------------------------
 class TestMeshGenerator(unittest.TestCase):
@@ -68,7 +69,9 @@ class TestMeshGenerator(unittest.TestCase):
     """
     generator = MeshGenerator()
     generator.interpolate = True
-    generator.create(generator.createCubeBoundary())
+    mesh = generator.create(generator.createCubeBoundary())
+    distributor = MeshDistributor()
+    newMesh = distributor.distributeMesh(mesh)
     self.assertEqual(True, generator.interpolate)
     return
 
