@@ -71,6 +71,7 @@ nobase_pkgpyexec_PYTHON = \
 	solver/SolverLinear.py \
 	topology/__init__.py \
 	topology/Mesh.py \
+	topology/MeshDistributor.py \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
 	utils/__init__.py \
