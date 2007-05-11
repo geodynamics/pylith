@@ -15,6 +15,8 @@
 
 #include "SolutionIO.hh" // ISA SolutionIO
 
+#include <iosfwd> // HOLDSA std::ofstream
+
 namespace pylith {
   namespace meshio {
     class SolutionIOVTK;
@@ -31,7 +33,6 @@ public :
   SolutionIOVTK(void);
 
   /// Destructor
-  virtual
   ~SolutionIOVTK(void);
 
   /** Set filename for VTK file.
@@ -40,18 +41,51 @@ public :
    */
   void filename(const char* filename);
 
-  /** Write solution to file.
+  /** Get filename of VTK file.
+   *
+   * @returns filename Name of VTK file.
+   */
+  const char* filename(void) const;
+
+  /** Open output files.
    *
    * @param mesh PETSc mesh object
    */
-  void write(const ALE::Obj<ALE::Mesh>& mesh);
+  void open(const ALE::Obj<ALE::Mesh>& mesh);
+
+  /// Close output files.
+  void close(void);
+
+  /** Write solution topology to file.
+   *
+   * @param mesh PETSc mesh object.
+   * @param 
+   */
+  void writeTopology(const ALE::Obj<ALE::Mesh>& mesh,
+		     const spatialdata::geocoords::CoordSys* csMesh);
+
+  /** Write solution field to file.
+   *
+   * @param t Time associated with field.
+   * @param field PETSc field.
+   * @param name Name of field.
+   * @param mesh PETSc mesh object.
+   */
+  void writeField(const double t,
+		  const ALE::Obj<real_section_type>& field,
+		  const char* name,
+		  const ALE::Obj<ALE::Mesh>& mesh);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 public :
 
   std::string _filename; ///< Name of VTK file.
 
+  std::ofstream* _fout; ///< Output stream
+
 }; // SolutionIOVTK
+
+#include "SolutionIOVTK.icc" // inline methods
 
 #endif // pylith_solutionio_solutioniovtk_hh
 

@@ -56,8 +56,8 @@ class SolutionIOVTK(SolutionIO):
     Constructor.
     """
     SolutionIO.__init__(self, name)
-    #import pylith.meshio.meshio as bindings
-    #self.cppHandle = bindings.SolutionIOVTK()
+    import pylith.meshio.meshio as bindings
+    self.cppHandle = bindings.SolutionIOVTK()
     return
 
 

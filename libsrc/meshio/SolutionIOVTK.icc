@@ -1,0 +1,33 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_meshio_solutionio_hh)
+#error "SolutionIOVTK.icc must be included only from SolutionIOVTK.hh"
+#else
+
+// Set filename for VTK file.
+inline
+void
+pylith::meshio::SolutionIOVTK::filename(const char* filename) {
+  _filename = filename;
+}
+
+// Get filename of VTK file.
+inline
+const char*
+pylith::meshio::SolutionIOVTK::filename(void) const {
+  return _filename.c_str();
+}
+
+#endif
+
+// End of file
