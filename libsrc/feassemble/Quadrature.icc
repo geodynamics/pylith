@@ -42,67 +42,39 @@ pylith::feassemble::Quadrature::quadWts(void) const {
   return _quadWts;
 }
 
-// Get basis fns evaluated at vertices.
-inline
-const pylith::double_array&
-pylith::feassemble::Quadrature::basisVert(void) const {
-  return _basisVert;
-}
-
-// Get derivatives of basis fns evaluated at vertices.
-inline
-const pylith::double_array&
-pylith::feassemble::Quadrature::basisDerivVert(void) const {
-  return _basisDerivVert;
-}
-
-// Get Jacobians evaluated at vertices.
-inline
-const pylith::double_array&
-pylith::feassemble::Quadrature::jacobianVert(void) const {
-  return _jacobianVert;
-}
-
-// Get determinants of Jacobian evaluated at vertices.
-inline
-const pylith::double_array&
-pylith::feassemble::Quadrature::jacobianDetVert(void) const {
-  return _jacobianDetVert;
-}
-
 // Get basis fns evaluated at quadrature points.
 inline
 const pylith::double_array&
-pylith::feassemble::Quadrature::basisQuad(void) const {
-  return _basisQuad;
+pylith::feassemble::Quadrature::basis(void) const {
+  return _basis;
 }
 
 // Get derivatives of basis fns evaluated at quadrature points.
 inline
 const pylith::double_array&
-pylith::feassemble::Quadrature::basisDerivQuad(void) const {
-  return _basisDerivQuad;
+pylith::feassemble::Quadrature::basisDeriv(void) const {
+  return _basisDeriv;
 }
 
 // Get Jacobians evaluated at quadrature points.
 inline
 const pylith::double_array&
-pylith::feassemble::Quadrature::jacobianQuad(void) const {
-  return _jacobianQuad;
+pylith::feassemble::Quadrature::jacobian(void) const {
+  return _jacobian;
 }
 
 // Get determinants of Jacobian evaluated at quadrature points.
 inline
 const pylith::double_array&
-pylith::feassemble::Quadrature::jacobianDetQuad(void) const {
-  return _jacobianDetQuad;
+pylith::feassemble::Quadrature::jacobianDet(void) const {
+  return _jacobianDet;
 }
 
 // Get Jacobian inverses evaluated at quadrature points.
 inline
 const pylith::double_array&
-pylith::feassemble::Quadrature::jacobianInvQuad(void) const {
-  return _jacobianInvQuad;
+pylith::feassemble::Quadrature::jacobianInv(void) const {
+  return _jacobianInv;
 }
 
 // Get number of dimensions in reference cell.

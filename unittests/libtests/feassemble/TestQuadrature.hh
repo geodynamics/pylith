@@ -59,21 +59,13 @@ public :
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
-  /** Test initialize() & computeGeometryVert()
+  /** Test initialize() & computeGeometry()
    *
    * @param pQuad Pointer to quadrature
    * @param data Data for testing quadrature
    */
-  void _testComputeGeometryVert(Quadrature* pQuad,
-				const QuadratureData& data) const;
-
-  /** Test initialize() & computeGeometryQuad()
-   *
-   * @param pQuad Pointer to quadrature
-   * @param data Data for testing quadrature
-   */
-  void _testComputeGeometryQuad(Quadrature* pQuad,
-				const QuadratureData& data) const;
+  void _testComputeGeometry(Quadrature* pQuad,
+			    const QuadratureData& data) const;
 
 }; // class TestQuadrature
 

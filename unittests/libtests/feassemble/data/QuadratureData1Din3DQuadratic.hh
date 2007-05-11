@@ -59,23 +59,15 @@ private:
 
   static const double _quadPts[];
 
-  static const double _basisVert[];
+  static const double _basis[];
 
-  static const double _basisDerivVert[];
+  static const double _basisDeriv[];
 
-  static const double _jacobianVert[];
+  static const double _jacobian[];
 
-  static const double _jacobianDetVert[];
+  static const double _jacobianDet[];
 
-  static const double _basisQuad[];
-
-  static const double _basisDerivQuad[];
-
-  static const double _jacobianQuad[];
-
-  static const double _jacobianDetQuad[];
-
-  static const double _jacobianInvQuad[];
+  static const double _jacobianInv[];
 
 };
 

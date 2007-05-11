@@ -38,50 +38,13 @@ pylith::feassemble::Quadrature1D::Quadrature1D(const Quadrature1D& q) :
 } // copy constructor
 
 // ----------------------------------------------------------------------
-// Compute geometric quantities for a cell at vertoces.
-void
-pylith::feassemble::Quadrature1D::computeGeometryVert(
-			      const ALE::Obj<Mesh>& mesh,
-			      const ALE::Obj<real_section_type>& coordinates,
-			      const Mesh::point_type& cell)
-{ // computeGeometryVert
-  assert(1 == _cellDim);
-  assert(1 == _spaceDim);
-
-  _resetGeometry();
-  
-  // Get coordinates of cell's vertices
-  const real_section_type::value_type* vertCoords = 
-    mesh->restrict(coordinates, cell);
-  assert(1 == coordinates->getFiberDimension(*mesh->depthStratum(0)->begin()));
-  
-  // Loop over vertices
-  const int numVertices = _numBasis;
-  for (int iVertex=0; iVertex < numVertices; ++iVertex) {
-    
-    // Compute Jacobian at vertices
-    // J = dx/dp = sum[i=0,n-1] (dNi/dp * xi)
-    for (int iBasis=0; iBasis < _numBasis; ++iBasis)
-      _jacobianVert[iVertex] += 
-	_basisDerivVert[iVertex*_numBasis+iBasis] * vertCoords[iBasis];
-
-    // Compute determinant of Jacobian at vertices
-    // |J| = j00
-    const double det = _jacobianVert[iVertex];
-    _checkJacobianDet(det);
-    _jacobianDetVert[iVertex] = _jacobianVert[iVertex];
-  } // for    
-
-} // computeGeometryVert
-
-// ----------------------------------------------------------------------
 // Compute geometric quantities for a cell at quadrature points.
 void
-pylith::feassemble::Quadrature1D::computeGeometryQuad(
+pylith::feassemble::Quadrature1D::computeGeometry(
 			      const ALE::Obj<Mesh>& mesh,
 			      const ALE::Obj<real_section_type>& coordinates,
 			      const Mesh::point_type& cell)
-{ // computeGeometryQuad
+{ // computeGeometry
   assert(1 == _cellDim);
   assert(1 == _spaceDim);
 
@@ -99,25 +62,25 @@ pylith::feassemble::Quadrature1D::computeGeometryQuad(
     // x = sum[i=0,n-1] (Ni * xi)
     for (int iBasis=0; iBasis < _numBasis; ++iBasis)
       _quadPts[iQuadPt] += 
-	_basisQuad[iQuadPt*_numBasis+iBasis]*vertCoords[iBasis];
+	_basis[iQuadPt*_numBasis+iBasis]*vertCoords[iBasis];
 
     // Compute Jacobian at quadrature point
     // J = dx/dp = sum[i=0,n-1] (dNi/dp * xi)
     for (int iBasis=0; iBasis < _numBasis; ++iBasis)
-      _jacobianQuad[iQuadPt] += 
-	_basisDerivQuad[iQuadPt*_numBasis+iBasis] * vertCoords[iBasis];
+      _jacobian[iQuadPt] += 
+	_basisDeriv[iQuadPt*_numBasis+iBasis] * vertCoords[iBasis];
 
     // Compute determinant of Jacobian at quadrature point
     // |J| = j00
-    const double det = _jacobianQuad[iQuadPt];
+    const double det = _jacobian[iQuadPt];
     _checkJacobianDet(det);
-    _jacobianDetQuad[iQuadPt] = _jacobianQuad[iQuadPt];
+    _jacobianDet[iQuadPt] = _jacobian[iQuadPt];
     
     // Compute inverse of Jacobian at quadrature point
     // Jinv = 1/j00
-    _jacobianInvQuad[iQuadPt] = 1.0/_jacobianDetQuad[iQuadPt];
+    _jacobianInv[iQuadPt] = 1.0/_jacobianDet[iQuadPt];
   } // for
-} // computeGeometryQuad
+} // computeGeometry
 
 
 // End of file 

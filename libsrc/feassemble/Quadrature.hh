@@ -61,21 +61,6 @@ public :
   /** Set basis functions and their derivatives, and coordinates and
    *  weights of the quadrature points.
    *
-   * @param basis Array of basis functions evaluated at vertices
-   *   N0Qp0, N1Qp0, ...
-   *   N0Qp1, N1Qp1, ...
-   *   ...
-   *   size = numVertices * numBasis
-   *   index = iVertex*numBasis + iBasis
-   *
-   * @param basisDeriv Array of basis function derivaties evaluated 
-   *   at quadrature pts
-   *   N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
-   *   N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
-   *   ...
-   *   size = numVertices * numBasis * cellDim
-   *   index = iVertex*numBasis*cellDim + iBasis*cellDim + iDim
-   *
    * @param basis Array of basis functions evaluated at quadrature pts
    *   N0Qp0, N1Qp0, ...
    *   N0Qp1, N1Qp1, ...
@@ -107,10 +92,8 @@ public :
    * @param numQuadPts Number of quadrature points
    * @param spaceDim Number of dimensions in coordinates of cell vertices
    */
-  void initialize(const double* basisVert,
-		  const double* basisDerivVert,
-		  const double* basisQuad,
-		  const double* basisDerivQuad,
+  void initialize(const double* basis,
+		  const double* basisDeriv,
 		  const double* quadPtsRef,
 		  const double* quadWts,
 		  const int cellDim,
@@ -142,60 +125,36 @@ public :
    */
   const double_array& quadWts(void) const;
 
-  /** Get basis fns evaluated at vertices.
-   *
-   * @returns Array of basis fns evaluated at vertices
-   */
-  const double_array& basisVert(void) const;
-
-  /** Get derivatives of basis fns evaluated at vertices.
-   *
-   * @returns Array of derivatives of basis fns evaluated at vertices
-   */
-  const double_array& basisDerivVert(void) const;
-
-  /** Get Jacobians evaluated at vertices.
-   *
-   * @returns Array of Jacobian inverses evaluated at vertices.
-   */
-  const double_array& jacobianVert(void) const;
-
-  /** Get determinants of Jacobian evaluated at vertices.
-   *
-   * @returns Array of determinants of Jacobian evaluated at vertices
-   */
-  const double_array& jacobianDetVert(void) const;
-
   /** Get basis fns evaluated at quadrature points.
    *
    * @returns Array of basis fns evaluated at quadrature points
    */
-  const double_array& basisQuad(void) const;
+  const double_array& basis(void) const;
 
   /** Get derivatives of basis fns evaluated at quadrature points.
    *
    * @returns Array of derivatives of basis fns evaluated at
    * quadrature points
    */
-  const double_array& basisDerivQuad(void) const;
+  const double_array& basisDeriv(void) const;
 
   /** Get Jacobians evaluated at quadrature points.
    *
    * @returns Array of Jacobian inverses evaluated at quadrature points.
    */
-  const double_array& jacobianQuad(void) const;
+  const double_array& jacobian(void) const;
 
   /** Get determinants of Jacobian evaluated at quadrature points.
    *
    * @returns Array of determinants of Jacobian evaluated at quadrature pts
    */
-  const double_array& jacobianDetQuad(void) const;
+  const double_array& jacobianDet(void) const;
 
   /** Get Jacobian inverses evaluated at quadrature points.
    *
    * @returns Array of Jacobian inverses evaluated at quadrature points.
    */
-  const double_array& jacobianInvQuad(void) const;
+  const double_array& jacobianInv(void) const;
 
   /** Get number of dimensions in reference cell.
    *
@@ -221,17 +180,6 @@ public :
    */
   int spaceDim(void) const;
 
-  /** Compute geometric quantities for a cell at vertices.
-   *
-   * @param mesh Finite-element mesh
-   * @param coordinates Section containing vertex coordinates
-   * @param cell Finite-element cell
-   */
-  virtual 
-  void computeGeometryVert(const ALE::Obj<Mesh>& mesh,
-			   const ALE::Obj<real_section_type>& coordinates,
-			   const Mesh::point_type& cell) = 0;
-
   /** Compute geometric quantities for a cell at quadrature points.
    *
    * @param mesh Finite-element mesh
@@ -239,9 +187,9 @@ public :
    * @param cell Finite-element cell
    */
   virtual 
-  void computeGeometryQuad(const ALE::Obj<Mesh>& mesh,
-			   const ALE::Obj<real_section_type>& coordinates,
-			   const Mesh::point_type& cell) = 0;
+  void computeGeometry(const ALE::Obj<Mesh>& mesh,
+		       const ALE::Obj<real_section_type>& coordinates,
+		       const Mesh::point_type& cell) = 0;
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -298,46 +246,6 @@ protected :
    */
   double_array _quadWts;
 
-  /** Array of basis functions evaluated at the vertices.
-   *
-   * N0Qp0, N1Qp0, ...
-   * N0Qp1, N1Qp1, ...
-   *
-   * size = numVertices * numBasis
-   * index = iVertex*numBasis + iBasis
-   */
-  double_array _basisVert;
-
-  /** Array of basis function derivatives evaluated at the vertices.
-   *
-   * N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
-   * N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
-   *
-   * size = numVertices * numBasis * cellDim
-   * index = iVertex*numBasis*cellDim + iBasis*cellDim + iDim
-   */
-  double_array _basisDerivVert;
-
-  /** Array of Jacobians evaluated at vertices.
-   *
-   * Qp0J00, Qp0J01, Qp0J02, ...
-   * Qp1J00, Qp1J01, Qp1J02, ...
-   * ...
-   *
-   * size = numVertices*cellDim*spaceDim
-   * index = iVertex*cellDim*spaceDim + iRow*spaceDim + iCol
-   */
-  double_array _jacobianVert;
-
-  /** Array of determinant of Jacobian evaluated at vertices.
-   *
-   * JdetQp0, JdetQp1, ...
-   *
-   * size = numVertices
-   * index = iVertex
-   */
-  double_array _jacobianDetVert;
-
   /** Array of basis functions evaluated at the quadrature points.
    *
    * N0Qp0, N1Qp0, ...
@@ -346,7 +254,7 @@ protected :
    * size = numQuadPts * numBasis
    * index = iQuadPt*numBasis + iBasis
    */
-  double_array _basisQuad;
+  double_array _basis;
 
   /** Array of basis function derivatives evaluated at the quadrature points.
    *
@@ -356,7 +264,7 @@ protected :
    * size = numQuadPts * numBasis * cellDim
    * index = iQuadPt*numBasis*cellDim + iBasis*cellDim + iDim
    */
-  double_array _basisDerivQuad;
+  double_array _basisDeriv;
 
   /** Array of Jacobians evaluated at quadrature points.
    *
@@ -367,7 +275,7 @@ protected :
    * size = numQuadPts*cellDim*spaceDim
    * index = iQuadPt*cellDim*spaceDim + iRow*spaceDim + iCol
    */
-  double_array _jacobianQuad;
+  double_array _jacobian;
 
   /** Array of determinant of Jacobian evaluated at quadrature points.
    *
@@ -376,7 +284,7 @@ protected :
    * size = numQuadPts
    * index = iQuadPt
    */
-  double_array _jacobianDetQuad;
+  double_array _jacobianDet;
 
   /** Array of Jacobian inverses evaluated at quadrature points.
    *
@@ -387,7 +295,7 @@ protected :
    * size = numQuadPts*spaceDim*cellDim
    * index = iQuadPt*spaceDim*cellDim + iRow*cellDim + iCol
    */
-  double_array _jacobianInvQuad;
+  double_array _jacobianInv;
 
   int _cellDim; ///< Number of dimensions in reference cell
   int _numBasis; ///< Number of basis functions (and vertices) for cell

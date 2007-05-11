@@ -85,28 +85,16 @@ class TestFIATSimplex(unittest.TestCase):
                             dtype=numpy.float64 )
     quadWtsE = numpy.array( [1.0, 1.0], dtype=numpy.float64 )
 
-    # Compute basis fns and derivatives at vertices
-    basisVert = numpy.zeros( (3, 3), dtype=numpy.float64)
-    basisDerivVert = numpy.zeros( (3, 3, 1), dtype=numpy.float64)
-    iVertex = 0
-    for v in verticesRef():
-      basisVert[iVertex] = numpy.array([N0(v), N1(v), N2(v)],
-                                       dtype=numpy.float64).reshape( (3,) )
-      deriv = numpy.array([[N0p(v)], [N1p(v)], [N2p(v)]],
-                          dtype=numpy.float64)      
-      basisDerivVert[iVertex] = deriv.reshape((3, 1))
-      iVertex += 1
-
     # Compute basis fns and derivatives at quadrature points
-    basisQuad = numpy.zeros( (2, 3), dtype=numpy.float64)
-    basisDerivQuad = numpy.zeros( (2, 3, 1), dtype=numpy.float64)
+    basis = numpy.zeros( (2, 3), dtype=numpy.float64)
+    basisDeriv = numpy.zeros( (2, 3, 1), dtype=numpy.float64)
     iQuad = 0
     for q in quadPtsE:
-      basisQuad[iQuad] = numpy.array([N0(q), N1(q), N2(q)],
+      basis[iQuad] = numpy.array([N0(q), N1(q), N2(q)],
                                  dtype=numpy.float64).reshape( (3,) )
       deriv = numpy.array([[N0p(q)], [N1p(q)], [N2p(q)]],
                           dtype=numpy.float64)      
-      basisDerivQuad[iQuad] = deriv.reshape((3, 1))
+      basisDeriv[iQuad] = deriv.reshape((3, 1))
       iQuad += 1
 
     cell.initialize()
@@ -119,10 +107,8 @@ class TestFIATSimplex(unittest.TestCase):
     # Check arrays
     test_double(self, quadPtsE, cell.quadPts)
     test_double(self, quadWtsE, cell.quadWts)
-    test_double(self, basisVert, cell.basisVert)
-    test_double(self, basisDerivVert, cell.basisDerivVert)
-    test_double(self, basisQuad, cell.basisQuad)
-    test_double(self, basisDerivQuad, cell.basisDerivQuad)
+    test_double(self, basis, cell.basis)
+    test_double(self, basisDeriv, cell.basisDeriv)
 
     return
 
