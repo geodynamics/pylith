@@ -13,23 +13,16 @@ Cleanup
   dimensions, we probably want to allow it in MeshIO, just not in the
   simulation where we don't support it.
 
-  Use pylith/utils/sievefwd.hh and pylith/utils/sievetypes.hh in unit
-  tests. Remove typedefs when possible (take advantage of typedefs in
-  seivefwd.hh).
+1. Implement cell geometry stuff.
+   Compute Jacobian in cell.
 
-  Use MeshIOAscii to get mesh information into Python tests?
-
-0. Implement MeshIOLagrit
-   b. unit tests at C++ level
-     Check unit tests on big endian machine.
-
-1. Implement VTK output
-   a. SolutionIO
-     i. Python
-     ii. C++
-   b. SolutionIOVTK
-     i. Python
-     ii. C++
+   i. CellGeometry
+   ii. GeometryPoint
+   iii. GeometryLine
+   iv. GeometryTri
+   v. GeometryTet
+   vi. GeometryQuad
+   vii. GeometryHex
 
 2. Implement Dirichlet boundary conditions
    a. C++
@@ -82,9 +75,6 @@ Cleanup
          constructor
          initialize()
 
-     v. Update Reference cell
-       (1) Improve how we get Jacobian at vertices of cell
-
 4. Finish implementing ExplicitElasticity and Explicit
    a. Replace integrateConstant() with integrateResidual()
 
@@ -110,9 +100,13 @@ SECONDARY PRIORITIES
    d. bindings
    e. unit tests at Python level
 
-2. Implement HDF5 output
+2. Reimplement SolutionIO.
 
+   Follow implementation of MeshIO. SolutionIO implements extracting
+   data from Sieve and calls virtual functions to write data.
 
+   a. Reimplement SolutionIOVTK
+   b. Implement SolutionIOHDF5
 
 ======================================================================
 UNRESOLVED ISSUES

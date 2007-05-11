@@ -77,11 +77,6 @@ pylith::materials::TestMaterial::testLabel(void)
 void
 pylith::materials::TestMaterial::testInitialize(void)
 { // testInitialize
-  typedef ALE::Mesh Mesh;
-  typedef Mesh::sieve_type sieve_type;
-  typedef Mesh::label_type label_type;
-  typedef Mesh::real_section_type real_section_type;
-
   ALE::Obj<Mesh> mesh;
   const int materialID = 24;
   { // create mesh
@@ -110,7 +105,7 @@ pylith::materials::TestMaterial::testInitialize(void)
 
   { // set material ids
     const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
-    const ALE::Obj<label_type>& labelMaterials = mesh->createLabel("material-id");
+    const ALE::Obj<Mesh::label_type>& labelMaterials = mesh->createLabel("material-id");
     int i = 0;
     for(Mesh::label_sequence::iterator e_iter = cells->begin();
 	e_iter != cells->end();
