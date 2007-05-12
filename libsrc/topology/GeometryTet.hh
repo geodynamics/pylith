@@ -28,7 +28,7 @@ namespace pylith {
   } // topology
 } // pylith
 
-class pylith::topology::GeometryTet
+class pylith::topology::GeometryTet : public CellGeometry
 { // GeometryTet
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////

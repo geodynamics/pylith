@@ -28,7 +28,7 @@ namespace pylith {
   } // topology
 } // pylith
 
-class pylith::topology::GeometryLine
+class pylith::topology::GeometryLine : public CellGeometry
 { // GeometryLine
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////

@@ -28,7 +28,7 @@ namespace pylith {
   } // topology
 } // pylith
 
-class pylith::topology::GeometryHex
+class pylith::topology::GeometryHex : public CellGeometry
 { // GeometryHex
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////

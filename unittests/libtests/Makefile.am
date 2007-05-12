@@ -14,7 +14,8 @@ SUBDIRS = \
 	faults \
 	feassemble \
 	materials \
-	meshio
+	meshio \
+	topology
 
 
 # End of file 

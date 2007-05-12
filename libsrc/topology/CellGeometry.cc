@@ -16,7 +16,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::CellGeometry::CellGeometry(void)
+pylith::topology::CellGeometry::CellGeometry(const int dimension) :
+  _dimension(dimension)
 { // constructor
 } // constructor
 

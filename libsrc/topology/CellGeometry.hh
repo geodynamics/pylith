@@ -33,12 +33,21 @@ class pylith::topology::CellGeometry
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
   
-  /// Default constructor.
-  CellGeometry(void);
+  /** Default constructor.
+   *
+   * @param dimension Dimension of cell.
+   */
+  CellGeometry(const int dimension);
 
   /// Default destructor.
   virtual
   ~CellGeometry(void);
+
+  /** Get dimension of cell.
+   *
+   * @returns Spatial dimension of cell.
+   */
+  int dimension(void) const;
 
   /** Compute Jacobian at location in cell.
    *
@@ -51,7 +60,14 @@ public :
 		const double_array& vertices,
 		const double_array& location) const = 0;
 
+// PRIVATE MEMBERS //////////////////////////////////////////////////////
+private :
+
+  int _dimension; ///< Dimension of cell.
+  
 }; // CellGeometry
+
+#include "CellGeometry.icc" // inline methods
 
 #endif // pylith_topology_cellgeometry_hh
 

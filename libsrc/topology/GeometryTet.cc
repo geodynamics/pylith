@@ -20,7 +20,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::GeometryTet::GeometryTet(void)
+pylith::topology::GeometryTet::GeometryTet(void) :
+  CellGeometry(3)
 { // constructor
 } // constructor
 

@@ -20,7 +20,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::GeometryLine::GeometryLine(void)
+pylith::topology::GeometryLine::GeometryLine(void) :
+  CellGeometry(1)
 { // constructor
 } // constructor
 

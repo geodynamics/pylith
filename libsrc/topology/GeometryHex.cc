@@ -20,7 +20,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::GeometryHex::GeometryHex(void)
+pylith::topology::GeometryHex::GeometryHex(void) :
+  CellGeometry(3)
 { // constructor
 } // constructor
 
