@@ -17,6 +17,7 @@
 ## Factory: mesh_generator.
 
 from MeshGenerator import MeshGenerator
+from Mesh import Mesh
 
 # MeshGenSimple class
 class MeshGenSimple(MeshGenerator):
@@ -42,7 +43,9 @@ class MeshGenSimple(MeshGenerator):
     """
     Generate a Mesh from a boundary
     """
-    return self.cppHandle.generate(self.boundary)
+    mesh = Mesh()
+    mesh.cppHandle = self.cppHandle.generate(self.boundary)
+    return mesh
 
 
   def setBoundary(self, boundary):
@@ -57,7 +60,9 @@ class MeshGenSimple(MeshGenerator):
     """
     Returns a Mesh that is the boundary of the unit cube
     """
-    return self.cppHandle.createCubeBoundary(self.debug)
+    mesh = Mesh()
+    mesh.cppHandle = self.cppHandle.createCubeBoundary(self.debug)
+    return mesh
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
