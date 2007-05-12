@@ -1,0 +1,27 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_topology_cellgeometry_hh)
+#error "CellGeometry.icc must be included only from CellGeometry.hh"
+#else
+
+// Get dimension of cell.
+inline
+int
+pylith::topology::CellGeometry::dimension(void) const {
+  return _dimension;
+} // dimension
+
+
+#endif
+
+// End of file

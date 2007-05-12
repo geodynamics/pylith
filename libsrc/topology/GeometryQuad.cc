@@ -20,7 +20,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::GeometryQuad::GeometryQuad(void)
+pylith::topology::GeometryQuad::GeometryQuad(void) :
+  CellGeometry(2)
 { // constructor
 } // constructor
 

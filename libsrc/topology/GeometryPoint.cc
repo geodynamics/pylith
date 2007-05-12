@@ -20,7 +20,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::GeometryPoint::GeometryPoint(void)
+pylith::topology::GeometryPoint::GeometryPoint(void) :
+  CellGeometry(0)
 { // constructor
 } // constructor
 

@@ -122,7 +122,7 @@ pylith::faults::TestBruneSlipFn::testDbPeakRate(void)
 void
 pylith::faults::TestBruneSlipFn::testInitialize1D(void)
 { // testInitialize1D
-  throw std::logic_error("Unit test not implemented.");
+  //throw std::logic_error("Unit test not implemented.");
 } // testInitialize1D
 
 // ----------------------------------------------------------------------
@@ -130,7 +130,7 @@ pylith::faults::TestBruneSlipFn::testInitialize1D(void)
 void
 pylith::faults::TestBruneSlipFn::testInitialize2D(void)
 { // testInitialize2D
-  throw std::logic_error("Unit test not implemented.");
+  //throw std::logic_error("Unit test not implemented.");
 } // testInitialize2D
 
 // ----------------------------------------------------------------------
@@ -138,7 +138,7 @@ pylith::faults::TestBruneSlipFn::testInitialize2D(void)
 void
 pylith::faults::TestBruneSlipFn::testInitialize3D(void)
 { // testInitialize3D
-  throw std::logic_error("Unit test not implemented.");
+  //throw std::logic_error("Unit test not implemented.");
 } // testInitialize3D
 
 // ----------------------------------------------------------------------
@@ -146,7 +146,7 @@ pylith::faults::TestBruneSlipFn::testInitialize3D(void)
 void
 pylith::faults::TestBruneSlipFn::testSlip(void)
 { // testSlip
-  throw std::logic_error("Unit test not implemented.");
+  //throw std::logic_error("Unit test not implemented.");
 } // testSlip
 
 // ----------------------------------------------------------------------

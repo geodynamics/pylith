@@ -20,7 +20,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::GeometryTri::GeometryTri(void)
+pylith::topology::GeometryTri::GeometryTri(void) :
+  CellGeometry(2)
 { // constructor
 } // constructor
 

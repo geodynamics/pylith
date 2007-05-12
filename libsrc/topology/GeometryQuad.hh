@@ -28,7 +28,7 @@ namespace pylith {
   } // topology
 } // pylith
 
-class pylith::topology::GeometryQuad
+class pylith::topology::GeometryQuad : public CellGeometry
 { // GeometryQuad
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
