@@ -29,7 +29,10 @@ def test_double(obj, valuesE, values):
     # Check values
     for (vE, v) in zip(numpy.reshape(valuesE, -1),
                        numpy.reshape(values, -1)):
-        obj.assertAlmostEqual(1.0, v/vE, 6)
+        if vE == 0.0:
+            obj.assertAlmostEqual(v, vE, 6)
+        else:
+            obj.assertAlmostEqual(1.0, v/vE, 6)
 
     return
 

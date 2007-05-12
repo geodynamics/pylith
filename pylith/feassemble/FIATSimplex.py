@@ -111,6 +111,13 @@ class FIATSimplex(FIATCell):
     return Lagrange(self._getShape(), self.degree).function_space()
 
 
+  def _setupVertices(self):
+    """
+    Setup evaluation functional points for reference cell.
+    """
+    from FIAT.Lagrange import Lagrange
+    return Lagrange(self._getShape(), self.degree).Udual.pts
+
   def _getShape(self):
     """
     Parse string into FIAT shape.
