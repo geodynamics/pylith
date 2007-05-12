@@ -23,22 +23,22 @@ def N0(p):
   return -0.5*p*(1.0-p)
 
 def N0p(p):
-  return -0.5*(1.0-p) + 0.5*p
+  return 1.0*p - 0.5
 
 def N1(p):
   return 0.5*p*(1.0+p)
 
 def N1p(p):
-  return +0.5*(1.0+p) + 0.5*p
+  return 1.0*p + 0.5
 
 def N2(p):
-  return (1.0-p**2)
+  return (1.0-p*p)
 
 def N2p(p):
   return -2.0*p
 
-def verticesRef():
-  return [-1.0, 1.0, 0.5]
+def nodesRef():
+  return [-1.0, 1.0, 0.0]
 
 
 # ----------------------------------------------------------------------
@@ -77,9 +77,9 @@ class TestFIATSimplex(unittest.TestCase):
     """
     from pylith.feassemble.FIATSimplex import FIATSimplex
     cell = FIATSimplex()
-    cell.shape = "line"
+    cell.shape  = "line"
     cell.degree = 2
-    cell.order = 2
+    cell.order  = 2
     quadPtsE = numpy.array( [(-1.0/3**0.5,),
                              (+1.0/3**0.5,)],
                             dtype=numpy.float64 )
