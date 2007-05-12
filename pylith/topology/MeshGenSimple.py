@@ -44,7 +44,7 @@ class MeshGenSimple(MeshGenerator):
     Generate a Mesh from a boundary
     """
     mesh = Mesh()
-    mesh.cppHandle = self.cppHandle.generate(self.boundary)
+    mesh.cppHandle = self.cppHandle.generate(self.boundary.cppHandle)
     return mesh
 
 
