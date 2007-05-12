@@ -58,10 +58,13 @@ pylith::topology::GeometryQuad::jacobian(double_array* jacobian,
   const double x = location[0];
   const double y = location[1];
 
-  (*jacobian)[0] = x1 - x0 + (x3 - x1 - x2 + x0)*y;
-  (*jacobian)[1] = x2 - x0 + (x3 - x1 - x2 + x0)*x;
-  (*jacobian)[2] = y1 - y0 + (y3 - y1 - y2 + y0)*y;
-  (*jacobian)[3] = y2 - y0 + (y3 - y1 - y2 + y0)*x;
+  const double f_xy = x2 - x1 - x3 + x0;
+  const double g_xy = y2 - y1 - y3 + y0;
+
+  (*jacobian)[0] = x1 - x0 + f_xy*y;
+  (*jacobian)[1] = x3 - x0 + f_xy*x;
+  (*jacobian)[2] = y1 - y0 + g_xy*y;
+  (*jacobian)[3] = y3 - y0 + g_xy*x;
 } // jacobian
 
 
