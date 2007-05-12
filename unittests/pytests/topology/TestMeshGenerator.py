@@ -17,13 +17,11 @@
 import unittest
 
 from pylith.topology.MeshGenerator import MeshGenerator
-from pylith.topology.MeshDistributor import MeshDistributor
-from pylith.meshio.SolutionIOVTK import SolutionIOVTK
 
 # ----------------------------------------------------------------------
 class TestMeshGenerator(unittest.TestCase):
   """
-  Unit testing of MeshIO object.
+  Unit testing of MeshGenerator object.
   """
 
   def test_constructor(self):
@@ -61,30 +59,6 @@ class TestMeshGenerator(unittest.TestCase):
     value = True
     generator.interpolate = value
     self.assertEqual(value, generator.interpolate)
-    return
-
-
-  def test_distribution(self):
-    """
-    Test mesh distribution
-    """
-    io = SolutionIOVTK()
-    generator = MeshGenerator()
-    generator.interpolate = True
-    mesh = generator.create(generator.createCubeBoundary())
-    io.filename = 'mesh.vtk'
-    #import spatialdata.geocoords.CSCart
-    #io.coordsys = spatialdata.geocoords.CSCart.CSCart()
-    io.open(mesh)
-    io.writeTopology(mesh)
-    io.close()
-    distributor = MeshDistributor()
-    newMesh = distributor.distributeMesh(mesh)
-    io.filename = 'newMesh.vtk'
-    io.open(newMesh)
-    io.writeTopology(newMesh)
-    io.close()
-    self.assertEqual(True, generator.interpolate)
     return
 
 

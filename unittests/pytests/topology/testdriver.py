@@ -64,6 +64,9 @@ class TestApp(Script):
     from TestMeshImporter import TestMeshImporter
     suite.addTest(unittest.makeSuite(TestMeshImporter))
 
+    from TestMeshGenSimple import TestMeshGenSimple
+    suite.addTest(unittest.makeSuite(TestMeshGenSimple))
+
     return suite
 
 

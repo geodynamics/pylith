@@ -59,25 +59,17 @@ class MeshGenerator(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="mesh_generator")
-    import pylith.topology.topology as bindings
-    self.cppHandle = bindings.MeshGenerator()
     self.debug = False
     self.interpolate = False
     return
 
 
-  def create(self, boundary, faults = None):
+  def create(self, faults=None):
     """
     Generate a Mesh from a boundary
     """
-    return self.cppHandle.generateMesh(boundary)
-
-
-  def createCubeBoundary(self):
-    """
-    Returns a Mesh that is the boundary of the unit cube
-    """
-    return self.cppHandle.createCubeBoundary(self.debug)
+    raise NotImplementedError("MeshGenerator.create() not implemented.")
+    return
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////

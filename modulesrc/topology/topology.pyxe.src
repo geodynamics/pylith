@@ -64,95 +64,6 @@ cdef void PetscMat_destructor(void* obj):
   return
 
 # ----------------------------------------------------------------------
-cdef class MeshGenerator:
-
-  def createCubeBoundary(self, debug = 0):
-    """
-    Returns a Mesh that is the boundary of the unit cube
-    """
-    # create shim for method 'read'
-    #embed{ void MeshGenerator_createCubeBoundary(int debug, void* meshVptr)
-    try {
-      assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* pMesh   = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      const double lower[3] = {0.0, 0.0, 0.0};
-      const double upper[3] = {1.0, 1.0, 1.0};
-      const int    faces[3] = {1, 1, 1};
-      *pMesh = ALE::MeshBuilder::createCubeBoundary(PETSC_COMM_WORLD, lower, upper, faces, debug);
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    mesh = Mesh()
-    MeshGenerator_createCubeBoundary(debug, ptrFromHandle(mesh))
-    return mesh
-
-  def generateMesh(self, meshBd):
-    """
-    Generate a Mesh from a boundary
-    """
-    # create shim for method 'read'
-    #embed{ void MeshGenerator_generateMesh(void* meshBdVptr, void* meshVptr)
-    try {
-      assert(0 != meshBdVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<ALE::Mesh>* pMeshBd = (ALE::Obj<ALE::Mesh>*) meshBdVptr;
-      ALE::Obj<ALE::Mesh>* pMesh   = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      *pMesh = ALE::Generator::generateMesh(*pMeshBd);
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    if meshBd.name != "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type 'Mesh'."
-    mesh = Mesh()
-    MeshGenerator_generateMesh(ptrFromHandle(meshBd), ptrFromHandle(mesh))
-    return mesh
-
-# ----------------------------------------------------------------------
-cdef class MeshDistributor:
-
-  def distributeMesh(self, mesh, partitioner = None):
-    """
-    Distribute a Mesh
-    """
-    # create shim for method 'read'
-    #embed{ void MeshDistributor_distributeMesh(void* meshVptr, char *partitioner, void* newMeshVptr)
-    try {
-      assert(0 != meshVptr);
-      assert(0 != newMeshVptr);
-      ALE::Obj<ALE::Mesh>* pMesh    = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ALE::Obj<ALE::Mesh>* pNewMesh = (ALE::Obj<ALE::Mesh>*) newMeshVptr;
-      if (!strlen(partitioner)) {
-        *pNewMesh = ALE::Distribution<ALE::Mesh>::distributeMesh(*pMesh);
-      } else {
-        *pNewMesh = ALE::Distribution<ALE::Mesh>::distributeMesh(*pMesh, 0, partitioner);
-      }
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    if mesh.name != "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type 'Mesh'."
-    newMesh = Mesh()
-    MeshDistributor_distributeMesh(ptrFromHandle(mesh), partitioner, ptrFromHandle(newMesh))
-    return newMesh
-
-# ----------------------------------------------------------------------
 cdef class Mesh:
 
   cdef void* thisptr # Pointer to C++ object
@@ -173,6 +84,9 @@ cdef class Mesh:
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -206,6 +120,9 @@ cdef class Mesh:
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -240,6 +157,9 @@ cdef class Mesh:
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -279,6 +199,9 @@ cdef class Mesh:
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -291,39 +214,6 @@ cdef class Mesh:
     ptr = Mesh_createMatrix(self.thisptr, fieldVptr)
     return PyCObject_FromVoidPtr(ptr, PetscMat_destructor)
 
-  def distribute(self, newMesh, height=0, partitioner=None):
-    """
-    Distribute the mesh across processes.
-    """
-    # create shim for MeshDistribute
-    #embed{ void Mesh_distribute(void* objVptr, void* newVptr, int height, char *partitioner)
-    try {
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
-      ALE::Obj<ALE::Mesh>* newMesh = (ALE::Obj<ALE::Mesh>*) newVptr;
-      assert(0 != mesh);
-      assert(0 != newMesh);
-      assert(!mesh->isNull());
-      assert(height >= 0);
-
-      if (0 == partitioner) {
-        *newMesh = ALE::Distribution<ALE::Mesh>::distributeMesh(*mesh);
-      } else {
-        *newMesh = ALE::Distribution<ALE::Mesh>::distributeMesh(*mesh, 0, partitioner);
-      } // if/else
-    } catch (const std::exception& err) {
-    PyErr_SetString(PyExc_RuntimeError,
-                    const_cast<char*>(err.what()));
-    } catch (...) {
-    PyErr_SetString(PyExc_RuntimeError,
-                    "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    if newMesh.name != "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type 'Mesh'."
-    Mesh_distribute(self.thisptr, ptrFromHandle(newMesh), height, partitioner)
-    return
-    
 
   def _createHandle(self):
     """
@@ -349,6 +239,9 @@ cdef class Mesh:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -371,6 +264,9 @@ cdef class Mesh:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -396,6 +292,9 @@ cdef class Mesh:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -405,6 +304,110 @@ cdef class Mesh:
       return Mesh_dimension_get(self.thisptr)
 
       
+# ----------------------------------------------------------------------
+cdef class MeshGenSimple:
+
+  def createCubeBoundary(self, debug = 0):
+    """
+    Returns a Mesh that is the boundary of the unit cube
+    """
+    # create shim for method 'read'
+    #embed{ void MeshGenerator_createCubeBoundary(int debug, void* meshVptr)
+    try {
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      const double lower[3] = {0.0, 0.0, 0.0};
+      const double upper[3] = {1.0, 1.0, 1.0};
+      const int    faces[3] = {1, 1, 1};
+      *mesh = ALE::MeshBuilder::createCubeBoundary(PETSC_COMM_WORLD, lower, upper, faces, debug);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    mesh = Mesh()
+    MeshGenerator_createCubeBoundary(debug, ptrFromHandle(mesh))
+    return mesh
+
+
+  def generate(self, meshBdry):
+    """
+    Generate a mesh from a boundary mesh.
+    """
+    # create shim for method 'read'
+    #embed{ void MeshGenerator_generate(void* meshVptr, void* meshBdryVptr)
+    try {
+      assert(0 != meshVptr);
+      assert(0 != meshBdryVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<ALE::Mesh>* meshBdry = (ALE::Obj<ALE::Mesh>*) meshBdryVptr;
+      *mesh = ALE::Generator::generateMesh(*meshBdry);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if meshBdry.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    mesh = Mesh()
+    MeshGenerator_generate(ptrFromHandle(mesh), ptrFromHandle(meshBdry))
+    return mesh
+
+
+# ----------------------------------------------------------------------
+cdef class Partitioner:
+
+  def distribute(self, mesh, partitioner):
+    """
+    Distribute a mesh.
+    """
+    # create shim for method 'distribute'
+    #embed{ void Partitioner_distribute(void* newMeshVptr, void* meshVptr, char *partitioner)
+    try {
+      assert(0 != meshVptr);
+      assert(0 != newMeshVptr);
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<ALE::Mesh>* newMesh = (ALE::Obj<ALE::Mesh>*) newMeshVptr;
+      if (strlen(partitioner) > 0) {
+        *newMesh = ALE::Distribution<ALE::Mesh>::distributeMesh(*mesh);
+      } else {
+        *newMesh =
+          ALE::Distribution<ALE::Mesh>::distributeMesh(*mesh, 0, partitioner);
+      }
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    newMesh = Mesh()
+    Partitioner_distribute(ptrFromHandle(newMesh), ptrFromHandle(mesh),
+                           partitioner)
+    return newMesh
+
+
+# ----------------------------------------------------------------------
 def zeroRealSection(section):
   """
   Zero real section.
@@ -421,6 +424,9 @@ def zeroRealSection(section):
   } catch (const std::exception& err) {
     PyErr_SetString(PyExc_RuntimeError,
                     const_cast<char*>(err.what()));
+  } catch (const ALE::Exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.msg().c_str()));
   } catch (...) {
     PyErr_SetString(PyExc_RuntimeError,
                     "Caught unknown C++ exception.");

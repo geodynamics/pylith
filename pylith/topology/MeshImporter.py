@@ -40,13 +40,21 @@ class MeshImporter(MeshGenerator):
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b importer Mesh importer
+    ## @li \b importer Mesh importer.
+    ## @li \b partitioner Mesh partitioner.
 
     import pyre.inventory
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
-    importer = pyre.inventory.facility("importer", factory=MeshIOAscii)
+    importer = pyre.inventory.facility("importer", family="mesh_io",
+                                       factory=MeshIOAscii)
     importer.meta['tip'] = "Mesh importer."
+
+    from Partitioner import Partitioner
+    partitioner = pyre.inventory.facility("partitioner",
+                                          family="mesh_partitioner",
+                                          factory=Partitioner)
+    partitioner.meta['tip'] = "Mesh partitioner."
   
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -59,21 +67,14 @@ class MeshImporter(MeshGenerator):
     return
 
 
-  def create(self, faults):
+  def create(self, faults=None):
     """
     Hook for creating mesh.
     """
     mesh = self.importer.read(self.debug, self.interpolate)
     self._adjustTopology(mesh, faults)
-    mesh.distribute(self.partitioner)
+    mesh = self.partitioner.distribute(mesh)
     return mesh
-
-
-  def createCubeBoundary(self):
-    """
-    Hook for creating cube boundary.
-    """
-    return self.importer.createCubeBoundary(self.debug)
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -84,6 +85,7 @@ class MeshImporter(MeshGenerator):
     """
     MeshGenerator._configure(self)
     self.importer = self.inventory.importer
+    self.partitioner = self.inventory.partitioner
     return
   
 
