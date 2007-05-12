@@ -39,7 +39,6 @@ class TestApp(Script):
     """
     from pylith.utils.PetscManager import PetscManager
     manager = PetscManager()
-    manager.options.append(('start_in_debugger', '1'))
     manager.initialize()
     unittest.TextTestRunner(verbosity=2).run(self._suite())
     manager.finalize()
