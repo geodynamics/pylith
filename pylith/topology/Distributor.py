@@ -10,31 +10,31 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/topology/Partitioner.py
+## @file pylith/topology/Distributor.py
 ##
-## @brief Python manager for mesh partitioner.
+## @brief Python manager for distributing mesh among processors.
 ##
-## Factory: mesh_partitioner.
+## Factory: mesh_distributor.
 
 from pyre.components.Component import Component
 
-# Partitioner class
-class Partitioner(Component):
+# Distributor class
+class Distributor(Component):
   """
-  Python manager for mesh partitioner.
+  Python manager for distributing mesh among processors.
 
-  Factory: mesh_partitioner
+  Factory: mesh_distributor
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
   class Inventory(Component.Inventory):
     """
-    Python object for managing Partitioner facilities and properties.
+    Python object for managing Distributor facilities and properties.
     """
 
     ## @class Inventory
-    ## Python object for managing Partitioner facilities and properties.
+    ## Python object for managing Distributor facilities and properties.
     ##
     ## \b Properties
     ## @li \b partitioner Name of mesh partitioner {"parmetis", "chaco"}
@@ -58,7 +58,7 @@ class Partitioner(Component):
     """
     Component.__init__(self, name, facility="partitioner")
     import pylith.topology.topology as bindings
-    self.cppHandle = bindings.Partitioner()
+    self.cppHandle = bindings.Distributor()
     return
 
 
@@ -66,7 +66,12 @@ class Partitioner(Component):
     """
     Distribute a Mesh
     """
-    return self.cppHandle.distribute(mesh, self.partitioner)
+    from Mesh import Mesh
+    newMesh = Mesh()
+    newMesh.cppHandle = self.cppHandle.distribute(mesh.cppHandle,
+                                                  self.partitioner)
+    newMesh.coordsys = mesh.coordsys
+    return newMesh
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
@@ -84,9 +89,9 @@ class Partitioner(Component):
 
 def mesh_partitioner():
   """
-  Factory associated with Partitioner.
+  Factory associated with Distributor.
   """
-  return Partitioner()
+  return Distributor()
 
 
 # End of file 

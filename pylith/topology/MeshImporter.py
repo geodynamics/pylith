@@ -50,11 +50,11 @@ class MeshImporter(MeshGenerator):
                                        factory=MeshIOAscii)
     importer.meta['tip'] = "Mesh importer."
 
-    from Partitioner import Partitioner
-    partitioner = pyre.inventory.facility("partitioner",
-                                          family="mesh_partitioner",
-                                          factory=Partitioner)
-    partitioner.meta['tip'] = "Mesh partitioner."
+    from Distributor import Distributor
+    distributor = pyre.inventory.facility("distributor",
+                                          family="mesh_distributor",
+                                          factory=Distributor)
+    distributor.meta['tip'] = "Mesh distributor."
   
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ class MeshImporter(MeshGenerator):
     """
     mesh = self.importer.read(self.debug, self.interpolate)
     self._adjustTopology(mesh, faults)
-    mesh = self.partitioner.distribute(mesh)
+    mesh = self.distributor.distribute(mesh)
     return mesh
 
 
@@ -85,7 +85,7 @@ class MeshImporter(MeshGenerator):
     """
     MeshGenerator._configure(self)
     self.importer = self.inventory.importer
-    self.partitioner = self.inventory.partitioner
+    self.distributor = self.inventory.distributor
     return
   
 
