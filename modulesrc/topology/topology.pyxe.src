@@ -368,14 +368,14 @@ cdef class MeshGenSimple:
 
 
 # ----------------------------------------------------------------------
-cdef class Partitioner:
+cdef class Distributor:
 
   def distribute(self, mesh, partitioner):
     """
     Distribute a mesh.
     """
     # create shim for method 'distribute'
-    #embed{ void Partitioner_distribute(void* newMeshVptr, void* meshVptr, char *partitioner)
+    #embed{ void Distributor_distribute(void* newMeshVptr, void* meshVptr, char *partitioner)
     try {
       assert(0 != meshVptr);
       assert(0 != newMeshVptr);
@@ -402,7 +402,7 @@ cdef class Partitioner:
       raise TypeError, \
             "Argument must be extension module type 'Mesh'."
     newMesh = Mesh()
-    Partitioner_distribute(ptrFromHandle(newMesh), ptrFromHandle(mesh),
+    Distributor_distribute(ptrFromHandle(newMesh), ptrFromHandle(mesh),
                            partitioner)
     return newMesh
 
