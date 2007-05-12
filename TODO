@@ -16,13 +16,10 @@ Cleanup
 1. Implement cell geometry stuff.
    Compute Jacobian in cell.
 
-   i. CellGeometry
-   ii. GeometryPoint
-   iii. GeometryLine
-   iv. GeometryTri
-   v. GeometryTet
-   vi. GeometryQuad
-   vii. GeometryHex
+   a. C++ source code
+     i. GeometryTet
+     ii. GeometryHex
+   b. C++ unit tests
 
 2. Implement Dirichlet boundary conditions
    a. C++

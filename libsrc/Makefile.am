@@ -61,7 +61,14 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileAscii.cc \
 	meshio/PsetFileBinary.cc \
 	meshio/SolutionIO.cc \
-	meshio/SolutionIOVTK.cc
+	meshio/SolutionIOVTK.cc \
+	topology/CellGeometry.cc \
+	topology/GeometryPoint.cc \
+	topology/GeometryLine.cc \
+	topology/GeometryTri.cc \
+	topology/GeometryTet.cc \
+	topology/GeometryQuad.cc \
+	topology/GeometryHex.cc
 
 if ENABLE_CUBIT
   libpylith_la_SOURCES += \
