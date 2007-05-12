@@ -14,7 +14,13 @@ subpackage = topology
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	Mesh.hh
+	CellGeometry.hh \
+	GeometryPoint.hh \
+	GeometryLine.hh \
+	GeometryTri.hh \
+	GeometryTet.hh \
+	GeometryQuad.hh \
+	GeometryHex.hh
 
 noinst_HEADERS =
 
