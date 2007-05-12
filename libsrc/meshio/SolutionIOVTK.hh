@@ -81,7 +81,7 @@ public :
 
   std::string _filename; ///< Name of VTK file.
 
-  std::ofstream* _fout; ///< Output stream
+  PetscViewer _viewer; ///< Output file
 
 }; // SolutionIOVTK
 

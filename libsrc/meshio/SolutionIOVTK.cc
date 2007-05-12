@@ -14,15 +14,18 @@
 
 #include "SolutionIOVTK.hh" // implementation of class methods
 
-#include <fstream> // USES std::ofstream
+#include <src/dm/mesh/meshvtk.h> // USES VTKViewer
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+template<typename Bundle, typename Section>
+PetscErrorCode SectionView_Sieve_Ascii(const Obj<Bundle>& bundle, const Obj<Section>& s, const char name[], PetscViewer viewer);
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::SolutionIOVTK::SolutionIOVTK(void) :
-  _fout(new std::ofstream)
+  _viewer(NULL)
 { // constructor
 } // constructor
 
@@ -30,7 +33,7 @@ pylith::meshio::SolutionIOVTK::SolutionIOVTK(void) :
 // Destructor
 pylith::meshio::SolutionIOVTK::~SolutionIOVTK(void)
 { // destructor
-  delete _fout; _fout = 0;
+  if (_viewer) PetscViewerDestroy(_viewer); _viewer = NULL;
 } // destructor  
 
 // ----------------------------------------------------------------------
@@ -38,10 +41,13 @@ pylith::meshio::SolutionIOVTK::~SolutionIOVTK(void)
 void
 pylith::meshio::SolutionIOVTK::open(const ALE::Obj<ALE::Mesh>& mesh)
 { // open
-  assert(0 != _fout);
+  PetscErrorCode ierr;
 
-  _fout->open(_filename.c_str());
-  if (!_fout->is_open() || !_fout->good()) {
+  ierr = PetscViewerCreate(mesh->comm(), &_viewer);
+  ierr = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
+  ierr = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);
+  ierr = PetscViewerFileSetName(_viewer, _filename.c_str());
+  if (ierr) {
     std::ostringstream msg;
     msg << "Could not open VTK file '" << _filename
 	<< "' for solution output.\n";
@@ -57,7 +63,7 @@ pylith::meshio::SolutionIOVTK::open(const ALE::Obj<ALE::Mesh>& mesh)
 void
 pylith::meshio::SolutionIOVTK::close(void)
 { // close
-  _fout->close();
+  if (_viewer) PetscViewerDestroy(_viewer); _viewer = NULL;
 } // close
 
 // ----------------------------------------------------------------------
@@ -67,12 +73,14 @@ pylith::meshio::SolutionIOVTK::writeTopology(const ALE::Obj<ALE::Mesh>& mesh,
 			        const spatialdata::geocoords::CoordSys* csMesh)
 { // writeTopology
   try {
-    // ADD STUFF HERE
+    PetscErrorCode ierr;
 
+    ierr = VTKViewer::writeHeader(_viewer);
+    ierr = VTKViewer::writeVertices(mesh, _viewer);
+    ierr = VTKViewer::writeElements(mesh, _viewer);
     // Use spatialdata::geocoords::Converter::convert() to convert
     // coordinates of vertices from csMesh to _cs (postpone and wait
     // for more general implementation of SolutionIO?).
-
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing topology information to VTK file '"
@@ -96,7 +104,10 @@ pylith::meshio::SolutionIOVTK::writeField(
 				     const ALE::Obj<ALE::Mesh>& mesh)
 { // writeField
   try {
-    // ADD STUFF HERE
+    PetscErrorCode ierr;
+
+    // Ignore time for now
+    ierr = SectionView_Sieve_Ascii(mesh, field, name, _viewer);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << name << "' at time " 
