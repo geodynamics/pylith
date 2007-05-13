@@ -16,12 +16,18 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	CellGeometry.hh \
 	CellGeometry.icc \
-	GeometryPoint.hh \
-	GeometryLine.hh \
-	GeometryTri.hh \
-	GeometryTet.hh \
-	GeometryQuad.hh \
-	GeometryHex.hh
+	GeometryPoint1D.hh \
+	GeometryPoint2D.hh \
+	GeometryPoint3D.hh \
+	GeometryLine1D.hh \
+	GeometryLine2D.hh \
+	GeometryLine3D.hh \
+	GeometryTri2D.hh \
+	GeometryTri3D.hh \
+	GeometryTet3D.hh \
+	GeometryQuad2D.hh \
+	GeometryQuad3D.hh \
+	GeometryHex3D.hh
 
 noinst_HEADERS =
 

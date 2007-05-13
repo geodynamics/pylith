@@ -10,25 +10,26 @@
 // ======================================================================
 //
 
-#include <portinfo>
-
-#include "CellGeometry.hh" // implementation of class methods
+#include "CellGeomData.hh"
 
 // ----------------------------------------------------------------------
-// Default constructor.
-pylith::topology::CellGeometry::CellGeometry(const int cellDim,
-					     const int spaceDim,
-					     const int numCorners) :
-  _cellDim(cellDim),
-  _spaceDim(spaceDim),
-  _numCorners(numCorners)
+// Constructor
+pylith::topology::CellGeomData::CellGeomData(void) :
+  cellDim(0),
+  spaceDim(0),
+  numCorners(0),
+  numLocs(0),
+  vertices(0),
+  locations(0),
+  jacobian(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
-// Default destructor.
-pylith::topology::CellGeometry::~CellGeometry(void)
+// Destructor
+pylith::topology::CellGeomData::~CellGeomData(void)
 { // destructor
 } // destructor
+
 
 // End of file

@@ -11,34 +11,41 @@
 //
 
 /**
- * @file pylith/topology/GeometryHex.hh
+ * @file pylith/topology/GeometryTri3D.hh
  *
- * @brief C++ implementation of cell geometry calculations for 3-D
- * hexahedral cell.
+ * @brief C++ implementation of cell geometry calculations for 2-D
+ * triangular cell.
  */
 
-#if !defined(pylith_topology_geometryhex_hh)
-#define pylith_topology_geometryhex_hh
+#if !defined(pylith_topology_geometrytri3d_hh)
+#define pylith_topology_geometrytri3d_hh
 
 #include "CellGeometry.hh" // ISA CellGeometry
 
 namespace pylith {
   namespace topology {
-    class GeometryHex;
+    class GeometryTri3D;
   } // topology
 } // pylith
 
-class pylith::topology::GeometryHex : public CellGeometry
-{ // GeometryHex
+class pylith::topology::GeometryTri3D : public CellGeometry
+{ // GeometryTri3D
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
   
   /// Default constructor.
-  GeometryHex(void);
+  GeometryTri3D(void);
 
   /// Default destructor.
-  ~GeometryHex(void);
+  ~GeometryTri3D(void);
+
+  /** Get cell geometry for lower dimension cell.
+   *
+   * @returns Pointer to cell geometry object corresponding to next
+   * lower dimension, NULL if there is no lower dimension object.
+   */
+  CellGeometry* geometryLowerDim(void) const;
 
   /** Compute Jacobian at location in cell.
    *
@@ -50,9 +57,9 @@ public :
 		const double_array& vertices,
 		const double_array& location) const;
 
-}; // GeometryHex
+}; // GeometryTri3D
 
-#endif // pylith_topology_geometryhex_hh
+#endif // pylith_topology_geometrytri3d_hh
 
 
 // End of file

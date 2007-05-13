@@ -12,7 +12,9 @@
 
 #include <portinfo>
 
-#include "GeometryTri.hh" // implementation of class methods
+#include "GeometryTri2D.hh" // implementation of class methods
+
+#include "GeometryLine2D.hh" // USES GeometryLine2D
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -20,29 +22,36 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::GeometryTri::GeometryTri(void) :
-  CellGeometry(2)
+pylith::topology::GeometryTri2D::GeometryTri2D(void) :
+  CellGeometry(2, 2, 3)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Default destructor.
-pylith::topology::GeometryTri::~GeometryTri(void)
+pylith::topology::GeometryTri2D::~GeometryTri2D(void)
 { // destructor
 } // destructor
 
 // ----------------------------------------------------------------------
+// Get cell geometry for lower dimension cell.
+pylith::topology::CellGeometry*
+pylith::topology::GeometryTri2D::geometryLowerDim(void) const
+{ // geometryLowerDim
+  return new GeometryLine2D();
+} // geometryLowerDim
+
+// ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::topology::GeometryTri::jacobian(double_array* jacobian,
+pylith::topology::GeometryTri2D::jacobian(double_array* jacobian,
 					  const double_array& vertices,
 					  const double_array& location) const
 { // jacobian
   assert(0 != jacobian);
 
-  assert(2*3 == vertices.size());
-  assert(2 == location.size());
-  assert(4 == jacobian->size());
+  assert(numCorners()*spaceDim() == vertices.size());
+  assert(spaceDim()*cellDim() == jacobian->size());
   
   const double x0 = vertices[0];
   const double y0 = vertices[1];

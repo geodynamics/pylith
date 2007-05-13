@@ -12,7 +12,9 @@
 
 #include <portinfo>
 
-#include "GeometryTet.hh" // implementation of class methods
+#include "GeometryTet3D.hh" // implementation of class methods
+
+#include "GeometryTri3D.hh" // USES GeometryTri3D
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -20,29 +22,36 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::GeometryTet::GeometryTet(void) :
-  CellGeometry(3)
+pylith::topology::GeometryTet3D::GeometryTet3D(void) :
+  CellGeometry(3, 3, 4)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Default destructor.
-pylith::topology::GeometryTet::~GeometryTet(void)
+pylith::topology::GeometryTet3D::~GeometryTet3D(void)
 { // destructor
 } // destructor
 
 // ----------------------------------------------------------------------
+// Get cell geometry for lower dimension cell.
+pylith::topology::CellGeometry*
+pylith::topology::GeometryTet3D::geometryLowerDim(void) const
+{ // geometryLowerDim
+  return new GeometryTri3D();
+} // geometryLowerDim
+
+// ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::topology::GeometryTet::jacobian(double_array* jacobian,
-					const double_array& vertices,
-					const double_array& location) const
+pylith::topology::GeometryTet3D::jacobian(double_array* jacobian,
+					  const double_array& vertices,
+					  const double_array& location) const
 { // jacobian
   assert(0 != jacobian);
 
-  assert(12 == vertices.size());
-  assert(3 == location.size());
-  assert(9 == jacobian->size());
+  assert(numCorners()*spaceDim() == vertices.size());
+  assert(spaceDim()*cellDim() == jacobian->size());
   
   const double x0 = vertices[0];
   const double y0 = vertices[1];

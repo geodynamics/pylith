@@ -19,14 +19,42 @@ check_PROGRAMS = testtopology
 
 # Primary source files
 testtopology_SOURCES = \
+	TestCellGeometry.cc \
+	TestGeometryPoint1D.cc \
+	TestGeometryPoint2D.cc \
+	TestGeometryPoint3D.cc \
+	TestGeometryLine1D.cc \
+	TestGeometryLine2D.cc \
+	TestGeometryLine3D.cc \
 	test_topology.cc
 
 noinst_HEADERS =
+	TestCellGeometry.hh \
+	TestGeometryPoint1D.hh \
+	TestGeometryPoint2D.hh \
+	TestGeometryPoint3D.hh \
+	TestGeometryLine1D.hh \
+	TestGeometryLine2D.hh \
+	TestGeometryLine3D.hh
 
 # Source files associated with testing data
-testtopology_SOURCES += 
+testtopology_SOURCES += \
+	data/CellGeomData.cc \
+	data/GeomDataPoint1D.cc \
+	data/GeomDataPoint2D.cc \
+	data/GeomDataPoint3D.cc \
+	data/GeomDataLine1D.cc \
+	data/GeomDataLine2D.cc \
+	data/GeomDataLine3D.cc
 
 noinst_HEADERS += 
+	data/CellGeomData.hh \
+	data/GeometryDataPoint1D.hh \
+	data/GeometryDataPoint2D.hh \
+	data/GeometryDataPoint3D.hh \
+	data/GeometryDataLine1D.hh \
+	data/GeometryDataLine2D.hh \
+	data/GeometryDataLine3D.hh
 
 testtopology_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
 
@@ -37,6 +65,10 @@ AM_CPPFLAGS = \
 testtopology_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/libpylith.la
+
+if ENABLE_CUBIT
+  testtopology_LDADD += -lnetcdf_c++ -lnetcdf
+endif
 
 noinst_tmp =
 
