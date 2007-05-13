@@ -11,34 +11,41 @@
 //
 
 /**
- * @file pylith/topology/GeometryPoint.hh
+ * @file pylith/topology/GeometryLine3D.hh
  *
- * @brief C++ implementation of cell geometry calculations for 0-D
- * point cell.
+ * @brief C++ implementation of cell geometry calculations for 1-D
+ * line cell.
  */
 
-#if !defined(pylith_topology_geometrypoint_hh)
-#define pylith_topology_geometrypoint_hh
+#if !defined(pylith_topology_geometryline3d_hh)
+#define pylith_topology_geometryline3d_hh
 
 #include "CellGeometry.hh" // ISA CellGeometry
 
 namespace pylith {
   namespace topology {
-    class GeometryPoint;
+    class GeometryLine3D;
   } // topology
 } // pylith
 
-class pylith::topology::GeometryPoint : public CellGeometry
-{ // GeometryPoint
+class pylith::topology::GeometryLine3D : public CellGeometry
+{ // GeometryLine3D
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
   
   /// Default constructor.
-  GeometryPoint(void);
+  GeometryLine3D(void);
 
   /// Default destructor.
-  ~GeometryPoint(void);
+  ~GeometryLine3D(void);
+
+  /** Get cell geometry for lower dimension cell.
+   *
+   * @returns Pointer to cell geometry object corresponding to next
+   * lower dimension, NULL if there is no lower dimension object.
+   */
+  CellGeometry* geometryLowerDim(void) const;
 
   /** Compute Jacobian at location in cell.
    *
@@ -50,9 +57,9 @@ public :
 		const double_array& vertices,
 		const double_array& location) const;
 
-}; // GeometryPoint
+}; // GeometryLine3D
 
-#endif // pylith_topology_geometrypoint_hh
+#endif // pylith_topology_geometryline3d_hh
 
 
 // End of file

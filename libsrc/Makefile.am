@@ -63,12 +63,18 @@ libpylith_la_SOURCES = \
 	meshio/SolutionIO.cc \
 	meshio/SolutionIOVTK.cc \
 	topology/CellGeometry.cc \
-	topology/GeometryPoint.cc \
-	topology/GeometryLine.cc \
-	topology/GeometryTri.cc \
-	topology/GeometryTet.cc \
-	topology/GeometryQuad.cc \
-	topology/GeometryHex.cc
+	topology/GeometryPoint1D.cc \
+	topology/GeometryPoint2D.cc \
+	topology/GeometryPoint3D.cc \
+	topology/GeometryLine1D.cc \
+	topology/GeometryLine2D.cc \
+	topology/GeometryLine3D.cc \
+	topology/GeometryTri2D.cc \
+	topology/GeometryTri3D.cc \
+	topology/GeometryTet3D.cc \
+	topology/GeometryQuad2D.cc \
+	topology/GeometryQuad3D.cc \
+	topology/GeometryHex3D.cc
 
 if ENABLE_CUBIT
   libpylith_la_SOURCES += \

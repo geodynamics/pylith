@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-#include "GeometryLine.hh" // implementation of class methods
+#include "GeometryPoint2D.hh" // implementation of class methods
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -20,31 +20,37 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::GeometryLine::GeometryLine(void) :
-  CellGeometry(1)
+pylith::topology::GeometryPoint2D::GeometryPoint2D(void) :
+  CellGeometry(0, 2, 1)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Default destructor.
-pylith::topology::GeometryLine::~GeometryLine(void)
+pylith::topology::GeometryPoint2D::~GeometryPoint2D(void)
 { // destructor
 } // destructor
 
 // ----------------------------------------------------------------------
+// Get cell geometry for lower dimension cell.
+pylith::topology::CellGeometry*
+pylith::topology::GeometryPoint2D::geometryLowerDim(void) const
+{ // geometryLowerDim
+  return 0;
+} // geometryLowerDim
+
+// ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::topology::GeometryLine::jacobian(double_array* jacobian,
+pylith::topology::GeometryPoint2D::jacobian(double_array* jacobian,
 					  const double_array& vertices,
 					  const double_array& location) const
 { // jacobian
   assert(0 != jacobian);
 
-  assert(2 == vertices.size());
-  assert(1 == location.size());
   assert(1 == jacobian->size());
-
-  (*jacobian)[0] = vertices[1]-vertices[0];
+  
+  (*jacobian)[0] = 1.0;
 } // jacobian
 
 

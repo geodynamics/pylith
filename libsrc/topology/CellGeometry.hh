@@ -35,9 +35,13 @@ public :
   
   /** Default constructor.
    *
-   * @param dimension Dimension of cell.
+   * @param cellDim Dimension of cell.
+   * @param spaceDim Dimension of coordinate space.
+   * @param numCorners Number of corners in cell.
    */
-  CellGeometry(const int dimension);
+  CellGeometry(const int cellDim,
+	       const int spaceDim,
+	       const int numCorners);
 
   /// Default destructor.
   virtual
@@ -47,7 +51,27 @@ public :
    *
    * @returns Spatial dimension of cell.
    */
-  int dimension(void) const;
+  int cellDim(void) const;
+
+  /** Get dimension of coordinate space.
+   *
+   * @returns Dimension of coordinate space.
+   */
+  int spaceDim(void) const;
+
+  /** Get number of vertices in cell.
+   *
+   * @returns Number of vertices in cell.
+   */
+  int numCorners(void) const;
+
+  /** Get cell geometry for lower dimension cell.
+   *
+   * @returns Pointer to cell geometry object corresponding to next
+   * lower dimension, NULL if there is no lower dimension object.
+   */
+  virtual
+  CellGeometry* geometryLowerDim(void) const = 0;
 
   /** Compute Jacobian at location in cell.
    *
@@ -63,7 +87,9 @@ public :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  int _dimension; ///< Dimension of cell.
+  int _cellDim; ///< Dimension of cell.
+  int _spaceDim; ///< Dimension of coordinate space.
+  int _numCorners; ///< Number of corners in cell.
   
 }; // CellGeometry
 

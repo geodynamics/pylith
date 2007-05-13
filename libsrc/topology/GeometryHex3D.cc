@@ -12,7 +12,9 @@
 
 #include <portinfo>
 
-#include "GeometryHex.hh" // implementation of class methods
+#include "GeometryHex3D.hh" // implementation of class methods
+
+#include "GeometryQuad3D.hh" // USES GeometryQuad3D
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -20,30 +22,38 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::topology::GeometryHex::GeometryHex(void) :
-  CellGeometry(3)
+pylith::topology::GeometryHex3D::GeometryHex3D(void) :
+  CellGeometry(3, 3, 8)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Default destructor.
-pylith::topology::GeometryHex::~GeometryHex(void)
+pylith::topology::GeometryHex3D::~GeometryHex3D(void)
 { // destructor
 } // destructor
 
 // ----------------------------------------------------------------------
+// Get cell geometry for lower dimension cell.
+pylith::topology::CellGeometry*
+pylith::topology::GeometryHex3D::geometryLowerDim(void) const
+{ // geometryLowerDim
+  return new GeometryQuad3D();
+} // geometryLowerDim
+
+// ----------------------------------------------------------------------
 // Compute Jacobian at location in cell.
 void
-pylith::topology::GeometryHex::jacobian(double_array* jacobian,
+pylith::topology::GeometryHex3D::jacobian(double_array* jacobian,
 					  const double_array& vertices,
 					  const double_array& location) const
 { // jacobian
   assert(0 != jacobian);
 
-  assert(3*8 == vertices.size());
-  assert(3 == location.size());
-  assert(9 == jacobian->size());
-  
+  assert(numCorners()*spaceDim() == vertices.size());
+  assert(cellDim() == location.size());
+  assert(spaceDim()*cellDim() == jacobian->size());
+
   const double x0 = vertices[0];
   const double y0 = vertices[1];
   const double z0 = vertices[2];
@@ -79,6 +89,9 @@ pylith::topology::GeometryHex::jacobian(double_array* jacobian,
   const double x = location[0];
   const double y = location[1];
   const double z = location[2];
+  assert(0 <= x && x <= 1.0);
+  assert(0 <= y && y <= 1.0);
+  assert(0 <= z && z <= 1.0);
 
   const double f_xy = x2 - x1 - x3 + x0;
   const double g_xy = y2 - y1 - y3 + y0;

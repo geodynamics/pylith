@@ -11,34 +11,41 @@
 //
 
 /**
- * @file pylith/topology/GeometryLine.hh
+ * @file pylith/topology/GeometryTri2D.hh
  *
- * @brief C++ implementation of cell geometry calculations for 1-D
- * line cell.
+ * @brief C++ implementation of cell geometry calculations for 2-D
+ * triangular cell.
  */
 
-#if !defined(pylith_topology_geometryline_hh)
-#define pylith_topology_geometryline_hh
+#if !defined(pylith_topology_geometrytri2d_hh)
+#define pylith_topology_geometrytri2d_hh
 
 #include "CellGeometry.hh" // ISA CellGeometry
 
 namespace pylith {
   namespace topology {
-    class GeometryLine;
+    class GeometryTri2D;
   } // topology
 } // pylith
 
-class pylith::topology::GeometryLine : public CellGeometry
-{ // GeometryLine
+class pylith::topology::GeometryTri2D : public CellGeometry
+{ // GeometryTri2D
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
   
   /// Default constructor.
-  GeometryLine(void);
+  GeometryTri2D(void);
 
   /// Default destructor.
-  ~GeometryLine(void);
+  ~GeometryTri2D(void);
+
+  /** Get cell geometry for lower dimension cell.
+   *
+   * @returns Pointer to cell geometry object corresponding to next
+   * lower dimension, NULL if there is no lower dimension object.
+   */
+  CellGeometry* geometryLowerDim(void) const;
 
   /** Compute Jacobian at location in cell.
    *
@@ -50,9 +57,9 @@ public :
 		const double_array& vertices,
 		const double_array& location) const;
 
-}; // GeometryLine
+}; // GeometryTri2D
 
-#endif // pylith_topology_geometryline_hh
+#endif // pylith_topology_geometrytri2d_hh
 
 
 // End of file
