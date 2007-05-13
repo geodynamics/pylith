@@ -80,14 +80,30 @@ class SolutionIO(Component):
     return
 
 
+  def close(self):
+    """
+    Close files for solution.
+    """
+    self._info.log("Closing files for output of solution.")
+
+    # Set flags
+    self._sync()
+
+    assert(self.cppHandle != None)
+    self.cppHandle.close()
+    return
+
+
   def writeTopology(self, mesh):
     """
     Write solution topology to file.
     """
     self._info.log("Writing solution topology.")
 
-    assert(cppHandle != None)
-    self.cppHandle.write(mesh.cppHandle, mesh.coordsys.cppHandle)
+    assert(self.cppHandle != None)
+    assert(mesh.cppHandle != None)
+    assert(mesh.coordsys.cppHandle != None)
+    self.cppHandle.writeTopology(mesh.cppHandle, mesh.coordsys.cppHandle)
     return
 
 
@@ -97,7 +113,7 @@ class SolutionIO(Component):
     """
     self._info.log("Writing solution field '%s'." % name)
 
-    self.cppHandle.write(t, field, name, mesh.cppHandle)
+    self.cppHandle.writeField(t, field, name, mesh.cppHandle)
     return
 
 
