@@ -75,7 +75,7 @@ class SolutionIO(Component):
       raise ValueError, "Coordinate system for output is unknown."
     self.coordsys.initialize()
 
-    assert(cppHandle != None)
+    assert(self.cppHandle != None)
     self.cppHandle.open(mesh.cppHandle)
     return
 
@@ -116,7 +116,7 @@ class SolutionIO(Component):
     """
     Force synchronization between Python and C++.
     """
-    self.cppHandle.coordsys = self.coordsys
+    self.cppHandle.coordsys = self.coordsys.cppHandle
     return
 
 

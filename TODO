@@ -15,6 +15,10 @@ Cleanup
 
 1. Implement cell geometry stuff.
    Compute Jacobian in cell.
+
+   Questions: 
+     (1) Need to get coordinates of "nodes" in reference cell.
+
    b. C++ unit tests
 
 2. Implement Dirichlet boundary conditions

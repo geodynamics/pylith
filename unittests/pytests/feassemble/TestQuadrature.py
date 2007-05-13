@@ -90,7 +90,6 @@ class TestQuadrature(unittest.TestCase):
     quadrature = Quadrature1D()
     quadrature.cell = cell
 
-    print cell.basisVert
     quadrature.initialize()
 
     from pylith.utils.testarray import test_double

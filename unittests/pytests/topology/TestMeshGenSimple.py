@@ -40,15 +40,15 @@ class TestMeshGenSimple(unittest.TestCase):
     generator.interpolate = True
     generator.setBoundary(generator.createCubeBoundary())
     mesh = generator.create()
-    
-    #from pylith.meshio.SolutionIOVTK import SolutionIOVTK
-    #io = SolutionIOVTK()
-    #io.filename = 'mesh.vtk'
-    #import spatialdata.geocoords.CSCart
-    #io.coordsys = spatialdata.geocoords.CSCart.CSCart()
-    #io.open(mesh)
-    #io.writeTopology(mesh)
-    #io.close()
+
+    from pylith.meshio.SolutionIOVTK import SolutionIOVTK
+    io = SolutionIOVTK()
+    io.filename = 'mesh.vtk'
+    from spatialdata.geocoords.CSCart import CSCart
+    io.coordsys = CSCart()
+    io.open(mesh)
+    io.writeTopology(mesh)
+    io.close()
 
     #from pylith.topology.Distributor import Distributor
     #distributor = Distributor()
