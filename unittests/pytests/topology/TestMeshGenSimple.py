@@ -46,6 +46,7 @@ class TestMeshGenSimple(unittest.TestCase):
     io.filename = 'mesh.vtk'
     from spatialdata.geocoords.CSCart import CSCart
     io.coordsys = CSCart()
+    mesh.coordsys = CSCart()
     io.open(mesh)
     io.writeTopology(mesh)
     io.close()
