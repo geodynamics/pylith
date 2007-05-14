@@ -29,7 +29,9 @@ testtopology_SOURCES = \
 	TestGeometryTri2D.cc \
 	TestGeometryTri3D.cc \
 	TestGeometryQuad2D.cc \
+	TestGeometryQuad3D.cc \
 	TestGeometryTet3D.cc \
+	TestGeometryHex3D.cc \
 	test_topology.cc
 
 noinst_HEADERS =
@@ -43,7 +45,9 @@ noinst_HEADERS =
 	TestGeometryTri2D.hh \
 	TestGeometryTri3D.hh \
 	TestGeometryQuad2D.hh \
-	TestGeometryTet3D.hh
+	TestGeometryQuad3D.hh \
+	TestGeometryTet3D.hh \
+	TestGeometryHex3D.hh
 
 # Source files associated with testing data
 testtopology_SOURCES += \
@@ -57,7 +61,9 @@ testtopology_SOURCES += \
 	data/GeomDataTri2D.cc \
 	data/GeomDataTri3D.cc \
 	data/GeomDataQuad2D.cc \
-	data/GeomDataTet3D.cc
+	data/GeomDataQuad3D.cc \
+	data/GeomDataTet3D.cc \
+	data/GeomDataHex3D.cc
 
 noinst_HEADERS += 
 	data/CellGeomData.hh \
@@ -70,7 +76,9 @@ noinst_HEADERS +=
 	data/GeometryDataTri2D.hh \
 	data/GeometryDataTri3D.hh \
 	data/GeometryDataQuad2D.hh \
-	data/GeometryDataTet3D.hh
+	data/GeometryDataQuad3D.hh \
+	data/GeometryDataTet3D.hh \
+	data/GeometryDataHex3D.hh
 
 testtopology_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
 

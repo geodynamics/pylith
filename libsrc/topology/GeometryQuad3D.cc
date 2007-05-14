@@ -23,7 +23,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::topology::GeometryQuad3D::GeometryQuad3D(void) :
-  CellGeometry(2, 2, 4)
+  CellGeometry(2, 3, 4)
 { // constructor
 } // constructor
 
