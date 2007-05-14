@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!@INTERPRETER@
+# -*- Python -*-
 #
 # ----------------------------------------------------------------------
 #
@@ -10,7 +11,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file applications/pylith.py
+## @file applications/pylith
 ## @brief Python PyLith application driver
 
 __requires__ = "PyLith"
@@ -28,12 +29,7 @@ if __name__ == "__main__":
             site.addsitedir(directory)
 
     from pylith.PyLithApp import PyLithApp
-
-    app = PyLithApp()
-    app.run()
-
-    #from pyre.applications import start
-    #start(applicationClass=PyLithApp)
-
+    from pyre.applications import start
+    start(applicationClass=PyLithApp)
 
 # End of file 
