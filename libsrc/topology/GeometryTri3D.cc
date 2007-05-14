@@ -23,7 +23,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::topology::GeometryTri3D::GeometryTri3D(void) :
-  CellGeometry(2, 2, 3)
+  CellGeometry(2, 3, 3)
 { // constructor
 } // constructor
 

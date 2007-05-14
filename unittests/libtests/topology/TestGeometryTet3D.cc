@@ -12,65 +12,65 @@
 
 #include <portinfo>
 
-#include "TestGeometryLine1D.hh" // Implementation of class methods
+#include "TestGeometryTet3D.hh" // Implementation of class methods
 
-#include "pylith/topology/GeometryLine1D.hh"
-#include "pylith/topology/GeometryPoint1D.hh"
+#include "pylith/topology/GeometryTet3D.hh"
+#include "pylith/topology/GeometryTri3D.hh"
 #include "pylith/topology/GeometryPoint2D.hh"
 
 #include "pylith/utils/array.hh" // USES double_array
 
-#include "data/GeomDataLine1D.hh"
+#include "data/GeomDataTet3D.hh"
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestGeometryLine1D );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestGeometryTet3D );
 
 // ----------------------------------------------------------------------
 // Test constructor
 void
-pylith::topology::TestGeometryLine1D::testConstructor(void)
+pylith::topology::TestGeometryTet3D::testConstructor(void)
 { // testConstructor
-  GeometryLine1D geometry;
+  GeometryTet3D geometry;
 } // testConstructor
 
 // ----------------------------------------------------------------------
 // Test cellDim()
 void
-pylith::topology::TestGeometryLine1D::testCellDim(void)
+pylith::topology::TestGeometryTet3D::testCellDim(void)
 { // testCellDim
-  GeometryLine1D geometry;
-  GeomDataLine1D data;
+  GeometryTet3D geometry;
+  GeomDataTet3D data;
   _testCellDim(geometry, data);
 } // testCellDim
 
 // ----------------------------------------------------------------------
 // Test spaceDim()
 void
-pylith::topology::TestGeometryLine1D::testSpaceDim(void)
+pylith::topology::TestGeometryTet3D::testSpaceDim(void)
 { // testSpaceDim
-  GeometryLine1D geometry;
-  GeomDataLine1D data;
+  GeometryTet3D geometry;
+  GeomDataTet3D data;
   _testSpaceDim(geometry, data);
 } // testSpaceDim
 
 // ----------------------------------------------------------------------
 // Test numCorners()
 void
-pylith::topology::TestGeometryLine1D::testNumCorners(void)
+pylith::topology::TestGeometryTet3D::testNumCorners(void)
 { // testNumCorners
-  GeometryLine1D geometry;
-  GeomDataLine1D data;
+  GeometryTet3D geometry;
+  GeomDataTet3D data;
   _testNumCorners(geometry, data);
 } // testNumCorners
 
 // ----------------------------------------------------------------------
 // Test geometryLowerDim().
 void
-pylith::topology::TestGeometryLine1D::testGeomLowerDim(void)
+pylith::topology::TestGeometryTet3D::testGeomLowerDim(void)
 { // testGeomLowerDim
-  GeometryLine1D geometry;
+  GeometryTet3D geometry;
   CellGeometry* geometryLD = geometry.geometryLowerDim();
-  GeometryPoint1D* geometryPt = dynamic_cast<GeometryPoint1D*>(geometryLD);
+  GeometryTri3D* geometryPt = dynamic_cast<GeometryTri3D*>(geometryLD);
   CPPUNIT_ASSERT(0 != geometryPt);
   GeometryPoint2D* geometryPt2 = dynamic_cast<GeometryPoint2D*>(geometryLD);
   CPPUNIT_ASSERT(0 == geometryPt2);
@@ -80,10 +80,10 @@ pylith::topology::TestGeometryLine1D::testGeomLowerDim(void)
 // ----------------------------------------------------------------------
 // Test jacobian().
 void
-pylith::topology::TestGeometryLine1D::testJacobian(void)
+pylith::topology::TestGeometryTet3D::testJacobian(void)
 { // testJacobian
-  GeometryLine1D geometry;
-  GeomDataLine1D data;
+  GeometryTet3D geometry;
+  GeomDataTet3D data;
 
   _testJacobian(&geometry, data);
 } // testJacobian
