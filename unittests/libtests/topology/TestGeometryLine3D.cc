@@ -16,6 +16,7 @@
 
 #include "pylith/topology/GeometryLine3D.hh"
 #include "pylith/topology/GeometryPoint3D.hh"
+#include "pylith/topology/GeometryPoint2D.hh"
 
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -70,7 +71,9 @@ pylith::topology::TestGeometryLine3D::testGeomLowerDim(void)
   GeometryLine3D geometry;
   CellGeometry* geometryLD = geometry.geometryLowerDim();
   GeometryPoint3D* geometryPt = dynamic_cast<GeometryPoint3D*>(geometryLD);
-  CPPUNIT_ASSERT(0 != geometryLD);
+  CPPUNIT_ASSERT(0 != geometryPt);
+  GeometryPoint2D* geometryPt2 = dynamic_cast<GeometryPoint2D*>(geometryLD);
+  CPPUNIT_ASSERT(0 == geometryPt2);
   delete geometryLD; geometryLD = 0;
 } // testGeomLowerDim
 

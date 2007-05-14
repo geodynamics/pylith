@@ -17,8 +17,8 @@
  * point cell.
  */
 
-#if !defined(pylith_topology_geometrypoint_hh)
-#define pylith_topology_geometrypoint_hh
+#if !defined(pylith_topology_geometrypoint2d_hh)
+#define pylith_topology_geometrypoint2d_hh
 
 #include "CellGeometry.hh" // ISA CellGeometry
 
@@ -59,7 +59,7 @@ public :
 
 }; // GeometryPoint2D
 
-#endif // pylith_topology_geometrypoint_hh
+#endif // pylith_topology_geometrypoint2d_hh
 
 
 // End of file
