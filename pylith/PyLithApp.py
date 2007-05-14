@@ -14,8 +14,7 @@
 ##
 ## @brief Python PyLith application
 
-#from mpi.Application import Application
-from pyre.applications.Script import Script as Application
+from mpi import Application
 
 # PyLithApp class
 class PyLithApp(Application):
@@ -75,7 +74,7 @@ class PyLithApp(Application):
     return
 
 
-  def main(self):
+  def main(self, *args, **kwds):
     """
     Run the application.
     """
