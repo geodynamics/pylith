@@ -70,7 +70,7 @@ const double pylith::feassemble::QuadratureData2Din3DLinearYZ::_jacobianDet[] = 
 };
 
 const double pylith::feassemble::QuadratureData2Din3DLinearYZ::_jacobianInv[] = {
-  0.00000000e+00,  0.00000000e+00,  1.00000000e+00,
+  0.00000000e+00,  1.00000000e+00,  0.00000000e+00,
   0.00000000e+00,  0.00000000e+00,  1.00000000e+00,
 };
 
