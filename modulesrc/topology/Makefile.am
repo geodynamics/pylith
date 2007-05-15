@@ -30,7 +30,7 @@ if ENABLE_CUBIT
   topologymodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
 endif
 
-INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
+INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
 topology.pyx topology_embed.cpp  topology_embed.h: topology.pyxe
 	pyrexembed topology.pyxe
@@ -39,8 +39,11 @@ topology.pyxe: $(srcdir)/topology.pyxe.src
 topology_embed.cpp: topology_embed.h
 topology_embed.h: topology.pyx
 
+# NYI
+PYTHON_EGG_PYXFLAGS = $(PYTHON_EGG_CPPFLAGS)/mpi
+
 .pyx.c:
-	pyrexc $<
+	pyrexc $(PYTHON_EGG_PYXFLAGS) $<
 
 CLEANFILES = topology.pyxe topology.pyx topology.c *_embed.*
 
