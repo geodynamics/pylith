@@ -71,7 +71,7 @@ const double pylith::feassemble::QuadratureData2Din3DLinearXY::_jacobianDet[] = 
 
 const double pylith::feassemble::QuadratureData2Din3DLinearXY::_jacobianInv[] = {
   1.00000000e+00,  0.00000000e+00,  0.00000000e+00,
-  1.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+  0.00000000e+00,  1.00000000e+00,  0.00000000e+00,
 };
 
 pylith::feassemble::QuadratureData2Din3DLinearXY::QuadratureData2Din3DLinearXY(void)

@@ -117,68 +117,68 @@ pylith::feassemble::Quadrature2Din3D::computeGeometry(
     _jacobianDet[iQuadPt] = det;
     
     // Compute inverse of Jacobian at quadrature point
-    const double d10 = 
+    const double d01 = 
       _jacobian[i00]*_jacobian[i11] - 
-      _jacobian[i01]*_jacobian[i10];
-    const double d21 = 
+      _jacobian[i10]*_jacobian[i01];
+    const double d12 = 
       _jacobian[i10]*_jacobian[i21] - 
-      _jacobian[i11]*_jacobian[i20];
-    const double d20 = 
+      _jacobian[i20]*_jacobian[i11];
+    const double d02 = 
       _jacobian[i00]*_jacobian[i21] - 
-      _jacobian[i01]*_jacobian[i20];
-    if (fabs(d20) > _minJacobian) {
-      // Jinv00 = 1/d10 * J11
-      // Jinv10 = 1/d10 * -J10
-      // Jinv02 = 1/d10 * -J01
-      // Jinv11 = 1/d10 * J00
-      _jacobianInv[iJ+0] =  _jacobian[i11] / d10; // Jinv00
-      _jacobianInv[iJ+1] = -_jacobian[i10] / d10; // Jinv10
-      _jacobianInv[iJ+2] = -_jacobian[i01] / d10; // Jinv01
-      _jacobianInv[iJ+3] =  _jacobian[i00] / d10; // Jinv11
-      if (fabs(d21) > _minJacobian) {
-	// Jinv02 = 1/d21 -J11
-	// Jinv12 = 1/d21 J10
-	_jacobianInv[iJ+4] = -_jacobian[i11] / d21; // Jinv02
-	_jacobianInv[iJ+5] =  _jacobian[i10] / d21; // Jinv12
+      _jacobian[i20]*_jacobian[i01];
+    if (fabs(d01) > _minJacobian) {
+      // Jinv00 = 1/d01 * J11
+      // Jinv01 = 1/d01 * -J01
+      // Jinv10 = 1/d01 * -J10
+      // Jinv11 = 1/d01 * J00
+      _jacobianInv[iJ+0] =  _jacobian[i11] / d01; // Jinv00
+      _jacobianInv[iJ+1] = -_jacobian[i01] / d01; // Jinv01
+      _jacobianInv[iJ+3] = -_jacobian[i10] / d01; // Jinv10
+      _jacobianInv[iJ+4] =  _jacobian[i00] / d01; // Jinv11
+      if (fabs(d12) > _minJacobian) {
+	// Jinv02 = 1/d12 -J11
+	// Jinv12 = 1/d12 J10
+	_jacobianInv[iJ+2] = -_jacobian[i11] / d12; // Jinv02
+	_jacobianInv[iJ+5] =  _jacobian[i10] / d12; // Jinv12
 	
-      } else if (fabs(d20) > _minJacobian) {
-	// Jinv02 = 1/d20 -J01
-	// Jinv12 = 1/d20 J00
-	_jacobianInv[iJ+4] = -_jacobian[i01] / d20; // Jinv02
-	_jacobianInv[iJ+5] =  _jacobian[i00] / d20; // Jinv12
+      } else if (fabs(d02) > _minJacobian) {
+	// Jinv02 = 1/d02 -J01
+	// Jinv12 = 1/d02 J00
+	_jacobianInv[iJ+2] = -_jacobian[i01] / d02; // Jinv02
+	_jacobianInv[iJ+5] =  _jacobian[i00] / d02; // Jinv12
       } else {
-	_jacobianInv[iJ+4] = 0.0; // Jinv02
+	_jacobianInv[iJ+2] = 0.0; // Jinv02
 	_jacobianInv[iJ+5] = 0.0; // Jinv12
       } // if/else
-    } else if (fabs(d20) > _minJacobian) {
-      // Jinv00 = 1/d20 * J21
-      // Jinv01 = 1/d20 * -J20
-      // Jinv20 = 1/d20 * -J01
-      // Jinv21 = 1/d20 * J00
-      _jacobianInv[iJ+0] =  _jacobian[i21] / d20; // Jinv00
-      _jacobianInv[iJ+1] = -_jacobian[i20] / d20; // Jinv10
-      _jacobianInv[iJ+4] = -_jacobian[i01] / d20; // Jinv02
-      _jacobianInv[iJ+5] =  _jacobian[i00] / d20; // Jinv12
-      if (fabs(d21) > _minJacobian) {
-	// Jinv10 = 1/d21 J21
-	// Jinv11 = 1/d21 -J20
-	_jacobianInv[iJ+2] = -_jacobian[i21] / d21; // Jinv01
-	_jacobianInv[iJ+3] =  _jacobian[i20] / d21; // Jinv11
+    } else if (fabs(d02) > _minJacobian) {
+      // Jinv00 = 1/d02 * J21
+      // Jinv02 = 1/d02 * -J01
+      // Jinv10 = 1/d02 * -J20
+      // Jinv12 = 1/d02 * J00
+      _jacobianInv[iJ+0] =  _jacobian[i21] / d02; // Jinv00
+      _jacobianInv[iJ+2] = -_jacobian[i01] / d02; // Jinv02
+      _jacobianInv[iJ+3] = -_jacobian[i20] / d02; // Jinv10
+      _jacobianInv[iJ+5] =  _jacobian[i00] / d02; // Jinv12
+      if (fabs(d12) > _minJacobian) {
+	// Jinv01 = 1/d12 J21
+	// Jinv11 = 1/d12 -J20
+	_jacobianInv[iJ+1] = -_jacobian[i21] / d12; // Jinv01
+	_jacobianInv[iJ+4] =  _jacobian[i20] / d12; // Jinv11
       } else {
-	_jacobianInv[iJ+2] = 0.0; // Jinv01
-	_jacobianInv[iJ+3] = 0.0; // Jinv11
+	_jacobianInv[iJ+1] = 0.0; // Jinv01
+	_jacobianInv[iJ+4] = 0.0; // Jinv11
       } // if/else
-    } else if (fabs(d21) > _minJacobian) {
+    } else if (fabs(d12) > _minJacobian) {
       _jacobianInv[iJ+0] = 0.0; // Jinv00
-      _jacobianInv[iJ+1] = 0.0; // Jinv10
-      // Jinv01 = 1/d21 J21
-      // Jinv11 = 1/d21 -J20
-      // Jinv02 = 1/d21 -J11
-      // Jinv12 = 1/d21 J10
-      _jacobianInv[iJ+2] =  _jacobian[i21] / d21; // Jinv01
-      _jacobianInv[iJ+3] = -_jacobian[i20] / d21; // Jin11
-      _jacobianInv[iJ+4] = -_jacobian[i11] / d21; // Jinv02
-      _jacobianInv[iJ+5] =  _jacobian[i10] / d21; // Jinv12
+      _jacobianInv[iJ+3] = 0.0; // Jinv10
+      // Jinv01 = 1/d12 J21
+      // Jinv02 = 1/d12 -J11
+      // Jinv11 = 1/d12 -J20
+      // Jinv12 = 1/d12 J10
+      _jacobianInv[iJ+1] =  _jacobian[i21] / d12; // Jinv01
+      _jacobianInv[iJ+2] = -_jacobian[i11] / d12; // Jinv02
+      _jacobianInv[iJ+4] = -_jacobian[i20] / d12; // Jinv11
+      _jacobianInv[iJ+5] =  _jacobian[i10] / d12; // Jinv12
     } else
       throw std::runtime_error("Could not invert Jacobian.");
   } // for
