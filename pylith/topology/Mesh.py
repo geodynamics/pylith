@@ -65,6 +65,18 @@ class Mesh(Component):
     return dim
 
 
+  def comm(self):
+    """
+    Get MPI communicator associated with mesh.
+    """
+    #comm = None
+    #if not self.cppHandle is None:
+    #  comm = self.cppHandle.comm
+    import mpi
+    comm = mpi.MPI_COMM_WORLD
+    return comm
+
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def _configure(self):
