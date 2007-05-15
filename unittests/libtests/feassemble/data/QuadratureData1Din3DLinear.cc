@@ -59,7 +59,9 @@ const double pylith::feassemble::QuadratureData1Din3DLinear::_basisDeriv[] = {
 };
 
 const double pylith::feassemble::QuadratureData1Din3DLinear::_jacobian[] = {
- -7.50000000e-01,  1.75000000e+00,  2.50000000e+00,
+ -7.50000000e-01,
+  1.75000000e+00,
+  2.50000000e+00,
 };
 
 const double pylith::feassemble::QuadratureData1Din3DLinear::_jacobianDet[] = {
@@ -67,9 +69,7 @@ const double pylith::feassemble::QuadratureData1Din3DLinear::_jacobianDet[] = {
 };
 
 const double pylith::feassemble::QuadratureData1Din3DLinear::_jacobianInv[] = {
- -1.33333333e+00,
-  5.71428571e-01,
-  4.00000000e-01,
+ -1.33333333e+00,  5.71428571e-01,  4.00000000e-01,
 };
 
 pylith::feassemble::QuadratureData1Din3DLinear::QuadratureData1Din3DLinear(void)

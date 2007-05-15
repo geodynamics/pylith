@@ -67,7 +67,8 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(
     } // for
     
     // Compute Jacobian at quadrature point
-    // J = [dx/dp dy/dp]
+    // J = [dx/dp
+    //      dy/dp]
     // dx/dp = sum[i=0,n-1] (dNi/dp * xi)
     // dy/dp = sum[i=0,n-1] (dNi/dp * yi)
     for (int iBasis=0; iBasis < _numBasis; ++iBasis) {
@@ -78,7 +79,7 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(
     } // for
 
     // Compute determinant of Jacobian at quadrature point
-    // |J| = sqrt(J transpose(J))
+    // |J| = sqrt(transpose(J) J)
     double det = 0.0;
     for (int iDim=0; iDim < _spaceDim; ++iDim)
       det += _jacobian[iQuadPt*_spaceDim+iDim] * 

@@ -90,12 +90,12 @@ const double pylith::feassemble::QuadratureData2DQuadratic::_basisDeriv[] = {
 };
 
 const double pylith::feassemble::QuadratureData2DQuadratic::_jacobian[] = {
-  2.33333333e+00,  1.60000000e+00,
-  8.33333333e-01,  2.03333333e+00,
-  3.33333333e+00,  1.20000000e+00,
- -1.66666667e-01,  1.63333333e+00,
-  2.33333333e+00,  8.00000000e-01,
- -1.66666667e-01,  1.63333333e+00,
+  2.33333333e+00,  8.33333333e-01,
+  1.60000000e+00,  2.03333333e+00,
+  3.33333333e+00, -1.66666667e-01,
+  1.20000000e+00,  1.63333333e+00,
+  2.33333333e+00, -1.66666667e-01,
+  8.00000000e-01,  1.63333333e+00,
 };
 
 const double pylith::feassemble::QuadratureData2DQuadratic::_jacobianDet[] = {
@@ -103,12 +103,12 @@ const double pylith::feassemble::QuadratureData2DQuadratic::_jacobianDet[] = {
 };
 
 const double pylith::feassemble::QuadratureData2DQuadratic::_jacobianInv[] = {
-  5.96091205e-01, -4.69055375e-01,
- -2.44299674e-01,  6.84039088e-01,
-  2.89370079e-01, -2.12598425e-01,
-  2.95275591e-02,  5.90551181e-01,
-  4.14084507e-01, -2.02816901e-01,
-  4.22535211e-02,  5.91549296e-01,
+  5.96091205e-01, -2.44299674e-01,
+ -4.69055375e-01,  6.84039088e-01,
+  2.89370079e-01,  2.95275591e-02,
+ -2.12598425e-01,  5.90551181e-01,
+  4.14084507e-01,  4.22535211e-02,
+ -2.02816901e-01,  5.91549296e-01,
 };
 
 pylith::feassemble::QuadratureData2DQuadratic::QuadratureData2DQuadratic(void)

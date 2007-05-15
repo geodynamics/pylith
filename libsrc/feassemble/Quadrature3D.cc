@@ -68,25 +68,25 @@ pylith::feassemble::Quadrature3D::computeGeometry(
     } // for
     
     // Compute Jacobian at quadrature point
-    // J = [dx/dp dy/dp dz/dp]
-    //     [dx/dq dy/dq dz/dq]
-    //     [dx/dr dy/dr dz/dr]
+    // J = [dx/dp dx/dq dx/dr]
+    //     [dy/dp dy/dq dy/dr]
+    //     [dz/dp dz/dq dz/dr]
     // dx/dp = sum[i=0,n-1] (dNi/dp * xi)
-    // dy/dp = sum[i=0,n-1] (dNi/dp * yi)
-    // dz/dp = sum[i=0,n-1] (dNi/dp * zi)
     // dx/dq = sum[i=0,n-1] (dNi/dq * xi)
-    // dy/dq = sum[i=0,n-1] (dNi/dq * yi)
-    // dz/dq = sum[i=0,n-1] (dNi/dq * zi)
     // dx/dr = sum[i=0,n-1] (dNi/dr * xi)
+    // dy/dp = sum[i=0,n-1] (dNi/dp * yi)
+    // dy/dq = sum[i=0,n-1] (dNi/dq * yi)
     // dy/dr = sum[i=0,n-1] (dNi/dr * yi)
+    // dz/dp = sum[i=0,n-1] (dNi/dp * zi)
+    // dz/dq = sum[i=0,n-1] (dNi/dq * zi)
     // dz/dr = sum[i=0,n-1] (dNi/dr * zi)
     for (int iBasis=0; iBasis < _numBasis; ++iBasis)
-      for (int iRow=0; iRow < _cellDim; ++iRow) {
+      for (int iCol=0; iCol < _cellDim; ++iCol) {
 	const double deriv = 
-	  _basisDeriv[iQuadPt*_numBasis*_spaceDim+iBasis*_cellDim+iRow];
-	for (int iCol=0; iCol < _spaceDim; ++iCol)
-	  _jacobian[iQuadPt*_cellDim*_spaceDim+iRow*_spaceDim+iCol] += 
-	    deriv * vertCoords[iBasis*_spaceDim+iCol];
+	  _basisDeriv[iQuadPt*_numBasis*_spaceDim+iBasis*_cellDim+iCol];
+	for (int iRow=0; iRow < _spaceDim; ++iRow)
+	  _jacobian[iQuadPt*_cellDim*_spaceDim+iRow*_cellDim+iCol] += 
+	    deriv * vertCoords[iBasis*_spaceDim+iRow];
       } // for
 
     // Compute determinant of Jacobian at quadrature point
