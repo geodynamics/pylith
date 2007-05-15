@@ -59,7 +59,9 @@ class MeshIO(Component):
     mesh.initialize(self.coordsys)
 
     # Read mesh
-    self.cppHandle.read(mesh.cppHandle)
+    import mpi
+    if 0 == mpi.MPI_Comm_rank(mpi.MPI_COMM_WORLD):
+      self.cppHandle.read(mesh.cppHandle)
     return mesh
 
 
@@ -73,32 +75,6 @@ class MeshIO(Component):
     self._sync()
     self.cppHandle.write(mesh.cppHandle)
     return
-
-
-  def createCubeBoundary(self, debug):
-    """
-    Create cube boundary mesh and store in Sieve mesh object.
-
-    @returns PETSc mesh object containing cube boundary mesh
-    """
-    self._info.log("Creating cube boundary mesh")
-
-    # Set flags
-    ##self._sync()
-    self.cppHandle.debug = debug
-
-    # Initialize coordinate system
-    ##if self.coordsys is None:
-    ##  raise ValueError, "Coordinate system for mesh is unknown."
-    ##self.coordsys.initialize()
-
-    from pylith.topology.Mesh import Mesh
-    mesh = Mesh()
-    ##mesh.initialize(self.coordsys)
-
-    # Create boundary
-    self.cppHandle.createCubeBoundary(mesh.cppHandle)
-    return mesh
 
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
