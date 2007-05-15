@@ -20,9 +20,12 @@
 #include <stdexcept>
 #include <Python.h>
 #include <assert.h>
+#include <mpi.h>
+#include "mpi/pympi.h"
 #}header
 
 # ----------------------------------------------------------------------
+
 cdef extern from "Python.h":
   object PyCObject_FromVoidPtr(void*, void (*destruct)(void*))
   void* PyCObject_AsVoidPtr(object)
@@ -64,6 +67,12 @@ cdef void PetscMat_destructor(void* obj):
   return
 
 # ----------------------------------------------------------------------
+
+cimport mpi
+import mpi
+
+# ----------------------------------------------------------------------
+
 cdef class Mesh:
 
   cdef void* thisptr # Pointer to C++ object
@@ -310,14 +319,13 @@ cdef class Mesh:
       Get MPI communicator associated with mesh.
       """
       # create shim for method 'comm'
-      #embed{ void* Mesh_comm_get(void* objVptr)
-      // REPLACE SOME OF THIS STUFF
-      void* result = 0; // TEMPORARY (fix this)
+      #embed{ void Mesh_comm_get(void* objVptr, void *vpycomm)
       try {
         ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
         assert(0 != mesh);
         assert(!mesh->isNull());
-        result = (void*) (*mesh)->comm(); // TEMPORARY (fix this)
+        PyMPICommObject *pycomm = (PyMPICommObject *)vpycomm;
+        pycomm->comm = (*mesh)->comm();
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -328,11 +336,11 @@ cdef class Mesh:
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
       } // try/catch
-      return result;
       #}embed
-      # handle = Mesh_comm_get(self.thisptr)
-      # return comm
-      return 0
+      cdef mpi.MPI_Comm pycomm
+      pycomm = mpi.MPI_Comm()
+      Mesh_comm_get(self.thisptr, <void*>pycomm)
+      return pycomm
 
       
 # ----------------------------------------------------------------------
