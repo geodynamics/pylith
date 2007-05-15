@@ -60,7 +60,7 @@ class MeshIO(Component):
 
     # Read mesh
     import mpi
-    if 0 == mpi.MPI_Comm_rank(mpi.MPI_COMM_WORLD):
+    if 0 == mpi.MPI_Comm_rank(mesh.comm()):
       self.cppHandle.read(mesh.cppHandle)
     return mesh
 
