@@ -163,13 +163,13 @@ class QuadratureApp(Script):
                        format="%16.8e", ncols=self.cellDim)
     self.data.addArray(vtype="double", name="_jacobian",
                        values=self.jacobian,
-                       format="%16.8e", ncols=self.spaceDim)
+                       format="%16.8e", ncols=self.cellDim)
     self.data.addArray(vtype="double", name="_jacobianDet",
                        values=self.jacobianDet,
                        format="%16.8e", ncols=self.numQuadPts)
     self.data.addArray(vtype="double", name="_jacobianInv",
                        values=self.jacobianInv,
-                       format="%16.8e", ncols=self.cellDim)
+                       format="%16.8e", ncols=self.spaceDim)
       
     return
 

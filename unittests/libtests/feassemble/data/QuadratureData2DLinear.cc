@@ -60,8 +60,8 @@ const double pylith::feassemble::QuadratureData2DLinear::_basisDeriv[] = {
 };
 
 const double pylith::feassemble::QuadratureData2DLinear::_jacobian[] = {
-  1.00000000e-01,  9.00000000e-01,
- -1.20000000e+00,  2.00000000e-01,
+  1.00000000e-01, -1.20000000e+00,
+  9.00000000e-01,  2.00000000e-01,
 };
 
 const double pylith::feassemble::QuadratureData2DLinear::_jacobianDet[] = {
@@ -69,8 +69,8 @@ const double pylith::feassemble::QuadratureData2DLinear::_jacobianDet[] = {
 };
 
 const double pylith::feassemble::QuadratureData2DLinear::_jacobianInv[] = {
-  1.81818182e-01, -8.18181818e-01,
-  1.09090909e+00,  9.09090909e-02,
+  1.81818182e-01,  1.09090909e+00,
+ -8.18181818e-01,  9.09090909e-02,
 };
 
 pylith::feassemble::QuadratureData2DLinear::QuadratureData2DLinear(void)
