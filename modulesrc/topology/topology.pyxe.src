@@ -11,10 +11,9 @@
 #
 
 #header{
-#include <Mesh.hh>
+#include <petscmesh.h>
 #include <Generator.hh>
 #include <Distribution.hh>
-#include <petscmesh.h>
 #include "pylith/utils/petscfwd.h"
 
 #include <stdexcept>
