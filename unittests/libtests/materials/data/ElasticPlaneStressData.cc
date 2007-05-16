@@ -23,6 +23,12 @@ const int pylith::materials::ElasticPlaneStressData::_numParameters = 3;
 
 const int pylith::materials::ElasticPlaneStressData::_numLocs = 2;
 
+const int pylith::materials::ElasticPlaneStressData::_numParamValues[] = {
+1,
+1,
+1,
+};
+
 const char* pylith::materials::ElasticPlaneStressData::_dbValues[] = {
 "density",
 "vs",
@@ -97,6 +103,7 @@ pylith::materials::ElasticPlaneStressData::ElasticPlaneStressData(void)
   numDBValues = _numDBValues;
   numParameters = _numParameters;
   numLocs = _numLocs;
+  numParamValues = const_cast<int*>(_numParamValues);
   dbValues = const_cast<char**>(_dbValues);
   parameterNames = const_cast<char**>(_parameterNames);
   dbData = const_cast<double*>(_dbData);

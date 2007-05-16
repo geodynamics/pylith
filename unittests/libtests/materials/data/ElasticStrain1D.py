@@ -40,6 +40,7 @@ class ElasticStrain1D(ElasticMaterialApp):
     self.numDBValues = 2
     self.dbValues = ["density", "vp"]
     self.numParameters = 2
+    self.numParamValues = [1, 1]
     self.parameterNames = ["density", "lambda2mu"]
 
     densityA = 2500.0

@@ -14,13 +14,15 @@
  *
  * @brief C++ abstract base class for Material object.
  *
- * Interface definition for material.
+ * Interface definition for material. The parameters for the material
+ * physical properties include state variables associated with the
+ * material constitutive model.
  */
 
 #if !defined(pylith_materials_material_hh)
 #define pylith_materials_material_hh
 
-#include "pylith/utils/arrayfwd.hh"
+#include "pylith/utils/array.hh" // USES std::vector, double_array
 #include <string> // HASA std::string
 
 /// Namespace for pylith package
@@ -146,12 +148,12 @@ protected :
   virtual
   const char** _parameterNames(void) const = 0;
 
-  /** Get number of parameters for physical properties.
+  /** Get number of values for each parameter for physical properties.
    *
-   * @returns Number of parameters
+   * @param numValues Array of number of values for each parameter.
    */
   virtual
-  int _numParameters(void) const = 0;
+  void _numParamValues(int_array* numValues) const = 0;
 
   /** Compute parameters from values in spatial database.
    *
@@ -161,7 +163,7 @@ protected :
    * @param numValues Number of database values
    */
   virtual
-  void _dbToParameters(double_array* const paramVals,
+  void _dbToParameters(std::vector<double_array>* const paramVals,
 		       const double_array& dbValues) const = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////

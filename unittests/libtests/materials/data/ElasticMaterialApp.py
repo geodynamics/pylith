@@ -61,6 +61,7 @@ class ElasticMaterialApp(Script):
     self.dimension = None
     self.numDBValues = None
     self.numParameters = None
+    self.numParamValues = None
     self.dbValues = None
     self.parameterNames = None
     self.dbData = None
@@ -105,6 +106,9 @@ class ElasticMaterialApp(Script):
     self.data.addScalar(vtype="int", name="_numParameters",
                         value=self.numParameters,
                         format="%d")
+    self.data.addArray(vtype="int", name="_numParamValues",
+                        values=self.numParamValues,
+                        format="%d", ncols=1)
     self.data.addArray(vtype="char*", name="_dbValues", values=self.dbValues,
                        format="\"%s\"", ncols=1)
     self.data.addArray(vtype="char*", name="_parameterNames",

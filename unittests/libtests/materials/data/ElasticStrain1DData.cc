@@ -23,6 +23,11 @@ const int pylith::materials::ElasticStrain1DData::_numParameters = 2;
 
 const int pylith::materials::ElasticStrain1DData::_numLocs = 2;
 
+const int pylith::materials::ElasticStrain1DData::_numParamValues[] = {
+1,
+1,
+};
+
 const char* pylith::materials::ElasticStrain1DData::_dbValues[] = {
 "density",
 "vp",
@@ -73,6 +78,7 @@ pylith::materials::ElasticStrain1DData::ElasticStrain1DData(void)
   numDBValues = _numDBValues;
   numParameters = _numParameters;
   numLocs = _numLocs;
+  numParamValues = const_cast<int*>(_numParamValues);
   dbValues = const_cast<char**>(_dbValues);
   parameterNames = const_cast<char**>(_parameterNames);
   dbData = const_cast<double*>(_dbData);

@@ -118,6 +118,9 @@ public :
   const std::vector<double_array>&
   calcDerivElastic(const std::vector<double_array>& totalStrain);
 
+  /// Update state variables (for next time step).
+  void updateState(void);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -148,29 +151,36 @@ protected :
    */
   virtual
   void _calcDensity(double_array* const density,
-		    const double_array& parameters) = 0;
+		    const std::vector<double_array>& parameters) = 0;
 
   /** Compute stress tensor from parameters.
    *
    * @param stress Array for stress tensor
-   * @param parameters Parameters at locations.
-   * @param totalStrain Total strain at locations.
+   * @param parameters Parameters at location.
+   * @param totalStrain Total strain at location.
    */
   virtual
   void _calcStress(double_array* const stress,
-		   const double_array& parameters,
+		   const std::vector<double_array>& parameters,
 		   const double_array& totalStrain) = 0;
 
   /** Compute derivatives of elasticity matrix from parameters.
    *
    * @param elasticConsts Array for elastic constants
-   * @param parameters Parameters at locations.
-   * @param totalStrain Total strain at locations.
+   * @param parameters Parameters at location.
+   * @param totalStrain Total strain at location.
    */
   virtual
   void _calcElasticConsts(double_array* const elasticConsts,
-			  const double_array& parameters,
+			  const std::vector<double_array>& parameters,
 			  const double_array& totalStrain) = 0;
+
+  /** Update parameters (for next time step).
+   *
+   * @param parameters Parameters at location.
+   */
+  virtual
+  void _updateState(std::vector<double_array>* const parameters);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -194,9 +204,10 @@ private :
 
   /** Parameters at quadrature points for current cell.
    *
-   * size = [numQuadPts][numParams]
+   * size = [numQuadPts][numParams][numValues]
+   * index = [iQuadPt][iParam][iValue]
    */
-  std::vector<double_array> _paramsCell;
+  std::vector<std::vector<double_array> > _paramsCell;
 
   /** Density value at quadrature points for current cell.
    *

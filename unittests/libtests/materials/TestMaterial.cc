@@ -205,13 +205,20 @@ pylith::materials::TestMaterial::_testDBToParameters(Material* material,
     const int numParameters = data.numParameters;
     double* const parameterDataE = &data.parameterData[iLoc*numParameters];
 
-    double_array parameterData(numParameters);
+    std::vector<double_array> parameterData(numParameters);
+    for (int iParam=0; iParam < numParameters; ++iParam)
+      parameterData[iParam].resize(data.numParamValues[iParam]);
     material->_dbToParameters(&parameterData, dbData);
 
     const double tolerance = 1.0e-06;
-    for (int i=0; i < numParameters; ++i)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, parameterData[i]/parameterDataE[i],
-				   tolerance);
+    for (int iParam=0, i=0; iParam < numParameters; ++iParam) {
+      const int numParamValues = data.numParamValues[iParam];
+      CPPUNIT_ASSERT_EQUAL(numParamValues, int(parameterData[i].size()));
+      for (int iValue=0; iValue < numParamValues; ++iValue)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+				     parameterData[iParam][iValue]/parameterDataE[i++],
+				     tolerance);
+    } // for
   } // for
 } // _testDBToParameters
 
@@ -242,11 +249,16 @@ pylith::materials::TestMaterial::_testParameters(Material* material,
 
   const int numParameters = data.numParameters;
 
-  CPPUNIT_ASSERT(numParameters == material->_numParameters());
+  int_array numParamValues;
+  material->_numParamValues(&numParamValues);
+
+  CPPUNIT_ASSERT_EQUAL(numParameters, int(numParamValues.size()));
   char** const namesE = data.parameterNames;
   const char** names = material->_parameterNames();
-  for (int i=0; i < numParameters; ++i)
+  for (int i=0; i < numParameters; ++i) {
+    CPPUNIT_ASSERT_EQUAL(data.numParamValues[i], numParamValues[i]);
     CPPUNIT_ASSERT(0 == strcmp(namesE[i], names[i]));
+  } // for
 } // _testParameters
 
 

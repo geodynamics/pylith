@@ -83,11 +83,11 @@ protected :
    */
   const char** _parameterNames(void) const;
 
-  /** Get number of parameters for physical properties.
+  /** Get number of values for each parameter for physical properties.
    *
-   * @returns Number of parameters
+   * @param numValues Array of number of values for each parameter.
    */
-  int _numParameters(void) const;
+  void _numParamValues(int_array* numValues) const;
 
   /** Compute parameters from values in spatial database.
    *
@@ -97,7 +97,7 @@ protected :
    * @param paramVals Array of parameters
    * @param dbValues Array of database values
    */
-  void _dbToParameters(double_array* const paramVals,
+  void _dbToParameters(std::vector<double_array>* const paramVals,
 		       const double_array& dbValues) const;
 
   /** Get number of entries in stress tensor.
@@ -126,7 +126,7 @@ protected :
    * @param parameters Parameters at location
    */
   void _calcDensity(double_array* const density,
-		    const double_array& parameters);
+		    const std::vector<double_array>& parameters);
 
   /** Compute stress tensor from parameters.
    *
@@ -135,7 +135,7 @@ protected :
    * @param totalStrain Total strain at locations.
    */
   void _calcStress(double_array* const stress,
-		   const double_array& parameters,
+		   const std::vector<double_array>& parameters,
 		   const double_array& totalStrain);
 
   /** Compute derivatives of elasticity matrix from parameters.
@@ -145,7 +145,7 @@ protected :
    * @param totalStrain Total strain at locations.
    */
   void _calcElasticConsts(double_array* const elasticConsts,
-			  const double_array& parameters,
+			  const std::vector<double_array>& parameters,
 			  const double_array& totalStrain);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////

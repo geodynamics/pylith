@@ -21,55 +21,37 @@
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace materials {
-    class _ElasticIsotropic3D;
+    namespace _ElasticIsotropic3D {
+
+      /// Number of entries in stress/strain tensors.
+      const int tensorSize = 6;
+
+      /// Number of entries in derivative of elasticity matrix.
+      const int numElasticConsts = 21;
+
+      /// Values expected in spatial database
+      const int numDBValues = 3;
+      const char* namesDBValues[] = { "density", "vs", "vp" };
+
+      /// Indices (order) of database values
+      const int didDensity = 0;
+      const int didVs = 1;
+      const int didVp = 2;
+
+      /// Parameters
+      const int numParameters = 3;
+      const int numParamValues[] = { 1, 1, 1 };
+      const char* namesParameters[] = { "density", "mu", "lambda" };
+
+      /// Indices (order) of parameters
+      const int pidDensity = 0;
+      const int pidMu = 1;
+      const int pidLambda = 2;
+
+    } // _ElasticIsotropic3D
   } // materials
 } // pylith
 
-/** _ElasticIsotropic is a helper class for ElasticIsotropic. We define
- * it in this implementation file to insulate other objects from these
- * details.
- */
-class pylith::materials::_ElasticIsotropic3D {
-public:
-  /// Number of entries in stress/strain tensors.
-  static const int tensorSize;
-
-  /// Number of entries in derivative of elasticity matrix.
-  static const int numElasticConsts;
-
-  /// Values expected in spatial database
-  static const int numDBValues;
-  static const char* namesDBValues[];
-
-  /// Indices (order) of database values
-  static const int didDensity;
-  static const int didVs;
-  static const int didVp;
-
-  /// Parameters
-  static const int numParameters;
-  static const char* namesParameters[];
-
-  /// Indices (order) of parameters
-  static const int pidDensity;
-  static const int pidMu;
-  static const int pidLambda;
-}; // _ElasticIsotropic3D
-
-const int pylith::materials::_ElasticIsotropic3D::tensorSize = 6;
-const int pylith::materials::_ElasticIsotropic3D::numElasticConsts = 21;
-const int pylith::materials::_ElasticIsotropic3D::numDBValues = 3;
-const char* pylith::materials::_ElasticIsotropic3D::namesDBValues[] =
-  {"density", "vs", "vp" };
-const int pylith::materials::_ElasticIsotropic3D::numParameters = 3;
-const char* pylith::materials::_ElasticIsotropic3D::namesParameters[] =
-  {"density", "mu", "lambda" };
-const int pylith::materials::_ElasticIsotropic3D::didDensity = 0;
-const int pylith::materials::_ElasticIsotropic3D::didVs = 1;
-const int pylith::materials::_ElasticIsotropic3D::didVp = 2;
-const int pylith::materials::_ElasticIsotropic3D::pidDensity = 0;
-const int pylith::materials::_ElasticIsotropic3D::pidMu = 1;
-const int pylith::materials::_ElasticIsotropic3D::pidLambda = 2;
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -117,17 +99,22 @@ pylith::materials::ElasticIsotropic3D::_parameterNames(void) const
 } // _parameterNames
 
 // ----------------------------------------------------------------------
-// Get number of parameters for physical properties.
-int
-pylith::materials::ElasticIsotropic3D::_numParameters(void) const
-{ // _numParameters
-  return _ElasticIsotropic3D::numParameters;
-} // _numParameters
+// Get number of values for each parameter for physical properties.
+void
+pylith::materials::ElasticIsotropic3D::_numParamValues(int_array* numValues) const
+{ // _numParamValues
+  assert(0 != numValues);
+
+  const int numParams = _ElasticIsotropic3D::numParameters;
+  numValues->resize(numParams);
+  for (int i=0; i < numParams; ++i)
+    (*numValues)[i] = _ElasticIsotropic3D::numParamValues[i];
+} // _numParamValues
 
 // ----------------------------------------------------------------------
 // Compute parameters from values in spatial database.
 void
-pylith::materials::ElasticIsotropic3D::_dbToParameters(double_array* paramVals,
+pylith::materials::ElasticIsotropic3D::_dbToParameters(std::vector<double_array>* paramVals,
 					  const double_array& dbValues) const
 { // _dbToParameters
   assert(0 != paramVals);
@@ -135,6 +122,8 @@ pylith::materials::ElasticIsotropic3D::_dbToParameters(double_array* paramVals,
   assert(_ElasticIsotropic3D::numParameters == numParams);
   const int numDBValues = dbValues.size();
   assert(_ElasticIsotropic3D::numDBValues == numDBValues);
+  for (int i=0; i < numParams; ++i)
+    assert(_ElasticIsotropic3D::numParamValues[i] == (*paramVals)[i].size());
 
   const double density = dbValues[_ElasticIsotropic3D::didDensity];
   const double vs = dbValues[_ElasticIsotropic3D::didVs];
@@ -143,9 +132,9 @@ pylith::materials::ElasticIsotropic3D::_dbToParameters(double_array* paramVals,
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
 
-  (*paramVals)[_ElasticIsotropic3D::pidDensity] = density;
-  (*paramVals)[_ElasticIsotropic3D::pidMu] = mu;
-  (*paramVals)[_ElasticIsotropic3D::pidLambda] = lambda;
+  (*paramVals)[_ElasticIsotropic3D::pidDensity][0] = density;
+  (*paramVals)[_ElasticIsotropic3D::pidMu][0] = mu;
+  (*paramVals)[_ElasticIsotropic3D::pidLambda][0] = lambda;
 } // _dbToParameters
 
 // ----------------------------------------------------------------------
@@ -167,31 +156,37 @@ pylith::materials::ElasticIsotropic3D::_numElasticConsts(void) const
 // ----------------------------------------------------------------------
 // Compute density at location from parameters.
 void
-pylith::materials::ElasticIsotropic3D::_calcDensity(double_array* const density,
-					      const double_array& parameters)
+pylith::materials::ElasticIsotropic3D::_calcDensity(
+				  double_array* const density,
+				  const std::vector<double_array>& parameters)
 { // _calcDensity
   assert(0 != density);
   assert(1 == density->size());
   assert(_ElasticIsotropic3D::numParameters == parameters.size());
+  assert(1 == parameters[_ElasticIsotropic3D::pidDensity].size());
 
-  (*density)[0] = parameters[_ElasticIsotropic3D::pidDensity];
+  (*density)[0] = parameters[_ElasticIsotropic3D::pidDensity][0];
 } // _calcDensity
 
 // ----------------------------------------------------------------------
 // Compute stress tensor at location from parameters.
 void
-pylith::materials::ElasticIsotropic3D::_calcStress(double_array* const stress,
-					       const double_array& parameters,
-					       const double_array& totalStrain)
+pylith::materials::ElasticIsotropic3D::_calcStress(
+				  double_array* const stress,
+				  const std::vector<double_array>& parameters,
+				  const double_array& totalStrain)
 { // _calcStress
   assert(0 != stress);
   assert(_ElasticIsotropic3D::tensorSize == stress->size());
   assert(_ElasticIsotropic3D::numParameters == parameters.size());
   assert(_ElasticIsotropic3D::tensorSize == totalStrain.size());
+  assert(1 == parameters[_ElasticIsotropic3D::pidDensity].size());
+  assert(1 == parameters[_ElasticIsotropic3D::pidMu].size());
+  assert(1 == parameters[_ElasticIsotropic3D::pidLambda].size());
 
-  const double density = parameters[_ElasticIsotropic3D::pidDensity];
-  const double mu = parameters[_ElasticIsotropic3D::pidMu];
-  const double lambda = parameters[_ElasticIsotropic3D::pidLambda];
+  const double density = parameters[_ElasticIsotropic3D::pidDensity][0];
+  const double mu = parameters[_ElasticIsotropic3D::pidMu][0];
+  const double lambda = parameters[_ElasticIsotropic3D::pidLambda][0];
 
   const double lambda2mu = lambda + 2.0 * mu;
   
@@ -216,18 +211,21 @@ pylith::materials::ElasticIsotropic3D::_calcStress(double_array* const stress,
 // Compute derivative of elasticity matrix at location from parameters.
 void
 pylith::materials::ElasticIsotropic3D::_calcElasticConsts(
-				       double_array* const elasticConsts,
-				       const double_array& parameters,
-				       const double_array& totalStrain)
+				  double_array* const elasticConsts,
+				  const std::vector<double_array>& parameters,
+				  const double_array& totalStrain)
 { // _calcElasticConsts
   assert(0 != elasticConsts);
   assert(_ElasticIsotropic3D::numElasticConsts == elasticConsts->size());
   assert(_ElasticIsotropic3D::numParameters == parameters.size());
   assert(_ElasticIsotropic3D::tensorSize == totalStrain.size());
+  assert(1 == parameters[_ElasticIsotropic3D::pidDensity].size());
+  assert(1 == parameters[_ElasticIsotropic3D::pidMu].size());
+  assert(1 == parameters[_ElasticIsotropic3D::pidLambda].size());
  
-  const double density = parameters[_ElasticIsotropic3D::pidDensity];
-  const double mu = parameters[_ElasticIsotropic3D::pidMu];
-  const double lambda = parameters[_ElasticIsotropic3D::pidLambda];
+  const double density = parameters[_ElasticIsotropic3D::pidDensity][0];
+  const double mu = parameters[_ElasticIsotropic3D::pidMu][0];
+  const double lambda = parameters[_ElasticIsotropic3D::pidLambda][0];
 
   const double lambda2mu = lambda + 2.0 * mu;
    

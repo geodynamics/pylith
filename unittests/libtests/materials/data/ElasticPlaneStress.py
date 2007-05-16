@@ -40,6 +40,7 @@ class ElasticPlaneStrain(ElasticMaterialApp):
     self.numDBValues = 3
     self.dbValues = ["density", "vs", "vp"]
     self.numParameters = 3
+    self.numParamValues = [1, 1, 1]
     self.parameterNames = ["density", "mu", "lambda"]
 
     densityA = 2500.0

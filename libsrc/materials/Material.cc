@@ -89,14 +89,19 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   delete _parameters; _parameters = new feassemble::ParameterManager(mesh);
   assert(0 != _parameters);
   const int numQuadPts = quadrature->numQuadPts();
-  const int fiberDim = numQuadPts; // number of values in field per cell
 
-  const int numParams = _numParameters();
+  int_array numParamValues;
+  _numParamValues(&numParamValues);
+  const int numParams = numParamValues.size();
   const char** paramNames = _parameterNames();
 
   std::vector<ALE::Obj<real_section_type> > paramSections(numParams);
   
   for (int iParam=0; iParam < numParams; ++iParam) {
+    // Fiber dimension is number of quadrature points times number of
+    // values per parameter
+    const int fiberDim = numQuadPts * numParamValues[iParam];
+
     _parameters->addReal(paramNames[iParam]);
     paramSections[iParam] = _parameters->getReal(paramNames[iParam]);
     assert(!paramSections[iParam].isNull());
@@ -110,11 +115,22 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   _db->queryVals(_dbValues(), numValues);
   
   // Loop over cells
+
+  // Container for data returned in query of database
   double_array queryData(numValues);
-  double_array paramData(numParams);
+  
+  // Container for parameters at a quadrature point
+  std::vector<double_array> paramData(numParams);
+
+  // Container of parameter data for a given cell (quadpts + parameters)
   std::vector<double_array> cellData(numParams);
-  for (int iParam = 0; iParam < numParams; ++iParam)
-    cellData[iParam].resize(numQuadPts);
+
+  for (int iParam = 0; iParam < numParams; ++iParam) {
+    const int fiberDim = numQuadPts * numParamValues[iParam];
+    cellData[iParam].resize(fiberDim);
+    paramData[iParam].resize(numParamValues[iParam]);
+  } // for
+
   for (ALE::Mesh::label_sequence::iterator cellIter=cells->begin();
        cellIter != cellsEnd;
        ++cellIter) {
@@ -142,8 +158,12 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       } // if
       _dbToParameters(&paramData, queryData);
 
-      for (int iParam=0; iParam < numParams; ++iParam)
-	cellData[iParam][iQuadPt] = paramData[iParam];
+      for (int iParam=0; iParam < numParams; ++iParam) {
+	const int numValues = numParamValues[iParam];
+	for (int iValue=0; iValue < numValues; ++iValue)
+	  cellData[iParam][iQuadPt*numValues+iValue] = 
+	    paramData[iParam][iValue];
+      } // for
     } // for
     // Assemble cell contribution into fields
     for (int iParam=0; iParam < numParams; ++iParam)

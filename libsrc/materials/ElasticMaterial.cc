@@ -106,16 +106,32 @@ pylith::materials::ElasticMaterial::initCellData(const Mesh::point_type& cell,
     _stress.resize(numQuadPts);
     _elasticConsts.resize(numQuadPts);
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-      _paramsCell[iQuad].resize(_numParameters());
       _density[iQuad].resize(1);
       _stress[iQuad].resize(_tensorSize());
       _elasticConsts[iQuad].resize(_numElasticConsts());
+      int_array numParamValues;
+      _numParamValues(&numParamValues);
+      const int numParams = numParamValues.size();
+      _paramsCell[iQuad].resize(numParams);
+      for (int iParam=0; iParam < numParams; ++iParam)
+	_paramsCell[iQuad][iParam].resize(numParamValues[iParam]);
     } // for
   } // if
 
   _getParameters(cell);
 } // initCellData
 
+// ----------------------------------------------------------------------
+// Update state variables (for next time step).
+void
+pylith::materials::ElasticMaterial::updateState(void)
+{ // updateState
+  const int numQuadPts = _numQuadPts;
+  assert(_paramsCell.size() == numQuadPts);
+
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
+    _updateState(&_paramsCell[iQuad]);
+} // updateState
 
 // ----------------------------------------------------------------------
 // Get parameters for cell.
@@ -127,21 +143,33 @@ pylith::materials::ElasticMaterial::_getParameters(const Mesh::point_type& cell)
   const int numQuadPts = _numQuadPts;
   assert(_paramsCell.size() == numQuadPts);
   
-  const int numParams = _numParameters();
+  int_array numParamValues;
+  _numParamValues(&numParamValues);
+  const int numParams = numParamValues.size();
   const char** paramNames = _parameterNames();
   
   for (int iParam=0; iParam < numParams; ++iParam) {
     const ALE::Obj<real_section_type> parameter = 
       _parameters->getReal(paramNames[iParam]);
     assert(!parameter.isNull());
+
+    const int numValues = numParamValues[iParam];
     
-    assert(parameter->getFiberDimension(cell) == numQuadPts);
+    assert(parameter->getFiberDimension(cell) == numQuadPts*numValues);
     const real_section_type::value_type* parameterCell =
       parameter->restrictPoint(cell);
     for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt)
-      _paramsCell[iQuadPt][iParam] = parameterCell[iQuadPt];
+      for (int iValue=0; iValue < numValues; ++iValue)
+	_paramsCell[iQuadPt][iParam][iValue] = 
+	  parameterCell[iQuadPt*numValues+iValue];
   } // for
 } // _getParameters
 
+// ----------------------------------------------------------------------
+// Update parameters (for next time step).
+void
+pylith::materials::ElasticMaterial::_updateState(std::vector<double_array>* const parameters)
+{ // _updateState
+} // _updateState
 
 // End of file 

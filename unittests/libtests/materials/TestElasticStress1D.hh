@@ -44,6 +44,7 @@ class pylith::materials::TestElasticStress1D : public TestElasticMaterial
   CPPUNIT_TEST( testCalcDensity );
   CPPUNIT_TEST( testCalcStress );
   CPPUNIT_TEST( testCalcElasticConsts );
+  CPPUNIT_TEST( testUpdateState );
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -66,6 +67,9 @@ public :
 
   /// Test calcElasticConsts()
   void testCalcElasticConsts(void);
+
+  /// Test updateState()
+  void testUpdateState(void);
 
 }; // class TestElasticStress1D
 

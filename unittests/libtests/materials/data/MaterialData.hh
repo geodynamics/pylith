@@ -39,6 +39,7 @@ public:
 
   int numDBValues; ///< Number of database values
   int numParameters; ///< Number of parameters
+  int* numParamValues; ///< Number of values for each parameter
 
   char** dbValues; ///< Aray of names of database values;
   char** parameterNames; //< Array of names of parameters
