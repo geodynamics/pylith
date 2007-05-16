@@ -52,4 +52,7 @@ CLEANFILES = \
 	testfeassemble.pyxe testfeassemble.pyx testfeassemble.c *_embed.* \
 	$(am__installdirs)/testfeassemblemodule.*
 
+TESTS_ENVIRONMENT = $(PYTHON)
+
+
 # End of file 

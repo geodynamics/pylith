@@ -24,5 +24,7 @@ noinst_PYTHON = \
 	TestFaultCohesive.py \
 	TestFaultCohesiveKin.py
 
+TESTS_ENVIRONMENT = $(PYTHON)
+
 
 # End of file 

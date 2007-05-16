@@ -24,5 +24,7 @@ noinst_PYTHON = \
 	TestMeshIOCubit.py \
 	TestMeshIOLagrit.py
 
+TESTS_ENVIRONMENT = $(PYTHON)
+
 
 # End of file 

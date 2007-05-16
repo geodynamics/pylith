@@ -22,5 +22,7 @@ noinst_PYTHON = \
 	TestMeshGenerator.py \
 	TestMeshImporter.py
 
+TESTS_ENVIRONMENT = $(PYTHON)
+
 
 # End of file 
