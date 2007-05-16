@@ -59,99 +59,13 @@ pylith::feassemble::ImplicitElasticity::material(
 } // material
 
 // ----------------------------------------------------------------------
-// Integrate portion of RHS that is assumed to remain constant over the
-// entire time step.  At present, this only includes body forces.
-// Note:  The vector produced by this computation remains unchanged for
-// small strain computations, so it might be reasonable to keep the vector
-// separate from the other contributions to the RHS.
-
-void
-pylith::feassemble::ImplicitElasticity::integrateConstant(
-			      const ALE::Obj<real_section_type>& b,
-			      const ALE::Obj<real_section_type>& dispT,
-			      const ALE::Obj<Mesh>& mesh)
-{ // integrateConstant
-  assert(0 != _quadrature);
-  assert(0 != _material);
-  assert(!b.isNull());
-  assert(!dispT.isNull());
-  assert(!mesh.isNull());
-
-  /* Comment out the guts of this code until we figure out where grav
-     section is coming from.  Code should be essentially correct, though.
-     It may also be necessary to put in a switch to turn gravity off.
-
-  // Get information about section
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
-  assert(!cells.isNull());
-  const Mesh::label_sequence::iterator  cellsEnd = cells->end();
-
-  const ALE::Obj<real_section_type>& coordinates = 
-    mesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-
-  // Get cell geometry information that doesn't depend on cell
-  const int numQuadPts = _quadrature->numQuadPts();
-  const double_array& quadWts = _quadrature->quadWts();
-  assert(quadWts.size() == numQuadPts);
-  const int numBasis = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
-  const int cellDim = _quadrature->cellDim();
-
-  // Allocate vector for cell values (if necessary)
-  _initCellVector();
-
-  // Loop over cells.
-  for (Mesh::label_sequence::iterator cellIter=cells->begin();
-       cellIter != cellsEnd;
-       ++cellIter) {
-    // Compute geometry information for current cell
-    _quadrature->computeGeometry(mesh, coordinates, *cellIter);
-
-    // Set cell data in material
-    _material->initCellData(*cellIter, numQuadPts);
-
-    // Reset element vector to zero
-    _resetCellVector();
-
-    // Get cell geometry information that depends on cell
-    const double_array& basis = _quadrature->basis();
-    const double_array& jacobianDet = _quadrature->jacobianDet();
-
-    // Get density at quadrature points for this cell
-    const std::vector<double_array>& density = _material->calcDensity();
-
-    // Compute action for cell
-
-    // Compute action for element body forces
-    if (!grav.isNull()) {
-      const real_section_type::value_type* gravCell =
-	mesh->restrict(grav, cell);
-      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
-	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
-	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  const int iBlock = iBasis * spaceDim;
-	  const double valI = wt*basis[iQ+iBasis];
-	  for (int iDim=0; iDim < spaceDim; ++iDim) {
-	    _cellVector[iBlock+iDim] += valI*gravCell[iDim];
-	  } // for
-	} // for
-      } // for
-      PetscErrorCode err =
-	PetscLogFlops(numQuadPts*(2+numBasis*(2+2*spaceDim)));
-      if (err)
-	throw std::runtime_error("Logging PETSc flops failed.");
-    } // if
-	      
-
-    // Assemble cell contribution into field
-    mesh->updateAdd(b, *cellIter, _cellVector);
-  } // for
-  */
-} // integrateConstant
-
-// ----------------------------------------------------------------------
 // Compute residual for quasi-static finite elements.
+// We assume that the effects of boundary conditions are already included
+// in b (tractions, concentrated nodal forces, and contributions to internal
+// force vector due to displacement/velocity BC).
+// This routine computes the additional external loads due to body forces
+// (not yet implemented) plus the element internal forces for the current
+// stress state.
 void
 pylith::feassemble::ImplicitElasticity::integrateResidual(
 			      const ALE::Obj<real_section_type>& b,
@@ -225,11 +139,41 @@ pylith::feassemble::ImplicitElasticity::integrateResidual(
     if (cellDim != spaceDim)
       throw std::logic_error("Not implemented yet.");
 
+    /* Comment out gravity section for now, until we figure out how to deal
+       with gravity vector.
+    // Get density at quadrature points for this cell
+    const std::vector<double_array>& density = _material->calcDensity();
+
+    // Compute action for cell
+
+    // Compute action for element body forces
+    if (!grav.isNull()) {
+      const real_section_type::value_type* gravCell =
+	mesh->restrict(grav, cell);
+      for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
+	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
+	  const int iBlock = iBasis * spaceDim;
+	  const double valI = wt*basis[iQ+iBasis];
+	  for (int iDim=0; iDim < spaceDim; ++iDim) {
+	    _cellVector[iBlock+iDim] += valI*gravCell[iDim];
+	  } // for
+	} // for
+      } // for
+      PetscErrorCode err =
+	PetscLogFlops(numQuadPts*(2+numBasis*(2+2*spaceDim)));
+      if (err)
+	throw std::runtime_error("Logging PETSc flops failed.");
+    } // if
+    */
+
     // Compute B(transpose) * sigma, first computing strains
     if (1 == cellDim) {
       // Compute total strains and then use these to compute stresses
       IntegratorElasticity::calcTotalStrain1D(&totalStrain, basisDeriv,
 					      dispTCell, numBasis);
+      // Need a way to tell calcStress whether to update state variables or not.
+      // Otherwise, need a separate update routine.
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 

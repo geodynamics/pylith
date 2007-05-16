@@ -73,21 +73,9 @@ public :
   virtual
   double stableTimeStep(void) const;
 
-  /** Integrate constant term (b) for dynamic elasticity term 
-   * for finite elements.
-   *
-   * @param fieldOut Constant field (output)
-   * @param fieldInT Input field at time t
-   * @param mesh Mesh object
-   */
-  virtual 
-  void integrateConstant(const ALE::Obj<real_section_type>& fieldOut,
-			 const ALE::Obj<real_section_type>& fieldInT,
-			 const ALE::Obj<Mesh>& mesh) = 0;
-
   /** Integrate residual for quasi-static finite elements.
    *
-   * @param fieldOut Constant field (output)
+   * @param fieldOut Residual field (output)
    * @param fieldInT Input field at time t
    * @param mesh Mesh object
    */
