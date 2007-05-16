@@ -19,6 +19,23 @@
 
 from BoundaryCondition import BoundaryCondition
 
+def validateDOF(value):
+  """
+  Validate list of fixed degrees of freedom.
+  """
+  try:
+    size = len(value)
+    num = map(float, value)
+    for v in num:
+      if v < 0:
+        raise ValueError
+  except:
+    raise ValueError, \
+          "'fixed_dof' must be a zero based list of indices of fixed " \
+          "degrees of freedom."
+  return value
+  
+
 # Dirichlet class
 class Dirichlet(BoundaryCondition):
   """
@@ -28,6 +45,29 @@ class Dirichlet(BoundaryCondition):
   Factory: boundary_condition
   """
 
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(Component.Inventory):
+    """
+    Python object for managing BoundaryCondition facilities and properties.
+    """
+    
+    ## @class Inventory
+    ## Python object for managing BoundaryCondition facilities and properties.
+    ##
+    ## \b Properties
+    ## @li \b fixed_dof Indices of fixed DOF (0=1st DOF, 1=2nd DOF, etc).
+    ##
+    ## \b Facilities
+    ## @li None
+
+    import pyre.inventory
+
+    fixeDOF = pyre.inventory.list("fixed_dof", default=[],
+                                  validator=validateDOF)
+    fixedDOF.meta['tip'] = "Indices of fixed DOF (0=1st DOF, 1=2nd DOF, etc)."
+    
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="dirichlet"):
@@ -35,8 +75,9 @@ class Dirichlet(BoundaryCondition):
     Constructor.
     """
     BoundaryCondition.__init__(self, name)
-    #import pylith.bc.bc as bindings
-    #self.cppHandle = bindings.Dirichlet()
+    self.fixedDOF = []
+    import pylith.bc.bc as bindings
+    self.cppHandle = bindings.Dirichlet()
     return
 
 
@@ -44,13 +85,27 @@ class Dirichlet(BoundaryCondition):
     """
     Initialize Dirichlet boundary condition.
     """
+    BoundaryCondition.initialize(self, mesh)
+    self.cppHandle.fixedDOF = fixedDOF
+    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys)
     return
   
 
-  def setField(self, field, t):
+  def setConstraints(self, field, mesh):
+    """
+    Set constraints in field.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.setConstraints(field)
+    return
+
+
+  def setField(self, t, field, mesh):
     """
     Set solution field at time t.
     """
+    assert(None != self.cppHandle)
+    self.cppHandle.setField(field, t)
     return
   
 
@@ -61,6 +116,7 @@ class Dirichlet(BoundaryCondition):
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
+    self.fixedDOF = self.inventory.fixedDOF
     return
 
   

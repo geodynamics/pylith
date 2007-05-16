@@ -12,15 +12,18 @@
 
 SUBDIRS = \
 	utils \
-	feassemble \
-	faults \
-	materials \
+	topology \
 	meshio \
-	topology
+	feassemble \
+	bc \
+	faults \
+	materials
 
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
+	bc/BoundaryCondition.cc \
+	bc/Dirichlet.cc \
 	faults/BruneSlipFn.cc \
 	faults/CohesiveTopology.cc \
 	faults/EqKinSrc.cc \

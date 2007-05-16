@@ -81,24 +81,35 @@ class BoundaryCondition(Component):
     """
     Initialize boundary condition.
     """
+    assert(None != self.cppHandle)
+    self.cppHandle.id = self.id
+    self.cppHandle.label = self.label
+    self.cppHandle.db = self.db.cppHandle
     return
 
 
-  def integrateJacobian(self, jacobian, field):
+  def setConstraints(self, field, mesh):
+    """
+    Set constraints in field.
+    """
+    return
+
+
+  def integrateJacobian(self, jacobian, field, mesh):
     """
     Integrate contribution to Jacobian.
     """
     return
 
 
-  def integrateResidual(self, residual, fieldT, fieldTmdt):
+  def integrateResidual(self, residual, fieldT, fieldTmdt, mesh):
     """
     Integrate contribution to residual.
     """
     return
 
 
-  def setField(self, field, t):
+  def setField(self, t, field, mesh):
     """
     Set solution field at time t.
     """

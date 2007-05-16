@@ -1,0 +1,25 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_bc_dirichlet_hh)
+#error "Dirichlet.icc can only be included from Dirichlet.hh"
+#endif
+
+// Set indices of fixed degrees of freedom. 
+inline
+void
+pylith::bc::Dirichlet::fixedDOF(const int_array& flags) {
+  _fixedDOF = flags;
+} // fixedDOF
+
+
+// End of file 

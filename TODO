@@ -13,19 +13,19 @@ Cleanup
   dimensions, we probably want to allow it in MeshIO, just not in the
   simulation where we don't support it.
 
-1. Add dualBasis to Quadrature.
+1. Implement Dirichlet boundary conditions
+   a. C++
+   b. Python
+   c. C++ unit tests
+   d. Python unit tests
+
+2. Add dualBasis to Quadrature.
    a. Python
      ReferenceCell
      FIATSimplex
      Quadrature()
    b. C++
      Quadrature
-   c. C++ unit tests
-   d. Python unit tests
-
-2. Implement Dirichlet boundary conditions
-   a. C++
-   b. Python
    c. C++ unit tests
    d. Python unit tests
 
