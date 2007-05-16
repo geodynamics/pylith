@@ -11,10 +11,10 @@
 #
 
 #header{
-#include <petscmesh.h>
+#include "pylith/utils/sievetypes.hh"
+#include "pylith/utils/petscfwd.h"
 #include <Generator.hh>
 #include <Distribution.hh>
-#include "pylith/utils/petscfwd.h"
 
 #include <stdexcept>
 #include <Python.h>
