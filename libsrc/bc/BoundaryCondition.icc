@@ -1,0 +1,53 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_bc_boundarycondition_hh)
+#error "BoundaryCondition.icc can only be included from BoundaryCondition.hh"
+#endif
+
+// Set identifier of fault.
+inline
+void
+pylith::bc::BoundaryCondition::id(const int value) {
+  _id = value;
+}
+
+// Get identifier of fault.
+inline
+int
+pylith::bc::BoundaryCondition::id(void) const {
+  return _id;
+}
+
+// Set name of fault.
+inline
+void
+pylith::bc::BoundaryCondition::label(const char* value) {
+  _label = value;
+}
+
+// Get label of fault.
+inline
+const std::string&
+pylith::bc::BoundaryCondition::label(void) const {
+  return _label;
+}
+
+// Set database for boundary condition parameters.
+inline
+void
+pylith::bc::BoundaryCondition::db(spatialdata::spatialdb::SpatialDB* const db) {
+  _db = db;
+}
+
+
+// End of file 

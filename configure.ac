@@ -201,6 +201,7 @@ AC_C_BIGENDIAN
 AC_CONFIG_FILES([Makefile
 		pylith/Makefile
                 libsrc/Makefile
+		libsrc/bc/Makefile
                 libsrc/feassemble/Makefile
 		libsrc/faults/Makefile
                 libsrc/materials/Makefile
