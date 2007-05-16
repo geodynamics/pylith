@@ -24,5 +24,7 @@ noinst_PYTHON = \
 	TestMaterial.py \
 	TestElasticIsotropic3D.py
 
+TESTS_ENVIRONMENT = $(PYTHON)
+
 
 # End of file 

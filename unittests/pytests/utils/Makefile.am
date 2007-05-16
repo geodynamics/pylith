@@ -20,5 +20,7 @@ check_SCRIPTS = testdriver.py
 noinst_PYTHON = \
 	TestPetscManager.py
 
+TESTS_ENVIRONMENT = $(PYTHON)
+
 
 # End of file 
