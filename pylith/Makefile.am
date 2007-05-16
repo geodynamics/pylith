@@ -73,7 +73,6 @@ nobase_pkgpyexec_PYTHON = \
 	topology/Distributor.py \
 	topology/Mesh.py \
 	topology/MeshGenerator.py \
-	topology/MeshGenSimple.py \
 	topology/MeshImporter.py \
 	utils/__init__.py \
 	utils/CheckpointTimer.py \
@@ -81,6 +80,10 @@ nobase_pkgpyexec_PYTHON = \
 	utils/PetscManager.py \
 	utils/importing.py \
 	utils/testarray.py
+
+if ENABLE_TETGEN
+  nobase_pkgpyexec_PYTHON += topology/MeshGenSimple.py
+endif
 
 
 # End of file 
