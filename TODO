@@ -13,13 +13,15 @@ Cleanup
   dimensions, we probably want to allow it in MeshIO, just not in the
   simulation where we don't support it.
 
-1. Implement cell geometry stuff.
-   Compute Jacobian in cell.
-
-   Questions: 
-     (1) Need to get coordinates of "nodes" in reference cell.
-
-   b. C++ unit tests
+1. Add dualBasis to Quadrature.
+   a. Python
+     ReferenceCell
+     FIATSimplex
+     Quadrature()
+   b. C++
+     Quadrature
+   c. C++ unit tests
+   d. Python unit tests
 
 2. Implement Dirichlet boundary conditions
    a. C++

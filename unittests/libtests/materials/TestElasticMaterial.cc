@@ -122,7 +122,7 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   const double size = numQuadPts;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, density[i][0]/densityE[i], tolerance);
-} // testCalcProperties
+} // testCalcDensity
     
 // ----------------------------------------------------------------------
 // Test calcStress()
@@ -355,9 +355,13 @@ pylith::materials::TestElasticMaterial::_testCalcDensity(
 					const ElasticMaterialData& data) const
 { // _testCalcDensity
   const int numParameters = data.numParameters;
-  double_array parameters(numParameters);
-  for (int i=0; i < numParameters; ++i)
-    parameters[i] = data.parameterData[i];
+  std::vector<double_array> parameters(numParameters);
+  for (int iParam=0, i=0; iParam < numParameters; ++iParam) {
+    const int numValues = data.numParamValues[iParam];
+    parameters[iParam].resize(numValues);
+    for (int iValue=0; iValue < numValues; ++iValue)
+      parameters[iParam][iValue] = data.parameterData[i++];
+  } // for
 
   double_array density(1);
   material->_calcDensity(&density, parameters);
@@ -377,9 +381,13 @@ pylith::materials::TestElasticMaterial::_testCalcStress(
 				       const ElasticMaterialData& data) const
 { // _testCalcElasticConsts
   const int numParameters = data.numParameters;
-  double_array parameters(numParameters);
-  for (int i=0; i < numParameters; ++i)
-    parameters[i] = data.parameterData[i];
+  std::vector<double_array> parameters(numParameters);
+  for (int iParam=0, i=0; iParam < numParameters; ++iParam) {
+    const int numValues = data.numParamValues[iParam];
+    parameters[iParam].resize(numValues);
+    for (int iValue=0; iValue < numValues; ++iValue)
+      parameters[iParam][iValue] = data.parameterData[i++];
+  } // for
 
   int stressSize = 0;
   switch(data.dimension)
@@ -421,9 +429,13 @@ pylith::materials::TestElasticMaterial::_testCalcElasticConsts(
 				       const ElasticMaterialData& data) const
 { // _testCalcElasticConsts
   const int numParameters = data.numParameters;
-  double_array parameters(numParameters);
-  for (int i=0; i < numParameters; ++i)
-    parameters[i] = data.parameterData[i];
+  std::vector<double_array> parameters(numParameters);
+  for (int iParam=0, i=0; iParam < numParameters; ++iParam) {
+    const int numValues = data.numParamValues[iParam];
+    parameters[iParam].resize(numValues);
+    for (int iValue=0; iValue < numValues; ++iValue)
+      parameters[iParam][iValue] = data.parameterData[i++];
+  } // for
 
   int numConsts = 0;
   int strainSize = 0;

@@ -45,6 +45,8 @@ private:
 
   static const int _numLocs;
 
+  static const int _numParamValues[];
+
   static const char* _dbValues[];
 
   static const char* _parameterNames[];

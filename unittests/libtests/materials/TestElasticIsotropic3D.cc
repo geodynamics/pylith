@@ -81,5 +81,14 @@ pylith::materials::TestElasticIsotropic3D::testCalcElasticConsts(void)
   _testCalcElasticConsts(&material, data);
 } // testElasticConsts
 
+// ----------------------------------------------------------------------
+// Test updateState()
+void
+pylith::materials::TestElasticIsotropic3D::testUpdateState(void)
+{ // testUpdateState
+  ElasticIsotropic3D material;
+  material.updateState();
+} // testUpdateState
+
 
 // End of file 

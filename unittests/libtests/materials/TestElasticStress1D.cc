@@ -81,5 +81,14 @@ pylith::materials::TestElasticStress1D::testCalcElasticConsts(void)
   _testCalcElasticConsts(&material, data);
 } // testElasticConsts
 
+// ----------------------------------------------------------------------
+// Test updateState()
+void
+pylith::materials::TestElasticStress1D::testUpdateState(void)
+{ // testUpdateState
+  ElasticStress1D material;
+  material.updateState();
+} // testUpdateState
+
 
 // End of file 
