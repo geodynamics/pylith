@@ -18,6 +18,8 @@
 inline
 void
 pylith::bc::Dirichlet::fixedDOF(const int_array& flags) {
+  const size_t size = flags.size();
+  _fixedDOF.resize(size);
   _fixedDOF = flags;
 } // fixedDOF
 

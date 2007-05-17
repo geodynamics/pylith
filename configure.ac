@@ -220,6 +220,8 @@ AC_CONFIG_FILES([Makefile
 		applications/Makefile
 		unittests/Makefile
 		unittests/libtests/Makefile
+		unittests/libtests/bc/Makefile
+		unittests/libtests/bc/data/Makefile
 		unittests/libtests/faults/Makefile
 		unittests/libtests/faults/data/Makefile
 		unittests/libtests/feassemble/Makefile
