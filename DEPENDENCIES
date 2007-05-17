@@ -1,3 +1,10 @@
+TEMPORARY KLUDGES
+
+#define NEW_SECTION in $PETSC_DIR/include/petscmesh.h
+
+  Matt will change the section type to this new section type after his
+  meeting in Turkey.
+
 REQUIRED DEPENDENCIES
 
 MPI
@@ -10,5 +17,7 @@ numpy
 OPTIONAL DEPENDENCIES
 
 cppunit
+CUBIT
+PETSc w/TetGen
 doxygen
 
