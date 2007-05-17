@@ -88,9 +88,16 @@ class BoundaryCondition(Component):
     return
 
 
+  def setConstraintSizes(self, field, mesh):
+    """
+    Set number of constraints at points in field.
+    """
+    return
+
+
   def setConstraints(self, field, mesh):
     """
-    Set constraints in field.
+    Set which degrees of freedom are constrained at points in field.
     """
     return
 

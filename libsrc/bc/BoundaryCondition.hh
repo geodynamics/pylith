@@ -98,7 +98,16 @@ public :
   void initialize(const ALE::Obj<ALE::Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs) = 0;
 
-  /** Set constrained degrees of freedom in field.
+  /** Set number of degrees of freedom that are constrained at points in field.
+   *
+   * @param field Solution field
+   * @param mesh PETSc mesh
+   */
+  virtual
+  void setConstraintSizes(const ALE::Obj<real_section_type>& field,
+			  const ALE::Obj<ALE::Mesh>& mesh);
+
+  /** Set which degrees of freedom are constrained at points in field.
    *
    * @param field Solution field
    * @param mesh PETSc mesh

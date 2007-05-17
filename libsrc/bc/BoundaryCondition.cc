@@ -31,11 +31,20 @@ pylith::bc::BoundaryCondition::~BoundaryCondition(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Set constrained degrees of freedom in field.
+// Set number of degrees of freedom that are constrained at points in field.
 void
-pylith::bc::BoundaryCondition::setConstraints(
+pylith::bc::BoundaryCondition::setConstraintSizes(
 				     const ALE::Obj<real_section_type>& field,
 				     const ALE::Obj<ALE::Mesh>& mesh)
+{ // setConstraintSizes
+} // setConstraintSizes
+
+// ----------------------------------------------------------------------
+// Set which degrees of freedom are constrained at points in field.
+void
+pylith::bc::BoundaryCondition::setConstraints(
+				    const ALE::Obj<real_section_type>& field,
+				    const ALE::Obj<ALE::Mesh>& mesh)
 { // setConstraints
 } // setConstraints
 
