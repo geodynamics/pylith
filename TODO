@@ -14,12 +14,25 @@ Cleanup
   simulation where we don't support it.
 
 1. Implement Dirichlet boundary conditions
-   a. C++
-   b. Python
    c. C++ unit tests
    d. Python unit tests
 
-2. Add dualBasis to Quadrature.
+2. Finish implementing ExplicitElasticity and Explicit
+   a. Replace integrateConstant() with integrateResidual()
+
+     {f}-[A]{u}, {u} is "guess" (zero for explicit)
+
+   a. Double check loops for integrateResidual() and integrateJacobian()
+   b. Create unit test (construction of residual term and Jacobian)
+
+   c. Add unit test for IntegratorElasticity::calcTotalStrain
+
+2a.
+
+  Add feature to materials and integrators wherein they indicate if
+  the Jacobian needs to be reformed at the current time step.
+
+3. Add dualBasis to Quadrature.
    a. Python
      ReferenceCell
      FIATSimplex
@@ -29,7 +42,7 @@ Cleanup
    c. C++ unit tests
    d. Python unit tests
 
-3. Implement faults for kinematic source
+4. Implement faults for kinematic source
    a. Creation of cohesive cells
      i. Add tests for interpolated meshes.
         Double check consistency in ordering of vertices (positive/negative).
@@ -73,16 +86,6 @@ Cleanup
        (2) Python unit tests
          constructor
          initialize()
-
-4. Finish implementing ExplicitElasticity and Explicit
-   a. Replace integrateConstant() with integrateResidual()
-
-     {f}-[A]{u}, {u} is "guess" (zero for explicit)
-
-   a. Double check loops for integrateResidual() and integrateJacobian()
-   b. Create unit test (construction of residual term and Jacobian)
-
-   c. Add unit test for IntegratorElasticity::calcTotalStrain
 
 5. Implement absorbing boundary conditions
 

@@ -11,6 +11,7 @@
 #
 
 SUBDIRS = \
+	bc \
 	faults \
 	feassemble \
 	materials \

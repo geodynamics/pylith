@@ -58,7 +58,7 @@ pylith::bc::Dirichlet::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   for(int_section_type::chart_type::iterator c_iter = chart.begin();
       c_iter != chart.end();
       ++c_iter)
-    _points[i] = *c_iter;
+    _points[i++] = *c_iter;
 
   // Get values for degrees of freedom
   const int numFixedDOF = _fixedDOF.size();
