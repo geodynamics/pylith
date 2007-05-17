@@ -209,6 +209,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/utils/Makefile
 		libsrc/topology/Makefile
                 modulesrc/Makefile
+                modulesrc/bc/Makefile
                 modulesrc/faults/Makefile
                 modulesrc/feassemble/Makefile
                 modulesrc/materials/Makefile

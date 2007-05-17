@@ -116,7 +116,7 @@ public :
   void setConstraints(const ALE::Obj<real_section_type>& field,
 		      const ALE::Obj<ALE::Mesh>& mesh);
 
-  /** Set constrained degrees of freedom in field.
+  /** Integrate boundary condition's contribution to the Jacobian.
    *
    * @param jacobian Matrix for Jacobian of system
    * @param field Solution field
@@ -127,7 +127,7 @@ public :
 			 const ALE::Obj<real_section_type>& field,
 			 const ALE::Obj<ALE::Mesh>& mesh);
 
-  /** Set constrained degrees of freedom in field.
+  /** Integrate boundary condition's contribution to the residual.
    *
    * @param residual Residual field
    * @param fieldT Solution field at time t
