@@ -2,8 +2,8 @@ TEMPORARY KLUDGES
 
 #define NEW_SECTION in $PETSC_DIR/include/petscmesh.h
 
-  Matt will change the section type to this new section type after his
-  meeting in Turkey.
+  Matt will change the section type in PETSc Sieve to this new section
+  type after his meeting in Turkey.
 
 REQUIRED DEPENDENCIES
 
