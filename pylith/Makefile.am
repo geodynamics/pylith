@@ -64,6 +64,7 @@ nobase_pkgpyexec_PYTHON = \
 	problems/EqDeformation.py \
 	problems/Explicit.py \
 	problems/Formulation.py \
+	problems/Implicit.py \
 	problems/Problem.py \
 	problems/TimeDependent.py \
 	solver/__init__.py \

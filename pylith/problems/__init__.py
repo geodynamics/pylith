@@ -19,6 +19,7 @@ __all__ = ['BCPrism',
            'BoundaryConditions',
            'EqDeformation',
            'Explicit',
+           'Implicit',
            'Problem',
            'TimeDependent']
 
