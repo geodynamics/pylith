@@ -16,6 +16,7 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	CellGeometry.hh \
 	CellGeometry.icc \
+	FieldsManager.hh \
 	GeometryPoint1D.hh \
 	GeometryPoint2D.hh \
 	GeometryPoint3D.hh \

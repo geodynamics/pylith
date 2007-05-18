@@ -14,8 +14,8 @@
 
 #include "Material.hh" // implementation of object methods
 
-#include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
-#include "pylith/feassemble/Quadrature.hh" // USES ParameterManager
+#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/utils/array.hh" // USES double_array, std::vector
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -86,7 +86,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   } // if
 
   // Create sections to hold parameters for physical properties
-  delete _parameters; _parameters = new feassemble::ParameterManager(mesh);
+  delete _parameters; _parameters = new topology::FieldsManager(mesh);
   assert(0 != _parameters);
   const int numQuadPts = quadrature->numQuadPts();
 

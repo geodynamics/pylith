@@ -19,7 +19,7 @@
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/utils/array.hh" // USES double_array
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
-#include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
+#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii

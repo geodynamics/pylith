@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-#include "ParameterManager.hh" // implementation of class methods
+#include "FieldsManager.hh" // implementation of class methods
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -20,47 +20,46 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::ParameterManager::ParameterManager(
-						const ALE::Obj<Mesh>& mesh) :
+pylith::topology::FieldsManager::FieldsManager(const ALE::Obj<Mesh>& mesh) :
   _mesh(mesh)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::ParameterManager::~ParameterManager(void)
+pylith::topology::FieldsManager::~FieldsManager(void)
 { // destructor
 } // destructor
 
 // ----------------------------------------------------------------------
-// Add parameter.
+// Add field.
 void
-pylith::feassemble::ParameterManager::addReal(const char* name)
+pylith::topology::FieldsManager::addReal(const char* name)
 { // addReal
   assert(!_mesh.isNull());
 
   map_real_type::iterator iter = _real.find(name);
   if (iter != _real.end()) {
     std::ostringstream msg;
-    msg << "Could not add parameter '" << name
-	<< "'. Parameter already exists.";
+    msg << "Could not add field '" << name
+	<< "', because it already exists.";
     throw std::runtime_error(msg.str());
   } // if
   
-  ALE::Obj<real_section_type> parameter = 
+  ALE::Obj<real_section_type> field = 
     new real_section_type(_mesh->comm(), _mesh->debug());
-  _real[name] = parameter;
+  _real[name] = field;
 } // addReal
 
 // ----------------------------------------------------------------------
-// Get parameter.
+// Get field.
 const ALE::Obj<pylith::real_section_type>&
-pylith::feassemble::ParameterManager::getReal(const char* name)
+pylith::topology::FieldsManager::getReal(const char* name)
 { // getReal
   map_real_type::const_iterator iter = _real.find(name);
   if (iter == _real.end()) {
     std::ostringstream msg;
-    msg << "Could not find parameter '" << name << "'.";
+    msg << "Could not find field '" << name << "'.";
     throw std::runtime_error(msg.str());
   } // if
   return _real[name];

@@ -14,7 +14,7 @@
 
 #include "SlipTimeFn.hh" // implementation of object methods
 
-#include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
+#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 
 // ----------------------------------------------------------------------
 // Default constructor.
