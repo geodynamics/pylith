@@ -218,7 +218,7 @@ pylith::bc::TestDirichlet::_initialize(ALE::Obj<Mesh>* mesh,
   cs.setSpaceDim((*mesh)->getDimension());
   cs.initialize();
 
-  spatialdata::spatialdb::SimpleDB db;
+  spatialdata::spatialdb::SimpleDB db("TestDirichlet");
   spatialdata::spatialdb::SimpleIOAscii dbIO;
   dbIO.filename(_data->dbFilename);
   db.ioHandler(&dbIO);

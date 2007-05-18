@@ -11,31 +11,31 @@
 //
 
 /**
- * @file unittests/libtests/bc/TestDirichletLine2.hh
+ * @file unittests/libtests/bc/TestDirichletHex8.hh
  *
  * @brief C++ TestDirichlet object.
  *
  * C++ unit testing for Dirichlet for mesh with 1-D line cells.
  */
 
-#if !defined(pylith_bc_testdirichletline2_hh)
-#define pylith_bc_testdirichletline2_hh
+#if !defined(pylith_bc_testdirichlethex8_hh)
+#define pylith_bc_testdirichlethex8_hh
 
 #include "TestDirichlet.hh" // ISA TestDirichlet
 
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
-    class TestDirichletLine2;
+    class TestDirichletHex8;
   } // bc
 } // pylith
 
-/// C++ unit testing for Dirichlet for mesh with 1-D line cells.
-class pylith::bc::TestDirichletLine2 : public TestDirichlet
+/// C++ unit testing for Dirichlet for mesh with 3-D hex cells.
+class pylith::bc::TestDirichletHex8 : public TestDirichlet
 { // class TestDirichlet
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDirichletLine2 );
+  CPPUNIT_TEST_SUITE( TestDirichletHex8 );
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testSetConstraintSizes );
   CPPUNIT_TEST( testSetConstraints );
@@ -51,9 +51,9 @@ public :
   /// Tear down testing data.
   void tearDown(void);
 
-}; // class TestDirichletLine2
+}; // class TestDirichletHex8
 
-#endif // pylith_bc_dirichletline2_hh
+#endif // pylith_bc_dirichlethex8_hh
 
 
 // End of file 

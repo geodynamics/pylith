@@ -37,7 +37,7 @@ const int pylith::bc::DirichletDataLine2::_constrainedPoints[] = { 0, 2 };
 const double pylith::bc::DirichletDataLine2::_values[] = { 1.1, 2.2 };
 
 const char* pylith::bc::DirichletDataLine2::_meshFilename = 
-  "data/meshLine2.txt";
+  "data/line2.mesh";
 const char* pylith::bc::DirichletDataLine2::_dbFilename =
   "data/line2.spatialdb";
 
