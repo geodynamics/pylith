@@ -159,8 +159,6 @@ cdef class Mesh:
         (*mesh)->getRealSection(label);
       assert(!section.isNull());
       section->setFiberDimension((*mesh)->depthStratum(0), fiberDim);
-      (*mesh)->allocate(section);
-      section->zero();
       result = (void*) &section;
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -177,6 +175,40 @@ cdef class Mesh:
     cdef void* ptr
     ptr = Mesh_createRealSection(self.thisptr, label, fiberDim)
     return PyCObject_FromVoidPtr(ptr, NULL)
+    
+
+  def allocateRealSection(self, section):
+    """
+    Allocate (and zero) real section.
+    """
+    # create shim for allocate
+    #embed{ void* Mesh_allocateRealSection(void* objVptr, void* sectionVptr)
+    typedef ALE::Mesh::real_section_type real_section_type;
+    
+    try {
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
+      ALE::Obj<pylith::real_section_type>* section =
+        (ALE::Obj<pylith::real_section_type>*) sectionVptr;
+      assert(0 != mesh);
+      assert(!mesh->isNull());
+      assert(0 != section);
+      assert(!section->isNull());
+      (*mesh)->allocate(*section);
+      (*section)->zero();
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    cdef void* ptr
+    ptr = Mesh_allocateRealSection(self.thisptr, PyCObject_AsVoidPtr(section))
+    return
     
 
   def createMatrix(self, field):

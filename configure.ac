@@ -231,6 +231,8 @@ AC_CONFIG_FILES([Makefile
 		unittests/libtests/meshio/data/Makefile
 		unittests/libtests/topology/Makefile
 		unittests/pytests/Makefile
+		unittests/pytests/bc/Makefile
+		unittests/pytests/bc/data/Makefile
 		unittests/pytests/faults/Makefile
 		unittests/pytests/faults/data/Makefile
 		unittests/pytests/feassemble/Makefile

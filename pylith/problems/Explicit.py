@@ -86,11 +86,20 @@ class Explicit(Formulation):
     self._info.log("Initializing integrators.")
 
     self._info.log("Creating fields and matrices.")
-    self.dispT = mesh.cppHandle.createRealSection("dispT", dimension)
-    self.dispTmdt = mesh.cppHandle.createRealSection("dispTmdt", dimension)
-    self.dispTpdt = mesh.cppHandle.createRealSection("dispTpdt", dimension)
-    self.constant = mesh.cppHandle.createRealSection("constant", dimension)
-    self.jacobian = mesh.cppHandle.createMatrix(self.constant)
+    self.dispT = mesh.createRealSection("dispT", dimension)
+    self.dispTmdt = mesh.createRealSection("dispTmdt", dimension)
+    self.dispTpdt = mesh.createRealSection("dispTpdt", dimension)
+    self.constant = mesh.createRealSection("constant", dimension)
+
+    # Setup constraints
+    # STUFF GOES HERE
+
+    mesh.allocateRealSection(self.dispT)
+    mesh.allocateRealSection(self.dispTmdt)
+    mesh.allocateRealSection(self.dispTpdt)
+    mesh.allocateRealSection(self.constant)
+    
+    self.jacobian = mesh.createMatrix(self.constant)
 
     self._info.log("Integrating Jacobian of operator.")
     for integrator in self.integrators:

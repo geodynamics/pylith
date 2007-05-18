@@ -77,6 +77,38 @@ class Mesh(Component):
     return comm
 
 
+  def getRealSection(self, label):
+    """
+    Get real section from mesh.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.getRealSection(label)
+
+
+  def createRealSection(self, label, fiberDim):
+    """
+    Create real section (but don't allocate).
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.createRealSection(label, fiberDim)
+
+
+  def allocateRealSection(self, field):
+    """
+    Allocated (and zero) real section.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.allocateRealSection(field)
+
+
+  def createMatrix(self, field):
+    """
+    Create sparse matrix compatible with field.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.createMatrix(field)
+  
+
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def _configure(self):

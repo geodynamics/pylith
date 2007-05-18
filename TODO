@@ -13,9 +13,8 @@ Cleanup
   dimensions, we probably want to allow it in MeshIO, just not in the
   simulation where we don't support it.
 
-1. Implement Dirichlet boundary conditions
-   c. C++ unit tests
-   d. Python unit tests
+1. Unit tests for Mesh.py
+  create section, matrix, etc
 
 2. Finish implementing ExplicitElasticity and Explicit
    a. Replace integrateConstant() with integrateResidual()

@@ -47,7 +47,7 @@ class Dirichlet(BoundaryCondition):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(Component.Inventory):
+  class Inventory(BoundaryCondition.Inventory):
     """
     Python object for managing BoundaryCondition facilities and properties.
     """
@@ -63,8 +63,8 @@ class Dirichlet(BoundaryCondition):
 
     import pyre.inventory
 
-    fixeDOF = pyre.inventory.list("fixed_dof", default=[],
-                                  validator=validateDOF)
+    fixedDOF = pyre.inventory.list("fixed_dof", default=[],
+                                   validator=validateDOF)
     fixedDOF.meta['tip'] = "Indices of fixed DOF (0=1st DOF, 1=2nd DOF, etc)."
     
 
@@ -86,8 +86,8 @@ class Dirichlet(BoundaryCondition):
     Initialize Dirichlet boundary condition.
     """
     BoundaryCondition.initialize(self, mesh)
-    self.cppHandle.fixedDOF = fixedDOF
-    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys)
+    self.cppHandle.fixedDOF = self.fixedDOF
+    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle)
     return
   
 
@@ -96,7 +96,7 @@ class Dirichlet(BoundaryCondition):
     Set number of constraints at points in field.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.setConstraintSizes(field)
+    self.cppHandle.setConstraintSizes(field, mesh.cppHandle)
     return
 
 
@@ -105,7 +105,7 @@ class Dirichlet(BoundaryCondition):
     Set which degrees of freedom are constrained at points in field.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.setConstraints(field)
+    self.cppHandle.setConstraints(field, mesh.cppHandle)
     return
 
 
@@ -114,7 +114,7 @@ class Dirichlet(BoundaryCondition):
     Set solution field at time t.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.setField(field, t)
+    self.cppHandle.setField(t, field, mesh.cppHandle)
     return
   
 
