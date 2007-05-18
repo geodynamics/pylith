@@ -13,6 +13,8 @@
 subpackage = topology
 include $(top_srcdir)/subpackage.am
 
+SUBDIRS = data
+
 TESTS = testdriver.py
 
 check_SCRIPTS = testdriver.py
