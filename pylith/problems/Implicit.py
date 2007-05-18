@@ -101,6 +101,8 @@ class Implicit(Formulation):
     mesh.allocateRealSection(self.dispTpdt)
     mesh.allocateRealSection(self.residual)
 
+    self.jacobian = mesh.createMatrix(self.residual)
+
     self._info.log("Integrating Jacobian of operator.")
     for integrator in self.integrators:
       integrator.timeStep(dt)

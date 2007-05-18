@@ -18,8 +18,10 @@ __all__ = ['ExplicitElasticity',
            'FIATCell',
            'FIATLagrange',
            'FIATSimplex',
+           'ImplicitElasticity',
            'Integrator',
            'IntegratorExplicit',
+           'IntegratorImplicit',
            'ReferenceCell',
            'quadrature']
 
