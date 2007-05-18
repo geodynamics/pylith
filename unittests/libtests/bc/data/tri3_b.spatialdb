@@ -1,0 +1,14 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 1
+  value-names =  dof-0
+  value-units =  m
+  num-locs = 1
+  data-dim = 0
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 2
+  }
+}
+ 0.0  0.0  0.9
