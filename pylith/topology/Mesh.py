@@ -69,7 +69,7 @@ class Mesh(Component):
     """
     Get MPI communicator associated with mesh.
     """
-    #comm = None
+    comm = None
     #if not self.cppHandle is None:
     #  comm = self.cppHandle.comm
     import mpi
@@ -109,7 +109,7 @@ class Mesh(Component):
     return self.cppHandle.createMatrix(field)
   
 
-  # PUBLIC METHODS /////////////////////////////////////////////////////
+  # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):
     """
