@@ -48,7 +48,7 @@ pylith::feassemble::IntegratorImplicit::timeStep(const double dt)
   if (_dt != -1.0)
     _dtm1 = _dt;
   else
-    _dtm1 = _dt;
+    _dtm1 = dt;
   _dt = dt;
   assert(_dt == _dtm1); // For now, don't allow variable time step
 } // timeStep

@@ -28,10 +28,12 @@ nobase_pkgpyexec_PYTHON = \
 	faults/SlipTimeFn.py \
 	feassemble/__init__.py \
 	feassemble/ExplicitElasticity.py \
+	feassemble/ImplicitElasticity.py \
 	feassemble/FIATCell.py \
 	feassemble/FIATSimplex.py \
 	feassemble/Integrator.py \
 	feassemble/IntegratorExplicit.py \
+	feassemble/IntegratorImplicit.py \
 	feassemble/ReferenceCell.py \
 	feassemble/quadrature/Quadrature.py \
 	feassemble/quadrature/Quadrature1D.py \
