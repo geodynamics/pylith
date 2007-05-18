@@ -45,7 +45,6 @@ libpylith_la_SOURCES = \
 	feassemble/Quadrature2D.cc \
 	feassemble/Quadrature2Din3D.cc \
 	feassemble/Quadrature3D.cc \
-	feassemble/ParameterManager.cc \
 	materials/Material.cc \
 	materials/ElasticStress1D.cc \
 	materials/ElasticStrain1D.cc \
@@ -66,6 +65,7 @@ libpylith_la_SOURCES = \
 	meshio/SolutionIO.cc \
 	meshio/SolutionIOVTK.cc \
 	topology/CellGeometry.cc \
+	topology/FieldsManager.cc \
 	topology/GeometryPoint1D.cc \
 	topology/GeometryPoint2D.cc \
 	topology/GeometryPoint3D.cc \

@@ -11,17 +11,14 @@
 //
 
 /**
- * @file pylith/feassemble/ParameterManager.hh
+ * @file pylith/topology/FieldsManager.hh
  *
- * @brief Object for managing fields associated with parameters for
- * finite-elements.
- *
- * The parameter manager stores the fields associated with parameters
- * for physical properties or boundary conditions.
+ * @brief Object for managing fields associated with the fields
+ * defined over a finite-element mesh.
  */
 
-#if !defined(pylith_feassemble_parametermanager_hh)
-#define pylith_feassemble_parametermanager_hh
+#if !defined(pylith_topology_fieldsmanager_hh)
+#define pylith_topology_fieldsmanager_hh
 
 #include <map> // HASA std::map
 #include <string> // USES std::string
@@ -29,34 +26,34 @@
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
 namespace pylith {
-  namespace feassemble {
-    class ParameterManager;
-    class TestParameterManager;
-  } // feassemble
+  namespace topology {
+    class FieldsManager;
+    class TestFieldsManager;
+  } // topology
 } // pylith
 
-class pylith::feassemble::ParameterManager
-{ // ParameterManager
-  friend class TestParameterManager; // unit testing
+class pylith::topology::FieldsManager
+{ // FieldsManager
+  friend class TestFieldsManager; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  ParameterManager(const ALE::Obj<Mesh>& mesh);
+  FieldsManager(const ALE::Obj<Mesh>& mesh);
 
   /// Destructor
-  ~ParameterManager(void);
+  ~FieldsManager(void);
 
-  /** Add parameter.
+  /** Add fields.
    *
-   * @param name Name of parameter field
+   * @param name Name of fields field
    */
   void addReal(const char* name);
 
-  /** Get parameter.
+  /** Get fields.
    *
-   * @param name Name of parameter field
+   * @param name Name of fields field
    */
   const ALE::Obj<real_section_type>& getReal(const char* name);
 
@@ -64,10 +61,10 @@ public :
 private :
 
   /// Not implemented
-  ParameterManager(const ParameterManager& m);
+  FieldsManager(const FieldsManager& m);
 
   /// Not implemented
-  const ParameterManager& operator=(const ParameterManager&);
+  const FieldsManager& operator=(const FieldsManager&);
 
 // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private :
@@ -80,12 +77,12 @@ private :
   /// PETSc mesh associated with fields
   const ALE::Obj<Mesh>& _mesh;
 
-  /// Map for parameters stored as real fields
+  /// Map for fieldss stored as real fields
   map_real_type _real;
 
-}; // ParameterManager
+}; // FieldsManager
 
-#endif // pylith_feassemble_parametermanager_hh
+#endif // pylith_topology_fieldsmanager_hh
 
 
 // End of file 

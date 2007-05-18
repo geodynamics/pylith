@@ -19,7 +19,7 @@
 
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
 #include "pylith/utils/array.hh" // USES double_array
-#include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
+#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticMaterial );
@@ -79,7 +79,7 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   ElasticIsotropic3D material;
   ElasticIsotropic3DData data;
   delete material._parameters; 
-  material._parameters = new feassemble::ParameterManager(mesh);
+  material._parameters = new topology::FieldsManager(mesh);
   const int numQuadPts = 2;
   const int fiberDim = numQuadPts; // number of values in field per cell
 
@@ -160,7 +160,7 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
   ElasticIsotropic3D material;
   ElasticIsotropic3DData data;
   delete material._parameters; 
-  material._parameters = new feassemble::ParameterManager(mesh);
+  material._parameters = new topology::FieldsManager(mesh);
   const int numQuadPts = 2;
   const int fiberDim = numQuadPts; // number of values in field per cell
 
@@ -270,7 +270,7 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
   ElasticIsotropic3D material;
   ElasticIsotropic3DData data;
   delete material._parameters; 
-  material._parameters = new feassemble::ParameterManager(mesh);
+  material._parameters = new topology::FieldsManager(mesh);
   const int numQuadPts = 2;
   const int fiberDim = numQuadPts; // number of values in field per cell
 

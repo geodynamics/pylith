@@ -33,8 +33,11 @@ namespace pylith {
   } // materials
 
   namespace feassemble {
-    class ParameterManager; // HOLDSA ParameterManager
     class Quadrature; // USES Quadrature
+  } // feassemble
+
+  namespace topology {
+    class FieldsManager; // HOLDSA FieldsManager
   } // feassemble
 } // pylith
 
@@ -176,7 +179,7 @@ private :
 protected :
 
   ///< Manager of parameters for physical properties of material
-  pylith::feassemble::ParameterManager* _parameters;
+  topology::FieldsManager* _parameters;
 
   int _dimension; ///< Spatial dimension associated with material
 

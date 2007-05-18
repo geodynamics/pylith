@@ -35,8 +35,7 @@ subpkginclude_HEADERS = \
 	Quadrature2Din3D.hh \
 	Quadrature2Din3D.icc \
 	Quadrature3D.hh \
-	Quadrature3D.icc \
-	ParameterManager.hh
+	Quadrature3D.icc
 
 noinst_HEADERS =
 

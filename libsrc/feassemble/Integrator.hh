@@ -32,7 +32,6 @@ namespace pylith {
     class TestIntegrator;
 
     class Quadrature; // HOLDSA Quadrature
-    class ParameterManager; // HOLDSA ParameterManager
   } // feassemble
 } // pylith
 

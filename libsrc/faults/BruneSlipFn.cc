@@ -14,7 +14,7 @@
 
 #include "BruneSlipFn.hh" // implementation of object methods
 
-#include "pylith/feassemble/ParameterManager.hh" // USES ParameterManager
+#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -75,7 +75,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
 
   // Create and allocate sections for parameters
   delete _parameters; 
-  _parameters = new feassemble::ParameterManager(faultMesh);
+  _parameters = new topology::FieldsManager(faultMesh);
   if (0 == _parameters)
     throw std::runtime_error("Could not create manager for parameters of "
 			     "Brune slip time function.");

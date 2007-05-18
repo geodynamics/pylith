@@ -29,8 +29,8 @@ namespace pylith {
     class TestSlipTimeFn; // unit testing
   } // faults
 
-  namespace feassemble {
-    class ParameterManager; // HOLDSA ParameterManager
+  namespace topology {
+    class FieldsManager; // HOLDSA FieldsManager
   } // feassemble
 } // pylith
 
@@ -104,7 +104,7 @@ private :
 protected :
 
   /// Parameters for slip time function
-  feassemble::ParameterManager* _parameters;
+  topology::FieldsManager* _parameters;
 
 }; // class SlipTimeFn
 
