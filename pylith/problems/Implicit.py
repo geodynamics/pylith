@@ -22,7 +22,7 @@ from Formulation import Formulation
 # Implicit class
 class Implicit(Formulation):
   """
-  Python Implicit object for solving equations using an explicit
+  Python Implicit object for solving equations using an implicit
   formulation.
 
   The formulation has the general form, [A(t+dt)] {u(t+dt)} = {b(t+dt)},
@@ -162,7 +162,7 @@ class Implicit(Formulation):
 
 def pde_formulation():
   """
-  Factory associated with Explicit.
+  Factory associated with Implicit.
   """
   return Implicit()
 
