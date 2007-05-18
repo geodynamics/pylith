@@ -90,10 +90,16 @@ class Implicit(Formulation):
     self._info.log("Initializing integrators.")
 
     self._info.log("Creating fields and matrices.")
-    self.dispT = mesh.cppHandle.createRealSection("dispT", dimension)
-    self.dispTpdt = mesh.cppHandle.createRealSection("dispTpdt", dimension)
-    self.residual = mesh.cppHandle.createRealSection("residual", dimension)
-    self.jacobian = mesh.cppHandle.createMatrix(self.residual)
+    self.dispT = mesh.createRealSection("dispT", dimension)
+    self.dispTpdt = mesh.createRealSection("dispTpdt", dimension)
+    self.residual = mesh.createRealSection("residual", dimension)
+
+    # Setup constraints
+    # STUFF GOES HERE
+
+    mesh.allocateRealSection(self.dispT)
+    mesh.allocateRealSection(self.dispTpdt)
+    mesh.allocateRealSection(self.residual)
 
     self._info.log("Integrating Jacobian of operator.")
     for integrator in self.integrators:
