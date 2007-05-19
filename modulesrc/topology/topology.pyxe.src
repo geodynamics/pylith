@@ -11,6 +11,7 @@
 #
 
 #header{
+#include "pylith/topology/FieldsManager.hh"
 #include "pylith/utils/sievetypes.hh"
 #include "pylith/utils/petscfwd.h"
 #include <Generator.hh>
@@ -65,6 +66,17 @@ cdef void PetscMat_destructor(void* obj):
   PetscMat_destructor_cpp(obj)
   return
 
+cdef void FieldsManager_destructor(void* obj):
+  """
+  Destroy FieldsManager.
+  """
+  #embed{ void FieldsManager_destructor_cpp(void* objVptr)
+  pylith::topology::FieldsManager* manager = (pylith::topology::FieldsManager*) objVptr;
+  delete manager;
+  #}embed
+  FieldsManager_destructor_cpp(obj)
+  return
+
 # ----------------------------------------------------------------------
 
 cimport mpi
@@ -113,15 +125,13 @@ cdef class Mesh:
     Get real section from mesh.
     """
     # create shim for getRealSection
-    #embed{ void* Mesh_getRealSection(void* objVptr, char* label)
-    typedef ALE::Mesh::real_section_type real_section_type;
-    
+    #embed{ void* Mesh_getRealSection(void* objVptr, char* label)    
     void* result = 0;
     try {
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
       assert(0 != mesh);
       assert(!mesh->isNull());
-      const ALE::Obj<real_section_type>& section =
+      const ALE::Obj<pylith::real_section_type>& section =
         (*mesh)->getRealSection(label);
       assert(!section.isNull());
       result = (void*) &section;
@@ -148,14 +158,12 @@ cdef class Mesh:
     """
     # create shim for createRealSection
     #embed{ void* Mesh_createRealSection(void* objVptr, char* label, int fiberDim)
-    typedef ALE::Mesh::real_section_type real_section_type;
-    
     void* result = 0;
     try {
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
       assert(0 != mesh);
       assert(!mesh->isNull());
-      const ALE::Obj<real_section_type>& section =
+      const ALE::Obj<pylith::real_section_type>& section =
         (*mesh)->getRealSection(label);
       assert(!section.isNull());
       section->setFiberDimension((*mesh)->depthStratum(0), fiberDim);
@@ -183,8 +191,6 @@ cdef class Mesh:
     """
     # create shim for allocate
     #embed{ void* Mesh_allocateRealSection(void* objVptr, void* sectionVptr)
-    typedef ALE::Mesh::real_section_type real_section_type;
-    
     try {
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
       ALE::Obj<pylith::real_section_type>* section =
@@ -217,15 +223,13 @@ cdef class Mesh:
     """
     # create shim for MeshCreateMatrix
     #embed{ void* Mesh_createMatrix(void* objVptr, void* fieldVptr)
-    typedef ALE::Mesh::real_section_type real_section_type;
-    
     void* result = 0;
     try {
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
       assert(0 != mesh);
       assert(!mesh->isNull());
-      const ALE::Obj<real_section_type>* field =
-        (ALE::Obj<real_section_type>*) fieldVptr;
+      const ALE::Obj<pylith::real_section_type>* field =
+        (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       assert(!field->isNull());
 
       PetscMat* mat = new PetscMat;
@@ -476,6 +480,184 @@ cdef class Distributor:
                            partitioner)
     return newMesh
 
+
+# ----------------------------------------------------------------------
+cdef class FieldsManager:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* FieldsManager_constructor(void* meshVptr)
+    void* result = 0;
+    try {
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      assert(0 != mesh);
+      assert(!mesh->isNull());
+      pylith::topology::FieldsManager* manager =
+        new pylith::topology::FieldsManager(*mesh);
+      result = (void*) manager;
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    self.thisptr = FieldsManager_constructor(ptrFromHandle(mesh))
+    self.handle = self._createHandle()
+    self.name = "pylith_topology_FieldsManager"
+    return
+
+
+  def getReal(self, label):
+    """
+    Get real field over mesh.
+    """
+    # create shim for getReal
+    #embed{ void* Mesh_getReal(void* objVptr, char* label)
+    void* result = 0;
+    try {
+      pylith::topology::FieldsManager* manager =
+      (pylith::topology::FieldsManager*) objVptr;
+      assert(0 != manager);
+      const ALE::Obj<pylith::real_section_type>& field =
+        manager->getReal(label);
+      assert(!field.isNull());
+      result = (void*) &field;
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+    cdef void* ptr
+    ptr = Mesh_getReal(self.thisptr, label)
+    return PyCObject_FromVoidPtr(ptr, NULL)
+    
+
+  def addReal(self, label):
+    """
+    Create real section over mesh.
+    """
+    # create shim for addReal
+    #embed{ void Mesh_addReal(void* objVptr, char* label)
+    try {
+      assert(0 != objVptr);
+      ((pylith::topology::FieldsManager*) objVptr)->addReal(label);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    Mesh_addReal(self.thisptr, label)
+    return
+
+
+  def delReal(self, label):
+    """
+    Delete real section over mesh.
+    """
+    # create shim for delReal
+    #embed{ void Mesh_delReal(void* objVptr, char* label)
+    try {
+      assert(0 != objVptr);
+      ((pylith::topology::FieldsManager*) objVptr)->delReal(label);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    Mesh_delReal(self.thisptr, label)
+    return
+
+
+  def copyLayout(self, label):
+    """
+    Copy layout of given section to all other sections in manager.
+    """
+    # create shim for copyLayout
+    #embed{ void Mesh_copyLayout(void* objVptr, char* label)
+    try {
+      assert(0 != objVptr);
+      ((pylith::topology::FieldsManager*) objVptr)->copyLayout(label);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    Mesh_copyLayout(self.thisptr, label)
+    return
+
+
+  def copyLayoutFromSrc(self, field):
+    """
+    Copy layout of section to all sections in manager.
+    """
+    # create shim for copyLayout
+    #embed{ void Mesh_copyLayoutFromSrc(void* objVptr, void* fieldVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      const ALE::Obj<pylith::real_section_type>* field =
+        (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ((pylith::topology::FieldsManager*) objVptr)->copyLayout(*field);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    Mesh_copyLayoutFromSrc(self.thisptr, PyCObject_AsVoidPtr(field))
+    return
+
+
+  def _createHandle(self):
+    """
+    Wrap pointer to C++ object in PyCObject.
+    """
+    return PyCObject_FromVoidPtr(self.thisptr, FieldsManager_destructor)
+    
 
 # ----------------------------------------------------------------------
 def zeroRealSection(section):

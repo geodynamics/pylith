@@ -45,17 +45,35 @@ public :
   /// Destructor
   ~FieldsManager(void);
 
-  /** Add fields.
+  /** Add field.
    *
-   * @param name Name of fields field
+   * @param name Name of field.
    */
   void addReal(const char* name);
 
-  /** Get fields.
+  /** Get field.
    *
-   * @param name Name of fields field
+   * @param name Name of field.
    */
   const ALE::Obj<real_section_type>& getReal(const char* name);
+
+  /** Remove field.
+   *
+   * @param name Name of field.
+   */
+  void delReal(const char* name);
+
+  /** Copy layout of field to all other fields.
+   *
+   * @param name Name of field.
+   */
+  void copyLayout(const char* name);
+
+  /** Copy layout of field to managed fields.
+   *
+   * @param field Field from which to copy layout.
+   */
+  void copyLayout(const ALE::Obj<real_section_type>& field);
 
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :

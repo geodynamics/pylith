@@ -131,6 +131,9 @@ pylith::bc::TestDirichlet::testSetConstraints(void)
   mesh->allocate(field);
   bc.setConstraints(field, mesh);
 
+  // ADD STUFF HERE
+  // use getConstraintDof()
+
   // No accessor in real_section_type to verify constraints are set
   // correctly. For now, rely on testSetField test.
 } // testSetConstraints
