@@ -13,8 +13,22 @@ Cleanup
   dimensions, we probably want to allow it in MeshIO, just not in the
   simulation where we don't support it.
 
-1. Unit tests for Mesh.py
-  create section, matrix, etc
+0. Create FieldsManager
+  b. C++ unit tests
+  c. Python unit tests
+
+Update TestDirichlet to check constraints.
+  getConstraintDof() IS IMPLEMENTED!
+
+1. Switch to more uniform implementation of integrators.
+
+  Formulation HASA FieldsManager (solnfields)
+
+  Integrators have
+    integrateResidual(residual, solnfields, mesh, timeId)
+    integrateJacobian(jacobian, solnfields, mesh, timeId)
+
+  timeId = {'t+dt', 't', 't-dt'}
 
 2. Finish implementing ExplicitElasticity and Explicit
    a. Replace integrateConstant() with integrateResidual()
@@ -26,10 +40,11 @@ Cleanup
 
    c. Add unit test for IntegratorElasticity::calcTotalStrain
 
-2a.
+2a. Cleanup integrators and boundary conditions.
 
-  Add feature to materials and integrators wherein they indicate if
-  the Jacobian needs to be reformed at the current time step.
+   a. Categorize into "integrators" and "constraints"
+   b. Add feature to materials and integrators wherein they indicate
+      if the Jacobian needs to be reformed at the current time step.
 
 3. Add dualBasis to Quadrature.
    a. Python

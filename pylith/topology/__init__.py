@@ -14,7 +14,9 @@
 
 ## @brief Python PyLith finite-element topology module initialization
 
-__all__ = ['Mesh',
+__all__ = ['Distributor',
+           'FieldsManager',
+           'Mesh',
            'MeshDistributor',
            'MeshGenerator',
            'MeshImporter']
