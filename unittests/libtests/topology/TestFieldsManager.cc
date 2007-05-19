@@ -19,8 +19,6 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
-#include <stdexcept> // TEMPORARY
-
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldsManager );
 
@@ -93,7 +91,48 @@ pylith::topology::TestFieldsManager::testDelReal(void)
 void
 pylith::topology::TestFieldsManager::testCopyLayout(void)
 { // testCopyLayout
-  throw std::logic_error("Unit test not implemented.");
+  ALE::Obj<Mesh> mesh;
+  _initialize(&mesh);
+  FieldsManager manager(mesh);
+  const int numCells = mesh->heightStratum(0)->size();
+  const int offset = numCells;
+
+  const char* labelA = "field A";
+  manager.addReal(labelA);
+  const int fiberDim = 3;
+  const int fixedDim = 1;
+  const Mesh::point_type fixedPt = offset + 2;
+
+  const ALE::Obj<real_section_type>& fieldA = manager.getReal(labelA);
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  fieldA->setFiberDimension(vertices, fiberDim);
+  fieldA->setConstraintDimension(fixedPt, 1);
+  mesh->allocate(fieldA);
+  fieldA->setConstraintDof(fixedPt, &fixedDim);
+
+  const char* labelB = "field B";
+  manager.addReal(labelB);
+
+  manager.copyLayout(labelA);
+
+  size_t size = 2;
+  CPPUNIT_ASSERT_EQUAL(size, manager._real.size());
+  const ALE::Obj<real_section_type>& fieldB = manager.getReal(labelB);
+  
+  CPPUNIT_ASSERT_EQUAL(fieldA->size(), fieldB->size());
+  CPPUNIT_ASSERT_EQUAL(fieldA->sizeWithBC(), fieldB->sizeWithBC());
+  for (Mesh::label_sequence::iterator v_iter = vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    if (*v_iter != fixedPt) {
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldB->getFiberDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(0, fieldB->getConstraintDimension(*v_iter));
+    } else {
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldB->getFiberDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(1, fieldB->getConstraintDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(fixedDim, fieldB->getConstraintDof(*v_iter)[0]);
+    } // if/else
+  } // for
 } // testCopyLayout
 
 // ----------------------------------------------------------------------
@@ -101,7 +140,56 @@ pylith::topology::TestFieldsManager::testCopyLayout(void)
 void
 pylith::topology::TestFieldsManager::testCopyLayoutFromField(void)
 { // testCopyLayoutFromField
-  throw std::logic_error("Unit test not implemented.");
+  ALE::Obj<Mesh> mesh;
+  _initialize(&mesh);
+  FieldsManager manager(mesh);
+  const int numCells = mesh->heightStratum(0)->size();
+  const int offset = numCells;
+
+  const char* labelA = "field A";
+  const ALE::Obj<real_section_type>& fieldA = 
+    new real_section_type(mesh->comm(), mesh->debug());
+  const int fiberDim = 3;
+  const int fixedDim = 1;
+  const Mesh::point_type fixedPt = offset + 2;
+
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  fieldA->setFiberDimension(vertices, fiberDim);
+  fieldA->setConstraintDimension(fixedPt, 1);
+  mesh->allocate(fieldA);
+  fieldA->setConstraintDof(fixedPt, &fixedDim);
+
+  const char* labelB = "field B";
+  manager.addReal(labelB);
+  const char* labelC = "field C";
+  manager.addReal(labelC);
+
+  manager.copyLayout(fieldA);
+
+  size_t size = 2;
+  CPPUNIT_ASSERT_EQUAL(size, manager._real.size());
+  const ALE::Obj<real_section_type>& fieldB = manager.getReal(labelB);
+  const ALE::Obj<real_section_type>& fieldC = manager.getReal(labelC);
+  
+  CPPUNIT_ASSERT_EQUAL(fieldA->size(), fieldB->size());
+  CPPUNIT_ASSERT_EQUAL(fieldA->sizeWithBC(), fieldB->sizeWithBC());
+  for (Mesh::label_sequence::iterator v_iter = vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    if (*v_iter != fixedPt) {
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldB->getFiberDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(0, fieldB->getConstraintDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldC->getFiberDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(0, fieldC->getConstraintDimension(*v_iter));
+    } else {
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldB->getFiberDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(1, fieldB->getConstraintDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(fixedDim, fieldB->getConstraintDof(*v_iter)[0]);
+      CPPUNIT_ASSERT_EQUAL(fiberDim, fieldC->getFiberDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(1, fieldC->getConstraintDimension(*v_iter));
+      CPPUNIT_ASSERT_EQUAL(fixedDim, fieldC->getConstraintDof(*v_iter)[0]);
+    } // if/else
+  } // for
 } // testCopyLayoutFromField
 
 // ----------------------------------------------------------------------

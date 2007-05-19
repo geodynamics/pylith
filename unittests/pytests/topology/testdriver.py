@@ -63,6 +63,9 @@ class TestApp(Script):
     from TestMeshImporter import TestMeshImporter
     suite.addTest(unittest.makeSuite(TestMeshImporter))
 
+    from TestFieldsManager import TestFieldsManager
+    suite.addTest(unittest.makeSuite(TestFieldsManager))
+
     return suite
 
 

@@ -104,7 +104,6 @@ pylith::topology::FieldsManager::copyLayout(const char* name)
     if (iter != src) {
       // Make sure fields are same size
       assert(!iter->second.isNull());
-      assert(src->second->sizeWithBC() == iter->second->sizeWithBC());
       for (real_section_type::chart_type::iterator p_iter=srcBegin;
 	   p_iter != srcEnd;
 	   ++p_iter) {
@@ -140,7 +139,6 @@ pylith::topology::FieldsManager::copyLayout(
   for (map_real_type::iterator iter=begin; iter != end; ++iter) {
     // Make sure fields are same size
     assert(!iter->second.isNull());
-    assert(field->sizeWithBC() == iter->second->sizeWithBC());
     for (real_section_type::chart_type::iterator p_iter=srcBegin;
 	 p_iter != srcEnd;
 	 ++p_iter) {

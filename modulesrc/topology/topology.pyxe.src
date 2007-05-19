@@ -488,7 +488,7 @@ cdef class FieldsManager:
   cdef readonly object handle # PyCObject holding pointer to C++ object
   cdef readonly object name # Identifier for object base type
 
-  def __init__(self):
+  def __init__(self, mesh):
     """
     Constructor.
     """
