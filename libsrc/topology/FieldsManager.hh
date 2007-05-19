@@ -63,6 +63,23 @@ public :
    */
   void delReal(const char* name);
 
+  /** Set fiber dimension for field.
+   *
+   * @param name Name of field.
+   * @param fiberDim Fiber dimension
+   * @param points Name of set of points in mesh over which section is defined
+   *   { "vertices", "cells" }
+   */
+  void setFiberDimension(const char* name,
+			 const int fiberDim,
+			 const char* points);
+
+  /** Allocate field.
+   *
+   * @param name Name of field.
+   */
+  void allocate(const char* name);
+
   /** Copy layout of field to all other fields.
    *
    * @param name Name of field.

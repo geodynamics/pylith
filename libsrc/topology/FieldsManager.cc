@@ -80,6 +80,58 @@ pylith::topology::FieldsManager::delReal(const char* name)
 } // delReal
 
 // ----------------------------------------------------------------------
+// Set fiber dimension for field.
+void
+pylith::topology::FieldsManager::setFiberDimension(const char* name,
+						   const int fiberDim,
+						   const char* points)
+{ // setFiberDimension
+  assert(!_mesh.isNull());
+  assert(fiberDim >= 0);
+
+  map_real_type::const_iterator iter = _real.find(name);
+  if (iter == _real.end()) {
+    std::ostringstream msg;
+    msg << "Could not find field '" << name << "' to delete.";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  assert(!_real[name].isNull());
+  if (0 == strcasecmp(points, "vertices")) {
+    const ALE::Obj<Mesh::label_sequence>& vertices = _mesh->depthStratum(0);
+    _real[name]->setFiberDimension(vertices, fiberDim);
+  } else if (0 == strcasecmp(points, "cells")) {
+    const ALE::Obj<Mesh::label_sequence>& cells = _mesh->heightStratum(0);
+    _real[name]->setFiberDimension(cells, fiberDim);
+  } else {
+    std::ostringstream msg;
+    msg << "Could not determine parse '" << points
+	<< "' into a known point type when setting fiber dimension to "
+	<< fiberDim << " for section '" << name << "'.\n"
+	<< "Known point types are 'vertices' and 'cells'.";
+    throw std::runtime_error(msg.str());
+  } // if/else
+} // setFiberDimension
+
+// ----------------------------------------------------------------------
+// Allocate field.
+void
+pylith::topology::FieldsManager::allocate(const char* name)
+{ // allocate
+  assert(!_mesh.isNull());
+
+  map_real_type::const_iterator iter = _real.find(name);
+  if (iter == _real.end()) {
+    std::ostringstream msg;
+    msg << "Could not find field '" << name << "' to delete.";
+    throw std::runtime_error(msg.str());
+  } // if
+  
+  assert(!_real[name].isNull());
+  _mesh->allocate(_real[name]);
+} // allocate
+
+// ----------------------------------------------------------------------
 // Copy layout of field to all other fields.
 void
 pylith::topology::FieldsManager::copyLayout(const char* name)

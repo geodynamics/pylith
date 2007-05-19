@@ -93,6 +93,50 @@ class TestFieldsManager(unittest.TestCase):
     return
 
 
+  def test_setFiberDimension(self):
+    """
+    Test setFiberDimension().
+
+    WARNING: This is not a rigorous test of setConstraints() because we
+    don't verify the results.
+    """
+
+    mesh = self._initialize()
+    from pylith.topology.FieldsManager import FieldsManager
+    manager = FieldsManager(mesh)
+
+    manager.addReal("field A")
+    manager.setFiberDimension("field A", 3, "vertices")
+
+    manager.addReal("field B")
+    manager.setFiberDimension("field B", 2, "cells")
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly.
+    return
+
+
+  def test_allocate(self):
+    """
+    Test allocate().
+
+    WARNING: This is not a rigorous test of setConstraints() because we
+    don't verify the results.
+    """
+
+    mesh = self._initialize()
+    from pylith.topology.FieldsManager import FieldsManager
+    manager = FieldsManager(mesh)
+
+    manager.addReal("field")
+    manager.setFiberDimension("field", 3, "vertices")
+    manager.allocate("field")
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly.
+    return
+
+
   def test_copyLayout(self):
     """
     Test copyLayout().
