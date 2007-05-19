@@ -131,11 +131,27 @@ pylith::bc::TestDirichlet::testSetConstraints(void)
   mesh->allocate(field);
   bc.setConstraints(field, mesh);
 
-  // ADD STUFF HERE
-  // use getConstraintDof()
+  CPPUNIT_ASSERT(0 != _data);
 
-  // No accessor in real_section_type to verify constraints are set
-  // correctly. For now, rely on testSetField test.
+  const int numCells = mesh->heightStratum(0)->size();
+  const int offset = numCells;
+  int iConstraint = 0;
+  for (Mesh::label_sequence::iterator v_iter = vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    const int* fixedDOF = field->getConstraintDof(*v_iter);
+    if (*v_iter != _data->constrainedPoints[iConstraint] + offset) {
+      CPPUNIT_ASSERT_EQUAL(0, field->getConstraintDimension(*v_iter));
+      //CPPUNIT_ASSERT(0 == fixedDOF);
+    } else {
+      CPPUNIT_ASSERT(0 != fixedDOF);
+      CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, 
+			   field->getConstraintDimension(*v_iter));
+      for (int iDOF=0; iDOF < _data->numFixedDOF; ++iDOF)
+	CPPUNIT_ASSERT_EQUAL(_data->fixedDOF[iDOF], fixedDOF[iDOF]);
+      ++iConstraint;
+    } // if/else
+  } // for
 } // testSetConstraints
 
 // ----------------------------------------------------------------------
