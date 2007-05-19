@@ -68,7 +68,7 @@ class FieldsManager(object):
     Copy layout of field to all fields in manager..
     """
     assert(None != self.cppHandle)
-    return self.cppHandle.copyLayoutFromSrc(label)
+    return self.cppHandle.copyLayoutFromSrc(field)
 
 
 # End of file 
