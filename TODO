@@ -13,13 +13,6 @@ Cleanup
   dimensions, we probably want to allow it in MeshIO, just not in the
   simulation where we don't support it.
 
-0. Create FieldsManager
-  b. C++ unit tests
-  c. Python unit tests
-
-Update TestDirichlet to check constraints.
-  getConstraintDof() IS IMPLEMENTED!
-
 1. Switch to more uniform implementation of integrators.
 
   Formulation HASA FieldsManager (solnfields)

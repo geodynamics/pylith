@@ -526,7 +526,7 @@ cdef class FieldsManager:
     Get real field over mesh.
     """
     # create shim for getReal
-    #embed{ void* Mesh_getReal(void* objVptr, char* label)
+    #embed{ void* FieldsManager_getReal(void* objVptr, char* label)
     void* result = 0;
     try {
       pylith::topology::FieldsManager* manager =
@@ -549,7 +549,7 @@ cdef class FieldsManager:
     return result;
     #}embed
     cdef void* ptr
-    ptr = Mesh_getReal(self.thisptr, label)
+    ptr = FieldsManager_getReal(self.thisptr, label)
     return PyCObject_FromVoidPtr(ptr, NULL)
     
 
@@ -558,7 +558,7 @@ cdef class FieldsManager:
     Create real section over mesh.
     """
     # create shim for addReal
-    #embed{ void Mesh_addReal(void* objVptr, char* label)
+    #embed{ void FieldsManager_addReal(void* objVptr, char* label)
     try {
       assert(0 != objVptr);
       ((pylith::topology::FieldsManager*) objVptr)->addReal(label);
@@ -573,7 +573,7 @@ cdef class FieldsManager:
                       "Caught unknown C++ exception.");
     } // try/catch
     #}embed
-    Mesh_addReal(self.thisptr, label)
+    FieldsManager_addReal(self.thisptr, label)
     return
 
 
@@ -582,7 +582,7 @@ cdef class FieldsManager:
     Delete real section over mesh.
     """
     # create shim for delReal
-    #embed{ void Mesh_delReal(void* objVptr, char* label)
+    #embed{ void FieldsManager_delReal(void* objVptr, char* label)
     try {
       assert(0 != objVptr);
       ((pylith::topology::FieldsManager*) objVptr)->delReal(label);
@@ -597,7 +597,55 @@ cdef class FieldsManager:
                       "Caught unknown C++ exception.");
     } // try/catch
     #}embed
-    Mesh_delReal(self.thisptr, label)
+    FieldsManager_delReal(self.thisptr, label)
+    return
+
+
+  def setFiberDimension(self, label, fiberDim, points):
+    """
+    Set fiber dimension for field.
+    """
+    # create shim for setFiberDimension
+    #embed{ void FieldsManager_setFiberDimension(void* objVptr, char* label, int fiberDim, char* points)
+    try {
+      assert(0 != objVptr);
+      ((pylith::topology::FieldsManager*) objVptr)->setFiberDimension(label, fiberDim, points);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    FieldsManager_setFiberDimension(self.thisptr, label, fiberDim, points)
+    return
+
+
+  def allocate(self, label):
+    """
+    Allocate field.
+    """
+    # create shim for allocate
+    #embed{ void FieldsManager_allocate(void* objVptr, char* label)
+    try {
+      assert(0 != objVptr);
+      ((pylith::topology::FieldsManager*) objVptr)->allocate(label);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    FieldsManager_allocate(self.thisptr, label)
     return
 
 
@@ -606,7 +654,7 @@ cdef class FieldsManager:
     Copy layout of given section to all other sections in manager.
     """
     # create shim for copyLayout
-    #embed{ void Mesh_copyLayout(void* objVptr, char* label)
+    #embed{ void FieldsManager_copyLayout(void* objVptr, char* label)
     try {
       assert(0 != objVptr);
       ((pylith::topology::FieldsManager*) objVptr)->copyLayout(label);
@@ -621,7 +669,7 @@ cdef class FieldsManager:
                       "Caught unknown C++ exception.");
     } // try/catch
     #}embed
-    Mesh_copyLayout(self.thisptr, label)
+    FieldsManager_copyLayout(self.thisptr, label)
     return
 
 
@@ -630,7 +678,7 @@ cdef class FieldsManager:
     Copy layout of section to all sections in manager.
     """
     # create shim for copyLayout
-    #embed{ void Mesh_copyLayoutFromSrc(void* objVptr, void* fieldVptr)
+    #embed{ void FieldsManager_copyLayoutFromSrc(void* objVptr, void* fieldVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -648,7 +696,7 @@ cdef class FieldsManager:
                       "Caught unknown C++ exception.");
     } // try/catch
     #}embed
-    Mesh_copyLayoutFromSrc(self.thisptr, PyCObject_AsVoidPtr(field))
+    FieldsManager_copyLayoutFromSrc(self.thisptr, PyCObject_AsVoidPtr(field))
     return
 
 

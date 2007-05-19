@@ -55,6 +55,24 @@ class FieldsManager(object):
     return self.cppHandle.delReal(label)
 
 
+  def setFiberDimension(self, label, fiberDim, points="vertices"):
+    """
+    Set fiber dimension for field
+
+    points = { 'vertices', 'cells' }
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.setFiberDimension(label, fiberDim, points)
+
+
+  def allocate(self, label):
+    """
+    Allocate field.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.allocate(label)
+
+
   def copyLayout(self, label):
     """
     Copy layout of field to all fields in manager.

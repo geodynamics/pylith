@@ -87,6 +87,66 @@ pylith::topology::TestFieldsManager::testDelReal(void)
 } // testDelReal
 
 // ----------------------------------------------------------------------
+// Test setFiberDimension().
+void
+pylith::topology::TestFieldsManager::testSetFiberDimension(void)
+{ // testSetFiberDimension
+  ALE::Obj<Mesh> mesh;
+  _initialize(&mesh);
+  FieldsManager manager(mesh);
+
+  const int fiberDim = 3;
+
+  const char* labelA = "field A";
+  manager.addReal(labelA);
+  manager.setFiberDimension(labelA, fiberDim, "vertices");
+  const ALE::Obj<real_section_type>& fieldA = manager.getReal(labelA);
+  CPPUNIT_ASSERT(!fieldA.isNull());
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  mesh->allocate(fieldA);
+  for (Mesh::label_sequence::iterator v_iter = vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter)
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldA->getFiberDimension(*v_iter));
+
+  const char* labelB = "field B";
+  manager.addReal(labelB);
+  manager.setFiberDimension(labelB, fiberDim, "cells");
+  const ALE::Obj<real_section_type>& fieldB = manager.getReal(labelB);
+  CPPUNIT_ASSERT(!fieldB.isNull());
+  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  mesh->allocate(fieldB);
+  for (Mesh::label_sequence::iterator c_iter = cells->begin();
+       c_iter != cells->end();
+       ++c_iter)
+    CPPUNIT_ASSERT_EQUAL(fiberDim, fieldB->getFiberDimension(*c_iter));
+} // testSetFiberDimension
+
+// ----------------------------------------------------------------------
+// Test allocate().
+void
+pylith::topology::TestFieldsManager::testAllocate(void)
+{ // testAllocate
+  ALE::Obj<Mesh> mesh;
+  _initialize(&mesh);
+  FieldsManager manager(mesh);
+
+  const int fiberDim = 3;
+
+  const char* labelA = "field A";
+  manager.addReal(labelA);
+  const ALE::Obj<real_section_type>& fieldA = manager.getReal(labelA);
+  manager.setFiberDimension(labelA, fiberDim, "vertices");
+  manager.allocate(labelA);
+
+  const char* labelB = "field B";
+  manager.addReal(labelB);
+  const ALE::Obj<real_section_type>& fieldB = manager.getReal(labelB);
+  manager.setFiberDimension(labelB, fiberDim, "cells");
+  manager.allocate(labelB);
+} // testAllocate
+
+// ----------------------------------------------------------------------
 // Test copyLayout().
 void
 pylith::topology::TestFieldsManager::testCopyLayout(void)

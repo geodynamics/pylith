@@ -44,6 +44,8 @@ class pylith::topology::TestFieldsManager : public CppUnit::TestFixture
   CPPUNIT_TEST( testAddReal );
   CPPUNIT_TEST( testGetReal );
   CPPUNIT_TEST( testDelReal );
+  CPPUNIT_TEST( testSetFiberDimension );
+  CPPUNIT_TEST( testAllocate );
   CPPUNIT_TEST( testCopyLayout );
   CPPUNIT_TEST( testCopyLayoutFromField );
   CPPUNIT_TEST_SUITE_END();
@@ -62,6 +64,12 @@ public :
 
   /// Test delReal().
   void testDelReal(void);
+
+  /// Test setFiberDimension().
+  void testSetFiberDimension(void);
+
+  /// Test allocate().
+  void testAllocate(void);
 
   /// Test copyLayout().
   void testCopyLayout(void);
