@@ -81,8 +81,34 @@ pylith::bc::TestDirichletMulti::testSetConstraints(void)
   bcA.setConstraints(field, mesh);
   bcB.setConstraints(field, mesh);
 
-  // No accessor in real_section_type to verify constraints are set
-  // correctly. For now, rely on testSetField test.
+  CPPUNIT_ASSERT(0 != _data);
+
+  const int numCells = mesh->heightStratum(0)->size();
+  const int offset = numCells;
+  for (Mesh::label_sequence::iterator v_iter = vertices->begin();
+       v_iter != vertices->end();
+       ++v_iter) {
+    const int* fixedDOF = field->getConstraintDof(*v_iter);
+    
+    const int flag = _data->bcFlags[*v_iter-offset];
+    if (-1 == flag) {
+      // no constraints
+      CPPUNIT_ASSERT_EQUAL(0, field->getConstraintDimension(*v_iter));
+      //CPPUNIT_ASSERT(0 == fixedDOF);
+    } else if (0 == flag) {
+      CPPUNIT_ASSERT(0 != fixedDOF);
+      CPPUNIT_ASSERT_EQUAL(_data->numFixedDOFA, 
+			   field->getConstraintDimension(*v_iter));
+      for (int iDOF=0; iDOF < _data->numFixedDOFA; ++iDOF)
+	CPPUNIT_ASSERT_EQUAL(_data->fixedDOFA[iDOF], fixedDOF[iDOF]);
+    } else if (1 == flag) {
+      CPPUNIT_ASSERT(0 != fixedDOF);
+      CPPUNIT_ASSERT_EQUAL(_data->numFixedDOFB, 
+			   field->getConstraintDimension(*v_iter));
+      for (int iDOF=0; iDOF < _data->numFixedDOFB; ++iDOF)
+	CPPUNIT_ASSERT_EQUAL(_data->fixedDOFB[iDOF], fixedDOF[iDOF]);
+    } // if/else
+  } // for
 } // testSetConstraints
 
 // ----------------------------------------------------------------------
