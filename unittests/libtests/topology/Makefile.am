@@ -13,6 +13,8 @@
 subpackage = topology
 include $(top_srcdir)/subpackage.am
 
+SUBDIRS = data
+
 TESTS = testtopology
 
 check_PROGRAMS = testtopology
@@ -20,6 +22,7 @@ check_PROGRAMS = testtopology
 # Primary source files
 testtopology_SOURCES = \
 	TestCellGeometry.cc \
+	TestFieldsManager.cc \
 	TestGeometryPoint1D.cc \
 	TestGeometryPoint2D.cc \
 	TestGeometryPoint3D.cc \
@@ -36,6 +39,7 @@ testtopology_SOURCES = \
 
 noinst_HEADERS =
 	TestCellGeometry.hh \
+	TestFieldsManager.hh \
 	TestGeometryPoint1D.hh \
 	TestGeometryPoint2D.hh \
 	TestGeometryPoint3D.hh \
