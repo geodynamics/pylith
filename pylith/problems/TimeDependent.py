@@ -111,14 +111,14 @@ class TimeDependent(Problem):
       # Checkpoint if necessary
       self.checkpointTimer.update(t)
 
-      # Do stuff before advancing time step
-      self._prestep()
-
       # Get stable time step
       dt = self.formulation.stableTimeStep()
       if dt.value == 0.0:
         # If formulation returns 0.0, use default time step
         dt = self.dt
+
+      # Do stuff before advancing time step
+      self._prestep(t, dt)
 
       # Advance in time
       self._step(dt)
@@ -126,7 +126,7 @@ class TimeDependent(Problem):
       # Do stuff after advancing time step
       self._poststep(t+dt)
 
-      # Update time stamp
+      # Update time step
       t += dt
     return
 
@@ -160,11 +160,11 @@ class TimeDependent(Problem):
     return
 
 
-  def _prestep(self):
+  def _prestep(self, t, dt):
     """
     Hook for doing stuff before advancing time step.
     """
-    self.formulation.prestep()
+    self.formulation.prestep(t, dt)
     return
 
 
