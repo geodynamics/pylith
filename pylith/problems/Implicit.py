@@ -91,14 +91,16 @@ class Implicit(Formulation):
 
     self._info.log("Creating fields and matrices.")
     self.dispT = mesh.createRealSection("dispT", dimension)
-    self.dispTpdt = mesh.createRealSection("dispTpdt", dimension)
+    self.dispTBctpdt = mesh.createRealSection("dispTBctpdt", dimension)
+    self.dispIncrement = mesh.createRealSection("dispIncrement", dimension)
     self.residual = mesh.createRealSection("residual", dimension)
 
     # Setup constraints
     # STUFF GOES HERE
 
     mesh.allocateRealSection(self.dispT)
-    mesh.allocateRealSection(self.dispTpdt)
+    mesh.allocateRealSection(self.dispTBctpdt)
+    mesh.allocateRealSection(self.dispIncrement)
     mesh.allocateRealSection(self.residual)
 
     self.jacobian = mesh.createMatrix(self.residual)
@@ -106,11 +108,12 @@ class Implicit(Formulation):
     self._info.log("Integrating Jacobian of operator.")
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateJacobian(self.jacobian, self.dispT)
+      integrator.integrateJacobian(self.jacobian, self.dispTBctpdt)
     import pylith.utils.petsc as petsc
     petsc.mat_assemble(self.jacobian)
 
-    self.solver.initialize(mesh, self.dispTpdt)
+    self.solver.initialize(mesh, self.dispIncrement)
+    # self.mesh = mesh
     return
 
 
@@ -124,10 +127,20 @@ class Implicit(Formulation):
     return dt
   
 
-  def prestep(self):
+  def prestep(self, t, dt):
     """
     Hook for doing stuff before advancing time step.
     """
+    # This will need to set dispTBctpdt to the BC at time step t+dt.
+    # Non-constrained DOF are unaffected and will be equal to their
+    # values from time step t.
+    # In this routine I also need to integrate the tractions for step
+    # t+dt, but I don't think the function for this is available yet.
+    # from pylith.bc.Dirichlet import Dirichlet
+
+    # dispbc = Dirichlet
+
+    # dispbc.setField(t+dt, self.dispTBctpdt, self.mesh)
     self._info.log("WARNING: Implicit::prestep() not implemented.")
     return
 
@@ -141,10 +154,10 @@ class Implicit(Formulation):
     bindings.zeroRealSection(self.residual)
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateResidual(self.residual, self.dispT)
+      integrator.integrateResidual(self.residual, self.dispTBctpdt)
 
     self._info.log("Solving equations.")
-    self.solver.solve(self.dispTpdt, self.jacobian, self.residual)
+    self.solver.solve(self.dispIncrement, self.jacobian, self.residual)
     return
 
 
@@ -152,7 +165,16 @@ class Implicit(Formulation):
     """
     Hook for doing stuff after advancing time step.
     """
-    self.dispT = self.dispTpdt
+    # This should give us the total displacements for time step t+dt, which
+    # is renamed as time step t following the solve.
+    # The vector dispTBctpdt contains the displacements from time step t
+    # along with the displacement BC from time step t+dt.  The displacement
+    # increments computed from the residual are then added to this to give us
+    # the total displacement field at time t+dt.
+    # Need a real way to do the operation below.
+    # It is commented out for now, and should be replaced with a call to PETSc.
+    # self.dispT = self.dispTBctpdt+self.dispIncrement
+    self.dispTBctpdt = self.dispT
     return
 
 

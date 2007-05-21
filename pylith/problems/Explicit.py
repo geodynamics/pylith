@@ -122,7 +122,7 @@ class Explicit(Formulation):
     return dt
   
 
-  def prestep(self):
+  def prestep(self, t, dt):
     """
     Hook for doing stuff before advancing time step.
     """
