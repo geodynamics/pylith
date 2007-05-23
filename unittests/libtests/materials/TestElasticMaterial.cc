@@ -44,6 +44,22 @@ pylith::materials::TestElasticMaterial::testClone(void)
 } // testClone
 
 // ----------------------------------------------------------------------
+// Test useElasticBehavior()
+void
+pylith::materials::TestElasticMaterial::testUseElasticBehavior(void)
+{ // testUseElasticBehavior
+  ElasticIsotropic3D material;
+
+  bool flag = true;
+  material.useElasticBehavior(flag);
+  CPPUNIT_ASSERT_EQUAL(flag, material._useElasticBehavior);
+
+  flag = false;
+  material.useElasticBehavior(flag);
+  CPPUNIT_ASSERT_EQUAL(flag, material._useElasticBehavior);
+} // testUseElasticBehavior
+
+// ----------------------------------------------------------------------
 // Test calcDensity()
 void
 pylith::materials::TestElasticMaterial::testCalcDensity(void)

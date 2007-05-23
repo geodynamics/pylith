@@ -73,6 +73,34 @@ pylith::materials::TestMaterial::testLabel(void)
 } // testLabel
     
 // ----------------------------------------------------------------------
+// Test timestep()
+void
+pylith::materials::TestMaterial::testTimestep(void) 
+{ // testTimestep
+  const double dt = 2.0;
+  ElasticIsotropic3D material;
+  material.timestep(dt);
+  
+  CPPUNIT_ASSERT_EQUAL(dt, material._dt);
+} // testTimestep
+
+// ----------------------------------------------------------------------
+// Test needNewJacobian()
+void
+pylith::materials::TestMaterial::testNeedNewJacobian(void)
+{ // testNeedNewJacobian
+  ElasticIsotropic3D material;
+
+  bool flag = false;
+  material._needNewJacobian = flag;
+  CPPUNIT_ASSERT_EQUAL(flag, material.needNewJacobian());
+
+  flag = true;
+  material._needNewJacobian = flag;
+  CPPUNIT_ASSERT_EQUAL(flag, material.needNewJacobian());
+} // testNeedNewJacobian
+
+// ----------------------------------------------------------------------
 // Test initialize()
 void
 pylith::materials::TestMaterial::testInitialize(void)

@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ----------------------------------------------------------------------
+//
+
+#if !defined(pylith_materials_elasticmaterial_hh)
+#error "ElasticMaterial.icc can only be included from ElasticMaterial.hh"
+#endif
+
+// Set whether elastic or inelastic constitutive relations are used.
+inline
+void
+pylith::materials::ElasticMaterial::useElasticBehavior(const bool flag) {
+  _useElasticBehavior = flag;
+} // useElasticBehavior
+
+// Get flag indicating whether elastic or inelastic constitutive
+inline
+bool
+pylith::materials::ElasticMaterial::useElasticBehavior(void) const {
+  return _useElasticBehavior;
+} // useElasticBehavior
+
+
+// End of file 

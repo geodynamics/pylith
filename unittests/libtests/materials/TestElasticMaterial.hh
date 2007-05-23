@@ -39,6 +39,7 @@ class pylith::materials::TestElasticMaterial : public TestMaterial
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestElasticMaterial );
   CPPUNIT_TEST( testClone );
+  CPPUNIT_TEST( testUseElasticBehavior );
   CPPUNIT_TEST( testCalcDensity );
   CPPUNIT_TEST( testCalcStress );
   CPPUNIT_TEST( testCalcDerivElastic );
@@ -49,6 +50,9 @@ public :
 
   /// Test clone()
   void testClone(void);
+
+  /// Test useElasticBehavior()
+  void testUseElasticBehavior(void);
 
   /// Test calcDensity()
   void testCalcDensity(void);

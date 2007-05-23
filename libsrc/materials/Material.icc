@@ -56,5 +56,21 @@ pylith::materials::Material::label(void) const {
   return _label;
 }
 
+// Set current time step.
+inline
+void
+pylith::materials::Material::timestep(const double dt) {
+  _dt = dt;
+}
+
+/* Get flag indicating whether Jacobian matrix must be reformed for
+ * current state.
+ */
+inline
+bool
+pylith::materials::Material::needNewJacobian(void) const {
+  return _needNewJacobian;
+}
+
 
 // End of file 
