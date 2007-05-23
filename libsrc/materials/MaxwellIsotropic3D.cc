@@ -202,12 +202,6 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double_array* const stress,
   const double lambda2mu = lambda + 2.0 * mu;
   const double bulkmodulus = lambda + 2.0 * mu/3.0;
 
-  // The following three definitions are dummies until we figure out how to get the
-  // information into the function.
-  const bool elastic = true;
-  const double dt = 1.0;
-  const bool updatestate = true;
-  
   const double e11 = totalStrain[0];
   const double e22 = totalStrain[1];
   const double e33 = totalStrain[2];
@@ -219,7 +213,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double_array* const stress,
   const double emeanTpdt = etraceTpdt/3.0;
   const double s123 = lambda * etraceTpdt;
 
-  if (elastic) {
+  if (useElasticBehavior()) {
     (*stress)[0] = s123 + 2.0*mu*e11;
     (*stress)[1] = s123 + 2.0*mu*e22;
     (*stress)[2] = s123 + 2.0*mu*e33;
@@ -227,33 +221,27 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double_array* const stress,
     (*stress)[4] = 2.0 * mu * e23;
     (*stress)[5] = 2.0 * mu * e13;
   } else {
-    const double diag[6] = {1.0, 1.0, 1.0, 0.0, 0.0, 0.0};
+    const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     const double smeanTpdt = bulkmodulus * etraceTpdt;
     // The code below should probably be in a separate function since it
     // is used more than once.  I should also probably cover the possibility
     // that Maxwell time is zero (although this should never happen).
     const double timeFrac = 1.0e-5;
-    const double numTerms = 5.0;
+    const int numTerms = 5;
     double dq = 0.0;
-    if(maxwelltime < timeFrac*dt) {
+    if(maxwelltime < timeFrac*_dt) {
       double fSign = 1.0;
       double factorial = 1.0;
       double fraction = 1.0;
       dq = 1.0;
-      double term = 2.0;
-      while (term <= numTerms) {
-	factorial = factorial*term;
-	fSign = -1.0 * fSign;
-	fraction = fraction * (dt/maxwelltime);
-	dq = dq + fSign*fraction/factorial;
-	term++;
-      }
-    } else {
+      for (int iTerm=0; iTerm < numTerms; ++iTerm) {
+	factorial *= iTerm;
+	fSign *= -1.0;
+	fraction *= _dt/maxwelltime;
+	dq += fSign*fraction/factorial;
+      } // for
+    } else
       dq = maxwelltime*(1.0-exp(-dt/maxwelltime))/dt;
-    }
-
-
-
 } // _calcStress
 
 // ----------------------------------------------------------------------

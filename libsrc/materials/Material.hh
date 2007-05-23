@@ -108,6 +108,13 @@ public :
    */
   const std::string& label(void) const;
 
+  /** Set current time step.
+   *
+   * @param dt Current time step.
+   */
+  virtual
+  void timestep(const double dt);
+
   /** Initialize material by getting physical property parameters from
    * database.
    *
@@ -119,6 +126,13 @@ public :
 		  const spatialdata::geocoords::CoordSys* cs,
 		  pylith::feassemble::Quadrature* quadrature);
   
+  /** Get flag indicating whether Jacobian matrix must be reformed for
+   * current state.
+   *
+   * @returns True if Jacobian matrix must be reformed, false otherwise.
+   */
+  bool needNewJacobian(void) const;
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -178,10 +192,13 @@ private :
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
+  double _dt; ///< Current time step
+
   ///< Manager of parameters for physical properties of material
   topology::FieldsManager* _parameters;
 
   int _dimension; ///< Spatial dimension associated with material
+  bool _needNewJacobian; ///< True if need to reform Jacobian, false otherwise
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :

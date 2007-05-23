@@ -124,13 +124,14 @@ pylith::materials::ElasticMaterial::initCellData(const Mesh::point_type& cell,
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
-pylith::materials::ElasticMaterial::updateState(void)
+pylith::materials::ElasticMaterial::updateState(
+				const std::vector<double_array>& totalStrain)
 { // updateState
   const int numQuadPts = _numQuadPts;
   assert(_paramsCell.size() == numQuadPts);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
-    _updateState(&_paramsCell[iQuad]);
+    _updateState(&_paramsCell[iQuad], totalStrain[iQuad]);
 } // updateState
 
 // ----------------------------------------------------------------------
@@ -168,8 +169,11 @@ pylith::materials::ElasticMaterial::_getParameters(const Mesh::point_type& cell)
 // ----------------------------------------------------------------------
 // Update parameters (for next time step).
 void
-pylith::materials::ElasticMaterial::_updateState(std::vector<double_array>* const parameters)
+pylith::materials::ElasticMaterial::_updateState(
+				 std::vector<double_array>* const parameters,
+				 const double_array& totalStrain)
 { // _updateState
 } // _updateState
+
 
 // End of file 

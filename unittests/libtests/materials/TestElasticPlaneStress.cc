@@ -87,7 +87,9 @@ void
 pylith::materials::TestElasticPlaneStress::testUpdateState(void)
 { // testUpdateState
   ElasticPlaneStress material;
-  material.updateState();
+
+  std::vector<double_array> totalStrain;
+  material.updateState(totalStrain);
 } // testUpdateState
 
 

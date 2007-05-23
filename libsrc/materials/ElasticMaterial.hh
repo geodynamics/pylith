@@ -118,8 +118,25 @@ public :
   const std::vector<double_array>&
   calcDerivElastic(const std::vector<double_array>& totalStrain);
 
-  /// Update state variables (for next time step).
-  void updateState(void);
+  /** Update state variables (for next time step).
+   *
+   * @param totalStrain Total strain tensor at quadrature points
+   *    [numQuadPts][tensorSize]
+   */
+  void updateState(const std::vector<double_array>& totalStrain);
+
+  /** Set whether elastic or inelastic constitutive relations are used.
+   *
+   * @param flag True to use elastic, false to use inelastic.
+   */
+  void useElasticBehavior(const bool flag);
+
+  /** Get flag indicating whether elastic or inelastic constitutive
+   * relations are used.
+   *
+   * @returns True if using elastic and false if using inelastic.
+   */
+  bool useElasticBehavior(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -178,9 +195,11 @@ protected :
   /** Update parameters (for next time step).
    *
    * @param parameters Parameters at location.
+   * @param totalStrain Total strain at location.
    */
   virtual
-  void _updateState(std::vector<double_array>* const parameters);
+  void _updateState(std::vector<double_array>* const parameters,
+		    const double_array& totalStrain);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -230,7 +249,15 @@ private :
    */
   std::vector<double_array> _elasticConsts;
 
+  /** Flag indicating whether elastic (true) or inelastic (false)
+   * constitutive model should be used. Always true for purely elastic
+   * materials.
+   */
+  bool _useElasticBehavior;
+
 }; // class ElasticMaterial
+
+#include "ElasticMaterial.icc" // inline methods
 
 #endif // pylith_materials_elasticmaterial_hh
 

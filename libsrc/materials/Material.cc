@@ -29,8 +29,10 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::Material::Material(void) :
+  _dt(0.0),
   _parameters(0),
   _dimension(0),
+  _needNewJacobian(false),
   _db(0),
   _id(0),
   _label("")
@@ -50,8 +52,10 @@ pylith::materials::Material::~Material(void)
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::materials::Material::Material(const Material& m) :
+  _dt(m._dt),
   _parameters(m._parameters),
   _dimension(m._dimension),
+  _needNewJacobian(m._needNewJacobian),
   _db(m._db),
   _id(m._id),
   _label(m._label)

@@ -87,7 +87,9 @@ void
 pylith::materials::TestElasticIsotropic3D::testUpdateState(void)
 { // testUpdateState
   ElasticIsotropic3D material;
-  material.updateState();
+
+  std::vector<double_array> totalStrain;
+  material.updateState(totalStrain);
 } // testUpdateState
 
 
