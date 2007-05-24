@@ -208,5 +208,52 @@ pylith::topology::FieldsManager::copyLayout(
   } // for
 } // copyLayout
 
+// ----------------------------------------------------------------------
+// Create history manager for a subset of the managed fields.
+void
+pylith::topology::FieldsManager::createHistory(const char** fields,
+					       const int size)
+{ // createHistory
+  if (size > 0 && 0 != fields) {
+    _history.resize(size);
+    for (int i=0; i < size; ++i) {
+      map_real_type::const_iterator iter = _real.find(fields[i]);
+      if (iter == _real.end()) {
+	std::ostringstream msg;
+	msg << "Cannot use unknown field '" << fields[i] 
+	    << "' when creating history.";
+	throw std::runtime_error(msg.str());
+      } // if
+      _history[i] = fields[i];
+    } // for
+  } // if
+} // createHistory
+
+// ----------------------------------------------------------------------
+// Shift fields in history. Handles to fields are shifted so that the
+// most recent values become associated with the second most recent
+// item in the history, etc.
+void
+pylith::topology::FieldsManager::shiftHistory(void)
+{ // shiftHistory
+
+  assert(_history.size() > 0);
+  const int size = _history.size();
+  ALE::Obj<real_section_type> tmp = _real[_history[size-1]];
+  tmp.addRef();
+  for (int i=size-1; i > 0; --i)
+    _real[_history[i]] = _real[_history[i-1]];
+  _real[_history[0]] = tmp;
+} // shiftHistory
+
+// ----------------------------------------------------------------------
+// Get field in history by position.
+const ALE::Obj<pylith::real_section_type>&
+pylith::topology::FieldsManager::getHistoryItem(const int index)
+{ // getHistoryItem
+  assert(index < _history.size());
+  return getReal(_history[index].c_str());
+} // getHistoryItem
+
 
 // End of file 
