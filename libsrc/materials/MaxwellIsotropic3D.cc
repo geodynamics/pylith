@@ -209,9 +209,9 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double_array* const stress,
   const double e23 = totalStrain[4];
   const double e13 = totalStrain[5];
   
-  const double etraceTpdt = e11 + e22 + e33;
-  const double emeanTpdt = etraceTpdt/3.0;
-  const double s123 = lambda * etraceTpdt;
+  const double traceStrainTpdt = e11 + e22 + e33;
+  const double meanStrainTpdt = traceStrainTpdt/3.0;
+  const double s123 = lambda * traceStrainTpdt;
 
   if (useElasticBehavior()) {
     (*stress)[0] = s123 + 2.0*mu*e11;
@@ -222,7 +222,11 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double_array* const stress,
     (*stress)[5] = 2.0 * mu * e13;
   } else {
     const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    const double smeanTpdt = bulkmodulus * etraceTpdt;
+    const double meanStressTpdt = bulkmodulus * traceStrainTpdt;
+    const double meanStrainT = parameters[_MaxwellIsotropic3D::pidStrainT][0] +
+      parameters[_MaxwellIsotropic3D::pidStrainT][1] +
+      parameters[_MaxwellIsotropic3D::pidStrainT][2];
+
     // The code below should probably be in a separate function since it
     // is used more than once.  I should also probably cover the possibility
     // that Maxwell time is zero (although this should never happen).
@@ -234,14 +238,30 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double_array* const stress,
       double factorial = 1.0;
       double fraction = 1.0;
       dq = 1.0;
-      for (int iTerm=0; iTerm < numTerms; ++iTerm) {
+      for (int iTerm=2; iTerm <= numTerms; ++iTerm) {
 	factorial *= iTerm;
 	fSign *= -1.0;
 	fraction *= _dt/maxwelltime;
 	dq += fSign*fraction/factorial;
       } // for
     } else
-      dq = maxwelltime*(1.0-exp(-dt/maxwelltime))/dt;
+      dq = maxwelltime*(1.0-exp(-_dt/maxwelltime))/_dt;
+    const double expFac = exp(-_dt/maxwelltime);
+    const double elasFac = 2.0*mu;
+    double devStrainTpdt = 0.0;
+    double devStrainT = 0.0;
+    double devStressTpdt = 0.0;
+    for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
+      devStrainTpdt = totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
+      devStrainT = parameters[_MaxwellIsotropic3D::pidStrainT][iComp] -
+	diag[iComp]*meanStrainT;
+      visStrain = expFac*parameters[_MaxwellIsotropic3D::pidVisStrain][iComp] +
+	dq*(devStrainTpdt - devStrainT);
+      devStressTpdt = elasFac*visStrain;
+      // Later I will want to put in initial stresses.
+      (*stress)[iComp] =diag[iComp]*smeanTpdt+devStressTpdt;
+    } // for
+  } //else
 } // _calcStress
 
 // ----------------------------------------------------------------------
