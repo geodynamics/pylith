@@ -48,6 +48,9 @@ class pylith::topology::TestFieldsManager : public CppUnit::TestFixture
   CPPUNIT_TEST( testAllocate );
   CPPUNIT_TEST( testCopyLayout );
   CPPUNIT_TEST( testCopyLayoutFromField );
+  CPPUNIT_TEST( testCreateHistory );
+  CPPUNIT_TEST( testShiftHistory );
+  CPPUNIT_TEST( testGetHistoryItem );
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -76,6 +79,15 @@ public :
 
   /// Test copyLayoutFromField().
   void testCopyLayoutFromField(void);
+
+  /// Test createHistory().
+  void testCreateHistory(void);
+
+  /// Test shiftHistory().
+  void testShiftHistory(void);
+
+  /// Test getHistoryItem().
+  void testGetHistoryItem(void);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :

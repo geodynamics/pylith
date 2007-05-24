@@ -700,6 +700,89 @@ cdef class FieldsManager:
     return
 
 
+  def createHistory(self, labels):
+    """
+    Create history manager for a subset of the managed fields.
+    """
+    # create shim for createHistory
+    #embed{ void FieldsManager_createHistory(void* objVptr, char** labels, int size)
+    try {
+      assert(0 != objVptr);
+      ((pylith::topology::FieldsManager*) objVptr)->createHistory((const char**) labels, size);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    cdef char** labelsPtr
+    size = len(labels)
+    labelsPtr = <char**> malloc(size*sizeof(char*))
+    for i from 0 <= i < size:
+      labelsPtr[i] = labels[i]
+    FieldsManager_createHistory(self.thisptr, labelsPtr, size)
+    free(labelsPtr)
+    return
+
+
+  def shiftHistory(self):
+    """
+    Shift fields in history.
+    """
+    # create shim for shiftHistory
+    #embed{ void FieldsManager_shiftHistory(void* objVptr)
+    try {
+      assert(0 != objVptr);
+      ((pylith::topology::FieldsManager*) objVptr)->shiftHistory();
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    FieldsManager_shiftHistory(self.thisptr)
+    return
+
+
+  def getHistoryItem(self, index):
+    """
+    Get field in history by position.
+    """
+    # create shim for getHistoryItem
+    #embed{ void* FieldsManager_getHistoryItem(void* objVptr, int index)
+    void* result = 0;
+    try {
+      assert(0 != objVptr);
+      const ALE::Obj<pylith::real_section_type>& field =
+        ((pylith::topology::FieldsManager*) objVptr)->getHistoryItem(index);
+      result = (void*) &field;
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+    cdef void* ptr
+    ptr = FieldsManager_getHistoryItem(self.thisptr, index)
+    return PyCObject_FromVoidPtr(ptr, NULL)
+
+
   def _createHandle(self):
     """
     Wrap pointer to C++ object in PyCObject.

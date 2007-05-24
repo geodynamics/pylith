@@ -22,6 +22,7 @@
 
 #include <map> // HASA std::map
 #include <string> // USES std::string
+#include <vector> // USES std::vector
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
@@ -92,6 +93,26 @@ public :
    */
   void copyLayout(const ALE::Obj<real_section_type>& field);
 
+  /** Create history manager for a subset of the managed fields.
+   *
+   * @param fields Fields in history (first is most recent).
+   * @param size Number of fields in history.
+   */
+  void createHistory(const char** fields,
+		     const int size);
+
+  /** Shift fields in history. Handles to fields are shifted so that
+   *  the most recent values become associated with the second most
+   *  recent item in the history, etc.
+   */
+  void shiftHistory(void);
+
+  /** Get field in history by position.
+   *
+   * @param index Index in history [0=most recent, 1=previous, etc]
+   */
+  const ALE::Obj<real_section_type>& getHistoryItem(const int index);
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
@@ -114,6 +135,9 @@ private :
 
   /// Map for fieldss stored as real fields
   map_real_type _real;
+
+  /// History manager for a subset of the fields
+  std::vector<std::string> _history;
 
 }; // FieldsManager
 

@@ -89,4 +89,28 @@ class FieldsManager(object):
     return self.cppHandle.copyLayoutFromSrc(field)
 
 
+  def createHistory(self, labels):
+    """
+    Create history manager for a subset of the managed fields.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.createHistory(labels)
+
+
+  def shiftHistory(self):
+    """
+    Shift fields in history.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.shiftHistory()
+
+
+  def getHistoryItem(self, index):
+    """
+    Get field in history by position.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.getHistoryItem(index)
+
+
 # End of file 
