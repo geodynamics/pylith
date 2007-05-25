@@ -14,6 +14,7 @@ subpackage = feassemble
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	Constraint.hh \
 	ExplicitElasticity.hh \
 	ExplicitElasticity.icc \
 	ImplicitElasticity.hh \
