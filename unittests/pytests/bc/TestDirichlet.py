@@ -60,7 +60,7 @@ class TestDirichlet(unittest.TestCase):
 
     (mesh, bc) = self._initialize()
     field = mesh.createRealSection("field", mesh.dimension())
-    bc.setConstraintSizes(field, mesh)
+    bc.setConstraintSizes(field)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -77,9 +77,9 @@ class TestDirichlet(unittest.TestCase):
 
     (mesh, bc) = self._initialize()
     field = mesh.createRealSection("field", mesh.dimension())
-    bc.setConstraintSizes(field, mesh)
+    bc.setConstraintSizes(field)
     mesh.allocateRealSection(field)
-    bc.setConstraints(field, mesh)
+    bc.setConstraints(field)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -96,11 +96,11 @@ class TestDirichlet(unittest.TestCase):
 
     (mesh, bc) = self._initialize()
     field = mesh.createRealSection("field", mesh.dimension())
-    bc.setConstraintSizes(field, mesh)
+    bc.setConstraintSizes(field)
     mesh.allocateRealSection(field)
-    bc.setConstraints(field, mesh)
+    bc.setConstraints(field)
     t = 1.0
-    bc.setField(t, field, mesh)
+    bc.setField(t, field)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    

@@ -18,6 +18,7 @@
 ## Factory: boundary_condition
 
 from BoundaryCondition import BoundaryCondition
+from pylith.feassemble.Constraint import Constraint
 
 def validateDOF(value):
   """
@@ -37,7 +38,7 @@ def validateDOF(value):
   
 
 # Dirichlet class
-class Dirichlet(BoundaryCondition):
+class Dirichlet(BoundaryCondition, Constraint):
   """
   Python object for managing a Dirichlet (prescribed displacements)
   boundary condition.
@@ -75,6 +76,7 @@ class Dirichlet(BoundaryCondition):
     Constructor.
     """
     BoundaryCondition.__init__(self, name)
+    Constraint.__init__(self)
     self.fixedDOF = []
     import pylith.bc.bc as bindings
     self.cppHandle = bindings.Dirichlet()
@@ -85,36 +87,9 @@ class Dirichlet(BoundaryCondition):
     """
     Initialize Dirichlet boundary condition.
     """
+    assert(None != self.cppHandle)
+    self.cppHandle.fixedDOF = self.fixedDOF    
     BoundaryCondition.initialize(self, mesh)
-    self.cppHandle.fixedDOF = self.fixedDOF
-    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle)
-    return
-  
-
-  def setConstraintSizes(self, field, mesh):
-    """
-    Set number of constraints at points in field.
-    """
-    assert(None != self.cppHandle)
-    self.cppHandle.setConstraintSizes(field, mesh.cppHandle)
-    return
-
-
-  def setConstraints(self, field, mesh):
-    """
-    Set which degrees of freedom are constrained at points in field.
-    """
-    assert(None != self.cppHandle)
-    self.cppHandle.setConstraints(field, mesh.cppHandle)
-    return
-
-
-  def setField(self, t, field, mesh):
-    """
-    Set solution field at time t.
-    """
-    assert(None != self.cppHandle)
-    self.cppHandle.setField(t, field, mesh.cppHandle)
     return
   
 

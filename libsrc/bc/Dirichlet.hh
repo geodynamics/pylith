@@ -20,6 +20,7 @@
 #define pylith_bc_dirichlet_hh
 
 #include "BoundaryCondition.hh" // ISA BoundaryCondition
+#include "pylith/feassemble/Constraint.hh" // ISA Constraint
 
 #include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
 
@@ -33,7 +34,8 @@ namespace pylith {
 
 
 /// C++ implementation of Dirichlet boundary conditions.
-class pylith::bc::Dirichlet : public BoundaryCondition
+class pylith::bc::Dirichlet : public BoundaryCondition, 
+			      public feassemble::Constraint
 { // class Dirichlet
   friend class TestDirichlet; // unit testing
 
@@ -70,7 +72,6 @@ public :
    * @param field Solution field
    * @param mesh PETSc mesh
    */
-  virtual
   void setConstraintSizes(const ALE::Obj<real_section_type>& field,
 			  const ALE::Obj<ALE::Mesh>& mesh);
 
@@ -79,7 +80,6 @@ public :
    * @param field Solution field
    * @param mesh PETSc mesh
    */
-  virtual
   void setConstraints(const ALE::Obj<real_section_type>& field,
 		      const ALE::Obj<ALE::Mesh>& mesh);
 
@@ -113,7 +113,7 @@ private :
 
 #include "Dirichlet.icc" // inline methods
 
-#endif // pylith_bc_fault_hh
+#endif // pylith_bc_dirichlet_hh
 
 
 // End of file 

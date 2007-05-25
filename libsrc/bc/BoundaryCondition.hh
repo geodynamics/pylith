@@ -98,59 +98,6 @@ public :
   void initialize(const ALE::Obj<ALE::Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs) = 0;
 
-  /** Set number of degrees of freedom that are constrained at points in field.
-   *
-   * @param field Solution field
-   * @param mesh PETSc mesh
-   */
-  virtual
-  void setConstraintSizes(const ALE::Obj<real_section_type>& field,
-			  const ALE::Obj<ALE::Mesh>& mesh);
-
-  /** Set which degrees of freedom are constrained at points in field.
-   *
-   * @param field Solution field
-   * @param mesh PETSc mesh
-   */
-  virtual
-  void setConstraints(const ALE::Obj<real_section_type>& field,
-		      const ALE::Obj<ALE::Mesh>& mesh);
-
-  /** Integrate boundary condition's contribution to the Jacobian.
-   *
-   * @param jacobian Matrix for Jacobian of system
-   * @param field Solution field
-   * @param mesh PETSc mesh
-   */
-  virtual
-  void integrateJacobian(PetscMat* jacobian,
-			 const ALE::Obj<real_section_type>& field,
-			 const ALE::Obj<ALE::Mesh>& mesh);
-
-  /** Integrate boundary condition's contribution to the residual.
-   *
-   * @param residual Residual field
-   * @param fieldT Solution field at time t
-   * @param fieldTmdt Solution field at time t-dt
-   * @param mesh PETSc mesh
-   */
-  virtual
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
-			 const ALE::Obj<real_section_type>& fieldT,
-			 const ALE::Obj<real_section_type>& fieldTmdt,
-			 const ALE::Obj<ALE::Mesh>& mesh);
-
-  /** Set values in field.
-   *
-   * @param t Current time
-   * @param field Solution field
-   * @param mesh PETSc mesh
-   */
-  virtual
-  void setField(const double t,
-		const ALE::Obj<real_section_type>& field,
-		const ALE::Obj<ALE::Mesh>& mesh);
-
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 

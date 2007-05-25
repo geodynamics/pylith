@@ -16,26 +16,28 @@
 ## that requires integration.
 ##
 ## This implementation of a boundary condition applies to a single
-## face of an domain and associates both a quadrature scheme with a
+## face of a domain and associates both a quadrature scheme with a
 ## physical boundary condition. Thus, applying different quadrature
 ## schemes along a face with the same physical boundary condition
-## requires two "bc", which can use the same database.
+## requires two boundary condition integrators, which can use the same
+## database.
 ##
 ## Factory: boundary_condition
 
 from BoundaryCondition import BoundaryCondition
+from pylith.feassemble.Integrator import Integrator
 
 # BCIntegrator class
-class BCIntegrator(BoundaryCondition):
+class BCIntegrator(BoundaryCondition, Integrator):
   """
   Python abstract base class for managing a boundary condition that
   requires integration.
 
-  This implementation of a boundary condition applies to a single
-  face of an domain and associates both a quadrature scheme with a
-  physical boundary condition. Thus, applying different quadrature
-  schemes along a face with the same physical boundary condition
-  requires two 'bc', which can use the same database.
+  This implementation of a boundary condition applies to a single face
+  of a domain and associates both a quadrature scheme with a physical
+  boundary condition. Thus, applying different quadrature schemes
+  along a face with the same physical boundary condition requires two
+  boundary condition integrators, which can use the same database.
 
   Factory: boundary_condition
   """
@@ -70,8 +72,19 @@ class BCIntegrator(BoundaryCondition):
     Constructor.
     """
     BoundaryCondition.__init__(self, name)
+    Integrator.__init__(self)
     return
 
+
+  def initialize(self, mesh):
+    """
+    Initialize boundary condition.
+    """
+    assert(None != self.cppHandle)
+    Integrator.initQuadrature(self, self.quadrature)
+    BoundaryCondition.initialize(self, mesh)
+    return
+  
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 

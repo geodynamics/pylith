@@ -12,6 +12,7 @@
 
 #header{
 #include "pylith/bc/BoundaryCondition.hh"
+#include "pylith/feassemble/Constraint.hh"
 #include "pylith/bc/Dirichlet.hh"
 
 #include "pylith/utils/array.hh"
@@ -97,172 +98,6 @@ cdef class BoundaryCondition:
             "Argument must be extension module type " \
             "'spatialdata::geocoords::CoordSys'."
     BoundaryCondition_initialize(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs))
-    return
-
-
-  def setConstraintSizes(self, field, mesh):
-    """
-    Set number of degrees of freedom that are constrained at points in field.
-    """
-    # create shim for method 'setConstraintSizes'
-    #embed{ void BoundaryCondition_setConstraintSizes(void* objVptr, void* fieldVptr, void* meshVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != fieldVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::bc::BoundaryCondition*) objVptr)->setConstraintSizes(*field, *mesh);
-      } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch      
-    #}embed
-
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'pylith::topology::Mesh'."
-    BoundaryCondition_setConstraintSizes(self.thisptr,
-                                         PyCObject_AsVoidPtr(field),
-                                         ptrFromHandle(mesh))
-    return
-
-
-  def setConstraints(self, field, mesh):
-    """
-    Set which degrees of freedom that are constrained at points in field.
-    """
-    # create shim for method 'setConstraints'
-    #embed{ void BoundaryCondition_setConstraints(void* objVptr, void* fieldVptr, void* meshVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != fieldVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::bc::BoundaryCondition*) objVptr)->setConstraints(*field, *mesh);
-      } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch      
-    #}embed
-
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'pylith::topology::Mesh'."
-    BoundaryCondition_setConstraints(self.thisptr, PyCObject_AsVoidPtr(field), ptrFromHandle(mesh))
-    return
-
-
-  def integrateJacobian(self, jacobian, field, mesh):
-    """
-    Integrate boundary condition's contribution to the Jacobian.
-    """
-    # create shim for method 'integrateJacobian'
-    #embed{ void BoundaryCondition_integrateJacobian(void* objVptr, void* jacobianVptr, void* fieldVptr, void* meshVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != jacobianVptr);
-      assert(0 != fieldVptr);
-      assert(0 != meshVptr);
-      PetscMat* jacobian = (PetscMat*) jacobianVptr;
-      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::bc::BoundaryCondition*) objVptr)->integrateJacobian(jacobian, *field, *mesh);
-      } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch      
-    #}embed
-
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'pylith::topology::Mesh'."
-    BoundaryCondition_integrateJacobian(self.thisptr,
-                                        PyCObject_AsVoidPtr(jacobian),
-                                        PyCObject_AsVoidPtr(field),
-                                        ptrFromHandle(mesh))
-    return
-
-
-  def integrateResidual(self, residual, fieldT, fieldTmdt, mesh):
-    """
-    Integrate boundary condition's contribution to the residual.
-    """
-    # create shim for method 'integrateResidual'
-    #embed{ void BoundaryCondition_integrateResidual(void* objVptr, void* residualVptr, void* fieldTVptr, void* fieldTmdtVptr, void* meshVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != residualVptr);
-      assert(0 != fieldTVptr);
-      assert(0 != fieldTmdtVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<pylith::real_section_type>* residual = (ALE::Obj<pylith::real_section_type>*) residualVptr;
-      ALE::Obj<pylith::real_section_type>* fieldT = (ALE::Obj<pylith::real_section_type>*) fieldTVptr;
-      ALE::Obj<pylith::real_section_type>* fieldTmdt = (ALE::Obj<pylith::real_section_type>*) fieldTmdtVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::bc::BoundaryCondition*) objVptr)->integrateResidual(*residual, *fieldT, *fieldTmdt, *mesh);
-      } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch      
-    #}embed
-
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'pylith::topology::Mesh'."
-    BoundaryCondition_integrateResidual(self.thisptr,
-                                        PyCObject_AsVoidPtr(residual),
-                                        PyCObject_AsVoidPtr(fieldT),
-                                        PyCObject_AsVoidPtr(fieldTmdt),
-                                        ptrFromHandle(mesh))
-    return
-
-
-  def setField(self, t, field, mesh):
-    """
-    Set values in field.
-    """
-    # create shim for method 'setField'
-    #embed{ void BoundaryCondition_setField(void* objVptr, double t, void* fieldVptr, void* meshVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != fieldVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::bc::BoundaryCondition*) objVptr)->setField(t, *field, *mesh);
-      } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch      
-    #}embed
-
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'pylith::topology::Mesh'."
-    BoundaryCondition_setField(self.thisptr, t, PyCObject_AsVoidPtr(field),
-                               ptrFromHandle(mesh))
     return
 
 
@@ -421,6 +256,98 @@ cdef class Dirichlet(BoundaryCondition):
         fixedDOF[i] = value[i]
       Dirichlet_fixedDOF_set(self.thisptr, fixedDOF, numFixedDOF)
       free(fixedDOF)
+
+
+  def setConstraintSizes(self, field, mesh):
+    """
+    Set number of degrees of freedom that are constrained at points in field.
+    """
+    # create shim for method 'setConstraintSizes'
+    #embed{ void Dirichlet_setConstraintSizes(void* objVptr, void* fieldVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::bc::Dirichlet*) objVptr)->setConstraintSizes(*field, *mesh);
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    Dirichlet_setConstraintSizes(self.thisptr, PyCObject_AsVoidPtr(field),
+                                  ptrFromHandle(mesh))
+    return
+
+
+  def setConstraints(self, field, mesh):
+    """
+    Set which degrees of freedom that are constrained at points in field.
+    """
+    # create shim for method 'setConstraints'
+    #embed{ void Dirichlet_setConstraints(void* objVptr, void* fieldVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::bc::Dirichlet*) objVptr)->setConstraints(*field, *mesh);
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    Dirichlet_setConstraints(self.thisptr, PyCObject_AsVoidPtr(field), ptrFromHandle(mesh))
+    return
+
+
+  def setField(self, t, field, mesh):
+    """
+    Set values in field.
+    """
+    # create shim for method 'setField'
+    #embed{ void Dirichlet_setField(void* objVptr, double t, void* fieldVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::bc::Dirichlet*) objVptr)->setField(t, *field, *mesh);
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    Dirichlet_setField(self.thisptr, t, PyCObject_AsVoidPtr(field),
+                          ptrFromHandle(mesh))
+    return
 
 
 # End of file 
