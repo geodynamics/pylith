@@ -82,7 +82,7 @@ class Constraint(object):
     Set constrained values in field at time t.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.setField(t, field, self.mesh.cppHandle)
+    self.cppHandle.setField(t.value, field, self.mesh.cppHandle)
     return
 
 

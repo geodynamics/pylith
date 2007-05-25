@@ -95,14 +95,15 @@ class Implicit(Formulation):
     self.fields.createHistory(["dispTBctpdt", "dispT"])
     self.fields.setFiberDimension("dispT", dimension)
     for constraint in self.constraints:
-      constraint.setConstraintSizes(self.fields.getReal("dispT"), mesh)
+      constraint.setConstraintSizes(self.fields.getReal("dispT"))
     self.fields.allocate("dispT")
     for constraint in self.constraints:
-      constraint.setConstraints(self.fields.getReal("dispT"), mesh)
+      constraint.setConstraints(self.fields.getReal("dispT"))
     self.fields.copyLayout("dispT")
     self.jacobian = mesh.createMatrix(self.fields.getReal("dispT"))
 
-    self._solveElastic(mesh, t=0.0, dt=dt)
+    from pyre.units.time import s
+    self._solveElastic(mesh, t=0.0*s, dt=dt)
 
     self.solver.initialize(mesh, self.fields.getReal("dispIncr"))
     return
@@ -126,7 +127,7 @@ class Implicit(Formulation):
     # unaffected and will be equal to their values at time t.
     dispTBctpdt = self.fields.getReal("dispTBctpdt")
     for constraint in self.constraints:
-      constraint.setField(dispTBctpdt, t+dt, dt)
+      constraint.setField(t+dt, dispTBctpdt)
 
     needNewJacobian = False
     for integrator in self.integrators:
@@ -201,7 +202,7 @@ class Implicit(Formulation):
     self._info.log("Setting constraints.")
     dispT = self.fields.getReal("dispT")
     for constraint in self.constraints:
-      constraint.setField(dispT, t, dt)
+      constraint.setField(t, dispT)
 
     self._info.log("Integrating Jacobian and residual of operator.")
     for integrator in self.integrators:

@@ -107,7 +107,7 @@ class Explicit(Formulation):
     """
     dispTpdt = self.fields.getReal("dispTpdt")
     for constraint in self.constraints:
-      constraint.setField(dispTpdt, t+dt, dt)
+      constraint.setField(t+dt, dispTpdt)
 
     needNewJacobian = False
     for integrator in self.integrators:

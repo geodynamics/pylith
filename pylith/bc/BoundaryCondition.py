@@ -82,6 +82,7 @@ class BoundaryCondition(Component):
     Initialize boundary condition.
     """
     assert(None != self.cppHandle)
+    self.db.initialize()
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
     self.cppHandle.db = self.db.cppHandle    

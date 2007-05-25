@@ -368,8 +368,8 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
 // Update state variables as needed.
 void
 pylith::feassemble::ElasticityExplicit::updateState(
-						    const ALE::Obj<real_section_type>& disp,
-						    const ALE::Obj<Mesh>& mesh)
+				   const ALE::Obj<real_section_type>& disp,
+				   const ALE::Obj<Mesh>& mesh)
 { // updateState
   assert(0 != _material);
   assert(!disp.isNull());
