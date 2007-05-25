@@ -25,6 +25,8 @@
 #include "pylith/feassemble/ExplicitElasticity.hh"
 #include "pylith/feassemble/ImplicitElasticity.hh"
 
+#include "pylith/feassemble/Constraint.hh"
+
 #include "pylith/utils/petscfwd.h"
 
 #include <assert.h>
@@ -70,6 +72,20 @@ cdef void Integrator_destructor(void* obj):
   delete pQ;
   #}embed
   Integrator_destructor_cpp(obj)
+  return
+
+
+cdef void Constraint_destructor(void* obj):
+  """
+  Destroy Constraint object.
+  """
+  # create shim for destructor
+  #embed{ void Constraint_destructor_cpp(void* objVptr)
+  pylith::feassemble::Constraint* pQ =
+    (pylith::feassemble::Constraint*) objVptr;
+  delete pQ;
+  #}embed
+  Constraint_destructor_cpp(obj)
   return
 
 
@@ -795,6 +811,122 @@ cdef class ImplicitElasticity(IntegratorImplicit):
         raise TypeError, \
               "Argument must be extension module type 'ElasticMaterial'."
       ImplicitElasticity_material_set(self.thisptr, ptrFromHandle(m))
+
+
+# ----------------------------------------------------------------------
+cdef class Constraint:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_feassemble_constraint"
+    return
+
+
+  def setConstraintSizes(self, field, mesh):
+    """
+    Set number of degrees of freedom that are constrained at points in field.
+    """
+    # create shim for method 'setConstraintSizes'
+    #embed{ void Constraint_setConstraintSizes(void* objVptr, void* fieldVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::feassemble::Constraint*) objVptr)->setConstraintSizes(*field, *mesh);
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    Constraint_setConstraintSizes(self.thisptr, PyCObject_AsVoidPtr(field),
+                                  ptrFromHandle(mesh))
+    return
+
+
+  def setConstraints(self, field, mesh):
+    """
+    Set which degrees of freedom that are constrained at points in field.
+    """
+    # create shim for method 'setConstraints'
+    #embed{ void Constraint_setConstraints(void* objVptr, void* fieldVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::feassemble::Constraint*) objVptr)->setConstraints(*field, *mesh);
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    Constraint_setConstraints(self.thisptr, PyCObject_AsVoidPtr(field), ptrFromHandle(mesh))
+    return
+
+
+  def setField(self, t, field, mesh):
+    """
+    Set values in field.
+    """
+    # create shim for method 'setField'
+    #embed{ void Constraint_setField(void* objVptr, double t, void* fieldVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::feassemble::Constraint*) objVptr)->setField(t, *field, *mesh);
+      } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    if not mesh.name == "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type " \
+            "'pylith::topology::Mesh'."
+    Constraint_setField(self.thisptr, t, PyCObject_AsVoidPtr(field),
+                        ptrFromHandle(mesh))
+    return
+
+
+  def _createHandle(self):
+    """
+    Wrap pointer to C++ object in PyCObject.
+    """
+    return PyCObject_FromVoidPtr(self.thisptr, Constraint_destructor)
 
 
 # End of file 
