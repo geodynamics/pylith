@@ -84,44 +84,11 @@ class BoundaryCondition(Component):
     assert(None != self.cppHandle)
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
-    self.cppHandle.db = self.db.cppHandle
+    self.cppHandle.db = self.db.cppHandle    
+    self.mesh = mesh
+    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle)
     return
 
-
-  def setConstraintSizes(self, field, mesh):
-    """
-    Set number of constraints at points in field.
-    """
-    return
-
-
-  def setConstraints(self, field, mesh):
-    """
-    Set which degrees of freedom are constrained at points in field.
-    """
-    return
-
-
-  def integrateJacobian(self, jacobian, field, mesh):
-    """
-    Integrate contribution to Jacobian.
-    """
-    return
-
-
-  def integrateResidual(self, residual, fieldT, fieldTmdt, mesh):
-    """
-    Integrate contribution to residual.
-    """
-    return
-
-
-  def setField(self, t, field, mesh):
-    """
-    Set solution field at time t.
-    """
-    return
-  
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
