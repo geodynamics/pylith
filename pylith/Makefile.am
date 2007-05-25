@@ -27,6 +27,7 @@ nobase_pkgpyexec_PYTHON = \
 	faults/SingleFault.py \
 	faults/SlipTimeFn.py \
 	feassemble/__init__.py \
+	feassemble/Constraint.py \
 	feassemble/ExplicitElasticity.py \
 	feassemble/ImplicitElasticity.py \
 	feassemble/FIATCell.py \
