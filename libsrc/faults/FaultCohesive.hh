@@ -20,7 +20,6 @@
 #define pylith_faults_faultcohesive_hh
 
 #include "Fault.hh" // ISA Fault
-#include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 #include "pylith/utils/sievefwd.hh" // HOLDSA PETSc Mesh
 #include "pylith/utils/petscfwd.h" // USES PetscMat
@@ -35,8 +34,7 @@ namespace pylith {
 
 /// C++ abstract base class for a fault surface implemented with
 /// cohesive elements.
-class pylith::faults::FaultCohesive : public Fault, 
-				      public feassemble::Integrator
+class pylith::faults::FaultCohesive : public Fault
 { // class FaultCohesive
   friend class TestFaultCohesive; // unit testing
 
@@ -56,39 +54,6 @@ public :
    */
   void adjustTopology(const ALE::Obj<ALE::Mesh>& mesh);
 
-  /** Integrate contribution of cohesive cells to residual term.
-   *
-   * @param residual Residual field (output)
-   * @param disp Displacement field at time t
-   * @param mesh Finite-element mesh
-   */
-  virtual
-  void integrateResidual(const ALE::Obj<real_section_type>& residual,
-			 const ALE::Obj<real_section_type>& disp,
-			 const ALE::Obj<Mesh>& mesh) = 0;
-
-  /** Compute Jacobian matrix (A) associated with operator.
-   *
-   * @param mat Sparse matrix
-   * @param disp Displacement field
-   * @param mesh Finite-element mesh
-   */
-  virtual
-  void integrateJacobian(PetscMat* mat,
-			 const ALE::Obj<real_section_type>& dispT,
-			 const ALE::Obj<Mesh>& mesh) = 0;
-  
-  /** Set field.
-   *
-   * @param t Current time
-   * @param disp Displacement field
-   * @param mesh Finite-element mesh
-   */
-  virtual
-  void setField(const double t,
-		const ALE::Obj<real_section_type>& disp,
-		const ALE::Obj<Mesh>& mesh) = 0;
-  
   // PROTECTED TYPEDEFS /////////////////////////////////////////////////
 protected :
 
@@ -101,12 +66,6 @@ protected :
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
-
-  /** Copy constructor.
-   *
-   * @param m Fault to copy
-   */
-  FaultCohesive(const FaultCohesive& m);
 
   /** Cohesive cells use Lagrange multiplier constraints?
    *
@@ -191,14 +150,11 @@ protected :
 		 const double_array& upDir,
 		 const int numLocs);
 		
-  /** Get size (fiber dimension) of orientation information.
-   *
-   * @returns Size of orientation information.
-   */
-  int _orientationSize(void) const;
-
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
+
+  /// Not implemented
+  FaultCohesive(const FaultCohesive& m);
 
   /// Not implemented
   const FaultCohesive& operator=(const FaultCohesive& m);

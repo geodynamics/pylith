@@ -15,6 +15,7 @@
 #include "FaultCohesiveDyn.hh" // implementation of object methods
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
 
 #include <assert.h> // USES assert()
@@ -34,13 +35,6 @@ pylith::faults::FaultCohesiveDyn::~FaultCohesiveDyn(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::faults::FaultCohesiveDyn::FaultCohesiveDyn(const FaultCohesiveDyn& f) :
-  FaultCohesive(f)
-{ // copy constructor
-} // copy constructor
-
-// ----------------------------------------------------------------------
 // Initialize fault. Determine orientation and setup boundary
 void
 pylith::faults::FaultCohesiveDyn::initialize(const ALE::Obj<ALE::Mesh>& mesh,
@@ -50,6 +44,7 @@ pylith::faults::FaultCohesiveDyn::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   assert(0 != _quadrature);
   assert(0 != _faultMesh);
   assert(!_faultMesh->isNull());
+  assert(0 != cs);
   
   if (3 != upDir.size())
     throw std::runtime_error("Up direction for fault orientation must be "
@@ -60,7 +55,9 @@ pylith::faults::FaultCohesiveDyn::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   ALE::Obj<real_section_type> orientation = 
     new real_section_type((*_faultMesh)->comm(), (*_faultMesh)->debug());
   assert(!orientation.isNull());
-  const int orientationSize = _orientationSize();
+  const int cellDim = (*_faultMesh)->getDimension();
+  const int spaceDim = cs->spaceDim();
+  const int orientationSize = cellDim*spaceDim;
   orientation->setFiberDimension((*_faultMesh)->depthStratum(0), 
 				 orientationSize);
   (*_faultMesh)->allocate(orientation);
@@ -205,7 +202,7 @@ pylith::faults::FaultCohesiveDyn::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 void
 pylith::faults::FaultCohesiveDyn::integrateResidual(
 				const ALE::Obj<real_section_type>& residual,
-				const ALE::Obj<real_section_type>& disp,
+				topology::FieldsManager* const fields,
 				const ALE::Obj<Mesh>& mesh)
 { // integrateResidual
 #if 0
@@ -255,20 +252,10 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 void
 pylith::faults::FaultCohesiveDyn::integrateJacobian(
 				    PetscMat* mat,
-				    const ALE::Obj<real_section_type>& dispT,
+				    topology::FieldsManager* const fields,
 				    const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
 } // integrateJacobian
   
-// ----------------------------------------------------------------------
-// Set field.
-void
-pylith::faults::FaultCohesiveDyn::setField(
-				     const double t,
-				     const ALE::Obj<real_section_type>& disp,
-				     const ALE::Obj<Mesh>& mesh)
-{ // setField
-} // setField
-
 
 // End of file 

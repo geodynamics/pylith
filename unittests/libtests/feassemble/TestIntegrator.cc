@@ -14,31 +14,13 @@
 
 #include "TestIntegrator.hh" // Implementation of class methods
 
-#include "pylith/feassemble/Integrator.hh" // USES Integrator
+#include "pylith/feassemble/ElasticityExplicit.hh" // USES ElasticityExplicit
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
 
 #include <petscmat.h>
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegrator );
-
-// ----------------------------------------------------------------------
-// Test clone().
-void
-pylith::feassemble::TestIntegrator::testCopy(void)
-{ // testCopy
-  // Test copy constructor by testing value of minJacobian value in quadrature
-
-  Quadrature1D quadrature;
-  const double minJacobian = 4.0;
-  quadrature.minJacobian(minJacobian);
-  
-  Integrator iOrig;
-  iOrig.quadrature(&quadrature);
-
-  Integrator iCopy = Integrator(iOrig);
-  CPPUNIT_ASSERT_EQUAL(minJacobian, iCopy._quadrature->minJacobian());
-} // testCopy
 
 // ----------------------------------------------------------------------
 // Test quadrature().
@@ -52,7 +34,7 @@ pylith::feassemble::TestIntegrator::testQuadrature(void)
   const double minJacobian = 4.0;
   quadrature.minJacobian(minJacobian);
   
-  Integrator integrator;
+  ElasticityExplicit integrator;
   integrator.quadrature(&quadrature);
 
   CPPUNIT_ASSERT_EQUAL(minJacobian, integrator._quadrature->minJacobian());

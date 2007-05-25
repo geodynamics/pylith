@@ -87,8 +87,10 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
   assert(coordinates.size() == numVertices*spaceDim);
   assert(cells.size() == numCells*numCorners);
 
+  // :BUG: This causes a memory leak.
   *_mesh = new Mesh(PETSC_COMM_WORLD, meshDim);
   _mesh->addRef();
+
   assert(!_mesh->isNull());
   (*_mesh)->setDebug(_debug);
 

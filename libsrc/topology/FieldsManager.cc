@@ -46,9 +46,7 @@ pylith::topology::FieldsManager::addReal(const char* name)
     throw std::runtime_error(msg.str());
   } // if
   
-  ALE::Obj<real_section_type> field = 
-    new real_section_type(_mesh->comm(), _mesh->debug());
-  _real[name] = field;
+  _real[name] = new real_section_type(_mesh->comm(), _mesh->debug());
 } // addReal
 
 // ----------------------------------------------------------------------

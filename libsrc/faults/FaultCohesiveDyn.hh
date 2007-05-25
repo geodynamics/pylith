@@ -23,7 +23,8 @@
 #if !defined(pylith_faults_faultcohesivedyn_hh)
 #define pylith_faults_faultcohesivedyn_hh
 
-#include "FaultCohesive.hh"
+#include "FaultCohesive.hh" // ISA FaultCohesive
+#include "pylith/feassemble/Integrator.hh" // ISA Constraint
 
 /// Namespace for pylith package
 namespace pylith {
@@ -35,7 +36,8 @@ namespace pylith {
 
 /// @brief C++ implementation for a fault surface with spontaneous
 /// (dynamic) slip implemented with cohesive elements.
-class pylith::faults::FaultCohesiveDyn : public FaultCohesive
+class pylith::faults::FaultCohesiveDyn : public FaultCohesive,
+					 public feassemble::Integrator
 { // class FaultCohesiveDyn
   friend class TestFaultCohesiveDyn; // unit testing
 
@@ -48,12 +50,6 @@ public :
   /// Destructor.
   virtual
   ~FaultCohesiveDyn(void);
-
-  /** Create copy of fault.
-   *
-   * @returns Copy of fault.
-   */
-  Fault* clone(void) const;  
 
   /** Initialize fault. Determine orientation and setup boundary
    * condition parameters.
@@ -71,41 +67,25 @@ public :
   /** Integrate contribution of cohesive cells to residual term.
    *
    * @param residual Residual field (output)
-   * @param disp Displacement field at time t
+   * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
-			 const ALE::Obj<real_section_type>& disp,
+			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 
   /** Compute Jacobian matrix (A) associated with operator.
    *
    * @param mat Sparse matrix
-   * @param disp Displacement field
+   * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   void integrateJacobian(PetscMat* mat,
-			 const ALE::Obj<real_section_type>& dispT,
+			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
-  
-  /** Set field.
-   *
-   * @param t Current time
-   * @param disp Displacement field
-   * @param mesh Finite-element mesh
-   */
-  void setField(const double t,
-		const ALE::Obj<real_section_type>& disp,
-		const ALE::Obj<Mesh>& mesh);
   
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
-
-  /** Copy constructor.
-   *
-   * @param m Fault to copy
-   */
-  FaultCohesiveDyn(const FaultCohesiveDyn& m);
 
   /** Cohesive cells use Lagrange multiplier constraints?
    *
@@ -116,6 +96,9 @@ protected :
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
+
+  /// Not implemented
+  FaultCohesiveDyn(const FaultCohesiveDyn& m);
 
   /// Not implemented
   const FaultCohesiveDyn& operator=(const FaultCohesiveDyn& m);

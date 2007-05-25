@@ -14,7 +14,7 @@
 ##
 ## @brief Python container for faults.
 ##
-## Factory: faults_bin
+## Factory: interfaces_bin
 
 from pyre.components.Component import Component
 
@@ -23,7 +23,7 @@ class FaultsBin(Component):
   """
   Python container for faults.
 
-  Factory: faults_bin
+  Factory: interfaces_bin
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ class FaultsBin(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="faults_bin")
-    self.faults = []
+    self.ic = []
     return
 
 

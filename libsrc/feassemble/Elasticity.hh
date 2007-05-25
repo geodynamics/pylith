@@ -11,27 +11,27 @@
 //
 
 /**
- * @file pylith/feassemble/IntegratorElasticity.hh
+ * @file pylith/feassemble/Elasticity.hh
  *
  * @brief C++ Utility class for general operations associated with
  * integrating finite-element actions for solid elasticity.
  */
 
-#if !defined(pylith_feassemble_integratorelasticity_hh)
-#define pylith_feassemble_integratorelasticity_hh
+#if !defined(pylith_feassemble_elasticity_hh)
+#define pylith_feassemble_elasticity_hh
 
 #include "pylith/utils/array.hh" // USES double_array, std::vector
 
 namespace pylith {
   namespace feassemble {
-    class IntegratorElasticity;
-    class TestIntegratorElasticity;
+    class Elasticity;
+    class TestElasticity;
   } // feassemble
 } // pylith
 
-class pylith::feassemble::IntegratorElasticity
-{ // IntegratorElasticity
-  friend class TestIntegratorElasticity; // unit testing
+class pylith::feassemble::Elasticity
+{ // Elasticity
+  friend class TestElasticity; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
@@ -79,8 +79,8 @@ public :
 			 const double* disp,
 			 const int numBasis);
 
-}; // IntegratorElasticity
+}; // Elasticity
 
-#endif // pylith_feassemble_integratorelasticity_hh
+#endif // pylith_feassemble_elasticity_hh
 
 // End of file 

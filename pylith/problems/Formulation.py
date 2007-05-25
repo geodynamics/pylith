@@ -61,16 +61,25 @@ class Formulation(Component):
     """
     Component.__init__(self, name, facility="pde_formulation")
     self.integrators = None
+    self.constraints = None
+    self.fields = None
     return
 
 
-  def initialize(self, mesh, materials, boundaryConditions, dimension, dt):
+  def initialize(self, mesh, materials, boundaryConditions,
+                 interfaceConditions, dimension, dt):
     """
     Create integrators for each element family.
     """
-    self._info.log("Initializing integrators.")
-    self.integrators = []
+    from pylith.feassemble.Integrator import implementsIntegrator
+    from pylith.feassemble.Constraint import implementsConstraint
 
+    from pylith.topology.FieldsManager import FieldsManager
+    self.fields = FieldsManager(mesh)
+    self.integrators = []
+    self.constraints = []
+
+    self._info.log("Initializing materials.")
     for material in materials.materials:
       if material.quadrature.spaceDim != dimension:
         raise ValueError, \
@@ -78,15 +87,38 @@ class Formulation(Component):
               "for material '%s' is for spatial dimension '%d'." % \
               (dimension, material.label, material.quadrature.spaceDim)
       integrator = self.elasticityIntegrator()
+      if not implementsIntegrator(integrator):
+        raise TypeError, \
+              "Could not use '%s' as an integrator for material '%s'. " \
+              "Functionality missing." % (integrator.name, material.label)
       integrator.setMesh(mesh)
       integrator.initQuadrature(material.quadrature)
       integrator.initMaterial(mesh, material)
       self.integrators.append(integrator)
 
+    self._info.log("Initializing boundary conditions.")
     for bc in boundaryConditions.bc:
-      integrator = bc
-      integrator.initialize(mesh)
-      self.integrators.append(integrator)
+      bc.initialize(mesh)
+      if implementsIntegrator(bc):
+        self.integrators.append(bc)
+      elif implementsConstraint(bc):
+        self.constraints.append(bc)
+      else:
+        raise TypeError, \
+              "Could not determine whether boundary condition '%s' is an " \
+              "integrator or a constraint." % bc.name
+
+    self._info.log("Initializing interior interfaces.")
+    for ic in interfaceConditions.ic:
+      ic.initialize(mesh)
+      if implementsIntegrator(ic):
+        self.integrators.append(ic)
+      elif implementsConstraint(ic):
+        self.constraints.append(ic)
+      else:
+        raise TypeError, \
+              "Could not determine whether interface condition '%s' is an " \
+              "integrator or a constraint." % ic.name
     return
 
 

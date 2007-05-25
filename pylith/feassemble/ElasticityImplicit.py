@@ -10,17 +10,17 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/feassemble/ImplicitElasticity.py
+## @file pylith/feassemble/ElasticityImplicit.py
 ##
 ## @brief Python object for implicit time integration of dynamic
 ## elasticity equation using finite-elements.
 ##
 ## Factory: integrator
 
-from IntegratorImplicit import IntegratorImplicit
+from IntegratorElasticity import IntegratorElasticity
 
-# ImplicitElasticity class
-class ImplicitElasticity(IntegratorImplicit):
+# ElasticityImplicit class
+class ElasticityImplicit(IntegratorElasticity):
   """
   Python object for implicit time integration of dynamic elasticity
   equation using finite-elements.
@@ -28,35 +28,24 @@ class ImplicitElasticity(IntegratorImplicit):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="implicitelasticity"):
+  def __init__(self, name="elasticityimplicit"):
     """
     Constructor.
     """
-    IntegratorImplicit.__init__(self, name)
+    IntegratorElasticity.__init__(self, name)
 
     import pylith.feassemble.feassemble as bindings
-    self.cppHandle = bindings.ImplicitElasticity()
+    self.cppHandle = bindings.ElasticityImplicit()
     return
 
 
-  def initMaterial(self, mesh, material):
-    """
-    Initialize material properties.
-    """
-    self._info.log("Initializing integrator material '%s'." % material.label)
-    material.initialize(mesh)
-    self.material = material
-    self.cppHandle.material = self.material.cppHandle
-    return
-  
-  
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def integrator():
   """
-  Factory associated with ImplicitElasticity.
+  Factory associated with ElasticityImplicit.
   """
-  return ImplicitElasticity()
+  return ElasticityImplicit()
 
 
 # End of file 

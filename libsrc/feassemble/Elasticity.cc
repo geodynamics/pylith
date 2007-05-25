@@ -12,14 +12,14 @@
 
 #include <portinfo>
 
-#include "IntegratorElasticity.hh" // implementation of class methods
+#include "Elasticity.hh" // implementation of class methods
 
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::logic_error
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticity::calcTotalStrain1D(
+pylith::feassemble::Elasticity::calcTotalStrain1D(
 					    std::vector<double_array>* strain,
 					    const double_array& basisDeriv,
 					    const double* disp,
@@ -43,7 +43,7 @@ pylith::feassemble::IntegratorElasticity::calcTotalStrain1D(
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticity::calcTotalStrain2D(
+pylith::feassemble::Elasticity::calcTotalStrain2D(
 					    std::vector<double_array>* strain,
 					    const double_array& basisDeriv,
 					    const double* disp,
@@ -73,7 +73,7 @@ pylith::feassemble::IntegratorElasticity::calcTotalStrain2D(
 
 // ----------------------------------------------------------------------
 void
-pylith::feassemble::IntegratorElasticity::calcTotalStrain3D(
+pylith::feassemble::Elasticity::calcTotalStrain3D(
 					    std::vector<double_array>* strain,
 					    const double_array& basisDeriv,
 					    const double* disp,

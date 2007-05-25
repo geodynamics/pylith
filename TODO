@@ -2,44 +2,23 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Cleanup
+1. Unit tests for Integrator stuff.
 
-  Add check at beginning of simulation to make sure cell dimension
-  matches space dimension. We don't have enough information to
-  determine the fault orientation information for a cell in a higher
-  dimension coordinate space. We also haven't implemented the
-  elasticity stuff for lower dimension cells in a higher
-  dimensions. Since Sieve can handle lower order meshes in higher
-  dimensions, we probably want to allow it in MeshIO, just not in the
-  simulation where we don't support it.
+  b. Integrator
+    iii. C++ unit tests
+    iv. Python unit tests
 
-1. Switch to more uniform implementation of integrators.
+  e. ElasticityExplicit
+    ii. Python unit tests
 
-  Formulation HASA FieldsManager (solnfields)
+  f. ElasticityImplicit
+    ii. Python unit tests
 
-  Integrators have
-    integrateResidual(residual, solnfields, mesh, timeId)
-    integrateJacobian(jacobian, solnfields, mesh, timeId)
+  g. Add unit test for IntegratorElasticity::calcTotalStrain
 
-  timeId = {'t+dt', 't', 't-dt'}
+  i. Add in use of useElasticBehavior()
 
-2. Finish implementing ExplicitElasticity and Explicit
-   a. Replace integrateConstant() with integrateResidual()
-
-     {f}-[A]{u}, {u} is "guess" (zero for explicit)
-
-   a. Double check loops for integrateResidual() and integrateJacobian()
-   b. Create unit test (construction of residual term and Jacobian)
-
-   c. Add unit test for IntegratorElasticity::calcTotalStrain
-
-2a. Cleanup integrators and boundary conditions.
-
-   a. Categorize into "integrators" and "constraints"
-   b. Add feature to materials and integrators wherein they indicate
-      if the Jacobian needs to be reformed at the current time step.
-
-3. Add dualBasis to Quadrature.
+2. Add dualBasis to Quadrature.
    a. Python
      ReferenceCell
      FIATSimplex
@@ -49,7 +28,7 @@ Cleanup
    c. C++ unit tests
    d. Python unit tests
 
-4. Implement faults for kinematic source
+3. Implement faults for kinematic source
    a. Creation of cohesive cells
      i. Add tests for interpolated meshes.
         Double check consistency in ordering of vertices (positive/negative).
@@ -94,9 +73,9 @@ Cleanup
          constructor
          initialize()
 
-5. Implement absorbing boundary conditions
+4. Implement absorbing boundary conditions
 
-6. Create suite of simple full test cases
+5. Create suite of simple full test cases
 
 ======================================================================
 SECONDARY PRIORITIES

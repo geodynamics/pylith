@@ -24,7 +24,8 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::ElasticMaterial::ElasticMaterial(void) :
-  _numQuadPts(0)
+  _numQuadPts(0),
+  _useElasticBehavior(true)
 { // constructor
 } // constructor
 
@@ -38,7 +39,8 @@ pylith::materials::ElasticMaterial::~ElasticMaterial(void)
 // Copy constructor.
 pylith::materials::ElasticMaterial::ElasticMaterial(const ElasticMaterial& m) :
   Material(m),
-  _numQuadPts(0)
+  _numQuadPts(0),
+  _useElasticBehavior(m._useElasticBehavior)
 { // copy constructor
 } // copy constructor
 

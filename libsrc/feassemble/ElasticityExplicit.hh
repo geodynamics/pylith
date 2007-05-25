@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/ExplicitElasticity.hh
+ * @file pylith/feassemble/ElasticityExplicit.hh
  *
  * @brief Explicit time integration of dynamic elasticity equation
  * using finite-elements.
@@ -20,17 +20,23 @@
  * is defined by the quadrature and a database of material property
  * parameters.
  *
- * Computes contributions to terms A and b in A(t) u(t+dt) = b(u(t),
- * u(t-dt)), where A(t) is a sparse matrix or vector, u(t+dt) is the
- * field we want to compute at time t+dt and b is a vector that
- * depends on the field at time t and t-dt.
+ * Computes contributions to terms A and r in
+ *
+ * A(t) u(t+dt) = b(u(t), u(t-dt)),
+ *
+ * r = b - A u0(t+dt)
+ *
+ * where A(t) is a sparse matrix or vector, u(t+dt) is the field we
+ * want to compute at time t+dt, b is a vector that depends on the
+ * field at time t and t-dt, and u0 is zero at unknown DOF and set to
+ * the constrained values at known DOF.
  *
  * Contributions from elasticity include the intertial and stiffness
- * terms, so this object computes the following portions of A and b:
+ * terms, so this object computes the following portions of A and r:
  *
  * A = 1/(dt*dt) [M]
  *
- * b = 2/(dt*dt)[M]{u(t)} - 1/(dt*dt)[M]{u(t-dt)} - [K]{u(t)}
+ * r = (1/(dt*dt) [M])(- {u(t+dt)} + 2/(dt*dt){u(t)} - {u(t-dt)}) - [K]{u(t)}
  *
  * Translational inertia.
  *   - Residual action over cell
@@ -41,21 +47,20 @@
  *     \f[
  *       \int_{V^e} (\rho N^q N^q)_i \, dV
  *     \f]
- *   - Integrate and lump to form lumped matrix (field)
  *
  * See governing equations section of user manual for more
  * information.
  */
 
-#if !defined(pylith_feassemble_explicitelasticity_hh)
-#define pylith_feassemble_explicitelasticity_hh
+#if !defined(pylith_feassemble_elasticityexplicit_hh)
+#define pylith_feassemble_elasticityexplicit_hh
 
-#include "IntegratorExplicit.hh" // ISA IntegratorExplicit
+#include "Integrator.hh" // ISA Integrator
 
 namespace pylith {
   namespace feassemble {
-    class ExplicitElasticity;
-    class TestExplicitElasticity;
+    class ElasticityExplicit;
+    class TestElasticityExplicit;
   } // feassemble
 
   namespace materials {
@@ -72,21 +77,18 @@ namespace spatialdata {
   } // geocoords
 } // spatialdata
 
-class pylith::feassemble::ExplicitElasticity : public IntegratorExplicit
-{ // ExplicitElasticity
-  friend class TestExplicitElasticity; // unit testing
+class pylith::feassemble::ElasticityExplicit : public Integrator
+{ // ElasticityExplicit
+  friend class TestElasticityExplicit; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  ExplicitElasticity(void);
+  ElasticityExplicit(void);
 
   /// Destructor
-  ~ExplicitElasticity(void);
-
-  /// Create a copy of this object.
-  IntegratorExplicit* clone(void) const;
+  ~ElasticityExplicit(void);
 
   /** Set material.
    *
@@ -94,59 +96,61 @@ public :
    */
   void material(const materials::ElasticMaterial* m);
 
-  /** Integrate constant term (b) for dynamic elasticity term 
-   * for finite elements.
+  /** Set time step for advancing from time t to time t+dt.
    *
-   * Compute b = 2/(dt*dt)[M]{u(t) - 1/(dt*dt)[M]{u(t-dt)} - [K]{u(t)}, where
-   * [M] = density * [N]^T [N]
+   * @param dt Time step
+   */
+  void timeStep(const double dt);
+
+  /** Integrate contributions to residual term (r) for operator.
    *
-   *
-   * @param b Constant field (output)
-   * @param dispT Displacement field at time t
-   * @param dispTmdt Displacement field at time t-dt
+   * @param residual Field containing values for residual
+   * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
-  void integrateConstant(const ALE::Obj<real_section_type>& b,
-			 const ALE::Obj<real_section_type>& dispT,
-			 const ALE::Obj<real_section_type>& dispTmdt,
+  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 
-  /** Compute Jacobian matrix (A) associated with operator.
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator.
    *
    * @param mat Sparse matrix
-   * @param dispT Displacement at time t
+   * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   void integrateJacobian(PetscMat* mat,
-			 const ALE::Obj<real_section_type>& dispT,
+			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
-  
-// PROTECTED METHODS ////////////////////////////////////////////////////
-protected :
 
-  /** Copy constructor.
+  /** Update state variables as needed.
    *
-   * @param i Integrator to copy
+   * @param field Current solution field.
+   * @param mesh Finite-element mesh
    */
-  ExplicitElasticity(const ExplicitElasticity& i);
+  void updateState(const ALE::Obj<real_section_type>& field,
+		   const ALE::Obj<Mesh>& mesh);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
+  /// Not implemented.
+  ElasticityExplicit(const ElasticityExplicit& i);
+
   /// Not implemented
-  const ExplicitElasticity& operator=(const ExplicitElasticity&);
+  const ElasticityExplicit& operator=(const ElasticityExplicit&);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
+  double _dtm1; ///< Time step for t-dt1 -> t
+
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
-}; // ExplicitElasticity
+}; // ElasticityExplicit
 
-#include "ExplicitElasticity.icc" // inline methods
-
-#endif // pylith_feassemble_explicitelasticity_hh
+#endif // pylith_feassemble_elasticityexplicit_hh
 
 
 // End of file 

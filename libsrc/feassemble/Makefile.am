@@ -15,14 +15,10 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	Constraint.hh \
-	ExplicitElasticity.hh \
-	ExplicitElasticity.icc \
-	ImplicitElasticity.hh \
-	ImplicitElasticity.icc \
+	ElasticityExplicit.hh \
+	ElasticityImplicit.hh \
 	Integrator.hh \
-	IntegratorElasticity.hh \
-	IntegratorExplicit.hh \
-	IntegratorImplicit.hh \
+	Elasticity.hh \
 	Quadrature.hh \
 	Quadrature.icc \
 	Quadrature1D.hh \

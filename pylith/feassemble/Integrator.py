@@ -17,10 +17,23 @@
 ##
 ## Factory: fe_integrator.
 
-from pyre.components.Component import Component
+def implementsIntegrator(obj):
+  """
+  Check whether object implements an integrator.
+  """
+  result = True
+  attrs = dir(obj)
+  if not "initQuadrature" in attrs or \
+     not "timeStep" in attrs or \
+     not "stableTimeStep" in attrs or \
+     not "integrateResidual" in attrs or \
+     not "integrateJacobian" in attrs:
+    result = False
+  return result
+
 
 # Integrator class
-class Integrator(Component):
+class Integrator(object):
   """
   Python abstract base class for integration of actions with
   finite-elements.
@@ -30,12 +43,10 @@ class Integrator(Component):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="integrator"):
+  def __init__(self):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="integrator")
-    self.cppHandle = None
     self.quadrature = None
     self.mesh = None
     return
@@ -53,14 +64,64 @@ class Integrator(Component):
     """
     Initialize quadrature.
     """
-    if self.cppHandle is None:
-      raise ValueError("C++ handle not set.")
-    
-    self._info.log("Initialize quadrature")
+    assert(None != self.cppHandle)
     quadrature.initialize()
     self.quadrature = quadrature
     self.cppHandle.quadrature = self.quadrature.cppHandle
     return
   
   
+  def timeStep(self, dt):
+    """
+    Set time step for advancing from time t to time t+dt.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.timeStep = dt.value
+    return
+
+
+  def stableTimeStep(self):
+    """
+    Get stable time step for advancing from time t to time t+dt.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.getStableTimeStep()
+
+
+  def integrateResidual(self, residual, fields):
+    """
+    Integrate contributions to residual term at time t.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.integrateResidual(residual, fields, self.mesh.cppHandle)
+    return
+
+
+  def needNewJacobian(self):
+    """
+    Returns true if we need to recompute Jacobian matrix for operator,
+    false otherwise.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.needNewJacobian
+
+
+  def integrateJacobian(self, jacobian, fields):
+    """
+    Integrate contributions to Jacobian term at time t.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.integrateJacobian(jacobian, fields, self.mesh.cppHandle)
+    return
+
+
+  def updateState(self, field):
+    """
+    Update state variables as needed.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.updateState(field, self.mesh.cppHandle)
+    return
+    
+
 # End of file 
