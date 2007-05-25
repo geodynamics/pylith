@@ -28,13 +28,12 @@ nobase_pkgpyexec_PYTHON = \
 	faults/SlipTimeFn.py \
 	feassemble/__init__.py \
 	feassemble/Constraint.py \
-	feassemble/ExplicitElasticity.py \
-	feassemble/ImplicitElasticity.py \
+	feassemble/ElasticityExplicit.py \
+	feassemble/ElasticityImplicit.py \
 	feassemble/FIATCell.py \
 	feassemble/FIATSimplex.py \
 	feassemble/Integrator.py \
-	feassemble/IntegratorExplicit.py \
-	feassemble/IntegratorImplicit.py \
+	feassemble/IntegratorElasticity.py \
 	feassemble/ReferenceCell.py \
 	feassemble/quadrature/Quadrature.py \
 	feassemble/quadrature/Quadrature1D.py \
@@ -64,7 +63,6 @@ nobase_pkgpyexec_PYTHON = \
 	problems/BCPrism.py \
 	problems/BCQuadrilateral.py \
 	problems/BoundaryConditions.py \
-	problems/EqDeformation.py \
 	problems/Explicit.py \
 	problems/Formulation.py \
 	problems/Implicit.py \

@@ -38,25 +38,6 @@ class Explicit(Formulation):
   Factory: pde_formulation.
   """
 
-  # INVENTORY //////////////////////////////////////////////////////////
-
-  class Inventory(Formulation.Inventory):
-    """
-    Python object for managing Explicit facilities and properties.
-    """
-
-    ## @class Inventory
-    ## Python object for managing Explicit facilities and properties.
-    ##
-    ## \b Properties
-    ## @li None
-    ##
-    ## \b Facilities
-    ## @li None
-
-    import pyre.inventory
-
-
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   def __init__(self, name="explicit"):
@@ -71,44 +52,42 @@ class Explicit(Formulation):
     """
     Get integrator for elastic material.
     """
-    from pylith.feassemble.ExplicitElasticity import ExplicitElasticity
-    return ExplicitElasticity()
+    from pylith.feassemble.ElasticityExplicit import ElasticityExplicit
+    return ElasticityExplicit()
 
 
-  def initialize(self, mesh, materials, boundaryConditions, dimension, dt):
+  def initialize(self, mesh, materials, boundaryConditions,
+                 interfaceConditions, dimension, dt):
     """
     Initialize problem for explicit time integration.
     """
-    self.integrators = []
     Formulation.initialize(self, mesh, materials, boundaryConditions,
-                           dimension, dt)
-
-    self._info.log("Initializing integrators.")
+                           interfaceConditions, dimension, dt)
 
     self._info.log("Creating fields and matrices.")
-    self.dispT = mesh.createRealSection("dispT", dimension)
-    self.dispTmdt = mesh.createRealSection("dispTmdt", dimension)
-    self.dispTpdt = mesh.createRealSection("dispTpdt", dimension)
-    self.constant = mesh.createRealSection("constant", dimension)
+    self.fields.addReal("dispT")
+    self.fields.addReal("dispTmdt")
+    self.fields.addReal("dispTpdt")
+    self.fields.addReal("residual")
+    self.fields.createHistory(["dispTpdt", "dispT", "dispTmdt"])    
+    self.fields.setFiberDimension("dispT", dimension)
+    for constraint in self.constraints:
+      constraint.setConstraintSizes(self.fields.getReal("dispT"), mesh)
+    self.fields.allocate("dispT")
+    for constraint in self.constraints:
+      constraint.setConstraints(self.fields.getReal("dispT"), mesh)    
+    self.fields.copyLayout("dispT")
+    self.jacobian = mesh.createMatrix(self.fields.getReal("residual"))
 
-    # Setup constraints
-    # STUFF GOES HERE
-
-    mesh.allocateRealSection(self.dispT)
-    mesh.allocateRealSection(self.dispTmdt)
-    mesh.allocateRealSection(self.dispTpdt)
-    mesh.allocateRealSection(self.constant)
-    
-    self.jacobian = mesh.createMatrix(self.constant)
-
-    self._info.log("Integrating Jacobian of operator.")
+    self._info.log("Forming Jacobian of operator.")
+    import pylith.utils.petsc as petsc
+    #petsc.zeroMatrix(self.jacobian)
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateJacobian(self.jacobian, self.dispT)
-    import pylith.utils.petsc as petsc
+      integrator.integrateJacobian(self.jacobian, self.fields.cppHandle)
     petsc.mat_assemble(self.jacobian)
 
-    self.solver.initialize(mesh, self.dispTpdt)
+    self.solver.initialize(mesh, self.fields.getReal("dispTpdt"))
     return
 
 
@@ -126,7 +105,22 @@ class Explicit(Formulation):
     """
     Hook for doing stuff before advancing time step.
     """
-    self._info.log("WARNING: Explicit::prestep() not implemented.")
+    dispTpdt = self.fields.getReal("dispTpdt")
+    for constraint in self.constraints:
+      constraint.setField(dispTpdt, t+dt, dt)
+
+    needNewJacobian = False
+    for integrator in self.integrators:
+      if integrator.needNewJacobian():
+        needNewJacobian = True
+    if needNewJacobian:
+      self._info.log("Reforming Jacobian of operator.")
+      import pylith.utils.petsc as petsc
+      petsc.zeroMatrix(self.jacobian)
+      for integrator in self.integrators:
+        integrator.timeStep(dt)
+        integrator.integrateJacobian(self.jacobian, self.fields.cppHandle)
+      petsc.mat_assemble(self.jacobian)
     return
 
 
@@ -135,14 +129,15 @@ class Explicit(Formulation):
     Advance to next time step.
     """
     self._info.log("Integrating constant term in operator.")
+    residual = self.fields.getReal("residual")
     import pylith.topology.topology as bindings
-    bindings.zeroRealSection(self.constant)
+    bindings.zeroRealSection(residual)
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateConstant(self.constant, self.dispT, self.dispTmdt)
+      integrator.integrateResidual(residual, self.fields.cppHandle)
 
     self._info.log("Solving equations.")
-    self.solver.solve(self.dispTpdt, self.jacobian, self.constant)
+    self.solver.solve(self.fields.getReal("dispTpdt"), self.jacobian, residual)
     return
 
 
@@ -150,10 +145,11 @@ class Explicit(Formulation):
     """
     Hook for doing stuff after advancing time step.
     """
-    tmp = self.dispTmdt
-    self.dispTmdt = self.dispT
-    self.dispT = self.dispTpdt
-    self.dispTpdt = tmp
+    self.fields.shiftHistory()
+
+    self._info.log("Updating integrators states.")
+    for integrator in self.integrators:
+      integrator.updateState(self.fields.getReal("dispT"))
     return
 
 

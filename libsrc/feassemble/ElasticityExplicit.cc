@@ -12,11 +12,13 @@
 
 #include <portinfo>
 
-#include "ExplicitElasticity.hh" // implementation of class methods
+#include "ElasticityExplicit.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
-#include "IntegratorElasticity.hh" // USES IntegratorElasticity
+#include "Elasticity.hh" // USES Elasticity
+
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
+#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
 
 #include "petscmat.h" // USES PetscMat
@@ -27,62 +29,70 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::ExplicitElasticity::ExplicitElasticity(void) :
+pylith::feassemble::ElasticityExplicit::ElasticityExplicit(void) :
+  _dtm1(-1.0),
   _material(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::feassemble::ExplicitElasticity::~ExplicitElasticity(void)
+pylith::feassemble::ElasticityExplicit::~ElasticityExplicit(void)
 { // destructor
   delete _material; _material = 0;
 } // destructor
   
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::feassemble::ExplicitElasticity::ExplicitElasticity(const ExplicitElasticity& i) :
-  IntegratorExplicit(i),
-  _material(0)
-{ // copy constructor
-  if (0 != i._material)
-    _material = i._material->clone();
-} // copy constructor
+// Set time step for advancing from time t to time t+dt.
+void
+pylith::feassemble::ElasticityExplicit::timeStep(const double dt)
+{ // timeStep
+  if (_dt != -1.0)
+    _dtm1 = _dt;
+  else
+    _dtm1 = dt;
+  _dt = dt;
+  assert(_dt == _dtm1); // For now, don't allow variable time step
+} // timeStep
 
 // ----------------------------------------------------------------------
 // Set material.
 void
-pylith::feassemble::ExplicitElasticity::material(
+pylith::feassemble::ElasticityExplicit::material(
 				       const materials::ElasticMaterial* m)
 { // material
   delete _material; _material = (0 != m) ? m->clone() : 0;
 } // material
 
 // ----------------------------------------------------------------------
-// Integrate constant term (b) for dynamic elasticity term for 3-D
-// finite elements.
+// Integrate constributions to residual term (r) for operator.
 void
-pylith::feassemble::ExplicitElasticity::integrateConstant(
-			      const ALE::Obj<real_section_type>& b,
-			      const ALE::Obj<real_section_type>& dispT,
-			      const ALE::Obj<real_section_type>& dispTmdt,
+pylith::feassemble::ElasticityExplicit::integrateResidual(
+			      const ALE::Obj<real_section_type>& residual,
+			      topology::FieldsManager* const fields,
 			      const ALE::Obj<Mesh>& mesh)
-{ // integrateConstant
+{ // integrateResidual
   assert(0 != _quadrature);
   assert(0 != _material);
-  assert(!b.isNull());
-  assert(!dispT.isNull());
-  assert(!dispTmdt.isNull());
+  assert(!residual.isNull());
+  assert(0 != fields);
   assert(!mesh.isNull());
 
-  // Get information about section
+  // Get cell information
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator  cellsEnd = cells->end();
 
+  // Get sections
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
+  const ALE::Obj<real_section_type>& dispTpdt = fields->getHistoryItem(0);
+  const ALE::Obj<real_section_type>& dispT = fields->getHistoryItem(1);
+  const ALE::Obj<real_section_type>& dispTmdt = fields->getHistoryItem(2);
+  assert(!dispTpdt.isNull());
+  assert(!dispT.isNull());
+  assert(!dispTmdt.isNull());
 
   // Get parameters used in integration.
   const double dt = _dt;
@@ -118,38 +128,40 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
     tensorSize = 3;
   else if (3 == cellDim)
     tensorSize = 6;
-  else
-    throw std::logic_error("Tensor size not implemented for given cellDim.");
+  else {
+    std::cerr << "Unknown case for cellDim '" << cellDim << "'." << std::endl;
+    assert(0);
+  } // else
   std::vector<double_array> totalStrain(numQuadPts);
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     totalStrain[iQuad].resize(tensorSize);
     totalStrain[iQuad] = 0.0;
   } // for
 
-  for (Mesh::label_sequence::iterator cellIter=cells->begin();
-       cellIter != cellsEnd;
-       ++cellIter) {
+  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+       c_iter != cellsEnd;
+       ++c_iter) {
     // Compute geometry information for current cell
-    _quadrature->computeGeometry(mesh, coordinates, *cellIter);
+    _quadrature->computeGeometry(mesh, coordinates, *c_iter);
 
     // Set cell data in material
-    _material->initCellData(*cellIter, numQuadPts);
+    _material->initCellData(*c_iter, numQuadPts);
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict input fields to cell
+    const real_section_type::value_type* dispTpdtCell = 
+      mesh->restrict(dispTpdt, *c_iter);
     const real_section_type::value_type* dispTCell = 
-      mesh->restrict(dispT, *cellIter);
+      mesh->restrict(dispT, *c_iter);
     const real_section_type::value_type* dispTmdtCell = 
-      mesh->restrict(dispTmdt, *cellIter);
+      mesh->restrict(dispTmdt, *c_iter);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
     const double_array& basisDeriv = _quadrature->basisDeriv();
     const double_array& jacobianDet = _quadrature->jacobianDet();
-
-    // Compute action for cell
 
     // Compute action for inertial terms
     const std::vector<double_array>& density = 
@@ -163,20 +175,21 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
           const double valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] += 
-	      valIJ * (2.0 * dispTCell[jBasis*spaceDim+iDim] - 
-		       dispTmdtCell[jBasis*spaceDim+iDim]);
+	      valIJ * (- dispTpdtCell[jBasis*spaceDim+iDim] 
+		       + 2.0 * dispTCell[jBasis*spaceDim+iDim]
+		       - dispTmdtCell[jBasis*spaceDim+iDim]);
         } // for
       } // for
     } // for
     PetscErrorCode err = 
-      PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
+      PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
     if (err)
       throw std::runtime_error("Logging PETSc flops failed.");
     
     // Compute action for elastic terms
     if (1 == cellDim) {
       // Compute stresses
-      IntegratorElasticity::calcTotalStrain1D(&totalStrain, basisDeriv,
+      Elasticity::calcTotalStrain1D(&totalStrain, basisDeriv,
 					      dispTCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
@@ -197,7 +210,7 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
 
     } else if (2 == cellDim) {
       // Compute stresses
-      IntegratorElasticity::calcTotalStrain2D(&totalStrain, basisDeriv,
+      Elasticity::calcTotalStrain2D(&totalStrain, basisDeriv,
 					      dispTCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
@@ -222,8 +235,8 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
       
     } else if (3 == cellDim) {
       // Compute stresses
-      IntegratorElasticity::calcTotalStrain3D(&totalStrain, basisDeriv,
-					      dispTCell, numBasis);
+      Elasticity::calcTotalStrain3D(&totalStrain, basisDeriv, 
+				    dispTCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
@@ -250,35 +263,41 @@ pylith::feassemble::ExplicitElasticity::integrateConstant(
       err = PetscLogFlops(numQuadPts*(1+numBasis*(3+12)));
       if (err)
 	throw std::runtime_error("Logging PETSc flops failed.");
+    } else {
+      std::cerr << "Unknown case for cellDim '" << cellDim << "'."
+		<< std::endl;
+      assert(0);
     } // if/else
-
     // Assemble cell contribution into field
-    mesh->updateAdd(b, *cellIter, _cellVector);
+    mesh->updateAdd(residual, *c_iter, _cellVector);
   } // for
-} // integrateConstant
+} // integrateResidual
 
 // ----------------------------------------------------------------------
 // Compute matrix associated with operator.
 void
-pylith::feassemble::ExplicitElasticity::integrateJacobian(
-			     PetscMat* mat,
-			     const ALE::Obj<real_section_type>& dispT,
-			     const ALE::Obj<Mesh>& mesh)
+pylith::feassemble::ElasticityExplicit::integrateJacobian(
+					PetscMat* mat,
+					topology::FieldsManager* fields,
+					const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
   assert(0 != _quadrature);
   assert(0 != _material);
   assert(0 != mat);
-  assert(!dispT.isNull());
+  assert(0 != fields);
   assert(!mesh.isNull());
 
-  // Get information about section
+  // Get cell information
   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator  cellsEnd = cells->end();
 
+  // Get sections
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
+  const ALE::Obj<real_section_type>& dispT = fields->getHistoryItem(1);
+  assert(!dispT.isNull());
 
   // Get parameters used in integration.
   const double dt = _dt;
@@ -294,14 +313,14 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
   // Allocate vector for cell values (if necessary)
   _initCellMatrix();
 
-  for (Mesh::label_sequence::iterator cellIter=cells->begin();
-       cellIter != cellsEnd;
-       ++cellIter) {
+  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+       c_iter != cellsEnd;
+       ++c_iter) {
     // Compute geometry information for current cell
-    _quadrature->computeGeometry(mesh, coordinates, *cellIter);
+    _quadrature->computeGeometry(mesh, coordinates, *c_iter);
 
     // Set cell data in material
-    _material->initCellData(*cellIter, numQuadPts);
+    _material->initCellData(*c_iter, numQuadPts);
 
     // Reset element vector to zero
     _resetCellMatrix();
@@ -312,8 +331,6 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
 
     // Get material physical properties at quadrature points for this cell
     const std::vector<double_array>& density = _material->calcDensity();
-
-    // Compute Jacobian for cell
 
     // Compute Jacobian for inertial terms
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -341,11 +358,97 @@ pylith::feassemble::ExplicitElasticity::integrateJacobian(
       mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
 
     err = updateOperator(*mat, mesh, dispT, globalOrder,
-			 *cellIter, _cellMatrix, ADD_VALUES);
+			 *c_iter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for
 } // integrateJacobian
+
+// ----------------------------------------------------------------------
+// Update state variables as needed.
+void
+pylith::feassemble::ElasticityExplicit::updateState(
+						    const ALE::Obj<real_section_type>& disp,
+						    const ALE::Obj<Mesh>& mesh)
+{ // updateState
+  assert(0 != _material);
+  assert(!disp.isNull());
+
+  // No need to update state if using elastic behavior
+  if (_material->useElasticBehavior())
+    return;
+
+  // Get cell information
+  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  assert(!cells.isNull());
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Get sections
+  const ALE::Obj<real_section_type>& coordinates = 
+    mesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+
+  // Get cell geometry information that doesn't depend on cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int cellDim = _quadrature->cellDim();
+
+  // Allocate vector for total strain
+  int tensorSize = 0;
+  if (1 == cellDim)
+    tensorSize = 1;
+  else if (2 == cellDim)
+    tensorSize = 3;
+  else if (3 == cellDim)
+    tensorSize = 6;
+  else {
+    std::cerr << "Unknown case for cellDim '" << cellDim << "'." << std::endl;
+    assert(0);
+  } // else
+  std::vector<double_array> totalStrain(numQuadPts);
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    totalStrain[iQuad].resize(tensorSize);
+    totalStrain[iQuad] = 0.0;
+  } // for
+
+  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+       c_iter != cellsEnd;
+       ++c_iter) {
+    // Compute geometry information for current cell
+    _quadrature->computeGeometry(mesh, coordinates, *c_iter);
+
+    // Set cell data in material
+    _material->initCellData(*c_iter, numQuadPts);
+
+    // Restrict input fields to cell
+    const real_section_type::value_type* dispCell = 
+      mesh->restrict(disp, *c_iter);
+
+    // Get cell geometry information that depends on cell
+    const double_array& basisDeriv = _quadrature->basisDeriv();
+  
+    // Compute action for elastic terms
+    if (1 == cellDim) {
+      Elasticity::calcTotalStrain1D(&totalStrain, basisDeriv,
+				    dispCell, numBasis);
+      _material->updateState(totalStrain);
+    } else if (2 == cellDim) {
+      Elasticity::calcTotalStrain2D(&totalStrain, basisDeriv,
+				    dispCell, numBasis);
+      _material->updateState(totalStrain);
+    } else if (3 == cellDim) {
+      // Compute stresses
+      Elasticity::calcTotalStrain3D(&totalStrain, basisDeriv, 
+				    dispCell, numBasis);
+      _material->updateState(totalStrain);
+    } else {
+      std::cerr << "Unknown case for cellDim '" << cellDim << "'."
+		<< std::endl;
+      assert(0);
+    } // if/else
+  } // for
+} // updateState
 
 
 // End of file 

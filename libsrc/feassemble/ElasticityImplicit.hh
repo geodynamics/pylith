@@ -11,7 +11,7 @@
 //
 
 /**
- * @file pylith/feassemble/ImplicitElasticity.hh
+ * @file pylith/feassemble/ElasticityImplicit.hh
  *
  * @brief Implicit time integration of quasi-static elasticity equation
  * using finite-elements.
@@ -20,10 +20,16 @@
  * is defined by the quadrature and a database of material property
  * parameters.
  *
- * Computes contributions to terms A and b in A(t+dt) u(t+dt) = b(u(t),
- * u(t+dt)), where A(t+dt) is a sparse matrix, u(t+dt) is the
- * field we want to compute at time t+dt and b is a vector that
- * depends on the field at time t and t+dt.
+ * Computes contributions to terms A and r in
+ *
+ * A(t) u(t+dt) = b(u(t), u(t-dt)),
+ *
+ * r = b - A u0(t+dt)
+ *
+ * where A(t) is a sparse matrix or vector, u(t+dt) is the field we
+ * want to compute at time t+dt, b is a vector that depends on the
+ * field at time t and t-dt, and u0 is zero at unknown DOF and set to
+ * the constrained values at known DOF.
  *
  * Contributions to the RHS (b) include body forces, which are either
  * independent of u (small strain case) or are computed based on the
@@ -38,15 +44,15 @@
  * information.
  */
 
-#if !defined(pylith_feassemble_implicitelasticity_hh)
-#define pylith_feassemble_implicitelasticity_hh
+#if !defined(pylith_feassemble_elasticityimplicit_hh)
+#define pylith_feassemble_elasticityimplicit_hh
 
-#include "IntegratorImplicit.hh" // ISA IntegratorImplicit
+#include "Integrator.hh" // ISA Integrator
 
 namespace pylith {
   namespace feassemble {
-    class ImplicitElasticity;
-    class TestImplicitElasticity;
+    class ElasticityImplicit;
+    class TestElasticityImplicit;
   } // feassemble
 
   namespace materials {
@@ -63,21 +69,18 @@ namespace spatialdata {
   } // geocoords
 } // spatialdata
 
-class pylith::feassemble::ImplicitElasticity : public IntegratorImplicit
-{ // ImplicitElasticity
-  friend class TestImplicitElasticity; // unit testing
+class pylith::feassemble::ElasticityImplicit : public Integrator
+{ // ElasticityImplicit
+  friend class TestElasticityImplicit; // unit testing
 
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
   /// Constructor
-  ImplicitElasticity(void);
+  ElasticityImplicit(void);
 
   /// Destructor
-  ~ImplicitElasticity(void);
-
-  /// Create a copy of this object.
-  IntegratorImplicit* clone(void) const;
+  ~ElasticityImplicit(void);
 
   /** Set material.
    *
@@ -85,54 +88,68 @@ public :
    */
   void material(const materials::ElasticMaterial* m);
 
+  /** Set time step for advancing from time t to time t+dt.
+   *
+   * @param dt Time step
+   */
+  void timeStep(const double dt);
+
   /** Integrate residual part of RHS for 3-D finite elements.
    * Includes gravity and element internal force contribution.
    *
+   * We assume that the effects of boundary conditions are already
+   * included in b (tractions, concentrated nodal forces, and
+   * contributions to internal force vector due to
+   * displacement/velocity BC).  This routine computes the additional
+   * external loads due to body forces (not yet implemented) plus the
+   * element internal forces for the current stress state.
    *
    * @param b Residual field (output)
-   * @param dispT Displacement field at time t
+   * @param fields Solution fields
    * @param mesh Mesh object
    */
   void integrateResidual(const ALE::Obj<real_section_type>& b,
-			 const ALE::Obj<real_section_type>& dispT,
+			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 
   /** Compute Jacobian matrix (A) associated with operator.
    *
    * @param mat Sparse matrix
-   * @param dispT Displacement at time t
+   * @param fields Solution fields
    * @param mesh Mesh object
    */
   void integrateJacobian(PetscMat* mat,
-			 const ALE::Obj<real_section_type>& dispT,
+			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
   
-// PROTECTED METHODS ////////////////////////////////////////////////////
-protected :
-
-  /** Copy constructor.
+  /** Update state variables as needed.
    *
-   * @param i Integrator to copy
+   * @param field Current solution field.
+   * @param mesh Finite-element mesh
    */
-  ImplicitElasticity(const ImplicitElasticity& i);
+  void updateState(const ALE::Obj<real_section_type>& field,
+		   const ALE::Obj<Mesh>& mesh);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
+  /// Not implemented.
+  ElasticityImplicit(const ElasticityImplicit& i);
+
   /// Not implemented
-  const ImplicitElasticity& operator=(const ImplicitElasticity&);
+  const ElasticityImplicit& operator=(const ElasticityImplicit&);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
+  double _dtm1; ///< Time step for t-dt1 -> t
+
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
-}; // ImplicitElasticity
+}; // ElasticityImplicit
 
-#include "ImplicitElasticity.icc" // inline methods
-
-#endif // pylith_feassemble_implicitelasticity_hh
+#endif // pylith_feassemble_elasticityimplicit_hh
 
 
 // End of file 

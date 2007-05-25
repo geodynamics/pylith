@@ -53,8 +53,6 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyTet4Lagrange );
   CPPUNIT_TEST( testAdjustTopologyHex8Lagrange );
 
-  CPPUNIT_TEST( testOrientationSize );
-
   CPPUNIT_TEST( testOrient1D );
   CPPUNIT_TEST( testOrient2D );
   CPPUNIT_TEST( testOrient3D );

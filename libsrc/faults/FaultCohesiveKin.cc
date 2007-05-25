@@ -17,7 +17,10 @@
 #include "EqKinSrc.hh" // USES EqKinSrc
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
+
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -36,16 +39,6 @@ pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
 { // destructor
   delete _eqsrc; _eqsrc = 0;
 } // destructor
-
-// ----------------------------------------------------------------------
-// Copy constructor.
-pylith::faults::FaultCohesiveKin::FaultCohesiveKin(const FaultCohesiveKin& f) :
-  FaultCohesive(f),
-  _eqsrc(0)
-{ // copy constructor
-  if (0 != f._eqsrc)
-    _eqsrc = f._eqsrc->clone();
-} // copy constructor
 
 // ----------------------------------------------------------------------
 // Set kinematic earthquake source.
@@ -75,7 +68,9 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   ALE::Obj<real_section_type> orientation = 
     new real_section_type((*_faultMesh)->comm(), (*_faultMesh)->debug());
   assert(!orientation.isNull());
-  const int orientationSize = _orientationSize();
+  const int cellDim = (*_faultMesh)->getDimension();
+  const int spaceDim = cs->spaceDim();
+  const int orientationSize = cellDim*spaceDim;
   orientation->setFiberDimension((*_faultMesh)->depthStratum(0), 
 				 orientationSize);
   (*_faultMesh)->allocate(orientation);
@@ -86,8 +81,8 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   assert(!coordinates.isNull());
 
   // Set orientation method
-  const int cellDim = _quadrature->cellDim();
-  const int spaceDim = _quadrature->spaceDim();
+  assert(cellDim == _quadrature->cellDim());
+  assert(spaceDim == _quadrature->spaceDim());
   orient_fn_type orientFn;
   switch (cellDim)
     { // switch
@@ -220,16 +215,28 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 void
 pylith::faults::FaultCohesiveKin::integrateResidual(
 				const ALE::Obj<real_section_type>& residual,
-				const ALE::Obj<real_section_type>& disp,
+				topology::FieldsManager* const fields,
 				const ALE::Obj<Mesh>& mesh)
 { // integrateResidual
+  assert(!residual.isNull());
+  assert(0 != fields);
+  assert(!mesh.isNull());
+  assert(0 != _faultMesh);
+  assert(!_faultMesh->isNull());
+
   // Subtract constraint forces (which are disp at the constraint
   // DOF) to residual; contributions are at DOF of normal vertices (i and j)
 
+  // Get cell information
   const ALE::Obj<Mesh::label_sequence>& cells = 
     (*_faultMesh)->heightStratum(0);
+  assert(!cells.isNull());
   const Mesh::label_sequence::iterator cBegin = cells->begin();
   const Mesh::label_sequence::iterator cEnd = cells->end();
+
+  // Get section information
+  const ALE::Obj<real_section_type>& disp = fields->getHistoryItem(1);
+  assert(!disp.isNull());  
 
   // Allocate vector for cell values (if necessary)
   _initCellVector();
@@ -268,24 +275,37 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 void
 pylith::faults::FaultCohesiveKin::integrateJacobian(
 				    PetscMat* mat,
-				    const ALE::Obj<real_section_type>& dispT,
+				    topology::FieldsManager* const fields,
 				    const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
+  assert(0 != mat);
+  assert(0 != fields);
+  assert(!mesh.isNull());
+  assert(0 != _faultMesh);
+  assert(!_faultMesh->isNull());
 
   // Add constraint information to Jacobian matrix; these are the
   // direction cosines. Entries are associated with vertices ik, jk,
   // ki, and kj.
 
+  // Get cell informatino
   const ALE::Obj<Mesh::label_sequence>& cells = 
     (*_faultMesh)->heightStratum(0);
   const Mesh::label_sequence::iterator cBegin = cells->begin();
   const Mesh::label_sequence::iterator cEnd = cells->end();
 
+  // Get section information
+  const ALE::Obj<real_section_type>& disp = fields->getHistoryItem(1);
+  assert(!disp.isNull());  
+
+  const int cellDim = _quadrature->cellDim();
+  const int spaceDim = _quadrature->spaceDim();
+  const int orientationSize = cellDim*spaceDim;
+
   // Allocate matrix for cell values (if necessary)
   _initCellMatrix();
 
   const int numVertices = _quadrature->numBasis();
-  const int spaceDim = _quadrature->spaceDim();
   for (Mesh::label_sequence::iterator c_iter=cBegin;
        c_iter != cEnd;
        ++c_iter) {
@@ -297,7 +317,6 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 
     const int numConstraintVert = numVertices / 3;
     assert(numVertices == numConstraintVert * 3);
-    const int orientationSize = _orientationSize();
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
       // Get orientations at constraint vertex
       const real_section_type::value_type* constraintOrient = 
@@ -338,14 +357,34 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 
     // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 
-      mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
-    err = updateOperator(*mat, mesh, dispT, globalOrder,
+      mesh->getFactory()->getGlobalOrder(mesh, "default", disp);
+    err = updateOperator(*mat, mesh, disp, globalOrder,
 			 *c_iter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for
 } // integrateJacobian
   
+// ----------------------------------------------------------------------
+// Set number of degrees of freedom that are constrained at points
+void
+pylith::faults::FaultCohesiveKin::setConstraintSizes(
+				    const ALE::Obj<real_section_type>& field,
+				    const ALE::Obj<ALE::Mesh>& mesh)
+{ // setConstraintSizes
+  throw std::logic_error("FaultCohesiveKin::setConstraintSizes() not implemented.");
+} // setConstraintSizes
+
+// ----------------------------------------------------------------------
+// Set which degrees of freedom are constrained at points in field.
+void
+pylith::faults::FaultCohesiveKin::setConstraints(
+				     const ALE::Obj<real_section_type>& field,
+				     const ALE::Obj<ALE::Mesh>& mesh)
+{ // setConstraints
+  throw std::logic_error("FaultCohesiveKin::setConstraints() not implemented.");
+} // setConstraints
+
 // ----------------------------------------------------------------------
 // Set field.
 void

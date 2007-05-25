@@ -10,32 +10,31 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/feassemble/ExplicitElasticity.py
+## @file pylith/feassemble/IntegratorElasticity.py
 ##
-## @brief Python object for explicit time integration of dynamic
-## elasticity equation using finite-elements.
+## @brief Python object implementing sgeneral methods for time
+## integration of the elasticity equation using finite-elements.
 ##
 ## Factory: integrator
 
-from IntegratorExplicit import IntegratorExplicit
+from Integrator import Integrator
 
-# ExplicitElasticity class
-class ExplicitElasticity(IntegratorExplicit):
+# IntegratorElasticity class
+class IntegratorElasticity(Integrator):
   """
-  Python object for explicit time integration of dynamic elasticity
-  equation using finite-elements.
+  Python object implementing sgeneral methods for time integration of
+  the elasticity equation using finite-elements.
   """
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="explicitelasticity"):
+  def __init__(self, name="integratorelasticity"):
     """
     Constructor.
     """
-    IntegratorExplicit.__init__(self, name)
-
-    import pylith.feassemble.feassemble as bindings
-    self.cppHandle = bindings.ExplicitElasticity()
+    Integrator.__init__(self)
+    import journal
+    self._info = journal.info(name)
     return
 
 
@@ -50,13 +49,4 @@ class ExplicitElasticity(IntegratorExplicit):
     return
   
   
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def integrator():
-  """
-  Factory associated with ExplicitElasticity.
-  """
-  return ExplicitElasticity()
-
-
 # End of file 

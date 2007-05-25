@@ -145,30 +145,6 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8Lagrange(void)
 } // testAdjustTopologyHex8Lagrange
 
 // ----------------------------------------------------------------------
-// Test _orientationSize().
-void
-pylith::faults::TestFaultCohesive::testOrientationSize(void)
-{ // testOrientationSize
-  const int cellDim = 2;
-  const int spaceDim = 3;
-  const int numBasis = 1;
-  const int numQuadPts = 1;
-  const double basis[] = { 0.5, 0.5, 0.4 };
-  const double basisDeriv[] = { 0.5, 0.3, -0.4 };
-  const double quadPtsRef[] = { 0.0, 3.0 };
-  const double quadWts[] = { 2.0 };
-  const double minJacobian = 1.0;
-
-  feassemble::Quadrature2Din3D q;
-  q.initialize(basis, basisDeriv, quadPtsRef, quadWts,
-	       cellDim, numBasis, numQuadPts, spaceDim);
-
-  FaultCohesiveKin fault;
-  fault.quadrature(&q);
-  CPPUNIT_ASSERT_EQUAL(cellDim*spaceDim, fault._orientationSize());
-} // testOrientationSize
-
-// ----------------------------------------------------------------------
 // Test _orient1D().
 void
 pylith::faults::TestFaultCohesive::testOrient1D(void)

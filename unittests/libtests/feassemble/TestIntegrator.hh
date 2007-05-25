@@ -38,16 +38,12 @@ class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestIntegrator );
-  CPPUNIT_TEST( testCopy );
   CPPUNIT_TEST( testQuadrature );
 
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
-
-  /// Test copy constructor.
-  void testCopy(void);
 
   /// Test quadrature()
   void testQuadrature(void);

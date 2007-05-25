@@ -42,6 +42,8 @@ class Problem(Component):
     ## \b Facilities
     ## @li \b materials Materials in problem.
     ## @li \b bc Boundary conditions.
+    ## @li \b interfaces Interior surfaces with constraints or
+    ##   constitutive models.
 
     import pyre.inventory
 
@@ -51,10 +53,16 @@ class Problem(Component):
     materials.meta['tip'] = "Materials in problem."
 
     from BoundaryConditions import BoundaryConditions
-    bc = pyre.inventory.facility("bc", family="bc",
+    bc = pyre.inventory.facility("bc", family="boundary_conditions",
                                  factory=BoundaryConditions)
     bc.meta['tip'] = "Boundary conditions."
-  
+
+
+    from pylith.faults.FaultsBin import FaultsBin
+    interfaces = pyre.inventory.facility("interfaces", family="interfaces_bin",
+                                         factory=FaultsBin)
+    interfaces.meta['tip'] = "Interior surfaces with constraints or " \
+                             "constitutive models."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -101,6 +109,7 @@ class Problem(Component):
     Component._configure(self)
     self.materials = self.inventory.materials
     self.bc = self.inventory.bc
+    self.interfaces = self.inventory.interfaces
     return
 
 

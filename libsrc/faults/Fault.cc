@@ -28,13 +28,5 @@ pylith::faults::Fault::~Fault(void)
 { // destructor
 } // destructor
 
-// ----------------------------------------------------------------------
-// Copy constructor.
-pylith::faults::Fault::Fault(const Fault& f) :
-  _id(f._id),
-  _label(f._label)
-{ // copy constructor
-} // copy constructor
-
 
 // End of file 

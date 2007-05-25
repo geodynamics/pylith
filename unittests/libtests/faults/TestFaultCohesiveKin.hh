@@ -36,14 +36,10 @@ class pylith::faults::TestFaultCohesiveKin : public TestFaultCohesive
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestFaultCohesiveKin );
-  CPPUNIT_TEST( testClone );
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
-
-  /// Test clone()
-  void testClone(void);
 
 }; // class TestFaultCohesiveKin
 

@@ -20,10 +20,8 @@
 #include "pylith/feassemble/Quadrature3D.hh"
 
 #include "pylith/feassemble/Integrator.hh"
-#include "pylith/feassemble/IntegratorExplicit.hh"
-#include "pylith/feassemble/IntegratorImplicit.hh"
-#include "pylith/feassemble/ExplicitElasticity.hh"
-#include "pylith/feassemble/ImplicitElasticity.hh"
+#include "pylith/feassemble/ElasticityExplicit.hh"
+#include "pylith/feassemble/ElasticityImplicit.hh"
 
 #include "pylith/feassemble/Constraint.hh"
 
@@ -430,6 +428,119 @@ cdef class Integrator:
     return
 
 
+  def integrateResidual(self, residual, fields, mesh):
+    """
+    Integrate contributions to residual term (r) for operator.
+    """
+    # create shim for method 'integrateResidual'
+    #embed{ void Integrator_integrateResidual(void* objVptr, void* residualVptr, void* fieldsVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != residualVptr);
+      assert(0 != fieldsVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::real_section_type>* residual =
+        (ALE::Obj<pylith::real_section_type>*) residualVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      ((pylith::feassemble::Integrator*) objVptr)->integrateResidual(*residual,
+                                                              fields, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    Integrator_integrateResidual(self.thisptr, 
+                                 PyCObject_AsVoidPtr(residual),
+                                 ptrFromHandle(fields),
+                                 ptrFromHandle(mesh))
+    return
+
+
+  def integrateJacobian(self, mat, fields, mesh):
+    """
+    Compute contributions to Jacobian matrix (A) associated with operator.
+    """
+    # create shim for method 'integrateJacobian'
+    #embed{ void Integrator_integrateJacobian(void* objVptr, void* matVptr, void* fieldsVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != matVptr);
+      assert(0 != fieldsVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      PetscMat* mat = (PetscMat*) matVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      ((pylith::feassemble::Integrator*) objVptr)->integrateJacobian(
+                                                        mat, fields, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    Integrator_integrateJacobian(self.thisptr,
+                                 PyCObject_AsVoidPtr(mat),
+                                 ptrFromHandle(fields),
+                                 ptrFromHandle(mesh))
+    return
+
+
+  def updateState(self, field, mesh):
+    """
+    Update state variables as needed.
+    """
+    # create shim for method 'updateState'
+    #embed{ void Integrator_updateState(void* objVptr, void* fieldVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field =
+        (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::feassemble::Integrator*) objVptr)->updateState(*field, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    Integrator_updateState(self.thisptr, PyCObject_AsVoidPtr(field),
+                           ptrFromHandle(mesh))
+    return
+
+
   def _createHandle(self):
     """
     Wrap pointer to C++ object in PyCObject.
@@ -463,118 +574,16 @@ cdef class Integrator:
       Integrator_quadrature_set(self.thisptr, ptrFromHandle(q))
 
 
-# ----------------------------------------------------------------------
-cdef class IntegratorExplicit(Integrator):
-
-  def __init__(self):
-    """
-    Constructor.
-    """
-    Integrator.__init__(self)
-    return
-
-
-  def integrateConstant(self, fieldOut, fieldInT, fieldInTmdt, mesh):
-    """
-    Integrate constant term (b) for dynamic elasticity term for 3-D
-    finite elements.
-    """
-    # create shim for method 'integrateConstant'
-    #embed{ void IntegratorExplicit_integrateConstant(void* objVptr, void* fieldOutVptr, void* fieldInTVptr, void* fieldInTmdtVptr, void* meshVptr)
-    typedef ALE::Mesh Mesh;
-    typedef ALE::Mesh::real_section_type real_section_type;
-
-    try {
-      assert(0 != objVptr);
-      assert(0 != fieldOutVptr);
-      assert(0 != fieldInTVptr);
-      assert(0 != fieldInTmdtVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<Mesh>* mesh =
-        (ALE::Obj<Mesh>*) meshVptr;
-      ALE::Obj<real_section_type>* fieldOut =
-        (ALE::Obj<real_section_type>*) fieldOutVptr;
-      ALE::Obj<real_section_type>* fieldInT =
-        (ALE::Obj<real_section_type>*) fieldInTVptr;
-      ALE::Obj<real_section_type>* fieldInTmdt =
-        (ALE::Obj<real_section_type>*) fieldInTmdtVptr;
-      ((pylith::feassemble::IntegratorExplicit*) objVptr)->integrateConstant(
-                *fieldOut, *fieldInT, *fieldInTmdt, *mesh);
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (const ALE::Exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.msg().c_str()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    cdef void* fieldOutVptr
-    cdef void* fieldInTVptr
-    cdef void* fieldInTmdtVptr
-    fieldOutVptr = PyCObject_AsVoidPtr(fieldOut)
-    fieldInTVptr = PyCObject_AsVoidPtr(fieldInT)
-    fieldInTmdtVptr = PyCObject_AsVoidPtr(fieldInTmdt)
-    IntegratorExplicit_integrateConstant(self.thisptr, 
-                                         fieldOutVptr, fieldInTVptr,
-                                         fieldInTmdtVptr,
-                                         ptrFromHandle(mesh))
-    return
-
-
-  def integrateJacobian(self, mat, fieldIn, mesh):
-    """
-    Compute matrix (A) associated with operator.
-    """
-    # create shim for method 'integrateJacobian'
-    #embed{ void IntegratorExplicit_integrateJacobian(void* objVptr, void* matVptr, void* fieldInVptr, void* meshVptr)
-    typedef ALE::Mesh Mesh;
-    typedef ALE::Mesh::real_section_type real_section_type;
-
-    try {
-      assert(0 != objVptr);
-      assert(0 != matVptr);
-      assert(0 != fieldInVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<Mesh>* mesh =
-        (ALE::Obj<Mesh>*) meshVptr;
-      PetscMat* mat = (PetscMat*) matVptr;
-      ALE::Obj<real_section_type>* fieldIn =
-        (ALE::Obj<real_section_type>*) fieldInVptr;
-      ((pylith::feassemble::IntegratorExplicit*) objVptr)->integrateJacobian(
-                mat, *fieldIn, *mesh);
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (const ALE::Exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.msg().c_str()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    cdef void* matVptr
-    cdef void* fieldInVptr
-    matVptr = PyCObject_AsVoidPtr(mat)
-    fieldInVptr = PyCObject_AsVoidPtr(fieldIn)
-    IntegratorExplicit_integrateJacobian(self.thisptr, matVptr, fieldInVptr,
-                                         ptrFromHandle(mesh))
-    return
-
-
   property timeStep:
     def __set__(self, dt):
       """
       Set timeStep.
       """
       # create shim for method 'timeStep'
-      #embed{ void IntegratorExplicit_timeStep_set(void* objVptr, double dt)
+      #embed{ void Integrator_timeStep_set(void* objVptr, double dt)
       try {
         assert(0 != objVptr);
-        ((pylith::feassemble::IntegratorExplicit*) objVptr)->timeStep(dt);
+        ((pylith::feassemble::Integrator*) objVptr)->timeStep(dt);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -583,115 +592,20 @@ cdef class IntegratorExplicit(Integrator):
                         "Caught unknown C++ exception.");
       } // try/catch
       #}embed
-      IntegratorExplicit_timeStep_set(self.thisptr, dt)
+      Integrator_timeStep_set(self.thisptr, dt)
 
 
-# ----------------------------------------------------------------------
-cdef class IntegratorImplicit(Integrator):
-
-  def __init__(self):
-    """
-    Constructor.
-    """
-    Integrator.__init__(self)
-    return
-
-
-  def integrateResidual(self, fieldOut, fieldInT, mesh):
-    """
-    Integrate constant term (b) for quasi-static elasticity term for
-    finite elements.
-    """
-    # create shim for method 'integrateResidual'
-    #embed{ void IntegratorImplicit_integrateResidual(void* objVptr, void* fieldOutVptr, void* fieldInTVptr, void* meshVptr)
-    typedef ALE::Mesh Mesh;
-    typedef ALE::Mesh::real_section_type real_section_type;
-
-    try {
-      assert(0 != objVptr);
-      assert(0 != fieldOutVptr);
-      assert(0 != fieldInTVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<Mesh>* mesh =
-        (ALE::Obj<Mesh>*) meshVptr;
-      ALE::Obj<real_section_type>* fieldOut =
-        (ALE::Obj<real_section_type>*) fieldOutVptr;
-      ALE::Obj<real_section_type>* fieldInT =
-        (ALE::Obj<real_section_type>*) fieldInTVptr;
-      ((pylith::feassemble::IntegratorImplicit*) objVptr)->integrateResidual(
-                *fieldOut, *fieldInT, *mesh);
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (const ALE::Exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.msg().c_str()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    cdef void* fieldOutVptr
-    cdef void* fieldInTVptr
-    fieldOutVptr = PyCObject_AsVoidPtr(fieldOut)
-    fieldInTVptr = PyCObject_AsVoidPtr(fieldInT)
-    IntegratorImplicit_integrateResidual(self.thisptr, 
-                                         fieldOutVptr, fieldInTVptr,
-                                         ptrFromHandle(mesh))
-    return
-
-
-  def integrateJacobian(self, mat, fieldIn, mesh):
-    """
-    Compute matrix (A) associated with operator.
-    """
-    # create shim for method 'integrateJacobian'
-    #embed{ void IntegratorImplicit_integrateJacobian(void* objVptr, void* matVptr, void* fieldInVptr, void* meshVptr)
-    typedef ALE::Mesh Mesh;
-    typedef ALE::Mesh::real_section_type real_section_type;
-
-    try {
-      assert(0 != objVptr);
-      assert(0 != matVptr);
-      assert(0 != fieldInVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<Mesh>* mesh =
-        (ALE::Obj<Mesh>*) meshVptr;
-      PetscMat* mat = (PetscMat*) matVptr;
-      ALE::Obj<real_section_type>* fieldIn =
-        (ALE::Obj<real_section_type>*) fieldInVptr;
-      ((pylith::feassemble::IntegratorImplicit*) objVptr)->integrateJacobian(
-                mat, *fieldIn, *mesh);
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (const ALE::Exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.msg().c_str()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    cdef void* matVptr
-    cdef void* fieldInVptr
-    matVptr = PyCObject_AsVoidPtr(mat)
-    fieldInVptr = PyCObject_AsVoidPtr(fieldIn)
-    IntegratorImplicit_integrateJacobian(self.thisptr, matVptr, fieldInVptr,
-                                         ptrFromHandle(mesh))
-    return
-
-
-  property timeStep:
-    def __set__(self, dt):
+  property needNewJacobian:
+    def __get__(self):
       """
       Set timeStep.
       """
-      # create shim for method 'timeStep'
-      #embed{ void IntegratorImplicit_timeStep_set(void* objVptr, double dt)
+      # create shim for method 'needNewJacobian'
+      #embed{ int Integrator_needNewJacobian_get(void* objVptr)
+      int result = 0;
       try {
         assert(0 != objVptr);
-        ((pylith::feassemble::IntegratorImplicit*) objVptr)->timeStep(dt);
+        ((pylith::feassemble::Integrator*) objVptr)->needNewJacobian();
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -699,22 +613,23 @@ cdef class IntegratorImplicit(Integrator):
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
       } // try/catch
+      return result;
       #}embed
-      IntegratorImplicit_timeStep_set(self.thisptr, dt)
+      return Integrator_needNewJacobian_get(self.thisptr)
 
 
 # ----------------------------------------------------------------------
-cdef class ExplicitElasticity(IntegratorExplicit):
+cdef class ElasticityExplicit(Integrator):
 
   def __init__(self):
     """
     Constructor.
     """
     # create shim for constructor
-    #embed{ void* ExplicitElasticity_constructor()
+    #embed{ void* ElasticityExplicit_constructor()
     void* result = 0;
     try {
-      result = (void*)(new pylith::feassemble::ExplicitElasticity);
+      result = (void*)(new pylith::feassemble::ElasticityExplicit);
       assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -726,8 +641,8 @@ cdef class ExplicitElasticity(IntegratorExplicit):
     return result;
     #}embed
 
-    IntegratorExplicit.__init__(self)
-    self.thisptr = ExplicitElasticity_constructor()
+    Integrator.__init__(self)
+    self.thisptr = ElasticityExplicit_constructor()
     self.handle = self._createHandle()
     return
 
@@ -738,12 +653,12 @@ cdef class ExplicitElasticity(IntegratorExplicit):
       Set material.
       """
       # create shim for method 'material'
-      #embed{ void ExplicitElasticity_material_set(void* objVptr, void* mVptr)
+      #embed{ void ElasticityExplicit_material_set(void* objVptr, void* mVptr)
       try {
         assert(0 != objVptr);
         pylith::materials::ElasticMaterial* material =
           (pylith::materials::ElasticMaterial*) mVptr;
-        ((pylith::feassemble::ExplicitElasticity*) objVptr)->material(material);
+        ((pylith::feassemble::ElasticityExplicit*) objVptr)->material(material);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -755,21 +670,21 @@ cdef class ExplicitElasticity(IntegratorExplicit):
       if not m.name == "pylith_materials_ElasticMaterial":
         raise TypeError, \
               "Argument must be extension module type 'ElasticMaterial'."
-      ExplicitElasticity_material_set(self.thisptr, ptrFromHandle(m))
+      ElasticityExplicit_material_set(self.thisptr, ptrFromHandle(m))
 
 
 # ----------------------------------------------------------------------
-cdef class ImplicitElasticity(IntegratorImplicit):
+cdef class ElasticityImplicit(Integrator):
 
   def __init__(self):
     """
     Constructor.
     """
     # create shim for constructor
-    #embed{ void* ImplicitElasticity_constructor()
+    #embed{ void* ElasticityImplicit_constructor()
     void* result = 0;
     try {
-      result = (void*)(new pylith::feassemble::ImplicitElasticity);
+      result = (void*)(new pylith::feassemble::ElasticityImplicit);
       assert(0 != result);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -781,8 +696,8 @@ cdef class ImplicitElasticity(IntegratorImplicit):
     return result;
     #}embed
 
-    IntegratorImplicit.__init__(self)
-    self.thisptr = ImplicitElasticity_constructor()
+    Integrator.__init__(self)
+    self.thisptr = ElasticityImplicit_constructor()
     self.handle = self._createHandle()
     return
 
@@ -793,12 +708,12 @@ cdef class ImplicitElasticity(IntegratorImplicit):
       Set material.
       """
       # create shim for method 'material'
-      #embed{ void ImplicitElasticity_material_set(void* objVptr, void* mVptr)
+      #embed{ void ElasticityImplicit_material_set(void* objVptr, void* mVptr)
       try {
         assert(0 != objVptr);
         pylith::materials::ElasticMaterial* material =
           (pylith::materials::ElasticMaterial*) mVptr;
-        ((pylith::feassemble::ImplicitElasticity*) objVptr)->material(material);
+        ((pylith::feassemble::ElasticityImplicit*) objVptr)->material(material);
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -810,7 +725,7 @@ cdef class ImplicitElasticity(IntegratorImplicit):
       if not m.name == "pylith_materials_ElasticMaterial":
         raise TypeError, \
               "Argument must be extension module type 'ElasticMaterial'."
-      ImplicitElasticity_material_set(self.thisptr, ptrFromHandle(m))
+      ElasticityImplicit_material_set(self.thisptr, ptrFromHandle(m))
 
 
 # ----------------------------------------------------------------------
@@ -854,7 +769,7 @@ cdef class Constraint:
 
     if not mesh.name == "pylith_topology_Mesh":
       raise TypeError, \
-            "Argument must be extension module type " \
+            "Argument 'mesh' must be extension module type " \
             "'pylith::topology::Mesh'."
     Constraint_setConstraintSizes(self.thisptr, PyCObject_AsVoidPtr(field),
                                   ptrFromHandle(mesh))
@@ -885,7 +800,7 @@ cdef class Constraint:
 
     if not mesh.name == "pylith_topology_Mesh":
       raise TypeError, \
-            "Argument must be extension module type " \
+            "Argument 'mesh' must be extension module type " \
             "'pylith::topology::Mesh'."
     Constraint_setConstraints(self.thisptr, PyCObject_AsVoidPtr(field), ptrFromHandle(mesh))
     return
@@ -915,7 +830,7 @@ cdef class Constraint:
 
     if not mesh.name == "pylith_topology_Mesh":
       raise TypeError, \
-            "Argument must be extension module type " \
+            "Argument 'mesh' must be extension module type " \
             "'pylith::topology::Mesh'."
     Constraint_setField(self.thisptr, t, PyCObject_AsVoidPtr(field),
                         ptrFromHandle(mesh))

@@ -42,19 +42,14 @@ class PyLithApp(Application):
 
     import pyre.inventory
 
-    from pyre.units.time import second
-    totalTime = pyre.inventory.dimensional("total_time", default=0.0*second,
-                          validator=pyre.inventory.greaterEqual(0.0*second))
-    totalTime.meta['tip'] = "Time duration for simulation."
-
     from pylith.topology.MeshImporter import MeshImporter
     mesher = pyre.inventory.facility("mesh_generator", family="mesh_generator",
                                      factory=MeshImporter)
     mesher.meta['tip'] = "Generates or imports the computational mesh."
 
-    from pylith.problems.EqDeformation import EqDeformation
+    from pylith.problems.TimeDependent import TimeDependent
     problem = pyre.inventory.facility("problem", family="problem",
-                                      factory=EqDeformation)
+                                      factory=TimeDependent)
     problem.meta['tip'] = "Computational problem to solve."
 
     # Dummy facility for passing options to PETSc

@@ -55,13 +55,6 @@ public :
   virtual
   ~Fault(void);
 
-  /** Create copy of fault.
-   *
-   * @returns Copy of fault.
-   */
-  virtual
-  Fault* clone(void) const = 0;
-
   /** Set identifier of fault.
    *
    * @param value Fault identifier
@@ -110,14 +103,11 @@ public :
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
-  /** Copy constructor.
-   *
-   * @param m Fault to copy
-   */
-  Fault(const Fault& m);
-
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
+
+  /// Not implemented
+  Fault(const Fault& m);
 
   /// Not implemented
   const Fault& operator=(const Fault& m);

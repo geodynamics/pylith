@@ -14,7 +14,7 @@
 ##
 ## @brief Python faults container with one fault.
 ##
-## Factory: faults_bin
+## Factory: interfaces_bin
 
 from FaultsBin import FaultsBin
 
@@ -23,7 +23,7 @@ class SingleFault(FaultsBin):
   """
   Python faults container with one material.
 
-  Factory: faults_bin
+  Factory: interfaces_bin
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -66,13 +66,13 @@ class SingleFault(FaultsBin):
     Set attributes from inventory.
     """
     FaultsBin._configure(self)
-    self.faults = [self.inventory.fault]
+    self.ic = [self.inventory.fault]
     return
 
   
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def faults_bin():
+def interfaces_bin():
   """
   Factory associated with SingleFault.
   """

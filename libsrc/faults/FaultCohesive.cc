@@ -38,16 +38,6 @@ pylith::faults::FaultCohesive::~FaultCohesive(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::faults::FaultCohesive::FaultCohesive(const FaultCohesive& f) :
-  Fault(f),
-  Integrator(f),
-  _faultMesh(new ALE::Obj<ALE::Mesh>)
-{ // copy constructor
-  *_faultMesh = *f._faultMesh;
-} // copy constructor
-
-// ----------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.
 void
 pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<ALE::Mesh>& mesh)
@@ -171,17 +161,6 @@ pylith::faults::FaultCohesive::_orient3D(double_array* orientation,
     (*orientation)[iLoc*orientSize+8] =  r2*wt;
   } // for
 } // _orient3D
-
-// ----------------------------------------------------------------------
-// Get size (fiber dimension) of orientation information.
-int 
-pylith::faults::FaultCohesive::_orientationSize(void) const
-{ // _orientationSize
-  assert(0 != _quadrature);
-
-  const int size = _quadrature->cellDim()*_quadrature->spaceDim();
-  return size;
-} // _orientationSize
 
 
 // End of file 

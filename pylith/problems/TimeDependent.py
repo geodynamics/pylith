@@ -90,9 +90,15 @@ class TimeDependent(Problem):
     bc/quadrature, etc.).
     """
     self._info.log("Initializing problem.")
+
+    if self.dimension != mesh.dimension():
+        raise ValueError, \
+              "Spatial dimension of problem is '%d' but mesh contains cells " \
+              "for spatial dimension '%d'." % \
+              (self.dimension, mesh.dimension)
     self.mesh = mesh
     self.formulation.initialize(mesh, self.materials, self.bc,
-                                self.dimension, self.dt)
+                                self.interfaces, self.dimension, self.dt)
     return
 
 

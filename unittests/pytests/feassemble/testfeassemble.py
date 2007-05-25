@@ -59,11 +59,11 @@ class TestApp(Script):
     from TestIntegrator import TestIntegrator
     suite.addTest(unittest.makeSuite(TestIntegrator))
 
-    from TestExplicitElasticity import TestExplicitElasticity
-    suite.addTest(unittest.makeSuite(TestExplicitElasticity))
+    from TestElasticityExplicit import TestElasticityExplicit
+    suite.addTest(unittest.makeSuite(TestElasticityExplicit))
 
-    from TestImplicitElasticity import TestImplicitElasticity
-    suite.addTest(unittest.makeSuite(TestImplicitElasticity))
+    from TestElasticityImplicit import TestElasticityImplicit
+    suite.addTest(unittest.makeSuite(TestElasticityImplicit))
 
     return suite
 

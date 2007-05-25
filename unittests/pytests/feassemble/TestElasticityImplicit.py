@@ -10,17 +10,17 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/feassemble/TestExplicitElasticity.py
+## @file unittests/pytests/feassemble/TestElasticityImplicit.py
 
-## @brief Unit testing of Python ExplicitElasticity object.
+## @brief Unit testing of Python ElasticityImplicit object.
 
 import unittest
-from pylith.feassemble.ExplicitElasticity import ExplicitElasticity
+from pylith.feassemble.ElasticityImplicit import ElasticityImplicit
 
 # ----------------------------------------------------------------------
-class TestExplicitElasticity(unittest.TestCase):
+class TestElasticityImplicit(unittest.TestCase):
   """
-  Unit testing of Python ExplicitElasticity object.
+  Unit testing of Python ElasticityImplicit object.
   """
 
   def test_initQuadrature(self):
@@ -37,7 +37,7 @@ class TestExplicitElasticity(unittest.TestCase):
     q.cell.order = 1
     q.cell.degree = 1
 
-    integrator = ExplicitElasticity()
+    integrator = ElasticityImplicit()
     integrator.initQuadrature(q)
     self.assertEqual(minJacobian, integrator.quadrature.minJacobian)
     return

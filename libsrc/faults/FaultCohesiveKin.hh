@@ -29,7 +29,9 @@
 #if !defined(pylith_faults_faultcohesivekin_hh)
 #define pylith_faults_faultcohesivekin_hh
 
-#include "FaultCohesive.hh"
+#include "FaultCohesive.hh" // ISA FaultCohesive
+#include "pylith/feassemble/Constraint.hh" // ISA Constraint
+#include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 /// Namespace for pylith package
 namespace pylith {
@@ -43,7 +45,9 @@ namespace pylith {
 
 /// C++ implementation for a fault surface with kinematic (prescribed)
 /// slip implemented with cohesive elements.
-class pylith::faults::FaultCohesiveKin : public FaultCohesive
+class pylith::faults::FaultCohesiveKin : public FaultCohesive,
+					 public feassemble::Integrator,
+					 public feassemble::Constraint
 { // class FaultCohesiveKin
   friend class TestFaultCohesiveKin; // unit testing
 
@@ -56,12 +60,6 @@ public :
   /// Destructor.
   virtual
   ~FaultCohesiveKin(void);
-
-  /** Create copy of fault.
-   *
-   * @returns Copy of fault.
-   */
-  Fault* clone(void) const;  
 
   /** Set kinematic earthquake source.
    *
@@ -82,31 +80,49 @@ public :
 		  const spatialdata::geocoords::CoordSys* cs,
 		  const double_array& upDir);
 
-  /** Integrate contribution of cohesive cells to residual term.
+  /** Integrate contributions to residual term (r) for operator.
    *
-   * @param residual Residual field (output)
-   * @param disp Displacement field at time t
+   * @param residual Field containing values for residual
+   * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
-			 const ALE::Obj<real_section_type>& disp,
+			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 
-  /** Compute Jacobian matrix (A) associated with operator.
+  /** Integrate contributions to Jacobian matrix (A) associated with
+   * operator.
    *
    * @param mat Sparse matrix
-   * @param disp Displacement field
+   * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   void integrateJacobian(PetscMat* mat,
-			 const ALE::Obj<real_section_type>& dispT,
+			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
-  
+
+  /** Set number of degrees of freedom that are constrained at points
+   * in field.
+   *
+   * @param field Solution field
+   * @param mesh PETSc mesh
+   */
+  void setConstraintSizes(const ALE::Obj<real_section_type>& field,
+			  const ALE::Obj<ALE::Mesh>& mesh);
+
+  /** Set which degrees of freedom are constrained at points in field.
+   *
+   * @param field Solution field
+   * @param mesh PETSc mesh
+   */
+  void setConstraints(const ALE::Obj<real_section_type>& field,
+		      const ALE::Obj<ALE::Mesh>& mesh);
+
   /** Set field.
    *
-   * @param t Current time
-   * @param disp Displacement field
-   * @param mesh Finite-element mesh
+   * @param t Current time.
+   * @param disp Displacement field at time t.
+   * @param mesh Finite-element mesh.
    */
   void setField(const double t,
 		const ALE::Obj<real_section_type>& disp,
@@ -114,12 +130,6 @@ public :
   
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
-
-  /** Copy constructor.
-   *
-   * @param m Fault to copy
-   */
-  FaultCohesiveKin(const FaultCohesiveKin& m);
 
   /** Cohesive cells use Lagrange multiplier constraints?
    *
@@ -130,6 +140,9 @@ protected :
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
+
+  /// Not implemented
+  FaultCohesiveKin(const FaultCohesiveKin& m);
 
   /// Not implemented
   const FaultCohesiveKin& operator=(const FaultCohesiveKin& m);

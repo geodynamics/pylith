@@ -75,45 +75,36 @@ class Implicit(Formulation):
     """
     Get integrator for elastic material.
     """
-    from pylith.feassemble.ImplicitElasticity import ImplicitElasticity
-    return ImplicitElasticity()
+    from pylith.feassemble.ElasticityImplicit import ElasticityImplicit
+    return ElasticityImplicit()
 
 
-  def initialize(self, mesh, materials, boundaryConditions, dimension, dt):
+  def initialize(self, mesh, materials, boundaryConditions,
+                 interfaceConditions, dimension, dt):
     """
     Initialize problem for implicit time integration.
     """
-    self.integrators = []
     Formulation.initialize(self, mesh, materials, boundaryConditions,
-                           dimension, dt)
-
-    self._info.log("Initializing integrators.")
+                           interfaceConditions, dimension, dt)
 
     self._info.log("Creating fields and matrices.")
-    self.dispT = mesh.createRealSection("dispT", dimension)
-    self.dispTBctpdt = mesh.createRealSection("dispTBctpdt", dimension)
-    self.dispIncrement = mesh.createRealSection("dispIncrement", dimension)
-    self.residual = mesh.createRealSection("residual", dimension)
+    self.fields.addReal("dispT")
+    self.fields.addReal("dispTBctpdt")
+    self.fields.addReal("dispIncr")
+    self.fields.addReal("residual")
+    self.fields.createHistory(["dispTBctpdt", "dispT"])
+    self.fields.setFiberDimension("dispT", dimension)
+    for constraint in self.constraints:
+      constraint.setConstraintSizes(self.fields.getReal("dispT"), mesh)
+    self.fields.allocate("dispT")
+    for constraint in self.constraints:
+      constraint.setConstraints(self.fields.getReal("dispT"), mesh)
+    self.fields.copyLayout("dispT")
+    self.jacobian = mesh.createMatrix(self.fields.getReal("dispT"))
 
-    # Setup constraints
-    # STUFF GOES HERE
+    self._solveElastic(mesh, t=0.0, dt=dt)
 
-    mesh.allocateRealSection(self.dispT)
-    mesh.allocateRealSection(self.dispTBctpdt)
-    mesh.allocateRealSection(self.dispIncrement)
-    mesh.allocateRealSection(self.residual)
-
-    self.jacobian = mesh.createMatrix(self.residual)
-
-    self._info.log("Integrating Jacobian of operator.")
-    for integrator in self.integrators:
-      integrator.timeStep(dt)
-      integrator.integrateJacobian(self.jacobian, self.dispTBctpdt)
-    import pylith.utils.petsc as petsc
-    petsc.mat_assemble(self.jacobian)
-
-    self.solver.initialize(mesh, self.dispIncrement)
-    # self.mesh = mesh
+    self.solver.initialize(mesh, self.fields.getReal("dispIncr"))
     return
 
 
@@ -131,17 +122,24 @@ class Implicit(Formulation):
     """
     Hook for doing stuff before advancing time step.
     """
-    # This will need to set dispTBctpdt to the BC at time step t+dt.
-    # Non-constrained DOF are unaffected and will be equal to their
-    # values from time step t.
-    # In this routine I also need to integrate the tractions for step
-    # t+dt, but I don't think the function for this is available yet.
-    # from pylith.bc.Dirichlet import Dirichlet
+    # Set dispTBctpdt to the BC at time t+dt. Unconstrained DOF are
+    # unaffected and will be equal to their values at time t.
+    dispTBctpdt = self.fields.getReal("dispTBctpdt")
+    for constraint in self.constraints:
+      constraint.setField(dispTBctpdt, t+dt, dt)
 
-    # dispbc = Dirichlet
-
-    # dispbc.setField(t+dt, self.dispTBctpdt, self.mesh)
-    self._info.log("WARNING: Implicit::prestep() not implemented.")
+    needNewJacobian = False
+    for integrator in self.integrators:
+      if integrator.needNewJacobian():
+        needNewJacobian = True
+    if needNewJacobian:
+      self._info.log("Reforming Jacobian of operator.")
+      import pylith.utils.petsc as petsc
+      petsc.zeroMatrix(self.jacobian)
+      for integrator in self.integrators:
+        integrator.timeStep(dt)
+        integrator.integrateJacobian(self.jacobian, self.fields.cppHandle)
+      petsc.mat_assemble(self.jacobian)
     return
 
 
@@ -150,14 +148,15 @@ class Implicit(Formulation):
     Advance to next time step.
     """
     self._info.log("Integrating residual term in operator.")
+    residual = self.fields.getReal("residual")
     import pylith.topology.topology as bindings
-    bindings.zeroRealSection(self.residual)
+    bindings.zeroRealSection(residual)
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateResidual(self.residual, self.dispTBctpdt)
+      integrator.integrateResidual(residual, self.fields.cppHandle)
 
     self._info.log("Solving equations.")
-    self.solver.solve(self.dispIncrement, self.jacobian, self.residual)
+    self.solver.solve(self.fields.getReal("dispIncr"), self.jacobian, residual)
     return
 
 
@@ -165,16 +164,21 @@ class Implicit(Formulation):
     """
     Hook for doing stuff after advancing time step.
     """
-    # This should give us the total displacements for time step t+dt, which
-    # is renamed as time step t following the solve.
-    # The vector dispTBctpdt contains the displacements from time step t
-    # along with the displacement BC from time step t+dt.  The displacement
-    # increments computed from the residual are then added to this to give us
-    # the total displacement field at time t+dt.
+    # This should give us the total displacements after stepping
+    # forward from t to t+dt, which is renamed as time step t for the
+    # next solve. The field dispTBctpdt contains the displacements
+    # from time step t along with the displacement BC from time step
+    # t+dt.  The displacement increments computed from the residual
+    # are then added to this to give us the total displacement field
+    # at time t+dt.
+
     # Need a real way to do the operation below.
-    # It is commented out for now, and should be replaced with a call to PETSc.
-    # self.dispT = self.dispTBctpdt+self.dispIncrement
-    self.dispTBctpdt = self.dispT
+    # self.dispT = self.dispTBctpdt + self.dispIncr
+    self.fields.shiftHistory()
+
+    self._info.log("Updating integrators states.")
+    for integrator in self.integrators:
+      integrator.updateState(self.fields.getReal("dispT"))
     return
 
 
@@ -187,6 +191,34 @@ class Implicit(Formulation):
     Formulation._configure(self)
     return
 
+
+  def _solveElastic(self, mesh, t, dt):
+    """
+    Solve for elastic solution.
+    """
+    self._info.log("Computing elastic solution.")
+
+    self._info.log("Setting constraints.")
+    dispT = self.fields.getReal("dispT")
+    for constraint in self.constraints:
+      constraint.setField(dispT, t, dt)
+
+    self._info.log("Integrating Jacobian and residual of operator.")
+    for integrator in self.integrators:
+      integrator.timeStep(dt)
+      integrator.integrateJacobian(self.jacobian, self.fields.cppHandle)
+      integrator.integrateResidual(self.fields.getReal("dispT"),
+                                   self.fields.cppHandle)
+    import pylith.utils.petsc as petsc
+    petsc.mat_assemble(self.jacobian)
+
+    self.solver.initialize(mesh, dispT)
+
+    self._info.log("Solving equations.")
+    self.solver.solve(dispT, self.jacobian, self.fields.getReal("residual"))
+
+    return
+  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
