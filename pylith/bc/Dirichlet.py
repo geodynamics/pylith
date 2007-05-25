@@ -26,7 +26,7 @@ def validateDOF(value):
   """
   try:
     size = len(value)
-    num = map(float, value)
+    num = map(int, value)
     for v in num:
       if v < 0:
         raise ValueError
@@ -34,7 +34,7 @@ def validateDOF(value):
     raise ValueError, \
           "'fixed_dof' must be a zero based list of indices of fixed " \
           "degrees of freedom."
-  return value
+  return num
   
 
 # Dirichlet class

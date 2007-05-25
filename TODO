@@ -2,21 +2,24 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+0. Create binding for zeroing PETSc matrix (use in Explicit.py and
+     Implicit.py before integrating Jacobian)
+
 1. Unit tests for Integrator stuff.
 
-  b. Integrator
-    iii. C++ unit tests
-    iv. Python unit tests
+  a. Add in use of useElasticBehavior()
+    Would like to use boost::shared_ptr to prevent copies and
+    cloning of materials.
 
-  e. ElasticityExplicit
+  b. Add unit test for IntegratorElasticity::calcTotalStrain
+
+  c. ElasticityExplicit
+    i. C++ unit tests
     ii. Python unit tests
 
-  f. ElasticityImplicit
+  d. ElasticityImplicit
+    i. C++ unit tests
     ii. Python unit tests
-
-  g. Add unit test for IntegratorElasticity::calcTotalStrain
-
-  i. Add in use of useElasticBehavior()
 
 2. Add dualBasis to Quadrature.
    a. Python
