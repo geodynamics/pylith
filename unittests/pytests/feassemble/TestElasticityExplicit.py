@@ -43,4 +43,13 @@ class TestElasticityExplicit(unittest.TestCase):
     return
     
 
+  def test_needNewJacobian(self):
+    """
+    Test needNewJacobian().
+    """
+    integrator = ElasticityExplicit()
+    self.assertEqual(False, integrator.needNewJacobian())
+    return
+
+
 # End of file 

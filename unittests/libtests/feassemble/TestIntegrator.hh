@@ -38,7 +38,9 @@ class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestIntegrator );
+
   CPPUNIT_TEST( testQuadrature );
+  CPPUNIT_TEST( testNeedNewJacobian );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -47,6 +49,9 @@ public :
 
   /// Test quadrature()
   void testQuadrature(void);
+
+  /// Test needNewJacobian()
+  void testNeedNewJacobian(void);
 
 }; // class TestIntegrator
 
