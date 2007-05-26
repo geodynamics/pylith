@@ -81,7 +81,7 @@ class Explicit(Formulation):
 
     self._info.log("Forming Jacobian of operator.")
     import pylith.utils.petsc as petsc
-    #petsc.zeroMatrix(self.jacobian)
+    petsc.mat_setzero(self.jacobian)
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateJacobian(self.jacobian, self.fields.cppHandle)
@@ -116,7 +116,7 @@ class Explicit(Formulation):
     if needNewJacobian:
       self._info.log("Reforming Jacobian of operator.")
       import pylith.utils.petsc as petsc
-      petsc.zeroMatrix(self.jacobian)
+      petsc.mat_setzero(self.jacobian)
       for integrator in self.integrators:
         integrator.timeStep(dt)
         integrator.integrateJacobian(self.jacobian, self.fields.cppHandle)

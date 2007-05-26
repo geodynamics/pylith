@@ -136,7 +136,7 @@ class Implicit(Formulation):
     if needNewJacobian:
       self._info.log("Reforming Jacobian of operator.")
       import pylith.utils.petsc as petsc
-      petsc.zeroMatrix(self.jacobian)
+      petsc.mat_setzero(self.jacobian)
       for integrator in self.integrators:
         integrator.timeStep(dt)
         integrator.integrateJacobian(self.jacobian, self.fields.cppHandle)
@@ -201,10 +201,14 @@ class Implicit(Formulation):
 
     self._info.log("Setting constraints.")
     dispT = self.fields.getReal("dispT")
+    import pylith.topology.topology as bindings
+    bindings.zeroRealSection(dispT)
     for constraint in self.constraints:
       constraint.setField(t, dispT)
 
     self._info.log("Integrating Jacobian and residual of operator.")
+    import pylith.utils.petsc as petsc
+    petsc.mat_setzero(self.jacobian)
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateJacobian(self.jacobian, self.fields.cppHandle)
