@@ -12,11 +12,35 @@ MAIN PRIORITIES (Brad)
 
   c. ElasticityExplicit
     i. C++ unit tests
+      (1) timeStep()
+      (2) stableTimeStep()
+      (3) integrateResidual() [want tests for different cellDim and cell types]
+      (4) integrateJacobian() [want tests for different cellDim and cell types]
+      (5) updateState()
     ii. Python unit tests
+      (1) setMesh()
+      (2) initQuadrature()
+      (3) timeStep()
+      (4) stableTimeStep()
+      (5) integrateResidual() [single test is okay, inteface is same]
+      (6) integrateJacobian() [single test is okay, inteface is same]
+      (7) updateState()
 
   d. ElasticityImplicit
     i. C++ unit tests
+      (1) timeStep()
+      (2) stableTimeStep()
+      (3) integrateResidual() [Charles]
+      (4) integrateJacobian() [Charles]
+      (5) updateState()
     ii. Python unit tests
+      (1) setMesh()
+      (2) initQuadrature()
+      (3) timeStep()
+      (4) stableTimeStep()
+      (5) integrateResidual() [Charles]
+      (6) integrateJacobian() [Charles]
+      (7) updateState()
 
 2. Add dualBasis to Quadrature.
    a. Python
