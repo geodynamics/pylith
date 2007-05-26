@@ -2,9 +2,6 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-0. Create binding for zeroing PETSc matrix (use in Explicit.py and
-     Implicit.py before integrating Jacobian)
-
 1. Unit tests for Integrator stuff.
 
   a. Add in use of useElasticBehavior()

@@ -103,4 +103,23 @@ def mat_assemble(mat):
   return
 
 
+def mat_setzero(mat):
+  """
+  Zero out entries in matrix (retain structure).
+  """
+  # create shim for 'MatZeroEntries'
+  #embed{ int Mat_setzero(void* matVptr)
+  Mat* mat = (Mat*) matVptr;
+  PetscErrorCode err = 0;
+  err = MatZeroEntries(*mat);
+  return 0;
+  #}embed
+  cdef void* matVptr
+  matVptr = PyCObject_AsVoidPtr(mat)
+  err = Mat_setzero(matVptr)
+  if err:
+    raise RuntimError("Error zeroing matrix values.")
+  return
+
+
 # End of file 
