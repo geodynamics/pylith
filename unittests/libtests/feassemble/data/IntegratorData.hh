@@ -34,34 +34,42 @@ public :
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-  int numVertices; ///< Number of vertices
+  /// @name Mesh information
+  //@{
+  char* meshFilename; ///< Name of mesh file.
+  //@}
+
+  /// @name Quadrature information
+  //@{
   int spaceDim; ///< Number of dimensions in vertex coordinates
-  int numCells; ///< Number of cells
   int cellDim; ///< Number of dimensions associated with cell
   int numBasis; ///< Number of vertices in cell
   int numQuadPts; ///< Number of quadrature points
-  int fiberDim; ///< Number of values per vertex in field
-
-  /// @name Mesh information
-  //@{
-  double* vertices; ///< Pointer to coordinates of vertices
-  int* cells; ///< Pointer to indices of vertices in cells
-  //@}
-
-  /// @name Discretization information
-  //@{
   double* quadPts; ///< Coordinates of quad pts in ref cell
   double* quadWts; ///< Weights of quadrature points
   double* basis; ///< Basis fns at quadrature points
   double* basisDeriv; ///< Derivatives of basis fns at quad pts
   //@}
 
-  /// @name Integration information
+  /// @name Material information
   //@{
-  double* fieldIn; ///< Input field for integration action
-  double* valsAction; ///< Expected output for integration action
-  double* valsMatrix; ///< Expected output for integration
-  double* valsLumped; ///< Expected output for lumped integration
+  double* matType; ///< String corresponding to material type.
+  double* matDBFilename; ///< Filename for database of material properties.
+  double* matId; ///< Material identifier.
+  double* matLabel; ///< Label of material.
+  //@}
+
+  /// @name Input fields
+  //@{
+  double* fieldTpdt; ///< Input field at time t+dt.
+  double* fieldT; ///< Input field at time t.
+  double* fieldTmdt; ///< Input field at time t-dt.
+  //@}
+
+  /// @name Calculated values.
+  //@{
+  double* valsResidual; ///< Expected values from residual calculation.
+  double* valsJacobian; ///< Expected values from Jacobian calculation.
   //@}
 };
 
