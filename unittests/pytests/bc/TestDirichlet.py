@@ -99,7 +99,8 @@ class TestDirichlet(unittest.TestCase):
     bc.setConstraintSizes(field)
     mesh.allocateRealSection(field)
     bc.setConstraints(field)
-    t = 1.0
+    from pyre.units.time import second
+    t = 1.0*second
     bc.setField(t, field)
 
     # We should really add something here to check to make sure things
