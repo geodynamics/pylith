@@ -55,24 +55,34 @@ class IntegratorApp(Script):
     """
     Script.__init__(self, name)
 
-    self.numVertices = None
+    # Mesh information
+    self.meshFilename = None
+
+    # Quadrature information
     self.spaceDim = None
-    self.numCells = None
     self.cellDim = None
     self.numBasis = None
     self.numQuadPts = None
-    self.fiberDim = None
-
     self.quadPts = None
     self.quadWts = None
-    self.vertices = None
-    self.cells = None
-
     self.basis = None
     self.basisDeriv = None
-    self.fieldIn = None
-    self.valsActions = None
-    self.valsMatrix = None
+
+    # Material information
+    self.matType = None
+    self.matDBFilename = None
+    self.matId = None
+    self.matLabel = None
+
+    # Input fields
+    self.dt = None
+    self.fieldTpdt = None
+    self.fieldT = None
+    self.fieldTmdt = None
+
+    # Calculated values
+    self.valsResidual = None
+    self.valsJacobian = None
     return
 
 
@@ -81,8 +91,8 @@ class IntegratorApp(Script):
     Run the application.
     """
     self._initialize()
-    self._calculateMatrix()
-    self._calculateAction()
+    self._calculateResidual()
+    self._calculateJacobian()
     self._initData()
     self.data.write(self.name)
     return
@@ -117,48 +127,37 @@ class IntegratorApp(Script):
     return
   
 
-  def _calculateMatrix(self):
+  def _calculateResidual(self):
     """
-    Calculate matrix associated with integration.
+    Calculate contribution to residual of operator for integrator.
     """
     raise NotImplementedError("Not implemented in abstract base class.")
 
 
-  def _calculateAction(self):
+  def _calculateJacobian(self):
     """
-    Calculate integration action using matrix.
+    Calculate contribution to Jacobian matrix of operator for integrator.
     """
     self.valsAction = numpy.dot(self.valsMatrix, self.fieldIn)[:]
     return
     
 
   def _initData(self):
-    self.data.addScalar(vtype="int", name="_numVertices",
-                        value=self.numVertices,
-                        format="%d")
+    # Mesh information
+    self.data.addScalar(vtype="char*", name="_meshFilename",
+                        value=self.meshFilename,
+                        format="%s")
+
+    # Quadrature information
     self.data.addScalar(vtype="int", name="_spaceDim", value=self.spaceDim,
-                        format="%d")
-    self.data.addScalar(vtype="int", name="_numCells", value=self.numCells,
                         format="%d")
     self.data.addScalar(vtype="int", name="_cellDim", value=self.cellDim,
                         format="%d")
-    self.data.addScalar(vtype="int", name="_numBasis", value=
-                        self.numBasis,
+    self.data.addScalar(vtype="int", name="_numBasis", value=self.numBasis,
                         format="%d")
-    self.data.addScalar(vtype="int", name="_numQuadPts",
-                        value=self.numQuadPts,
+    self.data.addScalar(vtype="int", name="_numQuadPts", value=self.numQuadPts,
                         format="%d")
-    self.data.addScalar(vtype="int", name="_fiberDim",
-                        value=self.fiberDim,
-                        format="%d")
-    
-    self.data.addArray(vtype="double", name="_vertices", values=self.vertices,
-                       format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="int", name="_cells", values=self.cells,
-                       format="%8d", ncols=self.numVertices)
-    
-    self.data.addArray(vtype="double", name="_quadPts",
-                       values=self.quadPts,
+    self.data.addArray(vtype="double", name="_quadPts", values=self.quadPts,
                        format="%16.8e", ncols=self.cellDim)
     self.data.addArray(vtype="double", name="_quadWts", values=self.quadWts,
                        format="%16.8e", ncols=self.numQuadPts)
@@ -168,15 +167,36 @@ class IntegratorApp(Script):
     self.data.addArray(vtype="double", name="_basisDeriv",
                        values=self.basisDeriv,
                        format="%16.8e", ncols=self.cellDim)
-    
-    self.data.addArray(vtype="double", name="_fieldIn",
-                       values=self.fieldIn,
+
+    # Material information
+    self.data.addScalar(vtype="char*", name="_matType", value=self.matType,
+                        format="%s")
+    self.data.addScalar(vtype="char*", name="_matDBFilename",
+                        value=self.matDBFilename, format="%s")
+    self.data.addScalar(vtype="int", name="_matId",
+                        value=self.matId, format="%d")
+    self.data.addScalar(vtype="char*", name="_matLabel",
+                        value=self.matLabel, format="%s")
+
+    # Input files
+    self.data.addScalar(vtype="double", name="_dt", values=self.dt,
+                        format="%16.8e")
+    self.data.addArray(vtype="double", name="_fieldTpdt",
+                       values=self.fieldTpdt,
                        format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="double", name="_valsAction",
-                       values=self.valsAction,
+    self.data.addArray(vtype="double", name="_fieldT",
+                       values=self.fieldTpdt,
                        format="%16.8e", ncols=self.spaceDim)
-    self.data.addArray(vtype="double", name="_valsMatrix",
-                       values=self.valsMatrix,
+    self.data.addArray(vtype="double", name="_fieldTmdt",
+                       values=self.fieldTpdt,
+                       format="%16.8e", ncols=self.spaceDim)
+
+    # Calculated values
+    self.data.addArray(vtype="double", name="_valsResidual",
+                       values=self.valsResidual,
+                       format="%16.8e", ncols=self.spaceDim)
+    self.data.addArray(vtype="double", name="_valsJacobian",
+                       values=self.valsJacobian,
                        format="%16.8e", ncols=self.spaceDim)
       
     return
