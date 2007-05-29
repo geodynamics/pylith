@@ -141,6 +141,8 @@ class Implicit(Formulation):
         integrator.timeStep(dt)
         integrator.integrateJacobian(self.jacobian, self.fields.cppHandle)
       petsc.mat_assemble(self.jacobian)
+    # Put in loop over integrators to see if stiffness needs
+    # reforming.  If so, then reform it.
     return
 
 
@@ -181,6 +183,9 @@ class Implicit(Formulation):
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
       integrator.updateState(self.fields.getReal("dispT"))
+    # call update state here.
+    # This will recompute stresses and state variables.
+    # Need to loop over integrators, and put this into integrator.
     return
 
 
