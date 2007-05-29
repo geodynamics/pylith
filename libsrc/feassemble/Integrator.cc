@@ -104,6 +104,7 @@ void
 pylith::feassemble::Integrator::_resetCellVector(void)
 { // _resetCellVector
   assert(0 != _quadrature);
+  assert(0 != _cellVector);
   const int size = _quadrature->spaceDim() * _quadrature->numBasis();
   for (int i=0; i < size; ++i)
     _cellVector[i] = 0.0;
@@ -130,6 +131,7 @@ void
 pylith::feassemble::Integrator::_resetCellMatrix(void)
 { // _resetCellMatrix
   assert(0 != _quadrature);
+  assert(0 != _cellMatrix);
   const int size =
     _quadrature->spaceDim() * _quadrature->numBasis() *
     _quadrature->spaceDim() * _quadrature->numBasis();

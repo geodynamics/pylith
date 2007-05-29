@@ -19,6 +19,7 @@ check_PROGRAMS = testfeassemble
 
 # Primary source files
 testfeassemble_SOURCES = \
+	TestElasticityExplicit.cc \
 	TestIntegrator.cc \
 	TestQuadrature.cc \
 	TestQuadrature1D.cc \
@@ -28,17 +29,9 @@ testfeassemble_SOURCES = \
 	TestQuadrature3D.cc \
 	test_feassemble.cc
 
-#TestIntegratorInertia.cc \
-#TestIntegratorInertia1D.cc \
-#TestIntegratorInertia2D.cc \
-#TestIntegratorInertia3D.cc
-
 noinst_HEADERS = \
+	TestElasticityExplicit.hh \
 	TestIntegrator.hh \
-	TestIntegratorInertia.hh \
-	TestIntegratorInertia1D.hh \
-	TestIntegratorInertia2D.hh \
-	TestIntegratorInertia3D.hh \
 	TestQuadrature.hh \
 	TestQuadrature1D.hh \
 	TestQuadrature1Din2D.hh \
@@ -48,14 +41,6 @@ noinst_HEADERS = \
 
 # Source files associated with testing data
 testfeassemble_SOURCES += \
-	data/IntegratorData.cc \
-	data/IntegratorDataInertia1DLinear.cc \
-	data/IntegratorDataInertia1DQuadratic.cc \
-	data/IntegratorDataInertia2Din3DOne.cc \
-	data/IntegratorDataInertia2Din3DTwo.cc \
-	data/IntegratorDataInertia2Din3DThree.cc \
-	data/IntegratorDataInertia3DLinear.cc \
-	data/IntegratorDataInertia3DQuadratic.cc \
 	data/QuadratureData.cc \
 	data/QuadratureData1DLinear.cc \
 	data/QuadratureData1DQuadratic.cc \
@@ -74,14 +59,6 @@ testfeassemble_SOURCES += \
 	data/QuadratureData3DQuadratic.cc
 
 noinst_HEADERS += \
-	data/IntegratorData.hh \
-	data/IntegratorDataInertia1DLinear.hh \
-	data/IntegratorDataInertia1DQuadratic.hh \
-	data/IntegratorDataInertia2Din3DOne.hh \
-	data/IntegratorDataInertia2Din3DTwo.hh \
-	data/IntegratorDataInertia2Din3DThree.hh \
-	data/IntegratorDataInertia3DLinear.hh \
-	data/IntegratorDataInertia3DQuadratic.hh \
 	data/QuadratureData.hh \
 	data/QuadratureData1DLinear.hh \
 	data/QuadratureData1DQuadratic.hh \
