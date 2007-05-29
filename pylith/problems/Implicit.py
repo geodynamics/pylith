@@ -174,6 +174,7 @@ class Implicit(Formulation):
     # at time t+dt.
 
     # Need a real way to do the operation below.
+    print "MISSING: UPDATING OF DISP"
     # self.dispT = self.dispTBctpdt + self.dispIncr
     self.fields.shiftHistory()
 
