@@ -130,8 +130,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    const real_section_type::value_type* dispTCell = 
-      mesh->restrict(dispT, *c_iter);
+    const int vecSize = spaceDim*numBasis;
+    double_array dispTCell(mesh->restrict(dispT, *c_iter), vecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -192,7 +192,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     } else if (2 == cellDim) {
       // Compute total strains and then use these to compute stresses
       Elasticity::calcTotalStrain2D(&totalStrain, basisDeriv,
-					      dispTCell, numBasis);
+				    dispTCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
@@ -217,7 +217,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     } else if (3 == cellDim) {
       // Compute total strains and then use these to compute stresses
       Elasticity::calcTotalStrain3D(&totalStrain, basisDeriv,
-					      dispTCell, numBasis);
+				    dispTCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
@@ -331,8 +331,8 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     _resetCellMatrix();
 
     // Restrict input fields to cell
-    const real_section_type::value_type* dispTCell = 
-      mesh->restrict(dispT, *c_iter);
+    const int vecSize = spaceDim*numBasis;
+    double_array dispTCell(mesh->restrict(dispT, *c_iter), vecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -569,8 +569,8 @@ pylith::feassemble::ElasticityImplicit::updateState(
     _material->initCellData(*c_iter, numQuadPts);
 
     // Restrict input fields to cell
-    const real_section_type::value_type* dispCell = 
-      mesh->restrict(disp, *c_iter);
+    const int vecSize = spaceDim*numBasis;
+    double_array dispCell(mesh->restrict(disp, *c_iter), vecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();

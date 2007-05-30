@@ -22,16 +22,16 @@ void
 pylith::feassemble::Elasticity::calcTotalStrain1D(
 					    std::vector<double_array>* strain,
 					    const double_array& basisDeriv,
-					    const double* disp,
+					    const double_array& disp,
 					    const int numBasis)
 { // calcTotalStrain1D
   assert(0 != strain);
-  assert(0 != disp);
   
   const int dimension = 1;
   const int numQuadPts = strain->size();
 
   assert(basisDeriv.size() == numQuadPts*numBasis*dimension);
+  assert(disp.size() == numBasis*dimension);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     assert(1 == (*strain)[iQuad].size());
@@ -46,16 +46,16 @@ void
 pylith::feassemble::Elasticity::calcTotalStrain2D(
 					    std::vector<double_array>* strain,
 					    const double_array& basisDeriv,
-					    const double* disp,
+					    const double_array& disp,
 					    const int numBasis)
 { // calcTotalStrain2D
   assert(0 != strain);
-  assert(0 != disp);
   
   const int dimension = 2;
   const int numQuadPts = strain->size();
 
   assert(basisDeriv.size() == numQuadPts*numBasis*dimension);
+  assert(disp.size() == numBasis*dimension);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     assert(3 == (*strain)[iQuad].size());
@@ -76,16 +76,16 @@ void
 pylith::feassemble::Elasticity::calcTotalStrain3D(
 					    std::vector<double_array>* strain,
 					    const double_array& basisDeriv,
-					    const double* disp,
+					    const double_array& disp,
 					    const int numBasis)
 { // calcTotalStrain3D
   assert(0 != strain);
-  assert(0 != disp);
 
   const int dimension = 3;
   const int numQuadPts = strain->size();
 
   assert(basisDeriv.size() == numQuadPts*numBasis*dimension);
+  assert(disp.size() == numBasis*dimension);
 
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
     assert(6 == (*strain)[iQuad].size());

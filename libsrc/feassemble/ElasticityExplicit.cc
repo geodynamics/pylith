@@ -150,12 +150,10 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    const real_section_type::value_type* dispTpdtCell = 
-      mesh->restrict(dispTpdt, *c_iter);
-    const real_section_type::value_type* dispTCell = 
-      mesh->restrict(dispT, *c_iter);
-    const real_section_type::value_type* dispTmdtCell = 
-      mesh->restrict(dispTmdt, *c_iter);
+    const int vecSize = spaceDim*numBasis;
+    double_array dispTpdtCell(mesh->restrict(dispTpdt, *c_iter), vecSize);
+    double_array dispTCell(mesh->restrict(dispT, *c_iter), vecSize);
+    double_array dispTmdtCell(mesh->restrict(dispTmdt, *c_iter), vecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -184,12 +182,12 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
       PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
     if (err)
       throw std::runtime_error("Logging PETSc flops failed.");
-    
+
     // Compute action for elastic terms
     if (1 == cellDim) {
       // Compute stresses
       Elasticity::calcTotalStrain1D(&totalStrain, basisDeriv,
-					      dispTCell, numBasis);
+				    dispTCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
@@ -210,7 +208,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     } else if (2 == cellDim) {
       // Compute stresses
       Elasticity::calcTotalStrain2D(&totalStrain, basisDeriv,
-					      dispTCell, numBasis);
+				    dispTCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
       
@@ -276,13 +274,13 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 // Compute matrix associated with operator.
 void
 pylith::feassemble::ElasticityExplicit::integrateJacobian(
-					PetscMat* mat,
+					PetscMat* jacobian,
 					topology::FieldsManager* fields,
 					const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
   assert(0 != _quadrature);
   assert(0 != _material);
-  assert(0 != mat);
+  assert(0 != jacobian);
   assert(0 != fields);
   assert(!mesh.isNull());
 
@@ -356,7 +354,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     const ALE::Obj<Mesh::order_type>& globalOrder = 
       mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
 
-    err = updateOperator(*mat, mesh, dispT, globalOrder,
+    err = updateOperator(*jacobian, mesh, dispT, globalOrder,
 			 *c_iter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
@@ -421,8 +419,8 @@ pylith::feassemble::ElasticityExplicit::updateState(
     _material->initCellData(*c_iter, numQuadPts);
 
     // Restrict input fields to cell
-    const real_section_type::value_type* dispCell = 
-      mesh->restrict(disp, *c_iter);
+    const int vecSize = spaceDim*numBasis;
+    double_array dispCell(mesh->restrict(disp, *c_iter), vecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();
