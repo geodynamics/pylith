@@ -133,7 +133,7 @@ class Quadrature2DQuadratic(Component):
       basisDeriv[iQuad] = derivQ.reshape((self.numBasis, self.cellDim))
       
       iQuad += 1
-    return
+    return (basis, basisDeriv)
     
 
 # FACTORIES ////////////////////////////////////////////////////////////

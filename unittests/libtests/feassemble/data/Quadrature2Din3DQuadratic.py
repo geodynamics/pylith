@@ -33,7 +33,7 @@ class Quadrature2Din3DQuadratic(Quadrature2DQuadratic):
     """
     Constructor.
     """
-    Quadrature2DLinear.__init__(self, name)
+    Quadrature2DQuadratic.__init__(self, name)
     
     self.spaceDim = 3
     return
