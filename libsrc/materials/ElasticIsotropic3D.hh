@@ -49,20 +49,8 @@ public :
   /// Destructor
   ~ElasticIsotropic3D(void);
 
-  /** Create a pointer to a copy of this.
-   *
-   * @returns Pointer to copy
-   */
-  ElasticMaterial* clone(void) const;
-
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
-
-  /** Copy constructor
-   *
-   * @param m Material to copy
-   */
-  ElasticIsotropic3D(const ElasticIsotropic3D& m);
 
   /** Get names of values expected to be in database of parameters for
    *  physical properties.
@@ -151,6 +139,9 @@ protected :
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
+
+  /// Not implemented
+  ElasticIsotropic3D(const ElasticIsotropic3D& m);
 
   /// Not implemented
   const ElasticIsotropic3D& operator=(const ElasticIsotropic3D& m);

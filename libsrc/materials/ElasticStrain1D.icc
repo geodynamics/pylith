@@ -14,12 +14,5 @@
 #error "ElasticStrain1D.icc can only be included from ElasticStrain1D.hh"
 #endif
 
-// Create a pointer to a copy of this.
-inline
-pylith::materials::ElasticMaterial*
-pylith::materials::ElasticStrain1D::clone(void) const {
-  return new ElasticStrain1D(*this);
-}
-
 
 // End of file 

@@ -36,13 +36,16 @@ public:
 
   /// @name Mesh information
   //@{
-  char* meshFilename; ///< Name of mesh file.
+  int spaceDim; ///< Number of dimensions in vertex coordinates
+  int cellDim; ///< Number of dimensions associated with cell
+  int numVertices; ///< Number of vertices
+  int numCells; ///< Number of cells
+  double* vertices; ///< Coordinates of vertices
+  int* cells; ///< Indices of vertices in cells
   //@}
 
   /// @name Quadrature information
   //@{
-  int spaceDim; ///< Number of dimensions in vertex coordinates
-  int cellDim; ///< Number of dimensions associated with cell
   int numBasis; ///< Number of vertices in cell
   int numQuadPts; ///< Number of quadrature points
   double* quadPts; ///< Coordinates of quad pts in ref cell
@@ -53,14 +56,15 @@ public:
 
   /// @name Material information
   //@{
-  double* matType; ///< String corresponding to material type.
-  double* matDBFilename; ///< Filename for database of material properties.
-  double* matId; ///< Material identifier.
-  double* matLabel; ///< Label of material.
+  char* matType; ///< String corresponding to material type.
+  char* matDBFilename; ///< Filename for database of material properties.
+  int matId; ///< Material identifier.
+  char* matLabel; ///< Label of material.
   //@}
 
   /// @name Input fields
   //@{
+  double dt; ///< Time step
   double* fieldTpdt; ///< Input field at time t+dt.
   double* fieldT; ///< Input field at time t.
   double* fieldTmdt; ///< Input field at time t-dt.

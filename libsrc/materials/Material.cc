@@ -50,19 +50,6 @@ pylith::materials::Material::~Material(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::materials::Material::Material(const Material& m) :
-  _dt(m._dt),
-  _parameters(m._parameters),
-  _dimension(m._dimension),
-  _needNewJacobian(m._needNewJacobian),
-  _db(m._db),
-  _id(m._id),
-  _label(m._label)
-{ // copy constructor
-} // copy constructor
-
-// ----------------------------------------------------------------------
 // Get physical property parameters from database.
 void
 pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,

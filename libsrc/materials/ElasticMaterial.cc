@@ -36,15 +36,6 @@ pylith::materials::ElasticMaterial::~ElasticMaterial(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::materials::ElasticMaterial::ElasticMaterial(const ElasticMaterial& m) :
-  Material(m),
-  _numQuadPts(0),
-  _useElasticBehavior(m._useElasticBehavior)
-{ // copy constructor
-} // copy constructor
-
-// ----------------------------------------------------------------------
 // Compute density for cell at quadrature points.
 const std::vector<pylith::double_array>&
 pylith::materials::ElasticMaterial::calcDensity(void)

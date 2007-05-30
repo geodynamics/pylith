@@ -38,13 +38,29 @@ class IntegratorApp(Script):
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b data Data manager.
+    ## @li \b data Manager for output data.
+    ## @li \b mesh Mesh information.
+    ## @li \b quadrature Quadrature information.
+    ## @li \b material Material information.
+    ## @li \b solution Solution information.
 
     import pyre.inventory
 
     from pylith.utils.CppData import CppData
     data = pyre.inventory.facility("data", factory=CppData)
-    data.meta['tip'] = "Data manager."
+    data.meta['tip'] = "Data output manager."
+
+    mesh = pyre.inventory.facility("mesh", family="mesh")
+    mesh.meta['tip'] = "Mesh information."
+
+    quadrature = pyre.inventory.facility("quadrature", family="quadrature")
+    quadrature.meta['tip'] = "Quadrature information."
+
+    material = pyre.inventory.facility("material", family="material")
+    material.meta['tip'] = "Material information."
+
+    solution = pyre.inventory.facility("solution", family="solution")
+    solution.meta['tip'] = "Solution information."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -56,11 +72,14 @@ class IntegratorApp(Script):
     Script.__init__(self, name)
 
     # Mesh information
-    self.meshFilename = None
-
-    # Quadrature information
     self.spaceDim = None
     self.cellDim = None
+    self.numVertices = None
+    self.numCells = None
+    self.vertices = None
+    self.cells = None
+
+    # This quadrature information is set by quadrature.calculateBasis()
     self.numBasis = None
     self.numQuadPts = None
     self.quadPts = None
@@ -90,7 +109,7 @@ class IntegratorApp(Script):
     """
     Run the application.
     """
-    self._initialize()
+    self._collectData()
     self._calculateResidual()
     self._calculateJacobian()
     self._initData()
@@ -106,24 +125,47 @@ class IntegratorApp(Script):
     """
     Script._configure(self)
     self.data = self.inventory.data
+    self.mesh = self.inventory.mesh
+    self.quadrature = self.inventory.quadrature
+    self.material = self.inventory.material
+    self.solution = self.inventory.solution
     return
 
 
-  def _initialize(self):
+  def _collectData(self):
     """
-    Get quadrature information.
+    Collect data we need from data objects.
     """
-    q = self.quadrature
-    q.calculateBasis()
-    self.spaceDim = q.spaceDim
-    self.numBasis = q.numBasis
-    self.cellDim = q.cellDim
-    self.numQuadPts = q.numQuadPts
-    self.basis = q.basis
-    self.basisDeriv = q.basisDeriv
-    self.quadPts = q.quadPtsRef
-    self.quadWts = q.quadWts
+    # Mesh information
+    self.spaceDim = self.mesh.spaceDim
+    self.cellDim = self.mesh.cellDim
+    self.numVertices = self.mesh.numVertices
+    self.numCells = self.mesh.numCells
+    self.vertices = self.mesh.vertices
+    self.cells = self.mesh.cells
 
+    # Quadrature information
+    self.numBasis = self.quadrature.numBasis
+    self.numQuadPts = self.quadrature.numQuadPts
+    self.quadPts = self.quadrature.quadPtsRef
+    self.quadWts = self.quadrature.quadWts
+    (self.basis, self.basisDeriv) = self.quadrature.calculateBasis()
+    self.quadPts = numpy.dot(self.basis, self.vertices)
+
+    # Material information
+    self.matType = self.material.type
+    self.matDBFilename = self.material.dbFilename
+    self.matId = self.material.id
+    self.matLabel = self.material.label
+    self.density = self.material.density
+    self.lameMu = self.material.lameMu
+    self.lameLambda = self.material.lameLambda
+
+    # Solution information
+    self.dt = self.solution.dt
+    self.fieldTpdt = self.solution.fieldTpdt
+    self.fieldT = self.solution.fieldT
+    self.fieldTmdt = self.solution.fieldTmdt
     return
   
 
@@ -132,27 +174,34 @@ class IntegratorApp(Script):
     Calculate contribution to residual of operator for integrator.
     """
     raise NotImplementedError("Not implemented in abstract base class.")
+    return
 
 
   def _calculateJacobian(self):
     """
     Calculate contribution to Jacobian matrix of operator for integrator.
     """
-    self.valsAction = numpy.dot(self.valsMatrix, self.fieldIn)[:]
+    raise NotImplementedError("Not implemented in abstract base class.")
     return
     
 
   def _initData(self):
     # Mesh information
-    self.data.addScalar(vtype="char*", name="_meshFilename",
-                        value=self.meshFilename,
-                        format="%s")
-
-    # Quadrature information
     self.data.addScalar(vtype="int", name="_spaceDim", value=self.spaceDim,
                         format="%d")
     self.data.addScalar(vtype="int", name="_cellDim", value=self.cellDim,
                         format="%d")
+    self.data.addScalar(vtype="int", name="_numVertices",
+                        value=self.numVertices,
+                        format="%d")
+    self.data.addScalar(vtype="int", name="_numCells", value=self.numCells,
+                        format="%d")
+    self.data.addArray(vtype="double", name="_vertices", values=self.vertices,
+                       format="%16.8e", ncols=self.spaceDim)
+    self.data.addArray(vtype="int", name="_cells", values=self.cells,
+                       format="%d", ncols=self.numBasis)    
+
+    # Quadrature information
     self.data.addScalar(vtype="int", name="_numBasis", value=self.numBasis,
                         format="%d")
     self.data.addScalar(vtype="int", name="_numQuadPts", value=self.numQuadPts,
@@ -161,7 +210,6 @@ class IntegratorApp(Script):
                        format="%16.8e", ncols=self.cellDim)
     self.data.addArray(vtype="double", name="_quadWts", values=self.quadWts,
                        format="%16.8e", ncols=self.numQuadPts)
-    
     self.data.addArray(vtype="double", name="_basis", values=self.basis,
                        format="%16.8e", ncols=self.cellDim)
     self.data.addArray(vtype="double", name="_basisDeriv",
@@ -170,16 +218,16 @@ class IntegratorApp(Script):
 
     # Material information
     self.data.addScalar(vtype="char*", name="_matType", value=self.matType,
-                        format="%s")
+                        format='"%s"')
     self.data.addScalar(vtype="char*", name="_matDBFilename",
-                        value=self.matDBFilename, format="%s")
+                        value=self.matDBFilename, format='"%s"')
     self.data.addScalar(vtype="int", name="_matId",
                         value=self.matId, format="%d")
     self.data.addScalar(vtype="char*", name="_matLabel",
-                        value=self.matLabel, format="%s")
+                        value=self.matLabel, format='"%s"')
 
     # Input files
-    self.data.addScalar(vtype="double", name="_dt", values=self.dt,
+    self.data.addScalar(vtype="double", name="_dt", value=self.dt,
                         format="%16.8e")
     self.data.addArray(vtype="double", name="_fieldTpdt",
                        values=self.fieldTpdt,
@@ -198,7 +246,6 @@ class IntegratorApp(Script):
     self.data.addArray(vtype="double", name="_valsJacobian",
                        values=self.valsJacobian,
                        format="%16.8e", ncols=self.spaceDim)
-      
     return
 
   

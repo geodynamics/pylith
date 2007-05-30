@@ -31,8 +31,17 @@ namespace pylith {
     class TestElasticityExplicit;
 
     class ElasticityExplicit; // USES ElasticityExplicit
-    class ElasticityExplicitData; // USES ElasticityExplicitData
+    class IntegratorData; // HOLDSA ElasticityExplicitData
+    class Quadrature; // HOLDSA Quadrature
   } // feassemble
+
+  namespace materials {
+    class ElasticMaterial; // HOLDSA ElasticMaterial
+  } // materials
+
+  namespace topology {
+    class FieldsManager; // USES FieldsManager
+  } // topology
 } // pylith
 
 /// C++ unit testing for ElasticityExplicit
@@ -77,18 +86,22 @@ public :
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  ElasticityExplicitData* _data; ///< Data for testing
+  IntegratorData* _data; ///< Data for testing.
+  materials::ElasticMaterial* _material; ///< Elastic material.
+  Quadrature* _quadrature; ///< Quadrature information.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
-  /** Initialize elasticity integrator..
+  /** Initialize elasticity integrator.
    *
    * @param mesh PETSc mesh to initialize.
    * @param integrator ElasticityIntegrator to initialize.
+   * @param fields Solution fields.
    */
   void _initialize(ALE::Obj<ALE::Mesh>* mesh,
-		   ElasticityExplicit* const integrator) const;
+		   ElasticityExplicit* const integrator,
+		   topology::FieldsManager* const fields);
 
 }; // class TestElasticityExplicit
 

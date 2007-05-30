@@ -71,14 +71,6 @@ pylith::materials::MaxwellIsotropic3D::~MaxwellIsotropic3D(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::materials::MaxwellIsotropic3D::MaxwellIsotropic3D(
-						const MaxwellIsotropic3D& m) :
-  ElasticMaterial(m)
-{ // copy constructor
-} // copy constructor
-
-// ----------------------------------------------------------------------
 // Get names of values expected to be in database of parameters for
 const char**
 pylith::materials::MaxwellIsotropic3D::_dbValues(void) const

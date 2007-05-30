@@ -273,7 +273,10 @@ class CppData(Component):
 
     for scalar in self.scalars:
       n = scalar['name']
-      fileOut.write("  %s = %s;\n" % (n[1:], n))
+      if "char*" != scalar['type']:
+        fileOut.write("  %s = %s;\n" % (n[1:], n))
+      else:
+        fileOut.write("  %s = const_cast<char*>(%s);\n" % (n[1:], n))
     for array in self.arrays:
       n = array['name']
       fileOut.write("  %s = const_cast<%s*>(%s);\n" % \

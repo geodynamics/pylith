@@ -15,9 +15,12 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::IntegratorData::IntegratorData(void) :
-  meshFilename(0),
   spaceDim(0),
   cellDim(0),
+  numVertices(0),
+  numCells(0),
+  vertices(0),
+  cells(0),
   numBasis(0),
   numQuadPts(0),
   quadPts(0),
@@ -27,7 +30,8 @@ pylith::feassemble::IntegratorData::IntegratorData(void) :
   matType(0),
   matDBFilename(0),
   matId(0),
-  matlabel(0),
+  matLabel(0),
+  dt(0),
   fieldTpdt(0),
   fieldT(0),
   fieldTmdt(0),

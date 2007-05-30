@@ -20,10 +20,12 @@ if [ $1 == "quadrature" ] || [ $1 == "all" ]; then
 
   # 1-D ----------------------------------------------------------------
 
-  python Quadrature1DLinear.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData1DLinear \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh1DLinear \
+    --quadrature=Quadrature1DLinear
 
   python Quadrature1DQuadratic.py \
     --data.namespace=pylith,feassemble \
@@ -102,48 +104,23 @@ if [ $1 == "quadrature" ] || [ $1 == "all" ]; then
 fi
 
 # //////////////////////////////////////////////////////////////////////
-if [ $1 == "integrator" ] || [ $1 == "all" ]; then
+if [ $1 == "explicit" ] || [ $1 == "all" ]; then
 
   # 1-D ----------------------------------------------------------------
 
-  python IntegratorInertia1DLinear.py \
+  python ElasticityExplicit.py \
     --data.namespace=pylith,feassemble \
-    --data.object=IntegratorDataInertia1DLinear \
-    --data.parent=IntegratorData
-
-  python IntegratorInertia1DQuadratic.py \
-    --data.namespace=pylith,feassemble \
-    --data.object=IntegratorDataInertia1DQuadratic \
-    --data.parent=IntegratorData
+    --data.object=ElasticityExplicitData1DLinear \
+    --data.parent=IntegratorData \
+    --mesh=Mesh1DLinear \
+    --quadrature=Quadrature1DLinear \
+    --material=MaterialElasticStrain1D \
+    --solution=Solution1DLinear
 
   # 2-D ----------------------------------------------------------------
 
-  python IntegratorInertia2Din3DOne.py \
-    --data.namespace=pylith,feassemble \
-    --data.object=IntegratorDataInertia2Din3DOne \
-    --data.parent=IntegratorData
-
-  python IntegratorInertia2Din3DTwo.py \
-    --data.namespace=pylith,feassemble \
-    --data.object=IntegratorDataInertia2Din3DTwo \
-    --data.parent=IntegratorData
-
-  python IntegratorInertia2Din3DThree.py \
-    --data.namespace=pylith,feassemble \
-    --data.object=IntegratorDataInertia2Din3DThree \
-    --data.parent=IntegratorData
 
   # 3-D ----------------------------------------------------------------
-
-  python IntegratorInertia3DLinear.py \
-    --data.namespace=pylith,feassemble \
-    --data.object=IntegratorDataInertia3DLinear \
-    --data.parent=IntegratorData
-
-  python IntegratorInertia3DQuadratic.py \
-    --data.namespace=pylith,feassemble \
-    --data.object=IntegratorDataInertia3DQuadratic \
-    --data.parent=IntegratorData
 
 fi
 
