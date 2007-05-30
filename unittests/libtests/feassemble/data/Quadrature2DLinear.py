@@ -59,11 +59,11 @@ class Quadrature2DLinear(Component):
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="quadrature2dlinear", facility="quadrature"):
+  def __init__(self, name="quadrature2dlinear"):
     """
     Constructor.
     """
-    QuadratureApp.__init__(self, name)
+    Component.__init__(self, name, facility="quadrature")
     
     self.quadPtsRef = numpy.array( [[1.0/3.0, 1.0/3.0]], dtype=numpy.float64)
     self.quadWts = numpy.array([0.5], dtype=numpy.float64)
@@ -98,7 +98,7 @@ class Quadrature2DLinear(Component):
       basisDeriv[iQuad] = derivQ.reshape((self.numBasis, self.cellDim))
 
       iQuad += 1
-    return
+    return (basis, basisDeriv)
     
 
 # FACTORIES ////////////////////////////////////////////////////////////
