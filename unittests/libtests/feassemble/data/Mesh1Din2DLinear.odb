@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/Mesh1DLinear.odb
+## @file unittests/libtests/feassemble/data/Mesh1Din2DLinear.odb
 ##
 ## @brief Python container holding mesh information for a 1-D
 ## linear finite-element cell used in testing finite-element C++
@@ -22,8 +22,8 @@ import numpy
 
 # ----------------------------------------------------------------------
 
-# Mesh1DLinear class
-class Mesh1DLinear(Component):
+# Mesh1Din2DLinear class
+class Mesh1Din2DLinear(Component):
   """
   Python container holding mesh information for a 1-D linear
   finite-element cell used in testing finite-element C++ routines.
@@ -31,17 +31,18 @@ class Mesh1DLinear(Component):
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="mesh1dlinear"):
+  def __init__(self, name="mesh1din2dlinear"):
     """
     Constructor.
     """
     Component.__init__(self, name, facility="mesh")
     
-    self.spaceDim = 1
+    self.spaceDim = 2
     self.cellDim = 1
     self.numVertices = 2
-    self.numCells = 1    
-    self.vertices = numpy.array( [[-0.25], [2.0]], dtype=numpy.float64)
+    self.numCells = 1
+    self.vertices = numpy.array( [[-0.2, -0.5], [0.7, 0.3]],
+                                 dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1]], dtype=numpy.int32)
     return
   
@@ -49,9 +50,9 @@ class Mesh1DLinear(Component):
 # FACTORIES ////////////////////////////////////////////////////////////
 def mesh():
   """
-  Factory for Mesh1DLinear.
+  Factory for Mesh1Din2DLinear.
   """
-  return Mesh1DLinear()
+  return Mesh1Din2DLinear()
 
 
 # End of file 

@@ -10,53 +10,51 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/Quadrature1Din3DQuadratic.py
+## @file unittests/libtests/feassemble/data/Mesh1Din3DQuadratic.odb
+##
+## @brief Python container holding mesh information for a 1-D
+## quadratic finite-element cell used in testing finite-element C++
+## routines.
 
-## @brief Python application for generating C++ data files for testing
-## C++ Quadrature1Din3D object w/quadratic basis functions.
-
-from Quadrature1DQuadratic import *
+from pyre.components.Component import Component
 
 import numpy
 
 # ----------------------------------------------------------------------
 
-# Quadrature1Din3DQuadratic class
-class Quadrature1Din3DQuadratic(Quadrature1DQuadratic):
+# Mesh1Din3DQuadratic class
+class Mesh1Din3DQuadratic(Component):
   """
-  Python application for generating C++ data files for testing C++
-  Quadrature1Din3D object w/quadratic basis functions.
+  Python container holding mesh information for a 1-D quadratic
+  finite-element cell used in testing finite-element C++ routines.
   """
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
-
-  def __init__(self, name="quadrature1din3dquadratic"):
+  
+  def __init__(self, name="mesh1din3dquadratic"):
     """
     Constructor.
     """
-    Quadrature1DQuadratic.__init__(self, name)
+    Component.__init__(self, name, facility="mesh")
     
-    self.numVertices = 3
     self.spaceDim = 3
-    self.numCells = 1
     self.cellDim = 1
-    self.numBasis = 3
-    self.numQuadPts = 2
-    
+    self.numVertices = 3
+    self.numCells = 1
     self.vertices = numpy.array( [[1.0, -1.5, -2.0],
                                   [0.3, 0.3, 0.8],
                                   [-0.5, 2.0, 3.0]],
                                  dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.int32)
-    
     return
+  
 
-
-# MAIN /////////////////////////////////////////////////////////////////
-if __name__ == "__main__":
-
-  app = Quadrature1Din3DQuadratic()
-  app.run()
+# FACTORIES ////////////////////////////////////////////////////////////
+def mesh():
+  """
+  Factory for Mesh1Din3DQuadratic.
+  """
+  return Mesh1Din3DQuadratic()
 
 
 # End of file 

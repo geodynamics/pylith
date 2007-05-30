@@ -10,9 +10,9 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/Mesh1DLinear.odb
+## @file unittests/libtests/feassemble/data/Mesh2Din3DLinearXZ.odb
 ##
-## @brief Python container holding mesh information for a 1-D
+## @brief Python container holding mesh information for a 2-D
 ## linear finite-element cell used in testing finite-element C++
 ## routines.
 
@@ -22,36 +22,39 @@ import numpy
 
 # ----------------------------------------------------------------------
 
-# Mesh1DLinear class
-class Mesh1DLinear(Component):
+# Mesh2Din3DLinearXZ class
+class Mesh2Din3DLinearXZ(Component):
   """
-  Python container holding mesh information for a 1-D linear
+  Python container holding mesh information for a 2-D linear
   finite-element cell used in testing finite-element C++ routines.
   """
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="mesh1dlinear"):
+  def __init__(self, name="mesh2din3dlinearxz"):
     """
     Constructor.
     """
     Component.__init__(self, name, facility="mesh")
     
-    self.spaceDim = 1
-    self.cellDim = 1
-    self.numVertices = 2
-    self.numCells = 1    
-    self.vertices = numpy.array( [[-0.25], [2.0]], dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1]], dtype=numpy.int32)
+    self.spaceDim = 3
+    self.cellDim = 2
+    self.numVertices = 3
+    self.numCells = 1
+    self.vertices = numpy.array( [[ 0.0,  0.0,  0.0],
+                                  [-1.0,  0.0,  0.0],
+                                  [ 0.0,  0.0,  1.0]],
+                                 dtype=numpy.float64)
+    self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.int32)
     return
   
 
 # FACTORIES ////////////////////////////////////////////////////////////
 def mesh():
   """
-  Factory for Mesh1DLinear.
+  Factory for Mesh2Din3DLinearXZ.
   """
-  return Mesh1DLinear()
+  return Mesh2Din3DLinearXZ()
 
 
 # End of file 

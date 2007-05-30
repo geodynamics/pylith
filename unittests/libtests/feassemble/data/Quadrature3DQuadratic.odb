@@ -10,12 +10,13 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/Quadrature3DQuadratic.py
+## @file unittests/libtests/feassemble/data/Quadrature3DQuadratic.odb
+##
+## @brief Python container holding quadrature information for a 3-D
+## quadratic finite-element cell used in testing finite-element C++
+## routines.
 
-## @brief Python application for generating C++ data files for testing
-## C++ Quadrature3D object w/quadratic basis functions.
-
-from QuadratureApp import QuadratureApp
+from pyre.components.Component import Component
 
 import numpy
 
@@ -144,10 +145,10 @@ def N9r(p):
 # ----------------------------------------------------------------------
 
 # Quadrature3DQuadratic class
-class Quadrature3DQuadratic(QuadratureApp):
+class Quadrature3DQuadratic(Component):
   """
-  Python application for generating C++ data files for testing C++
-  Quadrature3D object w/quadratic basis functions.
+  Python container holding quadrature information for a 3-D quadratic
+  finite-element cell used in testing finite-element C++ routines.
   """
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -156,14 +157,8 @@ class Quadrature3DQuadratic(QuadratureApp):
     """
     Constructor.
     """
-    QuadratureApp.__init__(self, name)
+    Component.__init__(self, name, facility="quadrature")
     
-    self.numVertices = 10
-    self.spaceDim = 3
-    self.numCells = 1
-    self.cellDim = 3
-    self.numBasis = 10
-    self.numQuadPts = 4
 
     # These are just approximate points used to test the quadrature routine
     self.quadPtsRef = numpy.array( [[1.0/12.0, 1.0/12.0, 1.0/12.0],
@@ -173,21 +168,10 @@ class Quadrature3DQuadratic(QuadratureApp):
                                    dtype=numpy.float64)
     self.quadWts = numpy.array([1.0/8.0, 1.0/8.0, 1.0/8.0, 1.0/8.0],
                                dtype=numpy.float64)
-    
-    self.vertices = numpy.array( [[-0.5, -2.0, -1.0],
-                                  [ 2.0, -2.0, -0.5],
-                                  [ 1.0,  1.0,  0.0],
-                                  [ 0.2,  0.5,  2.0],
-                                  [ 0.7, -2.1, -0.8],
-                                  [ 0.3, -0.5, -0.5],
-                                  [-0.2, -0.8,  0.5],
-                                  [ 1.5, -0.6, -0.2],
-                                  [ 0.6,  0.8,  0.9],
-                                  [ 1.1, -0.8,  0.7]],
-                                 dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
-                              dtype=numpy.int32)
-    
+    self.numBasis = 10
+    self.numQuadPts = 4
+    self.spaceDim = 3
+    self.cellDim = 3
     return
 
 
@@ -196,43 +180,43 @@ class Quadrature3DQuadratic(QuadratureApp):
     Calculate basis functions and their derivatives at quadrature points.
     """
 
-    self.basis = numpy.zeros( (self.numQuadPts, self.numBasis),
+    basis = numpy.zeros( (self.numQuadPts, self.numBasis),
+                         dtype=numpy.float64)
+    basisDeriv = numpy.zeros( (self.numQuadPts, self.numBasis, self.cellDim),
                               dtype=numpy.float64)
-    self.basisDeriv = numpy.zeros( (self.numQuadPts,
-                                    self.numBasis, self.cellDim),
-                                   dtype=numpy.float64)
 
     iQuad = 0
     for q in self.quadPtsRef:
       # Basis functions at quadrature points
-      basis = numpy.array([N0(q), N1(q), N2(q), N3(q), N4(q),
-                           N5(q), N6(q), N7(q), N8(q), N9(q)],
-                          dtype=numpy.float64)
-      self.basis[iQuad] = basis.reshape( (self.numBasis,) )
+      basisQ = numpy.array([N0(q), N1(q), N2(q), N3(q), N4(q),
+                            N5(q), N6(q), N7(q), N8(q), N9(q)],
+                           dtype=numpy.float64)
+      basis[iQuad] = basisQ.reshape( (self.numBasis,) )
 
       # Derivatives of basis functions at quadrature points
-      deriv = numpy.array([[N0p(q), N0q(q), N0r(q)],
-                           [N1p(q), N1q(q), N1r(q)],
-                           [N2p(q), N2q(q), N2r(q)],
-                           [N3p(q), N3q(q), N3r(q)],
-                           [N4p(q), N4q(q), N4r(q)],
-                           [N5p(q), N5q(q), N5r(q)],
-                           [N6p(q), N6q(q), N6r(q)],
-                           [N7p(q), N7q(q), N7r(q)],
-                           [N8p(q), N8q(q), N8r(q)],
-                           [N9p(q), N9q(q), N9r(q)]],
-                          dtype=numpy.float64)      
-      self.basisDeriv[iQuad] = deriv.reshape((self.numBasis, self.cellDim))
+      derivQ = numpy.array([[N0p(q), N0q(q), N0r(q)],
+                            [N1p(q), N1q(q), N1r(q)],
+                            [N2p(q), N2q(q), N2r(q)],
+                            [N3p(q), N3q(q), N3r(q)],
+                            [N4p(q), N4q(q), N4r(q)],
+                            [N5p(q), N5q(q), N5r(q)],
+                            [N6p(q), N6q(q), N6r(q)],
+                            [N7p(q), N7q(q), N7r(q)],
+                            [N8p(q), N8q(q), N8r(q)],
+                            [N9p(q), N9q(q), N9r(q)]],
+                           dtype=numpy.float64)      
+      basisDeriv[iQuad] = derivQ.reshape((self.numBasis, self.cellDim))
 
       iQuad += 1
-    return
+    return (basis, basisDeriv)
     
 
-# MAIN /////////////////////////////////////////////////////////////////
-if __name__ == "__main__":
-
-  app = Quadrature3DQuadratic()
-  app.run()
+# FACTORIES ////////////////////////////////////////////////////////////
+def quadrature():
+  """
+  Factory for Quadrature3DQuadratic.
+  """
+  return Quadrature3DQuadratic()
 
 
 # End of file 

@@ -10,10 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/Mesh1DLinear.odb
+## @file unittests/libtests/feassemble/data/Mesh1DQuadratic.odb
 ##
 ## @brief Python container holding mesh information for a 1-D
-## linear finite-element cell used in testing finite-element C++
+## quadratic finite-element cell used in testing finite-element C++
 ## routines.
 
 from pyre.components.Component import Component
@@ -22,16 +22,16 @@ import numpy
 
 # ----------------------------------------------------------------------
 
-# Mesh1DLinear class
-class Mesh1DLinear(Component):
+# Mesh1DQuadratic class
+class Mesh1DQuadratic(Component):
   """
-  Python container holding mesh information for a 1-D linear
+  Python container holding mesh information for a 1-D quadratic
   finite-element cell used in testing finite-element C++ routines.
   """
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="mesh1dlinear"):
+  def __init__(self, name="mesh1dquadratic"):
     """
     Constructor.
     """
@@ -39,19 +39,20 @@ class Mesh1DLinear(Component):
     
     self.spaceDim = 1
     self.cellDim = 1
-    self.numVertices = 2
-    self.numCells = 1    
-    self.vertices = numpy.array( [[-0.25], [2.0]], dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1]], dtype=numpy.int32)
+    self.numVertices = 3
+    self.numCells = 1
+    self.vertices = numpy.array( [[-0.25], [0.875], [2.0]],
+                                 dtype=numpy.float64)
+    self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.int32)
     return
   
 
 # FACTORIES ////////////////////////////////////////////////////////////
 def mesh():
   """
-  Factory for Mesh1DLinear.
+  Factory for Mesh1DQuadratic.
   """
-  return Mesh1DLinear()
+  return Mesh1DQuadratic()
 
 
 # End of file 
