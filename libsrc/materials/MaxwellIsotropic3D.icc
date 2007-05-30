@@ -10,8 +10,8 @@
 // ----------------------------------------------------------------------
 //
 
-#if !defined(pylith_materials_elasticisotropic3d_hh)
-#error "ElasticIsotropic3D.icc can only be included from ElasticIsotropic3D.hh"
+#if !defined(pylith_materials_maxwellisotropic3d_hh)
+#error "MaxwellIsotropic3D.icc can only be included from MaxwellIsotropic3D.hh"
 #endif
 
 

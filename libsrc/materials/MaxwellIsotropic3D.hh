@@ -10,44 +10,44 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/ElasticIsotropic3D.h
+/** @file libsrc/materials/MaxwellIsotropic3D.h
  *
- * @brief C++ ElasticIsotropic3D object
+ * @brief C++ MaxwellIsotropic3D object
  *
- * 3-D, isotropic, linear elastic material. The physical properties
- * are specified using density, shear-wave speed, and
- * compressional-wave speed. The physical properties are stored
- * internally using density, lambda, and mu, which are directly
+ * 3-D, isotropic, linear Maxwell viscoelastic material. The
+ * physical properties are specified using density, shear-wave speed,
+ * viscosity, and compressional-wave speed. The physical properties are
+ * stored internally using density, lambda, mu, which are directly
  * related to the elasticity constants used in the finite-element
- * integration.
+ * integration. The viscosity is stored using Maxwell Time (viscosity/mu).
  */
 
-#if !defined(pylith_materials_elasticisotropic3d_hh)
-#define pylith_materials_elasticisotropic3d_hh
+#if !defined(pylith_materials_maxwellisotropic3d_hh)
+#define pylith_materials_maxwellisotropic3d_hh
 
 #include "ElasticMaterial.hh"
 
 /// Namespace for pylith package
 namespace pylith {
   namespace materials {
-    class ElasticIsotropic3D;
-    class TestElasticIsotropic3D; // unit testing
+    class MaxwellIsotropic3D;
+    class TestMaxwellIsotropic3D; // unit testing
   } // materials
 } // pylith
 
-/// 3-D, isotropic, linear elastic material.
-class pylith::materials::ElasticIsotropic3D : public ElasticMaterial
-{ // class ElasticIsotropic3D
-  friend class TestElasticIsotropic3D; // unit testing
+/// 3-D, isotropic, linear Maxwell viscoelastic material.
+class pylith::materials::MaxwellIsotropic3D : public ElasticMaterial
+{ // class MaxwellIsotropic3D
+  friend class TestMaxwellIsotropic3D; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor
-  ElasticIsotropic3D(void);
+  MaxwellIsotropic3D(void);
 
   /// Destructor
-  ~ElasticIsotropic3D(void);
+  ~MaxwellIsotropic3D(void);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -76,7 +76,7 @@ protected :
    *
    * @returns Number of parameters
    */
-  int _numParameters(void) const;
+  int _numParamValues(int_array* numValues) const;
 
   /** Compute parameters from values in spatial database.
    *
@@ -86,7 +86,7 @@ protected :
    * @param paramVals Array of parameters
    * @param dbValues Array of database values
    */
-  void _dbToParameters(double_array* paramVals,
+  void _dbToParameters(std::vector<double_array>* paramVals,
 		       const double_array& dbValues) const;
 
   /** Get number of entries in stress/strain tensors.
@@ -115,7 +115,7 @@ protected :
    * @param parameters Parameters at location
    */
   void _calcDensity(double_array* const density,
-		    const double_array& parameters);
+		    const std::vector<double_array>& parameters);
 
   /** Compute stress tensor from parameters.
    *
@@ -124,7 +124,7 @@ protected :
    * @param totalStrain Total strain at locations.
    */
   void _calcStress(double_array* const stress,
-		   const double_array& parameters,
+		   const std::vector<double_array>& parameters,
 		   const double_array& totalStrain);
 
   /** Compute derivatives of elasticity matrix from parameters.
@@ -134,23 +134,23 @@ protected :
    * @param totalStrain Total strain at locations.
    */
   void _calcElasticConsts(double_array* const elasticConsts,
-			  const double_array& parameters,
+			  const std::vector<double_array>& parameters,
 			  const double_array& totalStrain);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
   /// Not implemented
-  ElasticIsotropic3D(const ElasticIsotropic3D& m);
+  MaxwellIsotropic3D(const MaxwellIsotropic3D& m);
 
   /// Not implemented
-  const ElasticIsotropic3D& operator=(const ElasticIsotropic3D& m);
+  const MaxwellIsotropic3D& operator=(const MaxwellIsotropic3D& m);
 
-}; // class ElasticIsotropic3D
+}; // class MaxwellIsotropic3D
 
-#include "ElasticIsotropic3D.icc" // inline methods
+#include "MaxwellIsotropic3D.icc" // inline methods
 
-#endif // pylith_materials_elasticisotropic3d_hh
+#endif // pylith_materials_maxwellisotropic3d_hh
 
 
 // End of file 
