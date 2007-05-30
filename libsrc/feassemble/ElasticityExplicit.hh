@@ -115,11 +115,11 @@ public :
   /** Integrate contributions to Jacobian matrix (A) associated with
    * operator.
    *
-   * @param mat Sparse matrix
-   * @param fields Solution fields
-   * @param mesh Finite-element mesh
+   * @param jacobian Sparse matrix to hold Jacobian of operator.
+   * @param fields Solution fields.
+   * @param mesh Finite-element mesh.
    */
-  void integrateJacobian(PetscMat* mat,
+  void integrateJacobian(PetscMat* jacobian,
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 

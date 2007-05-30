@@ -47,7 +47,7 @@ const int pylith::feassemble::ElasticityExplicitData1DLinear::_cells[] = {
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DLinear::_quadPts[] = {
-  8.75000000e-01,
+  0.00000000e+00,
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DLinear::_quadWts[] = {
@@ -70,18 +70,18 @@ const double pylith::feassemble::ElasticityExplicitData1DLinear::_fieldTpdt[] = 
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DLinear::_fieldT[] = {
-  1.20000000e+00,
-  1.70000000e+00,
+  1.10000000e+00,
+  1.50000000e+00,
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DLinear::_fieldTmdt[] = {
-  1.20000000e+00,
-  1.70000000e+00,
+  1.00000000e+00,
+  1.30000000e+00,
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DLinear::_valsResidual[] = {
- -5.56875000e+10,
-  3.12250226e-09,
+  2.02500000e+10,
+ -2.02500000e+10,
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DLinear::_valsJacobian[] = {

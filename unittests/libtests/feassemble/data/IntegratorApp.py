@@ -150,7 +150,6 @@ class IntegratorApp(Script):
     self.quadPts = self.quadrature.quadPtsRef
     self.quadWts = self.quadrature.quadWts
     (self.basis, self.basisDeriv) = self.quadrature.calculateBasis()
-    self.quadPts = numpy.dot(self.basis, self.vertices)
 
     # Material information
     self.matType = self.material.type
@@ -233,10 +232,10 @@ class IntegratorApp(Script):
                        values=self.fieldTpdt,
                        format="%16.8e", ncols=self.spaceDim)
     self.data.addArray(vtype="double", name="_fieldT",
-                       values=self.fieldTpdt,
+                       values=self.fieldT,
                        format="%16.8e", ncols=self.spaceDim)
     self.data.addArray(vtype="double", name="_fieldTmdt",
-                       values=self.fieldTpdt,
+                       values=self.fieldTmdt,
                        format="%16.8e", ncols=self.spaceDim)
 
     # Calculated values

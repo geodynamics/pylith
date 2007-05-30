@@ -48,7 +48,7 @@ public :
   static
   void calcTotalStrain1D(std::vector<double_array>* strain,
 			 const double_array& basisDeriv,
-			 const double* disp,
+			 const double_array& disp,
 			 const int numBasis);
 
   /** Compute total strain in at quadrature points of a cell.
@@ -62,7 +62,7 @@ public :
   static
   void calcTotalStrain2D(std::vector<double_array>* strain,
 			 const double_array& basisDeriv,
-			 const double* disp,
+			 const double_array& disp,
 			 const int numBasis);
 
   /** Compute total strain in at quadrature points of a cell.
@@ -76,7 +76,7 @@ public :
   static
   void calcTotalStrain3D(std::vector<double_array>* strain,
 			 const double_array& basisDeriv,
-			 const double* disp,
+			 const double_array& disp,
 			 const int numBasis);
 
 }; // Elasticity

@@ -25,6 +25,8 @@
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 
+#include <math.h> // USES fabs()
+
 #include <stdexcept> // TEMPORARY
 
 // ----------------------------------------------------------------------
@@ -88,7 +90,16 @@ pylith::feassemble::TestElasticityExplicit::testMaterial(void)
 void 
 pylith::feassemble::TestElasticityExplicit::testUpdateState(void)
 { // testUpdateState
-  throw std::logic_error("Unit test not implemented.");
+  CPPUNIT_ASSERT(0 != _data);
+
+  ALE::Obj<ALE::Mesh> mesh;
+  ElasticityExplicit integrator;
+  topology::FieldsManager fields(mesh);
+  _initialize(&mesh, &integrator, &fields);
+
+  const ALE::Obj<real_section_type>& dispT = fields.getReal("dispT");
+  CPPUNIT_ASSERT(!dispT.isNull());
+  integrator.updateState(dispT, mesh);
 } // testUpdateState
 
 // ----------------------------------------------------------------------
@@ -116,7 +127,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
 
   const double tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)
-    if (valsE[i] > 1.0)
+    if (fabs(valsE[i]) > 1.0)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
@@ -127,9 +138,62 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
 void
 pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
 { // testIntegrateJacobian
-  throw std::logic_error("Unit test not implemented.");
-} // testIntegrateJacobian
+  CPPUNIT_ASSERT(0 != _data);
 
+  ALE::Obj<ALE::Mesh> mesh;
+  ElasticityExplicit integrator;
+  topology::FieldsManager fields(mesh);
+  _initialize(&mesh, &integrator, &fields);
+
+  const ALE::Obj<pylith::real_section_type>& dispTpdt = 
+    fields.getReal("dispTpdt");
+  CPPUNIT_ASSERT(!dispTpdt.isNull());
+
+  PetscMat jacobian;
+  PetscErrorCode err = MeshCreateMatrix(mesh, dispTpdt, MATMPIBAIJ, &jacobian);
+  CPPUNIT_ASSERT(0 == err);
+
+  integrator.integrateJacobian(&jacobian, &fields, mesh);
+  err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);
+  CPPUNIT_ASSERT(0 == err);
+  err = MatAssemblyEnd(jacobian, MAT_FINAL_ASSEMBLY);
+  CPPUNIT_ASSERT(0 == err);
+
+  const double* valsE = _data->valsJacobian;
+  const int nrowsE = _data->numVertices * _data->spaceDim;
+  const int ncolsE = _data->numVertices * _data->spaceDim;
+
+  int nrows = 0;
+  int ncols = 0;
+  MatGetSize(jacobian, &nrows, &ncols);
+  CPPUNIT_ASSERT_EQUAL(nrowsE, nrows);
+  CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
+
+  PetscMat jDense;
+  PetscMat jSparseAIJ;
+  MatConvert(jacobian, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
+  MatConvert(jSparseAIJ, MATSEQDENSE, MAT_INITIAL_MATRIX, &jDense);
+
+  double_array vals(nrows*ncols);
+  int_array rows(nrows);
+  int_array cols(ncols);
+  for (int iRow=0; iRow < nrows; ++iRow)
+    rows[iRow] = iRow;
+  for (int iCol=0; iCol < ncols; ++iCol)
+    cols[iCol] = iCol;
+  MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
+  const double tolerance = 1.0e-06;
+  for (int iRow=0; iRow < nrows; ++iRow)
+    for (int iCol=0; iCol < ncols; ++iCol) {
+      const int index = ncols*iRow+iCol;
+      if (fabs(valsE[index]) > 1.0)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valsE[index], tolerance);
+      else
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[index], tolerance);
+    } // for
+  MatDestroy(jDense);
+  MatDestroy(jSparseAIJ);
+} // testIntegrateJacobian
 
 // ----------------------------------------------------------------------
 // Initialize elasticity integrator.

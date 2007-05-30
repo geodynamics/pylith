@@ -55,7 +55,6 @@ class pylith::feassemble::TestElasticityExplicit : public CppUnit::TestFixture
   CPPUNIT_TEST( testTimeStep );
   CPPUNIT_TEST( testStableTimeStep );
   CPPUNIT_TEST( testMaterial );
-  CPPUNIT_TEST( testUpdateState );
 
   CPPUNIT_TEST_SUITE_END();
 

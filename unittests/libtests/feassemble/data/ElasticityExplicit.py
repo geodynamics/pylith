@@ -48,8 +48,10 @@ class ElasticityExplicit(IntegratorElasticity):
           [K]{u(t)}
     """
     K = self._calculateStiffnessMat()
+    print K
+    
     M = self._calculateMassMat()
-
+    print M
 
     dispResult = -self.fieldTpdt + 2.0*self.fieldT - self.fieldTmdt
     self.valsResidual = 1.0/self.dt**2 * numpy.dot(M, dispResult) - \

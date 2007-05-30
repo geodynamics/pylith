@@ -59,6 +59,7 @@ class IntegratorElasticity(IntegratorApp):
 
     # Matrix of elasticity values
     D = self._calculateElasticityMat()
+    print "D: ",D
     
     for cell in self.cells:
       cellK = numpy.zeros( (self.spaceDim*self.numBasis,
@@ -70,6 +71,7 @@ class IntegratorElasticity(IntegratorApp):
       for iQuad in xrange(self.numQuadPts):
         wt = self.quadWts[iQuad] * jacobianDet[iQuad]
         B = self._calculateBasisDerivMat(iQuad)
+        print "B: ",B
         cellK[:] += wt * numpy.dot(numpy.dot(B.transpose(), D), B)
       feutils.assembleMat(K, cellK, cell, self.spaceDim)
     return K
@@ -94,6 +96,7 @@ class IntegratorElasticity(IntegratorApp):
       for iQuad in xrange(self.numQuadPts):
         wt = self.quadWts[iQuad] * jacobianDet[iQuad]
         N = self._calculateBasisMat(iQuad)
+        print "N: ",N
         cellM[:] += self.density * wt * numpy.dot(N.transpose(), N)
       feutils.assembleMat(M, cellM, cell, self.spaceDim)
     return M
@@ -191,10 +194,10 @@ class IntegratorElasticity(IntegratorApp):
         B[2, iBasis*self.spaceDim+0] = self.basisDeriv[iQuad, iBasis, 1]
         B[2, iBasis*self.spaceDim+1] = self.basisDeriv[iQuad, iBasis, 0]
     elif 1 == self.spaceDim:
-      iBasis = 0
       B = numpy.zeros( (1, self.spaceDim*self.numBasis),
                        dtype=numpy.float64)
-      B[0, iBasis*self.spaceDim+0] = self.basisDeriv[iQuad, iBasis, 0]
+      for iBasis in xrange(self.numBasis):
+        B[0, iBasis*self.spaceDim+0] = self.basisDeriv[iQuad, iBasis, 0]
     else:
       raise ValueError("Unknown spatial dimension '%d'." % self.spaceDim)
     return B
