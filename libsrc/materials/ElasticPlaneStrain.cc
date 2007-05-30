@@ -17,6 +17,8 @@
 #include "pylith/utils/array.hh" // USES double_array
 
 #include <assert.h> // USES assert()
+#include <sstream> // USES std::ostringstream
+#include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
 namespace pylith {
@@ -124,7 +126,15 @@ pylith::materials::ElasticPlaneStrain::_dbToParameters(
  
   const double mu = density * vs*vs;
   const double lambda = density * vp*vp - 2.0*mu;
-
+  if (lambda < 0.0) {
+    std::ostringstream msg;
+    msg << "Attempted to set Lame's constant lambda to negative value.\n"
+	<< "density: " << density << "\n"
+	<< "vp: " << vp << "\n"
+	<< "vs: " << vs << "\n";
+    throw std::runtime_error(msg.str());
+  } // if
+  
   (*paramVals)[_ElasticPlaneStrain::pidDensity][0] = density;
   (*paramVals)[_ElasticPlaneStrain::pidMu][0] = mu;
   (*paramVals)[_ElasticPlaneStrain::pidLambda][0] = lambda;
