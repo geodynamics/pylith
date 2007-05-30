@@ -10,39 +10,37 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/Quadrature2Din3DLinearYZ.py
+## @file unittests/libtests/feassemble/data/Mesh2Din3DLinearYZ.odb
+##
+## @brief Python container holding mesh information for a 2-D
+## linear finite-element cell used in testing finite-element C++
+## routines.
 
-## @brief Python application for generating C++ data files for testing
-## C++ Quadrature2Din3D object w/linear basis functions.
-
-from Quadrature2DLinear import *
+from pyre.components.Component import Component
 
 import numpy
 
 # ----------------------------------------------------------------------
 
-# Quadrature2Din3DLinearYZ class
-class Quadrature2Din3DLinearYZ(Quadrature2DLinear):
+# Mesh2Din3DLinearYZ class
+class Mesh2Din3DLinearYZ(Component):
   """
-  Python application for generating C++ data files for testing C++
-  Quadrature2Din3D object w/linear basis functions.
+  Python container holding mesh information for a 2-D linear
+  finite-element cell used in testing finite-element C++ routines.
   """
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="quadrature2din3dlinear"):
+  def __init__(self, name="mesh2din3dlinearyz"):
     """
     Constructor.
     """
-    Quadrature2DLinear.__init__(self, name)
+    Component.__init__(self, name, facility="mesh")
     
-    self.numVertices = 3
     self.spaceDim = 3
-    self.numCells = 1
     self.cellDim = 2
-    self.numBasis = 3
-    self.numQuadPts = 1
-    
+    self.numVertices = 3
+    self.numCells = 1
     self.vertices = numpy.array( [[ 0.0,  0.0,  0.0],
                                   [ 0.0,  1.0,  0.0],
                                   [ 0.0,  0.0,  1.0]],
@@ -51,11 +49,12 @@ class Quadrature2Din3DLinearYZ(Quadrature2DLinear):
     return
   
 
-# MAIN /////////////////////////////////////////////////////////////////
-if __name__ == "__main__":
-
-  app = Quadrature2Din3DLinearYZ()
-  app.run()
+# FACTORIES ////////////////////////////////////////////////////////////
+def mesh():
+  """
+  Factory for Mesh2Din3DLinearYZ.
+  """
+  return Mesh2Din3DLinearYZ()
 
 
 # End of file 

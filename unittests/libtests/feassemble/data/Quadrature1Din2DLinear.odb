@@ -10,48 +10,41 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/feassemble/data/Mesh1DLinear.odb
+## @file unittests/libtests/feassemble/data/Quadrature1Din2DLinear.odb
 ##
-## @brief Python container holding mesh information for a 1-D
+## @brief Python container holding quadrature information for a 1-D
 ## linear finite-element cell used in testing finite-element C++
 ## routines.
 
-from pyre.components.Component import Component
-
-import numpy
+from Quadrature1DLinear import *
 
 # ----------------------------------------------------------------------
 
-# Mesh1DLinear class
-class Mesh1DLinear(Component):
+# Quadrature1Din2DLinear class
+class Quadrature1Din2DLinear(Quadrature1DLinear):
   """
-  Python container holding mesh information for a 1-D linear
+  Python container holding quadrature information for a 1-D linear
   finite-element cell used in testing finite-element C++ routines.
   """
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="mesh1dlinear"):
+  def __init__(self, name="quadrature1din2dlinear"):
     """
     Constructor.
     """
-    Component.__init__(self, name, facility="mesh")
+    Quadrature1DLinear.__init__(self, name)
     
-    self.spaceDim = 1
-    self.cellDim = 1
-    self.numVertices = 2
-    self.numCells = 1    
-    self.vertices = numpy.array( [[-0.25], [2.0]], dtype=numpy.float64)
-    self.cells = numpy.array( [[0, 1]], dtype=numpy.int32)
+    self.spaceDim = 2
     return
   
 
 # FACTORIES ////////////////////////////////////////////////////////////
-def mesh():
+def quadrature():
   """
-  Factory for Mesh1DLinear.
+  Factory for Quadrature1Din2DLinear.
   """
-  return Mesh1DLinear()
+  return Quadrature1Din2DLinear()
 
 
 # End of file 

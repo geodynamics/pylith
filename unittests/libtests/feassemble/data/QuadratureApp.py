@@ -98,7 +98,7 @@ class QuadratureApp(Script):
 
     import feutils
     (self.jacobian, self.jacobianInv, self.jacobianDet) = \
-                    feutils.calculateJacobian(self, self.vertices)
+                    feutils.calculateJacobian(self.quadrature, self.vertices)
 
     self._initData()
     self.data.write(self.name)

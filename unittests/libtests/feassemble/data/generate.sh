@@ -27,79 +27,107 @@ if [ $1 == "quadrature" ] || [ $1 == "all" ]; then
     --mesh=Mesh1DLinear \
     --quadrature=Quadrature1DLinear
 
-  python Quadrature1DQuadratic.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData1DQuadratic \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh1DQuadratic \
+    --quadrature=Quadrature1DQuadratic
 
-  python Quadrature1Din2DLinear.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData1Din2DLinear \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh1Din2DLinear \
+    --quadrature=Quadrature1Din2DLinear
 
-  python Quadrature1Din2DQuadratic.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData1Din2DQuadratic \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh1Din2DQuadratic \
+    --quadrature=Quadrature1Din2DQuadratic
 
-  python Quadrature1Din3DLinear.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData1Din3DLinear \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh1Din3DLinear \
+    --quadrature=Quadrature1Din3DLinear
 
-  python Quadrature1Din3DQuadratic.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData1Din3DQuadratic \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh1Din3DQuadratic \
+    --quadrature=Quadrature1Din3DQuadratic
 
   # 2-D ----------------------------------------------------------------
 
-  python Quadrature2DLinear.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData2DLinear \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh2DLinear \
+    --quadrature=Quadrature2DLinear
 
-  python Quadrature2DQuadratic.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData2DQuadratic \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh2DQuadratic \
+    --quadrature=Quadrature2DQuadratic
 
-  python Quadrature2Din3DLinearXYZ.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData2Din3DLinearXYZ \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh2Din3DLinearXYZ \
+    --quadrature=Quadrature2Din3DLinear
 
-  python Quadrature2Din3DLinearXY.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData2Din3DLinearXY \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh2Din3DLinearXY \
+    --quadrature=Quadrature2Din3DLinear
 
-  python Quadrature2Din3DLinearYZ.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData2Din3DLinearYZ \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh2Din3DLinearYZ \
+    --quadrature=Quadrature2Din3DLinear
 
-  python Quadrature2Din3DLinearXZ.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData2Din3DLinearXZ \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh2Din3DLinearXZ \
+    --quadrature=Quadrature2Din3DLinear
 
-  python Quadrature2Din3DQuadratic.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData2Din3DQuadratic \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh2Din3DQuadratic \
+    --quadrature=Quadrature2Din3DQuadratic
 
   # 3-D ----------------------------------------------------------------
 
-  python Quadrature3DLinear.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData3DLinear \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh3DLinear \
+    --quadrature=Quadrature3DLinear
 
-  python Quadrature3DQuadratic.py \
+  python QuadratureApp.py \
     --data.namespace=pylith,feassemble \
     --data.object=QuadratureData3DQuadratic \
-    --data.parent=QuadratureData
+    --data.parent=QuadratureData \
+    --mesh=Mesh3DQuadratic \
+    --quadrature=Quadrature3DQuadratic
 
 fi
 
