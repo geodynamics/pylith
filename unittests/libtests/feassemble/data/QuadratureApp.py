@@ -38,13 +38,21 @@ class QuadratureApp(Script):
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b data Data manager.
+    ## @li \b data Manager for output data.
+    ## @li \b mesh Mesh information.
+    ## @li \b quadrature Quadrature information.
 
     import pyre.inventory
 
     from pylith.utils.CppData import CppData
     data = pyre.inventory.facility("data", factory=CppData)
-    data.meta['tip'] = "Data manager."
+    data.meta['tip'] = "Manager for output data."
+
+    mesh = pyre.inventory.facility("mesh", family="mesh")
+    mesh.meta['tip'] = "Mesh information."
+
+    quadrature = pyre.inventory.facility("quadrature", family="quadrature")
+    quadrature.meta['tip'] = "Quadrature information."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -56,17 +64,16 @@ class QuadratureApp(Script):
     Script.__init__(self, name)
 
     # Mesh information
-    self.numVertices = None
     self.spaceDim = None
+    self.cellDim = None
+    self.numVertices = None
     self.numCells = None
     self.vertices = None
     self.cells = None
 
     # Reference cell information
-    self.cellDim = None
     self.numBasis = None
     self.numQuadPts = None
-
     self.quadPtsRef = None
     self.quadWts = None
     self.basis = None
@@ -84,34 +91,19 @@ class QuadratureApp(Script):
     """
     Run the application.
     """
-    self.calculateBasis()
-    self.calculateJacobian()
+    self._collectData()
 
-    # Quadrature points in cell
+    (self.basis, self.basisDeriv) = self.quadrature.calculateBasis()
     self.quadPts = numpy.dot(self.basis, self.vertices)
+
+    import feutils
+    (self.jacobian, self.jacobianInv, self.jacobianDet) = \
+                    feutils.calculateJacobian(self, self.vertices)
 
     self._initData()
     self.data.write(self.name)
     return
   
-
-  def calculateBasis(self):
-    """
-    Calculate basis functions and derivatives at quadrature points.
-    """
-    raise NotImplementedError
-
-
-  def calculateJacobian(self):
-    """
-    Calculate Jacobian, its determinant, and its inverse at quadrature
-    pts plus coordinates of quadrature points in the cell.
-    """
-    import feutils
-    (self.jacobian, self.jacobianInv, self.jacobianDet) = \
-                    feutils.calculateJacobian(self, self.vertices)
-    return
-
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -121,8 +113,30 @@ class QuadratureApp(Script):
     """
     Script._configure(self)
     self.data = self.inventory.data
+    self.mesh = self.inventory.mesh
+    self.quadrature = self.inventory.quadrature
     return
 
+
+  def _collectData(self):
+    """
+    Collect data we need from data objects.
+    """
+    # Mesh information
+    self.spaceDim = self.mesh.spaceDim
+    self.cellDim = self.mesh.cellDim
+    self.numVertices = self.mesh.numVertices
+    self.numCells = self.mesh.numCells
+    self.vertices = self.mesh.vertices
+    self.cells = self.mesh.cells
+
+    # Quadrature information
+    self.numBasis = self.quadrature.numBasis
+    self.numQuadPts = self.quadrature.numQuadPts
+    self.quadPtsRef = self.quadrature.quadPtsRef
+    self.quadWts = self.quadrature.quadWts
+    return
+  
 
   def _initData(self):
     self.data.addScalar(vtype="int", name="_numVertices",
@@ -174,4 +188,11 @@ class QuadratureApp(Script):
     return
 
   
+# MAIN /////////////////////////////////////////////////////////////////
+if __name__ == "__main__":
+
+  app = QuadratureApp()
+  app.run()
+
+
 # End of file 

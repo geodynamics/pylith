@@ -50,13 +50,6 @@ public :
   virtual
   ~ElasticMaterial(void);
 
-  /** Create a pointer to a copy of this.
-   *
-   * @returns Pointer to copy
-   */
-  virtual
-  ElasticMaterial* clone(void) const = 0;
-
   /** Initialize arrays holding cell data.
    *
    * @param cell Finite element cell
@@ -141,12 +134,6 @@ public :
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
-  /** Copy constructor.
-   *
-   * @param m Material to copy
-   */
-  ElasticMaterial(const ElasticMaterial& m);
-
   /** Get number of entries in stress/strain tensors.
    *
    * @returns Size of stress/strain tensors.
@@ -203,6 +190,9 @@ protected :
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
+
+  /// Not implemented
+  ElasticMaterial(const ElasticMaterial& m);
 
   /// Not implemented
   const ElasticMaterial& operator=(const ElasticMaterial& m);

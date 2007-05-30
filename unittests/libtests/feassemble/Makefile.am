@@ -13,6 +13,8 @@
 subpackage = feassemble
 include $(top_srcdir)/subpackage.am
 
+SUBDIRS = data
+
 TESTS = testfeassemble
 
 check_PROGRAMS = testfeassemble
@@ -20,6 +22,7 @@ check_PROGRAMS = testfeassemble
 # Primary source files
 testfeassemble_SOURCES = \
 	TestElasticityExplicit.cc \
+	TestElasticityExplicit1DLinear.cc \
 	TestIntegrator.cc \
 	TestQuadrature.cc \
 	TestQuadrature1D.cc \
@@ -31,6 +34,7 @@ testfeassemble_SOURCES = \
 
 noinst_HEADERS = \
 	TestElasticityExplicit.hh \
+	TestElasticityExplicit1DLinear.hh \
 	TestIntegrator.hh \
 	TestQuadrature.hh \
 	TestQuadrature1D.hh \
@@ -41,6 +45,8 @@ noinst_HEADERS = \
 
 # Source files associated with testing data
 testfeassemble_SOURCES += \
+	data/IntegratorData.cc \
+	data/ElasticityExplicitData1DLinear.cc \
 	data/QuadratureData.cc \
 	data/QuadratureData1DLinear.cc \
 	data/QuadratureData1DQuadratic.cc \
@@ -59,6 +65,8 @@ testfeassemble_SOURCES += \
 	data/QuadratureData3DQuadratic.cc
 
 noinst_HEADERS += \
+	data/IntegratorData.hh \
+	data/ElasticityExplicitData1DLinear.hh \
 	data/QuadratureData.hh \
 	data/QuadratureData1DLinear.hh \
 	data/QuadratureData1DQuadratic.hh \
@@ -82,7 +90,8 @@ AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
 
 testfeassemble_LDADD = \
 	-lcppunit -ldl \
-	$(top_builddir)/libsrc/libpylith.la
+	$(top_builddir)/libsrc/libpylith.la \
+	-lspatialdata
 
 if ENABLE_CUBIT
   testfeassemble_LDADD += -lnetcdf_c++ -lnetcdf

@@ -49,20 +49,8 @@ public :
   /// Destructor
   ~ElasticStress1D(void);
 
-  /** Create a pointer to a copy of this.
-   *
-   * @returns Pointer to copy
-   */
-  ElasticMaterial* clone(void) const;
-
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
-
-  /** Copy constructor
-   *
-   * @param m Material to copy
-   */
-  ElasticStress1D(const ElasticStress1D& m);
 
   /** Get names of values expected to be in database of parameters for
    *  physical properties.
@@ -151,6 +139,9 @@ protected :
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
+
+  /// Not implemented
+  ElasticStress1D(const ElasticStress1D& m);
 
   /// Not implemented
   const ElasticStress1D& operator=(const ElasticStress1D& m);

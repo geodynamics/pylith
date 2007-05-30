@@ -25,25 +25,6 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticMaterial );
 
 // ----------------------------------------------------------------------
-// Test clone()
-void
-pylith::materials::TestElasticMaterial::testClone(void)
-{ // testClone
-  const char* label = "my_material";
-  const int id = 34;
-  ElasticIsotropic3D material;
-  material.label(label);
-  material.id(id);
-
-  ElasticMaterial* mycopy = material.clone();
-  CPPUNIT_ASSERT(0 != mycopy);
-  CPPUNIT_ASSERT(0 == strcmp(label, material.label().c_str()));
-  CPPUNIT_ASSERT_EQUAL(id, material.id());
-
-  delete mycopy; mycopy = 0;
-} // testClone
-
-// ----------------------------------------------------------------------
 // Test useElasticBehavior()
 void
 pylith::materials::TestElasticMaterial::testUseElasticBehavior(void)

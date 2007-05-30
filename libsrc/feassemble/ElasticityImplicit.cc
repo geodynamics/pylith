@@ -39,7 +39,7 @@ pylith::feassemble::ElasticityImplicit::ElasticityImplicit(void) :
 // Destructor
 pylith::feassemble::ElasticityImplicit::~ElasticityImplicit(void)
 { // destructor
-  delete _material; _material = 0;
+  _material = 0; // Don't manage memory for material
 } // destructor
   
 // ----------------------------------------------------------------------
@@ -58,10 +58,9 @@ pylith::feassemble::ElasticityImplicit::timeStep(const double dt)
 // ----------------------------------------------------------------------
 // Set material.
 void
-pylith::feassemble::ElasticityImplicit::material(
-				       const materials::ElasticMaterial* m)
+pylith::feassemble::ElasticityImplicit::material(materials::ElasticMaterial* m)
 { // material
-  delete _material; _material = (0 != m) ? m->clone() : 0;
+  _material = m;
 } // material
 
 // ----------------------------------------------------------------------
@@ -577,24 +576,21 @@ pylith::feassemble::ElasticityImplicit::updateState(
     const double_array& basisDeriv = _quadrature->basisDeriv();
   
     // Compute action for elastic terms
-    if (1 == cellDim) {
+    if (1 == cellDim)
       Elasticity::calcTotalStrain1D(&totalStrain, basisDeriv,
 				    dispCell, numBasis);
-      _material->updateState(totalStrain);
-    } else if (2 == cellDim) {
+    else if (2 == cellDim)
       Elasticity::calcTotalStrain2D(&totalStrain, basisDeriv,
 				    dispCell, numBasis);
-      _material->updateState(totalStrain);
-    } else if (3 == cellDim) {
-      // Compute stresses
+    else if (3 == cellDim)
       Elasticity::calcTotalStrain3D(&totalStrain, basisDeriv, 
 				    dispCell, numBasis);
-      _material->updateState(totalStrain);
-    } else {
+    else {
       std::cerr << "Unknown case for cellDim '" << cellDim << "'."
 		<< std::endl;
       assert(0);
-    } // if/else
+    } // else
+    _material->updateState(totalStrain);
   } // for
 } // updateState
 

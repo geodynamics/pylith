@@ -66,14 +66,6 @@ pylith::materials::ElasticPlaneStress::~ElasticPlaneStress(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::materials::ElasticPlaneStress::ElasticPlaneStress(
-						const ElasticPlaneStress& m) :
-  ElasticMaterial(m)
-{ // copy constructor
-} // copy constructor
-
-// ----------------------------------------------------------------------
 // Get names of values expected to be in database of parameters for
 const char**
 pylith::materials::ElasticPlaneStress::_dbValues(void) const

@@ -86,7 +86,7 @@ public :
    *
    * @param m Elastic material.
    */
-  void material(const materials::ElasticMaterial* m);
+  void material(materials::ElasticMaterial* m);
 
   /** Set time step for advancing from time t to time t+dt.
    *

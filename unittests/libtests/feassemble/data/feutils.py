@@ -33,11 +33,13 @@ def calculateJacobian(quadrature, vertices):
                               quadrature.cellDim, quadrature.spaceDim),
                              dtype=numpy.float64)
   jacobianDet = numpy.zeros( (quadrature.numQuadPts,), dtype=numpy.float64)
+
+  (basis, basisDeriv) = quadrature.calculateBasis()
     
   iQuad = 0
   for q in quadrature.quadPtsRef:
     # Jacobian at quadrature points
-    deriv = quadrature.basisDeriv[iQuad]
+    deriv = basisDeriv[iQuad]
     j = numpy.dot(vertices.transpose(), deriv)
     jacobian[iQuad] = j
 

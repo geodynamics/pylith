@@ -136,12 +136,6 @@ public :
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
-  /** Copy constructor.
-   *
-   * @param m Material to copy
-   */
-  Material(const Material& m);
-
   /** Get names of values expected to be in database of parameters for
    *  physical properties.
    *
@@ -185,6 +179,9 @@ protected :
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
+
+  /// Not implemented
+  Material(const Material& m);
 
   /// Not implemented
   const Material& operator=(const Material& m);
