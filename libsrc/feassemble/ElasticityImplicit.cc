@@ -141,8 +141,10 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     if (cellDim != spaceDim)
       throw std::logic_error("Not implemented yet.");
 
-    /* Comment out gravity section for now, until we figure out how to deal
-       with gravity vector.
+#if 0
+    // Comment out gravity section for now, until we figure out how to deal
+    // with gravity vector.
+
     // Get density at quadrature points for this cell
     const std::vector<double_array>& density = _material->calcDensity();
 
@@ -152,11 +154,11 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 	mesh->restrict(grav, cell);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
-	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  const int iBlock = iBasis * spaceDim;
+	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
+	     iBasis < numBasis; ++iBasis) {
 	  const double valI = wt*basis[iQ+iBasis];
 	  for (int iDim=0; iDim < spaceDim; ++iDim) {
-	    _cellVector[iBlock+iDim] += valI*gravCell[iDim];
+	    _cellVector[iBasis*spaceDim+iDim] += valI*gravCell[iDim];
 	  } // for
 	} // for
       } // for
@@ -165,7 +167,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
       if (err)
 	throw std::runtime_error("Logging PETSc flops failed.");
     } // if
-    */
+#endif
 
     // Compute B(transpose) * sigma, first computing strains
     if (1 == cellDim) {
@@ -179,10 +181,9 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
 	const double s11 = stress[iQuad][0];
-	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  const int iBlock = iBasis * spaceDim;
-	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
-	  _cellVector[iBlock  ] -= N1*s11;
+	for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+	  const double N1 = wt*basisDeriv[iQuad*numBasis+iBasis  ];
+	  _cellVector[iBasis*spaceDim  ] -= N1*s11;
 	} // for
       } // for
       PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*5));
@@ -202,12 +203,13 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 	const double s11 = stress[iQuad][0];
 	const double s22 = stress[iQuad][1];
 	const double s12 = stress[iQuad][2];
-	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  const int iBlock = iBasis * spaceDim;
+	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
+	     iBasis < numBasis;
+	     ++iBasis) {
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
-	  _cellVector[iBlock  ] -= N1*s11 + N2*s12;
-	  _cellVector[iBlock+1] -= N1*s12 + N2*s22;
+	  _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12;
+	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22;
 	} // for
       } // for
       PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
@@ -231,14 +233,15 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 	const double s23 = stress[iQuad][4];
 	const double s13 = stress[iQuad][5];
 
-	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  const int iBlock = iBasis * spaceDim;
+	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
+	     iBasis < numBasis;
+	     ++iBasis) {
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim+0];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
 	  const double N3 = wt*basisDeriv[iQ+iBasis*cellDim+2];
-	  _cellVector[iBlock  ] -= N1*s11 + N2*s12 + N3*s13;
-	  _cellVector[iBlock+1] -= N1*s12 + N2*s22 + N3*s23;
-	  _cellVector[iBlock+2] -= N1*s13 + N2*s23 + N3*s33;
+	  _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12 + N3*s13;
+	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22 + N3*s23;
+	  _cellVector[iBasis*spaceDim+2] -= N1*s13 + N2*s23 + N3*s33;
 	} // for
       } // for
       PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*(3+12)));
@@ -384,12 +387,12 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
         const double C2222 = elasticConsts[iQuad][3];
         const double C2212 = elasticConsts[iQuad][4];
 	const double C1212 = elasticConsts[iQuad][5];
-        for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-          const int iBlock = iBasis * spaceDim;
+        for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
+	     iBasis < numBasis;
+	     ++iBasis) {
           const double Nip = wt*basisDeriv[iQ+iBasis*cellDim  ];
           const double Niq = wt*basisDeriv[iQ+iBasis*cellDim+1];
           for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-            const int jBlock = jBasis * spaceDim;
             const double Njp = basisDeriv[iQ+jBasis*cellDim  ];
             const double Njq = basisDeriv[iQ+jBasis*cellDim+1];
             const double ki0j0 = 
@@ -401,10 +404,14 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
             const double ki1j1 =
               C2222 * Niq * Njq + C2212 * Nip * Njq +
               C2212 * Niq * Njp + C1212 * Nip * Njp;
-            _cellMatrix[iBlock  +jBlock  ] += ki0j0;
-            _cellMatrix[iBlock  +jBlock+1] += ki0j1;
-            _cellMatrix[iBlock+1+jBlock  ] += ki0j1;
-            _cellMatrix[iBlock+1+jBlock+1] += ki1j1;
+	    const int iBlock = iBasis*spaceDim * (spaceDim*numBasis);
+	    const int iBlock1 = (iBasis*spaceDim+1) * (spaceDim*numBasis);
+            const int jBlock = jBasis*spaceDim;
+            const int jBlock1 = jBasis*spaceDim+1;
+            _cellMatrix[iBlock +jBlock  ] += ki0j0;
+            _cellMatrix[iBlock +jBlock1] += ki0j1;
+            _cellMatrix[iBlock1+jBlock  ] += ki0j1;
+            _cellMatrix[iBlock1+jBlock1] += ki1j1;
           } // for
         } // for
       } // for
@@ -444,13 +451,13 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
         const double C2323 = elasticConsts[iQuad][18];
         const double C2313 = elasticConsts[iQuad][19];
         const double C1313 = elasticConsts[iQuad][20];
-        for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-          const int iBlock = iBasis * spaceDim;
+        for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
+	     iBasis < numBasis;
+	     ++iBasis) {
           const double Nip = wt*basisDeriv[iQ+iBasis*cellDim+0];
           const double Niq = wt*basisDeriv[iQ+iBasis*cellDim+1];
           const double Nir = wt*basisDeriv[iQ+iBasis*cellDim+2];
           for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-            const int jBlock = jBasis * spaceDim;
             const double Njp = basisDeriv[iQ+jBasis*cellDim+0];
             const double Njq = basisDeriv[iQ+jBasis*cellDim+1];
             const double Njr = basisDeriv[iQ+jBasis*cellDim+2];
@@ -479,15 +486,21 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
               C3323 * Nir * Njq + C2323 * Niq * Njq + C2313 * Nip * Njq +
               C3313 * Nir * Njp + C2313 * Niq * Njp + C1313 * Nip * Njp;
 
-	    _cellMatrix[iBlock  +jBlock  ] += ki0j0;
-	    _cellMatrix[iBlock+1+jBlock  ] += ki0j1;
-	    _cellMatrix[iBlock+2+jBlock  ] += ki0j2;
-	    _cellMatrix[iBlock  +jBlock+1] += ki0j1;
-	    _cellMatrix[iBlock+1+jBlock+1] += ki1j1;
-	    _cellMatrix[iBlock+2+jBlock+1] += ki1j2;
-	    _cellMatrix[iBlock  +jBlock+2] += ki0j2;
-	    _cellMatrix[iBlock+1+jBlock+2] += ki1j2;
-	    _cellMatrix[iBlock+2+jBlock+2] += ki2j2;
+	    const int iBlock = iBasis*spaceDim * (spaceDim*numBasis);
+	    const int iBlock1 = (iBasis*spaceDim+1) * (spaceDim*numBasis);
+	    const int iBlock2 = (iBasis*spaceDim+2) * (spaceDim*numBasis);
+            const int jBlock = jBasis*spaceDim;
+            const int jBlock1 = jBasis*spaceDim+1;
+            const int jBlock2 = jBasis*spaceDim+2;
+	    _cellMatrix[iBlock +jBlock ] += ki0j0;
+	    _cellMatrix[iBlock +jBlock1] += ki0j1;
+	    _cellMatrix[iBlock +jBlock2] += ki0j2;
+	    _cellMatrix[iBlock1+jBlock ] += ki0j1;
+	    _cellMatrix[iBlock1+jBlock1] += ki1j1;
+	    _cellMatrix[iBlock1+jBlock2] += ki1j2;
+	    _cellMatrix[iBlock2+jBlock ] += ki0j2;
+	    _cellMatrix[iBlock2+jBlock1] += ki1j2;
+	    _cellMatrix[iBlock2+jBlock2] += ki2j2;
           } // for
         } // for
       } // for

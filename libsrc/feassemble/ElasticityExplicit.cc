@@ -196,9 +196,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
 	const double s11 = stress[iQuad][0];
 	for (int iBasis=0; iBasis < numBasis; ++iBasis) {
-	  const int iBlock = iBasis * spaceDim;
 	  const double N1 = wt*basisDeriv[iQuad*numBasis+iBasis  ];
-	  _cellVector[iBlock  ] -= N1*s11;
+	  _cellVector[iBasis*spaceDim  ] -= N1*s11;
 	} // for
       } // for
       PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*5));
