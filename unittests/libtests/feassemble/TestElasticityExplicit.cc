@@ -144,6 +144,7 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
   ElasticityExplicit integrator;
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
+  mesh->getFactory()->clear();
 
   const ALE::Obj<pylith::real_section_type>& dispTpdt = 
     fields.getReal("dispTpdt");
