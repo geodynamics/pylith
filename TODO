@@ -2,38 +2,38 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+topology
+  add section->add(fieldA, fieldB)
+
+ElasticityExplicit
+  use new mesh->restrict() [preallocated array]
+
+ElasticityImplicit
+  use new mesh->restrict() [preallocated array]
+
+Implicit.py
+  use section->add(fieldA, fieldB)
+
+Add useElasticBehavior() switches to Implicit::solveElastic().
+
 1. Unit tests for Integrator stuff.
 
-  a. Add in use of useElasticBehavior()
+  a. Add unit test for IntegratorElasticity::calcTotalStrain
 
-  b. Add unit test for IntegratorElasticity::calcTotalStrain
-
-  c. ElasticityExplicit
-    i. C++ unit tests
-      Need help from Matt to fix PETSc matrix update problem.
-    ii. Python unit tests
-      (1) setMesh()
-      (2) initQuadrature()
-      (3) timeStep()
-      (4) stableTimeStep()
-      (5) integrateResidual() [single test is okay, inteface is same]
-      (6) integrateJacobian() [single test is okay, inteface is same]
-      (7) updateState()
-
-  d. ElasticityImplicit
+  c. ElasticityImplicit
     i. C++ unit tests
       (1) timeStep()
       (2) stableTimeStep()
-      (3) integrateResidual() [Charles]
-      (4) integrateJacobian() [Charles]
+      (3) integrateResidual()
+      (4) integrateJacobian()
       (5) updateState()
     ii. Python unit tests
       (1) setMesh()
       (2) initQuadrature()
       (3) timeStep()
       (4) stableTimeStep()
-      (5) integrateResidual() [Charles]
-      (6) integrateJacobian() [Charles]
+      (5) integrateResidual()
+      (6) integrateJacobian()
       (7) updateState()
 
 2. Add dualBasis to Quadrature.

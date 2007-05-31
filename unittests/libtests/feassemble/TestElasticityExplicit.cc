@@ -144,7 +144,6 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
   ElasticityExplicit integrator;
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
-  mesh->getFactory()->clear();
 
   const ALE::Obj<pylith::real_section_type>& dispTpdt = 
     fields.getReal("dispTpdt");
@@ -235,6 +234,7 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
       c_iter != cells->end();
       ++c_iter)
     (*mesh)->setValue(labelMaterials, *c_iter, _data->matId);
+  (*mesh)->getFactory()->clear(); // clear numberings
 
   // Setup quadrature
   _quadrature->initialize(_data->basis, _data->basisDeriv, _data->quadPts,

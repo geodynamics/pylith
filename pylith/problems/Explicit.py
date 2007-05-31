@@ -84,7 +84,7 @@ class Explicit(Formulation):
     petsc.mat_setzero(self.jacobian)
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateJacobian(self.jacobian, self.fields.cppHandle)
+      integrator.integrateJacobian(self.jacobian, self.fields)
     petsc.mat_assemble(self.jacobian)
 
     self.solver.initialize(mesh, self.fields.getReal("dispTpdt"))
@@ -119,7 +119,7 @@ class Explicit(Formulation):
       petsc.mat_setzero(self.jacobian)
       for integrator in self.integrators:
         integrator.timeStep(dt)
-        integrator.integrateJacobian(self.jacobian, self.fields.cppHandle)
+        integrator.integrateJacobian(self.jacobian, self.fields)
       petsc.mat_assemble(self.jacobian)
     return
 
@@ -134,7 +134,7 @@ class Explicit(Formulation):
     bindings.zeroRealSection(residual)
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateResidual(residual, self.fields.cppHandle)
+      integrator.integrateResidual(residual, self.fields)
 
     self._info.log("Solving equations.")
     self.solver.solve(self.fields.getReal("dispTpdt"), self.jacobian, residual)
