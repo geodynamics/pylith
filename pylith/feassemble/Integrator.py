@@ -94,7 +94,8 @@ class Integrator(object):
     Integrate contributions to residual term at time t.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.integrateResidual(residual, fields, self.mesh.cppHandle)
+    self.cppHandle.integrateResidual(residual, fields.cppHandle,
+                                     self.mesh.cppHandle)
     return
 
 
@@ -112,7 +113,8 @@ class Integrator(object):
     Integrate contributions to Jacobian term at time t.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.integrateJacobian(jacobian, fields, self.mesh.cppHandle)
+    self.cppHandle.integrateJacobian(jacobian, fields.cppHandle,
+                                     self.mesh.cppHandle)
     return
 
 

@@ -13,6 +13,8 @@
 subpackage = feassemble
 include $(top_srcdir)/subpackage.am
 
+SUBDIRS = data
+
 TESTS = testfeassemble.py
 
 check_SCRIPTS = testfeassemble.py

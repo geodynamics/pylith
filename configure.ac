@@ -238,6 +238,7 @@ AC_CONFIG_FILES([Makefile
 		unittests/pytests/faults/Makefile
 		unittests/pytests/faults/data/Makefile
 		unittests/pytests/feassemble/Makefile
+		unittests/pytests/feassemble/data/Makefile
 		unittests/pytests/materials/Makefile
 		unittests/pytests/materials/data/Makefile
 		unittests/pytests/meshio/Makefile
