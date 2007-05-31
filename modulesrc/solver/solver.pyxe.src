@@ -90,7 +90,7 @@ cdef class Solver:
         PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
         throw std::runtime_error("Could not create KSP object.");
       } // if
-      //err = KSPSetFromOptions(*ksp);
+      err = KSPSetFromOptions(*ksp);
       if (err) {
         PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
         throw std::runtime_error("Could not set KSP options.");

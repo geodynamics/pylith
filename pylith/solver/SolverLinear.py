@@ -66,6 +66,7 @@ class SolverLinear(Solver):
     """
     Solve linear system.
     """
+    self._info.log("Solving linear equations.")
     self.cppHandle.solve(fieldOut, jacobian, fieldIn)
     return
   
