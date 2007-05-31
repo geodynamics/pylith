@@ -52,4 +52,69 @@ class TestElasticityExplicit(unittest.TestCase):
     return
 
 
+  def test_setMesh(self):
+    """
+    Test setMesh().
+    """
+    raise NotImplementedError("Unit test not implemented.")
+    return
+
+  
+  def test_timeStep(self):
+    """
+    Test timeStep().
+    """
+    from pyre.units.time import second
+    dt = 2.4*second
+    integrator = ElasticityExplicit()
+    integrator.timeStep = dt
+    self.assertEqual(dt, integrator.timeStep)
+    return
+
+  
+  def test_stableTimeStep(self):
+    """
+    Test stableTimeStep().
+    """
+    from pyre.units.time import second
+    dt = 2.3*second
+    integrator = ElasticityExplicit()
+    integrator.timeStep(dt)
+    self.assertEqual(dt, integrator.stableTimeStep())
+    return
+
+  
+  def test_integrateResidual(self):
+    """
+    Test integrateResidual().
+    """
+    raise NotImplementedError("Unit test not implemented.")
+    return
+
+  
+  def test_needNewJacobian(self):
+    """
+    Test needNewJacobian().
+    """
+    integrator = ElasticityExplicit()
+    self.assertEqual(False, integrator.needNewJacobian())
+    return
+
+  
+  def test_integrateJacobian(self):
+    """
+    Test integrateJacobian().
+    """
+    raise NotImplementedError("Unit test not implemented.")
+    return
+
+  
+  def test_updateState(self):
+    """
+    Test updateState().
+    """
+    raise NotImplementedError("Unit test not implemented.")
+    return
+  
+
 # End of file 

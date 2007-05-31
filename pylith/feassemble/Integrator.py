@@ -85,7 +85,8 @@ class Integrator(object):
     Get stable time step for advancing from time t to time t+dt.
     """
     assert(None != self.cppHandle)
-    return self.cppHandle.getStableTimeStep()
+    from pyre.units.time import second
+    return self.cppHandle.stableTimeStep*second
 
 
   def integrateResidual(self, residual, fields):
