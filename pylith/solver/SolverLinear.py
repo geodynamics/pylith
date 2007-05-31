@@ -67,6 +67,7 @@ class SolverLinear(Solver):
     Solve linear system.
     """
     self._info.log("Solving linear equations.")
+    assert(None != self.cppHandle)
     self.cppHandle.solve(fieldOut, jacobian, fieldIn)
     return
   
