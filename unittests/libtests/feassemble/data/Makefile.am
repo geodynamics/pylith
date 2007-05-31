@@ -11,7 +11,9 @@
 #
 
 noinst_DATA = \
-	elasticstrain1d.spatialdb
+	elasticstrain1d.spatialdb \
+	elasticplanestrain.spatialdb \
+	elasticisotropic3d.spatialdb
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/unittests/libtests/feassemble/data
