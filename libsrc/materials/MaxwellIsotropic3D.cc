@@ -389,6 +389,7 @@ pylith::materials::MaxwellIsotropic3D::_updateState(
       parameters[_MaxwellIsotropic3D::pidVisStrain][iComp] =
 	totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
     } // for
+    useElasticBehavior(false);
   } else {
     const double meanStrainT = parameters[_MaxwellIsotropic3D::pidStrainT][0] +
       parameters[_MaxwellIsotropic3D::pidStrainT][1] +
