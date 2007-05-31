@@ -595,6 +595,30 @@ cdef class Integrator:
       Integrator_timeStep_set(self.thisptr, dt)
 
 
+  property stableTimeStep:
+    def __get__(self):
+      """
+      Get stable time step.
+      """
+      # create shim for method 'stableTimeStep'
+      #embed{ double Integrator_stableTimeStep_get(void* objVptr)
+      double result = 0.0;
+      try {
+        assert(0 != objVptr);
+        result =
+          ((pylith::feassemble::Integrator*) objVptr)->stableTimeStep();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return Integrator_stableTimeStep_get(self.thisptr)
+
+
   property needNewJacobian:
     def __get__(self):
       """
