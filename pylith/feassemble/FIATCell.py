@@ -80,6 +80,46 @@ class FIATCell(ReferenceCell):
     return
 
 
+  def initializeTensor(self, dim):
+    """
+    Initialize reference finite-element cell from a tensor product of 1D Lagrange elements.
+    """
+    quadrature = self._setupQuadrature()
+    basisFns = self._setupBasisFns()
+    
+    # Evaluate basis functions at quadrature points
+    quadpts = quadrature.get_points()
+    basis = numpy.array(basisFns.tabulate(quadpts)).transpose()
+    self.basis = numpy.reshape(basis.flatten(), basis.shape)
+
+    # Evaluate derivatives of basis functions at quadrature points
+    import FIAT.shapes
+    dim = FIAT.shapes.dimension(basisFns.base.shape)
+    basisDeriv = numpy.array([basisFns.deriv_all(d).tabulate(quadpts) \
+                              for d in range(dim)]).transpose()
+    self.basisDeriv = numpy.reshape(basisDeriv.flatten(), basisDeriv.shape)
+
+    self.quadPts = numpy.array(quadrature.get_points())
+    self.quadWts = numpy.array(quadrature.get_weights())
+
+    self.cellDim = dim
+    self.numCorners = len(basisFns)
+    self.numQuadPts = len(quadrature.get_weights())
+
+    self._info.line("Basis (quad pts):")
+    self._info.line(self.basis)
+    self._info.line("Basis derivatives (quad pts):")
+    self._info.line(self.basisDeriv)
+    self._info.line("Quad pts:")
+    self._info.line(quadrature.get_points())
+    self._info.line("Quad wts:")
+    self._info.line(quadrature.get_weights())
+
+    self._info.log()
+
+    return
+
+
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _setupQuadrature(self):
