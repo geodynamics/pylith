@@ -116,8 +116,12 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   if (cellDim != spaceDim)
     throw std::logic_error("Not implemented yet.");
 
-  // Allocate vector for cell values (if necessary)
+  // Allocate vectors for cell values.
   _initCellVector();
+  const int cellVecSize = spaceDim*numBasis;
+  double_array dispTpdtCell(cellVecSize);
+  double_array dispTCell(cellVecSize);
+  double_array dispTmdtCell(cellVecSize);
 
   // Allocate vector for total strain
   int tensorSize = 0;
@@ -150,10 +154,9 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    const int vecSize = spaceDim*numBasis;
-    double_array dispTpdtCell(mesh->restrict(dispTpdt, *c_iter), vecSize);
-    double_array dispTCell(mesh->restrict(dispT, *c_iter), vecSize);
-    double_array dispTmdtCell(mesh->restrict(dispTmdt, *c_iter), vecSize);
+    mesh->restrict(dispTpdt, *c_iter, &dispTpdtCell[0], cellVecSize);
+    mesh->restrict(dispT, *c_iter, &dispTCell[0], cellVecSize);
+    mesh->restrict(dispTmdt, *c_iter, &dispTmdtCell[0], cellVecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -393,6 +396,9 @@ pylith::feassemble::ElasticityExplicit::updateState(
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
 
+  const int cellVecSize = spaceDim*numBasis;
+  double_array dispCell(cellVecSize);
+
   // Allocate vector for total strain
   int tensorSize = 0;
   if (1 == cellDim)
@@ -421,8 +427,7 @@ pylith::feassemble::ElasticityExplicit::updateState(
     _material->initCellData(*c_iter, numQuadPts);
 
     // Restrict input fields to cell
-    const int vecSize = spaceDim*numBasis;
-    double_array dispCell(mesh->restrict(disp, *c_iter), vecSize);
+    mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();
