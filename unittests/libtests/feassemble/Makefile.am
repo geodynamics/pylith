@@ -23,6 +23,11 @@ check_PROGRAMS = testfeassemble
 testfeassemble_SOURCES = \
 	TestElasticityExplicit.cc \
 	TestElasticityExplicit1DLinear.cc \
+	TestElasticityExplicit1DQuadratic.cc \
+	TestElasticityExplicit2DLinear.cc \
+	TestElasticityExplicit2DQuadratic.cc \
+	TestElasticityExplicit3DLinear.cc \
+	TestElasticityExplicit3DQuadratic.cc \
 	TestIntegrator.cc \
 	TestQuadrature.cc \
 	TestQuadrature1D.cc \
@@ -35,6 +40,11 @@ testfeassemble_SOURCES = \
 noinst_HEADERS = \
 	TestElasticityExplicit.hh \
 	TestElasticityExplicit1DLinear.hh \
+	TestElasticityExplicit1DQuadratic.hh \
+	TestElasticityExplicit2DLinear.hh \
+	TestElasticityExplicit2DQuadratic.hh \
+	TestElasticityExplicit3DLinear.hh \
+	TestElasticityExplicit3DQuadratic.hh \
 	TestIntegrator.hh \
 	TestQuadrature.hh \
 	TestQuadrature1D.hh \
@@ -47,6 +57,11 @@ noinst_HEADERS = \
 testfeassemble_SOURCES += \
 	data/IntegratorData.cc \
 	data/ElasticityExplicitData1DLinear.cc \
+	data/ElasticityExplicitData1DQuadratic.cc \
+	data/ElasticityExplicitData2DLinear.cc \
+	data/ElasticityExplicitData2DQuadratic.cc \
+	data/ElasticityExplicitData3DLinear.cc \
+	data/ElasticityExplicitData3DQuadratic.cc \
 	data/QuadratureData.cc \
 	data/QuadratureData1DLinear.cc \
 	data/QuadratureData1DQuadratic.cc \
@@ -67,6 +82,11 @@ testfeassemble_SOURCES += \
 noinst_HEADERS += \
 	data/IntegratorData.hh \
 	data/ElasticityExplicitData1DLinear.hh \
+	data/ElasticityExplicitData1DQuadratic.hh \
+	data/ElasticityExplicitData2DLinear.hh \
+	data/ElasticityExplicitData2DQuadratic.hh \
+	data/ElasticityExplicitData3DLinear.hh \
+	data/ElasticityExplicitData3DQuadratic.hh \
 	data/QuadratureData.hh \
 	data/QuadratureData1DLinear.hh \
 	data/QuadratureData1DQuadratic.hh \

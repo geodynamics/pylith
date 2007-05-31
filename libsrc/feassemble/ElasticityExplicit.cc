@@ -197,7 +197,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	const double s11 = stress[iQuad][0];
 	for (int iBasis=0; iBasis < numBasis; ++iBasis) {
 	  const int iBlock = iBasis * spaceDim;
-	  const double N1 = wt*basisDeriv[iQuad*numBasis+iBasis*cellDim  ];
+	  const double N1 = wt*basisDeriv[iQuad*numBasis+iBasis  ];
 	  _cellVector[iBlock  ] -= N1*s11;
 	} // for
       } // for
@@ -218,12 +218,13 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	const double s11 = stress[iQuad][0];
 	const double s22 = stress[iQuad][1];
 	const double s12 = stress[iQuad][2];
-	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  const int iBlock = iBasis * spaceDim;
+	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
+	     iBasis < numBasis;
+	     ++iBasis) {
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
-	  _cellVector[iBlock  ] -= N1*s11 + N2*s12;
-	  _cellVector[iBlock+1] -= N1*s12 + N2*s22;
+	  _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12;
+	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22;
 	} // for
       } // for
       err = PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
@@ -247,14 +248,15 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	const double s23 = stress[iQuad][4];
 	const double s13 = stress[iQuad][5];
 
-	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  const int iBlock = iBasis * spaceDim;
+	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
+	     iBasis < numBasis;
+	     ++iBasis) {
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim+0];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
 	  const double N3 = wt*basisDeriv[iQ+iBasis*cellDim+2];
-	  _cellVector[iBlock  ] -= N1*s11 + N2*s12 + N3*s13;
-	  _cellVector[iBlock+1] -= N1*s12 + N2*s22 + N3*s23;
-	  _cellVector[iBlock+2] -= N1*s13 + N2*s23 + N3*s33;
+	  _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12 + N3*s13;
+	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22 + N3*s23;
+	  _cellVector[iBasis*spaceDim+2] -= N1*s13 + N2*s23 + N3*s33;
 	} // for
       } // for
       err = PetscLogFlops(numQuadPts*(1+numBasis*(3+12)));
@@ -338,8 +340,8 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
           const double valIJ = valI * basis[iQ+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim) {
-            const int iBlock = (iBasis * spaceDim + iDim) * (spaceDim * numBasis);
-            const int jBlock = (jBasis * spaceDim + iDim);
+            const int iBlock = (iBasis*spaceDim + iDim) * (spaceDim*numBasis);
+            const int jBlock = (jBasis*spaceDim + iDim);
             _cellMatrix[iBlock+jBlock] += valIJ;
           } // for
         } // for
@@ -353,6 +355,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 
       mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
+    assert(!globalOrder.isNull());
 
     err = updateOperator(*jacobian, mesh, dispT, globalOrder,
 			 *c_iter, _cellMatrix, ADD_VALUES);

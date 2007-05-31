@@ -59,7 +59,6 @@ class IntegratorElasticity(IntegratorApp):
 
     # Matrix of elasticity values
     D = self._calculateElasticityMat()
-    print "D: ",D
     
     for cell in self.cells:
       cellK = numpy.zeros( (self.spaceDim*self.numBasis,
@@ -71,7 +70,6 @@ class IntegratorElasticity(IntegratorApp):
       for iQuad in xrange(self.numQuadPts):
         wt = self.quadWts[iQuad] * jacobianDet[iQuad]
         B = self._calculateBasisDerivMat(iQuad)
-        print "B: ",B
         cellK[:] += wt * numpy.dot(numpy.dot(B.transpose(), D), B)
       feutils.assembleMat(K, cellK, cell, self.spaceDim)
     return K
@@ -96,7 +94,6 @@ class IntegratorElasticity(IntegratorApp):
       for iQuad in xrange(self.numQuadPts):
         wt = self.quadWts[iQuad] * jacobianDet[iQuad]
         N = self._calculateBasisMat(iQuad)
-        print "N: ",N
         cellM[:] += self.density * wt * numpy.dot(N.transpose(), N)
       feutils.assembleMat(M, cellM, cell, self.spaceDim)
     return M
@@ -114,11 +111,11 @@ class IntegratorElasticity(IntegratorApp):
     elif 2 == self.cellDim:
       lambda2mu = self.lameLambda + 2*self.lameMu
       C1111 = lambda2mu
-      C2222 = lambda2mu
       C1122 = self.lameLambda
-      C1212 = 2*self.lameMu
       C1112 = 0.0
+      C2222 = lambda2mu
       C2212 = 0.0
+      C1212 = self.lameMu # B uses engineering strain, so mu instead of 2*mu
       D = numpy.array([ [C1111, C1122, C1112],
                         [C1122, C2222, C2212],
                         [C1112, C2212, C1212] ],
@@ -131,9 +128,9 @@ class IntegratorElasticity(IntegratorApp):
       C1122 = self.lameLambda
       C1133 = self.lameLambda
       C2233 = self.lameLambda
-      C1212 = 2*self.lameMu
-      C2323 = 2*self.lameMu
-      C1313 = 2*self.lameMu
+      C1212 = self.lameMu # B uses engineering strain, so mu instead of 2*mu
+      C2323 = self.lameMu
+      C1313 = self.lameMu
       C1112 = 0.0
       C1123 = 0.0
       C1113 = 0.0
@@ -186,7 +183,7 @@ class IntegratorElasticity(IntegratorApp):
         B[5, iBasis*self.spaceDim+0] = self.basisDeriv[iQuad, iBasis, 2]
         B[5, iBasis*self.spaceDim+2] = self.basisDeriv[iQuad, iBasis, 0]
     elif 2 == self.spaceDim:
-      B = numpy.zeros( (4, self.spaceDim*self.numBasis),
+      B = numpy.zeros( (3, self.spaceDim*self.numBasis),
                        dtype=numpy.float64)
       for iBasis in xrange(self.numBasis):
         B[0, iBasis*self.spaceDim+0] = self.basisDeriv[iQuad, iBasis, 0]

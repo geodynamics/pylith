@@ -2,23 +2,15 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Fix TestDirichlet.setField unit test.
-
 1. Unit tests for Integrator stuff.
 
   a. Add in use of useElasticBehavior()
-    Would like to use boost::shared_ptr to prevent copies and
-    cloning of materials.
 
   b. Add unit test for IntegratorElasticity::calcTotalStrain
 
   c. ElasticityExplicit
     i. C++ unit tests
-      (1) timeStep()
-      (2) stableTimeStep()
-      (3) integrateResidual() [want tests for different cellDim and cell types]
-      (4) integrateJacobian() [want tests for different cellDim and cell types]
-      (5) updateState()
+      Need help from Matt to fix PETSc matrix update problem.
     ii. Python unit tests
       (1) setMesh()
       (2) initQuadrature()
