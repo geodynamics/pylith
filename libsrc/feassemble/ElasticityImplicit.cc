@@ -97,8 +97,11 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
 
-  // Allocate vector for cell values (if necessary)
+  // Allocate vector for cell values.
   _initCellVector();
+  const int cellVecSize = spaceDim*numBasis;
+  double_array dispTCell(cellVecSize);
+  //double_array gravCell(cellVecSize);
 
   // Allocate vector for total strain
   int tensorSize = 0;
@@ -130,8 +133,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    const int vecSize = spaceDim*numBasis;
-    double_array dispTCell(mesh->restrict(dispT, *c_iter), vecSize);
+    mesh->restrict(dispT, *c_iter, &dispTCell[0], cellVecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -150,8 +152,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Compute action for element body forces
     if (!grav.isNull()) {
-      const real_section_type::value_type* gravCell =
-	mesh->restrict(grav, cell);
+      mesh->restrict(grav, *c_iter, &gravCell[0], cellVecSize);
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad] * density[iQuad];
 	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
@@ -301,8 +302,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   if (cellDim != spaceDim)
     throw std::logic_error("Not implemented yet.");
 
-  // Allocate vector for cell values (if necessary)
+  // Allocate matrix and vectors for cell values.
   _initCellMatrix();
+  const int cellVecSize = spaceDim*numBasis;
+  double_array dispTCell(cellVecSize);
 
   // Allocate vector for total strain
   int tensorSize = 0;
@@ -334,8 +337,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     _resetCellMatrix();
 
     // Restrict input fields to cell
-    const int vecSize = spaceDim*numBasis;
-    double_array dispTCell(mesh->restrict(dispT, *c_iter), vecSize);
+    mesh->restrict(dispT, *c_iter, &dispTCell[0], cellVecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -554,6 +556,9 @@ pylith::feassemble::ElasticityImplicit::updateState(
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
 
+  const int cellVecSize = spaceDim*numBasis;
+  double_array dispCell(cellVecSize);
+
   // Allocate vector for total strain
   int tensorSize = 0;
   if (1 == cellDim)
@@ -582,8 +587,7 @@ pylith::feassemble::ElasticityImplicit::updateState(
     _material->initCellData(*c_iter, numQuadPts);
 
     // Restrict input fields to cell
-    const int vecSize = spaceDim*numBasis;
-    double_array dispCell(mesh->restrict(disp, *c_iter), vecSize);
+    mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();

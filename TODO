@@ -2,14 +2,8 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-topology
+topology module
   add section->add(fieldA, fieldB)
-
-ElasticityExplicit
-  use new mesh->restrict() [preallocated array]
-
-ElasticityImplicit
-  use new mesh->restrict() [preallocated array]
 
 Implicit.py
   use section->add(fieldA, fieldB)
@@ -20,7 +14,7 @@ Add useElasticBehavior() switches to Implicit::solveElastic().
 
   a. Add unit test for IntegratorElasticity::calcTotalStrain
 
-  c. ElasticityImplicit
+  b. ElasticityImplicit
     i. C++ unit tests
       (1) timeStep()
       (2) stableTimeStep()
