@@ -100,10 +100,10 @@ class Implicit(Formulation):
     self.fields.copyLayout("dispTBctpdt")
     self.jacobian = mesh.createMatrix(self.fields.getReal("dispTBctpdt"))
 
+    self.solver.initialize(mesh, self.fields.getReal("dispIncr"))
+
     from pyre.units.time import s
     self._solveElastic(mesh, materials, t=0.0*s, dt=dt)
-
-    self.solver.initialize(mesh, self.fields.getReal("dispIncr"))
     return
 
 
@@ -218,8 +218,6 @@ class Implicit(Formulation):
       integrator.integrateResidual(residual, self.fields)
     import pylith.utils.petsc as petsc
     petsc.mat_assemble(self.jacobian)
-
-    self.solver.initialize(mesh, dispIncr)
 
     self._info.log("Solving equations.")
     self.solver.solve(dispIncr, self.jacobian, residual)
