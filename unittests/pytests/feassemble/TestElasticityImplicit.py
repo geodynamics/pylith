@@ -151,8 +151,8 @@ class TestElasticityImplicit(unittest.TestCase):
     """
     (mesh, integrator, fields) = self._initialize()
 
-    dispT = fields.getReal("dispT")
-    integrator.updateState(dispT)
+    dispTBctpdt = fields.getReal("dispTBctpdt")
+    integrator.updateState(dispTBctpdt)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -213,9 +213,7 @@ class TestElasticityImplicit(unittest.TestCase):
     from pylith.topology.FieldsManager import FieldsManager
     fields = FieldsManager(mesh)
     fields.addReal("residual")
-    fields.addReal("dispBCTpdt")
-    fields.addReal("dispT")
-    fields.createHistory(["dispBCTpdt", "dispT"])
+    fields.addReal("dispTBctpdt")
     fields.setFiberDimension("residual", cs.spaceDim)
     fields.allocate("residual")
     fields.copyLayout("residual")
