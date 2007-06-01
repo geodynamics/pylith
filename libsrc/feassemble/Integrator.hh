@@ -81,6 +81,7 @@ public :
    *
    * @returns True if Jacobian needs to be recomputed, false otherwise.
    */
+  virtual
   bool needNewJacobian(void) const;
 
   /** Integrate contributions to residual term (r) for operator.

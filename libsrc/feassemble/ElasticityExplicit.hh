@@ -102,6 +102,12 @@ public :
    */
   void timeStep(const double dt);
 
+  /** Determine whether we need to recompute the Jacobian.
+   *
+   * @returns True if Jacobian needs to be recomputed, false otherwise.
+   */
+  bool needNewJacobian(void);
+
   /** Integrate contributions to residual term (r) for operator.
    *
    * @param residual Field containing values for residual

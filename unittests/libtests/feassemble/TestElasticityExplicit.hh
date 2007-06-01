@@ -55,6 +55,7 @@ class pylith::feassemble::TestElasticityExplicit : public CppUnit::TestFixture
   CPPUNIT_TEST( testTimeStep );
   CPPUNIT_TEST( testStableTimeStep );
   CPPUNIT_TEST( testMaterial );
+  CPPUNIT_TEST( testNeedNewJacobian );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -72,6 +73,9 @@ public :
 
   /// Test material().
   void testMaterial(void);
+
+  /// Test needNewJacobian().
+  void testNeedNewJacobian(void);
 
   /// Test updateState().
   void testUpdateState(void);

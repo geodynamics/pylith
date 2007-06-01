@@ -84,6 +84,20 @@ pylith::feassemble::TestElasticityExplicit::testMaterial(void)
 } // testMaterial
 
 // ----------------------------------------------------------------------
+// Test needNewJacobian().
+void
+pylith::feassemble::TestElasticityExplicit::testNeedNewJacobian(void)
+{ // testNeedNewJacobian
+  ElasticityExplicit integrator;
+
+  materials::ElasticIsotropic3D material;
+  integrator.material(&material);
+  CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
+  integrator._needNewJacobian = true;
+  CPPUNIT_ASSERT_EQUAL(true, integrator.needNewJacobian());  
+} // testNeedNewJacobian
+
+// ----------------------------------------------------------------------
 // Test updateState().
 void 
 pylith::feassemble::TestElasticityExplicit::testUpdateState(void)

@@ -64,6 +64,17 @@ pylith::feassemble::ElasticityExplicit::material(materials::ElasticMaterial* m)
 } // material
 
 // ----------------------------------------------------------------------
+// Determine whether we need to recompute the Jacobian.
+bool
+pylith::feassemble::ElasticityExplicit::needNewJacobian(void)
+{ // needNewJacobian
+  assert(0 != _material);
+  if (!_needNewJacobian)
+    _needNewJacobian = _material->needNewJacobian();
+  return _needNewJacobian;
+} // needNewJacobian
+
+// ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
 pylith::feassemble::ElasticityExplicit::integrateResidual(
