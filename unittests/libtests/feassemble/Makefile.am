@@ -21,6 +21,7 @@ check_PROGRAMS = testfeassemble
 
 # Primary source files
 testfeassemble_SOURCES = \
+	TestElasticity.cc \
 	TestElasticityExplicit.cc \
 	TestElasticityExplicit1DLinear.cc \
 	TestElasticityExplicit1DQuadratic.cc \
@@ -45,6 +46,7 @@ testfeassemble_SOURCES = \
 	test_feassemble.cc
 
 noinst_HEADERS = \
+	TestElasticity.hh \
 	TestElasticityExplicit.hh \
 	TestElasticityExplicit1DLinear.hh \
 	TestElasticityExplicit1DQuadratic.hh \
