@@ -103,7 +103,7 @@ class Implicit(Formulation):
     self.jacobian = mesh.createMatrix(self.fields.getReal("dispT"))
 
     from pyre.units.time import s
-    self._solveElastic(mesh, t=0.0*s, dt=dt)
+    self._solveElastic(mesh, materials, t=0.0*s, dt=dt)
 
     self.solver.initialize(mesh, self.fields.getReal("dispIncr"))
     return
@@ -174,18 +174,15 @@ class Implicit(Formulation):
     # t+dt.  The displacement increments computed from the residual
     # are then added to this to give us the total displacement field
     # at time t+dt.
-
-    # Need a real way to do the operation below.
-    print "MISSING: UPDATING OF DISP"
-    # self.dispT = self.dispTBctpdt + self.dispIncr
-    self.fields.shiftHistory()
+    import pylith.topology.topology as bindings
+    dispT = self.fields.getReal("dispT")
+    dispTBctpdt = self.fields.getReal("dispTBctpdt")
+    bindings.addRealSections(dispT, dispTBctpdt,
+                             self.fields.getReal("dispIncr"))
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(self.fields.getReal("dispT"))
-    # call update state here.
-    # This will recompute stresses and state variables.
-    # Need to loop over integrators, and put this into integrator.
+      integrator.updateState(dispT)
     return
 
 
@@ -199,35 +196,47 @@ class Implicit(Formulation):
     return
 
 
-  def _solveElastic(self, mesh, t, dt):
+  def _solveElastic(self, mesh, materials, t, dt):
     """
     Solve for elastic solution.
     """
     self._info.log("Computing elastic solution.")
 
+    for material in materials.materials:
+      material.useElasticBehavior(True)
+
     self._info.log("Setting constraints.")
-    dispT = self.fields.getReal("dispT")
+    dispTBctpdt = self.fields.getReal("dispTBctpdt")
     import pylith.topology.topology as bindings
-    bindings.zeroRealSection(dispT)
+    bindings.zeroRealSection(dispTBctpdt)
     for constraint in self.constraints:
-      constraint.setField(t, dispT)
+      constraint.setField(t, dispTBctpdt)
 
     self._info.log("Integrating Jacobian and residual of operator.")
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(self.jacobian)
+    residual = self.fields.getReal("residual")
+    dispIncr = self.fields.getReal("dispIncr")
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateJacobian(self.jacobian, self.fields)
-      integrator.integrateResidual(self.fields.getReal("dispT"),
-                                   self.fields)
+      integrator.integrateResidual(residual, self.fields)
     import pylith.utils.petsc as petsc
     petsc.mat_assemble(self.jacobian)
 
-    self.solver.initialize(mesh, dispT)
+    self.solver.initialize(mesh, dispIncr)
 
     self._info.log("Solving equations.")
-    self.solver.solve(dispT, self.jacobian, self.fields.getReal("residual"))
+    self.solver.solve(dispIncr, self.jacobian, residual)
 
+    import pylith.topology.topology as bindings
+    dispT = self.fields.getReal("dispT")
+    dispTBctpdt = self.fields.getReal("dispTBctpdt")
+    bindings.addRealSections(dispT, dispTBctpdt, dispIncr)
+
+    self._info.log("Updating integrators states.")
+    for integrator in self.integrators:
+      integrator.updateState(dispT)
     return
   
 

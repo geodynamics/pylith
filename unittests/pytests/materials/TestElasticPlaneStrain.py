@@ -43,4 +43,13 @@ class TestElasticPlaneStrain(unittest.TestCase):
     return
 
 
+  def test_useElasticBehavior(self):
+    """
+    Test useElasticBehavior().
+    """
+    material = ElasticPlaneStrain()
+    material.useElasticBehavior(False)
+    return
+
+
 # End of file 

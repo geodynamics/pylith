@@ -246,6 +246,27 @@ cdef class ElasticMaterial(Material):
     return
 
 
+  property useElasticBehavior:
+    def __set__(self, value):
+      """
+      Set useElasticBehavior flag.
+      """
+      # create shim for method 'useElasticBehavior'
+      #embed{ void Material_useElasticBehavior_set(void* objVptr, int value)
+      try {
+        assert(0 != objVptr);
+        ((pylith::materials::ElasticMaterial*) objVptr)->useElasticBehavior(value);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      Material_useElasticBehavior_set(self.thisptr, value)
+
+
 # ----------------------------------------------------------------------
 cdef class ElasticStrain1D(ElasticMaterial):
 

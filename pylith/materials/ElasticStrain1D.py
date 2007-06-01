@@ -17,13 +17,10 @@
 ##
 ## Factory: material.
 
-from Material import Material
-
-import pylith.materials.materials as bindings
-
+from ElasticMaterial import ElasticMaterial
 
 # ElasticStrain1D class
-class ElasticStrain1D(Material):
+class ElasticStrain1D(ElasticMaterial):
   """
   Python object implementing 1-D linear elastic material with axial strain.
 
@@ -36,7 +33,8 @@ class ElasticStrain1D(Material):
     """
     Constructor.
     """
-    Material.__init__(self, name)
+    ElasticMaterial.__init__(self, name)
+    import pylith.materials.materials as bindings
     self.cppHandle = bindings.ElasticStrain1D()
     self.dimension = self.cppHandle.dimension
     return

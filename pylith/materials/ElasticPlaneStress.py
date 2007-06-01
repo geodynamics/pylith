@@ -17,13 +17,10 @@
 ##
 ## Factory: material.
 
-from Material import Material
-
-import pylith.materials.materials as bindings
-
+from ElasticMaterial import ElasticMaterial
 
 # ElasticPlaneStress class
-class ElasticPlaneStress(Material):
+class ElasticPlaneStress(ElasticMaterial):
   """
   Python object implementing 2-D isotropic linear elastic material for
   plane stress.
@@ -37,7 +34,8 @@ class ElasticPlaneStress(Material):
     """
     Constructor.
     """
-    Material.__init__(self, name)
+    ElasticMaterial.__init__(self, name)
+    import pylith.materials.materials as bindings
     self.cppHandle = bindings.ElasticPlaneStress()
     self.dimension = self.cppHandle.dimension
     return
