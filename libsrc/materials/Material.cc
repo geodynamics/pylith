@@ -30,6 +30,7 @@
 // Default constructor.
 pylith::materials::Material::Material(void) :
   _dt(0.0),
+  _dtm(0.0),
   _parameters(0),
   _dimension(0),
   _needNewJacobian(false),

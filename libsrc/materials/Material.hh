@@ -190,6 +190,7 @@ private :
 protected :
 
   double _dt; ///< Current time step
+  double _dtm; ///< Previous time step
 
   ///< Manager of parameters for physical properties of material
   topology::FieldsManager* _parameters;
