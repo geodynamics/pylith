@@ -119,8 +119,8 @@ pylith::materials::MaxwellIsotropic3D::_dbToParameters(std::vector<double_array>
   assert(_MaxwellIsotropic3D::numParameters == numParams);
   const int numDBValues = dbValues.size();
   assert(_MaxwellIsotropic3D::numDBValues == numDBValues);
-  for (int i=0; i< numParams; ++i)
-    assert(_MaxwellIsotropic3D;;numParamValues[i] == (*paramVals)[i].size());
+  for (int i=0; i < numParams; ++i)
+    assert(_MaxwellIsotropic3D::numParamValues[i] == (*paramVals)[i].size());
 
   const double density = dbValues[_MaxwellIsotropic3D::didDensity];
   const double vs = dbValues[_MaxwellIsotropic3D::didVs];
@@ -166,8 +166,9 @@ pylith::materials::MaxwellIsotropic3D::_numElasticConsts(void) const
 // ----------------------------------------------------------------------
 // Compute density at location from parameters.
 void
-pylith::materials::MaxwellIsotropic3D::_calcDensity(double_array* const density,
-						    const std::vector<double_array&> parameters)
+pylith::materials::MaxwellIsotropic3D::_calcDensity(
+				double_array* const density,
+				const std::vector<double_array>& parameters)
 { // _calcDensity
   assert(0 != density);
   assert(1 == density->size());
@@ -251,6 +252,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double_array* const stress,
     double devStrainTpdt = 0.0;
     double devStrainT = 0.0;
     double devStressTpdt = 0.0;
+    double visStrain = 0.0;
     for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
       devStrainTpdt = totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
       devStrainT = parameters[_MaxwellIsotropic3D::pidStrainT][iComp] -
@@ -259,7 +261,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double_array* const stress,
 	dq*(devStrainTpdt - devStrainT);
       devStressTpdt = elasFac*visStrain;
       // Later I will want to put in initial stresses.
-      (*stress)[iComp] =diag[iComp]*smeanTpdt+devStressTpdt;
+      (*stress)[iComp] =diag[iComp]*meanStressTpdt+devStressTpdt;
     } // for
   } //else
 } // _calcStress
@@ -277,9 +279,9 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConsts(
   assert(_MaxwellIsotropic3D::numParameters == parameters.size());
   assert(_MaxwellIsotropic3D::tensorSize == totalStrain.size());
  
-  const double density = parameters[_MaxwellIsotropic3D::pidDensity];
-  const double mu = parameters[_MaxwellIsotropic3D::pidMu];
-  const double lambda = parameters[_MaxwellIsotropic3D::pidLambda];
+  const double density = parameters[_MaxwellIsotropic3D::pidDensity][0];
+  const double mu = parameters[_MaxwellIsotropic3D::pidMu][0];
+  const double lambda = parameters[_MaxwellIsotropic3D::pidLambda][0];
   const double maxwelltime = parameters[_MaxwellIsotropic3D::pidMaxwellTime][0];
 
   const double lambda2mu = lambda + 2.0 * mu;
@@ -354,7 +356,7 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConsts(
 // Update state variables.
 void
 pylith::materials::MaxwellIsotropic3D::_updateState(
-				const std::vector<double_array>& parameters,
+				std::vector<double_array>& parameters,
 				const double_array& totalStrain)
 { // _updateState
   assert(_MaxwellIsotropic3D::numParameters == parameters.size());
@@ -384,7 +386,7 @@ pylith::materials::MaxwellIsotropic3D::_updateState(
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
   if (useElasticBehavior()) {
-    for (int iComp=0; iComp < tensorSize; ++iComp) {
+    for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
       parameters[_MaxwellIsotropic3D::pidStrainT][iComp] = totalStrain[iComp];
       parameters[_MaxwellIsotropic3D::pidVisStrain][iComp] =
 	totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
@@ -417,6 +419,7 @@ pylith::materials::MaxwellIsotropic3D::_updateState(
     const double expFac = exp(-_dt/maxwelltime);
     double devStrainTpdt = 0.0;
     double devStrainT = 0.0;
+    double visStrain = 0.0;
     for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
       devStrainTpdt = totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
       devStrainT = parameters[_MaxwellIsotropic3D::pidStrainT][iComp] -

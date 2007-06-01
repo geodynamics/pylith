@@ -129,6 +129,12 @@ public :
    */
   void updateState(const ALE::Obj<real_section_type>& field,
 		   const ALE::Obj<Mesh>& mesh);
+  
+  /** Determine whether we need to recompute the Jacobian.
+   *
+   * @returns True if Jacobian needs to be recomputed, false otherwise.
+   */
+  bool needNewJacobian(void);
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
@@ -138,6 +144,11 @@ private :
 
   /// Not implemented
   const ElasticityImplicit& operator=(const ElasticityImplicit&);
+
+// PROTECTED MEMBERS ////////////////////////////////////////////////////
+protected :
+
+  bool _needNewJacobian;
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

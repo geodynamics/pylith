@@ -53,6 +53,7 @@ nobase_pkgpyexec_PYTHON = \
 	materials/Homogeneous.py \
 	materials/Material.py \
 	materials/MaterialsBin.py \
+	materials/MaxwellIsotropic3D.py \
 	meshio/__init__.py \
 	meshio/MeshIO.py \
 	meshio/MeshIOAscii.py \

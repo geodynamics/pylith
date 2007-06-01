@@ -49,6 +49,14 @@ public :
   /// Destructor
   ~MaxwellIsotropic3D(void);
 
+  /** Get flag indicating whether Jacobian matrix must be reformed for
+   *  current state.
+   *
+   * @returns True if Jacobian matrix must be reformed, false otherwise.
+   */
+
+  bool needNewJacobian(void);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -76,7 +84,7 @@ protected :
    *
    * @returns Number of parameters
    */
-  int _numParamValues(int_array* numValues) const;
+  void _numParamValues(int_array* numValues) const;
 
   /** Compute parameters from values in spatial database.
    *
@@ -137,6 +145,14 @@ protected :
 			  const std::vector<double_array>& parameters,
 			  const double_array& totalStrain);
 
+  /** Update state variables after solve.
+   *
+   * @param parameters Parameters at locations.
+   * @param totalStrain Total strain at locations.
+   */
+  void _updateState(std::vector<double_array>& parameters,
+		    const double_array& totalStrain);
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
@@ -145,6 +161,7 @@ private :
 
   /// Not implemented
   const MaxwellIsotropic3D& operator=(const MaxwellIsotropic3D& m);
+
 
 }; // class MaxwellIsotropic3D
 
