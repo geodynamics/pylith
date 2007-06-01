@@ -86,8 +86,9 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  const ALE::Obj<real_section_type>& dispT = fields->getHistoryItem(1);
-  assert(!dispT.isNull());
+  const ALE::Obj<real_section_type>& dispTBctpdt = 
+    fields->getReal("dispTBctpdt");
+  assert(!dispTBctpdt.isNull());
 
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
@@ -100,7 +101,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   // Allocate vector for cell values.
   _initCellVector();
   const int cellVecSize = numBasis*spaceDim;
-  double_array dispTCell(cellVecSize);
+  double_array dispTBctpdtCell(cellVecSize);
   //double_array gravCell(cellVecSize);
 
   // Allocate vector for total strain
@@ -133,7 +134,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     _resetCellVector();
 
     // Restrict input fields to cell
-    mesh->restrict(dispT, *c_iter, &dispTCell[0], cellVecSize);
+    mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -174,7 +175,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     if (1 == cellDim) {
       // Compute total strains and then use these to compute stresses
       Elasticity::calcTotalStrain1D(&totalStrain, basisDeriv,
-				    dispTCell, numBasis);
+				    dispTBctpdtCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
@@ -194,7 +195,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     } else if (2 == cellDim) {
       // Compute total strains and then use these to compute stresses
       Elasticity::calcTotalStrain2D(&totalStrain, basisDeriv,
-				    dispTCell, numBasis);
+				    dispTBctpdtCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
@@ -220,7 +221,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     } else if (3 == cellDim) {
       // Compute total strains and then use these to compute stresses
       Elasticity::calcTotalStrain3D(&totalStrain, basisDeriv,
-				    dispTCell, numBasis);
+				    dispTBctpdtCell, numBasis);
       const std::vector<double_array>& stress = 
 	_material->calcStress(totalStrain);
 
@@ -286,8 +287,9 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  const ALE::Obj<real_section_type>& dispT = fields->getHistoryItem(1);
-  assert(!dispT.isNull());
+  const ALE::Obj<real_section_type>& dispTBctpdt = 
+    fields->getReal("dispTBctpdt");
+  assert(!dispTBctpdt.isNull());
 
   // Get parameters used in integration.
   const double dt = _dt;
@@ -306,7 +308,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   // Allocate matrix and vectors for cell values.
   _initCellMatrix();
   const int cellVecSize = numBasis*spaceDim;
-  double_array dispTCell(cellVecSize);
+  double_array dispTBctpdtCell(cellVecSize);
 
   // Allocate vector for total strain
   int tensorSize = 0;
@@ -338,7 +340,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     _resetCellMatrix();
 
     // Restrict input fields to cell
-    mesh->restrict(dispT, *c_iter, &dispTCell[0], cellVecSize);
+    mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -348,7 +350,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     if (1 == cellDim) { // 1-D case
       // Compute strains
       Elasticity::calcTotalStrain1D(&totalStrain, basisDeriv,
-				    dispTCell, numBasis);
+				    dispTBctpdtCell, numBasis);
       
       // Get "elasticity" matrix at quadrature points for this cell
       const std::vector<double_array>& elasticConsts = 
@@ -375,7 +377,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     } else if (2 == cellDim) { // 2-D case
       // Compute strains
       Elasticity::calcTotalStrain2D(&totalStrain, basisDeriv,
-				    dispTCell, numBasis);
+				    dispTBctpdtCell, numBasis);
       
       // Get "elasticity" matrix at quadrature points for this cell
       const std::vector<double_array>& elasticConsts = 
@@ -428,7 +430,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     } else if (3 == cellDim) { // 3-D case
       // Compute strains
       Elasticity::calcTotalStrain3D(&totalStrain, basisDeriv,
-				    dispTCell, numBasis);
+				    dispTBctpdtCell, numBasis);
       // Get "elasticity" matrix at quadrature points for this cell
       const std::vector<double_array>& elasticConsts = 
 	_material->calcDerivElastic(totalStrain);
@@ -533,8 +535,8 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     // Assemble cell contribution into field.  Not sure if this is correct for
     // global stiffness matrix.
     const ALE::Obj<Mesh::order_type>& globalOrder = 
-      mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
-    err = updateOperator(*mat, mesh, dispT, globalOrder,
+      mesh->getFactory()->getGlobalOrder(mesh, "default", dispTBctpdt);
+    err = updateOperator(*mat, mesh, dispTBctpdt, globalOrder,
 			 *c_iter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");

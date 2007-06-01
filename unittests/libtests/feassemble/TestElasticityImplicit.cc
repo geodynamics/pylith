@@ -95,9 +95,10 @@ pylith::feassemble::TestElasticityImplicit::testUpdateState(void)
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  const ALE::Obj<real_section_type>& dispT = fields.getReal("dispT");
-  CPPUNIT_ASSERT(!dispT.isNull());
-  integrator.updateState(dispT, mesh);
+  const ALE::Obj<real_section_type>& dispTBctpdt = 
+    fields.getReal("dispTBctpdt");
+  CPPUNIT_ASSERT(!dispTBctpdt.isNull());
+  integrator.updateState(dispTBctpdt, mesh);
 } // testUpdateState
 
 // ----------------------------------------------------------------------
@@ -143,11 +144,12 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  const ALE::Obj<pylith::real_section_type>& dispT = fields.getReal("dispT");
-  CPPUNIT_ASSERT(!dispT.isNull());
+  const ALE::Obj<pylith::real_section_type>& dispTBctpdt = 
+    fields.getReal("dispTBctpdt");
+  CPPUNIT_ASSERT(!dispTBctpdt.isNull());
 
   PetscMat jacobian;
-  PetscErrorCode err = MeshCreateMatrix(mesh, dispT, MATMPIBAIJ, &jacobian);
+  PetscErrorCode err = MeshCreateMatrix(mesh, dispTBctpdt, MATMPIBAIJ, &jacobian);
   CPPUNIT_ASSERT(0 == err);
 
   integrator.integrateJacobian(&jacobian, &fields, mesh);
@@ -257,11 +259,7 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   // Setup fields
   CPPUNIT_ASSERT(0 != fields);
   fields->addReal("residual");
-  fields->addReal("dispBCTpdt");
-  fields->addReal("dispT");
-  const char* history[] = { "dispBCTpdt", "dispT" };
-  const int historySize = 2;
-  fields->createHistory(history, historySize);
+  fields->addReal("dispTBctpdt");
   
   const ALE::Obj<real_section_type>& residual = fields->getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
@@ -271,17 +269,13 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   fields->copyLayout("residual");
 
   const int fieldSize = _data->spaceDim * _data->numVertices;
-  const ALE::Obj<real_section_type>& dispBCTpdt = 
-    fields->getReal("dispBCTpdt");
-  const ALE::Obj<real_section_type>& dispT = fields->getReal("dispT");
-  CPPUNIT_ASSERT(!dispBCTpdt.isNull());
-  CPPUNIT_ASSERT(!dispT.isNull());
+  const ALE::Obj<real_section_type>& dispTBctpdt = 
+    fields->getReal("dispTBctpdt");
+  CPPUNIT_ASSERT(!dispTBctpdt.isNull());
   const int offset = _data->numCells;
   for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
-    dispBCTpdt->updatePoint(iVertex+offset, 
-			    &_data->fieldTpdt[iVertex*_data->spaceDim]);
-    dispT->updatePoint(iVertex+offset, 
-		       &_data->fieldT[iVertex*_data->spaceDim]);
+    dispTBctpdt->updatePoint(iVertex+offset, 
+			     &_data->fieldTpdt[iVertex*_data->spaceDim]);
   } // for
 } // _initialize
 

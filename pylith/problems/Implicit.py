@@ -88,19 +88,17 @@ class Implicit(Formulation):
                            interfaceConditions, dimension, dt)
 
     self._info.log("Creating fields and matrices.")
-    self.fields.addReal("dispT")
     self.fields.addReal("dispTBctpdt")
     self.fields.addReal("dispIncr")
     self.fields.addReal("residual")
-    self.fields.createHistory(["dispTBctpdt", "dispT"])
-    self.fields.setFiberDimension("dispT", dimension)
+    self.fields.setFiberDimension("dispTBctpdt", dimension)
     for constraint in self.constraints:
-      constraint.setConstraintSizes(self.fields.getReal("dispT"))
-    self.fields.allocate("dispT")
+      constraint.setConstraintSizes(self.fields.getReal("dispTBctpdt"))
+    self.fields.allocate("dispTBctpdt")
     for constraint in self.constraints:
-      constraint.setConstraints(self.fields.getReal("dispT"))
-    self.fields.copyLayout("dispT")
-    self.jacobian = mesh.createMatrix(self.fields.getReal("dispT"))
+      constraint.setConstraints(self.fields.getReal("dispTBctpdt"))
+    self.fields.copyLayout("dispTBctpdt")
+    self.jacobian = mesh.createMatrix(self.fields.getReal("dispTBctpdt"))
 
     from pyre.units.time import s
     self._solveElastic(mesh, materials, t=0.0*s, dt=dt)
@@ -167,22 +165,19 @@ class Implicit(Formulation):
     """
     Hook for doing stuff after advancing time step.
     """
-    # This should give us the total displacements after stepping
-    # forward from t to t+dt, which is renamed as time step t for the
-    # next solve. The field dispTBctpdt contains the displacements
-    # from time step t along with the displacement BC from time step
-    # t+dt.  The displacement increments computed from the residual
-    # are then added to this to give us the total displacement field
-    # at time t+dt.
+    # After solving, dispTBctpdt contains the displacements at time t
+    # for unconstrained DOF and displacements at time t+dt at
+    # constrained DOF. We add in the displacement increments (only
+    # nonzero at unconstrained DOF) so that after poststrp(),
+    # dispTBctpdt constains the solution at time t+dt.
     import pylith.topology.topology as bindings
-    dispT = self.fields.getReal("dispT")
     dispTBctpdt = self.fields.getReal("dispTBctpdt")
-    bindings.addRealSections(dispT, dispTBctpdt,
+    bindings.addRealSections(dispTBctpdt, dispTBctpdt,
                              self.fields.getReal("dispIncr"))
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(dispT)
+      integrator.updateState(dispTBctpdt)
     return
 
 
@@ -230,13 +225,12 @@ class Implicit(Formulation):
     self.solver.solve(dispIncr, self.jacobian, residual)
 
     import pylith.topology.topology as bindings
-    dispT = self.fields.getReal("dispT")
     dispTBctpdt = self.fields.getReal("dispTBctpdt")
-    bindings.addRealSections(dispT, dispTBctpdt, dispIncr)
+    bindings.addRealSections(dispTBctpdt, dispTBctpdt, dispIncr)
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(dispT)
+      integrator.updateState(dispTBctpdt)
     return
   
 
