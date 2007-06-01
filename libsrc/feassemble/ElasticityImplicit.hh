@@ -145,11 +145,6 @@ private :
   /// Not implemented
   const ElasticityImplicit& operator=(const ElasticityImplicit&);
 
-// PROTECTED MEMBERS ////////////////////////////////////////////////////
-protected :
-
-  bool _needNewJacobian;
-
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 

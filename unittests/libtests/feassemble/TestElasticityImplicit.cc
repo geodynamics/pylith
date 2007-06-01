@@ -81,6 +81,10 @@ pylith::feassemble::TestElasticityImplicit::testMaterial(void)
   integrator.material(&material);
   CPPUNIT_ASSERT_EQUAL(id, integrator._material->id());
   CPPUNIT_ASSERT_EQUAL(label, std::string(integrator._material->label()));
+  CPPUNIT_ASSERT_EQUAL(integrator._dt, integrator._material->timeStep());
+  const double dt = 2.0;
+  integrator.timeStep(dt);
+  CPPUNIT_ASSERT_EQUAL(dt, integrator._material->timeStep());
 } // testMaterial
 
 // ----------------------------------------------------------------------
@@ -262,7 +266,6 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   
   _material->id(_data->matId);
   _material->label(_data->matLabel);
-  _material->timestep(_data->dt);
   _material->db(&db);
   _material->initialize(*mesh, &cs, _quadrature);
 
