@@ -57,6 +57,9 @@ class TestApp(Script):
     from TestFIATSimplex import TestFIATSimplex
     suite.addTest(unittest.makeSuite(TestFIATSimplex))
 
+    from TestFIATLagrange import TestFIATLagrange
+    suite.addTest(unittest.makeSuite(TestFIATLagrange))
+
     from TestQuadrature import TestQuadrature
     suite.addTest(unittest.makeSuite(TestQuadrature))
 

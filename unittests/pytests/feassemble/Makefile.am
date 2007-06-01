@@ -20,6 +20,7 @@ TESTS = testfeassemble.py
 check_SCRIPTS = testfeassemble.py
 
 noinst_PYTHON = \
+	TestFIATLagrange.py \
 	TestFIATSimplex.py \
 	TestQuadrature.py \
 	TestIntegrator.py

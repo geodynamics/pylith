@@ -1,4 +1,4 @@
-b#!/usr/bin/env python
+#!/usr/bin/env python
 #
 # ----------------------------------------------------------------------
 #
@@ -20,7 +20,7 @@ b#!/usr/bin/env python
 ##
 ## Factory: reference_cell.
 
-from FIATCell import FIATCell
+from ReferenceCell import ReferenceCell
 
 import numpy
 
@@ -30,7 +30,7 @@ def validateDimension(self, dim):
   return
 
 # FIATLagrange class
-class FIATLagrange(FIATCell):
+class FIATLagrange(ReferenceCell):
   """
   Python object for managing basis functions and quadrature rules of a
   Lagrange reference finite-element cell using FIAT.
@@ -40,7 +40,7 @@ class FIATLagrange(FIATCell):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(FIATCell.Inventory):
+  class Inventory(ReferenceCell.Inventory):
     """Python object for managing FIATLagrange facilities and properties."""
 
     ## @class Inventory
@@ -73,7 +73,45 @@ class FIATLagrange(FIATCell):
     """
     Constructor.
     """
-    FIATCell.__init__(self, name)
+    ReferenceCell.__init__(self, name)
+    return
+
+
+  def initialize(self):
+    """
+    Initialize reference finite-element cell from a tensor product of
+    1-D Lagrange elements.
+    """
+    quadrature = self._setupQuadrature()
+    basisFns = self._setupBasisFns()
+    
+    # Evaluate basis functions at quadrature points
+    quadpts = quadrature.get_points()
+    basis = numpy.array(basisFns.tabulate(quadpts)).transpose()
+    self.basis = numpy.reshape(basis.flatten(), basis.shape)
+
+    # Evaluate derivatives of basis functions at quadrature points
+    import FIAT.shapes
+    dim = FIAT.shapes.dimension(basisFns.base.shape)
+    basisDeriv = numpy.array([basisFns.deriv_all(d).tabulate(quadpts) \
+                              for d in range(dim)]).transpose()
+    self.basisDeriv = numpy.reshape(basisDeriv.flatten(), basisDeriv.shape)
+
+    self.quadPts = numpy.array(quadrature.get_points())
+    self.quadWts = numpy.array(quadrature.get_weights())
+
+    self.numCorners = len(basisFns)
+    self.numQuadPts = len(quadrature.get_weights())
+
+    self._info.line("Basis (quad pts):")
+    self._info.line(self.basis)
+    self._info.line("Basis derivatives (quad pts):")
+    self._info.line(self.basisDeriv)
+    self._info.line("Quad pts:")
+    self._info.line(quadrature.get_points())
+    self._info.line("Quad wts:")
+    self._info.line(quadrature.get_weights())
+    self._info.log()
     return
 
 
@@ -85,19 +123,10 @@ class FIATLagrange(FIATCell):
     """
     import FIAT.shapes
 
-    FIATCell._configure(self)
+    ReferenceCell._configure(self)
     self.cellDim = self.inventory.dimension
     self.degree = self.inventory.degree
     self.order = self.inventory.order
-
-    # CHANGE TO BE LINE/QUADRILATERAL/HEXEHEDRAL
-    if self.cellDim == 1:
-      self.shape = FIAT.shapes.LINE
-    elif self.cellDim == 2:
-      self.shape = FIAT.shapes.TRIANGLE
-    elif self.cellDim == 3:
-      self.shape = FIAT.shapes.TETRAHEDRON
-    # END CHANGE
 
     if self.order == -1:
       self.order = 2*self.degree+1

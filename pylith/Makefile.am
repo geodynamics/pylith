@@ -30,7 +30,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/Constraint.py \
 	feassemble/ElasticityExplicit.py \
 	feassemble/ElasticityImplicit.py \
-	feassemble/FIATCell.py \
+	feassemble/FIATLagrange.py \
 	feassemble/FIATSimplex.py \
 	feassemble/Integrator.py \
 	feassemble/IntegratorElasticity.py \
