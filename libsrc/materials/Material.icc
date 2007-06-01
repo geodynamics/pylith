@@ -60,7 +60,6 @@ pylith::materials::Material::label(void) const {
 inline
 void
 pylith::materials::Material::timestep(const double dt) {
-  _dtm = _dt;
   _dt = dt;
 }
 

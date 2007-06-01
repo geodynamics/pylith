@@ -49,13 +49,11 @@ public :
   /// Destructor
   ~MaxwellIsotropic3D(void);
 
-  /** Get flag indicating whether Jacobian matrix must be reformed for
-   *  current state.
+  /** Set current time step.
    *
-   * @returns True if Jacobian matrix must be reformed, false otherwise.
+   * @param dt Current time step.
    */
-
-  bool needNewJacobian(void);
+  void timestep(const double dt);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

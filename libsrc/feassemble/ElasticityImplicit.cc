@@ -68,8 +68,10 @@ pylith::feassemble::ElasticityImplicit::material(materials::ElasticMaterial* m)
 bool
 pylith::feassemble::ElasticityImplicit::needNewJacobian(void)
 { // needNewJacobian
+  assert(0 != _material);
+  if (!_needNewJacobian)
     _needNewJacobian = _material->needNewJacobian();
-    return _needNewJacobian;
+  return _needNewJacobian;
 } // needNewJacobian
 
 // ----------------------------------------------------------------------

@@ -14,21 +14,15 @@
 #error "MaxwellIsotropic3D.icc can only be included from MaxwellIsotropic3D.hh"
 #endif
 
-/* Get flag indicating whether Jacobian matrix must be reformed for
- * current state.
- */
+// Set current time step.
 inline
-bool
-pylith::materials::MaxwellIsotropic3D::needNewJacobian(void) {
-  // Jacobian should be reformed for the elastic solution, for the first
-  // time step, and any time the step size changes.
-  if (_dt == _dtm)
-    _needNewJacobian = false;
-  else
+void
+pylith::materials::MaxwellIsotropic3D::timestep(const double dt) {
+  // Jacobian needs to be reformed if the time step size changes.
+  if (_dt > 0.0 && dt != _dt)
     _needNewJacobian = true;
-  return _needNewJacobian;
-}
-   
+  _dt = dt;
+} // timestep
 
 
 // End of file 
