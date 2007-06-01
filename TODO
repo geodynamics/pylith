@@ -2,10 +2,7 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-0. Unit tests for Integrator stuff.
-
-   a. Add unit test for IntegratorElasticity::calcTotalStrain
-   b. Incorporate Quad/Hex basis stuff
+a. Incorporate Quad/Hex basis stuff
 
 1. Simple tests with analytical solutions
 
