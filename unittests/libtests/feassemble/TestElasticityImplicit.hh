@@ -11,15 +11,15 @@
 //
 
 /**
- * @file unittests/libtests/feassemble/TestElasticityExplicit.hh
+ * @file unittests/libtests/feassemble/TestElasticityImplicit.hh
  *
- * @brief C++ TestElasticityExplicit object
+ * @brief C++ TestElasticityImplicit object
  *
- * C++ unit testing for ElasticityExplicit.
+ * C++ unit testing for ElasticityImplicit.
  */
 
-#if !defined(pylith_feassemble_testelasticityexplicit_hh)
-#define pylith_feassemble_testelasticityexplicit_hh
+#if !defined(pylith_feassemble_testelasticityimplicit_hh)
+#define pylith_feassemble_testelasticityimplicit_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -28,9 +28,9 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
-    class TestElasticityExplicit;
+    class TestElasticityImplicit;
 
-    class ElasticityExplicit; // USES ElasticityExplicit
+    class ElasticityImplicit; // USES ElasticityImplicit
     class IntegratorData; // HOLDSA IntegratorData
     class Quadrature; // HOLDSA Quadrature
   } // feassemble
@@ -44,12 +44,12 @@ namespace pylith {
   } // topology
 } // pylith
 
-/// C++ unit testing for ElasticityExplicit
-class pylith::feassemble::TestElasticityExplicit : public CppUnit::TestFixture
-{ // class TestElasticityExplicit
+/// C++ unit testing for ElasticityImplicit
+class pylith::feassemble::TestElasticityImplicit : public CppUnit::TestFixture
+{ // class TestElasticityImplicit
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestElasticityExplicit );
+  CPPUNIT_TEST_SUITE( TestElasticityImplicit );
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testTimeStep );
@@ -99,12 +99,12 @@ private :
    * @param fields Solution fields.
    */
   void _initialize(ALE::Obj<ALE::Mesh>* mesh,
-		   ElasticityExplicit* const integrator,
+		   ElasticityImplicit* const integrator,
 		   topology::FieldsManager* const fields);
 
-}; // class TestElasticityExplicit
+}; // class TestElasticityImplicit
 
-#endif // pylith_feassemble_testelasticityexplicit_hh
+#endif // pylith_feassemble_testelasticityimplicit_hh
 
 
 // End of file 

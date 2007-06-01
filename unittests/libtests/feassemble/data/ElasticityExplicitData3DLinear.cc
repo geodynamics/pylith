@@ -68,14 +68,14 @@ const double pylith::feassemble::ElasticityExplicitData3DLinear::_basisDeriv[] =
 };
 
 const double pylith::feassemble::ElasticityExplicitData3DLinear::_fieldTpdt[] = {
-  4.00000000e-01,  2.00000000e-01, -5.00000000e-01,
+  3.00000000e-01,  2.00000000e-01, -5.00000000e-01,
  -3.00000000e-01, -4.00000000e-01, -6.00000000e-01,
   2.00000000e-01,  6.00000000e-01,  3.00000000e-01,
  -6.00000000e-01, -1.00000000e-01, -3.00000000e-01,
 };
 
 const double pylith::feassemble::ElasticityExplicitData3DLinear::_fieldT[] = {
-  1.00000000e-01,  1.00000000e-01, -6.00000000e-01,
+  8.00000000e-01,  1.00000000e-01, -6.00000000e-01,
  -1.00000000e-01, -2.00000000e-01, -5.00000000e-01,
   1.00000000e-01,  7.00000000e-01,  2.00000000e-01,
  -5.00000000e-01, -0.00000000e+00, -2.00000000e-01,
@@ -89,10 +89,10 @@ const double pylith::feassemble::ElasticityExplicitData3DLinear::_fieldTmdt[] = 
 };
 
 const double pylith::feassemble::ElasticityExplicitData3DLinear::_valsResidual[] = {
- -6.45616813e+09,  3.87365044e+10,  2.90517478e+10,
- -6.45616812e+09,  4.84250438e+09,  8.06974781e+09,
-  4.84183188e+09, -3.22794956e+10, -1.12982522e+10,
-  8.06983188e+09, -1.12974956e+10, -2.58242522e+10,
+ -4.51909072e+10,  1.85615044e+10,  1.04907478e+10,
+  2.74390928e+10,  8.07050438e+09,  9.68374781e+09,
+  8.07109281e+09, -2.09814956e+10, -5.64925219e+09,
+  9.68509281e+09, -5.64849563e+09, -1.45262522e+10,
 };
 
 const double pylith::feassemble::ElasticityExplicitData3DLinear::_valsJacobian[] = {

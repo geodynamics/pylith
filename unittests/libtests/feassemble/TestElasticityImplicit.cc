@@ -12,9 +12,9 @@
 
 #include <portinfo>
 
-#include "TestElasticityExplicit.hh" // Implementation of class methods
+#include "TestElasticityImplicit.hh" // Implementation of class methods
 
-#include "pylith/feassemble/ElasticityExplicit.hh" // USES ElasticityExplicit
+#include "pylith/feassemble/ElasticityImplicit.hh" // USES ElasticityImplicit
 #include "data/IntegratorData.hh" // USES IntegratorData
 
 #include "pylith/materials/ElasticIsotropic3D.hh" // USES ElasticIsotropic3D
@@ -28,22 +28,22 @@
 #include <math.h> // USES fabs()
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicit );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityImplicit );
 
 // ----------------------------------------------------------------------
 // Test constructor.
 void
-pylith::feassemble::TestElasticityExplicit::testConstructor(void)
+pylith::feassemble::TestElasticityImplicit::testConstructor(void)
 { // testConstructor
-  ElasticityExplicit integrator;
+  ElasticityImplicit integrator;
 } // testConstructor
 
 // ----------------------------------------------------------------------
 // Test timeStep().
 void
-pylith::feassemble::TestElasticityExplicit::testTimeStep(void)
+pylith::feassemble::TestElasticityImplicit::testTimeStep(void)
 { // testTimeStep
-  ElasticityExplicit integrator;
+  ElasticityImplicit integrator;
 
   const double dt1 = 2.0;
   integrator.timeStep(dt1);
@@ -56,9 +56,9 @@ pylith::feassemble::TestElasticityExplicit::testTimeStep(void)
 // ----------------------------------------------------------------------
 // Test StableTimeStep().
 void
-pylith::feassemble::TestElasticityExplicit::testStableTimeStep(void)
+pylith::feassemble::TestElasticityImplicit::testStableTimeStep(void)
 { // testStableTimeStep
-  ElasticityExplicit integrator;
+  ElasticityImplicit integrator;
 
   const double dt1 = 2.0;
   integrator.timeStep(dt1);
@@ -69,9 +69,9 @@ pylith::feassemble::TestElasticityExplicit::testStableTimeStep(void)
 // ----------------------------------------------------------------------
 // Test material().
 void
-pylith::feassemble::TestElasticityExplicit::testMaterial(void)
+pylith::feassemble::TestElasticityImplicit::testMaterial(void)
 { // testMaterial
-  ElasticityExplicit integrator;
+  ElasticityImplicit integrator;
 
   materials::ElasticIsotropic3D material;
   const int id = 3;
@@ -86,12 +86,12 @@ pylith::feassemble::TestElasticityExplicit::testMaterial(void)
 // ----------------------------------------------------------------------
 // Test updateState().
 void 
-pylith::feassemble::TestElasticityExplicit::testUpdateState(void)
+pylith::feassemble::TestElasticityImplicit::testUpdateState(void)
 { // testUpdateState
   CPPUNIT_ASSERT(0 != _data);
 
   ALE::Obj<ALE::Mesh> mesh;
-  ElasticityExplicit integrator;
+  ElasticityImplicit integrator;
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
@@ -103,12 +103,12 @@ pylith::feassemble::TestElasticityExplicit::testUpdateState(void)
 // ----------------------------------------------------------------------
 // Test integrateResidual().
 void
-pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
+pylith::feassemble::TestElasticityImplicit::testIntegrateResidual(void)
 { // testIntegrateResidual
   CPPUNIT_ASSERT(0 != _data);
 
   ALE::Obj<ALE::Mesh> mesh;
-  ElasticityExplicit integrator;
+  ElasticityImplicit integrator;
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
@@ -134,21 +134,20 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
 // ----------------------------------------------------------------------
 // Test integrateJacobian().
 void
-pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
+pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
 { // testIntegrateJacobian
   CPPUNIT_ASSERT(0 != _data);
 
   ALE::Obj<ALE::Mesh> mesh;
-  ElasticityExplicit integrator;
+  ElasticityImplicit integrator;
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
 
-  const ALE::Obj<pylith::real_section_type>& dispTpdt = 
-    fields.getReal("dispTpdt");
-  CPPUNIT_ASSERT(!dispTpdt.isNull());
+  const ALE::Obj<pylith::real_section_type>& dispT = fields.getReal("dispT");
+  CPPUNIT_ASSERT(!dispT.isNull());
 
   PetscMat jacobian;
-  PetscErrorCode err = MeshCreateMatrix(mesh, dispTpdt, MATMPIBAIJ, &jacobian);
+  PetscErrorCode err = MeshCreateMatrix(mesh, dispT, MATMPIBAIJ, &jacobian);
   CPPUNIT_ASSERT(0 == err);
 
   integrator.integrateJacobian(&jacobian, &fields, mesh);
@@ -166,6 +165,8 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
   MatGetSize(jacobian, &nrows, &ncols);
   CPPUNIT_ASSERT_EQUAL(nrowsE, nrows);
   CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
+
+  MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD);
 
   PetscMat jDense;
   PetscMat jSparseAIJ;
@@ -196,9 +197,9 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
 // ----------------------------------------------------------------------
 // Initialize elasticity integrator.
 void
-pylith::feassemble::TestElasticityExplicit::_initialize(
+pylith::feassemble::TestElasticityImplicit::_initialize(
 					 ALE::Obj<ALE::Mesh>* mesh,
-					 ElasticityExplicit* const integrator,
+					 ElasticityImplicit* const integrator,
 					 topology::FieldsManager* fields)
 { // _initialize
   CPPUNIT_ASSERT(0 != mesh);
@@ -258,11 +259,10 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   // Setup fields
   CPPUNIT_ASSERT(0 != fields);
   fields->addReal("residual");
-  fields->addReal("dispTpdt");
+  fields->addReal("dispBCTpdt");
   fields->addReal("dispT");
-  fields->addReal("dispTmdt");
-  const char* history[] = { "dispTpdt", "dispT", "dispTmdt" };
-  const int historySize = 3;
+  const char* history[] = { "dispBCTpdt", "dispT" };
+  const int historySize = 2;
   fields->createHistory(history, historySize);
   
   const ALE::Obj<real_section_type>& residual = fields->getReal("residual");
@@ -273,20 +273,17 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
   fields->copyLayout("residual");
 
   const int fieldSize = _data->spaceDim * _data->numVertices;
-  const ALE::Obj<real_section_type>& dispTpdt = fields->getReal("dispTpdt");
+  const ALE::Obj<real_section_type>& dispBCTpdt = 
+    fields->getReal("dispBCTpdt");
   const ALE::Obj<real_section_type>& dispT = fields->getReal("dispT");
-  const ALE::Obj<real_section_type>& dispTmdt = fields->getReal("dispTmdt");
-  CPPUNIT_ASSERT(!dispTpdt.isNull());
+  CPPUNIT_ASSERT(!dispBCTpdt.isNull());
   CPPUNIT_ASSERT(!dispT.isNull());
-  CPPUNIT_ASSERT(!dispTmdt.isNull());
   const int offset = _data->numCells;
   for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
-    dispTpdt->updatePoint(iVertex+offset, 
-			  &_data->fieldTpdt[iVertex*_data->spaceDim]);
+    dispBCTpdt->updatePoint(iVertex+offset, 
+			    &_data->fieldTpdt[iVertex*_data->spaceDim]);
     dispT->updatePoint(iVertex+offset, 
 		       &_data->fieldT[iVertex*_data->spaceDim]);
-    dispTmdt->updatePoint(iVertex+offset, 
-			  &_data->fieldTmdt[iVertex*_data->spaceDim]);
   } // for
 } // _initialize
 
