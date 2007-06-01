@@ -75,14 +75,14 @@ pylith::materials::TestMaterial::testLabel(void)
 // ----------------------------------------------------------------------
 // Test timestep()
 void
-pylith::materials::TestMaterial::testTimestep(void) 
-{ // testTimestep
+pylith::materials::TestMaterial::testTimeStep(void) 
+{ // testTimeStep
   const double dt = 2.0;
   ElasticIsotropic3D material;
-  material.timestep(dt);
+  material.timeStep(dt);
   
-  CPPUNIT_ASSERT_EQUAL(dt, material._dt);
-} // testTimestep
+  CPPUNIT_ASSERT_EQUAL(dt, material.timeStep());
+} // testTimeStep
 
 // ----------------------------------------------------------------------
 // Test needNewJacobian()

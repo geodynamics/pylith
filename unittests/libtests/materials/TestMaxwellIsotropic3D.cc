@@ -92,5 +92,24 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdateState(void)
   material.updateState(totalStrain);
 } // testUpdateState
 
+// ----------------------------------------------------------------------
+// Test timeStep()
+void
+pylith::materials::TestMaxwellIsotropic3D::testTimeStep(void)
+{ // testTimeStep
+  MaxwellIsotropic3D material;
+
+  CPPUNIT_ASSERT_EQUAL(false, material._needNewJacobian);
+
+  const double dt1 = 1.0;
+  material.timeStep(dt1);
+  CPPUNIT_ASSERT_EQUAL(dt1, material.timeStep());
+  CPPUNIT_ASSERT_EQUAL(false, material.needNewJacobian());
+
+  const double dt2 = 2.0;
+  CPPUNIT_ASSERT_EQUAL(dt2, material.timeStep());
+  CPPUNIT_ASSERT_EQUAL(true, material.needNewJacobian());
+} // testTimeStep
+
 
 // End of file 

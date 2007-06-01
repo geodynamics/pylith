@@ -17,12 +17,12 @@
 // Set current time step.
 inline
 void
-pylith::materials::MaxwellIsotropic3D::timestep(const double dt) {
+pylith::materials::MaxwellIsotropic3D::timeStep(const double dt) {
   // Jacobian needs to be reformed if the time step size changes.
   if (_dt > 0.0 && dt != _dt)
     _needNewJacobian = true;
   _dt = dt;
-} // timestep
+} // timeStep
 
 
 // End of file 

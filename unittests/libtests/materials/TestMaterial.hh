@@ -41,7 +41,7 @@ class pylith::materials::TestMaterial : public CppUnit::TestFixture
   CPPUNIT_TEST( testDB );
   CPPUNIT_TEST( testID );
   CPPUNIT_TEST( testLabel );
-  CPPUNIT_TEST( testTimestep );
+  CPPUNIT_TEST( testTimeStep );
   CPPUNIT_TEST( testNeedNewJacobian );
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST_SUITE_END();
@@ -58,8 +58,8 @@ public :
   /// Test label()
   void testLabel(void);
 
-  /// Test timestep()
-  void testTimestep(void);
+  /// Test timeStep()
+  void testTimeStep(void);
 
   /// Test needNewJacobian()
   void testNeedNewJacobian(void);

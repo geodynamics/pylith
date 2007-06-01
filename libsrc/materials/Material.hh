@@ -113,7 +113,13 @@ public :
    * @param dt Current time step.
    */
   virtual
-  void timestep(const double dt);
+  void timeStep(const double dt);
+
+  /** Get current time step.
+   *
+   * @returns Current time step.
+   */
+  double timeStep(void) const;
 
   /** Initialize material by getting physical property parameters from
    * database.

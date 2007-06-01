@@ -53,7 +53,7 @@ public :
    *
    * @param dt Current time step.
    */
-  void timestep(const double dt);
+  void timeStep(const double dt);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
