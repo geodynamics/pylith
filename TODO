@@ -14,22 +14,6 @@ Add useElasticBehavior() switches to Implicit::solveElastic().
 
   a. Add unit test for IntegratorElasticity::calcTotalStrain
 
-  b. ElasticityImplicit
-    i. C++ unit tests
-      (1) timeStep()
-      (2) stableTimeStep()
-      (3) integrateResidual()
-      (4) integrateJacobian()
-      (5) updateState()
-    ii. Python unit tests
-      (1) setMesh()
-      (2) initQuadrature()
-      (3) timeStep()
-      (4) stableTimeStep()
-      (5) integrateResidual()
-      (6) integrateJacobian()
-      (7) updateState()
-
 2. Add dualBasis to Quadrature.
    a. Python
      ReferenceCell
