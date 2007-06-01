@@ -99,7 +99,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
   // Allocate vector for cell values.
   _initCellVector();
-  const int cellVecSize = spaceDim*numBasis;
+  const int cellVecSize = numBasis*spaceDim;
   double_array dispTCell(cellVecSize);
   //double_array gravCell(cellVecSize);
 
@@ -209,8 +209,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 	     ++iBasis) {
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
-	  _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12;
-	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22;
+	  _cellVector[iBasis*spaceDim  ] -=     N1*s11 + 0.5*N2*s12;
+	  _cellVector[iBasis*spaceDim+1] -= 0.5*N1*s12 +     N2*s22;
 	} // for
       } // for
       PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
@@ -237,12 +237,13 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
 	     iBasis < numBasis;
 	     ++iBasis) {
+	  const int iBlock = iBasis*spaceDim;
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim+0];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
 	  const double N3 = wt*basisDeriv[iQ+iBasis*cellDim+2];
-	  _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12 + N3*s13;
-	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22 + N3*s23;
-	  _cellVector[iBasis*spaceDim+2] -= N1*s13 + N2*s23 + N3*s33;
+	  _cellVector[iBlock  ] -=     N1*s11 + 0.5*N2*s12 + 0.5*N3*s13;
+	  _cellVector[iBlock+1] -= 0.5*N1*s12 +     N2*s22 + 0.5*N3*s23;
+	  _cellVector[iBlock+2] -= 0.5*N1*s13 + 0.5*N2*s23 +     N3*s33;
 	} // for
       } // for
       PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*(3+12)));
@@ -304,7 +305,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
   // Allocate matrix and vectors for cell values.
   _initCellMatrix();
-  const int cellVecSize = spaceDim*numBasis;
+  const int cellVecSize = numBasis*spaceDim;
   double_array dispTCell(cellVecSize);
 
   // Allocate vector for total strain
@@ -358,11 +359,11 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 	const double wt = quadWts[iQuad] * jacobianDet[iQuad];
 	const double C1111 = elasticConsts[iQuad][0];
 	for (int iBasis=0, iQ=iQuad*numBasis; iBasis < numBasis; ++iBasis) {
-	  const int iBlock = iBasis * spaceDim;
 	  const double valI = wt*basisDeriv[iQ+iBasis]*C1111;
 	  for (int jBasis=0; jBasis < numBasis; ++jBasis) {
-	    const int jBlock = jBasis * spaceDim;
 	    const double valIJ = valI * basisDeriv[iQ+jBasis];
+	    const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
+	    const int jBlock = jBasis*spaceDim;
 	    _cellMatrix[iBlock+jBlock] += valIJ;
 	  } // for
 	} // for
@@ -385,34 +386,37 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
         const double wt = quadWts[iQuad] * jacobianDet[iQuad];
         const double C1111 = elasticConsts[iQuad][0];
         const double C1122 = elasticConsts[iQuad][1];
-        const double C1112 = elasticConsts[iQuad][2];
+        const double C1112 = elasticConsts[iQuad][2]/2.0;
         const double C2222 = elasticConsts[iQuad][3];
-        const double C2212 = elasticConsts[iQuad][4];
-	const double C1212 = elasticConsts[iQuad][5];
+        const double C2212 = elasticConsts[iQuad][4]/2.0;
+	const double C1212 = elasticConsts[iQuad][5]/4.0;
         for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
 	     iBasis < numBasis;
 	     ++iBasis) {
           const double Nip = wt*basisDeriv[iQ+iBasis*cellDim  ];
           const double Niq = wt*basisDeriv[iQ+iBasis*cellDim+1];
+	  const int iBlock = (iBasis*spaceDim  ) * (numBasis*spaceDim);
+	  const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
           for (int jBasis=0; jBasis < numBasis; ++jBasis) {
             const double Njp = basisDeriv[iQ+jBasis*cellDim  ];
             const double Njq = basisDeriv[iQ+jBasis*cellDim+1];
             const double ki0j0 = 
-              C1111 * Nip * Njp + C1112 * Niq * Njp +
+	      C1111 * Nip * Njp + C1112 * Niq * Njp +
               C1112 * Nip * Njq + C1212 * Niq * Njq;
             const double ki0j1 =
-              C1122 * Nip * Njq + C2212 * Niq * Njq +
+	      C1122 * Nip * Njq + C2212 * Niq * Njq +
               C1112 * Nip * Njp + C1212 * Niq * Njp;
+            const double ki1j0 =
+	      C1122 * Niq * Njp + C2212 * Niq * Njq +
+              C1112 * Nip * Njp + C1212 * Nip * Njq;
             const double ki1j1 =
-              C2222 * Niq * Njq + C2212 * Nip * Njq +
+	      C2222 * Niq * Njq + C2212 * Nip * Njq +
               C2212 * Niq * Njp + C1212 * Nip * Njp;
-	    const int iBlock = iBasis*spaceDim * (spaceDim*numBasis);
-	    const int iBlock1 = (iBasis*spaceDim+1) * (spaceDim*numBasis);
-            const int jBlock = jBasis*spaceDim;
-            const int jBlock1 = jBasis*spaceDim+1;
-            _cellMatrix[iBlock +jBlock  ] += ki0j0;
+            const int jBlock = (jBasis*spaceDim  );
+            const int jBlock1 = (jBasis*spaceDim+1);
+            _cellMatrix[iBlock +jBlock ] += ki0j0;
             _cellMatrix[iBlock +jBlock1] += ki0j1;
-            _cellMatrix[iBlock1+jBlock  ] += ki0j1;
+            _cellMatrix[iBlock1+jBlock ] += ki1j0;
             _cellMatrix[iBlock1+jBlock1] += ki1j1;
           } // for
         } // for
@@ -435,24 +439,24 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
         const double C1111 = elasticConsts[iQuad][ 0];
         const double C1122 = elasticConsts[iQuad][ 1];
         const double C1133 = elasticConsts[iQuad][ 2];
-        const double C1112 = elasticConsts[iQuad][ 3];
-        const double C1123 = elasticConsts[iQuad][ 4];
-        const double C1113 = elasticConsts[iQuad][ 5];
+        const double C1112 = elasticConsts[iQuad][ 3]/2.0;
+        const double C1123 = elasticConsts[iQuad][ 4]/2.0;
+        const double C1113 = elasticConsts[iQuad][ 5]/2.0;
         const double C2222 = elasticConsts[iQuad][ 6];
         const double C2233 = elasticConsts[iQuad][ 7];
-        const double C2212 = elasticConsts[iQuad][ 8];
-        const double C2223 = elasticConsts[iQuad][ 9];
-        const double C2213 = elasticConsts[iQuad][10];
+        const double C2212 = elasticConsts[iQuad][ 8]/2.0;
+        const double C2223 = elasticConsts[iQuad][ 9]/2.0;
+        const double C2213 = elasticConsts[iQuad][10]/2.0;
         const double C3333 = elasticConsts[iQuad][11];
-        const double C3312 = elasticConsts[iQuad][12];
-        const double C3323 = elasticConsts[iQuad][13];
-        const double C3313 = elasticConsts[iQuad][14];
-        const double C1212 = elasticConsts[iQuad][15];
-        const double C1223 = elasticConsts[iQuad][16];
-        const double C1213 = elasticConsts[iQuad][17];
-        const double C2323 = elasticConsts[iQuad][18];
-        const double C2313 = elasticConsts[iQuad][19];
-        const double C1313 = elasticConsts[iQuad][20];
+        const double C3312 = elasticConsts[iQuad][12]/2.0;
+        const double C3323 = elasticConsts[iQuad][13]/2.0;
+        const double C3313 = elasticConsts[iQuad][14]/2.0;
+        const double C1212 = elasticConsts[iQuad][15]/4.0;
+        const double C1223 = elasticConsts[iQuad][16]/4.0;
+        const double C1213 = elasticConsts[iQuad][17]/4.0;
+        const double C2323 = elasticConsts[iQuad][18]/4.0;
+        const double C2313 = elasticConsts[iQuad][19]/4.0;
+        const double C1313 = elasticConsts[iQuad][20]/4.0;
         for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
 	     iBasis < numBasis;
 	     ++iBasis) {
@@ -464,7 +468,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
             const double Njq = basisDeriv[iQ+jBasis*cellDim+1];
             const double Njr = basisDeriv[iQ+jBasis*cellDim+2];
             const double ki0j0 = 
-              C1111 * Nip * Njp + C1112 * Niq * Njp + C1113 * Nir * Njp +
+	      C1111 * Nip * Njp + C1112 * Niq * Njp + C1113 * Nir * Njp +
               C1112 * Nip * Njq + C1212 * Niq * Njq + C1213 * Nir * Njq +
               C1113 * Nip * Njr + C1213 * Niq * Njr + C1313 * Nir * Njr;
             const double ki0j1 =
@@ -488,9 +492,9 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
               C3323 * Nir * Njq + C2323 * Niq * Njq + C2313 * Nip * Njq +
               C3313 * Nir * Njp + C2313 * Niq * Njp + C1313 * Nip * Njp;
 
-	    const int iBlock = iBasis*spaceDim * (spaceDim*numBasis);
-	    const int iBlock1 = (iBasis*spaceDim+1) * (spaceDim*numBasis);
-	    const int iBlock2 = (iBasis*spaceDim+2) * (spaceDim*numBasis);
+	    const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
+	    const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
+	    const int iBlock2 = (iBasis*spaceDim+2) * (numBasis*spaceDim);
             const int jBlock = jBasis*spaceDim;
             const int jBlock1 = jBasis*spaceDim+1;
             const int jBlock2 = jBasis*spaceDim+2;
@@ -556,7 +560,7 @@ pylith::feassemble::ElasticityImplicit::updateState(
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
 
-  const int cellVecSize = spaceDim*numBasis;
+  const int cellVecSize = numBasis*spaceDim;
   double_array dispCell(cellVecSize);
 
   // Allocate vector for total strain

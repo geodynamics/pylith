@@ -118,7 +118,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 
   // Allocate vectors for cell values.
   _initCellVector();
-  const int cellVecSize = spaceDim*numBasis;
+  const int cellVecSize = numBasis*spaceDim;
   double_array dispTpdtCell(cellVecSize);
   double_array dispTCell(cellVecSize);
   double_array dispTmdtCell(cellVecSize);
@@ -225,8 +225,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	     ++iBasis) {
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
-	  _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12;
-	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22;
+	  _cellVector[iBasis*spaceDim  ] -=     N1*s11 + 0.5*N2*s12;
+	  _cellVector[iBasis*spaceDim+1] -= 0.5*N1*s12 +     N2*s22;
 	} // for
       } // for
       err = PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
@@ -253,12 +253,13 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
 	     iBasis < numBasis;
 	     ++iBasis) {
+	  const int iBlock = iBasis*spaceDim;
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim+0];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
 	  const double N3 = wt*basisDeriv[iQ+iBasis*cellDim+2];
-	  _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12 + N3*s13;
-	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22 + N3*s23;
-	  _cellVector[iBasis*spaceDim+2] -= N1*s13 + N2*s23 + N3*s33;
+	  _cellVector[iBlock  ] -=     N1*s11 + 0.5*N2*s12 + 0.5*N3*s13;
+	  _cellVector[iBlock+1] -= 0.5*N1*s12 +     N2*s22 + 0.5*N3*s23;
+	  _cellVector[iBlock+2] -= 0.5*N1*s13 + 0.5*N2*s23 +     N3*s33;
 	} // for
       } // for
       err = PetscLogFlops(numQuadPts*(1+numBasis*(3+12)));
@@ -342,7 +343,7 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
           const double valIJ = valI * basis[iQ+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim) {
-            const int iBlock = (iBasis*spaceDim + iDim) * (spaceDim*numBasis);
+            const int iBlock = (iBasis*spaceDim + iDim) * (numBasis*spaceDim);
             const int jBlock = (jBasis*spaceDim + iDim);
             _cellMatrix[iBlock+jBlock] += valIJ;
           } // for
@@ -396,7 +397,7 @@ pylith::feassemble::ElasticityExplicit::updateState(
   const int spaceDim = _quadrature->spaceDim();
   const int cellDim = _quadrature->cellDim();
 
-  const int cellVecSize = spaceDim*numBasis;
+  const int cellVecSize = numBasis*spaceDim;
   double_array dispCell(cellVecSize);
 
   // Allocate vector for total strain

@@ -38,11 +38,11 @@ class Solution3DLinear(Component):
     
     # Input fields
     self.dt = 0.01
-    self.fieldTpdt = numpy.array([ +0.4, +0.2, -0.5,
+    self.fieldTpdt = numpy.array([ +0.3, +0.2, -0.5,
                                    -0.3, -0.4, -0.6,
                                    +0.2, +0.6, +0.3,
                                    -0.6, -0.1, -0.3], dtype=numpy.float64)
-    self.fieldT = numpy.array([ +0.1, +0.1, -0.6,
+    self.fieldT = numpy.array([ +0.8, +0.1, -0.6,
                                 -0.1, -0.2, -0.5,
                                 +0.1, +0.7, +0.2,
                                 -0.5, -0.0, -0.2], dtype=numpy.float64)

@@ -198,4 +198,71 @@ if [ $1 == "explicit" ] || [ $1 == "all" ]; then
 fi
 
 
+# //////////////////////////////////////////////////////////////////////
+if [ $1 == "implicit" ] || [ $1 == "all" ]; then
+
+  # 1-D ----------------------------------------------------------------
+
+  python ElasticityImplicit.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitData1DLinear \
+    --data.parent=IntegratorData \
+    --mesh=Mesh1DLinear \
+    --quadrature=Quadrature1DLinear \
+    --material=MaterialElasticStrain1D \
+    --solution=Solution1DLinear
+
+  python ElasticityImplicit.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitData1DQuadratic \
+    --data.parent=IntegratorData \
+    --mesh=Mesh1DQuadratic \
+    --quadrature=Quadrature1DQuadratic \
+    --material=MaterialElasticStrain1D \
+    --solution=Solution1DQuadratic
+
+  # 2-D ----------------------------------------------------------------
+
+  python ElasticityImplicit.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitData2DLinear \
+    --data.parent=IntegratorData \
+    --mesh=Mesh2DLinear \
+    --quadrature=Quadrature2DLinear \
+    --material=ElasticPlaneStrain \
+    --solution=Solution2DLinear
+
+  python ElasticityImplicit.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitData2DQuadratic \
+    --data.parent=IntegratorData \
+    --mesh=Mesh2DQuadratic \
+    --quadrature=Quadrature2DQuadratic \
+    --material=ElasticPlaneStrain \
+    --solution=Solution2DQuadratic
+
+
+  # 3-D ----------------------------------------------------------------
+
+  python ElasticityImplicit.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitData3DLinear \
+    --data.parent=IntegratorData \
+    --mesh=Mesh3DLinear \
+    --quadrature=Quadrature3DLinear \
+    --material=ElasticIsotropic3D \
+    --solution=Solution3DLinear
+
+  python ElasticityImplicit.py \
+    --data.namespace=pylith,feassemble \
+    --data.object=ElasticityImplicitData3DQuadratic \
+    --data.parent=IntegratorData \
+    --mesh=Mesh3DQuadratic \
+    --quadrature=Quadrature3DQuadratic \
+    --material=ElasticIsotropic3D \
+    --solution=Solution3DQuadratic
+
+fi
+
+
 # End of file 
