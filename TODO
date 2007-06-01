@@ -2,14 +2,6 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-topology module
-  add section->add(fieldA, fieldB)
-
-Implicit.py
-  use section->add(fieldA, fieldB)
-
-Add useElasticBehavior() switches to Implicit::solveElastic().
-
 1. Unit tests for Integrator stuff.
 
   a. Add unit test for IntegratorElasticity::calcTotalStrain

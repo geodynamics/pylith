@@ -16,13 +16,10 @@
 ##
 ## Factory: material.
 
-from Material import Material
-
-# import pylith.materials.materials as bindings
-
+from ElasticMaterial import ElasticMaterial
 
 # ElasticIsotropic3D class
-class ElasticIsotropic3D(Material):
+class ElasticIsotropic3D(ElasticMaterial):
   """
   Python object implementing 3-D isotropic linear elastic material.
 
@@ -35,7 +32,7 @@ class ElasticIsotropic3D(Material):
     """
     Constructor.
     """
-    Material.__init__(self, name)
+    ElasticMaterial.__init__(self, name)
     import pylith.materials.materials as bindings
     self.cppHandle = bindings.ElasticIsotropic3D()
     self.dimension = self.cppHandle.dimension

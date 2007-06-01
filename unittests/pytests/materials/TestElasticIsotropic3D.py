@@ -44,4 +44,13 @@ class TestElasticIsotropic3D(unittest.TestCase):
     return
 
 
+  def test_useElasticBehavior(self):
+    """
+    Test useElasticBehavior().
+    """
+    material = ElasticIsotropic3D()
+    material.useElasticBehavior(False)
+    return
+
+
 # End of file 

@@ -104,6 +104,7 @@ class Material(Component):
             (mesh.dimension(), self.dimension)
 
     self.db.initialize()
+    assert(None != self.cppHandle)
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
     self.cppHandle.db = self.db.cppHandle

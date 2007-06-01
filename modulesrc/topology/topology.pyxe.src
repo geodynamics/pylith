@@ -797,11 +797,9 @@ def zeroRealSection(section):
   """
   # create shim for zero section
   #embed{ void* Section_zero(void* objVptr)
-  typedef ALE::Mesh::real_section_type real_section_type;
-  
   try {
-    ALE::Obj<real_section_type>* section =
-      (ALE::Obj<real_section_type>*) objVptr;
+    ALE::Obj<pylith::real_section_type>* section =
+      (ALE::Obj<pylith::real_section_type>*) objVptr;
     assert(!section->isNull());
     (*section)->zero();
   } catch (const std::exception& err) {
@@ -818,6 +816,41 @@ def zeroRealSection(section):
   cdef void* ptr
   ptr = PyCObject_AsVoidPtr(section)
   Section_zero(ptr)
+  return
+
+
+# ----------------------------------------------------------------------
+def addRealSections(dst, srcA, srcB):
+  """
+  Add two sections, storing result in third section.
+  """
+  # create shim for Field::add()
+  #embed{ void* Section_addRealSections(void* objVptr, void* aVptr, void* bVptr)
+  try {
+    ALE::Obj<pylith::real_section_type>* dst =
+      (ALE::Obj<pylith::real_section_type>*) objVptr;
+    assert(!dst->isNull());
+    ALE::Obj<pylith::real_section_type>* a =
+      (ALE::Obj<pylith::real_section_type>*) aVptr;
+    assert(!a->isNull());
+    ALE::Obj<pylith::real_section_type>* b =
+      (ALE::Obj<pylith::real_section_type>*) bVptr;
+    assert(!b->isNull());
+    (*dst)->add(*a, *b);
+  } catch (const std::exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.what()));
+  } catch (const ALE::Exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.msg().c_str()));
+  } catch (...) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    "Caught unknown C++ exception.");
+  } // try/catch
+  #}embed
+  Section_addRealSections(PyCObject_AsVoidPtr(dst),
+                          PyCObject_AsVoidPtr(srcA),
+                          PyCObject_AsVoidPtr(srcB))
   return
 
 

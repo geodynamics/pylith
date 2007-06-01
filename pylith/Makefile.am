@@ -44,6 +44,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/quadrature/Quadrature3D.py \
 	feassemble/quadrature/__init__.py \
 	materials/__init__.py \
+	materials/ElasticMaterial.py \
 	materials/ElasticIsotropic3D.py \
 	materials/ElasticPlaneStrain.py \
 	materials/ElasticPlaneStress.py \
