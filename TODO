@@ -2,11 +2,25 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-1. Unit tests for Integrator stuff.
+0. Unit tests for Integrator stuff.
 
-  a. Add unit test for IntegratorElasticity::calcTotalStrain
+   a. Add unit test for IntegratorElasticity::calcTotalStrain
+   b. Incorporate Quad/Hex basis stuff
 
-2. Add dualBasis to Quadrature.
+1. Simple tests with analytical solutions
+
+   a. 1-D: axial compression
+   b. 2-D: axial compression of a "box"
+   c. 2-DD: shearing of a "box"
+   d. 3-D: axial compression of a "box"
+   3. 3-D: shearing of a "box"
+
+2. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
+   a. Materials C++ code
+   b. Integrator C++ code
+   b. Material C++ unit tests
+
+3. Add dualBasis to Quadrature.
    a. Python
      ReferenceCell
      FIATSimplex
@@ -16,7 +30,7 @@ MAIN PRIORITIES (Brad)
    c. C++ unit tests
    d. Python unit tests
 
-3. Implement faults for kinematic source
+4. Implement faults for kinematic source
    a. Creation of cohesive cells
      i. Add tests for interpolated meshes.
         Double check consistency in ordering of vertices (positive/negative).
@@ -62,8 +76,6 @@ MAIN PRIORITIES (Brad)
          initialize()
 
 4. Implement absorbing boundary conditions
-
-5. Create suite of simple full test cases
 
 ======================================================================
 SECONDARY PRIORITIES
