@@ -48,7 +48,7 @@ class ElasticityImplicit(IntegratorElasticity):
     """
     K = self._calculateStiffnessMat()    
 
-    self.valsResidual = -numpy.dot(K, self.fieldT)
+    self.valsResidual = -numpy.dot(K, self.fieldTpdt)
     return
 
 
