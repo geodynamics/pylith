@@ -18,6 +18,7 @@
 #include "pylith/materials/ElasticIsotropic3D.hh"
 #include "pylith/materials/ElasticPlaneStrain.hh"
 #include "pylith/materials/ElasticPlaneStress.hh"
+#include "pylith/materials/MaxwellIsotropic3D.hh"
 
 #include <assert.h>
 #include <stdexcept>
@@ -411,5 +412,33 @@ cdef class ElasticIsotropic3D(ElasticMaterial):
     self.handle = self._createHandle()
     return
 
+
+# ----------------------------------------------------------------------
+cdef class MaxwellIsotropic3D(ElasticMaterial):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* MaxwellIsotropic3D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::materials::MaxwellIsotropic3D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    ElasticMaterial.__init__(self)
+    self.thisptr = MaxwellIsotropic3D_constructor()
+    self.handle = self._createHandle()
+    return
 
 # End of file 
