@@ -479,6 +479,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
               C1133 * Nip * Njr + C3312 * Niq * Njr + C3313 * Nir * Njr +
               C1123 * Nip * Njq + C1223 * Niq * Njq + C2313 * Nir * Njq +
               C1113 * Nip * Njp + C1213 * Niq * Njp + C1313 * Nir * Njp;
+            const double ki1j0 =
+              C1122 * Niq * Njp + C1112 * Nip * Njp + C1123 * Nir * Njp +
+	      C2212 * Niq * Njq + C1212 * Nip * Njq + C1223 * Nir * Njq +
+	      C2213 * Niq * Njr + C1213 * Nip * Njr + C2313 * Nir * Njr;
             const double ki1j1 =
               C2222 * Niq * Njq + C2212 * Nip * Njq + C2223 * Nir * Njq +
               C2212 * Niq * Njp + C1212 * Nip * Njp + C1223 * Nir * Njp +
@@ -487,11 +491,18 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
               C2233 * Niq * Njr + C3312 * Nip * Njr + C3323 * Nir * Njr +
               C2223 * Niq * Njq + C1223 * Nip * Njq + C2323 * Nir * Njq +
               C2213 * Niq * Njp + C1213 * Nip * Njp + C2313 * Nir * Njp;
+            const double ki2j0 =
+              C1133 * Nir * Njp + C1123 * Niq * Njp + C1113 * Nip * Njp +
+	      C3312 * Nir * Njq + C1223 * Niq * Njq + C1213 * Nip * Njq +
+	      C3313 * Nir * Njr + C2313 * Niq * Njr + C1313 * Nip * Njr; 
+            const double ki2j1 =
+              C2233 * Nir * Njq + C2223 * Niq * Njq + C2213 * Nip * Njq +
+	      C3312 * Nir * Njp + C1223 * Niq * Njp + C1213 * Nip * Njp +
+	      C3323 * Nir * Njr + C2323 * Niq * Njr + C2313 * Nip * Njr; 
             const double ki2j2 =
               C3333 * Nir * Njr + C3323 * Niq * Njr + C3313 * Nip * Njr +
               C3323 * Nir * Njq + C2323 * Niq * Njq + C2313 * Nip * Njq +
               C3313 * Nir * Njp + C2313 * Niq * Njp + C1313 * Nip * Njp;
-
 	    const int iBlock = iBasis*spaceDim * (numBasis*spaceDim);
 	    const int iBlock1 = (iBasis*spaceDim+1) * (numBasis*spaceDim);
 	    const int iBlock2 = (iBasis*spaceDim+2) * (numBasis*spaceDim);
@@ -501,11 +512,11 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 	    _cellMatrix[iBlock +jBlock ] += ki0j0;
 	    _cellMatrix[iBlock +jBlock1] += ki0j1;
 	    _cellMatrix[iBlock +jBlock2] += ki0j2;
-	    _cellMatrix[iBlock1+jBlock ] += ki0j1;
+	    _cellMatrix[iBlock1+jBlock ] += ki1j0;
 	    _cellMatrix[iBlock1+jBlock1] += ki1j1;
 	    _cellMatrix[iBlock1+jBlock2] += ki1j2;
-	    _cellMatrix[iBlock2+jBlock ] += ki0j2;
-	    _cellMatrix[iBlock2+jBlock1] += ki1j2;
+	    _cellMatrix[iBlock2+jBlock ] += ki2j0;
+	    _cellMatrix[iBlock2+jBlock1] += ki2j1;
 	    _cellMatrix[iBlock2+jBlock2] += ki2j2;
           } // for
         } // for

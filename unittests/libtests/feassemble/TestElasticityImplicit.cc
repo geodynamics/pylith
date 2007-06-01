@@ -166,8 +166,6 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
   CPPUNIT_ASSERT_EQUAL(nrowsE, nrows);
   CPPUNIT_ASSERT_EQUAL(ncolsE, ncols);
 
-  MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD);
-
   PetscMat jDense;
   PetscMat jSparseAIJ;
   MatConvert(jacobian, MATSEQAIJ, MAT_INITIAL_MATRIX, &jSparseAIJ);
