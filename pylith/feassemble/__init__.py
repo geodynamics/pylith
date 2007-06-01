@@ -16,7 +16,6 @@
 
 __all__ = ['ElasticityExplicit',
            'ElasticityImplicit',
-           'FIATCell',
            'FIATLagrange',
            'FIATSimplex',
            'Integrator',

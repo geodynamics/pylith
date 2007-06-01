@@ -17,7 +17,7 @@
 ##
 ## Factory: reference_cell.
 
-from FIATCell import FIATCell
+from ReferenceCell import ReferenceCell
 
 import numpy
 
@@ -33,7 +33,7 @@ def validateShape(shape):
   return name
 
 # FIATSimplex class
-class FIATSimplex(FIATCell):
+class FIATSimplex(ReferenceCell):
   """
   Python object for managing basis functions and quadrature rules of a
   simplex reference finite-element cell using FIAT.
@@ -43,7 +43,7 @@ class FIATSimplex(FIATCell):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(FIATCell.Inventory):
+  class Inventory(ReferenceCell.Inventory):
     """Python object for managing FIATSimplex facilities and properties."""
 
     ## @class Inventory
@@ -76,8 +76,47 @@ class FIATSimplex(FIATCell):
     """
     Constructor.
     """
-    FIATCell.__init__(self, name)
+    ReferenceCell.__init__(self, name)
     return
+
+
+  def initialize(self):
+    """
+    Initialize reference finite-element cell.
+    """
+    quadrature = self._setupQuadrature()
+    basisFns = self._setupBasisFns()
+    
+    # Evaluate basis functions at quadrature points
+    quadpts = quadrature.get_points()
+    basis = numpy.array(basisFns.tabulate(quadpts)).transpose()
+    self.basis = numpy.reshape(basis.flatten(), basis.shape)
+
+    # Evaluate derivatives of basis functions at quadrature points
+    import FIAT.shapes
+    dim = FIAT.shapes.dimension(basisFns.base.shape)
+    basisDeriv = numpy.array([basisFns.deriv_all(d).tabulate(quadpts) \
+                              for d in range(dim)]).transpose()
+    self.basisDeriv = numpy.reshape(basisDeriv.flatten(), basisDeriv.shape)
+
+    self.quadPts = numpy.array(quadrature.get_points())
+    self.quadWts = numpy.array(quadrature.get_weights())
+
+    self.cellDim = dim
+    self.numCorners = len(basisFns)
+    self.numQuadPts = len(quadrature.get_weights())
+
+    self._info.line("Basis (quad pts):")
+    self._info.line(self.basis)
+    self._info.line("Basis derivatives (quad pts):")
+    self._info.line(self.basisDeriv)
+    self._info.line("Quad pts:")
+    self._info.line(quadrature.get_points())
+    self._info.line("Quad wts:")
+    self._info.line(quadrature.get_weights())
+    self._info.log()    
+    return
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -85,7 +124,7 @@ class FIATSimplex(FIATCell):
     """
     Set members based using inventory.
     """
-    FIATCell._configure(self)
+    ReferenceCell._configure(self)
     self.shape = self.inventory.shape
     self.degree = self.inventory.degree
     self.order = self.inventory.order
@@ -117,6 +156,7 @@ class FIATSimplex(FIATCell):
     """
     from FIAT.Lagrange import Lagrange
     return Lagrange(self._getShape(), self.degree).Udual.pts
+
 
   def _getShape(self):
     """
