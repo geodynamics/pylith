@@ -59,6 +59,7 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOCubit.py \
 	meshio/MeshIOLagrit.py \
+	meshio/SingleOutput.py \
 	meshio/SolutionIO.py \
 	meshio/SolutionIOVTK.py \
 	problems/__init__.py \
@@ -82,6 +83,7 @@ nobase_pkgpyexec_PYTHON = \
 	utils/__init__.py \
 	utils/CheckpointTimer.py \
 	utils/CppData.py \
+	utils/ObjectBin.py \
 	utils/PetscManager.py \
 	utils/importing.py \
 	utils/testarray.py

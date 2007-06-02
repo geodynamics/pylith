@@ -68,6 +68,8 @@ class Implicit(Formulation):
     Constructor.
     """
     Formulation.__init__(self, name)
+    self.solnField = {'name': "dispTBctpdt",
+                      'label': "displacements"}
     return
 
 
@@ -89,14 +91,14 @@ class Implicit(Formulation):
 
     self._info.log("Creating fields and matrices.")
     self.fields.addReal("dispTBctpdt")
-    self.fields.addReal("dispIncr")
-    self.fields.addReal("residual")
     self.fields.setFiberDimension("dispTBctpdt", dimension)
     for constraint in self.constraints:
       constraint.setConstraintSizes(self.fields.getReal("dispTBctpdt"))
     self.fields.allocate("dispTBctpdt")
     for constraint in self.constraints:
       constraint.setConstraints(self.fields.getReal("dispTBctpdt"))
+    self.fields.addReal("dispIncr")
+    self.fields.addReal("residual")
     self.fields.copyLayout("dispTBctpdt")
     self.jacobian = mesh.createMatrix(self.fields.getReal("dispTBctpdt"))
 
@@ -123,9 +125,9 @@ class Implicit(Formulation):
     """
     # Set dispTBctpdt to the BC at time t+dt. Unconstrained DOF are
     # unaffected and will be equal to their values at time t.
-    dispTBctpdt = self.fields.getReal("dispTBctpdt")
+    solnField = self.fields.getReal("dispTBctpdt")
     for constraint in self.constraints:
-      constraint.setField(t+dt, dispTBctpdt)
+      constraint.setField(t+dt, solnField)
 
     needNewJacobian = False
     for integrator in self.integrators:
@@ -171,13 +173,15 @@ class Implicit(Formulation):
     # nonzero at unconstrained DOF) so that after poststrp(),
     # dispTBctpdt constains the solution at time t+dt.
     import pylith.topology.topology as bindings
-    dispTBctpdt = self.fields.getReal("dispTBctpdt")
-    bindings.addRealSections(dispTBctpdt, dispTBctpdt,
+    solnField = self.fields.getReal("dispTBctpdt")
+    bindings.addRealSections(solnField, solnField,
                              self.fields.getReal("dispIncr"))
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(dispTBctpdt)
+      integrator.updateState(solnField)
+
+    Formulation.poststep(self, t)
     return
 
 
@@ -201,11 +205,11 @@ class Implicit(Formulation):
       material.useElasticBehavior(True)
 
     self._info.log("Setting constraints.")
-    dispTBctpdt = self.fields.getReal("dispTBctpdt")
+    solnField = self.fields.getReal("dispTBctpdt")
     import pylith.topology.topology as bindings
-    bindings.zeroRealSection(dispTBctpdt)
+    bindings.zeroRealSection(solnField)
     for constraint in self.constraints:
-      constraint.setField(t, dispTBctpdt)
+      constraint.setField(t, solnField)
 
     self._info.log("Integrating Jacobian and residual of operator.")
     import pylith.utils.petsc as petsc
@@ -223,12 +227,11 @@ class Implicit(Formulation):
     self.solver.solve(dispIncr, self.jacobian, residual)
 
     import pylith.topology.topology as bindings
-    dispTBctpdt = self.fields.getReal("dispTBctpdt")
-    bindings.addRealSections(dispTBctpdt, dispTBctpdt, dispIncr)
+    bindings.addRealSections(solnField, solnField, dispIncr)
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(dispTBctpdt)
+      integrator.updateState(solnField)
     return
   
 

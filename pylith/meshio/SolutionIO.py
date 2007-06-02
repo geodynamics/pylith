@@ -36,12 +36,28 @@ class SolutionIO(Component):
     ## Python object for managing SolutionIOVTK facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li \b output_freq Flag indicating whether to use 'time_step' or 'skip'
+    ##   to set frequency of solution output.
+    ## @li \b time_step Time step between solution output.
+    ## @li \b skip Number of time steps to skip between solution output.
     ##
     ## \b Facilities
     ## @li \b coordsys Coordinate system for output.
 
     import pyre.inventory
+
+    outputFreq = pyre.inventory.str("output_freq", default="skip",
+             validator=pyre.inventory.choice(["skip", "time_step"]))
+    outputFreq.meta['tip'] = "Flag indicating whether to use 'time_step' " \
+                             "or 'skip' to set frequency of solution output."
+
+    from pyre.units.time import s
+    dt = pyre.inventory.dimensional("time_step", default=1.0*s)
+    dt.meta['tip'] = "Time step between solution output."
+
+    skip = pyre.inventory.int("skip", default=1,
+                              validator=pyre.inventory.greaterEqual(0))
+    skip.meta['tip'] = "Number of time steps to skip between solution output."
 
     from spatialdata.geocoords.CSCart import CSCart
     coordsys = pyre.inventory.facility("coordsys", family="coordsys",
@@ -58,6 +74,9 @@ class SolutionIO(Component):
     Component.__init__(self, name, facility="solution_io")
     self.cppHandle = None
     self.coordsys = None
+    self.mesh = None
+    self.t = None
+    self.istep = None
     return
 
 
@@ -66,6 +85,7 @@ class SolutionIO(Component):
     Open files for solution.
     """
     self._info.log("Opening files for output of solution.")
+    self.mesh = mesh
 
     # Set flags
     self._sync()
@@ -94,26 +114,39 @@ class SolutionIO(Component):
     return
 
 
-  def writeTopology(self, mesh):
+  def writeTopology(self):
     """
     Write solution topology to file.
     """
     self._info.log("Writing solution topology.")
 
     assert(self.cppHandle != None)
-    assert(mesh.cppHandle != None)
-    assert(mesh.coordsys.cppHandle != None)
-    self.cppHandle.writeTopology(mesh.cppHandle, mesh.coordsys.cppHandle)
+    assert(self.mesh.cppHandle != None)
+    assert(self.mesh.coordsys.cppHandle != None)
+    self.cppHandle.writeTopology(self.mesh.cppHandle,
+                                 self.mesh.coordsys.cppHandle)
     return
 
 
-  def writeField(self, t, field, name, mesh):
+  def writeField(self, t, istep, field, name):
     """
     Write solution field at time t to file.
     """
-    self._info.log("Writing solution field '%s'." % name)
-
-    self.cppHandle.writeField(t, field, name, mesh.cppHandle)
+    write = False
+    if self.istep == None or not "value" in dir(self.t):
+      write = True
+    elif self.outputFreq == "skip":
+      if istep > self.istep + self.skip:
+        write = True
+    elif t >= self.t + self.dt:
+      write = True
+    if write:
+      self._info.log("Writing solution field '%s'." % name)
+      assert(self.cppHandle != None)
+      assert(self.mesh.cppHandle != None)
+      self.cppHandle.writeField(t.value, field, name, self.mesh.cppHandle)
+      self.istep = istep
+      self.t = t
     return
 
 
@@ -124,6 +157,9 @@ class SolutionIO(Component):
     Set members based using inventory.
     """
     Component._configure(self)
+    self.outputFreq = self.inventory.outputFreq
+    self.dt = self.inventory.dt
+    self.skip = self.inventory.skip
     self.coordsys = self.inventory.coordsys
     return
 

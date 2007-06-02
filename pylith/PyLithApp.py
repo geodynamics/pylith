@@ -84,6 +84,7 @@ class PyLithApp(Application):
     # Initialize problem and then run
     self.problem.initialize(mesh)
     self.problem.run(self)
+    self.problem.finalize()
     
     self.petsc.finalize()
     return

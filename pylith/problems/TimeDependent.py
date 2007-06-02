@@ -137,6 +137,14 @@ class TimeDependent(Problem):
     return
 
 
+  def finalize(self):
+    """
+    Cleanup after running problem.
+    """
+    self.formulation.finalize()
+    return
+
+
   def checkpoint(self):
     """
     Save problem state for restart.
