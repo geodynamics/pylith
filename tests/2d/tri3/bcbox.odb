@@ -1,0 +1,93 @@
+#!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+from pylith.problems.BoundaryConditions import BoundaryConditions
+
+# BCBox class
+class BCBox(BoundaryConditions):
+  """
+  Python boundary conditions container for box with four boundary conditions.
+
+  Factory: boundary_conditions
+  """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(BoundaryConditions.Inventory):
+    """
+    Python object for managing BCBox facilities and properties.
+    """
+    
+    ## @class Inventory
+    ## Python object for managing BCBox facilities and properties.
+    ##
+    ## \b Properties
+    ## @li None
+    ##
+    ## \b Facilities
+    ## @li \b bc Boundary condition.
+
+    import pyre.inventory
+    
+    from pylith.bc.Dirichlet import Dirichlet
+
+    xm = pyre.inventory.facility("x_minus", family="boundary_condition",
+                                 factory=Dirichlet)
+    xm.meta['tip'] = "Boundary condition on -x edge."
+
+    xp = pyre.inventory.facility("x_plus", family="boundary_condition",
+                                 factory=Dirichlet)
+    xp.meta['tip'] = "Boundary condition on +x edge."
+
+    ym = pyre.inventory.facility("y_minus", family="boundary_condition",
+                                 factory=Dirichlet)
+    ym.meta['tip'] = "Boundary condition on -y edge."
+
+    yp = pyre.inventory.facility("y_plus", family="boundary_condition",
+                                 factory=Dirichlet)
+    yp.meta['tip'] = "Boundary condition on +y edge."
+
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="bcbox"):
+    """
+    Constructor.
+    """
+    BoundaryConditions.__init__(self, name)
+    return
+
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Set attributes from inventory.
+    """
+    BoundaryConditions._configure(self)
+    self.bc = [self.inventory.xm,
+               self.inventory.xp,
+               self.inventory.ym,
+               self.inventory.yp]
+    return
+
+  
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def boundary_conditions():
+  """
+  Factory associated with BCBox.
+  """
+  return BCBox()
+
+
+# End of file 
