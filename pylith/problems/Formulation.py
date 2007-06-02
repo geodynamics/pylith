@@ -44,6 +44,7 @@ class Formulation(Component):
     ##
     ## \b Facilities
     ## @li \b solver Algebraic solver.
+    ## @li \b output Solution output.
 
     import pyre.inventory
 
@@ -51,7 +52,10 @@ class Formulation(Component):
     solver = pyre.inventory.facility("solver", family="solver",
                                      factory=SolverLinear)
     solver.meta['tip'] = "Algebraic solver."
-    
+
+    from pylith.meshio.SingleOutput import SingleOutput
+    output = pyre.inventory.facility("output", family="object_bin",
+                                     factory=SingleOutput)
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -63,6 +67,8 @@ class Formulation(Component):
     self.integrators = None
     self.constraints = None
     self.fields = None
+    self.solnField = None
+    self._istep = 0
     return
 
 
@@ -119,8 +125,37 @@ class Formulation(Component):
         raise TypeError, \
               "Could not determine whether interface condition '%s' is an " \
               "integrator or a constraint." % ic.name
+
+    self._info.log("Setting up solution output.")
+    for output in self.output.bin:
+      output.open(mesh)
+      output.writeTopology()
     return
 
+
+  def poststep(self, t):
+    """
+    Hook for doing stuff after advancing time step.
+    """
+    field = self.fields.getReal(self.solnField['name'])
+    for output in self.output.bin:
+      output.writeField(t, self._istep, field, self.solnField['label'])
+    self._istep += 1
+    return
+
+
+  def finalize(self):
+    """
+    Cleanup after time stepping.
+    """
+    for integrator in self.integrators:
+      integrator.finalize()
+    for constraint in self.constraints:
+      constraint.finalize()
+    for output in self.output.bin:
+      output.close()
+    return
+  
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -130,6 +165,7 @@ class Formulation(Component):
     """
     Component._configure(self)
     self.solver = self.inventory.solver
+    self.output = self.inventory.output
     return
 
 

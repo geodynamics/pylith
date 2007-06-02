@@ -86,4 +86,11 @@ class Constraint(object):
     return
 
 
+  def finalize(self):
+    """
+    Cleanup after time stepping.
+    """
+    return
+  
+
 # End of file 

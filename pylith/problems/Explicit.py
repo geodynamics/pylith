@@ -45,6 +45,8 @@ class Explicit(Formulation):
     Constructor.
     """
     Formulation.__init__(self, name)
+    self.solnField = {'name': "dispT",
+                      'label': "displacements"}
     return
 
 
@@ -66,16 +68,16 @@ class Explicit(Formulation):
 
     self._info.log("Creating fields and matrices.")
     self.fields.addReal("dispT")
-    self.fields.addReal("dispTmdt")
-    self.fields.addReal("dispTpdt")
-    self.fields.addReal("residual")
-    self.fields.createHistory(["dispTpdt", "dispT", "dispTmdt"])    
     self.fields.setFiberDimension("dispT", dimension)
     for constraint in self.constraints:
       constraint.setConstraintSizes(self.fields.getReal("dispT"), mesh)
     self.fields.allocate("dispT")
     for constraint in self.constraints:
       constraint.setConstraints(self.fields.getReal("dispT"), mesh)    
+    self.fields.addReal("dispTmdt")
+    self.fields.addReal("dispTpdt")
+    self.fields.addReal("residual")
+    self.fields.createHistory(["dispTpdt", "dispT", "dispTmdt"])    
     self.fields.copyLayout("dispT")
     self.jacobian = mesh.createMatrix(self.fields.getReal("residual"))
 
@@ -150,6 +152,8 @@ class Explicit(Formulation):
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
       integrator.updateState(self.fields.getReal("dispT"))
+
+    Formulation.poststep(self, t)
     return
 
 
