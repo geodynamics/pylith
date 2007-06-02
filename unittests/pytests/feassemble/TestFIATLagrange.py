@@ -23,37 +23,37 @@ def N0(p):
   return (1-p[0])*(1-p[1])/4.0
 
 def N0p(p):
-  return -0.25
+  return -(1-p[1])/4.0
 
 def N0q(p):
-  return -0.25
+  return -(1-p[0])/4.0
 
 def N1(p):
-  return (1+p[0])*(1-p[1])/4.0
-
-def N1p(p):
-  return +0.25
-
-def N1q(p):
-  return -0.25
-
-def N2(p):
-  return (1+p[0])*(1+p[1])/4.0
-
-def N2p(p):
-  return +0.25
-
-def N2q(p):
-  return +0.25
-
-def N3(p):
   return (1-p[0])*(1+p[1])/4.0
 
+def N1p(p):
+  return -(1+p[1])/4.0
+
+def N1q(p):
+  return (1-p[0])/4.0
+
+def N2(p):
+  return (1+p[0])*(1-p[1])/4.0
+
+def N2p(p):
+  return (1-p[1])/4.0
+
+def N2q(p):
+  return -(1+p[0])/4.0
+
+def N3(p):
+  return (1+p[0])*(1+p[1])/4.0
+
 def N3p(p):
-  return -0.25
+  return (1+p[1])/4.0
 
 def N3q(p):
-  return +0.25
+  return (1+p[0])/4.0
 
 # ----------------------------------------------------------------------
 class TestFIATLagrange(unittest.TestCase):
@@ -68,11 +68,12 @@ class TestFIATLagrange(unittest.TestCase):
     """
     from pylith.feassemble.FIATLagrange import FIATLagrange
     cell = FIATLagrange()
+    cell.cellDim = 2
     cell.degree = 1
-    cell.order  = 1
+    cell.order  = 2
     quadPtsE = numpy.array( [(-1.0/3**0.5, -1.0/3**0.5),
-                             (+1.0/3**0.5, -1.0/3**0.5),
                              (-1.0/3**0.5, +1.0/3**0.5),
+                             (+1.0/3**0.5, -1.0/3**0.5),
                              (+1.0/3**0.5, +1.0/3**0.5)],
                             dtype=numpy.float64 )
     quadWtsE = numpy.array( [1.0, 1.0, 1.0, 1.0], dtype=numpy.float64 )
