@@ -43,6 +43,10 @@ pylith::bc::Dirichlet::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   assert(!mesh.isNull());
   assert(0 != cs);
 
+  const int numFixedDOF = _fixedDOF.size();
+  if (0 == numFixedDOF)
+    return;
+
   // Get points associated with boundary condition
   const ALE::Obj<int_section_type>& groupField = mesh->getIntSection(_label);
   if (groupField.isNull()) {
@@ -61,7 +65,6 @@ pylith::bc::Dirichlet::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     _points[i++] = *c_iter;
 
   // Get values for degrees of freedom
-  const int numFixedDOF = _fixedDOF.size();
   char** valueNames = (numFixedDOF > 0) ? new char*[numFixedDOF] : 0;
   for (int i=0; i < numFixedDOF; ++i) {
     std::ostringstream name;
@@ -112,8 +115,11 @@ pylith::bc::Dirichlet::setConstraintSizes(const ALE::Obj<real_section_type>& fie
   assert(!field.isNull());
   assert(!mesh.isNull());
 
-  const int numPoints = _points.size();
   const int numFixedDOF = _fixedDOF.size();
+  if (0 == numFixedDOF)
+    return;
+
+  const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint)
     field->setConstraintDimension(_points[iPoint], numFixedDOF);
 } // setConstraintSizes
@@ -127,8 +133,11 @@ pylith::bc::Dirichlet::setConstraints(const ALE::Obj<real_section_type>& field,
   assert(!field.isNull());
   assert(!mesh.isNull());
 
-  const int numPoints = _points.size();
   const int numFixedDOF = _fixedDOF.size();
+  if (0 == numFixedDOF)
+    return;
+
+  const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint)
     field->setConstraintDof(_points[iPoint], &_fixedDOF[0]);
 } // setConstraints
@@ -143,8 +152,11 @@ pylith::bc::Dirichlet::setField(const double t,
   assert(!field.isNull());
   assert(!mesh.isNull());
 
-  const int numPoints = _points.size();
   const int numFixedDOF = _fixedDOF.size();
+  if (0 == numFixedDOF)
+    return;
+
+  const int numPoints = _points.size();
   for (int iPoint=0, i=0; iPoint < numPoints; ++iPoint, i+=numFixedDOF)
     field->updatePointBC(_points[iPoint], &_values[i]);
 } // setField

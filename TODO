@@ -2,6 +2,8 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+
+
 0. Incorporate Quad/Hex basis stuff (waiting for Matt to fix)
 
 Replace specific object bins with ObjectBin.
@@ -9,6 +11,10 @@ Replace specific object bins with ObjectBin.
 Python unit tests
   Integrator.finalize()
   Constraint.finalize()
+
+C++ unit test
+  Dirichlet
+    test with no fixedDOF
 
 1. Simple tests with analytical solutions
 
