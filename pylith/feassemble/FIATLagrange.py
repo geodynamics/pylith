@@ -83,34 +83,75 @@ class FIATLagrange(ReferenceCell):
     1-D Lagrange elements.
     """
     quadrature = self._setupQuadrature()
-    basisFns = self._setupBasisFns()
+    element    = self._setupElement()
+    dim        = self.cellDim
     
     # Evaluate basis functions at quadrature points
-    quadpts = quadrature.get_points()
-    basis = numpy.array(basisFns.tabulate(quadpts)).transpose()
-    self.basis = numpy.reshape(basis.flatten(), basis.shape)
+    quadpts     = numpy.array(quadrature.get_points())
+    quadwts     = numpy.array(quadrature.get_weights())
+    numQuadPts  = len(quadpts)
+    basis       = numpy.array(element.function_space().tabulate(quadrature.get_points())).transpose()
+    numBasisFns = len(element.function_space())
 
     # Evaluate derivatives of basis functions at quadrature points
-    import FIAT.shapes
-    dim = FIAT.shapes.dimension(basisFns.base.shape)
-    basisDeriv = numpy.array([basisFns.deriv_all(d).tabulate(quadpts) \
-                              for d in range(dim)]).transpose()
-    self.basisDeriv = numpy.reshape(basisDeriv.flatten(), basisDeriv.shape)
+    basisDeriv = numpy.array([element.function_space().deriv_all(d).tabulate(quadrature.get_points()) \
+                              for d in range(1)]).transpose()
 
-    self.quadPts = numpy.array(quadrature.get_points())
-    self.quadWts = numpy.array(quadrature.get_weights())
+    self.numQuadPts = numQuadPts**dim
+    self.numCorners = numBasisFns**dim
 
-    self.numCorners = len(basisFns)
-    self.numQuadPts = len(quadrature.get_weights())
-
+    if dim == 1:
+      self.quadPts    = quadpts
+      self.quadWts    = quadwts
+      self.basis      = basis
+      self.basisDeriv = basisDeriv
+    else:
+      if dim == 2:
+        self.quadPts    = numpy.zeros((numQuadPts, numQuadPts, dim))
+        self.quadWts    = numpy.zeros((numQuadPts, numQuadPts))
+        self.basis      = numpy.zeros((numQuadPts, numQuadPts, numBasisFns, numBasisFns))
+        self.basisDeriv = numpy.zeros((numQuadPts, numQuadPts, numBasisFns, numBasisFns, dim))
+        for q in range(numQuadPts):
+          for r in range(numQuadPts):
+            self.quadPts[q][r][0] = quadpts[q]
+            self.quadPts[q][r][1] = quadpts[r]
+            self.quadWts[q][r]    = quadwts[q]*quadwts[r]
+            for f in range(numBasisFns):
+              for g in range(numBasisFns):
+                self.basis[q][r][f][g]         = basis[q][f]*basis[r][g]
+                self.basisDeriv[q][r][f][g][0] = basisDeriv[q][f][0]*basis[r][g]
+                self.basisDeriv[q][r][f][g][1] = basis[q][f]*basisDeriv[r][g][0]
+      elif dim == 3:
+        self.quadPts    = numpy.array((numQuadPts, numQuadPts, numQuadPts, dim))
+        self.quadWts    = numpy.array((numQuadPts, numQuadPts, numQuadPts))
+        self.basis      = numpy.array((numQuadPts, numQuadPts, numQuadPts, numBasisFns, numBasisFns, numBasisFns))
+        self.basisDeriv = numpy.array((numQuadPts, numQuadPts, numQuadPts, numBasisFns, numBasisFns, numBasisFns, dim))
+        for q in range(numQuadPts):
+          for r in range(numQuadPts):
+            for s in range(numQuadPts):
+              self.quadPts[q][r][s][0] = quadpts[q]
+              self.quadPts[q][r][s][1] = quadpts[r]
+              self.quadPts[q][r][s][2] = quadpts[s]
+              self.quadWts[q][r][s]    = quadwts[q]*quadwts[r]*quadwts[s]
+            for f in range(numBasisFns):
+              for g in range(numBasisFns):
+                for h in range(numBasisFns):
+                  self.basis[q][r][s][f][g][h]         = basis[q][f]*basis[r][g]*basis[s][h]
+                  self.basisDeriv[q][r][s][f][g][h][0] = basisDeriv[q][f][0]*basis[r][g]*basis[s][h]
+                  self.basisDeriv[q][r][s][f][g][h][1] = basis[q][f]*basisDeriv[r][g][0]*basis[s][h]
+                  self.basisDeriv[q][r][s][f][g][h][2] = basis[q][f]*basis[r][g]*basisDeriv[s][h][0]
+      self.quadPts    = numpy.reshape(self.quadPts,    (self.numQuadPts, dim))
+      self.quadWts    = numpy.reshape(self.quadWts,    (self.numQuadPts))
+      self.basis      = numpy.reshape(self.basis,      (self.numQuadPts, self.numCorners))
+      self.basisDeriv = numpy.reshape(self.basisDeriv, (self.numQuadPts, self.numCorners, dim))
     self._info.line("Basis (quad pts):")
     self._info.line(self.basis)
     self._info.line("Basis derivatives (quad pts):")
     self._info.line(self.basisDeriv)
     self._info.line("Quad pts:")
-    self._info.line(quadrature.get_points())
+    self._info.line(self.quadPts)
     self._info.line("Quad wts:")
-    self._info.line(quadrature.get_weights())
+    self._info.line(self.quadWts)
     self._info.log()
     return
 
@@ -137,18 +178,18 @@ class FIATLagrange(ReferenceCell):
     """
     Setup quadrature rule for reference cell.
     """
-    # :TODO: ADD STUFF HERE
-    return
+    import FIAT.quadrature
+    import FIAT.shapes
+    return FIAT.quadrature.make_quadrature_by_degree(FIAT.shapes.LINE, self.order)
 
 
-  def _setupBasisFns(self):
+  def _setupElement(self):
     """
-    Setup basis functions for reference cell.
+    Setup the finite element for reference cell.
     """
-    from FIAT.Lagrange import Lagrange
-
-    # :TODO: ADD STUFF HERE
-    return
+    import FIAT.Lagrange
+    import FIAT.shapes
+    return FIAT.Lagrange.Lagrange(FIAT.shapes.LINE, self.degree)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
