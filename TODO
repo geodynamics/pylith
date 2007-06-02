@@ -2,15 +2,33 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-0. Incorporate Quad/Hex basis stuff
+0. Incorporate Quad/Hex basis stuff (waiting for Matt to fix)
 
 1. Simple tests with analytical solutions
 
-   a. 1-D: axial compression
-   b. 2-D: axial compression of a "box"
-   c. 2-DD: shearing of a "box"
-   d. 3-D: axial compression of a "box"
-   3. 3-D: shearing of a "box"
+   a. 1-D
+     i. line2 cells
+       (1) axial compression
+     ii. line3 cells
+       (1) axial compression
+   b. 2-D
+     i. tri3 cells
+       (1) axial compression
+       (2) shear
+       (3) axialshear
+     ii. quad4 cells
+       (1) axial compression
+       (2) shear
+       (3) axialshear
+   c. 3-D
+     i. tet4 cells
+       (1) axial compression
+       (2) shear
+       (3) axialshear
+     ii. hex8 cells
+       (1) axial compression
+       (2) shear
+       (3) axialshear
 
 2. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
    a. Materials C++ code

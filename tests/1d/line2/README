@@ -1,0 +1,19 @@
+1-D axial extension test.
+
+
+0      1      2      3      4
+* ---- * ---- * ---- * ---- *
+
+Vertex   Coordinates
+  0        0.0
+  1        1.0
+  2        2.0
+  3        3.0
+  4        4.0
+
+Dirichlet boundary conditions
+  u(0) = -0.2
+  u(4) = +0.2
+
+Analytical solution
+  u(x) = -0.2 + 0.1 * x
