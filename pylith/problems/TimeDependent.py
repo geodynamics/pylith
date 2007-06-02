@@ -61,10 +61,10 @@ class TimeDependent(Problem):
                                    validator=pyre.inventory.choice([1,2,3]))
     dimension.meta['tip'] = "Spatial dimension of problem space."
 
-    from Explicit import Explicit
+    from Implicit import Implicit
     formulation = pyre.inventory.facility("formulation",
                                           family="pde_formulation",
-                                          factory=Explicit)
+                                          factory=Implicit)
     formulation.meta['tip'] = "Formulation for solving PDE."
 
     from pylith.utils.CheckpointTimer import CheckpointTimer
