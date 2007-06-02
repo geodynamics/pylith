@@ -1,0 +1,78 @@
+#!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+from pylith.problems.BoundaryConditions import BoundaryConditions
+
+# BCSingle class
+class BCSingle(BoundaryConditions):
+  """
+  Python boundary conditions container for a single boundary condition.
+
+  Factory: boundary_conditions
+  """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(BoundaryConditions.Inventory):
+    """
+    Python object for managing BCSingle facilities and properties.
+    """
+    
+    ## @class Inventory
+    ## Python object for managing BCSingle facilities and properties.
+    ##
+    ## \b Properties
+    ## @li None
+    ##
+    ## \b Facilities
+    ## @li \b bc Boundary condition.
+
+    import pyre.inventory
+    
+    from pylith.bc.Dirichlet import Dirichlet
+
+    bc = pyre.inventory.facility("bc", family="boundary_condition",
+                                   factory=Dirichlet)
+    bc.meta['tip'] = "Boundary condition."
+
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="bcsingle"):
+    """
+    Constructor.
+    """
+    BoundaryConditions.__init__(self, name)
+    return
+
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Set attributes from inventory.
+    """
+    BoundaryConditions._configure(self)
+    self.bc = [self.inventory.bc]
+    return
+
+  
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def boundary_conditions():
+  """
+  Factory associated with BCSingle.
+  """
+  return BCSingle()
+
+
+# End of file 

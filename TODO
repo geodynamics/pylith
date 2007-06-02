@@ -12,11 +12,6 @@ Python unit tests
 
 1. Simple tests with analytical solutions
 
-   a. 1-D
-     i. line2 cells
-       (1) axial compression
-     ii. line3 cells
-       (1) axial compression
    b. 2-D
      i. tri3 cells
        (1) axial compression
