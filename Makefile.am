@@ -19,7 +19,9 @@ SUBDIRS = \
 	applications
 
 if ENABLE_TESTING
-  SUBDIRS += unittests
+  SUBDIRS += \
+	unittests \
+	tests
 endif
 
 if ENABLE_DOCUMENTATION

@@ -246,6 +246,16 @@ AC_CONFIG_FILES([Makefile
 		unittests/pytests/topology/Makefile
 		unittests/pytests/topology/data/Makefile
 		unittests/pytests/utils/Makefile
+		tests/Makefile
+		tests/1d/Makefile
+		tests/1d/line2/Makefile
+		tests/1d/line3/Makefile
+		tests/2d/Makefile
+		tests/2d/tri3/Makefile
+		tests/2d/quad4/Makefile
+		tests/3d/Makefile
+		tests/3d/tet4/Makefile
+		tests/3d/hex8/Makefile
                 doc/Makefile])
 
 AC_OUTPUT
