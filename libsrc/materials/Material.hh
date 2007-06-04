@@ -139,6 +139,10 @@ public :
    */
   bool needNewJacobian(void) const;
 
+  /// Reset flag indicating whether Jacobian matrix must be reformed for
+  /// current state.
+  void resetNeedNewJacobian(void);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
