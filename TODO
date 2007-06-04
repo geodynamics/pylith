@@ -2,15 +2,9 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-
-
-0. Incorporate Quad/Hex basis stuff (waiting for Matt to fix)
+0. Need to change order of basis functions in FIATLagrange cells.
 
 Replace specific object bins with ObjectBin.
-
-Python unit tests
-  Integrator.finalize()
-  Constraint.finalize()
 
 C++ unit test
   Dirichlet

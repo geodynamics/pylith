@@ -23,11 +23,20 @@ class TestIntegrator(unittest.TestCase):
   Unit testing of Python Integrator object.
   """
 
-  def test_constructors(self):
+  def test_constructor(self):
     """
     Test constructor.
     """
     i = Integrator()
+    return
+
+
+  def test_finalize(self):
+    """
+    Test constructor.
+    """
+    i = Integrator()
+    i.finalize()
     return
 
 

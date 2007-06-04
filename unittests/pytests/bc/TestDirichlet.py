@@ -50,6 +50,22 @@ class TestDirichlet(unittest.TestCase):
     return
 
 
+  def test_finalize(self):
+    """
+    Test finalize().
+
+    WARNING: This is not a rigorous test of finalize() because we
+    don't verify the results.
+    """
+    from pylith.bc.Dirichlet import Dirichlet
+    bc = Dirichlet()
+    bc.finalize()
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly    
+    return
+
+
   def test_setConstraintSizes(self):
     """
     Test setConstraintSizes().

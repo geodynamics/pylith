@@ -65,15 +65,18 @@ pylith::bc::TestDirichlet::testInitialize(void)
 
   const int numCells = mesh->heightStratum(0)->size();
 
+  const int numFixedDOF = _data->numFixedDOF;
+  const size_t numPoints = _data->numConstrainedPts;
+
   // Check points
   const int offset = numCells;
-  const size_t numPoints = _data->numConstrainedPts;
-  CPPUNIT_ASSERT_EQUAL(numPoints, bc._points.size());
-  for (int i=0; i < numPoints; ++i)
-    CPPUNIT_ASSERT_EQUAL(_data->constrainedPoints[i]+offset, bc._points[i]);
+  if (numFixedDOF > 0) {
+    CPPUNIT_ASSERT_EQUAL(numPoints, bc._points.size());
+    for (int i=0; i < numPoints; ++i)
+      CPPUNIT_ASSERT_EQUAL(_data->constrainedPoints[i]+offset, bc._points[i]);
+  } // if
 
   // Check values
-  const int numFixedDOF = _data->numFixedDOF;
   const size_t size = numPoints * numFixedDOF;
   CPPUNIT_ASSERT_EQUAL(size, bc._values.size());
   const double tolerance = 1.0e-06;
@@ -232,6 +235,7 @@ pylith::bc::TestDirichlet::_initialize(ALE::Obj<Mesh>* mesh,
   iohandler.filename(_data->meshFilename);
   iohandler.read(mesh);
   CPPUNIT_ASSERT(!mesh->isNull());
+  (*mesh)->getFactory()->clear();
 
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim((*mesh)->getDimension());
