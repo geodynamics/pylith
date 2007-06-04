@@ -67,6 +67,7 @@ pylith::meshio::MeshIOCubit::_read(void)
 
     _readVertices(ncfile, &coordinates, &numVertices, &spaceDim);
     _readCells(ncfile, &cells, &materialIds, &numCells, &numCorners);
+    _orientCells(&cells, numCells, numCorners, meshDim);
     _buildMesh(coordinates, numVertices, spaceDim,
 	       cells, numCells, numCorners, meshDim);
     _setMaterials(materialIds);
@@ -307,5 +308,51 @@ pylith::meshio::MeshIOCubit::_writeAttributes(NcFile& ncfile) const
   throw std::logic_error("MeshIOCubit::_writeAttributes() not implemented.");
 } // _writeAttributes
 
+// ----------------------------------------------------------------------
+// Reorder vertices in cells to match PyLith conventions.
+void
+pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
+					  const int numCells,
+					  const int numCorners,
+					  const int meshDim)
+{ // _orientCells
+  assert(0 != cells);
+  assert(cells->size() == numCells*numCorners);
+
+  if (2 == meshDim && 3 == numCorners) // TRI
+    // 0 1 2 -> 0 2 1
+    for (int iCell=0; iCell < numCells; ++iCell) {
+      const int i1 = iCell*numCorners+1;
+      const int i2 = iCell*numCorners+2;
+      const int tmp = (*cells)[i1];
+      (*cells)[i1] = (*cells)[i2];
+      (*cells)[i2] = tmp;
+    } // for
+  else if (2 == meshDim && 4 == numCorners) // QUAD
+    // 0 1 2 3 -> 0 1 3 2
+    for (int iCell=0; iCell < numCells; ++iCell) {
+      const int i2 = iCell*numCorners+2;
+      const int i3 = iCell*numCorners+3;
+      const int tmp = (*cells)[i2];
+      (*cells)[i2] = (*cells)[i3];
+      (*cells)[i3] = tmp;
+    } // for
+  else if (3 == meshDim && 8 == numCorners) // HEX
+    // 0 1 2 3 4 5 6 7 -> 0 1 3 2 4 5 7 6
+    for (int iCell=0; iCell < numCells; ++iCell) {
+      const int i2 = iCell*numCorners+2;
+      const int i3 = iCell*numCorners+3;
+      int tmp = (*cells)[i2];
+      (*cells)[i2] = (*cells)[i3];
+      (*cells)[i3] = tmp;
+
+      const int i6 = iCell*numCorners+6;
+      const int i7 = iCell*numCorners+7;
+      tmp = (*cells)[i6];
+      (*cells)[i6] = (*cells)[i7];
+      (*cells)[i7] = tmp;
+    } // for
+} // _orientCells
   
+
 // End of file 

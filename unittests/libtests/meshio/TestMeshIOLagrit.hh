@@ -43,6 +43,8 @@ class pylith::meshio::TestMeshIOLagrit : public TestMeshIO
   CPPUNIT_TEST( testFilename );
   CPPUNIT_TEST( testReadTetAscii );
   CPPUNIT_TEST( testReadTetBinary );
+  CPPUNIT_TEST( testOrientAsciiTet );
+  CPPUNIT_TEST( testOrientBinaryTet );
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -65,6 +67,12 @@ public :
 
   /// Test read() for mesh with binary files.
   void testReadTetBinary(void);
+
+  /// Test _orientCellsAscii with tet cells.
+  void testOrientAsciiTet(void);
+
+  /// Test _orientCellsBinary with tet cells.
+  void testOrientBinaryTet(void);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :

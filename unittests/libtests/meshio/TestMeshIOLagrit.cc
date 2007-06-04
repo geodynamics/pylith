@@ -17,6 +17,7 @@
 #include "pylith/meshio/MeshIOLagrit.hh"
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include "pylith/utils/array.hh" // USES int_array
 
 #include "data/MeshDataLagritTet.hh"
 
@@ -119,6 +120,62 @@ pylith::meshio::TestMeshIOLagrit::_testRead(const MeshData& data,
   // Make sure meshIn matches data
   _checkVals(mesh, data);
 } // _testRead
+
+// ----------------------------------------------------------------------
+// Test _orientCellsAscii with tet cells.
+void
+pylith::meshio::TestMeshIOLagrit::testOrientAsciiTet(void)
+{ // testOrientAsciiTet
+  // Expect vertices 1 and 2 to be swapped (not change to vertices 0 and 3)
+
+  const int meshDim = 3;
+  const int numCells = 2;
+  const int numCorners = 4;
+  const int cellsOrig[] = {
+    0, 1, 2, 3,
+    3, 4, 5, 6
+  };
+  const int cellsE[] = {
+    0, 2, 1, 3,
+    3, 5, 4, 6
+  };
+  
+  int_array cells(cellsOrig, numCells*numCorners);
+  MeshIOLagrit::_orientCellsAscii(&cells, numCells, numCorners, meshDim);
+
+  const int size = numCells*numCorners;
+  CPPUNIT_ASSERT_EQUAL(size, int(cells.size()));
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_EQUAL(cellsE[i], cells[i]);
+} // testOrientAsciiTet
+
+// ----------------------------------------------------------------------
+// Test _orientCellsBinary with tet cells.
+void
+pylith::meshio::TestMeshIOLagrit::testOrientBinaryTet(void)
+{ // testOrientBinaryTet
+  // No change in cells exepected
+
+  const int meshDim = 3;
+  const int numCells = 2;
+  const int numCorners = 4;
+  const int cellsOrig[] = {
+    0, 1, 2, 3,
+    3, 4, 5, 6
+  };
+  const int cellsE[] = {
+    0, 1, 2, 3,
+    3, 4, 5, 6
+  };
+  
+  int_array cells(cellsOrig, numCells*numCorners);
+  MeshIOLagrit::_orientCellsBinary(&cells, numCells, numCorners, meshDim);
+
+  const int size = numCells*numCorners;
+  CPPUNIT_ASSERT_EQUAL(size, int(cells.size()));
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_EQUAL(cellsE[i], cells[i]);
+} // testOrientBinaryTet
 
 
 // End of file 
