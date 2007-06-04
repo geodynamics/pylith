@@ -380,6 +380,9 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for
+
+  _needNewJacobian = false;
+  _material->resetNeedNewJacobian();
 } // integrateJacobian
 
 // ----------------------------------------------------------------------

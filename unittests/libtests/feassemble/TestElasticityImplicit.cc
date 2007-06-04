@@ -161,6 +161,7 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
   ElasticityImplicit integrator;
   topology::FieldsManager fields(mesh);
   _initialize(&mesh, &integrator, &fields);
+  integrator._needNewJacobian = true;
 
   const ALE::Obj<pylith::real_section_type>& dispTBctpdt = 
     fields.getReal("dispTBctpdt");
@@ -171,6 +172,8 @@ pylith::feassemble::TestElasticityImplicit::testIntegrateJacobian(void)
   CPPUNIT_ASSERT(0 == err);
 
   integrator.integrateJacobian(&jacobian, &fields, mesh);
+  CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
+
   err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);
   CPPUNIT_ASSERT(0 == err);
   err = MatAssemblyEnd(jacobian, MAT_FINAL_ASSEMBLY);

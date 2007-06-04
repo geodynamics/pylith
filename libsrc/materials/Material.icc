@@ -77,7 +77,15 @@ inline
 bool
 pylith::materials::Material::needNewJacobian(void) const {
   return _needNewJacobian;
-}
+} // needNewJacobian
+
+/// Reset flag indicating whether Jacobian matrix must be reformed for
+/// current state.
+inline
+void
+pylith::materials::Material::resetNeedNewJacobian(void) {
+  _needNewJacobian = false;
+} // resetNeedNewJacobian
 
 
 // End of file 
