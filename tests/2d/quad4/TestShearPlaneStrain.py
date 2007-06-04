@@ -10,10 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/2d/tri3/TestAxialPlaneStrain.py
+## @file tests/2d/quad4/TestShearPlaneStrain.py
 ##
-## @brief Test suite for testing pylith with axial extension in
-## y-direction for 2-D box.
+## @brief Test suite for testing pylith with shear in y-direction for
+## 2-D box.
 
 import unittest
 import numpy
@@ -25,16 +25,15 @@ def run_pylith():
   """
   if not "done" in dir(run_pylith):
     from pylith.PyLithApp import PyLithApp
-    app = PyLithApp("axialplanestrain")
+    app = PyLithApp("shearplanestrain")
     app.run()
     run_pylith.done = True
   return
 
 
-class TestAxialPlaneStrain(unittest.TestCase):
+class TestShearPlaneStrain(unittest.TestCase):
   """
-  Test suite for testing pylith with axial extension in y-direction
-  for 2-D box.
+  Test suite for testing pylith with shear in y-direction for 2-D box.
   """
 
   def setUp(self):

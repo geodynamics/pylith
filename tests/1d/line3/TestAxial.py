@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file tests/TestAxial.py
+## @file tests/1d/line3/TestAxial.py
 ##
 ## @brief Test suite for testing pylith with 1-D axial extension.
 

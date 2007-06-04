@@ -21,8 +21,8 @@ noinst_DATA = \
 	box.exo \
 	axialplanestrain.cfg \
 	bcbox.odb \
-	dispx.spatialdb \
-	dispy.spatialdb \
+	axialx.spatialdb \
+	axialy.spatialdb \
 	matprops.spatialdb
 
 noinst_TMP = \
