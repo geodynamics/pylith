@@ -327,8 +327,8 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConsts(
     } else
       dq = maxwelltime*(1.0-exp(-_dt/maxwelltime))/_dt;
     const double visFac = mu*dq/3.0;
-    (*elasticConsts)[ 0] = bulkmodulus + 4.0*dq; // C1111
-    (*elasticConsts)[ 1] = bulkmodulus - 2.0*dq; // C1122
+    (*elasticConsts)[ 0] = bulkmodulus + 4.0*visFac; // C1111
+    (*elasticConsts)[ 1] = bulkmodulus - 2.0*visFac; // C1122
     (*elasticConsts)[ 2] = (*elasticConsts)[1]; // C1133
     (*elasticConsts)[ 3] = 0; // C1112
     (*elasticConsts)[ 4] = 0; // C1123
