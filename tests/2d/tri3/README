@@ -1,17 +1,21 @@
+======================================================================
+AXIAL COMPRESSION
+======================================================================
+
 2-D axial compression test with linear triangular cells.
 
 -250 <= x <= +250
 -250 <= y <= +250
 
 
-         -1.0 m
-       ----------
-       |        |
- 0.0 m |        |
-       |        |
-       |        |
-       ----------
-         +1.0 m
+         y=-1.0 m
+        ----------
+        |        |
+x=0.0 m |        |
+        |        |
+        |        |
+        ----------
+         y=+1.0 m
 
 Dirichlet boundary conditions
   Ux(0,y) = 0.0
@@ -21,3 +25,33 @@ Dirichlet boundary conditions
 Analytical solution
   Ux(x,y) = 0
   Uy(x,y) = -0.004 * y
+
+
+======================================================================
+SHEAR
+======================================================================
+
+2-D shear test with linear triangular cells.
+
+-250 <= x <= +250
+-250 <= y <= +250
+
+
+         ----------
+         |        |
+y=-1.0 m |        | y=+1.0m
+         |        |
+         |        |
+         ----------
+
+
+Dirichlet boundary conditions
+  Ux(   0,y) =  0.0
+  Uy(   0,y) = -1.0 m
+  Ux(+250,y) =  0.0
+  Uy(+250,y) = +1.0 m
+
+Analytical solution
+  Ux(x,y) = 0
+  Uy(x,y) = -0.004 * x
+
