@@ -319,16 +319,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
   assert(0 != cells);
   assert(cells->size() == numCells*numCorners);
 
-  if (2 == meshDim && 3 == numCorners) // TRI
-    // 0 1 2 -> 0 2 1
-    for (int iCell=0; iCell < numCells; ++iCell) {
-      const int i1 = iCell*numCorners+1;
-      const int i2 = iCell*numCorners+2;
-      const int tmp = (*cells)[i1];
-      (*cells)[i1] = (*cells)[i2];
-      (*cells)[i2] = tmp;
-    } // for
-  else if (2 == meshDim && 4 == numCorners) // QUAD
+  if (2 == meshDim && 4 == numCorners) // QUAD
     // 0 1 2 3 -> 0 1 3 2
     for (int iCell=0; iCell < numCells; ++iCell) {
       const int i2 = iCell*numCorners+2;

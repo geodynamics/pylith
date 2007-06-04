@@ -155,7 +155,7 @@ pylith::meshio::TestMeshIOCubit::testOrientLine(void)
 void
 pylith::meshio::TestMeshIOCubit::testOrientTri(void)
 { // testOrientTri
-  // Swap vertices 1 and 2, vertex 0 is unchanged.
+  // No changes
 
   const int meshDim = 2;
   const int numCells = 2;
@@ -165,8 +165,8 @@ pylith::meshio::TestMeshIOCubit::testOrientTri(void)
     3, 4, 5
   };
   const int cellsE[] = {
-    0, 2, 1,
-    3, 5, 4
+    0, 1, 2,
+    3, 4, 5
   };
   
   int_array cells(cellsOrig, numCells*numCorners);
