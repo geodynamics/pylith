@@ -48,7 +48,7 @@ class TestMeshGenSimple(unittest.TestCase):
     io.coordsys = CSCart()
     mesh.coordsys = CSCart()
     io.open(mesh)
-    io.writeTopology(mesh)
+    io.writeTopology()
     io.close()
 
     #from pylith.topology.Distributor import Distributor

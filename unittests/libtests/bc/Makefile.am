@@ -24,6 +24,7 @@ testbc_SOURCES = \
 	TestBoundaryCondition.cc \
 	TestDirichlet.cc \
 	TestDirichletLine2.cc \
+	TestDirichletLine2b.cc \
 	TestDirichletTri3.cc \
 	TestDirichletQuad4.cc \
 	TestDirichletTet4.cc \
@@ -36,6 +37,7 @@ noinst_HEADERS = \
 	TestBoundaryCondition.hh \
 	TestDirichlet.hh \
 	TestDirichletLine2.hh \
+	TestDirichletLine2b.hh \
 	TestDirichletTri3.hh \
 	TestDirichletQuad4.hh \
 	TestDirichletTet4.hh \
@@ -47,6 +49,7 @@ noinst_HEADERS = \
 testbc_SOURCES += \
 	data/DirichletData.cc \
 	data/DirichletDataLine2.cc \
+	data/DirichletDataLine2b.cc \
 	data/DirichletDataTri3.cc \
 	data/DirichletDataQuad4.cc \
 	data/DirichletDataTet4.cc \
@@ -57,6 +60,7 @@ testbc_SOURCES += \
 noinst_HEADERS += \
 	data/DirichletData.hh \
 	data/DirichletDataLine2.hh \
+	data/DirichletDataLine2b.hh \
 	data/DirichletDataTri3.hh \
 	data/DirichletDataQuad4.hh \
 	data/DirichletDataTet4.hh \
