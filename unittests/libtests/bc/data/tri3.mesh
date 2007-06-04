@@ -34,9 +34,9 @@ mesh = {
   group = {
     name = bc2
     type = vertices
-    count = 1
+    count = 2
     indices = {
-      0
+      0  3
     }
   }
 }

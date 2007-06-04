@@ -33,7 +33,8 @@ pylith::bc::DirichletDataMulti::DirichletDataMulti(void) :
   valuesB(0),
   dbFilenameB(0),
   field(0),
-  bcFlags(0),
+  constraintSizes(0),
+  constrainedDOF(0),
   meshFilename(0)
 { // constructor
 } // constructor

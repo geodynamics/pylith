@@ -109,6 +109,10 @@ private :
   double_array _values; ///< Values at degrees of freedom
   int_array _fixedDOF; ///< Indices of fixed degrees of freedom
 
+  /// Offset in list of fixed DOF at point to get to fixed DOF
+  /// associated with this Dirichlet boundary condition.
+  int_array _offsetLocal;
+
 }; // class Dirichlet
 
 #include "Dirichlet.icc" // inline methods

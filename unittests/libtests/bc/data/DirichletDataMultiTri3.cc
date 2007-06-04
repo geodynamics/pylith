@@ -20,12 +20,13 @@
  *   1: 0.3
  *   3: 0.7
  *
- * Dirichlet BC B at vertex 0
+ * Dirichlet BC B at vertex 0 and 3.
  *
  * Fixed DOF: { 0 }
  *
  * Values
  *   0: 0.9
+ *   3: 0.5
  */
 
 #include "DirichletDataMultiTri3.hh"
@@ -47,20 +48,29 @@ const char* pylith::bc::DirichletDataMultiTri3::_labelB = "bc2";
 const int pylith::bc::DirichletDataMultiTri3::_numFixedDOFB = 1;
 const int pylith::bc::DirichletDataMultiTri3::_fixedDOFB[] = { 0 };
 const int pylith::bc::DirichletDataMultiTri3::_numConstrainedPtsB = 1;
-const int pylith::bc::DirichletDataMultiTri3::_constrainedPointsB[] = { 0 };
-const double pylith::bc::DirichletDataMultiTri3::_valuesB[] = { 0.9 };
+const int pylith::bc::DirichletDataMultiTri3::_constrainedPointsB[] = { 0, 3 };
+const double pylith::bc::DirichletDataMultiTri3::_valuesB[] = { 0.9, 0.5 };
 const char* pylith::bc::DirichletDataMultiTri3::_dbFilenameB =
   "data/tri3_b.spatialdb";
+
+const int pylith::bc::DirichletDataMultiTri3::_constraintSizes[] = {
+  1,
+  1,
+  0,
+  2
+};
+
+const int pylith::bc::DirichletDataMultiTri3::_constrainedDOF[] = {
+  0, 
+  1,
+  1, 0
+};
 
 const double pylith::bc::DirichletDataMultiTri3::_field[] = {
   0.9, 0.0,
   0.0, 0.3,
   0.0, 0.0,
-  0.0, 0.7
-};
-
-const int pylith::bc::DirichletDataMultiTri3::_bcFlags[] = {
-  1, 0, -1, 0
+  0.5, 0.7
 };
 
 const char* pylith::bc::DirichletDataMultiTri3::_meshFilename = 
@@ -89,7 +99,8 @@ pylith::bc::DirichletDataMultiTri3::DirichletDataMultiTri3(void)
   dbFilenameB = const_cast<char*>(_dbFilenameB);
 
   field = const_cast<double*>(_field);
-  bcFlags = const_cast<int*>(_bcFlags);
+  constraintSizes = const_cast<int*>(_constraintSizes);
+  constrainedDOF = const_cast<int*>(_constrainedDOF);
 
   meshFilename = const_cast<char*>(_meshFilename);
 } // constructor

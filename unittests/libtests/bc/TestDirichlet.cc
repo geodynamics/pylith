@@ -192,6 +192,19 @@ pylith::bc::TestDirichlet::testSetField(void)
   const double t = 1.0;
   bc.setField(t, field, mesh);
 
+  // Create list of unconstrained DOF at constrained DOF
+  const int numFreeDOF = _data->numDOF - _data->numFixedDOF;
+  int_array freeDOF(numFreeDOF);
+  int index = 0;
+  for (int iDOF=0; iDOF < _data->numDOF; ++iDOF) {
+    bool free = true;
+    for (int iFixed=0; iFixed < _data->numFixedDOF; ++iFixed)
+      if (iDOF == _data->fixedDOF[iFixed])
+	free = false;
+    if (free)
+      freeDOF[index] = iDOF;
+  } // for
+
   const int numCells = mesh->heightStratum(0)->size();
   const int offset = numCells;
   const int numFixedDOF = _data->numFixedDOF;
@@ -202,21 +215,24 @@ pylith::bc::TestDirichlet::testSetField(void)
     const int fiberDim = field->getFiberDimension(*v_iter);
     const real_section_type::value_type* values = 
       mesh->restrict(field, *v_iter);
+
     if (*v_iter != _data->constrainedPoints[iConstraint] + offset) {
+      // unconstrained point
       for (int i=0; i < fiberDim; ++i)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[i], tolerance);
     } else {
-      int iiConstraint = 0;
-      for (int i=0; i < fiberDim; ++i) {
-	if (i == _data->fixedDOF[iiConstraint]) {
-	  const int index = iConstraint * numFixedDOF + iiConstraint;
-	  CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->values[index],
-				       values[i],
-				       tolerance);
-	  ++iiConstraint;
-	} else {
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[i], tolerance);
-	} // if/else
+      // constrained point
+
+      // check unconstrained DOF
+      for (int iDOF=0; iDOF < numFreeDOF; ++iDOF)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, values[freeDOF[iDOF]], tolerance);
+
+      // check constrained DOF
+      for (int iDOF=0; iDOF < numFixedDOF; ++iDOF) {
+	const int index = iConstraint * numFixedDOF + iDOF;
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->values[index],
+				     values[_data->fixedDOF[iDOF]],
+				     tolerance);
       } // for
       ++iConstraint;
     } // if/else
