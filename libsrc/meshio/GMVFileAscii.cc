@@ -209,14 +209,6 @@ pylith::meshio::GMVFileAscii::_readCells(std::ifstream& fin,
 
   *cells -= 1; // use zero base
 
-  if (cellString == "tet")
-    // reverse order
-    for (int iCell=0; iCell < *numCells; ++iCell) {
-      const int tmp = (*cells)[iCell*(*numCorners)+1];
-      (*cells)[iCell*(*numCorners)+1] = (*cells)[iCell*(*numCorners)+2];
-      (*cells)[iCell*(*numCorners)+2] = tmp;
-    } // for
-
   info << "Done." << journal::endl;
 } // readCells
 

@@ -40,8 +40,10 @@ testmeshio_SOURCES += \
 	data/MeshData2D.cc \
 	data/MeshData2Din3D.cc \
 	data/MeshData3D.cc \
-	data/MeshDataCubitHex.cc \
+	data/MeshDataCubitTri.cc \
+	data/MeshDataCubitQuad.cc \
 	data/MeshDataCubitTet.cc \
+	data/MeshDataCubitHex.cc \
 	data/MeshDataLagritTet.cc
 
 noinst_HEADERS += \
@@ -52,8 +54,10 @@ noinst_HEADERS += \
 	data/MeshData2D.hh \
 	data/MeshData2Din3D.hh \
 	data/MeshData3D.hh \
-	data/MeshDataCubitHex.hh \
+	data/MeshDataCubitTri.hh \
+	data/MeshDataCubitQuad.hh \
 	data/MeshDataCubitTet.hh \
+	data/MeshDataCubitHex.hh \
 	data/MeshDataLagritTet.hh
 
 testmeshio_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)

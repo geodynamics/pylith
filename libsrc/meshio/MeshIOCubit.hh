@@ -20,6 +20,8 @@
 namespace pylith {
   namespace meshio {
     class MeshIOCubit;
+
+    class TestMeshIOCubit; // unit testing
   } // meshio
 } // pylith
 
@@ -27,6 +29,7 @@ class NcFile; // netcdf file
 
 class pylith::meshio::MeshIOCubit : public MeshIO
 { // MeshIOCubit
+  friend class TestMeshIOCubit;
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -110,6 +113,19 @@ private :
    * @param ncfile Cubit Exodus file.
    */
   void _writeAttributes(NcFile& ncfile) const;
+
+  /** Reorder vertices in cells to match PyLith conventions.
+   *
+   * @param cells Array of vertex indices for each cell [numCells*numCorners].
+   * @param numCells Number of cells.
+   * @param numCorners Number of vertices per cell.
+   * @param meshDim Spatial dimension of mesh.
+   */
+  static
+  void _orientCells(int_array* const cells,
+		    const int numCells,
+		    const int numCorners,
+		    const int meshDim);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

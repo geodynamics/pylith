@@ -20,11 +20,14 @@
 namespace pylith {
   namespace meshio {
     class MeshIOLagrit;
+
+    class TestMeshIOLagrit; // unit testing
   } // meshio
 } // pylith
 
 class pylith::meshio::MeshIOLagrit : public MeshIO
 { // MeshIOLagrit
+  friend class TestMeshIOLagrit; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -94,6 +97,34 @@ protected :
 
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
+
+  /** Reorder vertices in cells from ASCII GMV files to match PyLith
+   * conventions.
+   *
+   * @param cells Array of vertex indices for each cell [numCells*numCorners].
+   * @param numCells Number of cells.
+   * @param numCorners Number of vertices per cell.
+   * @param meshDim Spatial dimension of mesh.
+   */
+  static
+  void _orientCellsAscii(int_array* const cells,
+			 const int numCells,
+			 const int numCorners,
+			 const int meshDim);
+
+  /** Reorder vertices in cells from binary GMV files to match PyLith
+   * conventions.
+   *
+   * @param cells Array of vertex indices for each cell [numCells*numCorners].
+   * @param numCells Number of cells.
+   * @param numCorners Number of vertices per cell.
+   * @param meshDim Spatial dimension of mesh.
+   */
+  static
+  void _orientCellsBinary(int_array* const cells,
+			  const int numCells,
+			  const int numCorners,
+			  const int meshDim);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :

@@ -2,8 +2,6 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-0. Need to change order of basis functions in FIATLagrange cells.
-
 Replace specific object bins with ObjectBin.
 
 Update Dirichlet BC to allow mixing different Dirichlet BC for the

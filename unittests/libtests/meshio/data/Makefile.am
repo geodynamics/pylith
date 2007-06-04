@@ -15,8 +15,10 @@ noinst_DATA = \
 	cube2_ascii.pset \
 	cube2_binary.gmv \
 	cube2_binary.pset \
-	twohex8.exo \
-	twotet4.exo
+	twotri3.exo \
+	twoquad4.exo \
+	twotet4.exo \
+	twohex8.exo
 
 noinst_TMP =
 

@@ -21,6 +21,7 @@
 
 #include "pylith/utils/array.hh" // USES double_array, int_array
 
+#include <assert.h> // USES assert()
 #include <stdexcept> // TEMPORARY
 
 // ----------------------------------------------------------------------
@@ -56,10 +57,12 @@ pylith::meshio::MeshIOLagrit::_read(void)
     GMVFileAscii filein(_filenameGmv.c_str());
     filein.read(&coordinates, &cells, &materialIds, 
 		&meshDim, &spaceDim, &numVertices, &numCells, &numCorners);
+    _orientCellsAscii(&cells, numCells, numCorners, meshDim);
   } else {
     GMVFileBinary filein(_filenameGmv.c_str(), _flipEndian);
     filein.read(&coordinates, &cells, &materialIds, 
 		&meshDim, &spaceDim, &numVertices, &numCells, &numCorners);
+    _orientCellsBinary(&cells, numCells, numCorners, meshDim);
   } // if/else
   _buildMesh(coordinates, numVertices, spaceDim,
 	     cells, numCells, numCorners, meshDim);
@@ -87,5 +90,43 @@ pylith::meshio::MeshIOLagrit::_write(void) const
   throw std::logic_error("MeshIOLagrit::_write not implemented.");
 } // _write
 
+// ----------------------------------------------------------------------
+// Reorder vertices in cells from ASCII GMV file to match PyLith
+// conventions.
+void
+pylith::meshio::MeshIOLagrit::_orientCellsAscii(int_array* const cells,
+						const int numCells,
+						const int numCorners,
+						const int meshDim)
+{ // _orientCellsAscii
+  assert(0 != cells);
+  assert(cells->size() == numCells*numCorners);
+
+  if (3 == meshDim && 4 == numCorners) // TET
+    for (int iCell=0; iCell < numCells; ++iCell) {
+      const int i1 = iCell*numCorners+1;
+      const int i2 = iCell*numCorners+2;
+      const int tmp = (*cells)[i1];
+      (*cells)[i1] = (*cells)[i2];
+      (*cells)[i2] = tmp;
+    } // for
+} // _orientCellsAscii
   
+// ----------------------------------------------------------------------
+// Reorder vertices in cells from binary GMV file to match PyLith
+// conventions.
+void
+pylith::meshio::MeshIOLagrit::_orientCellsBinary(int_array* const cells,
+						 const int numCells,
+						 const int numCorners,
+						 const int meshDim)
+{ // _orientCellsBinary
+  assert(0 != cells);
+  assert(cells->size() == numCells*numCorners);
+
+  if (3 == meshDim && 4 == numCorners)  // TET
+    ; // do nothing
+} // _orientCellsBinary
+  
+
 // End of file 
