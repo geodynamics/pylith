@@ -14,21 +14,21 @@
 ##
 ## @brief Python faults container with one fault.
 ##
-## Factory: interfaces_bin
+## Factory: object_bin
 
-from FaultsBin import FaultsBin
+from pylith.utils.ObjectBin import ObjectBin
 
 # SingleFault class
-class SingleFault(FaultsBin):
+class SingleFault(ObjectBin):
   """
   Python faults container with one material.
 
-  Factory: interfaces_bin
+  Factory: object_bin
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(FaultsBin.Inventory):
+  class Inventory(ObjectBin.Inventory):
     """
     Python object for managing SingleFault facilities and properties.
     """
@@ -55,7 +55,7 @@ class SingleFault(FaultsBin):
     """
     Constructor.
     """
-    FaultsBin.__init__(self, name)
+    ObjectBin.__init__(self, name)
     return
 
 
@@ -65,14 +65,14 @@ class SingleFault(FaultsBin):
     """
     Set attributes from inventory.
     """
-    FaultsBin._configure(self)
-    self.ic = [self.inventory.fault]
+    ObjectBin._configure(self)
+    self.bin = [self.inventory.fault]
     return
 
   
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def interfaces_bin():
+def object_bin():
   """
   Factory associated with SingleFault.
   """

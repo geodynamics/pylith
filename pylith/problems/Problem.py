@@ -46,23 +46,21 @@ class Problem(Component):
     ##   constitutive models.
 
     import pyre.inventory
+    from pylith.utils.ObjectBin import ObjectBin
 
     from pylith.materials.Homogeneous import Homogeneous
     materials = pyre.inventory.facility("materials", family="materials",
                                         factory=Homogeneous)
     materials.meta['tip'] = "Materials in problem."
 
-    from BoundaryConditions import BoundaryConditions
-    bc = pyre.inventory.facility("bc", family="boundary_conditions",
-                                 factory=BoundaryConditions)
+    bc = pyre.inventory.facility("bc", family="object_bin", factory=ObjectBin)
     bc.meta['tip'] = "Boundary conditions."
 
-
-    from pylith.faults.FaultsBin import FaultsBin
-    interfaces = pyre.inventory.facility("interfaces", family="interfaces_bin",
-                                         factory=FaultsBin)
+    interfaces = pyre.inventory.facility("interfaces", family="object_bin",
+                                         factory=ObjectBin)
     interfaces.meta['tip'] = "Interior surfaces with constraints or " \
                              "constitutive models."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 

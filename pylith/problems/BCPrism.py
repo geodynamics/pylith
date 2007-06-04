@@ -16,23 +16,23 @@
 ##
 ## Boundary conditions can be applied to any of the six faces.
 ##
-## Factory: boundary_conditions
+## Factory: object_bin
 
-from BoundaryConditions import BoundaryConditions
+from pylith.utils.ObjectBin import ObjectBin
 
 # BCPrism class
-class BCPrism(BoundaryConditions):
+class BCPrism(ObjectBin):
   """
   Python boundary conditions container for a 3-D prism.
 
   Boundary conditions can be applied to any of the six faces.
 
-  Factory: boundary_conditions
+  Factory: object_bin
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(BoundaryConditions.Inventory):
+  class Inventory(ObjectBin.Inventory):
     """
     Python object for managing BCPrism facilities and properties.
     """
@@ -87,7 +87,7 @@ class BCPrism(BoundaryConditions):
     """
     Constructor.
     """
-    BoundaryConditions.__init__(self, name)
+    ObjectBin.__init__(self, name)
     return
 
 
@@ -97,7 +97,7 @@ class BCPrism(BoundaryConditions):
     """
     Set attributes from inventory.
     """
-    BoundaryConditions._configure(self)
+    ObjectBin._configure(self)
     self.bc = [self.inventory.xPos,
                self.inventory.xNeg,
                self.inventory.yPos,
@@ -109,7 +109,7 @@ class BCPrism(BoundaryConditions):
   
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def boundary_conditions():
+def object_bin():
   """
   Factory associated with BCPrism.
   """

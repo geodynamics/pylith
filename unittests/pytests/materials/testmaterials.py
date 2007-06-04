@@ -74,6 +74,9 @@ class TestApp(Script):
     from TestElasticStress1D import TestElasticStress1D
     suite.addTest(unittest.makeSuite(TestElasticStress1D))
 
+    from TestHomogeneous import TestHomogeneous
+    suite.addTest(unittest.makeSuite(TestHomogeneous))
+
     return suite
 
 

@@ -86,7 +86,7 @@ class Formulation(Component):
     self.constraints = []
 
     self._info.log("Initializing materials.")
-    for material in materials.materials:
+    for material in materials.bin:
       if material.quadrature.spaceDim != dimension:
         raise ValueError, \
               "Spatial dimension of problem is '%d' but quadrature " \
@@ -103,7 +103,7 @@ class Formulation(Component):
       self.integrators.append(integrator)
 
     self._info.log("Initializing boundary conditions.")
-    for bc in boundaryConditions.bc:
+    for bc in boundaryConditions.bin:
       bc.initialize(mesh)
       if implementsIntegrator(bc):
         self.integrators.append(bc)
@@ -115,7 +115,7 @@ class Formulation(Component):
               "integrator or a constraint." % bc.name
 
     self._info.log("Initializing interior interfaces.")
-    for ic in interfaceConditions.ic:
+    for ic in interfaceConditions.bin:
       ic.initialize(mesh)
       if implementsIntegrator(ic):
         self.integrators.append(ic)

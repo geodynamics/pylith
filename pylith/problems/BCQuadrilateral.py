@@ -16,23 +16,23 @@
 ##
 ## Boundary conditions can be applied to any of the four edges.
 ##
-## Factory: boundary_conditions
+## Factory: object_bin
 
-from BoundaryConditions import BoundaryConditions
+from pylith.utils.ObjectBin import ObjectBin
 
 # BCQuadrilateral class
-class BCQuadrilateral(BoundaryConditions):
+class BCQuadrilateral(ObjectBin):
   """
   Python boundary conditions container for a 2-D quadrilateral.
 
   Boundary conditions can be applied to any of the four edges.
 
-  Factory: boundary_conditions
+  Factory: object_bin
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(BoundaryConditions.Inventory):
+  class Inventory(ObjectBin.Inventory):
     """
     Python object for managing BCQuadrilateral facilities and properties.
     """
@@ -77,7 +77,7 @@ class BCQuadrilateral(BoundaryConditions):
     """
     Constructor.
     """
-    BoundaryConditions.__init__(self, name)
+    ObjectBin.__init__(self, name)
     return
 
 
@@ -87,7 +87,7 @@ class BCQuadrilateral(BoundaryConditions):
     """
     Set attributes from inventory.
     """
-    BoundaryConditions._configure(self)
+    ObjectBin._configure(self)
     self.bc = [self.inventory.xPos,
                self.inventory.xNeg,
                self.inventory.yPos,
@@ -97,7 +97,7 @@ class BCQuadrilateral(BoundaryConditions):
   
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def boundary_conditions():
+def object_bin():
   """
   Factory associated with BCQuadrilateral.
   """

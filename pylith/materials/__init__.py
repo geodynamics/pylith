@@ -22,7 +22,6 @@ __all__ = ['ElasticMaterial',
            'ElasticStress1D',
            'Homogeneous',
            'Material',
-           'MaterialsBin',
            'MaxwellIsotropic3D']
 
 
