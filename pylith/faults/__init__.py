@@ -15,7 +15,6 @@
 ## @brief Python PyLith faults module initialization
 
 __all__ = ['EqKinSrc',
-           'FaultsBin',
            'Fault',
            'FaultCohesive',
            'FaultCohesiveKin',

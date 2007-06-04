@@ -2,8 +2,6 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Replace specific object bins with ObjectBin.
-
 Update Dirichlet BC to allow mixing different Dirichlet BC for the
 same points.
 

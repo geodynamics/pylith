@@ -10,10 +10,10 @@
 # ----------------------------------------------------------------------
 #
 
-from pylith.problems.BoundaryConditions import BoundaryConditions
+from pylith.utils.ObjectBin import ObjectBin
 
 # BCBox class
-class BCBox(BoundaryConditions):
+class BCBox(ObjectBin):
   """
   Python boundary conditions container for box with four boundary conditions.
 
@@ -22,7 +22,7 @@ class BCBox(BoundaryConditions):
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(BoundaryConditions.Inventory):
+  class Inventory(ObjectBin.Inventory):
     """
     Python object for managing BCBox facilities and properties.
     """
@@ -63,7 +63,7 @@ class BCBox(BoundaryConditions):
     """
     Constructor.
     """
-    BoundaryConditions.__init__(self, name)
+    ObjectBin.__init__(self, name)
     return
 
 
@@ -73,17 +73,17 @@ class BCBox(BoundaryConditions):
     """
     Set attributes from inventory.
     """
-    BoundaryConditions._configure(self)
-    self.bc = [self.inventory.xm,
-               self.inventory.xp,
-               self.inventory.ym,
-               self.inventory.yp]
+    ObjectBin._configure(self)
+    self.bin = [self.inventory.xm,
+                self.inventory.xp,
+                self.inventory.ym,
+                self.inventory.yp]
     return
 
   
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def boundary_conditions():
+def object_bin():
   """
   Factory associated with BCBox.
   """

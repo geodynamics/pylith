@@ -20,7 +20,6 @@ nobase_pkgpyexec_PYTHON = \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \
 	faults/EqKinSrc.py \
-	faults/FaultsBin.py \
 	faults/Fault.py \
 	faults/FaultCohesive.py \
 	faults/FaultCohesiveKin.py \
@@ -52,7 +51,6 @@ nobase_pkgpyexec_PYTHON = \
 	materials/ElasticStress1D.py \
 	materials/Homogeneous.py \
 	materials/Material.py \
-	materials/MaterialsBin.py \
 	materials/MaxwellIsotropic3D.py \
 	meshio/__init__.py \
 	meshio/MeshIO.py \
@@ -65,7 +63,6 @@ nobase_pkgpyexec_PYTHON = \
 	problems/__init__.py \
 	problems/BCPrism.py \
 	problems/BCQuadrilateral.py \
-	problems/BoundaryConditions.py \
 	problems/Explicit.py \
 	problems/Formulation.py \
 	problems/Implicit.py \

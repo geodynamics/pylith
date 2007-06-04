@@ -14,21 +14,21 @@
 ##
 ## @brief Python materials container with one material.
 ##
-## Factory: materials_bin
+## Factory: object_bin
 
-from MaterialsBin import MaterialsBin
+from pylith.utils.ObjectBin import ObjectBin
 
 # Homogeneous class
-class Homogeneous(MaterialsBin):
+class Homogeneous(ObjectBin):
   """
   Python materials container with one material.
 
-  Factory: materials_bin
+  Factory: object_bin
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
 
-  class Inventory(MaterialsBin.Inventory):
+  class Inventory(ObjectBin.Inventory):
     """
     Python object for managing Homogeneous facilities and properties.
     """
@@ -56,7 +56,7 @@ class Homogeneous(MaterialsBin):
     """
     Constructor.
     """
-    MaterialsBin.__init__(self, name)
+    ObjectBin.__init__(self, name)
     return
 
 
@@ -66,8 +66,8 @@ class Homogeneous(MaterialsBin):
     """
     Set attributes from inventory.
     """
-    MaterialsBin._configure(self)
-    self.materials = [self.inventory.material]
+    ObjectBin._configure(self)
+    self.bin = [self.inventory.material]
     return
 
   

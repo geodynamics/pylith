@@ -201,7 +201,7 @@ class Implicit(Formulation):
     """
     self._info.log("Computing elastic solution.")
 
-    for material in materials.materials:
+    for material in materials.bin:
       material.useElasticBehavior(True)
 
     self._info.log("Setting constraints.")
