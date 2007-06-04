@@ -14,7 +14,7 @@
 
 #include "TestMaxwellIsotropic3D.hh" // Implementation of class methods
 
-#include "data/MaxwellIsotropic3DData.hh" // USES MaxwellIsotropic3DData
+#include "data/MaxwellIsotropic3DElasticData.hh" // USES MaxwellIsotropic3DElasticData
 
 #include "pylith/materials/MaxwellIsotropic3D.hh" // USES MaxwellIsotropic3D
 
@@ -27,7 +27,9 @@ void
 pylith::materials::TestMaxwellIsotropic3D::testDBValues(void)
 { // testDBValues
   MaxwellIsotropic3D material;
-  MaxwellIsotropic3DData data;
+  MaxwellIsotropic3DElasticData data;
+  bool elasFlag = true;
+  material.useElasticBehavior(elasFlag);
   _testDBValues(&material, data);
 } // testDBValues
 
@@ -37,7 +39,9 @@ void
 pylith::materials::TestMaxwellIsotropic3D::testParameters(void)
 { // testParameters
   MaxwellIsotropic3D material;
-  MaxwellIsotropic3DData data;
+  MaxwellIsotropic3DElasticData data;
+  bool elasFlag = true;
+  material.useElasticBehavior(elasFlag);
   _testParameters(&material, data);
 } // testParameters
 
@@ -47,7 +51,9 @@ void
 pylith::materials::TestMaxwellIsotropic3D::testDBToParameters(void)
 { // testDBToParameters
   MaxwellIsotropic3D material;
-  MaxwellIsotropic3DData data;
+  MaxwellIsotropic3DElasticData data;
+  bool elasFlag = true;
+  material.useElasticBehavior(elasFlag);
   _testDBToParameters(&material, data);
 } // testDBToParameters
 
@@ -57,40 +63,91 @@ void
 pylith::materials::TestMaxwellIsotropic3D::testCalcDensity(void)
 { // testCalcDensity
   MaxwellIsotropic3D material;
-  MaxwellIsotropic3DData data;
+  MaxwellIsotropic3DElasticData data;
+  bool elasFlag = true;
+  material.useElasticBehavior(elasFlag);
   _testCalcDensity(&material, data);
 } // testCalcDensity
 
 // ----------------------------------------------------------------------
-// Test calcStress()
+// Test calcStressElastic()
 void
-pylith::materials::TestMaxwellIsotropic3D::testCalcStress(void)
-{ // testCalcStress
+pylith::materials::TestMaxwellIsotropic3D::testCalcStressElastic(void)
+{ // testCalcStressElastic
   MaxwellIsotropic3D material;
-  MaxwellIsotropic3DData data;
+  MaxwellIsotropic3DElasticData data;
+  bool elasFlag = true;
+  material.useElasticBehavior(elasFlag);
   _testCalcStress(&material, data);
-} // testCalcStress
+} // testCalcStressElastic
 
 // ----------------------------------------------------------------------
-// Test calcElasticConsts()
+// Test calcElasticConstsElastic()
 void
-pylith::materials::TestMaxwellIsotropic3D::testCalcElasticConsts(void)
-{ // testElasticConsts
+pylith::materials::TestMaxwellIsotropic3D::testCalcElasticConstsElastic(void)
+{ // testElasticConstsElastic
   MaxwellIsotropic3D material;
-  MaxwellIsotropic3DData data;
-  _testCalcElasticConsts(&material, data);
-} // testElasticConsts
+  MaxwellIsotropic3DElasticData data;
+  bool elasFlag = true;
+  material.useElasticBehavior(elasFlag);
+  _testCalcElasticConstsElastic(&material, data);
+} // testElasticConstsElastic
 
 // ----------------------------------------------------------------------
-// Test updateState()
+// Test updateStateElastic()
 void
-pylith::materials::TestMaxwellIsotropic3D::testUpdateState(void)
-{ // testUpdateState
+pylith::materials::TestMaxwellIsotropic3D::testUpdateStateElastic(void)
+{ // testUpdateStateElastic
   MaxwellIsotropic3D material;
 
   std::vector<double_array> totalStrain;
-  material.updateState(totalStrain);
-} // testUpdateState
+  bool elasFlag = true;
+  material.useElasticBehavior(elasFlag);
+  material.updateStateElastic(totalStrain);
+} // testUpdateStateElastic
+
+// ----------------------------------------------------------------------
+// Test calcStressTimeDep()
+void
+pylith::materials::TestMaxwellIsotropic3D::testCalcStressTimeDep(void)
+{ // testCalcStressTimeDep
+  MaxwellIsotropic3D material;
+  MaxwellIsotropic3DTimeDepData data;
+  bool elasFlag = false;
+  material.useElasticBehavior(elasFlag);
+  double dt = 2.0e5;
+  material.timeStep(dt);
+  _testCalcStressTimeDep(&material, data);
+} // testCalcStressTimeDep
+
+// ----------------------------------------------------------------------
+// Test calcElasticConstsTimeDep()
+void
+pylith::materials::TestMaxwellIsotropic3D::testCalcElasticConstsTimeDep(void)
+{ // testElasticConstsTimeDep
+  MaxwellIsotropic3D material;
+  MaxwellIsotropic3DTimeDepData data;
+  bool elasFlag = false;
+  material.useElasticBehavior(elasFlag);
+  double dt = 2.0e5;
+  material.timeStep(dt);
+  _testCalcElasticConstsTimeDep(&material, data);
+} // testElasticConstsTimeDep
+
+// ----------------------------------------------------------------------
+// Test updateStateTimeDep()
+void
+pylith::materials::TestMaxwellIsotropic3D::testUpdateStateTimeDep(void)
+{ // testUpdateStateTimeDep
+  MaxwellIsotropic3D material;
+
+  std::vector<double_array> totalStrain;
+  bool elasFlag = false;
+  material.useElasticBehavior(elasFlag);
+  double dt = 2.0e5;
+  material.timeStep(dt);
+  material.updateStateTimeDep(totalStrain);
+} // testUpdateStateTimeDep
 
 // ----------------------------------------------------------------------
 // Test timeStep()
