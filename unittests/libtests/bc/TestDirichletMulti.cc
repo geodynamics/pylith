@@ -49,16 +49,8 @@ pylith::bc::TestDirichletMulti::testSetConstraintSizes(void)
        ++v_iter) {
     CPPUNIT_ASSERT_EQUAL(_data->numDOF, field->getFiberDimension(*v_iter));
     
-    const int flag = _data->bcFlags[*v_iter-offset];
-    if (-1 == flag)
-      // no constraints
-      CPPUNIT_ASSERT_EQUAL(0, field->getConstraintDimension(*v_iter));
-    else if (0 == flag) 
-      CPPUNIT_ASSERT_EQUAL(_data->numFixedDOFA, 
-			   field->getConstraintDimension(*v_iter));
-    else if (1 == flag)
-      CPPUNIT_ASSERT_EQUAL(_data->numFixedDOFB,
-			   field->getConstraintDimension(*v_iter));
+    CPPUNIT_ASSERT_EQUAL(_data->constraintSizes[*v_iter-offset],
+			 field->getConstraintDimension(*v_iter));
   } // for
 } // testSetConstraintSizes
 
@@ -85,29 +77,16 @@ pylith::bc::TestDirichletMulti::testSetConstraints(void)
 
   const int numCells = mesh->heightStratum(0)->size();
   const int offset = numCells;
+  int index = 0;
   for (Mesh::label_sequence::iterator v_iter = vertices->begin();
        v_iter != vertices->end();
        ++v_iter) {
-    const int* fixedDOF = field->getConstraintDof(*v_iter);
-    
-    const int flag = _data->bcFlags[*v_iter-offset];
-    if (-1 == flag) {
-      // no constraints
-      CPPUNIT_ASSERT_EQUAL(0, field->getConstraintDimension(*v_iter));
-      //CPPUNIT_ASSERT(0 == fixedDOF);
-    } else if (0 == flag) {
-      CPPUNIT_ASSERT(0 != fixedDOF);
-      CPPUNIT_ASSERT_EQUAL(_data->numFixedDOFA, 
-			   field->getConstraintDimension(*v_iter));
-      for (int iDOF=0; iDOF < _data->numFixedDOFA; ++iDOF)
-	CPPUNIT_ASSERT_EQUAL(_data->fixedDOFA[iDOF], fixedDOF[iDOF]);
-    } else if (1 == flag) {
-      CPPUNIT_ASSERT(0 != fixedDOF);
-      CPPUNIT_ASSERT_EQUAL(_data->numFixedDOFB, 
-			   field->getConstraintDimension(*v_iter));
-      for (int iDOF=0; iDOF < _data->numFixedDOFB; ++iDOF)
-	CPPUNIT_ASSERT_EQUAL(_data->fixedDOFB[iDOF], fixedDOF[iDOF]);
-    } // if/else
+    const int numConstrainedDOF = _data->constraintSizes[*v_iter-offset];
+    if (numConstrainedDOF > 0) {
+      const int* fixedDOF = field->getConstraintDof(*v_iter);
+      for (int iDOF=0; iDOF < numConstrainedDOF; ++iDOF)
+	CPPUNIT_ASSERT_EQUAL(_data->constrainedDOF[index++], fixedDOF[iDOF]);
+    } // if
   } // for
 } // testSetConstraints
 

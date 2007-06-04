@@ -2,9 +2,6 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Update Dirichlet BC to allow mixing different Dirichlet BC for the
-same points.
-
 1. Simple tests with analytical solutions
 
    b. 2-D

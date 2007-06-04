@@ -120,8 +120,11 @@ pylith::bc::Dirichlet::setConstraintSizes(const ALE::Obj<real_section_type>& fie
     return;
 
   const int numPoints = _points.size();
-  for (int iPoint=0; iPoint < numPoints; ++iPoint)
-    field->setConstraintDimension(_points[iPoint], numFixedDOF);
+  _offsetLocal.resize(numPoints);
+  for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+    _offsetLocal[iPoint] = field->getConstraintDimension(_points[iPoint]);
+    field->addConstraintDimension(_points[iPoint], numFixedDOF);
+  } // for
 } // setConstraintSizes
 
 // ----------------------------------------------------------------------
@@ -138,8 +141,15 @@ pylith::bc::Dirichlet::setConstraints(const ALE::Obj<real_section_type>& field,
     return;
 
   const int numPoints = _points.size();
-  for (int iPoint=0; iPoint < numPoints; ++iPoint)
-    field->setConstraintDof(_points[iPoint], &_fixedDOF[0]);
+  for (int iPoint=0; iPoint < numPoints; ++iPoint) {
+    const Mesh::point_type point = _points[iPoint];
+    const int* curFixedDOF = field->getConstraintDof(point);
+    const int numTotalConstrained = field->getConstraintDimension(point);
+    int_array allFixedDOF(curFixedDOF, numTotalConstrained);
+    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
+      allFixedDOF[_offsetLocal[iPoint]+iDOF] = _fixedDOF[iDOF];
+    field->setConstraintDof(point, &allFixedDOF[0]);
+  } // for
 } // setConstraints
 
 // ----------------------------------------------------------------------
@@ -157,8 +167,15 @@ pylith::bc::Dirichlet::setField(const double t,
     return;
 
   const int numPoints = _points.size();
-  for (int iPoint=0, i=0; iPoint < numPoints; ++iPoint, i+=numFixedDOF)
-    field->updatePointBC(_points[iPoint], &_values[i]);
+  for (int iPoint=0, i=0; iPoint < numPoints; ++iPoint) {
+    const Mesh::point_type point = _points[iPoint];
+    const int fiberDimension = field->getFiberDimension(point);
+    double_array allValues(fiberDimension);
+    mesh->restrict(field, point, &allValues[0], fiberDimension);
+    for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
+      allValues[_fixedDOF[iDOF]] = _values[i++];
+    field->updatePointAll(_points[iPoint], &allValues[0]);
+  } // for
 } // setField
 
 

@@ -57,7 +57,9 @@ private:
   static const char* _dbFilenameB; ///< Filename of simple spatial database.
 
   static const double _field[]; ///< Values in field
-  static const int _bcFlags[]; ///< Flags indicating if point is associated with BC
+  static const int _constraintSizes[]; ///< Number of constrained DOF at each vertex
+  static const int _constrainedDOF[]; ///< Indices of constrained DOF at each constrained vertex
+
   static const char* _meshFilename; ///< Filename of input mesh.
 };
 

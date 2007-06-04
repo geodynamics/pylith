@@ -59,7 +59,8 @@ public:
   //@}
 
   double* field; ///< Values in field
-  int* bcFlags; ///< Flags indicating if point is associated with BC
+  int* constraintSizes; ///< Number of constrained DOF at each vertex
+  int* constrainedDOF; ///< Indices of constrained DOF at each constrained vertex
 
   char* meshFilename; ///< Filename for input mesh.
 };
