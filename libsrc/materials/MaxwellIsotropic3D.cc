@@ -224,9 +224,9 @@ pylith::materials::MaxwellIsotropic3D::_calcStress(double_array* const stress,
   } else {
     const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     const double meanStressTpdt = bulkmodulus * traceStrainTpdt;
-    const double meanStrainT = parameters[_MaxwellIsotropic3D::pidStrainT][0] +
-      parameters[_MaxwellIsotropic3D::pidStrainT][1] +
-      parameters[_MaxwellIsotropic3D::pidStrainT][2];
+    const double meanStrainT = (parameters[_MaxwellIsotropic3D::pidStrainT][0] +
+				parameters[_MaxwellIsotropic3D::pidStrainT][1] +
+				parameters[_MaxwellIsotropic3D::pidStrainT][2])/3.0;
 
     // The code below should probably be in a separate function since it
     // is used more than once.  I should also probably cover the possibility
