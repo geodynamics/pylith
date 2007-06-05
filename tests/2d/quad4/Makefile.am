@@ -20,13 +20,15 @@ noinst_PYTHON = \
 noinst_DATA = \
 	box.exo \
 	axialplanestrain.cfg \
-	bcbox.odb \
-	dispx.spatialdb \
-	dispy.spatialdb \
+	shearplanestrain.cfg \
+	axialx.spatialdb \
+	axialy.spatialdb \
+	shearxy.spatialdb \
 	matprops.spatialdb
 
 noinst_TMP = \
-	axialplanestrain.vtk
+	axialplanestrain.vtk \
+	shearplanestrain.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)

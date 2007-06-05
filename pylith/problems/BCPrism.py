@@ -54,7 +54,6 @@ class BCPrism(ObjectBin):
     import pyre.inventory
     
     from pylith.bc.Dirichlet import Dirichlet
-    from pylith.bc.BoundaryCondition import BoundaryCondition
 
     xPos = pyre.inventory.facility("x_pos", family="boundary_condition",
                                    factory=Dirichlet)
@@ -73,7 +72,7 @@ class BCPrism(ObjectBin):
     yNeg.meta['tip'] = "Boundary condition on -y face of prism."
 
     zPos = pyre.inventory.facility("z_pos", family="boundary_condition",
-                                   factory=BoundaryCondition)
+                                   factory=Dirichlet)
     zPos.meta['tip'] = "Boundary condition on +z face of prism."
 
     zNeg = pyre.inventory.facility("z_neg", family="boundary_condition",
@@ -98,12 +97,12 @@ class BCPrism(ObjectBin):
     Set attributes from inventory.
     """
     ObjectBin._configure(self)
-    self.bc = [self.inventory.xPos,
-               self.inventory.xNeg,
-               self.inventory.yPos,
-               self.inventory.yNeg,
-               self.inventory.zPos,
-               self.inventory.zNeg]
+    self.bin = [self.inventory.xPos,
+                self.inventory.xNeg,
+                self.inventory.yPos,
+                self.inventory.yNeg,
+                self.inventory.zPos,
+                self.inventory.zNeg]
     return
 
   

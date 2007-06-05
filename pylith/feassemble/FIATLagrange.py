@@ -101,48 +101,54 @@ class FIATLagrange(ReferenceCell):
     self.numCorners = numBasisFns**dim
 
     if dim == 1:
-      self.quadPts    = quadpts
-      self.quadWts    = quadwts
-      self.basis      = basis
+      self.quadPts = quadpts
+      self.quadWts = quadwts
+      self.basis = basis
       self.basisDeriv = basisDeriv
     else:
       if dim == 2:
-        self.quadPts    = numpy.zeros((numQuadPts, numQuadPts, dim))
-        self.quadWts    = numpy.zeros((numQuadPts, numQuadPts))
-        self.basis      = numpy.zeros((numQuadPts, numQuadPts, numBasisFns, numBasisFns))
-        self.basisDeriv = numpy.zeros((numQuadPts, numQuadPts, numBasisFns, numBasisFns, dim))
+        self.quadPts = numpy.zeros((numQuadPts, numQuadPts, dim))
+        self.quadWts = numpy.zeros((numQuadPts, numQuadPts))
+        self.basis = numpy.zeros((numQuadPts, numQuadPts,
+                                       numBasisFns, numBasisFns))
+        self.basisDeriv = numpy.zeros((numQuadPts, numQuadPts,
+                                       numBasisFns, numBasisFns, dim))
         for q in range(numQuadPts):
           for r in range(numQuadPts):
-            self.quadPts[q][r][0] = quadpts[q]
-            self.quadPts[q][r][1] = quadpts[r]
-            self.quadWts[q][r]    = quadwts[q]*quadwts[r]
+            self.quadPts[q][r][0] = quadpts[r]
+            self.quadPts[q][r][1] = quadpts[q]
+            self.quadWts[q][r] = quadwts[r]*quadwts[q]
             for f in range(numBasisFns):
               for g in range(numBasisFns):
-                self.basis[q][r][f][g]         = basis[q][f]*basis[r][g]
-                self.basisDeriv[q][r][f][g][0] = basisDeriv[q][f][0]*basis[r][g]
-                self.basisDeriv[q][r][f][g][1] = basis[q][f]*basisDeriv[r][g][0]
+                self.basis[q][r][f][g] = basis[r][g]*basis[q][f]
+                self.basisDeriv[q][r][f][g][0] = basisDeriv[r][g][0]*basis[q][f]
+                self.basisDeriv[q][r][f][g][1] = basis[r][g]*basisDeriv[q][f][0]
       elif dim == 3:
-        self.quadPts    = numpy.zeros((numQuadPts, numQuadPts, numQuadPts, dim))
+        self.quadPts    = numpy.zeros((numQuadPts, numQuadPts,
+                                       numQuadPts, dim))
         self.quadWts    = numpy.zeros((numQuadPts, numQuadPts, numQuadPts))
-        self.basis      = numpy.zeros((numQuadPts, numQuadPts, numQuadPts, numBasisFns, numBasisFns, numBasisFns))
-        self.basisDeriv = numpy.zeros((numQuadPts, numQuadPts, numQuadPts, numBasisFns, numBasisFns, numBasisFns, dim))
+        self.basis      = numpy.zeros((numQuadPts, numQuadPts, numQuadPts,
+                                       numBasisFns, numBasisFns, numBasisFns))
+        self.basisDeriv = numpy.zeros((numQuadPts, numQuadPts, numQuadPts,
+                                       numBasisFns, numBasisFns, numBasisFns,
+                                       dim))
         for q in range(numQuadPts):
           for r in range(numQuadPts):
             for s in range(numQuadPts):
-              self.quadPts[q][r][s][0] = quadpts[q]
+              self.quadPts[q][r][s][0] = quadpts[s]
               self.quadPts[q][r][s][1] = quadpts[r]
-              self.quadPts[q][r][s][2] = quadpts[s]
-              self.quadWts[q][r][s]    = quadwts[q]*quadwts[r]*quadwts[s]
+              self.quadPts[q][r][s][2] = quadpts[q]
+              self.quadWts[q][r][s]    = quadwts[s]*quadwts[r]*quadwts[q]
               for f in range(numBasisFns):
                 for g in range(numBasisFns):
                   for h in range(numBasisFns):
-                    self.basis[q][r][s][f][g][h]         = basis[q][f]*basis[r][g]*basis[s][h]
-                    self.basisDeriv[q][r][s][f][g][h][0] = basisDeriv[q][f][0]*basis[r][g]*basis[s][h]
-                    self.basisDeriv[q][r][s][f][g][h][1] = basis[q][f]*basisDeriv[r][g][0]*basis[s][h]
-                    self.basisDeriv[q][r][s][f][g][h][2] = basis[q][f]*basis[r][g]*basisDeriv[s][h][0]
-      self.quadPts    = numpy.reshape(self.quadPts,    (self.numQuadPts, dim))
-      self.quadWts    = numpy.reshape(self.quadWts,    (self.numQuadPts))
-      self.basis      = numpy.reshape(self.basis,      (self.numQuadPts, self.numCorners))
+                    self.basis[q][r][s][f][g][h] = basis[s][h]*basis[r][g]*basis[q][f]
+                    self.basisDeriv[q][r][s][f][g][h][0] = basisDeriv[s][h][0]*basis[r][g]*basis[q][f]
+                    self.basisDeriv[q][r][s][f][g][h][1] = basis[s][h]*basisDeriv[r][g][0]*basis[q][f]
+                    self.basisDeriv[q][r][s][f][g][h][2] = basis[s][h]*basis[r][g]*basisDeriv[q][f][0]
+      self.quadPts = numpy.reshape(self.quadPts, (self.numQuadPts, dim))
+      self.quadWts = numpy.reshape(self.quadWts, (self.numQuadPts))
+      self.basis = numpy.reshape(self.basis, (self.numQuadPts, self.numCorners))
       self.basisDeriv = numpy.reshape(self.basisDeriv, (self.numQuadPts, self.numCorners, dim))
     self._info.line("Basis (quad pts):")
     self._info.line(self.basis)
