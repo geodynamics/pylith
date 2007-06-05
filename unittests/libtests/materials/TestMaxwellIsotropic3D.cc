@@ -15,6 +15,7 @@
 #include "TestMaxwellIsotropic3D.hh" // Implementation of class methods
 
 #include "data/MaxwellIsotropic3DElasticData.hh" // USES MaxwellIsotropic3DElasticData
+#include "data/MaxwellIsotropic3DTimeDepData.hh" // USES MaxwellIsotropic3DTimeDepData
 
 #include "pylith/materials/MaxwellIsotropic3D.hh" // USES MaxwellIsotropic3D
 
@@ -90,7 +91,7 @@ pylith::materials::TestMaxwellIsotropic3D::testCalcElasticConstsElastic(void)
   MaxwellIsotropic3DElasticData data;
   bool elasFlag = true;
   material.useElasticBehavior(elasFlag);
-  _testCalcElasticConstsElastic(&material, data);
+  _testCalcElasticConsts(&material, data);
 } // testElasticConstsElastic
 
 // ----------------------------------------------------------------------
@@ -103,7 +104,7 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdateStateElastic(void)
   std::vector<double_array> totalStrain;
   bool elasFlag = true;
   material.useElasticBehavior(elasFlag);
-  material.updateStateElastic(totalStrain);
+  material.updateState(totalStrain);
 } // testUpdateStateElastic
 
 // ----------------------------------------------------------------------
@@ -117,7 +118,7 @@ pylith::materials::TestMaxwellIsotropic3D::testCalcStressTimeDep(void)
   material.useElasticBehavior(elasFlag);
   double dt = 2.0e5;
   material.timeStep(dt);
-  _testCalcStressTimeDep(&material, data);
+  _testCalcStress(&material, data);
 } // testCalcStressTimeDep
 
 // ----------------------------------------------------------------------
@@ -131,7 +132,7 @@ pylith::materials::TestMaxwellIsotropic3D::testCalcElasticConstsTimeDep(void)
   material.useElasticBehavior(elasFlag);
   double dt = 2.0e5;
   material.timeStep(dt);
-  _testCalcElasticConstsTimeDep(&material, data);
+  _testCalcElasticConsts(&material, data);
 } // testElasticConstsTimeDep
 
 // ----------------------------------------------------------------------
@@ -146,7 +147,7 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdateStateTimeDep(void)
   material.useElasticBehavior(elasFlag);
   double dt = 2.0e5;
   material.timeStep(dt);
-  material.updateStateTimeDep(totalStrain);
+  material.updateState(totalStrain);
 } // testUpdateStateTimeDep
 
 // ----------------------------------------------------------------------
