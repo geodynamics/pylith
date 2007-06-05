@@ -231,11 +231,15 @@ pylith::materials::TestMaterial::_testDBToParameters(Material* material,
       dbData[i] = data.dbData[iLoc*numDBValues+i];
 
     const int numParameters = data.numParameters;
-    double* const parameterDataE = &data.parameterData[iLoc*numParameters];
+    int numParamEntries = 0;
 
     std::vector<double_array> parameterData(numParameters);
-    for (int iParam=0; iParam < numParameters; ++iParam)
+    for (int iParam=0; iParam < numParameters; ++iParam) {
       parameterData[iParam].resize(data.numParamValues[iParam]);
+      numParamEntries += data.numParamValues[iParam];
+    } // for
+
+    double* const parameterDataE = &data.parameterData[iLoc*numParamEntries];
     material->_dbToParameters(&parameterData, dbData);
 
     const double tolerance = 1.0e-06;
