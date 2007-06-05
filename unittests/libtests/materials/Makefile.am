@@ -28,6 +28,8 @@ testmaterials_SOURCES = \
 	TestElasticPlaneStress.cc \
 	TestElasticStrain1D.cc \
 	TestElasticStress1D.cc \
+	TestMaxwellIsotropic3D.cc \
+	TestElasticPlaneStrain.cc \
 	test_materials.cc
 
 noinst_HEADERS = \
@@ -41,7 +43,9 @@ testmaterials_SOURCES += \
 	data/ElasticPlaneStrainData.cc \
 	data/ElasticPlaneStressData.cc \
 	data/ElasticStrain1DData.cc \
-	data/ElasticStress1DData.cc
+	data/ElasticStress1DData.cc \
+	data/MaxwellIsotropic3DElasticData.cc \
+	data/MaxwellIsotropic3DTimeDepData.cc
 
 noinst_HEADERS += \
 	data/MaterialData.hh \
@@ -51,6 +55,8 @@ noinst_HEADERS += \
 	data/ElasticPlaneStressData.hh \
 	data/ElasticStrain1DData.hh \
 	data/ElasticStress1DData.hh \
+	data/MaxwellIsotropic3DElasticData.hh \
+	data/MaxwellIsotropic3DTimeDepData.hh \
 	data/header.hh
 
 testmaterials_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
