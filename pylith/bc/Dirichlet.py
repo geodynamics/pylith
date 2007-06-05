@@ -103,5 +103,14 @@ class Dirichlet(BoundaryCondition, Constraint):
     self.fixedDOF = self.inventory.fixedDOF
     return
 
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def boundary_condition():
+  """
+  Factory associated with Dirichlet.
+  """
+  return Dirichlet()
+
   
 # End of file 

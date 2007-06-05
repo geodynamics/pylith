@@ -52,7 +52,6 @@ class BCQuadrilateral(ObjectBin):
     import pyre.inventory
     
     from pylith.bc.Dirichlet import Dirichlet
-    from pylith.bc.BoundaryCondition import BoundaryCondition
 
     xPos = pyre.inventory.facility("x_pos", family="boundary_condition",
                                    factory=Dirichlet)
@@ -63,7 +62,7 @@ class BCQuadrilateral(ObjectBin):
     xNeg.meta['tip'] = "Boundary condition on -x face of prism."
 
     yPos = pyre.inventory.facility("y_pos", family="boundary_condition",
-                                   factory=BoundaryCondition)
+                                   factory=Dirichlet)
     yPos.meta['tip'] = "Boundary condition on +y face of prism."
 
     yNeg = pyre.inventory.facility("y_neg", family="boundary_condition",
@@ -88,10 +87,10 @@ class BCQuadrilateral(ObjectBin):
     Set attributes from inventory.
     """
     ObjectBin._configure(self)
-    self.bc = [self.inventory.xPos,
-               self.inventory.xNeg,
-               self.inventory.yPos,
-               self.inventory.yNeg]
+    self.bin = [self.inventory.xPos,
+                self.inventory.xNeg,
+                self.inventory.yPos,
+                self.inventory.yNeg]
     return
 
   

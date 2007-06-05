@@ -20,9 +20,10 @@ noinst_PYTHON = \
 noinst_DATA = \
 	box.exo \
 	axialplanestrain.cfg \
-	bcbox.odb \
+	shearplanestrain.cfg \
 	axialx.spatialdb \
 	axialy.spatialdb \
+	shearxy.spatialdb \
 	matprops.spatialdb
 
 noinst_TMP = \
