@@ -28,7 +28,8 @@ namespace pylith {
   namespace materials {
     class MaxwellIsotropic3D;
     class TestMaxwellIsotropic3D;
-    class MaxwellIsotropic3DData;
+    class MaxwellIsotropic3DElasticData;
+    class MaxwellIsotropic3DTimeDepData;
   } // materials
 } // pylith
 
@@ -42,9 +43,12 @@ class pylith::materials::TestMaxwellIsotropic3D : public TestElasticMaterial
   CPPUNIT_TEST( testDBValues );
   CPPUNIT_TEST( testParameters );
   CPPUNIT_TEST( testCalcDensity );
-  CPPUNIT_TEST( testCalcStress );
-  CPPUNIT_TEST( testCalcElasticConsts );
-  CPPUNIT_TEST( testUpdateState );
+  CPPUNIT_TEST( testCalcStressElastic );
+  CPPUNIT_TEST( testCalcStressTimeDep );
+  CPPUNIT_TEST( testCalcElasticConstsElastic );
+  CPPUNIT_TEST( testCalcElasticConstsTimeDep );
+  CPPUNIT_TEST( testUpdateStateElastic );
+  CPPUNIT_TEST( testUpdateStateTimeDep );
   CPPUNIT_TEST( testTimeStep );
   CPPUNIT_TEST_SUITE_END();
 
@@ -63,14 +67,23 @@ public :
   /// Test calcDensity()
   void testCalcDensity(void);
 
-  /// Test calcStress()
-  void testCalcStress(void);
+  /// Test calcStressElastic()
+  void testCalcStressElastic(void);
 
-  /// Test calcElasticConsts()
-  void testCalcElasticConsts(void);
+  /// Test calcStressTimeDep()
+  void testCalcStressTimeDep(void);
 
-  /// Test updateState()
-  void testUpdateState(void);
+  /// Test calcElasticConstsElastic()
+  void testCalcElasticConstsElastic(void);
+
+  /// Test calcElasticConstsTimeDep()
+  void testCalcElasticConstsTimeDep(void);
+
+  /// Test updateStateElastic()
+  void testUpdateStateElastic(void);
+
+  /// Test updateStateTimeDep()
+  void testUpdateStateTimeDep(void);
 
   /// Test timeStep()
   void testTimeStep(void);

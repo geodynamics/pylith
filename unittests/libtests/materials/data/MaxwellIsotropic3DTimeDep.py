@@ -10,26 +10,26 @@
 # ----------------------------------------------------------------------
 #
 
-## @file unittests/libtests/materials/data/MaxwellIsotropic3D.py
+## @file unittests/libtests/materials/data/MaxwellIsotropic3DTimeDep.py
 
 ## @brief Python application for generating C++ data files for testing
-## C++ MaxwellIsotropic3D object.
+## C++ MaxwellIsotropic3D object with viscoelastic behavior.
 
 from ElasticMaterialApp import ElasticMaterialApp
 
 import numpy
 
 # ----------------------------------------------------------------------
-# MaxwellIsotropic3D class
-class MaxwellIsotropic3D(ElasticMaterialApp):
+# MaxwellIsotropic3DTimeDep class
+class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
   """
   Python application for generating C++ data files for testing C++
-  MaxwellIsotropic3D object.
+  MaxwellIsotropic3D object using viscoelastic behavior.
   """
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
   
-  def __init__(self, name="maxwellisotropic3d"):
+  def __init__(self, name="maxwellisotropic3dtimedep"):
     """
     Constructor.
     """
@@ -67,23 +67,29 @@ class MaxwellIsotropic3D(ElasticMaterialApp):
     muA = vsA*vsA*densityA
     lambdaA = vpA*vpA*densityA - 2.0*muA
     maxwellTimeA = viscosityA/muA
+    visStrainA = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     muB = vsB*vsB*densityB
     lambdaB = vpB*vpB*densityB - 2.0*muB
     maxwellTimeB = viscosityB/muB
+    visStrainB = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     # Simplest approach for now is to assume this is the first step after the elastic solution.
     # In that case, both the total strain from the last step (strainT) and the total viscous
     # strain (visStrain) are defined by the assigned elastic strain.
-    strainTA = strainA.copy()
-    strainTB = strainB.copy()
+    strainTA = strainA[:]
+    strainTB = strainB[:]
     for i in range(6):
-      visStrainA[i] = strainA[i] - diag[i] * meanStrainA[i]
-      visStrainB[i] = strainB[i] - diag[i] * meanStrainB[i]
+      visStrainA[i] = strainA[i] - diag[i] * meanStrainA
+      visStrainB[i] = strainB[i] - diag[i] * meanStrainB
 
-    self.parameterData = numpy.array([ [densityA, muA, lambdaA, maxwellTimeA, strainTA, visStrainA],
-                                       [densityB, muB, lambdaB, maxwellTimeB, strainTB, visStrainB] ],
+    vecParamsA = numpy.hstack((strainTA, visStrainA))
+    vecParamsB = numpy.hstack((strainTB, visStrainB))
+    vecParams = numpy.vstack((vecParamsA, vecParamsB))
+    scalarParams = numpy.array([ [densityA, muA, lambdaA, maxwellTimeA],
+                                       [densityB, muB, lambdaB, maxwellTimeB] ],
                                      dtype=numpy.float64)
+    self.parameterData = numpy.hstack((scalarParams, vecParams))
     
     self.numLocs = 2
     numElasticConsts = 21
@@ -108,6 +114,8 @@ class MaxwellIsotropic3D(ElasticMaterialApp):
     Compute stress and derivative of elasticity matrix.
     This assumes behavior is always viscoelastic.
     """
+    import math
+    
     bulkModulus = lambdaV + 2.0 * muV/3.0
 
     diag = [1.0, 1.0, 1.0, 0.0, 0.0, 0.0]
@@ -115,6 +123,7 @@ class MaxwellIsotropic3D(ElasticMaterialApp):
     traceStrainTpdt = strainV[0] + strainV[1] + strainV[2]
     meanStrainT = traceStrainT/3.0
     meanStrainTpdt = traceStrainTpdt/3.0
+    meanStressTpdt = bulkModulus * traceStrainTpdt
     timeFrac = 1.0e-5
     numTerms = 5
     dq = 0.0
@@ -129,7 +138,7 @@ class MaxwellIsotropic3D(ElasticMaterialApp):
         fraction *= self.dt/maxwellTimeV
         dq += fSign*fraction/factorial
     else:
-      dq = maxwellTimeV*(1.0-exp(-self.dt/maxwellTimeV))/self.dt
+      dq = maxwellTimeV*(1.0-math.exp(-self.dt/maxwellTimeV))/self.dt
 
     visFac = muV*dq/3.0
 
@@ -161,9 +170,9 @@ class MaxwellIsotropic3D(ElasticMaterialApp):
                                  C2323, C2313,
                                  C1313], dtype=numpy.float64)
 
-    stress = numpy.zeros(  6, dtype=numpy.float64)
+    stressV = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-    expFac = exp(-self.dt/maxwellTimeV)
+    expFac = math.exp(-self.dt/maxwellTimeV)
     elasFac = 2.0*muV
     devStrainTpdt = 0.0
     devStrainT = 0.0
@@ -174,15 +183,16 @@ class MaxwellIsotropic3D(ElasticMaterialApp):
       devStrainT = strainTV[iComp] - diag[iComp]*meanStrainT
       visStrain = expFac*visStrainV[iComp] + dq*(devStrainTpdt - devStrainT)
       devStressTpdt = elasFac*visStrain
-      stress[iComp] = diag[iComp]*meanStressTpdt + devStressTpdt
+      stressV[iComp] = diag[iComp]*meanStressTpdt + devStressTpdt
       
+    stress = numpy.reshape(stressV, (6,1))
     return (elasticConsts, numpy.ravel(stress))
   
 
 # MAIN /////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
 
-  app = MaxwellIsotropic3D()
+  app = MaxwellIsotropic3DTimeDep()
   app.run()
 
 
