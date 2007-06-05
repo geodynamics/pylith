@@ -241,11 +241,16 @@ pylith::materials::TestMaterial::_testDBToParameters(Material* material,
     const double tolerance = 1.0e-06;
     for (int iParam=0, i=0; iParam < numParameters; ++iParam) {
       const int numParamValues = data.numParamValues[iParam];
-      CPPUNIT_ASSERT_EQUAL(numParamValues, int(parameterData[i].size()));
+      CPPUNIT_ASSERT_EQUAL(numParamValues, int(parameterData[iParam].size()));
       for (int iValue=0; iValue < numParamValues; ++iValue)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
+	if(fabs(parameterDataE[i]) > tolerance)
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, 
 				     parameterData[iParam][iValue]/parameterDataE[i++],
 				     tolerance);
+	else
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(parameterDataE[i++], parameterData[iParam][iValue],
+				     tolerance);
+	 
     } // for
   } // for
 } // _testDBToParameters
