@@ -165,6 +165,7 @@ pylith::materials::TestMaxwellIsotropic3D::testTimeStep(void)
   CPPUNIT_ASSERT_EQUAL(false, material.needNewJacobian());
 
   const double dt2 = 2.0;
+  material.timeStep(dt2);
   CPPUNIT_ASSERT_EQUAL(dt2, material.Material::timeStep());
   CPPUNIT_ASSERT_EQUAL(true, material.needNewJacobian());
 } // testTimeStep
