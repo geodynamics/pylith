@@ -23,8 +23,7 @@ export-data: $(noinst_DATA)
 BUILT_SOURCES = export-data
 
 CLEANFILES = \
-	$(export_datadir)/$(noinst_DATA) \
-	$(export_datadir)/$(noinst_TMP)
+	$(export_datadir)/$(noinst_DATA)
 
 
 # End of file 

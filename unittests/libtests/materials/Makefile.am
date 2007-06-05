@@ -29,7 +29,6 @@ testmaterials_SOURCES = \
 	TestElasticStrain1D.cc \
 	TestElasticStress1D.cc \
 	TestMaxwellIsotropic3D.cc \
-	TestElasticPlaneStrain.cc \
 	test_materials.cc
 
 noinst_HEADERS = \
