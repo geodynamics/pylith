@@ -54,6 +54,19 @@ const int pylith::feassemble::ElasticityImplicitData3DQuadratic::_cells[] = {
 0,1,2,3,4,5,6,7,8,9,
 };
 
+const double pylith::feassemble::ElasticityImplicitData3DQuadratic::_verticesRef[] = {
+ -1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
+  1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
+ -1.00000000e+00,  1.00000000e+00, -1.00000000e+00,
+ -1.00000000e+00, -1.00000000e+00,  1.00000000e+00,
+ -1.00000000e+00,  0.00000000e+00, -1.00000000e+00,
+  0.00000000e+00,  0.00000000e+00, -1.00000000e+00,
+  0.00000000e+00, -1.00000000e+00, -1.00000000e+00,
+ -1.00000000e+00, -1.00000000e+00,  0.00000000e+00,
+  0.00000000e+00, -1.00000000e+00,  0.00000000e+00,
+ -1.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+};
+
 const double pylith::feassemble::ElasticityImplicitData3DQuadratic::_quadPts[] = {
   8.33333333e-02,  8.33333333e-02,  8.33333333e-02,
   7.50000000e-01,  8.33333333e-02,  8.33333333e-02,
@@ -494,6 +507,7 @@ pylith::feassemble::ElasticityImplicitData3DQuadratic::ElasticityImplicitData3DQ
   dt = _dt;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
+  verticesRef = const_cast<double*>(_verticesRef);
   quadPts = const_cast<double*>(_quadPts);
   quadWts = const_cast<double*>(_quadWts);
   basis = const_cast<double*>(_basis);

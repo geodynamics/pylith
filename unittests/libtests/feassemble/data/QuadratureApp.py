@@ -74,6 +74,7 @@ class QuadratureApp(Script):
     # Reference cell information
     self.numBasis = None
     self.numQuadPts = None
+    self.verticesRef = None
     self.quadPtsRef = None
     self.quadWts = None
     self.basis = None
@@ -129,6 +130,7 @@ class QuadratureApp(Script):
     self.numCells = self.mesh.numCells
     self.vertices = self.mesh.vertices
     self.cells = self.mesh.cells
+    self.verticesRef = self.mesh.verticesRef
 
     # Quadrature information
     self.numBasis = self.quadrature.numBasis
@@ -160,6 +162,9 @@ class QuadratureApp(Script):
     self.data.addArray(vtype="int", name="_cells", values=self.cells,
                        format="%8d", ncols=self.numVertices)
     
+    self.data.addArray(vtype="double", name="_verticesRef",
+                       values=self.verticesRef,
+                       format="%16.8e", ncols=self.cellDim)
     self.data.addArray(vtype="double", name="_quadPtsRef",
                        values=self.quadPtsRef,
                        format="%16.8e", ncols=self.cellDim)

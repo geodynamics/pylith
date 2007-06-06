@@ -70,8 +70,10 @@ class TestQuadrature(unittest.TestCase):
     cell.shape = "line"
     cell.degree = 2
     cell.order = 2
-    quadPtsE = numpy.array( [(-1.0/3**0.5,),
-                             (+1.0/3**0.5,)],
+
+    verticesE = numpy.array([ [-1.0], [1.0], [0.0] ])
+    quadPtsE = numpy.array( [[-1.0/3**0.5],
+                             [+1.0/3**0.5]],
                             dtype=numpy.float64 )
     quadWtsE = numpy.array( [1.0, 1.0], dtype=numpy.float64 )
 
@@ -94,6 +96,9 @@ class TestQuadrature(unittest.TestCase):
 
     from pylith.utils.testarray import test_double
     import pylith.feassemble.testfeassemble as testmodule
+
+    vertices = testmodule.vertices(quadrature.cppHandle)
+    test_double(self, verticesE, vertices)
 
     basis = testmodule.basis(quadrature.cppHandle)
     test_double(self, basisE, basis)

@@ -46,6 +46,11 @@ class Mesh3DLinear(Component):
                                   [ 1.0, -0.1, -0.3],
                                   [-0.2,  0.5,  2.0]], dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2, 3]], dtype=numpy.int32)
+    self.verticesRef = numpy.array( [[-1.0, -1.0, -1.0],
+                                     [+1.0, -1.0, -1.0],
+                                     [-1.0, +1.0, -1.0],
+                                     [-1.0, -1.0, +1.0]],
+                                    dtype=numpy.float64)
     return
   
 

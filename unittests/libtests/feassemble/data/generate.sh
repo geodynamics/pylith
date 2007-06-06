@@ -11,7 +11,7 @@
 #
 
 if (( $# != 1 )); then
-  echo "usage: generate.sh quadrature|integrator|all"
+  echo "usage: generate.sh quadrature|explicit|implicit|all"
   exit 1
 fi
 

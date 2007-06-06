@@ -19,14 +19,6 @@ MAIN PRIORITIES (Brad)
        (1) axial compression
        (2) shear
 
-2. Add dualBasis to Quadrature.
-   a. Python
-     Quadrature()
-   b. C++
-     Quadrature
-   c. C++ unit tests
-   d. Python unit tests
-
 3. Implement faults for kinematic source
    a. Creation of cohesive cells
      i. Add tests for interpolated meshes.

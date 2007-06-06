@@ -44,6 +44,19 @@ const int pylith::feassemble::QuadratureData3DQuadratic::_cells[] = {
        0,       1,       2,       3,       4,       5,       6,       7,       8,       9,
 };
 
+const double pylith::feassemble::QuadratureData3DQuadratic::_verticesRef[] = {
+ -1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
+  1.00000000e+00, -1.00000000e+00, -1.00000000e+00,
+ -1.00000000e+00,  1.00000000e+00, -1.00000000e+00,
+ -1.00000000e+00, -1.00000000e+00,  1.00000000e+00,
+ -1.00000000e+00,  0.00000000e+00, -1.00000000e+00,
+  0.00000000e+00,  0.00000000e+00, -1.00000000e+00,
+  0.00000000e+00, -1.00000000e+00, -1.00000000e+00,
+ -1.00000000e+00, -1.00000000e+00,  0.00000000e+00,
+  0.00000000e+00, -1.00000000e+00,  0.00000000e+00,
+ -1.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+};
+
 const double pylith::feassemble::QuadratureData3DQuadratic::_quadPtsRef[] = {
   8.33333333e-02,  8.33333333e-02,  8.33333333e-02,
   7.50000000e-01,  8.33333333e-02,  8.33333333e-02,
@@ -130,7 +143,7 @@ const double pylith::feassemble::QuadratureData3DQuadratic::_jacobian[] = {
   6.33333333e-01,  1.26666667e+00,  2.96666667e+00,
   2.36666667e+00,  1.40000000e+00,  5.66666667e-01,
  -3.00000000e-01,  3.03333333e+00,  2.66666667e+00,
-  6.33333333e-01,  1.00000000e+00,  2.70000000e+00,
+  6.33333333e-01,  1.00000000e-00,  2.70000000e+00,
   2.63333333e+00,  1.66666667e+00,  8.33333333e-01,
  -3.33333333e-02,  3.30000000e+00,  2.66666667e+00,
   3.66666667e-01,  7.33333333e-01,  2.96666667e+00,
@@ -165,6 +178,7 @@ pylith::feassemble::QuadratureData3DQuadratic::QuadratureData3DQuadratic(void)
   numQuadPts = _numQuadPts;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
+  verticesRef = const_cast<double*>(_verticesRef);
   quadPtsRef = const_cast<double*>(_quadPtsRef);
   quadWts = const_cast<double*>(_quadWts);
   quadPts = const_cast<double*>(_quadPts);

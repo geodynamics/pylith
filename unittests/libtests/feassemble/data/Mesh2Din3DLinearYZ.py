@@ -46,6 +46,10 @@ class Mesh2Din3DLinearYZ(Component):
                                   [ 0.0,  0.0,  1.0]],
                                  dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.int32)
+    self.verticesRef = numpy.array( [[-1.0, -1.0],
+                                     [+1.0, -1.0],
+                                     [-1.0, +1.0]],
+                                    dtype=numpy.float64)
     return
   
 

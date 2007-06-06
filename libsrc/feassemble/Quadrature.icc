@@ -28,6 +28,13 @@ pylith::feassemble::Quadrature::minJacobian(const double min) {
   _minJacobian = min;
 }
 
+// Get coordinates of vertices in reference cell (dual basis).
+inline
+const pylith::double_array&
+pylith::feassemble::Quadrature::vertices(void) const {
+  return _vertices;
+}
+
 // Get coordinates of quadrature points in cell (NOT reference cell).
 inline
 const pylith::double_array&

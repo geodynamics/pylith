@@ -37,6 +37,12 @@ const int pylith::feassemble::QuadratureData2Din3DLinearXY::_cells[] = {
        0,       1,       2,
 };
 
+const double pylith::feassemble::QuadratureData2Din3DLinearXY::_verticesRef[] = {
+ -1.00000000e+00, -1.00000000e+00,
+  1.00000000e+00, -1.00000000e+00,
+ -1.00000000e+00,  1.00000000e+00,
+};
+
 const double pylith::feassemble::QuadratureData2Din3DLinearXY::_quadPtsRef[] = {
   3.33333333e-01,  3.33333333e-01,
 };
@@ -84,6 +90,7 @@ pylith::feassemble::QuadratureData2Din3DLinearXY::QuadratureData2Din3DLinearXY(v
   numQuadPts = _numQuadPts;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
+  verticesRef = const_cast<double*>(_verticesRef);
   quadPtsRef = const_cast<double*>(_quadPtsRef);
   quadWts = const_cast<double*>(_quadWts);
   quadPts = const_cast<double*>(_quadPts);

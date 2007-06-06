@@ -42,6 +42,7 @@ public:
   int numCells; ///< Number of cells
   double* vertices; ///< Coordinates of vertices
   int* cells; ///< Indices of vertices in cells
+  double* verticesRef; ///< Coordinates of vertices in ref cell (dual basis)
   //@}
 
   /// @name Quadrature information

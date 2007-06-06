@@ -78,6 +78,7 @@ class IntegratorApp(Script):
     self.numCells = None
     self.vertices = None
     self.cells = None
+    self.verticesRef = None
 
     # This quadrature information is set by quadrature.calculateBasis()
     self.numBasis = None
@@ -143,6 +144,7 @@ class IntegratorApp(Script):
     self.numCells = self.mesh.numCells
     self.vertices = self.mesh.vertices
     self.cells = self.mesh.cells
+    self.verticesRef = self.mesh.verticesRef
 
     # Quadrature information
     self.numBasis = self.quadrature.numBasis
@@ -199,6 +201,8 @@ class IntegratorApp(Script):
                        format="%16.8e", ncols=self.spaceDim)
     self.data.addArray(vtype="int", name="_cells", values=self.cells,
                        format="%d", ncols=self.numBasis)    
+    self.data.addArray(vtype="double", name="_verticesRef", values=self.verticesRef,
+                       format="%16.8e", ncols=self.cellDim)
 
     # Quadrature information
     self.data.addScalar(vtype="int", name="_numBasis", value=self.numBasis,
