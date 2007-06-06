@@ -86,7 +86,10 @@ class FIATSimplex(ReferenceCell):
     """
     quadrature = self._setupQuadrature()
     basisFns = self._setupBasisFns()
-    
+
+    # Get coordinates of vertices (dual basis)
+    self.vertices = numpy.array(self._setupVertices(), dtype=numpy.float64)
+
     # Evaluate basis functions at quadrature points
     quadpts = quadrature.get_points()
     basis = numpy.array(basisFns.tabulate(quadpts)).transpose()
@@ -106,14 +109,16 @@ class FIATSimplex(ReferenceCell):
     self.numCorners = len(basisFns)
     self.numQuadPts = len(quadrature.get_weights())
 
-    self._info.line("Basis (quad pts):")
-    self._info.line(self.basis)
-    self._info.line("Basis derivatives (quad pts):")
-    self._info.line(self.basisDeriv)
+    self._info.line("Vertices: ")
+    self._info.line(self.vertices)
     self._info.line("Quad pts:")
     self._info.line(quadrature.get_points())
     self._info.line("Quad wts:")
     self._info.line(quadrature.get_weights())
+    self._info.line("Basis fns @ quad pts ):")
+    self._info.line(self.basis)
+    self._info.line("Basis fn derivatives @ quad pts:")
+    self._info.line(self.basisDeriv)
     self._info.log()    
     return
 

@@ -86,6 +86,9 @@ class FIATLagrange(ReferenceCell):
     element    = self._setupElement()
     dim        = self.cellDim
     
+    # Get coordinates of vertices (dual basis)
+    vertices = numpy.array(self._setupVertices(element))
+
     # Evaluate basis functions at quadrature points
     quadpts     = numpy.array(quadrature.get_points())
     quadwts     = numpy.array(quadrature.get_weights())
@@ -101,12 +104,19 @@ class FIATLagrange(ReferenceCell):
     self.numCorners = numBasisFns**dim
 
     if dim == 1:
+      self.vertices = numpy.array(vertices)
       self.quadPts = quadpts
       self.quadWts = quadwts
       self.basis = basis
       self.basisDeriv = basisDeriv
     else:
       if dim == 2:
+        self.vertices = numpy.zeros((numBasisFns, numBasisFns, dim))
+        for q in range(numBasisFns):
+          for r in range(numBasisFns):
+            self.vertices[q][r][0] = vertices[r]
+            self.vertices[q][r][1] = vertices[q]
+        
         self.quadPts = numpy.zeros((numQuadPts, numQuadPts, dim))
         self.quadWts = numpy.zeros((numQuadPts, numQuadPts))
         self.basis = numpy.zeros((numQuadPts, numQuadPts,
@@ -124,6 +134,15 @@ class FIATLagrange(ReferenceCell):
                 self.basisDeriv[q][r][f][g][0] = basisDeriv[r][g][0]*basis[q][f]
                 self.basisDeriv[q][r][f][g][1] = basis[r][g]*basisDeriv[q][f][0]
       elif dim == 3:
+        self.vertices = numpy.zeros((numBasisFns, numBasisFns, numBasisFns,
+                                     dim))
+        for q in range(numBasisFns):
+          for r in range(numBasisFns):
+            for s in range(numBasisFns):
+              self.vertices[q][r][s][0] = vertices[s]
+              self.vertices[q][r][s][1] = vertices[r]
+              self.vertices[q][r][s][2] = vertices[q]
+
         self.quadPts    = numpy.zeros((numQuadPts, numQuadPts,
                                        numQuadPts, dim))
         self.quadWts    = numpy.zeros((numQuadPts, numQuadPts, numQuadPts))
@@ -146,19 +165,23 @@ class FIATLagrange(ReferenceCell):
                     self.basisDeriv[q][r][s][f][g][h][0] = basisDeriv[s][h][0]*basis[r][g]*basis[q][f]
                     self.basisDeriv[q][r][s][f][g][h][1] = basis[s][h]*basisDeriv[r][g][0]*basis[q][f]
                     self.basisDeriv[q][r][s][f][g][h][2] = basis[s][h]*basis[r][g]*basisDeriv[q][f][0]
+      self.vertices = numpy.reshape(self.vertices, (self.numCorners, dim))
       self.quadPts = numpy.reshape(self.quadPts, (self.numQuadPts, dim))
       self.quadWts = numpy.reshape(self.quadWts, (self.numQuadPts))
       self.basis = numpy.reshape(self.basis, (self.numQuadPts, self.numCorners))
       self.basisDeriv = numpy.reshape(self.basisDeriv, (self.numQuadPts, self.numCorners, dim))
-    self._info.line("Basis (quad pts):")
-    self._info.line(self.basis)
-    self._info.line("Basis derivatives (quad pts):")
-    self._info.line(self.basisDeriv)
+
+    self._info.line("Vertices: ")
+    self._info.line(self.vertices)
     self._info.line("Quad pts:")
-    self._info.line(self.quadPts)
+    self._info.line(quadrature.get_points())
     self._info.line("Quad wts:")
-    self._info.line(self.quadWts)
-    self._info.log()
+    self._info.line(quadrature.get_weights())
+    self._info.line("Basis fns @ quad pts ):")
+    self._info.line(self.basis)
+    self._info.line("Basis fn derivatives @ quad pts:")
+    self._info.line(self.basisDeriv)
+    self._info.log()    
     return
 
 
@@ -196,6 +219,13 @@ class FIATLagrange(ReferenceCell):
     import FIAT.Lagrange
     import FIAT.shapes
     return FIAT.Lagrange.Lagrange(FIAT.shapes.LINE, self.degree)
+
+
+  def _setupVertices(self, element):
+    """
+    Setup evaluation functional points for reference cell.
+    """
+    return element.Udual.pts
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
