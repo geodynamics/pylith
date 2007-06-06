@@ -21,6 +21,7 @@ pylith::feassemble::IntegratorData::IntegratorData(void) :
   numCells(0),
   vertices(0),
   cells(0),
+  verticesRef(0),
   numBasis(0),
   numQuadPts(0),
   quadPts(0),

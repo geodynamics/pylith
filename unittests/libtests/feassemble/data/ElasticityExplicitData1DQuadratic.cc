@@ -47,6 +47,12 @@ const int pylith::feassemble::ElasticityExplicitData1DQuadratic::_cells[] = {
 0,1,2,
 };
 
+const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_verticesRef[] = {
+ -1.00000000e+00,
+  1.00000000e+00,
+  0.00000000e+00,
+};
+
 const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_quadPts[] = {
  -5.77350269e-01,
   5.77350269e-01,
@@ -125,6 +131,7 @@ pylith::feassemble::ElasticityExplicitData1DQuadratic::ElasticityExplicitData1DQ
   dt = _dt;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
+  verticesRef = const_cast<double*>(_verticesRef);
   quadPts = const_cast<double*>(_quadPts);
   quadWts = const_cast<double*>(_quadWts);
   basis = const_cast<double*>(_basis);

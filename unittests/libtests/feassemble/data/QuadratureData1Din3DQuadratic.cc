@@ -37,6 +37,12 @@ const int pylith::feassemble::QuadratureData1Din3DQuadratic::_cells[] = {
        0,       1,       2,
 };
 
+const double pylith::feassemble::QuadratureData1Din3DQuadratic::_verticesRef[] = {
+ -1.00000000e+00,
+  1.00000000e+00,
+  0.00000000e+00,
+};
+
 const double pylith::feassemble::QuadratureData1Din3DQuadratic::_quadPtsRef[] = {
  -5.77350269e-01,
   5.77350269e-01,
@@ -97,6 +103,7 @@ pylith::feassemble::QuadratureData1Din3DQuadratic::QuadratureData1Din3DQuadratic
   numQuadPts = _numQuadPts;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
+  verticesRef = const_cast<double*>(_verticesRef);
   quadPtsRef = const_cast<double*>(_quadPtsRef);
   quadWts = const_cast<double*>(_quadWts);
   quadPts = const_cast<double*>(_quadPts);

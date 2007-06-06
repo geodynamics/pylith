@@ -26,9 +26,9 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
-    class Integrator;
     class TestIntegrator;
-    class IntegratorData;
+
+    class Quadrature1D; // USES Quadrature1D
   } // feassemble
 } // pylith
 
@@ -68,6 +68,15 @@ public :
 
   /// Test _resetCellMatrix()
   void testResetCellMatrix(void);
+
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /** Initialize 1-D quadrature object.
+   *
+   * @param quadrature Quadrature object
+   */
+  void _initQuadrature(Quadrature1D* quadrature);
 
 }; // class TestIntegrator
 

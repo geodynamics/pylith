@@ -23,6 +23,7 @@ pylith::feassemble::QuadratureData::QuadratureData(void) :
   numQuadPts(0),
   vertices(0),
   cells(0),
+  verticesRef(0),
   quadPtsRef(0),
   quadWts(0),
   quadPts(0),

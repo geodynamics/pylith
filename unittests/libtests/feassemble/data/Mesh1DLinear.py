@@ -43,6 +43,7 @@ class Mesh1DLinear(Component):
     self.numCells = 1    
     self.vertices = numpy.array( [[-0.25], [2.0]], dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1]], dtype=numpy.int32)
+    self.verticesRef = numpy.array( [[-1.0], [1.0]], dtype=numpy.float64)
     return
   
 

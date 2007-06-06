@@ -47,6 +47,12 @@ const int pylith::feassemble::ElasticityImplicitData2DLinear::_cells[] = {
 0,1,2,
 };
 
+const double pylith::feassemble::ElasticityImplicitData2DLinear::_verticesRef[] = {
+ -1.00000000e+00, -1.00000000e+00,
+  1.00000000e+00, -1.00000000e+00,
+ -1.00000000e+00,  1.00000000e+00,
+};
+
 const double pylith::feassemble::ElasticityImplicitData2DLinear::_quadPts[] = {
   3.33333333e-01,  3.33333333e-01,
 };
@@ -125,6 +131,7 @@ pylith::feassemble::ElasticityImplicitData2DLinear::ElasticityImplicitData2DLine
   dt = _dt;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
+  verticesRef = const_cast<double*>(_verticesRef);
   quadPts = const_cast<double*>(_quadPts);
   quadWts = const_cast<double*>(_quadWts);
   basis = const_cast<double*>(_basis);

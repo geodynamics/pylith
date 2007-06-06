@@ -63,6 +63,8 @@ private:
 
   static const int _cells[];
 
+  static const double _verticesRef[];
+
   static const double _quadPts[];
 
   static const double _quadWts[];

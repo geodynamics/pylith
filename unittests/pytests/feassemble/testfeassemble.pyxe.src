@@ -71,6 +71,18 @@ memcpy(vals, basis, size*sizeof(double));
 return vals;
 #}embed
 
+# create shim for TestQuadrature::vertices
+#embed{ double* TestQuadrature_vertices(void* obj)
+const pylith::feassemble::Quadrature* q =
+  (pylith::feassemble::Quadrature*) obj;
+const int size = TestQuadrature_numBasis(obj) *
+                 TestQuadrature_cellDim(obj);
+double* vals = (size > 0) ? new double[size] : 0;
+const double* vertices = pylith::feassemble::TestQuadrature::vertices(*q);
+memcpy(vals, vertices, size*sizeof(double));
+return vals;
+#}embed
+
 # create shim for TestQuadrature::basisDeriv
 #embed{ double* TestQuadrature_basisDeriv(void* obj)
 const pylith::feassemble::Quadrature* q =
@@ -106,6 +118,30 @@ const double* quadWts = pylith::feassemble::TestQuadrature::quadWts(*q);
 memcpy(vals, quadWts, size*sizeof(double));
 return vals;
 #}embed
+
+# ----------------------------------------------------------------------
+def vertices(qhandle):
+  """
+  Call TestQuadrature::vertices().
+  """
+  if not qhandle.name == "pylith_feassemble_Quadrature":
+    raise TypeError, \
+          "Argument 'quadrature' must be extension type 'Quadrature'."
+
+  cdef void* qptr
+  qptr = ptrFromHandle(qhandle)
+
+  cdef int numBasis
+  cdef int cellDim
+  numBasis = TestQuadrature_numBasis(qptr)
+  cellDim = TestQuadrature_cellDim(qptr)
+
+  cdef double* values
+  values = TestQuadrature_vertices(qptr)
+  dims = [numBasis, cellDim]
+  valuesObj = PyCObject_FromVoidPtr(values, NULL)
+  return spatialdata.utils.simplearray.SimpleCppArray(valuesObj, dims, "double")
+  
 
 # ----------------------------------------------------------------------
 def basis(qhandle):

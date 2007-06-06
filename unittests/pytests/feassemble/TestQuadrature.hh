@@ -61,6 +61,12 @@ public :
    */
   static int spaceDim(const Quadrature& q);
 
+  /** Get vertices in reference cell.
+   *
+   * @returns Array of coordinates of vertices in reference cell.
+   */
+  static const double* vertices(const Quadrature& q);
+
   /** Get basis functions evaluated at quadrature points.
    *
    * @returns Array of basis functions evaluated at quadrature points

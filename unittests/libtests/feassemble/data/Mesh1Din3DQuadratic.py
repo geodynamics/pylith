@@ -46,6 +46,7 @@ class Mesh1Din3DQuadratic(Component):
                                   [-0.5, 2.0, 3.0]],
                                  dtype=numpy.float64)
     self.cells = numpy.array( [[0, 1, 2]], dtype=numpy.int32)
+    self.verticesRef = numpy.array([[-1.0], [1.0], [0.0]], dtype=numpy.float64)
     return
   
 

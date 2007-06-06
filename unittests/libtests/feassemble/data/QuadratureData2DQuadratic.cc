@@ -40,6 +40,15 @@ const int pylith::feassemble::QuadratureData2DQuadratic::_cells[] = {
        0,       1,       2,       3,       4,       5,
 };
 
+const double pylith::feassemble::QuadratureData2DQuadratic::_verticesRef[] = {
+ -1.00000000e+00, -1.00000000e+00,
+  1.00000000e+00, -1.00000000e+00,
+ -1.00000000e+00,  1.00000000e+00,
+  0.00000000e+00,  0.00000000e+00,
+ -1.00000000e+00,  0.00000000e+00,
+  0.00000000e+00, -1.00000000e+00,
+};
+
 const double pylith::feassemble::QuadratureData2DQuadratic::_quadPtsRef[] = {
   6.66666667e-01,  1.66666667e-01,
   1.66666667e-01,  6.66666667e-01,
@@ -121,6 +130,7 @@ pylith::feassemble::QuadratureData2DQuadratic::QuadratureData2DQuadratic(void)
   numQuadPts = _numQuadPts;
   vertices = const_cast<double*>(_vertices);
   cells = const_cast<int*>(_cells);
+  verticesRef = const_cast<double*>(_verticesRef);
   quadPtsRef = const_cast<double*>(_quadPtsRef);
   quadWts = const_cast<double*>(_quadWts);
   quadPts = const_cast<double*>(_quadPts);

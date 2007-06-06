@@ -44,6 +44,7 @@ public:
   double* vertices; ///< Pointer to coordinates of vertices
   int* cells; ///< Pointer to indices of vertices in cells
 
+  double* verticesRef; ///< Coordinates of vertices in ref cell
   double* quadPtsRef; ///< Coordinates of quad pts in ref cell
   double* quadWts; ///< Weights of quadrature points
   double* quadPts; ///< Coordinates of quad pts in cell

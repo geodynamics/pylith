@@ -40,6 +40,7 @@ pylith::feassemble::Quadrature::~Quadrature(void)
 // Copy constructor
 pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
   _minJacobian(q._minJacobian),
+  _vertices(q._vertices),
   _quadPtsRef(q._quadPtsRef),
   _quadPts(q._quadPts),
   _quadWts(q._quadWts),
@@ -59,7 +60,8 @@ pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
 // Set basis functions and their derivatives and coordinates and
 //   weights of the quadrature points.
 void
-pylith::feassemble::Quadrature::initialize(const double* basis,
+pylith::feassemble::Quadrature::initialize(const double* vertices,
+					   const double* basis,
 					   const double* basisDeriv,
 					   const double* quadPtsRef,
 					   const double* quadWts,
@@ -68,7 +70,8 @@ pylith::feassemble::Quadrature::initialize(const double* basis,
 					   const int numQuadPts,
 					   const int spaceDim)
 { // initialize
-  if (0 == basis ||
+  if (0 == vertices ||
+      0 == basis ||
       0 == basisDeriv ||
       0 == quadPtsRef ||
       0 == quadWts ||
@@ -81,8 +84,9 @@ pylith::feassemble::Quadrature::initialize(const double* basis,
 	<< "their derivatives, and coordinates and weights of quadrature\n"
 	<< "points must all be specified.\n"
 	<< "Values:\n"
-	<< "  basis pointer (quad pts): " << basis << "\n"
-	<< "  basis derivatites pointer (quad pts): " << basisDeriv << "\n"
+	<< "  vertices pointer: " << vertices << "\n"
+	<< "  basis pointer: " << basis << "\n"
+	<< "  basis derivatites pointer: " << basisDeriv << "\n"
 	<< "  quadrature points pointer: " << quadPtsRef << "\n"
 	<< "  quadrature weights pointer: " << quadWts << "\n"
 	<< "  space dimension: " << spaceDim << "\n"
@@ -92,7 +96,12 @@ pylith::feassemble::Quadrature::initialize(const double* basis,
     throw std::runtime_error(msg.str());
   } // if
 
-  int size = numBasis * numQuadPts;
+  int size = numBasis * cellDim;
+  _vertices.resize(size);
+  for (int i=0; i < size; ++i)
+    _vertices[i] = vertices[i];
+
+  size = numBasis * numQuadPts;
   _basis.resize(size);
   for (int i=0; i < size; ++i)
     _basis[i] = basis[i];
