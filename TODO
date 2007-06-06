@@ -4,41 +4,30 @@ MAIN PRIORITIES (Brad)
 
 1. Simple tests with analytical solutions
 
-   b. 2-D
+   a. 2-D
      i. tri3 cells
        (1) axial compression
        (2) shear
-       (3) axialshear
      ii. quad4 cells
        (1) axial compression
        (2) shear
-       (3) axialshear
-   c. 3-D
+   b. 3-D
      i. tet4 cells
        (1) axial compression
        (2) shear
-       (3) axialshear
      ii. hex8 cells
        (1) axial compression
        (2) shear
-       (3) axialshear
 
-2. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
-   a. Materials C++ code
-   b. Integrator C++ code
-   b. Material C++ unit tests
-
-3. Add dualBasis to Quadrature.
+2. Add dualBasis to Quadrature.
    a. Python
-     ReferenceCell
-     FIATSimplex
      Quadrature()
    b. C++
      Quadrature
    c. C++ unit tests
    d. Python unit tests
 
-4. Implement faults for kinematic source
+3. Implement faults for kinematic source
    a. Creation of cohesive cells
      i. Add tests for interpolated meshes.
         Double check consistency in ordering of vertices (positive/negative).
@@ -82,6 +71,11 @@ MAIN PRIORITIES (Brad)
        (2) Python unit tests
          constructor
          initialize()
+
+3. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
+   a. Materials C++ code
+   b. Integrator C++ code
+   b. Material C++ unit tests
 
 4. Implement absorbing boundary conditions
 
