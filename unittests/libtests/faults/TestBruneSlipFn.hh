@@ -21,7 +21,7 @@
 #if !defined(pylith_faults_testbruneslipfn_hh)
 #define pylith_faults_testbruneslipfn_hh
 
-#include "TestFaultCohesive.hh"
+#include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
@@ -35,11 +35,12 @@ namespace pylith {
 } // pylith
 
 /// C++ unit testing for BruneSlipFn
-class pylith::faults::TestBruneSlipFn : public TestFaultCohesive
+class pylith::faults::TestBruneSlipFn : public CppUnit::TestFixture
 { // class TestBruneSlipFn
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestBruneSlipFn );
+
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testDbFinalSlip );
   CPPUNIT_TEST( testDbSlipTime );
@@ -49,6 +50,7 @@ class pylith::faults::TestBruneSlipFn : public TestFaultCohesive
   CPPUNIT_TEST( testInitialize3D );
   CPPUNIT_TEST( testSlip );
   CPPUNIT_TEST( testSlipTH );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
