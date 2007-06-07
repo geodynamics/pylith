@@ -86,7 +86,8 @@ const char* pylith::faults::CohesiveDataTet4Lagrange::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveDataTet4Lagrange::_filename = "data/meshTet4A.txt";
+const char* pylith::faults::CohesiveDataTet4Lagrange::_filename = 
+  "data/tet4.mesh";
 
 pylith::faults::CohesiveDataTet4Lagrange::CohesiveDataTet4Lagrange(void)
 { // constructor

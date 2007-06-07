@@ -56,12 +56,6 @@ public :
   virtual
   ~BruneSlipFn(void);
 
-  /** Create copy of fault.
-   *
-   * @returns Copy of fault.
-   */
-  SlipTimeFn* clone(void) const;  
-
   /** Set spatial database for final slip.
    *
    * @param db Spatial database
@@ -100,17 +94,11 @@ public :
   const ALE::Obj<real_section_type>& slip(const double t,
 			      const std::set<Mesh::point_type>& vertices);
 
-// PROTECTED METHODS ////////////////////////////////////////////////////
-protected :
-
-  /** Copy constructor.
-   *
-   * @param f BruneSlipFn to copy
-   */
-  BruneSlipFn(const BruneSlipFn& m);
-
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
+
+  /// Not implemented
+  BruneSlipFn(const BruneSlipFn& m);
 
   /// Not implemented
   const BruneSlipFn& operator=(const BruneSlipFn& f);

@@ -1,0 +1,16 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 1
+  value-names =  slip-time
+  value-units =  s
+  num-locs = 3
+  data-dim = 2
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 3
+  }
+}
+0.0  -1.0  0.0    1.2
+0.0   0.0  1.0    1.3
+0.0   1.0  0.0    1.4

@@ -33,4 +33,20 @@ class TestFaultCohesiveKin(unittest.TestCase):
     return
 
 
+  def test_initialize(self):
+    """
+    Test initialize().
+    """
+    raise NotImplementedError("Unit test not implemented.")
+    return
+
+
+  def test_adjustTopology(self):
+    """
+    Test adjustTopology().
+    """
+    raise NotImplementedError("Unit test not implemented.")
+    return
+
+
 # End of file 

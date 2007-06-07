@@ -33,12 +33,4 @@ class TestFault(unittest.TestCase):
     return
 
 
-  def test_initialize(self):
-    """
-    Test initialize().
-    """
-    raise NotImplementedError("Need to implement unit test.")
-    return
-  
-
 # End of file 

@@ -26,23 +26,16 @@ MAIN PRIORITIES (Brad)
 
    b. Implement integrator for faults
 
-     i. FaultCohesive
-       (2) Python unit tests
-	 constructor
-         initialize()
-
-     ii. BruneSlipFn
+     i. BruneSlipFn
        (1) C++ unit tests
-         initialize()
          slip()
        (2) Python unit tests
          constructor
          initialize()
 
-     iii. EqKinSrc
+     ii. EqKinSrc
        (1) C++ unit tests
          constructor
-         clone()
          slipfn()
          initialize()
          slip()
@@ -50,19 +43,20 @@ MAIN PRIORITIES (Brad)
          constructor
          initialize()
 
-     iv. FaultCohesiveKin
+     iii. FaultCohesiveKin
        (1) C++ unit tests
          constructor
-         clone()
          eqsrc()
          initialize()
          integrateResidual()
          integrateJacobian()
+         setConstraintSizes()
+         setConstraints()
          setField()
          _useLagrangeConstraint()
        (2) Python unit tests
-         constructor
          initialize()
+         adjustTopology()
 
 3. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
    a. Materials C++ code

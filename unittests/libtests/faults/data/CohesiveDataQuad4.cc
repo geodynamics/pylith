@@ -97,7 +97,8 @@ const char* pylith::faults::CohesiveDataQuad4::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveDataQuad4::_filename = "data/meshQuad4A.txt";
+const char* pylith::faults::CohesiveDataQuad4::_filename = 
+  "data/quad4.mesh";
 
 pylith::faults::CohesiveDataQuad4::CohesiveDataQuad4(void)
 { // constructor

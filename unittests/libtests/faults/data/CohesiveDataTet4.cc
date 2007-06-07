@@ -83,7 +83,7 @@ const char* pylith::faults::CohesiveDataTet4::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveDataTet4::_filename = "data/meshTet4A.txt";
+const char* pylith::faults::CohesiveDataTet4::_filename = "data/tet4.mesh";
 
 pylith::faults::CohesiveDataTet4::CohesiveDataTet4(void)
 { // constructor

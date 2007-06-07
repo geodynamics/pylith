@@ -29,24 +29,15 @@ pylith::faults::EqKinSrc::EqKinSrc(void) :
 // Destructor.
 pylith::faults::EqKinSrc::~EqKinSrc(void)
 { // destructor
-  delete _slipfn; _slipfn = 0;
+  _slipfn = 0; // Don't manage memory for slip fn
 } // destructor
-
-// ----------------------------------------------------------------------
-// Copy constructor.
-pylith::faults::EqKinSrc::EqKinSrc(const EqKinSrc& s) :
-  _slipfn(0)
-{ // copy constructor
-  if (0 != s._slipfn)
-    _slipfn = s._slipfn->clone();
-} // copy constructor
 
 // ----------------------------------------------------------------------
 // Set slip time function.
 void
 pylith::faults::EqKinSrc::slipfn(SlipTimeFn* slipfn)
 { // slipfn
-  delete _slipfn; _slipfn = (0 != slipfn) ? slipfn->clone() : 0;
+  _slipfn = slipfn; // Don't manage memory for slip fn
 } // slipfn
 
 // ----------------------------------------------------------------------

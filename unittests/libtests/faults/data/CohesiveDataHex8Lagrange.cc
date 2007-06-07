@@ -96,7 +96,8 @@ const char* pylith::faults::CohesiveDataHex8Lagrange::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveDataHex8Lagrange::_filename = "data/meshHex8A.txt";
+const char* pylith::faults::CohesiveDataHex8Lagrange::_filename = 
+  "data/hex8.mesh";
 
 pylith::faults::CohesiveDataHex8Lagrange::CohesiveDataHex8Lagrange(void)
 { // constructor

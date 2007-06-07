@@ -56,13 +56,6 @@ public :
   virtual
   ~SlipTimeFn(void);
 
-  /** Create copy of fault.
-   *
-   * @returns Copy of fault.
-   */
-  virtual
-  SlipTimeFn* clone(void) const = 0;
-
   /** Initialize slip time function.
    *
    * @param mesh Finite-element mesh.
@@ -85,17 +78,11 @@ public :
   const ALE::Obj<real_section_type>& slip(const double t,
 					  const std::set<Mesh::point_type>& vertices) = 0;
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
-
-  /** Copy constructor.
-   *
-   * @param f SlipTimeFn to copy
-   */
-  SlipTimeFn(const SlipTimeFn& f);
-
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
+
+  /// Not implemented.
+  SlipTimeFn(const SlipTimeFn& f);
 
   /// Not implemented
   const SlipTimeFn& operator=(const SlipTimeFn& f);

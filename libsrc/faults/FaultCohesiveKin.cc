@@ -37,7 +37,7 @@ pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
 // Destructor.
 pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
 { // destructor
-  delete _eqsrc; _eqsrc = 0;
+  _eqsrc = 0; // Don't manage memory for eq source
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -45,7 +45,7 @@ pylith::faults::FaultCohesiveKin::~FaultCohesiveKin(void)
 void
 pylith::faults::FaultCohesiveKin::eqsrc(EqKinSrc* src)
 { // eqsrc
-  delete _eqsrc; _eqsrc = (0 != src) ? src->clone() : 0;
+  _eqsrc = src; // Don't manage memory for eq source
 } // eqsrc
 
 // ----------------------------------------------------------------------

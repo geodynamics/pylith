@@ -17,13 +17,6 @@
 #include <math.h> // USES exp()
 #include <assert.h> // USES assert()
 
-// Create copy of fault.
-inline
-pylith::faults::SlipTimeFn*
-pylith::faults::BruneSlipFn::clone(void) const {
-  return new BruneSlipFn(*this);
-} // clone
-
 // Set spatial database for final slip.
 inline
 void
