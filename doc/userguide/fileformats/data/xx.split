@@ -1,0 +1,25 @@
+# File containing time stepping parameters.
+#
+# Comment lines begin with '#'
+#
+# Displacements are specified for each vertex on the fault for each
+# element containing the vertex. The displacements on each side of the
+# fault or dike should have opposite signs. The displacements
+# associated with a single side of the fault for each vertex should be
+# the same.
+#
+# Columns:
+#   (1) Element number
+#   (2) Vertex number
+#   (3) Time history flag
+#       0 = Slip only in elastic solution
+#      -1 = Slip at constant velocity
+#       n = Slip according to load history n (requires xx.hist file)
+#   (4) Displacement in x direction
+#   (5) Displacement in y direction
+#   (6) Displacement in z direction
+#
+ 14886   36    0   0.353500000 0.00000000  -0.353500000
+ 14887   36    0   0.353500000 0.00000000  -0.353500000
+ 14896   36    0  -0.353500000 0.00000000   0.353500000
+ 14981   36    0  -0.353500000 0.00000000   0.353500000
