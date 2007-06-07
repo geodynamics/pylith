@@ -28,15 +28,12 @@ MAIN PRIORITIES (Brad)
 
      i. FaultCohesiveKin
        (1) C++ unit tests
-         constructor
-         eqsrc()
          initialize()
          integrateResidual()
          integrateJacobian()
          setConstraintSizes()
          setConstraints()
          setField()
-         _useLagrangeConstraint()
        (2) Python unit tests
          initialize()
          adjustTopology()

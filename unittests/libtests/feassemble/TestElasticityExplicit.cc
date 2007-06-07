@@ -31,6 +31,26 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticityExplicit );
 
 // ----------------------------------------------------------------------
+// Setup testing data.
+void
+pylith::feassemble::TestElasticityExplicit::setUp(void)
+{ // setUp
+  _data = 0;
+  _quadrature = 0;
+  _material = 0;
+} // setUp
+
+// ----------------------------------------------------------------------
+// Tear down testing data.
+void
+pylith::feassemble::TestElasticityExplicit::tearDown(void)
+{ // tearDown
+  delete _data; _data = 0;
+  delete _quadrature; _quadrature = 0;
+  delete _material; _material = 0;
+} // tearDown
+
+// ----------------------------------------------------------------------
 // Test constructor.
 void
 pylith::feassemble::TestElasticityExplicit::testConstructor(void)

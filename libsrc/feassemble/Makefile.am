@@ -14,11 +14,25 @@ subpackage = feassemble
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	CellGeometry.hh \
+	CellGeometry.icc \
 	Constraint.hh \
 	ElasticityExplicit.hh \
 	ElasticityImplicit.hh \
 	Integrator.hh \
 	Elasticity.hh \
+	GeometryPoint1D.hh \
+	GeometryPoint2D.hh \
+	GeometryPoint3D.hh \
+	GeometryLine1D.hh \
+	GeometryLine2D.hh \
+	GeometryLine3D.hh \
+	GeometryTri2D.hh \
+	GeometryTri3D.hh \
+	GeometryTet3D.hh \
+	GeometryQuad2D.hh \
+	GeometryQuad3D.hh \
+	GeometryHex3D.hh \
 	Quadrature.hh \
 	Quadrature.icc \
 	Quadrature1D.hh \

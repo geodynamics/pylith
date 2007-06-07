@@ -111,6 +111,9 @@ class TestQuadrature(unittest.TestCase):
     
     quadPts = testmodule.quadPtsRef(quadrature.cppHandle)
     test_double(self, quadPtsE, quadPts)
+
+    from pylith.feassemble.geometry.GeometryLine1D import GeometryLine1D
+    self.assertTrue(isinstance(quadrature.cell.geometry, GeometryLine1D))
     
     return
 
@@ -122,32 +125,32 @@ class TestQuadrature(unittest.TestCase):
     q = Quadrature1D()
     self.assertEqual(1, q.spaceDim)
     self.assertEqual(1, q.cellDim)
-    self.failIf(None == q.cppHandle)
+    self.failIfEqual(None, q.cppHandle)
     
     q = Quadrature1Din2D()
     self.assertEqual(2, q.spaceDim)
     self.assertEqual(1, q.cellDim)
-    self.failIf(None == q.cppHandle)
+    self.failIfEqual(None, q.cppHandle)
     
     q = Quadrature1Din3D()
     self.assertEqual(3, q.spaceDim)
     self.assertEqual(1, q.cellDim)
-    self.failIf(None == q.cppHandle)
+    self.failIfEqual(None, q.cppHandle)
     
     q = Quadrature2D()
     self.assertEqual(2, q.spaceDim)
     self.assertEqual(2, q.cellDim)
-    self.failIf(None == q.cppHandle)
+    self.failIfEqual(None, q.cppHandle)
     
     q = Quadrature2Din3D()
     self.assertEqual(3, q.spaceDim)
     self.assertEqual(2, q.cellDim)
-    self.failIf(None == q.cppHandle)
+    self.failIfEqual(None, q.cppHandle)
     
     q = Quadrature3D()
     self.assertEqual(3, q.spaceDim)
     self.assertEqual(3, q.cellDim)
-    self.failIf(None == q.cppHandle)
+    self.failIfEqual(None, q.cppHandle)
     
     return
 

@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/feassemble/Qudrature1D.py
+## @file pylith/feassemble/quadrature/Qudrature1D.py
 ##
 ## @brief Python object implementing 1-D integration in 1-D space
 ## using numerical quadrature.

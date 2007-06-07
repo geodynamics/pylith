@@ -307,10 +307,12 @@ class TestFIATSimplex(unittest.TestCase):
     cell.shape  = "line"
     cell.degree = 1
     cell.order  = 1
-    cell.initialize()
+    cell.initialize(spaceDim=1)
 
     cellE = Line2()
     self._checkVals(cellE, cell)
+    from pylith.feassemble.geometry.GeometryLine1D import GeometryLine1D
+    self.assertTrue(isinstance(cell.geometry, GeometryLine1D))
     return
 
 
@@ -322,10 +324,12 @@ class TestFIATSimplex(unittest.TestCase):
     cell.shape  = "line"
     cell.degree = 2
     cell.order  = 2
-    cell.initialize()
+    cell.initialize(spaceDim=2)
 
     cellE = Line3()
     self._checkVals(cellE, cell)
+    from pylith.feassemble.geometry.GeometryLine2D import GeometryLine2D
+    self.assertTrue(isinstance(cell.geometry, GeometryLine2D))
     return
 
 
@@ -337,10 +341,12 @@ class TestFIATSimplex(unittest.TestCase):
     cell.shape  = "triangle"
     cell.degree = 1
     cell.order  = 1
-    cell.initialize()
+    cell.initialize(spaceDim=2)
 
     cellE = Tri3()
     self._checkVals(cellE, cell)
+    from pylith.feassemble.geometry.GeometryTri2D import GeometryTri2D
+    self.assertTrue(isinstance(cell.geometry, GeometryTri2D))
     return
 
 
@@ -352,10 +358,12 @@ class TestFIATSimplex(unittest.TestCase):
     cell.shape  = "tetrahedron"
     cell.degree = 1
     cell.order  = 1
-    cell.initialize()
+    cell.initialize(spaceDim=3)
 
     cellE = Tet4()
     self._checkVals(cellE, cell)
+    from pylith.feassemble.geometry.GeometryTet3D import GeometryTet3D
+    self.assertTrue(isinstance(cell.geometry, GeometryTet3D))
     return
 
 

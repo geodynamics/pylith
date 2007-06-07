@@ -62,6 +62,12 @@ class pylith::feassemble::TestElasticityImplicit : public CppUnit::TestFixture
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
+  /// Setup testing data.
+  void setUp(void);
+
+  /// Tear down testing data.
+  void tearDown(void);
+
   /// Test constructor.
   void testConstructor(void);
 

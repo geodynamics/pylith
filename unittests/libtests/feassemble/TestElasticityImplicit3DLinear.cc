@@ -36,15 +36,5 @@ pylith::feassemble::TestElasticityImplicit3DLinear::setUp(void)
 		       std::string(_data->matType));
 } // setUp
 
-// ----------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::feassemble::TestElasticityImplicit3DLinear::tearDown(void)
-{ // tearDown
-  delete _data;
-  delete _quadrature;
-  delete _material;
-} // tearDown
-
 
 // End of file 

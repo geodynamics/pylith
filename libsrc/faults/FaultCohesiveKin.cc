@@ -56,15 +56,15 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 					     const double_array& upDir)
 { // initialize
   assert(0 != _quadrature);
-  assert(0 != _faultMesh);
   assert(0 != _eqsrc);
+  assert(0 != _faultMesh);
   assert(!_faultMesh->isNull());
   
   if (3 != upDir.size())
     throw std::runtime_error("Up direction for fault orientation must be "
 			     "a vector with 3 components.");
 
-  // Allocate section for orientation at all fault vertices
+  // Allocate section for orientation at vertices in fault mesh
   ALE::Obj<real_section_type> orientation = 
     new real_section_type((*_faultMesh)->comm(), (*_faultMesh)->debug());
   assert(!orientation.isNull());

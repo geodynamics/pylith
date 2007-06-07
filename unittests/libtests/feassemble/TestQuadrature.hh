@@ -38,6 +38,7 @@ class pylith::feassemble::TestQuadrature : public CppUnit::TestFixture
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestQuadrature );
+
   CPPUNIT_TEST( testClone );
   CPPUNIT_TEST( testMinJacobian );
   CPPUNIT_TEST( testInitialize );

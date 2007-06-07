@@ -25,10 +25,11 @@ def validateShape(shape):
   name = shape.lower()
   if not ("tetrahedron" == name or 
           "triangle" == name or 
-          "line" == name):
+          "line" == name or
+          "point" == name):
     raise ValueError("Unknown shape '%s' for reference finite-element " \
                      "cell.\n" \
-                     "Known shapes: 'tetrahedron', 'triangle', 'line'" % \
+                     "Known shapes: 'tetrahedron', 'triangle', 'line', 'point'" % \
                      name)
   return name
 
@@ -80,41 +81,55 @@ class FIATSimplex(ReferenceCell):
     return
 
 
-  def initialize(self):
+  def initialize(self, spaceDim):
     """
     Initialize reference finite-element cell.
     """
-    quadrature = self._setupQuadrature()
-    basisFns = self._setupBasisFns()
+    self._setupGeometry(spaceDim)
 
-    # Get coordinates of vertices (dual basis)
-    self.vertices = numpy.array(self._setupVertices(), dtype=numpy.float64)
+    if "point" != self.shape.lower():
+      quadrature = self._setupQuadrature()
+      basisFns = self._setupBasisFns()
 
-    # Evaluate basis functions at quadrature points
-    quadpts = quadrature.get_points()
-    basis = numpy.array(basisFns.tabulate(quadpts)).transpose()
-    self.basis = numpy.reshape(basis.flatten(), basis.shape)
+      # Get coordinates of vertices (dual basis)
+      self.vertices = numpy.array(self._setupVertices(), dtype=numpy.float64)
 
-    # Evaluate derivatives of basis functions at quadrature points
-    import FIAT.shapes
-    dim = FIAT.shapes.dimension(basisFns.base.shape)
-    basisDeriv = numpy.array([basisFns.deriv_all(d).tabulate(quadpts) \
-                              for d in range(dim)]).transpose()
-    self.basisDeriv = numpy.reshape(basisDeriv.flatten(), basisDeriv.shape)
+      # Evaluate basis functions at quadrature points
+      quadpts = quadrature.get_points()
+      basis = numpy.array(basisFns.tabulate(quadpts)).transpose()
+      self.basis = numpy.reshape(basis.flatten(), basis.shape)
 
-    self.quadPts = numpy.array(quadrature.get_points())
-    self.quadWts = numpy.array(quadrature.get_weights())
+      # Evaluate derivatives of basis functions at quadrature points
+      import FIAT.shapes
+      dim = FIAT.shapes.dimension(basisFns.base.shape)
+      basisDeriv = numpy.array([basisFns.deriv_all(d).tabulate(quadpts) \
+                                for d in range(dim)]).transpose()
+      self.basisDeriv = numpy.reshape(basisDeriv.flatten(), basisDeriv.shape)
 
-    self.cellDim = dim
-    self.numCorners = len(basisFns)
-    self.numQuadPts = len(quadrature.get_weights())
+      self.quadPts = numpy.array(quadrature.get_points())
+      self.quadWts = numpy.array(quadrature.get_weights())
 
+      self.cellDim = dim
+      self.numCorners = len(basisFns)
+      self.numQuadPts = len(quadrature.get_weights())
+    else:
+      # Need 0-D quadrature for boundary conditions of 1-D meshes
+      self.cellDim = 0
+      self.numCorners = 1
+      self.numQuadPts = 1
+      self.basis = numpy.array([1.0])
+      self.basisDeriv = numpy.array([1.0])
+      self.quadPts = numpy.array([0.0])
+      self.quadWts = numpy.array([1.0])
+
+    self._info.line("Cell geometry: ")
+    self._info.line(self.geometry)
     self._info.line("Vertices: ")
     self._info.line(self.vertices)
     self._info.line("Quad pts:")
-    self._info.line(quadrature.get_points())
+    self._info.line(self.quadPts)
     self._info.line("Quad wts:")
-    self._info.line(quadrature.get_weights())
+    self._info.line(self.quadWts)
     self._info.line("Basis fns @ quad pts ):")
     self._info.line(self.basis)
     self._info.line("Basis fn derivatives @ quad pts:")
@@ -138,10 +153,54 @@ class FIATSimplex(ReferenceCell):
     return
 
 
+  def _setupGeometry(self, spaceDim):
+    """
+    Setup reference cell geometry object.
+    """
+    self.geometry = None
+    name = self.shape.lower()
+    if "tetrahedron" == name:
+      if 3 == spaceDim:
+        from geometry.GeometryTet3D import GeometryTet3D
+        self.geometry = GeometryTet3D()
+    elif "triangle" == name:
+      if 2 == spaceDim:
+        from geometry.GeometryTri2D import GeometryTri2D
+        self.geometry = GeometryTri2D()
+      elif 3 == spaceDim:
+        from geometry.GeometryTri3D import GeometryTri3D
+        self.geometry = GeometryTri3D()
+    elif "line" == name:
+      if 1 == spaceDim:
+        from geometry.GeometryLine1D import GeometryLine1D
+        self.geometry = GeometryLine1D()
+      elif 2 == spaceDim:
+        from geometry.GeometryLine2D import GeometryLine2D
+        self.geometry = GeometryLine2D()
+      elif 3 == spaceDim:
+        from geometry.GeometryLine3D import GeometryLine3D
+        self.geometry = GeometryLine3D()
+    elif "point" == name:
+      if 1 == spaceDim:
+        from geometry.GeometryPoint1D import GeometryPoint1D
+        self.geometry = GeometryPoint1D()
+      elif 2 == spaceDim:
+        from geometry.GeometryPoint2D import GeometryPoint2D
+        self.geometry = GeometryPoint2D()
+      elif 3 == spaceDim:
+        from geometry.GeometryPoint3D import GeometryPoint3D
+        self.geometry = GeometryPoint3D()
+    if None == self.geometry:
+      raise ValueError("Could not set shape of cell for '%s' in spatial " \
+                       "dimension '%s'." % (self.name, spaceDim))
+    return
+  
+
   def _setupQuadrature(self):
     """
     Setup quadrature rule for reference cell.
     """
+    
     import FIAT.quadrature
     return FIAT.quadrature.make_quadrature_by_degree(self._getShape(),
                                                      self.order)
@@ -175,6 +234,8 @@ class FIATSimplex(ReferenceCell):
       shape = FIAT.shapes.TRIANGLE
     elif "line" == name:
       shape = FIAT.shapes.LINE
+    elif "point" == name:
+      shape = None
     else:
       raise ValueError("Unknown shape '%s' for reference finite-element " \
                        "cell.\n" \

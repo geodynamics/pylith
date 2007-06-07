@@ -50,9 +50,6 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-  /// Tear down testing data.
-  void tearDown(void);
-
 }; // class TestElasticityImplicit1DQuadratic
 
 #endif // pylith_feassemble_testelasticityimplicit1dquadratic_hh

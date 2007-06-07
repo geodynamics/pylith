@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/feassemble/Qudrature3D.py
+## @file pylith/feassemble/quadrature/Qudrature3D.py
 ##
 ## @brief Python object implementing 3-D integration in 3-D space
 ## using numerical quadrature.

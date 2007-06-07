@@ -32,10 +32,23 @@ libpylith_la_SOURCES = \
 	faults/FaultCohesiveKin.cc \
 	faults/FaultCohesiveDyn.cc \
 	faults/SlipTimeFn.cc \
+	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
 	feassemble/Elasticity.cc \
 	feassemble/ElasticityExplicit.cc \
 	feassemble/ElasticityImplicit.cc \
+	feassemble/GeometryPoint1D.cc \
+	feassemble/GeometryPoint2D.cc \
+	feassemble/GeometryPoint3D.cc \
+	feassemble/GeometryLine1D.cc \
+	feassemble/GeometryLine2D.cc \
+	feassemble/GeometryLine3D.cc \
+	feassemble/GeometryTri2D.cc \
+	feassemble/GeometryTri3D.cc \
+	feassemble/GeometryTet3D.cc \
+	feassemble/GeometryQuad2D.cc \
+	feassemble/GeometryQuad3D.cc \
+	feassemble/GeometryHex3D.cc \
 	feassemble/Integrator.cc \
 	feassemble/Quadrature.cc \
 	feassemble/Quadrature1D.cc \
@@ -64,20 +77,7 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileBinary.cc \
 	meshio/SolutionIO.cc \
 	meshio/SolutionIOVTK.cc \
-	topology/CellGeometry.cc \
-	topology/FieldsManager.cc \
-	topology/GeometryPoint1D.cc \
-	topology/GeometryPoint2D.cc \
-	topology/GeometryPoint3D.cc \
-	topology/GeometryLine1D.cc \
-	topology/GeometryLine2D.cc \
-	topology/GeometryLine3D.cc \
-	topology/GeometryTri2D.cc \
-	topology/GeometryTri3D.cc \
-	topology/GeometryTet3D.cc \
-	topology/GeometryQuad2D.cc \
-	topology/GeometryQuad3D.cc \
-	topology/GeometryHex3D.cc
+	topology/FieldsManager.cc
 
 if ENABLE_CUBIT
   libpylith_la_SOURCES += \
