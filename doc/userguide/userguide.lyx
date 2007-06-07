@@ -1,0 +1,302 @@
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+\usepackage{hyperref}
+
+\let\myUrl\url
+\renewcommand{\url}[1]{(\myUrl{#1})}
+\newcommand\Prefix[3]{\vphantom{#3}#1#2#3}
+\end_preamble
+\language english
+\inputencoding latin1
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\cite_engine natbib_authoryear
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle plain
+\tracking_changes false
+\output_changes false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename pylith_cover.pdf
+	width 75page%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+thispagestyle{empty}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+frontmatter
+\end_layout
+
+\end_inset
+
+
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FloatList figure
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FloatList table
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \input{preface.lyx}
+preview false
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+mainmatter
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+raggedbottom
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Include \input{intro/intro.lyx}
+preview false
+
+\end_inset
+
+ 
+\begin_inset Include \input{install/install.lyx}
+preview false
+
+\end_inset
+
+ 
+\begin_inset Include \input{runpylith/runpylith.lyx}
+preview false
+
+\end_inset
+
+ 
+\begin_inset Include \input{tutorials/tutorials.lyx}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\start_of_appendix
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+%dummy comment inserted by tex2lyx to ensure that this paragraph is not
+ empty
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Include \input{fileformats/fileformats.lyx}
+preview false
+
+\end_inset
+
+ 
+\begin_inset Include \input{materials/materials.lyx}
+preview false
+
+\end_inset
+
+
+\begin_inset Include \input{license.lyx}
+preview false
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+
+\bibitem {Williams:etal:2005}
+Williams, C.A., B.
+ Aagaard, M.G.
+ Knepley (2005), Development of software for studying earthquakes across
+ multiple spatial and temporal scales by coupling quasi-static and dynamic
+ simulations, 
+\emph on
+Eos Trans.
+ AGU, 86
+\emph default
+(52), Fall Meet.
+ Suppl., Abstract S53A-1072.
+\end_layout
+
+\begin_layout Bibliography
+
+\bibitem {Williams:2006}
+Williams, C.A.
+ (2006), Development of a package for modeling stress in the lithosphere,
+ 
+\emph on
+Eos Trans.
+ AGU,
+\emph default
+ 
+\emph on
+87
+\emph default
+(36), Jt.
+ Assem.
+ Suppl., Abstract T24A-01 Invited.
+\end_layout
+
+\begin_layout Bibliography
+
+\bibitem {Kojic:Bathe:1987}
+Kojic, M.
+ and K.-J.
+ Bathe (1987), The `Effective Stress-Function' Algorithm for Thermo-Elasto-Plast
+icity and Creep, 
+\emph on
+Int.
+ J.
+ Num.
+ Meth.
+ Eng
+\emph default
+.
+\emph on
+, 24
+\emph default
+, 1509-1532.
+\end_layout
+
+\begin_layout Bibliography
+
+\bibitem [4]{Zienkiewicz:Taylor:2000}
+Zienkiewicz, O.C.
+ and R.L.
+ Taylor (2000), 
+\shape italic
+The Finite Element Method, Fifth Edition, Volume 2: Solid Mechanics
+\shape default
+, Butterworth-Heinemann, Oxford, 459 pp.
+\end_layout
+
+\begin_layout Bibliography
+
+\bibitem [5]{Taylor:2003}
+Taylor, R.L.
+ (2003), `FEAP--A Finite Element Analysis Program', 
+\shape italic
+Version 7.5 Theory Manual
+\shape default
+, 154 pp.
+\end_layout
+
+\end_body
+\end_document

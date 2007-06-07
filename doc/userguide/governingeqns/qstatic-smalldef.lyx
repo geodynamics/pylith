@@ -400,7 +400,7 @@ Index Notation
 \begin_layout Standard
 We consider a general class of quasi-static viscoelastic models under the
  assumption of infinitesimal strain, and the methods we derive are also
- appropriate for plastic or viscoplastic behavior.
+ appropriate for viscoplastic behavior.
  The stresses are considered to be a function of the total strains and possibly
  of other variables as well:
 \end_layout
@@ -419,7 +419,7 @@ The strains are given by
 \begin_inset Formula $q_{k}$
 \end_inset
 
-represent additional variables upon which the stress depends.
+ represent additional variables upon which the stress depends.
  These additional variables follow the evolution equations
 \end_layout
 
@@ -438,7 +438,7 @@ with the initial conditions
 \begin_inset Formula $\sigma_{ij}^{0}$
 \end_inset
 
-are the initial stresses in the material.
+ are the initial stresses in the material.
  To simplify our derivations, we consider the initial stresses to be included
  in the additional variables, 
 \begin_inset Formula $q_{k}$
@@ -469,7 +469,7 @@ Vector Notation
 \begin_layout Standard
 We consider a general class of quasi-static viscoelastic models under the
  assumption of infinitesimal strain, and the methods we derive are also
- appropriate for plastic or viscoplastic behavior.
+ appropriate for viscoplastic behavior.
  The stresses are considered to be a function of the total strains and possibly
  of other variables as well:
 \end_layout
@@ -507,7 +507,7 @@ with the initial conditions
 \begin_inset Formula $\underline{\boldsymbol{\sigma}}_{0}$
 \end_inset
 
-are the initial stresses in the material.
+ are the initial stresses in the material.
  To simplify our derivations, we consider the initial stresses to be included
  in the additional variables, 
 \begin_inset Formula $\boldsymbol{q}$
@@ -566,7 +566,7 @@ T_{i}=\sigma_{ij}n_{j},\end{equation}
 \end_inset
 
 where 
-\begin_inset Formula $\overrightarrow{n}$
+\begin_inset Formula $n_{j}$
 \end_inset
 
  is the vector normal to 
@@ -617,6 +617,28 @@ u_{i}=u_{i}^{o}\text{ on }S_{u.}\end{gather}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Note that since both 
+\begin_inset Formula $T_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $u_{i}$
+\end_inset
+
+ are vector quantities, there can be some spatial overlap of the conceptual
+ surfaces 
+\begin_inset Formula $S_{T}$
+\end_inset
+
+ and 
+\begin_inset Formula $S_{u}$
+\end_inset
+
+; however, the same degree of freedom cannot simultaneously have both types
+ of boundary conditions.
 \end_layout
 
 \begin_layout Subsubsection
@@ -701,6 +723,28 @@ Because the volume
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Note that since both 
+\begin_inset Formula $\overrightarrow{T}$
+\end_inset
+
+ and 
+\begin_inset Formula $\overrightarrow{u}$
+\end_inset
+
+ are vector quantities, there can be some spatial overlap of the conceptual
+ surfaces 
+\begin_inset Formula $S_{T}$
+\end_inset
+
+ and 
+\begin_inset Formula $S_{u}$
+\end_inset
+
+; however, the same degree of freedom cannot simultaneously have both types
+ of boundary conditions.
 \end_layout
 
 \begin_layout Subsection
@@ -903,7 +947,8 @@ Vector Notation
 \end_layout
 
 \begin_layout Standard
-We start with the wave equation (strong form),
+We start with the strong form of the quasi-stati problem under the assumption
+ of infinitesimal strains,
 \end_layout
 
 \begin_layout Standard
@@ -1122,11 +1167,31 @@ so in this case our integral equation becomes
 \end_layout
 
 \begin_layout Subsection
-Explicit Time Integration of Elasticity Equation
+Implicit Time Integration of Quasi-Static Equation
 \end_layout
 
 \begin_layout Subsubsection
 Index Notation
+\end_layout
+
+\begin_layout Standard
+Equation ??? may be linear or nonlinear, and may be solved using Newton-Raphson
+ methods.
+ We write a simplified version as a function of the displacements at time
+ 
+\begin_inset Formula $n+1$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\boldsymbol{P}\left(\boldsymbol{u}_{n+1}\right)-\boldsymbol{F}_{n+1}=\mathbf{0}\equiv\boldsymbol{R}_{n+1}\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
