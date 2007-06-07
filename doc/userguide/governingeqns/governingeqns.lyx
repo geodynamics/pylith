@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -38,6 +38,33 @@ Governing Equations
 \end_layout
 
 \begin_layout Standard
+We present here a brief derivation of the equations for both quasi-static
+ and dynamic computations.
+ Since the general equations are the same (except for the absence of acceleratio
+n terms in the quasi-static case), we first derive these equations.
+ We then present solution methods for each specific case.
+ In all of our derivations, we use the notation described in 
+\begin_inset LatexCommand \ref{tab:Mathematical-notation}
+
+\end_inset
+
+ for both index and vector notation.
+ When using index notation, we use the common convention that repeated indices
+ indicate summation over the range of the index.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{tab:Mathematical-notation}
+
+\end_inset
+
+
 \begin_inset Tabular
 <lyxtabular version="3" rows="10" columns="3">
 <features>
@@ -389,6 +416,11 @@ Mass density scalar field
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Derivation of Elasticity Equation
 \end_layout
@@ -423,7 +455,7 @@ T_{i}=\sigma_{ij}n_{j},\end{equation}
 \end_inset
 
 where 
-\begin_inset Formula $\overrightarrow{n}$
+\begin_inset Formula $n_{j}$
 \end_inset
 
  is the vector normal to 
@@ -473,7 +505,25 @@ u_{i}=u_{i}^{o}\text{ on }S_{u.}\end{gather}
 
 \end_inset
 
+Note that since both 
+\begin_inset Formula $T_{i}$
+\end_inset
 
+ and 
+\begin_inset Formula $u_{i}$
+\end_inset
+
+ are vector quantities, there can be some spatial overlap of the conceptual
+ surfaces 
+\begin_inset Formula $S_{T}$
+\end_inset
+
+ (specified tractions) and 
+\begin_inset Formula $S_{u}$
+\end_inset
+
+ (specified displacements); however, the same degree of freedom cannot simultane
+ously have both types of boundary conditions.
 \end_layout
 
 \begin_layout Subsubsection
@@ -556,7 +606,25 @@ Because the volume
 
 \end_inset
 
+Note that since both 
+\begin_inset Formula $\overrightarrow{T}$
+\end_inset
 
+ and 
+\begin_inset Formula $\overrightarrow{u}$
+\end_inset
+
+ are vector quantities, there can be some spatial overlap of the conceptual
+ surfaces 
+\begin_inset Formula $S_{T}$
+\end_inset
+
+ (specified tractions) and 
+\begin_inset Formula $S_{u}$
+\end_inset
+
+ (specified displacements); however, the same degree of freedom cannot simultane
+ously have both types of boundary conditions.
 \end_layout
 
 \begin_layout Subsection
@@ -736,7 +804,7 @@ u_{i}=N^{m}u_{i}^{m}.\end{gather}
 \end_inset
 
 We force the weak form to hold for each component in the vector space.
- For basis function 
+ Substituting into the integral equation, for basis function 
 \begin_inset Formula $N^{p}$
 \end_inset
 
@@ -954,7 +1022,7 @@ Substituting into the integral equation yields
 
 \end_inset
 
-For a linearly elastic material
+For the specific case of a linearly elastic material
 \begin_inset Formula \begin{equation}
 \underline{\sigma}=\underline{C}\cdot\underline{\varepsilon},\end{equation}
 
@@ -978,10 +1046,6 @@ so in this case our integral equation becomes
 
 \begin_layout Subsection
 Explicit Time Integration of Elasticity Equation
-\end_layout
-
-\begin_layout Subsubsection
-Index Notation
 \end_layout
 
 \begin_layout Standard
@@ -1076,20 +1140,148 @@ where
  
 \end_layout
 
-\begin_layout Subsubsection
-Vector Notation
+\begin_layout Subsection
+Solution method for infinitesimal strain quasi-static problems
 \end_layout
 
 \begin_layout Standard
-Using the central difference method to approximate the acceleration (and
- velocity),
-\begin_inset Formula \begin{gather}
-\frac{\partial^{2}\overrightarrow{u}(t)}{\partial t^{2}}=\frac{1}{\Delta t^{2}}\left(\overrightarrow{u}(t+\Delta t)-2\overrightarrow{u}(t)+\overrightarrow{u}(t-\Delta t)\right)\\
-\frac{\partial\overrightarrow{u}(t)}{\partial t}=\frac{1}{2\Delta t}\left(\overrightarrow{u}(t+\Delta t)-\overrightarrow{u}(t-\Delta t)\right)\end{gather}
+We consider a general class of quasi-static viscoelastic models under the
+ assumption of infinitesimal strain, and the methods we derive are also
+ appropriate for viscoplastic behavior.
+ The stresses are considered to be a function of the total strains and possibly
+ of other variables as well:
+\begin_inset Formula \begin{equation}
+\sigma_{ij}=h_{ij}\left(\epsilon_{ij},q_{k}\right)+\sigma_{ij}^{0}.\end{equation}
 
 \end_inset
 
+The strains are given by 
+\begin_inset Formula $\varepsilon_{ij}$
+\end_inset
 
+, while the 
+\begin_inset Formula $q_{k}$
+\end_inset
+
+ represent additional variables upon which the stress depends.
+ These additional variables follow the evolution equations
+\begin_inset Formula \begin{equation}
+\dot{q_{k}=r_{k}\left(\epsilon_{ij},q_{k}\right),}\end{equation}
+
+\end_inset
+
+with the initial conditions 
+\begin_inset Formula $q_{k}\left(t_{0}\right)=q_{k}^{0}$
+\end_inset
+
+.
+ The 
+\begin_inset Formula $\sigma_{ij}^{0}$
+\end_inset
+
+ are the initial stresses in the material.
+ The strain tensor is given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\varepsilon_{ij}=\frac{1}{2}\left(u_{i,j}+u_{j,i}\right).\end{equation}
+
+\end_inset
+
+The stress can be either a linear or nonlinear function of strain and the
+ additional variables, and in some cases the additional variables are not
+ needed.
+ In linear elastic behavior in the absence of initial stresses, for example,
+ the stress is linearly dependent on the strain and there are no additional
+ variables.
+\end_layout
+
+\begin_layout Standard
+For quasi-static problems, there are no acceleration or momentum terms,
+ and the equation of interest simplifies to
+\begin_inset Formula \begin{equation}
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV-\int_{V^{e}}N_{}^{p}f_{i}\: dV-\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS)=0.\end{equation}
+
+\end_inset
+
+The first term in this equation represents the internal forces within an
+ element, the second term represents the contribution from externally-applied
+ body forces, and the third term represents the contribution from externally-app
+lied tractions.
+\end_layout
+
+\begin_layout Standard
+We define the tangent constitutive operator as
+\begin_inset Formula \begin{equation}
+C_{ijrs}=\frac{\partial\sigma_{ij}}{\partial\epsilon_{rs}},\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\sigma_{ij}$
+\end_inset
+
+ and 
+\begin_inset Formula $\epsilon_{rs}$
+\end_inset
+
+ are the stresses and strains at any given time step.
+ For an elastic problem in which the stress is linearly dependent on the
+ strain, this allows the stress-strain relationship to be written
+\begin_inset Formula \begin{equation}
+\sigma_{ij}=C_{ijrs}\epsilon_{rs}+\sigma_{ij}^{0},\end{equation}
+
+\end_inset
+
+and we then obtain
+\begin_inset Formula \begin{equation}
+\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijrs}\left(N_{,s}^{p}+N_{,r}^{p}\right)\, dV)\overrightarrow{U}=\sum_{elements}\left(\int_{V^{e}}N_{}^{p}f_{i}\: dV+\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS-\int_{V^{e}}\frac{1}{2}\sigma_{ij}^{0}(N_{,j}^{p}+N_{,i}^{p})\: dV\right),\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\overrightarrow{U}$
+\end_inset
+
+ is the global displacement vector for all nodes in the finite element mesh.
+ This leads to the global matrix problem
+\begin_inset Formula \begin{equation}
+\underline{K}\overrightarrow{U}=\overrightarrow{B}\hphantom{}_{b}+\overrightarrow{B}\hphantom{}_{t}-\overrightarrow{B}\hphantom{}_{i},\end{equation}
+
+\end_inset
+
+or
+\begin_inset Formula \begin{equation}
+\underline{K}\overrightarrow{U}=\overrightarrow{B}\hphantom{}_{ext}-\overrightarrow{B}\hphantom{}_{i}.\end{equation}
+
+\end_inset
+
+The matrix 
+\begin_inset Formula $\underline{K}$
+\end_inset
+
+ is the global stiffness matrix, and the vectors 
+\begin_inset Formula $\overrightarrow{B}\hphantom{}_{b}$
+\end_inset
+
+, 
+\begin_inset Formula $\overrightarrow{B}\hphantom{}_{t}$
+\end_inset
+
+, and 
+\begin_inset Formula $\overrightarrow{B}\hphantom{}_{i}$
+\end_inset
+
+ represent the nodal force contributions from body forces, surface tractions,
+ and initial stresses, respectively.
+ The forces due to body forces and surface tractions represent the externally
+ applied forces, given by 
+\begin_inset Formula $\overrightarrow{B}\hphantom{}_{ext}$
+\end_inset
+
+.
+ This linear, sparse system may be solved by a number of available methods.
 \end_layout
 
 \end_body
