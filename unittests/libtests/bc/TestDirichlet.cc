@@ -28,6 +28,22 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestDirichlet );
 
 // ----------------------------------------------------------------------
+// Setup testing data.
+void
+pylith::bc::TestDirichlet::setUp(void)
+{ // setUp
+  _data = 0;
+} // setUp
+
+// ----------------------------------------------------------------------
+// Tear down testing data.
+void
+pylith::bc::TestDirichlet::tearDown(void)
+{ // tearDown
+  delete _data; _data = 0;
+} // tearDown
+
+// ----------------------------------------------------------------------
 // Test constructor.
 void
 pylith::bc::TestDirichlet::testConstructor(void)

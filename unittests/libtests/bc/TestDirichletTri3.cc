@@ -27,13 +27,5 @@ pylith::bc::TestDirichletTri3::setUp(void)
   _data = new DirichletDataTri3();
 } // setUp
 
-// ----------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::bc::TestDirichletTri3::tearDown(void)
-{ // tearDown
-  delete _data;
-} // tearDown
-
 
 // End of file 

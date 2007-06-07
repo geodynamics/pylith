@@ -48,9 +48,6 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-  /// Tear down testing data.
-  void tearDown(void);
-
 }; // class TestDirichletTri3
 
 #endif // pylith_bc_dirichlettri3_hh

@@ -27,13 +27,5 @@ pylith::bc::TestDirichletQuad4::setUp(void)
   _data = new DirichletDataQuad4();
 } // setUp
 
-// ----------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::bc::TestDirichletQuad4::tearDown(void)
-{ // tearDown
-  delete _data;
-} // tearDown
-
 
 // End of file 

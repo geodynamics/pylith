@@ -48,9 +48,6 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-  /// Tear down testing data.
-  void tearDown(void);
-
 }; // class TestDirichletLine2
 
 #endif // pylith_bc_dirichletline2_hh
