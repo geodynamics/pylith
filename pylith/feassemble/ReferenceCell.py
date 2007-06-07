@@ -36,6 +36,8 @@ class ReferenceCell(Component):
     """
     Component.__init__(self, name, facility="reference_cell")
 
+    self.geometry = None # Geometry of reference cell
+
     self.basisVert = None # numpy array w/basis fns at vertices
     self.basisDerivVert = None # numpy array w/basis fn derivs at vertices
     self.basisQuad = None # numpy array w/basis fns at quad pts
@@ -50,7 +52,7 @@ class ReferenceCell(Component):
     return
 
 
-  def initialize(self):
+  def initialize(self, spaceDim):
     """
     Initialize reference finite-element cell.
     """

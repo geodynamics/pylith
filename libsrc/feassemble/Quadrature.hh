@@ -37,6 +37,8 @@
 namespace pylith {
   namespace feassemble {
     class Quadrature;
+
+    class CellGeometry; // HOLDSA CellGeometry
   } // feassemble
 } // pylith
 
@@ -109,6 +111,18 @@ public :
 		  const int numBasis,
 		  const int numQuadPts,
 		  const int spaceDim);
+
+  /** Set geometry associated with reference cell.
+   *
+   * @param geometry Geometry of reference cell.
+   */
+  void refGeometry(CellGeometry* const geometry);
+
+  /** Get geometry associated with reference cell.
+   *
+   * @returns Geometry of reference cell.
+   */
+  const CellGeometry& refGeometry(void) const;
 
   /** Set minimum allowable determinant of Jacobian.
    *
@@ -328,6 +342,8 @@ protected :
   int _numBasis; ///< Number of basis functions (and vertices) for cell
   int _numQuadPts; ///< Number of quadrature points
   int _spaceDim; ///< Number of dimensions in coordinates of cell vertices
+
+  CellGeometry* _geometry; ///< Geometry of reference cell
 
 }; // Quadrature
 

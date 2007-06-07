@@ -50,9 +50,6 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-  /// Tear down testing data.
-  void tearDown(void);
-
 }; // class TestElasticityImplicit1DLinear
 
 #endif // pylith_feassemble_testelasticityimplicit1dlinear_hh

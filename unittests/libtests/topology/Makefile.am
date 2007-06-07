@@ -21,68 +21,16 @@ check_PROGRAMS = testtopology
 
 # Primary source files
 testtopology_SOURCES = \
-	TestCellGeometry.cc \
 	TestFieldsManager.cc \
-	TestGeometryPoint1D.cc \
-	TestGeometryPoint2D.cc \
-	TestGeometryPoint3D.cc \
-	TestGeometryLine1D.cc \
-	TestGeometryLine2D.cc \
-	TestGeometryLine3D.cc \
-	TestGeometryTri2D.cc \
-	TestGeometryTri3D.cc \
-	TestGeometryQuad2D.cc \
-	TestGeometryQuad3D.cc \
-	TestGeometryTet3D.cc \
-	TestGeometryHex3D.cc \
 	test_topology.cc
 
 noinst_HEADERS =
-	TestCellGeometry.hh \
-	TestFieldsManager.hh \
-	TestGeometryPoint1D.hh \
-	TestGeometryPoint2D.hh \
-	TestGeometryPoint3D.hh \
-	TestGeometryLine1D.hh \
-	TestGeometryLine2D.hh \
-	TestGeometryLine3D.hh \
-	TestGeometryTri2D.hh \
-	TestGeometryTri3D.hh \
-	TestGeometryQuad2D.hh \
-	TestGeometryQuad3D.hh \
-	TestGeometryTet3D.hh \
-	TestGeometryHex3D.hh
+	TestFieldsManager.hh
 
 # Source files associated with testing data
-testtopology_SOURCES += \
-	data/CellGeomData.cc \
-	data/GeomDataPoint1D.cc \
-	data/GeomDataPoint2D.cc \
-	data/GeomDataPoint3D.cc \
-	data/GeomDataLine1D.cc \
-	data/GeomDataLine2D.cc \
-	data/GeomDataLine3D.cc \
-	data/GeomDataTri2D.cc \
-	data/GeomDataTri3D.cc \
-	data/GeomDataQuad2D.cc \
-	data/GeomDataQuad3D.cc \
-	data/GeomDataTet3D.cc \
-	data/GeomDataHex3D.cc
+testtopology_SOURCES += 
 
 noinst_HEADERS += 
-	data/CellGeomData.hh \
-	data/GeometryDataPoint1D.hh \
-	data/GeometryDataPoint2D.hh \
-	data/GeometryDataPoint3D.hh \
-	data/GeometryDataLine1D.hh \
-	data/GeometryDataLine2D.hh \
-	data/GeometryDataLine3D.hh \
-	data/GeometryDataTri2D.hh \
-	data/GeometryDataTri3D.hh \
-	data/GeometryDataQuad2D.hh \
-	data/GeometryDataQuad3D.hh \
-	data/GeometryDataTet3D.hh \
-	data/GeometryDataHex3D.hh
 
 testtopology_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
 

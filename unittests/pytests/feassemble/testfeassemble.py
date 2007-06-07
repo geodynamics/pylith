@@ -54,6 +54,9 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
+    from TestCellGeometry import TestCellGeometry
+    suite.addTest(unittest.makeSuite(TestCellGeometry))
+
     from TestFIATSimplex import TestFIATSimplex
     suite.addTest(unittest.makeSuite(TestFIATSimplex))
 

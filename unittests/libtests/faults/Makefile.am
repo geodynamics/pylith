@@ -26,6 +26,7 @@ testfaults_SOURCES = \
 	TestFault.cc \
 	TestFaultCohesive.cc \
 	TestFaultCohesiveKin.cc \
+	TestFaultCohesiveKinLine2.cc \
 	test_faults.cc
 
 noinst_HEADERS = \
@@ -33,7 +34,8 @@ noinst_HEADERS = \
 	TestEqKinSrc.hh \
 	TestFault.hh \
 	TestFaultCohesive.hh \
-	TestFaultCohesiveKin.hh
+	TestFaultCohesiveKin.hh \
+	TestFaultCohesiveKinLine2.hh
 
 # Source files associated with testing data
 testfaults_SOURCES += \

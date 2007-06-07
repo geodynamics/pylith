@@ -11,6 +11,20 @@
 #
 
 #header{
+#include "pylith/feassemble/CellGeometry.hh"
+#include "pylith/feassemble/GeometryPoint1D.hh"
+#include "pylith/feassemble/GeometryPoint2D.hh"
+#include "pylith/feassemble/GeometryPoint3D.hh"
+#include "pylith/feassemble/GeometryLine1D.hh"
+#include "pylith/feassemble/GeometryLine2D.hh"
+#include "pylith/feassemble/GeometryLine3D.hh"
+#include "pylith/feassemble/GeometryTri2D.hh"
+#include "pylith/feassemble/GeometryTri3D.hh"
+#include "pylith/feassemble/GeometryQuad2D.hh"
+#include "pylith/feassemble/GeometryQuad3D.hh"
+#include "pylith/feassemble/GeometryTet3D.hh"
+#include "pylith/feassemble/GeometryHex3D.hh"
+
 #include "pylith/feassemble/Quadrature.hh"
 #include "pylith/feassemble/Quadrature1D.hh"
 #include "pylith/feassemble/Quadrature1Din2D.hh"
@@ -45,6 +59,19 @@ cdef extern from "stdlib.h":
     ctypedef unsigned long size_t
     void* malloc(size_t size)
     void free(void* mem)
+
+cdef void CellGeometry_destructor(void* obj):
+  """
+  Destroy CellGeometry object.
+  """
+  # create shim for destructor
+  #embed{ void CellGeometry_destructor_cpp(void* objVptr)
+  pylith::feassemble::CellGeometry* pQ =
+    (pylith::feassemble::CellGeometry*) objVptr;
+  delete pQ;
+  #}embed
+  CellGeometry_destructor_cpp(obj)
+  return
 
 cdef void Quadrature_destructor(void* obj):
   """
@@ -85,6 +112,352 @@ cdef void Constraint_destructor(void* obj):
   #}embed
   Constraint_destructor_cpp(obj)
   return
+
+
+# ----------------------------------------------------------------------
+cdef class CellGeometry:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    self.handle = None
+    self.thisptr = NULL
+    self.name = "pylith_feassemble_CellGeometry"
+    return
+
+
+  def _createHandle(self):
+    """Wrap pointer to C++ object in PyCObject."""
+    return PyCObject_FromVoidPtr(self.thisptr, CellGeometry_destructor)
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryPoint1D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryPoint1D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryPoint1D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryPoint1D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryPoint2D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryPoint2D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryPoint2D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryPoint2D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryPoint3D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryPoint3D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryPoint3D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryPoint3D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryLine1D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryLine1D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryLine1D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryLine1D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryLine2D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryLine2D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryLine2D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryLine2D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryLine3D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryLine3D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryLine3D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryLine3D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryTri2D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryTri2D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryTri2D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryTri2D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryTri3D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryTri3D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryTri3D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryTri3D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryQuad2D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryQuad2D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryQuad2D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryQuad2D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryQuad3D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryQuad3D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryQuad3D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryQuad3D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryTet3D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryTet3D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryTet3D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryTet3D_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+# ----------------------------------------------------------------------
+cdef class GeometryHex3D(CellGeometry):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* GeometryHex3D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::GeometryHex3D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    CellGeometry.__init__(self)
+    self.thisptr = GeometryHex3D_constructor()
+    self.handle = self._createHandle()
+    return
 
 
 # ----------------------------------------------------------------------
@@ -264,6 +637,34 @@ cdef class Quadrature:
       return result;
       #}embed
       return Quadrature_minJacobian_get(self.thisptr)
+
+
+  property refGeometry:
+    def __set__(self, value):
+      """
+      Set geometry associated with reference cell.
+      """
+      # create shim for method 'refGeometry'
+      #embed{ void Quadrature_refGeometry_set(void* objVptr, void* geomVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != geomVptr);
+        pylith::feassemble::CellGeometry* geom =
+          (pylith::feassemble::CellGeometry*) geomVptr;
+        ((pylith::feassemble::Quadrature*) objVptr)->refGeometry(geom);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "pylith_feassemble_CellGeometry":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'pylith::feassemble::CellGeometry'."
+      Quadrature_refGeometry_set(self.thisptr, ptrFromHandle(value))
 
 
 # ----------------------------------------------------------------------

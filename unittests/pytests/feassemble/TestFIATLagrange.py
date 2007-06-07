@@ -356,7 +356,6 @@ class TestFIATLagrange(unittest.TestCase):
   Unit testing of FIATLagrange object.
   """
 
-
   def test_initialize_line2(self):
     """
     Test initialize() with line2 cell.
@@ -366,10 +365,12 @@ class TestFIATLagrange(unittest.TestCase):
     cell.cellDim = 1
     cell.degree = 1
     cell.order  = 1
-    cell.initialize()
+    cell.initialize(spaceDim=1)
 
     cellE = Line2()
     self._checkVals(cellE, cell)
+    from pylith.feassemble.geometry.GeometryLine1D import GeometryLine1D
+    self.assertTrue(isinstance(cell.geometry, GeometryLine1D))
     return
 
 
@@ -382,10 +383,12 @@ class TestFIATLagrange(unittest.TestCase):
     cell.cellDim = 1
     cell.degree = 2
     cell.order  = 2
-    cell.initialize()
+    cell.initialize(spaceDim=2)
 
     cellE = Line3()
     self._checkVals(cellE, cell)
+    from pylith.feassemble.geometry.GeometryLine2D import GeometryLine2D
+    self.assertTrue(isinstance(cell.geometry, GeometryLine2D))
     return
 
 
@@ -398,10 +401,12 @@ class TestFIATLagrange(unittest.TestCase):
     cell.cellDim = 2
     cell.degree = 1
     cell.order  = 2
-    cell.initialize()
+    cell.initialize(spaceDim=2)
 
     cellE = Quad4()
     self._checkVals(cellE, cell)
+    from pylith.feassemble.geometry.GeometryQuad2D import GeometryQuad2D
+    self.assertTrue(isinstance(cell.geometry, GeometryQuad2D))
     return
 
 
@@ -414,10 +419,12 @@ class TestFIATLagrange(unittest.TestCase):
     cell.cellDim = 3
     cell.degree = 1
     cell.order  = 2
-    cell.initialize()
+    cell.initialize(spaceDim=3)
 
     cellE = Hex8()
     self._checkVals(cellE, cell)
+    from pylith.feassemble.geometry.GeometryHex3D import GeometryHex3D
+    self.assertTrue(isinstance(cell.geometry, GeometryHex3D))
     return
 
 

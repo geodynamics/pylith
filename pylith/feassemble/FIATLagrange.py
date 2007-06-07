@@ -77,100 +77,114 @@ class FIATLagrange(ReferenceCell):
     return
 
 
-  def initialize(self):
+  def initialize(self, spaceDim):
     """
     Initialize reference finite-element cell from a tensor product of
     1-D Lagrange elements.
     """
-    quadrature = self._setupQuadrature()
-    element    = self._setupElement()
-    dim        = self.cellDim
+    self._setupGeometry(spaceDim)
+
+    if  self.cellDim > 0:
+      quadrature = self._setupQuadrature()
+      element    = self._setupElement()
+      dim        = self.cellDim
     
-    # Get coordinates of vertices (dual basis)
-    vertices = numpy.array(self._setupVertices(element))
+      # Get coordinates of vertices (dual basis)
+      vertices = numpy.array(self._setupVertices(element))
 
-    # Evaluate basis functions at quadrature points
-    quadpts     = numpy.array(quadrature.get_points())
-    quadwts     = numpy.array(quadrature.get_weights())
-    numQuadPts  = len(quadpts)
-    basis       = numpy.array(element.function_space().tabulate(quadrature.get_points())).transpose()
-    numBasisFns = len(element.function_space())
+      # Evaluate basis functions at quadrature points
+      quadpts = numpy.array(quadrature.get_points())
+      quadwts = numpy.array(quadrature.get_weights())
+      numQuadPts = len(quadpts)
+      basis = numpy.array(element.function_space().tabulate(quadrature.get_points())).transpose()
+      numBasisFns = len(element.function_space())
 
-    # Evaluate derivatives of basis functions at quadrature points
-    basisDeriv = numpy.array([element.function_space().deriv_all(d).tabulate(quadrature.get_points()) \
-                              for d in range(1)]).transpose()
+      # Evaluate derivatives of basis functions at quadrature points
+      basisDeriv = numpy.array([element.function_space().deriv_all(d).tabulate(quadrature.get_points()) \
+                                for d in range(1)]).transpose()
 
-    self.numQuadPts = numQuadPts**dim
-    self.numCorners = numBasisFns**dim
+      self.numQuadPts = numQuadPts**dim
+      self.numCorners = numBasisFns**dim
 
-    if dim == 1:
-      self.vertices = numpy.array(vertices)
-      self.quadPts = quadpts
-      self.quadWts = quadwts
-      self.basis = basis
-      self.basisDeriv = basisDeriv
-    else:
-      if dim == 2:
-        self.vertices = numpy.zeros((numBasisFns, numBasisFns, dim))
-        for q in range(numBasisFns):
-          for r in range(numBasisFns):
-            self.vertices[q][r][0] = vertices[r]
-            self.vertices[q][r][1] = vertices[q]
+      if dim == 1:
+        self.vertices = numpy.array(vertices)
+        self.quadPts = quadpts
+        self.quadWts = quadwts
+        self.basis = basis
+        self.basisDeriv = basisDeriv
+      else:
+        if dim == 2:
+          self.vertices = numpy.zeros((numBasisFns, numBasisFns, dim))
+          for q in range(numBasisFns):
+            for r in range(numBasisFns):
+              self.vertices[q][r][0] = vertices[r]
+              self.vertices[q][r][1] = vertices[q]
         
-        self.quadPts = numpy.zeros((numQuadPts, numQuadPts, dim))
-        self.quadWts = numpy.zeros((numQuadPts, numQuadPts))
-        self.basis = numpy.zeros((numQuadPts, numQuadPts,
-                                       numBasisFns, numBasisFns))
-        self.basisDeriv = numpy.zeros((numQuadPts, numQuadPts,
-                                       numBasisFns, numBasisFns, dim))
-        for q in range(numQuadPts):
-          for r in range(numQuadPts):
-            self.quadPts[q][r][0] = quadpts[r]
-            self.quadPts[q][r][1] = quadpts[q]
-            self.quadWts[q][r] = quadwts[r]*quadwts[q]
-            for f in range(numBasisFns):
-              for g in range(numBasisFns):
-                self.basis[q][r][f][g] = basis[r][g]*basis[q][f]
-                self.basisDeriv[q][r][f][g][0] = basisDeriv[r][g][0]*basis[q][f]
-                self.basisDeriv[q][r][f][g][1] = basis[r][g]*basisDeriv[q][f][0]
-      elif dim == 3:
-        self.vertices = numpy.zeros((numBasisFns, numBasisFns, numBasisFns,
-                                     dim))
-        for q in range(numBasisFns):
-          for r in range(numBasisFns):
-            for s in range(numBasisFns):
-              self.vertices[q][r][s][0] = vertices[s]
-              self.vertices[q][r][s][1] = vertices[r]
-              self.vertices[q][r][s][2] = vertices[q]
-
-        self.quadPts    = numpy.zeros((numQuadPts, numQuadPts,
-                                       numQuadPts, dim))
-        self.quadWts    = numpy.zeros((numQuadPts, numQuadPts, numQuadPts))
-        self.basis      = numpy.zeros((numQuadPts, numQuadPts, numQuadPts,
-                                       numBasisFns, numBasisFns, numBasisFns))
-        self.basisDeriv = numpy.zeros((numQuadPts, numQuadPts, numQuadPts,
-                                       numBasisFns, numBasisFns, numBasisFns,
-                                       dim))
-        for q in range(numQuadPts):
-          for r in range(numQuadPts):
-            for s in range(numQuadPts):
-              self.quadPts[q][r][s][0] = quadpts[s]
-              self.quadPts[q][r][s][1] = quadpts[r]
-              self.quadPts[q][r][s][2] = quadpts[q]
-              self.quadWts[q][r][s]    = quadwts[s]*quadwts[r]*quadwts[q]
+          self.quadPts = numpy.zeros((numQuadPts, numQuadPts, dim))
+          self.quadWts = numpy.zeros((numQuadPts, numQuadPts))
+          self.basis = numpy.zeros((numQuadPts, numQuadPts,
+                                         numBasisFns, numBasisFns))
+          self.basisDeriv = numpy.zeros((numQuadPts, numQuadPts,
+                                         numBasisFns, numBasisFns, dim))
+          for q in range(numQuadPts):
+            for r in range(numQuadPts):
+              self.quadPts[q][r][0] = quadpts[r]
+              self.quadPts[q][r][1] = quadpts[q]
+              self.quadWts[q][r] = quadwts[r]*quadwts[q]
               for f in range(numBasisFns):
                 for g in range(numBasisFns):
-                  for h in range(numBasisFns):
-                    self.basis[q][r][s][f][g][h] = basis[s][h]*basis[r][g]*basis[q][f]
-                    self.basisDeriv[q][r][s][f][g][h][0] = basisDeriv[s][h][0]*basis[r][g]*basis[q][f]
-                    self.basisDeriv[q][r][s][f][g][h][1] = basis[s][h]*basisDeriv[r][g][0]*basis[q][f]
-                    self.basisDeriv[q][r][s][f][g][h][2] = basis[s][h]*basis[r][g]*basisDeriv[q][f][0]
-      self.vertices = numpy.reshape(self.vertices, (self.numCorners, dim))
-      self.quadPts = numpy.reshape(self.quadPts, (self.numQuadPts, dim))
-      self.quadWts = numpy.reshape(self.quadWts, (self.numQuadPts))
-      self.basis = numpy.reshape(self.basis, (self.numQuadPts, self.numCorners))
-      self.basisDeriv = numpy.reshape(self.basisDeriv, (self.numQuadPts, self.numCorners, dim))
+                  self.basis[q][r][f][g] = basis[r][g]*basis[q][f]
+                  self.basisDeriv[q][r][f][g][0] = basisDeriv[r][g][0]*basis[q][f]
+                  self.basisDeriv[q][r][f][g][1] = basis[r][g]*basisDeriv[q][f][0]
+        elif dim == 3:
+          self.vertices = numpy.zeros((numBasisFns, numBasisFns, numBasisFns,
+                                       dim))
+          for q in range(numBasisFns):
+            for r in range(numBasisFns):
+              for s in range(numBasisFns):
+                self.vertices[q][r][s][0] = vertices[s]
+                self.vertices[q][r][s][1] = vertices[r]
+                self.vertices[q][r][s][2] = vertices[q]
 
+          self.quadPts    = numpy.zeros((numQuadPts, numQuadPts,
+                                         numQuadPts, dim))
+          self.quadWts    = numpy.zeros((numQuadPts, numQuadPts, numQuadPts))
+          self.basis      = numpy.zeros((numQuadPts, numQuadPts, numQuadPts,
+                                         numBasisFns, numBasisFns, numBasisFns))
+          self.basisDeriv = numpy.zeros((numQuadPts, numQuadPts, numQuadPts,
+                                         numBasisFns, numBasisFns, numBasisFns,
+                                         dim))
+          for q in range(numQuadPts):
+            for r in range(numQuadPts):
+              for s in range(numQuadPts):
+                self.quadPts[q][r][s][0] = quadpts[s]
+                self.quadPts[q][r][s][1] = quadpts[r]
+                self.quadPts[q][r][s][2] = quadpts[q]
+                self.quadWts[q][r][s]    = quadwts[s]*quadwts[r]*quadwts[q]
+                for f in range(numBasisFns):
+                  for g in range(numBasisFns):
+                    for h in range(numBasisFns):
+                      self.basis[q][r][s][f][g][h] = basis[s][h]*basis[r][g]*basis[q][f]
+                      self.basisDeriv[q][r][s][f][g][h][0] = basisDeriv[s][h][0]*basis[r][g]*basis[q][f]
+                      self.basisDeriv[q][r][s][f][g][h][1] = basis[s][h]*basisDeriv[r][g][0]*basis[q][f]
+                      self.basisDeriv[q][r][s][f][g][h][2] = basis[s][h]*basis[r][g]*basisDeriv[q][f][0]
+        self.vertices = numpy.reshape(self.vertices, (self.numCorners, dim))
+        self.quadPts = numpy.reshape(self.quadPts, (self.numQuadPts, dim))
+        self.quadWts = numpy.reshape(self.quadWts, (self.numQuadPts))
+        self.basis = numpy.reshape(self.basis, (self.numQuadPts, self.numCorners))
+        self.basisDeriv = numpy.reshape(self.basisDeriv, (self.numQuadPts, self.numCorners, dim))
+    else:
+      # Need 0-D quadrature for boundary conditions of 1-D meshes
+      self.cellDim = 0
+      self.numCorners = 1
+      self.numQuadPts = 1
+      self.basis = numpy.array([1.0])
+      self.basisDeriv = numpy.array([1.0])
+      self.quadPts = numpy.array([0.0])
+      self.quadWts = numpy.array([1.0])
+
+    self._info.line("Cell geometry: ")
+    self._info.line(self.geometry)
     self._info.line("Vertices: ")
     self._info.line(self.vertices)
     self._info.line("Quad pts:")
@@ -202,6 +216,48 @@ class FIATLagrange(ReferenceCell):
       self.order = 2*self.degree+1
     return
 
+
+  def _setupGeometry(self, spaceDim):
+    """
+    Setup reference cell geometry object.
+    """
+    self.geometry = None
+    if 3 == self.cellDim:
+      if 3 == spaceDim:
+        from geometry.GeometryHex3D import GeometryHex3D
+        self.geometry = GeometryHex3D()
+    elif 2 == self.cellDim:
+      if 2 == spaceDim:
+        from geometry.GeometryQuad2D import GeometryQuad2D
+        self.geometry = GeometryQuad2D()
+      elif 3 == spaceDim:
+        from geometry.GeometryQuad3D import GeometryQuad3D
+        self.geometry = GeometryQuad3D()
+    elif 1 == self.cellDim:
+      if 1 == spaceDim:
+        from geometry.GeometryLine1D import GeometryLine1D
+        self.geometry = GeometryLine1D()
+      elif 2 == spaceDim:
+        from geometry.GeometryLine2D import GeometryLine2D
+        self.geometry = GeometryLine2D()
+      elif 3 == spaceDim:
+        from geometry.GeometryLine3D import GeometryLine3D
+        self.geometry = GeometryLine3D()
+    elif 0 == self.cellDim:
+      if 1 == spaceDim:
+        from geometry.GeometryPoint1D import GeometryPoint1D
+        self.geometry = GeometryPoint1D()
+      elif 2 == spaceDim:
+        from geometry.GeometryPoint2D import GeometryPoint2D
+        self.geometry = GeometryPoint2D()
+      elif 3 == spaceDim:
+        from geometry.GeometryPoint3D import GeometryPoint3D
+        self.geometry = GeometryPoint3D()
+    if None == self.geometry:
+      raise ValueError("Could not set shape of cell for '%s' in spatial " \
+                       "dimension '%s'." % (self.name, spaceDim))
+    return
+  
 
   def _setupQuadrature(self):
     """

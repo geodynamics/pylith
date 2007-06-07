@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/feassemble/Qudrature.py
+## @file pylith/feassemble/quadrature/Qudrature.py
 ##
 ## @brief Python abstract base class for integrating over
 ## finite-elements using quadrature.
@@ -77,21 +77,22 @@ class Quadrature(Component):
     self.cppHandle.minJacobian = self.minJacobian
 
     self._info.log("Initializing reference cell.")
-    c = self.cell
-    c.initialize()
+    cell = self.cell
+    cell.initialize(self.spaceDim)
 
-    if c.cellDim != self.cellDim:
+    if cell.cellDim != self.cellDim:
       raise TypeError("Dimension of reference cell '%d' does not match "
                       "dimension of quadrature implementation '%d'." % \
-                      (c.cellDim, self.cellDim))
+                      (cell.cellDim, self.cellDim))
 
 
     self._info.log("Initializing C++ quadrature.")
-    self.cppHandle.initialize(c.vertices,
-                              c.basis, c.basisDeriv,
-                              c.quadPts, c.quadWts,
-                              c.cellDim, c.numCorners, c.numQuadPts,
+    self.cppHandle.initialize(cell.vertices,
+                              cell.basis, cell.basisDeriv,
+                              cell.quadPts, cell.quadWts,
+                              cell.cellDim, cell.numCorners, cell.numQuadPts,
                               self.spaceDim)
+    self.cppHandle.refGeometry = cell.geometry.cppHandle
     return
 
 

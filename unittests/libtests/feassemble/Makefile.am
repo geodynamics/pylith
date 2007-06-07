@@ -21,6 +21,7 @@ check_PROGRAMS = testfeassemble
 
 # Primary source files
 testfeassemble_SOURCES = \
+	TestCellGeometry.cc \
 	TestElasticity.cc \
 	TestElasticityExplicit.cc \
 	TestElasticityExplicit1DLinear.cc \
@@ -36,6 +37,18 @@ testfeassemble_SOURCES = \
 	TestElasticityImplicit2DQuadratic.cc \
 	TestElasticityImplicit3DLinear.cc \
 	TestElasticityImplicit3DQuadratic.cc \
+	TestGeometryPoint1D.cc \
+	TestGeometryPoint2D.cc \
+	TestGeometryPoint3D.cc \
+	TestGeometryLine1D.cc \
+	TestGeometryLine2D.cc \
+	TestGeometryLine3D.cc \
+	TestGeometryTri2D.cc \
+	TestGeometryTri3D.cc \
+	TestGeometryQuad2D.cc \
+	TestGeometryQuad3D.cc \
+	TestGeometryTet3D.cc \
+	TestGeometryHex3D.cc \
 	TestIntegrator.cc \
 	TestQuadrature.cc \
 	TestQuadrature1D.cc \
@@ -46,6 +59,7 @@ testfeassemble_SOURCES = \
 	test_feassemble.cc
 
 noinst_HEADERS = \
+	TestCellGeometry.hh \
 	TestElasticity.hh \
 	TestElasticityExplicit.hh \
 	TestElasticityExplicit1DLinear.hh \
@@ -61,6 +75,18 @@ noinst_HEADERS = \
 	TestElasticityImplicit2DQuadratic.hh \
 	TestElasticityImplicit3DLinear.hh \
 	TestElasticityImplicit3DQuadratic.hh \
+	TestGeometryPoint1D.hh \
+	TestGeometryPoint2D.hh \
+	TestGeometryPoint3D.hh \
+	TestGeometryLine1D.hh \
+	TestGeometryLine2D.hh \
+	TestGeometryLine3D.hh \
+	TestGeometryTri2D.hh \
+	TestGeometryTri3D.hh \
+	TestGeometryQuad2D.hh \
+	TestGeometryQuad3D.hh \
+	TestGeometryTet3D.hh \
+	TestGeometryHex3D.hh \
 	TestIntegrator.hh \
 	TestQuadrature.hh \
 	TestQuadrature1D.hh \
@@ -71,6 +97,19 @@ noinst_HEADERS = \
 
 # Source files associated with testing data
 testfeassemble_SOURCES += \
+	data/CellGeomData.cc \
+	data/GeomDataPoint1D.cc \
+	data/GeomDataPoint2D.cc \
+	data/GeomDataPoint3D.cc \
+	data/GeomDataLine1D.cc \
+	data/GeomDataLine2D.cc \
+	data/GeomDataLine3D.cc \
+	data/GeomDataTri2D.cc \
+	data/GeomDataTri3D.cc \
+	data/GeomDataQuad2D.cc \
+	data/GeomDataQuad3D.cc \
+	data/GeomDataTet3D.cc \
+	data/GeomDataHex3D.cc \
 	data/IntegratorData.cc \
 	data/ElasticityExplicitData1DLinear.cc \
 	data/ElasticityExplicitData1DQuadratic.cc \
@@ -102,6 +141,19 @@ testfeassemble_SOURCES += \
 	data/QuadratureData3DQuadratic.cc
 
 noinst_HEADERS += \
+	data/CellGeomData.hh \
+	data/GeomDataPoint1D.hh \
+	data/GeomDataPoint2D.hh \
+	data/GeomDataPoint3D.hh \
+	data/GeomDataLine1D.hh \
+	data/GeomDataLine2D.hh \
+	data/GeomDataLine3D.hh \
+	data/GeomDataTri2D.hh \
+	data/GeomDataTri3D.hh \
+	data/GeomDataQuad2D.hh \
+	data/GeomDataQuad3D.hh \
+	data/GeomDataTet3D.hh \
+	data/GeomDataHex3D.hh \
 	data/IntegratorData.hh \
 	data/ElasticityExplicitData1DLinear.hh \
 	data/ElasticityExplicitData1DQuadratic.hh \

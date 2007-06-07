@@ -14,6 +14,8 @@
 
 #include "Quadrature.hh" // implementation of class methods
 
+#include "CellGeometry.hh" // USES CellGeometry
+
 #include <string.h> // USES memcpy()
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -26,7 +28,8 @@ pylith::feassemble::Quadrature::Quadrature(void) :
   _cellDim(0),
   _numBasis(0),
   _numQuadPts(0),
-  _spaceDim(0)
+  _spaceDim(0),
+  _geometry(0)
 { // constructor
 } // constructor
 
@@ -34,6 +37,7 @@ pylith::feassemble::Quadrature::Quadrature(void) :
 // Destructor
 pylith::feassemble::Quadrature::~Quadrature(void)
 { // destructor
+  delete _geometry; _geometry = 0;
 } // destructor
   
 // ----------------------------------------------------------------------
@@ -52,8 +56,11 @@ pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
   _cellDim(q._cellDim),
   _numBasis(q._numBasis),
   _numQuadPts(q._numQuadPts),
-  _spaceDim(q._spaceDim)
+  _spaceDim(q._spaceDim),
+  _geometry(0)
 { // copy constructor
+  if (0 != q._geometry)
+    _geometry = q._geometry->clone();
 } // copy constructor
 
 // ----------------------------------------------------------------------
@@ -141,6 +148,23 @@ pylith::feassemble::Quadrature::initialize(const double* vertices,
 } // initialize
 
 // ----------------------------------------------------------------------
+// Set geometry associated with reference cell.
+void
+pylith::feassemble::Quadrature::refGeometry(CellGeometry* const geometry)
+{ // refGeometry
+  delete _geometry; _geometry = (0 != geometry) ? geometry->clone() : 0;
+} // refGeometry
+
+// ----------------------------------------------------------------------
+// Get geometry associated with reference cell.
+const pylith::feassemble::CellGeometry&
+pylith::feassemble::Quadrature::refGeometry(void) const
+{ // refGeometry
+  assert(0 != _geometry);
+  return *_geometry;
+} // refGeometry
+
+// ----------------------------------------------------------------------
 // Set entries in geometry arrays to zero.
 void
 pylith::feassemble::Quadrature::_resetGeometry(void)
@@ -163,5 +187,6 @@ pylith::feassemble::Quadrature::_checkJacobianDet(const double det) const
     throw std::runtime_error(msg.str());
   } // if
 } // _checkJacobianDet
+
 
 // End of file 
