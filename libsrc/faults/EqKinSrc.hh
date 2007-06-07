@@ -60,13 +60,6 @@ public :
   virtual
   ~EqKinSrc(void);
 
-  /** Create copy of fault.
-   *
-   * @returns Copy of fault.
-   */
-  virtual
-  EqKinSrc* clone(void) const;
-
   /** Set slip time function.
    *
    * @param slipfn Slip time function.
@@ -95,17 +88,11 @@ public :
   const ALE::Obj<real_section_type>& slip(const double t,
 			      const std::set<Mesh::point_type>& vertices);
 
-  // PROTECTED METHODS //////////////////////////////////////////////////
-protected :
-
-  /** Copy constructor.
-   *
-   * @param s Source to copy
-   */
-  EqKinSrc(const EqKinSrc& s);
-
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
+
+  /// Not implemented
+  EqKinSrc(const EqKinSrc& s);
 
   /// Not implemented
   const EqKinSrc& operator=(const EqKinSrc& s);

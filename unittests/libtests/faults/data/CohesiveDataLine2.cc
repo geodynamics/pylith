@@ -72,7 +72,7 @@ const char* pylith::faults::CohesiveDataLine2::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveDataLine2::_filename = "data/meshLine.txt";
+const char* pylith::faults::CohesiveDataLine2::_filename = "data/line2.mesh";
 
 pylith::faults::CohesiveDataLine2::CohesiveDataLine2(void)
 { // constructor

@@ -73,7 +73,8 @@ const char* pylith::faults::CohesiveDataLine2Lagrange::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveDataLine2Lagrange::_filename = "data/meshLine.txt";
+const char* pylith::faults::CohesiveDataLine2Lagrange::_filename = 
+  "data/line2.mesh";
 
 pylith::faults::CohesiveDataLine2Lagrange::CohesiveDataLine2Lagrange(void)
 { // constructor

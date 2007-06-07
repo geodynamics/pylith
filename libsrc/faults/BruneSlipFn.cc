@@ -43,17 +43,6 @@ pylith::faults::BruneSlipFn::~BruneSlipFn(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::faults::BruneSlipFn::BruneSlipFn(const BruneSlipFn& f) :
-  SlipTimeFn(f),
-  _slipField(f._slipField),
-  _dbFinalSlip(f._dbFinalSlip),
-  _dbSlipTime(f._dbSlipTime),
-  _dbPeakRate(f._dbPeakRate)
-{ // copy constructor
-} // copy constructor
-
-// ----------------------------------------------------------------------
 // Initialize slip time function.
 void
 pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
@@ -107,23 +96,27 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   
   // Open databases and set query values
   _dbFinalSlip->open();
-  switch (spaceDim) {
-  case 1 : {
-    const char* slipValues[] = {"slip"};
-    _dbFinalSlip->queryVals(slipValues, 1);
-  } // case 1
-  case 2 : {
-    const char* slipValues[] = {"slip", "fault-opening"};
-    _dbFinalSlip->queryVals(slipValues, 2);
-  } // case 2
-  case 3 : {
-    const char* slipValues[] = {"left-lateral-slip", "reverse-slip", 
-				"fault-opening"};
-    _dbFinalSlip->queryVals(slipValues, 3);
-  } // case 3
-  default :
-    assert(0);
-  } // switch
+  switch (spaceDim)
+    { // switch
+    case 1 : {
+      const char* slipValues[] = {"slip"};
+      _dbFinalSlip->queryVals(slipValues, 1);
+      break;
+    } // case 1
+    case 2 : {
+      const char* slipValues[] = {"slip", "fault-opening"};
+      _dbFinalSlip->queryVals(slipValues, 2);
+      break;
+    } // case 2
+    case 3 : {
+      const char* slipValues[] = {"left-lateral-slip", "reverse-slip", 
+				  "fault-opening"};
+      _dbFinalSlip->queryVals(slipValues, 3);
+      break;
+    } // case 3
+    default :
+      assert(0);
+    } // switch
 
   _dbSlipTime->open();
   const char* slipTimeValues[] = {"slip-time"};
@@ -149,7 +142,8 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
     const real_section_type::value_type* vCoords = 
       coordinates->restrictPoint(*v_iter);
     
-    int err = _dbFinalSlip->query(&slipData[0], spaceDim, vCoords, spaceDim, cs);
+    int err = _dbFinalSlip->query(&slipData[0], spaceDim, 
+				  vCoords, spaceDim, cs);
     if (err) {
       std::ostringstream msg;
       msg << "Could not find final slip at (";

@@ -100,7 +100,8 @@ const char* pylith::faults::CohesiveDataTri3Lagrange::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveDataTri3Lagrange::_filename = "data/meshTri3A.txt";
+const char* pylith::faults::CohesiveDataTri3Lagrange::_filename = 
+  "data/tri3.mesh";
 
 pylith::faults::CohesiveDataTri3Lagrange::CohesiveDataTri3Lagrange(void)
 { // constructor

@@ -99,7 +99,8 @@ const char* pylith::faults::CohesiveDataQuad4Lagrange::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveDataQuad4Lagrange::_filename = "data/meshQuad4A.txt";
+const char* pylith::faults::CohesiveDataQuad4Lagrange::_filename = 
+  "data/quad4.mesh";
 
 pylith::faults::CohesiveDataQuad4Lagrange::CohesiveDataQuad4Lagrange(void)
 { // constructor

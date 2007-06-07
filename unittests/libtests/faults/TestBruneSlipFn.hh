@@ -27,6 +27,10 @@
 namespace pylith {
   namespace faults {
     class TestBruneSlipFn;
+
+    namespace _TestBruneSlipFn {
+      struct DataStruct;
+    } // _BruneSlipTimeFn
   } // faults
 } // pylith
 
@@ -37,7 +41,6 @@ class pylith::faults::TestBruneSlipFn : public TestFaultCohesive
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestBruneSlipFn );
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testClone );
   CPPUNIT_TEST( testDbFinalSlip );
   CPPUNIT_TEST( testDbSlipTime );
   CPPUNIT_TEST( testDbPeakRate );
@@ -53,9 +56,6 @@ public :
 
   /// Test constructor.
   void testConstructor(void);
-
-  /// Test clone().
-  void testClone(void);
 
   /// Test dbFinalSlip().
   void testDbFinalSlip(void);
@@ -80,6 +80,15 @@ public :
 
   /// Test _slip().
   void testSlipTH(void);
+
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /** Test intialize().
+   *
+   * @param data Data for initialization and testing of BruneSlipFn.
+   */
+  void _testInitialize(const _TestBruneSlipFn::DataStruct& data);
 
 }; // class TestBruneSlipFn
 

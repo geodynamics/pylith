@@ -42,7 +42,7 @@ pylith::faults::FaultCohesive::~FaultCohesive(void)
 void
 pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<ALE::Mesh>& mesh)
 { // adjustTopology
-  assert("" != label());
+  assert(std::string("") != label());
 
   // Get group of vertices associated with fault
   const ALE::Obj<int_section_type>& groupField = 

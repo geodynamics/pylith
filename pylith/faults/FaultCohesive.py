@@ -39,14 +39,6 @@ class FaultCohesive(Fault):
     return
 
 
-  def initialize(self, mesh):
-    """
-    Initialize cohesive elements.
-    """
-    Fault.initialize(self, mesh)
-    return
-
-
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
   def _configure(self):

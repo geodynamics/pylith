@@ -98,7 +98,7 @@ const char* pylith::faults::CohesiveDataTri3::_groupTypes[] = {
   "vertex", "vertex"
 };
 
-const char* pylith::faults::CohesiveDataTri3::_filename = "data/meshTri3A.txt";
+const char* pylith::faults::CohesiveDataTri3::_filename = "data/tri3.mesh";
 
 pylith::faults::CohesiveDataTri3::CohesiveDataTri3(void)
 { // constructor

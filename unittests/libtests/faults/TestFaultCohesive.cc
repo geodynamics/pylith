@@ -34,8 +34,6 @@
 #include "data/CohesiveDataTet4Lagrange.hh" // USES CohesiveDataTet4Lagrange
 #include "data/CohesiveDataHex8Lagrange.hh" // USES CohesiveDataHex8Lagrange
 
-#include <stdexcept> // TEMPORARY
-
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesive );
 

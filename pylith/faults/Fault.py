@@ -104,6 +104,7 @@ class Fault(Component):
     """
     Adjust mesh topology for fault implementation.
     """
+    assert(None != self.cppHandle)
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
     self.cppHandle.adjustTopology(mesh.cppHandle)
@@ -122,6 +123,7 @@ class Fault(Component):
             "Dimensions for quadrature: %d, dimensions for surface: 2" % \
             self.quadrature.cell.cellDim
 
+    assert(None != self.cppHandle)
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
     self.cppHandle.quadrature = self.quadrature.cppHandle

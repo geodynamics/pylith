@@ -11,11 +11,20 @@
 #
 
 noinst_DATA = \
-	meshLine.txt \
-	meshTri3A.txt \
-	meshQuad4A.txt \
-	meshTet4A.txt \
-	meshHex8A.txt
+	line2.mesh \
+	line2_finalslip.spatialdb \
+	line2_sliptime.spatialdb \
+	line2_peakrate.spatialdb \
+	tri3.mesh \
+	tri3_finalslip.spatialdb \
+	tri3_sliptime.spatialdb \
+	tri3_peakrate.spatialdb \
+	quad4.mesh \
+	tet4.mesh \
+	tet4_finalslip.spatialdb \
+	tet4_sliptime.spatialdb \
+	tet4_peakrate.spatialdb \
+	hex8.mesh
 
 noinst_TMP =
 
