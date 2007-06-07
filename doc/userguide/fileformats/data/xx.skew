@@ -1,0 +1,16 @@
+# File containing local nodal coordinates.
+#
+# Comment lines begin with '#'
+#
+# First, specify units for rotations.
+#
+rotation_units = degree
+#
+#
+# Columns:
+#   (1) Node number
+#   (2) Euler angle for rotation in the x-y plane
+#   (3) Euler angle for rotation in the x-z plane
+#
+68    12.3   4.2
+132  -12.3  -4.2

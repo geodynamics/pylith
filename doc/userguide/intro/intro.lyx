@@ -1,0 +1,477 @@
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+
+\end_preamble
+\language english
+\inputencoding latin1
+\fontscheme default
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 2in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\end_header
+
+\begin_body
+
+\begin_layout Chapter
+Introduction
+\end_layout
+
+\begin_layout Section
+Overview
+\end_layout
+
+\begin_layout Standard
+PyLith is a multi-scale simulation software package for earthquake physics.
+ It is portable, scalable software for simulation of crustal deformation
+ across spatial scales ranging from meters to hundreds of kilometers and
+ temporal scales ranging from milliseconds to thousands of years.
+\end_layout
+
+\begin_layout Section
+History
+\end_layout
+
+\begin_layout Standard
+This first version of PyLith is a direct descendant of Lithomop and marks
+ the first version that runs in parallel.
+ Lithomop was the product of major reengineering of Tecton, a finite-element
+ code for simulating static and quasi-static crustal deformation.
+ The major new features present in Lithomop included dynamic memory allocation
+ and the use of the Pyre simulation framework and PETSc solvers.
+\end_layout
+
+\begin_layout Standard
+This release of PyLith offers both tetrahedral and hexahedral linear elements,
+ the use of traction boundary conditions, load histories for split nodes,
+ a number of new material models, including power-law Maxwell and generalized
+ Maxwell (3 Maxwell models in parallel), the use of 
+\family typewriter
+.cfg
+\family default
+ files for setting simulation parameters, much simpler top-level code structure,
+ and several bug fixes.
+\end_layout
+
+\begin_layout Standard
+PyLith is currently being rewritten from scratch to create a much more modular,
+ powerful simulation package.
+ This new code will include earthquake dynamics (both rupture propagation
+ and seismic wave propagation).
+ A beta release is expected in Spring 2007.
+\end_layout
+
+\begin_layout Section
+Governing Equations
+\end_layout
+
+\begin_layout Standard
+Both LithoMop3d and PyLith-0.8 are quasi-static codes, meaning that time-dependen
+ce only enters through the constitutive relationships and the loading conditions.
+ The description here is for the small-strain formulation, which is the
+ only formulation available at present.
+ If a large deformation solution is desired, interested users may contact
+ 
+\begin_inset LatexCommand \url[Charles Williams]{willic3@rpi.edu}
+
+\end_inset
+
+ about a version of the finite element code TECTON.
+\end_layout
+
+\begin_layout Standard
+The problem is formulated in terms of the stresses (
+\begin_inset Formula $\sigma_{ij}$
+\end_inset
+
+), displacements (
+\begin_inset Formula $u_{i}$
+\end_inset
+
+), and body forces per unit volume 
+\begin_inset Formula $f_{i}^{B}$
+\end_inset
+
+.
+ We use standard index notation for all equations here, such that repeated
+ indices imply summation and a comma denotes differentiation.
+ For a general three-dimensional body, the problem must satisfy the equilibrium
+ conditions
+\end_layout
+
+\begin_layout Standard
+\align right
+\begin_inset Formula \begin{equation}
+\sigma_{ij,j}+f_{i}^{B}=0,\label{eq:1}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+subject to the natural boundary conditions 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\sigma_{ij}n_{j}=f_{i}^{S_{f}}\, on\, S_{f}\label{eq:2}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+and the essential boundary conditions 
+\begin_inset Formula \begin{equation}
+u_{i}=u_{i}^{S_{u}}\,\mathrm{on}\, S_{u}.\label{eq:3}\end{equation}
+
+\end_inset
+
+The surface of the body is 
+\begin_inset Formula $S$
+\end_inset
+
+, given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+S=S_{u}\cup S_{f},\,\, S_{u}\cap S_{f}=0.\label{eq:4}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The 
+\begin_inset Formula $n_{j}$
+\end_inset
+
+ are the components of the unit normal vector to 
+\begin_inset Formula $S$
+\end_inset
+
+, the 
+\begin_inset Formula $f_{i}^{S_{f}}$
+\end_inset
+
+ are the components of the surface tractions, and the 
+\begin_inset Formula $u_{i}^{S_{u}}$
+\end_inset
+
+ are the components of the applied displacements.
+ The stresses are computed from the strains and any existing initial stresses
+ using a given constitutive relationship.
+ The strains are given by 
+\begin_inset Formula \begin{equation}
+\varepsilon_{ij}=\frac{1}{2}(u_{i,j}+u_{j,i}).\label{eq:5}\end{equation}
+
+\end_inset
+
+ For a linear elastic material, the constitutive relationship between stress
+ and strain is 
+\begin_inset Formula \begin{equation}
+\sigma_{ij}=C_{ijkl}^{E}\varepsilon_{kl}+\sigma_{ij}^{I},\label{eq:6}\end{equation}
+
+\end_inset
+
+ where 
+\begin_inset Formula $\sigma_{ij}^{I}$
+\end_inset
+
+ are the initial stresses, and 
+\begin_inset Formula $C_{ijkl}^{E}$
+\end_inset
+
+ is the elastic constitutive relation.
+\end_layout
+
+\begin_layout Standard
+For inelastic behavior (viscous, plastic, etc.), we assume an additive decomposit
+ion of the strain tensor into elastic and inelastic parts, and use an integrated
+ form of the classical incremental theory of plasticity.
+ At time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+, the stresses are therefore computed from the total elastic strain: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+^{t+\Delta t}\sigma_{ij}=C_{ijkl}^{E}(^{t+\Delta t}\varepsilon_{kl}-^{t+\Delta t}\varepsilon_{kl}^{IN})+\sigma_{ij}^{I},\label{eq:7}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $^{t+\Delta t}\varepsilon_{kl}$
+\end_inset
+
+ are the total strains and 
+\begin_inset Formula $^{t+\Delta t}\varepsilon_{kl}^{IN}$
+\end_inset
+
+ are the inelastic strains, with the difference being the elastic strains.
+ In our actual computations, we use several different formulations, depending
+ on the constitutive relation.
+ One such formulation decomposes the stresses into the deviatoric and volumetric
+ parts, using ideas based on the ``effective stress function'' 
+\begin_inset LatexCommand \cite{Kojic:Bathe:1987}
+
+\end_inset
+
+.
+ This allows the time integration of stresses to be performed in terms of
+ a single parameter related to the second deviatoric stress invariant.
+ We also use viscoelastic formulations based on those of Zienkiewicz and
+ Taylor 
+\begin_inset LatexCommand \cite{Zienkiewicz:Taylor:2000}
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Software Components
+\end_layout
+
+\begin_layout Standard
+PyLith is separated into modules to encapsulate behavior and facilitate
+ use across multiple applications.
+ That way expert users can replace functionality of a wide variety of components
+ without recompiling or polluting the main code.
+ External packages reduce development time and enhance computational efficiency;
+ for example, PyLith runs 2
+\begin_inset Formula $\times$
+\end_inset
+
+ faster by using the PETSc linear solver.
+\end_layout
+
+\begin_layout Standard
+PyLith is based on several programming languages.
+ High-level code is written in Python; this rich, expressive interpreted
+ language with dynamic typing reduces development time.
+ Low-level code is written in Fortran 77 for fast execution.
+ Bindings, written in C/C++, are used to allow the low-level code (Fortran
+ 77) to be called from high-level code (Python).
+\end_layout
+
+\begin_layout Standard
+PyLith makes extensive use of external software.
+ Pyre is a science-neutral simulation framework being developed at Caltech.
+ PETSc is used to perform operations on matrices and vectors in parallel.
+\end_layout
+
+\begin_layout Subsection
+PETSc
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \htmlurl[PETSc]{www-unix.mcs.anl.gov/petsc/petsc-as}
+
+\end_inset
+
+, the Portable, Extensible Toolkit for Scientific computation, provides
+ a suite of routines for parallel, numerical solution of partial differential
+ equations for linear and nonlinear systems with large, sparse systems of
+ equations.
+ PETSc includes solvers that implement a variety of Newton and Krylov subspace
+ methods.
+ It can also interface with many external packages, including BlockSolve95,
+ ESSL, Matlab, ParMeTis, PVODE, and SPAI, thereby providing additional solvers
+ and interaction with other software packages.
+\end_layout
+
+\begin_layout Standard
+PETSc includes interfaces for Fortran, C, and C++ for nearly all of the
+ routines, and PETSc can be installed on most Unix systems.
+ PETSc can be built with user-supplied, highly optimized linear algebra
+ routines (e.g., ATLAS and commercial versions of BLAS/LAPACK), thereby improving
+ application performance.
+ Users can use PETSc parallel matrices, vectors, and other data structures
+ for most parallel operations, eliminating the need for explicit calls to
+ Message Passing Interface (MPI) routines.
+ Many settings and options can be controlled with PETSc-specific command-line
+ arguments, including selection of preconditions, solvers, and generation
+ of performance logs.
+\end_layout
+
+\begin_layout Standard
+PyLith 0.8 and the upcoming PyLith 1.0 make use of a new aspect of PETSc known
+ as 
+\family typewriter
+Sieve
+\family default
+, which is still under active development.
+ 
+\family typewriter
+Sieve
+\family default
+ is a new method for representing computational meshes, and it greatly simplifie
+s the task of code parallelization.
+ 
+\family typewriter
+Sieve
+\family default
+ also provides a number of other useful features, such as the ability to
+ grab ``sections'' of a mesh that share common characteristics, such as
+ elements of the same material type or nodes to which boundary conditions
+ have been applied.
+\end_layout
+
+\begin_layout Subsection
+Pyre
+\end_layout
+
+\begin_layout Standard
+Pyre is an object-oriented environment capable of specifying and launching
+ numerical simulations on multiple platforms, including Beowulf class parallel
+ computers and grid computing systems.
+ Pyre allows the binding of multiple components such as solid and fluid
+ models used in Earth science simulations, and different meshers.
+ The Pyre framework enables the elegant setup, modification and launching
+ of massively parallel three-dimensional solver applications.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Caption
+Pyre Architecture.
+ The integration framework is a set of cooperating abstract services.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename figs/pyre_overview.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Pyre is a framework, a combination of software and design philosophy that
+ promotes the reuse of code.
+ In their canonical software design book, 
+\emph on
+Design Patterns
+\emph default
+, Erich Gamma 
+\shape italic
+et al
+\shape default
+.
+ condense the concept of a framework concept down to, ``When you use a framework
+, you reuse the main body and write the code it calls.'' In the context of
+ frameworks and object-oriented programming, Pyre can be thought of as a
+ collection of classes and the way their instances interact.
+ Programming applications based on Pyre will look similar to those written
+ in any other object-oriented language.
+ The Pyre framework contains a subset of parts that make up the overall
+ framework.
+ Each of those parts is designed to solve a specific problem.
+\end_layout
+
+\begin_layout Standard
+The framework approach to computation offers many advantages.
+ It permits the exchange of codes and promotes the reuse of standardized
+ software while preserving efficiency.
+ Frameworks are also an efficient way to handle changes in computer architecture.
+ They present programmers and scientists with a unified and well-defined
+ task and allow for shared costs of the housekeeping aspects of software
+ development.
+ They provide greater institutional continuity to model development than
+ piecemeal approaches.
+\end_layout
+
+\begin_layout Standard
+The Pyre framework incorporates features aimed at enabling the scientific
+ non-expert to perform tasks easily without hindering the expert.
+ Target features for end users allow complete and intuitive simulation specifica
+tion, reasonable defaults, consistency checks of input, good diagnostics,
+ easy access to remote facilities, and status monitoring.
+ Target features for developers include easy access to user input, a shorter
+ development cycle, and good debugging support.
+\end_layout
+
+\begin_layout Section
+PyLith Design
+\end_layout
+
+\begin_layout Standard
+In transforming Lithomop, a serial code, into PyLith, a parallel code, a
+ principal concern was to preserve the existing structure of the serial
+ Fortran code.
+ Active development of purely analytic features in PyLith, such as new material
+ models or discretization schemes, depends on the familiarity of application
+ scientists with the traditional Fortran programming paradigm.
+ Global, topological operation should be strictly segregated from the existing
+ code.
+ In fact, with the exception of integrating PETSc for serial linear algebra
+ and solver operations, PyLith can be run purely in serial without activating
+ any of the parallel capabilities.
+\end_layout
+
+\begin_layout Standard
+In order to accomplish this separation, we use the PETSc 
+\family typewriter
+Sieve
+\family default
+ structure to create a model of the serial PyLith mesh.
+ This model is then partitioned and distributed to a set of processes.
+ Each process receives a self-consistent mesh, meaning the pieces are overlappin
+g.
+ Each process then executes a serial PyLith step on that particular mesh
+ piece.
+ The PETSc linear algebra operations are overloaded, using the 
+\family typewriter
+Sieve
+\family default
+ information, to produce a globally consistent field.
+\end_layout
+
+\end_body
+\end_document
