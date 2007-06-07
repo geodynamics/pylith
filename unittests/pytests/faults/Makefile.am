@@ -20,6 +20,7 @@ TESTS = testfaults.py
 check_SCRIPTS = testfaults.py
 
 noinst_PYTHON = \
+	TestBruneSlipFn.py \
 	TestFault.py \
 	TestFaultCohesive.py \
 	TestFaultCohesiveKin.py

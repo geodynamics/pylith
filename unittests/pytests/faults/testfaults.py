@@ -56,6 +56,9 @@ class TestApp(Script):
 
     suite = unittest.TestSuite()
 
+    from TestBruneSlipFn import TestBruneSlipFn
+    suite.addTest(unittest.makeSuite(TestBruneSlipFn))
+
     from TestFault import TestFault
     suite.addTest(unittest.makeSuite(TestFault))
 

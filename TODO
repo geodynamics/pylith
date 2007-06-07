@@ -26,14 +26,7 @@ MAIN PRIORITIES (Brad)
 
    b. Implement integrator for faults
 
-     i. BruneSlipFn
-       (1) C++ unit tests
-         slip()
-       (2) Python unit tests
-         constructor
-         initialize()
-
-     ii. EqKinSrc
+     i. EqKinSrc
        (1) C++ unit tests
          constructor
          slipfn()
@@ -43,7 +36,7 @@ MAIN PRIORITIES (Brad)
          constructor
          initialize()
 
-     iii. FaultCohesiveKin
+     ii. FaultCohesiveKin
        (1) C++ unit tests
          constructor
          eqsrc()
@@ -64,6 +57,10 @@ MAIN PRIORITIES (Brad)
    b. Material C++ unit tests
 
 4. Implement absorbing boundary conditions
+
+5. Additional unit tests
+  a. FaultCohesive
+    i. Check faultMesh
 
 ======================================================================
 SECONDARY PRIORITIES
