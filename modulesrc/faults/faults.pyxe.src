@@ -14,6 +14,7 @@
 #include "pylith/faults/Fault.hh"
 #include "pylith/faults/FaultCohesive.hh"
 #include "pylith/faults/FaultCohesiveKin.hh"
+#include "pylith/faults/EqKinSrc.hh"
 #include "pylith/faults/SlipTimeFn.hh"
 #include "pylith/faults/BruneSlipFn.hh"
 
@@ -49,6 +50,19 @@ cdef void Fault_destructor(void* obj):
   #}embed
   Fault_destructor_cpp(obj)
   return
+
+cdef void EqKinSrc_destructor(void* obj):
+  """
+  Destroy EqKinSrc object.
+  """
+  # create shim for destructor
+  #embed{ void EqKinSrc_destructor_cpp(void* objVptr)
+  pylith::faults::EqKinSrc* src = (pylith::faults::EqKinSrc*) objVptr;
+  delete src;
+  #}embed
+  EqKinSrc_destructor_cpp(obj)
+  return
+
 
 cdef void SlipTimeFn_destructor(void* obj):
   """
@@ -257,6 +271,74 @@ cdef class FaultCohesiveKin(FaultCohesive):
     self.thisptr = FaultCohesiveKin_constructor()
     self.handle = self._createHandle()
     return
+
+
+# ----------------------------------------------------------------------
+cdef class EqKinSrc:
+
+  cdef void* thisptr # Pointer to C++ object
+  cdef readonly object handle # PyCObject holding pointer to C++ object
+  cdef readonly object name # Identifier for object base type
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* EqKinSrc_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::faults::EqKinSrc);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    self.name = "pylith_faults_EqKinSrc"
+    self.thisptr = EqKinSrc_constructor()
+    self.handle = self._createHandle()
+    return
+
+
+  def _createHandle(self):
+    """
+    Wrap pointer to C++ object in PyCObject.
+    """
+    return PyCObject_FromVoidPtr(self.thisptr, EqKinSrc_destructor)
+
+
+  property slipfn:
+    def __set__(self, value):
+      """
+      Set slip time function.
+      """
+      # create shim for method 'slipfn'
+      #embed{ void EqKinSrc_slipfn_set(void* objVptr, void* fnVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != fnVptr);
+        pylith::faults::SlipTimeFn* fn =
+          (pylith::faults::SlipTimeFn*) fnVptr;
+        ((pylith::faults::EqKinSrc*) objVptr)->slipfn(fn);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "pylith_faults_SlipTimeFn":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'pylith_faults_SlipTimeFn'."
+      EqKinSrc_slipfn_set(self.thisptr, ptrFromHandle(value))
 
 
 # ----------------------------------------------------------------------

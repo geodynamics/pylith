@@ -328,7 +328,7 @@ pylith::faults::TestBruneSlipFn::testSlipTH(void)
 } // testSlipTH
 
 // ----------------------------------------------------------------------
-// Test initialize() in 1-D.
+// Test initialize().
 void
 pylith::faults::TestBruneSlipFn::_testInitialize(const _TestBruneSlipFn::DataStruct& data)
 { // _testInitialize

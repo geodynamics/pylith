@@ -50,9 +50,9 @@ class EqKinSrc(Component):
     import pyre.inventory
 
     from BruneSlipFn import BruneSlipFn
-    slipFn = pyre.inventory.facility("slip_function", family="slip_time_fn",
+    slipfn = pyre.inventory.facility("slip_function", family="slip_time_fn",
                                      factory=BruneSlipFn)
-    slipFn.meta['tip'] = "Slip time history function."
+    slipfn.meta['tip'] = "Slip time history function."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -62,6 +62,8 @@ class EqKinSrc(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="eqkinsrc")
+    import pylith.faults.faults as bindings
+    self.cppHandle = bindings.EqKinSrc()
     return
 
 
@@ -69,7 +71,9 @@ class EqKinSrc(Component):
     """
     Initialize.
     """
-    self.slipFn.initialize()
+    assert(None != self.cppHandle)
+    self.cppHandle.slipfn = self.slipfn.cppHandle
+    self.slipfn.initialize()
     return
 
 
@@ -80,7 +84,7 @@ class EqKinSrc(Component):
     Setup members using inventory.
     """
     Component._configure(self)
-    slipFn = self.inventory.slipFn
+    slipfn = self.inventory.slipfn
     return
 
   

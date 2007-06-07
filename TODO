@@ -26,17 +26,7 @@ MAIN PRIORITIES (Brad)
 
    b. Implement integrator for faults
 
-     i. EqKinSrc
-       (1) C++ unit tests
-         constructor
-         slipfn()
-         initialize()
-         slip()
-       (2) Python unit tests
-         constructor
-         initialize()
-
-     ii. FaultCohesiveKin
+     i. FaultCohesiveKin
        (1) C++ unit tests
          constructor
          eqsrc()

@@ -104,8 +104,6 @@ private :
 
 }; // class EqKinSrc
 
-#include "EqKinSrc.icc" // inline methods
-
 #endif // pylith_faults_eqkinsrc_hh
 
 
