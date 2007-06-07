@@ -1201,7 +1201,7 @@ The stress can be either a linear or nonlinear function of strain and the
 For quasi-static problems, there are no acceleration or momentum terms,
  and the equation of interest simplifies to
 \begin_inset Formula \begin{equation}
-\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV-\int_{V^{e}}N_{}^{p}f_{i}\: dV-\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS)=0.\end{equation}
+\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV-\int_{V^{e}}N_{}^{p}f_{i}\: dV-\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS)=\overrightarrow{0}.\end{equation}
 
 \end_inset
 
@@ -1235,8 +1235,12 @@ where
 \end_inset
 
 and we then obtain
-\begin_inset Formula \begin{equation}
-\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijrs}\left(N_{,s}^{p}+N_{,r}^{p}\right)\, dV)\overrightarrow{U}=\sum_{elements}\left(\int_{V^{e}}N_{}^{p}f_{i}\: dV+\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS-\int_{V^{e}}\frac{1}{2}\sigma_{ij}^{0}(N_{,j}^{p}+N_{,i}^{p})\: dV\right),\end{equation}
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{multline}
+\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijrs}\left(N_{,s}^{p}+N_{,r}^{p}\right)\, dV)\overrightarrow{U}=\\
+\sum_{elements}\left(\int_{V^{e}}N_{}^{p}f_{i}\: dV+\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS-\int_{V^{e}}\frac{1}{2}\sigma_{ij}^{0}(N_{,j}^{p}+N_{,i}^{p})\: dV\right),\end{multline}
 
 \end_inset
 
@@ -1282,6 +1286,91 @@ The matrix
 
 .
  This linear, sparse system may be solved by a number of available methods.
+\end_layout
+
+\begin_layout Standard
+We are interested in computing the solution at time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+, given the solution at time 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ An equilibrium solution will balance the internal forces
+\begin_inset Formula \begin{equation}
+\overrightarrow{B}\hphantom{}_{int}=\sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(N_{,j}^{p}+N_{,i}^{p})\, dV)\label{eq:qs-internal-force}\end{equation}
+
+\end_inset
+
+with the external forces for any given time:
+\begin_inset Formula \begin{equation}
+\overrightarrow{F}\hphantom{}^{t+\Delta t}=\overrightarrow{B}\hphantom{}_{ext}^{t+\Delta t}-\overrightarrow{B}\hphantom{}_{int}^{t+\Delta t}=\overrightarrow{0}.\label{eq:qs-force-balance}\end{equation}
+
+\end_inset
+
+Note that the internal forces include the effects of initial stresses.
+ Iterative methods such as Newton-Raphson may be used to solve 
+\begin_inset LatexCommand \ref{eq:qs-force-balance}
+
+\end_inset
+
+ for the unknown internal forces at time 
+\begin_inset Formula $t+\Delta t$
+\end_inset
+
+.
+ Since the internal forces at time 
+\begin_inset Formula $t$
+\end_inset
+
+ are known, we have
+\begin_inset Formula \begin{equation}
+\overrightarrow{B}\hphantom{}_{int}^{t+\Delta t}=\overrightarrow{B}\hphantom{}_{int}^{t}+\Delta\overrightarrow{B}\hphantom{}_{int},\end{equation}
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\Delta\overrightarrow{B}\hphantom{}_{int}$
+\end_inset
+
+ is the increment in nodal point forces corresponding to the increment in
+ element displacements and stresses.
+ This vector may be approximated as
+\begin_inset Formula \begin{equation}
+\Delta\overrightarrow{B}\hphantom{}_{int}\approx\underline{K}\hphantom{}^{t+\Delta t}\Delta\overrightarrow{U},\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\Delta\overrightarrow{U}$
+\end_inset
+
+ is a vector of displacement increments and
+\begin_inset Formula \begin{equation}
+\underline{K}\hphantom{}^{t+\Delta t}=-\frac{\partial\overrightarrow{F}\hphantom{}^{t+\Delta t}}{\partial\overrightarrow{U}\hphantom{}^{t+\Delta t}}=\frac{\partial\overrightarrow{B}\hphantom{}_{int}^{t+\Delta t}}{\partial\overrightarrow{U}\hphantom{}^{t+\Delta t}}=\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijrs}^{t+\Delta t}\left(N_{,s}^{p}+N_{,r}^{p}\right)\, dV).\end{equation}
+
+\end_inset
+
+Note that for a linear problem, the stiffness matrix remains constant, and
+ no iterations are necessary.
+ For a nonlinear problem, we begin the iterations using the stiffness matrix
+ at time 
+\begin_inset Formula $t$
+\end_inset
+
+, and recompute at specified iterations using the current estimates of stress,
+ strain, and other state variables.
 \end_layout
 
 \end_body
