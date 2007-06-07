@@ -27,13 +27,5 @@ pylith::bc::TestDirichletTet4::setUp(void)
   _data = new DirichletDataTet4();
 } // setUp
 
-// ----------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::bc::TestDirichletTet4::tearDown(void)
-{ // tearDown
-  delete _data;
-} // tearDown
-
 
 // End of file 

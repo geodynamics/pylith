@@ -48,9 +48,6 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-  /// Tear down testing data.
-  void tearDown(void);
-
 }; // class TestDirichletQuad4
 
 #endif // pylith_bc_dirichletquad4_hh

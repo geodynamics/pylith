@@ -27,13 +27,5 @@ pylith::bc::TestDirichletLine2b::setUp(void)
   _data = new DirichletDataLine2b();
 } // setUp
 
-// ----------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::bc::TestDirichletLine2b::tearDown(void)
-{ // tearDown
-  delete _data;
-} // tearDown
-
 
 // End of file 
