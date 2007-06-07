@@ -81,13 +81,13 @@ class BoundaryCondition(Component):
     """
     Initialize boundary condition.
     """
-    if None != self.cppHandle:
-      self.db.initialize()
-      self.cppHandle.id = self.id
-      self.cppHandle.label = self.label
-      self.cppHandle.db = self.db.cppHandle    
-      self.mesh = mesh
-      self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle)
+    assert(None != self.cppHandle)
+    self.db.initialize()
+    self.cppHandle.id = self.id
+    self.cppHandle.label = self.label
+    self.cppHandle.db = self.db.cppHandle    
+    self.mesh = mesh
+    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle)
     return
 
 
@@ -102,15 +102,6 @@ class BoundaryCondition(Component):
     self.label = self.inventory.label
     self.db = self.inventory.db
     return
-
-  
-# FACTORIES ////////////////////////////////////////////////////////////
-
-def boundary_condition():
-  """
-  Factory associated with BoundaryCondition.
-  """
-  return BoundaryCondition()
 
   
 # End of file 
