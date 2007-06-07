@@ -192,7 +192,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
 // Get slip on fault surface at time t.
 const ALE::Obj<pylith::real_section_type>&
 pylith::faults::BruneSlipFn::slip(const double t,
-				const std::set<Mesh::point_type>& vertices)
+				  const std::set<Mesh::point_type>& vertices)
 { // slip
   typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
 

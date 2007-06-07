@@ -312,4 +312,88 @@ cdef class BruneSlipFn(SlipTimeFn):
     return
 
 
+  property dbFinalSlip:
+    def __set__(self, value):
+      """
+      Set database for final slip.
+      """
+      # create shim for method 'dbFinalSlip'
+      #embed{ void BruneSlipFn_dbFinalSlip_set(void* objVptr, void* dbVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dbVptr);
+        spatialdata::spatialdb::SpatialDB* db =
+          (spatialdata::spatialdb::SpatialDB*) dbVptr;
+        ((pylith::faults::BruneSlipFn*) objVptr)->dbFinalSlip(db);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_spatialdb_SpatialDB":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::spatialdb::SpatialDB'."
+      BruneSlipFn_dbFinalSlip_set(self.thisptr, ptrFromHandle(value))
+
+
+  property dbSlipTime:
+    def __set__(self, value):
+      """
+      Set database for slip initiation time.
+      """
+      # create shim for method 'dbSlipTime'
+      #embed{ void BruneSlipFn_dbSlipTime_set(void* objVptr, void* dbVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dbVptr);
+        spatialdata::spatialdb::SpatialDB* db =
+          (spatialdata::spatialdb::SpatialDB*) dbVptr;
+        ((pylith::faults::BruneSlipFn*) objVptr)->dbSlipTime(db);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_spatialdb_SpatialDB":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::spatialdb::SpatialDB'."
+      BruneSlipFn_dbSlipTime_set(self.thisptr, ptrFromHandle(value))
+
+
+  property dbPeakRate:
+    def __set__(self, value):
+      """
+      Set database for peak slip rate.
+      """
+      # create shim for method 'dbPeakRate'
+      #embed{ void BruneSlipFn_dbPeakRate_set(void* objVptr, void* dbVptr)
+      try {
+        assert(0 != objVptr);
+        assert(0 != dbVptr);
+        spatialdata::spatialdb::SpatialDB* db =
+          (spatialdata::spatialdb::SpatialDB*) dbVptr;
+        ((pylith::faults::BruneSlipFn*) objVptr)->dbPeakRate(db);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not value.name == "spatialdata_spatialdb_SpatialDB":
+        raise TypeError, \
+              "Argument must be extension module type " \
+              "'spatialdata::spatialdb::SpatialDB'."
+      BruneSlipFn_dbPeakRate_set(self.thisptr, ptrFromHandle(value))
+
+
 # End of file 
