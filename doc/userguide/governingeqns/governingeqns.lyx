@@ -1145,7 +1145,9 @@ Solution method for infinitesimal strain quasi-static problems
 \end_layout
 
 \begin_layout Standard
-We consider a general class of quasi-static viscoelastic models under the
+For quasi-static problems, time-dependence only enters through the constitutive
+ relationships and the loading conditions.
+ We consider a general class of quasi-static viscoelastic models under the
  assumption of infinitesimal strain, and the methods we derive are also
  appropriate for viscoplastic behavior.
  The stresses are considered to be a function of the total strains and possibly

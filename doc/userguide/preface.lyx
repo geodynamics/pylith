@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -46,8 +46,9 @@ About This Document
 
 \begin_layout Standard
 This document is organized into two parts.
- The first part begins with an introduction to PyLith and discusses how
- to run the software; the second part provides appendices and references.
+ The first part begins with an introduction to PyLith and discusses the
+ types of problems that PyLith can solve and how to run the software; the
+ second part provides appendices and references.
 \end_layout
 
 \begin_layout Section

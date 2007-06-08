@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -56,209 +56,59 @@ History
 \end_layout
 
 \begin_layout Standard
-This first version of PyLith is a direct descendant of Lithomop and marks
- the first version that runs in parallel.
- Lithomop was the product of major reengineering of Tecton, a finite-element
+This version of PyLith (1.0) is the first version to allow the solution of
+ both implicit (quasi-static) and explicit (dynamic) problems, and represents
+ a complete rewrite of the original PyLith.
+ This version combines the functionality of EqSim [ref???] and PyLith 0.8.
+ PyLith 0.8 was a direct descendant of LithoMop and was the first version
+ that ran in parallel, as well as providing several other improvements over
+ LithoMop.
+ LithoMop was the product of major reengineering of Tecton, a finite-element
  code for simulating static and quasi-static crustal deformation.
  The major new features present in Lithomop included dynamic memory allocation
  and the use of the Pyre simulation framework and PETSc solvers.
+ EqSim was written by Brad Aaagaard to solve problems in earthquake dynamics,
+ including rupture propagaion and seismic wave propagation.
 \end_layout
 
 \begin_layout Standard
-This release of PyLith offers both tetrahedral and hexahedral linear elements,
- the use of traction boundary conditions, load histories for split nodes,
- a number of new material models, including power-law Maxwell and generalized
- Maxwell (3 Maxwell models in parallel), the use of 
-\family typewriter
+This release of PyLith allows the solution of both quasi-static and dynamic
+ problems in 1, 2, or 3 dimensions.
+ The code runs in either serial or parallel mode, and the design should
+ allow for relatively easy scripting using the Python programming language.
+ Boundary conditions, material properties, and fault specifications are
+ handled using a spatial database, which allows complex models to be easily
+ specified.
+ Model parameters are generally specified through the use of 
+\family sans
 .cfg
 \family default
- files for setting simulation parameters, much simpler top-level code structure,
- and several bug fixes.
+ files, although they can also be specified using 
+\family typewriter
+.pml
+\family default
+ files or from the command line.
+ At present, mesh information may be provided using a simple ASCII format,
+ and mesh data may also be imported from CUBIT or LaGriT, two widely-used
+ meshing packages.
+ The elements currently available include a linear beam (1D), linear triangles
+ and quadrilaterals (2D), and linear tetrahedra and hexahedra (3D).
+ Materials presently available include isotropic elastic and linear Maxwell
+ viscoelastic.
+ Faults???
 \end_layout
 
 \begin_layout Standard
-PyLith is currently being rewritten from scratch to create a much more modular,
- powerful simulation package.
- This new code will include earthquake dynamics (both rupture propagation
- and seismic wave propagation).
- A beta release is expected in Spring 2007.
-\end_layout
-
-\begin_layout Section
-Governing Equations
+PyLith is under active development and we expect a number of additions and
+ improvements in the near future.
+ Likely enhancements will include the addition of new material models for
+ both volume elements and cohesive (fault) elements, higher-order elements,
+ and the generation of Green's functions to be used in inversions.
+ Many of these features should be available by late Summer, 2007.
 \end_layout
 
 \begin_layout Standard
-Both LithoMop3d and PyLith-0.8 are quasi-static codes, meaning that time-dependen
-ce only enters through the constitutive relationships and the loading conditions.
- The description here is for the small-strain formulation, which is the
- only formulation available at present.
- If a large deformation solution is desired, interested users may contact
- 
-\begin_inset LatexCommand \url[Charles Williams]{willic3@rpi.edu}
 
-\end_inset
-
- about a version of the finite element code TECTON.
-\end_layout
-
-\begin_layout Standard
-The problem is formulated in terms of the stresses (
-\begin_inset Formula $\sigma_{ij}$
-\end_inset
-
-), displacements (
-\begin_inset Formula $u_{i}$
-\end_inset
-
-), and body forces per unit volume 
-\begin_inset Formula $f_{i}^{B}$
-\end_inset
-
-.
- We use standard index notation for all equations here, such that repeated
- indices imply summation and a comma denotes differentiation.
- For a general three-dimensional body, the problem must satisfy the equilibrium
- conditions
-\end_layout
-
-\begin_layout Standard
-\align right
-\begin_inset Formula \begin{equation}
-\sigma_{ij,j}+f_{i}^{B}=0,\label{eq:1}\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-subject to the natural boundary conditions 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \begin{equation}
-\sigma_{ij}n_{j}=f_{i}^{S_{f}}\, on\, S_{f}\label{eq:2}\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-and the essential boundary conditions 
-\begin_inset Formula \begin{equation}
-u_{i}=u_{i}^{S_{u}}\,\mathrm{on}\, S_{u}.\label{eq:3}\end{equation}
-
-\end_inset
-
-The surface of the body is 
-\begin_inset Formula $S$
-\end_inset
-
-, given by
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \begin{equation}
-S=S_{u}\cup S_{f},\,\, S_{u}\cap S_{f}=0.\label{eq:4}\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-The 
-\begin_inset Formula $n_{j}$
-\end_inset
-
- are the components of the unit normal vector to 
-\begin_inset Formula $S$
-\end_inset
-
-, the 
-\begin_inset Formula $f_{i}^{S_{f}}$
-\end_inset
-
- are the components of the surface tractions, and the 
-\begin_inset Formula $u_{i}^{S_{u}}$
-\end_inset
-
- are the components of the applied displacements.
- The stresses are computed from the strains and any existing initial stresses
- using a given constitutive relationship.
- The strains are given by 
-\begin_inset Formula \begin{equation}
-\varepsilon_{ij}=\frac{1}{2}(u_{i,j}+u_{j,i}).\label{eq:5}\end{equation}
-
-\end_inset
-
- For a linear elastic material, the constitutive relationship between stress
- and strain is 
-\begin_inset Formula \begin{equation}
-\sigma_{ij}=C_{ijkl}^{E}\varepsilon_{kl}+\sigma_{ij}^{I},\label{eq:6}\end{equation}
-
-\end_inset
-
- where 
-\begin_inset Formula $\sigma_{ij}^{I}$
-\end_inset
-
- are the initial stresses, and 
-\begin_inset Formula $C_{ijkl}^{E}$
-\end_inset
-
- is the elastic constitutive relation.
-\end_layout
-
-\begin_layout Standard
-For inelastic behavior (viscous, plastic, etc.), we assume an additive decomposit
-ion of the strain tensor into elastic and inelastic parts, and use an integrated
- form of the classical incremental theory of plasticity.
- At time 
-\begin_inset Formula $t+\Delta t$
-\end_inset
-
-, the stresses are therefore computed from the total elastic strain: 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \begin{equation}
-^{t+\Delta t}\sigma_{ij}=C_{ijkl}^{E}(^{t+\Delta t}\varepsilon_{kl}-^{t+\Delta t}\varepsilon_{kl}^{IN})+\sigma_{ij}^{I},\label{eq:7}\end{equation}
-
-\end_inset
-
-where 
-\begin_inset Formula $^{t+\Delta t}\varepsilon_{kl}$
-\end_inset
-
- are the total strains and 
-\begin_inset Formula $^{t+\Delta t}\varepsilon_{kl}^{IN}$
-\end_inset
-
- are the inelastic strains, with the difference being the elastic strains.
- In our actual computations, we use several different formulations, depending
- on the constitutive relation.
- One such formulation decomposes the stresses into the deviatoric and volumetric
- parts, using ideas based on the ``effective stress function'' 
-\begin_inset LatexCommand \cite{Kojic:Bathe:1987}
-
-\end_inset
-
-.
- This allows the time integration of stresses to be performed in terms of
- a single parameter related to the second deviatoric stress invariant.
- We also use viscoelastic formulations based on those of Zienkiewicz and
- Taylor 
-\begin_inset LatexCommand \cite{Zienkiewicz:Taylor:2000}
-
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Section
@@ -271,20 +121,23 @@ PyLith is separated into modules to encapsulate behavior and facilitate
  That way expert users can replace functionality of a wide variety of components
  without recompiling or polluting the main code.
  External packages reduce development time and enhance computational efficiency;
- for example, PyLith runs 2
+ for example, PyLith 0.8 ran 2
 \begin_inset Formula $\times$
 \end_inset
 
- faster by using the PETSc linear solver.
+ faster when the PETSc linear solver was used.
 \end_layout
 
 \begin_layout Standard
-PyLith is based on several programming languages.
+PyLith is based on two programming languages.
  High-level code is written in Python; this rich, expressive interpreted
  language with dynamic typing reduces development time.
- Low-level code is written in Fortran 77 for fast execution.
- Bindings, written in C/C++, are used to allow the low-level code (Fortran
- 77) to be called from high-level code (Python).
+ Low-level code is written in C++, providing fast execution while still
+ allowing object-oriented code.
+ We also make extensive use of two Python packages.
+ Pyrex is a package that simplifies the task of adding C extensions to Python
+ code.
+ We also use pyrexembed, which extends the use of Pyrex to handle C++ code.
 \end_layout
 
 \begin_layout Standard
@@ -328,8 +181,7 @@ PETSc includes interfaces for Fortran, C, and C++ for nearly all of the
 \end_layout
 
 \begin_layout Standard
-PyLith 0.8 and the upcoming PyLith 1.0 make use of a new aspect of PETSc known
- as 
+PyLith 0.8 and PyLith 1.0 make use of a new aspect of PETSc known as 
 \family typewriter
 Sieve
 \family default
@@ -348,6 +200,12 @@ Sieve
  grab ``sections'' of a mesh that share common characteristics, such as
  elements of the same material type or nodes to which boundary conditions
  have been applied.
+ This version of PyLith uses 
+\family typewriter
+Sieve
+\family default
+ much more extensively than PyLith 0.8, and should provide significantly
+ better performance.
 \end_layout
 
 \begin_layout Subsection
@@ -371,7 +229,7 @@ Pyre is an object-oriented environment capable of specifying and launching
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Caption
 Pyre Architecture.
@@ -442,9 +300,24 @@ PyLith Design
 \end_layout
 
 \begin_layout Standard
-In transforming Lithomop, a serial code, into PyLith, a parallel code, a
- principal concern was to preserve the existing structure of the serial
- Fortran code.
+In rewriting PyLith, the code was completely redesigned to be object-oriented
+ and modular.
+ Each module has its own facilities and parameters that may be specified
+ in a number of different ways.
+ This code structure will also simplify the tasks of code maintenance and
+ developement.
+ We provide unit tests for all significant code funtions, which simplifies
+ the task of diagnosing problems.
+ Extending the set of code features is also easier, since developers can
+ create new classes derived from the existing ones.
+\end_layout
+
+\begin_layout Standard
+The new code design has also allowed us to make better use of the PETSc
+ Sieve structure to handle mesh topology.
+ ***NEED TO REWRITE THIS SECTION***In transforming Lithomop, a serial code,
+ into PyLith, a parallel code, a principal concern was to preserve the existing
+ structure of the serial Fortran code.
  Active development of purely analytic features in PyLith, such as new material
  models or discretization schemes, depends on the familiarity of application
  scientists with the traditional Fortran programming paradigm.
