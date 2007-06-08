@@ -17,6 +17,7 @@
 #include "EqKinSrc.hh" // USES EqKinSrc
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+#include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
 
@@ -115,14 +116,19 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   double_array jacobian(jacobianSize);
   double jacobianDet = 0;
   double_array vertexOrientation(orientationSize);
+  double_array cellVertices(numBasis*spaceDim);
 
-  const ALE::Obj<Mesh::label_sequence>& cells = 
+  const ALE::Obj<Mesh::label_sequence>& cellsFault = 
     (*_faultMesh)->heightStratum(0);
-  const Mesh::label_sequence::iterator cBegin = cells->begin();
-  const Mesh::label_sequence::iterator cEnd = cells->end();
-  for (Mesh::label_sequence::iterator c_iter=cBegin;
-       c_iter != cEnd;
+  assert(!cellsFault.isNull());
+  const Mesh::label_sequence::iterator cellsFaultBegin = cellsFault->begin();
+  const Mesh::label_sequence::iterator cellsFaultEnd = cellsFault->end();
+  for (Mesh::label_sequence::iterator c_iter=cellsFaultBegin;
+       c_iter != cellsFaultEnd;
        ++c_iter) {
+    mesh->restrict(coordinates, *c_iter, 
+		   &cellVertices[0], cellVertices.size());
+
     // Compute orientation at each vertex
     int iBasis = 0;
     const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
@@ -135,7 +141,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	++v_iter, ++iBasis) {
       // Compute Jacobian and determinant of Jacobian at vertex
       double_array vertex(&verticesRef[iBasis*cellDim], cellDim);
-      //cellGeometry->jacobian(&jacobian, &jacobianDet, cellVertices, vertex);
+      cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, vertex);
 
       // Compute orientation
       orientFn(&vertexOrientation, jacobian, jacobianDet, upDir);
@@ -151,11 +157,11 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   // Loop over vertices, make orientation information unit magnitude
   const ALE::Obj<Mesh::label_sequence>& vertices = 
     (*_faultMesh)->depthStratum(0);
-  const Mesh::label_sequence::iterator vBegin = vertices->begin();
-  const Mesh::label_sequence::iterator vEnd = vertices->end();
+  const Mesh::label_sequence::iterator vertFaultBegin = vertices->begin();
+  const Mesh::label_sequence::iterator vertFaultEnd = vertices->end();
   double_array vertexDir(orientationSize);
-  for (Mesh::label_sequence::iterator v_iter=vBegin;
-       v_iter != vEnd;
+  for (Mesh::label_sequence::iterator v_iter=vertFaultBegin;
+       v_iter != vertFaultEnd;
        ++v_iter) {
     const real_section_type::value_type* vertexOrient = 
       orientation->restrictPoint(*v_iter);
@@ -171,10 +177,17 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     orientation->updatePoint(*v_iter, &vertexDir[0]);
   } // for
 
-  // Create set of constraint vertices
-  std::set<Mesh::point_type> setVert;
-  for (Mesh::label_sequence::iterator c_iter=cBegin;
-       c_iter != cEnd;
+  _constraintVert.clear();
+  // Create set of vertices associated with Lagrange multiplier constraints
+  const ALE::Obj<ALE::Mesh::label_sequence>& cellsCohesive = 
+    mesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const Mesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const Mesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
+  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
        ++c_iter) {
     // Vertices for each cohesive cell are in groups of N.
     // 0 to N-1: vertices on negative side of the fault
@@ -192,34 +205,38 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     for (int i=0, numSkip=2*coneSize/3; i < numSkip; ++i)
       ++v_iter;
     // Add constraint vertices to set
-    for(int i=0, numConstraintVert = coneSize/3; 
+    for(int i=0, numConstraintVert=coneSize/3; 
 	i < numConstraintVert; 
 	++i, ++v_iter)
-      setVert.insert(*v_iter);
+      _constraintVert.insert(*v_iter);
   } // for
 
-  // Only store orientation information at constraint vertices
-  _orientation = 
-    new real_section_type((*_faultMesh)->comm(), (*_faultMesh)->debug());
+  // Create orientation section over vertices associated with Lagrange
+  // multiplier constraints
+  _orientation = new real_section_type(mesh->comm(), mesh->debug());
   assert(!_orientation.isNull());
-  const std::set<Mesh::point_type>::const_iterator cvBegin = 
+  const std::set<Mesh::point_type>::const_iterator vertCohesiveBegin = 
     _constraintVert.begin();
-  const std::set<Mesh::point_type>::const_iterator cvEnd = 
+  const std::set<Mesh::point_type>::const_iterator vertCohesiveEnd = 
     _constraintVert.end();
-  for (std::set<Mesh::point_type>::const_iterator v_iter=cvBegin;
-       v_iter != cvEnd;
+  for (std::set<Mesh::point_type>::const_iterator v_iter=vertCohesiveBegin;
+       v_iter != vertCohesiveEnd;
        ++v_iter)
     _orientation->setFiberDimension(*v_iter, orientationSize);
-  (*_faultMesh)->allocate(_orientation);
-  for (std::set<Mesh::point_type>::const_iterator v_iter=cvBegin;
-       v_iter != cvEnd;
-       ++v_iter) {
+  mesh->allocate(_orientation);
+  
+  // Transfer orientation information from fault vertices to vertices
+  // associated with Lagrange multiplier constraints
+  Mesh::label_sequence::iterator vFault_iter=vertFaultBegin;
+  for (std::set<Mesh::point_type>::const_iterator vConstraint_iter=vertCohesiveBegin;
+       vConstraint_iter != vertCohesiveEnd;
+       ++vConstraint_iter, ++vFault_iter) {
     const real_section_type::value_type* vertexOrient = 
-      orientation->restrictPoint(*v_iter);
-    _orientation->updatePoint(*v_iter, vertexOrient);
+      orientation->restrictPoint(*vFault_iter);
+    _orientation->updatePoint(*vConstraint_iter, vertexOrient);
   } // for
   
-  _eqsrc->initialize(mesh, *_faultMesh, setVert, cs);
+  _eqsrc->initialize(mesh, *_faultMesh, _constraintVert, cs);
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -239,26 +256,26 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   // Subtract constraint forces (which are disp at the constraint
   // DOF) to residual; contributions are at DOF of normal vertices (i and j)
 
-  // Get cell information
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    (*_faultMesh)->heightStratum(0);
-  assert(!cells.isNull());
-  const Mesh::label_sequence::iterator cBegin = cells->begin();
-  const Mesh::label_sequence::iterator cEnd = cells->end();
+  // Get cohesive cells
+  const ALE::Obj<ALE::Mesh::label_sequence>& cellsCohesive = 
+    mesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const Mesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const Mesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
 
   // Get section information
   const ALE::Obj<real_section_type>& disp = fields->getHistoryItem(1);
   assert(!disp.isNull());  
-
+  
   // Allocate vector for cell values (if necessary)
   _initCellVector();
 
   // Loop over cohesive cells
-  const int numVertices = _quadrature->numBasis();
-  const int numConstraintVert = numVertices / 3;
-  assert(numVertices == numConstraintVert * 3);
-  for (Mesh::label_sequence::iterator c_iter=cBegin;
-       c_iter != cEnd;
+  const int numConstraintVert = _quadrature->numBasis();
+  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
        ++c_iter) {
     _resetCellVector();
 
@@ -277,8 +294,8 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     if (err)
       throw std::runtime_error("Logging PETSc flops failed.");
 
-    // Update residual
-    mesh->updateAdd(residual, *c_iter, _cellVector);
+    // Update residual (replace, do not add)
+    mesh->update(residual, *c_iter, _cellVector);
   } // for
 } // integrateResidual
 
@@ -300,11 +317,14 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   // direction cosines. Entries are associated with vertices ik, jk,
   // ki, and kj.
 
-  // Get cell informatino
-  const ALE::Obj<Mesh::label_sequence>& cells = 
-    (*_faultMesh)->heightStratum(0);
-  const Mesh::label_sequence::iterator cBegin = cells->begin();
-  const Mesh::label_sequence::iterator cEnd = cells->end();
+  // Get cohesive cells
+  const ALE::Obj<ALE::Mesh::label_sequence>& cellsCohesive = 
+    mesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const Mesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const Mesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
 
   // Get section information
   const ALE::Obj<real_section_type>& disp = fields->getHistoryItem(1);
@@ -317,9 +337,10 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   // Allocate matrix for cell values (if necessary)
   _initCellMatrix();
 
-  const int numVertices = _quadrature->numBasis();
-  for (Mesh::label_sequence::iterator c_iter=cBegin;
-       c_iter != cEnd;
+  const int numConstraintVert = _quadrature->numBasis();
+  const int numCorners = 3*numConstraintVert; // cohesive cell
+  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
        ++c_iter) {
     _resetCellMatrix();
 
@@ -327,28 +348,26 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     const real_section_type::value_type* cellOrientation = 
       mesh->restrict(_orientation, *c_iter);
 
-    const int numConstraintVert = numVertices / 3;
-    assert(numVertices == numConstraintVert * 3);
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
-      // Get orientations at constraint vertex
-      const real_section_type::value_type* constraintOrient = 
-	&cellOrientation[iConstraint*orientationSize];
-
       // Blocks in cell matrix associated with normal cohesive
       // vertices i and j and constraint vertex k
       const int iBasis = 3*iConstraint;
       const int jBasis = 3*iConstraint + 1;
       const int kBasis = 3*iConstraint + 2;
 
+      // Get orientations at constraint vertex (3rd vertex)
+      const real_section_type::value_type* constraintOrient = 
+	&cellOrientation[kBasis*orientationSize];
+
       // Entries associated with constraint forces applied at node i
       for (int iDim=0; iDim < spaceDim; ++iDim)
 	for (int kDim=0; kDim < spaceDim; ++kDim) {
 	  const int row = iBasis*spaceDim+iDim;
 	  const int col = kBasis*spaceDim+kDim;
-	  _cellMatrix[row*numVertices*spaceDim+col] =
+	  _cellMatrix[row*numCorners*spaceDim+col] =
 	    constraintOrient[iDim*spaceDim+kDim];
-	  _cellMatrix[col*numVertices*spaceDim+row] =
-	    _cellMatrix[row*numVertices*spaceDim+col]; // symmetric
+	  _cellMatrix[col*numCorners*spaceDim+row] =
+	    _cellMatrix[row*numCorners*spaceDim+col]; // symmetric
 	} // for
 
       // Entries associated with constraint forces applied at node j
@@ -356,10 +375,10 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	for (int kDim=0; kDim < spaceDim; ++kDim) {
 	  const int row = jBasis*spaceDim+jDim;
 	  const int col = kBasis*spaceDim+kDim;
-	  _cellMatrix[row*numVertices*spaceDim+col] =
+	  _cellMatrix[row*numCorners*spaceDim+col] =
 	    -constraintOrient[jDim*spaceDim+kDim];
-	  _cellMatrix[col*numVertices*spaceDim+row] =
-	    _cellMatrix[row*numVertices*spaceDim+col]; // symmetric
+	  _cellMatrix[col*numCorners*spaceDim+row] =
+	    _cellMatrix[row*numCorners*spaceDim+col]; // symmetric
 	} // for
     } // for
     PetscErrorCode err = 
@@ -370,8 +389,9 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 
       mesh->getFactory()->getGlobalOrder(mesh, "default", disp);
+    // Update values (do not add)
     err = updateOperator(*mat, mesh, disp, globalOrder,
-			 *c_iter, _cellMatrix, ADD_VALUES);
+			 *c_iter, _cellMatrix, INSERT_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for
