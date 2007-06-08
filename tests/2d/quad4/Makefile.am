@@ -21,6 +21,8 @@ noinst_DATA = \
 	box.exo \
 	axialplanestrain.cfg \
 	shearplanestrain.cfg \
+	shearplanestrain_free.cfg \
+	shearplanestrain_xfixed.cfg \
 	axialx.spatialdb \
 	axialy.spatialdb \
 	shearxy.spatialdb \
