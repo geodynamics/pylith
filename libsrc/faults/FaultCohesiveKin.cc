@@ -64,7 +64,12 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     throw std::runtime_error("Up direction for fault orientation must be "
 			     "a vector with 3 components.");
 
-  // Allocate section for orientation at vertices in fault mesh
+  /* First use fault mesh to get orientation of vertices in fault mesh
+   * We will transfer the orientation from the fault mesh vertices to
+   * the Lagrange constraint vertices.
+   */
+
+  // Allocate section for orientation of vertices in fault mesh
   ALE::Obj<real_section_type> orientation = 
     new real_section_type((*_faultMesh)->comm(), (*_faultMesh)->debug());
   assert(!orientation.isNull());
@@ -80,7 +85,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
 
-  // Set orientation method
+  // Set orientation function
   assert(cellDim == _quadrature->cellDim());
   assert(spaceDim == _quadrature->spaceDim());
   orient_fn_type orientFn;
@@ -99,40 +104,45 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       assert(0);
     } // switch
 
-  // Loop over cells, computing orientation at each vertex in cell
+  // Loop over cells in fault mesh, computing orientation at each vertex
   const ALE::Obj<sieve_type>& sieve = (*_faultMesh)->getSieve();
   assert(!sieve.isNull());
+
+  const int numBasis = _quadrature->numBasis();
+  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
+  const double_array& verticesRef = _quadrature->vertices();
+  const int jacobianSize = spaceDim * cellDim;
+  double_array jacobian(jacobianSize);
+  double jacobianDet = 0;
+  double_array vertexOrientation(orientationSize);
+
   const ALE::Obj<Mesh::label_sequence>& cells = 
     (*_faultMesh)->heightStratum(0);
   const Mesh::label_sequence::iterator cBegin = cells->begin();
   const Mesh::label_sequence::iterator cEnd = cells->end();
-  double_array cellOrientation(_quadrature->numBasis()*orientationSize);
-  const int numVertices = _quadrature->numBasis();
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const double_array& verticesRef = _quadrature->vertices();
-  const int numBasis = _quadrature->numBasis();
   for (Mesh::label_sequence::iterator c_iter=cBegin;
        c_iter != cEnd;
        ++c_iter) {
-    // Compute Jacobian at vertices
-    double_array jacobian;
-    double_array jacobianDet;
-
-    // Compute weighted orientation of face at vertices (using geometry info)
-    orientFn(&cellOrientation, jacobian, jacobianDet, upDir, numVertices);
-
-    // Update orientation section for vertices in cell
+    // Compute orientation at each vertex
+    int iBasis = 0;
     const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
       sieve->cone(*c_iter);
     assert(!cone.isNull());
     const sieve_type::traits::coneSequence::iterator vBegin = cone->begin();
     const sieve_type::traits::coneSequence::iterator vEnd = cone->end();
-    int index = 0;
     for(sieve_type::traits::coneSequence::iterator v_iter=vBegin;
 	v_iter != vEnd;
-	++v_iter)
-      orientation->updatePoint(*v_iter, &cellOrientation[index]);
-      index += orientationSize;
+	++v_iter, ++iBasis) {
+      // Compute Jacobian and determinant of Jacobian at vertex
+      double_array vertex(&verticesRef[iBasis*cellDim], cellDim);
+      //cellGeometry->jacobian(&jacobian, &jacobianDet, cellVertices, vertex);
+
+      // Compute orientation
+      orientFn(&vertexOrientation, jacobian, jacobianDet, upDir);
+      
+      // Update orientation
+      orientation->updatePoint(*v_iter, &vertexOrientation[0]);
+    } // for
   } // for
 
   // Assemble orientation information

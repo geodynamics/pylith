@@ -60,9 +60,8 @@ protected :
   /// Function type for orientation methods.
   typedef void (*orient_fn_type)(double_array*, 
 				 const double_array&,
-				 const double_array&,
-				 const double_array&,
-				 const int);
+				 const double,
+				 const double_array&);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -82,8 +81,8 @@ protected :
    *
    * The orientation is returned as an array of direction cosines.
    *
-   * size = numPts*spaceDim*spaceDim
-   * index = iPt*spaceDim*spaceDim + iDir*spaceDim + iComponent
+   * size = spaceDim*spaceDim
+   * index = iDir*spaceDim + iComponent
    *
    * @param orientation Array of direction cosines.
    * @param jacobian Jacobian matrix at point.
@@ -91,14 +90,12 @@ protected :
    * @param upDir Direction perpendicular to along-strike direction that is 
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction).
-   * @param numLocs Number of locations where values are given.
    */
   static
   void _orient1D(double_array* orientation,
 		 const double_array& jacobian,
-		 const double_array& jacobianDet,
-		 const double_array& upDir,
-		 const int numLocs);
+		 const double jacobianDet,
+		 const double_array& upDir);
 		
   /** Compute weighted orientation of fault for cohesive cell between
    * 2-D elements. Orientation is either at vertices or quadrature
@@ -107,8 +104,8 @@ protected :
    *
    * The orientation is returned as an array of direction cosines.
    *
-   * size = numPts*spaceDim*spaceDim
-   * index = iPt*spaceDim*spaceDim + iDir*spaceDim + iComponent
+   * size = spaceDim*spaceDim
+   * index = iDir*spaceDim + iComponent
    *
    * @param orientation Array of direction cosines.
    * @param jacobian Jacobian matrix at point.
@@ -116,14 +113,12 @@ protected :
    * @param upDir Direction perpendicular to along-strike direction that is 
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction).
-   * @param numLocs Number of locations where values are given.
    */
   static 
   void _orient2D(double_array* orientation,
 		 const double_array& jacobian,
-		 const double_array& jacobianDet,
-		 const double_array& upDir,
-		 const int numLocs);
+		 const double jacobianDet,
+		 const double_array& upDir);
 		
   /** Compute weighted orientation of fault for cohesive cell between
    * 3-D elements. Orientation is either at vertices or quadrature
@@ -132,8 +127,8 @@ protected :
    *
    * The orientation is returned as an array of direction cosines.
    *
-   * size = numPts*spaceDim*spaceDim
-   * index = iPt*spaceDim*spaceDim + iDir*spaceDim + iComponent
+   * size = spaceDim*spaceDim
+   * index = iDir*spaceDim + iComponent
    *
    * @param orientation Array of direction cosines.
    * @param jacobian Jacobian matrix at point.
@@ -141,14 +136,12 @@ protected :
    * @param upDir Direction perpendicular to along-strike direction that is 
    *   not collinear with fault normal (usually "up" direction but could 
    *   be up-dip direction).
-   * @param numLocs Number of locations where values are given.
    */
   static
   void _orient3D(double_array* orientation,
 		 const double_array& jacobian,
-		 const double_array& jacobianDet,
-		 const double_array& upDir,
-		 const int numLocs);
+		 const double jacobianDet,
+		 const double_array& upDir);
 		
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

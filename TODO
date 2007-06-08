@@ -4,6 +4,8 @@ MAIN PRIORITIES (Brad)
 
 1. Simple tests with analytical solutions
 
+   Try shear tests with Poisson ratio of 0.5.
+
    a. 2-D
      i. tri3 cells
        (1) axial compression
@@ -26,7 +28,9 @@ MAIN PRIORITIES (Brad)
 
    b. Implement integrator for faults
 
-     i. FaultCohesiveKin
+     i. Add determinant of Jacobian to CellGeometry::jacobian()
+
+     ii. FaultCohesiveKin
        (1) C++ unit tests
          initialize()
          integrateResidual()
