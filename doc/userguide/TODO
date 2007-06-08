@@ -29,34 +29,90 @@ MOSTLY DONE -- Needs some checking.
 
     d.  Explicit problems
 
-10. Tutorials (all using ascii mesh format?) [Charles]
+10. Installation
 
-    a.  Two-triangle elastic problem.
+    C++, Python
 
-    b.  Quad shear elastic problem?
+    Numpy
 
-    c.  Tetrahedral element shear viscoelastic problem?
+    FIAT
 
-    d.  Hexahedral element shear viscoelastic problem?
+    PETSc/MPI
 
-11. Material models (should be able to copy from 0.8 with some editing) [Charles]
+    Pythia
+
+    Pyrex/Pyrexembed
+
+    spatialdata and proj
+
+    optional
+
+      netcdf
+
+11. Tutorials (all using ascii mesh format?) [Charles]
+
+    a.  Two-triangle problem.
+
+        i. Dirichlet boundary conditions (shear)
+
+        ii. Dirichlet boundary conditions (fixed) and fault
+
+    b.  Two-quad problem.
+
+        i. Dirichlet boundary conditions (fixed) and fault
+
+    c.  Two-tet shear viscoelastic problem?
+
+    d.  Two-hex element shear viscoelastic problem?
+
+    e.  LaGrit/CUBIT problem with fault and Dirichlet (fixed) BC
+
+        i. Provide LaGriT and CUBIT scripts with comments.
+        ii. Describe process for setting up meshes for export from LaGriT/CUBIT.
+
+12. Material models (should be able to copy from 0.8 with some editing) [Charles]
 
     a.  Specifying .cfg and spatial database info.
 
     b.  Existing (and future?) material models. Include discussion of specifying material properties in terms of vp, vs, and density.
 
-12. Boundary and interface conditions (includes faults) [Charles]
+    * ElasticStrain1D
+    * ElasticStress1D
+    * ElasticPlaneStrain
+    * ElasticPlaneStress
+    * ElasticIsotropic3D
+    * MaxwellIsotropic3D
+
+13. Boundary and interface conditions (includes faults) [Charles]
 
     a.  Specifying .cfg and spatial database info.
 
     b.  Dirichlet conditions.
 
-    c.  Neumann conditions.
+    c.  Neumann conditions. [future]
 
-    d.  Kinematic fault conditions.
+    d.  Fault
 
-    e.  Cohesive element properties?
+      i. Conventions (sign, orientation info)
 
-13. Appendix [Charles]
+      ii. Cohesive cells (described how faults implemented)
 
-    a.  File formats (config, ascii mesh format, and spatial data).
+      iii. Kinematic earthquake source
+
+14. Appendix [Charles]
+
+    a. glossary
+      sieve
+      mesh
+      cell (element)
+      vertex (node)
+      field
+      section
+      fiber dimension
+      cohesive cell
+      cone
+      restrict
+
+    b.  File formats (config, ascii mesh format, and spatial data).
+
+    

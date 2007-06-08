@@ -50,6 +50,9 @@ MAIN PRIORITIES (Brad)
   a. FaultCohesive
     i. Check faultMesh
 
+  b. ElasticityExplicit and ElasticityImplicit
+    i. multiple materials
+
 ======================================================================
 SECONDARY PRIORITIES
 ======================================================================
