@@ -37,6 +37,11 @@ const double pylith::feassemble::GeomDataTet3D::_jacobian[] = {
   3.4, 0.3, 1.2, 0.1, 3.2, 1.0, -0.1, -0.5, 2.8
 };
 
+const double pylith::feassemble::GeomDataTet3D::_jacobianDet[] = {
+  32.374,
+  32.374
+};
+
 pylith::feassemble::GeomDataTet3D::GeomDataTet3D(void)
 { // constructor
   cellDim = _cellDim;
@@ -46,6 +51,7 @@ pylith::feassemble::GeomDataTet3D::GeomDataTet3D(void)
   vertices = const_cast<double*>(_vertices);
   locations = const_cast<double*>(_locations);
   jacobian = const_cast<double*>(_jacobian);
+  jacobianDet = const_cast<double*>(_jacobianDet);
 } // constructor
 
 pylith::feassemble::GeomDataTet3D::~GeomDataTet3D(void)

@@ -98,11 +98,12 @@ pylith::feassemble::TestCellGeometry::testJacobian(void)
   CPPUNIT_ASSERT_EQUAL(numCorners, _object->numCorners());
 
   double_array jacobian(cellDim*spaceDim);
+  double det = 0;
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     double_array vertices(_data->vertices, numCorners*spaceDim);
     double_array location(&_data->locations[iLoc*cellDim], cellDim);
 
-    _object->jacobian(&jacobian, vertices, location);
+    _object->jacobian(&jacobian, &det, vertices, location);
 
     const int size = jacobian.size();
     const int index = iLoc*cellDim*spaceDim;
@@ -114,6 +115,7 @@ pylith::feassemble::TestCellGeometry::testJacobian(void)
       else
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, jacobian[i]/_data->jacobian[index+i],
 				     tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->jacobianDet[iLoc], det, tolerance);
   } // for
 } // testJacobian
 

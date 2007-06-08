@@ -4,8 +4,6 @@ MAIN PRIORITIES (Brad)
 
 1. Simple tests with analytical solutions
 
-   Try shear tests with Poisson ratio of 0.5.
-
    a. 2-D
      i. tri3 cells
        (1) axial compression
@@ -55,6 +53,9 @@ MAIN PRIORITIES (Brad)
 ======================================================================
 SECONDARY PRIORITIES
 ======================================================================
+
+Want to take advantage of symmetry and block structure of Jacobian
+when possible.
 
 1. Implement MeshIOHDF5 & HDF5 (helper class)
    a. C++ objects

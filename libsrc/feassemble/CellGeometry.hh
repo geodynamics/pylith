@@ -83,11 +83,13 @@ public :
   /** Compute Jacobian at location in cell.
    *
    * @param jacobian Jacobian at location.
+   * @param det Determinant of Jacobian at location.
    * @param vertices Coordinates of vertices of cell.
    * @param location Location in reference cell at which to compute Jacobian.
    */
   virtual
   void jacobian(double_array* jacobian,
+		double* det,
 		const double_array& vertices,
 		const double_array& location) const = 0;
 

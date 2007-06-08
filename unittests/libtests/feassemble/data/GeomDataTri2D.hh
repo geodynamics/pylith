@@ -45,6 +45,7 @@ private:
   static const double _vertices[]; ///< Coordinates of cell's vertices
   static const double _locations[]; ///< Locations to compute Jacobian
   static const double _jacobian[]; ///< Jacobian at locations
+  static const double _jacobianDet[]; ///< Determinant of Jacobian at locations
 
 };
 

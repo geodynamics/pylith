@@ -53,10 +53,12 @@ pylith::feassemble::GeometryLine1D::geometryLowerDim(void) const
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryLine1D::jacobian(double_array* jacobian,
+					   double* det,
 					   const double_array& vertices,
 					   const double_array& location) const
 { // jacobian
   assert(0 != jacobian);
+  assert(0 != det);
 
   assert(numCorners()*spaceDim() == vertices.size());
   assert(spaceDim()*cellDim() == jacobian->size());
@@ -65,6 +67,7 @@ pylith::feassemble::GeometryLine1D::jacobian(double_array* jacobian,
   const double x1 = vertices[1];
 
   (*jacobian)[0] = x1 - x0;
+  *det = (*jacobian)[0];
 } // jacobian
 
 

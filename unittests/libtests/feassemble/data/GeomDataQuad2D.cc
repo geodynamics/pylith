@@ -43,6 +43,14 @@ const double pylith::feassemble::GeomDataQuad2D::_jacobian[] = {
   0.71, -0.28, -0.37, 1.46
 };
 
+const double pylith::feassemble::GeomDataQuad2D::_jacobianDet[] = {
+  0.63,
+  0.67,
+  1.04,
+  1.08,
+  0.933
+};
+
 pylith::feassemble::GeomDataQuad2D::GeomDataQuad2D(void)
 { // constructor
   cellDim = _cellDim;
@@ -52,6 +60,7 @@ pylith::feassemble::GeomDataQuad2D::GeomDataQuad2D(void)
   vertices = const_cast<double*>(_vertices);
   locations = const_cast<double*>(_locations);
   jacobian = const_cast<double*>(_jacobian);
+  jacobianDet = const_cast<double*>(_jacobianDet);
 } // constructor
 
 pylith::feassemble::GeomDataQuad2D::~GeomDataQuad2D(void)
