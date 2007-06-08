@@ -147,17 +147,15 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8Lagrange(void)
 void
 pylith::faults::TestFaultCohesive::testOrient1D(void)
 { // testOrient1D
-  const int numLocs = 3;
   double_array jacobian;
-  double_array jacobianDet;
+  double jacobianDet;
   double_array upDir;
-  double_array orientation(numLocs);
+  double_array orientation(1);
   
-  FaultCohesive::_orient1D(&orientation, 
-			   jacobian, jacobianDet, upDir, numLocs);
+  FaultCohesive::_orient1D(&orientation, jacobian, jacobianDet, upDir);
 
   const int size = orientation.size();
-  CPPUNIT_ASSERT_EQUAL(numLocs, size);
+  CPPUNIT_ASSERT_EQUAL(1, size);
   const double tolerance = 1.0e-6;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, orientation[i], tolerance);
@@ -176,24 +174,27 @@ pylith::faults::TestFaultCohesive::testOrient2D(void)
     -1.0, 2.0,
     -0.5, 1.0
   };
-  double_array jacobian(jacobianVals, numLocs*spaceDim*(spaceDim-1));
-  double_array jacobianDet;
-  double_array upDir;
-  double_array orientation(numLocs*orientSize);
-  
   const double orientationE[] = {
     -1.0, 2.0,  2.0, 1.0,
     -0.5, 1.0,  1.0, 0.5
   };
 
-  FaultCohesive::_orient2D(&orientation, 
-			   jacobian, jacobianDet, upDir, numLocs);
+  const int jacobianSize = spaceDim*(spaceDim-1);
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    double_array jacobian(&jacobianVals[iLoc*jacobianSize], jacobianSize);
+    double jacobianDet;
+    double_array upDir;
+    double_array orientation(orientSize);
 
-  const int size = orientation.size();
-  CPPUNIT_ASSERT_EQUAL(numLocs*orientSize, size);
-  const double tolerance = 1.0e-6;
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[i], orientation[i], tolerance);
+    FaultCohesive::_orient2D(&orientation, jacobian, jacobianDet, upDir);
+
+    const int size = orientation.size();
+    CPPUNIT_ASSERT_EQUAL(orientSize, size);
+    const double tolerance = 1.0e-6;
+    for (int i=0; i < size; ++i)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[iLoc*orientSize+i],
+				   orientation[i], tolerance);
+  } // for
 } // testOrient2D
 
 // ----------------------------------------------------------------------
@@ -209,15 +210,10 @@ pylith::faults::TestFaultCohesive::testOrient3D(void)
     2.0, 1.0, 0.5,   -0.5, -0.2, 2.0,
     -1.0, -3.0, -0.3,   2.0, -0.2, 0.3,
   };
-  double_array jacobian(jacobianVals, numLocs*spaceDim*(spaceDim-1));
   const double jacobianDetVals[] = {
     1.3, 0.7
   };
-  double_array jacobianDet(jacobianDetVals, numLocs);
   const double upDirVals[] = { 0.0, 0.0, 1.0 };
-  double_array upDir(upDirVals, 3);
-  double_array orientation(numLocs*orientSize);
-  
   const double orientationE[] = {
     1.1654847299258313, -0.012145479112634533, 0.57575848378190342, 
     0.57588657243394026, 0.024580136299379406, -1.1652255028919474, 
@@ -228,14 +224,22 @@ pylith::faults::TestFaultCohesive::testOrient3D(void)
     0.0, 0.11209084413599232, 0.69096717914882233
   };
 
-  FaultCohesive::_orient3D(&orientation, 
-			   jacobian, jacobianDet, upDir, numLocs);
+  double_array upDir(upDirVals, 3);
+  const int jacobianSize = spaceDim*(spaceDim-1);
+  for (int iLoc=0; iLoc < numLocs; ++iLoc) {
+    double_array jacobian(&jacobianVals[iLoc*jacobianSize], jacobianSize);
+    double jacobianDet = jacobianDetVals[iLoc];
+    double_array orientation(orientSize);
 
-  const int size = orientation.size();
-  CPPUNIT_ASSERT_EQUAL(numLocs*orientSize, size);
-  const double tolerance = 1.0e-6;
-  for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[i], orientation[i], tolerance);
+    FaultCohesive::_orient3D(&orientation, jacobian, jacobianDet, upDir);
+
+    const int size = orientation.size();
+    CPPUNIT_ASSERT_EQUAL(orientSize, size);
+    const double tolerance = 1.0e-6;
+    for (int i=0; i < size; ++i)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[iLoc*orientSize+i],
+				   orientation[i], tolerance);
+  } // for
 } // testOrient3D
 
 // ----------------------------------------------------------------------
