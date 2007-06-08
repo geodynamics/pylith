@@ -15,6 +15,8 @@
 #include "TestQuadrature.hh" // Implementation of class methods
 
 #include "pylith/feassemble/Quadrature1D.hh" // USES Quadrature1D
+#include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
+
 #include "data/QuadratureData.hh" // USES QuadratureData
 
 // ----------------------------------------------------------------------
@@ -40,6 +42,7 @@ pylith::feassemble::TestQuadrature::testClone(void)
   const double jacobianE[] = { 2.56 };
   const double jacobianInvE[] = { 5.12 };
   const double jacobianDetE[] = { 10.24 };
+  GeometryLine1D geometry;
 
   // Set values
   Quadrature1D qOrig;
@@ -84,6 +87,8 @@ pylith::feassemble::TestQuadrature::testClone(void)
   size = 1;
   qOrig._jacobianDet.resize(size);
   memcpy(&qOrig._jacobianDet[0], jacobianDetE, size*sizeof(double));
+
+  qOrig._geometry = geometry.clone();
 
   // Clone
   const Quadrature* qCopy = qOrig.clone();
@@ -151,6 +156,11 @@ pylith::feassemble::TestQuadrature::testClone(void)
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(jacobianDetE[i], jacobianDet[i]);
 
+  CPPUNIT_ASSERT(0 != qCopy->_geometry);
+  CPPUNIT_ASSERT_EQUAL(geometry.cellDim(), qCopy->_geometry->cellDim());
+  CPPUNIT_ASSERT_EQUAL(geometry.spaceDim(), qCopy->_geometry->spaceDim());
+  CPPUNIT_ASSERT_EQUAL(geometry.numCorners(), qCopy->_geometry->numCorners());
+
   delete qCopy; qCopy = 0;
 } // testCopy
 
@@ -164,6 +174,21 @@ pylith::feassemble::TestQuadrature::testMinJacobian(void)
   q.minJacobian(min);
   CPPUNIT_ASSERT_EQUAL(min, q._minJacobian);
 } // testMinJacobian
+
+// ----------------------------------------------------------------------
+// Test refGeometry()
+void
+pylith::feassemble::TestQuadrature::testRefGeometry(void)
+{ // testRefGeometry
+  GeometryLine1D geometry;
+  Quadrature1D quadrature;
+  quadrature.refGeometry(&geometry);
+  const CellGeometry& test = quadrature.refGeometry();
+
+  CPPUNIT_ASSERT_EQUAL(geometry.cellDim(), test.cellDim());
+  CPPUNIT_ASSERT_EQUAL(geometry.spaceDim(), test.spaceDim());
+  CPPUNIT_ASSERT_EQUAL(geometry.numCorners(), test.numCorners());
+} // testRefGeometry
 
 // ----------------------------------------------------------------------
 // Test initialize()
