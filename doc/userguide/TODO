@@ -17,7 +17,7 @@ MOSTLY DONE -- Need to rewrite PyLith Design section.
 7.  Governing equations [Charles]
 MOSTLY DONE -- Needs some checking.
 
-8.  Installing PyLith (we should have this even if most people use binaries) [Charles with some input from Leif]
+8.  Installing binary PyLith [Charles with some input from Leif]
 
 9.  Running PyLith (an overview) [Charles with some input from Brad]
 
@@ -29,7 +29,7 @@ MOSTLY DONE -- Needs some checking.
 
     d.  Explicit problems
 
-10. Installation
+10. Installation [Charles with some input from Leif and Brad]
 
     C++, Python
 
@@ -40,6 +40,8 @@ MOSTLY DONE -- Needs some checking.
     PETSc/MPI
 
     Pythia
+
+    nemesis
 
     Pyrex/Pyrexembed
 
