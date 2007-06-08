@@ -93,7 +93,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   assert(!mesh.isNull());
 
   // Get cell information
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+    mesh->getLabelStratum("material-id", _material->id());
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator  cellsEnd = cells->end();
 
@@ -294,7 +295,8 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   PetscErrorCode err = 0;
 
   // Get cell information
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+    mesh->getLabelStratum("material-id", _material->id());
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator  cellsEnd = cells->end();
 
@@ -575,7 +577,8 @@ pylith::feassemble::ElasticityImplicit::updateState(
     return;
 
   // Get cell information
-  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+    mesh->getLabelStratum("material-id", _material->id());
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
 
