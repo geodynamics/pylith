@@ -80,16 +80,13 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
 void
 pylith::faults::TestFaultCohesiveKin::testSetConstraintSizes(void)
 { // testSetConstraintSizes
+  // Make sure the fiber dimension at each point is equal to the
+  // spatial dimension of the mesh, because the Lagrange multiplier
+  // formation does not eliminate any DOF from the system of
+  // equations.
+
   throw std::logic_error("Unit test not implemented.");
 } // testSetConstraintSizes
-
-// ----------------------------------------------------------------------
-// Test setConstraints().
-void
-pylith::faults::TestFaultCohesiveKin::testSetConstraints(void)
-{ // testSetConstraints
-  throw std::logic_error("Unit test not implemented.");
-} // testSetConstraints
 
 // ----------------------------------------------------------------------
 // Test setField().

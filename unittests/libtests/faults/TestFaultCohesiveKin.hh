@@ -77,9 +77,6 @@ public :
   /// Test setConstraintSizes().
   void testSetConstraintSizes(void);
 
-  /// Test setConstraints().
-  void testSetConstraints(void);
-
   /// Test setField().
   void testSetField(void);
 

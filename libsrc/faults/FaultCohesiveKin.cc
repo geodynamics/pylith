@@ -70,7 +70,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   assert(!orientation.isNull());
   const int cellDim = (*_faultMesh)->getDimension();
   const int spaceDim = cs->spaceDim();
-  const int orientationSize = cellDim*spaceDim;
+  const int orientationSize = (cellDim > 0) ? cellDim*spaceDim : 1;
   orientation->setFiberDimension((*_faultMesh)->depthStratum(0), 
 				 orientationSize);
   (*_faultMesh)->allocate(orientation);
@@ -108,11 +108,13 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const Mesh::label_sequence::iterator cEnd = cells->end();
   double_array cellOrientation(_quadrature->numBasis()*orientationSize);
   const int numVertices = _quadrature->numBasis();
+  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
+  const double_array& verticesRef = _quadrature->vertices();
+  const int numBasis = _quadrature->numBasis();
   for (Mesh::label_sequence::iterator c_iter=cBegin;
        c_iter != cEnd;
        ++c_iter) {
     // Compute Jacobian at vertices
-    // STUFF GOES HERE
     double_array jacobian;
     double_array jacobianDet;
 
@@ -372,7 +374,9 @@ pylith::faults::FaultCohesiveKin::setConstraintSizes(
 				    const ALE::Obj<real_section_type>& field,
 				    const ALE::Obj<ALE::Mesh>& mesh)
 { // setConstraintSizes
-  throw std::logic_error("FaultCohesiveKin::setConstraintSizes() not implemented.");
+  /* No DOF are eliminated from the system of equations with the 
+   * Lagrange multiplier formulation
+   */
 } // setConstraintSizes
 
 // ----------------------------------------------------------------------
@@ -382,7 +386,9 @@ pylith::faults::FaultCohesiveKin::setConstraints(
 				     const ALE::Obj<real_section_type>& field,
 				     const ALE::Obj<ALE::Mesh>& mesh)
 { // setConstraints
-  throw std::logic_error("FaultCohesiveKin::setConstraints() not implemented.");
+  /* No DOF are eliminated from the system of equations with the 
+   * Lagrange multiplier formulation
+   */
 } // setConstraints
 
 // ----------------------------------------------------------------------
