@@ -43,6 +43,7 @@ public:
   double* vertices; ///< Coordinates of vertices of cell
   double* locations; ///< Locations where Jacobian is computed
   double* jacobian; ///< Jacobian at locations
+  double* jacobianDet; ///< Determinant of Jacobian at locations
 
 };
 

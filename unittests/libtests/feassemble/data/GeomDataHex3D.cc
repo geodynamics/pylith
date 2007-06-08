@@ -55,6 +55,18 @@ const double pylith::feassemble::GeomDataHex3D::_jacobian[] = {
   3.698, -0.088, -0.012, -0.116, 1.446, -0.056, -0.51, 0.46, 2.7
 };
 
+const double pylith::feassemble::GeomDataHex3D::_jacobianDet[] = {
+  11.13,
+  8.359,
+  14.622,
+  21.199,
+  9.41,
+  13.135,
+  12.253,
+  27.302,
+  14.494708
+};
+
 pylith::feassemble::GeomDataHex3D::GeomDataHex3D(void)
 { // constructor
   cellDim = _cellDim;
@@ -64,6 +76,7 @@ pylith::feassemble::GeomDataHex3D::GeomDataHex3D(void)
   vertices = const_cast<double*>(_vertices);
   locations = const_cast<double*>(_locations);
   jacobian = const_cast<double*>(_jacobian);
+  jacobianDet = const_cast<double*>(_jacobianDet);
 } // constructor
 
 pylith::feassemble::GeomDataHex3D::~GeomDataHex3D(void)

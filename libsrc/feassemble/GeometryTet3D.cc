@@ -60,10 +60,12 @@ pylith::feassemble::GeometryTet3D::geometryLowerDim(void) const
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryTet3D::jacobian(double_array* jacobian,
+					  double* det,
 					  const double_array& vertices,
 					  const double_array& location) const
 { // jacobian
   assert(0 != jacobian);
+  assert(0 != det);
 
   assert(numCorners()*spaceDim() == vertices.size());
   assert(spaceDim()*cellDim() == jacobian->size());
@@ -93,6 +95,14 @@ pylith::feassemble::GeometryTet3D::jacobian(double_array* jacobian,
   (*jacobian)[6] = z1 - z0;
   (*jacobian)[7] = z2 - z0;
   (*jacobian)[8] = z3 - z0;
+
+  *det = 
+    (*jacobian)[0]*((*jacobian)[4]*(*jacobian)[8] -
+		    (*jacobian)[5]*(*jacobian)[7]) -
+    (*jacobian)[1]*((*jacobian)[3]*(*jacobian)[8] -
+		    (*jacobian)[5]*(*jacobian)[6]) +
+    (*jacobian)[2]*((*jacobian)[3]*(*jacobian)[7] -
+		    (*jacobian)[4]*(*jacobian)[6]);
 } // jacobian
 
 

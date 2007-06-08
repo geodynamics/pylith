@@ -60,6 +60,7 @@ pylith::feassemble::GeometryTri2D::geometryLowerDim(void) const
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryTri2D::jacobian(double_array* jacobian,
+					  double* det,
 					  const double_array& vertices,
 					  const double_array& location) const
 { // jacobian
@@ -81,6 +82,10 @@ pylith::feassemble::GeometryTri2D::jacobian(double_array* jacobian,
   (*jacobian)[1] = x2 - x0;
   (*jacobian)[2] = y1 - y0;
   (*jacobian)[3] = y2 - y0;
+
+  *det = 
+    (*jacobian)[0]*(*jacobian)[3] - 
+    (*jacobian)[1]*(*jacobian)[2];
 } // jacobian
 
 

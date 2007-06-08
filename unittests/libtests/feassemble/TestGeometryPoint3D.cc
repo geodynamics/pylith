@@ -70,12 +70,14 @@ pylith::feassemble::TestGeometryPoint3D::testJacobian(void)
   CPPUNIT_ASSERT_EQUAL(numCorners, geometry.numCorners());
 
   double_array jacobian(1);
+  double det = 0.0;
   for (int iLoc=0; iLoc < numLocs; ++iLoc) {
     double_array vertices(data.vertices, numCorners*spaceDim);
     double_array location(&data.locations[iLoc], 1);
 
-    geometry.jacobian(&jacobian, vertices, location);
+    geometry.jacobian(&jacobian, &det, vertices, location);
     CPPUNIT_ASSERT_EQUAL(1.0, jacobian[0]);
+    CPPUNIT_ASSERT_EQUAL(1.0, det);
   } //for
 } // testJacobian
 

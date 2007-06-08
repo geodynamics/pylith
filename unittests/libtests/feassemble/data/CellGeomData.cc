@@ -21,7 +21,8 @@ pylith::feassemble::CellGeomData::CellGeomData(void) :
   numLocs(0),
   vertices(0),
   locations(0),
-  jacobian(0)
+  jacobian(0),
+  jacobianDet(0)
 { // constructor
 } // constructor
 

@@ -35,6 +35,11 @@ const double pylith::feassemble::GeomDataLine2D::_jacobian[] = {
   3.3, -3.8
 };
 
+const double pylith::feassemble::GeomDataLine2D::_jacobianDet[] = {
+  5.0328918128646478,
+  5.0328918128646478
+};
+
 pylith::feassemble::GeomDataLine2D::GeomDataLine2D(void)
 { // constructor
   cellDim = _cellDim;
@@ -44,6 +49,7 @@ pylith::feassemble::GeomDataLine2D::GeomDataLine2D(void)
   vertices = const_cast<double*>(_vertices);
   locations = const_cast<double*>(_locations);
   jacobian = const_cast<double*>(_jacobian);
+  jacobianDet = const_cast<double*>(_jacobianDet);
 } // constructor
 
 pylith::feassemble::GeomDataLine2D::~GeomDataLine2D(void)

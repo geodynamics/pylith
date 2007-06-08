@@ -60,10 +60,12 @@ pylith::feassemble::GeometryQuad3D::geometryLowerDim(void) const
 // Compute Jacobian at location in cell.
 void
 pylith::feassemble::GeometryQuad3D::jacobian(double_array* jacobian,
+					  double* det,
 					  const double_array& vertices,
 					  const double_array& location) const
 { // jacobian
   assert(0 != jacobian);
+  assert(0 != det);
 
   assert(numCorners()*spaceDim() == vertices.size());
   assert(cellDim() == location.size());
@@ -102,6 +104,21 @@ pylith::feassemble::GeometryQuad3D::jacobian(double_array* jacobian,
 
   (*jacobian)[4] = z1 - z0 + h_xy*y;
   (*jacobian)[5] = z3 - z0 + h_xy*x;
+
+  const double jj00 = 
+    (*jacobian)[0]*(*jacobian)[0] +
+    (*jacobian)[2]*(*jacobian)[2] +
+    (*jacobian)[4]*(*jacobian)[4];
+  const double jj10 =
+    (*jacobian)[0]*(*jacobian)[1] +
+    (*jacobian)[2]*(*jacobian)[3] +
+    (*jacobian)[4]*(*jacobian)[5];
+  const double jj01 = jj10;
+  const double jj11 = 
+    (*jacobian)[1]*(*jacobian)[1] +
+    (*jacobian)[3]*(*jacobian)[3] +
+    (*jacobian)[5]*(*jacobian)[5];
+  *det = sqrt(jj00*jj11 - jj01*jj10);
 } // jacobian
 
 

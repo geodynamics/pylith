@@ -36,6 +36,11 @@ const double pylith::feassemble::GeomDataTri3D::_jacobian[] = {
   -1.5, -1.3, -3.0, -0.9, 0.5, 1.8
 };
 
+const double pylith::feassemble::GeomDataTri3D::_jacobianDet[] = {
+  5.933590818383081,
+  5.933590818383081
+};
+
 pylith::feassemble::GeomDataTri3D::GeomDataTri3D(void)
 { // constructor
   cellDim = _cellDim;
@@ -45,6 +50,7 @@ pylith::feassemble::GeomDataTri3D::GeomDataTri3D(void)
   vertices = const_cast<double*>(_vertices);
   locations = const_cast<double*>(_locations);
   jacobian = const_cast<double*>(_jacobian);
+  jacobianDet = const_cast<double*>(_jacobianDet);
 } // constructor
 
 pylith::feassemble::GeomDataTri3D::~GeomDataTri3D(void)
