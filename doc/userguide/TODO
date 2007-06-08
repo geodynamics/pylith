@@ -1,0 +1,58 @@
+Outline of user manual:
+
+1.  Cover (not sure what image to use) [Sue?]
+
+2.  Table of contents [Sue]
+
+3.  List of figures [Sue]
+
+4.  List of tables [Sue]
+
+5.  Preface (should be able to mostly copy from PyLith 0.8) [Charles]
+
+6.  Intro (I can start with stuff from 0.8 and do some editing) [Charles]
+
+7.  Governing equations [Charles]
+MOSTLY DONE -- Needs some checking.
+
+8.  Running PyLith (an overview) [Charles with some input from Brad]
+
+    a.  Basic pieces needed to run problem
+
+    b.  Intro to config files
+
+    c.  Implicit problems
+
+    d.  Explicit problems
+
+9.  Tutorials (all using ascii mesh format?) [Charles]
+
+    a.  Two-triangle elastic problem.
+
+    b.  Quad shear elastic problem?
+
+    c.  Tetrahedral element shear viscoelastic problem?
+
+    d.  Hexahedral element shear viscoelastic problem?
+
+10. Material models (should be able to copy from 0.8 with some editing) [Charles]
+
+    a.  Specifying .cfg and spatial database info.
+
+    b.  Existing (and future?) material models. Include discussion of specifying material properties in terms of vp, vs, and density.
+
+11. Boundary and interface conditions (includes faults) [Charles]
+
+    a.  Specifying .cfg and spatial database info.
+
+    b.  Dirichlet conditions.
+
+    c.  Neumann conditions.
+
+    d.  Kinematic fault conditions.
+
+    e.  Cohesive element properties?
+
+12. Appendix [Charles]
+
+    a.  File formats (config, ascii mesh format, and spatial data).
