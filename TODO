@@ -32,7 +32,6 @@ MAIN PRIORITIES (Brad)
          integrateResidual()
          integrateJacobian()
          setConstraintSizes()
-         setConstraints()
          setField()
        (2) Python unit tests
          initialize()

@@ -41,7 +41,6 @@ class pylith::faults::TestFaultCohesiveKinLine2 : public TestFaultCohesiveKin
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
   CPPUNIT_TEST( testSetConstraintSizes );
-  CPPUNIT_TEST( testSetConstraints );
   CPPUNIT_TEST( testSetField );
 
   CPPUNIT_TEST_SUITE_END();
