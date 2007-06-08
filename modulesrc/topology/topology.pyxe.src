@@ -234,7 +234,9 @@ cdef class Mesh:
 
       PetscMat* mat = new PetscMat;
       assert(0 != mat);
-      PetscErrorCode err = MeshCreateMatrix(*mesh, *field, MATMPIBAIJ, mat);
+      // Should make type settable by user
+      //PetscErrorCode err = MeshCreateMatrix(*mesh, *field, MATMPIBAIJ, mat);
+      PetscErrorCode err = MeshCreateMatrix(*mesh, *field, MATAIJ, mat);
       if (err) {
         PetscError(__LINE__,__FUNCT__,__FILE__,__SDIR__,err,0," ");
         throw std::runtime_error("Could not create PETSc Matrix.");
