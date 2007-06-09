@@ -51,6 +51,7 @@ testfeassemble_SOURCES = \
 	TestGeometryHex3D.cc \
 	TestIntegrator.cc \
 	TestQuadrature.cc \
+	TestQuadrature0D.cc \
 	TestQuadrature1D.cc \
 	TestQuadrature1Din2D.cc \
 	TestQuadrature2D.cc \
@@ -89,6 +90,7 @@ noinst_HEADERS = \
 	TestGeometryHex3D.hh \
 	TestIntegrator.hh \
 	TestQuadrature.hh \
+	TestQuadrature0D.hh \
 	TestQuadrature1D.hh \
 	TestQuadrature1Din2D.hh \
 	TestQuadrature1Din3D.hh \

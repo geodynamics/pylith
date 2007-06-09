@@ -31,8 +31,12 @@ namespace pylith {
     class TestFaultCohesiveKin;
 
     class FaultCohesiveKin; // USES FaultCohesiveKin
-    class FaultCohesiveKinData; // HOLDSA FaultCohesiveKinData
+    class CohesiveKinData; // HOLDSA CohesiveKinData
   } // faults
+
+  namespace feassemble {
+    class Quadrature; // HOLDSA Quadrature
+  } // feassemble
 } // pylith
 
 /// C++ unit testing for FaultCohesiveKin
@@ -51,10 +55,17 @@ class pylith::faults::TestFaultCohesiveKin : public CppUnit::TestFixture
   // PROTECTED MEMBERS //////////////////////////////////////////////////
 protected :
 
-  FaultCohesiveKinData* _data; ///< Data for testing
+  CohesiveKinData* _data; ///< Data for testing
+  feassemble::Quadrature* _quadrature; ///< Data used in testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
+
+  /// Setup testing data.
+  void setUp(void);
+
+  /// Tear down testing data.
+  void tearDown(void);
 
   /// Test constructor.
   void testConstructor(void);

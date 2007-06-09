@@ -26,6 +26,7 @@
 #include "pylith/feassemble/GeometryHex3D.hh"
 
 #include "pylith/feassemble/Quadrature.hh"
+#include "pylith/feassemble/Quadrature0D.hh"
 #include "pylith/feassemble/Quadrature1D.hh"
 #include "pylith/feassemble/Quadrature1Din2D.hh"
 #include "pylith/feassemble/Quadrature1Din3D.hh"
@@ -665,6 +666,33 @@ cdef class Quadrature:
               "Argument must be extension module type " \
               "'pylith::feassemble::CellGeometry'."
       Quadrature_refGeometry_set(self.thisptr, ptrFromHandle(value))
+
+
+# ----------------------------------------------------------------------
+cdef class Quadrature0D(Quadrature):
+
+  def __init__(self):
+    """Constructor."""
+    # create shim for constructor
+    #embed{ void* Quadrature0D_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::feassemble::Quadrature0D);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+
+    Quadrature.__init__(self)
+    self.thisptr = Quadrature0D_constructor()
+    self.handle = self._createHandle()
+    return
 
 
 # ----------------------------------------------------------------------

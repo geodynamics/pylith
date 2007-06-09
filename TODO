@@ -2,6 +2,19 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+ISSUES: 
+
+  * What is the fault mesh supposed to be??????
+
+  * BruneSlipFn assumes fault mesh is associated with constraint
+    vertices (THIS IS NOT THE CASE).
+
+    The SlipTimeFn stuff doesn't care about topology, only
+    points. Need to eliminate passing both the constraint points and
+    the fault mesh; use one or the other but not both. Perhaps the
+    fault mesh should be composed of the constraint vertices; this
+    would eliminate the need to store the set of constraint vertices.
+
 1. Simple tests with analytical solutions
 
    a. 2-D

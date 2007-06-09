@@ -36,6 +36,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/ReferenceCell.py \
 	feassemble/quadrature/__init__.py \
 	feassemble/quadrature/Quadrature.py \
+	feassemble/quadrature/Quadrature0D.py \
 	feassemble/quadrature/Quadrature1D.py \
 	feassemble/quadrature/Quadrature1Din2D.py \
 	feassemble/quadrature/Quadrature1Din3D.py \

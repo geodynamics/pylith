@@ -58,127 +58,18 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 { // initialize
   assert(0 != _quadrature);
   assert(0 != _eqsrc);
-  assert(0 != _faultMesh);
-  assert(!_faultMesh->isNull());
   
   if (3 != upDir.size())
     throw std::runtime_error("Up direction for fault orientation must be "
 			     "a vector with 3 components.");
 
-  /* First use fault mesh to get orientation of vertices in fault mesh
-   * We will transfer the orientation from the fault mesh vertices to
-   * the Lagrange constraint vertices.
+  /* First find vertices associated with Lagrange multiplier
+   * constraints in cohesive cells and compute the orientation of the
+   * fault at these locations.
    */
 
-  // Allocate section for orientation of vertices in fault mesh
-  ALE::Obj<real_section_type> orientation = 
-    new real_section_type((*_faultMesh)->comm(), (*_faultMesh)->debug());
-  assert(!orientation.isNull());
-  const int cellDim = (*_faultMesh)->getDimension();
-  const int spaceDim = cs->spaceDim();
-  const int orientationSize = (cellDim > 0) ? cellDim*spaceDim : 1;
-  orientation->setFiberDimension((*_faultMesh)->depthStratum(0), 
-				 orientationSize);
-  (*_faultMesh)->allocate(orientation);
-  
-  // Get section containing coordinates of vertices
-  const ALE::Obj<real_section_type>& coordinates = 
-    mesh->getRealSection("coordinates");
-  assert(!coordinates.isNull());
-
-  // Set orientation function
-  assert(cellDim == _quadrature->cellDim());
-  assert(spaceDim == _quadrature->spaceDim());
-  orient_fn_type orientFn;
-  switch (cellDim)
-    { // switch
-    case 1 :
-      orientFn = _orient1D;
-      break;
-    case 2 :
-      orientFn = _orient2D;
-      break;
-    case 3 :
-      orientFn = _orient3D;
-      break;
-    default :
-      assert(0);
-    } // switch
-
-  // Loop over cells in fault mesh, computing orientation at each vertex
-  const ALE::Obj<sieve_type>& sieve = (*_faultMesh)->getSieve();
+  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
   assert(!sieve.isNull());
-
-  const int numBasis = _quadrature->numBasis();
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const double_array& verticesRef = _quadrature->vertices();
-  const int jacobianSize = spaceDim * cellDim;
-  double_array jacobian(jacobianSize);
-  double jacobianDet = 0;
-  double_array vertexOrientation(orientationSize);
-  double_array cellVertices(numBasis*spaceDim);
-
-  const ALE::Obj<Mesh::label_sequence>& cellsFault = 
-    (*_faultMesh)->heightStratum(0);
-  assert(!cellsFault.isNull());
-  const Mesh::label_sequence::iterator cellsFaultBegin = cellsFault->begin();
-  const Mesh::label_sequence::iterator cellsFaultEnd = cellsFault->end();
-  for (Mesh::label_sequence::iterator c_iter=cellsFaultBegin;
-       c_iter != cellsFaultEnd;
-       ++c_iter) {
-    mesh->restrict(coordinates, *c_iter, 
-		   &cellVertices[0], cellVertices.size());
-
-    // Compute orientation at each vertex
-    int iBasis = 0;
-    const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
-      sieve->cone(*c_iter);
-    assert(!cone.isNull());
-    const sieve_type::traits::coneSequence::iterator vBegin = cone->begin();
-    const sieve_type::traits::coneSequence::iterator vEnd = cone->end();
-    for(sieve_type::traits::coneSequence::iterator v_iter=vBegin;
-	v_iter != vEnd;
-	++v_iter, ++iBasis) {
-      // Compute Jacobian and determinant of Jacobian at vertex
-      double_array vertex(&verticesRef[iBasis*cellDim], cellDim);
-      cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, vertex);
-
-      // Compute orientation
-      orientFn(&vertexOrientation, jacobian, jacobianDet, upDir);
-      
-      // Update orientation
-      orientation->updatePoint(*v_iter, &vertexOrientation[0]);
-    } // for
-  } // for
-
-  // Assemble orientation information
-  //orientation->complete();
-
-  // Loop over vertices, make orientation information unit magnitude
-  const ALE::Obj<Mesh::label_sequence>& vertices = 
-    (*_faultMesh)->depthStratum(0);
-  const Mesh::label_sequence::iterator vertFaultBegin = vertices->begin();
-  const Mesh::label_sequence::iterator vertFaultEnd = vertices->end();
-  double_array vertexDir(orientationSize);
-  for (Mesh::label_sequence::iterator v_iter=vertFaultBegin;
-       v_iter != vertFaultEnd;
-       ++v_iter) {
-    const real_section_type::value_type* vertexOrient = 
-      orientation->restrictPoint(*v_iter);
-    
-    assert(cellDim*spaceDim == orientationSize);
-    for (int iDim=0, index=0; iDim < cellDim; ++iDim, index+=cellDim) {
-      double mag = 0;
-      for (int jDim=0; jDim < spaceDim; ++jDim)
-	mag *= vertexOrient[index*cellDim+jDim];
-      for (int jDim=0; jDim < cellDim; ++jDim)
-	vertexDir[index*cellDim+jDim] = vertexOrient[index*cellDim+jDim] / mag;
-    } // for
-    orientation->updatePoint(*v_iter, &vertexDir[0]);
-  } // for
-
-  _constraintVert.clear();
-  // Create set of vertices associated with Lagrange multiplier constraints
   const ALE::Obj<ALE::Mesh::label_sequence>& cellsCohesive = 
     mesh->getLabelStratum("material-id", id());
   assert(!cellsCohesive.isNull());
@@ -186,10 +77,13 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     cellsCohesive->begin();
   const Mesh::label_sequence::iterator cellsCohesiveEnd =
     cellsCohesive->end();
+
+  // Create set of vertices associated with Lagrange multiplier constraints
+  _constraintVert.clear();
   for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
-    // Vertices for each cohesive cell are in groups of N.
+    // Vertices for each cohesive cell are in three groups of N.
     // 0 to N-1: vertices on negative side of the fault
     // N-1 to 2N-1: vertices on positive side of the fault
     // 2N to 3N-1: vertices associated with constraint forces
@@ -211,8 +105,10 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       _constraintVert.insert(*v_iter);
   } // for
 
-  // Create orientation section over vertices associated with Lagrange
-  // multiplier constraints
+  // Create orientation section for constraint vertices
+  const int cohesiveDim = mesh->getDimension()-1;
+  const int spaceDim = cs->spaceDim();
+  const int orientationSize = (cohesiveDim > 0) ? cohesiveDim*spaceDim : 1;
   _orientation = new real_section_type(mesh->comm(), mesh->debug());
   assert(!_orientation.isNull());
   const std::set<Mesh::point_type>::const_iterator vertCohesiveBegin = 
@@ -224,18 +120,99 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
        ++v_iter)
     _orientation->setFiberDimension(*v_iter, orientationSize);
   mesh->allocate(_orientation);
-  
-  // Transfer orientation information from fault vertices to vertices
-  // associated with Lagrange multiplier constraints
-  Mesh::label_sequence::iterator vFault_iter=vertFaultBegin;
-  for (std::set<Mesh::point_type>::const_iterator vConstraint_iter=vertCohesiveBegin;
-       vConstraint_iter != vertCohesiveEnd;
-       ++vConstraint_iter, ++vFault_iter) {
-    const real_section_type::value_type* vertexOrient = 
-      orientation->restrictPoint(*vFault_iter);
-    _orientation->updatePoint(*vConstraint_iter, vertexOrient);
+
+  // Compute orientation of fault at constraint vertices
+
+  // Get section containing coordinates of vertices
+  const ALE::Obj<real_section_type>& coordinates = 
+    mesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+
+  // Set orientation function
+  assert(cohesiveDim == _quadrature->cellDim());
+  assert(spaceDim == _quadrature->spaceDim());
+  orient_fn_type orientFn;
+  switch (cohesiveDim)
+    { // switch
+    case 0 :
+      orientFn = _orient1D;
+      break;
+    case 1 :
+      orientFn = _orient2D;
+      break;
+    case 2 :
+      orientFn = _orient3D;
+      break;
+    default :
+      assert(0);
+    } // switch
+
+  // Loop over cohesive cells, computing orientation at each vertex
+
+  const int numBasis = _quadrature->numBasis();
+  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
+  const double_array& verticesRef = _quadrature->vertices();
+  const int jacobianSize = spaceDim * cohesiveDim;
+  double_array jacobian(jacobianSize);
+  double jacobianDet = 0;
+  double_array vertexOrientation(orientationSize);
+  double_array cohesiveVertices(3*numBasis*spaceDim);
+  double_array faceVertices(numBasis*spaceDim);
+
+  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
+    mesh->restrict(coordinates, *c_iter, 
+		   &cohesiveVertices[0], cohesiveVertices.size());
+    for (int i=0, offset=2*numBasis; i < numBasis; ++i)
+      faceVertices[i] = cohesiveVertices[offset+i];
+
+    int iBasis = 0;
+    const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
+      sieve->cone(*c_iter);
+    assert(!cone.isNull());
+    const sieve_type::traits::coneSequence::iterator vBegin = cone->begin();
+    const sieve_type::traits::coneSequence::iterator vEnd = cone->end();
+    for(sieve_type::traits::coneSequence::iterator v_iter=vBegin;
+	v_iter != vEnd;
+	++v_iter, ++iBasis) {
+      // Compute Jacobian and determinant of Jacobian at vertex
+      double_array vertex(&verticesRef[iBasis*cohesiveDim], cohesiveDim);
+      cellGeometry.jacobian(&jacobian, &jacobianDet, faceVertices, vertex);
+
+      // Compute orientation
+      orientFn(&vertexOrientation, jacobian, jacobianDet, upDir);
+      
+      // Update orientation
+      _orientation->updatePoint(*v_iter, &vertexOrientation[0]);
+    } // for
   } // for
-  
+
+  // Assemble orientation information
+  // FIX THIS
+  //const ALE::Obj<Mesh>& bundle = orientation.b;
+  //ALE::Distribution<Mesh>::completeSection(bundle, orientation);
+
+  // Loop over vertices, make orientation information unit magnitude
+  double_array vertexDir(orientationSize);
+  for (std::set<Mesh::point_type>::const_iterator v_iter=vertCohesiveBegin;
+       v_iter != vertCohesiveEnd;
+       ++v_iter) {
+    const real_section_type::value_type* vertexOrient = 
+      _orientation->restrictPoint(*v_iter);
+    
+    assert(cohesiveDim*spaceDim == orientationSize);
+    for (int iDim=0, index=0; iDim < cohesiveDim; ++iDim, index+=cohesiveDim) {
+      double mag = 0;
+      for (int jDim=0; jDim < spaceDim; ++jDim)
+	mag *= vertexOrient[index*cohesiveDim+jDim];
+      for (int jDim=0; jDim < cohesiveDim; ++jDim)
+	vertexDir[index*cohesiveDim+jDim] = 
+	  vertexOrient[index*cohesiveDim+jDim] / mag;
+    } // for
+    _orientation->updatePoint(*v_iter, &vertexDir[0]);
+  } // for
+
   _eqsrc->initialize(mesh, *_faultMesh, _constraintVert, cs);
 } // initialize
 
@@ -250,8 +227,6 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   assert(!residual.isNull());
   assert(0 != fields);
   assert(!mesh.isNull());
-  assert(0 != _faultMesh);
-  assert(!_faultMesh->isNull());
 
   // Subtract constraint forces (which are disp at the constraint
   // DOF) to residual; contributions are at DOF of normal vertices (i and j)
@@ -310,8 +285,6 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   assert(0 != mat);
   assert(0 != fields);
   assert(!mesh.isNull());
-  assert(0 != _faultMesh);
-  assert(!_faultMesh->isNull());
 
   // Add constraint information to Jacobian matrix; these are the
   // direction cosines. Entries are associated with vertices ik, jk,
@@ -330,9 +303,9 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   const ALE::Obj<real_section_type>& disp = fields->getHistoryItem(1);
   assert(!disp.isNull());  
 
-  const int cellDim = _quadrature->cellDim();
+  const int cohesiveDim = _quadrature->cellDim();
   const int spaceDim = _quadrature->spaceDim();
-  const int orientationSize = cellDim*spaceDim;
+  const int orientationSize = cohesiveDim*spaceDim;
 
   // Allocate matrix for cell values (if necessary)
   _initCellMatrix();
@@ -395,6 +368,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for
+  _needNewJacobian = false;
 } // integrateJacobian
   
 // ----------------------------------------------------------------------

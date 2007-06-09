@@ -11,31 +11,31 @@
 //
 
 /**
- * @file unittests/libtests/faults/TestFaultCohesiveKinLine2.hh
+ * @file unittests/libtests/faults/TestFaultCohesiveKinTri3.hh
  *
- * @brief C++ TestFaultCohesiveKinLine2 object.
+ * @brief C++ TestFaultCohesiveKinTri3 object.
  *
- * C++ unit testing for FaultCohesiveKin for mesh with 1-D line cells.
+ * C++ unit testing for FaultCohesiveKin for mesh with 2-D triangular cells.
  */
 
-#if !defined(pylith_faults_testfaultcohesivekinline2_hh)
-#define pylith_faults_testfaultcohesivekinline2_hh
+#if !defined(pylith_faults_testfaultcohesivekintri3_hh)
+#define pylith_faults_testfaultcohesivekintri3_hh
 
 #include "TestFaultCohesiveKin.hh" // ISA TestFaultCohesiveKin
 
 /// Namespace for pylith package
 namespace pylith {
   namespace faults {
-    class TestFaultCohesiveKinLine2;
+    class TestFaultCohesiveKinTri3;
   } // bc
 } // pylith
 
 /// C++ unit testing for FaultCohesiveKin for mesh with 1-D line cells.
-class pylith::faults::TestFaultCohesiveKinLine2 : public TestFaultCohesiveKin
-{ // class TestFaultCohesiveKinLine2
+class pylith::faults::TestFaultCohesiveKinTri3 : public TestFaultCohesiveKin
+{ // class TestFaultCohesiveKinTri3
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestFaultCohesiveKinLine2 );
+  CPPUNIT_TEST_SUITE( TestFaultCohesiveKinTri3 );
 
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
@@ -51,9 +51,9 @@ public :
   /// Setup testing data.
   void setUp(void);
 
-}; // class TestFaultCohesiveKinLine2
+}; // class TestFaultCohesiveKinTri3
 
-#endif // pylith_faults_testfaultcohesiveline2_hh
+#endif // pylith_faults_testfaultcohesivetri3_hh
 
 
 // End of file 

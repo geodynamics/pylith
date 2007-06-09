@@ -16,6 +16,7 @@
 ## initialization
 
 __all__ = ['Quadrature',
+           'Quadrature0D',
            'Quadrature1D',
            'Quadrature1Din2D',
            'Quadrature1Din3D',
