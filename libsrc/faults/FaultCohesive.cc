@@ -89,8 +89,8 @@ pylith::faults::FaultCohesive::_orient2D(double_array* orientation,
   const double j2 = jacobian[1];
   (*orientation)[0] =  j1;
   (*orientation)[1] =  j2;
-  (*orientation)[2] =  j2;
-  (*orientation)[3] = -j1;
+  (*orientation)[2] = -j2;
+  (*orientation)[3] =  j1;
 } // _orient2D
 		
 // ----------------------------------------------------------------------

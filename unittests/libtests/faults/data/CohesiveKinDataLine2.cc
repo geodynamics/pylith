@@ -66,20 +66,21 @@ const char* pylith::faults::CohesiveKinDataLine2::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataLine2::_peakRateFilename = 
   "data/line2_peakrate.spatialdb";
 
+// Don't expect these values to be used, so just use some values.
 const double pylith::faults::CohesiveKinDataLine2::_fieldTpdt[] = {
-  0.0,
-  0.0,
-  0.0,
-  0.0,
-  0.0
+  7.1,
+  7.2,
+  7.3,
+  7.4,
+  7.5
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_fieldT[] = {
-  0.0,
-  0.0,
-  0.0,
-  0.0,
-  0.0
+  0.1,
+  0.2,
+  0.3,
+  0.4,
+  2.3 // force associated with constraint
 };
 
 const int pylith::faults::CohesiveKinDataLine2::_numConstraintVert = 1;
@@ -94,10 +95,9 @@ const int pylith::faults::CohesiveKinDataLine2::_constraintVertices[] = {
 
 const double pylith::faults::CohesiveKinDataLine2::_valsResidual[] = {
   0.0,
+ -2.3,
   0.0,
-  0.0,
-  0.0,
-  0.0,
+  2.3,
   0.0
 };
 
@@ -106,16 +106,15 @@ const double pylith::faults::CohesiveKinDataLine2::_valsSlip[] = {
   0.0,
   0.0,
   0.0,
-  0.0,
-  1.2
+  1.05168389458
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_valsJacobian[] = {
-  0.0, 0.0, 0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0,  0.0,  0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,  0.0, -1.0,
+  0.0,  0.0,  0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,  0.0, +1.0,
+  0.0, -1.0,  0.0, +1.0,  0.0,
 };
 
 pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)

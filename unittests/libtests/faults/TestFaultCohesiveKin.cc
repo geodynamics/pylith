@@ -40,6 +40,8 @@ pylith::faults::TestFaultCohesiveKin::setUp(void)
 { // setUp
   _data = 0;
   _quadrature = 0;
+  _eqsrc = new EqKinSrc();
+  _slipfn = new BruneSlipFn();
 } // setUp
 
 // ----------------------------------------------------------------------
@@ -49,6 +51,8 @@ pylith::faults::TestFaultCohesiveKin::tearDown(void)
 { // tearDown
   delete _data; _data = 0;
   delete _quadrature; _quadrature = 0;
+  delete _eqsrc; _eqsrc = 0;
+  delete _slipfn; _slipfn = 0;
 } // tearDown
 
 // ----------------------------------------------------------------------
@@ -163,13 +167,17 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   int iVertex = 0;
   for (Mesh::label_sequence::iterator v_iter=vBegin;
        v_iter != vEnd;
-       ++v_iter) {
+       ++v_iter, ++iVertex) {
     dispTpdt->updatePoint(*v_iter, &_data->fieldTpdt[iVertex*spaceDim]);
     dispT->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
   } // for
   
+  //dispT->view("DISP T");
+
   // Call integrateResidual()
   fault.integrateResidual(residual, &fields, mesh);
+
+  //residual->view("RESIDUAL");
 
   // Check values
   const double* valsE = _data->valsResidual;
@@ -178,7 +186,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   const double tolerance = 1.0e-06;
   for (Mesh::label_sequence::iterator v_iter=vBegin;
        v_iter != vEnd;
-       ++v_iter) {
+       ++v_iter, ++iVertex) {
     const int fiberDim = residual->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
     const real_section_type::value_type* vals = 
@@ -231,7 +239,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   int iVertex = 0;
   for (Mesh::label_sequence::iterator v_iter=vBegin;
        v_iter != vEnd;
-       ++v_iter) {
+       ++v_iter, ++iVertex) {
     dispTpdt->updatePoint(*v_iter, &_data->fieldTpdt[iVertex*spaceDim]);
     dispT->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
   } // for
@@ -247,6 +255,8 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   CPPUNIT_ASSERT(0 == err);
   err = MatAssemblyEnd(jacobian, MAT_FINAL_ASSEMBLY);
   CPPUNIT_ASSERT(0 == err);
+
+  MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD);
 
   const double* valsE = _data->valsJacobian;
   const int nrowsE = dispT->sizeWithBC();
@@ -344,7 +354,6 @@ pylith::faults::TestFaultCohesiveKin::testSetField(void)
 
   // Check values
   const double* valsE = _data->valsSlip;
-  int iVertex = 0;
   const int fiberDimE = spaceDim;
   const double tolerance = 1.0e-06;
 
@@ -352,9 +361,10 @@ pylith::faults::TestFaultCohesiveKin::testSetField(void)
   CPPUNIT_ASSERT(!vertices.isNull());
   const Mesh::label_sequence::iterator vBegin = vertices->begin();
   const Mesh::label_sequence::iterator vEnd = vertices->end();
+  int iVertex = 0;
   for (Mesh::label_sequence::iterator v_iter=vBegin;
        v_iter != vEnd;
-       ++v_iter) {
+       ++v_iter, ++iVertex) {
     const int fiberDim = disp->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
     const real_section_type::value_type* vals = 
@@ -379,6 +389,8 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<ALE::Mesh>* mesh,
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != fault);
   CPPUNIT_ASSERT(0 != _quadrature);
+  CPPUNIT_ASSERT(0 != _eqsrc);
+  CPPUNIT_ASSERT(0 != _slipfn);
 
   try {
     meshio::MeshIOAscii iohandler;
@@ -412,18 +424,16 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<ALE::Mesh>* mesh,
     ioPeakRate.filename(_data->peakRateFilename);
     dbPeakRate.ioHandler(&ioPeakRate);
 
-    BruneSlipFn slipFn;
-    slipFn.dbFinalSlip(&dbFinalSlip);
-    slipFn.dbSlipTime(&dbSlipTime);
-    slipFn.dbPeakRate(&dbPeakRate);
+    _slipfn->dbFinalSlip(&dbFinalSlip);
+    _slipfn->dbSlipTime(&dbSlipTime);
+    _slipfn->dbPeakRate(&dbPeakRate);
   
-    EqKinSrc eqsrc;
-    eqsrc.slipfn(&slipFn);
+    _eqsrc->slipfn(_slipfn);
   
     fault->id(_data->id);
     fault->label(_data->label);
     fault->quadrature(_quadrature);
-    fault->eqsrc(&eqsrc);
+    fault->eqsrc(_eqsrc);
     fault->adjustTopology(*mesh);
 
     const double upDirVals[] = { 0.0, 0.0, 1.0 };
