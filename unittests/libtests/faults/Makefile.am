@@ -26,8 +26,11 @@ testfaults_SOURCES = \
 	TestFault.cc \
 	TestFaultCohesive.cc \
 	TestFaultCohesiveKin.cc \
-	TestFaultCohesiveKinLine2.cc \
+	TestFaultCohesiveKinTri3.cc \
 	test_faults.cc
+
+#	TestFaultCohesiveKinLine2.cc
+
 
 noinst_HEADERS = \
 	TestBruneSlipFn.hh \
@@ -35,7 +38,8 @@ noinst_HEADERS = \
 	TestFault.hh \
 	TestFaultCohesive.hh \
 	TestFaultCohesiveKin.hh \
-	TestFaultCohesiveKinLine2.hh
+	TestFaultCohesiveKinLine2.hh \
+	TestFaultCohesiveKinTri3.hh
 
 # Source files associated with testing data
 testfaults_SOURCES += \
@@ -49,7 +53,10 @@ testfaults_SOURCES += \
 	data/CohesiveDataHex8.cc \
 	data/CohesiveDataHex8Lagrange.cc \
 	data/CohesiveDataTet4.cc \
-	data/CohesiveDataTet4Lagrange.cc
+	data/CohesiveDataTet4Lagrange.cc \
+	data/CohesiveKinData.cc \
+	data/CohesiveKinDataLine2.cc \
+	data/CohesiveKinDataTri3.cc
 
 noinst_HEADERS += \
 	data/CohesiveData.hh \
@@ -62,7 +69,10 @@ noinst_HEADERS += \
 	data/CohesiveDataHex8.hh \
 	data/CohesiveDataHex8Lagrange.hh \
 	data/CohesiveDataTet4.hh \
-	data/CohesiveDataTet4Lagrange.hh
+	data/CohesiveDataTet4Lagrange.hh \
+	data/CohesiveKinData.hh \
+	data/CohesiveKinDataLine2.hh \
+	data/CohesiveKinDataTri3.hh
 
 testfaults_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
 

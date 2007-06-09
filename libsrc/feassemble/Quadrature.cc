@@ -82,7 +82,7 @@ pylith::feassemble::Quadrature::initialize(const double* vertices,
       0 == basisDeriv ||
       0 == quadPtsRef ||
       0 == quadWts ||
-      cellDim < 1 || cellDim > 3 ||
+      cellDim < 0 || cellDim > 3 ||
       numBasis < 1 ||
       numQuadPts < 1 ||
       spaceDim < 1 || spaceDim > 3) {
@@ -103,48 +103,107 @@ pylith::feassemble::Quadrature::initialize(const double* vertices,
     throw std::runtime_error(msg.str());
   } // if
 
-  int size = numBasis * cellDim;
-  _vertices.resize(size);
-  for (int i=0; i < size; ++i)
-    _vertices[i] = vertices[i];
+  if (cellDim > 0) {
+    int size = numBasis * cellDim;
+    _vertices.resize(size);
+    for (int i=0; i < size; ++i)
+      _vertices[i] = vertices[i];
 
-  size = numBasis * numQuadPts;
-  _basis.resize(size);
-  for (int i=0; i < size; ++i)
-    _basis[i] = basis[i];
+    size = numBasis * numQuadPts;
+    _basis.resize(size);
+    for (int i=0; i < size; ++i)
+      _basis[i] = basis[i];
 
-  size = numBasis * numQuadPts * cellDim;
-  _basisDeriv.resize(size);
-  for (int i=0; i < size; ++i)
-    _basisDeriv[i] = basisDeriv[i];
+    size = numBasis * numQuadPts * cellDim;
+    _basisDeriv.resize(size);
+    for (int i=0; i < size; ++i)
+      _basisDeriv[i] = basisDeriv[i];
 
-  size = numQuadPts * cellDim;
-  _quadPtsRef.resize(size);
-  for (int i=0; i < size; ++i)
-    _quadPtsRef[i] = quadPtsRef[i];
+    size = numQuadPts * cellDim;
+    _quadPtsRef.resize(size);
+    for (int i=0; i < size; ++i)
+      _quadPtsRef[i] = quadPtsRef[i];
 
-  size = numQuadPts;
-  _quadWts.resize(size);
-  for (int i=0; i < size; ++i)
-    _quadWts[i] = quadWts[i];
+    size = numQuadPts;
+    _quadWts.resize(size);
+    for (int i=0; i < size; ++i)
+      _quadWts[i] = quadWts[i];
 
-  _cellDim = cellDim;
-  _numBasis = numBasis;
-  _numQuadPts = numQuadPts;
-  _spaceDim = spaceDim;
+    _cellDim = cellDim;
+    _numBasis = numBasis;
+    _numQuadPts = numQuadPts;
+    _spaceDim = spaceDim;
 
-  // Allocate for Jacobian and its inverse
-  size = numQuadPts * cellDim * spaceDim;
-  _jacobian.resize(size);
-  _jacobianInv.resize(size);
+    // Allocate for Jacobian and its inverse
+    size = numQuadPts * cellDim * spaceDim;
+    _jacobian.resize(size);
+    _jacobianInv.resize(size);
 
-  // Allocate for Jacobian determinant
-  size = numQuadPts;
-  _jacobianDet.resize(size);
+    // Allocate for Jacobian determinant
+    size = numQuadPts;
+    _jacobianDet.resize(size);
 
-  // Allocate for quad pts
-  size = numQuadPts*spaceDim;
-  _quadPts.resize(size);
+    // Allocate for quad pts
+    size = numQuadPts*spaceDim;
+    _quadPts.resize(size);
+  } else {
+    if (1 != numBasis ||
+	1 != numQuadPts ||
+	1 != spaceDim) {
+      std::ostringstream msg;
+      msg << "0-D quadrature only works in 1-D and is limited to 1 basis "
+	  << "function and 1 quadrature point.\n"
+	  << "Values:\n"
+	  << "  cell dimension: " << cellDim << "\n"
+	  << "  spatial dimension: " << spaceDim << "\n"
+	  << "  # vertices per cell: " << numBasis << "\n"
+	  << "  # quadrature points: " << numQuadPts << "\n";
+      throw std::runtime_error(msg.str());
+    } // if
+
+    int size = 1;
+    _vertices.resize(size);
+    for (int i=0; i < size; ++i)
+      _vertices[i] = vertices[i];
+
+    size = 1;
+    _basis.resize(size);
+    for (int i=0; i < size; ++i)
+      _basis[i] = basis[i];
+
+    size = 1;
+    _basisDeriv.resize(size);
+    for (int i=0; i < size; ++i)
+      _basisDeriv[i] = basisDeriv[i];
+
+    size = 1;
+    _quadPtsRef.resize(size);
+    for (int i=0; i < size; ++i)
+      _quadPtsRef[i] = quadPtsRef[i];
+
+    size = 1;
+    _quadWts.resize(size);
+    for (int i=0; i < size; ++i)
+      _quadWts[i] = quadWts[i];
+
+    _cellDim = cellDim;
+    _numBasis = numBasis;
+    _numQuadPts = numQuadPts;
+    _spaceDim = spaceDim;
+
+    // Allocate for Jacobian and its inverse
+    size = 1;
+    _jacobian.resize(size);
+    _jacobianInv.resize(size);
+
+    // Allocate for Jacobian determinant
+    size = 1;
+    _jacobianDet.resize(size);
+
+    // Allocate for quad pts
+    size = spaceDim;
+    _quadPts.resize(size);
+  } // else
 } // initialize
 
 // ----------------------------------------------------------------------

@@ -17,6 +17,7 @@
 import unittest
 import numpy
 
+from pylith.feassemble.quadrature.Quadrature0D import Quadrature0D
 from pylith.feassemble.quadrature.Quadrature1D import Quadrature1D
 from pylith.feassemble.quadrature.Quadrature1Din2D import Quadrature1Din2D
 from pylith.feassemble.quadrature.Quadrature1Din3D import Quadrature1Din3D
@@ -122,6 +123,11 @@ class TestQuadrature(unittest.TestCase):
     """
     Test constructors for quadrature objects.
     """
+    q = Quadrature0D()
+    self.assertEqual(1, q.spaceDim)
+    self.assertEqual(0, q.cellDim)
+    self.failIfEqual(None, q.cppHandle)
+    
     q = Quadrature1D()
     self.assertEqual(1, q.spaceDim)
     self.assertEqual(1, q.cellDim)

@@ -11,6 +11,7 @@
 //
 
 #include "petsc.h"
+#include "petscmesh.h"
 
 #include <cppunit/extensions/TestFactoryRegistry.h>
 

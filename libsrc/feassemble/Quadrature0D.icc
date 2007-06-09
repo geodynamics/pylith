@@ -1,0 +1,26 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_feassemble_quadrature0d_hh)
+#error "Quadrature0D.icc must be included only from Quadrature0D.hh"
+#else
+
+// Create a copy of this object.
+inline
+pylith::feassemble::Quadrature*
+pylith::feassemble::Quadrature0D::clone(void) const {
+  return new Quadrature0D(*this);
+} // clone
+
+#endif
+
+// End of file
