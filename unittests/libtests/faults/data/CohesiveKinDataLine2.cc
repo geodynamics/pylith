@@ -111,12 +111,11 @@ const double pylith::faults::CohesiveKinDataLine2::_valsSlip[] = {
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_valsJacobian[] = {
-  0.0,
-  0.0,
-  0.0,
-  0.0,
-  0.0,
-  0.0
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, 0.0,
 };
 
 pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)

@@ -198,7 +198,6 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
 void
 pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
 { // testIntegrateJacobian
-#if 0
   ALE::Obj<Mesh> mesh;
   FaultCohesiveKin fault;
   _initialize(&mesh, &fault);
@@ -283,8 +282,6 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
     } // for
   MatDestroy(jDense);
   MatDestroy(jSparseAIJ);
-#endif
-  CPPUNIT_ASSERT(false);
 } // testIntegrateJacobian
 
 // ----------------------------------------------------------------------
@@ -327,7 +324,6 @@ pylith::faults::TestFaultCohesiveKin::testSetConstraintSizes(void)
 void
 pylith::faults::TestFaultCohesiveKin::testSetField(void)
 { // testSetField
-#if 0
   ALE::Obj<Mesh> mesh;
   FaultCohesiveKin fault;
   _initialize(&mesh, &fault);
@@ -371,8 +367,6 @@ pylith::faults::TestFaultCohesiveKin::testSetField(void)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[i], tolerance);
     } // for
   } // for
-#endif
-  CPPUNIT_ASSERT(false);
 } // testSetField
 
 // ----------------------------------------------------------------------
