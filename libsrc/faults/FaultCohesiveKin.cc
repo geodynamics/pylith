@@ -308,16 +308,14 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   const int spaceDim = _quadrature->spaceDim();
   const int orientationSize = spaceDim*spaceDim;
 
-  // Allocate matrix for cell values (if necessary)
-  _initCellMatrix();
-
   const int numConstraintVert = _quadrature->numBasis();
   const int numCorners = 3*numConstraintVert; // cohesive cell
+  double_array cellMatrix(numCorners*spaceDim * numCorners*spaceDim);
+
   for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
-    _resetCellMatrix();
-
+    cellMatrix = 0.0;
     // Get orientations at cells vertices (only valid at constraint vertices)
     const real_section_type::value_type* cellOrientation = 
       mesh->restrict(_orientation, *c_iter);
@@ -338,10 +336,10 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	for (int kDim=0; kDim < spaceDim; ++kDim) {
 	  const int row = iBasis*spaceDim+iDim;
 	  const int col = kBasis*spaceDim+kDim;
-	  _cellMatrix[row*numCorners*spaceDim+col] =
+	  cellMatrix[row*numCorners*spaceDim+col] =
 	    constraintOrient[iDim*spaceDim+kDim];
-	  _cellMatrix[col*numCorners*spaceDim+row] =
-	    _cellMatrix[row*numCorners*spaceDim+col]; // symmetric
+	  cellMatrix[col*numCorners*spaceDim+row] =
+	    cellMatrix[row*numCorners*spaceDim+col]; // symmetric
 	} // for
 
       // Entries associated with constraint forces applied at node j
@@ -349,10 +347,10 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	for (int kDim=0; kDim < spaceDim; ++kDim) {
 	  const int row = jBasis*spaceDim+jDim;
 	  const int col = kBasis*spaceDim+kDim;
-	  _cellMatrix[row*numCorners*spaceDim+col] =
+	  cellMatrix[row*numCorners*spaceDim+col] =
 	    -constraintOrient[jDim*spaceDim+kDim];
-	  _cellMatrix[col*numCorners*spaceDim+row] =
-	    _cellMatrix[row*numCorners*spaceDim+col]; // symmetric
+	  cellMatrix[col*numCorners*spaceDim+row] =
+	    cellMatrix[row*numCorners*spaceDim+col]; // symmetric
 	} // for
     } // for
     PetscErrorCode err = 
@@ -365,7 +363,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
       mesh->getFactory()->getGlobalOrder(mesh, "default", disp);
     // Update values (do not add)
     err = updateOperator(*mat, mesh, disp, globalOrder,
-			 *c_iter, _cellMatrix, INSERT_VALUES);
+			 *c_iter, &cellMatrix[0], INSERT_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for
@@ -407,13 +405,17 @@ pylith::faults::FaultCohesiveKin::setField(
   typedef std::set<Mesh::point_type>::const_iterator vert_iterator;
 
   assert(0 != _eqsrc);
-
   const ALE::Obj<real_section_type>& slip = _eqsrc->slip(t, _constraintVert);
   assert(!slip.isNull());
   const vert_iterator vBegin = _constraintVert.begin();
   const vert_iterator vEnd = _constraintVert.end();
-  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter)
-    disp->updatePoint(*v_iter, slip->restrictPoint(*v_iter));
+  
+  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
+    const int fiberDim = slip->getFiberDimension(*v_iter);
+    const real_section_type::value_type* values = slip->restrictPoint(*v_iter);
+    assert(fiberDim == disp->getFiberDimension(*v_iter));
+    disp->updatePoint(*v_iter, values);
+  } // for
 } // setField
 
 

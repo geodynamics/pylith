@@ -64,7 +64,7 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
 
   // Create and allocate sections for parameters
   delete _parameters; 
-  _parameters = new topology::FieldsManager(faultMesh);
+  _parameters = new topology::FieldsManager(mesh);
   if (0 == _parameters)
     throw std::runtime_error("Could not create manager for parameters of "
 			     "Brune slip time function.");
@@ -75,24 +75,29 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   const ALE::Obj<real_section_type>& finalSlip = 
     _parameters->getReal("final slip");
   assert(!finalSlip.isNull());
-  finalSlip->setFiberDimension(faultMesh->depthStratum(0), spaceDim);
-  faultMesh->allocate(finalSlip);
 
   // Parameter: slip initiation time
   _parameters->addReal("slip time");
   const ALE::Obj<real_section_type>& slipTime = 
     _parameters->getReal("slip time");
   assert(!slipTime.isNull());
-  slipTime->setFiberDimension(faultMesh->depthStratum(0), 1);
-  faultMesh->allocate(slipTime);
 
   // Parameter: peak slip rate
   _parameters->addReal("peak rate");
   const ALE::Obj<real_section_type>& peakRate = 
     _parameters->getReal("peak rate");
   assert(!peakRate.isNull());
-  peakRate->setFiberDimension(faultMesh->depthStratum(0), 1);
-  faultMesh->allocate(peakRate);
+
+  const vert_iterator vBegin = vertices.begin();
+  const vert_iterator vEnd = vertices.end();
+  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
+    finalSlip->setFiberDimension(*v_iter, spaceDim);
+    slipTime->setFiberDimension(*v_iter, 1);
+    peakRate->setFiberDimension(*v_iter, 1);
+  } // for
+  mesh->allocate(finalSlip);
+  mesh->allocate(slipTime);
+  mesh->allocate(peakRate);
   
   // Open databases and set query values
   _dbFinalSlip->open();
@@ -135,8 +140,6 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   double_array slipData(spaceDim);
   double slipTimeData;
   double peakRateData;
-  const vert_iterator vBegin = vertices.begin();
-  const vert_iterator vEnd = vertices.end();
   for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
     // Get coordinates of vertex
     const real_section_type::value_type* vCoords = 
@@ -183,9 +186,10 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   _dbPeakRate->close();
 
   // Allocate slip field
-  _slipField = new real_section_type(faultMesh->comm(), faultMesh->debug());
-  _slipField->setFiberDimension(faultMesh->depthStratum(0), spaceDim);
-  faultMesh->allocate(_slipField);
+  _slipField = new real_section_type(mesh->comm(), mesh->debug());
+  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter)
+    _slipField->setFiberDimension(*v_iter, spaceDim);
+  mesh->allocate(_slipField);
 } // initialize
 
 // ----------------------------------------------------------------------
