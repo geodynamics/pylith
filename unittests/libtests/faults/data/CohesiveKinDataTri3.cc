@@ -93,32 +93,32 @@ const char* pylith::faults::CohesiveKinDataTri3::_peakRateFilename =
   "data/tri3_peakrate.spatialdb";
 
 const double pylith::faults::CohesiveKinDataTri3::_fieldTpdt[] = {
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+  8.1, 9.1,
+  8.2, 9.2,
+  8.3, 9.3,
+  8.4, 9.4,
+  8.5, 9.5,
+  8.6, 9.6,
+  8.7, 9.7,
+  8.8, 9.8,
 };
 
 const double pylith::faults::CohesiveKinDataTri3::_fieldT[] = {
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+  6.1, 7.1, // 2
+  6.2, 7.2, // 3
+  6.3, 7.3, // 4
+  6.4, 7.4, // 5
+  6.5, 7.5, // 6
+  1.4, 1.5, // 7 (constraint force)
+  6.7, 7.7, // 8
+  2.6, 2.7, // 9 (constraint force)
 };
 
 const int pylith::faults::CohesiveKinDataTri3::_numConstraintVert = 2;
 
 const double pylith::faults::CohesiveKinDataTri3::_orientation[] = {
-  0.0, -1.0,  -1.0, 0.0,
-  0.0, -1.0,  -1.0, 0.0
+  0.0, -1.0,  +1.0, 0.0,
+  0.0, -1.0,  +1.0, 0.0
 };
 
 const int pylith::faults::CohesiveKinDataTri3::_constraintVertices[] = {
@@ -126,25 +126,25 @@ const int pylith::faults::CohesiveKinDataTri3::_constraintVertices[] = {
 };
 
 const double pylith::faults::CohesiveKinDataTri3::_valsResidual[] = {
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+  0.0,  0.0, // 2
+ -1.4, -1.5, // 3
+ -2.6, -2.7, // 4
+  0.0,  0.0, // 5
+ +1.4, +1.5, // 6
+  0.0,  0.0, // 7
+ +2.6, +2.7, // 8
+  0.0,  0.0  // 9
 };
 
 const double pylith::faults::CohesiveKinDataTri3::_valsSlip[] = {
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
-  0.0, 0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
 };
 
 const double pylith::faults::CohesiveKinDataTri3::_valsJacobian[] = {

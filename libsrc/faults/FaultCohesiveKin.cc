@@ -230,8 +230,9 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   assert(0 != fields);
   assert(!mesh.isNull());
 
-  // Subtract constraint forces (which are disp at the constraint
-  // DOF) to residual; contributions are at DOF of normal vertices (i and j)
+  // Subtract constraint forces (which are disp at the constraint DOF)
+  // to residual; contributions are at DOF of non-constraint vertices
+  // (i and j) of the cohesive cells
 
   // Get cohesive cells
   const ALE::Obj<ALE::Mesh::label_sequence>& cellsCohesive = 
@@ -246,25 +247,31 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   const ALE::Obj<real_section_type>& disp = fields->getHistoryItem(1);
   assert(!disp.isNull());  
   
-  // Allocate vector for cell values (if necessary)
-  _initCellVector();
+  // Allocate vector for cell values
+  const int spaceDim = _quadrature->spaceDim();
+  const int numConstraintVert = _quadrature->numBasis();
+  const int numCorners = 3*numConstraintVert; // cohesive cell
+  double_array cellVector(numCorners*spaceDim);
 
   // Loop over cohesive cells
-  const int numConstraintVert = _quadrature->numBasis();
   for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
-    _resetCellVector();
+    cellVector = 0.0;
 
     // Get values at vertices (want constraint forces in disp vector)
     const real_section_type::value_type* cellDisp = 
       mesh->restrict(disp, *c_iter);
 
     // Transfer constraint forces to cell's constribution to residual vector
-    for (int i=0; i < numConstraintVert; ++i) {
-      const double constraintForce = cellDisp[2*numConstraintVert+i];
-      _cellVector[                  i] = -constraintForce;
-      _cellVector[numConstraintVert+i] = -constraintForce;
+    for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint)
+      for (int iDim=0; iDim < spaceDim; ++iDim) {
+	const int indexI = iConstraint;
+	const int indexJ = iConstraint +   numConstraintVert;
+	const int indexK = iConstraint + 2*numConstraintVert;
+	const double constraintForce = cellDisp[indexK*spaceDim+iDim];
+      cellVector[indexI*spaceDim+iDim] = -constraintForce;
+      cellVector[indexJ*spaceDim+iDim] = +constraintForce;
     } // for
     PetscErrorCode err = 
       PetscLogFlops(numConstraintVert*2);
@@ -272,7 +279,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       throw std::runtime_error("Logging PETSc flops failed.");
 
     // Update residual (replace, do not add)
-    mesh->update(residual, *c_iter, _cellVector);
+    mesh->update(residual, *c_iter, &cellVector[0]);
   } // for
 } // integrateResidual
 
@@ -327,9 +334,9 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
       const int jBasis = 3*iConstraint + 1;
       const int kBasis = 3*iConstraint + 2;
 
-      // Get orientations at constraint vertex (3rd vertex)
+      // Get orientations at constraint vertex
       const real_section_type::value_type* constraintOrient = 
-	&cellOrientation[kBasis*orientationSize];
+	&cellOrientation[iConstraint*orientationSize];
 
       // Entries associated with constraint forces applied at node i
       for (int iDim=0; iDim < spaceDim; ++iDim)
@@ -337,7 +344,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	  const int row = iBasis*spaceDim+iDim;
 	  const int col = kBasis*spaceDim+kDim;
 	  cellMatrix[row*numCorners*spaceDim+col] =
-	    constraintOrient[iDim*spaceDim+kDim];
+	    -constraintOrient[iDim*spaceDim+kDim];
 	  cellMatrix[col*numCorners*spaceDim+row] =
 	    cellMatrix[row*numCorners*spaceDim+col]; // symmetric
 	} // for
@@ -348,7 +355,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	  const int row = jBasis*spaceDim+jDim;
 	  const int col = kBasis*spaceDim+kDim;
 	  cellMatrix[row*numCorners*spaceDim+col] =
-	    -constraintOrient[jDim*spaceDim+kDim];
+	    constraintOrient[jDim*spaceDim+kDim];
 	  cellMatrix[col*numCorners*spaceDim+row] =
 	    cellMatrix[row*numCorners*spaceDim+col]; // symmetric
 	} // for

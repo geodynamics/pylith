@@ -27,6 +27,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinLine2 );
 void
 pylith::faults::TestFaultCohesiveKinLine2::setUp(void)
 { // setUp
+  TestFaultCohesiveKin::setUp();
   _data = new CohesiveKinDataLine2();
   _quadrature = new feassemble::Quadrature0D();
   CPPUNIT_ASSERT(0 != _quadrature);

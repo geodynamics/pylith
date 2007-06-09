@@ -32,6 +32,8 @@ namespace pylith {
 
     class FaultCohesiveKin; // USES FaultCohesiveKin
     class CohesiveKinData; // HOLDSA CohesiveKinData
+    class EqKinSrc; // HOLDSA EqKinSrc
+    class BruneSlipFn; // HOLDSA BruneSlipFn
   } // faults
 
   namespace feassemble {
@@ -101,6 +103,12 @@ private :
    */
   void _initialize(ALE::Obj<ALE::Mesh>* mesh,
 		   FaultCohesiveKin* const fault) const;
+
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  EqKinSrc* _eqsrc; ///< Kinematic earthquake source
+  BruneSlipFn* _slipfn; ///< Slip time function
 
 }; // class TestFaultCohesiveKin
 
