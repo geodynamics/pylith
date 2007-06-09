@@ -26,10 +26,10 @@ testfaults_SOURCES = \
 	TestFault.cc \
 	TestFaultCohesive.cc \
 	TestFaultCohesiveKin.cc \
+	TestFaultCohesiveKinLine2.cc \
 	TestFaultCohesiveKinTri3.cc \
 	test_faults.cc
 
-#	TestFaultCohesiveKinLine2.cc
 
 
 noinst_HEADERS = \

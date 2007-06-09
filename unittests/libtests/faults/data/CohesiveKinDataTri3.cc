@@ -117,8 +117,8 @@ const double pylith::faults::CohesiveKinDataTri3::_fieldT[] = {
 const int pylith::faults::CohesiveKinDataTri3::_numConstraintVert = 2;
 
 const double pylith::faults::CohesiveKinDataTri3::_orientation[] = {
-  0.0, 1.0,
-  0.0, 1.0
+  0.0, -1.0,  -1.0, 0.0,
+  0.0, -1.0,  -1.0, 0.0
 };
 
 const int pylith::faults::CohesiveKinDataTri3::_constraintVertices[] = {
