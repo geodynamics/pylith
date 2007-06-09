@@ -23,6 +23,7 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
+#include <math.h> // USES pow(), sqrt()
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -106,9 +107,8 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   } // for
 
   // Create orientation section for constraint vertices
-  const int cohesiveDim = mesh->getDimension()-1;
   const int spaceDim = cs->spaceDim();
-  const int orientationSize = (cohesiveDim > 0) ? cohesiveDim*spaceDim : 1;
+  const int orientationSize = spaceDim*spaceDim;
   _orientation = new real_section_type(mesh->comm(), mesh->debug());
   assert(!_orientation.isNull());
   const std::set<Mesh::point_type>::const_iterator vertCohesiveBegin = 
@@ -129,6 +129,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   assert(!coordinates.isNull());
 
   // Set orientation function
+  const int cohesiveDim = mesh->getDimension()-1;
   assert(cohesiveDim == _quadrature->cellDim());
   assert(spaceDim == _quadrature->spaceDim());
   orient_fn_type orientFn;
@@ -152,7 +153,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int numBasis = _quadrature->numBasis();
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
   const double_array& verticesRef = _quadrature->vertices();
-  const int jacobianSize = spaceDim * cohesiveDim;
+  const int jacobianSize = (cohesiveDim > 0) ? spaceDim * cohesiveDim : 1;
   double_array jacobian(jacobianSize);
   double jacobianDet = 0;
   double_array vertexOrientation(orientationSize);
@@ -201,14 +202,15 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     const real_section_type::value_type* vertexOrient = 
       _orientation->restrictPoint(*v_iter);
     
-    assert(cohesiveDim*spaceDim == orientationSize);
-    for (int iDim=0, index=0; iDim < cohesiveDim; ++iDim, index+=cohesiveDim) {
+    assert(spaceDim*spaceDim == orientationSize);
+    for (int iDim=0; iDim < spaceDim; ++iDim) {
       double mag = 0;
-      for (int jDim=0; jDim < spaceDim; ++jDim)
-	mag *= vertexOrient[index*cohesiveDim+jDim];
-      for (int jDim=0; jDim < cohesiveDim; ++jDim)
-	vertexDir[index*cohesiveDim+jDim] = 
-	  vertexOrient[index*cohesiveDim+jDim] / mag;
+      for (int jDim=0, index=iDim*spaceDim; jDim < spaceDim; ++jDim)
+	mag += pow(vertexOrient[index+jDim],2);
+      mag = sqrt(mag);
+      for (int jDim=0, index=iDim*spaceDim; jDim < spaceDim; ++jDim)
+	vertexDir[index+jDim] = 
+	  vertexOrient[index+jDim] / mag;
     } // for
     _orientation->updatePoint(*v_iter, &vertexDir[0]);
   } // for
@@ -303,9 +305,8 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   const ALE::Obj<real_section_type>& disp = fields->getHistoryItem(1);
   assert(!disp.isNull());  
 
-  const int cohesiveDim = _quadrature->cellDim();
   const int spaceDim = _quadrature->spaceDim();
-  const int orientationSize = cohesiveDim*spaceDim;
+  const int orientationSize = spaceDim*spaceDim;
 
   // Allocate matrix for cell values (if necessary)
   _initCellMatrix();

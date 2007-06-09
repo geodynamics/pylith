@@ -99,7 +99,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   int iVertex = 0;
   for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
        v_iter != vertConstraintEnd;
-       ++v_iter)
+       ++v_iter, ++iVertex)
     CPPUNIT_ASSERT_EQUAL(_data->constraintVertices[iVertex],
 			 *v_iter);
 
@@ -107,7 +107,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   iVertex = 0;
   const int cellDim = _data->cellDim;
   const int spaceDim = _data->spaceDim;
-  const int orientationSize = (cellDim > 0) ? cellDim*spaceDim : 1;
+  const int orientationSize = spaceDim*spaceDim;
   for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
        v_iter != vertConstraintEnd;
        ++v_iter) {
@@ -198,7 +198,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
 void
 pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
 { // testIntegrateJacobian
-
+#if 0
   ALE::Obj<Mesh> mesh;
   FaultCohesiveKin fault;
   _initialize(&mesh, &fault);
@@ -283,6 +283,8 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
     } // for
   MatDestroy(jDense);
   MatDestroy(jSparseAIJ);
+#endif
+  CPPUNIT_ASSERT(false);
 } // testIntegrateJacobian
 
 // ----------------------------------------------------------------------
@@ -325,6 +327,7 @@ pylith::faults::TestFaultCohesiveKin::testSetConstraintSizes(void)
 void
 pylith::faults::TestFaultCohesiveKin::testSetField(void)
 { // testSetField
+#if 0
   ALE::Obj<Mesh> mesh;
   FaultCohesiveKin fault;
   _initialize(&mesh, &fault);
@@ -368,6 +371,8 @@ pylith::faults::TestFaultCohesiveKin::testSetField(void)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[i], tolerance);
     } // for
   } // for
+#endif
+  CPPUNIT_ASSERT(false);
 } // testSetField
 
 // ----------------------------------------------------------------------

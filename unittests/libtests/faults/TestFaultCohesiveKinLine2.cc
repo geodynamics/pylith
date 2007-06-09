@@ -16,8 +16,8 @@
 
 #include "data/CohesiveKinDataLine2.hh" // USES CohesiveKinDataLine2
 
-#include "pylith/feassemble/Quadrature0D.hh" // USES Quadrature1D
-#include "pylith/feassemble/GeometryLine1D.hh" // USES GeometryLine1D
+#include "pylith/feassemble/Quadrature0D.hh" // USES Quadrature0D
+#include "pylith/feassemble/GeometryPoint1D.hh" // USES GeometryPoint1D
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestFaultCohesiveKinLine2 );
@@ -30,7 +30,7 @@ pylith::faults::TestFaultCohesiveKinLine2::setUp(void)
   _data = new CohesiveKinDataLine2();
   _quadrature = new feassemble::Quadrature0D();
   CPPUNIT_ASSERT(0 != _quadrature);
-  feassemble::GeometryLine1D geometry;
+  feassemble::GeometryPoint1D geometry;
   _quadrature->refGeometry(&geometry);
 } // setUp
 
