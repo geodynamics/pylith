@@ -330,21 +330,21 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
       // Blocks in cell matrix associated with normal cohesive
       // vertices i and j and constraint vertex k
-      const int iBasis = 3*iConstraint;
-      const int jBasis = 3*iConstraint + 1;
-      const int kBasis = 3*iConstraint + 2;
+      const int indexI = iConstraint;
+      const int indexJ = iConstraint +   numConstraintVert;
+      const int indexK = iConstraint + 2*numConstraintVert;
 
-      // Get orientations at constraint vertex
+      // Get orientation at constraint vertex
       const real_section_type::value_type* constraintOrient = 
 	&cellOrientation[iConstraint*orientationSize];
 
       // Entries associated with constraint forces applied at node i
       for (int iDim=0; iDim < spaceDim; ++iDim)
 	for (int kDim=0; kDim < spaceDim; ++kDim) {
-	  const int row = iBasis*spaceDim+iDim;
-	  const int col = kBasis*spaceDim+kDim;
+	  const int row = indexI*spaceDim+iDim;
+	  const int col = indexK*spaceDim+kDim;
 	  cellMatrix[row*numCorners*spaceDim+col] =
-	    -constraintOrient[iDim*spaceDim+kDim];
+	    -constraintOrient[kDim*spaceDim+iDim];
 	  cellMatrix[col*numCorners*spaceDim+row] =
 	    cellMatrix[row*numCorners*spaceDim+col]; // symmetric
 	} // for
@@ -352,10 +352,10 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
       // Entries associated with constraint forces applied at node j
       for (int jDim=0; jDim < spaceDim; ++jDim)
 	for (int kDim=0; kDim < spaceDim; ++kDim) {
-	  const int row = jBasis*spaceDim+jDim;
-	  const int col = kBasis*spaceDim+kDim;
+	  const int row = indexJ*spaceDim+jDim;
+	  const int col = indexK*spaceDim+kDim;
 	  cellMatrix[row*numCorners*spaceDim+col] =
-	    constraintOrient[jDim*spaceDim+kDim];
+	    constraintOrient[kDim*spaceDim+jDim];
 	  cellMatrix[col*numCorners*spaceDim+row] =
 	    cellMatrix[row*numCorners*spaceDim+col]; // symmetric
 	} // for
