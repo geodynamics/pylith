@@ -256,7 +256,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   err = MatAssemblyEnd(jacobian, MAT_FINAL_ASSEMBLY);
   CPPUNIT_ASSERT(0 == err);
 
-  MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD);
+  //MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD);
 
   const double* valsE = _data->valsJacobian;
   const int nrowsE = dispT->sizeWithBC();
