@@ -31,6 +31,9 @@ noinst_DATA = \
 	quad4_sliptime.spatialdb \
 	quad4_peakrate.spatialdb \
 	tet4.mesh \
+	tet4b.mesh \
+	tet4c.mesh \
+	tet4d.mesh \
 	tet4_finalslip.spatialdb \
 	tet4_sliptime.spatialdb \
 	tet4_peakrate.spatialdb \

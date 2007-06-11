@@ -26,7 +26,6 @@ solutioniovtk
 3. Implement faults for kinematic source
    a. Creation of cohesive cells
      Add tests for each possible face as fault (CohesiveDataXXX).
-       Tet
        Hex
 
 3. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
@@ -69,47 +68,9 @@ matrix when possible.
 UNRESOLVED ISSUES
 ======================================================================
 
-0. Basis functions for Lagrange elements (quad4, hex8, plus quadratic cells)
-   [Matt]
-
-1. How to get orientation of faces at vertices? [discuss with Matt]
-
-2. Integration of nemesis (pylithic.py as mpi/python application) [Leif?]
-
 ======================================================================
 THINGS WE NEED SIEVE TO DO (Matt)
 ======================================================================
-
-1. Create PETSc mesh with associated boundary condition meshes.
-
-  In general we can only rely on mesh generators to provide vertices,
-  cells, attributes for vertices and cells (i.e., one value for each
-  vertex or cell), and groups of vertices and cells. As a result,
-  boundary conditions would be associated with groups of
-  vertices. This is nonunique if we require users to not allow
-  multiple surfaces be associated with a single group of vertices. In
-  other words, there is a unique set of faces for a group of
-  vertices. For our boundary conditions we will want the N-1 dimension
-  (where the mesh is N dimensions) representation of a subset of the
-  mesh (i.e., 2-D mesh of fault surface).
-
-  Inputs:
-    * PETSc mesh
-    * Group of vertices
-  Outputs:
-    * PETSc mesh with bc mesh
-
-  Note: Above would be repeated for each group of vertices.
-
-2. Create cohesive cells.
-
-  Inputs:
-    * PETSc mesh
-    * Surface meshes defining faults
-  Output:
-    * PETSc mesh with cohesive cells.
-
-  Note: Not sure whether this would be done with global or distributed mesh.
 
 3. Distribute mesh/bc in scalable manner. 
 
