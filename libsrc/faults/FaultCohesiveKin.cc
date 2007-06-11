@@ -148,8 +148,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       assert(0);
     } // switch
 
-  // Loop over cohesive cells, computing orientation at each vertex
-
+  // Loop over cohesive cells, computing orientation at constraint vertices
   const int numBasis = _quadrature->numBasis();
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
   const double_array& verticesRef = _quadrature->vertices();
@@ -169,13 +168,20 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     for (int i=0, offset=2*size; i < size; ++i)
       faceVertices[i] = cohesiveVertices[offset+i];
 
-    int iBasis = 0;
     const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
       sieve->cone(*c_iter);
     assert(!cone.isNull());
     const sieve_type::traits::coneSequence::iterator vBegin = cone->begin();
     const sieve_type::traits::coneSequence::iterator vEnd = cone->end();
-    for(sieve_type::traits::coneSequence::iterator v_iter=vBegin;
+
+    // skip over non-constraint vertices
+    sieve_type::traits::coneSequence::iterator vConstraintBegin = vBegin;
+    const int numSkip = 2*numBasis;
+    for (int i=0; i < numSkip; ++i)
+      ++vConstraintBegin;
+
+    int iBasis = 0;
+    for(sieve_type::traits::coneSequence::iterator v_iter=vConstraintBegin;
 	v_iter != vEnd;
 	++v_iter, ++iBasis) {
       // Compute Jacobian and determinant of Jacobian at vertex
