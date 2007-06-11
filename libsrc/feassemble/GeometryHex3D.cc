@@ -96,12 +96,12 @@ pylith::feassemble::GeometryHex3D::jacobian(double_array* jacobian,
   const double y7 = vertices[22];
   const double z7 = vertices[23];
 
-  const double x = location[0];
-  const double y = location[1];
-  const double z = location[2];
-  assert(0 <= x && x <= 1.0);
-  assert(0 <= y && y <= 1.0);
-  assert(0 <= z && z <= 1.0);
+  const double x = 0.5 * (location[0] + 1.0);
+  const double y = 0.5 * (location[1] + 1.0);
+  const double z = 0.5 * (location[2] + 1.0);
+  assert(-1.0 <= x && x <= 1.0);
+  assert(-1.0 <= y && y <= 1.0);
+  assert(-1.0 <= z && z <= 1.0);
 
   const double f_xy = x2 - x1 - x3 + x0;
   const double g_xy = y2 - y1 - y3 + y0;

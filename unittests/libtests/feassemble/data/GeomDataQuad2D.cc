@@ -24,15 +24,15 @@ const double pylith::feassemble::GeomDataQuad2D::_vertices[] = {
   0.3, 0.1,
   0.8, -0.2,
   0.7, 1.2,
-  -0.1, 1.6
+  -0.1, 1.6,
 };
 
 const double pylith::feassemble::GeomDataQuad2D::_locations[] = {
-  0.0, 0.0,
-  1.0, 0.0,
-  0.0, 1.0,
-  1.0, 1.0,
-  0.4, 0.7
+ -1.0, -1.0,
+  1.0, -1.0,
+ -1.0,  1.0,
+  1.0,  1.0,
+ -0.2,  0.4
 };
 
 const double pylith::feassemble::GeomDataQuad2D::_jacobian[] = {

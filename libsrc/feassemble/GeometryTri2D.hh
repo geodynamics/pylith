@@ -15,6 +15,13 @@
  *
  * @brief C++ implementation of cell geometry calculations for 2-D
  * triangular cell.
+ *
+ * Reference cell:
+ *
+ * Vertex   x     y
+ *    0   -1.0  -1.0
+ *    1   +1.0  -1.0
+ *    2   -1.0  +1.0
  */
 
 #if !defined(pylith_feassemble_geometrytri2d_hh)

@@ -39,8 +39,8 @@ const double pylith::meshio::MeshDataCubitHex::_vertices[] = {
 
 // PyLith order, not Cubit order
 const int pylith::meshio::MeshDataCubitHex::_cells[] = {
-  0,  1,  3,  2,  4,  5,  7,  6,
-  4,  5,  7,  6,  8,  9, 11, 10
+  0,  1,  2,  3,  4,  5,  6,  7,
+  4,  5,  6,  7,  8,  9, 10, 11
 };
 const int pylith::meshio::MeshDataCubitHex::_materialIds[] = {
   7, 8

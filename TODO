@@ -34,20 +34,14 @@ ISSUES:
 
 3. Implement faults for kinematic source
    a. Creation of cohesive cells
-     i. Add tests for interpolated meshes.
-        Double check consistency in ordering of vertices (positive/negative).
+     Add more tests for orientations.
 
    b. Implement integrator for faults
 
-     i. Add determinant of Jacobian to CellGeometry::jacobian()
-
      ii. FaultCohesiveKin
        (1) C++ unit tests
-         initialize()
-         integrateResidual()
-         integrateJacobian()
-         setConstraintSizes()
-         setField()
+         Quad4
+         Hex8
        (2) Python unit tests
          initialize()
          adjustTopology()
@@ -61,7 +55,7 @@ ISSUES:
 
 5. Additional unit tests
   a. FaultCohesive
-    i. Check faultMesh
+    i. Add checking of faultMesh [not currently used]
 
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials

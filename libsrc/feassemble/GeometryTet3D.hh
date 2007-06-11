@@ -15,6 +15,14 @@
  *
  * @brief C++ implementation of cell geometry calculations for 3-D
  * tetrahedral cell.
+ *
+ * Reference cell:
+ *
+ * Vertex   x     y     z
+ *    0   -1.0  -1.0  -1.0
+ *    1   +1.0  -1.0  -1.0
+ *    2   -1.0  +1.0  -1.0
+ *    3   -1.0  -1.0  +1.0
  */
 
 #if !defined(pylith_feassemble_geometrytet3d_hh)

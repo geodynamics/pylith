@@ -183,8 +183,7 @@ pylith::meshio::TestMeshIOCubit::testOrientTri(void)
 void
 pylith::meshio::TestMeshIOCubit::testOrientQuad(void)
 { // testOrientQuad
-  // Expect vertices 0 and 1 to remain the same, but vertices 2 and 3
-  // should be swapped
+  // Expect no change.
 
   const int meshDim = 2;
   const int numCells = 2;
@@ -194,8 +193,8 @@ pylith::meshio::TestMeshIOCubit::testOrientQuad(void)
     6, 7, 8, 9
   };
   const int cellsE[] = {
-    0, 1, 3, 2,
-    6, 7, 9, 8
+    0, 1, 2, 3,
+    6, 7, 8, 9
   };
   
   int_array cells(cellsOrig, numCells*numCorners);
@@ -240,8 +239,7 @@ pylith::meshio::TestMeshIOCubit::testOrientTet(void)
 void
 pylith::meshio::TestMeshIOCubit::testOrientHex(void)
 { // testOrientHex
-  // Expect vertices 0 and 1 to remain the same, but vertices 2 and 3
-  // should be swapped
+  // Expect no change.
 
   const int meshDim = 3;
   const int numCells = 2;
@@ -251,8 +249,8 @@ pylith::meshio::TestMeshIOCubit::testOrientHex(void)
     10, 11, 12, 13, 14, 15, 16, 17
   };
   const int cellsE[] = {
-    0, 1, 3, 2, 4, 5, 7, 6,
-    10, 11, 13, 12, 14, 15, 17, 16
+    0, 1, 2, 3, 4, 5, 6, 7,
+    10, 11, 12, 13, 14, 15, 16, 17
   };
   
   int_array cells(cellsOrig, numCells*numCorners);
