@@ -240,7 +240,9 @@ cdef class SolverLinear(Solver):
 
       PetscErrorCode err = 0;
       Vec localVec;
-      
+
+      (*fieldIn)->view("Rhs");
+      (*fieldOut)->view("Solution Before");
       err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldIn)->sizeWithBC(),
                                   (*fieldIn)->restrict(), &localVec);CHKERRQ(err);
       err = VecScatterBegin(scatter, localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD
@@ -258,6 +260,7 @@ cdef class SolverLinear(Solver):
       err = VecScatterEnd(scatter, vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE
                           ); CHKERRQ(err);
       err = VecDestroy(localVec); CHKERRQ(err);
+      (*fieldOut)->view("Solution After");
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
