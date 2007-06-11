@@ -158,10 +158,6 @@ class Quad4(object):
     self.quadWts = quadWts
     self.basis = basis
     self.basisDeriv = basisDeriv
-
-    print "quadPts\n",quadPts
-    print "basis\n",basis
-    print "basisDeriv\n",basisDeriv
     return
 
 

@@ -2,19 +2,6 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-ISSUES: 
-
-  * What is the fault mesh supposed to be??????
-
-  * BruneSlipFn assumes fault mesh is associated with constraint
-    vertices (THIS IS NOT THE CASE).
-
-    The SlipTimeFn stuff doesn't care about topology, only
-    points. Need to eliminate passing both the constraint points and
-    the fault mesh; use one or the other but not both. Perhaps the
-    fault mesh should be composed of the constraint vertices; this
-    would eliminate the need to store the set of constraint vertices.
-
 1. Simple tests with analytical solutions
 
    a. 2-D
@@ -34,14 +21,12 @@ ISSUES:
 
 3. Implement faults for kinematic source
    a. Creation of cohesive cells
-     Add more tests for orientations.
+     Add tests for each possible face as fault (CohesiveDataXXX).
 
    b. Implement integrator for faults
 
      ii. FaultCohesiveKin
        (1) C++ unit tests
-         Quad4
-         Hex8
        (2) Python unit tests
          initialize()
          adjustTopology()
@@ -65,7 +50,7 @@ SECONDARY PRIORITIES
 ======================================================================
 
 Want to take advantage of symmetry and block structure of Jacobian
-when possible.
+matrix when possible.
 
 1. Implement MeshIOHDF5 & HDF5 (helper class)
    a. C++ objects
