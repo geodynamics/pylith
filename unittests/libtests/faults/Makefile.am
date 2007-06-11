@@ -51,6 +51,8 @@ testfaults_SOURCES += \
 	data/CohesiveDataLine2.cc \
 	data/CohesiveDataLine2Lagrange.cc \
 	data/CohesiveDataTri3.cc \
+	data/CohesiveDataTri3b.cc \
+	data/CohesiveDataTri3c.cc \
 	data/CohesiveDataTri3Lagrange.cc \
 	data/CohesiveDataQuad4.cc \
 	data/CohesiveDataQuad4Lagrange.cc \
@@ -70,6 +72,8 @@ noinst_HEADERS += \
 	data/CohesiveDataLine2.hh \
 	data/CohesiveDataLine2Lagrange.hh \
 	data/CohesiveDataTri3.hh \
+	data/CohesiveDataTri3b.hh \
+	data/CohesiveDataTri3c.hh \
 	data/CohesiveDataTri3Lagrange.hh \
 	data/CohesiveDataQuad4.hh \
 	data/CohesiveDataQuad4Lagrange.hh \
