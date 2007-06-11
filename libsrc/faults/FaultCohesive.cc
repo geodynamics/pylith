@@ -113,10 +113,10 @@ pylith::faults::FaultCohesive::_orient3D(double_array* orientation,
   const int spaceDim = 3;
 
   const double j00 = jacobian[0];
-  const double j10 = jacobian[1];
-  const double j20 = jacobian[2];
-  const double j01 = jacobian[3];
-  const double j11 = jacobian[4];
+  const double j01 = jacobian[1];
+  const double j10 = jacobian[2];
+  const double j11 = jacobian[3];
+  const double j20 = jacobian[4];
   const double j21 = jacobian[5];
 
   // Compute normal using Jacobian
@@ -146,13 +146,13 @@ pylith::faults::FaultCohesive::_orient3D(double_array* orientation,
   
   const double wt = jacobianDet;
   (*orientation)[0] =  p0*wt;
-  (*orientation)[1] =  q0*wt;
-  (*orientation)[2] =  r0*wt;
-  (*orientation)[3] =  p1*wt;
+  (*orientation)[1] =  p1*wt;
+  (*orientation)[2] =  p2*wt;
+  (*orientation)[3] =  q0*wt;
   (*orientation)[4] =  q1*wt;
-  (*orientation)[5] =  r1*wt;
-  (*orientation)[6] =  p2*wt;
-  (*orientation)[7] =  q2*wt;
+  (*orientation)[5] =  q2*wt;
+  (*orientation)[6] =  r0*wt;
+  (*orientation)[7] =  r1*wt;
   (*orientation)[8] =  r2*wt;
 } // _orient3D
 

@@ -32,8 +32,8 @@ const double pylith::meshio::MeshDataCubitQuad::_vertices[] = {
 };
 
 const int pylith::meshio::MeshDataCubitQuad::_cells[] = {
-  0,  1,  3,  2,
-  1,  4,  2,  5
+  0,  1,  2,  3,
+  1,  4,  5,  2
 };
 const int pylith::meshio::MeshDataCubitQuad::_materialIds[] = {
   10, 11

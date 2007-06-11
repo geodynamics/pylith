@@ -15,6 +15,19 @@
  *
  * @brief C++ implementation of cell geometry calculations for 2-D
  * quadrilateral cell in 3-D.
+ *
+ * Reference cell:
+ *
+ * 3 -- 2
+ * |    |
+ * |    |
+ * 0 -- 1
+ *
+ * Vertex   x     y
+ *    0   -1.0  -1.0
+ *    1   +1.0  -1.0
+ *    2   +1.0  +1.0
+ *    3   -1.0  +1.0
  */
 
 #if !defined(pylith_feassemble_geometryquad3d_hh)

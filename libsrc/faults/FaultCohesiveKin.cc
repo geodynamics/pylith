@@ -165,7 +165,8 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
        ++c_iter) {
     mesh->restrict(coordinates, *c_iter, 
 		   &cohesiveVertices[0], cohesiveVertices.size());
-    for (int i=0, offset=2*numBasis; i < numBasis; ++i)
+    const int size = numBasis*spaceDim;
+    for (int i=0, offset=2*size; i < size; ++i)
       faceVertices[i] = cohesiveVertices[offset+i];
 
     int iBasis = 0;
@@ -208,10 +209,12 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       for (int jDim=0, index=iDim*spaceDim; jDim < spaceDim; ++jDim)
 	mag += pow(vertexOrient[index+jDim],2);
       mag = sqrt(mag);
+      assert(mag > 0.0);
       for (int jDim=0, index=iDim*spaceDim; jDim < spaceDim; ++jDim)
 	vertexDir[index+jDim] = 
 	  vertexOrient[index+jDim] / mag;
     } // for
+
     _orientation->updatePoint(*v_iter, &vertexDir[0]);
   } // for
 

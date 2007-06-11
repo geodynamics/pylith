@@ -87,8 +87,8 @@ pylith::feassemble::GeometryQuad3D::jacobian(double_array* jacobian,
   const double y3 = vertices[10];
   const double z3 = vertices[11];
 
-  const double x = location[0];
-  const double y = location[1];
+  const double x = 0.5 * (location[0] + 1.0);
+  const double y = 0.5 * (location[1] + 1.0);
   assert(0 <= x && x <= 1.0);
   assert(0 <= y && y <= 1.0);
 

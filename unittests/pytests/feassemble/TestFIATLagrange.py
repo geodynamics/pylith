@@ -127,12 +127,12 @@ class Quad4(object):
     """
     vertices = numpy.array([[-1.0, -1.0],
                             [+1.0, -1.0],
-                            [-1.0, +1.0],
-                            [+1.0, +1.0]])
+                            [+1.0, +1.0],
+                            [-1.0, +1.0]])
     quadPts = numpy.array([ [-1.0/3**0.5, -1.0/3**0.5],
                             [+1.0/3**0.5, -1.0/3**0.5],
-                            [-1.0/3**0.5, +1.0/3**0.5],
-                            [+1.0/3**0.5, +1.0/3**0.5] ])
+                            [+1.0/3**0.5, +1.0/3**0.5],
+                            [-1.0/3**0.5, +1.0/3**0.5] ])
     quadWts = numpy.array( [1.0, 1.0, 1.0, 1.0])
 
     # Compute basis fns and derivatives at quadrature points
@@ -158,6 +158,10 @@ class Quad4(object):
     self.quadWts = quadWts
     self.basis = basis
     self.basisDeriv = basisDeriv
+
+    print "quadPts\n",quadPts
+    print "basis\n",basis
+    print "basisDeriv\n",basisDeriv
     return
 
 
@@ -180,22 +184,22 @@ class Quad4(object):
     return -(1+p[0])/4.0
 
   def N2(self, p):
-    return (1-p[0])*(1+p[1])/4.0
-
-  def N2p(self, p):
-    return -(1+p[1])/4.0
-
-  def N2q(self, p):
-    return (1-p[0])/4.0
-
-  def N3(self, p):
     return (1+p[0])*(1+p[1])/4.0
 
-  def N3p(self, p):
+  def N2p(self, p):
     return (1+p[1])/4.0
 
-  def N3q(self, p):
+  def N2q(self, p):
     return (1+p[0])/4.0
+
+  def N3(self, p):
+    return (1-p[0])*(1+p[1])/4.0
+
+  def N3p(self, p):
+    return -(1+p[1])/4.0
+
+  def N3q(self, p):
+    return (1-p[0])/4.0
 
 # ----------------------------------------------------------------------
 class Hex8(object):
@@ -206,20 +210,20 @@ class Hex8(object):
     """
     vertices = numpy.array([[-1.0, -1.0, -1.0],
                             [+1.0, -1.0, -1.0],
-                            [-1.0, +1.0, -1.0],
                             [+1.0, +1.0, -1.0],
+                            [-1.0, +1.0, -1.0],
                             [-1.0, -1.0, +1.0],
                             [+1.0, -1.0, +1.0],
-                            [-1.0, +1.0, +1.0],
-                            [+1.0, +1.0, +1.0]])
+                            [+1.0, +1.0, +1.0],
+                            [-1.0, +1.0, +1.0]])
     quadPts = numpy.array([ [-1.0/3**0.5, -1.0/3**0.5, -1.0/3**0.5],
                             [+1.0/3**0.5, -1.0/3**0.5, -1.0/3**0.5],
-                            [-1.0/3**0.5, +1.0/3**0.5, -1.0/3**0.5],
                             [+1.0/3**0.5, +1.0/3**0.5, -1.0/3**0.5],
+                            [-1.0/3**0.5, +1.0/3**0.5, -1.0/3**0.5],
                             [-1.0/3**0.5, -1.0/3**0.5, +1.0/3**0.5],
                             [+1.0/3**0.5, -1.0/3**0.5, +1.0/3**0.5],
-                            [-1.0/3**0.5, +1.0/3**0.5, +1.0/3**0.5],
-                            [+1.0/3**0.5, +1.0/3**0.5, +1.0/3**0.5]])
+                            [+1.0/3**0.5, +1.0/3**0.5, +1.0/3**0.5],
+                            [-1.0/3**0.5, +1.0/3**0.5, +1.0/3**0.5]])
     quadWts = numpy.array( [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
     # Compute basis fns and derivatives at quadrature points
@@ -279,29 +283,29 @@ class Hex8(object):
     return -(1+p[0])*(1-p[1])/8.0
   
   def N2(self, p):
-    return (1-p[0])*(1+p[1])*(1-p[2])/8.0
-  
-  def N2p(self, p):
-    return -(1+p[1])*(1-p[2])/8.0
-  
-  def N2q(self, p):
-    return (1-p[0])*(1-p[2])/8.0
-  
-  def N2r(self, p):
-    return -(1-p[0])*(1+p[1])/8.0
-  
-  def N3(self, p):
     return (1+p[0])*(1+p[1])*(1-p[2])/8.0
   
-  def N3p(self, p):
+  def N2p(self, p):
     return (1+p[1])*(1-p[2])/8.0
   
-  def N3q(self, p):
+  def N2q(self, p):
     return (1+p[0])*(1-p[2])/8.0
 
-  def N3r(self, p):
+  def N2r(self, p):
     return -(1+p[0])*(1+p[1])/8.0
 
+  def N3(self, p):
+    return (1-p[0])*(1+p[1])*(1-p[2])/8.0
+  
+  def N3p(self, p):
+    return -(1+p[1])*(1-p[2])/8.0
+  
+  def N3q(self, p):
+    return (1-p[0])*(1-p[2])/8.0
+  
+  def N3r(self, p):
+    return -(1-p[0])*(1+p[1])/8.0
+  
   def N4(self, p):
     return (1-p[0])*(1-p[1])*(1+p[2])/8.0
 
@@ -327,29 +331,29 @@ class Hex8(object):
     return (1+p[0])*(1-p[1])/8.0
   
   def N6(self, p):
-    return (1-p[0])*(1+p[1])*(1+p[2])/8.0
-  
-  def N6p(self, p):
-    return -(1+p[1])*(1+p[2])/8.0
-  
-  def N6q(self, p):
-    return (1-p[0])*(1+p[2])/8.0
-  
-  def N6r(self, p):
-    return (1-p[0])*(1+p[1])/8.0
-  
-  def N7(self, p):
     return (1+p[0])*(1+p[1])*(1+p[2])/8.0
   
-  def N7p(self, p):
+  def N6p(self, p):
     return (1+p[1])*(1+p[2])/8.0
   
-  def N7q(self, p):
+  def N6q(self, p):
     return (1+p[0])*(1+p[2])/8.0
   
-  def N7r(self, p):
+  def N6r(self, p):
     return (1+p[0])*(1+p[1])/8.0
 
+  def N7(self, p):
+    return (1-p[0])*(1+p[1])*(1+p[2])/8.0
+  
+  def N7p(self, p):
+    return -(1+p[1])*(1+p[2])/8.0
+  
+  def N7q(self, p):
+    return (1-p[0])*(1+p[2])/8.0
+  
+  def N7r(self, p):
+    return (1-p[0])*(1+p[1])/8.0
+  
 # ----------------------------------------------------------------------
 class TestFIATLagrange(unittest.TestCase):
   """

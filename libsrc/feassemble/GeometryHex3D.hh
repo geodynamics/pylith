@@ -15,6 +15,18 @@
  *
  * @brief C++ implementation of cell geometry calculations for 3-D
  * hexahedral cell.
+ *
+ * Reference cell:
+ *
+ * Vertex   x     y    z
+ *    0   -1.0  -1.0  -1.0
+ *    1   +1.0  -1.0  -1.0
+ *    2   +1.0  +1.0  -1.0
+ *    3   -1.0  +1.0  -1.0
+ *    4   -1.0  -1.0  +1.0
+ *    5   +1.0  -1.0  +1.0
+ *    6   +1.0  +1.0  +1.0
+ *    7   -1.0  +1.0  +1.0
  */
 
 #if !defined(pylith_feassemble_geometryhex3d_hh)

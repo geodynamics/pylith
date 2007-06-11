@@ -1,0 +1,17 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 1
+  value-names =  slip-rate
+  value-units =  m/s
+  num-locs = 4
+  data-dim = 2
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 3
+  }
+}
+0.0  -1.0 -1.0    1.5
+0.0   1.0 -1.0    1.6
+0.0  -1.0  1.0    1.7
+0.0   1.0  1.0    1.8

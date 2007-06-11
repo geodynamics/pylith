@@ -20,11 +20,17 @@ noinst_DATA = \
 	tri3_sliptime.spatialdb \
 	tri3_peakrate.spatialdb \
 	quad4.mesh \
+	quad4_finalslip.spatialdb \
+	quad4_sliptime.spatialdb \
+	quad4_peakrate.spatialdb \
 	tet4.mesh \
 	tet4_finalslip.spatialdb \
 	tet4_sliptime.spatialdb \
 	tet4_peakrate.spatialdb \
-	hex8.mesh
+	hex8.mesh \
+	hex8_finalslip.spatialdb \
+	hex8_sliptime.spatialdb \
+	hex8_peakrate.spatialdb
 
 noinst_TMP =
 
