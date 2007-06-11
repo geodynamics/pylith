@@ -23,11 +23,12 @@ def implementsIntegrator(obj):
   """
   result = True
   attrs = dir(obj)
-  if not "initQuadrature" in attrs or \
-     not "timeStep" in attrs or \
+  if not "timeStep" in attrs or \
      not "stableTimeStep" in attrs or \
      not "integrateResidual" in attrs or \
-     not "integrateJacobian" in attrs:
+     not "integrateJacobian" in attrs or \
+     not "updateState" in attrs or \
+     not "finalize" in attrs:
     result = False
   return result
 

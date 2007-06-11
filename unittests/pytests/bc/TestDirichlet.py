@@ -24,6 +24,16 @@ class TestDirichlet(unittest.TestCase):
   Unit testing of Dirichlet object.
   """
 
+  def test_implementsConstraint(self):
+    """
+    Test to make sure Dirichlet satisfies constraint requirements.
+    """
+    bc = Dirichlet()
+    from pylith.feassemble.Constraint import implementsConstraint
+    self.assertTrue(implementsConstraint(bc))
+    return
+    
+
   def test_constructor(self):
     """
     Test constructor.
@@ -121,6 +131,22 @@ class TestDirichlet(unittest.TestCase):
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
+    return
+
+
+  def test_finalize(self):
+    """
+    Test finalize().
+
+    WARNING: This is not a rigorous test of finalize() because we
+    neither set the input fields or verify the results.
+    """
+    (mesh, bc) = self._initialize()
+
+    bc.finalize()
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly.
     return
 
 

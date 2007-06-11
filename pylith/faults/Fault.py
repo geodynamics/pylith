@@ -117,19 +117,113 @@ class Fault(Component):
     """
     self._info.log("Initializing fault '%s'." % self.label)
 
-    if 2 != self.quadrature.cell.cellDim:
+    self.quadrature.initialize()
+
+    faultDim = mesh.dimension() - 1
+    if faultDim != self.quadrature.cell.cellDim:
       raise ValueError, \
             "Quadrature is incompatible with fault surface.\n" \
-            "Dimensions for quadrature: %d, dimensions for surface: 2" % \
-            self.quadrature.cell.cellDim
+            "Dimensions for quadrature: %d, dimensions of fault: %d" % \
+            (self.quadrature.cell.cellDim, faultDim)
 
     assert(None != self.cppHandle)
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
     self.cppHandle.quadrature = self.quadrature.cppHandle
-    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle)
+    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
+                              self.upDir)
     return
 
+
+  def timeStep(self, dt):
+    """
+    Set time step for advancing from time t to time t+dt.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.timeStep = dt.value
+    return
+
+
+  def stableTimeStep(self):
+    """
+    Get stable time step for advancing from time t to time t+dt.
+    """
+    assert(None != self.cppHandle)
+    from pyre.units.time import second
+    return self.cppHandle.stableTimeStep*second
+
+
+  def integrateResidual(self, residual, fields):
+    """
+    Integrate contributions to residual term at time t.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.integrateResidual(residual, fields.cppHandle,
+                                     self.mesh.cppHandle)
+    return
+
+
+  def needNewJacobian(self):
+    """
+    Returns true if we need to recompute Jacobian matrix for operator,
+    false otherwise.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.needNewJacobian
+
+
+  def integrateJacobian(self, jacobian, fields):
+    """
+    Integrate contributions to Jacobian term at time t.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.integrateJacobian(jacobian, fields.cppHandle,
+                                     self.mesh.cppHandle)
+    return
+
+
+  def updateState(self, field):
+    """
+    Update state variables as needed.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.updateState(field, self.mesh.cppHandle)
+    return
+    
+
+  def setConstraintSizes(self, field):
+    """
+    Set constraint sizes in field.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.setConstraintSizes(field, self.mesh.cppHandle)
+    return
+
+
+  def setConstraints(self, field):
+    """
+    Set constraints for field.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.setConstraints(field, self.mesh.cppHandle)
+    return
+
+
+  def setField(self, t, field):
+    """
+    Set constrained values in field at time t.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.setField(t.value, field, self.mesh.cppHandle)
+    return
+
+
+  def finalize(self):
+    """
+    Cleanup after time stepping.
+    """
+    return
+  
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -140,6 +234,7 @@ class Fault(Component):
     Component._configure(self)
     self.id = self.inventory.id
     self.label = self.inventory.label
+    self.upDir = self.inventory.upDir
     self.quadrature = self.inventory.quadrature
     return
 

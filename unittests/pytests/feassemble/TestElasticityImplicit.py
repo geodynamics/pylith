@@ -25,6 +25,16 @@ class TestElasticityImplicit(unittest.TestCase):
   Unit testing of Python ElasticityImplicit object.
   """
 
+  def test_implementsIntegrator(self):
+    """
+    Test to make sure ElasticityImplicit satisfies integrator requirements.
+    """
+    integrator = ElasticityImplicit()
+    from pylith.feassemble.Integrator import implementsIntegrator
+    self.assertTrue(implementsIntegrator(integrator))
+    return
+    
+
   def test_initQuadrature(self):
     """
     Test initQuadrature().
@@ -158,6 +168,22 @@ class TestElasticityImplicit(unittest.TestCase):
     # actually initialized correctly    
     return
   
+
+  def test_finalize(self):
+    """
+    Test finalize().
+
+    WARNING: This is not a rigorous test of finalize() because we
+    neither set the input fields or verify the results.
+    """
+    (mesh, integrator, fields) = self._initialize()
+
+    integrator.finalize()
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly.
+    return
+
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 

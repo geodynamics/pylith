@@ -141,8 +141,6 @@ class Implicit(Formulation):
         integrator.timeStep(dt)
         integrator.integrateJacobian(self.jacobian, self.fields)
       petsc.mat_assemble(self.jacobian)
-    # Put in loop over integrators to see if stiffness needs
-    # reforming.  If so, then reform it.
     return
 
 
