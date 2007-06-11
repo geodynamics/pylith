@@ -26,7 +26,12 @@
 #include "data/CohesiveDataTri3.hh" // USES CohesiveDataTri3
 #include "data/CohesiveDataTri3b.hh" // USES CohesiveDataTri3b
 #include "data/CohesiveDataTri3c.hh" // USES CohesiveDataTri3c
+#include "data/CohesiveDataTri3d.hh" // USES CohesiveDataTri3d
 #include "data/CohesiveDataQuad4.hh" // USES CohesiveDataQuad4
+#include "data/CohesiveDataQuad4b.hh" // USES CohesiveDataQuad4b
+#include "data/CohesiveDataQuad4c.hh" // USES CohesiveDataQuad4c
+#include "data/CohesiveDataQuad4d.hh" // USES CohesiveDataQuad4d
+#include "data/CohesiveDataQuad4e.hh" // USES CohesiveDataQuad4e
 #include "data/CohesiveDataTet4.hh" // USES CohesiveDataTet4
 #include "data/CohesiveDataHex8.hh" // USES CohesiveDataHex8
 
@@ -60,7 +65,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3(void)
 } // testAdjustTopologyTri3
 
 // ----------------------------------------------------------------------
-// Test adjustTopology() with 2-D triangular element.
+// Test adjustTopology() with 2-D triangular element (edge b).
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyTri3b(void)
 { // testAdjustTopologyTri3b
@@ -70,7 +75,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3b(void)
 } // testAdjustTopologyTri3b
 
 // ----------------------------------------------------------------------
-// Test adjustTopology() with 2-D triangular element.
+// Test adjustTopology() with 2-D triangular element (edge c).
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyTri3c(void)
 { // testAdjustTopologyTri3c
@@ -78,6 +83,16 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3c(void)
   FaultCohesiveDyn fault;
   _testAdjustTopology(&fault, data);
 } // testAdjustTopologyTri3c
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D triangular element (two cohesive cells).
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTri3d(void)
+{ // testAdjustTopologyTri3d
+  CohesiveDataTri3d data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyTri3d
 
 // ----------------------------------------------------------------------
 // Test adjustTopology() with 2-D quadrilateral element.
@@ -88,6 +103,46 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4(void)
   FaultCohesiveDyn fault;
   _testAdjustTopology(&fault, data);
 } // testAdjustTopologyQuad4
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D quadrilateral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4b(void)
+{ // testAdjustTopologyQuad4b
+  CohesiveDataQuad4b data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyQuad4b
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D quadrilateral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4c(void)
+{ // testAdjustTopologyQuad4c
+  CohesiveDataQuad4c data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyQuad4c
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D quadrilateral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4d(void)
+{ // testAdjustTopologyQuad4d
+  CohesiveDataQuad4d data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyQuad4d
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D quadrilateral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4e(void)
+{ // testAdjustTopologyQuad4e
+  CohesiveDataQuad4e data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyQuad4e
 
 // ----------------------------------------------------------------------
 // Test adjustTopology() with 3-D tetrahedral element.

@@ -18,10 +18,15 @@ noinst_DATA = \
 	tri3.mesh \
 	tri3b.mesh \
 	tri3c.mesh \
+	tri3d.mesh \
 	tri3_finalslip.spatialdb \
 	tri3_sliptime.spatialdb \
 	tri3_peakrate.spatialdb \
 	quad4.mesh \
+	quad4b.mesh \
+	quad4c.mesh \
+	quad4d.mesh \
+	quad4e.mesh \
 	quad4_finalslip.spatialdb \
 	quad4_sliptime.spatialdb \
 	quad4_peakrate.spatialdb \
