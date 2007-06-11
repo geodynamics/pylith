@@ -107,6 +107,7 @@ pylith::meshio::SolutionIOVTK::writeField(
     PetscErrorCode ierr;
 
     // Ignore time for now
+    field->view("");
     ierr = SectionView_Sieve_Ascii(mesh, field, name, _viewer);
   } catch (const std::exception& err) {
     std::ostringstream msg;
