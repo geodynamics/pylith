@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -40,347 +40,39 @@
 Running PyLith
 \end_layout
 
-\begin_layout Section
-Supported Finite Elements
-\end_layout
-
 \begin_layout Standard
-PyLith currently only supports the 4-node linear tetrahedral and 8-node
- linear hexahedral elements.
- The node ordering must follow the convention shown in Figures\InsetSpace ~
-
-\begin_inset LatexCommand \ref{fig:tet4}
-
-\end_inset
-
- and\InsetSpace ~
-
-\begin_inset LatexCommand \ref{fig:hex8}
-
-\end_inset
-
-.
+There are essentially three major pieces needed to run a problem with PyLith:
 \end_layout
 
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status collapsed
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Graphics
-	filename figs/tet4.eps
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Caption
-Linear tetrahedral finite element.
-\end_layout
-
-\begin_layout Standard
-\begin_inset LatexCommand \label{fig:tet4}
-
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float figure
-placement t
-wide false
-sideways false
-status collapsed
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename figs/hex8.eps
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Caption
-Linear hexahedral finite element.
-\end_layout
-
-\begin_layout Standard
-\begin_inset LatexCommand \label{fig:hex8}
-
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Input Files
-\end_layout
-
-\begin_layout Standard
-PyLith gets its input from a variety of files.
- Most of these are associated with different kinds of boundary conditions.
- As a result only six files are required.
- The remaining files are only used when the associated boundary condition
- is used.
- See Appendix\InsetSpace ~
-
-\begin_inset LatexCommand \ref{cha:File-Formats}
-
-\end_inset
-
- for a detailed discussion of the file formats.
-\end_layout
-
-\begin_layout Standard
-The first step in the simulation process involves partitioning the mesh
- among the processors.
- In this phase, PyLith reads in the entire mesh and then writes out processor-sp
-ecific pieces with one file for each processor.
- The file names for these follow the convention 
-\family typewriter
-xx.PROC.ext
-\family default
- where 
-\family typewriter
-PROC
-\family default
- refers to the processor number and 
-\family typewriter
-xx.ext
-\family default
- is the original file name.
- This procedure is applied to files with the following extensions:
-\family typewriter
- coord, connect, split, bc
-\family default
-, and 
-\family typewriter
-traction
-\family default
-.
- The remaining files provide information common to all processors, and thus
- do not require separate files for each processor.
-\end_layout
-
-\begin_layout Standard
-In some cases, a user may want to run the same simulation using different
- numbers of processors.
- In this case, users may wish to provide distinctive sets of file names
- to distinguish between the different runs.
- Setting up this naming scheme is most easily done using symbolic links
- or copying files to local directories on each machine using a shell script
- that starts a simulation.
- See 
-\family typewriter
-mklinks.py
-\family default
- in Section\InsetSpace ~
-
-\begin_inset LatexCommand \ref{sec:Tutorial-Using-Reverse-Slip}
-
-\end_inset
-
- for a simple example.
- You can also choose your own file-name template by setting the appropriate
- parameters.
- See Section\InsetSpace ~
-
-\begin_inset LatexCommand \ref{sec:setting:parameters}
-
-\end_inset
-
- for more information.
-\end_layout
-
-\begin_layout Subsection
-Required Input Files
-\end_layout
-
-\begin_layout Standard
-The required input files define the finite-element mesh, boundary conditions,
- time-step information, output, and material properties.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-xx.coord
-\family default
- Coordinates of finite-element vertices.
- 
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-xx.connect
-\family default
- Topology and material information for the finite-element mesh.
- 
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-xx.bc
-\family default
- Boundary conditions at vertices on external boundaries.
- 
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-xx.time 
-\family default
-Time stepping information.
- 
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-xx.statevar
-\family default
- State variables to be output for the elastic and (time-dependent) viscoelastic
- solution.
- 
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-xx.prop
-\family default
- Properties for each material.
- 
-\end_layout
-
-\begin_layout Subsection
-Optional Input Files
-\end_layout
-
-\begin_layout Standard
-The optional input files are only read when a file exists matching the name
- of an input file PyLith expects to read.
- Note that explicit file names for each of the files can be specified using
- command-line arguments, with 
+\begin_layout Enumerate
+A set of parameters describing the problem.
+ These parameters describe the type of problem to be run, solver information,
+ time-stepping information, etc.
+ This information can be provided from the command-line or using a 
 \family typewriter
 .cfg
 \family default
- files, or with 
+ or 
 \family typewriter
 .pml
 \family default
- files, as discussed in Section\InsetSpace ~
-
-\begin_inset LatexCommand \ref{sec:setting:parameters}
-
-\end_inset
-
-.
+ file.
 \end_layout
 
-\begin_layout Description
-
-\family typewriter
-\color black
-xx.fuldat 
-\family default
-\color none
-Time steps for which full output is requested.
- 
-\shape italic
-Required for time-dependent problems.
+\begin_layout Enumerate
+Mesh information.
+ This includes nodal coordinates, element connectivities, and flagged sets
+ of nodes to which boundary conditions can be implied.
+ This information can be provided using a simple ascii format, or by importing
+ the information from the LaGriT or CUBIT meshing packages.
 \end_layout
 
-\begin_layout Description
-
-\family typewriter
-\color black
-xx.split
-\family default
-\color none
- Dislocation boundary condition information (implemented using split nodes).
- 
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-\color black
-xx.traction
-\family default
-\color none
- Traction boundary condition information.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-\color black
-xx.skew
-\family default
-\color none
- Local coordinate rotation information for boundary conditions.
- 
-\shape italic
-Not yet implemented.
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-\color black
-xx.wink
-\family default
-\color none
- Winkler spring element boundary condition information.
- 
-\emph on
- Not yet implemented.
-
-\emph default
- 
-\end_layout
-
-\begin_layout Description
-
-\family typewriter
-\color black
-xx.hist
-\family default
-\color none
- Time histories for split nodes and boundary conditions (if necessary).
-  
-\emph on
-Not yet tested.
-
-\emph default
- 
+\begin_layout Enumerate
+Databases specifying the material properties and boundary conditions to
+ be used.
+ Arbitrarily complex spatial variations in boundary conditions (including
+ fault specifications) and material properties may be given in the spatial
+ database.
 \end_layout
 
 \begin_layout Section
@@ -396,11 +88,14 @@ Setting Parameters for PyLith
 \end_layout
 
 \begin_layout Standard
-There are several methods for setting input parameters for 
+The most basic information for setting up a PyLith simulation is the problem
+ parameters, since these also describe the characteristics of the mesh and
+ database information.
+ There are several methods for setting input parameters for the 
 \family typewriter
-pylith3dapp.py
+pylith
 \family default
-: via the command line, or by using a configuration file in 
+ executable: via the command line, or by using a configuration file in 
 \family typewriter
 .cfg
 \family default
@@ -458,67 +153,45 @@ Each facility has a default component attached to it.
 \end_layout
 
 \begin_layout Standard
-In general, PyLith's command-line arguments fall into three categories:
- MPI settings, Pyre/PyLith properties and facilities, and PETSc settings.
+PyLith's command-line arguments can control Pyre and PyLith properties and
+ facilities, MPI settings, and PETSc settings.
  You can get more information on the available options by typing
 \end_layout
 
 \begin_layout LyX-Code
 
 \family typewriter
-$ pylith3dapp.py --help
+$ pylith --help
 \end_layout
 
 \begin_layout Standard
 All PyLith-related properties are associated with the 
 \family typewriter
-pylith3d
+pylithapp
 \family default
  component.
  You can get a list of all of these properties along with a description
  of what they do by running PyLith with the 
 \family typewriter
---pylith3d.help-properties
+--help-properties
 \family default
  command-line argument.
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Quote
-\noindent
-
+ To get information on user settable facilities and components, you can
+ run PyLith with the 
 \family typewriter
-\color black
-$ pylith3dapp.py --pylith3d.help-properties --pylith3d.fileRoot=
-\shape italic
-test
-\shape default
- --pylith3d.asciiOutput=
-\emph on
-none
-\emph default
- --pylith3d.title=
-\emph on
-"My simulation"
-\emph default
- 
+--help-components
+\family default
+ command-line argument.
+ To find out about the properties associated with a given component, you
+ can run PyLith with the 
+\family typewriter
+--[component].help-properties
+\family default
+ flag:
 \end_layout
 
-\begin_layout Caption
-Setting PyLith properties from the command line.
-\end_layout
-
-\end_inset
-
-
+\begin_layout LyX-Code
+$ pylith --problem.help-properties
 \end_layout
 
 \begin_layout Subsection
@@ -532,7 +205,7 @@ Using a
 \begin_layout Standard
 Entering all those parameters via the command line involves the risk of
  typographical errors, which can lead to undesired results.
- You may find it easier to write a brief 
+ You will generally find it easier to write a brief 
 \family typewriter
 .cfg
 \family default
@@ -542,7 +215,7 @@ Entering all those parameters via the command line involves the risk of
 \end_layout
 
 \begin_layout LyX-Code
-[pylith3d.component1.component2]
+[pylithapp.component1.component2]
 \end_layout
 
 \begin_layout LyX-Code
@@ -652,13 +325,13 @@ Configuration files may be specified on the command line:
 \end_layout
 
 \begin_layout LyX-Code
-$ pylith3dapp.py example.cfg
+$ pylith example.cfg
 \end_layout
 
 \begin_layout Standard
 In addition, the Pyre framework searches for configuration files named 
 \family typewriter
-pylith3d.cfg
+pylithapp.cfg
 \family default
  in several predefined locations.
  You may put settings in any or all of these locations, depending on the
@@ -668,7 +341,7 @@ pylith3d.cfg
 \begin_layout Enumerate
 
 \family typewriter
-PREFIX/etc/pylith3d.cfg
+PREFIX/etc/pylithapp.cfg
 \family default
 , for system-wide settings;
 \end_layout
@@ -676,7 +349,7 @@ PREFIX/etc/pylith3d.cfg
 \begin_layout Enumerate
 
 \family typewriter
-$HOME/.pyre/pylith3d/pylith3d.cfg
+$HOME/.pyre/pylithapp/pylithapp.cfg
 \family default
 , for user settings and preferences;
 \end_layout
@@ -684,7 +357,7 @@ $HOME/.pyre/pylith3d/pylith3d.cfg
 \begin_layout Enumerate
 the current directory (
 \family typewriter
-./pylith3d.cfg
+./pylithapp.cfg
 \family default
 ), for local overrides.
  
@@ -696,10 +369,34 @@ Parameters given directly on the command line will override any input contained
  Configuration files given on the command line override all others.
  The 
 \family typewriter
-pylith3d.cfg
+pylithapp.cfg
 \family default
  files placed in (3) will override those in (2), (2) overrides (1), and
  (1) overrides only the built-in defaults.
+\end_layout
+
+\begin_layout Subsection
+PETSc Settings
+\end_layout
+
+\begin_layout Standard
+PyLith relies on PETSc for the linear algebra computations.
+ PETSc options can be set in 
+\family typewriter
+.cfg
+\family default
+ files in sections beginning with 
+\family typewriter
+[pylithapp.petsc]
+\family default
+.
+ The ones of primary interest in the case of PyLith are shown in Table\InsetSpace ~
+
+\begin_inset LatexCommand \ref{tab:Useful-command-line-arguments}
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -976,24 +673,118 @@ Useful command-line arguments for setting PETSc options.
 
 \end_layout
 
-\begin_layout Subsection
-PETSc Settings
+\begin_layout Section
+Mesh Information
 \end_layout
 
 \begin_layout Standard
-PyLith relies on PETSc for the linear algebra computations.
- Many PETSc options can be set in 
-\family typewriter
-.cfg
-\family default
- files.
- The ones of primary interest in the case of PyLith are shown in Table\InsetSpace ~
+Geometrical and topological information for the finite element mesh may
+ be provided using CUBIT (exported using EXODUS format), LaGriT (exported
+ using a GMV and a pset file), or by specifying the information in PyLith
+ ascii format.
+ **Put in references to tutorials and appendix.**
+\end_layout
 
-\begin_inset LatexCommand \ref{tab:Useful-command-line-arguments}
+\begin_layout Standard
+**Maybe mention higher-order elements.** Quadratic elements are supported,
+ but not automatic generation of a quadratic mesh from a linear mesh.
+\end_layout
+
+\begin_layout Standard
+PyLith currently only supports the 4-node linear tetrahedral and 8-node
+ linear hexahedral elements.
+ The node ordering must follow the convention shown in Figures\InsetSpace ~
+
+\begin_inset LatexCommand \ref{fig:tet4}
+
+\end_inset
+
+ and\InsetSpace ~
+
+\begin_inset LatexCommand \ref{fig:hex8}
 
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Graphics
+	filename figs/tet4.eps
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Caption
+Linear tetrahedral finite element.
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \label{fig:tet4}
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement t
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/hex8.eps
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Caption
+Linear hexahedral finite element.
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \label{fig:hex8}
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+
 \end_layout
 
 \begin_layout Standard
