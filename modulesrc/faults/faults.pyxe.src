@@ -273,6 +273,239 @@ cdef class FaultCohesiveKin(FaultCohesive):
     return
 
 
+  def integrateResidual(self, residual, fields, mesh):
+    """
+    Integrate contributions to residual term (r) for operator.
+    """
+    # create shim for method 'integrateResidual'
+    #embed{ void FaultCohesiveKin_integrateResidual(void* objVptr, void* residualVptr, void* fieldsVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != residualVptr);
+      assert(0 != fieldsVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::real_section_type>* residual =
+        (ALE::Obj<pylith::real_section_type>*) residualVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      ((pylith::faults::FaultCohesiveKin*) objVptr)->integrateResidual(*residual,
+                                                              fields, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    FaultCohesiveKin_integrateResidual(self.thisptr, 
+                                 PyCObject_AsVoidPtr(residual),
+                                 ptrFromHandle(fields),
+                                 ptrFromHandle(mesh))
+    return
+
+
+  def integrateJacobian(self, mat, fields, mesh):
+    """
+    Compute contributions to Jacobian matrix (A) associated with operator.
+    """
+    # create shim for method 'integrateJacobian'
+    #embed{ void FaultCohesiveKin_integrateJacobian(void* objVptr, void* matVptr, void* fieldsVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != matVptr);
+      assert(0 != fieldsVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      PetscMat* mat = (PetscMat*) matVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      ((pylith::faults::FaultCohesiveKin*) objVptr)->integrateJacobian(
+                                                        mat, fields, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    FaultCohesiveKin_integrateJacobian(self.thisptr,
+                                 PyCObject_AsVoidPtr(mat),
+                                 ptrFromHandle(fields),
+                                 ptrFromHandle(mesh))
+    return
+
+
+  def updateState(self, field, mesh):
+    """
+    Update state variables as needed.
+    """
+    # create shim for method 'updateState'
+    #embed{ void FaultCohesiveKin_updateState(void* objVptr, void* fieldVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field =
+        (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::faults::FaultCohesiveKin*) objVptr)->updateState(*field, *mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    FaultCohesiveKin_updateState(self.thisptr, PyCObject_AsVoidPtr(field),
+                           ptrFromHandle(mesh))
+    return
+
+
+  property quadrature:
+    def __set__(self, q):
+      """
+      Set quadrature.
+      """
+      # create shim for method 'quadrature'
+      #embed{ void FaultCohesiveKin_quadrature_set(void* objVptr, void* qVptr)
+      try {
+        assert(0 != objVptr);
+        pylith::feassemble::Quadrature* quadrature =
+          (pylith::feassemble::Quadrature*) qVptr;
+        ((pylith::faults::FaultCohesiveKin*) objVptr)->quadrature(quadrature);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not q.name == "pylith_feassemble_Quadrature":
+        raise TypeError, \
+              "Argument must be extension module type 'Quadrature'."
+      FaultCohesiveKin_quadrature_set(self.thisptr, ptrFromHandle(q))
+
+
+  property eqsrc:
+    def __set__(self, src):
+      """
+      Set quadrature.
+      """
+      # create shim for method 'eqsrc'
+      #embed{ void FaultCohesiveKin_eqsrc_set(void* objVptr, void* srcVptr)
+      try {
+        assert(0 != objVptr);
+        pylith::faults::EqKinSrc* eqsrc =
+          (pylith::faults::EqKinSrc*) srcVptr;
+        ((pylith::faults::FaultCohesiveKin*) objVptr)->eqsrc(eqsrc);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not src.name == "pylith_faults_EqKinSrc":
+        raise TypeError, \
+              "Argument must be extension module type 'EqKinSrc'."
+      FaultCohesiveKin_eqsrc_set(self.thisptr, ptrFromHandle(src))
+
+
+  property timeStep:
+    def __set__(self, dt):
+      """
+      Set timeStep.
+      """
+      # create shim for method 'timeStep'
+      #embed{ void FaultCohesiveKin_timeStep_set(void* objVptr, double dt)
+      try {
+        assert(0 != objVptr);
+        ((pylith::faults::FaultCohesiveKin*) objVptr)->timeStep(dt);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      FaultCohesiveKin_timeStep_set(self.thisptr, dt)
+
+
+  property stableTimeStep:
+    def __get__(self):
+      """
+      Get stable time step.
+      """
+      # create shim for method 'stableTimeStep'
+      #embed{ double FaultCohesiveKin_stableTimeStep_get(void* objVptr)
+      double result = 0.0;
+      try {
+        assert(0 != objVptr);
+        result =
+          ((pylith::faults::FaultCohesiveKin*) objVptr)->stableTimeStep();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return FaultCohesiveKin_stableTimeStep_get(self.thisptr)
+
+
+  property needNewJacobian:
+    def __get__(self):
+      """
+      Set timeStep.
+      """
+      # create shim for method 'needNewJacobian'
+      #embed{ int FaultCohesiveKin_needNewJacobian_get(void* objVptr)
+      int result = 0;
+      try {
+        assert(0 != objVptr);
+        ((pylith::faults::FaultCohesiveKin*) objVptr)->needNewJacobian();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return FaultCohesiveKin_needNewJacobian_get(self.thisptr)
+
+
 # ----------------------------------------------------------------------
 cdef class EqKinSrc:
 

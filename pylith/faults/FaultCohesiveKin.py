@@ -48,9 +48,9 @@ class FaultCohesiveKin(FaultCohesive):
     import pyre.inventory
 
     from EqKinSrc import EqKinSrc
-    eqSrc = pyre.inventory.facility("eq_src", family="eq_kinematic_src",
+    eqsrc = pyre.inventory.facility("eq_src", family="eq_kinematic_src",
                                     factory=EqKinSrc)
-    eqSrc.meta['tip'] = "Kinematic earthquake source information."
+    eqsrc.meta['tip'] = "Kinematic earthquake source information."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -69,10 +69,76 @@ class FaultCohesiveKin(FaultCohesive):
     """
     Initialize cohesive elements.
     """
-    self.eqSrc.initialize()
+    self.mesh = mesh
+    assert(None != self.cppHandle)
+    self.eqsrc.initialize()
+    self.cppHandle.eqsrc = self.eqsrc.cppHandle
     FaultCohesive.initialize(self, mesh)
     return
 
+
+  def timeStep(self, dt):
+    """
+    Set time step for advancing from time t to time t+dt.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.timeStep = dt.value
+    return
+
+
+  def stableTimeStep(self):
+    """
+    Get stable time step for advancing from time t to time t+dt.
+    """
+    assert(None != self.cppHandle)
+    from pyre.units.time import second
+    return self.cppHandle.stableTimeStep*second
+
+
+  def integrateResidual(self, residual, fields):
+    """
+    Integrate contributions to residual term at time t.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.integrateResidual(residual, fields.cppHandle,
+                                     self.mesh.cppHandle)
+    return
+
+
+  def needNewJacobian(self):
+    """
+    Returns true if we need to recompute Jacobian matrix for operator,
+    false otherwise.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.needNewJacobian
+
+
+  def integrateJacobian(self, jacobian, fields):
+    """
+    Integrate contributions to Jacobian term at time t.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.integrateJacobian(jacobian, fields.cppHandle,
+                                     self.mesh.cppHandle)
+    return
+
+
+  def updateState(self, field):
+    """
+    Update state variables as needed.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.updateState(field, self.mesh.cppHandle)
+    return
+    
+
+  def finalize(self):
+    """
+    Cleanup after time stepping.
+    """
+    return
+  
 
   # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -81,7 +147,7 @@ class FaultCohesiveKin(FaultCohesive):
     Setup members using inventory.
     """
     FaultCohesive._configure(self)
-    eqSrc = self.inventory.eqSrc
+    eqsrc = self.inventory.eqsrc
     return
 
   

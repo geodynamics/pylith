@@ -26,7 +26,8 @@ def implementsConstraint(obj):
   if not "timeStep" in attrs or \
      not "setConstraintSizes" in attrs or \
      not "setConstraints" in attrs or \
-     not "setField" in attrs:
+     not "setField" in attrs or \
+     not "finalize" in attrs:
     result = False
   return result
 

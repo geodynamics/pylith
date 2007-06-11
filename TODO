@@ -2,6 +2,10 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+solutioniovtk
+
+  need to write each time step to a different file.
+
 1. Simple tests with analytical solutions
 
    a. 2-D
@@ -22,14 +26,8 @@ MAIN PRIORITIES (Brad)
 3. Implement faults for kinematic source
    a. Creation of cohesive cells
      Add tests for each possible face as fault (CohesiveDataXXX).
-
-   b. Implement integrator for faults
-
-     ii. FaultCohesiveKin
-       (1) C++ unit tests
-       (2) Python unit tests
-         initialize()
-         adjustTopology()
+       Tet
+       Hex
 
 3. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
    a. Materials C++ code
@@ -39,11 +37,11 @@ MAIN PRIORITIES (Brad)
 4. Implement absorbing boundary conditions
 
 5. Additional unit tests
-  a. FaultCohesive
-    i. Add checking of faultMesh [not currently used]
-
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials
+
+  a. FaultCohesive
+    i. Add checking of faultMesh [not currently used]
 
 ======================================================================
 SECONDARY PRIORITIES
