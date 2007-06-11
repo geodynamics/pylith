@@ -16,6 +16,8 @@ noinst_DATA = \
 	line2_sliptime.spatialdb \
 	line2_peakrate.spatialdb \
 	tri3.mesh \
+	tri3b.mesh \
+	tri3c.mesh \
 	tri3_finalslip.spatialdb \
 	tri3_sliptime.spatialdb \
 	tri3_peakrate.spatialdb \

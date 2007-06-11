@@ -24,6 +24,8 @@
 
 #include "data/CohesiveDataLine2.hh" // USES CohesiveDataLine2
 #include "data/CohesiveDataTri3.hh" // USES CohesiveDataTri3
+#include "data/CohesiveDataTri3b.hh" // USES CohesiveDataTri3b
+#include "data/CohesiveDataTri3c.hh" // USES CohesiveDataTri3c
 #include "data/CohesiveDataQuad4.hh" // USES CohesiveDataQuad4
 #include "data/CohesiveDataTet4.hh" // USES CohesiveDataTet4
 #include "data/CohesiveDataHex8.hh" // USES CohesiveDataHex8
@@ -56,6 +58,26 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTri3(void)
   FaultCohesiveDyn fault;
   _testAdjustTopology(&fault, data);
 } // testAdjustTopologyTri3
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D triangular element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTri3b(void)
+{ // testAdjustTopologyTri3b
+  CohesiveDataTri3b data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyTri3b
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D triangular element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTri3c(void)
+{ // testAdjustTopologyTri3c
+  CohesiveDataTri3c data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyTri3c
 
 // ----------------------------------------------------------------------
 // Test adjustTopology() with 2-D quadrilateral element.
@@ -256,7 +278,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   ALE::Obj<ALE::Mesh> mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
-  iohandler.debug(false);
+  iohandler.debug(true);
   iohandler.interpolate(false);
   iohandler.read(&mesh);
 
