@@ -100,6 +100,11 @@ class Implicit(Formulation):
     self.fields.addReal("dispIncr")
     self.fields.addReal("residual")
     self.fields.copyLayout("dispTBctpdt")
+
+    dispTBctpdt = self.fields.getReal("dispTBctpdt")
+    import pylith.topology.topology as bindings
+    bindings.sectionView(dispTBctpdt, "dispTBctpdt")
+    
     self.jacobian = mesh.createMatrix(self.fields.getReal("dispTBctpdt"))
 
     self.solver.initialize(mesh, self.fields.getReal("dispIncr"))
@@ -222,10 +227,16 @@ class Implicit(Formulation):
     petsc.mat_assemble(self.jacobian)
 
     self._info.log("Solving equations.")
+    print "BEFORE SOLVE"
+    bindings.sectionView(residual, "residual")
+    bindings.sectionView(dispIncr, "dispIncr")
     self.solver.solve(dispIncr, self.jacobian, residual)
+    print "AFTER SOLVE"
+    bindings.sectionView(dispIncr, "dispIncr")
 
     import pylith.topology.topology as bindings
     bindings.addRealSections(solnField, solnField, dispIncr)
+    bindings.sectionView(solnField, "solution")
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
