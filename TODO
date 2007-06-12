@@ -23,9 +23,6 @@ solutioniovtk
        (1) axial compression
        (2) shear
 
-3. Implement faults for kinematic source
-   a. Creation of cohesive cells
-
 5. Additional unit tests
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials
@@ -38,8 +35,9 @@ examples/templates
 
   containers
     faults.odb
-    bc.odb
     materials.odb
+
+Check trapping of errors in reading spatialdata files.
 
 ======================================================================
 SECONDARY PRIORITIES

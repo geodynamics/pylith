@@ -28,12 +28,20 @@ mesh = {
     }
   }
   group = {
-    type = vertices
     name = end points
+    type = vertices
     count = 2
     indices = {
       0
       4
+    }
+  }
+  group = {
+    name = fault
+    type = vertices
+    count = 1
+    indices = {
+      2
     }
   }
 }

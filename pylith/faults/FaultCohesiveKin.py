@@ -147,7 +147,7 @@ class FaultCohesiveKin(FaultCohesive):
     Setup members using inventory.
     """
     FaultCohesive._configure(self)
-    eqsrc = self.inventory.eqsrc
+    self.eqsrc = self.inventory.eqsrc
     return
 
   

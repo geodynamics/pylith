@@ -30,7 +30,7 @@ def validateUpDir(value):
   msg = "Up-direction must be a 3 component vector (list)."
   if not isinstance(value, list):
     raise ValueError(msg)
-  if 3 != len(list):
+  if 3 != len(value):
     raise ValueError(msg)
   try:
     nums = map(float, value)
@@ -63,7 +63,7 @@ class Fault(Component):
     ## \b Properties
     ## @li \b id Fault identifier
     ## @li \b name Name of fault
-    ## @li \b up-dir Up-dip or up direction
+    ## @li \b up_dir Up-dip or up direction
     ##   (perpendicular to along-strike and not collinear with fault normal)
     ##
     ## \b Facilities
@@ -78,7 +78,7 @@ class Fault(Component):
     label = pyre.inventory.str("label", default="")
     label.meta['tip'] = "Name of material."
 
-    upDir = pyre.inventory.list("up-dir", default=[0, 0, 1],
+    upDir = pyre.inventory.list("up_dir", default=[0, 0, 1],
                                 validator=validateUpDir)
     upDir.meta['tip'] = "Up-dip or up direction " \
                         "(perpendicular to along-strike and not collinear " \
