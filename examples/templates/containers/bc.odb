@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+## Template for user-defined boundary condition container.
+##
+## Copy this file to your working directory and rename it as
+## appropriate. Note: the extension MUST rename ".odb" for PyLith to
+## find it.
+
+# Parent class
+from pylith.utils.ObjectBin import ObjectBin
+
+# Define new boundary condition class
+#
+# You can change the name of this class, but the name here MUST match
+# the one in the object_bin() function at the bottom of this file.
+class MyBC(ObjectBin):
+  """
+  User-defined boundary conditions container.
+
+  Factory: object_bin
+  """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(ObjectBin.Inventory):
+    """
+    Python object for managing MyBC facilities and properties.
+    """
+
+    # Define the facilities in this boundary condition container.
+    #
+    # You must import any Python objects that are bound to the
+    # facilities.
+    #
+    # Synopsis:
+    #
+    # facilityName = pyre.inventory.facility("facility_name",
+    #   family="boundary_condition", factory=ClassNameOfComponent)
+    #
+    # where ClassNameOfComponent is the class name of the default
+    # component to bind to the facility 'facility_name'.
+
+    import pyre.inventory
+    
+    from pylith.bc.Dirichlet import Dirichlet
+
+    xPos = pyre.inventory.facility("x_pos", family="boundary_condition",
+                                   factory=Dirichlet)
+    xPos.meta['tip'] = "Boundary condition on +x face of 2-D box."
+    
+    xNeg = pyre.inventory.facility("x_neg", family="boundary_condition",
+                                   factory=Dirichlet)
+    xNeg.meta['tip'] = "Boundary condition on -x face of 2-D box."
+    
+    yPos = pyre.inventory.facility("y_pos", family="boundary_condition",
+                                   factory=Dirichlet)
+    yPos.meta['tip'] = "Boundary condition on +y face of 2-D box."
+    
+    yNeg = pyre.inventory.facility("y_neg", family="boundary_condition",
+                                   factory=Dirichlet)
+    yNeg.meta['tip'] = "Boundary condition on -y face of 2-D box."
+
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  # The 'name' argument on the next line defines the default name used
+  # to configure this component. Generally, we use the class name in
+  # lowercase.
+  def __init__(self, name="mybc"):
+    """
+    Constructor.
+    """
+    ObjectBin.__init__(self, name)
+    return
+
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Set attributes from inventory.
+    """
+    ObjectBin._configure(self)
+
+    # Define how the components are ordered in the container.
+    #
+    # Synopsis:
+    #
+    # self.bin = [self.inventory.facilityName1,
+    #             self.inventory.facilityName2]
+    #
+    # Replace the names of the facilities as desired. The names MUST
+    # match the VARIABLES in the inventory, as opposed to the names
+    # used to bind the components to the facilities, which is the
+    # first arugment in the calls to pyre.inventory.facility()).
+    #
+    # DO NOT change the name 'self.bin'.
+    self.bin = [self.inventory.xPos,
+                self.inventory.xNeg,
+                self.inventory.yPos,
+                self.inventory.yNeg]
+    return
+
+  
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def object_bin():
+  """
+  Factory associated with MyBC.
+  """
+  # The class name for the container used above MUST match the name
+  # used on the next line.
+  return MyBC()
+
+
+# End of file 
