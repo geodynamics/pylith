@@ -73,7 +73,7 @@ const int pylith::faults::CohesiveDataQuad4Lagrange::_numCorners[] = {
 const int pylith::faults::CohesiveDataQuad4Lagrange::_cells[] = {
   2,  4,  5,  3,
   6,  7, 10,  8,
-  5,  4, 10,  8, 11,  9
+  4,  5,  8, 10,  9, 11
 };
 
 const int pylith::faults::CohesiveDataQuad4Lagrange::_materialIds[] = {
