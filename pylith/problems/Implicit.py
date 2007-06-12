@@ -89,17 +89,10 @@ class Implicit(Formulation):
     Formulation.initialize(self, mesh, materials, boundaryConditions,
                            interfaceConditions, dimension, dt)
 
-    self._info.log("Creating fields and matrices.")
-    self.fields.addReal("dispTBctpdt")
-    self.fields.setFiberDimension("dispTBctpdt", dimension)
-    for constraint in self.constraints:
-      constraint.setConstraintSizes(self.fields.getReal("dispTBctpdt"))
-    self.fields.allocate("dispTBctpdt")
-    for constraint in self.constraints:
-      constraint.setConstraints(self.fields.getReal("dispTBctpdt"))
+    self._info.log("Creating other fields and matrices.")
     self.fields.addReal("dispIncr")
     self.fields.addReal("residual")
-    self.fields.copyLayout("dispTBctpdt")
+    self.fields.copyLayout(self.solnField['name'])
 
     dispTBctpdt = self.fields.getReal("dispTBctpdt")
     import pylith.topology.topology as bindings

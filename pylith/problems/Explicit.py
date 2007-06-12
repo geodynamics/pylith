@@ -66,14 +66,7 @@ class Explicit(Formulation):
     Formulation.initialize(self, mesh, materials, boundaryConditions,
                            interfaceConditions, dimension, dt)
 
-    self._info.log("Creating fields and matrices.")
-    self.fields.addReal("dispT")
-    self.fields.setFiberDimension("dispT", dimension)
-    for constraint in self.constraints:
-      constraint.setConstraintSizes(self.fields.getReal("dispT"), mesh)
-    self.fields.allocate("dispT")
-    for constraint in self.constraints:
-      constraint.setConstraints(self.fields.getReal("dispT"), mesh)    
+    self._info.log("Creating other fields and matrices.")
     self.fields.addReal("dispTmdt")
     self.fields.addReal("dispTpdt")
     self.fields.addReal("residual")

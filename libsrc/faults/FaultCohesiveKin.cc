@@ -253,7 +253,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     cellsCohesive->end();
 
   // Get section information
-  const ALE::Obj<real_section_type>& disp = fields->getHistoryItem(1);
+  const ALE::Obj<real_section_type>& disp = fields->getSolution();
   assert(!disp.isNull());  
   
   // Allocate vector for cell values
@@ -318,7 +318,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     cellsCohesive->end();
 
   // Get section information
-  const ALE::Obj<real_section_type>& disp = fields->getHistoryItem(1);
+  const ALE::Obj<real_section_type>& disp = fields->getSolution();
   assert(!disp.isNull());  
 
   const int spaceDim = _quadrature->spaceDim();
