@@ -39,6 +39,7 @@ namespace pylith {
     class Quadrature;
 
     class CellGeometry; // HOLDSA CellGeometry
+    class TestQuadrature;
   } // feassemble
 } // pylith
 
