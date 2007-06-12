@@ -174,13 +174,70 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    dispT = fields.getReal("dispT")
-    fault.updateState(dispT)
+    disp = fields.getReal("dispT")
+    fault.updateState(disp)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
     return
   
+
+  def test_setConstraintSizes(self):
+    """
+    Test setConstraintSizes().
+
+    WARNING: This is not a rigorous test of setConstraintSizes() because we
+    don't verify the results.
+    """
+    (mesh, fault, fields) = self._initialize()
+
+    disp = fields.getReal("dispT")
+    fault.setConstraintSizes(disp)
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly    
+    return
+
+
+  def test_setConstraints(self):
+    """
+    Test setConstraints().
+
+    WARNING: This is not a rigorous test of setConstraints() because we
+    don't verify the results.
+    """
+    (mesh, fault, fields) = self._initialize()
+
+    disp = fields.getReal("dispT")
+    fault.setConstraintSizes(disp)
+    mesh.allocateRealSection(disp)
+    fault.setConstraints(disp)
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly    
+    return
+
+
+  def test_setField(self):
+    """
+    Test setField().
+
+    WARNING: This is not a rigorous test of setField() because we
+    don't verify the results.
+    """
+    (mesh, fault, fields) = self._initialize()
+
+    disp = fields.getReal("dispT")
+    fault.setConstraintSizes(disp)
+    mesh.allocateRealSection(disp)
+    from pyre.units.time import second
+    t = 1.0*second
+    fault.setField(t, disp)
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly    
+    return
+
 
   def test_finalize(self):
     """
