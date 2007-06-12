@@ -72,7 +72,7 @@ const int pylith::faults::CohesiveDataTri3b::_numCorners[] = {
 const int pylith::faults::CohesiveDataTri3b::_cells[] = {
   4,  3,  2,
   7,  5,  6,
-  3,  4,  6, 7
+  4,  3,  7, 6
 };
 
 const int pylith::faults::CohesiveDataTri3b::_materialIds[] = {
