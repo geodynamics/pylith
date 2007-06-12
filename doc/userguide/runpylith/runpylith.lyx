@@ -62,9 +62,10 @@ A set of parameters describing the problem.
 \begin_layout Enumerate
 Mesh information.
  This includes nodal coordinates, element connectivities, and flagged sets
- of nodes to which boundary conditions can be implied.
- This information can be provided using a simple ascii format, or by importing
- the information from the LaGriT or CUBIT meshing packages.
+ of nodes to which boundary conditions can be applied.
+ This information can be provided using PyLith ASCII format (***reference***),
+ or by importing the information from the LaGriT or CUBIT meshing packages
+ (***put in references to tutorials and appendix***).
 \end_layout
 
 \begin_layout Enumerate
@@ -72,7 +73,7 @@ Databases specifying the material properties and boundary conditions to
  be used.
  Arbitrarily complex spatial variations in boundary conditions (including
  fault specifications) and material properties may be given in the spatial
- database.
+ database (***put in references to tutorials and appendix***).
 \end_layout
 
 \begin_layout Section
@@ -679,33 +680,52 @@ Mesh Information
 
 \begin_layout Standard
 Geometrical and topological information for the finite element mesh may
- be provided using CUBIT (exported using EXODUS format), LaGriT (exported
- using a GMV and a pset file), or by specifying the information in PyLith
- ascii format.
- **Put in references to tutorials and appendix.**
+ be provided by exporting an EXODUS format file from CUBIT, by exporting
+ a GMV file and an accompanying pset file from LaGriT, or by specifying
+ the information in PyLith ASCII format.
+ ***Put in references to tutorials and appendix.***
 \end_layout
 
 \begin_layout Standard
-**Maybe mention higher-order elements.** Quadratic elements are supported,
- but not automatic generation of a quadratic mesh from a linear mesh.
+PyLith supports linear elements in 1D (
+\begin_inset LatexCommand \ref{fig:1D-linear-elements}
+
+\end_inset
+
+), 2D (
+\begin_inset LatexCommand \ref{fig:2D-linear-elements}
+
+\end_inset
+
+), and 3D (
+\begin_inset LatexCommand \ref{fig:3D-linear-elements}
+
+\end_inset
+
+).
+ The node ordering must follow the convention shown in the figures.
+ Quadratic elements are also supported, but at present the only method for
+ using these elements in PyLith is using PyLith ASCII format.
+ PyLith does not yet support automatic generation of a quadratic mesh from
+ the linear meshes created by CUBIT or LaGriT.
 \end_layout
 
 \begin_layout Standard
-PyLith currently only supports the 4-node linear tetrahedral and 8-node
- linear hexahedral elements.
- The node ordering must follow the convention shown in Figures\InsetSpace ~
-
-\begin_inset LatexCommand \ref{fig:tet4}
-
-\end_inset
-
- and\InsetSpace ~
-
-\begin_inset LatexCommand \ref{fig:hex8}
-
-\end_inset
-
-.
+The mesh information defines the nodal coordinates as well as specifying
+ the nodes composing each element in the mesh.
+ The mesh information must also define at least one set of nodes for which
+ displacement (Dirichlet) boundary conditions will be provided.
+ In most realistic problems, there will be several node groups, each with
+ a unique identifying label.
+ For example, one group might define a surface of the mesh where displacement
+ (Dirichlet) boundary conditions will be applied, another might define a
+ surface where traction (Neumann) boundary conditions will be applied, while
+ a third might specify a surface that will define a fault.
+ Similarly, the mesh information contains element labels that define the
+ material type for each element in the mesh.
+ For a mesh with a single material type, there will only be a single label
+ for every element in the mesh.
+ ***Put in references for all of this***
 \end_layout
 
 \begin_layout Standard
@@ -721,7 +741,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename figs/tet4.eps
+	filename figs/bar2.eps
 
 \end_inset
 
@@ -729,11 +749,11 @@ status open
 \end_layout
 
 \begin_layout Caption
-Linear tetrahedral finite element.
+Linear bar element available for 1D problems.
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \label{fig:tet4}
+\begin_inset LatexCommand \label{fig:1D-linear-elements}
 
 \end_inset
 
@@ -757,19 +777,26 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/hex8.eps
+	filename figs/tri3.eps
 
 \end_inset
 
  
+\begin_inset Graphics
+	filename figs/quad4.eps
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Caption
-Linear hexahedral finite element.
+Linear elements available for 2D problems are the triangle (left) and the
+ quadrilateral (right).
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \label{fig:hex8}
+\begin_inset LatexCommand \label{fig:2D-linear-elements}
 
 \end_inset
 
@@ -784,6 +811,141 @@ Linear hexahedral finite element.
 \begin_layout Standard
 \noindent
 \align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+\begin_inset Graphics
+	filename figs/tet4.eps
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figs/hex8.eps
+
+\end_inset
+
+Linear elements available for 3D problems are the tetrahedron (left) and
+ the hexahedron (right).
+\begin_inset LatexCommand \label{fig:3D-linear-elements}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Boundary Condition and Material Property Databases
+\end_layout
+
+\begin_layout Standard
+Once the problem has been defined with PyLith parameters, and the mesh informati
+on has been provided, the final step is to specify the boundary conditions
+ and material properties to be used.
+ The mesh information provides labels defining sets of nodes to which boundary
+ conditions or fault conditions will be applied, as well as element labels
+ that will be used to define the material type of each element.
+ For boundary conditions, the .cfg file is used to associate boundary condition
+ types and spatial databases with each node group (***reference***).
+ For materials, the 
+\family typewriter
+.cfg
+\family default
+ file is used to associate material types and spatial databases with each
+ element group.
+\end_layout
+
+\begin_layout Standard
+The spatial databases define how the boundary conditions or material property
+ values vary spatially, and they can be arbitrarily complex.
+ The simplest example for a material database would be a mesh where all
+ the elements of a given type have uniform properties (
+\begin_inset Quotes eld
+\end_inset
+
+point
+\begin_inset Quotes erd
+\end_inset
+
+, or 0D variation).
+ A slightly more complex case would be a mesh where the elements of a given
+ type have properties that vary linearly along a given direction (
+\begin_inset Quotes eld
+\end_inset
+
+line
+\begin_inset Quotes erd
+\end_inset
+
+, or 1D variation).
+ In more complex models, the material properties might have different values
+ at each point in the mesh (
+\begin_inset Quotes eld
+\end_inset
+
+volume
+\begin_inset Quotes erd
+\end_inset
+
+, or 3D variation).
+ This might be the case, for example, if the material properties are provided
+ by a database of seismic velocities and densities.
+ ***Provide references***
+\end_layout
+
+\begin_layout Standard
+For boundary conditions, the simplest case would be where all nodes in a
+ given group have the same boundary conditions (
+\begin_inset Quotes eld
+\end_inset
+
+point
+\begin_inset Quotes erd
+\end_inset
+
+, or 0D variation).
+ A more complex case might specify a variation in the conditions on a given
+ surface (
+\begin_inset Quotes eld
+\end_inset
+
+area
+\begin_inset Quotes erd
+\end_inset
+
+, or 2D variation).
+ This sort of condition might be used, for example, to specify the variation
+ of slip on a fault plane.
+ ***Provide references***
+\begin_inset Note Comment
+status open
+
+\begin_layout Standard
+Maybe I should not be mixing 
+\end_layout
+
+\begin_layout Standard
+together BC and fault info, 
+\end_layout
+
+\begin_layout Standard
+or maybe I should change 
+\end_layout
+
+\begin_layout Standard
+the title of this section.
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
