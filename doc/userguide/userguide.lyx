@@ -185,6 +185,18 @@ preview false
 \end_inset
 
 
+\begin_inset Include \input{materials/materials.lyx}
+preview false
+
+\end_inset
+
+
+\begin_inset Include \input{boundaryconditions/boundaryconditions.lyx}
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -211,12 +223,6 @@ preview false
 \end_inset
 
  
-\begin_inset Include \input{materials/materials.lyx}
-preview false
-
-\end_inset
-
-
 \begin_inset Include \input{license.lyx}
 preview false
 
