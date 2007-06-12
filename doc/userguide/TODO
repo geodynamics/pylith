@@ -23,11 +23,25 @@ MOSTLY DONE -- Needs some checking.
 
     a.  Basic pieces needed to run problem
 
-    b.  Intro to config files
+    b.  Setting parameters for PyLith
 
-    c.  Implicit problems
+        i. Command line
 
-    d.  Explicit problems
+	ii. .cfg file
+
+	iii. .pml file
+
+	iv. Placement of .cfg files
+
+	v. PETSc settings
+
+    c.  Mesh information
+
+    d.  Database information
+
+    e.  Implicit problems
+
+    f.  Explicit problems
 
 10. Installation [Charles with some input from Leif and Brad]
 
