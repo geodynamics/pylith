@@ -68,14 +68,13 @@ noinst_HEADERS += \
 	data/DirichletDataMulti.hh \
 	data/DirichletDataMultiTri3.hh
 
-testbc_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
-
 AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
 
 testbc_LDADD = \
-	-lcppunit -ldl \
+	-lcppunit \
 	$(top_builddir)/libsrc/libpylith.la \
-	-lspatialdata
+	-lspatialdata \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
   testbc_LDADD += -lnetcdf_c++ -lnetcdf
