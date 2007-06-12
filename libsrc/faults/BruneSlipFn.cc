@@ -54,7 +54,6 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
 
   assert(!mesh.isNull());
-  assert(!faultMesh.isNull());
   assert(0 != cs);
   assert(0 != _dbFinalSlip);
   assert(0 != _dbSlipTime);

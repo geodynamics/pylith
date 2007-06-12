@@ -84,7 +84,7 @@ class EqKinSrc(Component):
     Setup members using inventory.
     """
     Component._configure(self)
-    slipfn = self.inventory.slipfn
+    self.slipfn = self.inventory.slipfn
     return
 
   

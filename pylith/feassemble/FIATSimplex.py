@@ -117,10 +117,11 @@ class FIATSimplex(ReferenceCell):
       self.cellDim = 0
       self.numCorners = 1
       self.numQuadPts = 1
-      self.basis = numpy.array([1.0])
-      self.basisDeriv = numpy.array([1.0])
-      self.quadPts = numpy.array([0.0])
+      self.basis = numpy.array([[1.0]])
+      self.basisDeriv = numpy.array([[[1.0]]])
+      self.quadPts = numpy.array([[0.0]])
       self.quadWts = numpy.array([1.0])
+      self.vertices = numpy.array([[0.0]])
 
     self._info.line("Cell geometry: ")
     self._info.line(self.geometry)

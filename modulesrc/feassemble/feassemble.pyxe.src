@@ -526,9 +526,14 @@ cdef class Quadrature:
       raise TypeError, \
             "Argument 'vertices' must be a contiguous, 2-D array " \
             "of type double."
-    if numBasis != vertices.shape[0] or cellDim != vertices.shape[1]:
-      raise TypeError, \
-            "Shape of argument 'vertices' must be (numBasis, cellDim)."
+    if cellDim > 0:
+      if numBasis != vertices.shape[0] or cellDim != vertices.shape[1]:
+        raise TypeError, \
+              "Shape of argument 'vertices' must be (numBasis, cellDim)."
+    else:
+      if 1 != vertices.shape[0] or 1 != vertices.shape[1]:
+        raise TypeError, \
+              "Shape of argument 'vertices' must be (1, 1) for 0-D cell."
 
     # basis
     basis = spatialdata.utils.simplearray.objAsSimpleArray(basis)
@@ -548,12 +553,19 @@ cdef class Quadrature:
       raise TypeError, \
             "Argument 'basisDeriv' must be a contiguous, 3-D array " \
             "of type double."
-    if numQuadPts != basisDeriv.shape[0] or \
-           numBasis != basisDeriv.shape[1] or \
-           cellDim != basisDeriv.shape[2]:
-      raise TypeError, \
-            "Shape of argument 'basisDeriv' must be (numQuadPts, " \
-            "numBasis, cellDim)."
+    if cellDim > 0:
+      if numQuadPts != basisDeriv.shape[0] or \
+             numBasis != basisDeriv.shape[1] or \
+             cellDim != basisDeriv.shape[2]:
+        raise TypeError, \
+              "Shape of argument 'basisDeriv' must be (numQuadPts, " \
+              "numBasis, cellDim)."
+    else:
+      if 1 != basisDeriv.shape[0] or \
+             1 != basisDeriv.shape[1] or \
+             1 != basisDeriv.shape[2]:
+        raise TypeError, \
+              "Shape of argument 'basisDeriv' must be (1, 1, 1) for 0-D cell."
 
     # quadPts
     quadPts = spatialdata.utils.simplearray.objAsSimpleArray(quadPts)
@@ -562,9 +574,14 @@ cdef class Quadrature:
       raise TypeError, \
             "Argument 'quadPts' must be a contiguous, 2-D array " \
             "of type double."
-    if numQuadPts != quadPts.shape[0] or cellDim != quadPts.shape[1]:
-      raise TypeError, \
-            "Shape of argument 'quadPts' must be (numQuadPts, cellDim)."
+    if cellDim > 0:
+      if numQuadPts != quadPts.shape[0] or cellDim != quadPts.shape[1]:
+        raise TypeError, \
+              "Shape of argument 'quadPts' must be (numQuadPts, cellDim)."
+    else:
+      if 1 != quadPts.shape[0] or 1 != quadPts.shape[1]:
+        raise TypeError, \
+              "Shape of argument 'quadPts' must be (1, 1) for 0-D cell."
 
     # quadWts
     quadWts = spatialdata.utils.simplearray.objAsSimpleArray(quadWts)
