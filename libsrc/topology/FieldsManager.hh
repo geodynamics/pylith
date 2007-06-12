@@ -93,6 +93,18 @@ public :
    */
   void copyLayout(const ALE::Obj<real_section_type>& field);
 
+  /** Set name of solution field.
+   *
+   * @param name Name of field that is the solution.
+   */
+  void solutionField(const char* name);
+
+  /** Get solution field.
+   *
+   * @returns Solution field.
+   */
+  const ALE::Obj<real_section_type>& getSolution(void);
+
   /** Create history manager for a subset of the managed fields.
    *
    * @param fields Fields in history (first is most recent).
@@ -110,6 +122,7 @@ public :
   /** Get field in history by position.
    *
    * @param index Index in history [0=most recent, 1=previous, etc]
+   * @returns Field in history.
    */
   const ALE::Obj<real_section_type>& getHistoryItem(const int index);
 
@@ -135,6 +148,9 @@ private :
 
   /// Map for fieldss stored as real fields
   map_real_type _real;
+
+  /// Name of field that corresponds to the solution.
+  std::string _solutionName;
 
   /// History manager for a subset of the fields
   std::vector<std::string> _history;
