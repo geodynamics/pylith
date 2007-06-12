@@ -84,13 +84,13 @@ class MeshGenerator(Component):
     return
 
 
-  def _adjustTopology(self, mesh, faults):
+  def _adjustTopology(self, mesh, interfaces):
     """
-    Adjust topology for fault implementation.
+    Adjust topology for interface implementation.
     """
-    if not faults is None:
-      for fault in faults:
-        mesh.adjustTopology(fault)
+    if not interfaces is None:
+      for interface in interfaces:
+        interface.adjustTopology(mesh)
     return
   
 

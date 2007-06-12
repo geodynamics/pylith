@@ -313,7 +313,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Assemble cell contribution into field
     mesh->updateAdd(residual, *c_iter, _cellVector);
-    residual->view("AFTER updateAdd"); // TEMPORARY
+    residual->view("residual AFTER updateAdd"); // TEMPORARY
   } // for
 } // integrateResidual
 

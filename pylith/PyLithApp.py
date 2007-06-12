@@ -75,11 +75,11 @@ class PyLithApp(Application):
     """
     self.petsc.initialize()
 
-    # Create mesh (adjust to account for faults if necessary)
-    faults = None
-    if faults in dir(self.problem):
-      faults = self.problem.faults
-    mesh = self.mesher.create(faults)
+    # Create mesh (adjust to account for interfaces (faults) if necessary)
+    interfaces = None
+    if "interfaces" in dir(self.problem):
+      interfaces = self.problem.interfaces.bin
+    mesh = self.mesher.create(interfaces)
 
     # Initialize problem and then run
     self.problem.initialize(mesh)

@@ -101,14 +101,20 @@ class Formulation(Component):
       integrator.initQuadrature(material.quadrature)
       integrator.initMaterial(mesh, material)
       self.integrators.append(integrator)
+      self._info.log("Added elasticity integrator for material '%s'." % \
+                     material.label)
 
     self._info.log("Initializing boundary conditions.")
     for bc in boundaryConditions.bin:
       bc.initialize(mesh)
       if implementsIntegrator(bc):
         self.integrators.append(bc)
-      elif implementsConstraint(bc):
+        self._info.log("Added boundary condition '%s' as an integrator." % \
+                       bc.label)
+      if implementsConstraint(bc):
         self.constraints.append(bc)
+        self._info.log("Added boundary condition '%s' as a constraint." % \
+                       bc.label)
       else:
         raise TypeError, \
               "Could not determine whether boundary condition '%s' is an " \
@@ -119,8 +125,12 @@ class Formulation(Component):
       ic.initialize(mesh)
       if implementsIntegrator(ic):
         self.integrators.append(ic)
-      elif implementsConstraint(ic):
+        self._info.log("Added interface condition '%s' as an integrator." % \
+                       ic.label)
+      if implementsConstraint(ic):
         self.constraints.append(ic)
+        self._info.log("Added interface condition '%s' as a constraint." % \
+                       ic.label)
       else:
         raise TypeError, \
               "Could not determine whether interface condition '%s' is an " \

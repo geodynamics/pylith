@@ -2,6 +2,11 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+Python unit tests for FaultCohesiveKin
+  setConstraintSizes()
+  setConstraints()
+  setField()
+
 tests/1d/line2
 
   dislocation.cfg
