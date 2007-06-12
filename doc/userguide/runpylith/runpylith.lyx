@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -816,7 +816,8 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\align center
 \begin_inset Graphics
 	filename figs/tet4.eps
 
@@ -828,6 +829,10 @@ status open
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Caption
 Linear elements available for 3D problems are the tetrahedron (left) and
  the hexahedron (right).
 \begin_inset LatexCommand \label{fig:3D-linear-elements}
