@@ -130,6 +130,17 @@ class Formulation(Component):
     for output in self.output.bin:
       output.open(mesh)
       output.writeTopology()
+
+    self._info.log("Creating solution field.")
+    solnName = self.solnField['name']
+    self.fields.addReal(solnName)
+    self.fields.solutionField(solnName)
+    self.fields.setFiberDimension(solnName, dimension)
+    for constraint in self.constraints:
+      constraint.setConstraintSizes(self.fields.getReal(solnName))
+    self.fields.allocate(solnName)
+    for constraint in self.constraints:
+      constraint.setConstraints(self.fields.getReal(solnName))
     return
 
 

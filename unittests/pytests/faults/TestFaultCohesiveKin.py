@@ -275,6 +275,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fields.addReal("dispTpdt")
     fields.addReal("dispT")
     fields.addReal("dispTmdt")
+    fields.solutionField("dispT");
     fields.createHistory(["dispTpdt", "dispT", "dispTmdt"])
     fields.setFiberDimension("residual", cs.spaceDim)
     fields.allocate("residual")

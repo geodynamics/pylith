@@ -143,6 +143,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   fields.addReal("residual");
   fields.addReal("dispTpdt");
   fields.addReal("dispT");
+  fields.solutionField("dispT");
   const char* history[] = { "dispTpdt", "dispT" };
   const int historySize = 2;
   fields.createHistory(history, historySize);
@@ -215,6 +216,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   fields.addReal("residual");
   fields.addReal("dispTpdt");
   fields.addReal("dispT");
+  fields.solutionField("dispT");
   const char* history[] = { "dispTpdt", "dispT" };
   const int historySize = 2;
   fields.createHistory(history, historySize);

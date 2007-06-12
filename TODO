@@ -2,6 +2,10 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+tests/1d/line2
+
+  dislocation.cfg
+
 solutioniovtk
 
   need to write each time step to a different file.
