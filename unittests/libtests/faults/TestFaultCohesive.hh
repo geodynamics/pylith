@@ -56,6 +56,11 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyTet4c );
   CPPUNIT_TEST( testAdjustTopologyTet4d );
   CPPUNIT_TEST( testAdjustTopologyHex8 );
+  CPPUNIT_TEST( testAdjustTopologyHex8b );
+  CPPUNIT_TEST( testAdjustTopologyHex8c );
+  CPPUNIT_TEST( testAdjustTopologyHex8d );
+  CPPUNIT_TEST( testAdjustTopologyHex8e );
+  CPPUNIT_TEST( testAdjustTopologyHex8f );
 
   CPPUNIT_TEST( testAdjustTopologyLine2Lagrange );
   CPPUNIT_TEST( testAdjustTopologyTri3Lagrange );
@@ -116,6 +121,21 @@ public :
 
   /// Test adjustTopology() with 3-D hexahedral element.
   void testAdjustTopologyHex8(void);
+
+  /// Test adjustTopology() with 3-D hexahedral element (face b).
+  void testAdjustTopologyHex8b(void);
+
+  /// Test adjustTopology() with 3-D hexahedral element (face c).
+  void testAdjustTopologyHex8c(void);
+
+  /// Test adjustTopology() with 3-D hexahedral element (face d).
+  void testAdjustTopologyHex8d(void);
+
+  /// Test adjustTopology() with 3-D hexahedral element (face e).
+  void testAdjustTopologyHex8e(void);
+
+  /// Test adjustTopology() with 3-D hexahedral element (face f).
+  void testAdjustTopologyHex8f(void);
 
   /// Test adjustTopology() with 1-D line element for Lagrange
   /// multipliers.

@@ -37,6 +37,11 @@
 #include "data/CohesiveDataTet4c.hh" // USES CohesiveDataTet4c
 #include "data/CohesiveDataTet4d.hh" // USES CohesiveDataTet4d
 #include "data/CohesiveDataHex8.hh" // USES CohesiveDataHex8
+#include "data/CohesiveDataHex8b.hh" // USES CohesiveDataHex8b
+#include "data/CohesiveDataHex8c.hh" // USES CohesiveDataHex8c
+#include "data/CohesiveDataHex8d.hh" // USES CohesiveDataHex8d
+#include "data/CohesiveDataHex8e.hh" // USES CohesiveDataHex8e
+#include "data/CohesiveDataHex8f.hh" // USES CohesiveDataHex8f
 
 #include "data/CohesiveDataLine2Lagrange.hh" // USES CohesiveDataLine2Lagrange
 #include "data/CohesiveDataTri3Lagrange.hh" // USES CohesiveDataTri3Lagrange
@@ -196,6 +201,56 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyHex8(void)
   FaultCohesiveDyn fault;
   _testAdjustTopology(&fault, data);
 } // testAdjustTopologyHex8
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D hexahedral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyHex8b(void)
+{ // testAdjustTopologyHex8b
+  CohesiveDataHex8b data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyHex8b
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D hexahedral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyHex8c(void)
+{ // testAdjustTopologyHex8c
+  CohesiveDataHex8c data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyHex8c
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D hexahedral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyHex8d(void)
+{ // testAdjustTopologyHex8d
+  CohesiveDataHex8d data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyHex8d
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D hexahedral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyHex8e(void)
+{ // testAdjustTopologyHex8e
+  CohesiveDataHex8e data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyHex8e
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D hexahedral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyHex8f(void)
+{ // testAdjustTopologyHex8f
+  CohesiveDataHex8f data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyHex8f
 
 // ----------------------------------------------------------------------
 // Test adjustTopology() with 1-D line element for Lagrange

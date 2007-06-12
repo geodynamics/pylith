@@ -1,0 +1,58 @@
+mesh = {
+  dimension = 3
+  use-index-zero = true
+  vertices = {
+    dimension = 3
+    count = 12
+    coordinates = {
+             0     -2.0 -1.0 -1.0
+             1     -2.0  1.0 -1.0
+             2     -2.0 -1.0  1.0
+             3     -2.0  1.0  1.0
+             4      0.0 -1.0 -1.0
+             5      0.0  1.0 -1.0
+             6      0.0 -1.0  1.0
+             7      0.0  1.0  1.0
+             8      2.0 -1.0 -1.0
+             9      2.0  1.0 -1.0
+            10      2.0 -1.0  1.0
+            11      2.0  1.0  1.0
+    }
+  }
+  cells = {
+    count = 2
+    num-corners = 8
+    simplices = {
+             0       4  6  7  5  0  2  3  1
+             1       8 10 11  9  4  6  7  5
+    }
+    material-ids = {
+             0   0
+             1   0
+    }
+  }
+  group = {
+    name = fault
+    type = vertices
+    count = 4
+    indices = {
+      4
+      5
+      6
+      7
+    }
+  }
+  group = {
+    name = output
+    type = vertices
+    count = 6
+    indices = {
+      2
+      3
+      6
+      7
+     10
+     11
+    }
+  }
+}

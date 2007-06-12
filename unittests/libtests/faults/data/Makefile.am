@@ -38,6 +38,11 @@ noinst_DATA = \
 	tet4_sliptime.spatialdb \
 	tet4_peakrate.spatialdb \
 	hex8.mesh \
+	hex8b.mesh \
+	hex8c.mesh \
+	hex8d.mesh \
+	hex8e.mesh \
+	hex8f.mesh \
 	hex8_finalslip.spatialdb \
 	hex8_sliptime.spatialdb \
 	hex8_peakrate.spatialdb
