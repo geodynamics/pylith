@@ -827,7 +827,7 @@ def addRealSections(dst, srcA, srcB):
   Add two sections, storing result in third section.
   """
   # create shim for Field::add()
-  #embed{ void* Section_addRealSections(void* objVptr, void* aVptr, void* bVptr)
+  #embed{ void Section_addRealSections(void* objVptr, void* aVptr, void* bVptr)
   try {
     ALE::Obj<pylith::real_section_type>* dst =
       (ALE::Obj<pylith::real_section_type>*) objVptr;
@@ -853,6 +853,34 @@ def addRealSections(dst, srcA, srcB):
   Section_addRealSections(PyCObject_AsVoidPtr(dst),
                           PyCObject_AsVoidPtr(srcA),
                           PyCObject_AsVoidPtr(srcB))
+  return
+
+
+# ----------------------------------------------------------------------
+def sectionView(field, label):
+  """
+  View section.
+  """
+  # create shim for section::view()
+  #embed{ void Section_view(void* objVptr, char* label)
+  try {
+    ALE::Obj<pylith::real_section_type>* field =
+      (ALE::Obj<pylith::real_section_type>*) objVptr;
+    assert(0 != field);
+    assert(!field->isNull());
+    (*field)->view(label);
+  } catch (const std::exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.what()));
+  } catch (const ALE::Exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.msg().c_str()));
+  } catch (...) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    "Caught unknown C++ exception.");
+  } // try/catch
+  #}embed
+  Section_view(PyCObject_AsVoidPtr(field), label)
   return
 
 

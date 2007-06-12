@@ -1,0 +1,32 @@
+# vtk DataFile Version 2.0
+Simplicial Mesh Example
+ASCII
+DATASET UNSTRUCTURED_GRID
+POINTS 8 double
+-3 -1 0.0
+-1 -1 0.0
+1 -1 0.0
+3 -1 0.0
+-3 1 0.0
+-1 1 0.0
+1 1 0.0
+3 1 0.0
+CELLS 3 15
+4  0 1 5 4
+4  1 2 6 5
+4  2 3 7 6
+CELL_TYPES 3
+9
+9
+9
+POINT_DATA 8
+SCALARS displacements double 2
+LOOKUP_TABLE default
+0 -3
+0 0.248062
+0 0.403101
+0 3
+0 -3
+0 -0.403101
+0 -0.248062
+0 3
