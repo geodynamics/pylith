@@ -20,13 +20,21 @@ noinst_PYTHON = \
 noinst_DATA = \
 	box.exo \
 	axialelasticisotropic.cfg \
+	axialmaxwellisotropic.cfg \
 	axialx.spatialdb \
 	axialy.spatialdb \
 	axialz.spatialdb \
-	matprops.spatialdb
+	matprops.spatialdb \
+	matprops-maxwell.spatialdb \
+	shearelasticisotropic.cfg \
+	shearmaxwellisotropic.cfg \
+	shearxyz.spatialdb
 
 noinst_TMP = \
-	axialelasticisotropic.vtk
+	axialelasticisotropic.vtk \
+	axialmaxwellisotropic.vtk \
+	shearelasticisotropic.vtk \
+	shearmaxwellisotropic.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
