@@ -20,7 +20,11 @@ TESTS = testbc.py
 check_SCRIPTS = testbc.py
 
 noinst_PYTHON = \
-	TestDirichlet.py
+	TestDirichlet.py \
+	TestBCSingle.py \
+	TestBCTwoSides.py \
+	TestBCFourSides.py \
+	TestBCSixSides.py
 
 TESTS_ENVIRONMENT = $(PYTHON)
 

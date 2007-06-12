@@ -20,7 +20,6 @@ noinst_PYTHON = \
 noinst_DATA = \
 	bar.mesh \
 	axialextension.cfg \
-	bcsingle.odb \
 	dispbc.spatialdb \
 	matprops.spatialdb
 

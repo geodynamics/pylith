@@ -17,6 +17,10 @@ nobase_pkgpyexec_PYTHON = \
 	bc/BCIntegrator.py \
 	bc/BoundaryCondition.py \
 	bc/Dirichlet.py \
+	bc/BCSingle.py \
+	bc/BCTwoSides.py \
+	bc/BCFourSides.py \
+	bc/BCSixSides.py \
 	faults/__init__.py \
 	faults/BruneSlipFn.py \
 	faults/EqKinSrc.py \
@@ -58,6 +62,7 @@ nobase_pkgpyexec_PYTHON = \
 	feassemble/geometry/GeometryTet3D.py \
 	feassemble/geometry/GeometryHex3D.py \
 	materials/__init__.py \
+	materials/BiMaterial.py \
 	materials/ElasticMaterial.py \
 	materials/ElasticIsotropic3D.py \
 	materials/ElasticPlaneStrain.py \
@@ -76,8 +81,6 @@ nobase_pkgpyexec_PYTHON = \
 	meshio/SolutionIO.py \
 	meshio/SolutionIOVTK.py \
 	problems/__init__.py \
-	problems/BCPrism.py \
-	problems/BCQuadrilateral.py \
 	problems/Explicit.py \
 	problems/Formulation.py \
 	problems/Implicit.py \
@@ -99,6 +102,7 @@ nobase_pkgpyexec_PYTHON = \
 	utils/PetscManager.py \
 	utils/importing.py \
 	utils/testarray.py
+
 
 if ENABLE_TETGEN
   nobase_pkgpyexec_PYTHON += topology/MeshGenSimple.py

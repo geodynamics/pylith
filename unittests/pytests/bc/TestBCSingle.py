@@ -10,24 +10,24 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/materials/TestHomogeneous.py
+## @file unittests/pytests/bc/TestBCSingle.py
 
-## @brief Unit testing of Homogenous object.
+## @brief Unit testing of BCSingle object.
 
 import unittest
 
 # ----------------------------------------------------------------------
-class TestHomogeneous(unittest.TestCase):
+class TestBCSingle(unittest.TestCase):
   """
-  Unit testing of Homogeneous object.
+  Unit testing of BCSingle object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    from pylith.materials.Homogeneous import Homogeneous
-    materials = Homogeneous()
+    from pylith.bc.BCSingle import BCSingle
+    bc = BCSingle()
     return
 
 
@@ -35,12 +35,12 @@ class TestHomogeneous(unittest.TestCase):
     """
     Test _configure().
     """
-    from pylith.materials.Homogeneous import Homogeneous
-    materials = Homogeneous()
-    from pylith.materials.ElasticIsotropic3D import ElasticIsotropic3D
-    materials.inventory.material = ElasticIsotropic3D()
-    materials._configure()
-    self.assertEqual(1, len(materials.bin))
+    from pylith.bc.BCSingle import BCSingle
+    bc = BCSingle()
+    from pylith.bc.Dirichlet import Dirichlet
+    bc.inventory.bc = Dirichlet()
+    bc._configure()
+    self.assertEqual(1, len(bc.bin))
     return
 
 

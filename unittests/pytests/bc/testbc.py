@@ -59,6 +59,18 @@ class TestApp(Script):
     from TestDirichlet import TestDirichlet
     suite.addTest(unittest.makeSuite(TestDirichlet))
 
+    from TestBCSingle import TestBCSingle
+    suite.addTest(unittest.makeSuite(TestBCSingle))
+
+    from TestBCTwoSides import TestBCTwoSides
+    suite.addTest(unittest.makeSuite(TestBCTwoSides))
+
+    from TestBCFourSides import TestBCFourSides
+    suite.addTest(unittest.makeSuite(TestBCFourSides))
+
+    from TestBCSixSides import TestBCSixSides
+    suite.addTest(unittest.makeSuite(TestBCSixSides))
+
     return suite
 
 

@@ -10,22 +10,22 @@
 # ----------------------------------------------------------------------
 #
 
-## @file pylith/problems/BCPrism.py
+## @file pylith/bc/BCFourSides.py
 ##
-## @brief Python boundary conditions container for a 3-D prism.
+## @brief Python boundary conditions container for a 2-D quadrilateral.
 ##
-## Boundary conditions can be applied to any of the six faces.
+## Boundary conditions can be applied to any of the four edges.
 ##
 ## Factory: object_bin
 
 from pylith.utils.ObjectBin import ObjectBin
 
-# BCPrism class
-class BCPrism(ObjectBin):
+# BCFourSides class
+class BCFourSides(ObjectBin):
   """
-  Python boundary conditions container for a 3-D prism.
+  Python boundary conditions container for a 2-D quadrilateral.
 
-  Boundary conditions can be applied to any of the six faces.
+  Boundary conditions can be applied to any of the four edges.
 
   Factory: object_bin
   """
@@ -34,22 +34,20 @@ class BCPrism(ObjectBin):
 
   class Inventory(ObjectBin.Inventory):
     """
-    Python object for managing BCPrism facilities and properties.
+    Python object for managing BCFourSides facilities and properties.
     """
     
     ## @class Inventory
-    ## Python object for managing BCPrism facilities and properties.
+    ## Python object for managing BCFourSides facilities and properties.
     ##
     ## \b Properties
     ## @li None
     ##
     ## \b Facilities
-    ## @li \b x_pos Boundary condition on +x face of prism.
-    ## @li \b x_neg Boundary condition on -x face of prism.
-    ## @li \b y_pos Boundary condition on +y face of prism.
-    ## @li \b y_neg Boundary condition on -y face of prism.
-    ## @li \b z_pos Boundary condition on +z face of prism.
-    ## @li \b z_neg Boundary condition on -z face of prism.
+    ## @li \b x_pos Boundary condition on +x face of 2-D box.
+    ## @li \b x_neg Boundary condition on -x face of 2-D box.
+    ## @li \b y_pos Boundary condition on +y face of 2-D box.
+    ## @li \b y_neg Boundary condition on -y face of 2-D box.
 
     import pyre.inventory
     
@@ -57,32 +55,24 @@ class BCPrism(ObjectBin):
 
     xPos = pyre.inventory.facility("x_pos", family="boundary_condition",
                                    factory=Dirichlet)
-    xPos.meta['tip'] = "Boundary condition on +x face of prism."
+    xPos.meta['tip'] = "Boundary condition on +x face of 2-D box."
 
     xNeg = pyre.inventory.facility("x_neg", family="boundary_condition",
                                    factory=Dirichlet)
-    xNeg.meta['tip'] = "Boundary condition on -x face of prism."
+    xNeg.meta['tip'] = "Boundary condition on -x face of 2-D box."
 
     yPos = pyre.inventory.facility("y_pos", family="boundary_condition",
                                    factory=Dirichlet)
-    yPos.meta['tip'] = "Boundary condition on +y face of prism."
+    yPos.meta['tip'] = "Boundary condition on +y face of 2-D box."
 
     yNeg = pyre.inventory.facility("y_neg", family="boundary_condition",
                                    factory=Dirichlet)
-    yNeg.meta['tip'] = "Boundary condition on -y face of prism."
-
-    zPos = pyre.inventory.facility("z_pos", family="boundary_condition",
-                                   factory=Dirichlet)
-    zPos.meta['tip'] = "Boundary condition on +z face of prism."
-
-    zNeg = pyre.inventory.facility("z_neg", family="boundary_condition",
-                                   factory=Dirichlet)
-    zNeg.meta['tip'] = "Boundary condition on -z face of prism."
+    yNeg.meta['tip'] = "Boundary condition on -y face of 2-D box."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="bcprism"):
+  def __init__(self, name="bcfoursides"):
     """
     Constructor.
     """
@@ -100,9 +90,7 @@ class BCPrism(ObjectBin):
     self.bin = [self.inventory.xPos,
                 self.inventory.xNeg,
                 self.inventory.yPos,
-                self.inventory.yNeg,
-                self.inventory.zPos,
-                self.inventory.zNeg]
+                self.inventory.yNeg]
     return
 
   
@@ -110,9 +98,9 @@ class BCPrism(ObjectBin):
 
 def object_bin():
   """
-  Factory associated with BCPrism.
+  Factory associated with BCFourSides.
   """
-  return BCPrism()
+  return BCFourSides()
 
 
 # End of file 

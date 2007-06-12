@@ -10,24 +10,24 @@
 # ======================================================================
 #
 
-## @file unittests/pytests/materials/TestHomogeneous.py
+## @file unittests/pytests/materials/TestSingleFault.py
 
-## @brief Unit testing of Homogenous object.
+## @brief Unit testing of SingleFault object.
 
 import unittest
 
 # ----------------------------------------------------------------------
-class TestHomogeneous(unittest.TestCase):
+class TestSingleFault(unittest.TestCase):
   """
-  Unit testing of Homogeneous object.
+  Unit testing of SingleFault object.
   """
 
   def test_constructor(self):
     """
     Test constructor.
     """
-    from pylith.materials.Homogeneous import Homogeneous
-    materials = Homogeneous()
+    from pylith.faults.SingleFault import SingleFault
+    faults = SingleFault()
     return
 
 
@@ -35,12 +35,12 @@ class TestHomogeneous(unittest.TestCase):
     """
     Test _configure().
     """
-    from pylith.materials.Homogeneous import Homogeneous
-    materials = Homogeneous()
-    from pylith.materials.ElasticIsotropic3D import ElasticIsotropic3D
-    materials.inventory.material = ElasticIsotropic3D()
-    materials._configure()
-    self.assertEqual(1, len(materials.bin))
+    from pylith.faults.SingleFault import SingleFault
+    faults = SingleFault()
+    from pylith.faults.Fault import Fault
+    faults.inventory.fault = Fault()
+    faults._configure()
+    self.assertEqual(1, len(faults.bin))
     return
 
 
