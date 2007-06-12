@@ -15,6 +15,22 @@
 ## Copy this file to your working directory and rename it as
 ## appropriate. Note: the extension MUST rename ".odb" for PyLith to
 ## find it.
+##
+## To use this container, in your .cfg file, bind this component to
+## the boundary condition facility of the problem:
+##
+## [pylithapp.timedependent]
+## bc = pylith.bc.MyBC
+##
+## You can then set the properties of the facilities in this container
+## just as you would any other Pyre component.
+##
+## For example:
+##
+## [pylithapp.timedepedent.bc.x_pos]
+## fixed_dof = [0]
+## id = 102
+## label = face +x
 
 # Parent class
 from pylith.utils.ObjectBin import ObjectBin
