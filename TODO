@@ -25,8 +25,6 @@ solutioniovtk
 
 3. Implement faults for kinematic source
    a. Creation of cohesive cells
-     Add tests for each possible face as fault (CohesiveDataXXX).
-       Hex
 
 3. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
    a. Materials C++ code
