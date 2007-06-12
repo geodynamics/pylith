@@ -71,7 +71,7 @@ const int pylith::faults::CohesiveDataQuad4c::_numCorners[] = {
 const int pylith::faults::CohesiveDataQuad4c::_cells[] = {
   5,  3,  2,  4,
   9,  8,  6,  7,
-  5,  4,  9,  8,
+  4,  5,  8,  9,
 };
 
 const int pylith::faults::CohesiveDataQuad4c::_materialIds[] = {
