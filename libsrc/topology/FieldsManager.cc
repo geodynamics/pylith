@@ -21,7 +21,8 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::topology::FieldsManager::FieldsManager(const ALE::Obj<Mesh>& mesh) :
-  _mesh(mesh)
+  _mesh(mesh),
+  _solutionName("")
 { // constructor
 } // constructor
 
@@ -205,6 +206,29 @@ pylith::topology::FieldsManager::copyLayout(
 				     field->getConstraintDof(*p_iter));
   } // for
 } // copyLayout
+
+// ----------------------------------------------------------------------
+// Set name of solution field.
+void
+pylith::topology::FieldsManager::solutionField(const char* name)
+{ // solutionField
+  map_real_type::const_iterator iter = _real.find(name);
+  if (iter == _real.end()) {
+    std::ostringstream msg;
+    msg << "Cannot use unknown field '" << name 
+	<< "' when setting name of solution field.";
+    throw std::runtime_error(msg.str());
+  } // if
+  _solutionName = name;
+} // solutionField
+
+// ----------------------------------------------------------------------
+// Get solution field.
+const ALE::Obj<pylith::real_section_type>&
+pylith::topology::FieldsManager::getSolution(void)
+{ // getSolution
+  return getReal(_solutionName.c_str());
+} // getSolution
 
 // ----------------------------------------------------------------------
 // Create history manager for a subset of the managed fields.

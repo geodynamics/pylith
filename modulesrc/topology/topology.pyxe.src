@@ -702,6 +702,58 @@ cdef class FieldsManager:
     return
 
 
+  def solutionField(self, name):
+    """
+    Set name of field corresponding to solution.
+    """
+    # create shim for solutionField
+    #embed{ void FieldsManager_solutionField(void* objVptr, char* name)
+    try {
+      assert(0 != objVptr);
+      ((pylith::topology::FieldsManager*) objVptr)->solutionField(name);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    FieldsManager_solutionField(self.thisptr, name)
+
+
+  def getSolution(self):
+    """
+    Get field corresponding to solution.
+    """
+    # create shim for getSolution
+    #embed{ void* FieldsManager_getSolution(void* objVptr)
+    void* result = 0;
+    try {
+      assert(0 != objVptr);
+      const ALE::Obj<pylith::real_section_type>& field =
+        ((pylith::topology::FieldsManager*) objVptr)->getSolution();
+      result = (void*) &field;
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+    cdef void* ptr
+    ptr = FieldsManager_getSolution(self.thisptr)
+    return PyCObject_FromVoidPtr(ptr, NULL)
+
+
   def createHistory(self, labels):
     """
     Create history manager for a subset of the managed fields.

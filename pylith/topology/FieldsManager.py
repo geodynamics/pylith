@@ -89,12 +89,30 @@ class FieldsManager(object):
     return self.cppHandle.copyLayoutFromSrc(field)
 
 
+  def solutionField(self, name):
+    """
+    Set name of field corresponding to solution.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.solutionField(name)
+    return
+
+
+  def getSolution(self):
+    """
+    Get field corresponding to solution.
+    """
+    assert(None != self.cppHandle)
+    return self.cppHandle.getSolution()
+
+
   def createHistory(self, labels):
     """
     Create history manager for a subset of the managed fields.
     """
     assert(None != self.cppHandle)
     self.cppHandle.createHistory(labels)
+    return
 
 
   def shiftHistory(self):
@@ -103,6 +121,7 @@ class FieldsManager(object):
     """
     assert(None != self.cppHandle)
     self.cppHandle.shiftHistory()
+    return
 
 
   def getHistoryItem(self, index):

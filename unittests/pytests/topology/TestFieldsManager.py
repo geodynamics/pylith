@@ -40,7 +40,7 @@ class TestFieldsManager(unittest.TestCase):
     """
     Test addReal().
 
-    WARNING: This is not a rigorous test of initialize() because we
+    WARNING: This is not a rigorous test of addReal() because we
     don't verify the results.
     """
 
@@ -58,7 +58,7 @@ class TestFieldsManager(unittest.TestCase):
     """
     Test getReal().
 
-    WARNING: This is not a rigorous test of setConstraintSizes() because we
+    WARNING: This is not a rigorous test of getReal() because we
     don't verify the results.
     """
     mesh = self._initialize()
@@ -77,7 +77,7 @@ class TestFieldsManager(unittest.TestCase):
     """
     Test delReal().
 
-    WARNING: This is not a rigorous test of setConstraints() because we
+    WARNING: This is not a rigorous test of delReal() because we
     don't verify the results.
     """
 
@@ -97,7 +97,7 @@ class TestFieldsManager(unittest.TestCase):
     """
     Test setFiberDimension().
 
-    WARNING: This is not a rigorous test of setConstraints() because we
+    WARNING: This is not a rigorous test of setFiberDimension() because we
     don't verify the results.
     """
 
@@ -120,7 +120,7 @@ class TestFieldsManager(unittest.TestCase):
     """
     Test allocate().
 
-    WARNING: This is not a rigorous test of setConstraints() because we
+    WARNING: This is not a rigorous test of allocate() because we
     don't verify the results.
     """
 
@@ -141,7 +141,7 @@ class TestFieldsManager(unittest.TestCase):
     """
     Test copyLayout().
 
-    WARNING: This is not a rigorous test of setField() because we
+    WARNING: This is not a rigorous test of copyLayout() because we
     don't verify the results.
     """
 
@@ -159,7 +159,7 @@ class TestFieldsManager(unittest.TestCase):
     """
     Test copyLayoutFromSrc().
 
-    WARNING: This is not a rigorous test of setField() because we
+    WARNING: This is not a rigorous test of copyLayoutFromSrc() because we
     don't verify the results.
     """
 
@@ -174,6 +174,51 @@ class TestFieldsManager(unittest.TestCase):
 
     manager.copyLayoutFromSrc(field)
     
+    # We should really add something here to check to make sure things
+    # actually initialized correctly.
+    return
+
+
+  def test_solutionField(self):
+    """
+    Test solutionField().
+
+    WARNING: This is not a rigorous test of solutionField() because we
+    don't verify the results.
+    """
+    mesh = self._initialize()
+    from pylith.topology.FieldsManager import FieldsManager
+    manager = FieldsManager(mesh)
+    
+    fields = ["field A", "field B", "field C"]
+    for field in fields:
+      manager.addReal(field)
+
+    manager.solutionField("field B")
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly.
+    return
+
+
+  def test_getSolution(self):
+    """
+    Test getSolution().
+
+    WARNING: This is not a rigorous test of getSolution() because we
+    don't verify the results.
+    """
+    mesh = self._initialize()
+    from pylith.topology.FieldsManager import FieldsManager
+    manager = FieldsManager(mesh)
+    
+    fields = ["field A", "field B", "field C"]
+    for field in fields:
+      manager.addReal(field)
+
+    manager.solutionField("field B")
+    solution = manager.getSolution()
+
     # We should really add something here to check to make sure things
     # actually initialized correctly.
     return
