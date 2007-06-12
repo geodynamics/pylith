@@ -14,9 +14,7 @@
 ##
 ## @brief Python PyLith crustal dynamics problems module initialization
 
-__all__ = ['BCPrism',
-           'BCQuadrilateral',
-           'EqDeformation',
+__all__ = ['EqDeformation',
            'Explicit',
            'Implicit',
            'Problem',

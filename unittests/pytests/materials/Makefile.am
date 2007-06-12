@@ -20,9 +20,15 @@ TESTS = testmaterials.py
 check_SCRIPTS = testmaterials.py
 
 noinst_PYTHON = \
+	TestBiMaterial.py \
+	TestElasticIsotropic3D.py \
+	TestElasticPlaneStrain.py \
+	TestElasticPlaneStress.py \
+	TestElasticStrain1D.py \
+	TestElasticStress1D.py \
 	TestHomogeneous.py \
 	TestMaterial.py \
-	TestElasticIsotropic3D.py
+	TestMaxwellIsotropic3D.py
 
 TESTS_ENVIRONMENT = $(PYTHON)
 

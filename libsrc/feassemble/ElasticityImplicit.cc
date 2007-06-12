@@ -106,6 +106,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     fields->getReal("dispTBctpdt");
   assert(!dispTBctpdt.isNull());
 
+  dispTBctpdt->view("DISP T BC t+dt"); // TEMPORARY
+
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const double_array& quadWts = _quadrature->quadWts();
@@ -140,6 +142,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
+    std::cout << "integrateResidual, cell: " << *c_iter << std::endl;
+
     // Compute geometry information for current cell
     _quadrature->computeGeometry(mesh, coordinates, *c_iter);
 
@@ -151,6 +155,16 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Restrict input fields to cell
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
+
+    { // TEMPORARY
+      std::cout << "dispTBctpdtCell\n";
+      for (int i=0; i < dispTBctpdtCell.size(); ++i) {
+	std::cout << " " << dispTBctpdtCell[i];
+	if ((i+1) % spaceDim == 0)
+	  std::cout << "\n";
+      }
+	std::cout << std::endl;
+    } // TEMPORARY
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -233,6 +247,16 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
       PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
       if (err)
 	throw std::runtime_error("Logging PETSc flops failed.");
+      
+      { // TEMPORARY
+	std::cout << "_cellVector\n";
+	for (int i=0; i < numBasis*spaceDim; ++i) {
+	  std::cout << " " << _cellVector[i];
+	  if ((i+1) % spaceDim == 0)
+	    std::cout << "\n";
+	}
+	std::cout << std::endl;
+      } // TEMPORARY
 
     } else if (3 == cellDim) {
       // Compute total strains and then use these to compute stresses
@@ -272,8 +296,24 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
       assert(0);
     } // if/else
 
-   // Assemble cell contribution into field
+#if 0
+    const double tmp[] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8 };
+    for (int i=0; i < 8; ++i)
+      _cellVector[i] = tmp[i];
+    { // TEMPORARY
+      std::cout << "_cellVector\n";
+      for (int i=0; i < numBasis*spaceDim; ++i) {
+	std::cout << " " << _cellVector[i];
+	if ((i+1) % spaceDim == 0)
+	  std::cout << "\n";
+      }
+      std::cout << std::endl;
+    } // TEMPORARY
+#endif
+
+    // Assemble cell contribution into field
     mesh->updateAdd(residual, *c_iter, _cellVector);
+    residual->view("AFTER updateAdd"); // TEMPORARY
   } // for
 } // integrateResidual
 

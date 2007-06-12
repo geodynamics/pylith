@@ -26,19 +26,20 @@ solutioniovtk
 3. Implement faults for kinematic source
    a. Creation of cohesive cells
 
-3. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
-   a. Materials C++ code
-   b. Integrator C++ code
-   b. Material C++ unit tests
-
-4. Implement absorbing boundary conditions
-
 5. Additional unit tests
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials
+    ii. constrained DOF
 
   a. FaultCohesive
     i. Add checking of faultMesh [not currently used]
+
+examples/templates
+
+  containers
+    faults.odb
+    bc.odb
+    materials.odb
 
 ======================================================================
 SECONDARY PRIORITIES
@@ -47,20 +48,27 @@ SECONDARY PRIORITIES
 Want to take advantage of symmetry and block structure of Jacobian
 matrix when possible.
 
-1. Implement MeshIOHDF5 & HDF5 (helper class)
-   a. C++ objects
-   b. unit tests at C++ level
-   c. Python object (MeshIOHDF5)
-   d. bindings
-   e. unit tests at Python level
+1. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
+   a. Materials C++ code
+   b. Integrator C++ code
+   b. Material C++ unit tests
 
-2. Reimplement SolutionIO.
+2. Implement absorbing boundary conditions
+
+3. Reimplement SolutionIO.
 
    Follow implementation of MeshIO. SolutionIO implements extracting
    data from Sieve and calls virtual functions to write data.
 
    a. Reimplement SolutionIOVTK
    b. Implement SolutionIOHDF5
+
+4. Implement MeshIOHDF5 & HDF5 (helper class)
+   a. C++ objects
+   b. unit tests at C++ level
+   c. Python object (MeshIOHDF5)
+   d. bindings
+   e. unit tests at Python level
 
 ======================================================================
 UNRESOLVED ISSUES

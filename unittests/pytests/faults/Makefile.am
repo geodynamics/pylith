@@ -23,7 +23,8 @@ noinst_PYTHON = \
 	TestBruneSlipFn.py \
 	TestFault.py \
 	TestFaultCohesive.py \
-	TestFaultCohesiveKin.py
+	TestFaultCohesiveKin.py \
+	TestSingleFault.py
 
 TESTS_ENVIRONMENT = $(PYTHON)
 

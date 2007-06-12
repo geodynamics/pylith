@@ -10,14 +10,20 @@
 # ----------------------------------------------------------------------
 #
 
+## @file pylith/bc/BCSingle.py
+##
+## @brief Python boundary conditions container for one boundary condition.
+##
+## Factory: object_bin
+
 from pylith.utils.ObjectBin import ObjectBin
 
 # BCSingle class
 class BCSingle(ObjectBin):
   """
-  Python boundary conditions container for a single boundary condition.
+  Python boundary conditions container for one boundary condition.
 
-  Factory: boundary_conditions
+  Factory: object_bin
   """
 
   # INVENTORY //////////////////////////////////////////////////////////
@@ -41,7 +47,7 @@ class BCSingle(ObjectBin):
     from pylith.bc.Dirichlet import Dirichlet
 
     bc = pyre.inventory.facility("bc", family="boundary_condition",
-                                   factory=Dirichlet)
+                                 factory=Dirichlet)
     bc.meta['tip'] = "Boundary condition."
 
 

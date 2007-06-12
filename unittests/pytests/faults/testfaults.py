@@ -71,6 +71,9 @@ class TestApp(Script):
     from TestFaultCohesiveKin import TestFaultCohesiveKin
     suite.addTest(unittest.makeSuite(TestFaultCohesiveKin))
 
+    from TestSingleFault import TestSingleFault
+    suite.addTest(unittest.makeSuite(TestSingleFault))
+
     return suite
 
 
