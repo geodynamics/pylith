@@ -61,13 +61,18 @@ testfaults_SOURCES += \
 	data/CohesiveDataQuad4d.cc \
 	data/CohesiveDataQuad4e.cc \
 	data/CohesiveDataQuad4Lagrange.cc \
-	data/CohesiveDataHex8.cc \
-	data/CohesiveDataHex8Lagrange.cc \
 	data/CohesiveDataTet4.cc \
 	data/CohesiveDataTet4b.cc \
 	data/CohesiveDataTet4c.cc \
 	data/CohesiveDataTet4d.cc \
 	data/CohesiveDataTet4Lagrange.cc \
+	data/CohesiveDataHex8.cc \
+	data/CohesiveDataHex8b.cc \
+	data/CohesiveDataHex8c.cc \
+	data/CohesiveDataHex8d.cc \
+	data/CohesiveDataHex8e.cc \
+	data/CohesiveDataHex8f.cc \
+	data/CohesiveDataHex8Lagrange.cc \
 	data/CohesiveKinData.cc \
 	data/CohesiveKinDataLine2.cc \
 	data/CohesiveKinDataTri3.cc \
@@ -90,13 +95,18 @@ noinst_HEADERS += \
 	data/CohesiveDataQuad4d.hh \
 	data/CohesiveDataQuad4e.hh \
 	data/CohesiveDataQuad4Lagrange.hh \
-	data/CohesiveDataHex8.hh \
-	data/CohesiveDataHex8Lagrange.hh \
 	data/CohesiveDataTet4.hh \
 	data/CohesiveDataTet4b.hh \
 	data/CohesiveDataTet4c.hh \
 	data/CohesiveDataTet4d.hh \
 	data/CohesiveDataTet4Lagrange.hh \
+	data/CohesiveDataHex8.hh \
+	data/CohesiveDataHex8b.hh \
+	data/CohesiveDataHex8c.hh \
+	data/CohesiveDataHex8d.hh \
+	data/CohesiveDataHex8e.hh \
+	data/CohesiveDataHex8f.hh \
+	data/CohesiveDataHex8Lagrange.hh \
 	data/CohesiveKinData.hh \
 	data/CohesiveKinDataLine2.hh \
 	data/CohesiveKinDataTri3.hh \
