@@ -1,8 +1,8 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
-\textclass article
+\textclass book
 \language english
 \inputencoding auto
 \fontscheme default

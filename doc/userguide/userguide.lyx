@@ -161,6 +161,12 @@ preview false
 \end_inset
 
  
+\begin_inset Include \input{governingeqns/governingeqns.lyx}
+preview false
+
+\end_inset
+
+
 \begin_inset Include \input{install/install.lyx}
 preview false
 
