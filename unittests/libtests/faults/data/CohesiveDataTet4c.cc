@@ -57,7 +57,7 @@ const int pylith::faults::CohesiveDataTet4c::_numCorners[] = {
 const int pylith::faults::CohesiveDataTet4c::_cells[] = {
   5,  4,  2,  3,
   6,  8,  9,  7,
-  5,  4,  3,  9,  8,  7
+  3,  5,  4,  7, 9,  8
 };
 
 const int pylith::faults::CohesiveDataTet4c::_materialIds[] = {
