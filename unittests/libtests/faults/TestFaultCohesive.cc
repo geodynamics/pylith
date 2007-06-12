@@ -467,6 +467,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
 
   int iCell = 0;
   i = 0;
+  mesh->view(data.filename);
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
