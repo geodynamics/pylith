@@ -10,10 +10,6 @@ tests/1d/line2
 
   dislocation.cfg
 
-solutioniovtk
-
-  need to write each time step to a different file.
-
 1. Simple tests with analytical solutions
 
    a. 2-D
@@ -40,10 +36,8 @@ solutioniovtk
     i. Add checking of faultMesh [not currently used]
 
 examples/templates
-
   containers
-    faults.odb
-    materials.odb
+    verify containers work
 
 Check trapping of errors in reading spatialdata files.
 

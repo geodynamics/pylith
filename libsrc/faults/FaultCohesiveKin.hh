@@ -159,6 +159,11 @@ private :
   /// Fault vertices associated with constraints
   std::set<Mesh::point_type> _constraintVert;
 
+  /// Label of cell used to compute Jacobian for each vertex (must
+  /// prevent overlap so only allow 1 cell to contribute for each
+  /// vertex).
+  ALE::Obj<int_section_type> _vertexCells;
+
 }; // class FaultCohesiveKin
 
 #include "FaultCohesiveKin.icc" // inline methods
