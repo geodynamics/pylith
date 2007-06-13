@@ -49,6 +49,7 @@ pylith::faults::FaultCohesiveDyn::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 void
 pylith::faults::FaultCohesiveDyn::integrateResidual(
 				const ALE::Obj<real_section_type>& residual,
+				const double t,
 				topology::FieldsManager* const fields,
 				const ALE::Obj<Mesh>& mesh)
 { // integrateResidual
@@ -60,6 +61,7 @@ pylith::faults::FaultCohesiveDyn::integrateResidual(
 void
 pylith::faults::FaultCohesiveDyn::integrateJacobian(
 				    PetscMat* mat,
+				    const double t,
 				    topology::FieldsManager* const fields,
 				    const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian

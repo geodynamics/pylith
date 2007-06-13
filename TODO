@@ -10,23 +10,6 @@ tests/1d/line2
 
   dislocation.cfg
 
-1. Simple tests with analytical solutions
-
-   a. 2-D
-     i. tri3 cells
-       (1) axial compression
-       (2) shear
-     ii. quad4 cells
-       (1) axial compression
-       (2) shear
-   b. 3-D
-     i. tet4 cells
-       (1) axial compression
-       (2) shear
-     ii. hex8 cells
-       (1) axial compression
-       (2) shear
-
 5. Additional unit tests
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials
@@ -34,6 +17,7 @@ tests/1d/line2
 
   a. FaultCohesive
     i. Add checking of faultMesh [not currently used]
+    ii. Tests for cases with multiple cohesive cells
 
 examples/templates
   containers

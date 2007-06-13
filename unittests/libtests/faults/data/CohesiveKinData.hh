@@ -60,8 +60,7 @@ public:
 
   /// @name Input fields
   //@{
-  double* fieldTpdt; ///< Input field at time t+dt.
-  double* fieldT; ///< Input field at time t.
+  double* fieldT; ///< Solution field at time t.
   //@}
 
   /// @name Calculated values.
@@ -69,7 +68,6 @@ public:
   double* orientation; ///< Expected values for fault orientation.
   int* constraintVertices; ///< Expected points for constraint vertices
   double* valsResidual; ///< Expected values from residual calculation.
-  double* valsSlip; ///< Expected values from settting field.
   double* valsJacobian; ///< Expected values from Jacobian calculation.
   int numConstraintVert; ///< Number of constraint vertices
   //@}

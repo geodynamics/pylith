@@ -135,7 +135,8 @@ pylith::feassemble::TestElasticityExplicit::testUpdateState(void)
 
   const ALE::Obj<real_section_type>& dispT = fields.getReal("dispT");
   CPPUNIT_ASSERT(!dispT.isNull());
-  integrator.updateState(dispT, mesh);
+  const double t = 1.0;
+  integrator.updateState(t, dispT, mesh);
 } // testUpdateState
 
 // ----------------------------------------------------------------------
@@ -152,7 +153,8 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateResidual(void)
 
   const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
-  integrator.integrateResidual(residual, &fields, mesh);
+  const double t = 1.0;
+  integrator.integrateResidual(residual, t, &fields, mesh);
 
   const double* valsE = _data->valsResidual;
   const int sizeE = _data->spaceDim * _data->numVertices;
@@ -190,7 +192,8 @@ pylith::feassemble::TestElasticityExplicit::testIntegrateJacobian(void)
   PetscErrorCode err = MeshCreateMatrix(mesh, dispTpdt, MATMPIBAIJ, &jacobian);
   CPPUNIT_ASSERT(0 == err);
 
-  integrator.integrateJacobian(&jacobian, &fields, mesh);
+  const double t = 1.0;
+  integrator.integrateJacobian(&jacobian, t, &fields, mesh);
   CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
 
   err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);

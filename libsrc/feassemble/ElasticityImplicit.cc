@@ -83,6 +83,7 @@ pylith::feassemble::ElasticityImplicit::needNewJacobian(void)
 void
 pylith::feassemble::ElasticityImplicit::integrateResidual(
 			      const ALE::Obj<real_section_type>& residual,
+			      const double t,
 			      topology::FieldsManager* const fields,
 			      const ALE::Obj<Mesh>& mesh)
 { // integrateResidual
@@ -284,6 +285,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 void
 pylith::feassemble::ElasticityImplicit::integrateJacobian(
 					PetscMat* mat,
+					const double t,
 					topology::FieldsManager* fields,
 					const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
@@ -567,6 +569,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 // Update state variables as needed.
 void
 pylith::feassemble::ElasticityImplicit::updateState(
+				   const double t,
 				   const ALE::Obj<real_section_type>& disp,
 				   const ALE::Obj<Mesh>& mesh)
 { // updateState

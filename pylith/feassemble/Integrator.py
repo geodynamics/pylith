@@ -90,12 +90,12 @@ class Integrator(object):
     return self.cppHandle.stableTimeStep*second
 
 
-  def integrateResidual(self, residual, fields):
+  def integrateResidual(self, residual, t, fields):
     """
     Integrate contributions to residual term at time t.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.integrateResidual(residual, fields.cppHandle,
+    self.cppHandle.integrateResidual(residual, t.value, fields.cppHandle,
                                      self.mesh.cppHandle)
     return
 
@@ -109,22 +109,22 @@ class Integrator(object):
     return self.cppHandle.needNewJacobian
 
 
-  def integrateJacobian(self, jacobian, fields):
+  def integrateJacobian(self, jacobian, t, fields):
     """
     Integrate contributions to Jacobian term at time t.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.integrateJacobian(jacobian, fields.cppHandle,
+    self.cppHandle.integrateJacobian(jacobian, t.value, fields.cppHandle,
                                      self.mesh.cppHandle)
     return
 
 
-  def updateState(self, field):
+  def updateState(self, t, field):
     """
     Update state variables as needed.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.updateState(field, self.mesh.cppHandle)
+    self.cppHandle.updateState(t.value, field, self.mesh.cppHandle)
     return
     
 

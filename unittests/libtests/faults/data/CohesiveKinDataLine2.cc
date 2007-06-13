@@ -67,20 +67,12 @@ const char* pylith::faults::CohesiveKinDataLine2::_peakRateFilename =
   "data/line2_peakrate.spatialdb";
 
 // Don't expect these values to be used, so just use some values.
-const double pylith::faults::CohesiveKinDataLine2::_fieldTpdt[] = {
+const double pylith::faults::CohesiveKinDataLine2::_fieldT[] = {
   7.1,
   7.2,
   7.3,
   7.4,
   7.5
-};
-
-const double pylith::faults::CohesiveKinDataLine2::_fieldT[] = {
-  0.1,
-  0.2,
-  0.3,
-  0.4,
-  2.3 // force associated with constraint
 };
 
 const int pylith::faults::CohesiveKinDataLine2::_numConstraintVert = 1;
@@ -94,14 +86,6 @@ const int pylith::faults::CohesiveKinDataLine2::_constraintVertices[] = {
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_valsResidual[] = {
-  0.0,
- -2.3,
-  0.0,
-  2.3,
-  0.0
-};
-
-const double pylith::faults::CohesiveKinDataLine2::_valsSlip[] = {
   0.0,
   0.0,
   0.0,
@@ -134,12 +118,10 @@ pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   peakRateFilename = const_cast<char*>(_peakRateFilename);
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
   valsResidual = const_cast<double*>(_valsResidual);
-  valsSlip = const_cast<double*>(_valsSlip);
   valsJacobian = const_cast<double*>(_valsJacobian);
   numConstraintVert = _numConstraintVert;  
 } // constructor

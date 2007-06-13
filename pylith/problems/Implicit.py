@@ -137,12 +137,12 @@ class Implicit(Formulation):
       petsc.mat_setzero(self.jacobian)
       for integrator in self.integrators:
         integrator.timeStep(dt)
-        integrator.integrateJacobian(self.jacobian, self.fields)
+        integrator.integrateJacobian(self.jacobian, t, self.fields)
       petsc.mat_assemble(self.jacobian)
     return
 
 
-  def step(self, dt):
+  def step(self, t, dt):
     """
     Advance to next time step.
     """
@@ -152,7 +152,7 @@ class Implicit(Formulation):
     bindings.zeroRealSection(residual)
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateResidual(residual, self.fields)
+      integrator.integrateResidual(residual, t, self.fields)
 
     self._info.log("Solving equations.")
     self.solver.solve(self.fields.getReal("dispIncr"), self.jacobian, residual)
@@ -175,7 +175,7 @@ class Implicit(Formulation):
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(solnField)
+      integrator.updateState(t, solnField)
 
     Formulation.poststep(self, t)
     return
@@ -214,13 +214,16 @@ class Implicit(Formulation):
     dispIncr = self.fields.getReal("dispIncr")
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateJacobian(self.jacobian, self.fields)
-      integrator.integrateResidual(residual, self.fields)
+      integrator.integrateJacobian(self.jacobian, t, self.fields)
+      integrator.integrateResidual(residual, t, self.fields)
     import pylith.utils.petsc as petsc
     petsc.mat_assemble(self.jacobian)
+    print "Jacobian matrix"
+    petsc.mat_view(self.jacobian)
 
     self._info.log("Solving equations.")
     print "BEFORE SOLVE"
+    bindings.sectionView(solnField, "dispTBctpdt")
     bindings.sectionView(residual, "residual")
     bindings.sectionView(dispIncr, "dispIncr")
     self.solver.solve(dispIncr, self.jacobian, residual)
@@ -233,7 +236,7 @@ class Implicit(Formulation):
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(solnField)
+      integrator.updateState(t, solnField)
 
     self._info.log("Outputting elastic solution.")
     field = self.fields.getReal(self.solnField['name'])

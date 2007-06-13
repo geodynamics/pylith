@@ -141,12 +141,8 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   // Setup fields
   topology::FieldsManager fields(mesh);
   fields.addReal("residual");
-  fields.addReal("dispTpdt");
   fields.addReal("dispT");
   fields.solutionField("dispT");
-  const char* history[] = { "dispTpdt", "dispT" };
-  const int historySize = 2;
-  fields.createHistory(history, historySize);
   
   const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
@@ -156,9 +152,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   residual->zero();
   fields.copyLayout("residual");
 
-  const ALE::Obj<real_section_type>& dispTpdt = fields.getReal("dispTpdt");
   const ALE::Obj<real_section_type>& dispT = fields.getReal("dispT");
-  CPPUNIT_ASSERT(!dispTpdt.isNull());
   CPPUNIT_ASSERT(!dispT.isNull());
 
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
@@ -169,14 +163,14 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   for (Mesh::label_sequence::iterator v_iter=vBegin;
        v_iter != vEnd;
        ++v_iter, ++iVertex) {
-    dispTpdt->updatePoint(*v_iter, &_data->fieldTpdt[iVertex*spaceDim]);
     dispT->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
   } // for
   
   //dispT->view("DISP T");
 
   // Call integrateResidual()
-  fault.integrateResidual(residual, &fields, mesh);
+  const double t = 2.134;
+  fault.integrateResidual(residual, t, &fields, mesh);
 
   //residual->view("RESIDUAL");
 
@@ -214,12 +208,8 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   // Setup fields
   topology::FieldsManager fields(mesh);
   fields.addReal("residual");
-  fields.addReal("dispTpdt");
   fields.addReal("dispT");
   fields.solutionField("dispT");
-  const char* history[] = { "dispTpdt", "dispT" };
-  const int historySize = 2;
-  fields.createHistory(history, historySize);
   
   const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
@@ -229,9 +219,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   residual->zero();
   fields.copyLayout("residual");
 
-  const ALE::Obj<real_section_type>& dispTpdt = fields.getReal("dispTpdt");
   const ALE::Obj<real_section_type>& dispT = fields.getReal("dispT");
-  CPPUNIT_ASSERT(!dispTpdt.isNull());
   CPPUNIT_ASSERT(!dispT.isNull());
 
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
@@ -242,15 +230,15 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   for (Mesh::label_sequence::iterator v_iter=vBegin;
        v_iter != vEnd;
        ++v_iter, ++iVertex) {
-    dispTpdt->updatePoint(*v_iter, &_data->fieldTpdt[iVertex*spaceDim]);
     dispT->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
   } // for
   
   PetscMat jacobian;
-  PetscErrorCode err = MeshCreateMatrix(mesh, dispTpdt, MATMPIBAIJ, &jacobian);
+  PetscErrorCode err = MeshCreateMatrix(mesh, dispT, MATMPIBAIJ, &jacobian);
   CPPUNIT_ASSERT(0 == err);
 
-  fault.integrateJacobian(&jacobian, &fields, mesh);
+  const double t = 2.134;
+  fault.integrateJacobian(&jacobian, t, &fields, mesh);
   CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
 
   err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);
@@ -295,91 +283,6 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   MatDestroy(jDense);
   MatDestroy(jSparseAIJ);
 } // testIntegrateJacobian
-
-// ----------------------------------------------------------------------
-// Test setConstraintSizes().
-void
-pylith::faults::TestFaultCohesiveKin::testSetConstraintSizes(void)
-{ // testSetConstraintSizes
-  // Make sure the fiber dimension at each point is equal to the
-  // spatial dimension of the mesh, because the Lagrange multiplier
-  // formation does not eliminate any DOF from the system of
-  // equations.
-
-  ALE::Obj<Mesh> mesh;
-  FaultCohesiveKin fault;
-  _initialize(&mesh, &fault);
-  
-  const int fiberDim = 3;
-  const ALE::Obj<real_section_type>& field = 
-    new real_section_type(mesh->comm(), mesh->debug());
-  CPPUNIT_ASSERT(!field.isNull());
-
-  field->setFiberDimension(mesh->depthStratum(0), fiberDim);
-  fault.setConstraintSizes(field, mesh);
-  mesh->allocate(field);
-
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const Mesh::label_sequence::iterator vBegin = vertices->begin();
-  const Mesh::label_sequence::iterator vEnd = vertices->end();
-  for (Mesh::label_sequence::iterator v_iter=vBegin;
-       v_iter != vEnd;
-       ++v_iter) {
-    CPPUNIT_ASSERT_EQUAL(fiberDim, field->getFiberDimension(*v_iter));
-    CPPUNIT_ASSERT_EQUAL(0, field->getConstraintDimension(*v_iter));
-  } // for
-} // testSetConstraintSizes
-
-// ----------------------------------------------------------------------
-// Test setField().
-void
-pylith::faults::TestFaultCohesiveKin::testSetField(void)
-{ // testSetField
-  ALE::Obj<Mesh> mesh;
-  FaultCohesiveKin fault;
-  _initialize(&mesh, &fault);
-
-  // Setup fields
-  topology::FieldsManager fields(mesh);
-  fields.addReal("disp");
-  
-  const ALE::Obj<real_section_type>& disp = fields.getReal("disp");
-  CPPUNIT_ASSERT(!disp.isNull());
-  const int spaceDim = _data->spaceDim;
-  disp->setFiberDimension(mesh->depthStratum(0), spaceDim);
-  mesh->allocate(disp);
-  disp->zero();
-
-  const double t = 2.134;
-  fault.setField(t, disp, mesh);
-
-  // Check values
-  const double* valsE = _data->valsSlip;
-  const int fiberDimE = spaceDim;
-  const double tolerance = 1.0e-06;
-
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  CPPUNIT_ASSERT(!vertices.isNull());
-  const Mesh::label_sequence::iterator vBegin = vertices->begin();
-  const Mesh::label_sequence::iterator vEnd = vertices->end();
-  int iVertex = 0;
-  for (Mesh::label_sequence::iterator v_iter=vBegin;
-       v_iter != vEnd;
-       ++v_iter, ++iVertex) {
-    const int fiberDim = disp->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-    const real_section_type::value_type* vals = 
-      disp->restrictPoint(*v_iter);
-    for (int i=0; i < fiberDimE; ++i) {
-      const int index = iVertex*spaceDim+i;
-      if (valsE[index] > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[index], tolerance);
-      else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[i], tolerance);
-    } // for
-  } // for
-} // testSetField
 
 // ----------------------------------------------------------------------
 // Initialize FaultCohesiveKin interface condition.

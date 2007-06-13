@@ -18,6 +18,7 @@ import unittest
 from pylith.feassemble.ElasticityImplicit import ElasticityImplicit
 
 from spatialdata.geocoords.CSCart import CSCart
+from pyre.units.time import year
 
 # ----------------------------------------------------------------------
 class TestElasticityImplicit(unittest.TestCase):
@@ -126,7 +127,8 @@ class TestElasticityImplicit(unittest.TestCase):
     (mesh, integrator, fields) = self._initialize()
 
     residual = fields.getReal("residual")
-    integrator.integrateResidual(residual, fields)
+    t = 3.4*year
+    integrator.integrateResidual(residual, t, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -145,7 +147,8 @@ class TestElasticityImplicit(unittest.TestCase):
     jacobian = mesh.createMatrix(fields.getReal("residual"))
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(jacobian)
-    integrator.integrateJacobian(jacobian, fields)
+    t = 7.3*year
+    integrator.integrateJacobian(jacobian, t, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -162,7 +165,8 @@ class TestElasticityImplicit(unittest.TestCase):
     (mesh, integrator, fields) = self._initialize()
 
     dispTBctpdt = fields.getReal("dispTBctpdt")
-    integrator.updateState(dispTBctpdt)
+    t = 0.27*year
+    integrator.updateState(t, dispTBctpdt)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    

@@ -891,12 +891,12 @@ cdef class Integrator:
     return
 
 
-  def integrateResidual(self, residual, fields, mesh):
+  def integrateResidual(self, residual, t, fields, mesh):
     """
     Integrate contributions to residual term (r) for operator.
     """
     # create shim for method 'integrateResidual'
-    #embed{ void Integrator_integrateResidual(void* objVptr, void* residualVptr, void* fieldsVptr, void* meshVptr)
+    #embed{ void Integrator_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != residualVptr);
@@ -909,7 +909,7 @@ cdef class Integrator:
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
       ((pylith::feassemble::Integrator*) objVptr)->integrateResidual(*residual,
-                                                              fields, *mesh);
+                                                            t, fields, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -926,17 +926,18 @@ cdef class Integrator:
             "Argument must be extension module type 'Mesh'."
     Integrator_integrateResidual(self.thisptr, 
                                  PyCObject_AsVoidPtr(residual),
+                                 t,
                                  ptrFromHandle(fields),
                                  ptrFromHandle(mesh))
     return
 
 
-  def integrateJacobian(self, mat, fields, mesh):
+  def integrateJacobian(self, mat, t, fields, mesh):
     """
     Compute contributions to Jacobian matrix (A) associated with operator.
     """
     # create shim for method 'integrateJacobian'
-    #embed{ void Integrator_integrateJacobian(void* objVptr, void* matVptr, void* fieldsVptr, void* meshVptr)
+    #embed{ void Integrator_integrateJacobian(void* objVptr, void* matVptr, double t, void* fieldsVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != matVptr);
@@ -948,7 +949,7 @@ cdef class Integrator:
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
       ((pylith::feassemble::Integrator*) objVptr)->integrateJacobian(
-                                                        mat, fields, *mesh);
+                                                        mat, t, fields, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -965,17 +966,18 @@ cdef class Integrator:
             "Argument 'mesh' must be extension module type 'Mesh'."
     Integrator_integrateJacobian(self.thisptr,
                                  PyCObject_AsVoidPtr(mat),
+                                 t,
                                  ptrFromHandle(fields),
                                  ptrFromHandle(mesh))
     return
 
 
-  def updateState(self, field, mesh):
+  def updateState(self, t, field, mesh):
     """
     Update state variables as needed.
     """
     # create shim for method 'updateState'
-    #embed{ void Integrator_updateState(void* objVptr, void* fieldVptr, void* meshVptr)
+    #embed{ void Integrator_updateState(void* objVptr, double t, void* fieldVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -984,7 +986,7 @@ cdef class Integrator:
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh =
         (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::feassemble::Integrator*) objVptr)->updateState(*field, *mesh);
+      ((pylith::feassemble::Integrator*) objVptr)->updateState(t, *field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -999,7 +1001,9 @@ cdef class Integrator:
     if mesh.name != "pylith_topology_Mesh":
       raise TypeError, \
             "Argument 'mesh' must be extension module type 'Mesh'."
-    Integrator_updateState(self.thisptr, PyCObject_AsVoidPtr(field),
+    Integrator_updateState(self.thisptr,
+                           t,
+                           PyCObject_AsVoidPtr(field),
                            ptrFromHandle(mesh))
     return
 

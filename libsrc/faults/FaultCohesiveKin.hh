@@ -30,7 +30,6 @@
 #define pylith_faults_faultcohesivekin_hh
 
 #include "FaultCohesive.hh" // ISA FaultCohesive
-#include "pylith/feassemble/Constraint.hh" // ISA Constraint
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 /// Namespace for pylith package
@@ -46,8 +45,7 @@ namespace pylith {
 /// C++ implementation for a fault surface with kinematic (prescribed)
 /// slip implemented with cohesive elements.
 class pylith::faults::FaultCohesiveKin : public FaultCohesive,
-					 public feassemble::Integrator,
-					 public feassemble::Constraint
+					 public feassemble::Integrator
 { // class FaultCohesiveKin
   friend class TestFaultCohesiveKin; // unit testing
 
@@ -83,10 +81,12 @@ public :
   /** Integrate contributions to residual term (r) for operator.
    *
    * @param residual Field containing values for residual
+   * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
+			 const double t,
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 
@@ -94,40 +94,15 @@ public :
    * operator.
    *
    * @param mat Sparse matrix
+   * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   void integrateJacobian(PetscMat* mat,
+			 const double t,
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 
-  /** Set number of degrees of freedom that are constrained at points
-   * in field.
-   *
-   * @param field Solution field
-   * @param mesh PETSc mesh
-   */
-  void setConstraintSizes(const ALE::Obj<real_section_type>& field,
-			  const ALE::Obj<ALE::Mesh>& mesh);
-
-  /** Set which degrees of freedom are constrained at points in field.
-   *
-   * @param field Solution field
-   * @param mesh PETSc mesh
-   */
-  void setConstraints(const ALE::Obj<real_section_type>& field,
-		      const ALE::Obj<ALE::Mesh>& mesh);
-
-  /** Set field.
-   *
-   * @param t Current time.
-   * @param disp Displacement field at time t.
-   * @param mesh Finite-element mesh.
-   */
-  void setField(const double t,
-		const ALE::Obj<real_section_type>& disp,
-		const ALE::Obj<Mesh>& mesh);
-  
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 

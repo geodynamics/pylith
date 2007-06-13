@@ -77,7 +77,7 @@ const char* pylith::faults::CohesiveKinDataTet4::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataTet4::_peakRateFilename = 
   "data/tet4_peakrate.spatialdb";
 
-const double pylith::faults::CohesiveKinDataTet4::_fieldTpdt[] = {
+const double pylith::faults::CohesiveKinDataTet4::_fieldT[] = {
   7.1, 8.1, 9.1,
   7.2, 8.2, 9.2,
   7.3, 8.3, 9.3,
@@ -89,20 +89,6 @@ const double pylith::faults::CohesiveKinDataTet4::_fieldTpdt[] = {
   7.9, 8.9, 9.9,
   7.0, 8.0, 9.0,
   7.1, 8.1, 9.1,
-};
-
-const double pylith::faults::CohesiveKinDataTet4::_fieldT[] = {
-  4.1, 5.1, 6.1, // 2
-  4.2, 5.2, 6.2, // 3
-  4.3, 5.3, 6.3, // 4
-  4.4, 5.4, 6.4, // 5
-  4.5, 5.5, 6.5, // 6
-  4.6, 5.6, 6.6, // 7
-  1.2, 1.3, 1.4, // 8 (constraint force)
-  4.8, 5.8, 6.8, // 9
-  2.2, 2.3, 2.4, // 10 (constraint force)
-  4.0, 5.0, 6.0, // 11
-  3.2, 3.3, 3.4, // 12 (constraint force)
 };
 
 const int pylith::faults::CohesiveKinDataTet4::_numConstraintVert = 3;
@@ -118,20 +104,6 @@ const int pylith::faults::CohesiveKinDataTet4::_constraintVertices[] = {
 };
 
 const double pylith::faults::CohesiveKinDataTet4::_valsResidual[] = {
-  0.0,  0.0,  0.0, // 2
- -1.2, -1.3, -1.4, // 3
- -2.2, -2.3, -2.4, // 4
- -3.2, -3.3, -3.4, // 5
-  0.0,  0.0,  0.0, // 6
- +1.2, +1.3, +1.4, // 7
-  0.0,  0.0,  0.0, // 8
- +2.2, +2.3, +2.4, // 9
-  0.0,  0.0,  0.0, // 10
- +3.2, +3.3, +3.4, // 11
-  0.0,  0.0,  0.0, // 12
-};
-
-const double pylith::faults::CohesiveKinDataTet4::_valsSlip[] = {
   0.0,  0.0,  0.0,
   0.0,  0.0,  0.0,
   0.0,  0.0,  0.0,
@@ -528,12 +500,10 @@ pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   peakRateFilename = const_cast<char*>(_peakRateFilename);
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
   valsResidual = const_cast<double*>(_valsResidual);
-  valsSlip = const_cast<double*>(_valsSlip);
   valsJacobian = const_cast<double*>(_valsJacobian);
   numConstraintVert = _numConstraintVert;  
 } // constructor

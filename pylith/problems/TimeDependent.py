@@ -128,7 +128,7 @@ class TimeDependent(Problem):
       self._prestep(t, dt)
 
       # Advance in time
-      self._step(dt)
+      self._step(t, dt)
 
       # Do stuff after advancing time step
       self._poststep(t+dt)
@@ -183,11 +183,11 @@ class TimeDependent(Problem):
     return
 
 
-  def _step(self, dt):
+  def _step(self, t, dt):
     """
     Advance to next time step.
     """
-    self.formulation.step(dt)
+    self.formulation.step(t, dt)
     return
 
 

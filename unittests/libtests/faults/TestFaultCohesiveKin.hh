@@ -87,12 +87,6 @@ public :
   /// Test integrateJacobian().
   void testIntegrateJacobian(void);
 
-  /// Test setConstraintSizes().
-  void testSetConstraintSizes(void);
-
-  /// Test setField().
-  void testSetField(void);
-
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 

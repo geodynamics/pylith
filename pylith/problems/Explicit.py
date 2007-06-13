@@ -63,6 +63,8 @@ class Explicit(Formulation):
     """
     Initialize problem for explicit time integration.
     """
+    from pyre.units.time import second
+    t = 0.0*second
     Formulation.initialize(self, mesh, materials, boundaryConditions,
                            interfaceConditions, dimension, dt)
 
@@ -79,7 +81,7 @@ class Explicit(Formulation):
     petsc.mat_setzero(self.jacobian)
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateJacobian(self.jacobian, self.fields)
+      integrator.integrateJacobian(self.jacobian, t, self.fields)
     petsc.mat_assemble(self.jacobian)
 
     self.solver.initialize(mesh, self.fields.getReal("dispTpdt"))
@@ -114,12 +116,12 @@ class Explicit(Formulation):
       petsc.mat_setzero(self.jacobian)
       for integrator in self.integrators:
         integrator.timeStep(dt)
-        integrator.integrateJacobian(self.jacobian, self.fields)
+        integrator.integrateJacobian(self.jacobian, t, self.fields)
       petsc.mat_assemble(self.jacobian)
     return
 
 
-  def step(self, dt):
+  def step(self, t, dt):
     """
     Advance to next time step.
     """
@@ -129,7 +131,7 @@ class Explicit(Formulation):
     bindings.zeroRealSection(residual)
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateResidual(residual, self.fields)
+      integrator.integrateResidual(residual, t, self.fields)
 
     self._info.log("Solving equations.")
     self.solver.solve(self.fields.getReal("dispTpdt"), self.jacobian, residual)
@@ -144,7 +146,7 @@ class Explicit(Formulation):
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(self.fields.getReal("dispT"))
+      integrator.updateState(t, self.fields.getReal("dispT"))
 
     Formulation.poststep(self, t)
     return

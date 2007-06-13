@@ -87,11 +87,13 @@ public :
   /** Integrate contributions to residual term (r) for operator.
    *
    * @param residual Field containing values for residual
+   * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   virtual 
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
+			 const double t,
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh) = 0;
 
@@ -99,21 +101,25 @@ public :
    * operator.
    *
    * @param mat Sparse matrix
+   * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   virtual 
   void integrateJacobian(PetscMat* mat,
+			 const double t,
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh) = 0;
 
   /** Update state variables as needed.
    *
+   * @param t Current time
    * @param field Current solution field.
    * @param mesh Finite-element mesh
    */
   virtual
-  void updateState(const ALE::Obj<real_section_type>& field,
+  void updateState(const double t,
+		   const ALE::Obj<real_section_type>& field,
 		   const ALE::Obj<Mesh>& mesh);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////

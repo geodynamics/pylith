@@ -122,4 +122,20 @@ def mat_setzero(mat):
   return
 
 
+def mat_view(mat):
+  """
+  Dump matrix to stdout.
+  """
+  # create shim for 'MatView'
+  #embed{ int Mat_view(void* matVptr)
+  Mat* mat = (Mat*) matVptr;
+  MatView(*mat, PETSC_VIEWER_STDOUT_WORLD);
+  return 0;
+  #}embed
+  cdef void* matVptr
+  err = Mat_view(PyCObject_AsVoidPtr(mat))
+
+  return
+
+
 # End of file 

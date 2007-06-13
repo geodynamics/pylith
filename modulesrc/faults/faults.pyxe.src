@@ -273,12 +273,12 @@ cdef class FaultCohesiveKin(FaultCohesive):
     return
 
 
-  def integrateResidual(self, residual, fields, mesh):
+  def integrateResidual(self, residual, t, fields, mesh):
     """
     Integrate contributions to residual term (r) for operator.
     """
     # create shim for method 'integrateResidual'
-    #embed{ void FaultCohesiveKin_integrateResidual(void* objVptr, void* residualVptr, void* fieldsVptr, void* meshVptr)
+    #embed{ void FaultCohesiveKin_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != residualVptr);
@@ -291,7 +291,7 @@ cdef class FaultCohesiveKin(FaultCohesive):
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
       ((pylith::faults::FaultCohesiveKin*) objVptr)->integrateResidual(*residual,
-                                                              fields, *mesh);
+                                                              t, fields, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -307,18 +307,19 @@ cdef class FaultCohesiveKin(FaultCohesive):
       raise TypeError, \
             "Argument must be extension module type 'Mesh'."
     FaultCohesiveKin_integrateResidual(self.thisptr, 
-                                 PyCObject_AsVoidPtr(residual),
-                                 ptrFromHandle(fields),
-                                 ptrFromHandle(mesh))
+                                       PyCObject_AsVoidPtr(residual),
+                                       t,
+                                       ptrFromHandle(fields),
+                                       ptrFromHandle(mesh))
     return
 
 
-  def integrateJacobian(self, mat, fields, mesh):
+  def integrateJacobian(self, mat, t, fields, mesh):
     """
     Compute contributions to Jacobian matrix (A) associated with operator.
     """
     # create shim for method 'integrateJacobian'
-    #embed{ void FaultCohesiveKin_integrateJacobian(void* objVptr, void* matVptr, void* fieldsVptr, void* meshVptr)
+    #embed{ void FaultCohesiveKin_integrateJacobian(void* objVptr, void* matVptr, double t, void* fieldsVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != matVptr);
@@ -330,7 +331,7 @@ cdef class FaultCohesiveKin(FaultCohesive):
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
       ((pylith::faults::FaultCohesiveKin*) objVptr)->integrateJacobian(
-                                                        mat, fields, *mesh);
+                                                        mat, t, fields, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -346,18 +347,19 @@ cdef class FaultCohesiveKin(FaultCohesive):
       raise TypeError, \
             "Argument 'mesh' must be extension module type 'Mesh'."
     FaultCohesiveKin_integrateJacobian(self.thisptr,
-                                 PyCObject_AsVoidPtr(mat),
-                                 ptrFromHandle(fields),
-                                 ptrFromHandle(mesh))
+                                       PyCObject_AsVoidPtr(mat),
+                                       t, 
+                                       ptrFromHandle(fields),
+                                       ptrFromHandle(mesh))
     return
 
 
-  def updateState(self, field, mesh):
+  def updateState(self, t, field, mesh):
     """
     Update state variables as needed.
     """
     # create shim for method 'updateState'
-    #embed{ void FaultCohesiveKin_updateState(void* objVptr, void* fieldVptr, void* meshVptr)
+    #embed{ void FaultCohesiveKin_updateState(void* objVptr, double t, void* fieldVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -366,7 +368,7 @@ cdef class FaultCohesiveKin(FaultCohesive):
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh =
         (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::faults::FaultCohesiveKin*) objVptr)->updateState(*field, *mesh);
+      ((pylith::faults::FaultCohesiveKin*) objVptr)->updateState(t, *field, *mesh);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -381,100 +383,10 @@ cdef class FaultCohesiveKin(FaultCohesive):
     if mesh.name != "pylith_topology_Mesh":
       raise TypeError, \
             "Argument 'mesh' must be extension module type 'Mesh'."
-    FaultCohesiveKin_updateState(self.thisptr, PyCObject_AsVoidPtr(field),
-                           ptrFromHandle(mesh))
-    return
-
-
-  def setConstraintSizes(self, field, mesh):
-    """
-    Set number of degrees of freedom that are constrained at points in field.
-    """
-    # create shim for method 'setConstraintSizes'
-    #embed{ void FaultCohesiveKin_setConstraintSizes(void* objVptr, void* fieldVptr, void* meshVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != fieldVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::faults::FaultCohesiveKin*) objVptr)->setConstraintSizes(*field, *mesh);
-      } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch      
-    #}embed
-
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'pylith::topology::Mesh'."
-    FaultCohesiveKin_setConstraintSizes(self.thisptr, PyCObject_AsVoidPtr(field),
-                                  ptrFromHandle(mesh))
-    return
-
-
-  def setConstraints(self, field, mesh):
-    """
-    Set which degrees of freedom that are constrained at points in field.
-    """
-    # create shim for method 'setConstraints'
-    #embed{ void FaultCohesiveKin_setConstraints(void* objVptr, void* fieldVptr, void* meshVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != fieldVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::faults::FaultCohesiveKin*) objVptr)->setConstraints(*field, *mesh);
-      } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch      
-    #}embed
-
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'pylith::topology::Mesh'."
-    FaultCohesiveKin_setConstraints(self.thisptr, PyCObject_AsVoidPtr(field), ptrFromHandle(mesh))
-    return
-
-
-  def setField(self, t, field, mesh):
-    """
-    Set values in field.
-    """
-    # create shim for method 'setField'
-    #embed{ void FaultCohesiveKin_setField(void* objVptr, double t, void* fieldVptr, void* meshVptr)
-    try {
-      assert(0 != objVptr);
-      assert(0 != fieldVptr);
-      assert(0 != meshVptr);
-      ALE::Obj<pylith::real_section_type>* field = (ALE::Obj<pylith::real_section_type>*) fieldVptr;
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
-      ((pylith::faults::FaultCohesiveKin*) objVptr)->setField(t, *field, *mesh);
-      } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch      
-    #}embed
-
-    if not mesh.name == "pylith_topology_Mesh":
-      raise TypeError, \
-            "Argument must be extension module type " \
-            "'pylith::topology::Mesh'."
-    FaultCohesiveKin_setField(self.thisptr, t, PyCObject_AsVoidPtr(field),
-                          ptrFromHandle(mesh))
+    FaultCohesiveKin_updateState(self.thisptr,
+                                 t,
+                                 PyCObject_AsVoidPtr(field),
+                                 ptrFromHandle(mesh))
     return
 
 

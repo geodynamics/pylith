@@ -101,7 +101,7 @@ const char* pylith::faults::CohesiveKinDataHex8::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataHex8::_peakRateFilename = 
   "data/hex8_peakrate.spatialdb";
 
-const double pylith::faults::CohesiveKinDataHex8::_fieldTpdt[] = {
+const double pylith::faults::CohesiveKinDataHex8::_fieldT[] = {
   4.1, 6.1, 8.1,
   4.2, 6.2, 8.2,
   4.3, 6.3, 8.3,
@@ -124,29 +124,6 @@ const double pylith::faults::CohesiveKinDataHex8::_fieldTpdt[] = {
   5.0, 7.0, 9.0,
 };
 
-const double pylith::faults::CohesiveKinDataHex8::_fieldT[] = {
-  4.1, 6.1, 8.1,
-  4.2, 6.2, 8.2,
-  4.3, 6.3, 8.3,
-  4.4, 6.4, 8.4,
-  4.5, 6.5, 8.5,
-  4.6, 6.6, 8.6,
-  4.7, 6.7, 8.7,
-  4.8, 6.8, 8.8,
-  4.9, 6.9, 8.9,
-  4.0, 6.0, 8.0,
-  5.1, 7.1, 9.1,
-  5.2, 7.2, 9.2,
-  5.3, 7.3, 9.3,
-  1.1, 1.2, 1.3, // 15
-  5.5, 7.5, 9.5,
-  2.1, 2.2, 2.3, // 17
-  5.7, 7.7, 9.7,
-  3.1, 3.2, 3.3, // 19
-  5.9, 7.9, 9.9,
-  1.5, 1.6, 1.7, // 21
-};
-
 const int pylith::faults::CohesiveKinDataHex8::_numConstraintVert = 4;
 
 const double pylith::faults::CohesiveKinDataHex8::_orientation[] = {
@@ -161,29 +138,6 @@ const int pylith::faults::CohesiveKinDataHex8::_constraintVertices[] = {
 };
 
 const double pylith::faults::CohesiveKinDataHex8::_valsResidual[] = {
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
- -1.1,-1.2,-1.3, // 6
- -2.1,-2.2,-2.3, // 7
- -3.1,-3.2,-3.3, // 8
- -1.5,-1.6,-1.7, // 9
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
- +1.1,+1.2,+1.3, // 14
-  0.0, 0.0, 0.0, // 15 (constraint)
- +2.1,+2.2,+2.3, // 16
-  0.0, 0.0, 0.0, // 17 (constraint)
- +3.1,+3.2,+3.3, // 18
-  0.0, 0.0, 0.0, // 19 (constraint)
- +1.5,+1.6,+1.7, // 20
-  0.0, 0.0, 0.0, // 21 (constraint)
-};
-
-const double pylith::faults::CohesiveKinDataHex8::_valsSlip[] = {
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -1426,12 +1380,10 @@ pylith::faults::CohesiveKinDataHex8::CohesiveKinDataHex8(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   peakRateFilename = const_cast<char*>(_peakRateFilename);
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
   valsResidual = const_cast<double*>(_valsResidual);
-  valsSlip = const_cast<double*>(_valsSlip);
   valsJacobian = const_cast<double*>(_valsJacobian);
   numConstraintVert = _numConstraintVert;  
 } // constructor
