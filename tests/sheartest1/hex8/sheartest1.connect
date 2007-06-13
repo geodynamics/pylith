@@ -1,0 +1,95 @@
+# Sample connectivity input file for 3D problem.  The element number is
+# not strictly necessary, but makes it easier to examine the file.
+# This file defines the element type, material type, and infinite
+# element info as well as the connectivity.
+# The entries are as follows:
+#   iel    = element number.
+#   ietype = element type from the following list:
+#            1 = linear hexahedron (8 nodes)
+#            2 = "wrick" -- linear hex with one set of collapsed nodes
+#                (7 nodes)
+#            3 = wedge -- linear hex with two sets of collapsed nodes
+#                (6 nodes)
+#            4 = pyramid -- linear hex with 4 nodes collapsed to a point
+#                (5 nodes)
+#            5 = linear tetrahedron (4 nodes)
+#            6 = quadratic hexahedron (20 nodes)
+#            7 = quadratic "wrick" -- quadratic hex with 3 nodes
+#                along one edge collapsed to a point (18 nodes)
+#            8 = quadratic wedge -- quadratic hex with 3 sets of
+#                collapsed nodes (15 nodes)
+#            9 = quadratic pyramid -- quadratic hex with 9 nodes
+#                collapsed to a point (13 nodes)
+#           10 = quadratic tetrahedron (10 nodes)
+#   mat    = material type for element.
+#   infin  = infinite domain element code.
+#   ia(i)  = node numbers for element.
+#
+# At present, comments are not allowed within the connectivity
+# information.
+#
+#   N   IETYPE MAT  INFIN  N1    N2    N3    N4    N5    N6    N7    N8
+      1   1  1  0    1     26     27      2      6     31     32      7
+      2   1  1  0    2     27     28      3      7     32     33      8
+      3   1  1  0    3     28     29      4      8     33     34      9
+      4   1  1  0    4     29     30      5      9     34     35     10
+      5   1  1  0    6     31     32      7     11     36     37     12
+      6   1  1  0    7     32     33      8     12     37     38     13
+      7   1  1  0    8     33     34      9     13     38     39     14
+      8   1  1  0    9     34     35     10     14     39     40     15
+      9   1  1  0   11     36     37     12     16     41     42     17
+     10   1  1  0   12     37     38     13     17     42     43     18
+     11   1  1  0   13     38     39     14     18     43     44     19
+     12   1  1  0   14     39     40     15     19     44     45     20
+     13   1  1  0   16     41     42     17     21     46     47     22
+     14   1  1  0   17     42     43     18     22     47     48     23
+     15   1  1  0   18     43     44     19     23     48     49     24
+     16   1  1  0   19     44     45     20     24     49     50     25
+     17   1  1  0   26     51     52     27     31     56     57     32
+     18   1  1  0   27     52     53     28     32     57     58     33
+     19   1  1  0   28     53     54     29     33     58     59     34
+     20   1  1  0   29     54     55     30     34     59     60     35
+     21   1  1  0   31     56     57     32     36     61     62     37
+     22   1  1  0   32     57     58     33     37     62     63     38
+     23   1  1  0   33     58     59     34     38     63     64     39
+     24   1  1  0   34     59     60     35     39     64     65     40
+     25   1  1  0   36     61     62     37     41     66     67     42
+     26   1  1  0   37     62     63     38     42     67     68     43
+     27   1  1  0   38     63     64     39     43     68     69     44
+     28   1  1  0   39     64     65     40     44     69     70     45
+     29   1  1  0   41     66     67     42     46     71     72     47
+     30   1  1  0   42     67     68     43     47     72     73     48
+     31   1  1  0   43     68     69     44     48     73     74     49
+     32   1  1  0   44     69     70     45     49     74     75     50
+     33   1  1  0   51     76     77     52     56     81     82     57
+     34   1  1  0   52     77     78     53     57     82     83     58
+     35   1  1  0   53     78     79     54     58     83     84     59
+     36   1  1  0   54     79     80     55     59     84     85     60
+     37   1  1  0   56     81     82     57     61     86     87     62
+     38   1  1  0   57     82     83     58     62     87     88     63
+     39   1  1  0   58     83     84     59     63     88     89     64
+     40   1  1  0   59     84     85     60     64     89     90     65
+     41   1  1  0   61     86     87     62     66     91     92     67
+     42   1  1  0   62     87     88     63     67     92     93     68
+     43   1  1  0   63     88     89     64     68     93     94     69
+     44   1  1  0   64     89     90     65     69     94     95     70
+     45   1  1  0   66     91     92     67     71     96     97     72
+     46   1  1  0   67     92     93     68     72     97     98     73
+     47   1  1  0   68     93     94     69     73     98     99     74
+     48   1  1  0   69     94     95     70     74     99    100     75
+     49   1  1  0   76    101    102     77     81    106    107     82
+     50   1  1  0   77    102    103     78     82    107    108     83
+     51   1  1  0   78    103    104     79     83    108    109     84
+     52   1  1  0   79    104    105     80     84    109    110     85
+     53   1  1  0   81    106    107     82     86    111    112     87
+     54   1  1  0   82    107    108     83     87    112    113     88
+     55   1  1  0   83    108    109     84     88    113    114     89
+     56   1  1  0   84    109    110     85     89    114    115     90
+     57   1  1  0   86    111    112     87     91    116    117     92
+     58   1  1  0   87    112    113     88     92    117    118     93
+     59   1  1  0   88    113    114     89     93    118    119     94
+     60   1  1  0   89    114    115     90     94    119    120     95
+     61   1  1  0   91    116    117     92     96    121    122     97
+     62   1  1  0   92    117    118     93     97    122    123     98
+     63   1  1  0   93    118    119     94     98    123    124     99
+     64   1  1  0   94    119    120     95     99    124    125    100
