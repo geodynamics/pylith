@@ -19,26 +19,38 @@ noinst_PYTHON = \
 
 noinst_DATA = \
 	box.exo \
+	matprops.spatialdb \
+	matprops-maxwell.spatialdb \
 	axialelasticisotropic.cfg \
 	axialmaxwellisotropic.cfg \
 	axialx.spatialdb \
 	axialy.spatialdb \
 	axialz.spatialdb \
-	matprops.spatialdb \
-	matprops-maxwell.spatialdb \
-	matprops-twocells.spatialdb \
 	shearelasticisotropic.cfg \
-	shearelastic-twocells.cfg \
 	shearmaxwellisotropic.cfg \
 	shearxyz.spatialdb \
-	shearxyz-twocells.spatialdb \
-	twocells.mesh
+	twocells.mesh \
+	twocellsb.mesh \
+	threecells.mesh \
+	fourcells.mesh \
+	eightcells.mesh \
+	shearelastic-small.cfg \
+	shearelastic-twocells.cfg \
+	shearelastic-twocellsb.cfg \
+	shearelastic-threecells.cfg \
+	shearelastic-fourcells.cfg \
+	shearelastic-eightcells.cfg \
+	shearxyz-small.spatialdb
 
 noinst_TMP = \
-	axialelasticisotropic.vtk \
-	axialmaxwellisotropic.vtk \
-	shearelasticisotropic.vtk \
-	shearmaxwellisotropic.vtk
+	axialelasticisotropic_t0.vtk \
+	axialelasticisotropic_t1.vtk \
+	axialmaxwellisotropic_t0.vtk \
+	axialmaxwellisotropic_t1.vtk \
+	shearelasticisotropic_t0.vtk \
+	shearelasticisotropic_t1.vtk \
+	shearmaxwellisotropic_t0.vtk \
+	shearmaxwellisotropic_t1.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
