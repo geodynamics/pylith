@@ -15,16 +15,23 @@ TESTS = testpylith.py
 check_SCRIPTS = testpylith.py
 
 noinst_PYTHON = \
-	TestAxial.py
+	TestAxial.py \
+	TestDislocation.py
 
 noinst_DATA = \
 	bar.mesh \
 	axialextension.cfg \
-	dispbc.spatialdb \
+	axialextension_disp.spatialdb \
+	dislocation.cfg \
+	dislocation_disp.spatialdb \
+	dislocation_slip.spatialdb \
+	dislocation_sliprate.spatialdb \
+	dislocation_sliptime.spatialdb \
 	matprops.spatialdb
 
 noinst_TMP = \
-	output.vtk
+	axialextension.vtk \
+	dislocation.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
