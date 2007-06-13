@@ -1,0 +1,56 @@
+mesh = {
+  dimension = 3
+  use-index-zero = true
+  vertices = {
+    dimension = 3
+    count = 16
+    coordinates = {
+             0     -1.5 -0.5 -0.5
+             1     -1.5  0.5 -0.5
+             2     -0.5 -0.5 -0.5
+             3     -0.5  0.5 -0.5
+             4      0.5 -0.5 -0.5
+             5      0.5  0.5 -0.5
+             6      1.5 -0.5 -0.5
+             7      1.5  0.5 -0.5
+             8     -1.5 -0.5  0.5
+             9     -1.5  0.5  0.5
+            10     -0.5 -0.5  0.5
+            11     -0.5  0.5  0.5
+            12      0.5 -0.5  0.5
+            13      0.5  0.5  0.5
+            14      1.5 -0.5  0.5
+            15      1.5  0.5  0.5
+    }
+  }
+  cells = {
+    count = 3
+    num-corners = 8
+    simplices = {
+             0       0  2  3  1  8 10 11  9
+             1       2  4  5  3 10 12 13 11
+             2       4  6  7  5 12 14 15 13
+    }
+    material-ids = {
+             0   0
+             1   0
+             2   0
+    }
+  }
+  group = {
+    name = x_neg
+    type = vertices
+    count = 4
+    indices = {
+      0  1  6  7
+    }
+  }
+  group = {
+    name = x_pos
+    type = vertices
+    count = 4
+    indices = {
+      8  9  14  15
+    }
+  }
+}
