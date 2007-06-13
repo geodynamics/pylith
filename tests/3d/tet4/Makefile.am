@@ -15,7 +15,8 @@ TESTS = testpylith.py
 check_SCRIPTS = testpylith.py
 
 noinst_PYTHON = \
-	TestAxialElasticIsotropic.py
+	TestAxialElasticIsotropic.py \
+	TestShearElasticIsotropic.py
 
 noinst_DATA = \
 	box.exo \
@@ -23,6 +24,8 @@ noinst_DATA = \
 	axialx.spatialdb \
 	axialy.spatialdb \
 	axialz.spatialdb \
+	shearelasticisotropic.cfg \
+	shearxyz.spatialdb \
 	matprops.spatialdb
 
 noinst_TMP = \
