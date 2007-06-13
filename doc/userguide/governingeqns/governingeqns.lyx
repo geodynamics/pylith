@@ -43,7 +43,7 @@ We present here a brief derivation of the equations for both quasi-static
  Since the general equations are the same (except for the absence of acceleratio
 n terms in the quasi-static case), we first derive these equations.
  We then present solution methods for each specific case.
- In all of our derivations, we use the notation described in 
+ In all of our derivations, we use the notation described in Table 
 \begin_inset LatexCommand \ref{tab:Mathematical-notation}
 
 \end_inset
@@ -54,7 +54,10 @@ n terms in the quasi-static case), we first derive these equations.
 \end_layout
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float table
+placement H
 wide false
 sideways false
 status open
@@ -64,7 +67,12 @@ status open
 
 \end_inset
 
+Mathematical Notation
+\end_layout
 
+\begin_layout Standard
+\noindent
+\align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="10" columns="3">
 <features>
@@ -439,7 +447,7 @@ Consider volume
 \end_inset
 
 .
- Applying a Lagrangian description of the convervation of momentum gives
+ Applying a Lagrangian description of the conservation of momentum gives
 \end_layout
 
 \begin_layout Standard
@@ -463,7 +471,7 @@ where
 \end_inset
 
 .
- Substituting into 
+ Substituting into Equation 
 \begin_inset LatexCommand \eqref{eqn:momentum:index}
 
 \end_inset
@@ -540,7 +548,7 @@ Consider volume
 \end_inset
 
 .
- Applying a Lagrangian description of the convervation of momentum gives
+ Applying a Lagrangian description of the conservation of momentum gives
 \end_layout
 
 \begin_layout Standard
@@ -564,7 +572,7 @@ where
 \end_inset
 
 .
- Substituting into 
+ Substituting into Equation 
 \begin_inset LatexCommand \eqref{eqn:momentum:vec}
 
 \end_inset
@@ -870,7 +878,7 @@ We construct the weak form by multiplying the wave equation by a trial function
 
 \end_inset
 
-Expanding the left hand side yields
+Expanding the left-hand side yields
 \begin_inset Formula \begin{equation}
 \int_{V}(\nabla\cdot\underline{\sigma})\cdot\overrightarrow{\phi}\: dV+\int_{V}\underline{\sigma}:\nabla\overrightarrow{\phi}\: dV=\int_{S}(\underline{\sigma}\cdot\overrightarrow{\phi})\cdot\overrightarrow{n}\: dS,\text{ or}\end{equation}
 
@@ -996,7 +1004,7 @@ where
  Rewriting the trial functions and displacement field in terms of the basis
  functions gives
 \begin_inset Marginal
-status open
+status collapsed
 
 \begin_layout Standard
 Is the trial function expression correct?
@@ -1093,7 +1101,7 @@ th component associated with basis function
 
 \end_inset
 
-We can rewrite the left-hand-side as a matrix-vector product where the vector
+We can rewrite the left-hand side as a matrix-vector product where the vector
  is the displacement field at time 
 \begin_inset Formula $t+\Delta t$
 \end_inset
@@ -1313,7 +1321,8 @@ with the external forces for any given time:
 \end_inset
 
 Note that the internal forces include the effects of initial stresses.
- Iterative methods such as Newton-Raphson may be used to solve 
+ Iterative methods such as Newton-Raphson may be used to solve Equation
+ 
 \begin_inset LatexCommand \ref{eq:qs-force-balance}
 
 \end_inset
