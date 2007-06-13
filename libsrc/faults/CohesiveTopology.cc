@@ -165,6 +165,9 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   PointArray origVertices;
   PointArray newVertices;
   int        oppositeVertex;
+  const int  numCorners = sieve->nCone(*mesh->heightStratum(0)->begin(), mesh->depth())->size();
+  const int  faceSize   = _numFaceVertices(*mesh->heightStratum(0)->begin(), mesh);
+  int       *indices    = new int[faceSize];
   
   for(Mesh::label_sequence::iterator f_iter = faces->begin();
       f_iter != faces->end();
@@ -187,6 +190,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
       if (vertexRenumber.find(*v_iter) != vertexRenumber.end()) {
         if (debug)
           std::cout << "    vertex " << vertexRenumber[*v_iter] << std::endl;
+        indices[origVertices.size()] = v;
         newVertices.insert(newVertices.end(), vertexRenumber[*v_iter]);
         origVertices.insert(origVertices.end(), *v_iter);
       } else {
@@ -209,16 +213,22 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     //const sieve_type::traits::coneSequence::iterator  fEnd   = fCone->end();
     PointArray faceVertices;
 	if (debug) {
+      int v = 0;
+
 	  std::cout << "  Original Vertices: " << std::endl << "    ";
-      for(PointArray::iterator v_iter = origVertices.begin(); v_iter != origVertices.end(); ++v_iter) {
-        std::cout << " " << *v_iter;
+      for(PointArray::iterator v_iter = origVertices.begin(); v_iter != origVertices.end(); ++v_iter, ++v) {
+        std::cout << " " << *v_iter << "(" << indices[v] << ")";
       }
 	  std::cout << std::endl << "  Opposite Vertex: " << oppositeVertex << std::endl;
     }
-    if (oppositeVertex%2) {
-      faceVertices.insert(faceVertices.end(), origVertices.begin(), origVertices.end());
-    } else {
+    if (_faceOrientation(cell, mesh, numCorners, indices, oppositeVertex)) {
+      if (debug)
+        std::cout << "  Reversing initial face orientation" << std::endl;
       faceVertices.insert(faceVertices.end(), origVertices.rbegin(), origVertices.rend());
+    } else {
+      if (debug)
+        std::cout << "  Keeping initial face orientation" << std::endl;
+      faceVertices.insert(faceVertices.end(), origVertices.begin(), origVertices.end());
     }
     const PointArray::iterator fBegin = faceVertices.begin();
     const PointArray::iterator fEnd   = faceVertices.end();
@@ -245,6 +255,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     }
     mesh->setValue(material, newPoint, materialId);
   } // for
+  delete [] indices;
   mesh->stratify();
   if (debug)
     mesh->view("Mesh with Cohesive Elements");
@@ -332,6 +343,32 @@ pylith::faults::CohesiveTopology::_numFaceVertices(const Mesh::point_type& cell,
     } // swtich
   return numFaceVertices;
 } // _numFaceVertices
+
+// ----------------------------------------------------------------------
+bool
+pylith::faults::CohesiveTopology::_faceOrientation(const Mesh::point_type& cell,
+                                                   const ALE::Obj<Mesh>& mesh,
+                                                   const int numCorners,
+                                                   const int indices[],
+                                                   const int oppositeVertex)
+{ // _faceOrientation
+  const int cellDim = mesh->getDimension();
+
+  // Simplices
+  if (cellDim == numCorners-1) {
+    return !(oppositeVertex%2);
+  } else if (cellDim == 2) {
+    // Quads
+    if ((indices[1] > indices[0]) && (indices[1] - indices[0] == 1)) {
+      return true;
+    }
+    return false;
+  } else if (cellDim == 3) {
+    // Hexes
+    //   I think we might have to enumerate all of these, ugh
+  }
+  return true;
+} // _faceOrientation
 
 
 // End of file

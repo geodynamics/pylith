@@ -65,6 +65,22 @@ private :
   unsigned int _numFaceVertices(const Mesh::point_type& cell,
 				const ALE::Obj<Mesh>& mesh);
 
+  /** Determine a face orientation
+   *    We should really have an interpolated mesh, instead of
+   *    calculating this on the fly.
+   *
+   * @param cell Finite-element cell
+   * @param mesh Finite-element mesh
+   *
+   * @returns True for positive orientation, otherwise false
+   */
+  static
+  bool _faceOrientation(const Mesh::point_type& cell,
+                        const ALE::Obj<Mesh>& mesh,
+                        const int numCorners,
+                        const int indices[],
+                        const int oppositeVertex);
+
 }; // class CohesiveTopology
 
 #endif // pylith_faults_cohesivetopology_hh
