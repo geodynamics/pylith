@@ -33,7 +33,7 @@
 
 \begin_body
 
-\begin_layout Section
+\begin_layout Chapter
 Governing Equations
 \end_layout
 
@@ -429,11 +429,11 @@ Mass density scalar field
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Derivation of Elasticity Equation
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Index Notation
 \end_layout
 
@@ -534,7 +534,7 @@ Note that since both
 ously have both types of boundary conditions.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Vector Notation
 \end_layout
 
@@ -635,11 +635,11 @@ Note that since both
 ously have both types of boundary conditions.
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Finite-Element Formulation of Elasticity Equation
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Index Notation
 \end_layout
 
@@ -829,7 +829,7 @@ We force the weak form to hold for each component in the vector space.
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Vector Notation
 \end_layout
 
@@ -1052,7 +1052,7 @@ so in this case our integral equation becomes
 
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Explicit Time Integration of Elasticity Equation
 \end_layout
 
@@ -1148,7 +1148,7 @@ where
  
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Section
 Solution method for infinitesimal strain quasi-static problems
 \end_layout
 
