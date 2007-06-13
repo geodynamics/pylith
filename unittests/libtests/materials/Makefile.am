@@ -58,14 +58,13 @@ noinst_HEADERS += \
 	data/MaxwellIsotropic3DTimeDepData.hh \
 	data/header.hh
 
-testmaterials_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
-
 AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
 
 testmaterials_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/libpylith.la \
-	-lspatialdata
+	-lspatialdata \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
   testmaterials_LDADD += -lnetcdf_c++ -lnetcdf
