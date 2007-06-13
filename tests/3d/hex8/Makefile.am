@@ -26,9 +26,13 @@ noinst_DATA = \
 	axialz.spatialdb \
 	matprops.spatialdb \
 	matprops-maxwell.spatialdb \
+	matprops-twocells.spatialdb \
 	shearelasticisotropic.cfg \
+	shearelastic-twocells.cfg \
 	shearmaxwellisotropic.cfg \
-	shearxyz.spatialdb
+	shearxyz.spatialdb \
+	shearxyz-twocells.spatialdb \
+	twocells.mesh
 
 noinst_TMP = \
 	axialelasticisotropic.vtk \
