@@ -20,8 +20,10 @@ SUBDIRS = \
 
 if ENABLE_TESTING
   SUBDIRS += \
-	unittests \
-	tests
+	unittests
+
+# Can't run tests without being able to 'rename' PyLith app.
+#	tests
 endif
 
 if ENABLE_DOCUMENTATION

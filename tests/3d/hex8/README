@@ -2,7 +2,7 @@
 AXIAL COMPRESSION
 ======================================================================
 
-3-D axial compression test with linear tetrahedral cells.
+3-D axial compression test with trilinear hexahedral cells.
 
 -200 m <= x <= +200 m
 -200 m <= y <= +200 m
@@ -34,7 +34,7 @@ Analytical solution
 SHEAR
 ======================================================================
 
-3-D shear test with linear tetrahedral cells.
+3-D shear test with trilinear hexahedral cells.
 
 -200 m <= x <= +200 m
 -200 m <= y <= +200 m
