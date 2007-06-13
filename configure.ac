@@ -36,7 +36,7 @@ CIT_PYTHON_SYSCONFIG
 CIT_PYTHON_EGG_SETUP
 
 # Check for PETSc.
-CIT_PATH_PETSC([2.3])
+CIT_PATH_PETSC([2.3.3])
 if test -z "$CXX"; then
     AC_PATH_PROG(CXX, $PETSC_CXX, $PETSC_CXX)
     test -z "$CXX" && AC_MSG_FAILURE([C++ compiler $PETSC_CXX (used to configure PETSc) not found in \$PATH])
