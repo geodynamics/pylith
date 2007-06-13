@@ -112,9 +112,6 @@ class TimeDependent(Problem):
     from pyre.units.time import second
     t = 0.0*second
 
-    # Do stuff for initial state
-    self._poststep(t)
-
     while t.value <= self.totalTime.value:
       self._info.log("Main time loop, t=%s" % t)
       
