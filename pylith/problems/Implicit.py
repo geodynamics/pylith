@@ -234,6 +234,12 @@ class Implicit(Formulation):
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
       integrator.updateState(solnField)
+
+    self._info.log("Outputting elastic solution.")
+    field = self.fields.getReal(self.solnField['name'])
+    for output in self.output.bin:
+      output.writeField(t, self._istep, field, self.solnField['label'])
+    self._istep += 1      
     return
   
 
