@@ -136,7 +136,6 @@ pylith::meshio::SolutionIOVTK::writeField(
     buffer.str("");
     buffer << name << "_t" << t;
 
-    field->view("");
     err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), _viewer);
   } catch (const std::exception& err) {
     std::ostringstream msg;
