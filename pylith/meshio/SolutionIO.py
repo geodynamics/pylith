@@ -55,7 +55,7 @@ class SolutionIO(Component):
     dt = pyre.inventory.dimensional("time_step", default=1.0*s)
     dt.meta['tip'] = "Time step between solution output."
 
-    skip = pyre.inventory.int("skip", default=1,
+    skip = pyre.inventory.int("skip", default=0,
                               validator=pyre.inventory.greaterEqual(0))
     skip.meta['tip'] = "Number of time steps to skip between solution output."
 

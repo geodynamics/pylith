@@ -10,6 +10,10 @@
 // ======================================================================
 //
 
+/* For now, we write each time step to a different file, so we throw
+ * the whole implementation into writeField().
+ */
+
 #include <portinfo>
 
 #include "SolutionIOVTK.hh" // implementation of class methods
@@ -25,7 +29,7 @@ PetscErrorCode SectionView_Sieve_Ascii(const Obj<Bundle>& bundle, const Obj<Sect
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::SolutionIOVTK::SolutionIOVTK(void) :
-  _viewer(NULL)
+  _viewer(0)
 { // constructor
 } // constructor
 
@@ -33,7 +37,9 @@ pylith::meshio::SolutionIOVTK::SolutionIOVTK(void) :
 // Destructor
 pylith::meshio::SolutionIOVTK::~SolutionIOVTK(void)
 { // destructor
-  if (_viewer) PetscViewerDestroy(_viewer); _viewer = NULL;
+  if (_viewer)
+    PetscViewerDestroy(_viewer);
+  _viewer = NULL;
 } // destructor  
 
 // ----------------------------------------------------------------------
@@ -41,21 +47,21 @@ pylith::meshio::SolutionIOVTK::~SolutionIOVTK(void)
 void
 pylith::meshio::SolutionIOVTK::open(const ALE::Obj<ALE::Mesh>& mesh)
 { // open
-  PetscErrorCode ierr;
+#if 0
+  PetscErrorCode err;
 
-  ierr = PetscViewerCreate(mesh->comm(), &_viewer);
-  ierr = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
-  ierr = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);
-  ierr = PetscViewerFileSetName(_viewer, _filename.c_str());
-  if (ierr) {
+  err = PetscViewerCreate(mesh->comm(), &_viewer);
+  err = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
+  err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);
+  err = PetscViewerFileSetName(_viewer, _filename.c_str());
+  if (err) {
     std::ostringstream msg;
     msg << "Could not open VTK file '" << _filename
 	<< "' for solution output.\n";
     throw std::runtime_error(msg.str());
   } // if
 
-  // Write header
-  // ADD STUFF HERE
+#endif
 } // open
 
 // ----------------------------------------------------------------------
@@ -63,7 +69,9 @@ pylith::meshio::SolutionIOVTK::open(const ALE::Obj<ALE::Mesh>& mesh)
 void
 pylith::meshio::SolutionIOVTK::close(void)
 { // close
-  if (_viewer) PetscViewerDestroy(_viewer); _viewer = NULL;
+  if
+    (_viewer) PetscViewerDestroy(_viewer);
+  _viewer = NULL;
 } // close
 
 // ----------------------------------------------------------------------
@@ -72,15 +80,13 @@ void
 pylith::meshio::SolutionIOVTK::writeTopology(const ALE::Obj<ALE::Mesh>& mesh,
 			        const spatialdata::geocoords::CoordSys* csMesh)
 { // writeTopology
+  #if 0
   try {
-    PetscErrorCode ierr;
+    PetscErrorCode err = 0;
 
-    ierr = VTKViewer::writeHeader(_viewer);
-    ierr = VTKViewer::writeVertices(mesh, _viewer);
-    ierr = VTKViewer::writeElements(mesh, _viewer);
-    // Use spatialdata::geocoords::Converter::convert() to convert
-    // coordinates of vertices from csMesh to _cs (postpone and wait
-    // for more general implementation of SolutionIO?).
+    err = VTKViewer::writeHeader(_viewer);
+    err = VTKViewer::writeVertices(mesh, _viewer);
+    err = VTKViewer::writeElements(mesh, _viewer);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing topology information to VTK file '"
@@ -92,6 +98,7 @@ pylith::meshio::SolutionIOVTK::writeTopology(const ALE::Obj<ALE::Mesh>& mesh,
 	<< _filename << "'.\n";
     throw std::runtime_error(msg.str());
   } // try/catch
+#endif
 } // writeTopology
 
 // ----------------------------------------------------------------------
@@ -103,12 +110,34 @@ pylith::meshio::SolutionIOVTK::writeField(
 				     const char* name,
 				     const ALE::Obj<ALE::Mesh>& mesh)
 { // writeField
-  try {
-    PetscErrorCode ierr;
 
-    // Ignore time for now
+  try {
+    PetscErrorCode err;
+
+    std::ostringstream buffer;
+    const int indexExt = _filename.find(".vtk");
+    buffer << std::string(_filename, 0, indexExt) << "_t" << t << ".vtk";
+
+    err = PetscViewerCreate(mesh->comm(), &_viewer);
+    err = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
+    err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);
+    err = PetscViewerFileSetName(_viewer, buffer.str().c_str());
+    if (err) {
+      std::ostringstream msg;
+      msg << "Could not open VTK file '" << buffer.str()
+	  << "' for solution output.\n";
+      throw std::runtime_error(msg.str());
+    } // if
+
+    err = VTKViewer::writeHeader(_viewer);
+    err = VTKViewer::writeVertices(mesh, _viewer);
+    err = VTKViewer::writeElements(mesh, _viewer);
+
+    buffer.clear();
+    buffer << name << "_t" << t << std::endl;
+
     field->view("");
-    ierr = SectionView_Sieve_Ascii(mesh, field, name, _viewer);
+    err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), _viewer);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << name << "' at time " 

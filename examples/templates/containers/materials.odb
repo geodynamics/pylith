@@ -10,38 +10,37 @@
 # ----------------------------------------------------------------------
 #
 
-## Template for user-defined boundary condition container.
+## Template for user-defined physical property container.
 ##
 ## Copy this file to your working directory and rename it as
 ## appropriate. Note: the extension MUST rename ".odb" for PyLith to
 ## find it.
 ##
 ## To use this container, in your .cfg file, bind this component to
-## the boundary condition facility of the problem:
+## the materials facility of the problem:
 ##
 ## [pylithapp.timedependent]
-## bc = MyBC
+## materials = MyMatBin
 ##
 ## You can then set the properties of the facilities in this container
 ## just as you would any other Pyre component.
 ##
 ## For example:
 ##
-## [pylithapp.timedepedent.bc.x_pos]
-## fixed_dof = [0]
-## id = 102
-## label = face +x
+## [pylithapp.timedepedent.materials.materialA]
+## label = elastic material
+## id = 1
 
 # Parent class
 from pylith.utils.ObjectBin import ObjectBin
 
-# Define new boundary condition class
+# Define new material container class
 #
 # You can change the name of this class, but the name here MUST match
 # the one in the object_bin() function at the bottom of this file.
-class MyBC(ObjectBin):
+class MyMatBin(ObjectBin):
   """
-  User-defined boundary conditions container.
+  User-defined materials container.
 
   Factory: object_bin
   """
@@ -53,7 +52,7 @@ class MyBC(ObjectBin):
     Python object for managing MyBC facilities and properties.
     """
 
-    # Define the facilities in this boundary condition container.
+    # Define the facilities in this material container.
     #
     # You must import any Python objects that are bound to the
     # facilities.
@@ -61,38 +60,31 @@ class MyBC(ObjectBin):
     # Synopsis:
     #
     # facilityName = pyre.inventory.facility("facility_name",
-    #   family="boundary_condition", factory=ClassNameOfComponent)
+    #   family="material", factory=ClassNameOfComponent)
     #
     # where ClassNameOfComponent is the class name of the default
     # component to bind to the facility 'facility_name'.
 
     import pyre.inventory
     
-    from pylith.bc.Dirichlet import Dirichlet
+    from pylith.materials.ElasticIsotropic3D import ElasticIsotropic3D
+    from pylith.materials.MaxwellIsotropic3D import MaxwellIsotropic3D
 
-    xPos = pyre.inventory.facility("x_pos", family="boundary_condition",
-                                   factory=Dirichlet)
-    xPos.meta['tip'] = "Boundary condition on +x face of 2-D box."
+    elastic = pyre.inventory.facility("elastic", family="material",
+                                   factory=ElasticIsotropic3D)
+    elastic.meta['tip'] = "Elastic material."
     
-    xNeg = pyre.inventory.facility("x_neg", family="boundary_condition",
-                                   factory=Dirichlet)
-    xNeg.meta['tip'] = "Boundary condition on -x face of 2-D box."
+    viscoelastic = pyre.inventory.facility("viscoelastic", family="material",
+                                   factory=MaxwellIsotropic3D)
+    viscoelastic.meta['tip'] = "Viscoelastic material."
     
-    yPos = pyre.inventory.facility("y_pos", family="boundary_condition",
-                                   factory=Dirichlet)
-    yPos.meta['tip'] = "Boundary condition on +y face of 2-D box."
-    
-    yNeg = pyre.inventory.facility("y_neg", family="boundary_condition",
-                                   factory=Dirichlet)
-    yNeg.meta['tip'] = "Boundary condition on -y face of 2-D box."
-
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
   # The 'name' argument on the next line defines the default name used
   # to configure this component. Generally, we use the class name in
   # lowercase.
-  def __init__(self, name="mybc"):
+  def __init__(self, name="mymatbin"):
     """
     Constructor.
     """
@@ -121,10 +113,8 @@ class MyBC(ObjectBin):
     # first arugment in the calls to pyre.inventory.facility()).
     #
     # DO NOT change the name 'self.bin'.
-    self.bin = [self.inventory.xPos,
-                self.inventory.xNeg,
-                self.inventory.yPos,
-                self.inventory.yNeg]
+    self.bin = [self.inventory.elastic,
+                self.inventory.viscoelastic]
     return
 
   
@@ -132,11 +122,11 @@ class MyBC(ObjectBin):
 
 def object_bin():
   """
-  Factory associated with MyBC.
+  Factory associated with MyMatBin.
   """
   # The class name for the container used above MUST match the name
   # used on the next line.
-  return MyBC()
+  return MyMatBin()
 
 
 # End of file 
