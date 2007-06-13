@@ -19,6 +19,7 @@ import unittest
 from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
 
 from spatialdata.geocoords.CSCart import CSCart
+from pyre.units.time import second
 
 # ----------------------------------------------------------------------
 class TestFaultCohesiveKin(unittest.TestCase):
@@ -33,16 +34,6 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault = FaultCohesiveKin()
     from pylith.feassemble.Integrator import implementsIntegrator
     self.assertTrue(implementsIntegrator(fault))
-    return
-    
-
-  def test_implementsConstraint(self):
-    """
-    Test to make sure FaultCohesiveKin satisfies constraint requirements.
-    """
-    fault = FaultCohesiveKin()
-    from pylith.feassemble.Constraint import implementsConstraint
-    self.assertTrue(implementsConstraint(fault))
     return
     
 
@@ -139,7 +130,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     (mesh, fault, fields) = self._initialize()
 
     residual = fields.getReal("residual")
-    fault.integrateResidual(residual, fields)
+    t = 1.0*second
+    fault.integrateResidual(residual, t, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -158,7 +150,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     jacobian = mesh.createMatrix(fields.getReal("residual"))
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(jacobian)
-    fault.integrateJacobian(jacobian, fields)
+    t = 1.0*second
+    fault.integrateJacobian(jacobian, t, fields)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -175,69 +168,13 @@ class TestFaultCohesiveKin(unittest.TestCase):
     (mesh, fault, fields) = self._initialize()
 
     disp = fields.getReal("dispT")
-    fault.updateState(disp)
+    t = 1.0*second
+    fault.updateState(t, disp)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
     return
   
-
-  def test_setConstraintSizes(self):
-    """
-    Test setConstraintSizes().
-
-    WARNING: This is not a rigorous test of setConstraintSizes() because we
-    don't verify the results.
-    """
-    (mesh, fault, fields) = self._initialize()
-
-    disp = fields.getReal("dispT")
-    fault.setConstraintSizes(disp)
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
-    return
-
-
-  def test_setConstraints(self):
-    """
-    Test setConstraints().
-
-    WARNING: This is not a rigorous test of setConstraints() because we
-    don't verify the results.
-    """
-    (mesh, fault, fields) = self._initialize()
-
-    disp = fields.getReal("dispT")
-    fault.setConstraintSizes(disp)
-    mesh.allocateRealSection(disp)
-    fault.setConstraints(disp)
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
-    return
-
-
-  def test_setField(self):
-    """
-    Test setField().
-
-    WARNING: This is not a rigorous test of setField() because we
-    don't verify the results.
-    """
-    (mesh, fault, fields) = self._initialize()
-
-    disp = fields.getReal("dispT")
-    fault.setConstraintSizes(disp)
-    mesh.allocateRealSection(disp)
-    from pyre.units.time import second
-    t = 1.0*second
-    fault.setField(t, disp)
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
-    return
-
 
   def test_finalize(self):
     """
@@ -329,11 +266,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     from pylith.topology.FieldsManager import FieldsManager
     fields = FieldsManager(mesh)
     fields.addReal("residual")
-    fields.addReal("dispTpdt")
     fields.addReal("dispT")
-    fields.addReal("dispTmdt")
     fields.solutionField("dispT");
-    fields.createHistory(["dispTpdt", "dispT", "dispTmdt"])
     fields.setFiberDimension("residual", cs.spaceDim)
     fields.allocate("residual")
     fields.copyLayout("residual")

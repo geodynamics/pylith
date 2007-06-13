@@ -67,20 +67,24 @@ public :
   /** Integrate contribution of cohesive cells to residual term.
    *
    * @param residual Residual field (output)
+   * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
+			 const double t,
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 
   /** Compute Jacobian matrix (A) associated with operator.
    *
    * @param mat Sparse matrix
+   * @param t Current time
    * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   void integrateJacobian(PetscMat* mat,
+			 const double t,
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
   

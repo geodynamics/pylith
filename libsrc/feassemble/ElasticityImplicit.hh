@@ -104,36 +104,42 @@ public :
    * Includes gravity and element internal force contribution.
    *
    * We assume that the effects of boundary conditions are already
-   * included in b (tractions, concentrated nodal forces, and
-   * contributions to internal force vector due to
+   * included in the residual (tractions, concentrated nodal forces,
+   * and contributions to internal force vector due to
    * displacement/velocity BC).  This routine computes the additional
    * external loads due to body forces (not yet implemented) plus the
    * element internal forces for the current stress state.
    *
-   * @param b Residual field (output)
+   * @param residual Residual field (output)
+   * @param t Current time
    * @param fields Solution fields
    * @param mesh Mesh object
    */
-  void integrateResidual(const ALE::Obj<real_section_type>& b,
+  void integrateResidual(const ALE::Obj<real_section_type>& residual,
+			 const double t,
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 
   /** Compute Jacobian matrix (A) associated with operator.
    *
    * @param mat Sparse matrix
+   * @param t Current time
    * @param fields Solution fields
    * @param mesh Mesh object
    */
   void integrateJacobian(PetscMat* mat,
+			 const double t,
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
   
   /** Update state variables as needed.
    *
+   * @param t Current time
    * @param field Current solution field.
    * @param mesh Finite-element mesh
    */
-  void updateState(const ALE::Obj<real_section_type>& field,
+  void updateState(const double t,
+		   const ALE::Obj<real_section_type>& field,
 		   const ALE::Obj<Mesh>& mesh);
   
 // PRIVATE METHODS //////////////////////////////////////////////////////

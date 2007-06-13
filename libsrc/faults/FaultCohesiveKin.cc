@@ -233,6 +233,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 void
 pylith::faults::FaultCohesiveKin::integrateResidual(
 				const ALE::Obj<real_section_type>& residual,
+				const double t,
 				topology::FieldsManager* const fields,
 				const ALE::Obj<Mesh>& mesh)
 { // integrateResidual
@@ -240,56 +241,22 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   assert(0 != fields);
   assert(!mesh.isNull());
 
-  // Subtract constraint forces (which are disp at the constraint DOF)
-  // to residual; contributions are at DOF of non-constraint vertices
-  // (i and j) of the cohesive cells
+  // Set slip values in residual vector; contributions are at DOF of
+  // constraint vertices (k) of the cohesive cells
 
-  // Get cohesive cells
-  const ALE::Obj<ALE::Mesh::label_sequence>& cellsCohesive = 
-    mesh->getLabelStratum("material-id", id());
-  assert(!cellsCohesive.isNull());
-  const Mesh::label_sequence::iterator cellsCohesiveBegin =
-    cellsCohesive->begin();
-  const Mesh::label_sequence::iterator cellsCohesiveEnd =
-    cellsCohesive->end();
+  typedef std::set<Mesh::point_type>::const_iterator vert_iterator;
 
-  // Get section information
-  const ALE::Obj<real_section_type>& disp = fields->getSolution();
-  assert(!disp.isNull());  
+  assert(0 != _eqsrc);
+  const ALE::Obj<real_section_type>& slip = _eqsrc->slip(t, _constraintVert);
+  assert(!slip.isNull());
+  const vert_iterator vBegin = _constraintVert.begin();
+  const vert_iterator vEnd = _constraintVert.end();
   
-  // Allocate vector for cell values
-  const int spaceDim = _quadrature->spaceDim();
-  const int numConstraintVert = _quadrature->numBasis();
-  const int numCorners = 3*numConstraintVert; // cohesive cell
-  double_array cellVector(numCorners*spaceDim);
-
-  // Loop over cohesive cells
-  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
-       c_iter != cellsCohesiveEnd;
-       ++c_iter) {
-    cellVector = 0.0;
-
-    // Get values at vertices (want constraint forces in disp vector)
-    const real_section_type::value_type* cellDisp = 
-      mesh->restrict(disp, *c_iter);
-
-    // Transfer constraint forces to cell's constribution to residual vector
-    for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint)
-      for (int iDim=0; iDim < spaceDim; ++iDim) {
-	const int indexI = iConstraint;
-	const int indexJ = iConstraint +   numConstraintVert;
-	const int indexK = iConstraint + 2*numConstraintVert;
-	const double constraintForce = cellDisp[indexK*spaceDim+iDim];
-      cellVector[indexI*spaceDim+iDim] = -constraintForce;
-      cellVector[indexJ*spaceDim+iDim] = +constraintForce;
-    } // for
-    PetscErrorCode err = 
-      PetscLogFlops(numConstraintVert*2);
-    if (err)
-      throw std::runtime_error("Logging PETSc flops failed.");
-
-    // Update residual (replace, do not add)
-    mesh->update(residual, *c_iter, &cellVector[0]);
+  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
+    const int fiberDim = slip->getFiberDimension(*v_iter);
+    const real_section_type::value_type* values = slip->restrictPoint(*v_iter);
+    assert(fiberDim == residual->getFiberDimension(*v_iter));
+    residual->updatePoint(*v_iter, values);
   } // for
 } // integrateResidual
 
@@ -298,6 +265,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 void
 pylith::faults::FaultCohesiveKin::integrateJacobian(
 				    PetscMat* mat,
+				    const double t,
 				    topology::FieldsManager* const fields,
 				    const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
@@ -394,53 +362,5 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   _needNewJacobian = false;
 } // integrateJacobian
   
-// ----------------------------------------------------------------------
-// Set number of degrees of freedom that are constrained at points
-void
-pylith::faults::FaultCohesiveKin::setConstraintSizes(
-				    const ALE::Obj<real_section_type>& field,
-				    const ALE::Obj<ALE::Mesh>& mesh)
-{ // setConstraintSizes
-  /* No DOF are eliminated from the system of equations with the 
-   * Lagrange multiplier formulation
-   */
-} // setConstraintSizes
-
-// ----------------------------------------------------------------------
-// Set which degrees of freedom are constrained at points in field.
-void
-pylith::faults::FaultCohesiveKin::setConstraints(
-				     const ALE::Obj<real_section_type>& field,
-				     const ALE::Obj<ALE::Mesh>& mesh)
-{ // setConstraints
-  /* No DOF are eliminated from the system of equations with the 
-   * Lagrange multiplier formulation
-   */
-} // setConstraints
-
-// ----------------------------------------------------------------------
-// Set field.
-void
-pylith::faults::FaultCohesiveKin::setField(
-				     const double t,
-				     const ALE::Obj<real_section_type>& disp,
-				     const ALE::Obj<Mesh>& mesh)
-{ // setField
-  typedef std::set<Mesh::point_type>::const_iterator vert_iterator;
-
-  assert(0 != _eqsrc);
-  const ALE::Obj<real_section_type>& slip = _eqsrc->slip(t, _constraintVert);
-  assert(!slip.isNull());
-  const vert_iterator vBegin = _constraintVert.begin();
-  const vert_iterator vEnd = _constraintVert.end();
-  
-  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
-    const int fiberDim = slip->getFiberDimension(*v_iter);
-    const real_section_type::value_type* values = slip->restrictPoint(*v_iter);
-    assert(fiberDim == disp->getFiberDimension(*v_iter));
-    disp->updatePoint(*v_iter, values);
-  } // for
-} // setField
-
 
 // End of file 

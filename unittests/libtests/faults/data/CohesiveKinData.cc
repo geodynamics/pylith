@@ -30,12 +30,10 @@ pylith::faults::CohesiveKinData::CohesiveKinData(void) :
   finalSlipFilename(0),
   slipTimeFilename(0),
   peakRateFilename(0),
-  fieldTpdt(0),
   fieldT(0),
   orientation(0),
   constraintVertices(0),
   valsResidual(0),
-  valsSlip(0),
   valsJacobian(0),
   numConstraintVert(0)
 { // constructor

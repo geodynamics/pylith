@@ -89,7 +89,7 @@ const char* pylith::faults::CohesiveKinDataQuad4::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataQuad4::_peakRateFilename = 
   "data/quad4_peakrate.spatialdb";
 
-const double pylith::faults::CohesiveKinDataQuad4::_fieldTpdt[] = {
+const double pylith::faults::CohesiveKinDataQuad4::_fieldT[] = {
   8.1, 9.1,
   8.2, 9.2,
   8.3, 9.3,
@@ -102,18 +102,6 @@ const double pylith::faults::CohesiveKinDataQuad4::_fieldTpdt[] = {
   8.0, 9.0,
 };
 
-const double pylith::faults::CohesiveKinDataQuad4::_fieldT[] = {
-  6.1, 7.1, // 2
-  6.2, 7.2, // 3
-  6.3, 7.3, // 4
-  6.4, 7.4, // 5
-  6.5, 7.5, // 6
-  6.6, 7.6, // 7
-  6.7, 7.7, // 8
-  1.4, 1.5, // 9 (constraint force)
-  6.8, 7.8, // 10
-  2.6, 2.7, // 11 (constraint force)
-};
 
 const int pylith::faults::CohesiveKinDataQuad4::_numConstraintVert = 2;
 
@@ -127,19 +115,6 @@ const int pylith::faults::CohesiveKinDataQuad4::_constraintVertices[] = {
 };
 
 const double pylith::faults::CohesiveKinDataQuad4::_valsResidual[] = {
-  0.0,  0.0, // 2
-  0.0,  0.0, // 3
- -1.4, -1.5, // 4
- -2.6, -2.7, // 5
-  0.0,  0.0, // 6
-  0.0,  0.0, // 7
- +1.4, +1.5, // 8
-  0.0,  0.0, // 9
- +2.6, +2.7, // 10
-  0.0,  0.0, // 11
-};
-
-const double pylith::faults::CohesiveKinDataQuad4::_valsSlip[] = {
   0.0,  0.0,
   0.0,  0.0,
   0.0,  0.0,
@@ -372,12 +347,10 @@ pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   peakRateFilename = const_cast<char*>(_peakRateFilename);
-  fieldTpdt = const_cast<double*>(_fieldTpdt);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
   valsResidual = const_cast<double*>(_valsResidual);
-  valsSlip = const_cast<double*>(_valsSlip);
   valsJacobian = const_cast<double*>(_valsJacobian);
   numConstraintVert = _numConstraintVert;  
 } // constructor

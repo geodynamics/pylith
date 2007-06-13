@@ -107,15 +107,18 @@ class Formulation(Component):
     self._info.log("Initializing boundary conditions.")
     for bc in boundaryConditions.bin:
       bc.initialize(mesh)
+      foundType = False
       if implementsIntegrator(bc):
+        foundType = True
         self.integrators.append(bc)
         self._info.log("Added boundary condition '%s' as an integrator." % \
                        bc.label)
       if implementsConstraint(bc):
+        foundType = True
         self.constraints.append(bc)
         self._info.log("Added boundary condition '%s' as a constraint." % \
                        bc.label)
-      else:
+      if not foundType:
         raise TypeError, \
               "Could not determine whether boundary condition '%s' is an " \
               "integrator or a constraint." % bc.name
@@ -123,15 +126,18 @@ class Formulation(Component):
     self._info.log("Initializing interior interfaces.")
     for ic in interfaceConditions.bin:
       ic.initialize(mesh)
+      foundType = False
       if implementsIntegrator(ic):
+        foundType = True
         self.integrators.append(ic)
         self._info.log("Added interface condition '%s' as an integrator." % \
                        ic.label)
       if implementsConstraint(ic):
+        foundType = True
         self.constraints.append(ic)
         self._info.log("Added interface condition '%s' as a constraint." % \
                        ic.label)
-      else:
+      if not foundType:
         raise TypeError, \
               "Could not determine whether interface condition '%s' is an " \
               "integrator or a constraint." % ic.name

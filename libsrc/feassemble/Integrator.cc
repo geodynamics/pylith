@@ -80,6 +80,7 @@ pylith::feassemble::Integrator::needNewJacobian(void) const
 // Update state variables as needed.
 void
 pylith::feassemble::Integrator::updateState(
+				     const double t,
 				     const ALE::Obj<real_section_type>& field,
 				     const ALE::Obj<Mesh>& mesh)
 { // updateState

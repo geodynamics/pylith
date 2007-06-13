@@ -96,13 +96,13 @@ class FaultCohesiveKin(FaultCohesive):
     return self.cppHandle.stableTimeStep*second
 
 
-  def integrateResidual(self, residual, fields):
+  def integrateResidual(self, residual, t, fields):
     """
     Integrate contributions to residual term at time t.
     """
     self._info.log("Integrating residual for fault '%s'." % self.label)
     assert(None != self.cppHandle)
-    self.cppHandle.integrateResidual(residual, fields.cppHandle,
+    self.cppHandle.integrateResidual(residual, t.value, fields.cppHandle,
                                      self.mesh.cppHandle)
     return
 
@@ -116,53 +116,26 @@ class FaultCohesiveKin(FaultCohesive):
     return self.cppHandle.needNewJacobian
 
 
-  def integrateJacobian(self, jacobian, fields):
+  def integrateJacobian(self, jacobian, t, fields):
     """
     Integrate contributions to Jacobian term at time t.
     """
     self._info.log("Integrating Jacobian for fault '%s'." % self.label)
     assert(None != self.cppHandle)
-    self.cppHandle.integrateJacobian(jacobian, fields.cppHandle,
+    self.cppHandle.integrateJacobian(jacobian, t.value, fields.cppHandle,
                                      self.mesh.cppHandle)
     return
 
 
-  def updateState(self, field):
+  def updateState(self, t, field):
     """
     Update state variables as needed.
     """
     self._info.log("Updating state for fault '%s'." % self.label)
     assert(None != self.cppHandle)
-    self.cppHandle.updateState(field, self.mesh.cppHandle)
+    self.cppHandle.updateState(t.value, field, self.mesh.cppHandle)
     return
     
-
-  def setConstraintSizes(self, field):
-    """
-    Set constraint sizes in field.
-    """
-    assert(None != self.cppHandle)
-    self.cppHandle.setConstraintSizes(field, self.mesh.cppHandle)
-    return
-
-
-  def setConstraints(self, field):
-    """
-    Set constraints for field.
-    """
-    assert(None != self.cppHandle)
-    self.cppHandle.setConstraints(field, self.mesh.cppHandle)
-    return
-
-
-  def setField(self, t, field):
-    """
-    Set constrained values in field at time t.
-    """
-    assert(None != self.cppHandle)
-    self.cppHandle.setField(t.value, field, self.mesh.cppHandle)
-    return
-
 
   def finalize(self):
     """
