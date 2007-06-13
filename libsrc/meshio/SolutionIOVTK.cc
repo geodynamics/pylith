@@ -133,8 +133,8 @@ pylith::meshio::SolutionIOVTK::writeField(
     err = VTKViewer::writeVertices(mesh, _viewer);
     err = VTKViewer::writeElements(mesh, _viewer);
 
-    buffer.clear();
-    buffer << name << "_t" << t << std::endl;
+    buffer.str("");
+    buffer << name << "_t" << t;
 
     field->view("");
     err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), _viewer);
