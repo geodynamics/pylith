@@ -1,22 +1,21 @@
 mesh = {
-  dimension = 1
+  dimension = 2
   vertices = {
-    dimension = 1
-    count = 5
+    dimension = 2
+    count = 4
     coordinates = {
-      0   0.0
-      1   1.0
-      2   2.0
-      3   3.0
-      4   4.0
+      0  -1.0   0.0
+      1   0.0   1.0
+      2   0.0  -1.0
+      3   1.0   0.0
     }
   }
   cells = {
     num-corners = 3
     count = 2
     simplices = {
-      0    0  2  1
-      1    2  4  3
+      0   0  2  1
+      1   1  2  3
     }
     material-ids = {
       0   1
@@ -24,20 +23,21 @@ mesh = {
     }
   }
   group = {
-    name = end points
     type = vertices
+    name = fault
     count = 2
     indices = {
-      0
-      4
+      1
+      2
     }
   }
   group = {
-    name = fault
     type = vertices
-    count = 1
+    name = end points
+    count = 2
     indices = {
-      2
+      0
+      3
     }
   }
 }

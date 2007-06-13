@@ -15,7 +15,8 @@ TESTS = testpylith.py
 check_SCRIPTS = testpylith.py
 
 noinst_PYTHON = \
-	TestAxial.py
+	TestAxial.py \
+	TestDislocation.py
 
 noinst_DATA = \
 	bar.mesh \

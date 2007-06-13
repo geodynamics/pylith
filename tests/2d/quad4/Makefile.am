@@ -15,22 +15,32 @@ TESTS = testpylith.py
 check_SCRIPTS = testpylith.py
 
 noinst_PYTHON = \
-	TestAxialPlaneStrain.py
+	TestAxialPlaneStrain.py \
+	TestShearPlaneStrain.py \
+	TestDislocation.py
 
 noinst_DATA = \
 	box.exo \
+	twocells.mesh \
+	matprops.spatialdb \
 	axialplanestrain.cfg \
+	axialx.spatialdb \
+	axialy.spatialdb \
 	shearplanestrain.cfg \
 	shearplanestrain_free.cfg \
 	shearplanestrain_xfixed.cfg \
-	axialx.spatialdb \
-	axialy.spatialdb \
 	shearxy.spatialdb \
-	matprops.spatialdb
+	dislocation.cfg \
+	dislocation_disp.spatialdb \
+	dislocation_sliprate.spatialdb \
+	dislocation_slip.spatialdb \
+	dislocation_sliptime.spatialdb
 
 noinst_TMP = \
-	axialplanestrain.vtk \
-	shearplanestrain.vtk
+	axialplanestrain_t0.vtk \
+	axialplanestrain_t1.vtk \
+	shearplanestrain_t0.vtk \
+	shearplanestrain_t1.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
