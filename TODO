@@ -2,10 +2,9 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Python unit tests for FaultCohesiveKin
-  setConstraintSizes()
-  setConstraints()
-  setField()
+FaultCohesiveKin::integrateJacobian()
+  Need to prevent multiple contributions of orientation information for
+  each vertex, because we want to use ADD_VALUES in updateOperator().
 
 tests/1d/line2
 

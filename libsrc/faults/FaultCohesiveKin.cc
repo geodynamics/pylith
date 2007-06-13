@@ -20,6 +20,7 @@
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
+#include <petscmat.h> // USES PETSc Mat
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -308,6 +309,8 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   // direction cosines. Entries are associated with vertices ik, jk,
   // ki, and kj.
 
+  PetscErrorCode err = 0;
+
   // Get cohesive cells
   const ALE::Obj<ALE::Mesh::label_sequence>& cellsCohesive = 
     mesh->getLabelStratum("material-id", id());
@@ -369,8 +372,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	    cellMatrix[row*numCorners*spaceDim+col]; // symmetric
 	} // for
     } // for
-    PetscErrorCode err = 
-      PetscLogFlops(numConstraintVert*spaceDim*spaceDim*4);
+    err = PetscLogFlops(numConstraintVert*spaceDim*spaceDim*4);
     if (err)
       throw std::runtime_error("Logging PETSc flops failed.");
 
@@ -378,8 +380,14 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     const ALE::Obj<Mesh::order_type>& globalOrder = 
       mesh->getFactory()->getGlobalOrder(mesh, "default", disp);
     // Update values (do not add)
+
+    // Most integrators will call the PETSc updateOperator() routine
+    // with ADD_VALUES, but with Lagrange multipler constraints, we
+    // call updateOperator() with INSERT_VALUES.
+
+    // :BUG: NEED TO USE INSERT_VALUES HERE
     err = updateOperator(*mat, mesh, disp, globalOrder,
-			 *c_iter, &cellMatrix[0], INSERT_VALUES);
+			 *c_iter, &cellMatrix[0], ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for

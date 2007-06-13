@@ -92,6 +92,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   assert(0 != fields);
   assert(!mesh.isNull());
 
+  PetscErrorCode err = 0;
+
   // Get cell information
   const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
     mesh->getLabelStratum("material-id", _material->id());
@@ -197,8 +199,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
         } // for
       } // for
     } // for
-    PetscErrorCode err = 
-      PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
+    err = PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
     if (err)
       throw std::runtime_error("Logging PETSc flops failed.");
 
@@ -219,7 +220,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	  _cellVector[iBasis*spaceDim  ] -= N1*s11;
 	} // for
       } // for
-      PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*5));
+      err = PetscLogFlops(numQuadPts*(1+numBasis*5));
       if (err)
 	throw std::runtime_error("Logging PETSc flops failed.");
 
