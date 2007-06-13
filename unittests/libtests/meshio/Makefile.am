@@ -60,15 +60,14 @@ noinst_HEADERS += \
 	data/MeshDataCubitHex.hh \
 	data/MeshDataLagritTet.hh
 
-testmeshio_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
-
 AM_CPPFLAGS = \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
 testmeshio_LDADD = \
 	-lcppunit -ldl \
-	$(top_builddir)/libsrc/libpylith.la
+	$(top_builddir)/libsrc/libpylith.la \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
   testmeshio_SOURCES += TestMeshIOCubit.cc

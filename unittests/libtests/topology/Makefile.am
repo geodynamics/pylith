@@ -32,15 +32,14 @@ testtopology_SOURCES +=
 
 noinst_HEADERS += 
 
-testtopology_LDFLAGS = $(PETSC_LIB) $(PYTHON_BLDLIBRARY)
-
 AM_CPPFLAGS = \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
 testtopology_LDADD = \
 	-lcppunit -ldl \
-	$(top_builddir)/libsrc/libpylith.la
+	$(top_builddir)/libsrc/libpylith.la \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
   testtopology_LDADD += -lnetcdf_c++ -lnetcdf
