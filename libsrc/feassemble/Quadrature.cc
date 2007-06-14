@@ -246,6 +246,9 @@ pylith::feassemble::Quadrature::_resetGeometry(void)
   _jacobian = 0.0;
   _jacobianDet = 0.0;
   _jacobianInv = 0.0;
+#if 0
+  _basisDeriv = 0.0;
+#endif
   _quadPts = 0.0;
 } // _resetGeometry
 
