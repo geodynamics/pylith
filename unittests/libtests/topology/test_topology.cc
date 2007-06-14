@@ -26,8 +26,6 @@
 
 #include <stdlib.h> // USES abort()
 
-#include "journal/info.h"
-
 int
 main(int argc,
      char* argv[])
@@ -38,12 +36,6 @@ main(int argc,
     // Initialize PETSc
     PetscErrorCode err = PetscInitialize(&argc, &argv, PETSC_NULL, PETSC_NULL);
     CHKERRQ(err);
-
-    // Initialize Python
-    Py_Initialize();
-
-    journal::info_t info("gmvfile");
-    //info.activate();
 
     // Create event manager and test controller
     CppUnit::TestResult controller;
@@ -63,9 +55,6 @@ main(int argc,
     // Print tests
     CppUnit::TextOutputter outputter(&result, std::cerr);
     outputter.write();
-
-    // Finalize Python
-    Py_Finalize();
 
     // Finalize PETSc
     err = PetscFinalize();

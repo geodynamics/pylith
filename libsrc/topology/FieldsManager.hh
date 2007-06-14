@@ -130,7 +130,7 @@ public :
 private :
 
   /// Not implemented
-  FieldsManager(const FieldsManager& m);
+  FieldsManager(const FieldsManager&);
 
   /// Not implemented
   const FieldsManager& operator=(const FieldsManager&);

@@ -320,6 +320,7 @@ protected :
    * size = numQuadPts * numBasis * cellDim
    * index = iQuadPt*numBasis*cellDim + iBasis*cellDim + iDim
    */
+  double _basisDeriv;
   //double_array _basisDeriv;
 
   /** Array of Jacobians evaluated at quadrature points.
