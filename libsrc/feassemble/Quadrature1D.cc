@@ -68,7 +68,7 @@ pylith::feassemble::Quadrature1D::computeGeometry(
     // J = dx/dp = sum[i=0,n-1] (dNi/dp * xi)
     for (int iBasis=0; iBasis < _numBasis; ++iBasis)
       _jacobian[iQuadPt] += 
-	_basisDeriv[iQuadPt*_numBasis+iBasis] * vertCoords[iBasis];
+	_basisDerivRef[iQuadPt*_numBasis+iBasis] * vertCoords[iBasis];
 
     // Compute determinant of Jacobian at quadrature point
     // |J| = j00
@@ -79,6 +79,17 @@ pylith::feassemble::Quadrature1D::computeGeometry(
     // Compute inverse of Jacobian at quadrature point
     // Jinv = 1/j00
     _jacobianInv[iQuadPt] = 1.0/_jacobianDet[iQuadPt];
+
+#if 0
+    // Compute derivatives of basis functions with respect to global
+    // coordinates
+    // dNi/dx = dNi/dp dp/dx + dNi/dq dq/dx + dNi/dr dr/dx
+    for (int iBasis=0; iBasis < _numBasis; ++iBasis)
+      for (int iDim=0; iDim < _spaceDim; ++iDim)
+	_basisDeriv[iQuadPt*_numBasis*_spaceDim+iBasis*_spaceDim+iDim] +=
+	  _basisDerivRef[iQuadPt*_numBasis*+iBasis] *
+	  _jacobianInv[iQuadPt*_spaceDim+iDim];
+#endif
   } // for
 } // computeGeometry
 

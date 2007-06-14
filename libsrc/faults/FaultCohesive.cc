@@ -16,8 +16,6 @@
 
 #include "CohesiveTopology.hh" // USES CohesiveTopology::create()
 
-#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
-
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 #include "pylith/utils/array.hh" // USES double_array
 

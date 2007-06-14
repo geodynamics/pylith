@@ -60,7 +60,7 @@ pylith::feassemble::TestQuadrature::basis(const Quadrature& q) {
 inline
 const double*
 pylith::feassemble::TestQuadrature::basisDeriv(const Quadrature& q) {
-  return &q._basisDeriv[0];
+  return &q._basisDerivRef[0];
 }
 
 // Get coordinates of quadrature points

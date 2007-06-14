@@ -79,18 +79,19 @@ public :
    *   size = numQuadPts * numBasis
    *   index = iQuadPt*numBasis + iBasis
    *
-   * @param basisDeriv Array of basis function derivaties evaluated 
-   *   at quadrature pts
-   *   N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
-   *   N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
+   * @param basisDerivRef Array of basis function derivaties evaluated at
+   * quadrature pts, where derivatives are with respect to cell's
+   * local coordinates.
+   *   N0pQp0, N0qQp0, N0rQp0, N1pQp0, N1qQp0, N1rQp0, ... 
+   *   N0pQp1, N0qQp1, N0rQp1, N1pQp1, N1qQp1, N1rQp1, ...
    *   ...
    *   size = numQuadPts * numBasis * cellDim
    *   index = iQuadPt*numBasis*cellDim + iBasis*cellDim + iDim
    *
    * @param quadPts Array of coordinates of quadrature points in 
    *   reference cell
-   *   Qp0x, Qp0y, Qp0z
-   *   Qp1x, Qp1y, Qp1z
+   *   Qp0p, Qp0q, Qp0r
+   *   Qp1p, Qp1q, Qp1r
    *   size = numQuadPts * numDims
    *   index = iQuadPt*numDims + iDim
    *
@@ -105,7 +106,7 @@ public :
    */
   void initialize(const double* vertices,
 		  const double* basis,
-		  const double* basisDeriv,
+		  const double* basisDerivRef,
 		  const double* quadPtsRef,
 		  const double* quadWts,
 		  const int cellDim,
@@ -270,7 +271,7 @@ protected :
    */
   double_array _quadPtsRef;
 
-  /** Array of coordinates of quadrature points in cell (NOT reference cell).
+  /** Array of coordinates of quadrature points in cell (global coordinates).
    *
    * Qp0x, Qp0y, Qp0z
    * Qp1x, Qp1y, Qp1z
@@ -298,7 +299,20 @@ protected :
    */
   double_array _basis;
 
-  /** Array of basis function derivatives evaluated at the quadrature points.
+  /** Array of basis function derivatives evaluated at the quadrature
+   * points, where derivatives are with respect to cell's local
+   * coordinates.
+   *
+   * N0pQp0, N0qQp0, N0rQp0, N1pQp0, N1qQp0, N1rQp0, ... 
+   * N0pQp1, N0qQp1, N0rQp1, N1pQp1, N1qQp1, N1rQp1, ...
+   *
+   * size = numQuadPts * numBasis * spaceDim
+   * index = iQuadPt*numBasis*cellDim + iBasis*spaceDim + iDim
+   */
+  double_array _basisDerivRef;
+
+  /** Array of basis function derivatives evaluated at the quadrature
+   * points, where derivatives are with respect to global coordinates.
    *
    * N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
    * N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
@@ -306,7 +320,7 @@ protected :
    * size = numQuadPts * numBasis * cellDim
    * index = iQuadPt*numBasis*cellDim + iBasis*cellDim + iDim
    */
-  double_array _basisDeriv;
+  //double_array _basisDeriv;
 
   /** Array of Jacobians evaluated at quadrature points.
    *

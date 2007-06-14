@@ -61,8 +61,8 @@ pylith::feassemble::TestQuadrature::testClone(void)
   memcpy(&qOrig._basis[0], basisE, size*sizeof(double));
   
   size = 2;
-  qOrig._basisDeriv.resize(size);
-  memcpy(&qOrig._basisDeriv[0], basisDerivE, size*sizeof(double));
+  qOrig._basisDerivRef.resize(size);
+  memcpy(&qOrig._basisDerivRef[0], basisDerivE, size*sizeof(double));
 
   size = 1;
   qOrig._quadPtsRef.resize(size);
@@ -226,7 +226,7 @@ pylith::feassemble::TestQuadrature::testInitialize(void)
 
   size = numBasis * numQuadPts * spaceDim;
   for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(basisDeriv[i], q._basisDeriv[i]);
+    CPPUNIT_ASSERT_EQUAL(basisDeriv[i], q._basisDerivRef[i]);
 
   size = numQuadPts * cellDim;
   for (int i=0; i < size; ++i)

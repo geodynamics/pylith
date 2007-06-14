@@ -83,7 +83,7 @@ pylith::feassemble::Quadrature3D::computeGeometry(
     for (int iBasis=0; iBasis < _numBasis; ++iBasis)
       for (int iCol=0; iCol < _cellDim; ++iCol) {
 	const double deriv = 
-	  _basisDeriv[iQuadPt*_numBasis*_spaceDim+iBasis*_cellDim+iCol];
+	  _basisDerivRef[iQuadPt*_numBasis*_spaceDim+iBasis*_cellDim+iCol];
 	for (int iRow=0; iRow < _spaceDim; ++iRow)
 	  _jacobian[iQuadPt*_cellDim*_spaceDim+iRow*_cellDim+iCol] += 
 	    deriv * vertCoords[iBasis*_spaceDim+iRow];
@@ -132,6 +132,18 @@ pylith::feassemble::Quadrature3D::computeGeometry(
 			 _jacobian[i00]*_jacobian[i21]) / det;
     _jacobianInv[i22] = (_jacobian[i00]*_jacobian[i11] -
 			 _jacobian[i01]*_jacobian[i10]) / det;
+
+#if 0
+    // Compute derivatives of basis functions with respect to global
+    // coordinates
+    // dNi/dx = dNi/dp dp/dx + dNi/dq dq/dx + dNi/dr dr/dx
+    for (int iBasis=0; iBasis < _numBasis; ++iBasis)
+      for (int iDim=0; iDim < _spaceDim; ++iDim)
+	for (int jDim=0; jDim < _cellDim; ++jDim)
+	  _basisDeriv[iQuadPt*_numBasis*_spaceDim+iBasis*_spaceDim+iDim] +=
+	    _basisDerivRef[iQuadPt*_numBasis*_cellDim+iBasis*_cellDim+jDim] *
+	    _jacobianInv[iQuadPt*_cellDim*_spaceDim+jDim*_spaceDim+iDim];
+#endif
   } // for
 } // computeGeometry
 
