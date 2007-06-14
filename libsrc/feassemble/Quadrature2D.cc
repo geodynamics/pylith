@@ -102,6 +102,7 @@ pylith::feassemble::Quadrature2D::computeGeometry(
     _jacobianInv[i01] = -_jacobian[i01] / det;
     _jacobianInv[i10] = -_jacobian[i10] / det;
     _jacobianInv[i11] =  _jacobian[i00] / det;
+    PetscLogFlops(_numBasis*2 + _numBasis*_cellDim*_spaceDim*2 + 21);
 
 #if 0
     // Compute derivatives of basis functions with respect to global
