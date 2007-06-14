@@ -77,7 +77,8 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   } // if
 
   // Create sections to hold parameters for physical properties
-  if (_parameters) {delete _parameters;};
+  if (0 != _parameters) // Can't delete NULL pointer that holds reference
+    delete _parameters;
   _parameters = new topology::FieldsManager(mesh);
   assert(0 != _parameters);
   const int numQuadPts = quadrature->numQuadPts();
