@@ -658,7 +658,7 @@ u_{i}=u_{i}^{o}\text{ on }S_{u},\\
 
 We construct the weak form by multiplying the wave equation by a trial function
  and setting the integral over the domain to zero.
- The trial function is a piecewise differential vector field, 
+ The trial function is a piecewise differentiable vector field, 
 \begin_inset Formula $\phi_{i}$
 \end_inset
 
