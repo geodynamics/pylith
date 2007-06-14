@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -826,6 +826,34 @@ We force the weak form to hold for each component in the vector space.
 
 \end_inset
 
+For the specific case of a linearly elastic material, 
+\begin_inset Formula \begin{equation}
+\sigma_{ij}=C_{ijkl}\epsilon_{kl},\end{equation}
+
+\end_inset
+
+and for infinitesimal strains, 
+\begin_inset Formula \begin{equation}
+\epsilon_{ij}=\frac{1}{2}\left(u_{i,j}+u_{j,i}\right),\end{equation}
+
+\end_inset
+
+so in this case our integral equation becomes 
+\begin_inset Formula \begin{equation}
+\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijkl}\left(N_{,k}^{q}u_{l}^{q}+N_{,l}^{q}u_{k}^{q}\right)\, dV+\int_{V^{e}}\rho N_{}^{p}\sum_{q}N_{}^{q}\ddot{u}_{i}^{q}\: dV-\int_{V^{e}}N_{}^{p}f_{i}\: dV-\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS)=0.\end{equation}
+
+\end_inset
+
+
+\begin_inset Marginal
+status open
+
+\begin_layout Standard
+Need to check this equation.
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -1004,7 +1032,7 @@ where
  Rewriting the trial functions and displacement field in terms of the basis
  functions gives
 \begin_inset Marginal
-status collapsed
+status open
 
 \begin_layout Standard
 Is the trial function expression correct?
@@ -1094,10 +1122,10 @@ th component associated with basis function
 \end_inset
 
  yields
-\begin_inset Formula \begin{multline*}
+\begin_inset Formula \begin{multline}
 \frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t+\Delta t)\, dV\right)=\frac{2}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t)\, dV\right)\\
 -\frac{1}{\Delta t^{2}}\sum_{elements}\left(\int_{V^{e}}\rho N^{p}\sum_{q}N^{q}u_{i}^{q}(t-\Delta t)\, dV\right)-\frac{1}{2}\sum_{elements}\left(\int_{V^{e}}\sigma_{ij}(t)(N_{,j}^{p}+N_{,i}^{p})\: dV\right)\\
-+\sum_{elements}\left(\int_{V^{e}}N^{p}f_{i}(t)\: dV\right)+\sum_{elements}\left(\int_{S_{T}}N^{p}T_{i}\: dS\right).\end{multline*}
++\sum_{elements}\left(\int_{V^{e}}N^{p}f_{i}(t)\: dV\right)+\sum_{elements}\left(\int_{S_{T}}N^{p}T_{i}\: dS\right).\end{multline}
 
 \end_inset
 
@@ -1107,8 +1135,8 @@ We can rewrite the left-hand side as a matrix-vector product where the vector
 \end_inset
 
  and the element mass matrix is given by
-\begin_inset Formula \[
-M_{ij}^{pq}=\delta_{ij}\int_{V^{e}}\rho N^{p}N^{q}\, dV,\]
+\begin_inset Formula \begin{equation}
+M_{ij}^{pq}=\delta_{ij}\int_{V^{e}}\rho N^{p}N^{q}\, dV,\end{equation}
 
 \end_inset
 
@@ -1176,7 +1204,7 @@ The strains are given by
  represent additional variables upon which the stress depends.
  These additional variables follow the evolution equations
 \begin_inset Formula \begin{equation}
-\dot{q_{k}=r_{k}\left(\epsilon_{ij},q_{k}\right),}\end{equation}
+q_{k}=r_{k}\left(\epsilon_{ij},q_{k}\right),\end{equation}
 
 \end_inset
 
@@ -1224,7 +1252,7 @@ lied tractions.
 \begin_layout Standard
 We define the tangent constitutive operator as
 \begin_inset Formula \begin{equation}
-C_{ijrs}=\frac{\partial\sigma_{ij}}{\partial\epsilon_{rs}},\end{equation}
+C_{ijkl}=\frac{\partial\sigma_{ij}}{\partial\epsilon_{kl}},\end{equation}
 
 \end_inset
 
@@ -1233,14 +1261,14 @@ where
 \end_inset
 
  and 
-\begin_inset Formula $\epsilon_{rs}$
+\begin_inset Formula $\epsilon_{kl}$
 \end_inset
 
  are the stresses and strains at any given time step.
  For an elastic problem in which the stress is linearly dependent on the
  strain, this allows the stress-strain relationship to be written
 \begin_inset Formula \begin{equation}
-\sigma_{ij}=C_{ijrs}\epsilon_{rs}+\sigma_{ij}^{0},\end{equation}
+\sigma_{ij}=C_{ijkl}\epsilon_{kl}+\sigma_{ij}^{0},\end{equation}
 
 \end_inset
 
@@ -1249,7 +1277,7 @@ and we then obtain
 
 \begin_layout Standard
 \begin_inset Formula \begin{multline}
-\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijrs}\left(N_{,s}^{p}+N_{,r}^{p}\right)\, dV)\overrightarrow{U}=\\
+\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijkl}\left(N_{,l}^{q}+N_{,k}^{q}\right)\, dV)\overrightarrow{U}=\\
 \sum_{elements}\left(\int_{V^{e}}N_{}^{p}f_{i}\: dV+\int_{S_{T}^{e}}N_{}^{p}T_{i}\, dS-\int_{V^{e}}\frac{1}{2}\sigma_{ij}^{0}(N_{,j}^{p}+N_{,i}^{p})\: dV\right),\end{multline}
 
 \end_inset
@@ -1369,7 +1397,7 @@ where
 
  is a vector of displacement increments and
 \begin_inset Formula \begin{equation}
-\underline{K}\hphantom{}^{t+\Delta t}=-\frac{\partial\overrightarrow{F}\hphantom{}^{t+\Delta t}}{\partial\overrightarrow{U}\hphantom{}^{t+\Delta t}}=\frac{\partial\overrightarrow{B}\hphantom{}_{int}^{t+\Delta t}}{\partial\overrightarrow{U}\hphantom{}^{t+\Delta t}}=\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijrs}^{t+\Delta t}\left(N_{,s}^{p}+N_{,r}^{p}\right)\, dV).\end{equation}
+\underline{K}\hphantom{}^{t+\Delta t}=-\frac{\partial\overrightarrow{F}\hphantom{}^{t+\Delta t}}{\partial\overrightarrow{U}\hphantom{}^{t+\Delta t}}=\frac{\partial\overrightarrow{B}\hphantom{}_{int}^{t+\Delta t}}{\partial\overrightarrow{U}\hphantom{}^{t+\Delta t}}=\sum_{elements}(\int_{V^{e}}\frac{1}{4}(N_{,j}^{p}+N_{,i}^{p})C_{ijkl}^{t+\Delta t}\left(N_{,l}^{q}+N_{,k}^{q}\right)\, dV).\end{equation}
 
 \end_inset
 
