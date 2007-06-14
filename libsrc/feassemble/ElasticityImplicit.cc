@@ -107,8 +107,6 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     fields->getReal("dispTBctpdt");
   assert(!dispTBctpdt.isNull());
 
-  dispTBctpdt->view("DISP T BC t+dt"); // TEMPORARY
-
   // Get cell geometry information that doesn't depend on cell
   const int numQuadPts = _quadrature->numQuadPts();
   const double_array& quadWts = _quadrature->quadWts();

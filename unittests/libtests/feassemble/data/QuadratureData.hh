@@ -50,7 +50,8 @@ public:
   double* quadPts; ///< Coordinates of quad pts in cell
 
   double* basis; ///< Basis fns at quadrature points
-  double* basisDeriv; ///< Derivatices of basis fns at quad pts
+  double* basisDerivRef; ///< Derivatices of basis fns at quad pts (cell)
+  double* basisDeriv; ///< Derivatices of basis fns at quad pts (global)
   double* jacobian; ///< Jacobian at quadrature points
   double* jacobianDet; ///< Determinant of quadrature points
   double* jacobianInv; ///< Inverse of Jacobian at quadruature points

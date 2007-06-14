@@ -78,6 +78,7 @@ class QuadratureApp(Script):
     self.quadPtsRef = None
     self.quadWts = None
     self.basis = None
+    self.basisDerivRef = None
     self.basisDeriv = None
 
     # Computed quadrature information
@@ -94,11 +95,11 @@ class QuadratureApp(Script):
     """
     self._collectData()
 
-    (self.basis, self.basisDeriv) = self.quadrature.calculateBasis()
+    (self.basis, self.basisDerivRef) = self.quadrature.calculateBasis()
     self.quadPts = numpy.dot(self.basis, self.vertices)
 
     import feutils
-    (self.jacobian, self.jacobianInv, self.jacobianDet) = \
+    (self.jacobian, self.jacobianInv, self.jacobianDet, self.basisDeriv) = \
                     feutils.calculateJacobian(self.quadrature, self.vertices)
 
     self._initData()
@@ -177,9 +178,12 @@ class QuadratureApp(Script):
     self.data.addArray(vtype="double", name="_basis",
                        values=self.basis,
                        format="%16.8e", ncols=self.cellDim)
+    self.data.addArray(vtype="double", name="_basisDerivRef",
+                       values=self.basisDerivRef,
+                       format="%16.8e", ncols=self.cellDim)
     self.data.addArray(vtype="double", name="_basisDeriv",
                        values=self.basisDeriv,
-                       format="%16.8e", ncols=self.cellDim)
+                       format="%16.8e", ncols=self.spaceDim)
     self.data.addArray(vtype="double", name="_jacobian",
                        values=self.jacobian,
                        format="%16.8e", ncols=self.cellDim)

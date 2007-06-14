@@ -58,9 +58,14 @@ const double pylith::feassemble::QuadratureData1Din3DLinear::_basis[] = {
   5.00000000e-01,
 };
 
-const double pylith::feassemble::QuadratureData1Din3DLinear::_basisDeriv[] = {
+const double pylith::feassemble::QuadratureData1Din3DLinear::_basisDerivRef[] = {
  -5.00000000e-01,
   5.00000000e-01,
+};
+
+const double pylith::feassemble::QuadratureData1Din3DLinear::_basisDeriv[] = {
+  6.66666667e-01, -2.85714286e-01, -2.00000000e-01,
+ -6.66666667e-01,  2.85714286e-01,  2.00000000e-01,
 };
 
 const double pylith::feassemble::QuadratureData1Din3DLinear::_jacobian[] = {
@@ -92,6 +97,7 @@ pylith::feassemble::QuadratureData1Din3DLinear::QuadratureData1Din3DLinear(void)
   quadWts = const_cast<double*>(_quadWts);
   quadPts = const_cast<double*>(_quadPts);
   basis = const_cast<double*>(_basis);
+  basisDerivRef = const_cast<double*>(_basisDerivRef);
   basisDeriv = const_cast<double*>(_basisDeriv);
   jacobian = const_cast<double*>(_jacobian);
   jacobianDet = const_cast<double*>(_jacobianDet);

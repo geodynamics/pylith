@@ -71,7 +71,7 @@ const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_basis[] = {
   4.55341801e-01,
 };
 
-const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_basisDeriv[] = {
+const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_basisDerivRef[] = {
  -1.07735027e+00,
   1.15470054e+00,
  -7.73502692e-02,
@@ -99,9 +99,9 @@ const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_fieldTmdt[]
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsResidual[] = {
- -1.41749375e+11,
-  3.24002500e+11,
- -1.82249375e+11,
+ -1.11999375e+11,
+  2.56002500e+11,
+ -1.43999375e+11,
 };
 
 const double pylith::feassemble::ElasticityExplicitData1DQuadratic::_valsJacobian[] = {
@@ -135,7 +135,7 @@ pylith::feassemble::ElasticityExplicitData1DQuadratic::ElasticityExplicitData1DQ
   quadPts = const_cast<double*>(_quadPts);
   quadWts = const_cast<double*>(_quadWts);
   basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
+  basisDerivRef = const_cast<double*>(_basisDerivRef);
   fieldTpdt = const_cast<double*>(_fieldTpdt);
   fieldT = const_cast<double*>(_fieldT);
   fieldTmdt = const_cast<double*>(_fieldTmdt);

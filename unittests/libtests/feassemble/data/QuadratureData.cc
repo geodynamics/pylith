@@ -28,6 +28,7 @@ pylith::feassemble::QuadratureData::QuadratureData(void) :
   quadWts(0),
   quadPts(0),
   basis(0),
+  basisDerivRef(0),
   basisDeriv(0),
   jacobian(0),
   jacobianDet(0),

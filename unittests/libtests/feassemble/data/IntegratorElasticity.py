@@ -65,11 +65,11 @@ class IntegratorElasticity(IntegratorApp):
                             self.spaceDim*self.numBasis),
                            dtype=numpy.float64)
       vertices = self.vertices[cell, :]
-      (jacobian, jacobianInv, jacobianDet) = \
+      (jacobian, jacobianInv, jacobianDet, basisDeriv) = \
                  feutils.calculateJacobian(self.quadrature, vertices)
       for iQuad in xrange(self.numQuadPts):
         wt = self.quadWts[iQuad] * jacobianDet[iQuad]
-        B = self._calculateBasisDerivMat(iQuad)
+        B = self._calculateBasisDerivMat(basisDeriv, iQuad)
         cellK[:] += wt * numpy.dot(numpy.dot(B.transpose(), D), B)
       feutils.assembleMat(K, cellK, cell, self.spaceDim)
     return K
@@ -89,7 +89,7 @@ class IntegratorElasticity(IntegratorApp):
                             self.spaceDim*self.numBasis),
                            dtype=numpy.float64)
       vertices = self.vertices[cell, :]
-      (jacobian, jacobianInv, jacobianDet) = \
+      (jacobian, jacobianInv, jacobianDet, basisDeriv) = \
                  feutils.calculateJacobian(self.quadrature, vertices)
       for iQuad in xrange(self.numQuadPts):
         wt = self.quadWts[iQuad] * jacobianDet[iQuad]
@@ -165,7 +165,7 @@ class IntegratorElasticity(IntegratorApp):
     return N
 
 
-  def _calculateBasisDerivMat(self, iQuad):
+  def _calculateBasisDerivMat(self, basisDeriv, iQuad):
     """
     Calculate matrix of derivatives of basis functions.
     """
@@ -173,28 +173,28 @@ class IntegratorElasticity(IntegratorApp):
       B = numpy.zeros( (6, self.spaceDim*self.numBasis),
                        dtype=numpy.float64)
       for iBasis in xrange(self.numBasis):
-        B[0, iBasis*self.spaceDim+0] = self.basisDeriv[iQuad, iBasis, 0]
-        B[1, iBasis*self.spaceDim+1] = self.basisDeriv[iQuad, iBasis, 1]
-        B[2, iBasis*self.spaceDim+2] = self.basisDeriv[iQuad, iBasis, 2]
-        B[3, iBasis*self.spaceDim+0] = 0.5*self.basisDeriv[iQuad, iBasis, 1]
-        B[3, iBasis*self.spaceDim+1] = 0.5*self.basisDeriv[iQuad, iBasis, 0]
-        B[4, iBasis*self.spaceDim+1] = 0.5*self.basisDeriv[iQuad, iBasis, 2]
-        B[4, iBasis*self.spaceDim+2] = 0.5*self.basisDeriv[iQuad, iBasis, 1]
-        B[5, iBasis*self.spaceDim+0] = 0.5*self.basisDeriv[iQuad, iBasis, 2]
-        B[5, iBasis*self.spaceDim+2] = 0.5*self.basisDeriv[iQuad, iBasis, 0]
+        B[0, iBasis*self.spaceDim+0] = basisDeriv[iQuad, iBasis, 0]
+        B[1, iBasis*self.spaceDim+1] = basisDeriv[iQuad, iBasis, 1]
+        B[2, iBasis*self.spaceDim+2] = basisDeriv[iQuad, iBasis, 2]
+        B[3, iBasis*self.spaceDim+0] = 0.5*basisDeriv[iQuad, iBasis, 1]
+        B[3, iBasis*self.spaceDim+1] = 0.5*basisDeriv[iQuad, iBasis, 0]
+        B[4, iBasis*self.spaceDim+1] = 0.5*basisDeriv[iQuad, iBasis, 2]
+        B[4, iBasis*self.spaceDim+2] = 0.5*basisDeriv[iQuad, iBasis, 1]
+        B[5, iBasis*self.spaceDim+0] = 0.5*basisDeriv[iQuad, iBasis, 2]
+        B[5, iBasis*self.spaceDim+2] = 0.5*basisDeriv[iQuad, iBasis, 0]
     elif 2 == self.spaceDim:
       B = numpy.zeros( (3, self.spaceDim*self.numBasis),
                        dtype=numpy.float64)
       for iBasis in xrange(self.numBasis):
-        B[0, iBasis*self.spaceDim+0] = self.basisDeriv[iQuad, iBasis, 0]
-        B[1, iBasis*self.spaceDim+1] = self.basisDeriv[iQuad, iBasis, 1]
-        B[2, iBasis*self.spaceDim+0] = 0.5*self.basisDeriv[iQuad, iBasis, 1]
-        B[2, iBasis*self.spaceDim+1] = 0.5*self.basisDeriv[iQuad, iBasis, 0]
+        B[0, iBasis*self.spaceDim+0] = basisDeriv[iQuad, iBasis, 0]
+        B[1, iBasis*self.spaceDim+1] = basisDeriv[iQuad, iBasis, 1]
+        B[2, iBasis*self.spaceDim+0] = 0.5*basisDeriv[iQuad, iBasis, 1]
+        B[2, iBasis*self.spaceDim+1] = 0.5*basisDeriv[iQuad, iBasis, 0]
     elif 1 == self.spaceDim:
       B = numpy.zeros( (1, self.spaceDim*self.numBasis),
                        dtype=numpy.float64)
       for iBasis in xrange(self.numBasis):
-        B[0, iBasis*self.spaceDim+0] = self.basisDeriv[iQuad, iBasis, 0]
+        B[0, iBasis*self.spaceDim+0] = basisDeriv[iQuad, iBasis, 0]
     else:
       raise ValueError("Unknown spatial dimension '%d'." % self.spaceDim)
     return B

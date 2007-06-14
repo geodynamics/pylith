@@ -86,7 +86,7 @@ class IntegratorApp(Script):
     self.quadPts = None
     self.quadWts = None
     self.basis = None
-    self.basisDeriv = None
+    self.basisDerivRef = None
 
     # Material information
     self.matType = None
@@ -151,7 +151,7 @@ class IntegratorApp(Script):
     self.numQuadPts = self.quadrature.numQuadPts
     self.quadPts = self.quadrature.quadPtsRef
     self.quadWts = self.quadrature.quadWts
-    (self.basis, self.basisDeriv) = self.quadrature.calculateBasis()
+    (self.basis, self.basisDerivRef) = self.quadrature.calculateBasis()
 
     # Material information
     self.matType = self.material.type
@@ -215,8 +215,8 @@ class IntegratorApp(Script):
                        format="%16.8e", ncols=self.numQuadPts)
     self.data.addArray(vtype="double", name="_basis", values=self.basis,
                        format="%16.8e", ncols=self.cellDim)
-    self.data.addArray(vtype="double", name="_basisDeriv",
-                       values=self.basisDeriv,
+    self.data.addArray(vtype="double", name="_basisDerivRef",
+                       values=self.basisDerivRef,
                        format="%16.8e", ncols=self.cellDim)
 
     # Material information

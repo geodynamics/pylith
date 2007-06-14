@@ -27,7 +27,7 @@ pylith::feassemble::IntegratorData::IntegratorData(void) :
   quadPts(0),
   quadWts(0),
   basis(0),
-  basisDeriv(0),
+  basisDerivRef(0),
   matType(0),
   matDBFilename(0),
   matId(0),

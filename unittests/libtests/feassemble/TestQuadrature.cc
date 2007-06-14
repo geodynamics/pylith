@@ -114,11 +114,11 @@ pylith::feassemble::TestQuadrature::testClone(void)
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_EQUAL(basisE[i], basis[i]);
 
-  const double_array& basisDeriv = qCopy->basisDeriv();
+  const double_array& basisDerivRef = qCopy->_basisDerivRef;
   size = numBasisE * numQuadPtsE * spaceDimE;
-  CPPUNIT_ASSERT_EQUAL(size, basisDeriv.size());
+  CPPUNIT_ASSERT_EQUAL(size, basisDerivRef.size());
   for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(basisDerivE[i], basisDeriv[i]);
+    CPPUNIT_ASSERT_EQUAL(basisDerivE[i], basisDerivRef[i]);
 
   const double_array& quadPtsRef = qCopy->_quadPtsRef;
   size = numQuadPtsE * cellDimE;
@@ -202,13 +202,13 @@ pylith::feassemble::TestQuadrature::testInitialize(void)
   const int spaceDim = 1;
   const double vertices[] = { -1.0, 1.0 };
   const double basis[] = { 0.5, 0.5 };
-  const double basisDeriv[] = { -0.5, 0.5 };
+  const double basisDerivRef[] = { -0.5, 0.5 };
   const double quadPtsRef[] = { 0.0 };
   const double quadWts[] = { 2.0 };
   const double minJacobian = 1.0;
 
   Quadrature1D q;
-  q.initialize(vertices, basis, basisDeriv, quadPtsRef, quadWts,
+  q.initialize(vertices, basis, basisDerivRef, quadPtsRef, quadWts,
 	       cellDim, numBasis, numQuadPts, spaceDim);
   
   CPPUNIT_ASSERT_EQUAL(cellDim, q._cellDim);
@@ -226,7 +226,7 @@ pylith::feassemble::TestQuadrature::testInitialize(void)
 
   size = numBasis * numQuadPts * spaceDim;
   for (int i=0; i < size; ++i)
-    CPPUNIT_ASSERT_EQUAL(basisDeriv[i], q._basisDerivRef[i]);
+    CPPUNIT_ASSERT_EQUAL(basisDerivRef[i], q._basisDerivRef[i]);
 
   size = numQuadPts * cellDim;
   for (int i=0; i < size; ++i)
@@ -262,7 +262,7 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(Quadrature* pQuad,
   const int spaceDim = data.spaceDim;
   const double* verticesRef = data.verticesRef;
   const double* basis = data.basis;
-  const double* basisDeriv = data.basisDeriv;
+  const double* basisDerivRef = data.basisDerivRef;
   const double* quadPtsRef = data.quadPtsRef;
   const double* quadWts = data.quadWts;
 
@@ -278,7 +278,7 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(Quadrature* pQuad,
   const double minJacobian = 1.0e-06;
 
   pQuad->minJacobian(minJacobian);
-  pQuad->initialize(verticesRef, basis, basisDeriv, quadPtsRef, quadWts,
+  pQuad->initialize(verticesRef, basis, basisDerivRef, quadPtsRef, quadWts,
 		    cellDim, numBasis, numQuadPts, spaceDim);
 
   // Create mesh with test cell
