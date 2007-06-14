@@ -263,6 +263,7 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(Quadrature* pQuad,
   const double* verticesRef = data.verticesRef;
   const double* basis = data.basis;
   const double* basisDerivRef = data.basisDerivRef;
+  const double* basisDeriv = data.basisDeriv;
   const double* quadPtsRef = data.quadPtsRef;
   const double* quadWts = data.quadWts;
 
@@ -324,6 +325,12 @@ pylith::feassemble::TestQuadrature::_testComputeGeometry(Quadrature* pQuad,
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(jacobianDet[i], pQuad->_jacobianDet[i], 
 				 tolerance);
+
+  size = numQuadPts * numBasis * spaceDim;
+  for (int i=0; i < size; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(basisDeriv[i], pQuad->_basisDeriv[i], 
+				 tolerance);
+
 } // testComputeGeometry
 
 
