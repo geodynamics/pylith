@@ -96,7 +96,6 @@ class Implicit(Formulation):
 
     dispTBctpdt = self.fields.getReal("dispTBctpdt")
     import pylith.topology.topology as bindings
-    bindings.sectionView(dispTBctpdt, "dispTBctpdt")
     
     self.jacobian = mesh.createMatrix(self.fields.getReal("dispTBctpdt"))
 
@@ -218,17 +217,9 @@ class Implicit(Formulation):
       integrator.integrateResidual(residual, t, self.fields)
     import pylith.utils.petsc as petsc
     petsc.mat_assemble(self.jacobian)
-    print "Jacobian matrix"
-    petsc.mat_view(self.jacobian)
 
     self._info.log("Solving equations.")
-    print "BEFORE SOLVE"
-    bindings.sectionView(solnField, "dispTBctpdt")
-    bindings.sectionView(residual, "residual")
-    bindings.sectionView(dispIncr, "dispIncr")
     self.solver.solve(dispIncr, self.jacobian, residual)
-    print "AFTER SOLVE"
-    bindings.sectionView(dispIncr, "dispIncr")
 
     import pylith.topology.topology as bindings
     bindings.addRealSections(solnField, solnField, dispIncr)

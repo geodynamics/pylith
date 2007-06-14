@@ -52,7 +52,7 @@ public:
   double* quadPts; ///< Coordinates of quad pts in ref cell
   double* quadWts; ///< Weights of quadrature points
   double* basis; ///< Basis fns at quadrature points
-  double* basisDeriv; ///< Derivatives of basis fns at quad pts
+  double* basisDerivRef; ///< Derivatives of basis fns at quad pts
   //@}
 
   /// @name Material information

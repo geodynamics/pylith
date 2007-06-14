@@ -77,7 +77,7 @@ const double pylith::feassemble::QuadratureData2Din3DQuadratic::_basis[] = {
   1.11111111e-01,  4.44444444e-01,
 };
 
-const double pylith::feassemble::QuadratureData2Din3DQuadratic::_basisDeriv[] = {
+const double pylith::feassemble::QuadratureData2Din3DQuadratic::_basisDerivRef[] = {
   3.33333333e-01,  3.33333333e-01,
   1.66666667e+00,  0.00000000e+00,
   0.00000000e+00, -3.33333333e-01,
@@ -96,6 +96,27 @@ const double pylith::feassemble::QuadratureData2Din3DQuadratic::_basisDeriv[] = 
   2.00000000e+00, -6.66666667e-01,
   6.66666667e-01,  6.66666667e-01,
  -6.66666667e-01,  2.00000000e+00,
+};
+
+const double pylith::feassemble::QuadratureData2Din3DQuadratic::_basisDeriv[] = {
+ -1.35593220e-01,  3.38983051e-02,  1.29554656e-01,
+  7.76836158e-02,  5.01412429e-01, -7.42240216e-02,
+  1.51129944e-01,  6.63841808e-02, -1.44399460e-01,
+  1.11581921e+00, -7.06214689e-02, -1.06612686e+00,
+ -1.17796610e+00, -3.30508475e-01,  1.12550607e+00,
+ -3.10734463e-02, -2.00564972e-01,  2.96896086e-02,
+ -1.18644068e-01,  5.08474576e-02,  1.10671937e-01,
+ -2.40112994e-02, -1.08757062e-01,  2.23978920e-02,
+ -7.13276836e-01, -2.89548023e-01,  6.65349144e-01,
+  2.85310734e-01,  1.15819209e-01, -2.66139657e-01,
+ -9.32203390e-02,  7.54237288e-01,  8.69565217e-02,
+  6.63841808e-01, -5.22598870e-01, -6.19235837e-01,
+  6.69642857e-01, -2.23214286e-01, -6.38297872e-01,
+ -1.63690476e-02, -1.05654762e-01,  1.56028369e-02,
+  1.50297619e-01,  6.10119048e-02, -1.43262411e-01,
+  3.98809524e-01,  7.55952381e-01, -3.80141844e-01,
+ -2.67857143e-01,  8.92857143e-02,  2.55319149e-01,
+ -9.34523810e-01, -5.77380952e-01,  8.90780142e-01,
 };
 
 const double pylith::feassemble::QuadratureData2Din3DQuadratic::_jacobian[] = {
@@ -138,6 +159,7 @@ pylith::feassemble::QuadratureData2Din3DQuadratic::QuadratureData2Din3DQuadratic
   quadWts = const_cast<double*>(_quadWts);
   quadPts = const_cast<double*>(_quadPts);
   basis = const_cast<double*>(_basis);
+  basisDerivRef = const_cast<double*>(_basisDerivRef);
   basisDeriv = const_cast<double*>(_basisDeriv);
   jacobian = const_cast<double*>(_jacobian);
   jacobianDet = const_cast<double*>(_jacobianDet);

@@ -65,7 +65,7 @@ const double pylith::feassemble::ElasticityImplicitData2DLinear::_basis[] = {
   3.33333333e-01,  3.33333333e-01,
   3.33333333e-01,};
 
-const double pylith::feassemble::ElasticityImplicitData2DLinear::_basisDeriv[] = {
+const double pylith::feassemble::ElasticityImplicitData2DLinear::_basisDerivRef[] = {
  -1.00000000e+00, -1.00000000e+00,
   1.00000000e+00,  0.00000000e+00,
   0.00000000e+00,  1.00000000e+00,
@@ -90,30 +90,30 @@ const double pylith::feassemble::ElasticityImplicitData2DLinear::_fieldTmdt[] = 
 };
 
 const double pylith::feassemble::ElasticityImplicitData2DLinear::_valsResidual[] = {
-  1.81500000e+10,  1.48500000e+10,
- -4.95000000e+09, -1.32000000e+10,
- -1.32000000e+10, -1.65000000e+09,
+ -4.40727273e+10,  1.63800000e+11,
+ -1.81636364e+10, -1.54200000e+11,
+  6.22363636e+10, -9.60000000e+09,
 };
 
 const double pylith::feassemble::ElasticityImplicitData2DLinear::_valsJacobian[] = {
-  5.77500000e+10,  2.47500000e+10,
- -4.95000000e+10, -8.25000000e+09,
- -8.25000000e+09, -1.65000000e+10,
-  2.47500000e+10,  5.77500000e+10,
- -1.65000000e+10, -8.25000000e+09,
- -8.25000000e+09, -4.95000000e+10,
- -4.95000000e+10, -1.65000000e+10,
-  4.95000000e+10,  0.00000000e+00,
-  0.00000000e+00,  1.65000000e+10,
- -8.25000000e+09, -8.25000000e+09,
-  0.00000000e+00,  8.25000000e+09,
-  8.25000000e+09,  0.00000000e+00,
- -8.25000000e+09, -8.25000000e+09,
-  0.00000000e+00,  8.25000000e+09,
-  8.25000000e+09,  0.00000000e+00,
- -1.65000000e+10, -4.95000000e+10,
-  1.65000000e+10,  0.00000000e+00,
-  0.00000000e+00,  4.95000000e+10,
+  3.15681818e+10, -1.86136364e+10,
+ -4.90909091e+09,  9.68181818e+09,
+ -2.66590909e+10,  8.93181818e+09,
+ -1.86136364e+10,  7.24772727e+10,
+  2.18181818e+09, -6.28636364e+10,
+  1.64318182e+10, -9.61363636e+09,
+ -4.90909091e+09,  2.18181818e+09,
+  1.14545455e+10,  4.90909091e+09,
+ -6.54545455e+09, -7.09090909e+09,
+  9.68181818e+09, -6.28636364e+10,
+  4.90909091e+09,  5.91818182e+10,
+ -1.45909091e+10,  3.68181818e+09,
+ -2.66590909e+10,  1.64318182e+10,
+ -6.54545455e+09, -1.45909091e+10,
+  3.32045455e+10, -1.84090909e+09,
+  8.93181818e+09, -9.61363636e+09,
+ -7.09090909e+09,  3.68181818e+09,
+ -1.84090909e+09,  5.93181818e+09,
 };
 
 pylith::feassemble::ElasticityImplicitData2DLinear::ElasticityImplicitData2DLinear(void)
@@ -135,7 +135,7 @@ pylith::feassemble::ElasticityImplicitData2DLinear::ElasticityImplicitData2DLine
   quadPts = const_cast<double*>(_quadPts);
   quadWts = const_cast<double*>(_quadWts);
   basis = const_cast<double*>(_basis);
-  basisDeriv = const_cast<double*>(_basisDeriv);
+  basisDerivRef = const_cast<double*>(_basisDerivRef);
   fieldTpdt = const_cast<double*>(_fieldTpdt);
   fieldT = const_cast<double*>(_fieldT);
   fieldTmdt = const_cast<double*>(_fieldTmdt);

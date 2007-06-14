@@ -26,25 +26,29 @@ def calculateJacobian(quadrature, vertices):
   @param quadrature Quadrature information
   @param vertices Coordinates of cell's vertices
   """
-  jacobian = numpy.zeros( (quadrature.numQuadPts,
-                           quadrature.spaceDim, quadrature.cellDim),
-                          dtype=numpy.float64)
-  jacobianInv = numpy.zeros( (quadrature.numQuadPts,
-                              quadrature.cellDim, quadrature.spaceDim),
-                             dtype=numpy.float64)
-  jacobianDet = numpy.zeros( (quadrature.numQuadPts,), dtype=numpy.float64)
+  (basis, basisDerivRef) = quadrature.calculateBasis()
 
-  (basis, basisDeriv) = quadrature.calculateBasis()
-    
+  numQuadPts = quadrature.numQuadPts
+  cellDim = quadrature.cellDim
+  spaceDim = quadrature.spaceDim
+  numBasis = quadrature.numBasis
+  jacobian = numpy.zeros( (numQuadPts, spaceDim, cellDim),
+                          dtype=numpy.float64)
+  jacobianInv = numpy.zeros( (numQuadPts, cellDim, spaceDim),
+                             dtype=numpy.float64)
+  jacobianDet = numpy.zeros( (numQuadPts,), dtype=numpy.float64)
+  basisDeriv = numpy.zeros( (numQuadPts, numBasis, spaceDim),
+                            dtype=numpy.float64)
+
   iQuad = 0
   for q in quadrature.quadPtsRef:
     # Jacobian at quadrature points
-    deriv = basisDeriv[iQuad]
+    deriv = basisDerivRef[iQuad]
     j = numpy.dot(vertices.transpose(), deriv)
     jacobian[iQuad] = j
 
     # Determinant of Jacobian and Jacobian inverse at quadrature points
-    if quadrature.spaceDim == quadrature.cellDim:
+    if spaceDim == cellDim:
       jacobianDet[iQuad] = numpy.linalg.det(j)
       jacobianInv[iQuad] = numpy.linalg.inv(j)
     else:
@@ -97,8 +101,16 @@ def calculateJacobian(quadrature, vertices):
           raise ValueError("Could not find inverse of Jacobian.")
       else:
         raise ValueError("Could not find inverse of Jacobian.")
+
+    # Compute derivatives of basis functions with respect to global
+    # coordinates using derivatives of basis functions with respect
+    # to local cell coordinates and inverse of Jacobian matrix
+    for iBasis in xrange(numBasis):
+      matBasis = numpy.array(basisDerivRef[iQuad,iBasis], dtype=numpy.float64)
+      jInv = jacobianInv[iQuad]
+      basisDeriv[iQuad,iBasis,:] = numpy.dot(matBasis, jInv)
     iQuad += 1
-  return (jacobian, jacobianInv, jacobianDet)
+  return (jacobian, jacobianInv, jacobianDet, basisDeriv)
     
 
 # ----------------------------------------------------------------------

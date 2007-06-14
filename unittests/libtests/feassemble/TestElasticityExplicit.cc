@@ -280,7 +280,7 @@ pylith::feassemble::TestElasticityExplicit::_initialize(
 
   // Setup quadrature
   _quadrature->initialize(_data->verticesRef, 
-			  _data->basis, _data->basisDeriv, _data->quadPts,
+			  _data->basis, _data->basisDerivRef, _data->quadPts,
 			  _data->quadWts, _data->cellDim, _data->numBasis,
 			  _data->numQuadPts, _data->spaceDim);
 
