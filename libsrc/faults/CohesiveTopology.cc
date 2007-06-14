@@ -150,13 +150,17 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
       const ALE::Obj<int_section_type>& group = mesh->getIntSection(*name);
 
       if (group->hasPoint(*v_iter)) {
-        group->setFiberDimension(newPoint, 1);
+        group->addPoint(newPoint, 1);
         if (constraintCell) {
-          group->setFiberDimension(newPoint+1, 1);
+          group->addPoint(newPoint+1, 1);
         }
       }
     } // for
     if (constraintCell) newPoint++;
+  } // for
+  for(std::set<std::string>::const_iterator name = groupNames->begin();
+      name != groupNames->end(); ++name) {
+    mesh->reallocate(mesh->getIntSection(*name));
   } // for
 
   // Split the mesh along the fault sieve and create cohesive elements
@@ -261,7 +265,6 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   const ALE::Obj<Mesh::label_type>&           label          = mesh->createLabel(std::string("censored depth"));
   const ALE::Obj<std::set<Mesh::point_type> > modifiedPoints = new std::set<Mesh::point_type>();
   _computeCensoredDepth(mesh, label, mesh->getSieve(), mesh->getSieve()->roots(), firstCohesiveCell, modifiedPoints);
-  label->view("");
   if (debug)
     mesh->view("Mesh with Cohesive Elements");
 
