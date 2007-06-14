@@ -80,16 +80,17 @@ pylith::feassemble::Quadrature1D::computeGeometry(
     // Jinv = 1/j00
     _jacobianInv[iQuadPt] = 1.0/_jacobianDet[iQuadPt];
 
-#if 0
+    assert(_numQuadPts*_numBasis*_spaceDim == _basisDeriv.size());
+    assert(_numQuadPts*_numBasis*_cellDim == _basisDerivRef.size());
+    assert(_numQuadPts*_cellDim*_spaceDim == _jacobianInv.size());
+
     // Compute derivatives of basis functions with respect to global
     // coordinates
     // dNi/dx = dNi/dp dp/dx + dNi/dq dq/dx + dNi/dr dr/dx
     for (int iBasis=0; iBasis < _numBasis; ++iBasis)
-      for (int iDim=0; iDim < _spaceDim; ++iDim)
-	_basisDeriv[iQuadPt*_numBasis*_spaceDim+iBasis*_spaceDim+iDim] +=
-	  _basisDerivRef[iQuadPt*_numBasis*+iBasis] *
-	  _jacobianInv[iQuadPt*_spaceDim+iDim];
-#endif
+      _basisDeriv[iQuadPt*_numBasis+iBasis] +=
+	  _basisDerivRef[iQuadPt*_numBasis+iBasis] *
+	  _jacobianInv[iQuadPt];
   } // for
 } // computeGeometry
 

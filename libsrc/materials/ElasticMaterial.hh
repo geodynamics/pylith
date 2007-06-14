@@ -22,9 +22,7 @@
 
 #include "Material.hh" // ISA Material
 
-#include "pylith/utils/arrayfwd.hh" // USES double_array
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
-#include <vector> // USES std::vector
 
 /// Namespace for pylith package
 namespace pylith {

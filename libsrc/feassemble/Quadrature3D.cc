@@ -133,7 +133,6 @@ pylith::feassemble::Quadrature3D::computeGeometry(
     _jacobianInv[i22] = (_jacobian[i00]*_jacobian[i11] -
 			 _jacobian[i01]*_jacobian[i10]) / det;
 
-#if 0
     // Compute derivatives of basis functions with respect to global
     // coordinates
     // dNi/dx = dNi/dp dp/dx + dNi/dq dq/dx + dNi/dr dr/dx
@@ -143,7 +142,6 @@ pylith::feassemble::Quadrature3D::computeGeometry(
 	  _basisDeriv[iQuadPt*_numBasis*_spaceDim+iBasis*_spaceDim+iDim] +=
 	    _basisDerivRef[iQuadPt*_numBasis*_cellDim+iBasis*_cellDim+jDim] *
 	    _jacobianInv[iQuadPt*_cellDim*_spaceDim+jDim*_spaceDim+iDim];
-#endif
   } // for
 } // computeGeometry
 
