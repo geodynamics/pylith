@@ -25,6 +25,22 @@
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 
 // ----------------------------------------------------------------------
+// Setup testing data.
+void
+pylith::bc::TestDirichletMulti::setUp(void)
+{ // setUp
+  _data = 0;
+} // setUp
+
+// ----------------------------------------------------------------------
+// Tear down testing data.
+void
+pylith::bc::TestDirichletMulti::tearDown(void)
+{ // tearDown
+  delete _data; _data = 0;
+} // tearDown
+
+// ----------------------------------------------------------------------
 // Test setConstraintSizes().
 void
 pylith::bc::TestDirichletMulti::testSetConstraintSizes(void)
