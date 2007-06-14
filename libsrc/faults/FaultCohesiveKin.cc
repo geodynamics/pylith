@@ -24,6 +24,8 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
+#include <Distribution.hh> // USES completeSection
+
 #include <math.h> // USES pow(), sqrt()
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -198,9 +200,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   } // for
 
   // Assemble orientation information
-  // FIX THIS
-  //const ALE::Obj<Mesh>& bundle = orientation.b;
-  //ALE::Distribution<Mesh>::completeSection(bundle, orientation);
+  ALE::Distribution<Mesh>::completeSection(mesh, _orientation);
 
   // Loop over vertices, make orientation information unit magnitude
   double_array vertexDir(orientationSize);

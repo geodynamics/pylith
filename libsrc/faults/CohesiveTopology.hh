@@ -53,7 +53,6 @@ public :
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
-
   /** Get number of vertices on face.
    *
    * @param cell Finite-element cell
@@ -80,6 +79,15 @@ private :
                         const int numCorners,
                         const int indices[],
                         const int oppositeVertex);
+
+  template<class InputPoints>
+  static
+  void _computeCensoredDepth(const ALE::Obj<Mesh>& mesh,
+                             const ALE::Obj<Mesh::label_type>& depth,
+                             const ALE::Obj<Mesh::sieve_type>& sieve,
+                             const ALE::Obj<InputPoints>& points,
+                             const Mesh::point_type& firstCohesiveCell,
+                             const ALE::Obj<std::set<Mesh::point_type> >& modifiedPoints);
 
 }; // class CohesiveTopology
 

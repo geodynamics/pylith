@@ -46,7 +46,7 @@ pylith::materials::Material::~Material(void)
   // Python db object owns database, so just set pointer to null
   _db = 0;
 
-  delete _parameters; _parameters = 0;
+  if (_parameters) {delete _parameters;}; _parameters = 0;
 } // destructor
 
 // ----------------------------------------------------------------------
@@ -77,7 +77,8 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   } // if
 
   // Create sections to hold parameters for physical properties
-  delete _parameters; _parameters = new topology::FieldsManager(mesh);
+  if (_parameters) {delete _parameters;};
+  _parameters = new topology::FieldsManager(mesh);
   assert(0 != _parameters);
   const int numQuadPts = quadrature->numQuadPts();
 

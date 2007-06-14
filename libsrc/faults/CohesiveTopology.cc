@@ -168,6 +168,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   const int  numCorners = sieve->nCone(*mesh->heightStratum(0)->begin(), mesh->depth())->size();
   const int  faceSize   = _numFaceVertices(*mesh->heightStratum(0)->begin(), mesh);
   int       *indices    = new int[faceSize];
+  const int  firstCohesiveCell = newPoint;
   
   for(Mesh::label_sequence::iterator f_iter = faces->begin();
       f_iter != faces->end();
@@ -257,6 +258,10 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   } // for
   delete [] indices;
   mesh->stratify();
+  const ALE::Obj<Mesh::label_type>&           label          = mesh->createLabel(std::string("censored depth"));
+  const ALE::Obj<std::set<Mesh::point_type> > modifiedPoints = new std::set<Mesh::point_type>();
+  _computeCensoredDepth(mesh, label, mesh->getSieve(), mesh->getSieve()->roots(), firstCohesiveCell, modifiedPoints);
+  label->view("");
   if (debug)
     mesh->view("Mesh with Cohesive Elements");
 
@@ -369,6 +374,34 @@ pylith::faults::CohesiveTopology::_faceOrientation(const Mesh::point_type& cell,
   }
   return true;
 } // _faceOrientation
+
+template<class InputPoints>
+void
+pylith::faults::CohesiveTopology::_computeCensoredDepth(const ALE::Obj<Mesh>& mesh,
+                                                        const ALE::Obj<Mesh::label_type>& depth,
+                                                        const ALE::Obj<Mesh::sieve_type>& sieve,
+                                                        const ALE::Obj<InputPoints>& points,
+                                                        const Mesh::point_type& firstCohesiveCell,
+                                                        const ALE::Obj<std::set<Mesh::point_type> >& modifiedPoints)
+{
+  modifiedPoints->clear();
+
+  for(typename InputPoints::iterator p_iter = points->begin(); p_iter != points->end(); ++p_iter) {
+    if (*p_iter >= firstCohesiveCell) continue;
+    // Compute the max depth of the points in the cone of p, and add 1
+    int d0 = mesh->getValue(depth, *p_iter, -1);
+    int d1 = mesh->getMaxValue(depth, sieve->cone(*p_iter), -1) + 1;
+
+    if(d1 != d0) {
+      mesh->setValue(depth, *p_iter, d1);
+      modifiedPoints->insert(*p_iter);
+    }
+  }
+  // FIX: We would like to avoid the copy here with support()
+  if(modifiedPoints->size() > 0) {
+    _computeCensoredDepth(mesh, depth, sieve, sieve->support(modifiedPoints), firstCohesiveCell, modifiedPoints);
+  }
+};
 
 
 // End of file
