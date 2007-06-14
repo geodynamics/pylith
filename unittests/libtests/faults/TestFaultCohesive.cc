@@ -340,8 +340,8 @@ pylith::faults::TestFaultCohesive::testOrient2D(void)
     -0.5, 1.0
   };
   const double orientationE[] = {
-     1.0, -2.0,  2.0, 1.0,
-     0.5, -1.0,  1.0, 0.5
+    -1.0,  2.0,  2.0, 1.0,
+    -0.5,  1.0,  1.0, 0.5
   };
 
   const int jacobianSize = spaceDim*(spaceDim-1);

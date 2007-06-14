@@ -16,20 +16,33 @@ check_SCRIPTS = testpylith.py
 
 noinst_PYTHON = \
 	TestAxialElasticIsotropic.py \
-	TestShearElasticIsotropic.py
+	TestShearElasticIsotropic.py \
+	TestDislocation.py
 
 noinst_DATA = \
 	box.exo \
+	matprops.spatialdb \
 	axialelasticisotropic.cfg \
 	axialx.spatialdb \
 	axialy.spatialdb \
 	axialz.spatialdb \
 	shearelasticisotropic.cfg \
 	shearxyz.spatialdb \
-	matprops.spatialdb
+	twocells.mesh \
+	dislocation.cfg \
+	dislocation_disp.spatialdb \
+	dislocation_sliprate.spatialdb \
+	dislocation_slip.spatialdb \
+	dislocation_sliptime.spatialdb
+
 
 noinst_TMP = \
-	axialelasticisotropic.vtk
+	axialelasticisotropic_t0.vtk \
+	axialelasticisotropic_t1.vtk \
+	shearelasticisotropic_t0.vtk \
+	shearelasticisotropic_t1.vtk \
+	dislocation_t0.vtk \
+	dislocation_t1.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
