@@ -1,7 +1,7 @@
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 1
-  value-names =  slip
+  value-names =  fault-opening
   value-units =  m
   num-locs = 1
   data-dim = 0

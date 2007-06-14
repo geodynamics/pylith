@@ -104,12 +104,12 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   switch (spaceDim)
     { // switch
     case 1 : {
-      const char* slipValues[] = {"slip"};
+      const char* slipValues[] = {"fault-opening"};
       _dbFinalSlip->queryVals(slipValues, 1);
       break;
     } // case 1
     case 2 : {
-      const char* slipValues[] = {"slip", "fault-opening"};
+      const char* slipValues[] = {"left-lateral-slip", "fault-opening"};
       _dbFinalSlip->queryVals(slipValues, 2);
       break;
     } // case 2
