@@ -62,7 +62,8 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   const int spaceDim = cs->spaceDim();
 
   // Create and allocate sections for parameters
-  delete _parameters; 
+  if (0 != _parameters) // Can't delete NULL pointer that holds reference
+    delete _parameters; 
   _parameters = new topology::FieldsManager(mesh);
   if (0 == _parameters)
     throw std::runtime_error("Could not create manager for parameters of "
