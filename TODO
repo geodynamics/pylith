@@ -2,18 +2,11 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-FaultCohesiveKin::integrateJacobian()
-  Need to prevent multiple contributions of orientation information for
-  each vertex, because we want to use ADD_VALUES in updateOperator().
-
-  Make slip directions consistent (left-lateral, fault-opening) across
-  0-D, 1-D, and 2-D. Need to adjust slip for 1-D (orient2D) to be
-  left-lateral instead of right lateral (p is lateral, q is out of
-  plane, r is normal in order to be consistent with 2-D faults).
-
-Dirichlet
-  Add check for overly constrained points.
-    (number of previously constrained DOF + number added <= fiberDim)
+Unit tests with multiple cohesive cells.
+  tri3
+  quad4
+  tet4
+  hex8
 
 5. Additional unit tests
   b. ElasticityExplicit and ElasticityImplicit
