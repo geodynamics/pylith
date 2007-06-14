@@ -2,8 +2,6 @@
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Create unit tests for Quadrature::basisDeriv().
-
 FaultCohesiveKin::integrateJacobian()
   Need to prevent multiple contributions of orientation information for
   each vertex, because we want to use ADD_VALUES in updateOperator().
@@ -24,7 +22,7 @@ Dirichlet
 
   a. FaultCohesive
     i. Add checking of faultMesh [not currently used]
-    ii. Tests for cases with multiple cohesive cells
+    ii. Tests cases with multiple cohesive cells
 
 examples/templates
   containers
