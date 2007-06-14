@@ -226,6 +226,50 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   } // for
 
   _eqsrc->initialize(mesh, *_faultMesh, _constraintVert, cs);
+
+  // Establish pairing between constraint vertices and first cell they
+  // appear in to prevent overlap in integrating Jacobian
+  const int noCell = -1;
+  _constraintCell = new int_section_type(mesh->comm(), mesh->debug());
+  assert(!_constraintCell.isNull());
+  for (std::set<Mesh::point_type>::const_iterator v_iter=vertCohesiveBegin;
+       v_iter != vertCohesiveEnd;
+       ++v_iter)
+    _constraintCell->setFiberDimension(*v_iter, 1);
+  mesh->allocate(_constraintCell);
+  // Set values to noCell
+  for (std::set<Mesh::point_type>::const_iterator v_iter=vertCohesiveBegin;
+       v_iter != vertCohesiveEnd;
+       ++v_iter)
+    _constraintCell->updatePoint(*v_iter, &noCell);
+
+  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
+    const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
+      sieve->cone(*c_iter);
+    assert(!cone.isNull());
+    const sieve_type::traits::coneSequence::iterator vBegin = cone->begin();
+    const sieve_type::traits::coneSequence::iterator vEnd = cone->end();
+    const int coneSize = cone->size();
+    assert(coneSize % 3 == 0);
+    sieve_type::traits::coneSequence::iterator v_iter = vBegin;
+    // Skip over non-constraint vertices
+    for (int i=0, numSkip=2*coneSize/3; i < numSkip; ++i)
+      ++v_iter;
+    // If haven't set cell-constraint pair, then set it for current
+    // cell, otherwise move on.
+    for(int i=0, numConstraintVert=coneSize/3; 
+	i < numConstraintVert; 
+	++i, ++v_iter) {
+      const int_section_type::value_type* curCell = 
+	_constraintCell->restrictPoint(*v_iter);
+      if (noCell == *curCell) {
+	int point = *c_iter;
+	_constraintCell->updatePoint(*v_iter, &point);
+      } // if
+    } // for
+  } // for
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -298,16 +342,26 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
   const int numConstraintVert = _quadrature->numBasis();
   const int numCorners = 3*numConstraintVert; // cohesive cell
   double_array cellMatrix(numCorners*spaceDim * numCorners*spaceDim);
+  double_array cellOrientation(numConstraintVert*orientationSize);
+  int_array cellConstraintCell(numConstraintVert);
 
   for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
        c_iter != cellsCohesiveEnd;
        ++c_iter) {
     cellMatrix = 0.0;
     // Get orientations at cells vertices (only valid at constraint vertices)
-    const real_section_type::value_type* cellOrientation = 
-      mesh->restrict(_orientation, *c_iter);
+    mesh->restrict(_orientation, *c_iter, &cellOrientation[0], 
+		   cellOrientation.size());
+
+    // Get constraint/cell pairings (only valid at constraint vertices)
+    mesh->restrict(_constraintCell, *c_iter, &cellConstraintCell[0], 
+		   cellConstraintCell.size());
 
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
+      // Skip setting values if they are set by another cell
+      if (cellConstraintCell[iConstraint] != *c_iter)
+	continue;
+      
       // Blocks in cell matrix associated with normal cohesive
       // vertices i and j and constraint vertex k
       const int indexI = iConstraint;
@@ -347,13 +401,9 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 
       mesh->getFactory()->getGlobalOrder(mesh, "default", disp);
-    // Update values (do not add)
-
-    // Most integrators will call the PETSc updateOperator() routine
-    // with ADD_VALUES, but with Lagrange multipler constraints, we
-    // call updateOperator() with INSERT_VALUES.
-
-    // :BUG: NEED TO USE INSERT_VALUES HERE
+    // Note: We are not really adding values because we prevent
+    // overlap across cells. We use ADD_VALUES for compatibility with
+    // the other integrators.
     err = updateOperator(*mat, mesh, disp, globalOrder,
 			 *c_iter, &cellMatrix[0], ADD_VALUES);
     if (err)

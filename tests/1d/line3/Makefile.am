@@ -30,8 +30,10 @@ noinst_DATA = \
 	matprops.spatialdb
 
 noinst_TMP = \
-	axialextension.vtk \
-	dislocation.vtk
+	axialextension_t0.vtk \
+	axialextension_t1.vtk \
+	dislocation_t0.vtk \
+	dislocation_t1.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)

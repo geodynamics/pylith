@@ -157,6 +157,11 @@ class Formulation(Component):
     self.fields.allocate(solnName)
     for constraint in self.constraints:
       constraint.setConstraints(self.fields.getReal(solnName))
+
+    # BEGIN TEMPORARY
+    import pylith.topology.topology as bindings
+    bindings.sectionView(self.fields.getReal(solnName), "solution")
+    # END TEMPORARY
     return
 
 

@@ -95,7 +95,6 @@ class Implicit(Formulation):
     self.fields.copyLayout(self.solnField['name'])
 
     dispTBctpdt = self.fields.getReal("dispTBctpdt")
-    import pylith.topology.topology as bindings
     
     self.jacobian = mesh.createMatrix(self.fields.getReal("dispTBctpdt"))
 
