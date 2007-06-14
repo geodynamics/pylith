@@ -62,6 +62,9 @@ pylith::feassemble::Quadrature0D::computeGeometry(
   _jacobian[0] = 1.0;
   _jacobianDet[0] = 1.0;
   _jacobianInv[0] = 1.0;
+#if 0
+  _basisDeriv[0] = _basisDerivRef[0];
+#endif
 } // computeGeometry
 
 
