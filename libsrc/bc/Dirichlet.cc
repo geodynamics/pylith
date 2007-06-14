@@ -122,7 +122,17 @@ pylith::bc::Dirichlet::setConstraintSizes(const ALE::Obj<real_section_type>& fie
   const int numPoints = _points.size();
   _offsetLocal.resize(numPoints);
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
-    _offsetLocal[iPoint] = field->getConstraintDimension(_points[iPoint]);
+    const int fiberDim = field->getFiberDimension(_points[iPoint]);
+    const int curNumConstraints = field->getConstraintDimension(_points[iPoint]);
+    if (curNumConstraints + numFixedDOF > fiberDim) {
+      std::ostringstream msg;
+      msg << "Found overly constrained point while setting up constraints for Dirichlet "
+	  << "boundary condition '" << _label << "'.\n" << "Number of DOF at point "
+	  << _points[iPoint] << " is " << fiberDim << " and number of attempted constraints is "
+	  << curNumConstraints+numFixedDOF << ".";
+      throw std::runtime_error(msg.str());
+    } // if
+    _offsetLocal[iPoint] = curNumConstraints;
     field->addConstraintDimension(_points[iPoint], numFixedDOF);
   } // for
 } // setConstraintSizes
