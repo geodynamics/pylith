@@ -161,13 +161,13 @@ PETSc
  equations.
  PETSc includes solvers that implement a variety of Newton and Krylov subspace
  methods.
- It can also interface with many external packages, including BlockSolve95,
- ESSL, Matlab, ParMeTis, PVODE, and SPAI, thereby providing additional solvers
+ It can also interface with many external packages, including ESSL, MUMPS,
+ Matlab, ParMeTis, PVODE, and Hypre, thereby providing additional solvers
  and interaction with other software packages.
 \end_layout
 
 \begin_layout Standard
-PETSc includes interfaces for Fortran, C, and C++ for nearly all of the
+PETSc includes interfaces for Fortran 77/90, C, C++, and Python for nearly all of the
  routines, and PETSc can be installed on most Unix systems.
  PETSc can be built with user-supplied, highly optimized linear algebra
  routines (e.g., ATLAS and commercial versions of BLAS/LAPACK), thereby improving
@@ -321,29 +321,49 @@ The new code design has also allowed us to make better use of the PETSc
  Active development of purely analytic features in PyLith, such as new material
  models or discretization schemes, depends on the familiarity of application
  scientists with the traditional Fortran programming paradigm.
- Global, topological operation should be strictly segregated from the existing
+ Global, topological operations such as parallel assembly were strictly segregated from the preexisting
  code.
- In fact, with the exception of integrating PETSc for serial linear algebra
- and solver operations, PyLith can be run purely in serial without activating
+ In fact, PyLith can be run purely in serial without activating
  any of the parallel capabilities.
 \end_layout
 
 \begin_layout Standard
-In order to accomplish this separation, we use the PETSc 
+In order to accomplish this separation in version 0.8, we use the PETSc 
 \family typewriter
 Sieve
 \family default
  structure to create a model of the serial PyLith mesh.
  This model is then partitioned and distributed to a set of processes.
- Each process receives a self-consistent mesh, meaning the pieces are overlappin
-g.
- Each process then executes a serial PyLith step on that particular mesh
+ Each process receives a self-consistent mesh, meaning the pieces are overlapping,
+ and then executes a serial PyLith step on that particular mesh
  piece.
- The PETSc linear algebra operations are overloaded, using the 
+ The PETSc assembles these pieces, using the 
 \family typewriter
 Sieve
 \family default
- information, to produce a globally consistent field.
+ information, into globally consistent vectors and matrices.
+\end_layout
+
+\begin_layout Standard
+Our new design begins with the
+\family typewriter
+Sieve
+\family default
+to represent the topology of our domain. Zero volume elements are inserted along
+all fault surfaces which can implement both split node and cohesive element schemes.
+Material properties and other parameters are represented as
+\family typewriter
+Sections
+\family default
+over the sieve, and values can be retrieved by restriction. For each problem, methods
+are provided to calculate the residual and its Jacobian. All analytic work is done in
+these functions, and parallel assembly is accomplished using the restrict/update paradigm
+from the
+\family typewriter
+Sieve
+\family default
+framework. We assemble into PETSc linear algebra objects and then call PETSc solvers. The solution
+is mapped back into a section, which can be output in VTK format.
 \end_layout
 
 \end_body
