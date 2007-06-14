@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -431,26 +431,27 @@ Sieve
 \begin_layout Standard
 Our new design begins with the
 \family typewriter
-Sieve
+ Sieve
 \family default
-to represent the topology of our domain.
- Zero volume elements are inserted alongall fault surfaces which can implement
- both split node and cohesive element schemes.Material properties and other
- parameters are represented as
+ to represent the topology of our domain.
+ Zero volume elements are inserted along all fault surfaces which can implement
+ both split node and cohesive element schemes.
+ Material properties and other parameters are represented as
 \family typewriter
-Sections
+ Sections
 \family default
-over the sieve, and values can be retrieved by restriction.
- For each problem, methodsare provided to calculate the residual and its
+ over the sieve, and values can be retrieved by restriction.
+ For each problem, methods are provided to calculate the residual and its
  Jacobian.
- All analytic work is done inthese functions, and parallel assembly is accomplis
-hed using the restrict/update paradigmfrom the
+ All analytic work is done in these functions, and parallel assembly is
+ accomplished using the restrict/update paradigm from the
 \family typewriter
-Sieve
+ Sieve
 \family default
-framework.
+ framework.
  We assemble into PETSc linear algebra objects and then call PETSc solvers.
- The solutionis mapped back into a section, which can be output in VTK format.
+ The solution is mapped back into a section, which can be output in VTK
+ format.
 \end_layout
 
 \end_body
