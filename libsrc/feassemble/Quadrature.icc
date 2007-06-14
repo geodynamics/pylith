@@ -60,7 +60,7 @@ pylith::feassemble::Quadrature::basis(void) const {
 inline
 const pylith::double_array&
 pylith::feassemble::Quadrature::basisDeriv(void) const {
-  return _basisDerivRef;
+  return _basisDeriv;
 }
 
 // Get Jacobians evaluated at quadrature points.
