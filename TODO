@@ -1,26 +1,28 @@
 ======================================================================
 CURRENT ISSUES
 ======================================================================
+  creation of cohesive cells for hex8 meshes
   tests/1d/line3/dislocation.cfg [CHACO]
-  tests/3d/tet4/shearelasticstrain.cfg [SIEVE INDEXING]
+  tests/3d/tet4/shearelasticstrain.cfg [SIEVE INDEXING AND CONSTRAINTS]
 
 ======================================================================
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Unit tests with multiple cohesive cells.
-  quad4
-  tet4
-  hex8
+1. Additional unit tests
 
-5. Additional unit tests
+  Unit tests with multiple cohesive cells.
+    quad4
+    tet4
+    hex8
+
+    normal okay with rollover of fault dip?
+
+    check _constraintCell in testing of FaultCohesiveKin::initialize().
+
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials
     ii. constrained DOF
-
-  a. FaultCohesive
-    i. Add checking of faultMesh [not currently used]
-    ii. Tests cases with multiple cohesive cells
 
 examples/templates
   containers
@@ -34,6 +36,10 @@ SECONDARY PRIORITIES
 
 Want to take advantage of symmetry and block structure of Jacobian
 matrix when possible.
+
+Additional unit tests
+  a. FaultCohesive
+    i. Add checking of faultMesh [not currently used]
 
 1. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
    a. Materials C++ code
