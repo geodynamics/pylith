@@ -96,7 +96,7 @@ const int pylith::faults::CohesiveKinDataTet4::_numConstraintVert = 3;
 const double pylith::faults::CohesiveKinDataTet4::_orientation[] = {
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
-  0.0, +1.0, 0.0,    0.0, 0.0, +1.0     +1.0, 0.0, 0.0,
+  0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
 };
 
 const int pylith::faults::CohesiveKinDataTet4::_constraintVertices[] = {

@@ -1,9 +1,14 @@
 ======================================================================
+CURRENT ISSUES
+======================================================================
+  tests/1d/line3/dislocation.cfg [CHACO]
+  tests/3d/tet4/shearelasticstrain.cfg [SIEVE INDEXING]
+
+======================================================================
 MAIN PRIORITIES (Brad)
 ======================================================================
 
 Unit tests with multiple cohesive cells.
-  tri3
   quad4
   tet4
   hex8
