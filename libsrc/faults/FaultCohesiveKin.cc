@@ -195,7 +195,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       orientFn(&vertexOrientation, jacobian, jacobianDet, upDir);
       
       // Update orientation
-      _orientation->updatePoint(*v_iter, &vertexOrientation[0]);
+      _orientation->updateAddPoint(*v_iter, &vertexOrientation[0]);
     } // for
   } // for
 

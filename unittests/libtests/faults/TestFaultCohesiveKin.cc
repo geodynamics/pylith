@@ -114,7 +114,7 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
   const int orientationSize = spaceDim*spaceDim;
   for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
        v_iter != vertConstraintEnd;
-       ++v_iter) {
+       ++v_iter, ++iVertex) {
     const int fiberDim = fault._orientation->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(orientationSize, fiberDim);
     const real_section_type::value_type* vertexOrient = 
@@ -166,8 +166,6 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     dispT->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
   } // for
   
-  //dispT->view("DISP T");
-
   // Call integrateResidual()
   const double t = 2.134;
   fault.integrateResidual(residual, t, &fields, mesh);
@@ -275,6 +273,13 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
+      if (fabs(valsE[index]-vals[index]) > tolerance)
+#if 0 // DEBUGGING
+	std::cout << "ERROR: iRow: " << iRow << ", iCol: " << iCol
+		  << "valE: " << valsE[index]
+		  << ", val: " << vals[index]
+		  << std::endl;
+#endif // DEBUGGING
       if (fabs(valsE[index]) > 1.0)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valsE[index], tolerance);
       else

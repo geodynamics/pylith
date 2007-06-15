@@ -28,6 +28,7 @@ testfaults_SOURCES = \
 	TestFaultCohesiveKin.cc \
 	TestFaultCohesiveKinLine2.cc \
 	TestFaultCohesiveKinTri3.cc \
+	TestFaultCohesiveKinTri3d.cc \
 	TestFaultCohesiveKinQuad4.cc \
 	TestFaultCohesiveKinTet4.cc \
 	TestFaultCohesiveKinHex8.cc \
@@ -41,6 +42,7 @@ noinst_HEADERS = \
 	TestFaultCohesiveKin.hh \
 	TestFaultCohesiveKinLine2.hh \
 	TestFaultCohesiveKinTri3.hh \
+	TestFaultCohesiveKinTri3d.hh \
 	TestFaultCohesiveKinQuad4.hh \
 	TestFaultCohesiveKinTet4.hh \
 	TestFaultCohesiveKinHex8.hh
@@ -76,6 +78,7 @@ testfaults_SOURCES += \
 	data/CohesiveKinData.cc \
 	data/CohesiveKinDataLine2.cc \
 	data/CohesiveKinDataTri3.cc \
+	data/CohesiveKinDataTri3d.cc \
 	data/CohesiveKinDataQuad4.cc \
 	data/CohesiveKinDataTet4.cc \
 	data/CohesiveKinDataHex8.cc
@@ -110,6 +113,7 @@ noinst_HEADERS += \
 	data/CohesiveKinData.hh \
 	data/CohesiveKinDataLine2.hh \
 	data/CohesiveKinDataTri3.hh \
+	data/CohesiveKinDataTri3d.hh \
 	data/CohesiveKinDataQuad4.hh \
 	data/CohesiveKinDataTet4.hh \
 	data/CohesiveKinDataHex8.hh
