@@ -137,6 +137,10 @@ const int pylith::faults::CohesiveKinDataHex8::_constraintVertices[] = {
   15, 17, 19, 21
 };
 
+const int pylith::faults::CohesiveKinDataHex8::_constraintCells[] = {
+  22, 22, 22, 22
+};
+
 const double pylith::faults::CohesiveKinDataHex8::_valsResidual[] = {
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -1383,6 +1387,7 @@ pylith::faults::CohesiveKinDataHex8::CohesiveKinDataHex8(void)
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
+  constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
   numConstraintVert = _numConstraintVert;  

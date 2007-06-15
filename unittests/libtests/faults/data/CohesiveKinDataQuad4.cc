@@ -114,6 +114,10 @@ const int pylith::faults::CohesiveKinDataQuad4::_constraintVertices[] = {
   9, 11
 };
 
+const int pylith::faults::CohesiveKinDataQuad4::_constraintCells[] = {
+  12, 12
+};
+
 const double pylith::faults::CohesiveKinDataQuad4::_valsResidual[] = {
   0.0,  0.0,
   0.0,  0.0,
@@ -350,6 +354,7 @@ pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
+  constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
   numConstraintVert = _numConstraintVert;  

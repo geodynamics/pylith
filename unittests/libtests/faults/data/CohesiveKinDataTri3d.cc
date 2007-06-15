@@ -135,6 +135,10 @@ const int pylith::faults::CohesiveKinDataTri3d::_constraintVertices[] = {
   11, 13, 15
 };
 
+const int pylith::faults::CohesiveKinDataTri3d::_constraintCells[] = {
+  16, 16, 17
+};
+
 const double pylith::faults::CohesiveKinDataTri3d::_valsResidual[] = {
   0.0,  0.0,
   0.0,  0.0,
@@ -461,6 +465,7 @@ pylith::faults::CohesiveKinDataTri3d::CohesiveKinDataTri3d(void)
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
+  constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
   numConstraintVert = _numConstraintVert;  
