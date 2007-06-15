@@ -103,6 +103,10 @@ const int pylith::faults::CohesiveKinDataTet4::_constraintVertices[] = {
   8, 10, 12
 };
 
+const int pylith::faults::CohesiveKinDataTet4::_constraintCells[] = {
+  13, 13, 13
+};
+
 const double pylith::faults::CohesiveKinDataTet4::_valsResidual[] = {
   0.0,  0.0,  0.0,
   0.0,  0.0,  0.0,
@@ -503,6 +507,7 @@ pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
+  constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
   numConstraintVert = _numConstraintVert;  

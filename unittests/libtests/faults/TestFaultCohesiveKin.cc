@@ -127,6 +127,20 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
 				   vertexOrient[i], tolerance);
     } // for
   } // for
+
+  // Check pairing of constraint vertices with cells
+  iVertex = 0;
+  for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
+       v_iter != vertConstraintEnd;
+       ++v_iter, ++iVertex) {
+    const int fiberDim = fault._constraintCell->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(1, fiberDim);
+    const int_section_type::value_type* vertexCell = 
+      fault._constraintCell->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != vertexCell);
+    CPPUNIT_ASSERT_EQUAL(_data->constraintCells[iVertex], vertexCell[0]);
+  } // for
+
 } // testInitialize
 
 // ----------------------------------------------------------------------

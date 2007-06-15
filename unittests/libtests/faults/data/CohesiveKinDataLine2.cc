@@ -85,6 +85,10 @@ const int pylith::faults::CohesiveKinDataLine2::_constraintVertices[] = {
   6
 };
 
+const int pylith::faults::CohesiveKinDataLine2::_constraintCells[] = {
+  7
+};
+
 const double pylith::faults::CohesiveKinDataLine2::_valsResidual[] = {
   0.0,
   0.0,
@@ -121,6 +125,7 @@ pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
+  constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
   numConstraintVert = _numConstraintVert;  

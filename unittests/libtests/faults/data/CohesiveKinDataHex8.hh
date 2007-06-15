@@ -60,6 +60,7 @@ private:
 
   static const double _orientation[]; ///< Expected values for fault orientation.
   static const int _constraintVertices[]; ///< Expected points for constraint vertices
+  static const int _constraintCells[]; ///< Expected cells for constraint vertices
   static const double _valsResidual[]; ///< Expected values from residual calculation.
   static const double _valsJacobian[]; ///< Expected values from Jacobian calculation.
   static const int _numConstraintVert; ///< Number of constraint vertices

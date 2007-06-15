@@ -67,6 +67,7 @@ public:
   //@{
   double* orientation; ///< Expected values for fault orientation.
   int* constraintVertices; ///< Expected points for constraint vertices
+  int* constraintCells; ///< Expected cells for constraint vertices
   double* valsResidual; ///< Expected values from residual calculation.
   double* valsJacobian; ///< Expected values from Jacobian calculation.
   int numConstraintVert; ///< Number of constraint vertices
