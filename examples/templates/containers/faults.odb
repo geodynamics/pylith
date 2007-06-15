@@ -70,11 +70,11 @@ class MyFaults(ObjectBin):
     from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
 
     sanandreas = pyre.inventory.facility("san_andreas", family="fault",
-                                   factory=CohesiveFaultKin)
+                                   factory=FaultCohesiveKin)
     sanandreas.meta['tip'] = "San Andreas fault."
     
     sanjacinto = pyre.inventory.facility("san_jacinto", family="fault",
-                                   factory=CohesiveFaultKin)
+                                   factory=FaultCohesiveKin)
     sanjacinto.meta['tip'] = "San Jacinto fault."
     
 
