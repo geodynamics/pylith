@@ -15,8 +15,6 @@ CURRENT ISSUES
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Add catching ALE exceptions in modules.
-
 1. Additional unit tests
 
   Unit tests with multiple cohesive cells.
@@ -28,10 +26,6 @@ Add catching ALE exceptions in modules.
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials
     ii. constrained DOF
-
-examples/templates
-  containers
-    verify containers work
 
 ======================================================================
 SECONDARY PRIORITIES
