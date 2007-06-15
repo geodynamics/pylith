@@ -227,8 +227,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 	     ++iBasis) {
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
-	  _cellVector[iBasis*spaceDim  ] -=     N1*s11 + 0.5*N2*s12;
-	  _cellVector[iBasis*spaceDim+1] -= 0.5*N1*s12 +     N2*s22;
+	  _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12;
+	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22;
 	} // for
       } // for
       PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
@@ -258,9 +258,9 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim+0];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
 	  const double N3 = wt*basisDeriv[iQ+iBasis*cellDim+2];
-	  _cellVector[iBlock  ] -=     N1*s11 + 0.5*N2*s12 + 0.5*N3*s13;
-	  _cellVector[iBlock+1] -= 0.5*N1*s12 +     N2*s22 + 0.5*N3*s23;
-	  _cellVector[iBlock+2] -= 0.5*N1*s13 + 0.5*N2*s23 +     N3*s33;
+	  _cellVector[iBlock  ] -= N1*s11 + N2*s12 + N3*s13;
+	  _cellVector[iBlock+1] -= N1*s12 + N2*s22 + N3*s23;
+	  _cellVector[iBlock+2] -= N1*s13 + N2*s23 + N3*s33;
 	} // for
       } // for
       PetscErrorCode err = PetscLogFlops(numQuadPts*(1+numBasis*(3+12)));
@@ -409,7 +409,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
         const double C1112 = elasticConsts[iQuad][2]/2.0;
         const double C2222 = elasticConsts[iQuad][3];
         const double C2212 = elasticConsts[iQuad][4]/2.0;
-	const double C1212 = elasticConsts[iQuad][5]/4.0;
+	const double C1212 = elasticConsts[iQuad][5]/2.0;
         for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
 	     iBasis < numBasis;
 	     ++iBasis) {
@@ -471,12 +471,12 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
         const double C3312 = elasticConsts[iQuad][12]/2.0;
         const double C3323 = elasticConsts[iQuad][13]/2.0;
         const double C3313 = elasticConsts[iQuad][14]/2.0;
-        const double C1212 = elasticConsts[iQuad][15]/4.0;
-        const double C1223 = elasticConsts[iQuad][16]/4.0;
-        const double C1213 = elasticConsts[iQuad][17]/4.0;
-        const double C2323 = elasticConsts[iQuad][18]/4.0;
-        const double C2313 = elasticConsts[iQuad][19]/4.0;
-        const double C1313 = elasticConsts[iQuad][20]/4.0;
+        const double C1212 = elasticConsts[iQuad][15]/2.0;
+        const double C1223 = elasticConsts[iQuad][16]/2.0;
+        const double C1213 = elasticConsts[iQuad][17]/2.0;
+        const double C2323 = elasticConsts[iQuad][18]/2.0;
+        const double C2313 = elasticConsts[iQuad][19]/2.0;
+        const double C1313 = elasticConsts[iQuad][20]/2.0;
         for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
 	     iBasis < numBasis;
 	     ++iBasis) {

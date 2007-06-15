@@ -116,9 +116,9 @@ class IntegratorElasticity(IntegratorApp):
       C2222 = lambda2mu
       C2212 = 0.0
       C1212 = 2.0*self.lameMu
-      D = numpy.array([ [C1111, C1122, C1112],
-                        [C1122, C2222, C2212],
-                        [C1112, C2212, C1212] ],
+      D = numpy.array([ [C1111, C1122, 0.5*C1112],
+                        [C1122, C2222, 0.5*C2212],
+                        [0.5*C1112, 0.5*C2212, 0.5*C1212] ],
                       dtype=numpy.float64)
     elif 3 == self.cellDim:
       lambda2mu = self.lameLambda + 2.0*self.lameMu
@@ -143,12 +143,12 @@ class IntegratorElasticity(IntegratorApp):
       C2323 = 2.0*self.lameMu
       C2313 = 0.0
       C1313 = 2.0*self.lameMu
-      D = numpy.array([ [C1111, C1122, C1133, C1112, C1123, C1113],
-                        [C1122, C2222, C2233, C2212, C2223, C2213],
-                        [C1133, C2233, C3333, C3312, C3323, C3313],
-                        [C1112, C2212, C3312, C1212, C1223, C1213],
-                        [C1123, C2223, C3323, C1223, C2323, C2313],
-                        [C1113, C2213, C3313, C1213, C2313, C1313] ],
+      D = numpy.array([ [C1111, C1122, C1133, 0.5*C1112, 0.5*C1123, 0.5*C1113],
+                        [C1122, C2222, C2233, 0.5*C2212, 0.5*C2223, 0.5*C2213],
+                        [C1133, C2233, C3333, 0.5*C3312, 0.5*C3323, 0.5*C3313],
+                        [0.5*C1112, 0.5*C2212, 0.5*C3312, 0.5*C1212, 0.5*C1223, 0.5*C1213],
+                        [0.5*C1123, 0.5*C2223, 0.5*C3323, 0.5*C1223, 0.5*C2323, 0.5*C2313],
+                        [0.5*C1113, 0.5*C2213, 0.5*C3313, 0.5*C1213, 0.5*C2313, 0.5*C1313] ],
                       dtype=numpy.float64)
     return D
 
@@ -176,20 +176,20 @@ class IntegratorElasticity(IntegratorApp):
         B[0, iBasis*self.spaceDim+0] = basisDeriv[iQuad, iBasis, 0]
         B[1, iBasis*self.spaceDim+1] = basisDeriv[iQuad, iBasis, 1]
         B[2, iBasis*self.spaceDim+2] = basisDeriv[iQuad, iBasis, 2]
-        B[3, iBasis*self.spaceDim+0] = 0.5*basisDeriv[iQuad, iBasis, 1]
-        B[3, iBasis*self.spaceDim+1] = 0.5*basisDeriv[iQuad, iBasis, 0]
-        B[4, iBasis*self.spaceDim+1] = 0.5*basisDeriv[iQuad, iBasis, 2]
-        B[4, iBasis*self.spaceDim+2] = 0.5*basisDeriv[iQuad, iBasis, 1]
-        B[5, iBasis*self.spaceDim+0] = 0.5*basisDeriv[iQuad, iBasis, 2]
-        B[5, iBasis*self.spaceDim+2] = 0.5*basisDeriv[iQuad, iBasis, 0]
+        B[3, iBasis*self.spaceDim+0] = basisDeriv[iQuad, iBasis, 1]
+        B[3, iBasis*self.spaceDim+1] = basisDeriv[iQuad, iBasis, 0]
+        B[4, iBasis*self.spaceDim+1] = basisDeriv[iQuad, iBasis, 2]
+        B[4, iBasis*self.spaceDim+2] = basisDeriv[iQuad, iBasis, 1]
+        B[5, iBasis*self.spaceDim+0] = basisDeriv[iQuad, iBasis, 2]
+        B[5, iBasis*self.spaceDim+2] = basisDeriv[iQuad, iBasis, 0]
     elif 2 == self.spaceDim:
       B = numpy.zeros( (3, self.spaceDim*self.numBasis),
                        dtype=numpy.float64)
       for iBasis in xrange(self.numBasis):
         B[0, iBasis*self.spaceDim+0] = basisDeriv[iQuad, iBasis, 0]
         B[1, iBasis*self.spaceDim+1] = basisDeriv[iQuad, iBasis, 1]
-        B[2, iBasis*self.spaceDim+0] = 0.5*basisDeriv[iQuad, iBasis, 1]
-        B[2, iBasis*self.spaceDim+1] = 0.5*basisDeriv[iQuad, iBasis, 0]
+        B[2, iBasis*self.spaceDim+0] = basisDeriv[iQuad, iBasis, 1]
+        B[2, iBasis*self.spaceDim+1] = basisDeriv[iQuad, iBasis, 0]
     elif 1 == self.spaceDim:
       B = numpy.zeros( (1, self.spaceDim*self.numBasis),
                        dtype=numpy.float64)
