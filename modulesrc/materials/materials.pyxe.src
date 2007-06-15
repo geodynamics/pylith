@@ -91,6 +91,9 @@ cdef class Material:
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -137,6 +140,9 @@ cdef class Material:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -162,6 +168,9 @@ cdef class Material:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -182,6 +191,9 @@ cdef class Material:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -204,6 +216,9 @@ cdef class Material:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -226,6 +241,9 @@ cdef class Material:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -260,6 +278,9 @@ cdef class ElasticMaterial(Material):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -284,6 +305,9 @@ cdef class ElasticStrain1D(ElasticMaterial):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -313,6 +337,9 @@ cdef class ElasticStress1D(ElasticMaterial):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -342,6 +369,9 @@ cdef class ElasticPlaneStrain(ElasticMaterial):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -371,6 +401,9 @@ cdef class ElasticPlaneStress(ElasticMaterial):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -400,6 +433,9 @@ cdef class ElasticIsotropic3D(ElasticMaterial):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -429,6 +465,9 @@ cdef class MaxwellIsotropic3D(ElasticMaterial):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");

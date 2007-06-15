@@ -95,6 +95,9 @@ cdef class MeshIO:
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -120,6 +123,9 @@ cdef class MeshIO:
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -148,6 +154,9 @@ cdef class MeshIO:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -166,6 +175,9 @@ cdef class MeshIO:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -186,6 +198,9 @@ cdef class MeshIO:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -204,6 +219,9 @@ cdef class MeshIO:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -227,6 +245,9 @@ cdef class MeshIOAscii(MeshIO):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -251,6 +272,9 @@ cdef class MeshIOAscii(MeshIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -270,6 +294,9 @@ cdef class MeshIOAscii(MeshIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -294,6 +321,9 @@ cdef class MeshIOCubit(MeshIO):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -323,6 +353,9 @@ cdef class MeshIOCubit(MeshIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -346,6 +379,9 @@ cdef class MeshIOCubit(MeshIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -372,6 +408,9 @@ cdef class MeshIOLagrit(MeshIO):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -396,6 +435,9 @@ cdef class MeshIOLagrit(MeshIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -415,6 +457,9 @@ cdef class MeshIOLagrit(MeshIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -435,6 +480,9 @@ cdef class MeshIOLagrit(MeshIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -454,6 +502,9 @@ cdef class MeshIOLagrit(MeshIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -474,6 +525,9 @@ cdef class MeshIOLagrit(MeshIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -492,6 +546,9 @@ cdef class MeshIOLagrit(MeshIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -532,6 +589,9 @@ cdef class SolutionIO:
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -556,6 +616,9 @@ cdef class SolutionIO:
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -582,6 +645,9 @@ cdef class SolutionIO:
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -616,6 +682,9 @@ cdef class SolutionIO:
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -649,6 +718,9 @@ cdef class SolutionIO:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -671,6 +743,9 @@ cdef class SolutionIOVTK(SolutionIO):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -695,6 +770,9 @@ cdef class SolutionIOVTK(SolutionIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -714,6 +792,9 @@ cdef class SolutionIOVTK(SolutionIO):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
