@@ -243,8 +243,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	     ++iBasis) {
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
-	  _cellVector[iBasis*spaceDim  ] -=     N1*s11 + 0.5*N2*s12;
-	  _cellVector[iBasis*spaceDim+1] -= 0.5*N1*s12 +     N2*s22;
+	  _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12;
+	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22;
 	} // for
       } // for
       err = PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
@@ -275,9 +275,9 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim+0];
 	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
 	  const double N3 = wt*basisDeriv[iQ+iBasis*cellDim+2];
-	  _cellVector[iBlock  ] -=     N1*s11 + 0.5*N2*s12 + 0.5*N3*s13;
-	  _cellVector[iBlock+1] -= 0.5*N1*s12 +     N2*s22 + 0.5*N3*s23;
-	  _cellVector[iBlock+2] -= 0.5*N1*s13 + 0.5*N2*s23 +     N3*s33;
+	  _cellVector[iBlock  ] -= N1*s11 + N2*s12 + N3*s13;
+	  _cellVector[iBlock+1] -= N1*s12 + N2*s22 + N3*s23;
+	  _cellVector[iBlock+2] -= N1*s13 + N2*s23 + N3*s33;
 	} // for
       } // for
       err = PetscLogFlops(numQuadPts*(1+numBasis*(3+12)));

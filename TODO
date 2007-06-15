@@ -4,6 +4,8 @@ CURRENT ISSUES
   creation of cohesive cells for hex8 meshes
   tests/1d/line3/dislocation.cfg [CHACO]
   tests/3d/tet4/shearelasticstrain.cfg [SIEVE INDEXING AND CONSTRAINTS]
+    Note: ordering the Dirichlet BC so that the constrainted DOF are in 
+          order is a workaround.
 
   VTK output
     zero out values at Lagrange constraint vertices
@@ -12,6 +14,8 @@ CURRENT ISSUES
 ======================================================================
 MAIN PRIORITIES (Brad)
 ======================================================================
+
+Add catching ALE exceptions in modules.
 
 1. Additional unit tests
 
@@ -28,8 +32,6 @@ MAIN PRIORITIES (Brad)
 examples/templates
   containers
     verify containers work
-
-Check trapping of errors in reading spatialdata files.
 
 ======================================================================
 SECONDARY PRIORITIES
