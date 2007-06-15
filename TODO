@@ -1,16 +1,26 @@
 ======================================================================
 CURRENT ISSUES
 ======================================================================
-  creation of cohesive cells for hex8 meshes
-  tests/1d/line3/dislocation.cfg [CHACO]
-  tests/3d/tet4/shearelasticstrain.cfg [SIEVE INDEXING AND CONSTRAINTS]
-    Note: ordering the Dirichlet BC so that the constrainted DOF are in 
-          order is a workaround.
 
-  VTK output
-    zero out values at Lagrange constraint vertices
-    make 3-component displacements default even for 1-D and 2-D meshes
+  1. creation of cohesive cells for hex8 meshes
+     [MATT]
 
+  2. tests/3d/tet4/shearelasticstrain.cfg [SIEVE INDEXING AND CONSTRAINTS]
+     Note: ordering the Dirichlet BC so that the constrainted DOF are in 
+           order is a workaround.
+     [MATT]
+
+  3. VTK output
+     zero out values at Lagrange constraint vertices
+     make 3-component displacements default even for 1-D and 2-D meshes
+     [MATT] 
+    
+  4. tests/1d/line3/dislocation.cfg [CHACO]
+     [MATT]
+
+
+Charles is debugging Maxwell viscoelastic model.
+  
 ======================================================================
 MAIN PRIORITIES (Brad)
 ======================================================================

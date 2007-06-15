@@ -287,8 +287,8 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
-      if (fabs(valsE[index]-vals[index]) > tolerance)
 #if 0 // DEBUGGING
+      if (fabs(valsE[index]-vals[index]) > tolerance)
 	std::cout << "ERROR: iRow: " << iRow << ", iCol: " << iCol
 		  << "valE: " << valsE[index]
 		  << ", val: " << vals[index]

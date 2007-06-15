@@ -40,9 +40,13 @@ noinst_DATA = \
 	tet4b.mesh \
 	tet4c.mesh \
 	tet4d.mesh \
+	tet4e.mesh \
 	tet4_finalslip.spatialdb \
 	tet4_sliptime.spatialdb \
 	tet4_peakrate.spatialdb \
+	tet4e_finalslip.spatialdb \
+	tet4e_sliptime.spatialdb \
+	tet4e_peakrate.spatialdb \
 	hex8.mesh \
 	hex8b.mesh \
 	hex8c.mesh \
