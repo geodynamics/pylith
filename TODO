@@ -5,7 +5,9 @@ CURRENT ISSUES
   tests/1d/line3/dislocation.cfg [CHACO]
   tests/3d/tet4/shearelasticstrain.cfg [SIEVE INDEXING AND CONSTRAINTS]
 
-  remove data at Lagrange constraint vertices from VTK output.
+  VTK output
+    zero out values at Lagrange constraint vertices
+    make 3-component displacements default even for 1-D and 2-D meshes
 
 ======================================================================
 MAIN PRIORITIES (Brad)
@@ -14,13 +16,10 @@ MAIN PRIORITIES (Brad)
 1. Additional unit tests
 
   Unit tests with multiple cohesive cells.
-    quad4
     tet4
     hex8
 
     normal okay with rollover of fault dip?
-
-    check _constraintCell in testing of FaultCohesiveKin::initialize().
 
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials
