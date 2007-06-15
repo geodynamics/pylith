@@ -107,6 +107,9 @@ cdef class Fault:
     } catch (const std::exception& err) {
     PyErr_SetString(PyExc_RuntimeError,
                     const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
     PyErr_SetString(PyExc_RuntimeError,
                     "Caught unknown C++ exception.");
@@ -137,6 +140,9 @@ cdef class Fault:
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -183,6 +189,9 @@ cdef class Fault:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+        } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -203,6 +212,9 @@ cdef class Fault:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+        } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -225,6 +237,9 @@ cdef class Fault:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -260,6 +275,9 @@ cdef class FaultCohesiveKin(FaultCohesive):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -405,6 +423,9 @@ cdef class FaultCohesiveKin(FaultCohesive):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -431,6 +452,9 @@ cdef class FaultCohesiveKin(FaultCohesive):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -455,6 +479,9 @@ cdef class FaultCohesiveKin(FaultCohesive):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -478,6 +505,9 @@ cdef class FaultCohesiveKin(FaultCohesive):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -501,6 +531,9 @@ cdef class FaultCohesiveKin(FaultCohesive):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -530,6 +563,9 @@ cdef class EqKinSrc:
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -566,6 +602,9 @@ cdef class EqKinSrc:
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -618,6 +657,9 @@ cdef class BruneSlipFn(SlipTimeFn):
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
@@ -647,6 +689,9 @@ cdef class BruneSlipFn(SlipTimeFn):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -675,6 +720,9 @@ cdef class BruneSlipFn(SlipTimeFn):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
@@ -703,6 +751,9 @@ cdef class BruneSlipFn(SlipTimeFn):
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
       } catch (...) {
         PyErr_SetString(PyExc_RuntimeError,
                         "Caught unknown C++ exception.");
