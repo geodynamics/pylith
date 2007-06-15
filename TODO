@@ -5,6 +5,8 @@ CURRENT ISSUES
   tests/1d/line3/dislocation.cfg [CHACO]
   tests/3d/tet4/shearelasticstrain.cfg [SIEVE INDEXING AND CONSTRAINTS]
 
+  remove data at Lagrange constraint vertices from VTK output.
+
 ======================================================================
 MAIN PRIORITIES (Brad)
 ======================================================================
