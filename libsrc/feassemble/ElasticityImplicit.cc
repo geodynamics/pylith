@@ -404,6 +404,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
       // Compute Jacobian for consistent tangent matrix
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
         const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+	// tau_ij = C_ijkl * e_kl
+	//        = C_ijlk * 0.5 (u_k,l + u_l,k)
+	//        = 0.5 * C_ijkl * (u_k,l + u_l,k)
+	// divide C_ijkl by 0.5 if k != l
         const double C1111 = elasticConsts[iQuad][0];
         const double C1122 = elasticConsts[iQuad][1];
         const double C1112 = elasticConsts[iQuad][2]/2.0;
@@ -456,6 +460,10 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
       // Compute Jacobian for consistent tangent matrix
       for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
         const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+	// tau_ij = C_ijkl * e_kl
+	//        = C_ijlk * 0.5 (u_k,l + u_l,k)
+	//        = 0.5 * C_ijkl * (u_k,l + u_l,k)
+	// divide C_ijkl by 0.5 if k != l
         const double C1111 = elasticConsts[iQuad][ 0];
         const double C1122 = elasticConsts[iQuad][ 1];
         const double C1133 = elasticConsts[iQuad][ 2];
