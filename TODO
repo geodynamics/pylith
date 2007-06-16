@@ -28,14 +28,13 @@ MAIN PRIORITIES (Brad)
 1. Additional unit tests
 
   Unit tests with multiple cohesive cells.
-    tet4
     hex8
 
     normal okay with rollover of fault dip?
 
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials
-    ii. constrained DOF
+    ii. partially constrained DOF
 
 ======================================================================
 SECONDARY PRIORITIES
