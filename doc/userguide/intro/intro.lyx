@@ -59,11 +59,12 @@ History
 This version of PyLith (1.0) is the first version to allow the solution of
  both implicit (quasi-static) and explicit (dynamic) problems, and represents
  a complete rewrite of the original PyLith.
- This version combines the functionality of EqSim [
-\series bold
-BRAD
-\series default
- -- ref???] and PyLith 0.8.
+ This version combines the functionality of EqSim 
+\begin_inset LatexCommand \cite{Aagaard:etal:2001a,Aagaard:etal:2001b}
+
+\end_inset
+
+ and PyLith 0.8.
  PyLith 0.8 was a direct descendant of LithoMop and was the first version
  that ran in parallel, as well as providing several other improvements over
  LithoMop.
@@ -77,13 +78,13 @@ BRAD
 
 \begin_layout Standard
 This release of PyLith allows the solution of both quasi-static and dynamic
- problems in 1, 2, or 3 dimensions.
- The code runs in either serial or parallel mode, and the design should
- allow for relatively easy scripting using the Python programming language.
- Boundary conditions, material properties, and fault specifications are
- handled using a spatial database, which allows complex models to be easily
- specified.
- Model parameters are generally specified through the use of 
+ problems in one, two, or three dimensions.
+ The code runs in either serial or parallel mode, and the design allows
+ for relatively easy scripting using the Python programming language.
+ Material properties and parameters for boundary and fault conditions are
+ specified using a spatial database, which permits easy precsription of
+ complex spatial variations of properties and parameters.
+ Simulation parameters are generally specified through the use of 
 \family sans
 .cfg
 \family default
@@ -93,30 +94,32 @@ This release of PyLith allows the solution of both quasi-static and dynamic
 \family default
  files or from the command line.
  At present, mesh information may be provided using a simple ASCII format
- (PyLith ASCII format), and mesh data may also be imported from CUBIT or
- LaGriT, two widely-used meshing packages.
- The elements currently available include a linear beam (1D), linear triangles
- and quadrilaterals (2D), and linear tetrahedra and hexahedra (3D).
+ (PyLith ASCII format) or imported from CUBIT or LaGriT, two widely-used
+ meshing packages.
+ The elements currently available include a linear bar in 1-D, linear triangles
+ and quadrilaterals in 2-D, and linear tetrahedra and hexahedra in 3-D)
  Higher-order (quadratic) elements are also supported, but it is not presently
  possible to create a quadratic mesh from the linear meshes provided by
  most meshing packages.
  Materials presently available include isotropic elastic and linear Maxwell
- viscoelastic.
+ viscoelastic (3-D only).
  Cohesive elements are used to represent faults.
  At present, only kinematically-specified fault slip is available.
  In the near future, we will provide several constitutive models for cohesive
  elements, which will allow slip to occur using several different fault
- physics models.
+ constitutive models.
 \end_layout
 
 \begin_layout Standard
 PyLith is under active development and we expect a number of additions and
  improvements in the near future.
- Likely enhancements will include the addition of new constitutive models
+ Likely enhancements will include the a more complete set of boundary conditions
+ (absorbing boundaries for use in dynamic modeling and traction boundary
+ conditions for use in quasi-static modeling), additional constitutive models
  for both volume elements and cohesive (fault) elements, automatic generation
  of higher-order elements from linear elements, and the generation of Green's
  functions to be used in inversions.
- Many of these features should be available by late Summer, 2007.
+ Many of these features should be available in Fall 2007.
 \end_layout
 
 \begin_layout Section
@@ -139,15 +142,15 @@ PyLith is one component in the process of investigating problems in tectonics
  In the case of PyLith, this task is performed by translating external formats
  into Sieve mesh data structures.
  PyLith presently provides three mesh importing options: CUBIT Exodus format,
- LaGriT GMV + pset files, and PyLith ASCII format.
+ LaGriT GMV + Pset files, and PyLith ASCII format.
  The modeling of the physical processes of interest is performed by a code
  such as PyLith.
  Once the computations have been performed, the results must be translated
  into a format that can be used by a visualization code.
  For PyLith, this task is performed by translating the Sieve data structures
  into an appropriate form.
- Present output consists of VTK format, which can be used by a number of
- visualization codes.
+ Present output consists of VTK files which can be used by a number of visualiza
+tion codes (e.g., ParaView and MayaVi).
  In the near future, a more flexible HDF5 format is planned.
  [
 \series bold
@@ -197,17 +200,15 @@ PyLith is separated into modules to encapsulate behavior and facilitate
  That way expert users can replace functionality of a wide variety of components
  without recompiling or polluting the main code.
  External packages reduce development time and enhance computational efficiency;
- for example, PyLith 0.8 ran 2
-\begin_inset Formula $\times$
-\end_inset
-
- faster when the PETSc linear solver was used.
+ for example, PyLith 0.8 ran two times faster when the PETSc linear solver
+ was used.
 \end_layout
 
 \begin_layout Standard
-PyLith is based on two programming languages.
+PyLith employs two programming languages.
  High-level code is written in Python; this rich, expressive interpreted
- language with dynamic typing reduces development time.
+ language with dynamic typing reduces development time and permits flexible
+ addition of user-contributed modules.
  Low-level code is written in C++, providing fast execution while still
  allowing object-oriented code.
  We also make extensive use of two Python packages.
@@ -388,44 +389,41 @@ BRAD, MATT
 \begin_layout Standard
 In rewriting PyLith, the code was completely redesigned to be object-oriented
  and modular.
- Each module has its own facilities and parameters that may be specified
- in a number of different ways.
- This code structure will also simplify code maintenance and developement.
- We provide unit tests for all significant code funtions, which simplifies
- the task of diagnosing problems.
+ Each type of module is accessed through a specified interface (set of functions
+).
+ This permits adding, replacing, and rewriting modules without affecting
+ other parts of the code.
+ This code structure simplifies code maintenance and developement.
  Extending the set of code features is also easier, since developers can
- create new classes derived from the existing ones.
+ create new modules derived from the existing ones.
 \end_layout
 
 \begin_layout Standard
-The new code design has also allowed us to make better use of the PETSc
- Sieve structure to handle mesh topology.
- ***NEED TO REWRITE THIS SECTION***In transforming Lithomop, a serial code,
- into PyLith, a parallel code, a principal concern was to preserve the existing
- structure of the serial Fortran code.
- Active development of purely analytic features in PyLith, such as new material
- models or discretization schemes, depends on the familiarity of application
- scientists with the traditional Fortran programming paradigm.
- Global, topological operations such as parallel assembly were strictly
- segregated from the preexisting code.
- In fact, PyLith can be run purely in serial without activating any of the
- parallel capabilities.
+The new code design leverages Pyre, Sieve, and PETSc much more extensively
+ than the previous version.
+ Pyre is used to glue together the various modules used to construct a simulatio
+n and specify the simulation parameters.
+ Sieve is used for all finite-element storage and manipulation and handles
+ the creation of the PETSc matrices and vectors.
+ As a result, most of the PyLith source code pertains to implementing the
+ geodynamics, such as bulk rheology, boundary conditions, and slip on faults.
+ 
 \end_layout
 
 \begin_layout Standard
-In order to accomplish this separation in version 0.8, we use the PETSc 
-\family typewriter
-Sieve
-\family default
- structure to create a model of the serial PyLith mesh.
- This model is then partitioned and distributed to a set of processes.
- Each process receives a self-consistent mesh, meaning the pieces are overlappin
-g, and then executes a serial PyLith step on that particular mesh piece.
- The PETSc assembles these pieces, using the 
-\family typewriter
-Sieve
-\family default
- information, into globally consistent vectors and matrices.
+During development tests were constructed for nearly every module function.
+ These unit tests are distributed with the source code.
+ During development these tests were run on a frequent basis to expose bugs
+ and isolate their origin.
+ As additional changes are made to the code, the tests are rerun to help
+ prevent introduction of bugs.
+ A number of simple, full scale tests, such as axial compression, simple
+ shear, and slip between two cells have been used to test the code.
+\end_layout
+
+\begin_layout Standard
+[ADD DESCRIPTION OF WHAT HAPPENS WHEN EXECUTING PYLITH IN PARALLEL, next
+ paragraph is too technical (too much nomenclature)]
 \end_layout
 
 \begin_layout Standard
