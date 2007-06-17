@@ -145,16 +145,20 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
       std::cout << "Duplicating " << *v_iter << " to "
 		<< vertexRenumber[*v_iter] << std::endl;
 
+    // Add shadow and constraint vertices (if they exist) to group
+    // associated with fault
+    groupField->addPoint(newPoint, 1);
+    if (constraintCell)
+      groupField->addPoint(newPoint+1, 1);
+
+    // Add shadow vertices to other groups, don't add constraint
+    // vertices (if they exist) because we don't want BC, etc to act
+    // on constraint vertices
     for(std::set<std::string>::const_iterator name = groupNames->begin();
        name != groupNames->end(); ++name) {
       const ALE::Obj<int_section_type>& group = mesh->getIntSection(*name);
-
-      if (group->hasPoint(*v_iter)) {
+      if (group->hasPoint(*v_iter))
         group->addPoint(newPoint, 1);
-        if (constraintCell) {
-          group->addPoint(newPoint+1, 1);
-        }
-      }
     } // for
     if (constraintCell) newPoint++;
   } // for

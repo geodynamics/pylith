@@ -58,11 +58,11 @@ const int pylith::faults::CohesiveDataLine2Lagrange::_materialIds[] = {
 const int pylith::faults::CohesiveDataLine2Lagrange::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataLine2Lagrange::_groupSizes[] = 
-  { 3, 4 };
+  { 3, 3 };
 
 const int pylith::faults::CohesiveDataLine2Lagrange::_groups[] = {
   3, 5, 6,
-  2, 3, 5, 6
+  2, 3, 5
 };
 
 const char* pylith::faults::CohesiveDataLine2Lagrange::_groupNames[] = {

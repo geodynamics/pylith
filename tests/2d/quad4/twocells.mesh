@@ -52,4 +52,12 @@ mesh = {
       5
     }
   }
+  group = {
+    name = y_pos
+    type = vertices
+    count = 1
+    indices = {
+      3
+    }
+  }
 }
