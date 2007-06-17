@@ -1,15 +1,37 @@
 Outline of user manual:
 
-1.  Cover (not sure what image to use) [Sue?]
+1.  Cover
+
+  Replace with new benchmark image if we have one in time.
 
 5.  Preface (should be able to mostly copy from PyLith 0.8) [Charles]
 DONE
 
-6.  Intro (I can start with stuff from 0.8 and do some editing) [Charles]
-MOSTLY DONE -- Need to rewrite PyLith Design section.
+6.  Intro [MOSTLY DONE]
 
-7.  Governing equations [Charles]
-MOSTLY DONE -- Needs some checking.
+  Needs more work on PyLith design section.
+
+  Figures
+
+    Workflow [Brad]
+
+    PyLith Diagram [Brad]
+
+      Pyre
+
+      PyLith
+
+        Faults, Topology, BC, FEAssemble, Problems, MeshIO, Solver, Materials
+
+      PETSc
+
+      Sieve
+
+      MPI
+
+7.  Governing equations [MOSTLY DONE]
+
+  Needs some checking. [Charles]
 
 8.  Installing binary PyLith [Charles with some input from Leif]
 
@@ -37,7 +59,7 @@ MOSTLY DONE -- Needs some checking.
 
     f.  Explicit problems
 
-10. Installation [Charles with some input from Leif and Brad]
+10. Installation from source [Leif will write after CFEM]
 
     C++, Python
 
@@ -84,14 +106,23 @@ MOSTLY DONE -- Needs some checking.
 
     a.  Specifying .cfg and spatial database info.
 
-    b.  Existing (and future?) material models. Include discussion of specifying material properties in terms of vp, vs, and density.
+    b.  Existing material models. 
 
-    * ElasticStrain1D
-    * ElasticStress1D
-    * ElasticPlaneStrain
-    * ElasticPlaneStress
-    * ElasticIsotropic3D
-    * MaxwellIsotropic3D
+    * ElasticStrain1D [Brad]
+
+    * ElasticStress1D [Brad]
+
+    * ElasticPlaneStrain [Brad]
+
+    * ElasticPlaneStress [Brad]
+
+    * ElasticIsotropic3D [DONE]
+
+    * MaxwellIsotropic3D [Charles]
+
+      Need to rewrite formulation in terms of mu and lambda.
+
+    c. List material models in 0.8 that will be added soon.
 
 13. Boundary and interface conditions (includes faults) [Charles]
 

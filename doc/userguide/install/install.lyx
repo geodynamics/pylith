@@ -1,4 +1,4 @@
-#LyX 1.4.3-4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -45,6 +45,36 @@ Installation and Getting Help
 \end_layout
 
 \begin_layout Section
+Installation of Binary Executable
+\end_layout
+
+\begin_layout Standard
+[ADD STUFF HERE]
+\end_layout
+
+\begin_layout Section
+Installation from Source
+\end_layout
+
+\begin_layout Standard
+PyLith 1.0 depends on a number of other packages.
+ This complicates building the software from the source code.
+ In many cases some of the packages required by PyLith are available as
+ binary packages.
+ On the one hand, using these packages removes the burden of configuring,
+ building, and installing these packages, but it can come with its own host
+ of complications if a consistent compiler and configuration settings are
+ not used across all of the packages on which PyLith depends.
+ This is usually not an issue with Linux distributions, such as Fedora,
+ Ubuntu, and Debian that have good quality control; it can be an issue with
+ Darwin package managers, such as Fink, where there is limited enforcement
+ of consistency across pacakges.
+ Nevertheless, PyLith can be built on most systems provided the instructions
+ are followed carefully.
+ PyLith is developed and tested on Linux and Mac OS X.
+\end_layout
+
+\begin_layout Subsection
 Introduction
 \end_layout
 
@@ -107,10 +137,6 @@ ies, instead of using the prepared source packages; see Section
  later in this chapter.
 \end_layout
 
-\begin_layout Standard
-PyLith is developed and tested on Linux and Mac OS X.
-\end_layout
-
 \begin_layout Section
 Getting Help
 \end_layout
@@ -118,34 +144,14 @@ Getting Help
 \begin_layout Standard
 Help is available via the CIG Short-Term Crustal Dynamics Mailing List and
  CIG's issue tracking system.
-\end_layout
-
-\begin_layout Subsection
-Requesting Help
-\end_layout
-
-\begin_layout Standard
-The 
-\begin_inset LatexCommand \url[CIG Short-Term Crustal Dynamics Mailing List]{cig-short@geodynamics.org}
+ The mailing list, , 
+\begin_inset LatexCommand \htmlurl[cig-short@geodynamics.org]{http://www.geodynamics.org/cig/lists}
 
 \end_inset
 
- is dedicated to CIG issues associated with short-term crustal dynamics,
+, is dedicated to CIG issues associated with short-term crustal dynamics,
  including the use of PyLith.
- You can subscribe to the mailing list and view messages at 
-\begin_inset LatexCommand \htmlurl[CIG Mailing Lists]{www.geodynamics.org/cig/lists/}
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Reporting Bugs
-\end_layout
-
-\begin_layout Standard
-CIG uses 
+ CIG uses 
 \family typewriter
 Roundup
 \family default
@@ -184,10 +190,6 @@ Installation of PyLith requires the following:
 \end_layout
 
 \begin_layout Itemize
-A Fortran compiler
-\end_layout
-
-\begin_layout Itemize
 A C++ compiler
 \end_layout
 
@@ -196,45 +198,7 @@ Python 2.3 or greater (Python 2.4 or greater is required on 64-bit machines)
 \end_layout
 
 \begin_layout Itemize
-The development version of the PETSc library
-\end_layout
-
-\begin_layout Subsection
-Fortran Compiler
-\end_layout
-
-\begin_layout Standard
-The core of PyLith is Fortran-77 code which can be compiled with any Fortran-77
- or Fortran-9x compiler.
-\end_layout
-
-\begin_layout Standard
-There are several free Fortran compilers available.
- GCC 4 contains a Fortran-95 compiler called 
-\family typewriter
-gfortran
-\family default
-.
- Earlier versions of GCC include 
-\family typewriter
-g77
-\family default
-, which is also suitable for building PyLith.
- Another free alternative is 
-\family typewriter
-g95
-\family default
-; the G95 project offers pre-built binaries for a variety of systems, which
- makes it an attractive option for Mac OS X users.
-\end_layout
-
-\begin_layout Standard
-PyLith has also been tested with commercial Fortran compilers, including
- Intel's 
-\family typewriter
-ifort
-\family default
- and the Portland Group compiler.
+The development version of PETSc
 \end_layout
 
 \begin_layout Subsection
