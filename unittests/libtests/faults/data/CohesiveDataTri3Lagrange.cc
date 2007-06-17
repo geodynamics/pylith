@@ -85,11 +85,11 @@ const int pylith::faults::CohesiveDataTri3Lagrange::_materialIds[] = {
 const int pylith::faults::CohesiveDataTri3Lagrange::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataTri3Lagrange::_groupSizes[] = 
-  { 6, 7 };
+  { 6, 5 };
 
 const int pylith::faults::CohesiveDataTri3Lagrange::_groups[] = {
   3, 4, 6, 7, 8, 9,
-  3, 4, 5, 6, 7, 8, 9
+  3, 4, 5, 6, 8
 };
 
 const char* pylith::faults::CohesiveDataTri3Lagrange::_groupNames[] = {

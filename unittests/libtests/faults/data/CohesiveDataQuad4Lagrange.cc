@@ -84,11 +84,11 @@ const int pylith::faults::CohesiveDataQuad4Lagrange::_materialIds[] = {
 const int pylith::faults::CohesiveDataQuad4Lagrange::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataQuad4Lagrange::_groupSizes[] = 
-  { 6, 5 };
+  { 6, 4 };
 
 const int pylith::faults::CohesiveDataQuad4Lagrange::_groups[] = {
   4, 5, 8, 9, 10, 11,
-  3, 5, 7, 10, 11
+  3, 5, 7, 10
 };
 
 const char* pylith::faults::CohesiveDataQuad4Lagrange::_groupNames[] = {

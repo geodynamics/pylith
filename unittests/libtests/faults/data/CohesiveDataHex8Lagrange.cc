@@ -81,11 +81,11 @@ const int pylith::faults::CohesiveDataHex8Lagrange::_materialIds[] = {
 const int pylith::faults::CohesiveDataHex8Lagrange::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataHex8Lagrange::_groupSizes[] = 
-  { 12, 10 };
+  { 12, 8 };
 
 const int pylith::faults::CohesiveDataHex8Lagrange::_groups[] = {
   6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 20, 21,
-  4, 5, 8, 9, 12, 13, 18, 19, 20, 21
+  4, 5, 8, 9, 12, 13, 18, 20
 };
 
 const char* pylith::faults::CohesiveDataHex8Lagrange::_groupNames[] = {

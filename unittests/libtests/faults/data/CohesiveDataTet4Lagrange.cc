@@ -71,11 +71,11 @@ const int pylith::faults::CohesiveDataTet4Lagrange::_materialIds[] = {
 const int pylith::faults::CohesiveDataTet4Lagrange::_numGroups = 2;
 
 const int pylith::faults::CohesiveDataTet4Lagrange::_groupSizes[] = 
-  { 9, 7 };
+  { 9, 5 };
 
 const int pylith::faults::CohesiveDataTet4Lagrange::_groups[] = {
   3, 4, 5, 7, 8, 9, 10, 11, 12,
-  2, 4, 5, 9, 10, 11, 12
+  2, 4, 5, 9, 11
 };
 
 const char* pylith::faults::CohesiveDataTet4Lagrange::_groupNames[] = {
