@@ -25,6 +25,9 @@ Charles is debugging Maxwell viscoelastic model.
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+add flipping of fault orientation (in case we get opposite of what we want)
+  add unit test
+
 1. Additional unit tests
 
   Unit tests with multiple cohesive cells.
@@ -35,6 +38,16 @@ MAIN PRIORITIES (Brad)
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials
     ii. partially constrained DOF
+
+Add diagnostic output
+  cells
+    processor
+    material id
+  fault (kin)
+    orientation (3 vectors)
+    slip (vector)
+    peak rate (scalar)
+    slip time (scalar)
 
 ======================================================================
 SECONDARY PRIORITIES
