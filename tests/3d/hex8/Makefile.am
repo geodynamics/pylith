@@ -27,6 +27,7 @@ noinst_DATA = \
 	axialy.spatialdb \
 	axialz.spatialdb \
 	shearelasticisotropic.cfg \
+	shearplanestrain.cfg \
 	shearmaxwellisotropic.cfg \
 	shearxyz.spatialdb \
 	twocells.mesh \
@@ -49,6 +50,8 @@ noinst_TMP = \
 	axialmaxwellisotropic_t1.vtk \
 	shearelasticisotropic_t0.vtk \
 	shearelasticisotropic_t1.vtk \
+	shearplanestrain_t0.vtk \
+	shearplanestrain_t1.vtk \
 	shearmaxwellisotropic_t0.vtk \
 	shearmaxwellisotropic_t1.vtk
 

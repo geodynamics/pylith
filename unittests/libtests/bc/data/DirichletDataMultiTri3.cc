@@ -63,7 +63,7 @@ const int pylith::bc::DirichletDataMultiTri3::_constraintSizes[] = {
 const int pylith::bc::DirichletDataMultiTri3::_constrainedDOF[] = {
   0, 
   1,
-  1, 0
+  0, 1
 };
 
 const double pylith::bc::DirichletDataMultiTri3::_field[] = {

@@ -30,12 +30,12 @@ const char* pylith::bc::DirichletDataQuad4::_label = "bc";
 
 const int pylith::bc::DirichletDataQuad4::_numDOF = 2;
 const int pylith::bc::DirichletDataQuad4::_numFixedDOF = 2;
-const int pylith::bc::DirichletDataQuad4::_fixedDOF[] = { 1, 0 };
+const int pylith::bc::DirichletDataQuad4::_fixedDOF[] = { 0, 1 };
 
 const int pylith::bc::DirichletDataQuad4::_numConstrainedPts = 3;
 const int pylith::bc::DirichletDataQuad4::_constrainedPoints[] = { 0, 1, 4 };
 const double pylith::bc::DirichletDataQuad4::_values[] =
-  { 0.6, 0.1, 0.3, 0.5, 0.2, 0.4 };
+  { 0.1, 0.6, 0.5, 0.3, 0.4, 0.2 };
 
 const char* pylith::bc::DirichletDataQuad4::_meshFilename = 
   "data/quad4.mesh";

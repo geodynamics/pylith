@@ -26,6 +26,9 @@ def suite():
   from TestShearElasticIsotropic import TestShearElasticIsotropic
   suite.addTest(unittest.makeSuite(TestShearElasticIsotropic))
 
+  from TestShearPlaneStrain import TestShearPlaneStrain
+  suite.addTest(unittest.makeSuite(TestShearPlaneStrain))
+
   return suite
 
 

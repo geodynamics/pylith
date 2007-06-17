@@ -153,11 +153,28 @@ pylith::bc::Dirichlet::setConstraints(const ALE::Obj<real_section_type>& field,
   const int numPoints = _points.size();
   for (int iPoint=0; iPoint < numPoints; ++iPoint) {
     const Mesh::point_type point = _points[iPoint];
+
+    // Get list of currently constrained DOF
     const int* curFixedDOF = field->getConstraintDof(point);
     const int numTotalConstrained = field->getConstraintDimension(point);
+
+    // Create array holding all constrained DOF
     int_array allFixedDOF(curFixedDOF, numTotalConstrained);
+
+    // Add in the ones for this Dirichlet BC
     for (int iDOF=0; iDOF < numFixedDOF; ++iDOF)
       allFixedDOF[_offsetLocal[iPoint]+iDOF] = _fixedDOF[iDOF];
+
+    // Fill in rest of values not yet set (will be set by another Dirichlet BC)
+    for (int iDOF=_offsetLocal[iPoint]+numFixedDOF; 
+	 iDOF < numTotalConstrained; 
+	 ++iDOF)
+      allFixedDOF[_offsetLocal[iPoint]+iDOF] = 999;
+
+    // Sort list of constrained DOF
+    std::sort(&allFixedDOF[0], &allFixedDOF[numTotalConstrained]);
+
+    // Update list of constrained DOF
     field->setConstraintDof(point, &allFixedDOF[0]);
   } // for
 } // setConstraints
