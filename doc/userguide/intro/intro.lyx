@@ -186,12 +186,8 @@ Workflow involved in going from geologic structure to problem analysis.
 
 \end_layout
 
-\begin_layout Standard
-
-\end_layout
-
 \begin_layout Section
-Software Components
+PyLith Design
 \end_layout
 
 \begin_layout Standard
@@ -223,66 +219,80 @@ PyLith makes extensive use of external software.
  PETSc is used to perform operations on matrices and vectors in parallel.
 \end_layout
 
-\begin_layout Subsection
-PETSc
+\begin_layout Standard
+[
+\series bold
+BRAD, MATT
+\series default
+ -- This section needs to be completely rewritten, since it came from PyLith
+ 0.8.
+ Any help would be appreciated.]
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \htmlurl[PETSc]{www-unix.mcs.anl.gov/petsc/petsc-as}
-
-\end_inset
-
-, the Portable, Extensible Toolkit for Scientific computation, provides
- a suite of routines for parallel, numerical solution of partial differential
- equations for linear and nonlinear systems with large, sparse systems of
- equations.
- PETSc includes solvers that implement a variety of Newton and Krylov subspace
- methods.
- It can also interface with many external packages, including ESSL, MUMPS,
- Matlab, ParMeTis, PVODE, and Hypre, thereby providing additional solvers
- and interaction with other software packages.
+In rewriting PyLith, the code was completely redesigned to be object-oriented
+ and modular.
+ Each type of module is accessed through a specified interface (set of functions
+).
+ This permits adding, replacing, and rewriting modules without affecting
+ other parts of the code.
+ This code structure simplifies code maintenance and developement.
+ Extending the set of code features is also easier, since developers can
+ create new modules derived from the existing ones.
 \end_layout
 
 \begin_layout Standard
-PETSc includes interfaces for Fortran 77/90, C, C++, and Python for nearly
- all of the routines, and PETSc can be installed on most Unix systems.
- PETSc can be built with user-supplied, highly optimized linear algebra
- routines (e.g., ATLAS and commercial versions of BLAS/LAPACK), thereby improving
- application performance.
- Users can use PETSc parallel matrices, vectors, and other data structures
- for most parallel operations, eliminating the need for explicit calls to
- Message Passing Interface (MPI) routines.
- Many settings and options can be controlled with PETSc-specific command-line
- arguments, including selection of preconditions, solvers, and generation
- of performance logs.
-\end_layout
-
-\begin_layout Standard
-PyLith 0.8 and PyLith 1.0 make use of a new aspect of PETSc known as 
-\family typewriter
-Sieve
-\family default
-, which is still under active development.
+The new code design leverages Pyre, Sieve, and PETSc much more extensively
+ than the previous version.
+ Pyre is used to glue together the various modules used to construct a simulatio
+n and specify the simulation parameters.
+ Sieve is used for all finite-element storage and manipulation and handles
+ the creation of the PETSc matrices and vectors.
+ As a result, most of the PyLith source code pertains to implementing the
+ geodynamics, such as bulk rheology, boundary conditions, and slip on faults.
  
+\end_layout
+
+\begin_layout Standard
+During development tests were constructed for nearly every module function.
+ These unit tests are distributed with the source code.
+ During development these tests were run on a frequent basis to expose bugs
+ and isolate their origin.
+ As additional changes are made to the code, the tests are rerun to help
+ prevent introduction of bugs.
+ A number of simple, full scale tests, such as axial compression, simple
+ shear, and slip between two cells have been used to test the code.
+\end_layout
+
+\begin_layout Standard
+[ADD DESCRIPTION OF WHAT HAPPENS WHEN EXECUTING PYLITH IN PARALLEL, next
+ paragraph is too technical (too much nomenclature)]
+\end_layout
+
+\begin_layout Standard
+Our new design begins with the
 \family typewriter
-Sieve
+ Sieve
 \family default
- is a new method for representing computational meshes, and it greatly simplifie
-s the task of code parallelization.
- 
+ to represent the topology of our domain.
+ Zero volume elements are inserted along all fault surfaces which can implement
+ both split node and cohesive element schemes.
+ Material properties and other parameters are represented as
 \family typewriter
-Sieve
+ Sections
 \family default
- also provides a number of other useful features, such as the ability to
- grab ``sections'' of a mesh that share common characteristics, such as
- elements of the same material type or nodes to which boundary conditions
- have been applied.
- This version of PyLith uses 
+ over the sieve, and values can be retrieved by restriction.
+ For each problem, methods are provided to calculate the residual and its
+ Jacobian.
+ All analytic work is done in these functions, and parallel assembly is
+ accomplished using the restrict/update paradigm from the
 \family typewriter
-Sieve
+ Sieve
 \family default
- much more extensively than PyLith 0.8, and should provide significantly
- better performance.
+ framework.
+ We assemble into PETSc linear algebra objects and then call PETSc solvers.
+ The solution is mapped back into a section, which can be output in VTK
+ format.
 \end_layout
 
 \begin_layout Subsection
@@ -372,84 +382,67 @@ tion, reasonable defaults, consistency checks of input, good diagnostics,
  development cycle, and good debugging support.
 \end_layout
 
-\begin_layout Section
-PyLith Design
+\begin_layout Subsection
+Sieve and PETSc
 \end_layout
 
 \begin_layout Standard
-[
-\series bold
-BRAD, MATT
-\series default
- -- This section needs to be completely rewritten, since it came from PyLith
- 0.8.
- Any help would be appreciated.]
-\end_layout
-
-\begin_layout Standard
-In rewriting PyLith, the code was completely redesigned to be object-oriented
- and modular.
- Each type of module is accessed through a specified interface (set of functions
-).
- This permits adding, replacing, and rewriting modules without affecting
- other parts of the code.
- This code structure simplifies code maintenance and developement.
- Extending the set of code features is also easier, since developers can
- create new modules derived from the existing ones.
-\end_layout
-
-\begin_layout Standard
-The new code design leverages Pyre, Sieve, and PETSc much more extensively
- than the previous version.
- Pyre is used to glue together the various modules used to construct a simulatio
-n and specify the simulation parameters.
- Sieve is used for all finite-element storage and manipulation and handles
- the creation of the PETSc matrices and vectors.
- As a result, most of the PyLith source code pertains to implementing the
- geodynamics, such as bulk rheology, boundary conditions, and slip on faults.
+PyLith 0.8 and PyLith 1.0 make use of a new set of data structures and routines
+ in PETSc called 
+\family typewriter
+Sieve
+\family default
+, which is still under active development.
  
+\family typewriter
+Sieve
+\family default
+ is a new method for representing computational meshes, and it greatly simplifie
+s finite-element computations.
+ 
+\family typewriter
+Sieve
+\family default
+ provides a number of useful features, such as the ability to grab ``sections''
+ of a mesh that share common characteristics, such as cells of the same
+ material type or vertices to which boundary conditions need to be applied.
+ This version of PyLith uses 
+\family typewriter
+Sieve
+\family default
+ much more extensively than PyLith 0.8, and should provide significantly
+ better performance.
+ Sieve interfaces with PETSc for solving the system of equations.
 \end_layout
 
 \begin_layout Standard
-During development tests were constructed for nearly every module function.
- These unit tests are distributed with the source code.
- During development these tests were run on a frequent basis to expose bugs
- and isolate their origin.
- As additional changes are made to the code, the tests are rerun to help
- prevent introduction of bugs.
- A number of simple, full scale tests, such as axial compression, simple
- shear, and slip between two cells have been used to test the code.
+\begin_inset LatexCommand \htmlurl[PETSc]{www-unix.mcs.anl.gov/petsc/petsc-as}
+
+\end_inset
+
+, the Portable, Extensible Toolkit for Scientific computation, provides
+ a suite of routines for parallel, numerical solution of partial differential
+ equations for linear and nonlinear systems with large, sparse systems of
+ equations.
+ PETSc includes solvers that implement a variety of Newton and Krylov subspace
+ methods.
+ It can also interface with many external packages, including ESSL, MUMPS,
+ Matlab, ParMeTis, PVODE, and Hypre, thereby providing additional solvers
+ and interaction with other software packages.
 \end_layout
 
 \begin_layout Standard
-[ADD DESCRIPTION OF WHAT HAPPENS WHEN EXECUTING PYLITH IN PARALLEL, next
- paragraph is too technical (too much nomenclature)]
-\end_layout
-
-\begin_layout Standard
-Our new design begins with the
-\family typewriter
- Sieve
-\family default
- to represent the topology of our domain.
- Zero volume elements are inserted along all fault surfaces which can implement
- both split node and cohesive element schemes.
- Material properties and other parameters are represented as
-\family typewriter
- Sections
-\family default
- over the sieve, and values can be retrieved by restriction.
- For each problem, methods are provided to calculate the residual and its
- Jacobian.
- All analytic work is done in these functions, and parallel assembly is
- accomplished using the restrict/update paradigm from the
-\family typewriter
- Sieve
-\family default
- framework.
- We assemble into PETSc linear algebra objects and then call PETSc solvers.
- The solution is mapped back into a section, which can be output in VTK
- format.
+PETSc includes interfaces for Fortran 77/90, C, C++, and Python for nearly
+ all of the routines, and PETSc can be installed on most Unix systems.
+ PETSc can be built with user-supplied, highly optimized linear algebra
+ routines (e.g., ATLAS and commercial versions of BLAS/LAPACK), thereby improving
+ application performance.
+ Users can use PETSc parallel matrices, vectors, and other data structures
+ for most parallel operations, eliminating the need for explicit calls to
+ Message Passing Interface (MPI) routines.
+ Many settings and options can be controlled with PETSc-specific command-line
+ arguments, including selection of preconditions, solvers, and generation
+ of performance logs.
 \end_layout
 
 \end_body

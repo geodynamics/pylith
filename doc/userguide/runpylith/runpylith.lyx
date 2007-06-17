@@ -61,19 +61,41 @@ A set of parameters describing the problem.
 
 \begin_layout Enumerate
 Mesh information.
- This includes nodal coordinates, element connectivities, and flagged sets
- of nodes to which boundary conditions can be applied.
- This information can be provided using PyLith ASCII format (***reference***),
- or by importing the information from the LaGriT or CUBIT meshing packages
- (***put in references to tutorials and appendix***).
+ This includes the topology of the finite-element mesh (coordinates of vertices
+ and how the vertices are connected into cells), the material identifier
+ for each cell, and sets of vertices associated with boundary conditions,
+ faults, and output (for subsets of the mesh).
+ This information can be provided using the PyLith Mesh ASCII format (See
+ Chapter 
+\begin_inset LatexCommand \ref{cha:Tutorials}
+
+\end_inset
+
+ for examples and Section 
+\begin_inset LatexCommand \ref{sec:MeshIOAscii}
+
+\end_inset
+
+ for the format specification) or by importing the information from the
+ LaGriT or CUBIT meshing packages (See Section XX [LaGriT/CUBIT tutorials]).
 \end_layout
 
 \begin_layout Enumerate
 Databases specifying the material properties and boundary conditions to
  be used.
- Arbitrarily complex spatial variations in boundary conditions (including
- fault specifications) and material properties may be given in the spatial
- database (***put in references to tutorials and appendix***).
+ Arbitrarily complex spatial variations in boundary and fault conditions
+ and material properties may be given in the spatial database (See Chapter
+ 
+\begin_inset LatexCommand \ref{cha:Tutorials}
+
+\end_inset
+
+ for examples and Section 
+\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
+
+\end_inset
+
+ for the format specification).
 \end_layout
 
 \begin_layout Section
@@ -681,9 +703,14 @@ Mesh Information
 \begin_layout Standard
 Geometrical and topological information for the finite element mesh may
  be provided by exporting an EXODUS format file from CUBIT, by exporting
- a GMV file and an accompanying pset file from LaGriT, or by specifying
- the information in PyLith ASCII format.
- ***Put in references to tutorials and appendix.***
+ a GMV file and an accompanying Pset file from LaGriT, or by specifying
+ the information in PyLith Mesh ASCII format.
+ See Chapter 
+\begin_inset LatexCommand \ref{cha:Tutorials}
+
+\end_inset
+
+ for examples.
 \end_layout
 
 \begin_layout Standard
@@ -749,7 +776,7 @@ status open
 \end_layout
 
 \begin_layout Caption
-Linear bar element available for 1D problems.
+Linear bar element available for 1-D problems.
 \end_layout
 
 \begin_layout Standard
@@ -781,7 +808,9 @@ status open
 
 \end_inset
 
- 
+ \InsetSpace ~
+\InsetSpace ~
+
 \begin_inset Graphics
 	filename figs/quad4.eps
 
@@ -791,7 +820,7 @@ status open
 \end_layout
 
 \begin_layout Caption
-Linear elements available for 2D problems are the triangle (left) and the
+Linear elements available for 2-D problems are the triangle (left) and the
  quadrilateral (right).
 \end_layout
 
@@ -811,6 +840,7 @@ Linear elements available for 2D problems are the triangle (left) and the
 \begin_layout Standard
 \noindent
 \align center
+-
 \begin_inset Float figure
 wide false
 sideways false
@@ -823,6 +853,8 @@ status open
 
 \end_inset
 
+\InsetSpace ~
+\InsetSpace ~
 
 \begin_inset Graphics
 	filename figs/hex8.eps
@@ -848,7 +880,7 @@ Linear elements available for 3D problems are the tetrahedron (left) and
 \end_layout
 
 \begin_layout Section
-Boundary Condition and Material Property Databases
+Databases for Boundaries, Interfaces, and Material Properties
 \end_layout
 
 \begin_layout Standard
@@ -880,7 +912,7 @@ point
 \begin_inset Quotes erd
 \end_inset
 
-, or 0D variation).
+, or 0-D variation).
  A slightly more complex case would be a mesh where the elements of a given
  type have properties that vary linearly along a given direction (
 \begin_inset Quotes eld
@@ -890,7 +922,7 @@ line
 \begin_inset Quotes erd
 \end_inset
 
-, or 1D variation).
+, or 1-D variation).
  In more complex models, the material properties might have different values
  at each point in the mesh (
 \begin_inset Quotes eld
@@ -900,7 +932,7 @@ volume
 \begin_inset Quotes erd
 \end_inset
 
-, or 3D variation).
+, or 3-D variation).
  This might be the case, for example, if the material properties are provided
  by a database of seismic velocities and densities.
  ***Provide references***
@@ -916,7 +948,7 @@ point
 \begin_inset Quotes erd
 \end_inset
 
-, or 0D variation).
+, or 0-D variation).
  A more complex case might specify a variation in the conditions on a given
  surface (
 \begin_inset Quotes eld
@@ -926,32 +958,10 @@ area
 \begin_inset Quotes erd
 \end_inset
 
-, or 2D variation).
+, or 2-D variation).
  This sort of condition might be used, for example, to specify the variation
  of slip on a fault plane.
  ***Provide references***
-\begin_inset Note Comment
-status open
-
-\begin_layout Standard
-Maybe I should not be mixing 
-\end_layout
-
-\begin_layout Standard
-together BC and fault info, 
-\end_layout
-
-\begin_layout Standard
-or maybe I should change 
-\end_layout
-
-\begin_layout Standard
-the title of this section.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
