@@ -5,11 +5,6 @@ CURRENT ISSUES
   1. creation of cohesive cells for hex8 meshes
      [MATT]
 
-  2. tests/3d/tet4/shearelasticstrain.cfg [SIEVE INDEXING AND CONSTRAINTS]
-     Note: ordering the Dirichlet BC so that the constrainted DOF are in 
-           order is a workaround.
-     [MATT]
-
   3. VTK output
      zero out values at Lagrange constraint vertices
      make 3-component displacements default even for 1-D and 2-D meshes
@@ -25,8 +20,8 @@ Charles is debugging Maxwell viscoelastic model.
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-add flipping of fault orientation (in case we get opposite of what we want)
-  add unit test
+add preferred normal direction for fault normal (to increase changes
+we get the orientation that we want in 3-D cases).
 
 1. Additional unit tests
 
@@ -39,7 +34,7 @@ add flipping of fault orientation (in case we get opposite of what we want)
     i. multiple materials
     ii. partially constrained DOF
 
-Add diagnostic output
+Add diagnostic output?
   cells
     processor
     material id
