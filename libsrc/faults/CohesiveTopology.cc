@@ -28,7 +28,6 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
 { // create
   assert(0 != fault);
 
-  typedef std::vector<Mesh::point_type> PointArray;
   typedef ALE::SieveAlg<Mesh> sieveAlg;
 
   // Create set with vertices on fault
@@ -230,15 +229,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
       }
 	  std::cout << std::endl << "  Opposite Vertex: " << oppositeVertex << std::endl;
     }
-    if (_faceOrientation(cell, mesh, numCorners, indices, oppositeVertex)) {
-      if (debug)
-        std::cout << "  Reversing initial face orientation" << std::endl;
-      faceVertices.insert(faceVertices.end(), origVertices.rbegin(), origVertices.rend());
-    } else {
-      if (debug)
-        std::cout << "  Keeping initial face orientation" << std::endl;
-      faceVertices.insert(faceVertices.end(), origVertices.begin(), origVertices.end());
-    }
+    _faceOrientation(cell, mesh, numCorners, indices, oppositeVertex, &origVertices, &faceVertices);
     const PointArray::iterator fBegin = faceVertices.begin();
     const PointArray::iterator fEnd   = faceVertices.end();
     color = 0;
@@ -357,29 +348,210 @@ pylith::faults::CohesiveTopology::_numFaceVertices(const Mesh::point_type& cell,
 } // _numFaceVertices
 
 // ----------------------------------------------------------------------
+// We need this method because we do not use interpolates sieves
+//   - Without interpolation, we cannot say what vertex collections are
+//     faces, and how they are oriented
+//   - Now we read off the list of face vertices IN THE ORDER IN WHICH
+//     THEY APPEAR IN THE CELL
+//   - This leads to simple algorithms for simplices and quads to check
+//     orientation since these sets are always valid faces
+//   - This is not true with hexes, so we just sort and check explicit cases
+//   - This means for hexes that we have to alter the vertex container as well
 bool
 pylith::faults::CohesiveTopology::_faceOrientation(const Mesh::point_type& cell,
                                                    const ALE::Obj<Mesh>& mesh,
                                                    const int numCorners,
                                                    const int indices[],
-                                                   const int oppositeVertex)
+                                                   const int oppositeVertex,
+                                                   PointArray *origVertices,
+                                                   PointArray *faceVertices)
 { // _faceOrientation
-  const int cellDim = mesh->getDimension();
+  const int cellDim   = mesh->getDimension();
+  bool      posOrient = false;
+  int       debug     = mesh->debug();
 
   // Simplices
   if (cellDim == numCorners-1) {
-    return !(oppositeVertex%2);
+    posOrient = !(oppositeVertex%2);
   } else if (cellDim == 2) {
     // Quads
     if ((indices[1] > indices[0]) && (indices[1] - indices[0] == 1)) {
-      return true;
+      posOrient = true;
+    } else if ((indices[0] == 3) && (indices[1] == 0)) {
+      posOrient = true;
+    } else {
+      posOrient = false;
     }
-    return false;
   } else if (cellDim == 3) {
     // Hexes
-    //   I think we might have to enumerate all of these, ugh
+    //   A hex is two oriented quads with the normal of the first
+    //   pointing up at the second.
+    //
+    //     7---6
+    //    /|  /|
+    //   4---5 |
+    //   | 3-|-2
+    //   |/  |/
+    //   0---1
+    int sortedIndices[4];
+
+    for(int i = 0; i < 4; ++i) sortedIndices[i] = indices[i];
+    std::sort(sortedIndices, sortedIndices+4);
+    // Case 1: Bottom quad
+    if ((sortedIndices[0] == 0) && (sortedIndices[1] == 1) && (sortedIndices[2] == 2) && (sortedIndices[3] == 3)) {
+      if (debug) std::cout << "Bottom quad" << std::endl;
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 0) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 1) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 2) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 3) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+    }
+    // Case 2: Top quad
+    if ((sortedIndices[0] == 4) && (sortedIndices[1] == 5) && (sortedIndices[2] == 6) && (sortedIndices[3] == 7)) {
+      if (debug) std::cout << "Top quad" << std::endl;
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 4) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 7) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 6) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 5) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+    }
+    // Case 3: Front quad
+    if ((sortedIndices[0] == 0) && (sortedIndices[1] == 1) && (sortedIndices[2] == 4) && (sortedIndices[3] == 5)) {
+      if (debug) std::cout << "Front quad" << std::endl;
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 0) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 4) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 5) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 1) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+    }
+    // Case 4: Back quad
+    if ((sortedIndices[0] == 2) && (sortedIndices[1] == 3) && (sortedIndices[2] == 6) && (sortedIndices[3] == 7)) {
+      if (debug) std::cout << "Back quad" << std::endl;
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 3) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 2) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 6) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 7) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+    }
+    // Case 5: Right quad
+    if ((sortedIndices[0] == 1) && (sortedIndices[1] == 2) && (sortedIndices[2] == 5) && (sortedIndices[3] == 6)) {
+      if (debug) std::cout << "Right quad" << std::endl;
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 1) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 5) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 6) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 2) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+    }
+    // Case 6: Left quad
+    if ((sortedIndices[0] == 0) && (sortedIndices[1] == 3) && (sortedIndices[2] == 4) && (sortedIndices[3] == 7)) {
+      if (debug) std::cout << "Left quad" << std::endl;
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 0) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 3) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 7) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+      for(int i = 0; i < 4; ++i) {
+        if (indices[i] == 4) {
+          faceVertices->push_back((*origVertices)[i]); break;
+        }
+      }
+    }
+    return false;
   }
-  return true;
+  // We reverse a positive orientation because our indices are from the "shadow" face side
+  if (posOrient) {
+    if (debug) std::cout << "  Reversing initial face orientation" << std::endl;
+    faceVertices->insert(faceVertices->end(), (*origVertices).rbegin(), (*origVertices).rend());
+  } else {
+    if (debug) std::cout << "  Keeping initial face orientation" << std::endl;
+    faceVertices->insert(faceVertices->end(), (*origVertices).begin(), (*origVertices).end());
+  }
+  return posOrient;
 } // _faceOrientation
 
 template<class InputPoints>
