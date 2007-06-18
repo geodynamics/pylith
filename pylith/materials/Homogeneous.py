@@ -73,7 +73,7 @@ class Homogeneous(ObjectBin):
   
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def materials_bin():
+def object_bin():
   """
   Factory associated with Homogeneous.
   """
