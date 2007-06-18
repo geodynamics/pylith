@@ -33,6 +33,7 @@ class pylith::faults::CohesiveTopology
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
+  typedef std::vector<Mesh::point_type> PointArray;
 
   /** Create cohesive cells.
    *
@@ -78,7 +79,9 @@ private :
                         const ALE::Obj<Mesh>& mesh,
                         const int numCorners,
                         const int indices[],
-                        const int oppositeVertex);
+                        const int oppositeVertex,
+                        PointArray *origVertices,
+                        PointArray *faceVertices);
 
   template<class InputPoints>
   static
