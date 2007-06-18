@@ -172,6 +172,7 @@ pylith::bc::Dirichlet::setConstraints(const ALE::Obj<real_section_type>& field,
       allFixedDOF[_offsetLocal[iPoint]+iDOF] = 999;
 
     // Sort list of constrained DOF
+    //   I need these sorted for my update algorithms to work properly
     std::sort(&allFixedDOF[0], &allFixedDOF[numTotalConstrained]);
 
     // Update list of constrained DOF
