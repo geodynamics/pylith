@@ -363,7 +363,10 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<ALE::Mesh>* mesh,
     const double upDirVals[] = { 0.0, 0.0, 1.0 };
     double_array upDir(upDirVals, 3);
 
-    fault->initialize(*mesh, &cs, upDir); 
+    const double normalDirVals[] = { 1.0, 0.0, 0.0 };
+    double_array normalDir(normalDirVals, 3);
+
+    fault->initialize(*mesh, &cs, upDir, normalDir); 
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
   } // catch

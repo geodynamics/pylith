@@ -33,6 +33,7 @@ testfaults_SOURCES = \
 	TestFaultCohesiveKinQuad4e.cc \
 	TestFaultCohesiveKinTet4.cc \
 	TestFaultCohesiveKinTet4e.cc \
+	TestFaultCohesiveKinTet4f.cc \
 	TestFaultCohesiveKinHex8.cc \
 	test_faults.cc
 
@@ -49,6 +50,7 @@ noinst_HEADERS = \
 	TestFaultCohesiveKinQuad4e.hh \
 	TestFaultCohesiveKinTet4.hh \
 	TestFaultCohesiveKinTet4e.hh \
+	TestFaultCohesiveKinTet4f.hh \
 	TestFaultCohesiveKinHex8.hh
 
 # Source files associated with testing data
@@ -71,6 +73,7 @@ testfaults_SOURCES += \
 	data/CohesiveDataTet4b.cc \
 	data/CohesiveDataTet4c.cc \
 	data/CohesiveDataTet4d.cc \
+	data/CohesiveDataTet4f.cc \
 	data/CohesiveDataTet4Lagrange.cc \
 	data/CohesiveDataHex8.cc \
 	data/CohesiveDataHex8b.cc \
@@ -87,6 +90,7 @@ testfaults_SOURCES += \
 	data/CohesiveKinDataQuad4e.cc \
 	data/CohesiveKinDataTet4.cc \
 	data/CohesiveKinDataTet4e.cc \
+	data/CohesiveKinDataTet4f.cc \
 	data/CohesiveKinDataHex8.cc
 
 noinst_HEADERS += \
@@ -108,6 +112,7 @@ noinst_HEADERS += \
 	data/CohesiveDataTet4b.hh \
 	data/CohesiveDataTet4c.hh \
 	data/CohesiveDataTet4d.hh \
+	data/CohesiveDataTet4f.hh \
 	data/CohesiveDataTet4Lagrange.hh \
 	data/CohesiveDataHex8.hh \
 	data/CohesiveDataHex8b.hh \
@@ -124,6 +129,7 @@ noinst_HEADERS += \
 	data/CohesiveKinDataQuad4e.hh \
 	data/CohesiveKinDataTet4.hh \
 	data/CohesiveKinDataTet4e.hh \
+	data/CohesiveKinDataTet4f.hh \
 	data/CohesiveKinDataHex8.hh
 
 AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)

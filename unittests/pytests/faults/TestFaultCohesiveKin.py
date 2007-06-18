@@ -256,6 +256,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.id = 10
     fault.label = "fault"
     fault.upDir = [0, 0, 1]
+    fault.normalDir = [1, 0, 0]
     fault.quadrature = quadrature
     fault.eqsrc = eqsrc
     fault.timeStep(dt)

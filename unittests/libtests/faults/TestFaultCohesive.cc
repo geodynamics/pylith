@@ -36,6 +36,7 @@
 #include "data/CohesiveDataTet4b.hh" // USES CohesiveDataTet4b
 #include "data/CohesiveDataTet4c.hh" // USES CohesiveDataTet4c
 #include "data/CohesiveDataTet4d.hh" // USES CohesiveDataTet4d
+#include "data/CohesiveDataTet4f.hh" // USES CohesiveDataTet4f
 #include "data/CohesiveDataHex8.hh" // USES CohesiveDataHex8
 #include "data/CohesiveDataHex8b.hh" // USES CohesiveDataHex8b
 #include "data/CohesiveDataHex8c.hh" // USES CohesiveDataHex8c
@@ -173,7 +174,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4b(void)
 } // testAdjustTopologyTet4b
 
 // ----------------------------------------------------------------------
-// Test adjustTopology() with 3-D tetrahedral element (face b).
+// Test adjustTopology() with 3-D tetrahedral element (face c).
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyTet4c(void)
 { // testAdjustTopologyTet4c
@@ -183,7 +184,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4c(void)
 } // testAdjustTopologyTet4c
 
 // ----------------------------------------------------------------------
-// Test adjustTopology() with 3-D tetrahedral element (face b).
+// Test adjustTopology() with 3-D tetrahedral element (face d).
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyTet4d(void)
 { // testAdjustTopologyTet4d
@@ -191,6 +192,16 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4d(void)
   FaultCohesiveDyn fault;
   _testAdjustTopology(&fault, data);
 } // testAdjustTopologyTet4d
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D tetrahedral element (reverse cell order).
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTet4f(void)
+{ // testAdjustTopologyTet4f
+  CohesiveDataTet4f data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyTet4f
 
 // ----------------------------------------------------------------------
 // Test adjustTopology() with 3-D hexahedral element.

@@ -22,12 +22,12 @@
 
 from pyre.components.Component import Component
 
-# Validator for up-direction
-def validateUpDir(value):
+# Validator for direction
+def validateDir(value):
   """
-  Validate up-direction.
+  Validate direction.
   """
-  msg = "Up-direction must be a 3 component vector (list)."
+  msg = "Direction must be a 3 component vector (list)."
   if not isinstance(value, list):
     raise ValueError(msg)
   if 3 != len(value):
@@ -64,7 +64,11 @@ class Fault(Component):
     ## @li \b id Fault identifier
     ## @li \b name Name of fault
     ## @li \b up_dir Up-dip or up direction
-    ##   (perpendicular to along-strike and not collinear with fault normal)
+    ##   (perpendicular to along-strike and not collinear with fault normal;
+    ##   only applies to fault surfaces in a 3-D domain).
+    ## @li \b normal_dir General preferred direction for fault normal
+    ##   (used to pick which of two possible normal directions for
+    ##   interface; only applies to fault surfaces in a 3-D domain).
     ##
     ## \b Facilities
     ## @li \b quadrature Quadrature object for numerical integration
@@ -79,10 +83,17 @@ class Fault(Component):
     label.meta['tip'] = "Name of material."
 
     upDir = pyre.inventory.list("up_dir", default=[0, 0, 1],
-                                validator=validateUpDir)
+                                validator=validateDir)
     upDir.meta['tip'] = "Up-dip or up direction " \
                         "(perpendicular to along-strike and not collinear " \
-                        "with fault normal)."
+                        "with fault normal; only applies to fault surface " \
+                        "in a 3-D domain)."
+
+    normalDir = pyre.inventory.list("normal_dir", default=[1, 0, 0],
+                                validator=validateDir)
+    normalDir.meta['tip'] = "General preferred direction for fault normal " \
+                 "(used to pick which of two possible normal directions for " \
+                 "interface; only applies to fault surfaces in a 3-D domain)."
 
     from pylith.feassemble.quadrature.Quadrature import Quadrature
     quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
@@ -131,7 +142,7 @@ class Fault(Component):
     self.cppHandle.label = self.label
     self.cppHandle.quadrature = self.quadrature.cppHandle
     self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
-                              self.upDir)
+                              self.upDir, self.normalDir)
     return
 
 
@@ -145,6 +156,7 @@ class Fault(Component):
     self.id = self.inventory.id
     self.label = self.inventory.label
     self.upDir = self.inventory.upDir
+    self.normalDir = self.inventory.normalDir
     self.quadrature = self.inventory.quadrature
     return
 
