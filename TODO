@@ -2,16 +2,20 @@
 CURRENT ISSUES
 ======================================================================
 
-  1. tests/1d/line3/dislocation.cfg [CHACO]
-     [MATT]
+  0. Fix updating of section in ElasticMaterial.cc [Brad]
 
-  2. VTK output
-     zero out values at Lagrange constraint vertices
+  1. VTK output
      make 3-component displacements default even for 1-D and 2-D meshes
      [MATT] 
 
+  2. debugging Mesh distribution is debugging the mesh distribution.
+     [MATT]
+
 Charles is debugging Maxwell viscoelastic model.
   
+  3. Create list of missing features (EqSim/PyLith 0.8) and new
+  features.
+
 ======================================================================
 MAIN PRIORITIES (Brad)
 ======================================================================
