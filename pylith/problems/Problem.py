@@ -49,7 +49,7 @@ class Problem(Component):
     from pylith.utils.ObjectBin import ObjectBin
 
     from pylith.materials.Homogeneous import Homogeneous
-    materials = pyre.inventory.facility("materials", family="materials",
+    materials = pyre.inventory.facility("materials", family="object_bin",
                                         factory=Homogeneous)
     materials.meta['tip'] = "Materials in problem."
 
