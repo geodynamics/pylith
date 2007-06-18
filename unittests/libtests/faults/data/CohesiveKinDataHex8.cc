@@ -129,8 +129,8 @@ const int pylith::faults::CohesiveKinDataHex8::_numConstraintVert = 4;
 const double pylith::faults::CohesiveKinDataHex8::_orientation[] = {
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
-  0.0, +1.0, 0.0,    0.0, 0.0, +1.0     +1.0, 0.0, 0.0,
-  0.0, +1.0, 0.0,    0.0, 0.0, +1.0     +1.0, 0.0, 0.0,
+  0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
+  0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
 };
 
 const int pylith::faults::CohesiveKinDataHex8::_constraintVertices[] = {
