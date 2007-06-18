@@ -94,7 +94,7 @@ pylith::materials::TestElasticMaterial::testCalcDensity(void)
   cellData[1] = data.parameterData[5];
   parameterLambda->updateAddPoint(*cellIter, cellData);
 
-  material.initCellData(*cellIter, numQuadPts);
+  material.getStateVarsCell(*cellIter, numQuadPts);
   const std::vector<double_array>& density = material.calcDensity();
 
   const double tolerance = 1.0e-06;
@@ -195,7 +195,7 @@ pylith::materials::TestElasticMaterial::testCalcStress(void)
       strain[iQuad][iStrain] = data.strain[i];
   } // for
 
-  material.initCellData(*cellIter, numQuadPts);
+  material.getStateVarsCell(*cellIter, numQuadPts);
   const std::vector<double_array>& stress = material.calcStress(strain);
 
   const double tolerance = 1.0e-06;
@@ -305,7 +305,7 @@ pylith::materials::TestElasticMaterial::testCalcDerivElastic(void)
       strain[iQuad][iStrain] = data.strain[i];
   } // for
 
-  material.initCellData(*cellIter, numQuadPts);
+  material.getStateVarsCell(*cellIter, numQuadPts);
   const std::vector<double_array>& elasticConsts = 
     material.calcDerivElastic(strain);
 

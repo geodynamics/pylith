@@ -19,6 +19,7 @@
 
 #include "pylith/materials/MaxwellIsotropic3D.hh" // USES MaxwellIsotropic3D
 
+#include <stdexcept> // TEMPORARY
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaxwellIsotropic3D );
 
@@ -82,8 +83,7 @@ pylith::materials::TestMaxwellIsotropic3D::testDBValues(void)
 { // testDBValues
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DElasticData data;
-  bool elasFlag = true;
-  material.useElasticBehavior(elasFlag);
+  material.useElasticBehavior(true);
   _testDBValues(&material, data);
 } // testDBValues
 
@@ -94,8 +94,7 @@ pylith::materials::TestMaxwellIsotropic3D::testParameters(void)
 { // testParameters
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DElasticData data;
-  bool elasFlag = true;
-  material.useElasticBehavior(elasFlag);
+  material.useElasticBehavior(true);
   _testParameters(&material, data);
 } // testParameters
 
@@ -106,8 +105,7 @@ pylith::materials::TestMaxwellIsotropic3D::testDBToParameters(void)
 { // testDBToParameters
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DElasticData data;
-  bool elasFlag = true;
-  material.useElasticBehavior(elasFlag);
+  material.useElasticBehavior(true);
   _testDBToParameters(&material, data);
 } // testDBToParameters
 
@@ -118,8 +116,7 @@ pylith::materials::TestMaxwellIsotropic3D::testCalcDensity(void)
 { // testCalcDensity
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DElasticData data;
-  bool elasFlag = true;
-  material.useElasticBehavior(elasFlag);
+  material.useElasticBehavior(true);
   _testCalcDensity(&material, data);
 } // testCalcDensity
 
@@ -130,8 +127,7 @@ pylith::materials::TestMaxwellIsotropic3D::testCalcStressElastic(void)
 { // testCalcStressElastic
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DElasticData data;
-  bool elasFlag = true;
-  material.useElasticBehavior(elasFlag);
+  material.useElasticBehavior(true);
   _testCalcStress(&material, data);
 } // testCalcStressElastic
 
@@ -142,8 +138,7 @@ pylith::materials::TestMaxwellIsotropic3D::testCalcElasticConstsElastic(void)
 { // testElasticConstsElastic
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DElasticData data;
-  bool elasFlag = true;
-  material.useElasticBehavior(elasFlag);
+  material.useElasticBehavior(true);
   _testCalcElasticConsts(&material, data);
 } // testElasticConstsElastic
 
@@ -153,11 +148,37 @@ void
 pylith::materials::TestMaxwellIsotropic3D::testUpdateStateElastic(void)
 { // testUpdateStateElastic
   MaxwellIsotropic3D material;
+  MaxwellIsotropic3DElasticData data;
 
-  std::vector<double_array> totalStrain;
-  bool elasFlag = true;
-  material.useElasticBehavior(elasFlag);
-  material.updateState(totalStrain);
+  // CHARLES: Setup parameters and totalStrain so this works.
+
+#if 0
+  const int numParams = data.numParameters;
+
+  std::vector<double_array> parameters(numParams);
+  const int paramsSize = 1;
+  for (int i=0; i < numParams; ++i) {
+    parameters[i].resize(numParams);
+    for (int j=0; j < paramsSize; ++j)
+      parameters[i][j] = i+j;
+  } // for
+    
+  const int tensorSize = 9;
+  double_array totalStrain(tensorSize);
+  for (int i=0; i < tensorSize; ++i)
+    totalStrain[i] = i;
+  
+  material._updateState(&parameters, totalStrain);
+
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < numParams; ++i)
+    for (int j=0; j < paramsSize; ++j)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i+j), parameters[i][j], tolerance);
+    
+  for (int i=0; i < tensorSize; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i), totalStrain[i], tolerance);
+#endif
+  throw std::logic_error("Unit test not implemented.");
 } // testUpdateStateElastic
 
 // ----------------------------------------------------------------------
@@ -167,8 +188,7 @@ pylith::materials::TestMaxwellIsotropic3D::testCalcStressTimeDep(void)
 { // testCalcStressTimeDep
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DTimeDepData data;
-  bool elasFlag = false;
-  material.useElasticBehavior(elasFlag);
+  material.useElasticBehavior(false);
   double dt = 2.0e5;
   material.timeStep(dt);
   _testCalcStress(&material, data);
@@ -181,8 +201,7 @@ pylith::materials::TestMaxwellIsotropic3D::testCalcElasticConstsTimeDep(void)
 { // testElasticConstsTimeDep
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DTimeDepData data;
-  bool elasFlag = false;
-  material.useElasticBehavior(elasFlag);
+  material.useElasticBehavior(false);
   double dt = 2.0e5;
   material.timeStep(dt);
   _testCalcElasticConsts(&material, data);
@@ -194,13 +213,36 @@ void
 pylith::materials::TestMaxwellIsotropic3D::testUpdateStateTimeDep(void)
 { // testUpdateStateTimeDep
   MaxwellIsotropic3D material;
+  MaxwellIsotropic3DTimeDepData data;
 
-  std::vector<double_array> totalStrain;
-  bool elasFlag = false;
-  material.useElasticBehavior(elasFlag);
-  double dt = 2.0e5;
-  material.timeStep(dt);
-  material.updateState(totalStrain);
+  // CHARLES: Setup parameters and totalStrain so this works.
+#if 0
+  const int numParams = data.numParameters;
+
+  std::vector<double_array> parameters(numParams);
+  const int paramsSize = 1;
+  for (int i=0; i < numParams; ++i) {
+    parameters[i].resize(numParams);
+    for (int j=0; j < paramsSize; ++j)
+      parameters[i][j] = i+j;
+  } // for
+    
+  const int tensorSize = 9;
+  double_array totalStrain(tensorSize);
+  for (int i=0; i < tensorSize; ++i)
+    totalStrain[i] = i;
+  
+  material._updateState(&parameters, totalStrain);
+
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < numParams; ++i)
+    for (int j=0; j < paramsSize; ++j)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i+j), parameters[i][j], tolerance);
+    
+  for (int i=0; i < tensorSize; ++i)
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i), totalStrain[i], tolerance);
+#endif
+  throw std::logic_error("Unit test not implemented.");
 } // testUpdateStateTimeDep
 
 
