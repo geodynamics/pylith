@@ -14,9 +14,8 @@
 #error "MaxwellIsotropic3D.icc can only be included from MaxwellIsotropic3D.hh"
 #endif
 
-#define CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
-
 #include <assert.h> // USES assert()
+#include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 
 // Set current time step.
 inline

@@ -16,6 +16,7 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	array.hh \
 	arrayfwd.hh \
+	macrodefs.h \
 	petscfwd.h \
 	sievefwd.hh \
 	sievetypes.hh

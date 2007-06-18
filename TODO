@@ -2,48 +2,19 @@
 CURRENT ISSUES
 ======================================================================
 
-  1. creation of cohesive cells for hex8 meshes
+  1. tests/1d/line3/dislocation.cfg [CHACO]
      [MATT]
 
-  3. VTK output
+  2. VTK output
      zero out values at Lagrange constraint vertices
      make 3-component displacements default even for 1-D and 2-D meshes
      [MATT] 
-    
-  4. tests/1d/line3/dislocation.cfg [CHACO]
-     [MATT]
-
 
 Charles is debugging Maxwell viscoelastic model.
   
 ======================================================================
 MAIN PRIORITIES (Brad)
 ======================================================================
-
-ElasticityImplicit
-  calcTotalStrain_fn_type
-  elasticityResidual_fn_type
-  elasticityJacobian_fn_type
-
-  _calcTotalStrainFn
-  _elasticityResidualFn
-  _elasticityJacobianFn
-
-  _elasticityResidual1D
-  _elasticityResidual2D
-  _elasticityResidual3D
-  _elasticityJacobian1D
-  _elasticityJacobian2D
-  _elasticityJacobian3D
-
-
-add ability to have comments in meshio and spatial data files (if easy
-to do, would use '#' as delimiter).
-
-  FaultCohesiveKin
-    multiple cohesive cells for hex8 mesh
-
-    normal okay with rollover of fault dip?
 
 Create meshes for benchmarks
 
@@ -53,6 +24,14 @@ Create meshes for benchmarks
   reverse
     tet (LaGriT)
     hex (CUBIT)
+
+add ability to have comments in meshio and spatial data files (if easy
+to do, would use '#' as delimiter).
+
+  FaultCohesiveKin
+    multiple cohesive cells for hex8 mesh
+
+    normal okay with rollover of fault dip?
 
 1. Additional unit tests
 

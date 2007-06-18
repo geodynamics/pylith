@@ -48,6 +48,7 @@
 #define pylith_feassemble_elasticityimplicit_hh
 
 #include "Integrator.hh" // ISA Integrator
+#include "pylith/utils/array.hh" // USES std::vector, double_array
 
 namespace pylith {
   namespace feassemble {
@@ -143,6 +144,45 @@ public :
 		   const ALE::Obj<Mesh>& mesh);
   
 // PRIVATE METHODS //////////////////////////////////////////////////////
+private :
+
+  /** Integrate elasticity term in residual for 1-D cells.
+   *
+   * @param stress Stress tensor for cell at quadrature points.
+   */
+  void _elasticityResidual1D(const std::vector<double_array>& stress);
+
+  /** Integrate elasticity term in residual for 2-D cells.
+   *
+   * @param stress Stress tensor for cell at quadrature points.
+   */
+  void _elasticityResidual2D(const std::vector<double_array>& stress);
+
+  /** Integrate elasticity term in residual for 3-D cells.
+   *
+   * @param stress Stress tensor for cell at quadrature points.
+   */
+  void _elasticityResidual3D(const std::vector<double_array>& stress);
+
+  /** Integrate elasticity term in Jacobian for 1-D cells.
+   *
+   * @param elasticConsts Matrix of elasticity constants at quadrature points.
+   */
+  void _elasticityJacobian1D(const std::vector<double_array>& elasticConsts);
+
+  /** Integrate elasticity term in Jacobian for 2-D cells.
+   *
+   * @param elasticConsts Matrix of elasticity constants at quadrature points.
+   */
+  void _elasticityJacobian2D(const std::vector<double_array>& elasticConsts);
+
+  /** Integrate elasticity term in Jacobian for 3-D cells.
+   *
+   * @param elasticConsts Matrix of elasticity constants at quadrature points.
+   */
+  void _elasticityJacobian3D(const std::vector<double_array>& elasticConsts);
+
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
   /// Not implemented.
