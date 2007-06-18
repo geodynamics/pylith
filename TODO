@@ -20,13 +20,13 @@ Charles is debugging Maxwell viscoelastic model.
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-add preferred normal direction for fault normal (to increase changes
-we get the orientation that we want in 3-D cases).
+add ability to have comments in meshio and spatial data files (if easy
+to do, would use '#' as delimiter).
 
 1. Additional unit tests
 
-  Unit tests with multiple cohesive cells.
-    hex8
+  FaultCohesiveKin
+    multiple cohesive cells for hex8 mesh
 
     normal okay with rollover of fault dip?
 

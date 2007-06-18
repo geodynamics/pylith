@@ -55,6 +55,7 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyTet4b );
   CPPUNIT_TEST( testAdjustTopologyTet4c );
   CPPUNIT_TEST( testAdjustTopologyTet4d );
+  CPPUNIT_TEST( testAdjustTopologyTet4f );
   CPPUNIT_TEST( testAdjustTopologyHex8 );
   CPPUNIT_TEST( testAdjustTopologyHex8b );
   CPPUNIT_TEST( testAdjustTopologyHex8c );
@@ -118,6 +119,9 @@ public :
 
   /// Test adjustTopology() with 3-D tetrahedral element (face d).
   void testAdjustTopologyTet4d(void);
+
+  /// Test adjustTopology() with 3-D tetrahedral element (reverse cell order).
+  void testAdjustTopologyTet4f(void);
 
   /// Test adjustTopology() with 3-D hexahedral element.
   void testAdjustTopologyHex8(void);

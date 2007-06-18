@@ -22,62 +22,62 @@
  *
  * Cells are 0-1,10, vertices are 2-9.
  *
- * 2   3,4,5  7,9,11   6
- *             8,10,12
+ * 2   7,9,11   3,4,5  6
+ *      8,10,12
  *     ^^^^^^^^^^^^ Cohesive element in x-y plane.
  */
 
-#include "CohesiveKinDataTet4.hh"
+#include "CohesiveKinDataTet4f.hh"
 
-const char* pylith::faults::CohesiveKinDataTet4::_meshFilename =
-  "data/tet4.mesh";
+const char* pylith::faults::CohesiveKinDataTet4f::_meshFilename =
+  "data/tet4f.mesh";
 
-const int pylith::faults::CohesiveKinDataTet4::_spaceDim = 3;
+const int pylith::faults::CohesiveKinDataTet4f::_spaceDim = 3;
 
-const int pylith::faults::CohesiveKinDataTet4::_cellDim = 2;
+const int pylith::faults::CohesiveKinDataTet4f::_cellDim = 2;
 
-const int pylith::faults::CohesiveKinDataTet4::_numBasis = 3;
+const int pylith::faults::CohesiveKinDataTet4f::_numBasis = 3;
 
-const int pylith::faults::CohesiveKinDataTet4::_numQuadPts = 1;
+const int pylith::faults::CohesiveKinDataTet4f::_numQuadPts = 1;
 
-const double pylith::faults::CohesiveKinDataTet4::_quadPts[] = {
+const double pylith::faults::CohesiveKinDataTet4f::_quadPts[] = {
   3.33333333e-01,  3.33333333e-01,
 };
 
-const double pylith::faults::CohesiveKinDataTet4::_quadWts[] = {
+const double pylith::faults::CohesiveKinDataTet4f::_quadWts[] = {
   5.00000000e-01,
 };
 
-const double pylith::faults::CohesiveKinDataTet4::_basis[] = {
+const double pylith::faults::CohesiveKinDataTet4f::_basis[] = {
   3.33333333e-01,  3.33333333e-01,
   3.33333333e-01,};
 
-const double pylith::faults::CohesiveKinDataTet4::_basisDeriv[] = {
+const double pylith::faults::CohesiveKinDataTet4f::_basisDeriv[] = {
  -1.00000000e+00, -1.00000000e+00,
   1.00000000e+00,  0.00000000e+00,
   0.00000000e+00,  1.00000000e+00,
 };
 
-const double pylith::faults::CohesiveKinDataTet4::_verticesRef[] = {
+const double pylith::faults::CohesiveKinDataTet4f::_verticesRef[] = {
  -1.00000000e+00, -1.00000000e+00,
   1.00000000e+00, -1.00000000e+00,
  -1.00000000e+00,  1.00000000e+00,
 };
 
-const int pylith::faults::CohesiveKinDataTet4::_id = 10;
+const int pylith::faults::CohesiveKinDataTet4f::_id = 10;
 
-const char* pylith::faults::CohesiveKinDataTet4::_label = "fault";
+const char* pylith::faults::CohesiveKinDataTet4f::_label = "fault";
 
-const char* pylith::faults::CohesiveKinDataTet4::_finalSlipFilename = 
+const char* pylith::faults::CohesiveKinDataTet4f::_finalSlipFilename = 
   "data/tet4_finalslip.spatialdb";
 
-const char* pylith::faults::CohesiveKinDataTet4::_slipTimeFilename = 
+const char* pylith::faults::CohesiveKinDataTet4f::_slipTimeFilename = 
   "data/tet4_sliptime.spatialdb";
 
-const char* pylith::faults::CohesiveKinDataTet4::_peakRateFilename = 
+const char* pylith::faults::CohesiveKinDataTet4f::_peakRateFilename = 
   "data/tet4_peakrate.spatialdb";
 
-const double pylith::faults::CohesiveKinDataTet4::_fieldT[] = {
+const double pylith::faults::CohesiveKinDataTet4f::_fieldT[] = {
   7.1, 8.1, 9.1,
   7.2, 8.2, 9.2,
   7.3, 8.3, 9.3,
@@ -91,23 +91,23 @@ const double pylith::faults::CohesiveKinDataTet4::_fieldT[] = {
   7.1, 8.1, 9.1,
 };
 
-const int pylith::faults::CohesiveKinDataTet4::_numConstraintVert = 3;
+const int pylith::faults::CohesiveKinDataTet4f::_numConstraintVert = 3;
 
-const double pylith::faults::CohesiveKinDataTet4::_orientation[] = {
+const double pylith::faults::CohesiveKinDataTet4f::_orientation[] = {
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
   0.0, +1.0, 0.0,    0.0, 0.0, +1.0,    +1.0, 0.0, 0.0,
 };
 
-const int pylith::faults::CohesiveKinDataTet4::_constraintVertices[] = {
+const int pylith::faults::CohesiveKinDataTet4f::_constraintVertices[] = {
   8, 10, 12
 };
 
-const int pylith::faults::CohesiveKinDataTet4::_constraintCells[] = {
+const int pylith::faults::CohesiveKinDataTet4f::_constraintCells[] = {
   13, 13, 13
 };
 
-const double pylith::faults::CohesiveKinDataTet4::_valsResidual[] = {
+const double pylith::faults::CohesiveKinDataTet4f::_valsResidual[] = {
   0.0,  0.0,  0.0,
   0.0,  0.0,  0.0,
   0.0,  0.0,  0.0,
@@ -121,7 +121,7 @@ const double pylith::faults::CohesiveKinDataTet4::_valsResidual[] = {
   0.90493237602, -0.32577565537, 0.10859188512, // 12
 };
 
-const double pylith::faults::CohesiveKinDataTet4::_valsJacobian[] = {
+const double pylith::faults::CohesiveKinDataTet4f::_valsJacobian[] = {
   0.0, 0.0, 0.0, // 2x
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
@@ -487,7 +487,7 @@ const double pylith::faults::CohesiveKinDataTet4::_valsJacobian[] = {
   0.0, 0.0, 0.0,
 };
 
-pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
+pylith::faults::CohesiveKinDataTet4f::CohesiveKinDataTet4f(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
   spaceDim = _spaceDim;
@@ -513,7 +513,7 @@ pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
   numConstraintVert = _numConstraintVert;  
 } // constructor
 
-pylith::faults::CohesiveKinDataTet4::~CohesiveKinDataTet4(void)
+pylith::faults::CohesiveKinDataTet4f::~CohesiveKinDataTet4f(void)
 {}
 
 

@@ -58,11 +58,15 @@ public :
    * @param cs Coordinate system for mesh
    * @param upDir Direction perpendicular to along-strike direction that is 
    *   not collinear with fault normal (usually "up" direction but could 
-   *   be up-dip direction).
+   *   be up-dip direction; only applies to fault surfaces in a 3-D domain).
+   * @param normalDir General preferred direction for fault normal
+   *   (used to pick which of two possible normal directions for
+   *   interface; only applies to fault surfaces in a 3-D domain).
    */
   void initialize(const ALE::Obj<ALE::Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
-		  const double_array& upDir);
+		  const double_array& upDir,
+		  const double_array& normalDir);
 
   /** Integrate contribution of cohesive cells to residual term.
    *

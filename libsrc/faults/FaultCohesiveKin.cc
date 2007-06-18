@@ -58,13 +58,17 @@ pylith::faults::FaultCohesiveKin::eqsrc(EqKinSrc* src)
 void
 pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 					     const spatialdata::geocoords::CoordSys* cs,
-					     const double_array& upDir)
+					     const double_array& upDir,
+					     const double_array& normalDir)
 { // initialize
   assert(0 != _quadrature);
   assert(0 != _eqsrc);
   
   if (3 != upDir.size())
     throw std::runtime_error("Up direction for fault orientation must be "
+			     "a vector with 3 components.");
+  if (3 != normalDir.size())
+    throw std::runtime_error("Normal direction for fault orientation must be "
 			     "a vector with 3 components.");
 
   /* First find vertices associated with Lagrange multiplier
@@ -114,12 +118,12 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int orientationSize = spaceDim*spaceDim;
   _orientation = new real_section_type(mesh->comm(), mesh->debug());
   assert(!_orientation.isNull());
-  const std::set<Mesh::point_type>::const_iterator vertCohesiveBegin = 
+  const std::set<Mesh::point_type>::const_iterator vertConstraintBegin = 
     _constraintVert.begin();
-  const std::set<Mesh::point_type>::const_iterator vertCohesiveEnd = 
+  const std::set<Mesh::point_type>::const_iterator vertConstraintEnd = 
     _constraintVert.end();
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vertCohesiveBegin;
-       v_iter != vertCohesiveEnd;
+  for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
+       v_iter != vertConstraintEnd;
        ++v_iter)
     _orientation->setFiberDimension(*v_iter, orientationSize);
   mesh->allocate(_orientation);
@@ -204,8 +208,8 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
   // Loop over vertices, make orientation information unit magnitude
   double_array vertexDir(orientationSize);
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vertCohesiveBegin;
-       v_iter != vertCohesiveEnd;
+  for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
+       v_iter != vertConstraintEnd;
        ++v_iter) {
     const real_section_type::value_type* vertexOrient = 
       _orientation->restrictPoint(*v_iter);
@@ -225,6 +229,44 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     _orientation->updatePoint(*v_iter, &vertexDir[0]);
   } // for
 
+  if (2 == cohesiveDim) {
+    // Check orientation of first vertex, if dot product of fault
+    // normal with preferred normal is negative, flip all along-strike
+    // and fault-normal directions (keep up-dip direction the same).
+    // If the user gives the correct normal direction, we should end
+    // up with left-lateral-slip, reverse-slip, and fault-opening for
+    // positive slip values.
+
+    const real_section_type::value_type* vertexOrient = 
+      _orientation->restrictPoint(*vertConstraintBegin);
+    assert(9 == _orientation->getFiberDimension(*vertConstraintBegin));
+    double_array vertNormalDir(&vertexOrient[6], 3);
+    const double dot = 
+      normalDir[0]*vertNormalDir[0] +
+      normalDir[1]*vertNormalDir[1] +
+      normalDir[2]*vertNormalDir[2];
+    if (dot < 0.0)
+      for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
+	   v_iter != vertConstraintEnd;
+	   ++v_iter) {
+	const real_section_type::value_type* vertexOrient = 
+	  _orientation->restrictPoint(*v_iter);
+	assert(9 == _orientation->getFiberDimension(*v_iter));
+	// Flip along-strike direction
+	for (int iDim=0; iDim < 3; ++iDim)
+	  vertexDir[iDim] = -vertexOrient[iDim];
+	// Keep up-dip direction
+	for (int iDim=3; iDim < 6; ++iDim)
+	  vertexDir[iDim] = vertexOrient[iDim];
+	// Flip normal direction
+	for (int iDim=6; iDim < 9; ++iDim)
+	  vertexDir[iDim] = -vertexOrient[iDim];
+	
+	// Update direction
+	_orientation->updatePoint(*v_iter, &vertexDir[0]);
+      } // for
+  } // if
+
   _eqsrc->initialize(mesh, *_faultMesh, _constraintVert, cs);
 
   // Establish pairing between constraint vertices and first cell they
@@ -232,14 +274,14 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int noCell = -1;
   _constraintCell = new int_section_type(mesh->comm(), mesh->debug());
   assert(!_constraintCell.isNull());
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vertCohesiveBegin;
-       v_iter != vertCohesiveEnd;
+  for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
+       v_iter != vertConstraintEnd;
        ++v_iter)
     _constraintCell->setFiberDimension(*v_iter, 1);
   mesh->allocate(_constraintCell);
   // Set values to noCell
-  for (std::set<Mesh::point_type>::const_iterator v_iter=vertCohesiveBegin;
-       v_iter != vertCohesiveEnd;
+  for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
+       v_iter != vertConstraintEnd;
        ++v_iter)
     _constraintCell->updatePoint(*v_iter, &noCell);
 
