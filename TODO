@@ -2,8 +2,6 @@
 CURRENT ISSUES
 ======================================================================
 
-  0. Fix updating of section in ElasticMaterial.cc [Brad]
-
   1. VTK output
      make 3-component displacements default even for 1-D and 2-D meshes
      [MATT] 
@@ -15,6 +13,24 @@ Charles is debugging Maxwell viscoelastic model.
   
   3. Create list of missing features (EqSim/PyLith 0.8) and new
   features.
+
+    Missing features
+      EqSim
+        Absorbing boundaries
+        Dynamic fault interface conditions
+        Fault constitutive models
+        Output of surface/fault information
+      PyLith 0.8
+        Traction boundary conditions
+
+    New features
+      EqSim
+        Multiple cell types
+        1-D and 2-D simulations
+        Importing of meshes from CUBIT
+        Availability as open-source with documentation
+      PyLith 0.8
+        Dislocation-based fault implementation
 
 ======================================================================
 MAIN PRIORITIES (Brad)
@@ -42,16 +58,6 @@ to do, would use '#' as delimiter).
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials
     ii. partially constrained DOF
-
-Add diagnostic output?
-  cells
-    processor
-    material id
-  fault (kin)
-    orientation (3 vectors)
-    slip (vector)
-    peak rate (scalar)
-    slip time (scalar)
 
 ======================================================================
 SECONDARY PRIORITIES

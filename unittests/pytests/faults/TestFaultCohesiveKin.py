@@ -33,7 +33,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     fault = FaultCohesiveKin()
     from pylith.feassemble.Integrator import implementsIntegrator
-    self.assertTrue(implementsIntegrator(fault))
+    self.failUnless(implementsIntegrator(fault))
     return
     
 
