@@ -22,6 +22,15 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticIsotropic3D );
 
 // ----------------------------------------------------------------------
+// Test usesUpdateState()
+void
+pylith::materials::TestElasticIsotropic3D::testUsesUpdateState(void)
+{ // testUsesUpdateState
+  ElasticIsotropic3D material;
+  CPPUNIT_ASSERT_EQUAL(false, material.usesUpdateState());
+} // testUsesUpdateState
+
+// ----------------------------------------------------------------------
 // Test DBValues()
 void
 pylith::materials::TestElasticIsotropic3D::testDBValues(void)

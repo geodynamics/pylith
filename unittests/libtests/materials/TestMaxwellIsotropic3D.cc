@@ -23,6 +23,59 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestMaxwellIsotropic3D );
 
 // ----------------------------------------------------------------------
+// Test timeStep()
+void
+pylith::materials::TestMaxwellIsotropic3D::testTimeStep(void)
+{ // testTimeStep
+  MaxwellIsotropic3D material;
+
+  CPPUNIT_ASSERT_EQUAL(false, material._needNewJacobian);
+
+  const double dt1 = 1.0;
+  material.timeStep(dt1);
+  CPPUNIT_ASSERT_EQUAL(dt1, material.Material::timeStep());
+  CPPUNIT_ASSERT_EQUAL(false, material.needNewJacobian());
+
+  const double dt2 = 2.0;
+  material.timeStep(dt2);
+  CPPUNIT_ASSERT_EQUAL(dt2, material.Material::timeStep());
+  CPPUNIT_ASSERT_EQUAL(true, material.needNewJacobian());
+} // testTimeStep
+
+// ----------------------------------------------------------------------
+// Test useElasticBehavior()
+void
+pylith::materials::TestMaxwellIsotropic3D::testUseElasticBehavior(void)
+{ // testUseElasticBehavior
+  MaxwellIsotropic3D material;
+
+  material.useElasticBehavior(true);
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::MaxwellIsotropic3D::_calcStressElastic,
+		       material._calcStressFn);
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic,
+		       material._calcElasticConstsFn);
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::MaxwellIsotropic3D::_updateStateElastic,
+		       material._updateStateFn);
+
+  material.useElasticBehavior(false);
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic,
+		       material._calcStressFn);
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic,
+		       material._calcElasticConstsFn);
+  CPPUNIT_ASSERT_EQUAL(&pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic,
+		       material._updateStateFn);
+} // testUseElasticBehavior
+
+// ----------------------------------------------------------------------
+// Test usesUpdateState()
+void
+pylith::materials::TestMaxwellIsotropic3D::testUsesUpdateState(void)
+{ // testUsesUpdateState
+  MaxwellIsotropic3D material;
+  CPPUNIT_ASSERT_EQUAL(true, material.usesUpdateState());
+} // testUsesUpdateState
+
+// ----------------------------------------------------------------------
 // Test DBValues()
 void
 pylith::materials::TestMaxwellIsotropic3D::testDBValues(void)
@@ -149,26 +202,6 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdateStateTimeDep(void)
   material.timeStep(dt);
   material.updateState(totalStrain);
 } // testUpdateStateTimeDep
-
-// ----------------------------------------------------------------------
-// Test timeStep()
-void
-pylith::materials::TestMaxwellIsotropic3D::testTimeStep(void)
-{ // testTimeStep
-  MaxwellIsotropic3D material;
-
-  CPPUNIT_ASSERT_EQUAL(false, material._needNewJacobian);
-
-  const double dt1 = 1.0;
-  material.timeStep(dt1);
-  CPPUNIT_ASSERT_EQUAL(dt1, material.Material::timeStep());
-  CPPUNIT_ASSERT_EQUAL(false, material.needNewJacobian());
-
-  const double dt2 = 2.0;
-  material.timeStep(dt2);
-  CPPUNIT_ASSERT_EQUAL(dt2, material.Material::timeStep());
-  CPPUNIT_ASSERT_EQUAL(true, material.needNewJacobian());
-} // testTimeStep
 
 
 // End of file 

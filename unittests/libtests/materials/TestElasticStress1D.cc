@@ -22,6 +22,15 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::materials::TestElasticStress1D );
 
 // ----------------------------------------------------------------------
+// Test usesUpdateState()
+void
+pylith::materials::TestElasticStress1D::testUsesUpdateState(void)
+{ // testUsesUpdateState
+  ElasticStress1D material;
+  CPPUNIT_ASSERT_EQUAL(false, material.usesUpdateState());
+} // testUsesUpdateState
+
+// ----------------------------------------------------------------------
 // Test DBValues()
 void
 pylith::materials::TestElasticStress1D::testDBValues(void)

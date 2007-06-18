@@ -402,7 +402,7 @@ pylith::feassemble::ElasticityExplicit::updateState(
   assert(!disp.isNull());
 
   // No need to update state if using elastic behavior
-  if (_material->useElasticBehavior())
+  if (!_material->usesUpdateState())
     return;
 
   // Get cell information

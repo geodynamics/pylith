@@ -14,6 +14,10 @@
 #error "MaxwellIsotropic3D.icc can only be included from MaxwellIsotropic3D.hh"
 #endif
 
+#define CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
+
+#include <assert.h> // USES assert()
+
 // Set current time step.
 inline
 void
@@ -24,5 +28,65 @@ pylith::materials::MaxwellIsotropic3D::timeStep(const double dt) {
   _dt = dt;
 } // timeStep
 
+// Set whether elastic or inelastic constitutive relations are used.
+inline
+void
+pylith::materials::MaxwellIsotropic3D::useElasticBehavior(const bool flag) {
+  if (flag) {
+    _calcStressFn = 
+      &pylith::materials::MaxwellIsotropic3D::_calcStressElastic;
+    _calcElasticConstsFn = 
+      &pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic;
+    _updateStateFn = 
+      &pylith::materials::MaxwellIsotropic3D::_updateStateElastic;
+  } else {
+    _calcStressFn = 
+      &pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic;
+    _calcElasticConstsFn = 
+      &pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic;
+    _updateStateFn = 
+      &pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic;
+  } // if/else
+} // useElasticBehavior
+
+// Get flag indicating whether material implements an empty
+inline
+bool
+pylith::materials::MaxwellIsotropic3D::usesUpdateState(void) const {
+  return true;
+} // usesUpdateState
+
+// Compute stress tensor from parameters.
+inline
+void
+pylith::materials::MaxwellIsotropic3D::_calcStress(
+				   double_array* const stress,
+				   const std::vector<double_array>& parameters,
+				   const double_array& totalStrain) {
+  assert(0 != _calcStressFn);
+  CALL_MEMBER_FN(*this, _calcStressFn)(stress, parameters, totalStrain);
+} // _calcStress
+
+// Compute derivatives of elasticity matrix from parameters.
+inline
+void
+pylith::materials::MaxwellIsotropic3D::_calcElasticConsts(
+				  double_array* const elasticConsts,
+				  const std::vector<double_array>& parameters,
+				  const double_array& totalStrain) {
+  assert(0 != _calcElasticConstsFn);
+  CALL_MEMBER_FN(*this, _calcElasticConstsFn)
+    (elasticConsts, parameters, totalStrain);
+} // _calcElasticConsts
+
+// Update state variables after solve.
+inline
+void
+pylith::materials::MaxwellIsotropic3D::_updateState(
+				      std::vector<double_array>* parameters,
+				      const double_array& totalStrain) {
+  assert(0 != _updateStateFn);
+  CALL_MEMBER_FN(*this, _updateStateFn)(parameters, totalStrain);
+} // _updateState
 
 // End of file 

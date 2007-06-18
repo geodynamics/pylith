@@ -18,15 +18,14 @@
 inline
 void
 pylith::materials::ElasticMaterial::useElasticBehavior(const bool flag) {
-  _useElasticBehavior = flag;
 } // useElasticBehavior
 
-// Get flag indicating whether elastic or inelastic constitutive
+// Get flag indicating whether material implements an empty
 inline
 bool
-pylith::materials::ElasticMaterial::useElasticBehavior(void) const {
-  return _useElasticBehavior;
-} // useElasticBehavior
+pylith::materials::ElasticMaterial::usesUpdateState(void) const {
+  return false;
+} // usesUpdateState
 
 
 // End of file 

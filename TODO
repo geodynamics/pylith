@@ -20,15 +20,41 @@ Charles is debugging Maxwell viscoelastic model.
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+ElasticityImplicit
+  calcTotalStrain_fn_type
+  elasticityResidual_fn_type
+  elasticityJacobian_fn_type
+
+  _calcTotalStrainFn
+  _elasticityResidualFn
+  _elasticityJacobianFn
+
+  _elasticityResidual1D
+  _elasticityResidual2D
+  _elasticityResidual3D
+  _elasticityJacobian1D
+  _elasticityJacobian2D
+  _elasticityJacobian3D
+
+
 add ability to have comments in meshio and spatial data files (if easy
 to do, would use '#' as delimiter).
-
-1. Additional unit tests
 
   FaultCohesiveKin
     multiple cohesive cells for hex8 mesh
 
     normal okay with rollover of fault dip?
+
+Create meshes for benchmarks
+
+  strike-slip
+    tet (LaGriT)
+    hex (CUBIT)
+  reverse
+    tet (LaGriT)
+    hex (CUBIT)
+
+1. Additional unit tests
 
   b. ElasticityExplicit and ElasticityImplicit
     i. multiple materials
