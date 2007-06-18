@@ -30,7 +30,7 @@ class TestDirichlet(unittest.TestCase):
     """
     bc = Dirichlet()
     from pylith.feassemble.Constraint import implementsConstraint
-    self.assertTrue(implementsConstraint(bc))
+    self.failUnless(implementsConstraint(bc))
     return
     
 

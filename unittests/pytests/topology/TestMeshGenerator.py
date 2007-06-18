@@ -39,11 +39,11 @@ class TestMeshGenerator(unittest.TestCase):
     generator = MeshGenerator()
 
     value = False # default should be False
-    self.assertTrue(value == generator.debug)
+    self.failUnless(value == generator.debug)
 
     value = True
     generator.debug = value
-    self.assertTrue(value == generator.debug)
+    self.failUnless(value == generator.debug)
     return
 
 

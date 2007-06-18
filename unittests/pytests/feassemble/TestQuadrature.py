@@ -114,7 +114,7 @@ class TestQuadrature(unittest.TestCase):
     test_double(self, quadPtsE, quadPts)
 
     from pylith.feassemble.geometry.GeometryLine1D import GeometryLine1D
-    self.assertTrue(isinstance(quadrature.cell.geometry, GeometryLine1D))
+    self.failUnless(isinstance(quadrature.cell.geometry, GeometryLine1D))
     
     return
 

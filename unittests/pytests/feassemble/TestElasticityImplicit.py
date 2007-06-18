@@ -32,7 +32,7 @@ class TestElasticityImplicit(unittest.TestCase):
     """
     integrator = ElasticityImplicit()
     from pylith.feassemble.Integrator import implementsIntegrator
-    self.assertTrue(implementsIntegrator(integrator))
+    self.failUnless(implementsIntegrator(integrator))
     return
     
 
