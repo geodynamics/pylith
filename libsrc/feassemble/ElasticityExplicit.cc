@@ -402,6 +402,7 @@ pylith::feassemble::ElasticityExplicit::updateState(
   assert(!disp.isNull());
 
   // No need to update state if using elastic behavior
+  std::cout << "USES_UPDATE_STATE: " << _material->usesUpdateState() << std::endl;
   if (!_material->usesUpdateState())
     return;
 

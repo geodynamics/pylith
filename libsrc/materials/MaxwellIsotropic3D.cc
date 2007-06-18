@@ -23,7 +23,7 @@
 // ----------------------------------------------------------------------
 namespace pylith {
   namespace materials {
-    namespace _MaxwellIsotropic3D{;
+    namespace _MaxwellIsotropic3D{
 
       /// Number of entries in stress/strain tensors.
       const int tensorSize = 6;

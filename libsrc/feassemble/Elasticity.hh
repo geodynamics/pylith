@@ -33,6 +33,15 @@ class pylith::feassemble::Elasticity
 { // Elasticity
   friend class TestElasticity; // unit testing
 
+// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+public :
+
+  typedef void (*totalStrain_fn_type)(std::vector<double_array>*,
+				      const double_array&,
+				      const double_array&,
+				      const int);
+  
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
