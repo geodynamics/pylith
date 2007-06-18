@@ -166,8 +166,8 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     // Compute geometry information for current cell
     _quadrature->computeGeometry(mesh, coordinates, *c_iter);
 
-    // Set cell data in material
-    _material->initCellData(*c_iter, numQuadPts);
+    // Get state variables for cell.
+    _material->getStateVarsCell(*c_iter, numQuadPts);
 
     // Reset element vector to zero
     _resetCellVector();
@@ -341,8 +341,8 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
     // Compute geometry information for current cell
     _quadrature->computeGeometry(mesh, coordinates, *c_iter);
 
-    // Set cell data in material
-    _material->initCellData(*c_iter, numQuadPts);
+    // Get state variables for cell.
+    _material->getStateVarsCell(*c_iter, numQuadPts);
 
     // Reset element vector to zero
     _resetCellMatrix();
@@ -450,9 +450,6 @@ pylith::feassemble::ElasticityExplicit::updateState(
     // Compute geometry information for current cell
     _quadrature->computeGeometry(mesh, coordinates, *c_iter);
 
-    // Set cell data in material
-    _material->initCellData(*c_iter, numQuadPts);
-
     // Restrict input fields to cell
     mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
 
@@ -474,7 +471,7 @@ pylith::feassemble::ElasticityExplicit::updateState(
 		<< std::endl;
       assert(0);
     } // else
-    _material->updateState(totalStrain);
+    _material->updateState(totalStrain, *c_iter);
   } // for
 } // updateState
 

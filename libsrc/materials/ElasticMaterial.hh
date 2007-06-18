@@ -48,13 +48,13 @@ public :
   virtual
   ~ElasticMaterial(void);
 
-  /** Initialize arrays holding cell data.
+  /** Push cell's state variable information into material's sections.
    *
    * @param cell Finite element cell
    * @param numQuadPts Number of quadrature points
    */
-  void initCellData(const Mesh::point_type& cell,
-		    const int numQuadPts);
+  void getStateVarsCell(const Mesh::point_type& cell,
+			const int numQuadPts);
 
   /** Compute density for cell at quadrature points.
    *
@@ -113,8 +113,10 @@ public :
    *
    * @param totalStrain Total strain tensor at quadrature points
    *    [numQuadPts][tensorSize]
+   * @param cell Finite element cell
    */
-  void updateState(const std::vector<double_array>& totalStrain);
+  void updateState(const std::vector<double_array>& totalStrain,
+		   const Mesh::point_type& cell);
 
   /** Set whether elastic or inelastic constitutive relations are used.
    *

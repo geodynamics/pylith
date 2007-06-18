@@ -85,11 +85,11 @@ pylith::materials::ElasticMaterial::calcDerivElastic(
 } // calcDerivElastic
 
 // ----------------------------------------------------------------------
-// Initialize arrays holding cell data.
+// Get cell's state variable information from material's sections.
 void
-pylith::materials::ElasticMaterial::initCellData(const Mesh::point_type& cell,
+pylith::materials::ElasticMaterial::getStateVarsCell(const Mesh::point_type& cell,
 						 const int numQuadPts)
-{ // initCellData
+{ // getStateVarsCell
   if (_numQuadPts != numQuadPts) {
     _numQuadPts = numQuadPts;
 
@@ -111,19 +111,42 @@ pylith::materials::ElasticMaterial::initCellData(const Mesh::point_type& cell,
   } // if
 
   _getParameters(cell);
-} // initCellData
+} // getStateVarsCell
 
 // ----------------------------------------------------------------------
 // Update state variables (for next time step).
 void
 pylith::materials::ElasticMaterial::updateState(
-				const std::vector<double_array>& totalStrain)
+				const std::vector<double_array>& totalStrain,
+				const Mesh::point_type& cell)
 { // updateState
   const int numQuadPts = _numQuadPts;
-  assert(_paramsCell.size() == numQuadPts);
+  getStateVarsCell(cell, numQuadPts);
 
+  assert(_paramsCell.size() == numQuadPts);
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     _updateState(&_paramsCell[iQuad], totalStrain[iQuad]);
+
+  int_array numParamValues;
+  _numParamValues(&numParamValues);
+  const int numParams = numParamValues.size();
+  const char** paramNames = _parameterNames();
+  
+  for (int iParam=0; iParam < numParams; ++iParam) {
+    const ALE::Obj<real_section_type> parameter = 
+      _parameters->getReal(paramNames[iParam]);
+    assert(!parameter.isNull());
+
+    const int numValues = numParamValues[iParam];
+    double_array parameterCell(numQuadPts*numValues);
+    
+    assert(parameter->getFiberDimension(cell) == numQuadPts*numValues);
+    for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt)
+      for (int iValue=0; iValue < numValues; ++iValue)
+	parameterCell[iQuadPt*numValues+iValue] = 
+	  _paramsCell[iQuadPt][iParam][iValue];
+    parameter->updatePoint(cell, &parameterCell[0]);
+  } // for
 } // updateState
 
 // ----------------------------------------------------------------------

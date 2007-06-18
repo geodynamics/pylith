@@ -158,9 +158,9 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	    paramData[iParam][iValue];
       } // for
     } // for
-    // Assemble cell contribution into fields
+    // Insert cell contribution into fields
     for (int iParam=0; iParam < numParams; ++iParam)
-      mesh->updateAdd(paramSections[iParam], *cellIter, &cellData[iParam][0]);
+      mesh->update(paramSections[iParam], *cellIter, &cellData[iParam][0]);
   } // for
 
   // Close database
