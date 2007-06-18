@@ -120,14 +120,16 @@ public :
    *
    * @param flag True to use elastic, false to use inelastic.
    */
+  virtual
   void useElasticBehavior(const bool flag);
 
-  /** Get flag indicating whether elastic or inelastic constitutive
-   * relations are used.
+  /** Get flag indicating whether material implements an empty
+   * _updateState() method.
    *
-   * @returns True if using elastic and false if using inelastic.
+   * @returns False if _updateState() is empty, true otherwise.
    */
-  bool useElasticBehavior(void) const;
+  virtual
+  bool usesUpdateState(void) const;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
@@ -236,12 +238,6 @@ private :
    * index = [iQuadPt][iConstant]
    */
   std::vector<double_array> _elasticConsts;
-
-  /** Flag indicating whether elastic (true) or inelastic (false)
-   * constitutive model should be used. Always true for purely elastic
-   * materials.
-   */
-  bool _useElasticBehavior;
 
 }; // class ElasticMaterial
 

@@ -55,6 +55,19 @@ public :
    */
   void timeStep(const double dt);
 
+  /** Set whether elastic or inelastic constitutive relations are used.
+   *
+   * @param flag True to use elastic, false to use inelastic.
+   */
+  void useElasticBehavior(const bool flag);
+
+  /** Get flag indicating whether material implements an empty
+   * _updateState() method.
+   *
+   * @returns False if _updateState() is empty, true otherwise.
+   */
+  bool usesUpdateState(void) const;
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -148,8 +161,89 @@ protected :
    * @param parameters Parameters at locations.
    * @param totalStrain Total strain at locations.
    */
-  void _updateState(std::vector<double_array>& parameters,
+  void _updateState(std::vector<double_array>* parameters,
 		    const double_array& totalStrain);
+
+  // PRIVATE TYPEDEFS ///////////////////////////////////////////////////
+private :
+
+  /// Member prototype for _calcStress()
+  typedef void (pylith::materials::MaxwellIsotropic3D::*calcStress_fn_type)
+    (double_array* const,
+     const std::vector<double_array>&,
+     const double_array&);
+
+  /// Member prototype for _calcElasticConsts()
+  typedef void (pylith::materials::MaxwellIsotropic3D::*calcElasticConsts_fn_type)
+    (double_array* const,
+     const std::vector<double_array>&,
+     const double_array&);
+
+  /// Member prototype for _updateState()
+  typedef void (pylith::materials::MaxwellIsotropic3D::*updateState_fn_type)
+    (std::vector<double_array>* const,
+     const double_array&);
+
+  // PRIVATE METHODS ////////////////////////////////////////////////////
+private :
+
+  /** Compute stress tensor from parameters as an elastic material.
+   *
+   * @param stress Array for stress tensor
+   * @param parameters Parameters at locations.
+   * @param totalStrain Total strain at locations.
+   */
+  void _calcStressElastic(double_array* const stress,
+			  const std::vector<double_array>& parameters,
+			  const double_array& totalStrain);
+
+  /** Compute stress tensor from parameters as an viscoelastic material.
+   *
+   * @param stress Array for stress tensor
+   * @param parameters Parameters at locations.
+   * @param totalStrain Total strain at locations.
+   */
+  void _calcStressViscoelastic(double_array* const stress,
+			       const std::vector<double_array>& parameters,
+			       const double_array& totalStrain);
+
+  /** Compute derivatives of elasticity matrix from parameters as an
+   * elastic material.
+   *
+   * @param elasticConsts Array for elastic constants
+   * @param parameters Parameters at locations.
+   * @param totalStrain Total strain at locations.
+   */
+  void _calcElasticConstsElastic(double_array* const elasticConsts,
+				 const std::vector<double_array>& parameters,
+				 const double_array& totalStrain);
+
+  /** Compute derivatives of elasticity matrix from parameters as a
+   * viscoelastic material.
+   *
+   * @param elasticConsts Array for elastic constants
+   * @param parameters Parameters at locations.
+   * @param totalStrain Total strain at locations.
+   */
+  void _calcElasticConstsViscoelastic(double_array* const elasticConsts,
+				      const std::vector<double_array>& parameters,
+				      const double_array& totalStrain);
+
+  /** Update state variables after solve as an elastic material.
+   *
+   * @param parameters Parameters at locations.
+   * @param totalStrain Total strain at locations.
+   */
+  void _updateStateElastic(std::vector<double_array>* parameters,
+			   const double_array& totalStrain);
+
+  /** Update state variables after solve as a viscoelastic material.
+   *
+   * @param parameters Parameters at locations.
+   * @param totalStrain Total strain at locations.
+   */
+  void _updateStateViscoelastic(std::vector<double_array>* parameters,
+				const double_array& totalStrain);
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
@@ -160,6 +254,17 @@ private :
   /// Not implemented
   const MaxwellIsotropic3D& operator=(const MaxwellIsotropic3D& m);
 
+  // PRIVATE MEMBERS ////////////////////////////////////////////////////
+private :
+
+  /// Method to use for _calcElasticConsts().
+  calcElasticConsts_fn_type _calcElasticConstsFn;
+
+  /// Method to use for _calcStress().
+  calcStress_fn_type _calcStressFn;
+
+  /// Method to use for _updateState().
+  updateState_fn_type _updateStateFn;
 
 }; // class MaxwellIsotropic3D
 

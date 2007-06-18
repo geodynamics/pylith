@@ -24,8 +24,7 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::ElasticMaterial::ElasticMaterial(void) :
-  _numQuadPts(0),
-  _useElasticBehavior(true)
+  _numQuadPts(0)
 { // constructor
 } // constructor
 

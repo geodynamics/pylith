@@ -583,7 +583,7 @@ pylith::feassemble::ElasticityImplicit::updateState(
   assert(!disp.isNull());
 
   // No need to update state if using elastic behavior
-  if (_material->useElasticBehavior())
+  if (!_material->usesUpdateState())
     return;
 
   // Get cell information
@@ -656,6 +656,7 @@ pylith::feassemble::ElasticityImplicit::updateState(
     } // else
     _material->updateState(totalStrain);
   } // for
+  _material->useElasticBehavior(false);
 } // updateState
 
 

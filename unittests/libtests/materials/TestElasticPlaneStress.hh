@@ -38,6 +38,8 @@ class pylith::materials::TestElasticPlaneStress : public TestElasticMaterial
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestElasticPlaneStress );
+
+  CPPUNIT_TEST( testUsesUpdateState );
   CPPUNIT_TEST( testDBToParameters );
   CPPUNIT_TEST( testDBValues );
   CPPUNIT_TEST( testParameters );
@@ -45,10 +47,14 @@ class pylith::materials::TestElasticPlaneStress : public TestElasticMaterial
   CPPUNIT_TEST( testCalcStress );
   CPPUNIT_TEST( testCalcElasticConsts );
   CPPUNIT_TEST( testUpdateState );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
+
+  /// Test usesUpdateState()
+  void testUsesUpdateState();
 
   /// Test DBValues()
   void testDBValues(void);
