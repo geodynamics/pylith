@@ -105,7 +105,7 @@ class Dirichlet(BoundaryCondition, Constraint):
 
   def _createCppHandle(self):
     """
-    Create handle to C++ object.
+    Create handle to corresponding C++ object.
     """
     if None == self.cppHandle:
       import pylith.bc.bc as bindings
