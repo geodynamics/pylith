@@ -24,7 +24,7 @@
 #include <stdexcept> // USES std::runtime_error
 
 template<typename Bundle, typename Section>
-PetscErrorCode SectionView_Sieve_Ascii(const Obj<Bundle>& bundle, const Obj<Section>& s, const char name[], PetscViewer viewer);
+PetscErrorCode SectionView_Sieve_Ascii(const Obj<Bundle>& bundle, const Obj<Section>& s, const char name[], PetscViewer viewer, int enforceDim);
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -136,7 +136,9 @@ pylith::meshio::SolutionIOVTK::writeField(
     buffer.str("");
     buffer << name << "_t" << t;
 
-    err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), _viewer);
+    // Now we are enforcing a 3D solution
+    //   Perhaps we need to push this argument higher
+    err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), _viewer, 3);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << name << "' at time " 

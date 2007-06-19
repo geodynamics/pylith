@@ -51,13 +51,13 @@ class TestMeshGenSimple(unittest.TestCase):
     io.writeTopology()
     io.close()
 
-    #from pylith.topology.Distributor import Distributor
-    #distributor = Distributor()
-    #newMesh = distributor.distribute(mesh)
-    #io.filename = 'newMesh.vtk'
-    #io.open(newMesh)
-    #io.writeTopology(newMesh)
-    #io.close()
+    from pylith.topology.Distributor import Distributor
+    distributor = Distributor()
+    newMesh = distributor.distribute(mesh)
+    io.filename = 'newMesh.vtk'
+    io.open(newMesh)
+    io.writeTopology(newMesh)
+    io.close()
     return
 
 
