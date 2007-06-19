@@ -7,15 +7,11 @@ Outline of user manual:
 5.  Preface (should be able to mostly copy from PyLith 0.8) [Charles]
 DONE
 
-6.  Intro [MOSTLY DONE]
-
-  Needs more work on PyLith design section.
+6.  Intro [DONE (for now)]
 
   Figures
 
-    Workflow [Brad]
-
-    PyLith Diagram [Brad]
+    PyLith Diagram [future: Brad]
 
       Pyre
 
