@@ -267,6 +267,13 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
   const double meanStressTpdt = bulkmodulus * traceStrainTpdt;
+  // See what's going on in state variables.
+  std::cout << " pidStrainT, pidVisStrain : " << std::endl;
+  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
+    std::cout << "  " << parameters[_MaxwellIsotropic3D::pidStrainT][iComp]
+	    << "   " << parameters[_MaxwellIsotropic3D::pidVisStrain][iComp]
+	    << std::endl;
+
   const double meanStrainT = (parameters[_MaxwellIsotropic3D::pidStrainT][0] +
 			      parameters[_MaxwellIsotropic3D::pidStrainT][1] +
 			      parameters[_MaxwellIsotropic3D::pidStrainT][2])/3.0;
@@ -307,6 +314,13 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
     // Later I will want to put in initial stresses.
     (*stress)[iComp] =diag[iComp]*meanStressTpdt+devStressTpdt;
   } // for
+  std::cout << " totalStrain: " << std::endl;
+  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
+    std::cout << "  " << totalStrain[iComp];
+  std::cout << std::endl << " stress: " << std::endl;
+  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
+    std::cout << "  " << (*stress)[iComp];
+  std::cout << std::endl;
 } // _calcStress
 
 // ----------------------------------------------------------------------
@@ -433,13 +447,7 @@ pylith::materials::MaxwellIsotropic3D::_updateStateElastic(
   assert(6 == (*parameters)[_MaxwellIsotropic3D::pidStrainT].size());
   assert(6 == (*parameters)[_MaxwellIsotropic3D::pidVisStrain].size());
 
-  const double density = (*parameters)[_MaxwellIsotropic3D::pidDensity][0];
-  const double mu = (*parameters)[_MaxwellIsotropic3D::pidMu][0];
-  const double lambda = (*parameters)[_MaxwellIsotropic3D::pidLambda][0];
   const double maxwelltime = (*parameters)[_MaxwellIsotropic3D::pidMaxwellTime][0];
-
-  const double lambda2mu = lambda + 2.0 * mu;
-  const double bulkmodulus = lambda + 2.0 * mu/3.0;
 
   const double e11 = totalStrain[0];
   const double e22 = totalStrain[1];
@@ -447,7 +455,6 @@ pylith::materials::MaxwellIsotropic3D::_updateStateElastic(
 
   const double traceStrainTpdt = e11 + e22 + e33;
   const double meanStrainTpdt = traceStrainTpdt/3.0;
-  const double s123 = lambda * traceStrainTpdt;
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
@@ -456,6 +463,12 @@ pylith::materials::MaxwellIsotropic3D::_updateStateElastic(
     (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp] =
       totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
   } // for
+  std::cout << " pidStrainT, pidVisStrain : " << std::endl;
+  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
+    std::cout << "  " << (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp]
+	    << "   " << (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp]
+	    << std::endl;
+  _needNewJacobian = true;
 } // _calcStressElastic
 
 // ----------------------------------------------------------------------
@@ -475,21 +488,13 @@ pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
   assert(6 == (*parameters)[_MaxwellIsotropic3D::pidStrainT].size());
   assert(6 == (*parameters)[_MaxwellIsotropic3D::pidVisStrain].size());
 
-  const double density = (*parameters)[_MaxwellIsotropic3D::pidDensity][0];
-  const double mu = (*parameters)[_MaxwellIsotropic3D::pidMu][0];
-  const double lambda = (*parameters)[_MaxwellIsotropic3D::pidLambda][0];
   const double maxwelltime = (*parameters)[_MaxwellIsotropic3D::pidMaxwellTime][0];
-
-  const double lambda2mu = lambda + 2.0 * mu;
-  const double bulkmodulus = lambda + 2.0 * mu/3.0;
 
   const double e11 = totalStrain[0];
   const double e22 = totalStrain[1];
   const double e33 = totalStrain[2];
 
-  const double traceStrainTpdt = e11 + e22 + e33;
-  const double meanStrainTpdt = traceStrainTpdt/3.0;
-  const double s123 = lambda * traceStrainTpdt;
+  const double meanStrainTpdt = (e11 + e22 + e33)/3.0;
 
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
