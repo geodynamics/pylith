@@ -115,6 +115,8 @@ class Fault(Component):
     """
     Adjust mesh topology for fault implementation.
     """
+    self._createCppHandle()
+    
     assert(None != self.cppHandle)
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label

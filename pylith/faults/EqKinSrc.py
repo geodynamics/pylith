@@ -72,8 +72,8 @@ class EqKinSrc(Component):
     Initialize.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.slipfn = self.slipfn.cppHandle
     self.slipfn.initialize()
+    self.cppHandle.slipfn = self.slipfn.cppHandle
     return
 
 
