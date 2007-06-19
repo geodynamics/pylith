@@ -122,7 +122,8 @@ pylith::meshio::MeshIOCubit::_readVertices(NcFile& ncfile,
   if (0 == num_nodes)
     throw std::runtime_error("Could not get dimension 'num_nodes'.");
   *numVertices = num_nodes->size();
-  info << "Reading " << *numVertices << " vertices." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading " << *numVertices << " vertices." << journal::endl;
 
   NcVar* coord = ncfile.get_var("coord");
   if (0 == coord)
@@ -177,7 +178,8 @@ pylith::meshio::MeshIOCubit::_readCells(NcFile& ncfile,
     throw std::runtime_error("Could not get dimension 'num_el_blk'.");
   const int numMaterials = num_el_blk->size();
 
-  info << "Reading " << numCells << " cells in " << numMaterials 
+  info << journal::at(__HERE__)
+       << "Reading " << *numCells << " cells in " << numMaterials 
        << " blocks." << journal::endl;
 
   NcVar* eb_prop1 = ncfile.get_var("eb_prop1");
@@ -246,7 +248,8 @@ pylith::meshio::MeshIOCubit::_readGroups(NcFile& ncfile)
   if (0 == num_node_sets)
     throw std::runtime_error("Could not get dimension 'num_node_sets'.");
   const int numGroups = num_node_sets->size();
-  info << "Found " << numGroups << " node sets." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Found " << numGroups << " node sets." << journal::endl;
       
   NcVar* ns_prop1 = ncfile.get_var("ns_prop1");
   if (0 == ns_prop1) 
@@ -265,7 +268,8 @@ pylith::meshio::MeshIOCubit::_readGroups(NcFile& ncfile)
     if (0 == node_ns)
       throw std::runtime_error("Could not get node set.");
     const int size = node_ns->num_vals();
-    info << "Reading node set " << ids[iGroup] << " with "
+    info << journal::at(__HERE__)
+	 << "Reading node set " << ids[iGroup] << " with "
 	 << size << " nodes." << journal::endl;
 
     points.resize(size);

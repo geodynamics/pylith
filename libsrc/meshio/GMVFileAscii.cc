@@ -72,7 +72,8 @@ pylith::meshio::GMVFileAscii::read(double_array* coordinates,
     throw std::runtime_error(msg.str());
   } // if
     
-  info << "Reading ASCII GMV file '" << _filename << "'." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading ASCII GMV file '" << _filename << "'." << journal::endl;
 
   _readHeader(fin);
 
@@ -152,7 +153,8 @@ pylith::meshio::GMVFileAscii::_readVertices(std::ifstream& fin,
   journal::info_t info("gmvfile");
 
   fin >> *numVertices;
-  info << "Reading " << *numVertices << " nodes." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading " << *numVertices << " nodes." << journal::endl;
 
   coordinates->resize(*numVertices * (*spaceDim));
   // NOTE: Order of loops is different than what we usually have
@@ -160,7 +162,8 @@ pylith::meshio::GMVFileAscii::_readVertices(std::ifstream& fin,
     for (int iVertex=0; iVertex < *numVertices; ++iVertex)
       fin >> (*coordinates)[iVertex*(*spaceDim)+iDim];
 
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // readVertices
 
 #include <iostream>
@@ -181,7 +184,8 @@ pylith::meshio::GMVFileAscii::_readCells(std::ifstream& fin,
 
   fin >> *numCells;
   std::string cellString = "";
-  info << "Reading " << numCells << " cells." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading " << numCells << " cells." << journal::endl;
   for (int iCell=0; iCell < *numCells; ++iCell) {
     std::string cellStringCur;
     int numCornersCur = 0;
@@ -209,7 +213,8 @@ pylith::meshio::GMVFileAscii::_readCells(std::ifstream& fin,
 
   *cells -= 1; // use zero base
 
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // readCells
 
 // ----------------------------------------------------------------------
@@ -220,7 +225,8 @@ pylith::meshio::GMVFileAscii::_readVariables(std::ifstream& fin,
 { // _readVariables
   journal::info_t info("gmvfile");
 
-  info << "Reading variables..." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading variables..." << journal::endl;
 
   std::string varName;
   fin >> varName;
@@ -241,7 +247,8 @@ pylith::meshio::GMVFileAscii::_readVariables(std::ifstream& fin,
     fin >> varName;
   } // while
 
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // _readVariables
 
 // ----------------------------------------------------------------------
@@ -252,7 +259,8 @@ pylith::meshio::GMVFileAscii::_readFlags(std::ifstream& fin,
 { // _readFlags
   journal::info_t info("gmvfile");
 
-  info << "Reading flags..." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading flags..." << journal::endl;
 
   std::string varName;
   fin >> varName;
@@ -276,7 +284,8 @@ pylith::meshio::GMVFileAscii::_readFlags(std::ifstream& fin,
     fin >> varName;
   } // while
 
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // _readFlags
 
 // ----------------------------------------------------------------------
@@ -289,7 +298,8 @@ pylith::meshio::GMVFileAscii::_readMaterials(std::ifstream& fin,
   assert(0 != materialIds);
 
   journal::info_t info("gmvfile");
-  info << "Reading materials..." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading materials..." << journal::endl;
 
   int numMaterials = 0;
   int dataType = 0;
@@ -309,7 +319,8 @@ pylith::meshio::GMVFileAscii::_readMaterials(std::ifstream& fin,
       fin >> materials[iVertex];
   } // else
 
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // _readMaterials
 
 

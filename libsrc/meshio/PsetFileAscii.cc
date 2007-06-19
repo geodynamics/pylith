@@ -56,7 +56,8 @@ pylith::meshio::PsetFileAscii::read(std::vector<Pset>* groups)
     throw std::runtime_error(msg.str());
   } // if
     
-  info << "Reading ASCII Pset file '" << _filename << "'." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading ASCII Pset file '" << _filename << "'." << journal::endl;
 
   _readHeader(fin);
 
@@ -66,7 +67,8 @@ pylith::meshio::PsetFileAscii::read(std::vector<Pset>* groups)
   groups->resize(numGroups);
 
   // Read groups
-  info << "Reading " << numGroups << " point sets from file." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading " << numGroups << " point sets from file." << journal::endl;
   for (int iGroup=0; iGroup < numGroups; ++iGroup)
     _readPset(fin, &(*groups)[iGroup]);
 } // read
@@ -87,7 +89,8 @@ pylith::meshio::PsetFileAscii::write(const std::vector<Pset>& groups)
     throw std::runtime_error(msg.str());
   } // if
     
-  info << "Writing ASCII Pset file '" << _filename << "'." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Writing ASCII Pset file '" << _filename << "'." << journal::endl;
 
   _writeHeader(fout);
 
@@ -96,7 +99,8 @@ pylith::meshio::PsetFileAscii::write(const std::vector<Pset>& groups)
   fout << std::setw(4) << numGroups << std::endl;
 
   // Write groups
-  info << "Writing " << numGroups << " point sets to file." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Writing " << numGroups << " point sets to file." << journal::endl;
   for (int iGroup=0; iGroup < numGroups; ++iGroup)
     _writePset(fout, groups[iGroup]);
 } // write
@@ -136,7 +140,8 @@ pylith::meshio::PsetFileAscii::_readPset(std::ifstream& fin,
 
   int size = 0;
   fin >> group->name >> group->id >> size;
-  info << "Reading point set '" << group->name << "' with " << size
+  info << journal::at(__HERE__)
+       << "Reading point set '" << group->name << "' with " << size
        << " points." << journal::endl;
 
   group->points.resize(size);
@@ -145,7 +150,8 @@ pylith::meshio::PsetFileAscii::_readPset(std::ifstream& fin,
 
   group->points -= 1; // use zero base
 
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // _readPset
 
 // ----------------------------------------------------------------------
@@ -156,7 +162,8 @@ pylith::meshio::PsetFileAscii::_writePset(std::ofstream& fout,
   journal::info_t info("psetfile");
   const int size = group.points.size();
 
-  info << "Writing point set '" << group.name << "' with " << size
+  info << journal::at(__HERE__)
+       << "Writing point set '" << group.name << "' with " << size
        << " points." << journal::endl;
 
   fout << group.name << " " << group.id << "  " << size << std::endl;
@@ -170,7 +177,8 @@ pylith::meshio::PsetFileAscii::_writePset(std::ofstream& fout,
     } // if
   } // for
 
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // _writePset
 
 
