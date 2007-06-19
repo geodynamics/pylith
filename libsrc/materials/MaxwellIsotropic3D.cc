@@ -268,11 +268,11 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
   const double meanStressTpdt = bulkmodulus * traceStrainTpdt;
   // See what's going on in state variables.
-  std::cout << " pidStrainT, pidVisStrain : " << std::endl;
-  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-    std::cout << "  " << parameters[_MaxwellIsotropic3D::pidStrainT][iComp]
-	    << "   " << parameters[_MaxwellIsotropic3D::pidVisStrain][iComp]
-	    << std::endl;
+  // std::cout << " pidStrainT, pidVisStrain : " << std::endl;
+  // for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
+    // std::cout << "  " << parameters[_MaxwellIsotropic3D::pidStrainT][iComp]
+	    // << "   " << parameters[_MaxwellIsotropic3D::pidVisStrain][iComp]
+	    // << std::endl;
 
   const double meanStrainT = (parameters[_MaxwellIsotropic3D::pidStrainT][0] +
 			      parameters[_MaxwellIsotropic3D::pidStrainT][1] +
@@ -314,13 +314,13 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
     // Later I will want to put in initial stresses.
     (*stress)[iComp] =diag[iComp]*meanStressTpdt+devStressTpdt;
   } // for
-  std::cout << " totalStrain: " << std::endl;
-  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-    std::cout << "  " << totalStrain[iComp];
-  std::cout << std::endl << " stress: " << std::endl;
-  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-    std::cout << "  " << (*stress)[iComp];
-  std::cout << std::endl;
+  // std::cout << " totalStrain: " << std::endl;
+  // for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
+    // std::cout << "  " << totalStrain[iComp];
+  // std::cout << std::endl << " stress: " << std::endl;
+  // for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
+    // std::cout << "  " << (*stress)[iComp];
+  // std::cout << std::endl;
 } // _calcStress
 
 // ----------------------------------------------------------------------
@@ -463,11 +463,11 @@ pylith::materials::MaxwellIsotropic3D::_updateStateElastic(
     (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp] =
       totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
   } // for
-  std::cout << " pidStrainT, pidVisStrain : " << std::endl;
-  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-    std::cout << "  " << (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp]
-	    << "   " << (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp]
-	    << std::endl;
+  // std::cout << " updateStateElastic: pidStrainT, pidVisStrain : " << std::endl;
+  // for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
+    // std::cout << "  " << (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp]
+	    // << "   " << (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp]
+	    // << std::endl;
   _needNewJacobian = true;
 } // _calcStressElastic
 
@@ -499,9 +499,9 @@ pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
   const double meanStrainT = 
-    (*parameters)[_MaxwellIsotropic3D::pidStrainT][0] +
-    (*parameters)[_MaxwellIsotropic3D::pidStrainT][1] +
-    (*parameters)[_MaxwellIsotropic3D::pidStrainT][2];
+    ((*parameters)[_MaxwellIsotropic3D::pidStrainT][0] +
+     (*parameters)[_MaxwellIsotropic3D::pidStrainT][1] +
+     (*parameters)[_MaxwellIsotropic3D::pidStrainT][2])/3.0;
   
   // The code below should probably be in a separate function since it
   // is used more than once.  I should also probably cover the possibility
@@ -537,6 +537,12 @@ pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
     (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp] = visStrain;
     (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp] = totalStrain[iComp];
   } // for
+
+  // std::cout << " updateStateViscoelastic: pidStrainT, pidVisStrain : " << std::endl;
+  // for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
+    // std::cout << "  " << (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp]
+	    // << "   " << (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp]
+	    // << std::endl;
 } // _calcStressViscoelastic
 
 
