@@ -76,7 +76,8 @@ pylith::meshio::GMVFileBinary::read(double_array* coordinates,
     throw std::runtime_error(msg.str());
   } // if
     
-  info << "Reading binary GMV file '" << _filename << "'." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading binary GMV file '" << _filename << "'." << journal::endl;
 
   _readHeader(fin);
 
@@ -160,7 +161,8 @@ pylith::meshio::GMVFileBinary::_readVertices(std::ifstream& fin,
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) numVertices, 1, sizeof(int));
   assert(*numVertices > 0);
-  info << "Reading " << *numVertices << " nodes." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading " << *numVertices << " nodes." << journal::endl;
 
   const int size = (*numVertices) * (*spaceDim);
   float_array buffer(size);
@@ -175,7 +177,8 @@ pylith::meshio::GMVFileBinary::_readVertices(std::ifstream& fin,
     for (int iVertex=0; iVertex < *numVertices; ++iVertex)
       (*coordinates)[iVertex*(*spaceDim)+iDim] = buffer[i++];
   
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // _readVertices
 
 // ----------------------------------------------------------------------
@@ -194,7 +197,8 @@ pylith::meshio::GMVFileBinary::_readCells(std::ifstream& fin,
   fin.read((char*) numCells, sizeof(int));
   if (_flipEndian)
     BinaryIO::swapByteOrder((char*) numCells, 1, sizeof(int));
-  info << "Reading " << *numCells << " cells." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading " << *numCells << " cells." << journal::endl;
   std::string cellString = "";
   for (int iCell=0; iCell < *numCells; ++iCell) {
     const int stringLen = 8;
@@ -229,7 +233,8 @@ pylith::meshio::GMVFileBinary::_readCells(std::ifstream& fin,
 
   *cells -= 1; // use zero base
   
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // _readCells
 
 // ----------------------------------------------------------------------
@@ -239,7 +244,8 @@ pylith::meshio::GMVFileBinary::_readVariables(std::ifstream& fin,
 					      const int numCells)
 { // _readVariables
   journal::info_t info("gmvfile");
-  info << "Reading variables..." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading variables..." << journal::endl;
   
   const int varNameLen = 8;
   std::string varName = BinaryIO::readString(fin, varNameLen);
@@ -258,7 +264,8 @@ pylith::meshio::GMVFileBinary::_readVariables(std::ifstream& fin,
     varName = BinaryIO::readString(fin, varNameLen);
   } // while
 
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // _readVariables
 
 // ----------------------------------------------------------------------
@@ -268,7 +275,8 @@ pylith::meshio::GMVFileBinary::_readFlags(std::ifstream& fin,
 					  const int numCells)
 { // _readFlags
   journal::info_t info("gmvfile");
-  info << "Reading flags..." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading flags..." << journal::endl;
 
   const int varNameLen = 8;
   std::string varName = BinaryIO::readString(fin, varNameLen);
@@ -295,7 +303,8 @@ pylith::meshio::GMVFileBinary::_readFlags(std::ifstream& fin,
     varName = BinaryIO::readString(fin, varNameLen);
   } // while
   
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // _readFlags
 
 // ----------------------------------------------------------------------
@@ -308,7 +317,8 @@ pylith::meshio::GMVFileBinary::_readMaterials(std::ifstream& fin,
   assert(0 != materialIds);
 
   journal::info_t info("gmvfile");
-  info << "Reading materials..." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Reading materials..." << journal::endl;
 
   int numMaterials = 0;
   fin.read((char*) &numMaterials, sizeof(int));
@@ -335,7 +345,8 @@ pylith::meshio::GMVFileBinary::_readMaterials(std::ifstream& fin,
     fin.read((char*) &buffer[0], sizeof(int)*numVertices);
   } // else
 
-  info << "Done." << journal::endl;
+  info << journal::at(__HERE__)
+       << "Done." << journal::endl;
 } // _readMaterials
 
 
