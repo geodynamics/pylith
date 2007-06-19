@@ -91,6 +91,7 @@ class Material(Component):
     Initialize material property manager.
     """
     self._info.log("Initializing material '%s'." % self.label)
+    self._createCppHandle()
 
     if self.dimension != self.quadrature.cell.cellDim:
       raise ValueError, \
@@ -104,7 +105,6 @@ class Material(Component):
             (mesh.dimension(), self.dimension)
 
     self.db.initialize()
-    assert(None != self.cppHandle)
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
     self.cppHandle.db = self.db.cppHandle
@@ -126,5 +126,13 @@ class Material(Component):
     self.quadrature = self.inventory.quadrature
     return
 
+  
+  def _createCppHandle(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    raise NotImplementedError("Please implement _createCppHandle() in " \
+                              "derived class.")
+  
   
 # End of file 

@@ -29,6 +29,7 @@ class TestEqKinSrc(unittest.TestCase):
     Test constructor.
     """
     eqsrc = EqKinSrc()
+    eqsrc._createCppHandle()
     self.failIfEqual(None, eqsrc.cppHandle)
     return
 

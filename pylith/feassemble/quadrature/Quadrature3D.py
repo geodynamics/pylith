@@ -33,12 +33,22 @@ class Quadrature3D(Quadrature):
     Constructor.
     """
     Quadrature.__init__(self, name)
-    import pylith.feassemble.feassemble as bindings
-    self.cppHandle = bindings.Quadrature3D()
     self.spaceDim = 3
     self.cellDim = 3
     return
 
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _createCppHandle(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    if None == self.cppHandle:
+      import pylith.feassemble.feassemble as bindings
+      self.cppHandle = bindings.Quadrature3D()
+    return
+  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

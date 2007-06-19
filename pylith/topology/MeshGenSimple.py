@@ -34,8 +34,7 @@ class MeshGenSimple(MeshGenerator):
     Constructor.
     """
     MeshGenerator.__init__(self, name)
-    import pylith.topology.topology as bindings
-    self.cppHandle = bindings.MeshGenSimple()
+    self.cppHandle = None
     return
 
 
@@ -44,6 +43,7 @@ class MeshGenSimple(MeshGenerator):
     Generate a Mesh from a boundary
     """
     mesh = Mesh()
+    self._createCppHandle()
     mesh.cppHandle = self.cppHandle.generate(self.boundary.cppHandle)
     return mesh
 
@@ -61,6 +61,7 @@ class MeshGenSimple(MeshGenerator):
     Returns a Mesh that is the boundary of the unit cube
     """
     mesh = Mesh()
+    self._createCppHandle()
     mesh.cppHandle = self.cppHandle.createCubeBoundary(self.debug)
     return mesh
 
@@ -74,5 +75,15 @@ class MeshGenSimple(MeshGenerator):
     MeshGenerator._configure(self)
     return
 
+
+  def _createCppHandle(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    if None == self.cppHandle:
+      import pylith.topology.topology as bindings
+      self.cppHandle = bindings.MeshGenSimple()
+    return
+  
 
 # End of file 

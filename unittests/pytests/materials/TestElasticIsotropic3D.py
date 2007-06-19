@@ -30,7 +30,7 @@ class TestElasticIsotropic3D(unittest.TestCase):
     """
     from pylith.materials.ElasticIsotropic3D import ElasticIsotropic3D
     material = ElasticIsotropic3D()
-
+    material._createCppHandle()
     self.assertNotEqual(None, material.cppHandle)
     return
 
@@ -40,6 +40,7 @@ class TestElasticIsotropic3D(unittest.TestCase):
     Test dimension().
     """
     material = ElasticIsotropic3D()
+    material._createCppHandle()
     self.assertEqual(3, material.dimension)
     return
 
@@ -49,6 +50,7 @@ class TestElasticIsotropic3D(unittest.TestCase):
     Test useElasticBehavior().
     """
     material = ElasticIsotropic3D()
+    material._createCppHandle()
     material.useElasticBehavior(False)
     return
 

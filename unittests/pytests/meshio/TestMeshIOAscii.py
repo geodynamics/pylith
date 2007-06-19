@@ -29,6 +29,8 @@ class TestMeshIOAscii(unittest.TestCase):
     Test constructor.
     """
     iohandler = MeshIOAscii()
+    iohandler._configure()
+    iohandler._sync()
     self.assertNotEqual(None, iohandler.cppHandle)
     return
 

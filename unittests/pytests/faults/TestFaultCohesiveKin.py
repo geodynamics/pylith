@@ -42,6 +42,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     Test constructor.
     """
     fault = FaultCohesiveKin()
+    fault._createCppHandle()
     self.failIfEqual(None, fault.cppHandle)
     return
 
