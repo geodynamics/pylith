@@ -55,13 +55,12 @@ class FaultCohesiveKin(FaultCohesive):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="faultcohesivekin"):
+  def _init(self):
     """
-    Constructor.
+    
     """
-    FaultCohesive.__init__(self, name)
-    import pylith.faults.faults as bindings
-    self.cppHandle = bindings.FaultCohesiveKin()
+    self.name = "faultcohesivekin"
+    FaultCohesive._init(self)
     return
 
 
@@ -154,6 +153,15 @@ class FaultCohesiveKin(FaultCohesive):
     self.eqsrc = self.inventory.eqsrc
     return
 
+
+  def _createCppHandle(self):
+    """
+    Create handle to C++ FaultCohesiveKin.
+    """
+    import pylith.faults.faults as bindings
+    self.cppHandle = bindings.FaultCohesiveKin()
+    return
+    
   
 # FACTORIES ////////////////////////////////////////////////////////////
 

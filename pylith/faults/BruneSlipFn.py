@@ -72,8 +72,6 @@ class BruneSlipFn(SlipTimeFn):
     Constructor.
     """
     SlipTimeFn.__init__(self, name)
-    import pylith.faults.faults as bindings
-    self.cppHandle = bindings.BruneSlipFn()
     return
 
 
@@ -81,6 +79,9 @@ class BruneSlipFn(SlipTimeFn):
     """
     Initialize.
     """
+    import pylith.faults.faults as bindings
+    self.cppHandle = bindings.BruneSlipFn()
+
     SlipTimeFn.initialize(self)
 
     self.slip.initialize()
