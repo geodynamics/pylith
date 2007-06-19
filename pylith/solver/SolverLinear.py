@@ -48,7 +48,6 @@ class SolverLinear(Solver):
     Constructor.
     """
     Solver.__init__(self, name)
-    self.cppHandle = None
     return
 
 
@@ -56,8 +55,7 @@ class SolverLinear(Solver):
     """
     Initialize solver.
     """
-    import pylith.solver.solver as bindings
-    self.cppHandle = bindings.SolverLinear()
+    self._createCppHandle()
     self.cppHandle.initialize(mesh.cppHandle, field)
     return
 
@@ -81,5 +79,15 @@ class SolverLinear(Solver):
     Solver._configure(self)
     return
 
+
+  def _createCppHandle(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    if None == self.cppHandle:
+      import pylith.solver.solver as bindings
+      self.cppHandle = bindings.SolverLinear()
+    return
+  
 
 # End of file 

@@ -62,8 +62,7 @@ class EqKinSrc(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="eqkinsrc")
-    import pylith.faults.faults as bindings
-    self.cppHandle = bindings.EqKinSrc()
+    self.cppHandle = None
     return
 
 
@@ -71,7 +70,7 @@ class EqKinSrc(Component):
     """
     Initialize.
     """
-    assert(None != self.cppHandle)
+    self._createCppHandle()
     self.slipfn.initialize()
     self.cppHandle.slipfn = self.slipfn.cppHandle
     return
@@ -88,6 +87,16 @@ class EqKinSrc(Component):
     return
 
   
+  def _createCppHandle(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    if None == self.cppHandle:
+      import pylith.faults.faults as bindings
+      self.cppHandle = bindings.EqKinSrc()
+    return
+  
+
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def eq_kinematic_src():

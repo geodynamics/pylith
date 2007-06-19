@@ -168,8 +168,17 @@ class SolutionIO(Component):
     """
     Force synchronization between Python and C++.
     """
+    self._createCppHandle()
     self.cppHandle.coordsys = self.coordsys.cppHandle
     return
 
 
+  def _createCppHandle(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    raise NotImplementedError("Please implement _createCppHandle() in " \
+                              "derived class.")
+  
+  
 # End of file 

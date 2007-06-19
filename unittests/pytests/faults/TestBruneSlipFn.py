@@ -29,6 +29,7 @@ class TestBruneSlipFn(unittest.TestCase):
     Test constructor.
     """
     slipFn = BruneSlipFn()
+    slipFn._createCppHandle()
     self.failIfEqual(None, slipFn.cppHandle)
     return
 

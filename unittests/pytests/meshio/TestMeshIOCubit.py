@@ -30,6 +30,8 @@ class TestMeshIOCubit(unittest.TestCase):
     Test constructor.
     """
     iohandler = MeshIOCubit()
+    iohandler._configure()
+    iohandler._sync()
     self.assertNotEqual(None, iohandler.cppHandle)
     return
 

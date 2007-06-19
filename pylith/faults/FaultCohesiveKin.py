@@ -55,12 +55,11 @@ class FaultCohesiveKin(FaultCohesive):
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def _init(self):
+  def __init__(self, name="faultcohesivekin"):
     """
-    
+    Initialize configuration.
     """
-    self.name = "faultcohesivekin"
-    FaultCohesive._init(self)
+    FaultCohesive.__init__(self, name)
     return
 
 
@@ -69,6 +68,8 @@ class FaultCohesiveKin(FaultCohesive):
     Initialize cohesive elements.
     """
     self._info.log("Initializing fault '%s'." % self.label)
+    self._createCppHandle
+    
     self.mesh = mesh
     assert(None != self.cppHandle)
     self.eqsrc.initialize()
@@ -81,7 +82,7 @@ class FaultCohesiveKin(FaultCohesive):
     """
     Set time step for advancing from time t to time t+dt.
     """
-    assert(None != self.cppHandle)
+    self._createCppHandle()
     self.cppHandle.timeStep = dt.value
     return
 
@@ -111,7 +112,7 @@ class FaultCohesiveKin(FaultCohesive):
     Returns true if we need to recompute Jacobian matrix for operator,
     false otherwise.
     """
-    assert(None != self.cppHandle)
+    self._createCppHandle()
     return self.cppHandle.needNewJacobian
 
 
@@ -158,8 +159,9 @@ class FaultCohesiveKin(FaultCohesive):
     """
     Create handle to C++ FaultCohesiveKin.
     """
-    import pylith.faults.faults as bindings
-    self.cppHandle = bindings.FaultCohesiveKin()
+    if None == self.cppHandle:
+      import pylith.faults.faults as bindings
+      self.cppHandle = bindings.FaultCohesiveKin()
     return
     
   

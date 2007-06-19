@@ -33,11 +33,19 @@ class ElasticIsotropic3D(ElasticMaterial):
     Constructor.
     """
     ElasticMaterial.__init__(self, name)
-    import pylith.materials.materials as bindings
-    self.cppHandle = bindings.ElasticIsotropic3D()
-    self.dimension = self.cppHandle.dimension
     return
 
+
+  def _createCppHandle(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    if None == self.cppHandle:
+      import pylith.materials.materials as bindings
+      self.cppHandle = bindings.ElasticIsotropic3D()
+      self.dimension = self.cppHandle.dimension
+    return
+  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

@@ -30,7 +30,7 @@ class TestMaxwellIsotropic3D(unittest.TestCase):
     """
     from pylith.materials.MaxwellIsotropic3D import MaxwellIsotropic3D
     material = MaxwellIsotropic3D()
-
+    material._createCppHandle()
     self.assertNotEqual(None, material.cppHandle)
     return
 
@@ -40,6 +40,7 @@ class TestMaxwellIsotropic3D(unittest.TestCase):
     Test dimension().
     """
     material = MaxwellIsotropic3D()
+    material._createCppHandle()
     self.assertEqual(3, material.dimension)
     return
 
@@ -49,6 +50,7 @@ class TestMaxwellIsotropic3D(unittest.TestCase):
     Test useMaxwellBehavior().
     """
     material = MaxwellIsotropic3D()
+    material._createCppHandle()
     material.useElasticBehavior(False)
     return
 

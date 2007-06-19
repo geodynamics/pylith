@@ -124,36 +124,43 @@ class TestQuadrature(unittest.TestCase):
     Test constructors for quadrature objects.
     """
     q = Quadrature0D()
+    q._createCppHandle()
     self.assertEqual(1, q.spaceDim)
     self.assertEqual(0, q.cellDim)
     self.failIfEqual(None, q.cppHandle)
     
     q = Quadrature1D()
+    q._createCppHandle()
     self.assertEqual(1, q.spaceDim)
     self.assertEqual(1, q.cellDim)
     self.failIfEqual(None, q.cppHandle)
     
     q = Quadrature1Din2D()
+    q._createCppHandle()
     self.assertEqual(2, q.spaceDim)
     self.assertEqual(1, q.cellDim)
     self.failIfEqual(None, q.cppHandle)
     
     q = Quadrature1Din3D()
+    q._createCppHandle()
     self.assertEqual(3, q.spaceDim)
     self.assertEqual(1, q.cellDim)
     self.failIfEqual(None, q.cppHandle)
     
     q = Quadrature2D()
+    q._createCppHandle()
     self.assertEqual(2, q.spaceDim)
     self.assertEqual(2, q.cellDim)
     self.failIfEqual(None, q.cppHandle)
     
     q = Quadrature2Din3D()
+    q._createCppHandle()
     self.assertEqual(3, q.spaceDim)
     self.assertEqual(2, q.cellDim)
     self.failIfEqual(None, q.cppHandle)
     
     q = Quadrature3D()
+    q._createCppHandle()
     self.assertEqual(3, q.spaceDim)
     self.assertEqual(3, q.cellDim)
     self.failIfEqual(None, q.cppHandle)

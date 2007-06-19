@@ -30,6 +30,8 @@ class TestMeshIOLagrit(unittest.TestCase):
     Test constructor.
     """
     iohandler = MeshIOLagrit()
+    iohandler._configure()
+    iohandler._sync()
     self.assertNotEqual(None, iohandler.cppHandle)
     return
 

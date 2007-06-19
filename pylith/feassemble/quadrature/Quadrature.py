@@ -71,8 +71,7 @@ class Quadrature(Component):
     """
     Initialize C++ quadrature object.
     """
-    if self.cppHandle is None:
-      raise ValueError("C++ handle not set.")
+    self._createCppHandle()
     
     self.cppHandle.minJacobian = self.minJacobian
 
@@ -108,4 +107,12 @@ class Quadrature(Component):
     return
 
 
+  def _createCppHandle(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    raise NotImplementedError("Please implement _createCppHandle() in " \
+                              "derived class.")
+  
+  
 # End of file 

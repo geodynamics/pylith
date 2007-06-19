@@ -57,8 +57,7 @@ class Distributor(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="partitioner")
-    import pylith.topology.topology as bindings
-    self.cppHandle = bindings.Distributor()
+    self.cppHandle = None
     return
 
 
@@ -66,6 +65,8 @@ class Distributor(Component):
     """
     Distribute a Mesh
     """
+    self._createCppHandle()
+    
     from Mesh import Mesh
     newMesh = Mesh()
     newMesh.cppHandle = self.cppHandle.distribute(mesh.cppHandle,
@@ -84,6 +85,16 @@ class Distributor(Component):
     self.partitioner = self.inventory.partitioner
     return
 
+
+  def _createCppHandle(self):
+    """
+    Create handle to C++ object.
+    """
+    if None == self.cppHandle:
+      import pylith.topology.topology as bindings
+      self.cppHandle = bindings.Distributor()
+    return
+  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

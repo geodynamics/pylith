@@ -31,8 +31,7 @@ class Mesh(Component):
     Constructor.
     """
     Component.__init__(self, name, facility="finite_element_mesh")
-    import pylith.topology.topology as bindings
-    self.cppHandle = bindings.Mesh()
+    self.cppHandle = None
     self.coordsys = None
     self.debug = False
     return
@@ -42,6 +41,7 @@ class Mesh(Component):
     """
     Initialize mesh.
     """
+    self._createCppHandle()
     self.coordsys = coordsys
     return
 
@@ -116,6 +116,16 @@ class Mesh(Component):
     Set members based using inventory.
     """
     Component._configure(self)
+    return
+
+  
+  def _createCppHandle(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    if None == self.cppHandle:
+      import pylith.topology.topology as bindings
+      self.cppHandle = bindings.Mesh()
     return
   
 

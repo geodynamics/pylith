@@ -70,8 +70,6 @@ class MeshIOLagrit(MeshIO):
     Constructor.
     """
     MeshIO.__init__(self, name)
-    import pylith.meshio.meshio as bindings
-    self.cppHandle = bindings.MeshIOLagrit()
     return
 
 
@@ -92,6 +90,10 @@ class MeshIOLagrit(MeshIO):
     """
     Force synchronization between Python and C++.
     """
+    if None == self.cppHandle:
+      import pylith.meshio.meshio as bindings
+      self.cppHandle = bindings.MeshIOLagrit()
+    
     MeshIO._sync(self)
     self.cppHandle.filenameGmv = self.filenameGmv
     self.cppHandle.filenamePset = self.filenamePset

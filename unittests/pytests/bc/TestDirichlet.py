@@ -40,8 +40,6 @@ class TestDirichlet(unittest.TestCase):
     """
     from pylith.bc.Dirichlet import Dirichlet
     bc = Dirichlet()
-
-    self.assertNotEqual(None, bc.cppHandle)
     return
 
 
@@ -53,7 +51,9 @@ class TestDirichlet(unittest.TestCase):
     don't verify the results.
     """
 
-    self._initialize()
+    (mesh, bc) = self._initialize()
+
+    self.assertNotEqual(None, bc.cppHandle)
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    

@@ -56,8 +56,6 @@ class SolutionIOVTK(SolutionIO):
     Constructor.
     """
     SolutionIO.__init__(self, name)
-    import pylith.meshio.meshio as bindings
-    self.cppHandle = bindings.SolutionIOVTK()
     return
 
 
@@ -78,6 +76,16 @@ class SolutionIOVTK(SolutionIO):
     """
     SolutionIO._sync(self)
     self.cppHandle.filename = self.filename
+    return
+  
+
+  def _createCppHandle(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    if None == self.cppHandle:
+      import pylith.meshio.meshio as bindings
+      self.cppHandle = bindings.SolutionIOVTK()
     return
   
 

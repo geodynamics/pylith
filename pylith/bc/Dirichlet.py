@@ -78,8 +78,6 @@ class Dirichlet(BoundaryCondition, Constraint):
     BoundaryCondition.__init__(self, name)
     Constraint.__init__(self)
     self.fixedDOF = []
-    import pylith.bc.bc as bindings
-    self.cppHandle = bindings.Dirichlet()
     return
 
 
@@ -87,7 +85,8 @@ class Dirichlet(BoundaryCondition, Constraint):
     """
     Initialize Dirichlet boundary condition.
     """
-    assert(None != self.cppHandle)
+    self._createCppHandle()
+
     self.cppHandle.fixedDOF = self.fixedDOF    
     BoundaryCondition.initialize(self, mesh)
     return
@@ -103,6 +102,16 @@ class Dirichlet(BoundaryCondition, Constraint):
     self.fixedDOF = self.inventory.fixedDOF
     return
 
+
+  def _createCppHandle(self):
+    """
+    Create handle to C++ object.
+    """
+    if None == self.cppHandle:
+      import pylith.bc.bc as bindings
+      self.cppHandle = bindings.Dirichlet()    
+    return
+  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

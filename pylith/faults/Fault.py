@@ -129,7 +129,8 @@ class Fault(Component):
     Initialize fault.
     """
     self._info.log("Initializing fault '%s'." % self.label)
-
+    self._createCppHandle()
+    
     self.quadrature.initialize()
 
     faultDim = mesh.dimension() - 1
@@ -162,5 +163,13 @@ class Fault(Component):
     self.quadrature = self.inventory.quadrature
     return
 
+  
+  def _createCppHandle(self):
+    """
+    Create handle to corresponding C++ object.
+    """
+    raise NotImplementedError("Please implement _createCppHandle() in " \
+                              "derived class.")
+  
   
 # End of file 

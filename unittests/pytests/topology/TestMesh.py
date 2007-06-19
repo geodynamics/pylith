@@ -29,7 +29,6 @@ class TestMesh(unittest.TestCase):
     Test constructor.
     """
     mesh = Mesh()
-    self.assertNotEqual(None, mesh.cppHandle)
     return
 
 
@@ -42,6 +41,7 @@ class TestMesh(unittest.TestCase):
 
     mesh = Mesh()
     mesh.initialize(cs)
+    self.assertNotEqual(None, mesh.cppHandle)
     self.assertEqual(cs, mesh.coordsys)
     return
 

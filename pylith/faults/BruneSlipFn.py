@@ -79,9 +79,8 @@ class BruneSlipFn(SlipTimeFn):
     """
     Initialize.
     """
-    import pylith.faults.faults as bindings
-    self.cppHandle = bindings.BruneSlipFn()
-
+    self._createCppHandle()
+      
     SlipTimeFn.initialize(self)
 
     self.slip.initialize()
@@ -107,6 +106,16 @@ class BruneSlipFn(SlipTimeFn):
     self.slipRate = self.inventory.slipRate
     return
 
+
+  def _createCppHandle(self):
+    """
+    Create handle to C++ object.
+    """
+    if None == self.cppHandle:
+      import pylith.faults.faults as bindings
+      self.cppHandle = bindings.BruneSlipFn()
+    return
+  
   
 # FACTORIES ////////////////////////////////////////////////////////////
 

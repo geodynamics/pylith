@@ -62,8 +62,6 @@ class MeshIOAscii(MeshIO):
     Constructor.
     """
     MeshIO.__init__(self, name)
-    import pylith.meshio.meshio as bindings
-    self.cppHandle = bindings.MeshIOAscii()
     return
 
 
@@ -83,6 +81,10 @@ class MeshIOAscii(MeshIO):
     """
     Force synchronization between Python and C++.
     """
+    if None == self.cppHandle:
+      import pylith.meshio.meshio as bindings
+      self.cppHandle = bindings.MeshIOAscii()
+    
     MeshIO._sync(self)
     self.cppHandle.filename = self.filename
     return

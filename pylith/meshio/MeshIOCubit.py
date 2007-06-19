@@ -61,8 +61,6 @@ class MeshIOCubit(MeshIO):
     Constructor.
     """
     MeshIO.__init__(self, name)
-    import pylith.meshio.meshio as bindings
-    self.cppHandle = bindings.MeshIOCubit()
     return
 
 
@@ -82,6 +80,10 @@ class MeshIOCubit(MeshIO):
     """
     Force synchronization between Python and C++.
     """
+    if None == self.cppHandle:
+      import pylith.meshio.meshio as bindings
+      self.cppHandle = bindings.MeshIOCubit()
+
     MeshIO._sync(self)
     self.cppHandle.filename = self.filename
     return
