@@ -226,34 +226,67 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdateStateTimeDep(void)
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DTimeDepData data;
 
-  // CHARLES: Setup parameters and totalStrain so this works.
-#if 0
   const int numParams = data.numParameters;
 
+  material.useElasticBehavior(false);
+  const double dt = 2.0e5;
+  material.timeStep(dt);
+  const double viscosity = 1.0e18;
+  const double mu = 3.0e10;
+  const double maxwelltime = viscosity/mu;
+    
+  const int tensorSize = 6;
+  double_array totalStrainTpdt(tensorSize);
+  double_array totalStrainT(tensorSize);
+  double_array visStrainT(tensorSize);
+  for (int i=0; i < tensorSize; ++i) {
+    totalStrainTpdt[i] = i;
+    totalStrainT[i] = totalStrainTpdt[i]/2.0;
+    visStrainT[i] = totalStrainTpdt[i]/4.0;
+  } // for
+
+  const double meanStrainTpdt = (totalStrainTpdt[0] + totalStrainTpdt[1] + totalStrainTpdt[2])/3.0;
+  const double meanStrainT = (totalStrainT[0] + totalStrainT[1] + totalStrainT[2])/3.0;
+
+  const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+
   std::vector<double_array> parameters(numParams);
-  const int paramsSize = 1;
+  std::vector<double_array> paramdata(numParams);
+  const int paramsSize []= { 1, 1, 1, 1, 6, 6};
   for (int i=0; i < numParams; ++i) {
-    parameters[i].resize(numParams);
-    for (int j=0; j < paramsSize; ++j)
+    parameters[i].resize(paramsSize[i]);
+    paramdata[i].resize(paramsSize[i]);
+    for (int j=0; j < paramsSize[i]; ++j)
       parameters[i][j] = i+j;
   } // for
-    
-  const int tensorSize = 9;
-  double_array totalStrain(tensorSize);
-  for (int i=0; i < tensorSize; ++i)
-    totalStrain[i] = i;
+
+  parameters[3][0] = maxwelltime;
+  paramdata[3][0] = maxwelltime;
+
+  const double dq = maxwelltime*(1.0-exp(-dt/maxwelltime))/dt;
+  const double expFac = exp(-dt/maxwelltime);
+  double devStrainTpdt = 0.0;
+  double devStrainT = 0.0;
+
+  for (int i=0; i < tensorSize; ++i) {
+    devStrainTpdt = totalStrainTpdt[i] - diag[i]*meanStrainTpdt;
+    devStrainT = totalStrainT[i] - diag[i]*meanStrainT;
+    parameters[4][i] = totalStrainT[i];
+    parameters[5][i] = visStrainT[i];
+    paramdata[4][i] = totalStrainTpdt[i];
+    paramdata[5][i] = expFac * visStrainT[i] + dq * (devStrainTpdt - devStrainT);
+  } //for
   
-  material._updateState(&parameters, totalStrain);
+  material._updateState(&parameters, totalStrainTpdt);
 
   const double tolerance = 1.0e-06;
-  for (int i=0; i < numParams; ++i)
-    for (int j=0; j < paramsSize; ++j)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i+j), parameters[i][j], tolerance);
+  // Test vector parameters and Maxwell time.
+  for (int i=3; i < numParams; ++i)
+    for (int j=0; j < paramsSize[i]; ++j)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(paramdata[i][j], parameters[i][j], tolerance);
     
   for (int i=0; i < tensorSize; ++i)
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i), totalStrain[i], tolerance);
-#endif
-  throw std::logic_error("Unit test not implemented.");
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i), totalStrainTpdt[i], tolerance);
 } // testUpdateStateTimeDep
 
 
