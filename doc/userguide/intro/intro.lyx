@@ -151,8 +151,11 @@ sideways false
 status open
 
 \begin_layout Standard
+\align center
 \begin_inset Graphics
 	filename figs/workflow.eps
+	scale 67
+	keepAspectRatio
 
 \end_inset
 
@@ -292,6 +295,7 @@ Pyre Architecture.
 \end_layout
 
 \begin_layout Standard
+\align center
 \begin_inset Graphics
 	filename figs/pyre_overview.png
 
