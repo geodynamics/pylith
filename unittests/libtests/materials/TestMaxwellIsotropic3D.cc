@@ -150,35 +150,46 @@ pylith::materials::TestMaxwellIsotropic3D::testUpdateStateElastic(void)
   MaxwellIsotropic3D material;
   MaxwellIsotropic3DElasticData data;
 
-  // CHARLES: Setup parameters and totalStrain so this works.
-
-#if 0
   const int numParams = data.numParameters;
-
-  std::vector<double_array> parameters(numParams);
-  const int paramsSize = 1;
-  for (int i=0; i < numParams; ++i) {
-    parameters[i].resize(numParams);
-    for (int j=0; j < paramsSize; ++j)
-      parameters[i][j] = i+j;
-  } // for
     
-  const int tensorSize = 9;
+  const int tensorSize = 6;
   double_array totalStrain(tensorSize);
   for (int i=0; i < tensorSize; ++i)
     totalStrain[i] = i;
+
+  const double meanStrain = (totalStrain[0] + totalStrain[1] + totalStrain[2])/3.0;
+
+  std::vector<double_array> parameters(numParams);
+  std::vector<double_array> paramdata(numParams);
+  const int paramsSize [] = { 1, 1, 1, 1, 6, 6};
+  for (int i=0; i < numParams; ++i) {
+    parameters[i].resize(paramsSize[i]);
+    paramdata[i].resize(paramsSize[i]);
+    for (int j=0; j < paramsSize[i]; ++j)
+      parameters[i][j] = i+j;
+  } // for
+
+  // Set up vector parameters, which are the only ones updated.
+  for (int i=0; i< 3; ++i) {
+    paramdata[4][i] = totalStrain[i];
+    paramdata[5][i] = totalStrain[i] - meanStrain;
+  } // for
+  
+  for (int i=3; i< 6; ++i) {
+    paramdata[4][i] = totalStrain[i];
+    paramdata[5][i] = totalStrain[i];
+  } // for
   
   material._updateState(&parameters, totalStrain);
 
   const double tolerance = 1.0e-06;
-  for (int i=0; i < numParams; ++i)
-    for (int j=0; j < paramsSize; ++j)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i+j), parameters[i][j], tolerance);
+  // Only test vector parameters
+  for (int i=4; i < numParams; ++i)
+    for (int j=0; j < paramsSize[i]; ++j)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(paramdata[i][j], parameters[i][j], tolerance);
     
   for (int i=0; i < tensorSize; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i), totalStrain[i], tolerance);
-#endif
-  throw std::logic_error("Unit test not implemented.");
 } // testUpdateStateElastic
 
 // ----------------------------------------------------------------------
