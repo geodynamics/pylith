@@ -86,6 +86,7 @@ class BruneSlipFn(SlipTimeFn):
     self.slip.initialize()
     self.slipTime.initialize()
     self.slipRate.initialize()
+    assert(None != self.cppHandle)
 
     self.cppHandle.dbFinalSlip = self.slip.cppHandle
     self.cppHandle.dbSlipTime = self.slipTime.cppHandle
