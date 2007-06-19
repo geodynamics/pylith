@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -84,30 +84,23 @@ This release of PyLith allows the solution of both quasi-static and dynamic
  Material properties and parameters for boundary and fault conditions are
  specified using a spatial database, which permits easy precsription of
  complex spatial variations of properties and parameters.
- Simulation parameters are generally specified through the use of 
-\family sans
-.cfg
-\family default
- files, although they can also be specified using 
-\family typewriter
-.pml
-\family default
- files or from the command line.
- At present, mesh information may be provided using a simple ASCII format
+ Simulation parameters are generally specified through the use of simple
+ ASCII files or the command line.
+ At present, mesh information may be provided using a simple ASCII file
  (PyLith ASCII format) or imported from CUBIT or LaGriT, two widely-used
  meshing packages.
  The elements currently available include a linear bar in 1-D, linear triangles
- and quadrilaterals in 2-D, and linear tetrahedra and hexahedra in 3-D)
+ and quadrilaterals in 2-D, and linear tetrahedra and hexahedra in 3-D.
  Higher-order (quadratic) elements are also supported, but it is not presently
  possible to create a quadratic mesh from the linear meshes provided by
  most meshing packages.
  Materials presently available include isotropic elastic and linear Maxwell
  viscoelastic (3-D only).
- Cohesive elements are used to represent faults.
+ Cohesive elements are used to implement slip across interior surfaces (faults).
  At present, only kinematically-specified fault slip is available.
  In the near future, we will provide several constitutive models for cohesive
- elements, which will allow slip to occur using several different fault
- constitutive models.
+ elements, which will allow slip to occur using various fault constitutive
+ models.
 \end_layout
 
 \begin_layout Standard
@@ -139,26 +132,19 @@ PyLith is one component in the process of investigating problems in tectonics
  Once the structure has been defined, a computational mesh must be created.
  Since there are a wide variety of mesh formats, this information must then
  be translated into something that the computational physics code can understand.
- In the case of PyLith, this task is performed by translating external formats
- into Sieve mesh data structures.
  PyLith presently provides three mesh importing options: CUBIT Exodus format,
  LaGriT GMV + Pset files, and PyLith ASCII format.
  The modeling of the physical processes of interest is performed by a code
  such as PyLith.
- Once the computations have been performed, the results must be translated
+ Once the computations have been performed, the results must be exported
  into a format that can be used by a visualization code.
- For PyLith, this task is performed by translating the Sieve data structures
- into an appropriate form.
  Present output consists of VTK files which can be used by a number of visualiza
 tion codes (e.g., ParaView and MayaVi).
  In the near future, a more flexible HDF5 format is planned.
- [
-\series bold
-BRAD
-\series default
- -- need new figure to replace this placeholder.
- If you give me the original xfig (or whatever you used), I can modify it
- accordingly)] 
+ 
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -166,7 +152,7 @@ status open
 
 \begin_layout Standard
 \begin_inset Graphics
-	filename figs/workflow.pdf
+	filename figs/workflow.eps
 
 \end_inset
 
@@ -193,44 +179,32 @@ PyLith Design
 \begin_layout Standard
 PyLith is separated into modules to encapsulate behavior and facilitate
  use across multiple applications.
- That way expert users can replace functionality of a wide variety of components
- without recompiling or polluting the main code.
- External packages reduce development time and enhance computational efficiency;
- for example, PyLith 0.8 ran two times faster when the PETSc linear solver
- was used.
+ This allows expert users to replace functionality of a wide variety of
+ components without recompiling or polluting the main code.
+ PyLith employs external packages to reduce development time and enhance
+ computational efficiency; for example, PyLith 0.8 ran two times faster when
+ the PETSc linear solver was used.
 \end_layout
 
 \begin_layout Standard
-PyLith employs two programming languages.
+PyLith is written in two programming languages.
  High-level code is written in Python; this rich, expressive interpreted
  language with dynamic typing reduces development time and permits flexible
  addition of user-contributed modules.
+ This high-level code makes use of Pyre, a science-neutral simulation framework
+ developed at Caltech, to link the modules together at runtime and gather
+ user-input.
  Low-level code is written in C++, providing fast execution while still
- allowing object-oriented code.
+ allowing an object-oriented implementation.
+ This low-level code relies on PETSc to perform operations on matrices and
+ vectors in parallel.
  We also make extensive use of two Python packages.
  Pyrex is a package that simplifies the task of adding C extensions to Python
- code.
- We also use pyrexembed, which extends the use of Pyrex to handle C++ code.
+ code, and pyrexembed extends Pyrex to handle C++ code.
 \end_layout
 
 \begin_layout Standard
-PyLith makes extensive use of external software.
- Pyre is a science-neutral simulation framework being developed at Caltech.
- PETSc is used to perform operations on matrices and vectors in parallel.
-\end_layout
-
-\begin_layout Standard
-[
-\series bold
-BRAD, MATT
-\series default
- -- This section needs to be completely rewritten, since it came from PyLith
- 0.8.
- Any help would be appreciated.]
-\end_layout
-
-\begin_layout Standard
-In rewriting PyLith, the code was completely redesigned to be object-oriented
+In writing PyLith 1.0, the code was completely redesigned to be object-oriented
  and modular.
  Each type of module is accessed through a specified interface (set of functions
 ).
@@ -254,19 +228,14 @@ n and specify the simulation parameters.
 \end_layout
 
 \begin_layout Standard
-During development tests were constructed for nearly every module function.
+During development, tests were constructed for nearly every module function.
  These unit tests are distributed with the source code.
- During development these tests were run on a frequent basis to expose bugs
- and isolate their origin.
+ These tests are run continuously during development to expose bugs and
+ isolate their origin.
  As additional changes are made to the code, the tests are rerun to help
  prevent introduction of bugs.
  A number of simple, full scale tests, such as axial compression, simple
  shear, and slip between two cells have been used to test the code.
-\end_layout
-
-\begin_layout Standard
-[ADD DESCRIPTION OF WHAT HAPPENS WHEN EXECUTING PYLITH IN PARALLEL, next
- paragraph is too technical (too much nomenclature)]
 \end_layout
 
 \begin_layout Standard
@@ -276,16 +245,15 @@ Our new design begins with the
 \family default
  to represent the topology of our domain.
  Zero volume elements are inserted along all fault surfaces which can implement
- both split node and cohesive element schemes.
- Material properties and other parameters are represented as
-\family typewriter
- Sections
-\family default
- over the sieve, and values can be retrieved by restriction.
- For each problem, methods are provided to calculate the residual and its
- Jacobian.
- All analytic work is done in these functions, and parallel assembly is
- accomplished using the restrict/update paradigm from the
+ both kinematic (prescribed) and dynamic (constitutive model) implementations
+ of fault slip.
+ Material properties and other parameters are represented as sections (scalar
+ and vector fields) over the mesh, and values for a vertex or cell can be
+ retrived by restricting the section to the vertex or cell.
+ For each problem, functions are provided to calculate the residual and
+ its Jacobian.
+ All numerical integration is done in these functions, and parallel assembly
+ is accomplished using the restrict/update paradigm of the
 \family typewriter
  Sieve
 \family default
@@ -306,7 +274,7 @@ Pyre is an object-oriented environment capable of specifying and launching
  Pyre allows the binding of multiple components such as solid and fluid
  models used in Earth science simulations, and different meshers.
  The Pyre framework enables the elegant setup, modification and launching
- of massively parallel three-dimensional solver applications.
+ of massively parallel solver applications.
 \end_layout
 
 \begin_layout Standard
