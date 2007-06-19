@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -803,19 +803,24 @@ status open
 
 \begin_layout Standard
 \align center
+
+\hfill
+
 \begin_inset Graphics
 	filename figs/tri3.eps
 
 \end_inset
 
- \InsetSpace ~
-\InsetSpace ~
+ 
+\hfill
 
 \begin_inset Graphics
 	filename figs/quad4.eps
 
 \end_inset
 
+
+\hfill
 
 \end_layout
 
@@ -848,19 +853,24 @@ status open
 
 \begin_layout Standard
 \align center
+
+\hfill
+
 \begin_inset Graphics
 	filename figs/tet4.eps
 
 \end_inset
 
-\InsetSpace ~
-\InsetSpace ~
+
+\hfill
 
 \begin_inset Graphics
 	filename figs/hex8.eps
 
 \end_inset
 
+
+\hfill
 
 \end_layout
 

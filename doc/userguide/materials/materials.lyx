@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -57,51 +57,7 @@ raggedbottom
 \end_layout
 
 \begin_layout Section
-1-D Material Models
-\end_layout
-
-\begin_layout Subsection
-Elastic 
-\begin_inset Quotes eld
-\end_inset
-
-Linear
-\begin_inset Quotes erd
-\end_inset
-
- Strain
-\end_layout
-
-\begin_layout Subsection
-Elastic 
-\begin_inset Quotes eld
-\end_inset
-
-Linear
-\begin_inset Quotes erd
-\end_inset
-
- Stress
-\end_layout
-
-\begin_layout Section
-2-D Material Models
-\end_layout
-
-\begin_layout Subsection
-Elastic Plane Strain
-\end_layout
-
-\begin_layout Subsection
-Elastic Plane Stress
-\end_layout
-
-\begin_layout Section
-3-D Material Models
-\end_layout
-
-\begin_layout Subsection
-Isotropic Elastic Material
+Elastic Material Models
 \end_layout
 
 \begin_layout Standard
@@ -117,16 +73,32 @@ The generalized form of Hooke's law relating stress and strain for linear
 
 Due to symmetry considerations, however, the 81 components of the elasticity
  matrix are reduced to 21 independent components for the most general case
- of anisotropic elasticity; for the case of isotropic elasticity, the number
- of independent components reduces to two.
+ of anisotropic elasticity.
  Representing the stress and strain in terms of vectors, the constitutive
  relation may be written
 \begin_inset Formula \begin{gather}
-\overrightarrow{\sigma}=\underline{C}\overrightarrow{\epsilon\,}.\label{eq:7}\end{gather}
+\overrightarrow{\sigma}=\underline{C}\overrightarrow{\epsilon\,},\label{eq:7}\end{gather}
 
 \end_inset
 
-This model may be characterized by two parameters, Lame's constants 
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{C}=\left[\begin{array}{cccccc}
+C_{1111} & C_{1122} & C_{1133} & C_{1112} & C_{1123} & C_{1113}\\
+C_{1122} & C_{2222} & C_{2233} & C_{2212} & C_{2223} & C_{2213}\\
+C_{1133} & C_{2233} & C_{3333} & C_{3312} & C_{3323} & C_{3313}\\
+C_{1112} & C_{2212} & C_{3312} & C_{1212} & C_{1223} & C_{1213}\\
+C_{1123} & C_{2223} & C_{3323} & C_{1223} & C_{2323} & C_{2313}\\
+C_{1113} & C_{2213} & C_{3313} & C_{1213} & C_{1223} & C_{1313}\end{array}\right]\:.\label{eq:8}\end{gather}
+
+\end_inset
+
+For the case of isotropic elasticity, the number of independent components
+ reduces to two, and the model can be characterized by two parameters, Lame's
+ constants 
 \begin_inset Formula $\mu$
 \end_inset
 
@@ -135,11 +107,11 @@ This model may be characterized by two parameters, Lame's constants
 \end_inset
 
 .
- In terms of these two parameters, the stress-strain matrix, 
+ For this case the stress-strain matrix, 
 \begin_inset Formula $\underline{C}$
 \end_inset
 
-, may be written:
+, becomes
 \end_layout
 
 \begin_layout Standard
@@ -154,10 +126,6 @@ This model may be characterized by two parameters, Lame's constants
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 Lame's constants are related to the density (
 \begin_inset Formula $\rho$
 \end_inset
@@ -174,14 +142,10 @@ Lame's constants are related to the density (
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $ $
-\end_inset
-
-
-\begin_inset Formula \[
+\begin_inset Formula \begin{equation}
 \begin{aligned}\mu= & \rho v_{s}^{2}\\
 \lambda= & \rho v_{p}^{2}-2\mu\end{aligned}
-\]
+\end{equation}
 
 \end_inset
 
@@ -189,6 +153,89 @@ Lame's constants are related to the density (
 \end_layout
 
 \begin_layout Subsection
+1-D Elastic Material Models
+\end_layout
+
+\begin_layout Subsubsection
+Elastic 
+\begin_inset Quotes eld
+\end_inset
+
+Linear
+\begin_inset Quotes erd
+\end_inset
+
+ Strain
+\end_layout
+
+\begin_layout Standard
+For purely 1-D axial deformation, Hooke's law simplifies to
+\begin_inset Formula \begin{equation}
+\sigma_{11}=(\lambda+2\mu)\epsilon_{11},\end{equation}
+
+\end_inset
+
+ with
+\begin_inset Formula \begin{gather}
+\sigma_{22}=\sigma_{33}=\lambda\epsilon_{11},\\
+\sigma_{12}=\sigma_{23}=\sigma_{13}=0.\end{gather}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Elastic 
+\begin_inset Quotes eld
+\end_inset
+
+Linear
+\begin_inset Quotes erd
+\end_inset
+
+ Stress
+\end_layout
+
+\begin_layout Standard
+For deformation where the tractions are confined to the axial direction,
+ Hooke's law simplifies to
+\begin_inset Formula \begin{equation}
+\sigma_{11}=\frac{\mu(3\lambda+2\mu)}{\lambda+\mu}\epsilon_{11},\end{equation}
+
+\end_inset
+
+with
+\begin_inset Formula \begin{gather}
+\epsilon_{22}=\epsilon_{33}=-\frac{\lambda}{2(\lambda+\mu)}\epsilon_{11},\\
+\sigma_{22}=\sigma_{33}=\sigma_{12}=\sigma_{23}=\sigma_{13}=0.\end{gather}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+2-D Elastic Material Models
+\end_layout
+
+\begin_layout Subsubsection
+Elastic Plane Strain
+\end_layout
+
+\begin_layout Subsubsection
+Elastic Plane Stress
+\end_layout
+
+\begin_layout Subsection
+3-D Elastic Material Models
+\end_layout
+
+\begin_layout Subsubsection
+Isotropic
+\end_layout
+
+\begin_layout Section
 Viscoelastic Materials
 \end_layout
 
@@ -503,7 +550,7 @@ Spring-dashpot 1D representations of the material models available in PyLith.
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Definitions
 \end_layout
 
@@ -753,7 +800,7 @@ Mathematical notation used in this section.
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Effective Stress Formulations for Viscoelastic Materials
 \end_layout
 
@@ -855,7 +902,7 @@ and
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
 Linear Maxwell Viscoelastic Material
 \end_layout
 
