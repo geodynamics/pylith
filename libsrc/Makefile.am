@@ -85,6 +85,8 @@ if ENABLE_CUBIT
 	meshio/MeshIOCubit.cc
 endif
 
+libpylith_la_LDFLAGS = -no-undefined
+
 INCLUDES = -I$(top_builddir)/include
 INCLUDES += $(PETSC_INCLUDE)
 

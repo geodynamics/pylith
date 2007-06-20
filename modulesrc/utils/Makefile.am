@@ -15,7 +15,8 @@ include $(top_srcdir)/subpackage.am
 
 subpkgpyexec_LTLIBRARIES = petscmodule.la
 
-petscmodule_la_LDFLAGS = -module
+petscmodule_la_LDFLAGS = -module -no-undefined -avoid-version \
+	$(PYTHON_LA_LDFLAGS)
 
 petscmodule_la_SOURCES = petsc.pyxe
 
@@ -24,7 +25,8 @@ nodist_petscmodule_la_SOURCES = \
 
 petscmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
-	$(PETSC_LIB)
+	$(PETSC_LIB) \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
   petscmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf

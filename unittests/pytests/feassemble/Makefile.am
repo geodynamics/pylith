@@ -29,7 +29,8 @@ noinst_PYTHON = \
 # module
 subpkgpyexec_LTLIBRARIES = testfeassemblemodule.la
 
-testfeassemblemodule_la_LDFLAGS = -module
+testfeassemblemodule_la_LDFLAGS = -module -no-undefined -avoid-version \
+	$(PYTHON_LA_LDFLAGS)
 
 testfeassemblemodule_la_SOURCES = testfeassemble.pyxe
 
@@ -37,7 +38,8 @@ nodist_testfeassemblemodule_la_SOURCES = \
 	testfeassemble.c testfeassemble_embed.cpp testfeassemble_embed.h
 
 testfeassemblemodule_la_LIBADD = \
-	$(PETSC_LIB)
+	$(PETSC_LIB) \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
