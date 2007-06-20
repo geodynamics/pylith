@@ -155,10 +155,10 @@ class Implicit(Formulation):
       integrator.timeStep(dt)
       integrator.integrateResidual(residual, t, self.fields)
 
-    #bindings.sectionView(residual, "residual")
+    bindings.sectionView(residual, "residual")
     self._info.log("Solving equations.")
     self.solver.solve(dispIncr, self.jacobian, residual)
-    #bindings.sectionView(self.fields.getReal("solution"), "solution")
+    bindings.sectionView(self.fields.getReal("solution"), "solution")
     return
 
 
@@ -175,7 +175,7 @@ class Implicit(Formulation):
     solution = self.fields.getReal("solution")
     disp = self.fields.getReal("dispTBctpdt")
     bindings.addRealSections(disp, disp, solution)
-    #bindings.sectionView(solution, "solution")
+    bindings.sectionView(solution, "solution")
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
@@ -183,7 +183,9 @@ class Implicit(Formulation):
 
     # If finishing first time step, then switch from solving for total
     # displacements to solving for incremental displacements
-    if 1 == self._istep:
+    if 0 == self._istep:
+      self._info.log("Switching from total field solution to incremental " \
+                     "field solution.")
       for constraint in self.constraints:
         constraint.useSolnIncr(True)
       for integrator in self.integrators:
@@ -230,15 +232,15 @@ class Implicit(Formulation):
     petsc.mat_assemble(self.jacobian)
 
     import pylith.topology.topology as bindings
-    #petsc.mat_view(self.jacobian)
-    #bindings.sectionView(residual, "residual")
+    petsc.mat_view(self.jacobian)
+    bindings.sectionView(residual, "residual")
 
     self._info.log("Solving equations.")
     self.solver.solve(solution, self.jacobian, residual)
 
     bindings.addRealSections(disp, disp, solution)
-    #bindings.sectionView(solution, "solution")
-    #bindings.sectionView(self.fields.getReal("dispIncr"), "dispIncr")
+    bindings.sectionView(solution, "solution")
+    bindings.sectionView(self.fields.getReal("dispIncr"), "dispIncr")
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
