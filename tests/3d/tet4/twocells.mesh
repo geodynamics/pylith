@@ -43,4 +43,15 @@ mesh = {
       4
     }
   }
+  group = {
+    name = bottom surface
+    type = vertices
+    count = 4
+    indices = {
+      0
+      1
+      3
+      4
+    }
+  }
 }
