@@ -306,8 +306,8 @@ protected :
    * N0pQp0, N0qQp0, N0rQp0, N1pQp0, N1qQp0, N1rQp0, ... 
    * N0pQp1, N0qQp1, N0rQp1, N1pQp1, N1qQp1, N1rQp1, ...
    *
-   * size = numQuadPts * numBasis * spaceDim
-   * index = iQuadPt*numBasis*cellDim + iBasis*spaceDim + iDim
+   * size = numQuadPts * numBasis * cellDim
+   * index = iQuadPt*numBasis*cellDim + iBasis*cellDim + iDim
    */
   double_array _basisDerivRef;
 
@@ -317,8 +317,8 @@ protected :
    * N0xQp0, N0yQp0, N0zQp0, N1xQp0, N1yQp0, N1zQp0, ... 
    * N0xQp1, N0yQp1, N0zQp1, N1xQp1, N1yQp1, N1zQp1, ...
    *
-   * size = numQuadPts * numBasis * cellDim
-   * index = iQuadPt*numBasis*cellDim + iBasis*cellDim + iDim
+   * size = numQuadPts * numBasis * spaceDim
+   * index = iQuadPt*numBasis*spaceDim + iBasis*spaceDim + iDim
    */
   double_array _basisDeriv;
 
