@@ -84,7 +84,7 @@ class Constraint(object):
     Set behavior for using total field solution or incremental field solution.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.useSolnIncr(flag)
+    self.cppHandle.useSolnIncr = flag
     return
   
 
