@@ -1191,7 +1191,8 @@ cdef class Integrator:
       int result = 0;
       try {
         assert(0 != objVptr);
-        ((pylith::feassemble::Integrator*) objVptr)->needNewJacobian();
+        result =
+          ((pylith::feassemble::Integrator*) objVptr)->needNewJacobian();
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -1205,6 +1206,30 @@ cdef class Integrator:
       return result;
       #}embed
       return Integrator_needNewJacobian_get(self.thisptr)
+
+
+  property useSolnIncr:
+    def __set__(self, flag):
+      """
+      Set solution increment flag.
+      """
+      # create shim for method 'useSolnIncr'
+      #embed{ void Integrator_useSolnIncr_set(void* objVptr, int flag)
+      try {
+        assert(0 != objVptr);
+        ((pylith::feassemble::Integrator*) objVptr)->useSolnIncr(flag);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      Integrator_useSolnIncr_set(self.thisptr, flag)
 
 
 # ----------------------------------------------------------------------
@@ -1445,6 +1470,30 @@ cdef class Constraint:
     Constraint_setField(self.thisptr, t, PyCObject_AsVoidPtr(field),
                         ptrFromHandle(mesh))
     return
+
+
+  property useSolnIncr:
+    def __set__(self, flag):
+      """
+      Set use solution increment flag.
+      """
+      # create shim for method 'useSolnIncr'
+      #embed{ void Constraint_useSolnIncr_set(void* objVptr, int flag)
+      try {
+        assert(0 != objVptr);
+        ((pylith::feassemble::Constraint*) objVptr)->useSolnIncr(flag);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      Constraint_useSolnIncr_set(self.thisptr, flag)
 
 
   def _createHandle(self):

@@ -108,6 +108,13 @@ public :
    */
   bool needNewJacobian(void);
 
+  /** Set flag for setting constraints for total field solution or
+   *  incremental field solution.
+   *
+   * @param flag True if using incremental solution, false otherwise.
+   */
+  void useSolnIncr(const bool flag);
+
   /** Integrate contributions to residual term (r) for operator.
    *
    * @param residual Field containing values for residual

@@ -67,7 +67,7 @@ class Formulation(Component):
     self.integrators = None
     self.constraints = None
     self.fields = None
-    self.solnField = None
+    self.outputField = None
     self._istep = 0
     return
 
@@ -148,19 +148,17 @@ class Formulation(Component):
       output.writeTopology()
 
     self._info.log("Creating solution field.")
-    solnName = self.solnField['name']
-    self.fields.addReal(solnName)
-    self.fields.solutionField(solnName)
-    self.fields.setFiberDimension(solnName, dimension)
+    self.fields.addReal("solution")
+    self.fields.setFiberDimension("solution", dimension)
     for constraint in self.constraints:
-      constraint.setConstraintSizes(self.fields.getReal(solnName))
-    self.fields.allocate(solnName)
+      constraint.setConstraintSizes(self.fields.getReal("solution"))
+    self.fields.allocate("solution")
     for constraint in self.constraints:
-      constraint.setConstraints(self.fields.getReal(solnName))
+      constraint.setConstraints(self.fields.getReal("solution"))
 
     # BEGIN TEMPORARY
     import pylith.topology.topology as bindings
-    bindings.sectionView(self.fields.getReal(solnName), "solution")
+    bindings.sectionView(self.fields.getReal("solution"), "solution")
     # END TEMPORARY
     return
 
@@ -169,9 +167,9 @@ class Formulation(Component):
     """
     Hook for doing stuff after advancing time step.
     """
-    field = self.fields.getReal(self.solnField['name'])
+    field = self.fields.getReal(self.outputField['name'])
     for output in self.output.bin:
-      output.writeField(t, self._istep, field, self.solnField['label'])
+      output.writeField(t, self._istep, field, self.outputField['label'])
     self._istep += 1
     return
 

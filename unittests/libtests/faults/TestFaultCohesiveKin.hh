@@ -50,6 +50,8 @@ class pylith::faults::TestFaultCohesiveKin : public CppUnit::TestFixture
 
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testEqsrc );
+  CPPUNIT_TEST( testNeedNewJacobian );
+  CPPUNIT_TEST( testUseSolnIncr );
   CPPUNIT_TEST( testUseLagrangeConstraints );
 
   CPPUNIT_TEST_SUITE_END();
@@ -74,6 +76,12 @@ public :
 
   /// Test eqsrc().
   void testEqsrc(void);
+
+  /// Test needNewJacobian()
+  void testNeedNewJacobian(void);
+
+  /// Test useSolnIncr()
+  void testUseSolnIncr(void);
 
   /// Test useLagrangeConstraints().
   void testUseLagrangeConstraints(void);

@@ -63,5 +63,16 @@ pylith::faults::EqKinSrc::slip(const double t,
   return _slipfn->slip(t, vertices);
 } // slip
 
+// ----------------------------------------------------------------------
+// Get slip increment on fault surface from time t0 to 1.
+const ALE::Obj<pylith::real_section_type>&
+pylith::faults::EqKinSrc::slipIncr(const double t0,
+				   const double t1,
+				   const std::set<Mesh::point_type>& vertices)
+{ // slip
+  assert(0 != _slipfn);
+  return _slipfn->slipIncr(t0, t1, vertices);
+} // slip
+
 
 // End of file 

@@ -116,10 +116,24 @@ pylith::feassemble::TestElasticityImplicit::testNeedNewJacobian(void)
 
   materials::ElasticIsotropic3D material;
   integrator.material(&material);
-  CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());
-  integrator._needNewJacobian = true;
-  CPPUNIT_ASSERT_EQUAL(true, integrator.needNewJacobian());  
+  CPPUNIT_ASSERT_EQUAL(true, integrator.needNewJacobian());
+  integrator._needNewJacobian = false;
+  CPPUNIT_ASSERT_EQUAL(false, integrator.needNewJacobian());  
 } // testNeedNewJacobian
+
+// ----------------------------------------------------------------------
+// Test useSolnIncr().
+void
+pylith::feassemble::TestElasticityImplicit::testUseSolnIncr(void)
+{ // testUseSolnIncr
+  ElasticityImplicit integrator;
+
+  materials::ElasticIsotropic3D material;
+  integrator.material(&material);
+  CPPUNIT_ASSERT_EQUAL(false, integrator._useSolnIncr);
+  integrator.useSolnIncr(true);
+  CPPUNIT_ASSERT_EQUAL(true, integrator._useSolnIncr);  
+} // testUseSolnIncr
 
 // ----------------------------------------------------------------------
 // Test updateState().

@@ -56,15 +56,6 @@ class TestElasticityExplicit(unittest.TestCase):
     return
     
 
-  def test_needNewJacobian(self):
-    """
-    Test needNewJacobian().
-    """
-    integrator = ElasticityExplicit()
-    self.assertEqual(False, integrator.needNewJacobian())
-    return
-
-
   def test_setMesh(self):
     """
     Test setMesh().
@@ -112,11 +103,20 @@ class TestElasticityExplicit(unittest.TestCase):
     """
     Test needNewJacobian().
     """
-    integrator = ElasticityExplicit()
-    self.assertEqual(False, integrator.needNewJacobian())
+    (mesh, integrator, fields) = self._initialize()
+    self.assertEqual(True, integrator.needNewJacobian())
     return
 
   
+  def test_useSolnIncr(self):
+    """
+    Test useSolnIncr().
+    """
+    (mesh, integrator, fields) = self._initialize()
+    integrator.useSolnIncr(True)
+    return
+
+
   def test_integrateResidual(self):
     """
     Test integrateResidual().
@@ -150,6 +150,7 @@ class TestElasticityExplicit(unittest.TestCase):
     petsc.mat_setzero(jacobian)
     t = 0.145*second
     integrator.integrateJacobian(jacobian, t, fields)
+    self.assertEqual(False, integrator.needNewJacobian())
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -244,10 +245,10 @@ class TestElasticityExplicit(unittest.TestCase):
     from pylith.topology.FieldsManager import FieldsManager
     fields = FieldsManager(mesh)
     fields.addReal("residual")
-    fields.addReal("dispTpdt")
+    fields.addReal("solution")
     fields.addReal("dispT")
     fields.addReal("dispTmdt")
-    fields.createHistory(["dispTpdt", "dispT", "dispTmdt"])
+    fields.createHistory(["solution", "dispT", "dispTmdt"])
     fields.setFiberDimension("residual", cs.spaceDim)
     fields.allocate("residual")
     fields.copyLayout("residual")

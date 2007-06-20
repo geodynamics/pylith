@@ -16,7 +16,8 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::feassemble::Constraint::Constraint(void)
+pylith::feassemble::Constraint::Constraint(void) :
+  _useSolnIncr(false)
 { // constructor
 } // constructor
 

@@ -179,11 +179,11 @@ class TestFieldsManager(unittest.TestCase):
     return
 
 
-  def test_solutionField(self):
+  def test_outputField(self):
     """
-    Test solutionField().
+    Test outputField().
 
-    WARNING: This is not a rigorous test of solutionField() because we
+    WARNING: This is not a rigorous test of outputField() because we
     don't verify the results.
     """
     mesh = self._initialize()
@@ -194,18 +194,18 @@ class TestFieldsManager(unittest.TestCase):
     for field in fields:
       manager.addReal(field)
 
-    manager.solutionField("field B")
+    manager.outputField("field B")
 
     # We should really add something here to check to make sure things
     # actually initialized correctly.
     return
 
 
-  def test_getSolution(self):
+  def test_getOutputSoln(self):
     """
-    Test getSolution().
+    Test getOutputSoln().
 
-    WARNING: This is not a rigorous test of getSolution() because we
+    WARNING: This is not a rigorous test of getOutputSoln() because we
     don't verify the results.
     """
     mesh = self._initialize()
@@ -216,8 +216,8 @@ class TestFieldsManager(unittest.TestCase):
     for field in fields:
       manager.addReal(field)
 
-    manager.solutionField("field B")
-    solution = manager.getSolution()
+    manager.outputField("field B")
+    solution = manager.getOutputSoln()
 
     # We should really add something here to check to make sure things
     # actually initialized correctly.

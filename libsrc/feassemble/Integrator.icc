@@ -1,0 +1,57 @@
+// -*- C++ -*-
+//
+// ======================================================================
+//
+//                           Brad T. Aagaard
+//                        U.S. Geological Survey
+//
+// {LicenseText}
+//
+// ======================================================================
+//
+
+#if !defined(pylith_feassemble_integrator_hh)
+#error "Integrator.icc must be included only from Integrator.hh"
+#else
+
+// Set time step for advancing from time t to time t+dt.
+inline
+void
+pylith::feassemble::Integrator::timeStep(const double dt) {
+  _dt = dt;
+} // timeStep
+
+// Get stable time step for advancing from time t to time t+dt.
+inline
+double
+pylith::feassemble::Integrator::stableTimeStep(void) const {
+  // Default is current time step
+  return _dt;
+} // stableTimeStep
+
+// Check whether Jacobian needs to be recomputed.
+inline
+bool
+pylith::feassemble::Integrator::needNewJacobian(void) const {
+  return _needNewJacobian;
+} // needNewJacobian
+
+// Set flag for setting constraints for total field solution or
+inline
+void
+pylith::feassemble::Integrator::useSolnIncr(const bool flag) {
+  _useSolnIncr = flag;
+} // useSolnIncr
+
+// Update state variables as needed.
+inline
+void
+pylith::feassemble::Integrator::updateState(
+				     const double t,
+				     const ALE::Obj<real_section_type>& field,
+				     const ALE::Obj<Mesh>& mesh) {}
+
+
+#endif
+
+// End of file
