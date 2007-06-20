@@ -49,6 +49,7 @@ class pylith::faults::TestBruneSlipFn : public CppUnit::TestFixture
   CPPUNIT_TEST( testInitialize2D );
   CPPUNIT_TEST( testInitialize3D );
   CPPUNIT_TEST( testSlip );
+  CPPUNIT_TEST( testSlipIncr );
   CPPUNIT_TEST( testSlipTH );
 
   CPPUNIT_TEST_SUITE_END();
@@ -79,6 +80,9 @@ public :
 
   /// Test slip().
   void testSlip(void);
+
+  /// Test slipIncr().
+  void testSlipIncr(void);
 
   /// Test _slip().
   void testSlipTH(void);

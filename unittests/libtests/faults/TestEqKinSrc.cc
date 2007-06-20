@@ -224,5 +224,109 @@ pylith::faults::TestEqKinSrc::testSlip(void)
   } // for
 } // testSlip
 
+// ----------------------------------------------------------------------
+// Test slipIncr().
+void
+pylith::faults::TestEqKinSrc::testSlipIncr(void)
+{ // testSlip
+  const char* meshFilename = "data/tri3.mesh";
+  const char* faultLabel = "fault";
+  const int faultId = 2;
+  const char* finalSlipFilename = "data/tri3_finalslip.spatialdb";
+  const char* slipTimeFilename = "data/tri3_sliptime.spatialdb";
+  const char* peakRateFilename = "data/tri3_peakrate.spatialdb";
+  const int constraintPts[] = { 3, 4 };
+  const double finalSlipE[] = { 2.3, 0.1, 
+				2.4, 0.2};
+  const double slipTimeE[] = { 1.2, 1.3 };
+  const double peakRateE[] = { 1.4, 1.5 };
+  const int numConstraintPts = 2;
+
+  ALE::Obj<Mesh> mesh;
+  meshio::MeshIOAscii meshIO;
+  meshIO.filename(meshFilename);
+  meshIO.debug(false);
+  meshIO.interpolate(false);
+  meshIO.read(&mesh);
+  CPPUNIT_ASSERT(!mesh.isNull());
+  const int spaceDim = mesh->getDimension();
+  spatialdata::geocoords::CSCart cs;
+  cs.setSpaceDim(spaceDim);
+
+  // Create fault mesh
+  ALE::Obj<Mesh> faultMesh;
+  const bool useLagrangeConstraints = true;
+  CohesiveTopology::create(&faultMesh, mesh, 
+			   mesh->getIntSection(faultLabel),
+			   faultId);
+  CPPUNIT_ASSERT(!faultMesh.isNull());
+
+  // Create set of constraint vertices
+  std::set<Mesh::point_type> eqsrcVertices;
+  for (int i=0; i < numConstraintPts; ++i)
+    eqsrcVertices.insert(constraintPts[i]);
+  CPPUNIT_ASSERT_EQUAL(numConstraintPts, int(eqsrcVertices.size()));
+  
+  // Setup databases
+  spatialdata::spatialdb::SimpleDB dbFinalSlip("final slip");
+  spatialdata::spatialdb::SimpleIOAscii ioFinalSlip;
+  ioFinalSlip.filename(finalSlipFilename);
+  dbFinalSlip.ioHandler(&ioFinalSlip);
+  
+  spatialdata::spatialdb::SimpleDB dbSlipTime("slip time");
+  spatialdata::spatialdb::SimpleIOAscii ioSlipTime;
+  ioSlipTime.filename(slipTimeFilename);
+  dbSlipTime.ioHandler(&ioSlipTime);
+  
+  spatialdata::spatialdb::SimpleDB dbPeakRate("peak rate");
+  spatialdata::spatialdb::SimpleIOAscii ioPeakRate;
+  ioPeakRate.filename(peakRateFilename);
+  dbPeakRate.ioHandler(&ioPeakRate);
+
+  // setup EqKinSrc
+  BruneSlipFn slipFn;
+  slipFn.dbFinalSlip(&dbFinalSlip);
+  slipFn.dbSlipTime(&dbSlipTime);
+  slipFn.dbPeakRate(&dbPeakRate);
+  
+  EqKinSrc eqsrc;
+  eqsrc.slipfn(&slipFn);
+  eqsrc.initialize(mesh, faultMesh, eqsrcVertices, &cs);
+  
+  const double t0 = 1.234;
+  const double t1 = 2.525;
+  const ALE::Obj<real_section_type>& slip = 
+    eqsrc.slipIncr(t0, t1, eqsrcVertices);
+  CPPUNIT_ASSERT(!slip.isNull());
+
+  int iPoint = 0;
+  const double tolerance = 1.0e-06;
+  typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
+  const vert_iterator vBegin = eqsrcVertices.begin();
+  const vert_iterator vEnd = eqsrcVertices.end();
+  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter, ++iPoint) {
+    double slipMag = 0.0;
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      slipMag += pow(finalSlipE[iPoint*spaceDim+iDim], 2);
+    slipMag = sqrt(slipMag);
+    const double tau = slipMag / (exp(1.0) * peakRateE[iPoint]);
+    const double tRef = slipTimeE[iPoint];
+    const double slipNorm0 = 
+      (t0 > tRef) ? 1.0 - exp(-(t0-tRef)/tau) * (1.0 + (t0-tRef)/tau) : 0.0;
+    const double slipNorm1 =
+      (t1 > tRef) ? 1.0 - exp(-(t1-tRef)/tau) * (1.0 + (t1-tRef)/tau) : 0.0;
+
+    const int fiberDim = slip->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
+    const real_section_type::value_type* vals = 
+      slip->restrictPoint(*v_iter);
+    for (int iDim=0; iDim < fiberDim; ++iDim) {
+      const double slipE = 
+	finalSlipE[iPoint*spaceDim+iDim] * (slipNorm1 - slipNorm0);
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(slipE, vals[iDim], tolerance);
+    } // for
+  } // for
+} // testSlipIncr
+
 
 // End of file 
