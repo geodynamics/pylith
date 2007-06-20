@@ -125,10 +125,9 @@ class Implicit(Formulation):
     """
     Hook for doing stuff before advancing time step.
     """
-    self._info.log("Preparing for advanving time step.")
-
     # Set dispTBctpdt to the BC t time t+dt. Unconstrained DOF are
     # unaffected and will be equal to their values at time t.
+    self._info.log("Setting constraints.")
     dispTBctpdt = self.fields.getReal("dispTBctpdt")
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTBctpdt)
@@ -143,7 +142,7 @@ class Implicit(Formulation):
       petsc.mat_setzero(self.jacobian)
       for integrator in self.integrators:
         integrator.timeStep(dt)
-        integrator.integrateJacobian(self.jacobian, t, self.fields)
+        integrator.integrateJacobian(self.jacobian, t+dt, self.fields)
       petsc.mat_assemble(self.jacobian)
     return
 
@@ -160,7 +159,7 @@ class Implicit(Formulation):
     bindings.zeroRealSection(dispIncr)
     for integrator in self.integrators:
       integrator.timeStep(dt)
-      integrator.integrateResidual(residual, t, self.fields)
+      integrator.integrateResidual(residual, t+dt, self.fields)
 
     import pylith.utils.petsc as petsc
     self._info.log("Solving equations.")
@@ -168,7 +167,7 @@ class Implicit(Formulation):
     return
 
 
-  def poststep(self, t):
+  def poststep(self, t, dt):
     """
     Hook for doing stuff after advancing time step.
     """
@@ -184,7 +183,7 @@ class Implicit(Formulation):
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(t, disp)
+      integrator.updateState(t+dt, disp)
 
     # If finishing first time step, then switch from solving for total
     # displacements to solving for incremental displacements
@@ -196,7 +195,7 @@ class Implicit(Formulation):
       for integrator in self.integrators:
         integrator.useSolnIncr(True)
 
-    Formulation.poststep(self, t)
+    Formulation.poststep(self, t+dt)
     return
 
 
