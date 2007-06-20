@@ -267,7 +267,7 @@ class PyLithApp(PetscApplication):
     partitioner.meta['tip'] = "Partitioner (chaco, parmetis)."
 
     # Unused option flags.
-    iskopt = pyre.bool("autoRotateSlipperyNodes",default=True)
+    iskopt = pyre.bool("autoRotateSlipperyNodes",default=False)
     iskopt.meta['tip'] = "Whether to performa automatic rotation for slippery nodes (presently unused)."
     iskopt.__converter = lambda self, value: int(value) + 1
 
