@@ -250,11 +250,11 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	const double s11 = stress[iQuad][0];
 	const double s22 = stress[iQuad][1];
 	const double s12 = stress[iQuad][2];
-	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
+	for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	     iBasis < numBasis;
 	     ++iBasis) {
-	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim  ];
-	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
+	  const double N1 = wt*basisDeriv[iQ+iBasis*spaceDim  ];
+	  const double N2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
 	  _cellVector[iBasis*spaceDim  ] -= N1*s11 + N2*s12;
 	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22;
 	} // for
@@ -280,13 +280,13 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	const double s23 = stress[iQuad][4];
 	const double s13 = stress[iQuad][5];
 
-	for (int iBasis=0, iQ=iQuad*numBasis*cellDim;
+	for (int iBasis=0, iQ=iQuad*numBasis*spaceDim;
 	     iBasis < numBasis;
 	     ++iBasis) {
 	  const int iBlock = iBasis*spaceDim;
-	  const double N1 = wt*basisDeriv[iQ+iBasis*cellDim+0];
-	  const double N2 = wt*basisDeriv[iQ+iBasis*cellDim+1];
-	  const double N3 = wt*basisDeriv[iQ+iBasis*cellDim+2];
+	  const double N1 = wt*basisDeriv[iQ+iBasis*spaceDim+0];
+	  const double N2 = wt*basisDeriv[iQ+iBasis*spaceDim+1];
+	  const double N3 = wt*basisDeriv[iQ+iBasis*spaceDim+2];
 	  _cellVector[iBlock  ] -= N1*s11 + N2*s12 + N3*s13;
 	  _cellVector[iBlock+1] -= N1*s12 + N2*s22 + N3*s23;
 	  _cellVector[iBlock+2] -= N1*s13 + N2*s23 + N3*s33;
