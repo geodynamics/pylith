@@ -114,7 +114,7 @@ class TimeDependent(Problem):
       dt = self.dt
     t = self.formulation.startTime(self.dt)
     while t.value < self.totalTime.value:
-      self._info.log("Main time loop, t=%s" % t)
+      self._info.log("Main time loop, current time is t=%s" % t)
       
       # Checkpoint if necessary
       self.checkpointTimer.update(t)
@@ -132,7 +132,7 @@ class TimeDependent(Problem):
       self._step(t, dt)
 
       # Do stuff after advancing time step
-      self._poststep(t+dt)
+      self._poststep(t, dt)
 
       # Update time step
       t += dt
@@ -180,6 +180,7 @@ class TimeDependent(Problem):
     """
     Hook for doing stuff before advancing time step.
     """
+    self._info.log("Preparing to advance solution from time t=%s." % t)
     self.formulation.prestep(t, dt)
     return
 
@@ -188,15 +189,17 @@ class TimeDependent(Problem):
     """
     Advance to next time step.
     """
+    self._info.log("Advancing solution from t=%s to t=%s." % (t, t+dt))    
     self.formulation.step(t, dt)
     return
 
 
-  def _poststep(self, t):
+  def _poststep(self, t, dt):
     """
     Hook for doing stuff after advancing time step.
     """
-    self.formulation.poststep(t)
+    self._info.log("Finishing advancing solution to t=%s." % (t+dt))    
+    self.formulation.poststep(t, dt)
     return
 
 
