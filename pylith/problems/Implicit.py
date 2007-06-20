@@ -118,9 +118,11 @@ class Implicit(Formulation):
     """
     Hook for doing stuff before advancing time step.
     """
-    # Set dispTBctpdt to the BC at time t+dt. Unconstrained DOF are
+    self._info.log("Preparing for advanving time step.")
+
+    # Set dispTBctpdt to the BC t time t+dt. Unconstrained DOF are
     # unaffected and will be equal to their values at time t.
-    dispTBctdpt = self.fields.getReal("dispTBctpdt")
+    dispTBctpdt = self.fields.getReal("dispTBctpdt")
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTBctpdt)
 
@@ -153,8 +155,10 @@ class Implicit(Formulation):
       integrator.timeStep(dt)
       integrator.integrateResidual(residual, t, self.fields)
 
+    #bindings.sectionView(residual, "residual")
     self._info.log("Solving equations.")
     self.solver.solve(dispIncr, self.jacobian, residual)
+    #bindings.sectionView(self.fields.getReal("solution"), "solution")
     return
 
 
@@ -169,8 +173,9 @@ class Implicit(Formulation):
     # dispTBctpdt contains the displacement field at time t+dt.
     import pylith.topology.topology as bindings
     solution = self.fields.getReal("solution")
-    disp = self.fields.getReal("dispTBcTpdt")
+    disp = self.fields.getReal("dispTBctpdt")
     bindings.addRealSections(disp, disp, solution)
+    #bindings.sectionView(solution, "solution")
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
@@ -215,6 +220,8 @@ class Implicit(Formulation):
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(self.jacobian)
     residual = self.fields.getReal("residual")
+    petsc.mat_setzero(self.jacobian)
+    bindings.zeroRealSection(residual)
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateJacobian(self.jacobian, t, self.fields)
@@ -222,12 +229,16 @@ class Implicit(Formulation):
     import pylith.utils.petsc as petsc
     petsc.mat_assemble(self.jacobian)
 
+    import pylith.topology.topology as bindings
+    #petsc.mat_view(self.jacobian)
+    #bindings.sectionView(residual, "residual")
+
     self._info.log("Solving equations.")
     self.solver.solve(solution, self.jacobian, residual)
 
-    import pylith.topology.topology as bindings
     bindings.addRealSections(disp, disp, solution)
-    bindings.sectionView(solution, "solution")
+    #bindings.sectionView(solution, "solution")
+    #bindings.sectionView(self.fields.getReal("dispIncr"), "dispIncr")
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
