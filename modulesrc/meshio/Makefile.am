@@ -15,7 +15,8 @@ include $(top_srcdir)/subpackage.am
 
 subpkgpyexec_LTLIBRARIES = meshiomodule.la
 
-meshiomodule_la_LDFLAGS = -module
+meshiomodule_la_LDFLAGS = -module -no-undefined -avoid-version \
+	$(PYTHON_LA_LDFLAGS)
 
 meshiomodule_la_SOURCES = meshio.pyxe
 
@@ -24,7 +25,8 @@ nodist_meshiomodule_la_SOURCES = \
 
 meshiomodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
-	$(PETSC_LIB)
+	$(PETSC_LIB) \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
   meshiomodule_la_LIBADD += -lnetcdf_c++ -lnetcdf

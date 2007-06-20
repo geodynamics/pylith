@@ -15,7 +15,8 @@ include $(top_srcdir)/subpackage.am
 
 subpkgpyexec_LTLIBRARIES = materialsmodule.la
 
-materialsmodule_la_LDFLAGS = -module
+materialsmodule_la_LDFLAGS = -module -no-undefined -avoid-version \
+	$(PYTHON_LA_LDFLAGS)
 
 materialsmodule_la_SOURCES = materials.pyxe
 
@@ -24,7 +25,8 @@ nodist_materialsmodule_la_SOURCES = \
 
 materialsmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
-	$(PETSC_LIB)
+	$(PETSC_LIB) \
+	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT
   materialsmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
