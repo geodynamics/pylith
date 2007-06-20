@@ -45,6 +45,7 @@ class pylith::faults::TestEqKinSrc : public CppUnit::TestFixture
   CPPUNIT_TEST( testSlipFn );
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testSlip );
+  CPPUNIT_TEST( testSlipIncr );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -64,6 +65,10 @@ public :
   /// Test slip(). Use 2-D mesh with Brune slip function to test
   /// slip().
   void testSlip(void);
+
+  /// Test slipIncr(). Use 2-D mesh with Brune slip function to test
+  /// slip().
+  void testSlipIncr(void);
 
 }; // class TestEqKinSrc
 
