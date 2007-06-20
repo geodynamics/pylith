@@ -18,6 +18,8 @@
 
 #include "journal/info.h" // USES journal::info_t
 
+#include <petsc.h> // USES MPI
+
 #include <iomanip> // USES setw(), setiosflags(), resetiosflags()
 #include <assert.h> // USES assert()
 #include <fstream> // USES std::ifstream, std::ofstream
@@ -46,6 +48,8 @@ pylith::meshio::MeshIOAscii::~MeshIOAscii(void)
 void
 pylith::meshio::MeshIOAscii::_read(void)
 { // _read
+  MPI_Comm comm = PETSC_COMM_WORLD;
+  int rank;
   int meshDim = 0;
   int spaceDim = 0;
   int numVertices = 0;
@@ -54,81 +58,89 @@ pylith::meshio::MeshIOAscii::_read(void)
   double_array coordinates;
   int_array cells;
   int_array materialIds;
-  
-  std::ifstream filein(_filename.c_str());
-  if (!filein.is_open() || !filein.good()) {
-    std::ostringstream msg;
-    msg << "Could not open mesh file '" << _filename
-	<< "' for reading.\n";
-    throw std::runtime_error(msg.str());
-  } // if
 
-  std::string token;
-  const int maxIgnore = 1024;
-  filein >> token;
-  if (0 != strcasecmp(token.c_str(), "mesh")) {
-    std::ostringstream msg;
-    msg << "Expected 'mesh' token but encountered '" << token << "'\n";
-    throw std::runtime_error(msg.str());
-  }
-
-  bool readDim = false;
-  bool readCells = false;
-  bool readVertices = false;
-  bool builtMesh = false;
-
-  filein.ignore(maxIgnore, '{');
-  filein >> token;
-  while (filein.good() && token != "}") {
-    if (0 == strcasecmp(token.c_str(), "dimension")) {
-      filein.ignore(maxIgnore, '=');
-      filein >> meshDim;
-      readDim = true;
-    } else if (0 == strcasecmp(token.c_str(), "use-index-zero")) {
-      filein.ignore(maxIgnore, '=');
-      std::string flag = "";
-      filein >> flag;
-      if (0 == strcasecmp(flag.c_str(), "true"))
-        useIndexZero(true);
-      else
-        useIndexZero(false);
-    } else if (0 == strcasecmp(token.c_str(), "vertices")) {
-      filein.ignore(maxIgnore, '{');
-      _readVertices(filein, &coordinates, &numVertices, &spaceDim);
-      readVertices = true;
-    } else if (0 == strcasecmp(token.c_str(), "cells")) {
-      filein.ignore(maxIgnore, '{');
-      _readCells(filein, &cells, &materialIds, &numCells, &numCorners);
-      readCells = true;
-    } else if (0 == strcasecmp(token.c_str(), "group")) {
-      std::string name;
-      GroupPtType type;
-      int numPoints = 0;
-      int_array points;
-
-      if (!builtMesh)
-        throw std::runtime_error("Both 'vertices' and 'cells' must "
-				 "precede any groups in mesh file.");
-      filein.ignore(maxIgnore, '{');
-      _readGroup(filein, &points, &type, &name);
-      _setGroup(name, type, points);
-    } else {
+  MPI_Comm_rank(comm, &rank);
+  if (!rank) {
+    std::ifstream filein(_filename.c_str());
+    if (!filein.is_open() || !filein.good()) {
       std::ostringstream msg;
-      msg << "Could not parse '" << token << "' into a mesh setting.";
-      throw std::runtime_error(msg.str());  
-    } // else
-
-    if (readDim && readCells && readVertices && !builtMesh) {
-      // Can now build mesh
-      _buildMesh(coordinates, numVertices, spaceDim,
-		 cells, numCells, numCorners, meshDim);
-      _setMaterials(materialIds);
-      builtMesh = true;
+      msg << "Could not open mesh file '" << _filename
+          << "' for reading.\n";
+      throw std::runtime_error(msg.str());
     } // if
 
+    std::string token;
+    const int maxIgnore = 1024;
     filein >> token;
-  } // while
-  filein.close();
+    if (0 != strcasecmp(token.c_str(), "mesh")) {
+      std::ostringstream msg;
+      msg << "Expected 'mesh' token but encountered '" << token << "'\n";
+      throw std::runtime_error(msg.str());
+    }
+
+    bool readDim = false;
+    bool readCells = false;
+    bool readVertices = false;
+    bool builtMesh = false;
+
+    filein.ignore(maxIgnore, '{');
+    filein >> token;
+    while (filein.good() && token != "}") {
+      if (0 == strcasecmp(token.c_str(), "dimension")) {
+        filein.ignore(maxIgnore, '=');
+        filein >> meshDim;
+        readDim = true;
+      } else if (0 == strcasecmp(token.c_str(), "use-index-zero")) {
+        filein.ignore(maxIgnore, '=');
+        std::string flag = "";
+        filein >> flag;
+        if (0 == strcasecmp(flag.c_str(), "true"))
+          useIndexZero(true);
+        else
+          useIndexZero(false);
+      } else if (0 == strcasecmp(token.c_str(), "vertices")) {
+        filein.ignore(maxIgnore, '{');
+        _readVertices(filein, &coordinates, &numVertices, &spaceDim);
+        readVertices = true;
+      } else if (0 == strcasecmp(token.c_str(), "cells")) {
+        filein.ignore(maxIgnore, '{');
+        _readCells(filein, &cells, &materialIds, &numCells, &numCorners);
+        readCells = true;
+      } else if (0 == strcasecmp(token.c_str(), "group")) {
+        std::string name;
+        GroupPtType type;
+        int numPoints = 0;
+        int_array points;
+
+        if (!builtMesh)
+          throw std::runtime_error("Both 'vertices' and 'cells' must "
+                                   "precede any groups in mesh file.");
+        filein.ignore(maxIgnore, '{');
+        _readGroup(filein, &points, &type, &name);
+        _setGroup(name, type, points);
+      } else {
+        std::ostringstream msg;
+        msg << "Could not parse '" << token << "' into a mesh setting.";
+        throw std::runtime_error(msg.str());  
+      } // else
+
+      if (readDim && readCells && readVertices && !builtMesh) {
+        // Can now build mesh
+        _buildMesh(coordinates, numVertices, spaceDim,
+                   cells, numCells, numCorners, meshDim);
+        _setMaterials(materialIds);
+        builtMesh = true;
+      } // if
+
+      filein >> token;
+    } // while
+    filein.close();
+  } else {
+    _buildMesh(coordinates, numVertices, spaceDim,
+               cells, numCells, numCorners, meshDim);
+    _setMaterials(materialIds);
+  }
+  _distributeGroups();
 } // read
 
 // ----------------------------------------------------------------------

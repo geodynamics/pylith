@@ -84,25 +84,34 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
 				   const int meshDim)
 { // _buildMesh
   assert(0 != _mesh);
-  assert(coordinates.size() == numVertices*spaceDim);
-  assert(cells.size() == numCells*numCorners);
+  MPI_Comm comm = PETSC_COMM_WORLD;
+  int      dim  = meshDim;
+  int      rank;
 
+  MPI_Bcast(&dim, 1, MPI_INT, 0, comm);
   // :BUG: This causes a memory leak.
-  *_mesh = new Mesh(PETSC_COMM_WORLD, meshDim);
+  *_mesh = new Mesh(PETSC_COMM_WORLD, dim);
   _mesh->addRef();
 
   assert(!_mesh->isNull());
   (*_mesh)->setDebug(_debug);
 
   ALE::Obj<sieve_type> sieve = new sieve_type((*_mesh)->comm());
-
-  ALE::SieveBuilder<Mesh>::buildTopology(sieve, meshDim, 
-                                         numCells, 
-                                         const_cast<int*>(&cells[0]), 
-                                         numVertices, 
-                                         _interpolate, numCorners, -1,
-                                         (*_mesh)->getArrowSection("orientation"));
   (*_mesh)->setSieve(sieve);
+
+  MPI_Comm_rank(comm, &rank);
+  if (!rank) {
+    assert(coordinates.size() == numVertices*spaceDim);
+    assert(cells.size() == numCells*numCorners);
+    ALE::SieveBuilder<Mesh>::buildTopology(sieve, meshDim, 
+                                           numCells, 
+                                           const_cast<int*>(&cells[0]), 
+                                           numVertices, 
+                                           _interpolate, numCorners, -1,
+                                           (*_mesh)->getArrowSection("orientation"));
+  } else {
+    (*_mesh)->getArrowSection("orientation");
+  }
   (*_mesh)->stratify();
   ALE::SieveBuilder<Mesh>::buildCoordinates(*_mesh, spaceDim, &coordinates[0]);
 } // _buildMesh
@@ -193,27 +202,29 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 { // _setMaterials
   assert(0 != _mesh);
   assert(!_mesh->isNull());
-  
-  const ALE::Obj<Mesh::label_sequence>& cells = (*_mesh)->heightStratum(0);
-  assert(!cells.isNull());
-
-  const int numCells = materialIds.size();
-  if (cells->size() != numCells) {
-    std::ostringstream msg;
-    msg << "Mismatch in size of materials identifier array ("
-	<< numCells << ") and number of cells in mesh ("
-	<< cells->size() << ").";
-    throw std::runtime_error(msg.str());
-  } // if
 
   const ALE::Obj<Mesh::label_type>& labelMaterials = 
     (*_mesh)->createLabel("material-id");
+
+  if (!(*_mesh)->commRank()) {
+    const ALE::Obj<Mesh::label_sequence>& cells = (*_mesh)->heightStratum(0);
+    assert(!cells.isNull());
+
+    const int numCells = materialIds.size();
+    if (cells->size() != numCells) {
+      std::ostringstream msg;
+      msg << "Mismatch in size of materials identifier array ("
+          << numCells << ") and number of cells in mesh ("
+          << cells->size() << ").";
+      throw std::runtime_error(msg.str());
+    } // if
   
-  int i = 0;
-  for(Mesh::label_sequence::iterator e_iter = cells->begin();
-      e_iter != cells->end();
-      ++e_iter)
-    (*_mesh)->setValue(labelMaterials, *e_iter, materialIds[i++]);
+    int i = 0;
+    for(Mesh::label_sequence::iterator e_iter = cells->begin();
+        e_iter != cells->end();
+        ++e_iter)
+      (*_mesh)->setValue(labelMaterials, *e_iter, materialIds[i++]);
+  }
 } // _setMaterials
 
 // ----------------------------------------------------------------------
@@ -268,6 +279,47 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   } // if/else
   (*_mesh)->allocate(groupField);
 } // _setGroup
+
+// ----------------------------------------------------------------------
+// Create empty groups on other processes
+void
+pylith::meshio::MeshIO::_distributeGroups()
+{ // _distributeGroups
+  assert(0 != _mesh);
+  assert(!_mesh->isNull());
+
+  if (!(*_mesh)->commRank()) {
+    const ALE::Obj<std::set<std::string> >& sectionNames = 
+      (*_mesh)->getIntSections();
+    int numGroups = sectionNames->size();
+
+    MPI_Bcast(&numGroups, 1, MPI_INT, 0, (*_mesh)->comm());
+    for (std::set<std::string>::const_iterator name=sectionNames->begin();
+         name != sectionNames->end(); ++name) {
+      int len = name->size();
+      
+      MPI_Bcast(&len, 1, MPI_INT, 0, (*_mesh)->comm());
+      MPI_Bcast((void *) name->c_str(), len, MPI_CHAR, 0, (*_mesh)->comm());
+    }
+  } else {
+    int numGroups;
+
+    MPI_Bcast(&numGroups, 1, MPI_INT, 0, (*_mesh)->comm());
+    for(int g = 0; g < numGroups; ++g) {
+      char *name;
+      int   len;
+
+      MPI_Bcast(&len, 1, MPI_INT, 0, (*_mesh)->comm());
+      name = new char[len+1];
+      MPI_Bcast(name, len, MPI_CHAR, 0, (*_mesh)->comm());
+      name[len] = 0;
+      const ALE::Obj<int_section_type>& groupField = (*_mesh)->getIntSection(name);
+      assert(!groupField.isNull());
+      (*_mesh)->allocate(groupField);
+      delete [] name;
+    }
+  }
+} // _distributeGroups
 
 // ----------------------------------------------------------------------
 // Get names of all groups in mesh.
