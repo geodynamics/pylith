@@ -86,6 +86,7 @@ if ENABLE_CUBIT
 endif
 
 libpylith_la_LDFLAGS = -no-undefined
+libpylith_la_LIBADD = $(PETSC_LIB)
 
 INCLUDES = -I$(top_builddir)/include
 INCLUDES += $(PETSC_INCLUDE)
