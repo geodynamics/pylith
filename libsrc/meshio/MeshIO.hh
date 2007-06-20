@@ -190,6 +190,10 @@ protected :
 		 GroupPtType* type,
 		 const char *name) const;
 
+  /** Create empty groups on other processes
+   */
+  void _distributeGroups();
+
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 

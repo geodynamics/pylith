@@ -70,11 +70,13 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const ALE::Mesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Check to make sure we have cells
+#if 0
   if (0 == cells->size()) {
     std::ostringstream msg;
     msg << "Could not find any cells for material '" << _label << "'.";
     throw std::runtime_error(msg.str());
   } // if
+#endif
 
   // Create sections to hold parameters for physical properties
   if (0 != _parameters) // Can't delete NULL pointer that holds reference

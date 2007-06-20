@@ -172,11 +172,17 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   PointArray origVertices;
   PointArray newVertices;
   int        oppositeVertex;
-  const int  numCorners = sieve->nCone(*mesh->heightStratum(0)->begin(), mesh->depth())->size();
-  const int  faceSize   = _numFaceVertices(*mesh->heightStratum(0)->begin(), mesh);
-  int       *indices    = new int[faceSize];
-  const int  firstCohesiveCell = newPoint;
-  
+  int        numCorners = 0;
+  int        faceSize   = 0;
+  int       *indices    = NULL;
+  int        firstCohesiveCell;
+
+  if (!(*fault)->commRank()) {
+    numCorners = sieve->nCone(*mesh->heightStratum(0)->begin(), mesh->depth())->size();
+    faceSize   = _numFaceVertices(*mesh->heightStratum(0)->begin(), mesh);
+    indices    = new int[faceSize];
+    firstCohesiveCell = newPoint;
+  }
   for(Mesh::label_sequence::iterator f_iter = faces->begin();
       f_iter != faces->end();
       ++f_iter, ++newPoint) {
@@ -255,7 +261,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     }
     mesh->setValue(material, newPoint, materialId);
   } // for
-  delete [] indices;
+  if (!(*fault)->commRank()) delete [] indices;
   mesh->stratify();
   const ALE::Obj<Mesh::label_type>&           label          = mesh->createLabel(std::string("censored depth"));
   const ALE::Obj<std::set<Mesh::point_type> > modifiedPoints = new std::set<Mesh::point_type>();

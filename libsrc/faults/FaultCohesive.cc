@@ -48,7 +48,7 @@ pylith::faults::FaultCohesive::adjustTopology(const ALE::Obj<ALE::Mesh>& mesh)
   assert(!groupField.isNull());
 
   CohesiveTopology::create(_faultMesh, mesh, groupField, id(),
-			   _useLagrangeConstraints());
+                           _useLagrangeConstraints());
 } // adjustTopology
 
 // ----------------------------------------------------------------------

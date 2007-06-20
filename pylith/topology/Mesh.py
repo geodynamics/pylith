@@ -63,6 +63,15 @@ class Mesh(Component):
     if not self.cppHandle is None:
       dim = self.cppHandle.dimension
     return dim
+  
+
+  def view(self):
+    """
+    View the mesh.
+    """
+    if not self.cppHandle is None:
+      self.cppHandle.view
+    return
 
 
   def comm(self):

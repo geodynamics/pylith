@@ -59,9 +59,10 @@ class MeshIO(Component):
     mesh.initialize(self.coordsys)
 
     # Read mesh
-    import mpi
-    if 0 == mpi.MPI_Comm_rank(mesh.comm()):
-      self.cppHandle.read(mesh.cppHandle)
+    #import mpi
+    #if 0 == mpi.MPI_Comm_rank(mesh.comm()):
+    self.cppHandle.read(mesh.cppHandle)
+    mesh.view()
     return mesh
 
 
