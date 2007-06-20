@@ -86,6 +86,14 @@ class Explicit(Formulation):
     return
 
 
+  def startTime(self):
+    """
+    Get time at which time stepping should start.
+    """
+    from pyre.units.time import second
+    return 0.0*second
+
+
   def stableTimeStep(self):
     """
     Get stable time step for advancing forward in time.
