@@ -56,15 +56,6 @@ class TestElasticityImplicit(unittest.TestCase):
     return
     
 
-  def test_needNewJacobian(self):
-    """
-    Test needNewJacobian().
-    """
-    integrator = ElasticityImplicit()
-    self.assertEqual(False, integrator.needNewJacobian())
-    return
-
-
   def test_setMesh(self):
     """
     Test setMesh().
@@ -112,11 +103,20 @@ class TestElasticityImplicit(unittest.TestCase):
     """
     Test needNewJacobian().
     """
-    integrator = ElasticityImplicit()
-    self.assertEqual(False, integrator.needNewJacobian())
+    (mesh, integrator, fields) = self._initialize()
+    self.assertEqual(True, integrator.needNewJacobian())
     return
 
   
+  def test_useSolnIncr(self):
+    """
+    Test useSolnIncr().
+    """
+    (mesh, integrator, fields) = self._initialize()
+    integrator.useSolnIncr(True)
+    return
+
+
   def test_integrateResidual(self):
     """
     Test integrateResidual().
@@ -149,6 +149,7 @@ class TestElasticityImplicit(unittest.TestCase):
     petsc.mat_setzero(jacobian)
     t = 7.3*year
     integrator.integrateJacobian(jacobian, t, fields)
+    self.assertEqual(False, integrator.needNewJacobian())
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    

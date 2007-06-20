@@ -538,7 +538,8 @@ cdef class FaultCohesiveKin(FaultCohesive):
       int result = 0;
       try {
         assert(0 != objVptr);
-        ((pylith::faults::FaultCohesiveKin*) objVptr)->needNewJacobian();
+        result =
+          ((pylith::faults::FaultCohesiveKin*) objVptr)->needNewJacobian();
       } catch (const std::exception& err) {
         PyErr_SetString(PyExc_RuntimeError,
                         const_cast<char*>(err.what()));
@@ -552,6 +553,30 @@ cdef class FaultCohesiveKin(FaultCohesive):
       return result;
       #}embed
       return FaultCohesiveKin_needNewJacobian_get(self.thisptr)
+
+
+  property useSolnIncr:
+    def __set__(self, flag):
+      """
+      Set timeStep.
+      """
+      # create shim for method 'useSolnIncr'
+      #embed{ void FaultCohesiveKin_useSolnIncr_set(void* objVptr, int flag)
+      try {
+        assert(0 != objVptr);
+        ((pylith::faults::FaultCohesiveKin*) objVptr)->useSolnIncr(flag);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      FaultCohesiveKin_useSolnIncr_set(self.thisptr, flag)
 
 
 # ----------------------------------------------------------------------

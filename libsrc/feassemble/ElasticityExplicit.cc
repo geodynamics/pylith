@@ -75,8 +75,20 @@ pylith::feassemble::ElasticityExplicit::needNewJacobian(void)
   assert(0 != _material);
   if (!_needNewJacobian)
     _needNewJacobian = _material->needNewJacobian();
+  std::cout << "ElasticityExplicit.cc Need new jacobian: " << _needNewJacobian << std::endl;
   return _needNewJacobian;
 } // needNewJacobian
+
+// ----------------------------------------------------------------------
+// Set flag for setting constraints for total field solution or
+// incremental field solution.
+void
+pylith::feassemble::ElasticityExplicit::useSolnIncr(const bool flag)
+{ // useSolnIncr
+  assert(0 != _material);
+  _useSolnIncr = flag;
+  _material->useElasticBehavior(!_useSolnIncr);
+} // useSolnIncr
 
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
@@ -402,7 +414,6 @@ pylith::feassemble::ElasticityExplicit::updateState(
   assert(!disp.isNull());
 
   // No need to update state if using elastic behavior
-  std::cout << "USES_UPDATE_STATE: " << _material->usesUpdateState() << std::endl;
   if (!_material->usesUpdateState())
     return;
 

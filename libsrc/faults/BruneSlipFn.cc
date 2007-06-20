@@ -245,5 +245,60 @@ pylith::faults::BruneSlipFn::slip(const double t,
   return _slipField;
 } // slip
 
+// ----------------------------------------------------------------------
+// Get increment of slip on fault surface between time t0 and t1.
+const ALE::Obj<pylith::real_section_type>&
+pylith::faults::BruneSlipFn::slipIncr(const double t0,
+				      const double t1,
+				      const std::set<Mesh::point_type>& vertices)
+{ // slipIncr
+  typedef std::set<Mesh::point_type>::const_iterator vert_iterator;  
+
+  assert(0 != _parameters);
+  assert(!_slipField.isNull());
+  
+  // Get parameters
+  const ALE::Obj<real_section_type>& finalSlip = 
+    _parameters->getReal("final slip");
+  assert(!finalSlip.isNull());
+
+  const ALE::Obj<real_section_type>& slipTime = 
+    _parameters->getReal("slip time");
+  assert(!slipTime.isNull());
+
+  const ALE::Obj<real_section_type>& peakRate = 
+    _parameters->getReal("peak rate");
+  assert(!peakRate.isNull());
+
+  double_array slipValues(3);
+  const vert_iterator vBegin = vertices.begin();
+  const vert_iterator vEnd = vertices.end();
+  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
+    // Get values of parameters at vertex
+    const int numSlipValues = finalSlip->getFiberDimension(*v_iter);
+    const real_section_type::value_type* vFinalSlip = 
+      finalSlip->restrictPoint(*v_iter);
+    const real_section_type::value_type* vSlipTime = 
+      slipTime->restrictPoint(*v_iter);
+    const real_section_type::value_type* vPeakRate = 
+      peakRate->restrictPoint(*v_iter);
+
+    double vFinalSlipMag = 0.0;
+    for (int iSlip=0; iSlip < numSlipValues; ++iSlip)
+      vFinalSlipMag += vFinalSlip[iSlip]*vFinalSlip[iSlip];
+    vFinalSlipMag = sqrt(vFinalSlipMag);
+    const double vSlip0 = _slip(t0-vSlipTime[0], vFinalSlipMag, vPeakRate[0]);
+    const double vSlip1 = _slip(t1-vSlipTime[0], vFinalSlipMag, vPeakRate[0]);
+    const double scale = (vSlip1 - vSlip0) / vFinalSlipMag;
+    for (int iSlip=0; iSlip < numSlipValues; ++iSlip)
+      slipValues[iSlip] = scale * vFinalSlip[iSlip];
+
+    // Update field
+    _slipField->updatePoint(*v_iter, &slipValues[0]);
+  } // for
+
+  return _slipField;
+} // slipIncr
+
 
 // End of file 

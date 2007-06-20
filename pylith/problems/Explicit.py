@@ -45,8 +45,8 @@ class Explicit(Formulation):
     Constructor.
     """
     Formulation.__init__(self, name)
-    self.solnField = {'name': "dispT",
-                      'label': "displacements"}
+    self.outputField = {'name': "dispT",
+                        'label': "displacements"}
     return
 
 
@@ -69,22 +69,20 @@ class Explicit(Formulation):
                            interfaceConditions, dimension, dt)
 
     self._info.log("Creating other fields and matrices.")
+    self.fields.addReal("dispT")
     self.fields.addReal("dispTmdt")
-    self.fields.addReal("dispTpdt")
     self.fields.addReal("residual")
-    self.fields.createHistory(["dispTpdt", "dispT", "dispTmdt"])    
-    self.fields.copyLayout("dispT")
-    self.jacobian = mesh.createMatrix(self.fields.getReal("residual"))
+    self.fields.createHistory(["solution", "dispT", "dispTmdt"])    
+    self.fields.copyLayout("solution")
+    self.jacobian = mesh.createMatrix(self.fields.getReal("solution"))
 
-    self._info.log("Forming Jacobian of operator.")
-    import pylith.utils.petsc as petsc
-    petsc.mat_setzero(self.jacobian)
+    self.solver.initialize(mesh, self.fields.getReal("solution"))
+
+    # Solve for total displacement field
+    for constraint in self.constraints:
+      constraint.useSolnIncr(False)
     for integrator in self.integrators:
-      integrator.timeStep(dt)
-      integrator.integrateJacobian(self.jacobian, t, self.fields)
-    petsc.mat_assemble(self.jacobian)
-
-    self.solver.initialize(mesh, self.fields.getReal("dispTpdt"))
+      integrator.useSolnIncr(False)
     return
 
 
@@ -102,7 +100,7 @@ class Explicit(Formulation):
     """
     Hook for doing stuff before advancing time step.
     """
-    dispTpdt = self.fields.getReal("dispTpdt")
+    dispTpdt = self.fields.getReal("solution")
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTpdt)
 
@@ -134,7 +132,7 @@ class Explicit(Formulation):
       integrator.integrateResidual(residual, t, self.fields)
 
     self._info.log("Solving equations.")
-    self.solver.solve(self.fields.getReal("dispTpdt"), self.jacobian, residual)
+    self.solver.solve(self.fields.getReal("solution"), self.jacobian, residual)
     return
 
 

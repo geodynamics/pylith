@@ -40,7 +40,6 @@ class pylith::feassemble::TestIntegrator : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestIntegrator );
 
   CPPUNIT_TEST( testQuadrature );
-  CPPUNIT_TEST( testNeedNewJacobian );
   CPPUNIT_TEST( testInitCellVector );
   CPPUNIT_TEST( testResetCellVector );
   CPPUNIT_TEST( testInitCellMatrix );
@@ -53,9 +52,6 @@ public :
 
   /// Test quadrature()
   void testQuadrature(void);
-
-  /// Test needNewJacobian()
-  void testNeedNewJacobian(void);
 
   /// Test _initCellVector()
   void testInitCellVector(void);

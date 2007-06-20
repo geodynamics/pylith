@@ -53,10 +53,11 @@ class TestMeshGenSimple(unittest.TestCase):
 
     from pylith.topology.Distributor import Distributor
     distributor = Distributor()
+    distributor.partitioner = "chaco"
     newMesh = distributor.distribute(mesh)
     io.filename = 'newMesh.vtk'
     io.open(newMesh)
-    io.writeTopology(newMesh)
+    io.writeTopology()
     io.close()
     return
 

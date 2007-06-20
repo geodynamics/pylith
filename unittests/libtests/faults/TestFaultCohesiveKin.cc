@@ -76,6 +76,28 @@ pylith::faults::TestFaultCohesiveKin::testEqsrc(void)
 } // testEqsrc
 
 // ----------------------------------------------------------------------
+/// Test needNewJacobian()
+void
+pylith::faults::TestFaultCohesiveKin::testNeedNewJacobian(void)
+{ // testNeedNewJacobian
+  FaultCohesiveKin fault;
+  CPPUNIT_ASSERT_EQUAL(true, fault.needNewJacobian());
+  fault._needNewJacobian = false;
+  CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
+} // testNeedNewJacobian
+
+// ----------------------------------------------------------------------
+/// Test useSolnIncr()
+void
+pylith::faults::TestFaultCohesiveKin::testUseSolnIncr(void)
+{ // testUseSolnIncr
+  FaultCohesiveKin fault;
+  CPPUNIT_ASSERT_EQUAL(false, fault._useSolnIncr);
+  fault.useSolnIncr(true);
+  CPPUNIT_ASSERT_EQUAL(true, fault._useSolnIncr);
+} // testUseSolnIncr
+
+// ----------------------------------------------------------------------
 // Test useLagrangeConstraints().
 void
 pylith::faults::TestFaultCohesiveKin::testUseLagrangeConstraints(void)
@@ -155,8 +177,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   // Setup fields
   topology::FieldsManager fields(mesh);
   fields.addReal("residual");
-  fields.addReal("dispT");
-  fields.solutionField("dispT");
+  fields.addReal("solution");
   
   const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
@@ -166,8 +187,8 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   residual->zero();
   fields.copyLayout("residual");
 
-  const ALE::Obj<real_section_type>& dispT = fields.getReal("dispT");
-  CPPUNIT_ASSERT(!dispT.isNull());
+  const ALE::Obj<real_section_type>& solution = fields.getReal("solution");
+  CPPUNIT_ASSERT(!solution.isNull());
 
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
@@ -177,7 +198,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   for (Mesh::label_sequence::iterator v_iter=vBegin;
        v_iter != vEnd;
        ++v_iter, ++iVertex) {
-    dispT->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+    solution->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
   } // for
   
   // Call integrateResidual()
@@ -220,8 +241,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   // Setup fields
   topology::FieldsManager fields(mesh);
   fields.addReal("residual");
-  fields.addReal("dispT");
-  fields.solutionField("dispT");
+  fields.addReal("solution");
   
   const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
@@ -231,8 +251,8 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   residual->zero();
   fields.copyLayout("residual");
 
-  const ALE::Obj<real_section_type>& dispT = fields.getReal("dispT");
-  CPPUNIT_ASSERT(!dispT.isNull());
+  const ALE::Obj<real_section_type>& solution = fields.getReal("solution");
+  CPPUNIT_ASSERT(!solution.isNull());
 
   const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
   CPPUNIT_ASSERT(!vertices.isNull());
@@ -242,11 +262,11 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   for (Mesh::label_sequence::iterator v_iter=vBegin;
        v_iter != vEnd;
        ++v_iter, ++iVertex) {
-    dispT->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
+    solution->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
   } // for
   
   PetscMat jacobian;
-  PetscErrorCode err = MeshCreateMatrix(mesh, dispT, MATMPIBAIJ, &jacobian);
+  PetscErrorCode err = MeshCreateMatrix(mesh, solution, MATMPIBAIJ, &jacobian);
   CPPUNIT_ASSERT(0 == err);
 
   const double t = 2.134;
@@ -261,7 +281,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   //MatView(jacobian, PETSC_VIEWER_STDOUT_WORLD);
 
   const double* valsE = _data->valsJacobian;
-  const int nrowsE = dispT->sizeWithBC();
+  const int nrowsE = solution->sizeWithBC();
   const int ncolsE = nrowsE;
 
   int nrows = 0;
@@ -301,6 +321,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
     } // for
   MatDestroy(jDense);
   MatDestroy(jSparseAIJ);
+  CPPUNIT_ASSERT_EQUAL(false, fault.needNewJacobian());
 } // testIntegrateJacobian
 
 // ----------------------------------------------------------------------

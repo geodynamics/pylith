@@ -2,11 +2,21 @@
 CURRENT ISSUES
 ======================================================================
 
-  1. VTK output
-     make 3-component displacements default even for 1-D and 2-D meshes
-     [MATT] 
+  1. Fix scaling and time stepping for fault implementation.
 
-  2. debugging Mesh distribution is debugging the mesh distribution.
+    BruneSlipFn
+      Add slipIncr()
+      [Needs unit test]
+    EqKinSrc
+      slipIncr()
+      [Needs unit test]
+    FaultCohesiveKin
+      Fix scaling.
+      C++ unit tests with solution increment
+        integrateJacobian
+        integrateResidual
+
+  2. Debug mesh distribution.
      [MATT]
 
 Charles is debugging Maxwell viscoelastic model.
@@ -31,6 +41,8 @@ Charles is debugging Maxwell viscoelastic model.
         Availability as open-source with documentation
       PyLith 0.8
         Dislocation-based fault implementation
+        Importing of meshes from CUBIT and LaGriT
+        User-friendly specification of boundary conditions and parameters
 
 ======================================================================
 MAIN PRIORITIES (Brad)

@@ -25,6 +25,7 @@ def implementsIntegrator(obj):
   attrs = dir(obj)
   if not "timeStep" in attrs or \
      not "stableTimeStep" in attrs or \
+     not "useSolnIncr" in attrs or \
      not "integrateResidual" in attrs or \
      not "integrateJacobian" in attrs or \
      not "updateState" in attrs or \
@@ -89,6 +90,15 @@ class Integrator(object):
     from pyre.units.time import second
     return self.cppHandle.stableTimeStep*second
 
+
+  def useSolnIncr(self, flag):
+    """
+    Set behavior for using total field solution or incremental field solution.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.useSolnIncr = flag
+    return
+  
 
   def integrateResidual(self, residual, t, fields):
     """

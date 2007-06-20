@@ -89,21 +89,21 @@ class FieldsManager(object):
     return self.cppHandle.copyLayoutFromSrc(field)
 
 
-  def solutionField(self, name):
+  def outputField(self, name):
     """
-    Set name of field corresponding to solution.
+    Set name of field corresponding to solution for output.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.solutionField(name)
+    self.cppHandle.outputField(name)
     return
 
 
-  def getSolution(self):
+  def getOutputSoln(self):
     """
-    Get field corresponding to solution.
+    Get field corresponding to solution for output.
     """
     assert(None != self.cppHandle)
-    return self.cppHandle.getSolution()
+    return self.cppHandle.getOutputSoln()
 
 
   def createHistory(self, labels):

@@ -26,6 +26,7 @@ def implementsConstraint(obj):
   if not "timeStep" in attrs or \
      not "setConstraintSizes" in attrs or \
      not "setConstraints" in attrs or \
+     not "useSolnIncr" in attrs or \
      not "setField" in attrs or \
      not "finalize" in attrs:
     result = False
@@ -77,6 +78,15 @@ class Constraint(object):
     self.cppHandle.setConstraints(field, self.mesh.cppHandle)
     return
 
+
+  def useSolnIncr(self, flag):
+    """
+    Set behavior for using total field solution or incremental field solution.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.useSolnIncr(flag)
+    return
+  
 
   def setField(self, t, field):
     """

@@ -84,6 +84,14 @@ public :
   virtual
   bool needNewJacobian(void) const;
 
+  /** Set flag for setting constraints for total field solution or
+   *  incremental field solution.
+   *
+   * @param flag True if using incremental solution, false otherwise.
+   */
+  virtual
+  void useSolnIncr(const bool flag);
+
   /** Integrate contributions to residual term (r) for operator.
    *
    * @param residual Field containing values for residual
@@ -163,7 +171,13 @@ protected :
   /// Default is false;
   bool _needNewJacobian;
 
+  /// Flag indicating whether to set constraints for a total field
+  /// solution or an incremental field solution
+  bool _useSolnIncr;
+
 }; // Integrator
+
+#include "Integrator.icc" // inline methods
 
 #endif // pylith_feassemble_integrator_hh
 

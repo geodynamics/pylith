@@ -68,8 +68,8 @@ class Implicit(Formulation):
     Constructor.
     """
     Formulation.__init__(self, name)
-    self.solnField = {'name': "dispTBctpdt",
-                      'label': "displacements"}
+    self.outputField = {'name': "dispTBctpdt",
+                        'label': "displacements"}
     return
 
 
@@ -90,18 +90,17 @@ class Implicit(Formulation):
                            interfaceConditions, dimension, dt)
 
     self._info.log("Creating other fields and matrices.")
-    self.fields.addReal("dispIncr")
+    self.fields.addReal("dispTBctpdt")
     self.fields.addReal("residual")
-    self.fields.copyLayout(self.solnField['name'])
+    self.fields.copyLayout("solution")
+    self.jacobian = mesh.createMatrix(self.fields.getReal("solution"))
+    self.solver.initialize(mesh, self.fields.getReal("solution"))
 
-    dispTBctpdt = self.fields.getReal("dispTBctpdt")
-    
-    self.jacobian = mesh.createMatrix(self.fields.getReal("dispTBctpdt"))
-
-    self.solver.initialize(mesh, self.fields.getReal("dispIncr"))
-
-    from pyre.units.time import s
-    self._solveElastic(mesh, materials, t=0.0*s, dt=dt)
+    # Initial time step solves for total displacement field, not increment
+    for constraint in self.constraints:
+      constraint.useSolnIncr(False)
+    for integrator in self.integrators:
+      integrator.useSolnIncr(False)
     return
 
 
@@ -121,9 +120,9 @@ class Implicit(Formulation):
     """
     # Set dispTBctpdt to the BC at time t+dt. Unconstrained DOF are
     # unaffected and will be equal to their values at time t.
-    solnField = self.fields.getReal("dispTBctpdt")
+    dispTBctdpt = self.fields.getReal("dispTBctpdt")
     for constraint in self.constraints:
-      constraint.setField(t+dt, solnField)
+      constraint.setField(t+dt, dispTBctpdt)
 
     needNewJacobian = False
     for integrator in self.integrators:
@@ -146,14 +145,16 @@ class Implicit(Formulation):
     """
     self._info.log("Integrating residual term in operator.")
     residual = self.fields.getReal("residual")
+    dispIncr = self.fields.getReal("solution")
     import pylith.topology.topology as bindings
     bindings.zeroRealSection(residual)
+    bindings.zeroRealSection(dispIncr)
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateResidual(residual, t, self.fields)
 
     self._info.log("Solving equations.")
-    self.solver.solve(self.fields.getReal("dispIncr"), self.jacobian, residual)
+    self.solver.solve(dispIncr, self.jacobian, residual)
     return
 
 
@@ -164,16 +165,24 @@ class Implicit(Formulation):
     # After solving, dispTBctpdt contains the displacements at time t
     # for unconstrained DOF and displacements at time t+dt at
     # constrained DOF. We add in the displacement increments (only
-    # nonzero at unconstrained DOF) so that after poststrp(),
-    # dispTBctpdt constains the solution at time t+dt.
+    # nonzero at unconstrained DOF) so that after poststep(),
+    # dispTBctpdt contains the displacement field at time t+dt.
     import pylith.topology.topology as bindings
-    solnField = self.fields.getReal("dispTBctpdt")
-    bindings.addRealSections(solnField, solnField,
-                             self.fields.getReal("dispIncr"))
+    solution = self.fields.getReal("solution")
+    disp = self.fields.getReal("dispTBcTpdt")
+    bindings.addRealSections(disp, disp, solution)
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(t, solnField)
+      integrator.updateState(t, disp)
+
+    # If finishing first time step, then switch from solving for total
+    # displacements to solving for incremental displacements
+    if 1 == self._istep:
+      for constraint in self.constraints:
+        constraint.useSolnIncr(True)
+      for integrator in self.integrators:
+        integrator.useSolnIncr(True)
 
     Formulation.poststep(self, t)
     return
@@ -195,9 +204,6 @@ class Implicit(Formulation):
     """
     self._info.log("Computing elastic solution.")
 
-    for material in materials.bin:
-      material.useElasticBehavior(True)
-
     self._info.log("Setting constraints.")
     solnField = self.fields.getReal("dispTBctpdt")
     import pylith.topology.topology as bindings
@@ -209,7 +215,6 @@ class Implicit(Formulation):
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(self.jacobian)
     residual = self.fields.getReal("residual")
-    dispIncr = self.fields.getReal("dispIncr")
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateJacobian(self.jacobian, t, self.fields)
@@ -218,20 +223,19 @@ class Implicit(Formulation):
     petsc.mat_assemble(self.jacobian)
 
     self._info.log("Solving equations.")
-    self.solver.solve(dispIncr, self.jacobian, residual)
+    self.solver.solve(solution, self.jacobian, residual)
 
     import pylith.topology.topology as bindings
-    bindings.addRealSections(solnField, solnField, dispIncr)
-    bindings.sectionView(solnField, "solution")
+    bindings.addRealSections(disp, disp, solution)
+    bindings.sectionView(solution, "solution")
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
-      integrator.updateState(t, solnField)
+      integrator.updateState(t, disp)
 
     self._info.log("Outputting elastic solution.")
-    field = self.fields.getReal(self.solnField['name'])
     for output in self.output.bin:
-      output.writeField(t, self._istep, field, self.solnField['label'])
+      output.writeField(t, self._istep, disp, self.solnField['label'])
     self._istep += 1      
     return
   

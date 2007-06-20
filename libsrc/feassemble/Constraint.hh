@@ -64,6 +64,14 @@ public :
   void setConstraints(const ALE::Obj<real_section_type>& field,
 		      const ALE::Obj<ALE::Mesh>& mesh) = 0;
 
+  /** Set flag for setting constraints for total field solution or
+   *  incremental field solution.
+   *
+   * @param flag True if using incremental solution, false otherwise.
+   */
+  virtual
+  void useSolnIncr(const bool flag);
+
   /** Set values in field.
    *
    * @param t Current time
@@ -75,6 +83,13 @@ public :
 		const ALE::Obj<real_section_type>& field,
 		const ALE::Obj<ALE::Mesh>& mesh) = 0;
 
+  // PROTECTED MEMBERS //////////////////////////////////////////////////
+protected :
+
+  /// Flag indicating whether to set constraints for a total field
+  /// solution or an incremental field solution
+  bool _useSolnIncr;
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
@@ -85,6 +100,8 @@ private :
   const Constraint& operator=(const Constraint& m);
 
 }; // class Constraint
+
+#include "Constraint.icc" // inline methods
 
 #endif // pylith_feassemble_constraint_hh
 

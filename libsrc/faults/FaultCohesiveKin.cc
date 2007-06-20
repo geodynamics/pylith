@@ -314,6 +314,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   } // for
 } // initialize
 
+const double fakeStiffness = 1.0;//e+9;
 // ----------------------------------------------------------------------
 // Integrate contribution of cohesive cells to residual term.
 void
@@ -327,6 +328,116 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   assert(0 != fields);
   assert(!mesh.isNull());
 
+#if 0
+  // Cohesive cells with normal vertices i and j, and constraint
+  // vertex k make 2 contributions to the residual:
+  //
+  //   * DOF i and j: internal forces in soln field associated with 
+  //                  slip
+  //   * DOF k: slip values
+
+  // Get cell information and setup storage for cell data
+  const int spaceDim = _quadrature->spaceDim();
+  const int orientationSize = spaceDim*spaceDim;
+  const int numConstraintVert = _quadrature->numBasis();
+  const int numCorners = 3*numConstraintVert; // cohesive cell
+  int_array cellConstraintCell(numConstraintVert);
+  double_array cellOrientation(numConstraintVert*orientationSize);
+  double_array cellResidual(numCorners*spaceDim);
+  double_array cellSoln(numCorners*spaceDim);
+  double_array cellSlip(numConstraintVert*spaceDim);
+
+  // Get cohesive cells
+  const ALE::Obj<ALE::Mesh::label_sequence>& cellsCohesive = 
+    mesh->getLabelStratum("material-id", id());
+  assert(!cellsCohesive.isNull());
+  const Mesh::label_sequence::iterator cellsCohesiveBegin =
+    cellsCohesive->begin();
+  const Mesh::label_sequence::iterator cellsCohesiveEnd =
+    cellsCohesive->end();
+
+  // Get section information
+  const ALE::Obj<real_section_type>& solution = fields->getReal("solution");
+  assert(!solution.isNull());  
+
+  const bool _isSolnIncr = t > 0.0;
+  ALE::Obj<real_section_type> slip;
+  if (!_isSolnIncr) {
+    // Compute slip field at current time step
+    assert(0 != _eqsrc);
+    slip = _eqsrc->slip(t, _constraintVert);
+    assert(!slip.isNull());
+  } else {
+    // Compute increment of slip field at current time step
+    assert(0 != _eqsrc);
+    slip = _eqsrc->slipIncr(t-_dt, t, _constraintVert);
+    assert(!slip.isNull());
+  } // else
+  
+  solution->view("SOLUTION");
+  slip->view("SLIP");
+
+  for (Mesh::label_sequence::iterator c_iter=cellsCohesiveBegin;
+       c_iter != cellsCohesiveEnd;
+       ++c_iter) {
+    cellResidual = 0.0;
+    // Get constraint/cell pairings (only valid at constraint vertices)
+    mesh->restrict(_constraintCell, *c_iter, &cellConstraintCell[0], 
+		   cellConstraintCell.size());
+    
+    // Get orientations at cells vertices (only valid at constraint vertices)
+    mesh->restrict(_orientation, *c_iter, &cellOrientation[0], 
+		   cellOrientation.size());
+    
+    // Get slip at cells vertices (only valid at constraint vertices)
+    mesh->restrict(slip, *c_iter, &cellSlip[0], cellSlip.size());
+
+    // Get slip at cells vertices (valid at all cohesive vertices)
+    mesh->restrict(solution, *c_iter, &cellSoln[0], cellSoln.size());
+    
+    for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
+      // Skip setting values if they are set by another cell
+      if (cellConstraintCell[iConstraint] != *c_iter)
+	continue;
+      
+      // Blocks in cell matrix associated with normal cohesive
+      // vertices i and j and constraint vertex k
+      const int indexI = iConstraint;
+      const int indexJ = iConstraint +   numConstraintVert;
+      const int indexK = iConstraint + 2*numConstraintVert;
+
+      // Set slip values in residual vector; contributions are at DOF of
+      // constraint vertices (k) of the cohesive cells
+      for (int iDim=0; iDim < spaceDim; ++iDim)
+	cellResidual[indexK*spaceDim+iDim] = 
+	  cellSlip[iConstraint*spaceDim+iDim] * fakeStiffness;
+      
+      // Get orientation at constraint vertex
+      const real_section_type::value_type* constraintOrient = 
+	&cellOrientation[iConstraint*orientationSize];
+
+      // Entries associated with constraint forces applied at node i
+      for (int iDim=0; iDim < spaceDim; ++iDim)
+	for (int kDim=0; kDim < spaceDim; ++kDim)
+	  cellResidual[indexI*spaceDim+iDim] -=
+	    cellSoln[indexK*spaceDim+kDim] * 
+	    -constraintOrient[kDim*spaceDim+iDim];
+
+      // Entries associated with constraint forces applied at node j
+      for (int jDim=0; jDim < spaceDim; ++jDim)
+	for (int kDim=0; kDim < spaceDim; ++kDim)
+	  cellResidual[indexJ*spaceDim+jDim] -=
+	    cellSoln[indexK*spaceDim+kDim] * 
+	    constraintOrient[kDim*spaceDim+jDim];
+    } // for
+    // Assemble cell contribution into field
+    mesh->updateAdd(residual, *c_iter, &cellResidual[0]);
+  } // for
+  PetscErrorCode err = PetscLogFlops(numConstraintVert*spaceDim*spaceDim*4 +
+				     numConstraintVert*spaceDim);
+  if (err)
+    throw std::runtime_error("Logging PETSc flops failed.");
+#else
   // Set slip values in residual vector; contributions are at DOF of
   // constraint vertices (k) of the cohesive cells
 
@@ -337,13 +448,14 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
   assert(!slip.isNull());
   const vert_iterator vBegin = _constraintVert.begin();
   const vert_iterator vEnd = _constraintVert.end();
-  
+
   for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
     const int fiberDim = slip->getFiberDimension(*v_iter);
     const real_section_type::value_type* values = slip->restrictPoint(*v_iter);
     assert(fiberDim == residual->getFiberDimension(*v_iter));
     residual->updatePoint(*v_iter, values);
   } // for
+#endif
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -375,8 +487,8 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     cellsCohesive->end();
 
   // Get section information
-  const ALE::Obj<real_section_type>& disp = fields->getSolution();
-  assert(!disp.isNull());  
+  const ALE::Obj<real_section_type>& solution = fields->getReal("solution");
+  assert(!solution.isNull());  
 
   const int spaceDim = _quadrature->spaceDim();
   const int orientationSize = spaceDim*spaceDim;
@@ -414,13 +526,17 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
       const real_section_type::value_type* constraintOrient = 
 	&cellOrientation[iConstraint*orientationSize];
 
+      // Scale orientation information by pseudo-stiffness to bring
+      // constraint forces in solution vector to the same order of
+      // magnitude as the displacements to prevent ill-conditioning
+
       // Entries associated with constraint forces applied at node i
       for (int iDim=0; iDim < spaceDim; ++iDim)
 	for (int kDim=0; kDim < spaceDim; ++kDim) {
 	  const int row = indexI*spaceDim+iDim;
 	  const int col = indexK*spaceDim+kDim;
 	  cellMatrix[row*numCorners*spaceDim+col] =
-	    -constraintOrient[kDim*spaceDim+iDim];
+	    -constraintOrient[kDim*spaceDim+iDim]*fakeStiffness;
 	  cellMatrix[col*numCorners*spaceDim+row] =
 	    cellMatrix[row*numCorners*spaceDim+col]; // symmetric
 	} // for
@@ -431,7 +547,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	  const int row = indexJ*spaceDim+jDim;
 	  const int col = indexK*spaceDim+kDim;
 	  cellMatrix[row*numCorners*spaceDim+col] =
-	    constraintOrient[kDim*spaceDim+jDim];
+	    constraintOrient[kDim*spaceDim+jDim]*fakeStiffness;
 	  cellMatrix[col*numCorners*spaceDim+row] =
 	    cellMatrix[row*numCorners*spaceDim+col]; // symmetric
 	} // for
@@ -442,11 +558,11 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 
     // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 
-      mesh->getFactory()->getGlobalOrder(mesh, "default", disp);
+      mesh->getFactory()->getGlobalOrder(mesh, "default", solution);
     // Note: We are not really adding values because we prevent
     // overlap across cells. We use ADD_VALUES for compatibility with
     // the other integrators.
-    err = updateOperator(*mat, mesh, disp, globalOrder,
+    err = updateOperator(*mat, mesh, solution, globalOrder,
 			 *c_iter, &cellMatrix[0], ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");

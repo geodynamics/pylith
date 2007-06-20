@@ -116,8 +116,20 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     Test needNewJacobian().
     """
-    fault = FaultCohesiveKin()
-    self.assertEqual(False, fault.needNewJacobian())
+    (mesh, fault, fields) = self._initialize()
+    self.assertEqual(True, fault.needNewJacobian())
+    return
+
+  
+  def test_useSolnIncr(self):
+    """
+    Test useSolnIncr().
+    """
+    (mesh, fault, fields) = self._initialize()
+    fault.useSolnIncr(True)
+
+    # We should really add something here to check to make sure things
+    # actually initialized correctly    
     return
 
   
@@ -153,6 +165,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     petsc.mat_setzero(jacobian)
     t = 1.0*second
     fault.integrateJacobian(jacobian, t, fields)
+    self.assertEqual(False, fault.needNewJacobian())
 
     # We should really add something here to check to make sure things
     # actually initialized correctly    
@@ -168,7 +181,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     """
     (mesh, fault, fields) = self._initialize()
 
-    disp = fields.getReal("dispT")
+    disp = fields.getReal("disp")
     t = 1.0*second
     fault.updateState(t, disp)
 
@@ -268,8 +281,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     from pylith.topology.FieldsManager import FieldsManager
     fields = FieldsManager(mesh)
     fields.addReal("residual")
-    fields.addReal("dispT")
-    fields.solutionField("dispT");
+    fields.addReal("solution")
+    fields.addReal("disp")
     fields.setFiberDimension("residual", cs.spaceDim)
     fields.allocate("residual")
     fields.copyLayout("residual")

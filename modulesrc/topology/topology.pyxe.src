@@ -702,15 +702,15 @@ cdef class FieldsManager:
     return
 
 
-  def solutionField(self, name):
+  def outputField(self, name):
     """
-    Set name of field corresponding to solution.
+    Set name of field corresponding to solution field for output.
     """
-    # create shim for solutionField
-    #embed{ void FieldsManager_solutionField(void* objVptr, char* name)
+    # create shim for 'outputField'
+    #embed{ void FieldsManager_outputField(void* objVptr, char* name)
     try {
       assert(0 != objVptr);
-      ((pylith::topology::FieldsManager*) objVptr)->solutionField(name);
+      ((pylith::topology::FieldsManager*) objVptr)->outputField(name);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -722,20 +722,20 @@ cdef class FieldsManager:
                       "Caught unknown C++ exception.");
     } // try/catch
     #}embed
-    FieldsManager_solutionField(self.thisptr, name)
+    FieldsManager_outputField(self.thisptr, name)
 
 
-  def getSolution(self):
+  def getOutputSoln(self):
     """
-    Get field corresponding to solution.
+    Get field corresponding to solution for output.
     """
-    # create shim for getSolution
-    #embed{ void* FieldsManager_getSolution(void* objVptr)
+    # create shim for 'getOutputSoln'
+    #embed{ void* FieldsManager_getOutputSoln(void* objVptr)
     void* result = 0;
     try {
       assert(0 != objVptr);
       const ALE::Obj<pylith::real_section_type>& field =
-        ((pylith::topology::FieldsManager*) objVptr)->getSolution();
+        ((pylith::topology::FieldsManager*) objVptr)->getOutputSoln();
       result = (void*) &field;
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -750,7 +750,7 @@ cdef class FieldsManager:
     return result;
     #}embed
     cdef void* ptr
-    ptr = FieldsManager_getSolution(self.thisptr)
+    ptr = FieldsManager_getOutputSoln(self.thisptr)
     return PyCObject_FromVoidPtr(ptr, NULL)
 
 

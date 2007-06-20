@@ -25,7 +25,8 @@ pylith::feassemble::Integrator::Integrator(void) :
   _quadrature(0),
   _cellVector(0),
   _cellMatrix(0),
-  _needNewJacobian(false)
+  _needNewJacobian(true),
+  _useSolnIncr(false)
 { // constructor
 } // constructor
 
@@ -50,41 +51,6 @@ pylith::feassemble::Integrator::quadrature(const Quadrature* q)
   delete[] _cellVector; _cellVector = 0;
   delete[] _cellMatrix; _cellMatrix = 0;
 } // quadrature
-
-// ----------------------------------------------------------------------
-// Set time step for advancing from time t to time t+dt.
-void
-pylith::feassemble::Integrator::timeStep(const double dt)
-{ // timeStep
-  _dt = dt;
-} // timeStep
-
-// ----------------------------------------------------------------------
-// Get stable time step for advancing from time t to time t+dt.
-double
-pylith::feassemble::Integrator::stableTimeStep(void) const
-{ // stableTimeStep
-  // Default is current time step
-  return _dt;
-} // stableTimeStep
-
-// ----------------------------------------------------------------------
-// Check whether Jacobian needs to be recomputed.
-bool
-pylith::feassemble::Integrator::needNewJacobian(void) const
-{ // needNewJacobian
-  return _needNewJacobian;
-} // needNewJacobian
-
-// ----------------------------------------------------------------------
-// Update state variables as needed.
-void
-pylith::feassemble::Integrator::updateState(
-				     const double t,
-				     const ALE::Obj<real_section_type>& field,
-				     const ALE::Obj<Mesh>& mesh)
-{ // updateState
-} // updateState
 
 // ----------------------------------------------------------------------
 // Initialize vector containing result of integration action for cell.

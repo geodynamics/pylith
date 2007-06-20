@@ -42,23 +42,6 @@ pylith::feassemble::TestIntegrator::testQuadrature(void)
 } // testQuadrature
 
 // ----------------------------------------------------------------------
-// Test needNewJacobian().
-void
-pylith::feassemble::TestIntegrator::testNeedNewJacobian(void)
-{ // testNeedNewJacobian
-  ElasticityExplicit integrator;
-  
-  // Default should be false
-  CPPUNIT_ASSERT_EQUAL(false, integrator._needNewJacobian);
-
-  integrator._needNewJacobian = true;
-  CPPUNIT_ASSERT_EQUAL(true, integrator._needNewJacobian);
-
-  integrator._needNewJacobian = false;
-  CPPUNIT_ASSERT_EQUAL(false, integrator._needNewJacobian);
-} // testNeedNewJacobian
-
-// ----------------------------------------------------------------------
 // Test _initCellVector()
 void
 pylith::feassemble::TestIntegrator::testInitCellVector(void)

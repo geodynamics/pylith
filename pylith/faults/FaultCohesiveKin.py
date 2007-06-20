@@ -116,6 +116,15 @@ class FaultCohesiveKin(FaultCohesive):
     return self.cppHandle.needNewJacobian
 
 
+  def useSolnIncr(self, flag):
+    """
+    Set flag indicating whether using total soluton field of increment.
+    """
+    self._createCppHandle()
+    self.cppHandle.useSolnIncr = flag
+    return
+
+
   def integrateJacobian(self, jacobian, t, fields):
     """
     Integrate contributions to Jacobian term at time t.

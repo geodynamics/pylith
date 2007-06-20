@@ -17,9 +17,11 @@ subpkginclude_HEADERS = \
 	CellGeometry.hh \
 	CellGeometry.icc \
 	Constraint.hh \
+	Constraint.icc \
 	ElasticityExplicit.hh \
 	ElasticityImplicit.hh \
 	Integrator.hh \
+	Integrator.icc \
 	Elasticity.hh \
 	GeometryPoint1D.hh \
 	GeometryPoint2D.hh \

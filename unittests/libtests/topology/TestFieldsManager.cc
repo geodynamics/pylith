@@ -253,25 +253,25 @@ pylith::topology::TestFieldsManager::testCopyLayoutFromField(void)
 } // testCopyLayoutFromField
 
 // ----------------------------------------------------------------------
-// Test solutionField().
+// Test outputField().
 void
-pylith::topology::TestFieldsManager::testSolutionField(void)
-{ // testSolutionField
+pylith::topology::TestFieldsManager::testOutputField(void)
+{ // testOutputField
   ALE::Obj<Mesh> mesh;
   _initialize(&mesh);
   FieldsManager manager(mesh);
 
   const std::string& name = "my solution";
   manager.addReal(name.c_str());
-  manager.solutionField(name.c_str());
-  CPPUNIT_ASSERT_EQUAL(name, manager._solutionName);
+  manager.outputField(name.c_str());
+  CPPUNIT_ASSERT_EQUAL(name, manager._outputName);
 } // testSolutionField
 
 // ----------------------------------------------------------------------
-// Test getSolution().
+// Test getOutputSoln().
 void
-pylith::topology::TestFieldsManager::testGetSolution(void)
-{ // testGetSolution
+pylith::topology::TestFieldsManager::testGetOutputSoln(void)
+{ // testGetOutputSoln
   ALE::Obj<Mesh> mesh;
   _initialize(&mesh);
   FieldsManager manager(mesh);
@@ -293,11 +293,11 @@ pylith::topology::TestFieldsManager::testGetSolution(void)
   fieldB->setFiberDimension(vertices, fiberDimB);
   fieldC->setFiberDimension(vertices, fiberDimC);
 
-  manager.solutionField(labels[1]);
-  const ALE::Obj<real_section_type>& solution = manager.getSolution();
+  manager.outputField(labels[1]);
+  const ALE::Obj<real_section_type>& solution = manager.getOutputSoln();
   CPPUNIT_ASSERT_EQUAL(fiberDimB, 
 		       solution->getFiberDimension(*(vertices->begin())));
-} // testGetSolution
+} // testGetOutputSoln
 
 // ----------------------------------------------------------------------
 // Test createHistory().

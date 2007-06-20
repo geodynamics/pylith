@@ -88,6 +88,17 @@ public :
   const ALE::Obj<real_section_type>& slip(const double t,
 			      const std::set<Mesh::point_type>& vertices);
 
+  /** Get increment of slip on fault surface between time t0 and t1.
+   *
+   * @param t Time t.
+   * @param vertices Vertices where slip will be prescribed.
+   */
+  virtual
+  const ALE::Obj<real_section_type>& slipIncr(
+			      const double t0,
+			      const double t1,
+			      const std::set<Mesh::point_type>& vertices);
+
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
