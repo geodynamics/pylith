@@ -104,6 +104,13 @@ class Implicit(Formulation):
     return
 
 
+  def startTime(self, dt):
+    """
+    Get time at which time stepping should start.
+    """
+    return -dt
+
+
   def stableTimeStep(self):
     """
     Get stable time step for advancing forward in time.
@@ -155,10 +162,9 @@ class Implicit(Formulation):
       integrator.timeStep(dt)
       integrator.integrateResidual(residual, t, self.fields)
 
-    bindings.sectionView(residual, "residual")
+    import pylith.utils.petsc as petsc
     self._info.log("Solving equations.")
     self.solver.solve(dispIncr, self.jacobian, residual)
-    bindings.sectionView(self.fields.getReal("solution"), "solution")
     return
 
 
@@ -175,7 +181,6 @@ class Implicit(Formulation):
     solution = self.fields.getReal("solution")
     disp = self.fields.getReal("dispTBctpdt")
     bindings.addRealSections(disp, disp, solution)
-    bindings.sectionView(solution, "solution")
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
@@ -204,54 +209,6 @@ class Implicit(Formulation):
     Formulation._configure(self)
     return
 
-
-  def _solveElastic(self, mesh, materials, t, dt):
-    """
-    Solve for elastic solution.
-    """
-    self._info.log("Computing elastic solution.")
-
-    self._info.log("Setting constraints.")
-    solnField = self.fields.getReal("dispTBctpdt")
-    import pylith.topology.topology as bindings
-    bindings.zeroRealSection(solnField)
-    for constraint in self.constraints:
-      constraint.setField(t, solnField)
-
-    self._info.log("Integrating Jacobian and residual of operator.")
-    import pylith.utils.petsc as petsc
-    petsc.mat_setzero(self.jacobian)
-    residual = self.fields.getReal("residual")
-    petsc.mat_setzero(self.jacobian)
-    bindings.zeroRealSection(residual)
-    for integrator in self.integrators:
-      integrator.timeStep(dt)
-      integrator.integrateJacobian(self.jacobian, t, self.fields)
-      integrator.integrateResidual(residual, t, self.fields)
-    import pylith.utils.petsc as petsc
-    petsc.mat_assemble(self.jacobian)
-
-    import pylith.topology.topology as bindings
-    petsc.mat_view(self.jacobian)
-    bindings.sectionView(residual, "residual")
-
-    self._info.log("Solving equations.")
-    self.solver.solve(solution, self.jacobian, residual)
-
-    bindings.addRealSections(disp, disp, solution)
-    bindings.sectionView(solution, "solution")
-    bindings.sectionView(self.fields.getReal("dispIncr"), "dispIncr")
-
-    self._info.log("Updating integrators states.")
-    for integrator in self.integrators:
-      integrator.updateState(t, disp)
-
-    self._info.log("Outputting elastic solution.")
-    for output in self.output.bin:
-      output.writeField(t, self._istep, disp, self.solnField['label'])
-    self._istep += 1      
-    return
-  
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

@@ -109,10 +109,11 @@ class TimeDependent(Problem):
     self._info.log("Solving problem.")
     self.checkpointTimer.toplevel = app # Set handle for saving state
     
-    from pyre.units.time import second
-    t = 0.0*second
-
-    while t.value <= self.totalTime.value:
+    dt = self.formulation.stableTimeStep()
+    if dt.value == 0.0: # If formulation returns 0.0, use default time step
+      dt = self.dt
+    t = self.formulation.startTime(self.dt)
+    while t.value < self.totalTime.value:
       self._info.log("Main time loop, t=%s" % t)
       
       # Checkpoint if necessary
