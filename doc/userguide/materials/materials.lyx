@@ -107,26 +107,7 @@ For the case of isotropic elasticity, the number of independent components
 \end_inset
 
 .
- For this case the stress-strain matrix, 
-\begin_inset Formula $\underline{C}$
-\end_inset
-
-, becomes
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \begin{gather}
-\underline{C}=\left[\begin{array}{cccccc}
-\lambda+2\mu & \lambda & \lambda & 0 & 0 & 0\\
-\lambda & \lambda+2\mu & \lambda & 0 & 0 & 0\\
-\lambda & \lambda & \lambda+2\mu & 0 & 0 & 0\\
-0 & 0 & 0 & 2\mu & 0 & 0\\
-0 & 0 & 0 & 0 & 2\mu & 0\\
-0 & 0 & 0 & 0 & 0 & 2\mu\end{array}\right]\:.\label{eq:8}\end{gather}
-
-\end_inset
-
-Lame's constants are related to the density (
+ Lame's constants are related to the density (
 \begin_inset Formula $\rho$
 \end_inset
 
@@ -156,6 +137,14 @@ Lame's constants are related to the density (
 1-D Elastic Material Models
 \end_layout
 
+\begin_layout Standard
+In 1-D we can write Hooke's law as 
+\begin_inset Formula $\sigma_{11}=C_{1111}\epsilon_{11}$
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Subsubsection
 Elastic 
 \begin_inset Quotes eld
@@ -169,13 +158,17 @@ Linear
 \end_layout
 
 \begin_layout Standard
-For purely 1-D axial deformation, Hooke's law simplifies to
+For purely 1-D axial deformation 
+\begin_inset Formula $C_{1111}=\lambda+2\mu$
+\end_inset
+
+, so we have
 \begin_inset Formula \begin{equation}
 \sigma_{11}=(\lambda+2\mu)\epsilon_{11},\end{equation}
 
 \end_inset
 
- with
+with
 \begin_inset Formula \begin{gather}
 \sigma_{22}=\sigma_{33}=\lambda\epsilon_{11},\\
 \sigma_{12}=\sigma_{23}=\sigma_{13}=0.\end{gather}
@@ -199,7 +192,11 @@ Linear
 
 \begin_layout Standard
 For deformation where the tractions are confined to the axial direction,
- Hooke's law simplifies to
+ 
+\begin_inset Formula $C_{1111}=\frac{\mu(3\lambda+2\mu)}{\lambda+\mu}$
+\end_inset
+
+, so we have
 \begin_inset Formula \begin{equation}
 \sigma_{11}=\frac{\mu(3\lambda+2\mu)}{\lambda+\mu}\epsilon_{11},\end{equation}
 
@@ -219,12 +216,93 @@ with
 2-D Elastic Material Models
 \end_layout
 
+\begin_layout Standard
+In 2-D we can write Hooke's law as
+\begin_inset Formula \begin{gather}
+\left[\begin{array}{c}
+\sigma_{11}\\
+\sigma_{22}\\
+\sigma_{12}\end{array}\right]=\left[\begin{array}{ccc}
+C_{1111} & C_{1122} & C_{1112}\\
+C_{1122} & C_{2222} & C_{2212}\\
+C_{1112} & C_{2212} & C_{1212}\end{array}\right]\left[\begin{array}{c}
+\epsilon_{11}\\
+\epsilon_{22}\\
+\epsilon_{12}\end{array}\right]\:.\label{eq:8}\end{gather}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection
 Elastic Plane Strain
 \end_layout
 
+\begin_layout Standard
+If the gradient in deformation with respect to the 
+\begin_inset Formula $x_{3}$
+\end_inset
+
+axis is zero, then 
+\begin_inset Formula $\epsilon_{33}=\epsilon_{13}=\epsilon_{23}=0$
+\end_inset
+
+ and plane strain conditions apply, so we have 
+\begin_inset Formula \begin{gather}
+\left[\begin{array}{c}
+\sigma_{11}\\
+\sigma_{22}\\
+\sigma_{12}\end{array}\right]=\left[\begin{array}{ccc}
+\lambda+2\mu & \lambda & 0\\
+\lambda & \lambda+2\mu & 0\\
+0 & 0 & 2\mu\end{array}\right]\left[\begin{array}{c}
+\epsilon_{11}\\
+\epsilon_{22}\\
+\epsilon_{12}\end{array}\right]\:.\label{eq:8}\end{gather}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection
 Elastic Plane Stress
+\end_layout
+
+\begin_layout Standard
+If the 
+\begin_inset Formula $x_{1}x_{2}$
+\end_inset
+
+plane is traction free, then 
+\begin_inset Formula $\sigma_{33}=\sigma_{13}=\sigma_{23}=0$
+\end_inset
+
+ and plane stress conditions apply, so we have
+\begin_inset Formula \begin{gather}
+\left[\begin{array}{c}
+\sigma_{11}\\
+\sigma_{22}\\
+\sigma_{12}\end{array}\right]=\left[\begin{array}{ccc}
+\frac{4\mu(\lambda+\mu)}{\lambda+2\mu} & \frac{2\mu\lambda}{\lambda+2\mu} & 0\\
+\frac{2\mu\lambda}{\lambda+2} & \frac{4\mu(\lambda+\mu)}{\lambda+2\mu} & 0\\
+0 & 0 & 2\mu\end{array}\right]\left[\begin{array}{c}
+\epsilon_{11}\\
+\epsilon_{22}\\
+\epsilon_{12}\end{array}\right]\:,\label{eq:8}\end{gather}
+
+\end_inset
+
+where
+\begin_inset Formula \[
+\begin{gathered}\epsilon_{33}=-\frac{\lambda}{\lambda+2\mu}(\epsilon_{11}+\epsilon_{22})\\
+\epsilon_{13}=\epsilon_{23}=0\,.\end{gathered}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -233,6 +311,29 @@ Elastic Plane Stress
 
 \begin_layout Subsubsection
 Isotropic
+\end_layout
+
+\begin_layout Standard
+For this case the stress-strain matrix, 
+\begin_inset Formula $\underline{C}$
+\end_inset
+
+, becomes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather}
+\underline{C}=\left[\begin{array}{cccccc}
+\lambda+2\mu & \lambda & \lambda & 0 & 0 & 0\\
+\lambda & \lambda+2\mu & \lambda & 0 & 0 & 0\\
+\lambda & \lambda & \lambda+2\mu & 0 & 0 & 0\\
+0 & 0 & 0 & 2\mu & 0 & 0\\
+0 & 0 & 0 & 0 & 2\mu & 0\\
+0 & 0 & 0 & 0 & 0 & 2\mu\end{array}\right]\:.\label{eq:8}\end{gather}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
