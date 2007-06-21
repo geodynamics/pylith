@@ -77,6 +77,9 @@ const char* pylith::faults::CohesiveKinDataTet4::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataTet4::_peakRateFilename = 
   "data/tet4_peakrate.spatialdb";
 
+const char* pylith::faults::CohesiveKinDataTet4::_matPropsFilename = 
+  "data/bulkprops_3d.spatialdb";
+
 const double pylith::faults::CohesiveKinDataTet4::_fieldT[] = {
   7.1, 8.1, 9.1,
   7.2, 8.2, 9.2,
@@ -84,11 +87,11 @@ const double pylith::faults::CohesiveKinDataTet4::_fieldT[] = {
   7.4, 8.4, 9.4,
   7.5, 8.5, 9.5,
   7.6, 8.6, 9.6,
-  7.7, 8.7, 9.7,
+  7.7, 8.7, 9.7, // 8
   7.8, 8.8, 9.8,
-  7.9, 8.9, 9.9,
+  7.9, 8.9, 9.9, // 10
   7.0, 8.0, 9.0,
-  7.1, 8.1, 9.1,
+  7.1, 8.1, 9.1, // 12
 };
 
 const int pylith::faults::CohesiveKinDataTet4::_numConstraintVert = 3;
@@ -109,15 +112,15 @@ const int pylith::faults::CohesiveKinDataTet4::_constraintCells[] = {
 
 const double pylith::faults::CohesiveKinDataTet4::_valsResidual[] = {
   0.0,  0.0,  0.0,
+  9.7,  7.7,  8.7, // 3
+  9.9,  7.9,  8.9, // 4
+  9.1,  7.1,  8.1, // 5
   0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
+ -9.7, -7.7, -8.7, // 7
   1.07974939836, -0.32861938211, 0.04694562602, // 8
-  0.0,  0.0,  0.0,
+ -9.9, -7.9, -8.9, // 4
   1.00381374723, -0.33460458241, 0.08365114560, // 10
-  0.0,  0.0,  0.0,
+ -9.1, -7.1, -8.1, // 5
   0.90493237602, -0.32577565537, 0.10859188512, // 12
 };
 
@@ -487,6 +490,8 @@ const double pylith::faults::CohesiveKinDataTet4::_valsJacobian[] = {
   0.0, 0.0, 0.0,
 };
 
+const double pylith::faults::CohesiveKinDataTet4::_pseudoStiffness = 2.4;
+
 pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -504,12 +509,14 @@ pylith::faults::CohesiveKinDataTet4::CohesiveKinDataTet4(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   peakRateFilename = const_cast<char*>(_peakRateFilename);
+  matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
+  pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

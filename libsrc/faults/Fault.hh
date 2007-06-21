@@ -38,6 +38,10 @@ namespace spatialdata {
   namespace geocoords {
     class CoordSys;
   } // geocoords
+
+  namespace spatialdb {
+    class SpatialDB; // USES SpatialDB
+  } // spatialdb
 } // spatialdata
 
 /// C++ abstract base class for Fault object.
@@ -97,12 +101,15 @@ public :
    * @param normalDir General preferred direction for fault normal
    *   (used to pick which of two possible normal directions for
    *   interface; only applies to fault surfaces in a 3-D domain).
+   * @param matDB Database of bulk elastic properties for fault region
+   *   (used to improve conditioning of Jacobian matrix)
    */
   virtual
   void initialize(const ALE::Obj<ALE::Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
 		  const double_array& upDir,
-		  const double_array& normalDir) = 0;
+		  const double_array& normalDir,
+		  spatialdata::spatialdb::SpatialDB* matDB) = 0;
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :

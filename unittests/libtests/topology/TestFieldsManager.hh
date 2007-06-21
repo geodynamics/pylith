@@ -14,7 +14,7 @@
  * @file unittests/libtests/topology/TestFieldsManager.hh
  *
  * @brief C++ TestFieldsManager object.
- *
+ * 
  * C++ unit testing for FieldsManager.
  */
 
@@ -48,8 +48,8 @@ class pylith::topology::TestFieldsManager : public CppUnit::TestFixture
   CPPUNIT_TEST( testAllocate );
   CPPUNIT_TEST( testCopyLayout );
   CPPUNIT_TEST( testCopyLayoutFromField );
-  CPPUNIT_TEST( testOutputField );
-  CPPUNIT_TEST( testGetOutputSoln );
+  CPPUNIT_TEST( testSolutionField );
+  CPPUNIT_TEST( testGetSolution );
   CPPUNIT_TEST( testCreateHistory );
   CPPUNIT_TEST( testShiftHistory );
   CPPUNIT_TEST( testGetHistoryItem );
@@ -82,11 +82,11 @@ public :
   /// Test copyLayoutFromField().
   void testCopyLayoutFromField(void);
 
-  /// Test outputField().
-  void testOutputField(void);
+  /// Test solutionField().
+  void testSolutionField(void);
 
-  /// Test getOutputSoln().
-  void testGetOutputSoln(void);
+  /// Test getSolution().
+  void testGetSolution(void);
 
   /// Test createHistory().
   void testCreateHistory(void);

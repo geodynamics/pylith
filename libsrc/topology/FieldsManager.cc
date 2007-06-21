@@ -22,10 +22,10 @@
 // Constructor
 pylith::topology::FieldsManager::FieldsManager(const ALE::Obj<Mesh>& mesh) :
   _mesh(mesh),
-  _outputName("")
+  _solutionName("")
 { // constructor
 } // constructor
-
+ 
 // ----------------------------------------------------------------------
 // Destructor
 pylith::topology::FieldsManager::~FieldsManager(void)
@@ -208,27 +208,27 @@ pylith::topology::FieldsManager::copyLayout(
 } // copyLayout
 
 // ----------------------------------------------------------------------
-// Set name of solution field for output
+// Set name of solution field.
 void
-pylith::topology::FieldsManager::outputField(const char* name)
-{ // outputField
+pylith::topology::FieldsManager::solutionField(const char* name)
+{ // solutionField
   map_real_type::const_iterator iter = _real.find(name);
   if (iter == _real.end()) {
     std::ostringstream msg;
     msg << "Cannot use unknown field '" << name 
-	<< "' when setting name of solution field for output.";
+	<< "' when setting name of solution field.";
     throw std::runtime_error(msg.str());
   } // if
-  _outputName = name;
-} // outputField
+  _solutionName = name;
+} // solutionField
 
 // ----------------------------------------------------------------------
-// Get solution field for output.
+// Get solution field.
 const ALE::Obj<pylith::real_section_type>&
-pylith::topology::FieldsManager::getOutputSoln(void)
-{ // getOutputSoln
-  return getReal(_outputName.c_str());
-} // getOutputSoln
+pylith::topology::FieldsManager::getSolution(void)
+{ // getSolution
+  return getReal(_solutionName.c_str());
+} // getSolution
 
 // ----------------------------------------------------------------------
 // Create history manager for a subset of the managed fields.

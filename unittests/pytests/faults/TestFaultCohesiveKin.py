@@ -265,6 +265,12 @@ class TestFaultCohesiveKin(unittest.TestCase):
     eqsrc = EqKinSrc()
     eqsrc.slipfn = slipfn
 
+    ioMatDB = SimpleIOAscii()
+    ioMatDB.filename = "data/bulkprops_2d.spatialdb"
+    dbMat = SimpleDB()
+    dbMat.iohandler = ioMatDB
+    dbMat.label = "bulk properties"
+    
     # Setup fault
     fault = FaultCohesiveKin()
     fault.id = 10
@@ -273,6 +279,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.normalDir = [1, 0, 0]
     fault.quadrature = quadrature
     fault.eqsrc = eqsrc
+    fault.matDB = dbMat
     fault.timeStep(dt)
     fault.adjustTopology(mesh)
     fault.initialize(mesh)
@@ -283,6 +290,7 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fields.addReal("residual")
     fields.addReal("solution")
     fields.addReal("disp")
+    fields.solutionField("solution")
     fields.setFiberDimension("residual", cs.spaceDim)
     fields.allocate("residual")
     fields.copyLayout("residual")

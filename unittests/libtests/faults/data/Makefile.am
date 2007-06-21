@@ -11,6 +11,9 @@
 #
 
 noinst_DATA = \
+	bulkprops_1d.spatialdb \
+	bulkprops_2d.spatialdb \
+	bulkprops_3d.spatialdb \
 	line2.mesh \
 	line2_finalslip.spatialdb \
 	line2_sliptime.spatialdb \

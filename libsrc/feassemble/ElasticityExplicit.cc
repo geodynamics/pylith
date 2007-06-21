@@ -75,7 +75,6 @@ pylith::feassemble::ElasticityExplicit::needNewJacobian(void)
   assert(0 != _material);
   if (!_needNewJacobian)
     _needNewJacobian = _material->needNewJacobian();
-  std::cout << "ElasticityExplicit.cc Need new jacobian: " << _needNewJacobian << std::endl;
   return _needNewJacobian;
 } // needNewJacobian
 

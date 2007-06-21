@@ -21,9 +21,8 @@
  * fault. 
  *
  * The ordering of vertices in a cohesive cell is the vertices on the
- * POSITIVE/NEGATIVE (CHECK WHICH IT IS) side of the fault, the
- * corresponding entries on the other side of the fault, and then the
- * corresponding constraint vertices.
+ * one side of the fault, the corresponding entries on the other side
+ * of the fault, and then the corresponding constraint vertices.
  */
 
 #if !defined(pylith_faults_faultcohesivekin_hh)
@@ -76,11 +75,14 @@ public :
    * @param normalDir General preferred direction for fault normal
    *   (used to pick which of two possible normal directions for
    *   interface; only applies to fault surfaces in a 3-D domain).
+   * @param matDB Database of bulk elastic properties for fault region
+   *   (used to improve conditioning of Jacobian matrix)
    */
   void initialize(const ALE::Obj<ALE::Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
 		  const double_array& upDir,
-		  const double_array& normalDir);
+		  const double_array& normalDir,
+		  spatialdata::spatialdb::SpatialDB* matDB);
 
   /** Integrate contributions to residual term (r) for operator.
    *
@@ -131,6 +133,10 @@ private :
 
   EqKinSrc* _eqsrc; ///< Kinematic earthquake source information
 
+  /// Pseudo-stiffness for scaling constraint information to improve
+  /// conditioning of Jacobian matrix
+  ALE::Obj<real_section_type> _pseudoStiffness;
+
   /// Orientation of fault surface at vertices (fiber dimension is
   /// nonzero only at constraint vertices)
   ALE::Obj<real_section_type> _orientation;
@@ -142,6 +148,8 @@ private :
   /// prevent overlap so that only allow 1 cell will contribute for
   /// each vertex).
   ALE::Obj<int_section_type> _constraintCell;
+
+
 
 }; // class FaultCohesiveKin
 

@@ -54,6 +54,7 @@ private:
   static const char* _finalSlipFilename; ///< Name of db for final slip
   static const char* _slipTimeFilename; ///< Name of db for slip time
   static const char* _peakRateFilename; ///< Name of db for peak rate
+  static const char* _matPropsFilename; ///< Name of db for bulk mat properties.
   //@}
 
   static const double _fieldT[]; ///< Solution field at time t.
@@ -63,6 +64,7 @@ private:
   static const int _constraintCells[]; ///< Expected cells for constraint vertices
   static const double _valsResidual[]; ///< Expected values from residual calculation.
   static const double _valsJacobian[]; ///< Expected values from Jacobian calculation.
+  static const double _pseudoStiffness; ///< Fake stiffness for conditioning
   static const int _numConstraintVert; ///< Number of constraint vertices
 
 };

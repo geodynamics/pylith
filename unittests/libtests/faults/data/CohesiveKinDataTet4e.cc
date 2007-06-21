@@ -77,6 +77,9 @@ const char* pylith::faults::CohesiveKinDataTet4e::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataTet4e::_peakRateFilename = 
   "data/tet4e_peakrate.spatialdb";
 
+const char* pylith::faults::CohesiveKinDataTet4e::_matPropsFilename = 
+  "data/bulkprops_3d.spatialdb";
+
 const double pylith::faults::CohesiveKinDataTet4e::_fieldT[] = {
   3.1, 5.1, 7.1,
   3.2, 5.2, 7.2,
@@ -85,13 +88,13 @@ const double pylith::faults::CohesiveKinDataTet4e::_fieldT[] = {
   3.5, 5.5, 7.5,
   3.6, 5.6, 7.6,
   3.7, 5.7, 7.7,
-  3.8, 5.8, 7.8,
+  3.8, 5.8, 7.8, // 11
   3.9, 5.9, 7.9,
-  3.0, 5.0, 7.0,
+  3.0, 5.0, 7.0, // 13
   4.1, 6.1, 8.1,
-  4.2, 6.2, 8.2,
+  4.2, 6.2, 8.2, // 15
   4.3, 6.3, 8.3,
-  4.4, 6.4, 8.4,
+  4.4, 6.4, 8.4, // 17
 };
 
 const int pylith::faults::CohesiveKinDataTet4e::_numConstraintVert = 4;
@@ -113,18 +116,18 @@ const int pylith::faults::CohesiveKinDataTet4e::_constraintCells[] = {
 
 const double pylith::faults::CohesiveKinDataTet4e::_valsResidual[] = {
   0.0,  0.0,  0.0,
+  7.8,  3.8,  5.8, // 5
+  7.0,  3.0,  5.0, // 6
+  8.2,  4.2,  6.2, // 7
+  8.4,  4.4,  6.4, // 8
   0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
-  0.0,  0.0,  0.0,
+ -7.8, -3.8, -5.8, // 10
   1.07974939836, -0.32861938211, 0.04694562602, // 11
-  0.0,  0.0,  0.0,
+ -7.0, -3.0, -5.0, // 12
   1.00381374723, -0.33460458241, 0.08365114560, // 13
-  0.0,  0.0,  0.0,
+ -8.2, -4.2, -6.2, // 14
   0.90493237602, -0.32577565537, 0.10859188512, // 15
-  0.0, 0.0, 0.0,
+ -8.4, -4.4, -6.4, // 16
   0.78469841324, -0.30180708202, 0.12072283281, // 17
 };
 
@@ -719,6 +722,8 @@ const double pylith::faults::CohesiveKinDataTet4e::_valsJacobian[] = {
   0.0, 0.0, 0.0,
 };
 
+const double pylith::faults::CohesiveKinDataTet4e::_pseudoStiffness = 2.4;
+
 pylith::faults::CohesiveKinDataTet4e::CohesiveKinDataTet4e(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -736,12 +741,14 @@ pylith::faults::CohesiveKinDataTet4e::CohesiveKinDataTet4e(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   peakRateFilename = const_cast<char*>(_peakRateFilename);
+  matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
+  pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

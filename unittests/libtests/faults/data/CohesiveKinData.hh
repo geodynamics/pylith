@@ -56,6 +56,7 @@ public:
   char* finalSlipFilename; ///< Name of db for final slip
   char* slipTimeFilename; ///< Name of db for slip time
   char* peakRateFilename; ///< Name of db for peak rate
+  char* matPropsFilename; ///< Name of db for bulk material properties
   //@}
 
   /// @name Input fields
@@ -70,6 +71,7 @@ public:
   int* constraintCells; ///< Expected cells for constraint vertices
   double* valsResidual; ///< Expected values from residual calculation.
   double* valsJacobian; ///< Expected values from Jacobian calculation.
+  double pseudoStiffness; ///< Fake stiffness for conditioning
   int numConstraintVert; ///< Number of constraint vertices
   //@}
 

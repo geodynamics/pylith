@@ -31,7 +31,7 @@ pylith::topology::TestFieldsManager::testConstructor(void)
   _initialize(&mesh);
   FieldsManager manager(mesh);
 } // testConstructor
-
+ 
 // ----------------------------------------------------------------------
 // Test addReal().
 void
@@ -253,25 +253,25 @@ pylith::topology::TestFieldsManager::testCopyLayoutFromField(void)
 } // testCopyLayoutFromField
 
 // ----------------------------------------------------------------------
-// Test outputField().
+// Test solutionField().
 void
-pylith::topology::TestFieldsManager::testOutputField(void)
-{ // testOutputField
+pylith::topology::TestFieldsManager::testSolutionField(void)
+{ // testSolutionField
   ALE::Obj<Mesh> mesh;
   _initialize(&mesh);
   FieldsManager manager(mesh);
 
   const std::string& name = "my solution";
   manager.addReal(name.c_str());
-  manager.outputField(name.c_str());
-  CPPUNIT_ASSERT_EQUAL(name, manager._outputName);
+  manager.solutionField(name.c_str());
+  CPPUNIT_ASSERT_EQUAL(name, manager._solutionName);
 } // testSolutionField
 
 // ----------------------------------------------------------------------
-// Test getOutputSoln().
+// Test getSolution().
 void
-pylith::topology::TestFieldsManager::testGetOutputSoln(void)
-{ // testGetOutputSoln
+pylith::topology::TestFieldsManager::testGetSolution(void)
+{ // testGetSolution
   ALE::Obj<Mesh> mesh;
   _initialize(&mesh);
   FieldsManager manager(mesh);
@@ -293,11 +293,11 @@ pylith::topology::TestFieldsManager::testGetOutputSoln(void)
   fieldB->setFiberDimension(vertices, fiberDimB);
   fieldC->setFiberDimension(vertices, fiberDimC);
 
-  manager.outputField(labels[1]);
-  const ALE::Obj<real_section_type>& solution = manager.getOutputSoln();
+  manager.solutionField(labels[1]);
+  const ALE::Obj<real_section_type>& solution = manager.getSolution();
   CPPUNIT_ASSERT_EQUAL(fiberDimB, 
 		       solution->getFiberDimension(*(vertices->begin())));
-} // testGetOutputSoln
+} // testGetSolution
 
 // ----------------------------------------------------------------------
 // Test createHistory().

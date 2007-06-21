@@ -66,6 +66,9 @@ const char* pylith::faults::CohesiveKinDataLine2::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataLine2::_peakRateFilename = 
   "data/line2_peakrate.spatialdb";
 
+const char* pylith::faults::CohesiveKinDataLine2::_matPropsFilename = 
+  "data/bulkprops_1d.spatialdb";
+
 // Don't expect these values to be used, so just use some values.
 const double pylith::faults::CohesiveKinDataLine2::_fieldT[] = {
   7.1,
@@ -90,11 +93,11 @@ const int pylith::faults::CohesiveKinDataLine2::_constraintCells[] = {
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_valsResidual[] = {
-  0.0,
-  0.0,
-  0.0,
-  0.0,
-  1.05168389458
+   0.0,
+   7.5,
+   0.0,
+  -7.5,
+   1.05168389458
 };
 
 const double pylith::faults::CohesiveKinDataLine2::_valsJacobian[] = {
@@ -104,6 +107,8 @@ const double pylith::faults::CohesiveKinDataLine2::_valsJacobian[] = {
   0.0,  0.0,  0.0,  0.0, +1.0,
   0.0, -1.0,  0.0, +1.0,  0.0,
 };
+
+const double pylith::faults::CohesiveKinDataLine2::_pseudoStiffness = 2.4;
 
 pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
 { // constructor
@@ -122,12 +127,14 @@ pylith::faults::CohesiveKinDataLine2::CohesiveKinDataLine2(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   peakRateFilename = const_cast<char*>(_peakRateFilename);
+  matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
+  pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

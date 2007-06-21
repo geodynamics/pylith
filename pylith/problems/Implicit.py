@@ -68,8 +68,8 @@ class Implicit(Formulation):
     Constructor.
     """
     Formulation.__init__(self, name)
-    self.outputField = {'name': "dispTBctpdt",
-                        'label': "displacements"}
+    self.solnField = {'name': "dispTBctpdt",
+                      'label': "displacements"}
     return
 
 
@@ -90,11 +90,11 @@ class Implicit(Formulation):
                            interfaceConditions, dimension, dt)
 
     self._info.log("Creating other fields and matrices.")
-    self.fields.addReal("dispTBctpdt")
+    self.fields.addReal("dispIncr")
     self.fields.addReal("residual")
-    self.fields.copyLayout("solution")
-    self.jacobian = mesh.createMatrix(self.fields.getReal("solution"))
-    self.solver.initialize(mesh, self.fields.getReal("solution"))
+    self.fields.copyLayout("dispTBctpdt")
+    self.jacobian = mesh.createMatrix(self.fields.getSolution())
+    self.solver.initialize(mesh, self.fields.getSolution())
 
     # Initial time step solves for total displacement field, not increment
     for constraint in self.constraints:
@@ -137,13 +137,7 @@ class Implicit(Formulation):
       if integrator.needNewJacobian():
         needNewJacobian = True
     if needNewJacobian:
-      self._info.log("Reforming Jacobian of operator.")
-      import pylith.utils.petsc as petsc
-      petsc.mat_setzero(self.jacobian)
-      for integrator in self.integrators:
-        integrator.timeStep(dt)
-        integrator.integrateJacobian(self.jacobian, t+dt, self.fields)
-      petsc.mat_assemble(self.jacobian)
+      self._reformJacobian()
     return
 
 
@@ -153,7 +147,7 @@ class Implicit(Formulation):
     """
     self._info.log("Integrating residual term in operator.")
     residual = self.fields.getReal("residual")
-    dispIncr = self.fields.getReal("solution")
+    dispIncr = self.fields.getReal("dispIncr")
     import pylith.topology.topology as bindings
     bindings.zeroRealSection(residual)
     bindings.zeroRealSection(dispIncr)
@@ -177,9 +171,9 @@ class Implicit(Formulation):
     # nonzero at unconstrained DOF) so that after poststep(),
     # dispTBctpdt contains the displacement field at time t+dt.
     import pylith.topology.topology as bindings
-    solution = self.fields.getReal("solution")
-    disp = self.fields.getReal("dispTBctpdt")
-    bindings.addRealSections(disp, disp, solution)
+    dispIncr = self.fields.getReal("dispIncr")
+    disp = self.fields.getSolution()
+    bindings.addRealSections(disp, disp, dispIncr)
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
@@ -194,8 +188,9 @@ class Implicit(Formulation):
         constraint.useSolnIncr(True)
       for integrator in self.integrators:
         integrator.useSolnIncr(True)
+      self._reformJacobian(t, dt)
 
-    Formulation.poststep(self, t+dt)
+    Formulation.poststep(self, t, dt)
     return
 
 

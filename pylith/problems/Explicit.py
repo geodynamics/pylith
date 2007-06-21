@@ -45,8 +45,8 @@ class Explicit(Formulation):
     Constructor.
     """
     Formulation.__init__(self, name)
-    self.outputField = {'name': "dispT",
-                        'label': "displacements"}
+    self.solnField = {'name': "dispT",
+                      'label': "displacements"}
     return
 
 
@@ -69,14 +69,14 @@ class Explicit(Formulation):
                            interfaceConditions, dimension, dt)
 
     self._info.log("Creating other fields and matrices.")
-    self.fields.addReal("dispT")
+    self.fields.addReal("dispTpdt")
     self.fields.addReal("dispTmdt")
     self.fields.addReal("residual")
-    self.fields.createHistory(["solution", "dispT", "dispTmdt"])    
-    self.fields.copyLayout("solution")
-    self.jacobian = mesh.createMatrix(self.fields.getReal("solution"))
+    self.fields.createHistory(["dispTpdt", "dispT", "dispTmdt"])    
+    self.fields.copyLayout("dispT")
+    self.jacobian = mesh.createMatrix(self.fields.getSolution())
 
-    self.solver.initialize(mesh, self.fields.getReal("solution"))
+    self.solver.initialize(mesh, self.fields.getSolution())
 
     # Solve for total displacement field
     for constraint in self.constraints:
@@ -86,7 +86,7 @@ class Explicit(Formulation):
     return
 
 
-  def startTime(self):
+  def startTime(self, dt):
     """
     Get time at which time stepping should start.
     """
@@ -108,7 +108,7 @@ class Explicit(Formulation):
     """
     Hook for doing stuff before advancing time step.
     """
-    dispTpdt = self.fields.getReal("solution")
+    dispTpdt = self.fields.getReal("dispTpdt")
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTpdt)
 
@@ -140,11 +140,11 @@ class Explicit(Formulation):
       integrator.integrateResidual(residual, t, self.fields)
 
     self._info.log("Solving equations.")
-    self.solver.solve(self.fields.getReal("solution"), self.jacobian, residual)
+    self.solver.solve(self.fields.getReal("dispTpdt"), self.jacobian, residual)
     return
 
 
-  def poststep(self, t):
+  def poststep(self, t, dt):
     """
     Hook for doing stuff after advancing time step.
     """
@@ -154,7 +154,7 @@ class Explicit(Formulation):
     for integrator in self.integrators:
       integrator.updateState(t, self.fields.getReal("dispT"))
 
-    Formulation.poststep(self, t)
+    Formulation.poststep(self, t, dt)
     return
 
 

@@ -11,7 +11,7 @@
 #
 
 ## @file unittests/pytests/topology/TestFieldsManager.py
-
+##
 ## @brief Unit testing of FieldsManager object.
 
 import unittest
@@ -179,11 +179,11 @@ class TestFieldsManager(unittest.TestCase):
     return
 
 
-  def test_outputField(self):
+  def test_solutionField(self):
     """
-    Test outputField().
+    Test solutionField().
 
-    WARNING: This is not a rigorous test of outputField() because we
+    WARNING: This is not a rigorous test of solutionField() because we
     don't verify the results.
     """
     mesh = self._initialize()
@@ -194,18 +194,18 @@ class TestFieldsManager(unittest.TestCase):
     for field in fields:
       manager.addReal(field)
 
-    manager.outputField("field B")
+    manager.solutionField("field B")
 
     # We should really add something here to check to make sure things
     # actually initialized correctly.
     return
 
 
-  def test_getOutputSoln(self):
+  def test_getSolution(self):
     """
-    Test getOutputSoln().
+    Test getSolution().
 
-    WARNING: This is not a rigorous test of getOutputSoln() because we
+    WARNING: This is not a rigorous test of getSolution() because we
     don't verify the results.
     """
     mesh = self._initialize()
@@ -216,8 +216,8 @@ class TestFieldsManager(unittest.TestCase):
     for field in fields:
       manager.addReal(field)
 
-    manager.outputField("field B")
-    solution = manager.getOutputSoln()
+    manager.solutionField("field B")
+    solution = manager.getSolution()
 
     # We should really add something here to check to make sure things
     # actually initialized correctly.

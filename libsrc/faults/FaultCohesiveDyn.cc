@@ -40,7 +40,8 @@ void
 pylith::faults::FaultCohesiveDyn::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 					     const spatialdata::geocoords::CoordSys* cs,
 					     const double_array& upDir,
-					     const double_array& normalDir)
+					     const double_array& normalDir,
+					     spatialdata::spatialdb::SpatialDB* matDB)
 { // initialize
   throw std::logic_error("FaultCohesiveDyn::initialize() not implemented.");
 } // initialize

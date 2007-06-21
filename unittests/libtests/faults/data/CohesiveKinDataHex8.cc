@@ -101,6 +101,9 @@ const char* pylith::faults::CohesiveKinDataHex8::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataHex8::_peakRateFilename = 
   "data/hex8_peakrate.spatialdb";
 
+const char* pylith::faults::CohesiveKinDataHex8::_matPropsFilename = 
+  "data/bulkprops_3d.spatialdb";
+
 const double pylith::faults::CohesiveKinDataHex8::_fieldT[] = {
   4.1, 6.1, 8.1,
   4.2, 6.2, 8.2,
@@ -115,13 +118,13 @@ const double pylith::faults::CohesiveKinDataHex8::_fieldT[] = {
   5.1, 7.1, 9.1,
   5.2, 7.2, 9.2,
   5.3, 7.3, 9.3,
-  5.4, 7.4, 9.4,
+  5.4, 7.4, 9.4, // 15
   5.5, 7.5, 9.5,
-  5.6, 7.6, 9.6,
+  5.6, 7.6, 9.6, // 17
   5.7, 7.7, 9.7,
-  5.8, 7.8, 9.8,
+  5.8, 7.8, 9.8, // 19
   5.9, 7.9, 9.9,
-  5.0, 7.0, 9.0,
+  5.0, 7.0, 9.0, // 21
 };
 
 const int pylith::faults::CohesiveKinDataHex8::_numConstraintVert = 4;
@@ -146,21 +149,21 @@ const double pylith::faults::CohesiveKinDataHex8::_valsResidual[] = {
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
+  9.4, 5.4, 7.4, // 6
+  9.6, 5.6, 7.6, // 7
+  9.8, 5.8, 7.8, // 8
+  9.0, 5.0, 7.0, // 9
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
+ -9.4,-5.4,-7.4, // 14
   1.07974939836, -0.32861938211, 0.04694562602, // 15 (constraint)
-  0.0, 0.0, 0.0,
+ -9.6,-5.6,-7.6, // 16
   1.00381374723, -0.33460458241, 0.08365114560, // 17 (constraint)
-  0.0, 0.0, 0.0,
+ -9.8,-5.8,-7.8, // 18
   0.90493237602, -0.32577565537, 0.10859188512, // 19 (constraint)
-  0.0, 0.0, 0.0,
+ -9.0,-5.0,-7.0, // 20
   0.78469841324, -0.30180708202, 0.12072283281, // 21 (constraint)
 };
 
@@ -1367,6 +1370,8 @@ const double pylith::faults::CohesiveKinDataHex8::_valsJacobian[] = {
   0.0, 0.0, 0.0,
 };
 
+const double pylith::faults::CohesiveKinDataHex8::_pseudoStiffness = 2.4;
+
 pylith::faults::CohesiveKinDataHex8::CohesiveKinDataHex8(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -1384,12 +1389,14 @@ pylith::faults::CohesiveKinDataHex8::CohesiveKinDataHex8(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   peakRateFilename = const_cast<char*>(_peakRateFilename);
+  matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
+  pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

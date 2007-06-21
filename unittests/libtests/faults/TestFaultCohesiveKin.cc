@@ -163,6 +163,20 @@ pylith::faults::TestFaultCohesiveKin::testInitialize(void)
     CPPUNIT_ASSERT_EQUAL(_data->constraintCells[iVertex], vertexCell[0]);
   } // for
 
+  // Check pseudoStiffness
+  iVertex = 0;
+  for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
+       v_iter != vertConstraintEnd;
+       ++v_iter, ++iVertex) {
+    const int fiberDim = fault._pseudoStiffness->getFiberDimension(*v_iter);
+    CPPUNIT_ASSERT_EQUAL(1, fiberDim);
+    const real_section_type::value_type* vertexStiffness = 
+      fault._pseudoStiffness->restrictPoint(*v_iter);
+    CPPUNIT_ASSERT(0 != vertexStiffness);
+    const double tolerance = 1.0e-06;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->pseudoStiffness, vertexStiffness[0],
+				 tolerance);
+  } // for
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -178,6 +192,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
   topology::FieldsManager fields(mesh);
   fields.addReal("residual");
   fields.addReal("solution");
+  fields.solutionField("solution");
   
   const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
@@ -221,10 +236,11 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
       residual->restrictPoint(*v_iter);
     for (int i=0; i < fiberDimE; ++i) {
       const int index = iVertex*spaceDim+i;
-      if (valsE[index] > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[index], tolerance);
+      const double valE = valsE[index] * _data->pseudoStiffness;
+      if (valE > tolerance)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[i], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
     } // for
   } // for
 } // testIntegrateResidual
@@ -242,6 +258,7 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   topology::FieldsManager fields(mesh);
   fields.addReal("residual");
   fields.addReal("solution");
+  fields.solutionField("solution");
   
   const ALE::Obj<real_section_type>& residual = fields.getReal("residual");
   CPPUNIT_ASSERT(!residual.isNull());
@@ -307,17 +324,18 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
+      const double valE = valsE[index] * _data->pseudoStiffness;
 #if 0 // DEBUGGING
-      if (fabs(valsE[index]-vals[index]) > tolerance)
+      if (fabs(valE-vals[index]) > tolerance)
 	std::cout << "ERROR: iRow: " << iRow << ", iCol: " << iCol
-		  << "valE: " << valsE[index]
+		  << "valE: " << valE
 		  << ", val: " << vals[index]
 		  << std::endl;
 #endif // DEBUGGING
-      if (fabs(valsE[index]) > 1.0)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valsE[index], tolerance);
+      if (fabs(valE) > 1.0)
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[index]/valE, tolerance);
       else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[index], vals[index], tolerance);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[index], tolerance);
     } // for
   MatDestroy(jDense);
   MatDestroy(jSparseAIJ);
@@ -387,7 +405,12 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<ALE::Mesh>* mesh,
     const double normalDirVals[] = { 1.0, 0.0, 0.0 };
     double_array normalDir(normalDirVals, 3);
 
-    fault->initialize(*mesh, &cs, upDir, normalDir); 
+    spatialdata::spatialdb::SimpleDB dbMatProp("material properties");
+    spatialdata::spatialdb::SimpleIOAscii ioMatProp;
+    ioMatProp.filename(_data->matPropsFilename);
+    dbMatProp.ioHandler(&ioMatProp);
+
+    fault->initialize(*mesh, &cs, upDir, normalDir, &dbMatProp); 
   } catch (const ALE::Exception& err) {
     throw std::runtime_error(err.msg());
   } // catch
