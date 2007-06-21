@@ -1,8 +1,19 @@
+// Global mesh object.
 mesh = {
+
+  // This is a two-dimensional mesh.
   dimension = 2
+
+  // Describe the vertices (nodes) defining the mesh.
   vertices = {
+
+    // The vertices are defined in a 2D coordinate system.
     dimension = 2
+
+    // There are 4 vertices.
     count = 4
+
+    // List node number (starting from 0), x-coord, and y-coord.
     coordinates = {
       0  -1.0   0.0
       1   0.0   1.0
@@ -10,30 +21,49 @@ mesh = {
       3   1.0   0.0
     }
   }
+  
+  // Describe the cells (elements) composing the mesh.
   cells = {
+
+    // These are linear triangular cells, so there are 3 corners per cell.
     num-corners = 3
+
+    // There are 2 cells
     count = 2
+
+    // List cell number, and then vertices moving counter-clockwise around the cell.
     simplices = {
       0   0  2  1
       1   1  2  3
     }
+
+    // List the material ID's associated with each cell (both have an ID of 1).
     material-ids = {
       0   1
       1   1
     }
   }
+
+
+  // This group of vertices may be used to define a fault.
   group = {
     type = vertices
     name = fault
+
+    // There are 2 vertices corresponding to indices 1 and 2.
     count = 2
     indices = {
       1
       2
     }
   }
+
+  // This group of vertices may be used to specify boundary conditions.
   group = {
     type = vertices
     name = end points
+
+    // There are 2 vertices corresponding to indices 0 and 3.
     count = 2
     indices = {
       0
