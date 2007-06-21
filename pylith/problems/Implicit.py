@@ -137,7 +137,7 @@ class Implicit(Formulation):
       if integrator.needNewJacobian():
         needNewJacobian = True
     if needNewJacobian:
-      self._reformJacobian()
+      self._reformJacobian(t, dt)
     return
 
 
