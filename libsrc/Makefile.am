@@ -78,9 +78,11 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileBinary.cc \
 	meshio/SolutionIO.cc \
 	meshio/SolutionIOVTK.cc \
-	topology/FieldsManager.cc
+	topology/FieldsManager.cc \
+	utils/LineParser.cc
 
-libpylith_la_LDFLAGS = -no-undefined $(PYTHON_LA_LDFLAGS)
+#libpylith_la_LDFLAGS = -no-undefined $(PYTHON_LA_LDFLAGS)
+libpylith_la_LDFLAGS = $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
 	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
