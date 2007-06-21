@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -134,11 +134,11 @@ For the case of isotropic elasticity, the number of independent components
 \end_layout
 
 \begin_layout Subsection
-1-D Elastic Material Models
+1D Elastic Material Models
 \end_layout
 
 \begin_layout Standard
-In 1-D we can write Hooke's law as 
+In 1D we can write Hooke's law as 
 \begin_inset Formula $\sigma_{11}=C_{1111}\epsilon_{11}$
 \end_inset
 
@@ -158,7 +158,7 @@ Linear
 \end_layout
 
 \begin_layout Standard
-For purely 1-D axial deformation 
+For purely 1D axial deformation 
 \begin_inset Formula $C_{1111}=\lambda+2\mu$
 \end_inset
 
@@ -213,11 +213,11 @@ with
 \end_layout
 
 \begin_layout Subsection
-2-D Elastic Material Models
+2D Elastic Material Models
 \end_layout
 
 \begin_layout Standard
-In 2-D we can write Hooke's law as
+In 2D we can write Hooke's law as
 \begin_inset Formula \begin{gather}
 \left[\begin{array}{c}
 \sigma_{11}\\
@@ -244,7 +244,7 @@ If the gradient in deformation with respect to the
 \begin_inset Formula $x_{3}$
 \end_inset
 
-axis is zero, then 
+ axis is zero, then 
 \begin_inset Formula $\epsilon_{33}=\epsilon_{13}=\epsilon_{23}=0$
 \end_inset
 
@@ -275,7 +275,7 @@ If the
 \begin_inset Formula $x_{1}x_{2}$
 \end_inset
 
-plane is traction free, then 
+ plane is traction free, then 
 \begin_inset Formula $\sigma_{33}=\sigma_{13}=\sigma_{23}=0$
 \end_inset
 
@@ -306,7 +306,7 @@ where
 \end_layout
 
 \begin_layout Subsection
-3-D Elastic Material Models
+3D Elastic Material Models
 \end_layout
 
 \begin_layout Subsubsection
@@ -372,7 +372,7 @@ There are six material models presently available in PyLith, as shown in
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \noindent
@@ -639,7 +639,7 @@ Spring-dashpot 1D representations of the material models available in PyLith.
 \align center
 \begin_inset Graphics
 	filename figs/pylith-materials.ai
-	scale 95
+	scale 75
 
 \end_inset
 
@@ -743,7 +743,7 @@ Note the use of engineering strain measures (
 \begin_inset Formula $\gamma_{ij}$
 \end_inset
 
-) in equation 
+) in Equation 
 \begin_inset LatexCommand \ref{eq:5}
 
 \end_inset
@@ -949,7 +949,7 @@ where
 \end_inset
 
 , respectively.
- The topmost equation in equation 
+ The topmost equation in Equation 
 \begin_inset LatexCommand \ref{eq:9}
 
 \end_inset
@@ -1034,7 +1034,7 @@ Therefore,
 
 \end_inset
 
-Substituting equations 
+Substituting Equations 
 \begin_inset LatexCommand \ref{eq:13}
 
 \end_inset
@@ -1115,7 +1115,7 @@ Using the chain rule,
 
 \end_inset
 
-From equation 
+From Equation 
 \begin_inset LatexCommand \ref{eq:11}
 
 \end_inset
@@ -1126,7 +1126,7 @@ From equation
 
 \end_inset
 
-and from equation 
+and from Equation 
 \begin_inset LatexCommand \ref{eq:3}
 
 \end_inset
@@ -1141,7 +1141,7 @@ and from equation
 
 \end_inset
 
-Finally, from equation 
+Finally, from Equation 
 \begin_inset LatexCommand \ref{eq:19}
 
 \end_inset
@@ -1152,7 +1152,7 @@ Finally, from equation
 
 \end_inset
 
-From equation 
+From Equation 
 \begin_inset LatexCommand \ref{eq:24}
 
 \end_inset
@@ -1216,7 +1216,7 @@ C_{44}^{E}=\frac{E}{2(1+\nu)}\,\,\nonumber \end{gather}
 
 \end_inset
 
-This is consistent with the regular elasticity matrix, and equation 
+This is consistent with the regular elasticity matrix, and Equation 
 \begin_inset LatexCommand \ref{eq:30}
 
 \end_inset
