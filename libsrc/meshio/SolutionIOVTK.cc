@@ -18,13 +18,10 @@
 
 #include "SolutionIOVTK.hh" // implementation of class methods
 
-#include <src/dm/mesh/meshvtk.h> // USES VTKViewer
+#include <petscmesh_viewers.hh> // USES VTKViewer
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
-
-template<typename Bundle, typename Section>
-PetscErrorCode SectionView_Sieve_Ascii(const Obj<Bundle>& bundle, const Obj<Section>& s, const char name[], PetscViewer viewer, int enforceDim);
 
 // ----------------------------------------------------------------------
 // Constructor
