@@ -2,14 +2,9 @@
 CURRENT ISSUES
 ======================================================================
 
-  2. Debug mesh distribution. [MATT]
+  1. Debug mesh distribution. [MATT]
 
-  3. Debug Maxwell viscoelastic model. [CHARLES]
-
-  5. Add check to make sure every material supplied by user exists in
-  the mesh.
-  
-  6. Need PETSc settings for absolute convergence (i.e., don't want to
+  3. Need PETSc settings for absolute convergence (i.e., don't want to
   max out iterations when there is no increment in displacement).
 
 ----------------------------------------------------------------------
@@ -43,9 +38,12 @@ MAIN PRIORITIES (Brad)
 add check in fields manager when returning solution (solution name
 shouldn't be empty)
 
-add ability to have comments in meshio and spatial data files (if easy
-to do, would use '#' as delimiter).
+add ability to have comments in spatial data files (if easy
+to do, would use '//' as delimiter).
 
+Add check to make sure every material supplied by user exists in the
+mesh.
+  
 Create meshes for benchmarks
 
   strike-slip

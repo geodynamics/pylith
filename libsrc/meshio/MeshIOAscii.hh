@@ -22,6 +22,10 @@ namespace pylith {
   namespace meshio {
     class MeshIOAscii;
   } // meshio
+
+  namespace utils {
+    class LineParser;
+  } // utils
 } // pylith
 
 class pylith::meshio::MeshIOAscii : public MeshIO
@@ -63,12 +67,12 @@ private :
 
   /** Read mesh vertices.
    *
-   * @param filein Input stream
+   * @param parser Input parser.
    * @param coordinates Pointer to array of vertex coordinates
    * @param numVertices Pointer to number of vertices
    * @param spaceDim Pointer to dimension of coordinates vector space
    */
-  void _readVertices(std::istream& filein,
+  void _readVertices(utils::LineParser& parser,
 		     double_array* coordinates,
 		     int* numVertices,
 		     int* spaceDim) const;
@@ -81,13 +85,13 @@ private :
   
   /** Read mesh cells.
    *
-   * @param filein Input stream
+   * @param parser Input parser.
    * @param pCells Pointer to array of indices of cell vertices
    * @param pMaterialIds Pointer to array of material identifiers
    * @param pNumCells Pointer to number of cells
    * @param pNumCorners Pointer to number of corners
    */
-  void _readCells(std::istream& filein,
+  void _readCells(utils::LineParser& parser,
 		  int_array* pCells,
 		  int_array* pMaterialIds,
 		  int* numCells,
@@ -104,10 +108,10 @@ private :
   
   /** Read a point group.
    *
-   * @param filein Input stream
+   * @param parser Input parser.
    * @param mesh The mesh
    */
-  void _readGroup(std::istream& filein,
+  void _readGroup(utils::LineParser& parser,
 		  int_array* points,
                   GroupPtType* type,
                   std::string* name) const;
