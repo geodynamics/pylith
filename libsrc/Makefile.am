@@ -80,11 +80,6 @@ libpylith_la_SOURCES = \
 	meshio/SolutionIOVTK.cc \
 	topology/FieldsManager.cc
 
-if ENABLE_CUBIT
-  libpylith_la_SOURCES += \
-	meshio/MeshIOCubit.cc
-endif
-
 libpylith_la_LDFLAGS = -no-undefined $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
 	$(PETSC_LIB) \
@@ -94,5 +89,11 @@ INCLUDES = -I$(top_builddir)/include
 INCLUDES += $(PETSC_INCLUDE)
 
 AM_CPPFLAGS = $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_SIEVE_FLAGS)
+
+if ENABLE_CUBIT
+  libpylith_la_SOURCES += \
+	meshio/MeshIOCubit.cc
+  libpylith_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
 
 # End of file 
