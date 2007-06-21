@@ -2,27 +2,18 @@
 CURRENT ISSUES
 ======================================================================
 
-  1. Fix scaling and time stepping for fault implementation.
+  2. Debug mesh distribution. [MATT]
 
-    BruneSlipFn
-      Add slipIncr()
-      [Needs unit test]
-    EqKinSrc
-      slipIncr()
-      [Needs unit test]
-    FaultCohesiveKin
-      Fix scaling.
-      C++ unit tests with solution increment
-        integrateJacobian
-        integrateResidual
+  3. Debug Maxwell viscoelastic model. [CHARLES]
 
-  2. Debug mesh distribution.
-     [MATT]
-
-Charles is debugging Maxwell viscoelastic model.
+  5. Add check to make sure every material supplied by user exists in
+  the mesh.
   
-  3. Create list of missing features (EqSim/PyLith 0.8) and new
-  features.
+  6. Need PETSc settings for absolute convergence (i.e., don't want to
+  max out iterations when there is no increment in displacement).
+
+----------------------------------------------------------------------
+List of missing features (EqSim/PyLith 0.8) and new features.
 
     Missing features
       EqSim
@@ -38,6 +29,7 @@ Charles is debugging Maxwell viscoelastic model.
         Multiple cell types
         1-D and 2-D simulations
         Importing of meshes from CUBIT
+	Exporting to VTK files
         Availability as open-source with documentation
       PyLith 0.8
         Dislocation-based fault implementation
@@ -48,6 +40,12 @@ Charles is debugging Maxwell viscoelastic model.
 MAIN PRIORITIES (Brad)
 ======================================================================
 
+add check in fields manager when returning solution (solution name
+shouldn't be empty)
+
+add ability to have comments in meshio and spatial data files (if easy
+to do, would use '#' as delimiter).
+
 Create meshes for benchmarks
 
   strike-slip
@@ -56,9 +54,6 @@ Create meshes for benchmarks
   reverse
     tet (LaGriT)
     hex (CUBIT)
-
-add ability to have comments in meshio and spatial data files (if easy
-to do, would use '#' as delimiter).
 
   FaultCohesiveKin
     multiple cohesive cells for hex8 mesh

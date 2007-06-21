@@ -14,7 +14,7 @@
  * @file pylith/topology/FieldsManager.hh
  *
  * @brief Object for managing fields associated with the fields
- * defined over a finite-element mesh.
+ * defined over a finite-element mesh. 
  */
 
 #if !defined(pylith_topology_fieldsmanager_hh)
@@ -93,17 +93,17 @@ public :
    */
   void copyLayout(const ALE::Obj<real_section_type>& field);
 
-  /** Set name of solution field for output.
+  /** Set name of solution field.
    *
-   * @param name Name of output field.
+   * @param name Name of field that is the solution.
    */
-  void outputField(const char* name);
+  void solutionField(const char* name);
 
-  /** Get solution field for output.
+  /** Get solution field.
    *
-   * @returns Solution field for output.
+   * @returns Solution field.
    */
-  const ALE::Obj<real_section_type>& getOutputSoln(void);
+  const ALE::Obj<real_section_type>& getSolution(void);
 
   /** Create history manager for a subset of the managed fields.
    *
@@ -149,8 +149,8 @@ private :
   /// Map for fieldss stored as real fields
   map_real_type _real;
 
-  /// Name of field that is used to output the solution.
-  std::string _outputName;
+  /// Name of field that corresponds to the solution.
+  std::string _solutionName;
 
   /// History manager for a subset of the fields
   std::vector<std::string> _history;

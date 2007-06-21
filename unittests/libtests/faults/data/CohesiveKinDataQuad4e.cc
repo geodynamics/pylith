@@ -108,6 +108,9 @@ const char* pylith::faults::CohesiveKinDataQuad4e::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataQuad4e::_peakRateFilename = 
   "data/quad4e_peakrate.spatialdb";
 
+const char* pylith::faults::CohesiveKinDataQuad4e::_matPropsFilename = 
+  "data/bulkprops_2d.spatialdb";
+
 const double pylith::faults::CohesiveKinDataQuad4e::_fieldT[] = {
   3.1, 5.1,
   3.2, 5.2,
@@ -119,11 +122,11 @@ const double pylith::faults::CohesiveKinDataQuad4e::_fieldT[] = {
   3.8, 5.8,
   3.9, 5.9,
   3.0, 5.0,
-  4.1, 6.1,
+  4.1, 6.1, // 14
   4.2, 6.2,
-  4.3, 6.3,
+  4.3, 6.3, // 16
   4.4, 6.4,
-  4.5, 6.5,
+  4.5, 6.5, // 18
 };
 
 
@@ -146,18 +149,18 @@ const int pylith::faults::CohesiveKinDataQuad4e::_constraintCells[] = {
 const double pylith::faults::CohesiveKinDataQuad4e::_valsResidual[] = {
   0.0,  0.0,
   0.0,  0.0,
+  6.1,  4.1, // 6
+  6.3,  4.3, // 7
   0.0,  0.0,
   0.0,  0.0,
   0.0,  0.0,
+  6.5,  4.5, // 11
   0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
+ -6.1, -4.1, // 13
   0.989535448086, 0.0824612873405, // 14
-  0.0,  0.0,
+ -6.3, -4.3, // 15
   1.05057813143, 0.0456773100622, // 16
-  0.0,  0.0,
+ -6.5, -4.5, // 17
   0.90435792846,  0.10852295130, // 18
 };
 
@@ -614,6 +617,8 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
 };
 
+const double pylith::faults::CohesiveKinDataQuad4e::_pseudoStiffness = 2.4;
+
 pylith::faults::CohesiveKinDataQuad4e::CohesiveKinDataQuad4e(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -631,12 +636,14 @@ pylith::faults::CohesiveKinDataQuad4e::CohesiveKinDataQuad4e(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   peakRateFilename = const_cast<char*>(_peakRateFilename);
+  matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
+  pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

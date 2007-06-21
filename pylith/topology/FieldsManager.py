@@ -11,7 +11,7 @@
 #
 
 ## @file pylith/topology/FieldsManager.py
-##
+## 
 ## @brief Python manager for fields over a mesh.
 
 # FieldsManager class
@@ -89,21 +89,21 @@ class FieldsManager(object):
     return self.cppHandle.copyLayoutFromSrc(field)
 
 
-  def outputField(self, name):
+  def solutionField(self, name):
     """
-    Set name of field corresponding to solution for output.
+    Set name of field corresponding to solution.
     """
     assert(None != self.cppHandle)
-    self.cppHandle.outputField(name)
+    self.cppHandle.solutionField(name)
     return
 
 
-  def getOutputSoln(self):
+  def getSolution(self):
     """
-    Get field corresponding to solution for output.
+    Get field corresponding to solution.
     """
     assert(None != self.cppHandle)
-    return self.cppHandle.getOutputSoln()
+    return self.cppHandle.getSolution()
 
 
   def createHistory(self, labels):

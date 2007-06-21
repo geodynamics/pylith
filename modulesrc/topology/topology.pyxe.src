@@ -16,7 +16,7 @@
 #include "pylith/utils/petscfwd.h"
 #include <Generator.hh>
 #include <Distribution.hh>
-
+ 
 #include <stdexcept>
 #include <Python.h>
 #include <assert.h>
@@ -259,32 +259,6 @@ cdef class Mesh:
     fieldVptr = PyCObject_AsVoidPtr(field)
     ptr = Mesh_createMatrix(self.thisptr, fieldVptr)
     return PyCObject_FromVoidPtr(ptr, PetscMat_destructor)
-    
-
-  def view(self):
-    """
-    View the mesh.
-    """
-    # create shim for view
-    #embed{ void* Mesh_view(void* objVptr)
-    try {
-      ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) objVptr;
-      assert(0 != mesh);
-      assert(!mesh->isNull());
-      (*mesh)->view("");
-    } catch (const std::exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.what()));
-    } catch (const ALE::Exception& err) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      const_cast<char*>(err.msg().c_str()));
-    } catch (...) {
-      PyErr_SetString(PyExc_RuntimeError,
-                      "Caught unknown C++ exception.");
-    } // try/catch
-    #}embed
-    Mesh_view(self.thisptr)
-    return
 
 
   def _createHandle(self):
@@ -728,15 +702,15 @@ cdef class FieldsManager:
     return
 
 
-  def outputField(self, name):
+  def solutionField(self, name):
     """
-    Set name of field corresponding to solution field for output.
+    Set name of field corresponding to solution.
     """
-    # create shim for 'outputField'
-    #embed{ void FieldsManager_outputField(void* objVptr, char* name)
+    # create shim for solutionField
+    #embed{ void FieldsManager_solutionField(void* objVptr, char* name)
     try {
       assert(0 != objVptr);
-      ((pylith::topology::FieldsManager*) objVptr)->outputField(name);
+      ((pylith::topology::FieldsManager*) objVptr)->solutionField(name);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -748,20 +722,20 @@ cdef class FieldsManager:
                       "Caught unknown C++ exception.");
     } // try/catch
     #}embed
-    FieldsManager_outputField(self.thisptr, name)
+    FieldsManager_solutionField(self.thisptr, name)
 
 
-  def getOutputSoln(self):
+  def getSolution(self):
     """
-    Get field corresponding to solution for output.
+    Get field corresponding to solution.
     """
-    # create shim for 'getOutputSoln'
-    #embed{ void* FieldsManager_getOutputSoln(void* objVptr)
+    # create shim for getSolution
+    #embed{ void* FieldsManager_getSolution(void* objVptr)
     void* result = 0;
     try {
       assert(0 != objVptr);
       const ALE::Obj<pylith::real_section_type>& field =
-        ((pylith::topology::FieldsManager*) objVptr)->getOutputSoln();
+        ((pylith::topology::FieldsManager*) objVptr)->getSolution();
       result = (void*) &field;
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
@@ -776,7 +750,7 @@ cdef class FieldsManager:
     return result;
     #}embed
     cdef void* ptr
-    ptr = FieldsManager_getOutputSoln(self.thisptr)
+    ptr = FieldsManager_getSolution(self.thisptr)
     return PyCObject_FromVoidPtr(ptr, NULL)
 
 

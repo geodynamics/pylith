@@ -119,19 +119,22 @@ cdef class Fault:
     return
 
 
-  def initialize(self, mesh, cs, upDir, normalDir):
+  def initialize(self, mesh, cs, upDir, normalDir, matDB):
     """
     Initialize fault.
     """
     # create shim for method 'initialize'
-    #embed{ void Fault_initialize(void* objVptr, void* meshVptr, void* csVptr, double* upDirPtr, double* normalDirPtr)
+    #embed{ void Fault_initialize(void* objVptr, void* meshVptr, void* csVptr, double* upDirPtr, double* normalDirPtr, void* dbVptr)
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
       assert(0 != csVptr);
+      assert(0 != dbVptr);
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
+      spatialdata::spatialdb::SpatialDB* matDB =
+        (spatialdata::spatialdb::SpatialDB*) dbVptr;
       pylith::double_array upDir(3);
       upDir[0] = upDirPtr[0];
       upDir[1] = upDirPtr[1];
@@ -140,7 +143,7 @@ cdef class Fault:
       normalDir[0] = normalDirPtr[0];
       normalDir[1] = normalDirPtr[1];
       normalDir[2] = normalDirPtr[2];
-      ((pylith::faults::Fault*) objVptr)->initialize(*mesh, cs, upDir, normalDir);
+      ((pylith::faults::Fault*) objVptr)->initialize(*mesh, cs, upDir, normalDir, matDB);
       } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -155,18 +158,22 @@ cdef class Fault:
 
     if not mesh.name == "pylith_topology_Mesh":
       raise TypeError, \
-            "Argument must be extension module type " \
+            "Argument 'mesh' must be extension module type " \
             "'pylith::topology::Mesh'."
     if not cs.name == "spatialdata_geocoords_CoordSys":
       raise TypeError, \
-            "Argument must be extension module type " \
+            "Argument 'cs' must be extension module type " \
             "'spatialdata::geocoords::CoordSys'."
     if 3 != len(upDir):
       raise TypeError, \
-            "Argument must be a 3 vector (list)."
+            "Argument 'upDir' must be a 3 vector (list)."
     if 3 != len(normalDir):
       raise TypeError, \
-            "Argument must be a 3 vector (list)."
+            "Argument 'normalDir' must be a 3 vector (list)."
+    if not matDB.name == "spatialdata_spatialdb_SpatialDB":
+      raise TypeError, \
+            "Argument 'matDB' must be extension module type " \
+            "'spatialdata::spatialdb::SpatialDB'."
     cdef double upDirCpp[3]
     upDirCpp[0] = upDir[0]
     upDirCpp[1] = upDir[1]
@@ -176,7 +183,7 @@ cdef class Fault:
     normalDirCpp[1] = normalDir[1]
     normalDirCpp[2] = normalDir[2]    
     Fault_initialize(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs),
-                     upDirCpp, normalDirCpp)
+                     upDirCpp, normalDirCpp, ptrFromHandle(matDB))
     return
 
 

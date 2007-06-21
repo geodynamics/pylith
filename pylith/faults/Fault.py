@@ -69,6 +69,8 @@ class Fault(Component):
     ## @li \b normal_dir General preferred direction for fault normal
     ##   (used to pick which of two possible normal directions for
     ##   interface; only applies to fault surfaces in a 3-D domain).
+    ## @li \b mat_db Spatial database for bulk material properties
+    ##   (used in improving conditioning of Jacobian matrix).
     ##
     ## \b Facilities
     ## @li \b quadrature Quadrature object for numerical integration
@@ -99,6 +101,12 @@ class Fault(Component):
     quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
     quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    matDB = pyre.inventory.facility("mat_db", family="spatial_database",
+                                   factory=SimpleDB, args=["bulk materials"])
+    matDB.meta['tip'] = "Spatial database for bulk material properties " \
+                        "(used in improving conditioning of Jacobian matrix)."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -128,10 +136,10 @@ class Fault(Component):
     """
     Initialize fault.
     """
-    self._info.log("Initializing fault '%s'." % self.label)
     self._createCppHandle()
     
     self.quadrature.initialize()
+    self.matDB.initialize()
 
     faultDim = mesh.dimension() - 1
     if faultDim != self.quadrature.cell.cellDim:
@@ -145,7 +153,8 @@ class Fault(Component):
     self.cppHandle.label = self.label
     self.cppHandle.quadrature = self.quadrature.cppHandle
     self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
-                              self.upDir, self.normalDir)
+                              self.upDir, self.normalDir,
+                              self.matDB.cppHandle)
     return
 
 
@@ -161,6 +170,7 @@ class Fault(Component):
     self.upDir = self.inventory.upDir
     self.normalDir = self.inventory.normalDir
     self.quadrature = self.inventory.quadrature
+    self.matDB = self.inventory.matDB
     return
 
   

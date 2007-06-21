@@ -62,11 +62,14 @@ public :
    * @param normalDir General preferred direction for fault normal
    *   (used to pick which of two possible normal directions for
    *   interface; only applies to fault surfaces in a 3-D domain).
+   * @param matDB Database of bulk elastic properties for fault region
+   *   (used to improve conditioning of Jacobian matrix)
    */
   void initialize(const ALE::Obj<ALE::Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs,
 		  const double_array& upDir,
-		  const double_array& normalDir);
+		  const double_array& normalDir,
+		  spatialdata::spatialdb::SpatialDB* matDB);
 
   /** Integrate contribution of cohesive cells to residual term.
    *

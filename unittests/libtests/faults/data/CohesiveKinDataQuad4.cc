@@ -89,6 +89,9 @@ const char* pylith::faults::CohesiveKinDataQuad4::_slipTimeFilename =
 const char* pylith::faults::CohesiveKinDataQuad4::_peakRateFilename = 
   "data/quad4_peakrate.spatialdb";
 
+const char* pylith::faults::CohesiveKinDataQuad4::_matPropsFilename = 
+  "data/bulkprops_2d.spatialdb";
+
 const double pylith::faults::CohesiveKinDataQuad4::_fieldT[] = {
   8.1, 9.1,
   8.2, 9.2,
@@ -97,9 +100,9 @@ const double pylith::faults::CohesiveKinDataQuad4::_fieldT[] = {
   8.5, 9.5,
   8.6, 9.6,
   8.7, 9.7,
-  8.8, 9.8,
+  8.8, 9.8, // 9
   8.9, 9.9,
-  8.0, 9.0,
+  8.0, 9.0, // 11
 };
 
 
@@ -121,13 +124,13 @@ const int pylith::faults::CohesiveKinDataQuad4::_constraintCells[] = {
 const double pylith::faults::CohesiveKinDataQuad4::_valsResidual[] = {
   0.0,  0.0,
   0.0,  0.0,
+  9.8,  8.8, // 4
+  9.0,  8.0, // 5
   0.0,  0.0,
   0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
-  0.0,  0.0,
+ -9.8, -8.8, // 8
   0.989535448086, 0.0824612873405, // 9
-  0.0,  0.0,
+  -9.0, -8.0, // 10
   1.05057813143, 0.0456773100622, // 11
 };
 
@@ -334,6 +337,8 @@ const double pylith::faults::CohesiveKinDataQuad4::_valsJacobian[] = {
   0.0, 0.0,
 };
 
+const double pylith::faults::CohesiveKinDataQuad4::_pseudoStiffness = 2.4;
+
 pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
 { // constructor
   meshFilename = const_cast<char*>(_meshFilename);
@@ -351,12 +356,14 @@ pylith::faults::CohesiveKinDataQuad4::CohesiveKinDataQuad4(void)
   finalSlipFilename = const_cast<char*>(_finalSlipFilename);
   slipTimeFilename = const_cast<char*>(_slipTimeFilename);
   peakRateFilename = const_cast<char*>(_peakRateFilename);
+  matPropsFilename = const_cast<char*>(_matPropsFilename);
   fieldT = const_cast<double*>(_fieldT);
   orientation = const_cast<double*>(_orientation);
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
   valsJacobian = const_cast<double*>(_valsJacobian);
+  pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
 } // constructor
 

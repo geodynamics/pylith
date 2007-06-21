@@ -67,7 +67,7 @@ class Formulation(Component):
     self.integrators = None
     self.constraints = None
     self.fields = None
-    self.outputField = None
+    self.solnField = None
     self._istep = 0
     return
 
@@ -148,23 +148,25 @@ class Formulation(Component):
       output.writeTopology()
 
     self._info.log("Creating solution field.")
-    self.fields.addReal("solution")
-    self.fields.setFiberDimension("solution", dimension)
+    solnName = self.solnField['name']
+    self.fields.addReal(solnName)
+    self.fields.solutionField(solnName)
+    self.fields.setFiberDimension(solnName, dimension)
     for constraint in self.constraints:
-      constraint.setConstraintSizes(self.fields.getReal("solution"))
-    self.fields.allocate("solution")
+      constraint.setConstraintSizes(self.fields.getSolution())
+    self.fields.allocate(solnName)
     for constraint in self.constraints:
-      constraint.setConstraints(self.fields.getReal("solution"))
+      constraint.setConstraints(self.fields.getSolution())
     return
 
 
-  def poststep(self, t):
+  def poststep(self, t, dt):
     """
     Hook for doing stuff after advancing time step.
     """
-    field = self.fields.getReal(self.outputField['name'])
+    field = self.fields.getSolution()
     for output in self.output.bin:
-      output.writeField(t, self._istep, field, self.outputField['label'])
+      output.writeField(t+dt, self._istep, field, self.solnField['label'])
     self._istep += 1
     return
 
@@ -191,6 +193,20 @@ class Formulation(Component):
     Component._configure(self)
     self.solver = self.inventory.solver
     self.output = self.inventory.output
+    return
+
+
+  def _reformJacobian(self, t, dt):
+    """
+    Reform Jacobian matrix for operator.
+    """
+    self._info.log("Reforming Jacobian of operator.")
+    import pylith.utils.petsc as petsc
+    petsc.mat_setzero(self.jacobian)
+    for integrator in self.integrators:
+      integrator.timeStep(dt)
+      integrator.integrateJacobian(self.jacobian, t+dt, self.fields)
+    petsc.mat_assemble(self.jacobian)
     return
 
 

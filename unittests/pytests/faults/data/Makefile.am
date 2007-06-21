@@ -11,6 +11,7 @@
 #
 
 noinst_DATA = \
+	bulkprops_2d.spatialdb \
 	tri3.mesh \
 	tri3_finalslip.spatialdb \
 	tri3_sliptime.spatialdb \
