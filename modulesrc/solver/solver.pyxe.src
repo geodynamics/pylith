@@ -11,7 +11,7 @@
 #
 
 #header{
-#include <petscmesh.h>
+#include <petscmesh.hh>
 #include <petscksp.h>
 
 #include <assert.h>

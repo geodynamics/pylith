@@ -14,8 +14,7 @@
 #include "pylith/topology/FieldsManager.hh"
 #include "pylith/utils/sievetypes.hh"
 #include "pylith/utils/petscfwd.h"
-#include <Generator.hh>
-#include <Distribution.hh>
+#include <petscmesh.hh>
  
 #include <stdexcept>
 #include <Python.h>
