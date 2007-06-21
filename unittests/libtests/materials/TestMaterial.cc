@@ -25,7 +25,7 @@
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
-#include <petscmesh.h> // USES PETSc Mesh
+#include "pylith/utils/sievetypes.hh" // USES Mesh
 
 #include <math.h> // USES assert()
 

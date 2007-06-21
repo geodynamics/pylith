@@ -17,7 +17,7 @@
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
 
-#include <petscmesh.h> // USES Mesh
+#include "pylith/utils/sievetypes.hh" // USES Mesh
 
 #include <assert.h> // USES assert()
 

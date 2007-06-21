@@ -23,6 +23,7 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
