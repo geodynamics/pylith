@@ -144,12 +144,12 @@ Getting Help
 \begin_layout Standard
 Help is available via the CIG Short-Term Crustal Dynamics Mailing List and
  CIG's issue tracking system.
- The mailing list, , 
-\begin_inset LatexCommand \htmlurl[cig-short@geodynamics.org]{http://www.geodynamics.org/cig/lists}
+ The mailing list 
+\begin_inset LatexCommand \htmlurl[cig-short@geodynamics.org]{http://geodynamics.org/cig/lists/cig-short}
 
 \end_inset
 
-, is dedicated to CIG issues associated with short-term crustal dynamics,
+ is dedicated to CIG issues associated with short-term crustal dynamics,
  including the use of PyLith.
  CIG uses 
 \family typewriter
@@ -162,9 +162,9 @@ Roundup
 \end_inset
 
 .
- Of course, it is helpful to first check to see if someone else already
- submitted a report related to the issue; one of the CIG developers may
- have already posted a solution to the problem.
+ You should first check to see if someone else already submitted a report
+ related to the issue; one of the CIG developers may have posted a solution
+ to the problem.
  You can reply to a current issue by clicking on the issue title.
  To submit a new issue, click 
 \family sans
