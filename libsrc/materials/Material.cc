@@ -20,7 +20,7 @@
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
-#include <petscmesh.h> // USES Mesh
+#include "pylith/utils/sievetypes.hh" // USES Mesh
 
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
