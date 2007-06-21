@@ -32,7 +32,8 @@ noinst_DATA = \
 	dislocation_disp.spatialdb \
 	dislocation_sliprate.spatialdb \
 	dislocation_slip.spatialdb \
-	dislocation_sliptime.spatialdb
+	dislocation_sliptime.spatialdb \
+	explicit.cfg
 
 noinst_TMP = \
 	axialplanestrain_t0.vtk \
