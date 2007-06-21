@@ -117,13 +117,7 @@ class Explicit(Formulation):
       if integrator.needNewJacobian():
         needNewJacobian = True
     if needNewJacobian:
-      self._info.log("Reforming Jacobian of operator.")
-      import pylith.utils.petsc as petsc
-      petsc.mat_setzero(self.jacobian)
-      for integrator in self.integrators:
-        integrator.timeStep(dt)
-        integrator.integrateJacobian(self.jacobian, t, self.fields)
-      petsc.mat_assemble(self.jacobian)
+      self._reformJacobian(t, dt)
     return
 
 
