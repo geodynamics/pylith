@@ -157,7 +157,7 @@ class MaxwellIsotropic3DTimeDep(ElasticMaterialApp):
     C3312 = 0.0
     C3323 = 0.0
     C3313 = 0.0
-    C1212 = 3.0*visFac
+    C1212 = 6.0*visFac
     C1223 = 0.0
     C1213 = 0.0
     C2323 = C1212
