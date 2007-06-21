@@ -1,4 +1,6 @@
 // Global mesh object.
+// This mesh defines a square domain with the corners lying along the
+// x and y axes.
 mesh = {
 
   // This is a two-dimensional mesh.
