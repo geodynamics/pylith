@@ -67,6 +67,7 @@ AM_CPPFLAGS = \
 testmeshio_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/libpylith.la \
+	-lspatialdata \
 	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
 if ENABLE_CUBIT

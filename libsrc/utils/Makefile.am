@@ -19,8 +19,7 @@ subpkginclude_HEADERS = \
 	macrodefs.h \
 	petscfwd.h \
 	sievefwd.hh \
-	sievetypes.hh \
-	LineParser.hh
+	sievetypes.hh
 
 noinst_HEADERS = 
 

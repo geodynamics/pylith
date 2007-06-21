@@ -15,7 +15,7 @@
 #include "MeshIOAscii.hh" // implementation of class methods
 
 #include "pylith/utils/array.hh" // USES double_array, int_array, string_vector
-#include "pylith/utils/LineParser.hh" // USES LineParser
+#include "spatialdata/utils/LineParser.hh" // USES LineParser
 
 #include "journal/info.h" // USES journal::info_t
 
@@ -44,7 +44,6 @@ pylith::meshio::MeshIOAscii::~MeshIOAscii(void)
 { // destructor
 } // destructor
 
-#include <iostream>
 // ----------------------------------------------------------------------
 // Unpickle mesh
 void
@@ -71,7 +70,8 @@ pylith::meshio::MeshIOAscii::_read(void)
       throw std::runtime_error(msg.str());
     } // if
 
-    utils::LineParser parser(filein, "//");
+    spatialdata::utils::LineParser parser(filein, "//");
+    parser.eatwhitespace(true);
 
     std::string token;
     std::istringstream buffer;
@@ -91,7 +91,6 @@ pylith::meshio::MeshIOAscii::_read(void)
     bool builtMesh = false;
 
     try {
-      parser.eatws();
       buffer.str(parser.next());
       buffer.clear();
       buffer >> token;
@@ -123,7 +122,6 @@ pylith::meshio::MeshIOAscii::_read(void)
 	  if (!builtMesh)
 	    throw std::runtime_error("Both 'vertices' and 'cells' must "
 				     "precede any groups in mesh file.");
-	  //buffer.ignore(maxIgnore, '{');
 	  _readGroup(parser, &points, &type, &name);
 	  _setGroup(name, type, points);
 	} else {
@@ -140,7 +138,6 @@ pylith::meshio::MeshIOAscii::_read(void)
 	  builtMesh = true;
 	} // if
 
-	parser.eatws();
 	buffer.str(parser.next());
 	buffer.clear();
 	buffer >> token;
@@ -153,17 +150,19 @@ pylith::meshio::MeshIOAscii::_read(void)
       msg << "Error occurred while reading PyLith mesh ASCII file '"
 	  << _filename << "'.\n"
 	  << err.what();
+      throw std::runtime_error(msg.str());
     } catch (...) {
       std::ostringstream msg;      
       msg << "Unknown I/O error while reading PyLith mesh ASCII file '"
 	  << _filename << "'.\n";
+      throw std::runtime_error(msg.str());
     } // catch
     filein.close();
   } else {
     _buildMesh(coordinates, numVertices, spaceDim,
                cells, numCells, numCorners, meshDim);
     _setMaterials(materialIds);
-  }
+  } // if/else
   _distributeGroups();
 } // read
 
@@ -201,7 +200,7 @@ pylith::meshio::MeshIOAscii::_write(void) const
 // ----------------------------------------------------------------------
 // Read mesh vertices.
 void
-pylith::meshio::MeshIOAscii::_readVertices(utils::LineParser& parser,
+pylith::meshio::MeshIOAscii::_readVertices(spatialdata::utils::LineParser& parser,
 					   double_array* coordinates,
 					   int* numVertices, 
 					   int* numDims) const
@@ -213,7 +212,6 @@ pylith::meshio::MeshIOAscii::_readVertices(utils::LineParser& parser,
   std::string token;
   std::istringstream buffer;
   const int maxIgnore = 1024;
-  parser.eatws();
   buffer.str(parser.next());
   buffer.clear();
   buffer >> token;
@@ -246,7 +244,6 @@ pylith::meshio::MeshIOAscii::_readVertices(utils::LineParser& parser,
       msg << "Could not parse '" << token << "' into a vertices setting.";
       throw std::runtime_error(msg.str());
     } // else
-    parser.eatws();
     buffer.str(parser.next());
     buffer.clear();
     buffer >> token;
@@ -288,7 +285,7 @@ pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const
 // ----------------------------------------------------------------------
 // Read mesh cells.
 void
-pylith::meshio::MeshIOAscii::_readCells(utils::LineParser& parser,
+pylith::meshio::MeshIOAscii::_readCells(spatialdata::utils::LineParser& parser,
 					int_array* cells,
 					int_array* materialIds,
 					int* numCells, 
@@ -304,7 +301,6 @@ pylith::meshio::MeshIOAscii::_readCells(utils::LineParser& parser,
   std::string token;
   std::istringstream buffer;
   const int maxIgnore = 1024;
-  parser.eatws();
   buffer.str(parser.next());
   buffer.clear();
   buffer >> token;
@@ -359,7 +355,6 @@ pylith::meshio::MeshIOAscii::_readCells(utils::LineParser& parser,
       msg << "Could not parse '" << token << "' into an cells setting.";
       throw std::runtime_error(msg.str());
     } // else
-    parser.eatws();
     buffer.str(parser.next());
     buffer.clear();
     buffer >> token;
@@ -417,7 +412,7 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const
 // ----------------------------------------------------------------------
 // Read mesh group.
 void
-pylith::meshio::MeshIOAscii::_readGroup(utils::LineParser& parser,
+pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
 					int_array* points,
 					GroupPtType* type,
 					std::string* name) const
@@ -430,7 +425,6 @@ pylith::meshio::MeshIOAscii::_readGroup(utils::LineParser& parser,
   std::istringstream buffer;
   const int maxIgnore = 1024;
   int numPoints = -1;
-  parser.eatws();
   buffer.str(parser.next());
   buffer.clear();
   buffer >> token;
@@ -464,10 +458,14 @@ pylith::meshio::MeshIOAscii::_readGroup(utils::LineParser& parser,
         throw std::runtime_error(msg.str());
       } // if
       points->resize(numPoints);
+      buffer.str(parser.next());
+      buffer.clear();
       for (int i=0; i < numPoints; ++i) {
-	buffer.str(parser.next());
-	buffer.clear();
-        buffer >> (*points)[i];
+	buffer >> (*points)[i];
+	if (!buffer.good() && i < numPoints-1) {
+	  buffer.str(parser.next());
+	  buffer.clear();
+	} // if
       } // for
       parser.ignore('}');
     } else {
@@ -475,13 +473,15 @@ pylith::meshio::MeshIOAscii::_readGroup(utils::LineParser& parser,
       msg << "Could not parse '" << token << "' into a group setting.";
       throw std::runtime_error(msg.str());
     } // else
-    parser.eatws();
     buffer.str(parser.next());
     buffer.clear();
     buffer >> token;
   } // while
-  if (token != "}")
-    throw std::runtime_error("I/O error while parsing group settings.");
+  if (token != "}") {
+    std::ostringstream msg;
+    msg << "I/O error while parsing group '" << *name << "'.";
+    throw std::runtime_error(msg.str());
+  } // if
 } // _readGroup
 
 // ----------------------------------------------------------------------

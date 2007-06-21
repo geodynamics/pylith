@@ -22,7 +22,9 @@ namespace pylith {
   namespace meshio {
     class MeshIOAscii;
   } // meshio
+} // pylith
 
+namespace spatialdata {
   namespace utils {
     class LineParser;
   } // utils
@@ -72,7 +74,7 @@ private :
    * @param numVertices Pointer to number of vertices
    * @param spaceDim Pointer to dimension of coordinates vector space
    */
-  void _readVertices(utils::LineParser& parser,
+  void _readVertices(spatialdata::utils::LineParser& parser,
 		     double_array* coordinates,
 		     int* numVertices,
 		     int* spaceDim) const;
@@ -91,7 +93,7 @@ private :
    * @param pNumCells Pointer to number of cells
    * @param pNumCorners Pointer to number of corners
    */
-  void _readCells(utils::LineParser& parser,
+  void _readCells(spatialdata::utils::LineParser& parser,
 		  int_array* pCells,
 		  int_array* pMaterialIds,
 		  int* numCells,
@@ -111,7 +113,7 @@ private :
    * @param parser Input parser.
    * @param mesh The mesh
    */
-  void _readGroup(utils::LineParser& parser,
+  void _readGroup(spatialdata::utils::LineParser& parser,
 		  int_array* points,
                   GroupPtType* type,
                   std::string* name) const;

@@ -2,8 +2,6 @@ Outline of user manual:
 
 1.  Cover
 
-  Replace with new benchmark image if we have one in time.
-
 5.  Preface (should be able to mostly copy from PyLith 0.8) [Charles]
 DONE
 
@@ -12,17 +10,11 @@ DONE
   Figures
 
     PyLith Diagram [future: Brad]
-
       Pyre
-
       PyLith
-
         Faults, Topology, BC, FEAssemble, Problems, MeshIO, Solver, Materials
-
       PETSc
-
       Sieve
-
       MPI
 
 7.  Governing equations [MOSTLY DONE]
@@ -104,9 +96,9 @@ DONE
 
     b.  Existing material models. 
 
-    * ElasticStrain1D [Brad]
+    * ElasticStrain1D [DONE]
 
-    * ElasticStress1D [Brad]
+    * ElasticStress1D [DONE]
 
     * ElasticPlaneStrain [Brad]
 
