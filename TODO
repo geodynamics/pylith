@@ -6,8 +6,6 @@ CURRENT ISSUES
 
   2. Add unit test for reading MeshIOAscii file with comments.
 
-  3. Add unit test for reading SimpleIOAscii file with comments.
-
   4. Need PETSc settings for absolute convergence (i.e., don't want to
   max out iterations when there is no increment in displacement).
 
@@ -39,15 +37,12 @@ List of missing features (EqSim/PyLith 0.8) and new features.
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-add check in fields manager when returning solution (solution name
-shouldn't be empty)
-
-check test routines that create mesh to make sure they clear factory
-(*mesh)->getFactory()->clear();
-
 Add check to make sure every material supplied by user exists in the
 mesh.
   
+check test routines that create mesh to make sure they clear factory
+(*mesh)->getFactory()->clear();
+
 Create meshes for benchmarks
 
   strike-slip
