@@ -25,6 +25,7 @@ nodist_bcmodule_la_SOURCES = \
 
 bcmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
+	-lspatialdata \
 	$(PETSC_LIB) \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 
