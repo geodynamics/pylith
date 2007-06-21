@@ -227,6 +227,9 @@ pylith::topology::FieldsManager::solutionField(const char* name)
 const ALE::Obj<pylith::real_section_type>&
 pylith::topology::FieldsManager::getSolution(void)
 { // getSolution
+  if (_solutionName == "")
+    throw std::runtime_error("Cannot retrieve solution. Name of solution " \
+			     "field has not been specified.");
   return getReal(_solutionName.c_str());
 } // getSolution
 
