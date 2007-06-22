@@ -235,9 +235,14 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
     const real_section_type::value_type* vals = 
       residual->restrictPoint(*v_iter);
+    
+    const bool isConstraint = 
+      (fault._constraintVert.end() != fault._constraintVert.find(*v_iter));
+    const double pseudoStiffness = 
+      (!isConstraint) ? _data->pseudoStiffness : 1.0;
     for (int i=0; i < fiberDimE; ++i) {
       const int index = iVertex*spaceDim+i;
-      const double valE = valsE[index] * _data->pseudoStiffness;
+      const double valE = valsE[index] * pseudoStiffness;
       if (valE > tolerance)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
       else
@@ -325,7 +330,9 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateJacobian(void)
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
       const int index = ncols*iRow+iCol;
-      const double valE = valsE[index] * _data->pseudoStiffness;
+      const double pseudoStiffness = 
+	(iRow > iCol) ? 1.0 : _data->pseudoStiffness;
+      const double valE = valsE[index] * pseudoStiffness;
 #if 0 // DEBUGGING
       if (fabs(valE-vals[index]) > tolerance)
 	std::cout << "ERROR: iRow: " << iRow << ", iCol: " << iCol

@@ -233,8 +233,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
   if (2 == cohesiveDim) {
     // Check orientation of first vertex, if dot product of fault
-    // normal with preferred normal is negative, flip all along-strike
-    // and fault-normal directions (keep up-dip direction the same).
+    // normal with preferred normal is negative, flip up/down dip direction.
     // If the user gives the correct normal direction, we should end
     // up with left-lateral-slip, reverse-slip, and fault-opening for
     // positive slip values.
@@ -254,15 +253,15 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	const real_section_type::value_type* vertexOrient = 
 	  _orientation->restrictPoint(*v_iter);
 	assert(9 == _orientation->getFiberDimension(*v_iter));
-	// Flip along-strike direction
+	// Keep along-strike direction
 	for (int iDim=0; iDim < 3; ++iDim)
-	  vertexDir[iDim] = -vertexOrient[iDim];
-	// Keep up-dip direction
-	for (int iDim=3; iDim < 6; ++iDim)
 	  vertexDir[iDim] = vertexOrient[iDim];
-	// Flip normal direction
-	for (int iDim=6; iDim < 9; ++iDim)
+	// Flip up-dip direction
+	for (int iDim=3; iDim < 6; ++iDim)
 	  vertexDir[iDim] = -vertexOrient[iDim];
+	// Keep normal direction
+	for (int iDim=6; iDim < 9; ++iDim)
+	  vertexDir[iDim] = vertexOrient[iDim];
 	
 	// Update direction
 	_orientation->updatePoint(*v_iter, &vertexDir[0]);
@@ -350,6 +349,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     const double density = matprops[0];
     const double vs = matprops[1];
     const double mu = density * vs*vs;
+    //const double mu = 1.0;
     _pseudoStiffness->updatePoint(*v_iter, &mu);
   } // for
 } // initialize
@@ -452,7 +452,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
       // constraint vertices (k) of the cohesive cells
       for (int iDim=0; iDim < spaceDim; ++iDim)
 	cellResidual[indexK*spaceDim+iDim] = 
-	  cellSlip[iConstraint*spaceDim+iDim] * pseudoStiffness;
+	  cellSlip[iConstraint*spaceDim+iDim];
       
       // Get orientation at constraint vertex
       const real_section_type::value_type* constraintOrient = 
@@ -570,7 +570,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	  cellMatrix[row*numCorners*spaceDim+col] =
 	    -constraintOrient[kDim*spaceDim+iDim]*pseudoStiffness;
 	  cellMatrix[col*numCorners*spaceDim+row] =
-	    cellMatrix[row*numCorners*spaceDim+col]; // symmetric
+	    -constraintOrient[kDim*spaceDim+iDim];
 	} // for
 
       // Entries associated with constraint forces applied at node j
@@ -581,7 +581,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	  cellMatrix[row*numCorners*spaceDim+col] =
 	    constraintOrient[kDim*spaceDim+jDim]*pseudoStiffness;
 	  cellMatrix[col*numCorners*spaceDim+row] =
-	    cellMatrix[row*numCorners*spaceDim+col]; // symmetric
+	    constraintOrient[kDim*spaceDim+jDim];
 	} // for
     } // for
     err = PetscLogFlops(numConstraintVert*spaceDim*spaceDim*4);

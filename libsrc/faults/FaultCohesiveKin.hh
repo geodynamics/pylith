@@ -23,6 +23,15 @@
  * The ordering of vertices in a cohesive cell is the vertices on the
  * one side of the fault, the corresponding entries on the other side
  * of the fault, and then the corresponding constraint vertices.
+ *
+ * [ K  aC^T ] [ U  ] = [ Fe ]
+ * [ C   0   ] [ Fi ] = [ D  ]
+ *
+ * where K is the stiffness matrix, C is the matrix of Lagrange
+ * constraints, U is the displacement field, Fe is the vector of
+ * external forces, Fi is the vector of Lagrange multipers (forces), D
+ * is the fault slip, and "a" is the conditioning value (taken to be
+ * the shear modulus).
  */
 
 #if !defined(pylith_faults_faultcohesivekin_hh)
