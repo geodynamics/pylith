@@ -15,8 +15,8 @@ include $(top_srcdir)/subpackage.am
 
 subpkgpyexec_LTLIBRARIES = bcmodule.la
 
-bcmodule_la_LDFLAGS = -module -no-undefined -avoid-version \
-	$(PYTHON_LA_LDFLAGS)
+bcmodule_la_LDFLAGS = -module -avoid-version \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
 bcmodule_la_SOURCES = bc.pyxe
 

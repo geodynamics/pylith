@@ -67,7 +67,14 @@ AM_CONDITIONAL([ENABLE_DOCUMENTATION], [test "$enable_documentation" = yes])
 AC_PROG_CXX
 AC_PROG_CC
 AC_DISABLE_STATIC
+
 AC_PROG_LIBTOOL
+if test "$allow_undefined_flag" = unsupported; then
+    # See issue119.
+    AM_LDFLAGS="-no-undefined $AM_LDFLAGS"
+fi
+AC_SUBST(AM_LDFLAGS)
+
 AC_PROG_INSTALL
 
 # PYTHON

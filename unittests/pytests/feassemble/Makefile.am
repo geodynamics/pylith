@@ -29,8 +29,8 @@ noinst_PYTHON = \
 # module
 subpkgpyexec_LTLIBRARIES = testfeassemblemodule.la
 
-testfeassemblemodule_la_LDFLAGS = -module -no-undefined -avoid-version \
-	$(PYTHON_LA_LDFLAGS)
+testfeassemblemodule_la_LDFLAGS = -module -avoid-version \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
 testfeassemblemodule_la_SOURCES = testfeassemble.pyxe
 
