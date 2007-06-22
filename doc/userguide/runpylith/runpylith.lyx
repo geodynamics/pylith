@@ -90,7 +90,7 @@ Databases specifying the material properties and boundary conditions to
 
 \end_inset
 
- for examples and Section 
+ for examples and Appendix 
 \begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
 
 \end_inset
@@ -199,8 +199,8 @@ pylithapp
 --help-properties
 \family default
  command-line argument.
- To get information on user settable facilities and components, you can
- run PyLith with the 
+ To get information on user-configurable facilities and components, you
+ can run PyLith with the 
 \family typewriter
 --help-components
 \family default
@@ -603,7 +603,7 @@ Convergence tolerance for relative decrease in residual norm.
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -676,17 +676,17 @@ Geometrical and topological information for the finite element mesh may
 \end_layout
 
 \begin_layout Standard
-PyLith supports linear cells in 1D (
+PyLith supports linear cells in 1D (Figure 
 \begin_inset LatexCommand \ref{fig:1D-linear-elements}
 
 \end_inset
 
-), 2D (
+), 2D (Figure 
 \begin_inset LatexCommand \ref{fig:2D-linear-elements}
 
 \end_inset
 
-), and 3D (
+), and 3D (Figure 
 \begin_inset LatexCommand \ref{fig:3D-linear-elements}
 
 \end_inset
@@ -738,7 +738,7 @@ status open
 \end_layout
 
 \begin_layout Caption
-Linear bar cell available for 1-D problems.
+Linear bar cell available for 1D problems.
 \end_layout
 
 \begin_layout Standard
@@ -752,19 +752,14 @@ Linear bar cell available for 1-D problems.
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-\noindent
-\align center
 \begin_inset Float figure
-placement t
+placement H
 wide false
 sideways false
 status open
 
 \begin_layout Standard
-\align center
+\align left
 
 \hfill
 
@@ -784,11 +779,13 @@ status open
 
 \hfill
 
+\hfill
+
 \end_layout
 
 \begin_layout Caption
-Linear cells available for 2-D problems are the triangle (left) and the
- quadrilateral (right).
+Linear cells available for 2D problems are the triangle (left) and the quadrilat
+eral (right).
 \end_layout
 
 \begin_layout Standard
@@ -807,14 +804,14 @@ Linear cells available for 2-D problems are the triangle (left) and the
 \begin_layout Standard
 \noindent
 \align center
--
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
 
 \begin_layout Standard
-\align center
+\align left
 
 \hfill
 
@@ -831,6 +828,8 @@ status open
 
 \end_inset
 
+
+\hfill
 
 \hfill
 
@@ -862,8 +861,12 @@ on has been provided, the final step is to specify the boundary conditions
  The mesh information provides labels defining sets of vertices to which
  boundary conditions or fault conditions will be applied, as well as cell
  labels that will be used to define the material type of each cell.
- For boundary conditions, the .cfg file is used to associate boundary condition
- types and spatial databases with each vertex group (see Chapter 
+ For boundary conditions, the 
+\family typewriter
+.cfg
+\family default
+ file is used to associate boundary condition types and spatial databases
+ with each vertex group (see Chapter 
 \begin_inset LatexCommand \ref{cha:boundary:interface:conditions}
 
 \end_inset
@@ -894,7 +897,7 @@ point
 \begin_inset Quotes erd
 \end_inset
 
- or 0-D variation).
+ or 0D variation).
  A slightly more complex case would be a mesh where the cells of a given
  type have properties that vary linearly along a given direction (
 \begin_inset Quotes eld
@@ -904,7 +907,7 @@ line
 \begin_inset Quotes erd
 \end_inset
 
- or 1-D variation).
+ or 1D variation).
  In more complex models, the material properties might have different values
  at each point in the mesh (
 \begin_inset Quotes eld
@@ -914,7 +917,7 @@ volume
 \begin_inset Quotes erd
 \end_inset
 
- or 3-D variation).
+ or 3D variation).
  This might be the case, for example, if the material properties are provided
  by a database of seismic velocities and densities.
  See Section 
@@ -932,7 +935,7 @@ point
 \begin_inset Quotes erd
 \end_inset
 
-, or 0-D variation).
+ or 0D variation).
  A more complex case might specify a variation in the conditions on a given
  surface (
 \begin_inset Quotes eld
@@ -942,7 +945,7 @@ area
 \begin_inset Quotes erd
 \end_inset
 
- or 2-D variation).
+ or 2D variation).
  This sort of condition might be used, for example, to specify the variation
  of slip on a fault plane.
  The examples discussed in Chapter 

@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -72,8 +72,8 @@ This version of PyLith (1.0) is the first version to allow the solution of
  code for simulating static and quasi-static crustal deformation.
  The major new features present in Lithomop included dynamic memory allocation
  and the use of the Pyre simulation framework and PETSc solvers.
- EqSim was written by Brad Aaagaard to solve problems in earthquake dynamics,
- including rupture propagaion and seismic wave propagation.
+ EqSim was written by Brad Aagaard to solve problems in earthquake dynamics,
+ including rupture propagaiton and seismic wave propagation.
 \end_layout
 
 \begin_layout Standard
@@ -82,20 +82,20 @@ This release of PyLith allows the solution of both quasi-static and dynamic
  The code runs in either serial or parallel mode, and the design allows
  for relatively easy scripting using the Python programming language.
  Material properties and parameters for boundary and fault conditions are
- specified using a spatial database, which permits easy precsription of
+ specified using a spatial database, which permits easy prescription of
  complex spatial variations of properties and parameters.
  Simulation parameters are generally specified through the use of simple
  ASCII files or the command line.
  At present, mesh information may be provided using a simple ASCII file
  (PyLith ASCII format) or imported from CUBIT or LaGriT, two widely-used
  meshing packages.
- The elements currently available include a linear bar in 1-D, linear triangles
- and quadrilaterals in 2-D, and linear tetrahedra and hexahedra in 3-D.
+ The elements currently available include a linear bar in 1D, linear triangles
+ and quadrilaterals in 2D, and linear tetrahedra and hexahedra in 3D.
  Higher-order (quadratic) elements are also supported, but it is not presently
  possible to create a quadratic mesh from the linear meshes provided by
  most meshing packages.
  Materials presently available include isotropic elastic and linear Maxwell
- viscoelastic (3-D only).
+ viscoelastic (3D only).
  Cohesive elements are used to implement slip across interior surfaces (faults).
  At present, only kinematically-specified fault slip is available.
  In the near future, we will provide several constitutive models for cohesive
@@ -106,7 +106,7 @@ This release of PyLith allows the solution of both quasi-static and dynamic
 \begin_layout Standard
 PyLith is under active development and we expect a number of additions and
  improvements in the near future.
- Likely enhancements will include the a more complete set of boundary conditions
+ Likely enhancements will include a more complete set of boundary conditions
  (absorbing boundaries for use in dynamic modeling and traction boundary
  conditions for use in quasi-static modeling), additional constitutive models
  for both volume elements and cohesive (fault) elements, automatic generation
@@ -121,7 +121,7 @@ PyLith Workflow
 
 \begin_layout Standard
 PyLith is one component in the process of investigating problems in tectonics
- (
+ (Figure 
 \begin_inset LatexCommand \ref{fig:Workflow-summary}
 
 \end_inset
@@ -238,7 +238,7 @@ During development, tests were constructed for nearly every module function.
  As additional changes are made to the code, the tests are rerun to help
  prevent introduction of bugs.
  A number of simple, full scale tests, such as axial compression, simple
- shear, and slip between two cells have been used to test the code.
+ shear, and slip between two cells, have been used to test the code.
 \end_layout
 
 \begin_layout Standard
@@ -252,7 +252,7 @@ Our new design begins with the
  of fault slip.
  Material properties and other parameters are represented as sections (scalar
  and vector fields) over the mesh, and values for a vertex or cell can be
- retrived by restricting the section to the vertex or cell.
+ retrieved by restricting the section to the vertex or cell.
  For each problem, functions are provided to calculate the residual and
  its Jacobian.
  All numerical integration is done in these functions, and parallel assembly
@@ -298,6 +298,7 @@ Pyre Architecture.
 \align center
 \begin_inset Graphics
 	filename figs/pyre_overview.png
+	scale 75
 
 \end_inset
 

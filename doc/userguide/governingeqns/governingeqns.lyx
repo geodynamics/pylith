@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -67,7 +67,7 @@ status open
 
 \end_inset
 
-Mathematical Notation
+Mathematical notation
 \end_layout
 
 \begin_layout Standard
@@ -472,7 +472,7 @@ where
 
 .
  Substituting into Equation 
-\begin_inset LatexCommand \eqref{eqn:momentum:index}
+\begin_inset LatexCommand \ref{eqn:momentum:index}
 
 \end_inset
 
@@ -573,7 +573,7 @@ where
 
 .
  Substituting into Equation 
-\begin_inset LatexCommand \eqref{eqn:momentum:vec}
+\begin_inset LatexCommand \ref{eqn:momentum:vec}
 
 \end_inset
 
@@ -1112,7 +1112,7 @@ for the
 \begin_inset Formula $i$
 \end_inset
 
-th component associated with basis function
+th component associated with basis function 
 \begin_inset Formula $N^{p}$
 \end_inset
 
@@ -1177,7 +1177,7 @@ where
 \end_layout
 
 \begin_layout Section
-Solution method for infinitesimal strain quasi-static problems
+Solution Method for Infinitesimal Strain Quasi-Static Problems
 \end_layout
 
 \begin_layout Standard

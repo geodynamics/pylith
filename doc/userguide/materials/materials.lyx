@@ -80,8 +80,15 @@ A material container must be created unless a suitable one already exists.
 \end_layout
 
 \begin_layout Enumerate
-Set the parameters for each material in the materials container using .cfg
- or pml files and/or command line arguments.
+Set the parameters for each material in the materials container using 
+\family typewriter
+.cfg
+\family default
+ or 
+\family typewriter
+.pml
+\family default
+ files and/or command line arguments.
 \end_layout
 
 \begin_layout Enumerate
@@ -99,7 +106,7 @@ Each cell in the finite-element mesh must have a material identifier.
  The parameters of the material model need not be uniform for cells with
  the same material identifier.
  The bulk constitutive model and numerical integration (quadrature) scheme
- will however, be the same for all cells with the same material identifier
+ will, however, be the same for all cells with the same material identifier
  value.
  The material identifier is set during the mesh generation process.
  The procedure for assigning this integer value to a cell depends on the
@@ -124,12 +131,23 @@ The material container associates a material model (label for the material,
  The default material container is a homogeneous material, i.e., a single
  material model for the entire problem.
  A two-material container (pylith.materials.BiMaterial) is also supplied.
- For more problems with more than two materials, the user must create the
- material container using an an .odb file (a template is provided in the
- examples/templates directory of the PyLith distribution).
+ For problems with more than two materials, the user must create the material
+ container using an 
+\family typewriter
+.odb
+\family default
+ file (a template is provided in the 
+\family typewriter
+examples/templates
+\family default
+ directory of the PyLith distribution).
  Example XX discusses creating a material container using this template.
- This .odb file should be placed in the directory with the other simulation
- input files.
+ This 
+\family typewriter
+.odb
+\family default
+ file should be placed in the directory with the other simulation input
+ files.
 \end_layout
 
 \begin_layout Subsection
@@ -161,8 +179,11 @@ quadrature Numerical integration scheme used in integrating fields over
 \end_layout
 
 \begin_layout Standard
-An example of setting these parameters in a .cfg file for the homogeneous
- material is:
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file for the homogeneous material is:
 \end_layout
 
 \begin_layout LyX-Code
@@ -202,10 +223,10 @@ quadrature = pylith.feassemble.Quadrature3D
 \end_layout
 
 \begin_layout Standard
-where we have specified that the bulk constitutive model is the 3-D linear
+where we have specified that the bulk constitutive model is the 3D linear
  elastic model and we use linear interpolation for computing the spatial
  variation of the parameters within the spatial database.
- See Chapter 
+ See Appendix 
 \begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
 
 \end_inset
@@ -1006,7 +1027,7 @@ Description
 \begin_inset Text
 
 \begin_layout Standard
-Vector field a.
+Vector field a
 \end_layout
 
 \end_inset
@@ -1041,7 +1062,7 @@ Vector field a.
 \begin_inset Text
 
 \begin_layout Standard
-Second order tensor field a.
+Second order tensor field a
 \end_layout
 
 \end_inset

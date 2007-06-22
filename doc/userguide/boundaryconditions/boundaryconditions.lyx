@@ -58,7 +58,15 @@ Create a container to hold the various boundary conditions unless a suitable
 
 \begin_layout Enumerate
 Set the parameters for each boundary condition in the boundary condition
- container using .cfg or pml files and/or command line arguments.
+ container using 
+\family typewriter
+.cfg
+\family default
+ or 
+\family typewriter
+.pml
+\family default
+ files and/or command line arguments.
 \end_layout
 
 \begin_layout Enumerate
@@ -85,14 +93,14 @@ The procedure for creating sets of vertices differs depending on the mesh
  Note that we chose to associated boundary conditions with groups of vertices
  because nearly every mesh generation package supports associating a string
  or integer with groups of vertices.
- Note that we currently associate boundary conditions with string identifiers,
- so even if the mesh generator uses integers, the name is specified as the
- digits of the integer value.
+ Note also that we currently associate boundary conditions with string identifie
+rs, so even if the mesh generator uses integers, the name is specified as
+ the digits of the integer value.
  
 \end_layout
 
 \begin_layout Subsection
-Boundary Conditions Container
+Boundary Condition Container
 \end_layout
 
 \begin_layout Standard
@@ -108,14 +116,25 @@ The boundary condition container associates a type of boundary condition
 \end_inset
 
  gives the predefined boundary condition containers.
- The default boundary condition for in each of the containers is the Dirichlet
+ The default boundary condition in each of the containers is the Dirichlet
  boundary condition.
  If no parameters are specified for the boundary condition, it is not used.
  For problems with more than six boundary conditions, the user must create
- the container using an an .odb file (a template is provided in the examples/temp
-lates directory of the PyLith distribution).
- This .odb file should be placed in the directory with the other simulation
- input files.
+ the container using an an 
+\family typewriter
+.odb
+\family default
+ file (a template is provided in the 
+\family typewriter
+examples/templates
+\family default
+ directory of the PyLith distribution).
+ This 
+\family typewriter
+.odb
+\family default
+ file should be placed in the directory with the other simulation input
+ files.
 \end_layout
 
 \begin_layout Standard
@@ -254,7 +273,7 @@ x_neg, x_pos, y_neg, y_pos
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -344,12 +363,15 @@ db Spatial database specifying the spatial variation in the displacement
 
 \begin_layout Description
 fixed_dof Array of degrees of freedom to be fixed (first degree of freedom
- is 0)
+ is 0).
 \end_layout
 
 \begin_layout Standard
-An example of setting these parameters in a .cfg file for the homogeneous
- material is:
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file for the homogeneous material is:
 \end_layout
 
 \begin_layout LyX-Code
@@ -390,13 +412,9 @@ where we have specified that we want to use the BCTwoSides boundary condition
 \begin_inset Quotes eld
 \end_inset
 
-face A
-\begin_inset Quotes erd
-\end_inset
-
-, the spatial database query should use the nearest point algorithm, and
- motion in the z-direction is constrained.
- See Chapter 
+face A,'' the spatial database query should use the nearest point algorithm,
+ and motion in the z-direction is constrained.
+ See Appendix 
 \begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
 
 \end_inset
