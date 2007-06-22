@@ -82,6 +82,33 @@ thispagestyle{empty}
 
 \end_layout
 
+\begin_layout Title
+PyLith User Manual
+\end_layout
+
+\begin_layout Author
+© California Institute of Technology
+\newline
+Version 1.0
+\end_layout
+
+\begin_layout Date
+\noindent
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+today
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset ERT
 status collapsed
@@ -202,7 +229,7 @@ preview false
 \begin_layout Standard
 \start_of_appendix
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
