@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -434,7 +434,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="7" columns="3">
+<lyxtabular version="3" rows="6" columns="3">
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0.9in">
 <column alignment="center" valignment="middle" leftline="true" width="0.8in">
@@ -492,7 +492,7 @@ log_summary
 \begin_layout Standard
 
 \shape italic
-true
+false
 \end_layout
 
 \end_inset
@@ -523,9 +523,7 @@ ksp_monitor
 \begin_inset Text
 
 \begin_layout Standard
-
-\shape italic
-true
+false
 \end_layout
 
 \end_inset
@@ -556,9 +554,7 @@ ksp_view
 \begin_inset Text
 
 \begin_layout Standard
-
-\shape italic
-true
+false
 \end_layout
 
 \end_inset
@@ -592,7 +588,7 @@ ksp_rtol
 \begin_layout Standard
 
 \shape italic
-1.0e-09
+1.0e-05
 \end_layout
 
 \end_inset
@@ -625,7 +621,7 @@ pc_type
 \begin_layout Standard
 
 \shape italic
-bjacobi
+jacobi
 \end_layout
 
 \end_inset
@@ -637,40 +633,6 @@ bjacobi
 Set preconditioner type to block Jacobi.
  See PETSc documentation for a list of all preconditioner types.
  
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row topline="true" bottomline="true">
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\family typewriter
-sub_pc_type
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\shape italic
-ilu
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-Set preconditioner to incomplete factorization for each block.
- See PETSc documentation for a list of all preconditioners.
 \end_layout
 
 \end_inset
@@ -714,7 +676,7 @@ Geometrical and topological information for the finite element mesh may
 \end_layout
 
 \begin_layout Standard
-PyLith supports linear elements in 1D (
+PyLith supports linear cells in 1D (
 \begin_inset LatexCommand \ref{fig:1D-linear-elements}
 
 \end_inset
@@ -730,28 +692,28 @@ PyLith supports linear elements in 1D (
 \end_inset
 
 ).
- The node ordering must follow the convention shown in the figures.
- Quadratic elements are also supported, but at present the only method for
- using these elements in PyLith is using PyLith ASCII format.
+ The vertex ordering must follow the convention shown in the figures.
+ Quadratic cells are also supported, but at present the only method for
+ using these cells in PyLith is using PyLith ASCII format.
  PyLith does not yet support automatic generation of a quadratic mesh from
  the linear meshes created by CUBIT or LaGriT.
 \end_layout
 
 \begin_layout Standard
 The mesh information defines the nodal coordinates as well as specifying
- the nodes composing each element in the mesh.
- The mesh information must also define at least one set of nodes for which
- displacement (Dirichlet) boundary conditions will be provided.
- In most realistic problems, there will be several node groups, each with
+ the vertices composing each cell in the mesh.
+ The mesh information must also define at least one set of vertices for
+ which displacement (Dirichlet) boundary conditions will be provided.
+ In most realistic problems, there will be several vertex groups, each with
  a unique identifying label.
  For example, one group might define a surface of the mesh where displacement
  (Dirichlet) boundary conditions will be applied, another might define a
  surface where traction (Neumann) boundary conditions will be applied, while
  a third might specify a surface that will define a fault.
- Similarly, the mesh information contains element labels that define the
- material type for each element in the mesh.
+ Similarly, the mesh information contains cell labels that define the material
+ type for each cell in the mesh.
  For a mesh with a single material type, there will only be a single label
- for every element in the mesh.
+ for every cell in the mesh.
  ***Put in references for all of this***
 \end_layout
 
@@ -776,7 +738,7 @@ status open
 \end_layout
 
 \begin_layout Caption
-Linear bar element available for 1-D problems.
+Linear bar cell available for 1-D problems.
 \end_layout
 
 \begin_layout Standard
@@ -825,7 +787,7 @@ status open
 \end_layout
 
 \begin_layout Caption
-Linear elements available for 2-D problems are the triangle (left) and the
+Linear cells available for 2-D problems are the triangle (left) and the
  quadrilateral (right).
 \end_layout
 
@@ -875,8 +837,8 @@ status open
 \end_layout
 
 \begin_layout Caption
-Linear elements available for 3D problems are the tetrahedron (left) and
- the hexahedron (right).
+Linear cells available for 3D problems are the tetrahedron (left) and the
+ hexahedron (right).
 \begin_inset LatexCommand \label{fig:3D-linear-elements}
 
 \end_inset
@@ -897,24 +859,34 @@ Databases for Boundaries, Interfaces, and Material Properties
 Once the problem has been defined with PyLith parameters, and the mesh informati
 on has been provided, the final step is to specify the boundary conditions
  and material properties to be used.
- The mesh information provides labels defining sets of nodes to which boundary
- conditions or fault conditions will be applied, as well as element labels
- that will be used to define the material type of each element.
+ The mesh information provides labels defining sets of vertices to which
+ boundary conditions or fault conditions will be applied, as well as cell
+ labels that will be used to define the material type of each cell.
  For boundary conditions, the .cfg file is used to associate boundary condition
- types and spatial databases with each node group (***reference***).
+ types and spatial databases with each vertex group (see Chapter 
+\begin_inset LatexCommand \ref{cha:boundary:interface:conditions}
+
+\end_inset
+
+).
  For materials, the 
 \family typewriter
 .cfg
 \family default
- file is used to associate material types and spatial databases with each
- element group.
+ file is used to associate material types and spatial databases with cells
+ identified by the material identifier (see Chapter 
+\begin_inset LatexCommand \ref{fig:Material-models}
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
 The spatial databases define how the boundary conditions or material property
  values vary spatially, and they can be arbitrarily complex.
  The simplest example for a material database would be a mesh where all
- the elements of a given type have uniform properties (
+ the cells of a given type have uniform properties (
 \begin_inset Quotes eld
 \end_inset
 
@@ -922,8 +894,8 @@ point
 \begin_inset Quotes erd
 \end_inset
 
-, or 0-D variation).
- A slightly more complex case would be a mesh where the elements of a given
+ or 0-D variation).
+ A slightly more complex case would be a mesh where the cells of a given
  type have properties that vary linearly along a given direction (
 \begin_inset Quotes eld
 \end_inset
@@ -932,7 +904,7 @@ line
 \begin_inset Quotes erd
 \end_inset
 
-, or 1-D variation).
+ or 1-D variation).
  In more complex models, the material properties might have different values
  at each point in the mesh (
 \begin_inset Quotes eld
@@ -942,15 +914,17 @@ volume
 \begin_inset Quotes erd
 \end_inset
 
-, or 3-D variation).
+ or 3-D variation).
  This might be the case, for example, if the material properties are provided
  by a database of seismic velocities and densities.
- ***Provide references***
-\end_layout
+ See Section 
+\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
 
-\begin_layout Standard
-For boundary conditions, the simplest case would be where all nodes in a
- given group have the same boundary conditions (
+\end_inset
+
+ for the specification of the file format for the default spatial database.
+ For boundary conditions the simplest case would be where all vertices in
+ a given group have the same boundary condition parameters (
 \begin_inset Quotes eld
 \end_inset
 
@@ -968,10 +942,16 @@ area
 \begin_inset Quotes erd
 \end_inset
 
-, or 2-D variation).
+ or 2-D variation).
  This sort of condition might be used, for example, to specify the variation
  of slip on a fault plane.
- ***Provide references***
+ The examples discussed in Chapter 
+\begin_inset LatexCommand \ref{cha:Tutorials}
+
+\end_inset
+
+ also contain more information regarding the specification and use of the
+ spatial database files.
 \end_layout
 
 \begin_layout Standard
