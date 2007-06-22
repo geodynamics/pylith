@@ -49,4 +49,6 @@ pylith axialdisp.cfg
 pylith sheardisp.cfg
 pylith dislocation.cfg
 
-Each of these commands will produce a corresponding VTK file, which may be viewed with visualization packages such as ParaView or Mayavi.
+Each of these commands will produce a corresponding VTK file, which may be viewed with visualization packages such as ParaView or Mayavi.  The
+jpeg files in this directory show results for the different examples
+visualized using ParaView.
