@@ -18,7 +18,8 @@ noinst_DATA = \
 	twotri3.exo \
 	twoquad4.exo \
 	twotet4.exo \
-	twohex8.exo
+	twohex8.exo \
+	mesh2D_comments.txt
 
 noinst_TMP =
 
@@ -30,8 +31,7 @@ export-data: $(noinst_DATA)
 BUILT_SOURCES = export-data
 
 CLEANFILES = \
-	$(export_datadir)/$(noinst_DATA) \
-	$(export_datadir)/$(noinst_TMP)
+	$(export_datadir)/$(noinst_DATA)
 
 
 # End of file 
