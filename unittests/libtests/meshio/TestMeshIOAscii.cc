@@ -127,6 +127,16 @@ pylith::meshio::TestMeshIOAscii::testWriteRead3D(void)
 } // testWriteRead3D
 
 // ----------------------------------------------------------------------
+// Test write() and read() for 2D mesh in 2D space with comments.
+void
+pylith::meshio::TestMeshIOAscii::testReadComments(void)
+{ // testWriteReadComments
+  MeshData2D data;
+  const char* filename = "data/mesh2D_comments.txt";
+  _testRead(data, filename);
+} // testWriteReadComments
+
+// ----------------------------------------------------------------------
 // Build mesh, perform write() and read(), and then check values.
 void
 pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
@@ -147,5 +157,22 @@ pylith::meshio::TestMeshIOAscii::_testWriteRead(const MeshData& data,
   // Make sure meshIn matches data
   _checkVals(meshIn, data);
 } // _testWriteRead
+
+// ----------------------------------------------------------------------
+// Read mesh and then check values.
+void
+pylith::meshio::TestMeshIOAscii::_testRead(const MeshData& data,
+					   const char* filename)
+{ // _testWriteRead
+  // Read mesh
+  ALE::Obj<Mesh> mesh;
+  MeshIOAscii iohandler;
+  iohandler.filename(filename);
+  iohandler.read(&mesh);
+
+  // Make sure mesh matches data
+  _checkVals(mesh, data);
+} // _testRead
+
 
 // End of file 

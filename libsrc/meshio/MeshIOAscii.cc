@@ -460,13 +460,15 @@ pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
       points->resize(numPoints);
       buffer.str(parser.next());
       buffer.clear();
-      for (int i=0; i < numPoints; ++i) {
-	buffer >> (*points)[i];
-	if (!buffer.good() && i < numPoints-1) {
+      int i = 0;
+      while (buffer.good() && i < numPoints) {
+	buffer >> (*points)[i++];
+	buffer >> std::ws;
+	if (!buffer.good() && i < numPoints) {
 	  buffer.str(parser.next());
 	  buffer.clear();
 	} // if
-      } // for
+      } // while
       parser.ignore('}');
     } else {
       std::ostringstream msg;

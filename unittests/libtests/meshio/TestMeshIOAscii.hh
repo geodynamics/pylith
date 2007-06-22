@@ -37,6 +37,7 @@ class pylith::meshio::TestMeshIOAscii : public TestMeshIO
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestMeshIOAscii );
+
   CPPUNIT_TEST( testConstructor );
   CPPUNIT_TEST( testDebug );
   CPPUNIT_TEST( testInterpolate );
@@ -47,6 +48,8 @@ class pylith::meshio::TestMeshIOAscii : public TestMeshIO
   CPPUNIT_TEST( testWriteRead2D );
   CPPUNIT_TEST( testWriteRead2Din3D );
   CPPUNIT_TEST( testWriteRead3D );
+  CPPUNIT_TEST( testReadComments );
+
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -82,6 +85,9 @@ public :
   /// Test write() and read() for 3D mesh in 3D space.
   void testWriteRead3D(void);
 
+  /// Test and read() for 2D mesh in 2D space with comments.
+  void testReadComments(void);
+
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
 
@@ -92,6 +98,14 @@ private :
    */
   void _testWriteRead(const MeshData& data,
 		      const char* filename);
+
+  /** Read mesh and then check values.
+   *
+   * @param data Mesh data
+   * @param filename Name of mesh file to read
+   */
+  void _testRead(const MeshData& data,
+		 const char* filename);
 
 }; // class TestMeshIOAscii
 
