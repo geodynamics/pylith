@@ -138,7 +138,7 @@ class Explicit(Formulation):
     return
 
 
-  def poststep(self, t, dt):
+  def poststep(self, t, dt, totalTime):
     """
     Hook for doing stuff after advancing time step.
     """
@@ -148,7 +148,7 @@ class Explicit(Formulation):
     for integrator in self.integrators:
       integrator.updateState(t, self.fields.getReal("dispT"))
 
-    Formulation.poststep(self, t, dt)
+    Formulation.poststep(self, t, dt, totalTime)
     return
 
 
