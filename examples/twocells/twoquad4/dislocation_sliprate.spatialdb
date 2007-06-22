@@ -1,0 +1,41 @@
+#SPATIAL.ascii 1
+
+// This database is used to specify the fault slip rate for the
+// dislocation (kinematic fault) example.
+SimpleDB {
+
+  // There is one value specified in the database, corresponding to the
+  // slip rate.
+  num-values = 1
+  value-names =  slip-rate
+
+  // The fault slip rate has units of meters/second.
+  value-units =  m/s
+
+  // The value is specified at one spatial location.
+  num-locs = 1
+
+  // The dimension of the spatial distribution is 0, since the same data
+  // is specified for all points in the set.
+  data-dim = 0
+
+  // The spatial dimension of the database is 2.
+  space-dim = 2
+
+  // We are specifying the data in a Cartesian coordinate system.
+  cs-data = cartesian {
+
+    // Our units are already in meters, so we can just multiply by one.
+    to-meters = 1.0
+
+    // We are using a 2D Cartesian coordinate system.
+    space-dim = 2
+  }
+}
+
+// This is where the data is specified.
+// As described in dislocation.cfg, this database will be used to specify
+// uniform data for a fault (pylith.faults.SingleFault).
+// The entries are:
+// X-Coord, Y-Coord, slip rate
+0.0  0.0  1.0e+6
