@@ -6,9 +6,6 @@ CURRENT ISSUES
 
   2. Add unit test for reading MeshIOAscii file with comments.
 
-  4. Need PETSc settings for absolute convergence (i.e., don't want to
-  max out iterations when there is no increment in displacement).
-
 ----------------------------------------------------------------------
 List of missing features (EqSim/PyLith 0.8) and new features.
 
@@ -20,6 +17,8 @@ List of missing features (EqSim/PyLith 0.8) and new features.
         Output of surface/fault information
       PyLith 0.8
         Traction boundary conditions
+        Viscoelastic material models (several)
+        Output of stress/strain information
 
     New features
       EqSim
@@ -37,11 +36,9 @@ List of missing features (EqSim/PyLith 0.8) and new features.
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Add check to make sure every material supplied by user exists in the
-mesh.
-  
-check test routines that create mesh to make sure they clear factory
-(*mesh)->getFactory()->clear();
+Create 6x6x4 meshes for examples.
+  CUBIT
+  LaGriT
 
 Create meshes for benchmarks
 
@@ -72,6 +69,12 @@ matrix when possible.
 Additional unit tests
   a. FaultCohesive
     i. Add checking of faultMesh [not currently used]
+
+Add check to make sure every material supplied by user exists in the
+mesh.
+  
+check test routines that create mesh to make sure they clear factory
+(*mesh)->getFactory()->clear(); necessary?
 
 1. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
    a. Materials C++ code

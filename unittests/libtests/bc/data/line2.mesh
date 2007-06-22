@@ -1,55 +1,33 @@
-// This is a comment
-mesh = { // more commetns
-// another 
-  dimension = 1 // here
+mesh = {
+  dimension = 1
   use-index-zero = true
-// there
-
   vertices = {
-// yes
     dimension = 1
     count = 3
- 	// no
     coordinates = {
              0     -1.0
-  // maybe
              1      0.0
-             2      1.0 // yes
-  // nod
-    } // do
-  } // au
-   // di
-// df
+             2      1.0
+    }
+  }
   cells = {
-    // jdf
-// dsf
     count = 2
     num-corners = 2
-    simplices = { // sdf
-        // sdf
+    simplices = {
              0       0       1
-  // sdf
              1       1       2
-// dfj
     }
     material-ids = {
-             0   0 // sdfjdsf
-    // sdfdskf
+             0   0
              1   0
     }
   }
-// sdfsd
   group = {
     name = bc0
-// sdfs
-    type = vertices // sdfjsf
-    count = 2 // sfsdfk
-// sdfjsdf
-// sdjflsdjf
+    type = vertices
+    count = 2
     indices = {
       0  2
     }
-// sjflskdf
   }
-// sjdfs
 }

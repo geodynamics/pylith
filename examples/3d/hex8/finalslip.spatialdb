@@ -1,0 +1,16 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 3
+  value-names =  left-lateral-slip  reverse-slip  fault-opening
+  value-units =  m  m  m
+  num-locs = 3
+  data-dim = 1
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0e+3
+    space-dim = 3
+  } // cs-data
+} // SimpleDB
+0.0  0.0  0.0    -2.00  0.25  0.00
+0.0  0.0 -2.0    -2.00  0.00  0.00
+0.0  0.0 -4.0     0.00  0.00  0.00
