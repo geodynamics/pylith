@@ -132,7 +132,7 @@ class TimeDependent(Problem):
       self._step(t, dt)
 
       # Do stuff after advancing time step
-      self._poststep(t, dt)
+      self._poststep(t, dt, self.totalTime)
 
       # Update time step
       t += dt
@@ -194,12 +194,12 @@ class TimeDependent(Problem):
     return
 
 
-  def _poststep(self, t, dt):
+  def _poststep(self, t, dt, totalTime):
     """
     Hook for doing stuff after advancing time step.
     """
     self._info.log("Finishing advancing solution to t=%s." % (t+dt))    
-    self.formulation.poststep(t, dt)
+    self.formulation.poststep(t, dt, totalTime)
     return
 
 

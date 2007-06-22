@@ -160,7 +160,7 @@ class Formulation(Component):
     return
 
 
-  def poststep(self, t, dt):
+  def poststep(self, t, dt, totalTime):
     """
     Hook for doing stuff after advancing time step.
     """
