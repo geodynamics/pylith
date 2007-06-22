@@ -1,0 +1,47 @@
+## /tools/common/cubit-10.2/bin/clarox
+## Cubit Version 10.2
+## Cubit Build 24
+## Revised 12/15/2006 16:09:40 MST
+## Running 06/18/2007 10:26:50 AM
+## Command Options:
+## -warning = On
+## -information = On
+
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+
+# Block is 6 km x 6 km x 4 km
+# -3 km <= x <= 3 km
+# -3 km <= y <= 3 km
+# -4 km <= z <= 0 km
+reset
+brick x 6000 y 6000 z 4000
+
+# Translate block so the top is at z=0
+volume 1 move x 0 y 0 z -2000
+
+# ----------------------------------------------------------------------
+# Create interface surfaces
+# ----------------------------------------------------------------------
+create planar surface with plane xplane offset 0
+surface 7 name "fault_surface"
+create planar surface with plane zplane offset -2000
+surface 8 name "material_interface"
+
+# ----------------------------------------------------------------------
+# Divide volumes using interface surfaces
+# ----------------------------------------------------------------------
+webcut volume 1 with plane surface fault_surface
+webcut volume 1 with plane surface material_interface
+webcut volume 4 with plane surface material_interface
+volume 1 name "elastic_xpos"
+volume 4 name "elastic_xneg"
+volume 5 name "visco_xpos"
+volume 6 name "visco_xneg"
+
+# ----------------------------------------------------------------------
+# Imprint all volumes, merging surfaces
+# ----------------------------------------------------------------------
+imprint volume all with volume all
+merge volume all
