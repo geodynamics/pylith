@@ -1,6 +1,5 @@
 // Global mesh object.
-// This mesh defines a square domain with the corners lying along the
-// x and y axes.
+// This defines a square mesh with unit edge lengths.
 mesh = {
 
   // This is a two-dimensional mesh.
@@ -15,12 +14,14 @@ mesh = {
     // There are 4 vertices.
     count = 4
 
-    // List node number (starting from 0), x-coord, and y-coord.
+    // List the coordinates as:
+    // Vertex number (starting from zero), x-coord, y-coord
+    // Use coordinate units that are consistent with the other units used.
     coordinates = {
-      0  -1.0   0.0
-      1   0.0   1.0
-      2   0.0  -1.0
-      3   1.0   0.0
+      0  -0.5  -0.5
+      1   0.5  -0.5
+      2  -0.5   0.5
+      3   0.5   0.5
     }
   }
   
@@ -33,26 +34,33 @@ mesh = {
     // There are 2 cells
     count = 2
 
-    // List cell number, and then vertices moving counter-clockwise around the cell.
+    // List the vertices composing each cell,
+    // moving counter-clockwise around the cell.
+    // List the information as:
+    // Cell number (starting from zero), vertex 0, vertex 1, vertex 2
     simplices = {
-      0   0  2  1
-      1   1  2  3
+      0   0  1  2
+      1   1  3  2
     }
 
-    // List the material ID's associated with each cell (both have an ID of 1).
+    // List the material ID's associated with each cell.
+    // Different ID's may be used to specify a different material type, or
+    // to use a different spatial database for each material ID.
+    // In this example, cells 0 and 1 both are associated with material ID 1.
     material-ids = {
       0   1
       1   1
     }
   }
 
+  // Here we list different groups (cells or vertices) that we want to associate
+  // with a particular name (ID).
 
   // This group of vertices may be used to define a fault.
+  // There are 2 vertices corresponding to indices 1 and 2.
   group = {
     type = vertices
     name = fault
-
-    // There are 2 vertices corresponding to indices 1 and 2.
     count = 2
     indices = {
       1
@@ -61,14 +69,37 @@ mesh = {
   }
 
   // This group of vertices may be used to specify boundary conditions.
+  // There are 2 vertices corresponding to indices 0 and 3.
   group = {
     type = vertices
     name = end points
-
-    // There are 2 vertices corresponding to indices 0 and 3.
     count = 2
     indices = {
       0
+      3
+    }
+  }
+
+  // This group of vertices may be used to specify boundary conditions.
+  // There are 2 vertices corresponding to indices 0 and 2.
+  group = {
+    type = vertices
+    name = x_neg
+    count = 2
+    indices = {
+      0
+      2
+    }
+  }
+
+  // This group of vertices may be used to specify boundary conditions.
+  // There are 2 vertices corresponding to indices 1 and 3.
+  group = {
+    type = vertices
+    name = x_pos
+    count = 2
+    indices = {
+      1
       3
     }
   }

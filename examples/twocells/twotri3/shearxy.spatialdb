@@ -1,7 +1,7 @@
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 2
-  value-names =  dof-0 dof-1
+  value-names =  dof-0  dof-1
   value-units =  m  m
   num-locs = 2
   data-dim = 1
@@ -11,5 +11,5 @@ SimpleDB {
     space-dim = 2
   }
 }
--0.5 -0.5  -0.01 -0.01
- 0.5  0.5   0.01  0.01
+-0.5  0.0    0.0  -0.01
++0.5  0.0    0.0  +0.01
