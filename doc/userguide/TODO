@@ -19,57 +19,18 @@ DONE
 
 7.  Governing equations [MOSTLY DONE]
 
-  Needs some checking. [Charles]
+  Needs some checking. [CHARLES]
 
-8.  Installing binary PyLith [Charles with some input from Leif]
+8.  Running PyLith (an overview) [PRETTY MUCH DONE?]
 
-9.  Running PyLith (an overview) [Charles with some input from Brad]
+9.  Installing binary PyLith
 
-    a.  Basic pieces needed to run problem
+   [CHARLES- NEED TO GET BINARY AND WRITE INSTRUCTIONS]
 
-    b.  Setting parameters for PyLith
+   Installation from source [Leif will write after CFEM]
 
-        i. Command line
 
-	ii. .cfg file
-
-	iii. .pml file
-
-	iv. Placement of .cfg files
-
-	v. PETSc settings
-
-    c.  Mesh information
-
-    d.  Database information
-
-    e.  Implicit problems
-
-    f.  Explicit problems
-
-10. Installation from source [Leif will write after CFEM]
-
-    C++, Python
-
-    Numpy
-
-    FIAT
-
-    PETSc/MPI
-
-    Pythia
-
-    nemesis
-
-    Pyrex/Pyrexembed
-
-    spatialdata and proj
-
-    optional
-
-      netcdf
-
-11. Tutorials (all using ascii mesh format?) [Charles]
+11. Tutorials (all using ascii mesh format?) [CHARLES]
 
     a.  Two-triangle problem.
 
@@ -92,33 +53,27 @@ DONE
 
 12. Material models (should be able to copy from 0.8 with some editing) [Charles]
 
-    a.  Specifying .cfg and spatial database info.
+    a. Specifying .cfg and spatial database info.
 
-    b.  Existing material models. 
-
-    * ElasticStrain1D [DONE]
-
-    * ElasticStress1D [DONE]
-
-    * ElasticPlaneStrain [Brad]
-
-    * ElasticPlaneStress [Brad]
-
-    * ElasticIsotropic3D [DONE]
+      [BRAD - needs to add a little more]
 
     * MaxwellIsotropic3D [Charles]
 
-      Need to rewrite formulation in terms of mu and lambda.
+      [CHARLES - need to rewrite formulation in terms of mu and lambda]
+
+      [CHARLES - also list material modesl that will be added soon]
 
     c. List material models in 0.8 that will be added soon.
 
-13. Boundary and interface conditions (includes faults) [Charles]
+13. Boundary and interface conditions (includes faults)
+
+   [BRAD]
 
     a.  Specifying .cfg and spatial database info.
 
     b.  Dirichlet conditions.
 
-    c.  Neumann conditions. [future]
+    c.  Neumann conditions. [to be added in the future]
 
     d.  Fault
 
@@ -128,19 +83,7 @@ DONE
 
       iii. Kinematic earthquake source
 
-14. Appendix [Charles]
-
-    a. glossary
-      sieve
-      mesh
-      cell (element)
-      vertex (node)
-      field
-      section
-      fiber dimension
-      cohesive cell
-      cone
-      restrict
+14. Appendix [BRAD]
 
     b.  File formats (config, ascii mesh format, and spatial data).
 

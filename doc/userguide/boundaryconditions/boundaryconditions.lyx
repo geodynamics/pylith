@@ -30,22 +30,412 @@
 \begin_body
 
 \begin_layout Chapter
-Boundary and Interface Conditions 
+\begin_inset LatexCommand \label{cha:boundary:interface:conditions}
+
+\end_inset
+
+Boundary and Interface Conditions
+\end_layout
+
+\begin_layout Section
+Assigning Boundary Conditions
 \end_layout
 
 \begin_layout Standard
-(includes faults) 
+There are four basic steps in assigning a specific boundary condition to
+ a portion of the domain.
 \end_layout
 
-\begin_layout Itemize
-a.
- Specifying .cfg and spatial database info.
+\begin_layout Enumerate
+Create sets of vertices in the mesh generation process for each boundary
+ condition.
 \end_layout
 
-\begin_layout Itemize
-b.
- Dirichlet conditions.
- 82% 
+\begin_layout Enumerate
+Create a container to hold the various boundary conditions unless a suitable
+ one already exists.
+\end_layout
+
+\begin_layout Enumerate
+Set the parameters for each boundary condition in the boundary condition
+ container using .cfg or pml files and/or command line arguments.
+\end_layout
+
+\begin_layout Enumerate
+Specify the spatial variation in parameters for the boundary condition using
+ a spatial database file.
+\end_layout
+
+\begin_layout Subsection
+Creating Sets of Vertices
+\end_layout
+
+\begin_layout Standard
+The procedure for creating sets of vertices differs depending on the mesh
+ generator.
+ For meshes specified using the PyLith mesh ASCII format, the sets of vertices
+ are specified using groups (see Section 
+\begin_inset LatexCommand \ref{sec:MeshIOAscii}
+
+\end_inset
+
+).
+ In CUBIT the groups of vertices are created using nodesets.
+ Similarly, in LaGriT psets are used.
+ Note that we chose to associated boundary conditions with groups of vertices
+ because nearly every mesh generation package supports associating a string
+ or integer with groups of vertices.
+ Note that we currently associate boundary conditions with string identifiers,
+ so even if the mesh generator uses integers, the name is specified as the
+ digits of the integer value.
+ 
+\end_layout
+
+\begin_layout Subsection
+Boundary Conditions Container
+\end_layout
+
+\begin_layout Standard
+The boundary condition container associates a type of boundary condition
+ with a string label.
+ Because the number of boundary conditions depends on the problem and Pyre
+ does not support dynamic arrays of components, a generic boundary condition
+ container is not yet available.
+ However, we supply containers for one, two, four, and six boundary conditions.
+ Table 
+\begin_inset LatexCommand \ref{tab:bc:containers}
+
+\end_inset
+
+ gives the predefined boundary condition containers.
+ The default boundary condition for in each of the containers is the Dirichlet
+ boundary condition.
+ If no parameters are specified for the boundary condition, it is not used.
+ For problems with more than six boundary conditions, the user must create
+ the container using an an .odb file (a template is provided in the examples/temp
+lates directory of the PyLith distribution).
+ This .odb file should be placed in the directory with the other simulation
+ input files.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="3">
+<features>
+<column alignment="left" valignment="top" leftline="true" width="0.75in">
+<column alignment="center" valignment="top" leftline="true" width="1.3in">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Container
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Number of Boundary Conditions
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Container Facilities
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+BCSingle
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+bc
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+BCTwoSides
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+neg, pos
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+BCFourSides
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+x_neg, x_pos, y_neg, y_pos
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+BCSixSides
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+x_neg, x_pos, y_neg, y_pos, z_neg, z_pos
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{tab:bc:containers}
+
+\end_inset
+
+Predefined boundary condition containers.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Dirichlet Boundary Conditions
+\end_layout
+
+\begin_layout Standard
+Dirichlet boundary conditions prescribe a fixed value of slip at vertices
+ of the finite-element mesh.
+ While Dirichlet boundary conditions can be applied to any vertex, usually
+ they are applied to vertices on the lateral and bottom boundaries of the
+ domain.
+ Currently, time dependent displacements are not supported.
+ Allowing time variation of the prescribed displacements on the boundaries
+ will likely be available in a future release.
+\end_layout
+
+\begin_layout Subsection
+Dirichlet Boundary Condition Parameters
+\end_layout
+
+\begin_layout Standard
+The principal parameters for the Dirichlet boundary condition are:
+\end_layout
+
+\begin_layout Description
+id This is an integer identifier for the boundary condition.
+ It is not used in the current implementation.
+\end_layout
+
+\begin_layout Description
+name Name or label for the boundary condition.
+ This associates sets of vertices with the boundary condition in addition
+ to being used in error and diagnostic reports.
+\end_layout
+
+\begin_layout Description
+db Spatial database specifying the spatial variation in the displacement
+ field.
+\end_layout
+
+\begin_layout Description
+fixed_dof Array of degrees of freedom to be fixed (first degree of freedom
+ is 0)
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a .cfg file for the homogeneous
+ material is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem]
+\end_layout
+
+\begin_layout LyX-Code
+bc = pylith.bc.BCTwoSides
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.bc.pos]
+\end_layout
+
+\begin_layout LyX-Code
+label = face A
+\end_layout
+
+\begin_layout LyX-Code
+db.iohandler.filename = disp_A.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+db.query_type = nearest
+\end_layout
+
+\begin_layout LyX-Code
+fixed_dof = [2]
+\end_layout
+
+\begin_layout Standard
+where we have specified that we want to use the BCTwoSides boundary condition
+ container, the group of vertices has the label 
+\begin_inset Quotes eld
+\end_inset
+
+face A
+\begin_inset Quotes erd
+\end_inset
+
+, the spatial database query should use the nearest point algorithm, and
+ motion in the z-direction is constrained.
+ See Chapter 
+\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
+
+\end_inset
+
+ for a complete list of the spatial database settings.
+ 
+\end_layout
+
+\begin_layout Subsection
+Dirichlet Boundary Condition Spatial Database Files
+\end_layout
+
+\begin_layout Standard
+[ADD STUFF HERE]
+\end_layout
+
+\begin_layout Section
+Neumann Boundary Conditions
+\end_layout
+
+\begin_layout Standard
+Neumann (traction) boundary conditions are not implemented in this release.
+ We hope to include these in the next release.
+\end_layout
+
+\begin_layout Section
+Fault Interface Conditions
+\end_layout
+
+\begin_layout Subsection
+Conventions
+\end_layout
+
+\begin_layout Subsection
+Fault Implementation
+\end_layout
+
+\begin_layout Subsection
+Kinematic Earthquake Source
 \end_layout
 
 \end_body

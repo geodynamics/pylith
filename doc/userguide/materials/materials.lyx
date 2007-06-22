@@ -37,6 +37,10 @@
 \begin_body
 
 \begin_layout Chapter
+\begin_inset LatexCommand \label{cha:material:models}
+
+\end_inset
+
 Material Models
 \end_layout
 
@@ -54,6 +58,168 @@ raggedbottom
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Specifying Material Properties
+\end_layout
+
+\begin_layout Standard
+Associating material properties with each a given cell involves several
+ steps.
+ 
+\end_layout
+
+\begin_layout Enumerate
+In the mesh generation process, a material identifier must be assigned to
+ each cell.
+\end_layout
+
+\begin_layout Enumerate
+A material container must be created unless a suitable one already exists.
+\end_layout
+
+\begin_layout Enumerate
+Set the parameters for each material in the materials container using .cfg
+ or pml files and/or command line arguments.
+\end_layout
+
+\begin_layout Enumerate
+Specify the spatial variation in material property parameters using a spatial
+ database file.
+\end_layout
+
+\begin_layout Subsection
+Setting the Material Identifier
+\end_layout
+
+\begin_layout Standard
+Each cell in the finite-element mesh must have a material identifier.
+ This integer value is associated with a bulk material model.
+ The parameters of the material model need not be uniform for cells with
+ the same material identifier.
+ The bulk constitutive model and numerical integration (quadrature) scheme
+ will however, be the same for all cells with the same material identifier
+ value.
+ The material identifier is set during the mesh generation process.
+ The procedure for assigning this integer value to a cell depends on the
+ mesh generator.
+ For example, in the PyLith mesh ASCII format, the identifiers are listed
+ in the cells group using the material-id data; in CUBIT materials are defined
+ using blocks; in LaGriT materials are defined by the attribute imt and
+ the mregion command.
+\end_layout
+
+\begin_layout Subsection
+Creating a Material Container
+\end_layout
+
+\begin_layout Standard
+The material container associates a material model (label for the material,
+ a bulk constitutive model, and parameters for the constitutive model) with
+ a material identifier.
+ Because the number of materials depends on the problem and Pyre does not
+ support dynamic arrays of components, a generic materials container is
+ not yet available.
+ The default material container is a homogeneous material, i.e., a single
+ material model for the entire problem.
+ A two-material container (pylith.materials.BiMaterial) is also supplied.
+ For more problems with more than two materials, the user must create the
+ material container using an an .odb file (a template is provided in the
+ examples/templates directory of the PyLith distribution).
+ Example XX discusses creating a material container using this template.
+ This .odb file should be placed in the directory with the other simulation
+ input files.
+\end_layout
+
+\begin_layout Subsection
+Material Parameters
+\end_layout
+
+\begin_layout Standard
+The principal parameters for a material are:
+\end_layout
+
+\begin_layout Description
+id This is the material identifier that matches the integer value assigned
+ to each cell in the mesh generation process.
+\end_layout
+
+\begin_layout Description
+name Name or label for the material.
+ This is used in error and diagnostic reports.
+\end_layout
+
+\begin_layout Description
+db Spatial database specifying the spatial variation in the parameters of
+ the bulk constitutive model.
+\end_layout
+
+\begin_layout Description
+quadrature Numerical integration scheme used in integrating fields over
+ each cell.
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a .cfg file for the homogeneous
+ material is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.materials.homogeneous]
+\end_layout
+
+\begin_layout LyX-Code
+material = pylith.materials.ElasticIsotropic3D
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.materials.material]
+\end_layout
+
+\begin_layout LyX-Code
+id = 1
+\end_layout
+
+\begin_layout LyX-Code
+name = Elastic material
+\end_layout
+
+\begin_layout LyX-Code
+db.iohandler.filename = elastic.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+db.query_type = linear
+\end_layout
+
+\begin_layout LyX-Code
+quadrature = pylith.feassemble.Quadrature3D
+\end_layout
+
+\begin_layout Standard
+where we have specified that the bulk constitutive model is the 3-D linear
+ elastic model and we use linear interpolation for computing the spatial
+ variation of the parameters within the spatial database.
+ See Chapter 
+\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
+
+\end_inset
+
+ for a complete list of the spatial database settings.
+ 
+\end_layout
+
+\begin_layout Subsection
+Material Spatial Database Files
+\end_layout
+
+\begin_layout Standard
+[ADD STUFF HERE]
 \end_layout
 
 \begin_layout Section

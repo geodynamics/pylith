@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -202,7 +202,7 @@ preview false
 \begin_layout Standard
 \start_of_appendix
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Standard
 
@@ -213,6 +213,12 @@ status collapsed
 \begin_layout Standard
 
 \end_layout
+
+\end_inset
+
+
+\begin_inset Include \input{glossary.lyx}
+preview false
 
 \end_inset
 
