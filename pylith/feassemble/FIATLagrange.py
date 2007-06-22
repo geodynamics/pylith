@@ -110,8 +110,8 @@ class FIATLagrange(ReferenceCell):
         self.vertices = numpy.array(vertices)
         self.quadPts = quadpts
         self.quadWts = quadwts
-        self.basis = basis
-        self.basisDeriv = basisDeriv
+        self.basis = numpy.reshape(basis.flatten(), basis.shape)
+        self.basisDeriv = numpy.reshape(basisDeriv.flatten(), basisDeriv.shape)
       else:
         if dim == 2:
           self.vertices = numpy.zeros((self.numCorners, dim))
