@@ -724,7 +724,7 @@ The mesh information defines the nodal coordinates as well as specifying
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \noindent
@@ -752,6 +752,11 @@ Linear bar cell available for 1D problems.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
 placement H
 wide false
@@ -759,27 +764,38 @@ sideways false
 status open
 
 \begin_layout Standard
-\align left
-
-\hfill
-
+\noindent
+\align center
 \begin_inset Graphics
 	filename figs/tri3.eps
 
 \end_inset
 
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
  
-\hfill
-
 \begin_inset Graphics
 	filename figs/quad4.eps
 
 \end_inset
 
-
-\hfill
-
-\hfill
 
 \end_layout
 
@@ -811,27 +827,38 @@ sideways false
 status open
 
 \begin_layout Standard
-\align left
-
-\hfill
-
+\noindent
+\align center
 \begin_inset Graphics
 	filename figs/tet4.eps
 
 \end_inset
 
-
-\hfill
-
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+\InsetSpace ~
+ 
 \begin_inset Graphics
 	filename figs/hex8.eps
 
 \end_inset
 
-
-\hfill
-
-\hfill
 
 \end_layout
 
