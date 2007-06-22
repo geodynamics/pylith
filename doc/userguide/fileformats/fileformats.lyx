@@ -93,7 +93,7 @@ Spatialdata Files
 
 \begin_layout Standard
 Spatialdata files provide specification of a field over some set of points.
- There is not topology associated with the points.
+ There is no topology associated with the points.
  Spatialdata files contain a header describing the set of points and then
  the data with each line listing the coordinates of a point followed by
  the values of the fields for that point.
