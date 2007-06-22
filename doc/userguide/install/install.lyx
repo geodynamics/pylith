@@ -71,12 +71,16 @@ Help is available via the CIG Short-Term Crustal Dynamics Mailing List and
  is dedicated to CIG issues associated with short-term crustal dynamics,
  including the use of PyLith.
  You can subscribe to the mailing list and view messages at 
-\begin_inset LatexCommand \htmlurl[CIG Mailing Lists]{www.geodynamics.org/cig/lists/}
+\begin_inset LatexCommand \htmlurl[cig-short Mailing List]{www.geodynamics.org/cig/lists/cig-short}
 
 \end_inset
 
 .
- CIG uses 
+ 
+\end_layout
+
+\begin_layout Standard
+CIG uses 
 \family typewriter
 Roundup
 \family default
@@ -89,7 +93,7 @@ Roundup
 .
  Of course, it is helpful to first check to see if someone else already
  submitted a report related to the issue; one of the CIG developers may
- have already posted a solution to the problem.
+ have posted a solution to the problem.
  You can reply to a current issue by clicking on the issue title.
  To submit a new issue, click 
 \family sans
@@ -126,7 +130,7 @@ PyLith 1.0 depends on a number of other packages.
  This is usually not an issue with Linux distributions, such as Fedora,
  Ubuntu, and Debian that have good quality control; it can be an issue with
  Darwin package managers, such as Fink, where there is limited enforcement
- of consistency across pacakges.
+ of consistency across packages.
  Nevertheless, PyLith can be built on most systems provided the instructions
  are followed carefully.
  PyLith is developed and tested on Linux and Mac OS X.
