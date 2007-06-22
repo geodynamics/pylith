@@ -1,0 +1,83 @@
+// Put some comments at the top
+// Add a second line
+mesh = { // begin mesh
+  // a comment here
+  dimension = 2 // comment there
+  use-index-zero = true
+  // coment 1
+  // ^^^^^^ mispelled word
+  vertices = { // begin vertics
+    dimension = 2
+  // 9 vertices for this mesh
+    count = 9
+    coordinates = {
+             0     -1.000000e+00      3.000000e+00 // comment after some data
+   // comment in the middle with whitespace
+             1      1.000000e+00      3.300000e+00
+             2     -1.200000e+00      9.000000e-01
+// comment in the middle with no whitespace
+             3      9.000000e-01      1.000000e+00
+             4      3.000000e+00      2.900000e+00
+             5      6.000000e+00      1.200000e+00
+             6      3.400000e+00     -2.000000e-01
+             7      1.000000e-01     -1.100000e+00
+             8      2.900000e+00     -3.100000e+00
+    } // end coordinates
+ // a comment between braces
+  }
+// comment before cells
+  cells = { // begin cells
+    count = 3
+    num-corners = 4 // number of vertices per element
+    simplices = { // simplices array
+             0       0       2       3       1
+// comment with cells
+             1       4       3       6       5 // comment after cell
+             2       3       7       8       6
+    // comment before brace
+    }
+    material-ids = { // comment at beginning of material ids
+             0   1
+             1   0 // only 1 id per line
+             2   1
+    // comment after data
+    }
+  }
+ // comment before group
+  group = {
+    name = group A
+    type = vertices
+    count = 5
+    indices = {
+      0 // comment here
+// comment here again
+      2 // and here
+      4  6
+  // and here
+      8
+    }
+  }
+  group = { // begin group
+    name = group B
+    type = vertices
+    count = 3
+  // comment here
+    indices = {
+      1
+      4
+      7
+    }
+  // comment there
+  }
+  group = {
+    name = group C
+  // comments everywhere
+    type = cells
+    count = 2
+    indices = {
+      0
+      2
+    }
+ // even here
+  }
+}
