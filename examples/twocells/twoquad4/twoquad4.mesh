@@ -1,0 +1,123 @@
+// Global mesh object.
+// This defines a rectangular mesh composed of two square
+// elements with unit edge lengths.
+mesh = {
+
+  // This is a two-dimensional mesh.
+  dimension = 2
+
+  // We are using zero-indexing (default) rather than one-indexing.
+  use-index-zero = true
+
+  // Describe the vertices (nodes) defining the mesh.
+  vertices = {
+
+    // The vertices are defined in a 2D coordinate system.
+    dimension = 2
+
+    // There are 6 vertices.
+    count = 6
+
+    // List the coordinates as:
+    // Vertex number (starting from zero), x-coord, y-coord
+    // Use coordinate units that are consistent with the other units used.
+    coordinates = {
+             0     -2.0 -1.0
+             1     -2.0  1.0
+             2      0.0 -1.0
+             3      0.0  1.0
+             4      2.0 -1.0
+             5      2.0  1.0
+    }
+  }
+
+  // Describe the cells (elements) composing the mesh.
+  cells = {
+
+    // There are 2 cells.
+    count = 2
+
+    // These are bilinear quadrilateral cells, so there are 4 corners per cell.
+    num-corners = 4
+
+    // List the vertices composing each cell,
+    // moving counter-clockwise around the cell.
+    // List the information as:
+    // Cell number (starting from zero), vertex 0, vertex 1, vertex 2, vertex 3
+    simplices = {
+             0       0  2  3  1
+             1       4  5  3  2
+    }
+
+    // List the material ID's associated with each cell.
+    // Different ID's may be used to specify a different material type, or
+    // to use a different spatial database for each material ID.
+    // In this example, cells 0 and 1 both are associated with material ID 1.
+    material-ids = {
+             0   0
+             1   0
+    }
+  }
+
+  // Here we list different groups (cells or vertices) that we want to associate
+  // with a particular name (ID).
+
+  // This group of vertices may be used to define a fault.
+  // There are 2 vertices corresponding to indices 2 and 3.
+  group = {
+    name = fault
+    type = vertices
+    count = 2
+    indices = {
+      2
+      3
+    }
+  }
+
+  // This group of vertices may be used to specify boundary conditions.
+  // There are 2 vertices corresponding to indices 0 and 4.
+  group = {
+    name = y_neg
+    type = vertices
+    count = 2
+    indices = {
+      0
+      4
+    }
+  }
+
+  // This group of vertices may be used to specify boundary conditions.
+  // There are 2 vertices corresponding to indices 0 and 1.
+  group = {
+    name = x_neg
+    type = vertices
+    count = 2
+    indices = {
+      0
+      1
+    }
+  }
+
+  // This group of vertices may be used to specify boundary conditions.
+  // There are 2 vertices corresponding to indices 4 and 5.
+  group = {
+    name = x_pos
+    type = vertices
+    count = 2
+    indices = {
+      4
+      5
+    }
+  }
+
+  // This group of vertices may be used to specify boundary conditions.
+  // There is 1 vertex corresponding to index 3.
+  group = {
+    name = y_pos
+    type = vertices
+    count = 1
+    indices = {
+      3
+    }
+  }
+}
