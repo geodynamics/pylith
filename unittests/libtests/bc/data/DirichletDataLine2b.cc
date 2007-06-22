@@ -29,7 +29,7 @@ const int pylith::bc::DirichletDataLine2b::_fixedDOF[] = {};
 
 const int pylith::bc::DirichletDataLine2b::_numConstrainedPts = 2;
 const int pylith::bc::DirichletDataLine2b::_constrainedPoints[] = { 0, 2 };
-const double pylith::bc::DirichletDataLine2b::_values[] = {};
+const double pylith::bc::DirichletDataLine2b::_values[] = {0};
 
 const char* pylith::bc::DirichletDataLine2b::_meshFilename = 
   "data/line2.mesh";
