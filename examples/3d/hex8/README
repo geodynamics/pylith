@@ -1,0 +1,28 @@
+The examples in this directory include (1) simple shearing of a box
+and (2) slip on a through-going, vertical, strike-slip fault in a box
+that is 6 km x 6 km x 4 km with linear hexahedral cells that have
+edges 1.0 km long.
+
+The box spans the volume:
+
+  -3 km <= x <= +3 km
+  -3 km <= y <= +3 km
+  -6 km <= z <= 0  km.
+
+The mesh is generated using CUBIT. Journal files are included and are
+annotated to guide you through the GUI to replicate the commands in
+the journal files should you prefer to use the GUI.
+
+NOTE: Importing Exodus files into PyLith requires the netcdf
+library. This is included in the PyLith binary distribution. If you
+are compiling from the source code, you will want to use the
+--enable-cubit option to turn on importing meshes from CUBIT (you must
+have the netcdf library and header files installed when configuring
+PyLith).
+
+You can examine the Exodus file exported from CUBIT using the ncdump
+command.
+
+See the configuration files shearxy.cfg and dislocation.cfg on
+instructions on how to run these simulations. The configuration files
+also contain information about the simulation parameters.

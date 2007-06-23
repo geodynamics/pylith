@@ -1,14 +1,31 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This spatial database specifies the distribution of the
+// displacement field for Dirichlet boundary conditions associated
+// with no motion.
+//
+// dof-0: Ux = 0
+// dof-1: Uy = 0
+// dof-2: Uz = 0
+//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 3
-  value-names =  dof-0 dof-1 dof-2
+  value-names =  dof-0  dof-1  dof-2
   value-units =  m  m  m
   num-locs = 1
-  data-dim = 0
+  data-dim = 0 // data is uniform
   space-dim = 3
   cs-data = cartesian {
     to-meters = 1.0
     space-dim = 3
   }
 }
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) z coordinate (km)
+// (4) Ux (m)
+// (5) Uy (m)
+// (6) Uz (m)
 0.0  0.0  0.0    0.0  0.0  0.0
