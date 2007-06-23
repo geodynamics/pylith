@@ -51,11 +51,14 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyQuad4c );
   CPPUNIT_TEST( testAdjustTopologyQuad4d );
   CPPUNIT_TEST( testAdjustTopologyQuad4e );
+  CPPUNIT_TEST( testAdjustTopologyQuad4f );
   CPPUNIT_TEST( testAdjustTopologyTet4 );
   CPPUNIT_TEST( testAdjustTopologyTet4b );
   CPPUNIT_TEST( testAdjustTopologyTet4c );
   CPPUNIT_TEST( testAdjustTopologyTet4d );
   CPPUNIT_TEST( testAdjustTopologyTet4f );
+  CPPUNIT_TEST( testAdjustTopologyTet4g );
+  CPPUNIT_TEST( testAdjustTopologyTet4h );
   CPPUNIT_TEST( testAdjustTopologyHex8 );
   CPPUNIT_TEST( testAdjustTopologyHex8b );
   CPPUNIT_TEST( testAdjustTopologyHex8c );
@@ -108,6 +111,9 @@ public :
   /// Test adjustTopology() with 2-D quadrilateral element (2 cohesive cells).
   void testAdjustTopologyQuad4e(void);
 
+  /// Test adjustTopology() with 2-D quadrilateral element (2 cohesive cells b).
+  void testAdjustTopologyQuad4f(void);
+
   /// Test adjustTopology() with 3-D tetrahedral element.
   void testAdjustTopologyTet4(void);
 
@@ -122,6 +128,12 @@ public :
 
   /// Test adjustTopology() with 3-D tetrahedral element (reverse cell order).
   void testAdjustTopologyTet4f(void);
+
+  /// Test adjustTopology() with 3-D tetrahedral element (face g).
+  void testAdjustTopologyTet4g(void);
+
+  /// Test adjustTopology() with 3-D tetrahedral element (face h).
+  void testAdjustTopologyTet4h(void);
 
   /// Test adjustTopology() with 3-D hexahedral element.
   void testAdjustTopologyHex8(void);

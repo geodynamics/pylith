@@ -32,11 +32,14 @@
 #include "data/CohesiveDataQuad4c.hh" // USES CohesiveDataQuad4c
 #include "data/CohesiveDataQuad4d.hh" // USES CohesiveDataQuad4d
 #include "data/CohesiveDataQuad4e.hh" // USES CohesiveDataQuad4e
+#include "data/CohesiveDataQuad4f.hh" // USES CohesiveDataQuad4f
 #include "data/CohesiveDataTet4.hh" // USES CohesiveDataTet4
 #include "data/CohesiveDataTet4b.hh" // USES CohesiveDataTet4b
 #include "data/CohesiveDataTet4c.hh" // USES CohesiveDataTet4c
 #include "data/CohesiveDataTet4d.hh" // USES CohesiveDataTet4d
 #include "data/CohesiveDataTet4f.hh" // USES CohesiveDataTet4f
+#include "data/CohesiveDataTet4g.hh" // USES CohesiveDataTet4g
+#include "data/CohesiveDataTet4h.hh" // USES CohesiveDataTet4h
 #include "data/CohesiveDataHex8.hh" // USES CohesiveDataHex8
 #include "data/CohesiveDataHex8b.hh" // USES CohesiveDataHex8b
 #include "data/CohesiveDataHex8c.hh" // USES CohesiveDataHex8c
@@ -154,6 +157,16 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4e(void)
 } // testAdjustTopologyQuad4e
 
 // ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D quadrilateral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4f(void)
+{ // testAdjustTopologyQuad4fs
+  CohesiveDataQuad4f data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyQuad4f
+
+// ----------------------------------------------------------------------
 // Test adjustTopology() with 3-D tetrahedral element.
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyTet4(void)
@@ -202,6 +215,26 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyTet4f(void)
   FaultCohesiveDyn fault;
   _testAdjustTopology(&fault, data);
 } // testAdjustTopologyTet4f
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D tetrahedral element (face g).
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTet4g(void)
+{ // testAdjustTopologyTet4g
+  CohesiveDataTet4g data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyTet4g
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 3-D tetrahedral element (face h).
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyTet4h(void)
+{ // testAdjustTopologyTet4h
+  CohesiveDataTet4h data;
+  FaultCohesiveDyn fault;
+  _testAdjustTopology(&fault, data);
+} // testAdjustTopologyTet4h
 
 // ----------------------------------------------------------------------
 // Test adjustTopology() with 3-D hexahedral element.
@@ -432,7 +465,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   ALE::Obj<ALE::Mesh> mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
-  iohandler.debug(false);
+  iohandler.debug(true);
   iohandler.interpolate(false);
   iohandler.read(&mesh);
 
