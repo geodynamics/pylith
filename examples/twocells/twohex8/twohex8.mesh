@@ -80,7 +80,6 @@ mesh = {
     }
   }
 
-
   // This group of vertices may be used to specify boundary conditions.
   // There are 4 vertices corresponding to indices 0, 1, 6, and 7.
   group = {
