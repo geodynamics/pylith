@@ -1,0 +1,93 @@
+#!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+## Container of four materials.
+##
+## See examples/templates/materials.odb for a template file with a
+## detailed explanation.
+
+# Parent class
+from pylith.utils.ObjectBin import ObjectBin
+
+class MyMatBin(ObjectBin):
+  """
+  User-defined materials container.
+
+  Factory: object_bin
+  """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(ObjectBin.Inventory):
+    """
+    Python object for managing MyBC facilities and properties.
+    """
+
+    import pyre.inventory
+    
+    from pylith.materials.ElasticIsotropic3D import ElasticIsotropic3D
+    from pylith.materials.MaxwellIsotropic3D import MaxwellIsotropic3D
+
+    elasticNeg = pyre.inventory.facility("elastic_neg", family="material",
+                                         factory=ElasticIsotropic3D)
+    elasticNeg.meta['tip'] = "Elastic material on -x side of the fault."
+    
+    elasticPos = pyre.inventory.facility("elastic_pos", family="material",
+                                         factory=ElasticIsotropic3D)
+    elasticPos.meta['tip'] = "Elastic material on +x side of the fault."
+    
+    viscoelasticNeg = pyre.inventory.facility("viscoelastic_neg",
+                                              family="material",
+                                              factory=MaxwellIsotropic3D)
+    viscoelasticNeg.meta['tip'] = "Viscoelastic material on -x side of the fault."
+    
+    viscoelasticPos = pyre.inventory.facility("viscoelastic_pos",
+                                              family="material",
+                                              factory=MaxwellIsotropic3D)
+    viscoelasticPos.meta['tip'] = "Viscoelastic material on +x side of the fault."
+    
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="mymatbin"):
+    """
+    Constructor.
+    """
+    ObjectBin.__init__(self, name)
+    return
+
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Set attributes from inventory.
+    """
+    ObjectBin._configure(self)
+
+    self.bin = [self.inventory.elasticNeg,
+                self.inventory.elasticPos,
+                self.inventory.viscoelasticNeg,
+                self.inventory.viscoelasticPos]
+    return
+
+  
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def object_bin():
+  """
+  Factory associated with MyMatBin.
+  """
+  return MyMatBin()
+
+
+# End of file 

@@ -1,0 +1,25 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This spatial database specifies the distribution of the peak slip
+// rate for the kinematic fault rupture. We set the peak slip rate to
+// a large value for instantaneous slip.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 1
+  value-names =  slip-rate
+  value-units =  m/s
+  num-locs = 1
+  data-dim = 0 // data is uniform (1 location)
+  space-dim = 3
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 3
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) z coordinate (m)
+// (4) Peak slip rate (m/s)
+0.0  0.0  0.0  1.0e+6
