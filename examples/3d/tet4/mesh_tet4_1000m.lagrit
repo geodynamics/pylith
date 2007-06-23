@@ -1,0 +1,212 @@
+* -*- LaGriT -*-
+*
+* Mesh of a box with a through-going, vertical, strike-slip fault.
+*
+* Block is 6 km x 6 km x 4 km
+* -3 km <= x <= 3 km
+* -3 km <= y <= 3 km
+* -4 km <= z <= 0 km
+* 
+* The domain is constructed with the region command after constructing the
+* boundaries of the domain using the surface command with the plane
+* attribute (construct the 3-D domain from boundary surfaces). The
+* fault plane is also a plane.
+*
+* ----------------------------------------------------------------------
+* PARAMETERS CONTROLLING MESH
+* ----------------------------------------------------------------------
+*
+* Boundaries of domain
+define / domain_xm / -3.0e+3
+define / domain_xp /  3.0e+3
+define / domain_ym / -3.0e+3
+define / domain_yp /  3.0e+3
+define / domain_zm / -4.0e+3
+define / domain_zp /  0.0e+3
+*
+* Mesh size and number of points along x & y
+define / dx / 1000.0
+define / nx / 7
+define / ny / 7
+*
+* ----------------------------------------------------------------------
+* CREATE GEOMETRY
+* ----------------------------------------------------------------------
+*
+* Create a mesh object and name it box
+cmo / create / box /
+*
+* Create boundary surfaces
+surface / surf_xm / reflect / plane / &
+   domain_xm   0.0e+0   0.0e+0 / &
+   domain_xm   0.0e+0  10.0e+3 / &
+   domain_xm  10.0e+3   0.0e+0
+surface / surf_xp / reflect / plane / &
+    domain_xp   0.0e+0   0.0e+0 / &
+    domain_xp  10.0e+3   0.0e+0 / &
+    domain_xp   0.0e+0  10.0e+3
+surface / surf_ym / reflect / plane / &
+     0.0e+0  domain_ym   0.0e+0 / &
+     0.0e+0  domain_ym  10.0e+3 / &
+   -10.0e+3  domain_ym   0.0e+0
+surface / surf_yp / reflect / plane / &
+     0.0e+0   domain_yp   0.0e+0 / &
+   -10.0e+3   domain_yp   0.0e+0 / &
+     0.0e+0   domain_yp  10.0e+3
+surface / surf_zm / reflect / plane / &
+     0.0e+0    0.0e+0  domain_zm / &
+   -10.0e+3    0.0e+0  domain_zm / &
+     0.0e+0   10.0e+3  domain_zm
+surface / surf_zp / reflect / plane / &
+     0.0e+0    0.0e+0    domain_zp / &
+     0.0e+0   10.0e+3    domain_zp / &
+   -10.0e+3    0.0e+0    domain_zp
+*
+* Create fault plane
+surface / surf_fault / intrface / plane / &
+  0.0  0.0  0.0 / &
+  0.0  1.0  0.0 / &
+  0.0  0.0  1.0 /
+* Create material interface
+surface / surf_mantle / intrface / plane / &
+  0.0  0.0  -2.0e+3 / &
+  1.0  0.0  -2.0e+3 / &
+  0.0  1.0  -2.0e+3 /
+
+* ----------------------------------------------------------------------
+* Create regions
+* ----------------------------------------------------------------------
+
+** Elastic on +x side of fault
+region / r_elastic_pos / &
+  le surf_xp and ge surf_fault  &
+  and le surf_yp and le surf_ym  &
+  and le surf_zp and ge surf_mantle /
+
+** Elastic on -x side of the fault
+region / r_elastic_neg / &
+  le surf_xm and lt surf_fault  &
+  and le surf_yp and le surf_ym  &
+  and le surf_zp and ge surf_mantle /
+
+** Viscoelastic on +x side of the fault
+region / r_visco_pos / &
+  le surf_xp and ge surf_fault  &
+  and le surf_yp and le surf_ym  &
+  and lt surf_mantle and le surf_zm /
+
+** Viscoelastic on -x side of the fault
+region / r_visco_neg / &
+  le surf_xm and lt surf_fault  &
+  and le surf_yp and le surf_ym  &
+  and lt surf_mantle and le surf_zm /
+
+* ----------------------------------------------------------------------
+* Create material regions
+* ----------------------------------------------------------------------
+* Material regions do not include internal interfaces (regions do)
+*
+mregion / mr_elastic_pos / &
+  le surf_xp and gt surf_fault  &
+  and le surf_yp and le surf_ym  &
+  and le surf_zp and gt surf_mantle /
+mregion / mr_elastic_neg / &
+  le surf_xm and lt surf_fault  &
+  and le surf_yp and le surf_ym  &
+  and le surf_zp and gt surf_mantle /
+mregion / mr_visco_pos / &
+  le surf_xp and gt surf_fault  &
+  and le surf_yp and le surf_ym  &
+  and lt surf_mantle and le surf_zm /
+mregion / mr_visco_neg / &
+  le surf_xm and lt surf_fault  &
+  and le surf_yp and le surf_ym  &
+  and lt surf_mantle and le surf_zm /
+*
+* ----------------------------------------------------------------------
+* CREATE MESH
+* ----------------------------------------------------------------------
+*
+createpts / xyz / nx,ny,1 / &
+  domain_xm  domain_ym  domain_zp / &
+  domain_xp  domain_yp  domain_zp / &
+  1,1,0 /
+pset / rayend / seq / 0,0,0
+*
+
+loop / foreach / iregion / &
+  r_elastic_pos r_elastic_neg r_visco_pos r_visco_neg &
+  / loop_end / &
+  regnpts / iregion / dx / pset,get,rayend / xyz / &
+    0.0e+3  0.0e+3  domain_zm / &
+    0.0e+3  1.0e+3  domain_zm / &
+    1.0e+3  0.0e+3  domain_zm / &
+    0,0
+cmo/setatt//itp/pset,get,rayend/dud
+pset / rayend / delete
+
+* ----------------------------------------------------------------------
+* Remove duplicate points
+* ----------------------------------------------------------------------
+filter / 1,0,0 / 10.0
+rmpoint / compress
+
+* ----------------------------------------------------------------------
+* Set node type and material
+* ----------------------------------------------------------------------
+setpts
+
+* ----------------------------------------------------------------------
+* Connect the points into a Delaunay tetrahedral mesh
+* ----------------------------------------------------------------------
+connect
+
+* ----------------------------------------------------------------------
+* Set elements to tetrahedra
+* ----------------------------------------------------------------------
+settets / geometry
+resetpts/cell_color
+
+* Remove parent/child hierarchy
+resetpts
+rmpoint / compress
+*
+* ----------------------------------------------------------------------
+* MESH QUALITY
+* ----------------------------------------------------------------------
+*
+quality
+*
+* ----------------------------------------------------------------------
+* IDENTIFY GROUPS
+* ----------------------------------------------------------------------
+*
+* Identify nodes on fault surface
+pset / fault / surface / surf_fault /
+*
+* Identify nodes on boundaries
+pset / boundary_xm / surface / surf_xm /
+pset / boundary_xp / surface / surf_xp /
+pset / boundary_ym / surface / surf_ym /
+pset / boundary_yp / surface / surf_yp /
+pset / boundary_zm / surface / surf_zm /
+pset / boundary_zp / surface / surf_zp /
+*
+* ----------------------------------------------------------------------
+* WRITE MESH
+* ----------------------------------------------------------------------
+*
+* Export mesh and psets to files.
+cmo / setatt / box / ipolydat / no
+dump / gmv / tet4_1000m_binary.gmv / / binary
+dump / gmv / tet4_1000m_ascii.gmv / / ascii
+
+pset / -all- / write / tet4_1000m_ascii.pset / ascii
+pset / -all- / write / tet4_1000m_binary.pset / binary
+
+*
+* Terminate processing
+finish
+
+* ======================================================================
+* End of file
