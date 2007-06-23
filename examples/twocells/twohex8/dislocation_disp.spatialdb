@@ -1,0 +1,44 @@
+#SPATIAL.ascii 1
+
+// This database is used to specify the boundary conditions for the
+// dislocation (kinematic fault) example.
+
+// This follows the format for a Simple DB (the only type presently available).
+SimpleDB {
+
+  // There are two values specified in the database, corresponding to the
+  // constraint values for the x (dof-0) and y (dof-1) degrees of freedom.
+  num-values = 2
+  value-names =  dof-0 dof-1
+
+  // The constraint values (displacements) have units of meters.
+  value-units =  m  m
+
+  // The values are specified at two spatial locations.
+  num-locs = 2
+
+  // The dimension of the spatial distribution is 1, since the data
+  // is being specified at points.
+  data-dim = 1
+
+  // The spatial dimension of the database is 2.
+  space-dim = 2
+
+  // We are specifying the data in a Cartesian coordinate system.
+  cs-data = cartesian {
+
+    // Our units are already in meters, so we can just multiply by one.
+    to-meters = 1.0
+
+    // We are using a 2D Cartesian coordinate system.
+    space-dim = 2
+  }
+}
+
+// This is where the data is specified.
+// As described in dislocation.cfg, this database will be used to specify
+// data along an edge (pylith.bc.BCFourSides).
+// The entries are:
+// X-coord, Y-coord, dof-0 (x constraint), dof-1 (y constraint).
+-2.0  0.0     0.0  0.0
+ 2.0  0.0     0.0  0.0

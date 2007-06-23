@@ -1,0 +1,127 @@
+// Global mesh object.
+// This defines a brick-shaped mesh composed of two cubic elements.
+mesh = {
+
+  // This is a 3D mesh.is is a 3D mesh.
+  dimension = 3
+
+  // We are using zero-indexing (default) rather than one-indexing.
+  use-index-zero = true
+
+  // Describe the vertices (nodes) defining the mesh.
+  vertices = {
+
+    // The vertices are defined in a 3D coordinate system.
+    dimension = 3
+
+    // There are 12 vertices.
+    count = 12
+
+    // List the coordinates as:
+    // Vertex number (starting from zero), x-coord, y-coord, z-coord
+    // Use coordinate units that are consistent with the other units used.
+    coordinates = {
+             0     -1.0 -0.5 -0.5
+             1     -1.0  0.5 -0.5
+             2      0.0 -0.5 -0.5
+             3      0.0  0.5 -0.5
+             4      1.0 -0.5 -0.5
+             5      1.0  0.5 -0.5
+             6     -1.0 -0.5  0.5
+             7     -1.0  0.5  0.5
+             8      0.0 -0.5  0.5
+             9      0.0  0.5  0.5
+            10      1.0 -0.5  0.5
+            11      1.0  0.5  0.5
+    }
+  }
+
+  // Describe the cells (elements) composing the mesh.
+  cells = {
+
+    // There are 2 cells.
+    count = 2
+
+    // These are trilinear hexahedral cells, so there are 8 corners per cell.
+    num-corners = 8
+
+    // List the vertices composing each cell (see manual for ordering).
+    // List the information as:
+    // Cell number (starting from zero), vertex 0, vertex 1, etc.
+    simplices = {
+             0       0  2  3  1  6  8  9  7
+             1       2  4  5  3  8 10 11  9
+    }
+
+    // List the material ID's associated with each cell.
+    // Different ID's may be used to specify a different material type, or
+    // to use a different spatial database for each material ID.
+    // In this example, cells 0 and 1 both are associated with material ID 1.
+    material-ids = {
+             0   1
+             1   1
+    }
+  }
+
+  // Here we list different groups (cells or vertices) that we want to associate
+  // with a particular name (ID).
+
+  // This group of vertices may be used to define a fault.
+  // There are 4 vertices corresponding to indices 2, 3, 8, and 9.
+  group = {
+    name = fault
+    type = vertices
+    count = 4
+    indices = {
+      2
+      3
+      8
+      9
+    }
+  }
+
+
+  // This group of vertices may be used to specify boundary conditions.
+  // There are 4 vertices corresponding to indices 0, 1, 6, and 7.
+  group = {
+    name = x_neg
+    type = vertices
+    count = 4
+    indices = {
+      0  1  6  7
+    }
+  }
+
+  // This group of vertices may be used to specify boundary conditions.
+  // There are 4 vertices corresponding to indices 4, 5, 10, and 11.
+  group = {
+    name = x_pos
+    type = vertices
+    count = 4
+    indices = {
+      4  5  10  11
+    }
+  }
+
+  // This group of vertices may be used to specify boundary conditions.
+  // There are 6 vertices corresponding to indices 0, 2, 4, 6, 8, and 10.
+  group = {
+    name = y_neg
+    type = vertices
+    count = 6
+    indices = {
+      0  2  4  6  8 10
+    }
+  }
+
+  // This group of vertices may be used to specify boundary conditions.
+  // There are 6 vertices corresponding to indices 0, 1, 2, 3, 4, and 5.
+  group = {
+    name = z_neg
+    type = vertices
+    count = 6
+    indices = {
+      0  1  2  3  4  5
+    }
+  }
+}
