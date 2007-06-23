@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -66,23 +66,27 @@ Before you begin any of the tutorials, you will need to install PyLith following
 \end_inset
 
 .
- In order to work through a full tutorial, in addition to 
-\family typewriter
-\color black
-PyLith
-\family default
+ 
 \color none
- you will need 
-\begin_inset LatexCommand \htmlurl[NETGEN]{www.hpfem.jku.at/netgen/}
+For more complex tutorials, you will also need either the 
+\begin_inset LatexCommand \htmlurl[CUBIT]{http://cubit.sandia.gov}
 
 \end_inset
 
- to generate the mesh and 
+ or 
+\begin_inset LatexCommand \htmlurl[LaGriT]{http://meshing.lanl.gov}
+
+\end_inset
+
+ mesh generation packages to create your own mesh.
+ If you do not wish to create your own mesh at this time, the meshes are
+ also provided as part of the tutorial.
+ The 
 \begin_inset LatexCommand \htmlurl[ParaView]{www.paraview.org}
 
 \end_inset
 
- to view simulation results.
+ visualization package may be used to view simulation results.
  You may use other packages, but some adaption from what is described here
  will be necessary.
  Alternatively, you can complete a subset of the tutorial using files provided
@@ -91,62 +95,32 @@ PyLith
 \end_layout
 
 \begin_layout Standard
-The files needed to work through the tutorials have been collected into
- a single tarball.
- Each tutorial contains instructions for downloading and unpacking the tutorial
- tarball.
-\end_layout
-
-\begin_layout Subsection
-Tutor
-\end_layout
-
-\begin_layout Standard
-Each tutorial includes a simple Python script, 
+The files needed to work through the tutorials are found in the 
 \family typewriter
-\color black
-tutor.py
+examples
 \family default
-\color none
-, to help with miscellaneous tasks, such as copying provided files into
- a working directory.
- This script can (1) check to make sure the files necessary for a given
- step in the tutorial exist, (2) retrieve any missing files from the tutorial
- archive directory that are needed for a given step, or (3) prepare the
- work area for a given step by removing old files that would otherwise be
- overwritten.
- You can run 
+ directory in the top-level PyLith directory.
+ There are four examples in 
 \family typewriter
-\color black
-tutor.py
+examples/twocells
 \family default
-\color none
- with the 
+, each consisting of just two cells (elements).
+ These very simple examples make use of PyLith Mesh ASCII format to describe
+ the mesh.
+ This format is useful for understanding the basics of how PyLith works,
+ since it is easy to create these files by hand.
+ More complex problems, such as those found in 
 \family typewriter
-\color black
--h
+examples/3d
 \family default
-\color none
- option for more information.
- We will use this script at the beginning of each step of the tutorials
- to retrieve files as necessary from the tutorial archive directory.
-\end_layout
-
-\begin_layout Quote
-
-\series bold
-TIP:
-\series default
- When retrieving files from the archive directory, 
+, will require the use of a mesh generation package to create the meshes.
+ All of the files used in the example problems are heavily documented, which
+ should help users to understand the different file formats.
+ This tutorial begins with the simplest problem (
 \family typewriter
-\color black
-tutor.py
+examples/twocells/twotri3
 \family default
-\color none
- will not overwrite files that already exist in the workarea directory.
- This means that if you mangle files in the working area, you should remove
- them and let the tutor retrieve clean copies.
- 
+), and continues to more complex examples.
 \end_layout
 
 \begin_layout Standard
