@@ -1,4 +1,11 @@
 ======================================================================
+CURRENT ISSUES
+======================================================================
+
+  0. Need check to make sure quadrature scheme is compatible with
+  cells in mesh.
+
+======================================================================
 KNOWN DEFICIENCIES
 ======================================================================
 
@@ -7,11 +14,9 @@ KNOWN DEFICIENCIES
   multiplier that is "free". Not sure if this is okay, when the fault
   is at an angle to the boundary.
 
-======================================================================
-CURRENT ISSUES
-======================================================================
-
-  1. Debug mesh distribution. [MATT]
+    Might be able to fix this problem by examining constraints
+    relative to orientation and if orientation coincides with
+    preexisting constraint, then constrain Lagrange multiplier DOF.
 
 ----------------------------------------------------------------------
 List of missing features (EqSim/PyLith 0.8) and new features.
@@ -45,7 +50,9 @@ MAIN PRIORITIES (Brad)
 
 Create 6x6x4 meshes for examples.
   CUBIT
+    Add GUI instructions in journal files.
   LaGriT
+    Figure out why fault orientations are not consistent for LaGriT mesh.
 
 Create meshes for benchmarks
 
