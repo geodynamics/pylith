@@ -1,0 +1,44 @@
+#SPATIAL.ascii 1
+
+// This database is used to specify the boundary conditions for the shear
+// displacement example.
+
+// This follows the format for a Simple DB (the only type presently available).
+SimpleDB {
+
+  // There are 3 values specified in the database, corresponding to the
+  // constraint values for the x, y, and z degrees of freedom.
+  num-values = 3
+  value-names =  dof-0 dof-1 dof-2
+
+  // The constraint values (displacements) have units of meters.
+  value-units =  m  m  m
+
+  // The values are specified at 2 spatial locations.
+  num-locs = 2
+
+  // The dimension of the spatial distribution is 1, since data is being
+  // specified at points.
+  data-dim = 1
+
+  // The spatial dimension of the database is 3.
+  space-dim = 3
+
+  // We are specifying the data in a Cartesian coordinate system.
+  cs-data = cartesian {
+
+    // Our units are already in meters, so we can just multiply by one.
+    to-meters = 1.0
+
+    // We are using a 3D Cartesian coordinate system.
+    space-dim = 3
+  }
+}
+
+// This is where the data is specified.
+// As described in axialdisp.cfg, this database will be used to specify
+// data along edges (pylith.bc.BCSixSides).
+// The entries are:
+// X-coord, Y-coord, Z-coord, dof-0, dof-1, dof-2.
+-1.0  0.0  0.0   0.0 - 0.01  0.0
+ 1.0  0.0  0.0   0.0   0.01  0.0
