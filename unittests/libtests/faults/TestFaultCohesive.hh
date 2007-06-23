@@ -46,6 +46,7 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyTri3b );
   CPPUNIT_TEST( testAdjustTopologyTri3c );
   CPPUNIT_TEST( testAdjustTopologyTri3d );
+  CPPUNIT_TEST( testAdjustTopologyTri3e );
   CPPUNIT_TEST( testAdjustTopologyQuad4 );
   CPPUNIT_TEST( testAdjustTopologyQuad4b );
   CPPUNIT_TEST( testAdjustTopologyQuad4c );
@@ -59,12 +60,15 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyTet4f );
   CPPUNIT_TEST( testAdjustTopologyTet4g );
   CPPUNIT_TEST( testAdjustTopologyTet4h );
+  CPPUNIT_TEST( testAdjustTopologyTet4i );
   CPPUNIT_TEST( testAdjustTopologyHex8 );
   CPPUNIT_TEST( testAdjustTopologyHex8b );
   CPPUNIT_TEST( testAdjustTopologyHex8c );
   CPPUNIT_TEST( testAdjustTopologyHex8d );
   CPPUNIT_TEST( testAdjustTopologyHex8e );
   CPPUNIT_TEST( testAdjustTopologyHex8f );
+  CPPUNIT_TEST( testAdjustTopologyHex8g );
+  CPPUNIT_TEST( testAdjustTopologyHex8h );
 
   CPPUNIT_TEST( testAdjustTopologyLine2Lagrange );
   CPPUNIT_TEST( testAdjustTopologyTri3Lagrange );
@@ -95,6 +99,9 @@ public :
 
   /// Test adjustTopology() with 2-D triangular element (2 cohesive cells).
   void testAdjustTopologyTri3d(void);
+
+  /// Test adjustTopology() with 2-D triangular element (2 cohesive cells b).
+  void testAdjustTopologyTri3e(void);
 
   /// Test adjustTopology() with 2-D quadrilateral element.
   void testAdjustTopologyQuad4(void);
@@ -135,6 +142,9 @@ public :
   /// Test adjustTopology() with 3-D tetrahedral element (face h).
   void testAdjustTopologyTet4h(void);
 
+  /// Test adjustTopology() with 3-D tetrahedral element (2 cells b).
+  void testAdjustTopologyTet4i(void);
+
   /// Test adjustTopology() with 3-D hexahedral element.
   void testAdjustTopologyHex8(void);
 
@@ -152,6 +162,12 @@ public :
 
   /// Test adjustTopology() with 3-D hexahedral element (face f).
   void testAdjustTopologyHex8f(void);
+
+  /// Test adjustTopology() with 3-D hexahedral element (2 cells easy).
+  void testAdjustTopologyHex8g(void);
+
+  /// Test adjustTopology() with 3-D hexahedral element (2 cells difficult).
+  void testAdjustTopologyHex8h(void);
 
   /// Test adjustTopology() with 1-D line element for Lagrange
   /// multipliers.
