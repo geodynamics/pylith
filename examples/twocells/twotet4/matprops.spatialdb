@@ -41,6 +41,6 @@ SimpleDB {
 // The values given here will give a shear modulus and Lame's constant both
 // equal to 30 GPa (Poisson's ratio = 0.25).
 // The entries are:
-// X-coord, Y-coord, density, Vs, Vp viscosity.
+// X-coord, Y-coord, Z-coord, density, Vs, Vp viscosity.
 
-0.0  0.0   2700.0  3333.333333333333  5773.502691896258  1.0e18
+0.0  0.0  0.0   2700.0  3333.333333333333  5773.502691896258  1.0e18
