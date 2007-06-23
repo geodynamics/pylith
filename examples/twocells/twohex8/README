@@ -1,0 +1,53 @@
+This directory contains a set of 3 3D viscoelastic example problems.
+All problems share the same mesh and material properties, with the
+only differences being in the boundary conditions.  The mesh consists
+of two hexahedral elements.  All of these examples are run for 10 time
+steps (0.1 year steps), plus the elastic solution.  The information
+describing the examples may be divided into four groups:
+
+1.  Global mesh information:  described in file twohex4.mesh
+
+2.  Parameter settings common to all examples:  described in file
+pylithapp.cfg.
+
+3.  Material properties common to all examples:  described in the
+database file matprops.cfg.
+
+4.  Example-specific parameters and boundary condition specifications.
+
+The examples and associated files are:
+
+1.  axialdisp:  Axial displacements are applied to the left and right
+sides of the mesh.
+  a.  axialdisp.cfg:  Parameter settings for this problem.
+  b.  axialdisp.spatialdb:  Boundary condition database for this
+      problem.
+
+2.  sheardisp:  Shear displacements are applied to the left and right
+sides of the mesh.
+  a.  sheardisp.cfg:  Parameter settings for this problem.
+  b.  sheardisp.spatialdb:  Boundary condition database for this
+      problem.
+
+3.  dislocation:  Fault displacements are applied between the two
+elements, while the left and right corners are fixed in x, y, and z.
+  a.  dislocation.cfg:  Parameter settings for this problem.
+  b.  dislocation.spatialdb:  Boundary condition database for this
+      problem.
+  c.  dislocation_disp.spatialdb:  Fault slip database for this problem.
+  d.  dislocation_sliprate.spatialdb:  Fault slip rate database for this
+      problem.
+  e.  dislocation_sliptime.spatialdb:  Fault slip time database for this
+      problem.
+
+All of the files are documented.  The 'pylithapp.cfg' file is read
+automatically when running PyLith.  To add to or override these
+settings, you may place an additional .cfg file on the command line.
+To run the examples, you can type:
+pylith axialdisp.cfg
+pylith sheardisp.cfg
+pylith dislocation.cfg
+
+Each of these commands will produce a set of VTK files (one for each
+time step), which may be viewed with visualization packages such as
+ParaView or Mayavi.
