@@ -102,26 +102,22 @@ pylithapp.cfg
  The settings contained in pylithapp.cfg for this problem consist of:
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.journal.info Settings that control the verbosity of the output for
  the different components.
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.mesh_generator Settings that control mesh importing, such as the
  importer type, the filename, and the spatial dimension of the mesh.
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.timedependent Settings that control the problem, such as the total
  time, time step size, and spatial dimension.
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.timedependent.materials Settings that control the material type,
  specify which material ID's are to be associated with a particular material
  type, and give the name of the spatial database containing material parameters
@@ -129,8 +125,7 @@ pylithapp.timedependent.materials Settings that control the material type,
  The quadrature information is also given.
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.petsc PETSc settings to use for the problem, such as the preconditioner
  type.
 \end_layout
@@ -146,25 +141,22 @@ pylithapp.timedependent.materials
 pylithapp.cfg
 \family default
 .
- This information is contained in 
+ This information is contained in the file
+\family typewriter
+ matprops.spatialdb
+\family default
+.
+ Although the material model is specific in 
+\family typewriter
+pylithapp.cfg
+\family default
+, the parameters for the material model are given in 
 \family typewriter
 matprops.spatialdb
 \family default
 .
- Although the actual material type is given in 
-\family typewriter
-pylithapp.cfg
-\family default
-, the values to be used are given in 
-\family typewriter
-matprops.spatialdb
-\family default
-, along with information describing the dimensionality of the database,
- the number of points at which values are specified, etc.
  For this example, values describing elastic plane strain material properties
- are given at a single point.
- For a data dimension of zero, this means that uniform properties will be
- assigned for the entire mesh.
+ are given at a single point, resulting in uniform material properties.
 \end_layout
 
 \begin_layout Subsection
@@ -186,8 +178,7 @@ axialdisp.cfg
  These settings are:
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.timedependent We specify an implicit formulation for the problem
  and specify a container for boundary conditions (
 \family typewriter
@@ -196,8 +187,7 @@ pylith.bc.BCSingle
 ) that allows them to be given at a point (or set of points).
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.timedependent.bc.bc We define which degrees of freedom are being
  constrained (x and y), we give the label (defined in 
 \family typewriter
@@ -212,8 +202,7 @@ axialdisp.spatialdb
 ).
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.problem.formulation.output.output We give the base filename for VTK
  output (
 \family typewriter
@@ -301,6 +290,8 @@ Color contours and vectors of displacement for the axial displacement example.
 \begin_inset Graphics
 	filename figs/axialdisp.jpg
 	lyxscale 80
+	scale 75
+	keepAspectRatio
 
 \end_inset
 
@@ -331,8 +322,7 @@ sheardisp.cfg
  These settings are:
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.timedependent We specify an implicit formulation for the problem
  and specify a container for boundary conditions (
 \family typewriter
@@ -341,8 +331,7 @@ pylith.bc.BCFourSides
 ) that allows them to be given on four sides of a rectangular domain.
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.timedependent.bc.x_neg We specify the boundary conditions for the
  left side of the mesh, defining which degrees of freedom are being constrained
  (x and y), giving the label (
@@ -362,8 +351,7 @@ sheardisp.spatialdb
 ).
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.timedependent.bc.x_pos We specify the boundary conditions for the
  left side of the mesh, defining which degrees of freedom are being constrained
  (y only), giving the label (
@@ -383,8 +371,7 @@ sheardisp.spatialdb
 ).
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.problem.formulation.output.output We give the base filename for VTK
  output (
 \family typewriter
@@ -503,14 +490,12 @@ dislocation.cfg
  These settings are:
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.journal.info We turn on journaling for 1D quadrature (used for 2D
  faults) and for cohesive kinematic faults.
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.timedependent We specify an implicit formulation for the problem,
  specify a container for boundary conditions (
 \family typewriter
@@ -524,8 +509,7 @@ pylith.faults.SingleFault
 ).
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.timedependent.bc.bc We define which degrees of freedom are being
  constrained (x and y), we give the label (defined in 
 \family typewriter
@@ -540,8 +524,7 @@ dislocation_disp.spatialdb
 ).
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.timedependent.interfaces We give the type of fault being used (
 \family typewriter
 pylith.faults.FaultCohesiveKin
@@ -555,8 +538,7 @@ twotri3.mesh
  fault slip, fault slip rate, and fault slip time.
 \end_layout
 
-\begin_layout List
-\labelwidthstring 00.00.0000
+\begin_layout Description
 pylithapp.problem.formulation.output.output We give the base filename for VTK
  output (
 \family typewriter
