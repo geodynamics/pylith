@@ -1,10 +1,10 @@
-This directory contains a set of 2 elastic plane strain example
+This directory contains a set of 2 3D elastic example
 problems. All problems share the same mesh and material properties,
 with the only differences being in the boundary conditions.  The mesh
 consists of two tetrahedral elements.  The information describing the
 examples may be divided into four groups:
 
-1.  Global mesh information:  described in file twoquad4.mesh
+1.  Global mesh information:  described in file twotet4.mesh
 
 2.  Parameter settings common to all examples:  described in file
 pylithapp.cfg.
@@ -40,6 +40,5 @@ To run the examples, you can type:
 pylith axialdisp.cfg
 pylith dislocation.cfg
 
-Each of these commands will produce a corresponding VTK file, which may be viewed with visualization packages such as ParaView or Mayavi.  The
-jpeg files in this directory show results for the different examples
-visualized using ParaView.
+Each of these commands will produce a corresponding VTK file, which may
+be viewed with visualization packages such as ParaView or Mayavi.

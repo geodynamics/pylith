@@ -6,14 +6,14 @@
 // This follows the format for a Simple DB (the only type presently available).
 SimpleDB {
 
-  // There are 4 values specified in the database, corresponding to density,
-  // S-velocity, P-velocity, and viscosity (values for shear modulus and Lame's
+  // There are 3 values specified in the database, corresponding to density,
+  // S-velocity, and P-velocity (values for shear modulus and Lame's
   // constant are computed from the density and seismic velocities).
-  num-values = 4
-  value-names =  density vs vp viscosity
+  num-values = 3
+  value-names =  density vs vp
 
   // These are the units used to specify density, vs, and vp.
-  value-units =  kg/m^3  m/s  m/s  Pa*s
+  value-units =  kg/m^3  m/s  m/s
 
   // Values are only specified at a single point since they are constant
   // throughout the mesh.
@@ -41,6 +41,6 @@ SimpleDB {
 // The values given here will give a shear modulus and Lame's constant both
 // equal to 30 GPa (Poisson's ratio = 0.25).
 // The entries are:
-// X-coord, Y-coord, Z-coord, density, Vs, Vp viscosity.
+// X-coord, Y-coord, Z-coord, density, Vs, Vp.
 
-0.0  0.0  0.0   2700.0  3333.333333333333  5773.502691896258  1.0e18
+0.0  0.0  0.0   2700.0  3333.333333333333  5773.502691896258
