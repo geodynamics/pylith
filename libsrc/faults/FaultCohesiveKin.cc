@@ -240,7 +240,8 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
     const real_section_type::value_type* vertexOrient = 
       _orientation->restrictPoint(*vertConstraintBegin);
-    assert(9 == _orientation->getFiberDimension(*vertConstraintBegin));
+    if (vertConstraintBegin != vertConstraintEnd)
+      assert(9 == _orientation->getFiberDimension(*vertConstraintBegin));
     double_array vertNormalDir(&vertexOrient[6], 3);
     const double dot = 
       normalDir[0]*vertNormalDir[0] +
