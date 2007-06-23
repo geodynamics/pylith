@@ -1,6 +1,6 @@
 // Global mesh object.
 // This defines a rectangular mesh composed of two square
-// elements with unit edge lengths.
+// elements with edge lengths of 2.0.
 mesh = {
 
   // This is a two-dimensional mesh.
