@@ -19,8 +19,8 @@ SimpleDB {
   // is specified for all points in the set.
   data-dim = 0
 
-  // The spatial dimension of the database is 2.
-  space-dim = 2
+  // The spatial dimension of the database is 3.
+  space-dim = 3
 
   // We are specifying the data in a Cartesian coordinate system.
   cs-data = cartesian {
@@ -28,8 +28,8 @@ SimpleDB {
     // Our units are already in meters, so we can just multiply by one.
     to-meters = 1.0
 
-    // We are using a 2D Cartesian coordinate system.
-    space-dim = 2
+    // We are using a 3D Cartesian coordinate system.
+    space-dim = 3
   }
 }
 
@@ -37,5 +37,5 @@ SimpleDB {
 // As described in dislocation.cfg, this database will be used to specify
 // uniform data for a fault (pylith.faults.SingleFault).
 // The entries are:
-// X-Coord, Y-Coord, slip time
-0.0  0.0   -1.0
+// X-Coord, Y-Coord, Z-Coord, slip time
+0.0  0.0  0.0   -1.0
