@@ -11,6 +11,9 @@
 #
 
 ## Container of four materials.
+##
+## See examples/templates/materials.odb for a template file with a
+## detailed explanation.
 
 # Parent class
 from pylith.utils.ObjectBin import ObjectBin
