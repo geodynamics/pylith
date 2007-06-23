@@ -59,8 +59,332 @@ PyLith Mesh ASCII files allow quick specification of the mesh information
  small, simple meshes.
 \end_layout
 
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+[ADD FIGURE OF MESH HERE]
+\end_layout
+
+\begin_layout Caption
+Diagram of mesh specified in Figure 
+\begin_inset LatexCommand \ref{fig:meshioascii:format}
+
+\end_inset
+
+.
+\begin_inset LatexCommand \label{fig:meshioascii:diagram}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout LyX-Code
-SAMPLE MESH FILE GOES HERE
+// This mesh file defines a finite-element mesh composed of two
+\end_layout
+
+\begin_layout LyX-Code
+// square of edge length 2.
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+// Comments can appear almost anywhere in these files and are
+\end_layout
+
+\begin_layout LyX-Code
+// delimited with two slashes (//) just like in C++.
+ All text and 
+\end_layout
+
+\begin_layout LyX-Code
+// whitespace after the delimiter on a given line is ignored.
+\end_layout
+
+\begin_layout LyX-Code
+mesh = { // begin specification of the mesh
+\end_layout
+
+\begin_layout LyX-Code
+  dimension = 2 // spatial dimension of the mesh
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+  // Begin vertex and cell labels with 0.
+ This is the default so 
+\end_layout
+
+\begin_layout LyX-Code
+  // this next line is optional
+\end_layout
+
+\begin_layout LyX-Code
+  use-index-zero = true
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+  vertices = { // vertices or nodes of the finite-element cells
+\end_layout
+
+\begin_layout LyX-Code
+    dimension = 2 // spatial dimension of the vertex coordinates
+\end_layout
+
+\begin_layout LyX-Code
+    count = 6 // number of vertices in the mesh
+\end_layout
+
+\begin_layout LyX-Code
+    coordinates = { // list of vertex index and coordinates
+\end_layout
+
+\begin_layout LyX-Code
+      // the coordinates must coincide with the coordinate 
+\end_layout
+
+\begin_layout LyX-Code
+      // system specified in the Mesh object
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+      // exactly one vertex must appear on each line
+\end_layout
+
+\begin_layout LyX-Code
+      // (excluding whitespace)
+\end_layout
+
+\begin_layout LyX-Code
+      0    -2.0  -1.0
+\end_layout
+
+\begin_layout LyX-Code
+      1    -2.0  +1.0
+\end_layout
+
+\begin_layout LyX-Code
+      2     0.0  -1.0
+\end_layout
+
+\begin_layout LyX-Code
+      3     0.0  +1.0
+\end_layout
+
+\begin_layout LyX-Code
+      4    +2.0  -1.0
+\end_layout
+
+\begin_layout LyX-Code
+      5    +2.0  +1.0
+\end_layout
+
+\begin_layout LyX-Code
+    } // end of coordinates list
+\end_layout
+
+\begin_layout LyX-Code
+  } // end of vertices
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  cells = { // finite-element cells
+\end_layout
+
+\begin_layout LyX-Code
+    count = 2 // number of cells in the mesh
+\end_layout
+
+\begin_layout LyX-Code
+    num-corners = 4 // number of vertices defining the cell
+\end_layout
+
+\begin_layout LyX-Code
+    simplices = { // list of vertices in each cell
+\end_layout
+
+\begin_layout LyX-Code
+      // see Section XX for diagrams giving the order for each 
+\end_layout
+
+\begin_layout LyX-Code
+      // type of cell supported in PyLith
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+      // index of cell precedes the list of vertices for the cell 
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+      // exactly one cell must appear on each line
+\end_layout
+
+\begin_layout LyX-Code
+      // (excluding whitespace)
+\end_layout
+
+\begin_layout LyX-Code
+      0    0  2  3  1
+\end_layout
+
+\begin_layout LyX-Code
+      1    4  5  3  2
+\end_layout
+
+\begin_layout LyX-Code
+    } // end of simplices list
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+    material-ids = { // associated each cell with a material model
+\end_layout
+
+\begin_layout LyX-Code
+      // the material id is specified using the index of the cell 
+\end_layout
+
+\begin_layout LyX-Code
+      // and then the corresponding material id
+\end_layout
+
+\begin_layout LyX-Code
+      0   0 // cell 0 has a material id of 0
+\end_layout
+
+\begin_layout LyX-Code
+      1   2 // cell 1 has a material id of 2
+\end_layout
+
+\begin_layout LyX-Code
+    } // end of material-ids list
+\end_layout
+
+\begin_layout LyX-Code
+  } // end of cells
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // This next section lists groups of vertices that can be used
+\end_layout
+
+\begin_layout LyX-Code
+  // in applying boundary conditions to portions of the domain
+\end_layout
+
+\begin_layout LyX-Code
+  group = { // start of a group
+\end_layout
+
+\begin_layout LyX-Code
+    // the name can have whitespace, so no comments are allowed
+\end_layout
+
+\begin_layout LyX-Code
+    // after the name
+\end_layout
+
+\begin_layout LyX-Code
+    name = face +y
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+    // Either groups of vertices or groups of cells can be     
+\end_layout
+
+\begin_layout LyX-Code
+    // specified, but currently PyLith only makes use of groups 
+\end_layout
+
+\begin_layout LyX-Code
+    // of vertices
+\end_layout
+
+\begin_layout LyX-Code
+    type = vertices // 'vertices' or 'cells'
+\end_layout
+
+\begin_layout LyX-Code
+    count = 2 // number of vertices in the group
+\end_layout
+
+\begin_layout LyX-Code
+    indices = { // list of vertex indices in the group
+\end_layout
+
+\begin_layout LyX-Code
+      // multiple vertices may appear on a line
+\end_layout
+
+\begin_layout LyX-Code
+      0  4 // this group contains vertices 0 and 4
+\end_layout
+
+\begin_layout LyX-Code
+    } // end of list of vertices
+\end_layout
+
+\begin_layout LyX-Code
+  } // end of group
+\end_layout
+
+\begin_layout LyX-Code
+  // additional groups can be listed here
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Standard
@@ -76,6 +400,11 @@ Format of
 PyLith
 \family default
  mesh ASCII files.
+\begin_inset LatexCommand \label{fig:meshioascii:format}
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -88,7 +417,7 @@ PyLith
 
 \end_inset
 
-Spatialdata Files
+Spatial Database Files
 \end_layout
 
 \begin_layout Standard
@@ -97,10 +426,266 @@ Spatialdata files provide specification of a field over some set of points.
  Spatialdata files contain a header describing the set of points and then
  the data with each line listing the coordinates of a point followed by
  the values of the fields for that point.
+ Although multiple values can be specified at each point with more than
+ one value included in a search query, the interpolation of each value will
+ be done indepedently.
+ Time dependent variations of a field are not supported in these files.
+ Alternative implementations of spatial databases using the same application
+ programming interface (API) can provide other representations of spatial
+ variations of parameters for material properties (for example, the USGS
+ Bay Area Velocity Model), boundary conditions, and earthquake source parameters.
+\end_layout
+
+\begin_layout Standard
+Spatial database files can specifiy spatial variations over zero, one, two,
+ and three dimensions.
+ Zero dimensional variations correspond to uniform values.
+ One-dimensional spatial variations correspond to linear variations, which
+ need not coincide with coordinate axes.
+ Likewise, two-dimensional spatial variations correspond to values specifies
+ on a planar surface (which need not coincide with the coordinate axes)
+ and three-dimensional spatial variations correspond to variations over
+ a volume.
+ In one, two, and three dimensions, queries can use a 
+\begin_inset Quotes eld
+\end_inset
+
+nearest value
+\begin_inset Quotes erd
+\end_inset
+
+ search or linear interpolation.
+\end_layout
+
+\begin_layout Standard
+The spatial database files need not provide the data using the same coordinate
+ system as the mesh coordinate system, provided the two coordinate systems
+ are compatible.
+ Examples of compatible coordinate systems include geographic coordinates
+ (longitude/latitude/elevation), and projected coordiates (e.g., coordinates
+ in a transverse Mercator projection).
+ Spatial database queries use the 
+\begin_inset LatexCommand \htmlurl[Proj.4 Cartographic Projections library]{http://proj.maptools.org}
+
+\end_inset
+
+ to convert between coordinate systems, so a large number of geographic
+ projections are available with support for converting between NAD27 and
+ WGS84 horizontal datums as well as several other frequently used datums.
+ Because the interpolation is done in the coordinate system of the spatial
+ database, geographic coordinates should only be used for very simple datasets,
+ or undesirable results will occur.
+ This is especially true when the spatial database coordinate system combines
+ latitude, longitude, and elevation in meters (longitude and latitude in
+ degrees are often much smaller than elevations in meters leading to distorted
+ 
+\begin_inset Quotes eld
+\end_inset
+
+distance
+\begin_inset Quotes erd
+\end_inset
+
+ between locations and interpolation).
 \end_layout
 
 \begin_layout LyX-Code
-SAMPLE DATA FILE GOES HERE
+// This spatial database specifies the distribution of slip on the
+\end_layout
+
+\begin_layout LyX-Code
+// fault surface.
+ In this case we prescribe a piecewise linear, 
+\end_layout
+
+\begin_layout LyX-Code
+// depth dependent distribution of slip.
+ The slip is 2.0 m 
+\end_layout
+
+\begin_layout LyX-Code
+// right-lateral with 0.25 m of reverse slip at the surface with // a linear
+ taper from 2.0 m to 0.0 m from -2 km to -4 km.
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// Comments can appear almost anywhere in these files and are
+\end_layout
+
+\begin_layout LyX-Code
+// delimited with two slashes (//) just like in C++.
+ All text and 
+\end_layout
+
+\begin_layout LyX-Code
+// whitespace after the delimiter on a given line is ignored.
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// The next line is the magic header for spatial database files 
+\end_layout
+
+\begin_layout LyX-Code
+// in ASCII format.
+\end_layout
+
+\begin_layout LyX-Code
+#SPATIAL.ascii 1
+\end_layout
+
+\begin_layout LyX-Code
+SimpleDB { // start specifying the database parameters
+\end_layout
+
+\begin_layout LyX-Code
+  num-values = 3 // number of values in the databasae
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Specify the names and the order of the values as they appear 
+\end_layout
+
+\begin_layout LyX-Code
+  // in the data.
+ The names of the values must correspond to the 
+\end_layout
+
+\begin_layout LyX-Code
+  // names PyLith requests in querying the database.
+\end_layout
+
+\begin_layout LyX-Code
+  value-names =  left-lateral-slip  reverse-slip  fault-opening
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Specify the units of the values.
+ Currently, these are read 
+\end_layout
+
+\begin_layout LyX-Code
+  // and stored but not parsed for meaning.
+ Unit conversions will   // likely be implemented in a future PyLith release.
+\end_layout
+
+\begin_layout LyX-Code
+  value-units =  m  m  m
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+  num-locs = 3 // Number of locations where values are given
+\end_layout
+
+\begin_layout LyX-Code
+  data-dim = 1 // Locations of data points form a line
+\end_layout
+
+\begin_layout LyX-Code
+  space-dim = 3 // Spatial dimension in which data resides
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Specify the coordinate system associated with the 
+\end_layout
+
+\begin_layout LyX-Code
+  // coordinates of the locations where data is given
+\end_layout
+
+\begin_layout LyX-Code
+  cs-data = cartesian { // Use a Cartesian coordinate system
+\end_layout
+
+\begin_layout LyX-Code
+    to-meters = 1.0e+3 // Coordinates are in km
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+    // Specify the spatial dimension of the coordinate system
+\end_layout
+
+\begin_layout LyX-Code
+    // This value must match the one associated with the database
+\end_layout
+
+\begin_layout LyX-Code
+    space-dim = 3
+\end_layout
+
+\begin_layout LyX-Code
+  } // cs-data // end of coordinate system specifcation
+\end_layout
+
+\begin_layout LyX-Code
+} // end of SimpleDB specification
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// The locations and values are listed after the parameters.
+\end_layout
+
+\begin_layout LyX-Code
+// Columns are coordinates of the points (1 column for each 
+\end_layout
+
+\begin_layout LyX-Code
+// spatial dimension) followed by the data values in the order 
+\end_layout
+
+\begin_layout LyX-Code
+// specified by the value-names field.
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+0.0  0.0  0.0    -2.00  0.25  0.00
+\end_layout
+
+\begin_layout LyX-Code
+0.0  0.0 -2.0    -2.00  0.00  0.00
+\end_layout
+
+\begin_layout LyX-Code
+0.0  0.0 -4.0     0.00  0.00  0.00
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Standard
@@ -111,7 +696,7 @@ sideways false
 status open
 
 \begin_layout Caption
-Format of spatial data files.
+Format of spatial database files.
 \end_layout
 
 \end_inset
@@ -119,8 +704,60 @@ Format of spatial data files.
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Subsection
+Spatial Database Coordinate Systems
+\end_layout
 
+\begin_layout Subsubsection
+Cartesian
+\end_layout
+
+\begin_layout LyX-Code
+cs-data = cartesian {
+\end_layout
+
+\begin_layout LyX-Code
+  to-meters = 1.0e+3 // locations in km
+\end_layout
+
+\begin_layout LyX-Code
+  space-dim = 2 // 1, 2, or 3 dimensions
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Format of Cartesian coordinate systems in spatial database files.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Geographic
+\end_layout
+
+\begin_layout Subsubsection
+Geographic Projection
+\end_layout
+
+\begin_layout Subsubsection
+Geographic Local Cartesian
 \end_layout
 
 \end_body
