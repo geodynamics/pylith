@@ -2,8 +2,18 @@
 CURRENT ISSUES
 ======================================================================
 
-  0. Need check to make sure quadrature scheme is compatible with
+  0. Orientation of cohesive cells is not consistent over fault
+     surface. Unit tests now expose problem. [Matt is working on fixing this]
+
+  1. Need check to make sure quadrature scheme is compatible with
   cells in mesh.
+
+  2. Need better error trapping when using LineParser. State of
+  ifstream is insufficient. Need state of istringstream buffer, but it
+  is often !good() at eof(). Test of !good() and !eof()?
+
+  3. Need to add in documentation that fault id corresponds to the
+  material-id for cohesive cells.
 
 ======================================================================
 KNOWN DEFICIENCIES
