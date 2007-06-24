@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -226,21 +226,17 @@ quadrature = pylith.feassemble.Quadrature3D
 where we have specified that the bulk constitutive model is the 3D linear
  elastic model and we use linear interpolation for computing the spatial
  variation of the parameters within the spatial database.
- See Appendix 
+ The parameters for the bulk constitutive model are specified using a spatial
+ database.
+ Refer to the discussion of each material model to find the parameters that
+ must be specified inthe spatial database.
+ Appendix 
 \begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
 
 \end_inset
 
- for a complete list of the spatial database settings.
+ describes the format of the spatial database files.
  
-\end_layout
-
-\begin_layout Subsection
-Material Spatial Database Files
-\end_layout
-
-\begin_layout Standard
-[ADD STUFF HERE]
 \end_layout
 
 \begin_layout Section
@@ -314,6 +310,140 @@ For the case of isotropic elasticity, the number of independent components
 \begin{aligned}\mu= & \rho v_{s}^{2}\\
 \lambda= & \rho v_{p}^{2}-2\mu\end{aligned}
 \end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features>
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="0.85in">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\align center
+
+\series bold
+Name in Spatial Database 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $v_{p}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+Vp
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $v_{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+Vs
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Formula $\rho$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+density
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+Values in spatial database used as parameters in the elastic material constituti
+ve models.
+\end_layout
 
 \end_inset
 
