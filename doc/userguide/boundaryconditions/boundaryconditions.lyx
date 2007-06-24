@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -105,7 +105,7 @@ Boundary Condition Container
 
 \begin_layout Standard
 The boundary condition container associates a type of boundary condition
- with a string label.
+ with a set of vertices via a string label.
  Because the number of boundary conditions depends on the problem and Pyre
  does not support dynamic arrays of components, a generic boundary condition
  container is not yet available.
@@ -191,6 +191,8 @@ Container Facilities
 \begin_inset Text
 
 \begin_layout Standard
+
+\family typewriter
 BCSingle
 \end_layout
 
@@ -209,6 +211,8 @@ BCSingle
 \begin_inset Text
 
 \begin_layout Standard
+
+\family typewriter
 bc
 \end_layout
 
@@ -220,6 +224,8 @@ bc
 \begin_inset Text
 
 \begin_layout Standard
+
+\family typewriter
 BCTwoSides
 \end_layout
 
@@ -238,6 +244,8 @@ BCTwoSides
 \begin_inset Text
 
 \begin_layout Standard
+
+\family typewriter
 neg, pos
 \end_layout
 
@@ -249,6 +257,8 @@ neg, pos
 \begin_inset Text
 
 \begin_layout Standard
+
+\family typewriter
 BCFourSides
 \end_layout
 
@@ -267,6 +277,8 @@ BCFourSides
 \begin_inset Text
 
 \begin_layout Standard
+
+\family typewriter
 x_neg, x_pos, y_neg, y_pos
 \end_layout
 
@@ -278,6 +290,8 @@ x_neg, x_pos, y_neg, y_pos
 \begin_inset Text
 
 \begin_layout Standard
+
+\family typewriter
 BCSixSides
 \end_layout
 
@@ -296,6 +310,8 @@ BCSixSides
 \begin_inset Text
 
 \begin_layout Standard
+
+\family typewriter
 x_neg, x_pos, y_neg, y_pos, z_neg, z_pos
 \end_layout
 
@@ -371,7 +387,7 @@ An example of setting these parameters in a
 \family typewriter
 .cfg
 \family default
- file for the homogeneous material is:
+ file is:
 \end_layout
 
 \begin_layout LyX-Code
@@ -461,7 +477,7 @@ status open
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
 <features>
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="1.7in">
+<column alignment="left" valignment="top" leftline="true" width="1.7in">
 <column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
@@ -586,8 +602,42 @@ Neumann (traction) boundary conditions are not implemented in this release.
 Fault Interface Conditions
 \end_layout
 
+\begin_layout Standard
+Fault interfaces are used to create dislocations (jumps in displacement
+ field) in the model.
+ The dislocations arise from slip across a fault surface.
+ Both shear and tensile dislocations are supported.
+ For fault interfaces dislocations in 1-D correspond to fault-opening (and
+ closing), in 2-D lateral-slip and fault opening, and in 3-D lateral-slip,
+ reverse-slip, and fault opening.
+ The current release of PyLith supports kinematic (prescribed) slip.
+ Support for fault constitutive models for frictional interface conditions
+ will be supported in a future release (Fall 2007).
+\end_layout
+
 \begin_layout Subsection
 Conventions
+\end_layout
+
+\begin_layout Standard
+Slip corresponds to relative motion across a fault surface.
+ Figure 
+\begin_inset LatexCommand \ref{fig:fault:orientation}
+
+\end_inset
+
+ shows the orientation of the slip vector in 3-D with respect to the fault
+ surface and coordinate axes.
+ PyLith automatically determines the orientation of the fault surface.
+ This alleviates the user from having to compute the strike, dip, and rake
+ angles over potentially complex, nonplanar fault surfaces.
+ Instead, the user specifies fault parameters in terms of lateral motion,
+ reverse motion, and fault opening as shown in Figure 
+\begin_inset LatexCommand \ref{fig:fault:slip:motions}
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -610,7 +660,20 @@ status open
 \end_layout
 
 \begin_layout Caption
-Orientation of a fault surface in 3-D.
+Orientation of a fault surface in 3-D, where 
+\begin_inset Formula $\phi$
+\end_inset
+
+ denotes the angle of the fault strike, 
+\begin_inset Formula $\delta$
+\end_inset
+
+ denotes the angle of the fault dip, and 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ the rake angle.
+ 
 \begin_inset LatexCommand \label{fig:fault:orientation}
 
 \end_inset
@@ -662,8 +725,158 @@ Sign conventions associated with fault slip.
 Fault Surface Container
 \end_layout
 
+\begin_layout Standard
+The fault surface container associates a fault interface condition with
+ a set of vertices via a string label.
+ Because the number of fault surfaces depends on the problem and Pyre does
+ not support dynamic arrays of components, a generic fault surface container
+ is not yet available.
+ We supply a container for a single fault surface, 
+\family typewriter
+pylith.faults.SingleFault
+\family default
+.
+ For problems with multiple fault surfaces, the user must supply an appropriate
+ fault surface container (see 
+\family typewriter
+examples/templates/containers/faults.odb
+\family default
+ for a template fault surface container).
+ This 
+\family typewriter
+.odb
+\family default
+ file should be placed in the directory with the other simulation input
+ files.
+ The default fault surface container is an empty container, so you must
+ specify a fault surface container to include fault interfaces.
+ Each simply connected fault surface should be placed in a separate container.
+ Additionally, fault surfaces may not share vertices.
+ At fault intersections, one fault must end one cell before the intersection.
+ Future releases of PyLith may relax this requirement.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features>
+<column alignment="left" valignment="top" leftline="true" width="0.75in">
+<column alignment="center" valignment="top" leftline="true" width="1.3in">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.75in">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Container
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Number of Fault Surfaces
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Container Facilities
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+SingleFault
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+f
+\family typewriter
+ault
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+\begin_inset LatexCommand \label{tab:fault:containers}
+
+\end_inset
+
+Predefined fault surface containers.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Fault Implementation
+\end_layout
+
+\begin_layout Standard
+In order to create relative motion across the fault surface in the finite-elemen
+t mesh, additional degrees of freedom must be added along with adjustment
+ of the topology of the mesh.
+ These additional degreees of freedom are associated with cohesive cells.
+ These zero volume cells allow control of the relative motion between vertices
+ on the two sides of the fault.
+ PyLith automatically adds cohesive cells for each fault surface.
+ Figure 
+\begin_inset LatexCommand \ref{fig:fault:cohesive:quad4}
+
+\end_inset
+
+ illustrates the results of inserting a cohesive cell in a mesh consisting
+ of two quadrilateral cells.
 \end_layout
 
 \begin_layout Standard
@@ -686,8 +899,8 @@ status open
 \end_layout
 
 \begin_layout Caption
-Example of cohesive cell inserted into a mesh of quadrilateral cells.
- The zero thickness cohesive cell (shown as a dashed line) controls slip
+Example of cohesive cell inserted into a mesh of two quadrilateral cells.
+ The zero thickness cohesive cell (shown with dashed lines) controls slip
  on the fault via the relative motion between vertices 3 and 7 and 2 and
  6.
 \begin_inset LatexCommand \label{fig:fault:cohesive:quad4}
@@ -707,7 +920,7 @@ Fault Parameters
 \end_layout
 
 \begin_layout Standard
-The principal parameters for the Dirichlet boundary condition are:
+The principal parameters for fault interface conditions are:
 \end_layout
 
 \begin_layout Description
@@ -723,12 +936,16 @@ of the cohesive cells in the mesh.
 
 \begin_layout Description
 name Name or label for the fault.
- This associates sets of vertices with the boundary condition in addition
- to being used in error and diagnostic reports.
+ This associates sets of vertices with the fault surface in addition to
+ being used in error and diagnostic reports.
 \end_layout
 
 \begin_layout Description
-up_dir [ADD STUFF HERE]
+up_dir Up-dip or up direction.
+ This only requirement for this direction is that it not be collinear with
+ the fault normal direction.
+ The default value of [0,0,1] can be used as long as the fault normal does
+ not coincide with [0,0,1].
 \end_layout
 
 \begin_layout Description
@@ -748,7 +965,7 @@ An example of setting these parameters in a
 \family typewriter
 .cfg
 \family default
- file for the cohesive fault with a kinematic earthquake source is:
+ file is:
 \end_layout
 
 \begin_layout LyX-Code
@@ -799,6 +1016,232 @@ quadrature.cell.dimension = 2
 mat_db.iohandler.filename = elastic_materials.spatialdb
 \end_layout
 
+\begin_layout Standard
+We have specified that we want to use the SingleFault container.
+ The group of vertices has the label 
+\begin_inset Quotes eld
+\end_inset
+
+fault A''.
+ We replicate the default values for the fault 
+\begin_inset Quotes eld
+\end_inset
+
+up
+\begin_inset Quotes erd
+\end_inset
+
+ direction, and the desired general direction for the fault normal.
+ This settings apply to a 2-D fault surface embedded within a 3-D mesh,
+ so we use 2-D quadrature in a 3-D spatial coordinate system with 2-D Lagrange
+ reference cells.
+ The spatial database for elastic properties is used to determine the approximat
+e shear modulus and condition the equations for faster convergence rates.
+ 
+\end_layout
+
+\begin_layout Subsection
+Kinematic Earthquake Source
+\end_layout
+
+\begin_layout Standard
+Kinematic earthquake sources specify the slip as a function of time on the
+ fault surface.
+ Slip may evolve simultaneously over the fault surface instantaneously in
+ a single time step (as is usually done in quasi-static simulations) or
+ propagate over the fault surface over hundreds to thousands of time steps
+ (as is usually done in a dynamic simulation).
+\end_layout
+
+\begin_layout Subsubsection
+Governing Equations
+\end_layout
+
+\begin_layout Standard
+The insertion of cohesive cells into the finite-element mesh has the effect
+ of decoupling the motion of the two sides of the fault surface.
+ In order to impose the desired relative motion, we must adjust the governing
+ equations.
+ PyLith employs Lagrange multiplier constraints to do this.
+ Typically, the additional degrees of freedom associated with the Lagrange
+ multiplies results in a complex implementation.
+ However, the use of Lagrange multiplier constraints with cohesive cells
+ makes this very easy; we simply add the additional degrees of freedom associate
+d with the Lagrange multipliers to the cohesive cells.
+ As a result, the fault implementation is completely confined to the cohesive
+ cell.
+ Furthermore, the Lagrange multiplier constraints correspond to forces required
+ to impose the relative motions, so they are related to the change in stress
+ on the fault surface associated with fault slip.
+ If we write the governing equations in the form
+\begin_inset Formula \begin{equation}
+[A]\{ u\}=\{ b\}\,,\end{equation}
+
+\end_inset
+
+then inserting the Lagrange multiplier constraints results in
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{cc}
+[A] & [{C]}^{T}\\{}
+[C] & 0\end{array}\right]\left[\begin{array}{c}
+\{ u\}\\
+\{ L\}\end{array}\right]=\left[\begin{array}{c}
+\{ b\}\\
+\{ D\}\end{array}\right]\,,\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $[C]$
+\end_inset
+
+ is a matrix of direction cosines relating the relative motion across the
+ fault to the vector of fault slip, 
+\begin_inset Formula $\{ D\}$
+\end_inset
+
+, and 
+\begin_inset Formula $\{ L\}$
+\end_inset
+
+ is the vector of Lagrange multipliers.
+ Note that by using the direction cosines to relate the relative motion
+ across the fault, the slip vector and Lagrange multipliers (forces required
+ to impose the slip) are in the local fault coordinate system (lateral motion,
+ reverse motion, and fault opening).
+ Because the solution vector now mixes displacements, 
+\begin_inset Formula $\{ u\}$
+\end_inset
+
+, and forces, 
+\begin_inset Formula $\{ L\}$
+\end_inset
+
+, the matrix on the left-hand side is ill-conditioned.
+ In order to improve the conditioning we scale the direction cosines in
+ the upper right portion of the matrix by an amount necessary to reduce
+ the forces in the solution vector to within a few orders of magnitude of
+ the displacements, resulting in
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{cc}
+[A] & a[{C]}^{T}\\{}
+[C] & 0\end{array}\right]\left[\begin{array}{c}
+\{ u\}\\
+\frac{1}{a}\{ L\}\end{array}\right]=\left[\begin{array}{c}
+\{ b\}\\
+\{ D\}\end{array}\right]\,.\end{equation}
+
+\end_inset
+
+While the matrix on the left-hand side is now nonsymmetric, the solution
+ converges very quickly.
+ Future releases of PyLith may use alternative conditioning algorithms to
+ retain the symmetry of the matrix, thereby reducing storage requirements.
+\end_layout
+
+\begin_layout Subsubsection
+Slip Time Function
+\end_layout
+
+\begin_layout Standard
+The current release of PyLith supports specification of the evolution of
+ fault slip using an analytical expression for the slip time history at
+ each point where the parameters for the slip time function may vary over
+ the fault surface.
+ We use integral of Brune's far-field time function 
+\begin_inset LatexCommand \cite{Brune:1970}
+
+\end_inset
+
+ to describe the evolution in time of slip at a point: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{gather*}
+D(t)=D_{final}(1-e^{-(t-t_{r})/t_{0}}(1+(t-t_{r})/t_{0}))\,,\\
+t_{0}=D/D_{final}eV_{max}\,,\end{gather*}
+
+\end_inset
+
+where 
+\begin_inset Formula $D(t)$
+\end_inset
+
+ is slip at time 
+\begin_inset Formula $t$
+\end_inset
+
+, 
+\begin_inset Formula $D_{final}$
+\end_inset
+
+ is the final slip at the location, 
+\begin_inset Formula $t_{r}$
+\end_inset
+
+ is the slip initiation time (time when rupture reaches the location), and
+ 
+\begin_inset Formula $V_{max}$
+\end_inset
+
+ is the peak slip rate.
+\end_layout
+
+\begin_layout Standard
+See Appendix 
+\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
+
+\end_inset
+
+ for a complete list of the spatial database settings.
+ The parameters for the kinematic earthquake source are:
+\end_layout
+
+\begin_layout Description
+id This is an integer identifier for the fault surfae.
+ It is used to specify the 
+\family typewriter
+material-id 
+\family default
+of the cohesive cells in the mesh.
+ Material identifiers must be unique so this value cannot be the same as
+ any of the material models or any other fault.
+\end_layout
+
+\begin_layout Description
+name Name or label for the fault.
+ This associates sets of vertices with the fault surface in addition to
+ being used in error and diagnostic reports.
+\end_layout
+
+\begin_layout Description
+up_dir [ADD STUFF HERE]
+\end_layout
+
+\begin_layout Description
+normal_dir [ADD STUFF HERE]
+\end_layout
+
+\begin_layout Description
+quadrature [ADD STUFF HERE]
+\end_layout
+
+\begin_layout Description
+mat_db [ADD STUFF HERE]
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.ic.fault]
+\end_layout
+
 \begin_layout LyX-Code
 eq_src = [ADD STUFF HERE]
 \end_layout
@@ -813,43 +1256,6 @@ eq_src = [ADD STUFF HERE]
 
 \begin_layout LyX-Code
 [ADD STUFF HERE]
-\end_layout
-
-\begin_layout Standard
-We have specified that we want to use the SingleFault container.
- The group of vertices has the label 
-\begin_inset Quotes eld
-\end_inset
-
-fault A''.
- [ADD STUFF HERE].
- 
-\end_layout
-
-\begin_layout Subsection
-Kinematic Earthquake Source
-\end_layout
-
-\begin_layout Subsubsection
-Brune's Far-Field Time Function
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \[
-ADD\ EQUATION\ HERE\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-See Appendix 
-\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
-
-\end_inset
-
- for a complete list of the spatial database settings.
 \end_layout
 
 \end_body
