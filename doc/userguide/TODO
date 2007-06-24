@@ -1,13 +1,4 @@
-Outline of user manual:
-
-1.  Cover
-
-5.  Preface (should be able to mostly copy from PyLith 0.8) [Charles]
-DONE
-
 6.  Intro [DONE (for now)]
-
-  Figures
 
     PyLith Diagram [future: Brad]
       Pyre
@@ -19,9 +10,12 @@ DONE
 
 7.  Governing equations [MOSTLY DONE]
 
-  Needs some checking. [CHARLES]
+  Remove margin notes, check if possible. [CHARLES]
 
-8.  Running PyLith (an overview) [PRETTY MUCH DONE?]
+8.  Running PyLith
+
+  Insert cross-references.
+  Could use an overview of what happens when you run PyLith.
 
 9.  Installing binary PyLith
 
@@ -53,27 +47,19 @@ DONE
 
 12. Material models (should be able to copy from 0.8 with some editing) [Charles]
 
-    a. Specifying .cfg and spatial database info.
-
-      [BRAD - needs to add a little more]
-
     * MaxwellIsotropic3D [Charles]
 
       [CHARLES - need to rewrite formulation in terms of mu and lambda]
 
       [CHARLES - also list material modesl that will be added soon]
 
+      [CHARLES - Create table with spatial database parameter names]
+
     c. List material models in 0.8 that will be added soon.
 
 13. Boundary and interface conditions (includes faults)
 
    [BRAD]
-
-    a.  Specifying .cfg and spatial database info.
-
-    b.  Dirichlet conditions.
-
-    c.  Neumann conditions. [to be added in the future]
 
     d.  Fault
 
@@ -83,8 +69,5 @@ DONE
 
       iii. Kinematic earthquake source
 
-14. Appendix [BRAD]
+14. Appendix [DONE]
 
-    b.  File formats (config, ascii mesh format, and spatial data).
-
-    
