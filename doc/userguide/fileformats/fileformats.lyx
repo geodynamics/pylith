@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -71,7 +71,12 @@ status open
 \begin_layout Standard
 \noindent
 \align center
-[ADD FIGURE OF MESH HERE]
+\begin_inset Graphics
+	filename figs/meshhex8.eps
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Caption
@@ -98,7 +103,7 @@ Diagram of mesh specified in Figure
 \end_layout
 
 \begin_layout LyX-Code
-// square of edge length 2.
+// squares of edge length 2.
 \end_layout
 
 \begin_layout LyX-Code
@@ -383,10 +388,6 @@ mesh = { // begin specification of the mesh
   // additional groups can be listed here
 \end_layout
 
-\begin_layout LyX-Code
-
-\end_layout
-
 \begin_layout Standard
 \begin_inset Float figure
 placement H
@@ -669,10 +670,6 @@ SimpleDB { // start specifying the database parameters
 \end_layout
 
 \begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout LyX-Code
 0.0  0.0  0.0    -2.00  0.25  0.00
 \end_layout
 
@@ -682,10 +679,6 @@ SimpleDB { // start specifying the database parameters
 
 \begin_layout LyX-Code
 0.0  0.0 -4.0     0.00  0.00  0.00
-\end_layout
-
-\begin_layout LyX-Code
-
 \end_layout
 
 \begin_layout Standard
@@ -708,8 +701,34 @@ Format of spatial database files.
 Spatial Database Coordinate Systems
 \end_layout
 
+\begin_layout Standard
+The spatial database files support four different types of coordinate systems.
+ Conversions among the three geographic coordinate systems are supported
+ in 3-D.
+ Conversions among the geographic and geographic projected coordinate systems
+ are supported in 2-D.
+ In using the coordinate systems, we assume that you have installed the
+ 
+\family typewriter
+proj
+\family default
+ program in addition to the Proj.4 libraries, so that you can obtain a list
+ of support projections, datums, and ellipsoids.
+ Alternatively, refer to the documentation for the 
+\begin_inset LatexCommand \htmlurl[Proj.4 Cartographic Projections library]{http://proj.maptools.org}
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Subsubsection
 Cartesian
+\end_layout
+
+\begin_layout Standard
+This is a conventional Cartesian coordinate system.
+ Conversions to other Cartesian coordinate systems are possible, 
 \end_layout
 
 \begin_layout LyX-Code
@@ -717,7 +736,7 @@ cs-data = cartesian {
 \end_layout
 
 \begin_layout LyX-Code
-  to-meters = 1.0e+3 // locations in km
+  to-meters = 1.0e+3 // Locations in km
 \end_layout
 
 \begin_layout LyX-Code
@@ -728,10 +747,6 @@ cs-data = cartesian {
 }
 \end_layout
 
-\begin_layout LyX-Code
-
-\end_layout
-
 \begin_layout Standard
 \begin_inset Float figure
 placement H
@@ -740,7 +755,7 @@ sideways false
 status open
 
 \begin_layout Caption
-Format of Cartesian coordinate systems in spatial database files.
+Format for Cartesian coordinate systems in spatial database files.
 \end_layout
 
 \end_inset
@@ -752,12 +767,514 @@ Format of Cartesian coordinate systems in spatial database files.
 Geographic
 \end_layout
 
+\begin_layout Standard
+This coordinate system is for geographic coordinates, such as longtitude
+ and latitude.
+ Specification of the location in three-dimensions is supported.
+ The vertical datum can be either the reference ellipsoid or mean sea level.
+ The vertical coordinate is positive upwards.
+\end_layout
+
+\begin_layout LyX-Code
+cs-data = geographic {
+\end_layout
+
+\begin_layout LyX-Code
+  // Conversion factor to get to meters (only applies to vertical coordinate
+ unless you are 
+\end_layout
+
+\begin_layout LyX-Code
+  // using a geocentric coordinate system).
+\end_layout
+
+\begin_layout LyX-Code
+  to-meters = 1.0e+3
+\end_layout
+
+\begin_layout LyX-Code
+  space-dim = 2 // 2 or 3 dimensions
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Run 
+\begin_inset Quotes eld
+\end_inset
+
+proj -le
+\begin_inset Quotes erd
+\end_inset
+
+ to see a list of available reference ellipsoids.
+\end_layout
+
+\begin_layout LyX-Code
+  // Comments are not allowed at the end of the next line.
+\end_layout
+
+\begin_layout LyX-Code
+  ellipspod = WGS84
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Run 
+\begin_inset Quotes eld
+\end_inset
+
+proj -ld
+\begin_inset Quotes erd
+\end_inset
+
+ to see a list of available datums.
+\end_layout
+
+\begin_layout LyX-Code
+  // Comments are not allowed at the end of the next line.
+\end_layout
+
+\begin_layout LyX-Code
+  datum-horiz = WGS84
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // 
+\begin_inset Quotes eld
+\end_inset
+
+ellipsoid
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+mean sea level
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+  // Comments are not allowed at the end of the next line.
+\end_layout
+
+\begin_layout LyX-Code
+  datum-vert = ellipsoid
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Use a geocentric coordinate system?
+\end_layout
+
+\begin_layout LyX-Code
+  is-geocentric = false // true or false
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Format for geographic coordinate systems in spatial database files.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection
 Geographic Projection
 \end_layout
 
+\begin_layout Standard
+This coordinate system applies to geographic projections.
+ As in the geographic coordinate system, the vertical coordinate (if used)
+ can be specified with respect to either the reference ellipsoid or mean
+ sea level.
+\end_layout
+
+\begin_layout LyX-Code
+cs-data = geo-projected {
+\end_layout
+
+\begin_layout LyX-Code
+  to-meters = 1.0e+3 // Conversion factor to get to meters.
+\end_layout
+
+\begin_layout LyX-Code
+  space-dim = 2 // 2 or 3 dimensions
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+  // Run 
+\begin_inset Quotes eld
+\end_inset
+
+proj -le
+\begin_inset Quotes erd
+\end_inset
+
+ to see a list of available reference ellipsoids.
+\end_layout
+
+\begin_layout LyX-Code
+  // Comments are not allowed at the end of the next line.
+\end_layout
+
+\begin_layout LyX-Code
+  ellipspod = WGS84
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Run 
+\begin_inset Quotes eld
+\end_inset
+
+proj -ld
+\begin_inset Quotes erd
+\end_inset
+
+ to see a list of available datums.
+\end_layout
+
+\begin_layout LyX-Code
+  // Comments are not allowed at the end of the next line.
+\end_layout
+
+\begin_layout LyX-Code
+  datum-horiz = WGS84
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // 
+\begin_inset Quotes eld
+\end_inset
+
+ellipsoid
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+mean sea level
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+  // Comments are not allowed at the end of the next line.
+\end_layout
+
+\begin_layout LyX-Code
+  datum-vert = ellipsoid
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Run 
+\begin_inset Quotes eld
+\end_inset
+
+proj -lp
+\begin_inset Quotes erd
+\end_inset
+
+ to see a list of available geographic projections.
+\end_layout
+
+\begin_layout LyX-Code
+  // projector = projection {
+\end_layout
+
+\begin_layout LyX-Code
+    // Name of the projection.
+ run 
+\begin_inset Quotes eld
+\end_inset
+
+proj -lp
+\begin_inset Quotes erd
+\end_inset
+
+ to see a list of supported projections.
+\end_layout
+
+\begin_layout LyX-Code
+    projection = utm // Use the Universal Transverse Mercator projection.
+\end_layout
+
+\begin_layout LyX-Code
+    units = m // Units in the projection.
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+    // Provide a list of projection options; these are the command line
+ arguments you would 
+\end_layout
+
+\begin_layout LyX-Code
+    // use with the proj program.
+ Refer to the Proj.4 library documentation for complete 
+\end_layout
+
+\begin_layout LyX-Code
+    // details.
+\end_layout
+
+\begin_layout LyX-Code
+    // Comments are not allowed at the end of the next line.
+\end_layout
+
+\begin_layout LyX-Code
+    proj-options = +zone=10
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Format for geographic projection coordinate systems in spatial database
+ files.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection
 Geographic Local Cartesian
+\end_layout
+
+\begin_layout Standard
+This coordinate system is a geographically referenced, local 3-D Cartesian
+ coordinate system.
+ This allow use of a conventional Cartesian coordinate system with accurate
+ georeferencing.
+ For example, one can construct a finite-element model in this coordinate
+ system and use spatial databases in geographic coordinates.
+ This coordinate system provides an alternative to using a geographic projection
+ as the Cartesian grip.
+ The advantage of this coordinate system is that it retains the curvature
+ of the Earth, while a geographic projection does not.
+\end_layout
+
+\begin_layout LyX-Code
+cs-data = geo-local-cartesian {
+\end_layout
+
+\begin_layout LyX-Code
+  // Conversion factor to get to meters (only applies to vertical coordinate
+ unless you are 
+\end_layout
+
+\begin_layout LyX-Code
+  // using a geocentric coordinate system).
+\end_layout
+
+\begin_layout LyX-Code
+  to-meters = 1.0 // use meters
+\end_layout
+
+\begin_layout LyX-Code
+  space-dim = 2 // 2 or 3 dimensions
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Run 
+\begin_inset Quotes eld
+\end_inset
+
+proj -le
+\begin_inset Quotes erd
+\end_inset
+
+ to see a list of available reference ellipsoids.
+\end_layout
+
+\begin_layout LyX-Code
+  // Comments are not allowed at the end of the next line.
+\end_layout
+
+\begin_layout LyX-Code
+  ellipspod = WGS84
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Run 
+\begin_inset Quotes eld
+\end_inset
+
+proj -ld
+\begin_inset Quotes erd
+\end_inset
+
+ to see a list of available datums.
+\end_layout
+
+\begin_layout LyX-Code
+  // Comments are not allowed at the end of the next line.
+\end_layout
+
+\begin_layout LyX-Code
+  datum-horiz = WGS84
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // 
+\begin_inset Quotes eld
+\end_inset
+
+ellipsoid
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+mean sea level
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+  // Comments are not allowed at the end of the next line.
+\end_layout
+
+\begin_layout LyX-Code
+  datum-vert = ellipsoid
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+  // Origin of the local Cartesian coordinate system.
+ To avoid roundoff errors it is best to pick a location near the center
+ of the region of interest.
+ An elevation on the surface of the Earth in the middle of the region also
+ works well (and makes the vertical coordinate easy to interpret).
+\end_layout
+
+\begin_layout LyX-Code
+origin-lon = -116.7094 // Longitude of the origin in decimal degrees (west
+ is negative).
+\end_layout
+
+\begin_layout LyX-Code
+origin-lat = 36.3874 // Latitude of the origin in decimal degrees (north
+ is positive).
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+// Elevation with respect to the vertical datum.
+ Units are the same as the Cartesian 
+\end_layout
+
+\begin_layout LyX-Code
+// coordinate system (in this case meters).
+\end_layout
+
+\begin_layout LyX-Code
+origin-elev = 3.5
+\end_layout
+
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Format for the geographic local Cartesian coordinate system in spatial database
+ files.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
