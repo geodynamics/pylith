@@ -44,8 +44,9 @@ class SingleFault(ObjectBin):
 
     import pyre.inventory
 
-    from Fault import Fault
-    fault = pyre.inventory.facility("fault", family="fault", factory=Fault)
+    from FaultCohesiveKin import FaultCohesiveKin
+    fault = pyre.inventory.facility("fault", family="fault",
+                                    factory=FaultCohesiveKin)
     fault.meta['tip'] = "Fault in problem."
 
 
