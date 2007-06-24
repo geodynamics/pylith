@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -154,7 +154,7 @@ status open
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0.75in">
 <column alignment="center" valignment="top" leftline="true" width="1.3in">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.75in">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -428,7 +428,149 @@ Dirichlet Boundary Condition Spatial Database Files
 \end_layout
 
 \begin_layout Standard
-[ADD STUFF HERE]
+The spatial database files for the Dirichlet boundary condition specify
+ the fixed displacements.
+ The spatial database file may contain displacements at more degrees of
+ freedom than those specified in the Dirichlet boundary condition settings
+ using the 
+\family typewriter
+fixed_dof
+\family default
+ setting.
+ Only those listed in 
+\family typewriter
+fixed_dof
+\family default
+ will be used.
+ This permits using the same spatial database file for multiple Dirichlet
+ boundary conditions with the same displacement field.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features>
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="1.7in">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Value in 
+\family typewriter
+fixed_dof
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\align center
+
+\series bold
+Name in Spatial Database 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+dof-0
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+dof-1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+dof-2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+Values in spatial database used as parameters in the elastic material constituti
+ve models.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -448,12 +590,266 @@ Fault Interface Conditions
 Conventions
 \end_layout
 
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/faultOrientation.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+Orientation of a fault surface in 3-D.
+\begin_inset LatexCommand \label{fig:fault:orientation}
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/slipmotions.eps
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+Sign conventions associated with fault slip.
+ Positive values are associated with left-lateral, reverse, and fault opening
+ motions.
+\begin_inset LatexCommand \label{fig:fault:slip:motions}
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Fault Surface Container
+\end_layout
+
 \begin_layout Subsection
 Fault Implementation
 \end_layout
 
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/quad4cohesive.fig
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+Example of cohesive cell inserted into a mesh of quadrilateral cells.
+ The zero thickness cohesive cell (shown as a dashed line) controls slip
+ on the fault via the relative motion between vertices 3 and 7 and 2 and
+ 6.
+\begin_inset LatexCommand \label{fig:fault:cohesive:quad4}
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Fault Parameters
+\end_layout
+
+\begin_layout Standard
+The principal parameters for the Dirichlet boundary condition are:
+\end_layout
+
+\begin_layout Description
+id This is an integer identifier for the fault surfae.
+ It is used to specify the 
+\family typewriter
+material-id 
+\family default
+of the cohesive cells in the mesh.
+ Material identifiers must be unique so this value cannot be the same as
+ any of the material models or any other fault.
+\end_layout
+
+\begin_layout Description
+name Name or label for the fault.
+ This associates sets of vertices with the boundary condition in addition
+ to being used in error and diagnostic reports.
+\end_layout
+
+\begin_layout Description
+up_dir [ADD STUFF HERE]
+\end_layout
+
+\begin_layout Description
+normal_dir [ADD STUFF HERE]
+\end_layout
+
+\begin_layout Description
+quadrature [ADD STUFF HERE]
+\end_layout
+
+\begin_layout Description
+mat_db [ADD STUFF HERE]
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file for the cohesive fault with a kinematic earthquake source is:
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem]
+\end_layout
+
+\begin_layout LyX-Code
+interfaces = pylith.ic.SingleFault
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.ic.fault]
+\end_layout
+
+\begin_layout LyX-Code
+label = fault A
+\end_layout
+
+\begin_layout LyX-Code
+id = 100 // This is the default value.
+\end_layout
+
+\begin_layout LyX-Code
+up_dir = [0, 0, 1] // This is the default value.
+\end_layout
+
+\begin_layout LyX-Code
+normal_dir = [1, 0, 0] // This is the default value.
+\end_layout
+
+\begin_layout LyX-Code
+quadrature = pylith.feassemble.Quadrature2Din3D
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell = pylith.feassemble.FIATLagrange
+\end_layout
+
+\begin_layout LyX-Code
+quadrature.cell.dimension = 2
+\end_layout
+
+\begin_layout LyX-Code
+mat_db.iohandler.filename = elastic_materials.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
+eq_src = [ADD STUFF HERE]
+\end_layout
+
+\begin_layout LyX-Code
+ 
+\end_layout
+
+\begin_layout LyX-Code
+[pylithapp.problem.ic.fault.eq_src.slip_function]
+\end_layout
+
+\begin_layout LyX-Code
+[ADD STUFF HERE]
+\end_layout
+
+\begin_layout Standard
+We have specified that we want to use the SingleFault container.
+ The group of vertices has the label 
+\begin_inset Quotes eld
+\end_inset
+
+fault A''.
+ [ADD STUFF HERE].
+ 
+\end_layout
+
 \begin_layout Subsection
 Kinematic Earthquake Source
+\end_layout
+
+\begin_layout Subsubsection
+Brune's Far-Field Time Function
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \[
+ADD\ EQUATION\ HERE\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+See Appendix 
+\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
+
+\end_inset
+
+ for a complete list of the spatial database settings.
 \end_layout
 
 \end_body
