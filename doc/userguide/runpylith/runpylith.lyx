@@ -930,7 +930,7 @@ on has been provided, the final step is to specify the boundary conditions
 .cfg
 \family default
  file is used to associate material types and spatial databases with cells
- identified by the material identifier (see Chapter 
+ identified by the material identifier (see Figure 
 \begin_inset LatexCommand \ref{fig:Material-models}
 
 \end_inset

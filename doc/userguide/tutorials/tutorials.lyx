@@ -69,12 +69,12 @@ Before you begin any of the tutorials, you will need to install PyLith following
  
 \color none
 For more complex tutorials, you will also need either the 
-\begin_inset LatexCommand \htmlurl[CUBIT]{http://cubit.sandia.gov}
+\begin_inset LatexCommand \htmlurl[CUBIT]{cubit.sandia.gov}
 
 \end_inset
 
  or 
-\begin_inset LatexCommand \htmlurl[LaGriT]{http://meshing.lanl.gov}
+\begin_inset LatexCommand \htmlurl[LaGriT]{meshing.lanl.gov}
 
 \end_inset
 
@@ -105,7 +105,7 @@ examples
 examples/twocells
 \family default
 , each consisting of just two cells (elements).
- These very simple examples make use of PyLith Mesh ASCII format to describe
+ These very simple examples make use of PyLith mesh ASCII format to describe
  the mesh.
  This format is useful for understanding the basics of how PyLith works,
  since it is easy to create these files by hand.
