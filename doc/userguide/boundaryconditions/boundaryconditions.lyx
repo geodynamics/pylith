@@ -343,8 +343,8 @@ Dirichlet Boundary Conditions
 \end_layout
 
 \begin_layout Standard
-Dirichlet boundary conditions prescribe a fixed value of slip at vertices
- of the finite-element mesh.
+Dirichlet boundary conditions prescribe a fixed value of displacement on
+ a subset of the vertices of the finite-element mesh.
  While Dirichlet boundary conditions can be applied to any vertex, usually
  they are applied to vertices on the lateral and bottom boundaries of the
  domain.
@@ -363,7 +363,7 @@ The principal parameters for the Dirichlet boundary condition are:
 
 \begin_layout Description
 id This is an integer identifier for the boundary condition.
- It is not used in the current implementation.
+ It is not used in the current implementation and may be ommitted.
 \end_layout
 
 \begin_layout Description
@@ -423,8 +423,11 @@ fixed_dof = [2]
 \end_layout
 
 \begin_layout Standard
-where we have specified that we want to use the BCTwoSides boundary condition
- container, the group of vertices has the label 
+where we have specified that we want to use the 
+\family typewriter
+BCTwoSides
+\family default
+ boundary condition container, the group of vertices has the label 
 \begin_inset Quotes eld
 \end_inset
 

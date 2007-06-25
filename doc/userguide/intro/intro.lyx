@@ -87,7 +87,7 @@ This release of PyLith allows the solution of both quasi-static and dynamic
  Simulation parameters are generally specified through the use of simple
  ASCII files or the command line.
  At present, mesh information may be provided using a simple ASCII file
- (PyLith ASCII format) or imported from CUBIT or LaGriT, two widely-used
+ (PyLith mesh ASCII format) or imported from CUBIT or LaGriT, two widely-used
  meshing packages.
  The elements currently available include a linear bar in 1D, linear triangles
  and quadrilaterals in 2D, and linear tetrahedra and hexahedra in 3D.
@@ -133,7 +133,7 @@ PyLith is one component in the process of investigating problems in tectonics
  Since there are a wide variety of mesh formats, this information must then
  be translated into something that the computational physics code can understand.
  PyLith presently provides three mesh importing options: CUBIT Exodus format,
- LaGriT GMV + Pset files, and PyLith ASCII format.
+ LaGriT GMV + Pset files, and PyLith mesh ASCII format.
  The modeling of the physical processes of interest is performed by a code
  such as PyLith.
  Once the computations have been performed, the results must be exported

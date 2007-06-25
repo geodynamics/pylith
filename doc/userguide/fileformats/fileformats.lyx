@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -53,7 +53,7 @@ PyLith Mesh ASCII Files
 \end_layout
 
 \begin_layout Standard
-PyLith Mesh ASCII files allow quick specification of the mesh information
+PyLith mesh ASCII files allow quick specification of the mesh information
  for very small, simple meshes that are most easily written by hand.
  We do not recommend using this format for anything other than these very
  small, simple meshes.
@@ -103,7 +103,7 @@ Diagram of mesh specified in Figure
 \end_layout
 
 \begin_layout LyX-Code
-// squares of edge length 2.
+// square cells of edge length 2.
 \end_layout
 
 \begin_layout LyX-Code
@@ -241,7 +241,7 @@ mesh = { // begin specification of the mesh
 \end_layout
 
 \begin_layout LyX-Code
-      // see Section XX for diagrams giving the order for each 
+      // see Section 4.2 for diagrams giving the order for each 
 \end_layout
 
 \begin_layout LyX-Code
@@ -422,11 +422,12 @@ Spatial Database Files
 \end_layout
 
 \begin_layout Standard
-Spatialdata files provide specification of a field over some set of points.
+Spatial database files provide specification of a field over some set of
+ points.
  There is no topology associated with the points.
- Spatialdata files contain a header describing the set of points and then
- the data with each line listing the coordinates of a point followed by
- the values of the fields for that point.
+ Spatial database files contain a header describing the set of points and
+ then the data with each line listing the coordinates of a point followed
+ by the values of the fields for that point.
  Although multiple values can be specified at each point with more than
  one value included in a search query, the interpolation of each value will
  be done indepedently.
@@ -441,13 +442,12 @@ Spatialdata files provide specification of a field over some set of points.
 Spatial database files can specifiy spatial variations over zero, one, two,
  and three dimensions.
  Zero dimensional variations correspond to uniform values.
- One-dimensional spatial variations correspond to linear variations, which
- need not coincide with coordinate axes.
- Likewise, two-dimensional spatial variations correspond to values specifies
- on a planar surface (which need not coincide with the coordinate axes)
- and three-dimensional spatial variations correspond to variations over
- a volume.
- In one, two, and three dimensions, queries can use a 
+ One-dimensional spatial variations correspond to piecewise linear variations,
+ which need not coincide with coordinate axes.
+ Likewise, two-dimensional spatial variations correspond to variations on
+ a planar surface (which need not coincide with the coordinate axes) and
+ three-dimensional spatial variations correspond to variations over a volume.
+ In one, two, or three dimensions, queries can use a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -505,8 +505,11 @@ distance
 \end_layout
 
 \begin_layout LyX-Code
-// right-lateral with 0.25 m of reverse slip at the surface with // a linear
- taper from 2.0 m to 0.0 m from -2 km to -4 km.
+// right-lateral with 0.25 m of reverse slip at the surface with
+\end_layout
+
+\begin_layout LyX-Code
+// a linear taper from 2.0 m to 0.0 m from -2 km to -4 km.
 \end_layout
 
 \begin_layout LyX-Code
@@ -582,7 +585,11 @@ SimpleDB { // start specifying the database parameters
 
 \begin_layout LyX-Code
   // and stored but not parsed for meaning.
- Unit conversions will   // likely be implemented in a future PyLith release.
+ Unit conversions will
+\end_layout
+
+\begin_layout LyX-Code
+  // likely be implemented in a future PyLith release.
 \end_layout
 
 \begin_layout LyX-Code
@@ -780,12 +787,11 @@ cs-data = geographic {
 \end_layout
 
 \begin_layout LyX-Code
-  // Conversion factor to get to meters (only applies to vertical coordinate
- unless you are 
+  // Conversion factor to get to meters (only applies to vertical 
 \end_layout
 
 \begin_layout LyX-Code
-  // using a geocentric coordinate system).
+  // coordinate unless you are using a geocentric coordinate system).
 \end_layout
 
 \begin_layout LyX-Code
@@ -1024,11 +1030,15 @@ proj -lp
 \begin_inset Quotes erd
 \end_inset
 
- to see a list of available geographic projections.
+ to see a list of available geographic 
 \end_layout
 
 \begin_layout LyX-Code
-  // projector = projection {
+  // projections.
+\end_layout
+
+\begin_layout LyX-Code
+    projector = projection {
 \end_layout
 
 \begin_layout LyX-Code
@@ -1041,11 +1051,20 @@ proj -lp
 \begin_inset Quotes erd
 \end_inset
 
- to see a list of supported projections.
+ to see a list of 
 \end_layout
 
 \begin_layout LyX-Code
-    projection = utm // Use the Universal Transverse Mercator projection.
+    // supported projections.
+ Use the Universal Transverse Mercator
+\end_layout
+
+\begin_layout LyX-Code
+    // projection.
+\end_layout
+
+\begin_layout LyX-Code
+    projection = utm
 \end_layout
 
 \begin_layout LyX-Code
@@ -1057,17 +1076,16 @@ proj -lp
 \end_layout
 
 \begin_layout LyX-Code
-    // Provide a list of projection options; these are the command line
- arguments you would 
+    // Provide a list of projection options; these are the command 
 \end_layout
 
 \begin_layout LyX-Code
-    // use with the proj program.
- Refer to the Proj.4 library documentation for complete 
+    // line arguments you would use with the proj program.
+ Refer to
 \end_layout
 
 \begin_layout LyX-Code
-    // details.
+    // the Proj.4 library documentation for complete details.
 \end_layout
 
 \begin_layout LyX-Code
@@ -1121,12 +1139,11 @@ cs-data = geo-local-cartesian {
 \end_layout
 
 \begin_layout LyX-Code
-  // Conversion factor to get to meters (only applies to vertical coordinate
- unless you are 
+  // Conversion factor to get to meters (only applies to vertical
 \end_layout
 
 \begin_layout LyX-Code
-  // using a geocentric coordinate system).
+  // coordinate unless you are using a geocentric coordinate system).
 \end_layout
 
 \begin_layout LyX-Code
@@ -1223,20 +1240,40 @@ mean sea level
 
 \begin_layout LyX-Code
   // Origin of the local Cartesian coordinate system.
- To avoid roundoff errors it is best to pick a location near the center
- of the region of interest.
- An elevation on the surface of the Earth in the middle of the region also
- works well (and makes the vertical coordinate easy to interpret).
+ To avoid
 \end_layout
 
 \begin_layout LyX-Code
-origin-lon = -116.7094 // Longitude of the origin in decimal degrees (west
- is negative).
+  // roundoff errors it is best to pick a location near the center of
 \end_layout
 
 \begin_layout LyX-Code
-origin-lat = 36.3874 // Latitude of the origin in decimal degrees (north
- is positive).
+  // the region of interest.
+ An elevation on the surface of the Earth
+\end_layout
+
+\begin_layout LyX-Code
+  // in the middle of the region also works well (and makes the
+\end_layout
+
+\begin_layout LyX-Code
+  // vertical coordinate easy to interpret).
+\end_layout
+
+\begin_layout LyX-Code
+  origin-lon = -116.7094 // Longitude of the origin in decimal degrees
+\end_layout
+
+\begin_layout LyX-Code
+                         // (west is negative).
+\end_layout
+
+\begin_layout LyX-Code
+  origin-lat = 36.3874 // Latitude of the origin in decimal degrees 
+\end_layout
+
+\begin_layout LyX-Code
+                       // (north is positive).
 \end_layout
 
 \begin_layout LyX-Code
@@ -1244,16 +1281,16 @@ origin-lat = 36.3874 // Latitude of the origin in decimal degrees (north
 \end_layout
 
 \begin_layout LyX-Code
-// Elevation with respect to the vertical datum.
- Units are the same as the Cartesian 
+  // Elevation with respect to the vertical datum.
+ Units are the
 \end_layout
 
 \begin_layout LyX-Code
-// coordinate system (in this case meters).
+  // same as the Cartesian coordinate system (in this case meters).
 \end_layout
 
 \begin_layout LyX-Code
-origin-elev = 3.5
+  origin-elev = 3.5
 \end_layout
 
 \begin_layout LyX-Code
@@ -1274,6 +1311,82 @@ Format for the geographic local Cartesian coordinate system in spatial database
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Subsection
+Spatial Database Parameters
+\end_layout
+
+\begin_layout Standard
+As in the other Pyre objects, spatial database objects contain parameters
+ that can be set from the command line or 
+\family typewriter
+.cf
+\family default
+g or 
+\family typewriter
+.pml
+\family default
+ files.
+ The parameters for a spatial database are:
+\end_layout
+
+\begin_layout Description
+label Label for the database, which is used in diagnostic messages.
+\end_layout
+
+\begin_layout Description
+query_type Type of search query to perform.
+ Values for this parameter are 
+\begin_inset Quotes eld
+\end_inset
+
+linear
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+nearest
+\begin_inset Quotes erd
+\end_inset
+
+ (default).
+\end_layout
+
+\begin_layout Description
+iohandler Database importer.
+ Only one importer is implemented, so you do not need to change this setting.
+\end_layout
+
+\begin_layout Description
+iohandler.filename Filename for the spatial database.
+\end_layout
+
+\begin_layout Standard
+An example of setting these parameters in a 
+\family typewriter
+.cfg
+\family default
+ file is:
+\end_layout
+
+\begin_layout LyX-Code
+label = Material properties
+\end_layout
+
+\begin_layout LyX-Code
+query_type = linear
+\end_layout
+
+\begin_layout LyX-Code
+iohandler.filename = mydb.spatialdb
+\end_layout
+
+\begin_layout LyX-Code
 
 \end_layout
 

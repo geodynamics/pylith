@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -116,11 +116,6 @@ examples/3d
 , will require the use of a mesh generation package to create the meshes.
  All of the files used in the example problems are heavily documented, which
  should help users to understand the different file formats.
- This tutorial begins with the simplest problem (
-\family typewriter
-examples/twocells/twotri3
-\family default
-), and continues to more complex examples.
 \end_layout
 
 \begin_layout Standard

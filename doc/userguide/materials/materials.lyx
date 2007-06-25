@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -71,12 +71,11 @@ Associating material properties with each a given cell involves several
 \end_layout
 
 \begin_layout Enumerate
-In the mesh generation process, a material identifier must be assigned to
- each cell.
+In the mesh generation process, assign a material identifier to each cell.
 \end_layout
 
 \begin_layout Enumerate
-A material container must be created unless a suitable one already exists.
+Create a material container unless a suitable one already exists.
 \end_layout
 
 \begin_layout Enumerate
@@ -113,8 +112,11 @@ Each cell in the finite-element mesh must have a material identifier.
  mesh generator.
  For example, in the PyLith mesh ASCII format, the identifiers are listed
  in the cells group using the material-id data; in CUBIT materials are defined
- using blocks; in LaGriT materials are defined by the attribute imt and
- the mregion command.
+ using blocks; in LaGriT materials are defined by the attribute 
+\family typewriter
+imt1
+\family default
+ and the mregion command.
 \end_layout
 
 \begin_layout Subsection
@@ -130,7 +132,11 @@ The material container associates a material model (label for the material,
  not yet available.
  The default material container is a homogeneous material, i.e., a single
  material model for the entire problem.
- A two-material container (pylith.materials.BiMaterial) is also supplied.
+ A two-material container (
+\family typewriter
+pylith.materials.BiMaterial
+\family default
+) is also supplied.
  For problems with more than two materials, the user must create the material
  container using an 
 \family typewriter
@@ -141,7 +147,15 @@ The material container associates a material model (label for the material,
 examples/templates
 \family default
  directory of the PyLith distribution).
- Example XX discusses creating a material container using this template.
+ The examples in 
+\family typewriter
+examples/3d/hex8
+\family default
+ and 
+\family typewriter
+examples/3d/tet4
+\family default
+ use a material container using this template.
  This 
 \family typewriter
 .odb
@@ -229,7 +243,7 @@ where we have specified that the bulk constitutive model is the 3D linear
  The parameters for the bulk constitutive model are specified using a spatial
  database.
  Refer to the discussion of each material model to find the parameters that
- must be specified inthe spatial database.
+ must be specified in the spatial database.
  Appendix 
 \begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
 

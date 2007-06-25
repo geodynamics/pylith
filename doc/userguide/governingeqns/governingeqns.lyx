@@ -845,16 +845,6 @@ so in this case our integral equation becomes
 \end_inset
 
 
-\begin_inset Marginal
-status open
-
-\begin_layout Standard
-Need to check this equation.
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -1005,16 +995,6 @@ This is the equation we want to solve.
 
 Within an element we represent the fields as a linear combination of a set
  of basis functions and the values of the fields at vertices of the element,
-\begin_inset Marginal
-status open
-
-\begin_layout Standard
-Is this written correctly?
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula \begin{equation}
 \overrightarrow{a}=\underline{N}\cdot\overrightarrow{a^{e}},\end{equation}
 
@@ -1031,16 +1011,6 @@ where
  is the field at an element's vertices.
  Rewriting the trial functions and displacement field in terms of the basis
  functions gives
-\begin_inset Marginal
-status open
-
-\begin_layout Standard
-Is the trial function expression correct?
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula \begin{equation}
 \overrightarrow{\phi}=\overrightarrow{N},\text{ and}\end{equation}
 
@@ -1081,7 +1051,7 @@ so in this case our integral equation becomes
 \end_layout
 
 \begin_layout Section
-Explicit Time Integration of Elasticity Equation
+Solution Method for Dynamic Problems
 \end_layout
 
 \begin_layout Standard
@@ -1177,7 +1147,7 @@ where
 \end_layout
 
 \begin_layout Section
-Solution Method for Infinitesimal Strain Quasi-Static Problems
+Solution Method for Quasi-Static Problems
 \end_layout
 
 \begin_layout Standard
