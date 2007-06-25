@@ -49,8 +49,8 @@ public :
   void create(ALE::Obj<Mesh>* fault,
               const ALE::Obj<Mesh>& mesh,
               const ALE::Obj<Mesh::int_section_type>& groupField,
-	      const int materialId,
-	      const bool constraintCell =false);
+              const int materialId,
+              const bool constraintCell = false);
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
@@ -64,7 +64,7 @@ private :
   static
   unsigned int _numFaceVertices(const Mesh::point_type& cell,
                                 const ALE::Obj<Mesh>& mesh,
-                                const int depth);
+                                const int depth = -1);
 
   /** Determine a face orientation
    *    We should really have an interpolated mesh, instead of
@@ -81,6 +81,16 @@ private :
                         const int numCorners,
                         const int indices[],
                         const int oppositeVertex,
+                        PointArray *origVertices,
+                        PointArray *faceVertices);
+
+  template<typename FaceType>
+  static
+  bool _getOrientedFace(const ALE::Obj<Mesh>& mesh,
+                        const Mesh::point_type& cell,
+                        FaceType face,
+                        const int numCorners,
+                        int indices[],
                         PointArray *origVertices,
                         PointArray *faceVertices);
 

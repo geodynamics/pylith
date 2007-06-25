@@ -29,7 +29,7 @@
  *
  * Cells are 0-1,10 vertices are 2-9.
  *
- *       3 -------- 5 -- 9 -------- 7
+ *       3 -------- 9 -- 5 -------- 7
  *       |          |    |          |
  *       |          |    |          |
  *       |          |    |          |
@@ -38,7 +38,7 @@
  *       |          |    |          |
  *       |          |    |          |
  *       |          |    |          |
- *       2 -------- 4 -- 8 -------- 6
+ *       2 -------- 8 -- 4 -------- 6
  */
 
 #include "CohesiveDataQuad4d.hh"
@@ -69,9 +69,9 @@ const int pylith::faults::CohesiveDataQuad4d::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataQuad4d::_cells[] = {
-  3,  2,  4,  5,
-  8,  6,  7,  9,
-  4,  5,  8,  9,
+  3,  2,  8,  9,
+  4,  6,  7,  5,
+  5,  4,  9,  8,
 };
 
 const int pylith::faults::CohesiveDataQuad4d::_materialIds[] = {

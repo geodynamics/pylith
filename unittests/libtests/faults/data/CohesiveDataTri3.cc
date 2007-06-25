@@ -31,7 +31,7 @@
  *
  * Cells are 0-1, 8, vertices are 2-7.
  *
- *              3 -- 6
+ *              6 -- 3
  *             /|    |\
  *            / |    | \
  *           /  |    |  \
@@ -41,7 +41,7 @@
  *           \  |    |  /
  *            \ |    | /
  *             \|    |/
- *              4 -- 7
+ *              7 -- 4
  */
 
 #include "CohesiveDataTri3.hh"
@@ -70,9 +70,9 @@ const int pylith::faults::CohesiveDataTri3::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataTri3::_cells[] = {
-  2,  4,  3,
-  6,  7,  5,
-  4,  3,  7, 6
+  2,  7,  6,
+  3,  4,  5,
+  3,  4,  6, 7
 };
 
 const int pylith::faults::CohesiveDataTri3::_materialIds[] = {
