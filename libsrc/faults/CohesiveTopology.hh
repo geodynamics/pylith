@@ -63,7 +63,8 @@ private :
    */
   static
   unsigned int _numFaceVertices(const Mesh::point_type& cell,
-				const ALE::Obj<Mesh>& mesh);
+                                const ALE::Obj<Mesh>& mesh,
+                                const int depth);
 
   /** Determine a face orientation
    *    We should really have an interpolated mesh, instead of

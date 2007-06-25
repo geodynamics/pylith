@@ -41,7 +41,7 @@ mesh = {
     }
   }
   group = {
-    name = end points
+    name = output
     type = vertices
     count = 2
     indices = {
