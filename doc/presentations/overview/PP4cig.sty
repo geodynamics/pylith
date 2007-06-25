@@ -1,0 +1,136 @@
+%==============================================================================
+% PPower4 -- (PP4bluegrad) Style file
+% A LaTeX style for creating slides with ppower4
+% Author: Brad Aagaard
+%==============================================================================
+
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{PP4white}[2006/02/21]
+\typeout{`white background' style for ppower4 ---}
+\typeout{ }
+
+\RequirePackage[bgadd]{background}
+\ifinColor
+  \definecolor{dkgray}{rgb}{0.26, 0.41, 0.46}
+  \definecolor{medgray}{rgb}{0.55, 0.67, 0.73}
+  \definecolor{orange}{rgb}{1.0, 0.67, 0.32}
+
+  \def\colText{black}
+
+  \def\colTitle{dkgray}
+  \def\colSubtitle{black}
+
+  \def\colSummary{dkgray}
+  \def\colFoot{medgray}
+
+  \def\colTitleRule{white}
+
+  \def\colItemi{dkgray}
+  \def\colItemii{medgray}
+  \def\colItemiii{orange}
+  \def\colItemiv{dkgray}
+  \def\symItemi{\ensuremath{\bullet}}
+  \def\symItemii{\ensuremath{\bullet}}
+  \def\symItemiii{\ensuremath{\bullet}}
+  \def\symItemiv{\ensuremath{\circ}}
+
+  \def\colLink{\colText}
+  \def\colAnchor{\colText}
+  \def\colCite{\colText}
+  \def\colFile{\colText}
+  \def\colMenu{\colText}
+  \def\colPage{\colText}
+  \def\colURL{\colText}
+\else
+  \def\colText{black}
+
+  \def\colTitle{\colText}
+  \def\colSubtitle{\colText}
+
+  \def\colSummary{\colText}
+  \def\colFoot{\colText}
+
+  \def\colTitleRule{\colText}
+
+  \def\colItemi{\colText}
+  \def\colItemii{\colText}
+  \def\colItemiii{\colText}
+  \def\colItemiv{\colText}
+  \def\symItemi{\ensuremath{\bullet}}
+  \def\symItemii{\ensuremath{\circ}}
+  \def\symItemiii{\bfseries--}
+  \def\symItemiv{\ensuremath{\cdot}}
+
+  \def\colLink{\colText}
+  \def\colAnchor{\colText}
+  \def\colCite{\colText}
+  \def\colFile{\colText}
+  \def\colMenu{\colText}
+  \def\colPage{\colText}
+  \def\colURL{\colText}
+\fi
+
+\color{\colText}
+
+\gdef\@fontTitle{%
+  \LARGE\bfseries\color{\colTitle}}
+\gdef\@fontSubtitle{%
+  \large\color{\colSubtitle}}
+
+\renewcommand{\slidetitle}[1]{\color{\colTitle}%
+  \reset@font\large\centering\bfseries#1\par%
+  \par\vspace*{12pt}}
+
+\def\@maketitle{\newpage
+  \zerolistvertdimens
+  \if@compatibility\else
+    \advance\abovetitleskip -\baselineskip
+  \fi
+  \null\vskip\abovetitleskip
+  \pdfbookmark{\@title}{\thepage}
+  \begin{center}
+    \normalfont
+    {\@fontTitle\@title\par}
+    \expandafter\ifx\csname @subtitle\endcsname\relax %
+    \else
+    \vskip1.5in
+    {\@fontSubtitle\@subtitle\par}
+    \fi
+    \vskip\titleauthorskip
+    {\large \@author}
+    \expandafter\ifx\csname @institution\endcsname\relax %
+    \else
+    \vskip.8em
+    \@institution
+    \fi
+    \vskip\authordateskip {\@date}
+    \par\vfill
+    \end{center}
+}
+
+
+
+\setlength{\headsep}{0pt}
+\setlength{\headheight}{0pt}
+\setlength{\voffset}{-0.25in}
+\addtolength{\textheight}{1.5in}
+\setlength{\footskip}{10pt}
+\setlength{\foilheadskip}{4pt}
+\setlength{\parindent}{0pt}
+
+\setlength{\topsep}{0pt}
+\setlength{\parsep}{0pt}
+\setlength{\itemsep}{0pt}
+\setlength{\partopsep}{0pt}
+\setlength{\parskip}{0pt}
+
+\LogoOff
+
+\RequirePackage{helvet}
+
+\endinput
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
