@@ -56,7 +56,7 @@ This tutorial is a simple 3D example of a quasi-static finite element problem.
  Due to the simple geometry of the problem, the mesh may be constructed
  by hand, using PyLith mesh ASCII format to describe the mesh.
  In this tutorial, we will walk through the steps necessary to construct,
- run, and view three problems that use the same mesh.
+ run, and view two problems that use the same mesh.
  In addition to this manual, each of the files for the example problem is
  heavily documented to aid users in understanding the basic file formats.
 \end_layout
@@ -67,16 +67,16 @@ Mesh Description
 
 \begin_layout Standard
 The mesh consists of two tetrahedra forming a pyramid shape (Figure 
-\begin_inset LatexCommand \ref{fig:twotri3-mesh}
+\begin_inset LatexCommand \ref{fig:twotet4-mesh}
 
 \end_inset
 
 ).
  The mesh geometry and topology is described in the file 
 \family typewriter
-twotri3.mesh
+twotet4.mesh
 \family default
-, which is in PyLith Mesh ASCII format.
+, which is in PyLith mesh ASCII format.
  This file format is described in 
 \begin_inset LatexCommand \ref{cha:File-Formats}
 
@@ -99,7 +99,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/twotri3-mesh.eps
+	filename figs/twotet4-mesh.fig
 
 \end_inset
 
@@ -108,7 +108,7 @@ status open
 
 \begin_layout Caption
 Mesh used for the two triangle examples.
-\begin_inset LatexCommand \label{fig:twotri3-mesh}
+\begin_inset LatexCommand \label{fig:twotet4-mesh}
 
 \end_inset
 
@@ -204,7 +204,7 @@ Axial Displacement Example
 
 \begin_layout Standard
 The first example problem is extension of the mesh along the diagonal extending
- from the lower left to the upper right of the square mesh.
+ along the base of the pyramid between two opposing vertices.
  Parameter settings that override or augment those in 
 \family typewriter
 pylithapp.cfg
@@ -230,7 +230,7 @@ pylith.bc.BCSingle
 pylithapp.timedependent.bc.bc We define which degrees of freedom are being
  constrained (x and y), we give the label (defined in 
 \family typewriter
-twotri3.mesh
+twotet4.mesh
 \family default
 ) defining the points we want, we assign a label to the boundary condition
  set, and we give the name of the spatial database defining the boundary
@@ -260,9 +260,7 @@ axialdisp.spatialdb
 axialdisp.cfg
 \family default
 .
- The format of all spatial database files is similar.
- In this case, we give the desired displacement values at two points (lower
- left and upper right).
+ In this case, we give the desired displacement values at two points.
  Since data is being specified at points (rather than being uniform over
  the mesh, for example), the data dimension is one.
 \end_layout
@@ -270,7 +268,7 @@ axialdisp.cfg
 \begin_layout Standard
 The files containing common information (
 \family typewriter
-twotri3.mesh
+twotet4.mesh
 \family default
 , 
 \family typewriter
@@ -304,7 +302,7 @@ axialdisp_t0.vtk
 , which may be used with a number of visualization packages.
  If the problem ran correctly, you should be able to generate a figure such
  as 
-\begin_inset LatexCommand \ref{fig:twotri3-axial}
+\begin_inset LatexCommand \ref{fig:twotet4-axial}
 
 \end_inset
 
@@ -332,176 +330,7 @@ status open
 
 \begin_layout Caption
 Color contours and vectors of displacement for the axial displacement example.
-\begin_inset LatexCommand \label{fig:twotri3-axial}
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Shear Displacement Example
-\end_layout
-
-\begin_layout Standard
-The next example problem is shearing of the mesh in the y direction using
- displacements applied along the positive and negative x boundaries.
- Parameter settings that override or augment those in 
-\family typewriter
-pylithapp.cfg
-\family default
- are contained in the file 
-\family typewriter
-sheardisp.cfg
-\family default
-.
- These settings are:
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent We specify an implicit formulation for the problem
- and specify a container for boundary conditions (
-\family typewriter
-pylith.bc.BCFourSides
-\family default
-) that allows them to be given on four sides of a rectangular domain.
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.x_neg We specify the boundary conditions for the
- left side of the mesh, defining which degrees of freedom are being constrained
- (x and y), giving the label (
-\family typewriter
-x_neg
-\family default
-, defined in 
-\family typewriter
-twotri3.mesh
-\family default
-) defining the points we want, assigning a label to the boundary condition
- set, and giving the name of the spatial database defining the boundary
- conditions (
-\family typewriter
-sheardisp.spatialdb
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.timedependent.bc.x_pos We specify the boundary conditions for the
- left side of the mesh, defining which degrees of freedom are being constrained
- (y only), giving the label (
-\family typewriter
-x_
-\family default
-pos, defined in 
-\family typewriter
-twotri3.mesh
-\family default
-) defining the points we want, assigning a label to the boundary condition
- set, and giving the name of the spatial database defining the boundary
- conditions (
-\family typewriter
-sheardisp.spatialdb
-\family default
-).
-\end_layout
-
-\begin_layout Description
-pylithapp.problem.formulation.output.output We give the base filename for VTK
- output (
-\family typewriter
-sheardisp.vtk
-\family default
-).
-\end_layout
-
-\begin_layout Standard
-The boundary conditions are described in the file 
-\family typewriter
-sheardisp.spatialdb
-\family default
-, as specified in 
-\family typewriter
-sheardisp.cfg
-\family default
-.
- In this case, we give the desired displacement values at two points, correspond
-ing to the two edges we want to constrain.
- Since data is being specified at points (rather than being uniform over
- the mesh, for example), the data dimension is one.
-\end_layout
-
-\begin_layout Standard
-The files containing common information (
-\family typewriter
-twotri3.mesh
-\family default
-, 
-\family typewriter
-pylithapp.cfg
-\family default
-, 
-\family typewriter
-matprops.spatialdb
-\family default
-) along with the problem-specific files (
-\family typewriter
-sheardisp.cfg
-\family default
-, 
-\family typewriter
-sheardisp.spatialdb
-\family default
-) provide a complete description of the problem, and we can then run this
- example by typing:
-\end_layout
-
-\begin_layout LyX-Code
-pylith sheardisp.cfg
-\end_layout
-
-\begin_layout Standard
-Once the problem has run, there will be a file called 
-\family typewriter
-sheardisp_t0.vtk
-\family default
-, which may be used with a number of visualization packages.
- If the problem ran correctly, you should be able to generate a figure such
- as 
-\begin_inset LatexCommand \ref{fig:twotri-shear}
-
-\end_inset
-
-, which was generated using ParaView.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename figs/sheardisp.jpg
-	lyxscale 50
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Caption
-Color contours and vectors of displacement for the shear displacement example.
-\begin_inset LatexCommand \label{fig:twotri-shear}
+\begin_inset LatexCommand \label{fig:twotet4-axial}
 
 \end_inset
 
@@ -519,9 +348,8 @@ Kinematic Fault Slip Example
 
 \begin_layout Standard
 The next example problem is left lateral fault slip applied between the
- two triangular cells using kinematic cohesive cells.
- The lower left and upper right boundaries are held fixed in the x and y
- directions.
+ two tetrahedral cells using kinematic cohesive cells.
+ The vertices away from the fault are held fixed in the x and y directions.
  Parameter settings that override or augment those in 
 \family typewriter
 pylithapp.cfg
@@ -535,7 +363,7 @@ dislocation.cfg
 \end_layout
 
 \begin_layout Description
-pylithapp.journal.info We turn on journaling for 1D quadrature (used for 2D
+pylithapp.journal.info We turn on journaling for 2D quadrature (used for 3D
  faults) and for cohesive kinematic faults.
 \end_layout
 
@@ -555,9 +383,9 @@ pylith.faults.SingleFault
 
 \begin_layout Description
 pylithapp.timedependent.bc.bc We define which degrees of freedom are being
- constrained (x and y), we give the label (defined in 
+ constrained (x, y, and z), we give the label (defined in 
 \family typewriter
-twotri3.mesh
+twotet4.mesh
 \family default
 ) defining the points we want, we assign a label to the boundary condition
  set, and we give the name of the spatial database defining the boundary
@@ -571,7 +399,7 @@ dislocation_disp.spatialdb
 \begin_layout Description
 pylithapp.timedependent.interfaces We give the label (defined in 
 \family typewriter
-twotri3.mesh
+twotet4.mesh
 \family default
 ) defining the points on the fault, provide quadrature information, and
  then give database names for material properties (needed for conditioning),
@@ -638,7 +466,7 @@ dislocation_sliptime.spatialdb
 \begin_layout Standard
 The files containing common information (
 \family typewriter
-twotri3.mesh
+twotet4.mesh
 \family default
 , 
 \family typewriter
@@ -684,7 +512,7 @@ dislocation_t0.vtk
 , which may be used with a number of visualization packages.
  If the problem ran correctly, you should be able to generate a figure such
  as 
-\begin_inset LatexCommand \ref{fig:twotri-disloc}
+\begin_inset LatexCommand \ref{fig:twotet4-disloc}
 
 \end_inset
 
@@ -711,7 +539,7 @@ status open
 
 \begin_layout Caption
 Color contours and vectors of displacement for the kinematic fault example.
-\begin_inset LatexCommand \label{fig:twotri-disloc}
+\begin_inset LatexCommand \label{fig:twotet4-disloc}
 
 \end_inset
 
