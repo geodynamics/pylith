@@ -10,11 +10,15 @@
 \paperfontsize default
 \spacing single
 \papersize default
-\use_geometry false
+\use_geometry true
 \use_amsmath 1
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -82,14 +86,14 @@ Creating Sets of Vertices
 The procedure for creating sets of vertices differs depending on the mesh
  generator.
  For meshes specified using the PyLith mesh ASCII format, the sets of vertices
- are specified using groups (see Section 
+ are specified using groups (see Appendix 
 \begin_inset LatexCommand \ref{sec:MeshIOAscii}
 
 \end_inset
 
 ).
  In CUBIT the groups of vertices are created using nodesets.
- Similarly, in LaGriT psets are used.
+ Similarly, in LaGriT, psets are used.
  Note that we chose to associated boundary conditions with groups of vertices
  because nearly every mesh generation package supports associating a string
  or integer with groups of vertices.
@@ -120,7 +124,7 @@ The boundary condition container associates a type of boundary condition
  boundary condition.
  If no parameters are specified for the boundary condition, it is not used.
  For problems with more than six boundary conditions, the user must create
- the container using an an 
+ the container using an 
 \family typewriter
 .odb
 \family default
@@ -154,12 +158,14 @@ status open
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0.75in">
 <column alignment="center" valignment="top" leftline="true" width="1.3in">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.75in">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="2in">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
+
+\series bold
 Container
 \end_layout
 
@@ -180,6 +186,8 @@ Number of Boundary Conditions
 \begin_inset Text
 
 \begin_layout Standard
+
+\series bold
 Container Facilities
 \end_layout
 
@@ -363,7 +371,7 @@ The principal parameters for the Dirichlet boundary condition are:
 
 \begin_layout Description
 id This is an integer identifier for the boundary condition.
- It is not used in the current implementation and may be ommitted.
+ It is not used in the current implementation and may be omitted.
 \end_layout
 
 \begin_layout Description
@@ -480,8 +488,8 @@ status open
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="1.7in">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
+<column alignment="center" valignment="middle" leftline="true" width="1.7in">
+<column alignment="center" valignment="middle" leftline="true" rightline="true" width="2.47in">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -610,8 +618,8 @@ Fault interfaces are used to create dislocations (jumps in displacement
  field) in the model.
  The dislocations arise from slip across a fault surface.
  Both shear and tensile dislocations are supported.
- For fault interfaces dislocations in 1-D correspond to fault-opening (and
- closing), in 2-D lateral-slip and fault opening, and in 3-D lateral-slip,
+ For fault interfaces, dislocations in 1D correspond to fault-opening (and
+ closing), in 2D lateral-slip and fault opening, and in 3D lateral-slip,
  reverse-slip, and fault opening.
  The current release of PyLith supports kinematic (prescribed) slip.
  Support for fault constitutive models for frictional interface conditions
@@ -663,7 +671,7 @@ status open
 \end_layout
 
 \begin_layout Caption
-Orientation of a fault surface in 3-D, where 
+Orientation of a fault surface in 3D, where 
 \begin_inset Formula $\phi$
 \end_inset
 
@@ -731,7 +739,7 @@ Fault Surface Container
 \begin_layout Standard
 The fault surface container associates a fault interface condition with
  a set of vertices via a string label.
- Because the number of fault surfaces depends on the problem and Pyre does
+ Because the number of fault surfaces depends on the problem, and Pyre does
  not support dynamic arrays of components, a generic fault surface container
  is not yet available.
  We supply a container for a single fault surface, 
@@ -774,7 +782,7 @@ status open
 \begin_inset Tabular
 <lyxtabular version="3" rows="2" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="0.75in">
+<column alignment="left" valignment="top" leftline="true" width="0.88in">
 <column alignment="center" valignment="top" leftline="true" width="1.3in">
 <column alignment="center" valignment="top" leftline="true" rightline="true" width="2in">
 <row topline="true" bottomline="true">
@@ -782,6 +790,8 @@ status open
 \begin_inset Text
 
 \begin_layout Standard
+
+\series bold
 Container
 \end_layout
 
@@ -802,6 +812,8 @@ Number of Fault Surfaces
 \begin_inset Text
 
 \begin_layout Standard
+
+\series bold
 Container Facilities
 \end_layout
 
@@ -870,7 +882,7 @@ In order to create relative motion across the fault surface in the finite-elemen
 t mesh, additional degrees of freedom must be added along with adjustment
  of the topology of the mesh.
  These additional degreees of freedom are associated with cohesive cells.
- These zero volume cells allow control of the relative motion between vertices
+ These zero-volume cells allow control of the relative motion between vertices
  on the two sides of the fault.
  PyLith automatically adds cohesive cells for each fault surface.
  Figure 
@@ -927,7 +939,7 @@ The principal parameters for fault interface conditions are:
 \end_layout
 
 \begin_layout Description
-id This is an integer identifier for the fault surfae.
+id This is an integer identifier for the fault surface.
  It is used to specify the 
 \family typewriter
 material-id 
@@ -944,7 +956,7 @@ name Name or label for the fault.
 \end_layout
 
 \begin_layout Description
-up_dir Up-dip or up direction (only used in 3D simulations).
+up_dir Up-dir or up direction (only used in 3D simulations).
  This only requirement for this direction is that it not be collinear with
  the fault normal direction.
  The default value of [0, 0, 1] can be used as long as the fault normal
@@ -966,7 +978,7 @@ quadrature Quadrature object used in integrating fault quantities.
 
 \begin_layout Description
 mat_db Spatial database for bulk material properties (used in improving
- the conditioning the system).
+ the conditioning of the system).
 \end_layout
 
 \begin_layout Standard
@@ -1039,8 +1051,7 @@ We have specified that we want to use the SingleFault container.
 \begin_inset Quotes eld
 \end_inset
 
-fault A''.
- We replicate the default values for the fault 
+fault A.'' We replicate the default values for the fault 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1049,8 +1060,8 @@ up
 \end_inset
 
  direction, and the desired general direction for the fault normal.
- This settings apply to a 2-D fault surface embedded within a 3-D mesh,
- so we use 2-D quadrature in a 3-D spatial coordinate system with 2-D Lagrange
+ These settings apply to a 2D fault surface embedded within a 3D mesh, so
+ we use 2D quadrature in a 3D spatial coordinate system with 2D Lagrange
  reference cells.
  The spatial database for elastic properties is used to determine the approximat
 e shear modulus and condition the equations for faster convergence rates.
@@ -1081,7 +1092,7 @@ The insertion of cohesive cells into the finite-element mesh has the effect
  equations.
  PyLith employs Lagrange multiplier constraints to do this.
  Typically, the additional degrees of freedom associated with the Lagrange
- multiplies results in a complex implementation.
+ multipliers results in a complex implementation.
  However, the use of Lagrange multiplier constraints with cohesive cells
  makes this very easy; we simply add the additional degrees of freedom associate
 d with the Lagrange multipliers to the cohesive cells.
@@ -1165,7 +1176,7 @@ The current release of PyLith supports specification of the evolution of
  fault slip using an analytical expression for the slip time history at
  each point where the parameters for the slip time function may vary over
  the fault surface.
- We use integral of Brune's far-field time function 
+ We use an integral of Brune's far-field time function 
 \begin_inset LatexCommand \cite{Brune:1970}
 
 \end_inset
@@ -1221,7 +1232,7 @@ slip_time Spatial database of slip initiation times (
 \end_layout
 
 \begin_layout Description
-slip_rate Spatial database for peak slip slip (
+slip_rate Spatial database for peak slip rate (
 \begin_inset Formula $V_{max}$
 \end_inset
 
