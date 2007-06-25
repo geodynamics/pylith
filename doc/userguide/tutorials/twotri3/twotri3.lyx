@@ -54,7 +54,7 @@ This tutorial is the simplest 2D example of a quasi-static finite element
  It is a mesh composed of two linear triangles subject to displacement boundary
  conditions, assuming plane-strain linear elastic behavior.
  Due to the simple geometry of the problem, the mesh may be constructed
- by hand, using PyLith Mesh ASCII format to describe the mesh.
+ by hand, using PyLith mesh ASCII format to describe the mesh.
  In this tutorial, we will walk through the steps necessary to construct,
  run, and view three problems that use the same mesh.
  In addition to this manual, each of the files for the example problem is
@@ -97,17 +97,19 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{fig:twotri3-mesh}
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/twotri3-mesh.eps
 
 \end_inset
 
-Mesh used for the two triangle examples.
+
 \end_layout
 
-\begin_layout Standard
-\begin_inset Graphics
-	filename figs/twotri3-mesh.eps
+\begin_layout Caption
+Mesh used for the two triangle examples.
+\begin_inset LatexCommand \label{fig:twotri3-mesh}
 
 \end_inset
 
@@ -316,20 +318,22 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{fig:twotri3-axial}
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/axialdisp.jpg
+	lyxscale 50
+	scale 50
+	keepAspectRatio
 
 \end_inset
 
-Color contours and vectors of displacement for the axial displacement example.
+
 \end_layout
 
-\begin_layout Standard
-\begin_inset Graphics
-	filename figs/axialdisp.jpg
-	lyxscale 65
-	scale 75
-	keepAspectRatio
+\begin_layout Caption
+Color contours and vectors of displacement for the axial displacement example.
+\begin_inset LatexCommand \label{fig:twotri3-axial}
 
 \end_inset
 
@@ -484,18 +488,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{fig:twotri-shear}
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/sheardisp.jpg
+	lyxscale 50
+	scale 50
 
 \end_inset
 
-Color contours and vectors of displacement for the shear displacement example.
+
 \end_layout
 
-\begin_layout Standard
-\begin_inset Graphics
-	filename figs/sheardisp.jpg
-	lyxscale 65
+\begin_layout Caption
+Color contours and vectors of displacement for the shear displacement example.
+\begin_inset LatexCommand \label{fig:twotri-shear}
 
 \end_inset
 
@@ -691,18 +698,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{fig:twotri-disloc}
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename figs/dislocation.jpg
+	lyxscale 50
+	scale 50
 
 \end_inset
 
-Color contours and vectors of displacement for the kinematic fault example.
+
 \end_layout
 
-\begin_layout Standard
-\begin_inset Graphics
-	filename figs/dislocation.jpg
-	lyxscale 65
+\begin_layout Caption
+Color contours and vectors of displacement for the kinematic fault example.
+\begin_inset LatexCommand \label{fig:twotri-disloc}
 
 \end_inset
 
