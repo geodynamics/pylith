@@ -109,7 +109,123 @@ Installation of Binary Executable
 \end_layout
 
 \begin_layout Standard
-[ADD MORE DETAIL HERE AFTER LOOKING AT BINARY PACKAGE]
+Binary executables are available for Linux, Mac OSX (Power PC), and Windows
+ (cygwin) from 
+\begin_inset LatexCommand \htmlurl[CIG website]{http://www.geodynamics.org/cig/software/packages/short/pylith/}
+
+\end_inset
+
+ in gzipped tar files.
+\end_layout
+
+\begin_layout Subsection
+Linux
+\end_layout
+
+\begin_layout Itemize
+Open a terminal window and change to the directory where you want to place
+ the distribution.
+\end_layout
+
+\begin_layout LyX-Code
+$ cd $HOME
+\end_layout
+
+\begin_layout LyX-Code
+$ mkdir pylith
+\end_layout
+
+\begin_layout LyX-Code
+$ cd pylith
+\end_layout
+
+\begin_layout Itemize
+Download the tarball for Linux from 
+\family typewriter
+http://www.geodynamics.org/cig/software/packages/short/pylith/
+\family default
+ and save it to the desired location, e.g., 
+\family typewriter
+$HOME/pylith
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Unpack the tarball.
+\end_layout
+
+\begin_layout LyX-Code
+$ tar -zvf pylith-1.0.0-linux-i686.tar.gz
+\end_layout
+
+\begin_layout Itemize
+Set your path to the bin directory.
+\end_layout
+
+\begin_layout LyX-Code
+$ PATH=${PATH}:${HOME}/pylith/pylith-1.0.0-linux-i686/bin
+\end_layout
+
+\begin_layout Subsection
+Mac OSX
+\end_layout
+
+\begin_layout Itemize
+Open a terminal window and change to the directory where you want to place
+ the distribution.
+\end_layout
+
+\begin_layout LyX-Code
+$ cd $HOME
+\end_layout
+
+\begin_layout LyX-Code
+$ mkdir pylith
+\end_layout
+
+\begin_layout LyX-Code
+$ cd pylith
+\end_layout
+
+\begin_layout Itemize
+Download the tarball for Darwin from 
+\family typewriter
+http://www.geodynamics.org/cig/software/packages/short/pylith/
+\family default
+ and save it to the desired location, e.g., 
+\family typewriter
+$HOME/pylith
+\family default
+.
+\end_layout
+
+\begin_layout Itemize
+Unpack the tarball.
+\end_layout
+
+\begin_layout LyX-Code
+$ tar -zvf pylith-1.0.0-darwin-powerpc.tar.gz
+\end_layout
+
+\begin_layout Itemize
+Set environment variables.
+\end_layout
+
+\begin_layout LyX-Code
+$ source setup.sh
+\end_layout
+
+\begin_layout Subsection
+Windows
+\end_layout
+
+\begin_layout Itemize
+Download the installer from 
+\family typewriter
+http://www.geodynamics.org/cig/software/packages/short/pylith/
+\family default
+ and save it to your desktop and run the installer.
 \end_layout
 
 \begin_layout Section
