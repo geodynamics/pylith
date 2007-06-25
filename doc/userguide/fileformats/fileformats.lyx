@@ -430,7 +430,7 @@ Spatial database files provide specification of a field over some set of
  by the values of the fields for that point.
  Although multiple values can be specified at each point with more than
  one value included in a search query, the interpolation of each value will
- be done indepedently.
+ be done independently.
  Time dependent variations of a field are not supported in these files.
  Alternative implementations of spatial databases using the same application
  programming interface (API) can provide other representations of spatial
@@ -466,7 +466,7 @@ The spatial database files need not provide the data using the same coordinate
  (longitude/latitude/elevation), and projected coordiates (e.g., coordinates
  in a transverse Mercator projection).
  Spatial database queries use the 
-\begin_inset LatexCommand \htmlurl[Proj.4 Cartographic Projections library]{http://proj.maptools.org}
+\begin_inset LatexCommand \htmlurl[Proj.4 Cartographic Projections library]{proj.maptools.org}
 
 \end_inset
 
@@ -649,7 +649,7 @@ SimpleDB { // start specifying the database parameters
 \end_layout
 
 \begin_layout LyX-Code
-  } // cs-data // end of coordinate system specifcation
+  } // cs-data // end of coordinate system specification
 \end_layout
 
 \begin_layout LyX-Code
@@ -711,9 +711,9 @@ Spatial Database Coordinate Systems
 \begin_layout Standard
 The spatial database files support four different types of coordinate systems.
  Conversions among the three geographic coordinate systems are supported
- in 3-D.
+ in 3D.
  Conversions among the geographic and geographic projected coordinate systems
- are supported in 2-D.
+ are supported in 2D.
  In using the coordinate systems, we assume that you have installed the
  
 \family typewriter
@@ -722,7 +722,7 @@ proj
  program in addition to the Proj.4 libraries, so that you can obtain a list
  of support projections, datums, and ellipsoids.
  Alternatively, refer to the documentation for the 
-\begin_inset LatexCommand \htmlurl[Proj.4 Cartographic Projections library]{http://proj.maptools.org}
+\begin_inset LatexCommand \htmlurl[Proj.4 Cartographic Projections library]{proj.maptools.org}
 
 \end_inset
 
@@ -735,7 +735,7 @@ Cartesian
 
 \begin_layout Standard
 This is a conventional Cartesian coordinate system.
- Conversions to other Cartesian coordinate systems are possible, 
+ Conversions to other Cartesian coordinate systems are possible.
 \end_layout
 
 \begin_layout LyX-Code
@@ -1122,9 +1122,9 @@ Geographic Local Cartesian
 \end_layout
 
 \begin_layout Standard
-This coordinate system is a geographically referenced, local 3-D Cartesian
+This coordinate system is a geographically referenced, local 3D Cartesian
  coordinate system.
- This allow use of a conventional Cartesian coordinate system with accurate
+ This allows use of a conventional Cartesian coordinate system with accurate
  georeferencing.
  For example, one can construct a finite-element model in this coordinate
  system and use spatial databases in geographic coordinates.
@@ -1320,7 +1320,7 @@ Spatial Database Parameters
 
 \begin_layout Standard
 As in the other Pyre objects, spatial database objects contain parameters
- that can be set from the command line or 
+ that can be set from the command line or using 
 \family typewriter
 .cf
 \family default
@@ -1338,23 +1338,7 @@ label Label for the database, which is used in diagnostic messages.
 
 \begin_layout Description
 query_type Type of search query to perform.
- Values for this parameter are 
-\begin_inset Quotes eld
-\end_inset
-
-linear
-\begin_inset Quotes erd
-\end_inset
-
- and 
-\begin_inset Quotes eld
-\end_inset
-
-nearest
-\begin_inset Quotes erd
-\end_inset
-
- (default).
+ Values for this parameter are ``linear'' and ``nearest'' (default).
 \end_layout
 
 \begin_layout Description

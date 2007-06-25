@@ -65,8 +65,7 @@ Specifying Material Properties
 \end_layout
 
 \begin_layout Standard
-Associating material properties with each a given cell involves several
- steps.
+Associating material properties with a given cell involves several steps.
  
 \end_layout
 
@@ -87,7 +86,7 @@ Set the parameters for each material in the materials container using
 \family typewriter
 .pml
 \family default
- files and/or command line arguments.
+ files and/or command-line arguments.
 \end_layout
 
 \begin_layout Enumerate
@@ -345,8 +344,8 @@ status open
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
 <features>
-<column alignment="left" valignment="top" leftline="true" rightline="true" width="0.85in">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
+<column alignment="center" valignment="middle" leftline="true" rightline="true" width="0.85in">
+<column alignment="center" valignment="middle" leftline="true" rightline="true" width="2.47in">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -957,13 +956,13 @@ Definitions
 \end_layout
 
 \begin_layout Standard
-In the following sections, we use a combination of vector and index notation,
- and our notation conventions are shown in Table 
+In the following sections, we use a combination of vector and index notation
+ (our notation conventions are shown in Table 
 \begin_inset LatexCommand \ref{tab:Mathematical-notation}
 
 \end_inset
 
-.
+).
  When using index notation, we use the common convention where repeated
  indices indicate summation over the range of the index.
  We also make frequent use of the scalar inner product.
@@ -1337,7 +1336,7 @@ where
 
 \end_inset
 
-With the form in equation 
+With the form in Equation 
 \begin_inset LatexCommand \ref{eq:23}
 
 \end_inset
@@ -1371,7 +1370,7 @@ The first term is zero, the second term includes a jump term associated
 \end_inset
 
  at time zero, and the last term covers the subsequent history of strain.
- Applying this separation to equation 
+ Applying this separation to Equation 
 \begin_inset LatexCommand \ref{eq:22}
 
 \end_inset
@@ -1386,7 +1385,7 @@ where we have left the sign off of the lower limit on the integral.
 \end_layout
 
 \begin_layout Standard
-Substituting equation 
+Substituting Equation 
 \begin_inset LatexCommand \ref{eq:25}
 
 \end_inset
@@ -1478,7 +1477,7 @@ We need to compute the tangent constitutive matrix when forming the stiffness
 
 \end_inset
 
-where the second derivative on the right may be easily deduced from equation
+where the second derivative on the right may be easily deduced from Equation
  
 \begin_inset LatexCommand \ref{eq:16}
 
@@ -1496,7 +1495,7 @@ where
 \end_inset
 
  is the identity matrix.
- From equations 
+ From Equations 
 \begin_inset LatexCommand \ref{eq:33}
 
 \end_inset
@@ -1876,7 +1875,7 @@ Therefore,
 
 \end_inset
 
-substituting equations 
+substituting Equations 
 \begin_inset LatexCommand \ref{eq:46}
 
 \end_inset
@@ -1935,7 +1934,7 @@ Equation
 
  -- and may be solved by bisection or by Newton's method.
  Once this parameter has been found, the deviatoric stresses for the current
- time step may be found from equations 
+ time step may be found from Equations 
 \begin_inset LatexCommand \ref{eq:65}
 
 \end_inset
@@ -1945,7 +1944,7 @@ Equation
 
 \end_inset
 
-, and the total stresses may be found from equation 
+, and the total stresses may be found from Equation 
 \begin_inset LatexCommand \ref{eq:54}
 
 \end_inset
@@ -1955,13 +1954,13 @@ Equation
 
 \begin_layout Standard
 To compute the tangent stress-strain relation, we proceed as for the linear
- case, but the evaluation of the first derivative in equation 
+ case, but the evaluation of the first derivative in Equation 
 \begin_inset LatexCommand \ref{eq:58}
 
 \end_inset
 
  is more complicated.
- We begin by rewriting equation 
+ We begin by rewriting Equation 
 \begin_inset LatexCommand \ref{eq:68}
 
 \end_inset
@@ -1985,7 +1984,7 @@ The derivative is then
 
 \end_inset
 
-From equation 
+From Equation 
 \begin_inset LatexCommand \ref{eq:66}
 
 \end_inset
@@ -2002,7 +2001,7 @@ We first note that
 
 \end_inset
 
- which allows us to rewrite equation 
+ which allows us to rewrite Equation 
 \begin_inset LatexCommand \ref{eq:69}
 
 \end_inset
@@ -2037,13 +2036,13 @@ Note that for a linear material
 \end_inset
 
 , this derivative is zero.
- This relation may be used in equation 
+ This relation may be used in Equation 
 \begin_inset LatexCommand \ref{eq:73}
 
 \end_inset
 
 .
- Then, using equations 
+ Then, using Equations 
 \begin_inset LatexCommand \ref{eq:57}
 
 \end_inset
