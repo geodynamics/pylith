@@ -776,7 +776,7 @@ status open
 <features>
 <column alignment="left" valignment="top" leftline="true" width="0.75in">
 <column alignment="center" valignment="top" leftline="true" width="1.3in">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.75in">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="2in">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -894,7 +894,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/quad4cohesive.fig
+	filename figs/quad4cohesive.eps
 
 \end_inset
 

@@ -69,7 +69,7 @@ The
  is dedicated to CIG issues associated with short-term crustal dynamics,
  including the use of PyLith.
  You can subscribe to the mailing list and view messages at 
-\begin_inset LatexCommand \htmlurl[cig-short Mailing List]{www.geodynamics.org/cig/lists/cig-short}
+\begin_inset LatexCommand \htmlurl[cig-short Mailing List]{geodynamics.org/cig/lists/cig-short}
 
 \end_inset
 
@@ -84,7 +84,7 @@ Roundup
 \family default
  for bug tracking.
  If you find a bug in PyLith, please submit a bug report to the 
-\begin_inset LatexCommand \htmlurl[CIG Roundup System]{www.geodynamics.org/roundup/}
+\begin_inset LatexCommand \htmlurl[CIG Roundup System]{geodynamics.org/roundup/}
 
 \end_inset
 
@@ -110,8 +110,8 @@ Installation of Binary Executable
 
 \begin_layout Standard
 Binary executables are available for Linux, Mac OSX (Power PC), and Windows
- (cygwin) from 
-\begin_inset LatexCommand \htmlurl[CIG website]{http://www.geodynamics.org/cig/software/packages/short/pylith/}
+ (cygwin) from the 
+\begin_inset LatexCommand \htmlurl[CIG website]{geodynamics.org/cig/software/packages/short/pylith/}
 
 \end_inset
 
@@ -140,10 +140,11 @@ $ cd pylith
 \end_layout
 
 \begin_layout Itemize
-Download the tarball for Linux from 
-\family typewriter
-http://www.geodynamics.org/cig/software/packages/short/pylith/
-\family default
+Download the 
+\begin_inset LatexCommand \htmlurl[Linux tarball]{geodynamics.org/cig/software/packages/short/pylith/}
+
+\end_inset
+
  and save it to the desired location, e.g., 
 \family typewriter
 $HOME/pylith
@@ -189,10 +190,11 @@ $ cd pylith
 \end_layout
 
 \begin_layout Itemize
-Download the tarball for Darwin from 
-\family typewriter
-http://www.geodynamics.org/cig/software/packages/short/pylith/
-\family default
+Download the 
+\begin_inset LatexCommand \htmlurl[Darwin tarball]{geodynamics.org/cig/software/packages/short/pylith/}
+
+\end_inset
+
  and save it to the desired location, e.g., 
 \family typewriter
 $HOME/pylith
@@ -221,11 +223,12 @@ Windows
 \end_layout
 
 \begin_layout Itemize
-Download the installer from 
-\family typewriter
-http://www.geodynamics.org/cig/software/packages/short/pylith/
-\family default
- and save it to your desktop and run the installer.
+Download the 
+\begin_inset LatexCommand \htmlurl[Windows installer]{geodynamics.org/cig/software/packages/short/pylith/}
+
+\end_inset
+
+, save it to your desktop, and run the installer.
 \end_layout
 
 \begin_layout Section

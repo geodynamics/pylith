@@ -688,7 +688,7 @@ We construct the weak form by multiplying the wave equation by a trial function
 
 \end_inset
 
-Expanding the left hand side yields
+Expanding the left-hand side yields
 \begin_inset Formula \begin{gather}
 \int_{V}\sigma_{ij,j}\phi_{i}\: dV+\int_{V}\sigma_{ij}\phi_{i,j}\: dV=\int_{S}\sigma_{ij}\phi_{i}n_{i}\: dS,\text{ or}\\
 \int_{V}\sigma_{ij,j}\phi_{i}\: dV=-\int_{V}\sigma_{ij}\phi_{i,j}\, dV+\int_{S}\sigma_{ij}\phi_{i}n_{i}\, dS.\end{gather}
@@ -772,7 +772,7 @@ so that the equation reduces to
 \end_inset
 
 This is the equation we want to solve.
- Discretizing into finite-elements separates the integral over the domain
+ Discretizing into finite elements separates the integral over the domain
  and boundaries into a sum of integrals over elements and element boundaries,
 \begin_inset Formula \begin{equation}
 \sum_{elements}(\int_{V^{e}}\frac{1}{2}\sigma_{ij}(\phi_{i,j}+\phi_{j,i})\, dV+\int_{V^{e}}\rho\ddot{u}_{i}\phi_{i}\, dV-\int_{V^{e}}f_{i}\phi_{i}\, dV-\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=0.\end{equation}
@@ -986,7 +986,7 @@ so that the equation reduces to
 \end_inset
 
 This is the equation we want to solve.
- Discretizing into finite-elements separates the integral over the domain
+ Discretizing into finite elements separates the integral over the domain
  and boundaries into a sum of integrals over elements and element boundaries,
 \begin_inset Formula \begin{equation}
 \sum_{elements}(\int_{V^{e}}\frac{1}{2}\underline{\sigma}:(\nabla+\nabla^{T})\overrightarrow{\phi}\, dV+\int_{V^{e}}\rho\frac{\partial^{2}\overrightarrow{u}}{\partial t^{2}}\cdot\overrightarrow{\phi}\, dV-\int_{V^{e}}\overrightarrow{f}\cdot\overrightarrow{\phi}\, dV-\int_{S_{t}^{e}}\overrightarrow{T}\cdot\overrightarrow{\phi}\, dS)=0.\end{equation}

@@ -73,7 +73,7 @@ This version of PyLith (1.0) is the first version to allow the solution of
  The major new features present in Lithomop included dynamic memory allocation
  and the use of the Pyre simulation framework and PETSc solvers.
  EqSim was written by Brad Aagaard to solve problems in earthquake dynamics,
- including rupture propagaiton and seismic wave propagation.
+ including rupture propagation and seismic wave propagation.
 \end_layout
 
 \begin_layout Standard

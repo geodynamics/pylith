@@ -41,6 +41,8 @@
 \begin_body
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Float figure
 placement H
 wide false
@@ -48,6 +50,8 @@ sideways false
 status open
 
 \begin_layout Standard
+\noindent
+\align center
 \begin_inset Graphics
 	filename pylith_cover.pdf
 	width 75page%
