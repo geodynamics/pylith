@@ -64,12 +64,12 @@ const int pylith::faults::CohesiveDataTet4i::_cells[] = {
  10, 12, 11,  9,
  13,  9, 12, 10,
   4,  5,  8,  7,
-  5,  7,  6, 10, 12, 11,
-  7, 5,  8,  12, 10, 13,
+  7,  6,  5, 12, 11, 10,
+  5,  8,  7, 10, 13, 12,
 };
 
 const int pylith::faults::CohesiveDataTet4i::_materialIds[] = {
-  0,  0, 0, 0,
+  0, 0, 0, 0,
   1, 1
 };
 
@@ -80,7 +80,7 @@ const int pylith::faults::CohesiveDataTet4i::_groupSizes[] =
 
 const int pylith::faults::CohesiveDataTet4i::_groups[] = {
   5, 6, 7, 8, 10, 11, 12, 13,
-  0, 5
+  4, 9
 };
 
 const char* pylith::faults::CohesiveDataTet4i::_groupNames[] = {
