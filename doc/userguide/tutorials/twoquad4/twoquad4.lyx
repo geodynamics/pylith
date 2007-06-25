@@ -352,7 +352,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/axialdisp.eps
+	filename figs/axialdisp.jpg
 	lyxscale 50
 	scale 50
 
@@ -521,7 +521,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/sheardispl.eps
+	filename figs/sheardispl.jpg
 	lyxscale 50
 	scale 50
 
@@ -754,7 +754,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/dislocation.eps
+	filename figs/dislocation.jpg
 	lyxscale 50
 	scale 50
 
