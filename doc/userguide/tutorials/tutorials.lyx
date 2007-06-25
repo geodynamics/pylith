@@ -124,13 +124,13 @@ examples/twocells/twotri3
 \end_layout
 
 \begin_layout Standard
-\begin_inset Include \input{splitcube/splitcube.lyx}
+\begin_inset Include \input{twotri3/twotri3.lyx}
 preview false
 
 \end_inset
 
  
-\begin_inset Include \input{reversenog/reversenog.lyx}
+\begin_inset Include \input{twoquad4/twoquad4.lyx}
 preview false
 
 \end_inset
