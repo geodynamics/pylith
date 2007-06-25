@@ -61,9 +61,7 @@ Getting Help and Reporting Bugs
 \end_layout
 
 \begin_layout Standard
-Help is available via the CIG Short-Term Crustal Dynamics Mailing List and
- CIG's issue tracking system.
- The 
+The 
 \begin_inset LatexCommand \url[CIG Short-Term Crustal Dynamics Mailing List]{cig-short@geodynamics.org}
 
 \end_inset
@@ -125,7 +123,7 @@ PyLith 1.0 depends on a number of other packages.
  binary packages.
  On the one hand, using these packages removes the burden of configuring,
  building, and installing these packages, but it can come with its own host
- of complications if a consistent compiler and configuration settings are
+ of complications if consistent compiler and configuration settings are
  not used across all of the packages on which PyLith depends.
  This is usually not an issue with Linux distributions, such as Fedora,
  Ubuntu, and Debian that have good quality control; it can be an issue with
