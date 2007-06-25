@@ -136,6 +136,12 @@ preview false
 \end_inset
 
  
+\begin_inset Include \input{twotet4/twotet4.lyx}
+preview false
+
+\end_inset
+
+
 \end_layout
 
 \end_body
