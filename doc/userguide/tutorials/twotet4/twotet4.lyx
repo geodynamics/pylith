@@ -107,7 +107,7 @@ status open
 \end_layout
 
 \begin_layout Caption
-Mesh used for the two triangle examples.
+Mesh used for the two tetrahedra examples.
 \begin_inset LatexCommand \label{fig:twotet4-mesh}
 
 \end_inset
