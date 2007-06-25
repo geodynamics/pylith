@@ -13,6 +13,8 @@ pythia
 spatialdata
   proj
 numpy
+pyrexembed (from CIG)
+nemesis
 
 OPTIONAL DEPENDENCIES
 

@@ -42,9 +42,9 @@
  *       /   \
  *      /     \
  *     /       \
- *   12--------- 10
+ *    8---------  5
  *    |          /|
- *    8---------5 |
+ *   12--------10 |
  *     \       /| |\
  *      \     / | | \
  *       \   /  | |  \
@@ -54,7 +54,7 @@
  *           \  | |  /
  *            \ | | /
  *             \| |/
- *              6-11
+ *             11-6
  */
 
 #include "CohesiveDataTri3d.hh"
@@ -89,12 +89,12 @@ const int pylith::faults::CohesiveDataTri3d::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataTri3d::_cells[] = {
-  4,  6,  5,
- 10, 11,  7,
-  8,  4,  5,
- 12, 10,  9,
-  6,  5, 11, 10,
-  5,  8, 10, 12,
+  4, 11, 10,
+  5,  6,  7,
+ 12,  4, 10,
+  8,  5,  9,
+  5,  6, 10, 11,
+  8,  5, 12, 10,
 };
 
 const int pylith::faults::CohesiveDataTri3d::_materialIds[] = {

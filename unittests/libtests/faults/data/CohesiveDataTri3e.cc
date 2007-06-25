@@ -42,19 +42,19 @@
  *       /   \
  *      /     \
  *     /       \
- *   12--------- 10
+ *    8---------  5
  *    |          /|
- *    8---------5 |
- *     \       /| |\
- *      \     / | | \
- *       \   /  | |  \
- *        \ /   | |   \
+ *   12--------10 |\
+ *     \       /| | \
+ *      \     / | |  \
+ *       \   /  | |   \
+ *        \ /   | |    \
  *         4    | |    7
  *          \   | |   /
  *           \  | |  /
  *            \ | | /
  *             \| |/
- *              6-11
+ *             11-6
  */
 
 #include "CohesiveDataTri3e.hh"
@@ -89,12 +89,12 @@ const int pylith::faults::CohesiveDataTri3e::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataTri3e::_cells[] = {
-  4,  6,  5,
- 10, 11,  7,
- 12, 10,  9,
-  8,  4,  5,
-  6,  5, 11, 10,
-  5,  8, 10, 12,
+  4, 11, 10,
+  5,  6,  7,
+  8,  5,  9,
+ 12,  4, 10,
+  5,  6, 10, 11,
+  8,  5, 12, 10,
 };
 
 const int pylith::faults::CohesiveDataTri3e::_materialIds[] = {

@@ -31,7 +31,7 @@
  *
  * Cells are 0-1, 8, vertices are 2-7.
  *
- *              3 -7- 6
+ *              6 -7- 3
  *             /|     |\
  *            / |     | \
  *           /  |     |  \
@@ -41,7 +41,7 @@
  *           \  |     |  /
  *            \ |     | /
  *             \|     |/
- *              4 -9- 8
+ *              8 -9- 4
  */
 
 #include "CohesiveDataTri3Lagrange.hh"
@@ -72,9 +72,9 @@ const int pylith::faults::CohesiveDataTri3Lagrange::_numCorners[] = {
 };
 
 const int pylith::faults::CohesiveDataTri3Lagrange::_cells[] = {
-  2,  4,  3,
-  6,  8,  5,
-  4,  3,  8,  6,  9,  7
+  2,  8,  6,
+  3,  4,  5,
+  3,  4,  6,  8,  7,  9
 };
 
 const int pylith::faults::CohesiveDataTri3Lagrange::_materialIds[] = {

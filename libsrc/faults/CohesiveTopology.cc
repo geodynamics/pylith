@@ -29,29 +29,30 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   assert(0 != fault);
 
   typedef ALE::SieveAlg<Mesh> sieveAlg;
+  typedef std::set<Mesh::point_type> PointSet;
 
-  // Create set with vertices on fault
   const int_section_type::chart_type& chart = groupField->getChart();
-  std::set<Mesh::point_type> faultVertices; // Vertices on fault
+  PointSet faultVertices; // Vertices on fault
   const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
   *fault = new Mesh(mesh->comm(), mesh->getDimension()-1, mesh->debug());
   const ALE::Obj<sieve_type> faultSieve = new sieve_type(sieve->comm(), 
                                                          sieve->debug());
   const int  numCells   = mesh->heightStratum(0)->size();
-  int        numCorners = 0;
-  int        faceSize   = 0;
-  int       *indices    = NULL;
-  int        oppositeVertex;
+  int        numCorners = 0;    // The number of vertices in a mesh cell
+  int        faceSize   = 0;    // The number of vertices in a mesh face
+  int       *indices    = NULL; // The indices of a face vertex set in a cell
+  int        oppositeVertex;    // For simplices, the vertex opposite a given face
   PointArray origVertices;
   PointArray faceVertices;
   PointArray neighborVertices;
 
   if (!(*fault)->commRank()) {
     numCorners = sieve->nCone(*mesh->heightStratum(0)->begin(), mesh->depth())->size();
-    faceSize   = _numFaceVertices(*mesh->heightStratum(0)->begin(), mesh, -1);
+    faceSize   = _numFaceVertices(*mesh->heightStratum(0)->begin(), mesh);
     indices    = new int[faceSize];
   }
 
+  // Create set with vertices on fault
   for(int_section_type::chart_type::iterator c_iter = chart.begin();
       c_iter != chart.end();
       ++c_iter) {
@@ -59,20 +60,16 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     faultVertices.insert(*c_iter);
   } // for
 
-  const std::set<Mesh::point_type>::const_iterator fvBegin = 
-    faultVertices.begin();
-  const std::set<Mesh::point_type>::const_iterator fvEnd = 
-    faultVertices.end();
+  const PointSet::const_iterator fvBegin = faultVertices.begin();
+  const PointSet::const_iterator fvEnd   = faultVertices.end();
 
   int f = sieve->base()->size() + sieve->cap()->size();
   int debug = mesh->debug();
-  ALE::Obj<std::set<Mesh::point_type> > face = new std::set<Mesh::point_type>();
-  std::set<Mesh::point_type> faultCells;
+  ALE::Obj<PointSet> face = new PointSet();
+  PointSet faultCells;
   
   // Create a sieve which captures the fault
-  for(std::set<int>::const_iterator fv_iter = fvBegin;
-      fv_iter != fvEnd;
-      ++fv_iter) {
+  for(PointSet::const_iterator fv_iter = fvBegin; fv_iter != fvEnd; ++fv_iter) {
     const ALE::Obj<sieveAlg::supportArray>& cells =
       sieveAlg::nSupport(mesh, *fv_iter, mesh->depth());
     const sieveAlg::supportArray::iterator cBegin = cells->begin();
@@ -81,10 +78,8 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     if (debug)
       std::cout << "Checking fault vertex " << *fv_iter << std::endl;
     for(sieveAlg::supportArray::iterator c_iter = cBegin;
-	c_iter != cEnd;
-	++c_iter) {
-      const unsigned int faceSize = _numFaceVertices(*c_iter, mesh, -1);
-
+        c_iter != cEnd;
+        ++c_iter) {
       if (debug) std::cout << "  Checking cell " << *c_iter << std::endl;
       if (faultCells.find(*c_iter) != faultCells.end())	continue;
       const ALE::Obj<sieveAlg::coneArray>& cone =
@@ -94,8 +89,8 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
 
       face->clear();
       for(sieveAlg::coneArray::iterator v_iter = vBegin;
-	  v_iter != vEnd;
-	  ++v_iter) {
+          v_iter != vEnd;
+          ++v_iter) {
         if (faultVertices.find(*v_iter) != fvEnd) {
           if (debug) std::cout << "    contains fault vertex " << *v_iter << std::endl;
           face->insert(face->end(), *v_iter);
@@ -113,44 +108,12 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
           throw ALE::Exception("Invalid fault sieve: Multiple faces from "
                                "vertex set");
         } else if (preFace->size() == 1) {
-          const Mesh::point_type faultFace = *preFace->begin();
-
-          if (*c_iter < *faultSieve->support(faultFace)->begin()) {
-            if (debug) std::cout << "  Reversing face " << faultFace << std::endl;
-            faceVertices.clear();
-            const ALE::Obj<sieve_type::traits::coneSequence>& cone = faultSieve->cone(faultFace);
-            for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
-                v_iter != cone->end(); ++v_iter) {
-              faceVertices.insert(faceVertices.begin(), *v_iter);
-            }
-            faultSieve->clearCone(faultFace);
-            int color = 0;
-            for(PointArray::const_iterator v_iter = faceVertices.begin();
-                v_iter != faceVertices.end(); ++v_iter) {
-              faultSieve->addArrow(*v_iter, faultFace, color++);
-            } // for
-          }
-          faultSieve->addArrow(faultFace, *c_iter);
+          // Add the other cell neighbor for this face
+          faultSieve->addArrow(*preFace->begin(), *c_iter);
         } else if (preFace->size() == 0) {
+          if (debug) std::cout << "  Orienting face " << f << std::endl;
+          _getOrientedFace(mesh, *c_iter, face, numCorners, indices, &origVertices, &faceVertices);
           if (debug) std::cout << "  Adding face " << f << std::endl;
-          // Give the face an orientation
-          const ALE::Obj<sieve_type::traits::coneSequence>& cone = sieve->cone(*c_iter);
-
-          origVertices.clear();
-          faceVertices.clear();
-          int v = 0;
-          for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
-              v_iter != cone->end(); ++v_iter, ++v) {
-            if (face->find(*v_iter) != face->end()) {
-              if (debug) std::cout << "    vertex " << *v_iter << std::endl;
-              indices[origVertices.size()] = v;
-              origVertices.insert(origVertices.end(), *v_iter);
-            } else {
-              if (debug) std::cout << "    vertex " << *v_iter << std::endl;
-              oppositeVertex = v;
-            } // if/else
-          }
-          _faceOrientation(*c_iter, mesh, numCorners, indices, oppositeVertex, &origVertices, &faceVertices);
           int color = 0;
           for(PointArray::const_iterator f_iter = faceVertices.begin();
               f_iter != faceVertices.end(); ++f_iter) {
@@ -169,83 +132,61 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   faultCells.clear();
   if (debug) (*fault)->view("Fault mesh");
   // Orient the fault sieve
-  int numFaultCorners = 0;
-  PointArray flippedFaces;
+  const ALE::Obj<Mesh::label_sequence>& fFaces = (*fault)->heightStratum(1);
+  int faultDepth      = (*fault)->depth()-1; // Depth of fault cells
+  int numFaultCorners = 0; // The number of vertices in a fault cell
+  PointArray flippedFaces; // Incorrectly oriented fault cells
 
   if (!(*fault)->commRank()) {
-    numFaultCorners = faultSieve->nCone(*(*fault)->heightStratum(1)->begin(), (*fault)->depth()-1)->size();
+    numFaultCorners = faultSieve->nCone(*fFaces->begin(), faultDepth)->size();
     if (debug) std::cout << "  Fault corners " << numFaultCorners << std::endl;
+    assert(numFaultCorners == faceSize);
   }
-  const ALE::Obj<Mesh::label_sequence>& fFaces = (*fault)->heightStratum(1);
-  int faultFaceSize = _numFaceVertices(*fFaces->begin(), (*fault), (*fault)->depth()-1);
+  int faultFaceSize = _numFaceVertices(*fFaces->begin(), (*fault), faultDepth);
   if (debug) std::cout << "  Fault face size " << faultFaceSize << std::endl;
   for(Mesh::label_sequence::iterator e_iter = fFaces->begin(); e_iter != fFaces->end(); ++e_iter) {
     if (debug) std::cout << "  Checking fault face " << *e_iter << std::endl;
-    const Obj<sieve_type::traits::coneSequence>& vertices  = faultSieve->cone(*e_iter);
-    sieve_type::traits::coneSequence::iterator vEnd = vertices->end();
-    std::set<Mesh::point_type> facesSeen;
+    const Obj<sieve_type::traits::coneSequence>& vertices = faultSieve->cone(*e_iter);
+    sieve_type::traits::coneSequence::iterator   vEnd     = vertices->end();
+    PointSet facesSeen;
 
     for(sieve_type::traits::coneSequence::iterator v_iter = vertices->begin(); v_iter != vEnd; ++v_iter) {
-      const Obj<sieve_type::traits::supportSequence>& neighbors = faultSieve->support(*v_iter);
-      sieve_type::traits::supportSequence::iterator nEnd = neighbors->end();
+      const Obj<sieve_type::traits::supportSequence>& neighbors  = faultSieve->support(*v_iter);
+      const sieve_type::traits::supportSequence::iterator nBegin = neighbors->begin();
+      const sieve_type::traits::supportSequence::iterator nEnd   = neighbors->end();
 
-      for(sieve_type::traits::supportSequence::iterator n_iter = neighbors->begin(); n_iter != nEnd; ++n_iter) {
+      for(sieve_type::traits::supportSequence::iterator n_iter = nBegin; n_iter != nEnd; ++n_iter) {
         if (facesSeen.find(*n_iter) != facesSeen.end()) continue;
         facesSeen.insert(*n_iter);
         if (debug) std::cout << "  Checking fault neighbor " << *n_iter << std::endl;
         if (*e_iter >= *n_iter) continue;
-        const ALE::Obj<sieve_type::coneSet>& meet = faultSieve->nMeet(*e_iter, *n_iter, 1);
+        const ALE::Obj<sieve_type::coneSet>& meet = faultSieve->nMeet(*e_iter, *n_iter, faultDepth);
 
-        for(sieve_type::coneSet::iterator c_iter = meet->begin(); c_iter != meet->end(); ++c_iter) {
-          if (debug) std::cout << "    meet " << *c_iter << std::endl;
+        if (debug) {
+          for(sieve_type::coneSet::iterator c_iter = meet->begin(); c_iter != meet->end(); ++c_iter)
+            std::cout << "    meet " << *c_iter << std::endl;
         }
         if ((int) meet->size() == faultFaceSize) {
           if (debug) std::cout << "    Found neighboring fault face " << *n_iter << std::endl;
-          // Give the faces an orientation
-          const ALE::Obj<sieve_type::traits::coneSequence>& eCone = faultSieve->cone(*e_iter);
+          bool eOrient = _getOrientedFace(*fault, *e_iter, meet, numFaultCorners, indices, &origVertices, &faceVertices);
+          bool nOrient = _getOrientedFace(*fault, *n_iter, meet, numFaultCorners, indices, &origVertices, &neighborVertices);
 
-          origVertices.clear();
-          faceVertices.clear();
-          int v = 0;
-          for(sieve_type::traits::coneSequence::iterator v_iter = eCone->begin(); v_iter != eCone->end(); ++v_iter, ++v) {
-            if (meet->find(*v_iter) != meet->end()) {
-              indices[origVertices.size()] = v;
-              origVertices.insert(origVertices.end(), *v_iter);
-              if (debug) std::cout << "    vertex " << *v_iter << std::endl;
-            } else {
-              oppositeVertex = v;
-              if (debug) std::cout << "    vertex " << *v_iter << " opposite vertex " << oppositeVertex << std::endl;
-            } // if/else
-          }
-          bool eOrient = _faceOrientation(*e_iter, (*fault), numFaultCorners, indices, oppositeVertex, &origVertices, &faceVertices);
-          const ALE::Obj<sieve_type::traits::coneSequence>& nCone = faultSieve->cone(*n_iter);
-
-          origVertices.clear();
-          neighborVertices.clear();
-          v = 0;
-          for(sieve_type::traits::coneSequence::iterator v_iter = nCone->begin(); v_iter != nCone->end(); ++v_iter, ++v) {
-            if (meet->find(*v_iter) != meet->end()) {
-              indices[origVertices.size()] = v;
-              origVertices.insert(origVertices.end(), *v_iter);
-              if (debug) std::cout << "    vertex " << *v_iter << std::endl;
-            } else {
-              oppositeVertex = v;
-              if (debug) std::cout << "    vertex " << *v_iter << " opposite vertex " << oppositeVertex << std::endl;
-            } // if/else
-          }
-          bool nOrient = _faceOrientation(*n_iter, (*fault), numFaultCorners, indices, oppositeVertex, &origVertices, &neighborVertices);
           if (faultFaceSize > 1) {
-            for(PointArray::iterator v_iter = faceVertices.begin(); v_iter != faceVertices.end(); ++v_iter) {
-              if (debug) std::cout << "  face vertex " << *v_iter << std::endl;
+            if (debug) {
+              for(PointArray::iterator v_iter = faceVertices.begin(); v_iter != faceVertices.end(); ++v_iter) {
+                std::cout << "  face vertex " << *v_iter << std::endl;
+              }
+              for(PointArray::iterator v_iter = neighborVertices.begin(); v_iter != neighborVertices.end(); ++v_iter) {
+                std::cout << "  neighbor vertex " << *v_iter << std::endl;
+              }
             }
-            for(PointArray::iterator v_iter = neighborVertices.begin(); v_iter != neighborVertices.end(); ++v_iter) {
-              if (debug) std::cout << "  neighbor vertex " << *v_iter << std::endl;
-            }
+            // Here we use the fact that fault faces are only 1D
             if (*faceVertices.begin() == *neighborVertices.begin()) {
               if (debug) std::cout << "  Scheduling fault face " << *n_iter << " to be flipped" << std::endl;
               flippedFaces.push_back(*n_iter);
             }
           } else {
+            // For 0D, we use the orientation returned (not sure if we have to do this)
             if (nOrient == eOrient) {
               if (debug) std::cout << "  Scheduling fault face " << *n_iter << " to be flipped" << std::endl;
               flippedFaces.push_back(*n_iter);
@@ -317,75 +258,63 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   PointArray newVertices;
 
   for(Mesh::label_sequence::iterator f_iter = faces->begin();
-      f_iter != faces->end();
-      ++f_iter, ++newPoint) {
-    if (debug)
-      std::cout << "Considering fault face " << *f_iter << std::endl;
+      f_iter != faces->end(); ++f_iter, ++newPoint) {
+    if (debug) std::cout << "Considering fault face " << *f_iter << std::endl;
     const ALE::Obj<sieve_type::traits::supportSequence>& cells =
       faultSieve->support(*f_iter);
     Mesh::point_type cell = *cells->begin();
-    const ALE::Obj<sieve_type::traits::coneSequence>& cone = sieve->cone(cell);
-    
+
     if (debug) std::cout << "  Checking orientation against cell " << cell << std::endl;
-    origVertices.clear();
-    faceVertices.clear();
-    int v = 0;
-    for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin(); v_iter != cone->end(); ++v_iter, ++v) {
-      if (vertexRenumber.find(*v_iter) != vertexRenumber.end()) {
-        if (debug) std::cout << "    vertex " << vertexRenumber[*v_iter] << std::endl;
-        indices[origVertices.size()] = v;
-        origVertices.insert(origVertices.end(), *v_iter);
-      } else {
-        if (debug) std::cout << "    vertex " << *v_iter << " opposite vertex " << v << std::endl;
-        oppositeVertex = v;
-      } // if/else
-    }
-    _faceOrientation(cell, mesh, numCorners, indices, oppositeVertex, &origVertices, &faceVertices);
+    _getOrientedFace(mesh, cell, &vertexRenumber, numCorners, indices, &origVertices, &faceVertices);
+
     const ALE::Obj<sieve_type::traits::coneSequence>& faceCone = faultSieve->cone(*f_iter);
     bool found = true;
 
-    v = 0;
-    for(sieve_type::traits::coneSequence::iterator v_iter = faceCone->begin(); v_iter != faceCone->end(); ++v_iter, ++v) {
-      if (debug) std::cout << "    Checking " << *v_iter << " against " << faceVertices[v] << std::endl;
-      if (faceVertices[v] != *v_iter) {
-        found = false;
-        break;
+    if (numFaultCorners == 2) {
+      if (faceVertices[0] != *faceCone->begin()) found = false;
+    } else {
+      int v = 0;
+      // Locate first vertex
+      while((v < numFaultCorners) && (faceVertices[v] != *faceCone->begin())) ++v;
+      for(sieve_type::traits::coneSequence::iterator v_iter = faceCone->begin(); v_iter != faceCone->end(); ++v_iter, ++v) {
+        if (debug) std::cout << "    Checking " << *v_iter << " against " << faceVertices[v%numFaultCorners] << std::endl;
+        if (faceVertices[v%numFaultCorners] != *v_iter) {
+          found = false;
+          break;
+        }
       }
     }
     if (found) {
       if (debug) std::cout << "  Choosing other cell" << std::endl;
       cell = *(++cells->begin());
     } else {
+      if (debug) std::cout << "  Verifing reverse orientation" << std::endl;
       found = true;
-      v = 0;
+      int v = 0;
+      // Locate first vertex
+      while((v < numFaultCorners) && (faceVertices[v] != *faceCone->rbegin())) ++v;
       for(sieve_type::traits::coneSequence::reverse_iterator v_iter = faceCone->rbegin(); v_iter != faceCone->rend(); ++v_iter, ++v) {
-        if (debug) std::cout << "    Checking " << *v_iter << " against " << faceVertices[v] << std::endl;
-        if (faceVertices[v] != *v_iter) {
+        if (debug) std::cout << "    Checking " << *v_iter << " against " << faceVertices[v%numFaultCorners] << std::endl;
+        if (faceVertices[v%numFaultCorners] != *v_iter) {
           found = false;
           break;
         }
       }
-      if (!found) std::cout << "ERROR: Invalid orientation " << cell << std::endl;
+      assert(found);
     }
     if (debug) std::cout << "  Replacing cell " << cell << std::endl;
     const ALE::Obj<sieve_type::traits::coneSequence>& cCone = sieve->cone(cell);
 
-    origVertices.clear();
     newVertices.clear();
-    v = 0;
     for(sieve_type::traits::coneSequence::iterator v_iter = cCone->begin();
-        v_iter != cCone->end(); ++v_iter, ++v) {
+        v_iter != cCone->end(); ++v_iter) {
       if (vertexRenumber.find(*v_iter) != vertexRenumber.end()) {
         if (debug)
           std::cout << "    vertex " << vertexRenumber[*v_iter] << std::endl;
-        indices[origVertices.size()] = v;
         newVertices.insert(newVertices.end(), vertexRenumber[*v_iter]);
-        origVertices.insert(origVertices.end(), *v_iter);
       } else {
-        if (debug)
-          std::cout << "    vertex " << *v_iter << std::endl;
+        if (debug) std::cout << "    vertex " << *v_iter << std::endl;
         newVertices.insert(newVertices.end(), *v_iter);
-        oppositeVertex = v;
       } // if/else
     } // for
     sieve->clearCone(cell);
@@ -398,19 +327,6 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     const ALE::Obj<sieve_type::traits::coneSequence>& fCone  = faultSieve->cone(*f_iter);
     const sieve_type::traits::coneSequence::iterator  fBegin = fCone->begin();
     const sieve_type::traits::coneSequence::iterator  fEnd   = fCone->end();
-// 	if (debug) {
-//       int v = 0;
-
-// 	  std::cout << "  Original Vertices: " << std::endl << "    ";
-//       for(PointArray::iterator v_iter = origVertices.begin(); v_iter != origVertices.end(); ++v_iter, ++v) {
-//         std::cout << " " << *v_iter << "(" << indices[v] << ")";
-//       }
-// 	  std::cout << std::endl << "  Opposite Vertex: " << oppositeVertex << std::endl;
-//     }
-//     faceVertices.clear();
-//     _faceOrientation(cell, mesh, numCorners, indices, oppositeVertex, &origVertices, &faceVertices);
-//     const PointArray::iterator fBegin = faceVertices.begin();
-//     const PointArray::iterator fEnd   = faceVertices.end();
     color = 0;
 
 	if (debug)
@@ -439,11 +355,10 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   } // for
   if (!(*fault)->commRank()) delete [] indices;
   mesh->stratify();
-  const ALE::Obj<Mesh::label_type>&           label          = mesh->createLabel(std::string("censored depth"));
-  const ALE::Obj<std::set<Mesh::point_type> > modifiedPoints = new std::set<Mesh::point_type>();
+  const ALE::Obj<Mesh::label_type>& label          = mesh->createLabel(std::string("censored depth"));
+  const ALE::Obj<PointSet>          modifiedPoints = new PointSet();
   _computeCensoredDepth(mesh, label, mesh->getSieve(), mesh->getSieve()->roots(), firstCohesiveCell, modifiedPoints);
-  if (debug)
-    mesh->view("Mesh with Cohesive Elements");
+  if (debug) mesh->view("Mesh with Cohesive Elements");
 
   // Fix coordinates
   const ALE::Obj<real_section_type>& coordinates = 
@@ -477,7 +392,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
 unsigned int
 pylith::faults::CohesiveTopology::_numFaceVertices(const Mesh::point_type& cell,
                                                    const ALE::Obj<Mesh>& mesh,
-                                                   const int depth = -1)
+                                                   const int depth)
 { // _numFaceVertices
 
   /** :QUESTION:
@@ -739,6 +654,41 @@ pylith::faults::CohesiveTopology::_faceOrientation(const Mesh::point_type& cell,
   }
   return posOrient;
 } // _faceOrientation
+
+// ----------------------------------------------------------------------
+// Given a cell and a face, as a set of vertices,
+//   return the oriented face, as a set of vertices, in faceVertices
+// The orientation is such that the face normal points out of the cell
+template<typename FaceType>
+bool
+pylith::faults::CohesiveTopology::_getOrientedFace(const ALE::Obj<Mesh>& mesh,
+                                                   const Mesh::point_type& cell,
+                                                   FaceType face,
+                                                   const int numCorners,
+                                                   int indices[],
+                                                   PointArray *origVertices,
+                                                   PointArray *faceVertices)
+{
+  const ALE::Obj<sieve_type::traits::coneSequence>& cone = mesh->getSieve()->cone(cell);
+  const int debug = mesh->debug();
+  int       v     = 0;
+  int       oppositeVertex;
+
+  origVertices->clear();
+  faceVertices->clear();
+  for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
+      v_iter != cone->end(); ++v_iter, ++v) {
+    if (face->find(*v_iter) != face->end()) {
+      if (debug) std::cout << "    vertex " << *v_iter << std::endl;
+      indices[origVertices->size()] = v;
+      origVertices->insert(origVertices->end(), *v_iter);
+    } else {
+      if (debug) std::cout << "    vertex " << *v_iter << std::endl;
+      oppositeVertex = v;
+    }
+  }
+  return _faceOrientation(cell, mesh, numCorners, indices, oppositeVertex, origVertices, faceVertices);
+}
 
 template<class InputPoints>
 void
