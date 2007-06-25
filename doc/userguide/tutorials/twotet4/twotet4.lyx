@@ -318,10 +318,9 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/axialdisp.jpg
+	filename figs/axialdisp.eps
 	lyxscale 50
 	scale 50
-	keepAspectRatio
 
 \end_inset
 
@@ -528,7 +527,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/dislocation.jpg
+	filename figs/dislocation.eps
 	lyxscale 50
 	scale 50
 
