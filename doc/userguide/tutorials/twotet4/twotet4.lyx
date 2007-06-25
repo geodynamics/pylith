@@ -41,7 +41,7 @@
 
 \end_inset
 
-Tutorial Using Two Linear Triangles and PyLith Mesh ASCII Format
+Tutorial Using Two Linear Tetrahedra and PyLith Mesh ASCII Format
 \end_layout
 
 \begin_layout Subsection
@@ -49,10 +49,10 @@ Overview
 \end_layout
 
 \begin_layout Standard
-This tutorial is the simplest 2D example of a quasi-static finite element
- problem (a simpler problem would consist of a 1D bar).
- It is a mesh composed of two linear triangles subject to displacement boundary
- conditions, assuming plane-strain linear elastic behavior.
+This tutorial is a simple 3D example of a quasi-static finite element problem.
+ It is a mesh composed of two linear tetrahedra subject to displacement
+ boundary conditions, and is probably the simplest example of a 3D elastic
+ problem.
  Due to the simple geometry of the problem, the mesh may be constructed
  by hand, using PyLith mesh ASCII format to describe the mesh.
  In this tutorial, we will walk through the steps necessary to construct,
@@ -66,8 +66,7 @@ Mesh Description
 \end_layout
 
 \begin_layout Standard
-The mesh consists of two triangles forming a square with edge lengths of
- one unit (Figure 
+The mesh consists of two tetrahedra forming a pyramid shape (Figure 
 \begin_inset LatexCommand \ref{fig:twotri3-mesh}
 
 \end_inset
