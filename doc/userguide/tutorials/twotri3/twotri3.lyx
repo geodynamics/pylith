@@ -51,12 +51,12 @@ Overview
 \begin_layout Standard
 This tutorial is the simplest 2D example of a quasi-static finite element
  problem (a simpler problem would consist of a 1D bar).
- It is a mesh composed of 2 linear triangles subject to displacement boundary
+ It is a mesh composed of two linear triangles subject to displacement boundary
  conditions, assuming plane-strain linear elastic behavior.
  Due to the simple geometry of the problem, the mesh may be constructed
  by hand, using PyLith Mesh ASCII format to describe the mesh.
  In this tutorial, we will walk through the steps necessary to construct,
- run, and view 3 problems that use the same mesh.
+ run, and view three problems that use the same mesh.
  In addition to this manual, each of the files for the example problem is
  heavily documented to aid users in understanding the basic file formats.
 \end_layout
@@ -67,18 +67,47 @@ Mesh Description
 
 \begin_layout Standard
 The mesh consists of two triangles forming a square with edge lengths of
- 1 unit (***FIGURE***).
+ one unit (***FIGURE***).
  The mesh geometry and topology is described in the file 
 \family typewriter
 twotri3.mesh
 \family default
 , which is in PyLith Mesh ASCII format.
- This file format is described in (***REFERENCE***).
+ This file format is described in 
+\begin_inset LatexCommand \ref{cha:File-Formats}
+
+\end_inset
+
+.
  This file describes the dimensionality of the problem (1D, 2D, or 3D),
- the nodal coordinates, the nodes composing each element, the material ID
- to be associated with each element, and then provides groups of vertices
- that may be used to define faults or surfaces to which boundary conditions
- may be applied.
+ the coordinates of the vertices (nodes), the vertices composing each cell
+ (element), the material ID to be associated with each element, and then
+ provides groups of vertices that may be used to define faults or surfaces
+ to which boundary conditions may be applied.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Caption
+Mesh used for the two triangle examples.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename figs/twotri3-mesh.eps
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -86,7 +115,7 @@ Additional Common Information
 \end_layout
 
 \begin_layout Standard
-In addition to the mesh, the 3 example problems share additional information.
+In addition to the mesh, the three example problems share additional information.
  For problems of this type, it is generally useful to create a file named
  
 \family typewriter
@@ -146,7 +175,7 @@ pylithapp.cfg
  matprops.spatialdb
 \family default
 .
- Although the material model is specific in 
+ Although the material model is specified in 
 \family typewriter
 pylithapp.cfg
 \family default
@@ -289,7 +318,7 @@ Color contours and vectors of displacement for the axial displacement example.
 \begin_layout Standard
 \begin_inset Graphics
 	filename figs/axialdisp.jpg
-	lyxscale 80
+	lyxscale 65
 	scale 75
 	keepAspectRatio
 
@@ -457,7 +486,7 @@ Color contours and vectors of displacement for the shear displacement example.
 \begin_layout Standard
 \begin_inset Graphics
 	filename figs/sheardisp.jpg
-	lyxscale 80
+	lyxscale 65
 
 \end_inset
 
@@ -525,11 +554,7 @@ dislocation_disp.spatialdb
 \end_layout
 
 \begin_layout Description
-pylithapp.timedependent.interfaces We give the type of fault being used (
-\family typewriter
-pylith.faults.FaultCohesiveKin
-\family default
-), give the label (defined in 
+pylithapp.timedependent.interfaces We give the label (defined in 
 \family typewriter
 twotri3.mesh
 \family default
@@ -563,8 +588,8 @@ dislocation.cfg
 \end_layout
 
 \begin_layout Standard
-The fault example requires 3 additional database files that were not needed
- for the simple displacement examples.
+The fault example requires three additional database files that were not
+ needed for the simple displacement examples.
  The first file (
 \family typewriter
 dislocation_slip.spatialdb
@@ -668,7 +693,7 @@ Color contours and vectors of displacement for the kinematic fault example.
 \begin_layout Standard
 \begin_inset Graphics
 	filename figs/dislocation.jpg
-	lyxscale 80
+	lyxscale 65
 
 \end_inset
 
