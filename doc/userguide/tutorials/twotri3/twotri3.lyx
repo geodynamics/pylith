@@ -67,7 +67,12 @@ Mesh Description
 
 \begin_layout Standard
 The mesh consists of two triangles forming a square with edge lengths of
- one unit (***FIGURE***).
+ one unit (Figure 
+\begin_inset LatexCommand \ref{fig:twotri3-mesh}
+
+\end_inset
+
+).
  The mesh geometry and topology is described in the file 
 \family typewriter
 twotri3.mesh
@@ -81,9 +86,9 @@ twotri3.mesh
 .
  This file describes the dimensionality of the problem (1D, 2D, or 3D),
  the coordinates of the vertices (nodes), the vertices composing each cell
- (element), the material ID to be associated with each element, and then
- provides groups of vertices that may be used to define faults or surfaces
- to which boundary conditions may be applied.
+ (element), the material ID to be associated with each cell, and then provides
+ groups of vertices that may be used to define faults or surfaces to which
+ boundary conditions may be applied.
 \end_layout
 
 \begin_layout Standard
@@ -93,6 +98,10 @@ sideways false
 status open
 
 \begin_layout Caption
+\begin_inset LatexCommand \label{fig:twotri3-mesh}
+
+\end_inset
+
 Mesh used for the two triangle examples.
 \end_layout
 
@@ -254,7 +263,7 @@ axialdisp.cfg
  In this case, we give the desired displacement values at two points (lower
  left and upper right).
  Since data is being specified at points (rather than being uniform over
- the mesh, for example), the data dimension is 1.
+ the mesh, for example), the data dimension is one.
 \end_layout
 
 \begin_layout Standard
@@ -422,7 +431,7 @@ sheardisp.cfg
  In this case, we give the desired displacement values at two points, correspond
 ing to the two edges we want to constrain.
  Since data is being specified at points (rather than being uniform over
- the mesh, for example), the data dimension is 1.
+ the mesh, for example), the data dimension is one.
 \end_layout
 
 \begin_layout Standard
@@ -504,7 +513,7 @@ Kinematic Fault Slip Example
 
 \begin_layout Standard
 The next example problem is left lateral fault slip applied between the
- two triangular elements using kinematic cohesive elements.
+ two triangular cells using kinematic cohesive cells.
  The lower left and upper right boundaries are held fixed in the x and y
  directions.
  Parameter settings that override or augment those in 
