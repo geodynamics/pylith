@@ -78,7 +78,7 @@ The mesh consists of two square cells with edge lengths of one forming a
 twoquad4.mesh
 \family default
 , which is in PyLith mesh ASCII format.
- This file format is described in 
+ This file format is described in Appendix 
 \begin_inset LatexCommand \ref{cha:File-Formats}
 
 \end_inset
@@ -350,8 +350,9 @@ sideways false
 status open
 
 \begin_layout Standard
+\align center
 \begin_inset Graphics
-	filename figs/axialdisp.jpg
+	filename figs/axialdisp.eps
 	lyxscale 50
 	scale 50
 
@@ -520,7 +521,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/sheardispl.jpg
+	filename figs/sheardispl.eps
 	lyxscale 50
 	scale 50
 
@@ -753,7 +754,7 @@ status open
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename figs/dislocation.jpg
+	filename figs/dislocation.eps
 	lyxscale 50
 	scale 50
 
