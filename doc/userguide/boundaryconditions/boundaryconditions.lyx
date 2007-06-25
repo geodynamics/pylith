@@ -488,8 +488,8 @@ status open
 \begin_inset Tabular
 <lyxtabular version="3" rows="4" columns="2">
 <features>
-<column alignment="center" valignment="middle" leftline="true" width="1.7in">
-<column alignment="center" valignment="middle" leftline="true" rightline="true" width="2.47in">
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -508,10 +508,9 @@ fixed_dof
 \begin_inset Text
 
 \begin_layout Standard
-\align center
 
 \series bold
-Name in Spatial Database 
+Name in Spatial Database
 \end_layout
 
 \end_inset
@@ -533,7 +532,7 @@ Name in Spatial Database
 \begin_layout Standard
 
 \family typewriter
-dof-0
+dof-1
 \end_layout
 
 \end_inset
@@ -555,7 +554,7 @@ dof-0
 \begin_layout Standard
 
 \family typewriter
-dof-1
+dof-2
 \end_layout
 
 \end_inset
@@ -577,7 +576,7 @@ dof-1
 \begin_layout Standard
 
 \family typewriter
-dof-2
+dof-3
 \end_layout
 
 \end_inset
@@ -1287,9 +1286,9 @@ status open
 \begin_inset Tabular
 <lyxtabular version="3" rows="6" columns="3">
 <features>
-<column alignment="left" valignment="top" leftline="true" width="1in">
-<column alignment="center" valignment="top" leftline="true" width="1.5in">
-<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
+<column alignment="left" valignment="top" leftline="true" width="0">
+<column alignment="left" valignment="top" leftline="true" width="0">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="2.5in">
 <row topline="true" bottomline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
@@ -1302,14 +1301,13 @@ Database
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
-\align center
 
 \series bold
-Value 
+Value
 \end_layout
 
 \end_inset
@@ -1338,7 +1336,7 @@ slip
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
@@ -1382,7 +1380,7 @@ reverse-slip
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
@@ -1415,7 +1413,7 @@ fault-opening
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
@@ -1438,7 +1436,7 @@ slip_rate
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
@@ -1475,7 +1473,7 @@ slip_time
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Standard
