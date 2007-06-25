@@ -941,23 +941,29 @@ name Name or label for the fault.
 \end_layout
 
 \begin_layout Description
-up_dir Up-dip or up direction.
+up_dir Up-dip or up direction (only used in 3D simulations).
  This only requirement for this direction is that it not be collinear with
  the fault normal direction.
- The default value of [0,0,1] can be used as long as the fault normal does
- not coincide with [0,0,1].
+ The default value of [0, 0, 1] can be used as long as the fault normal
+ does not coincide with this direction.
 \end_layout
 
 \begin_layout Description
-normal_dir [ADD STUFF HERE]
+normal_dir General preferred direction for the fault normal (only used in
+ 3D simulations).
+ This direction is used to resolve the ambiguity as to which side of the
+ fault to choose for the fault normal.
+ This direction should point from the footwall to the hanging wall.
+ The default value is [1, 0, 0].
 \end_layout
 
 \begin_layout Description
-quadrature [ADD STUFF HERE]
+quadrature Quadrature object used in integrating fault quantities.
 \end_layout
 
 \begin_layout Description
-mat_db [ADD STUFF HERE]
+mat_db Spatial database for bulk material properties (used in improving
+ the conditioning the system).
 \end_layout
 
 \begin_layout Standard
@@ -973,7 +979,7 @@ An example of setting these parameters in a
 \end_layout
 
 \begin_layout LyX-Code
-interfaces = pylith.ic.SingleFault
+interfaces = pylith.faults.SingleFault
 \end_layout
 
 \begin_layout LyX-Code
@@ -981,7 +987,15 @@ interfaces = pylith.ic.SingleFault
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.problem.ic.fault]
+[pylithapp.problem.interfaces]
+\end_layout
+
+\begin_layout LyX-Code
+fault = pylith.faults.FaultCohesiveKin 
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -1075,33 +1089,33 @@ d with the Lagrange multipliers to the cohesive cells.
  on the fault surface associated with fault slip.
  If we write the governing equations in the form
 \begin_inset Formula \begin{equation}
-[A]\{ u\}=\{ b\}\,,\end{equation}
+\underline{A}\overrightarrow{u}=\overrightarrow{b}\,,\end{equation}
 
 \end_inset
 
 then inserting the Lagrange multiplier constraints results in
 \begin_inset Formula \begin{equation}
 \left[\begin{array}{cc}
-[A] & [{C]}^{T}\\{}
-[C] & 0\end{array}\right]\left[\begin{array}{c}
-\{ u\}\\
-\{ L\}\end{array}\right]=\left[\begin{array}{c}
-\{ b\}\\
-\{ D\}\end{array}\right]\,,\end{equation}
+\underline{A} & \underline{C}^{T}\\
+\underline{C} & 0\end{array}\right]\left[\begin{array}{c}
+\overrightarrow{u}\\
+\overrightarrow{L}\end{array}\right]=\left[\begin{array}{c}
+\overrightarrow{b}\\
+\overrightarrow{D}\end{array}\right]\,,\end{equation}
 
 \end_inset
 
 where 
-\begin_inset Formula $[C]$
+\begin_inset Formula $\underline{C}$
 \end_inset
 
  is a matrix of direction cosines relating the relative motion across the
  fault to the vector of fault slip, 
-\begin_inset Formula $\{ D\}$
+\begin_inset Formula $\overrightarrow{D}$
 \end_inset
 
 , and 
-\begin_inset Formula $\{ L\}$
+\begin_inset Formula $\overrightarrow{L}$
 \end_inset
 
  is the vector of Lagrange multipliers.
@@ -1110,11 +1124,11 @@ where
  to impose the slip) are in the local fault coordinate system (lateral motion,
  reverse motion, and fault opening).
  Because the solution vector now mixes displacements, 
-\begin_inset Formula $\{ u\}$
+\begin_inset Formula $\overrightarrow{u}$
 \end_inset
 
 , and forces, 
-\begin_inset Formula $\{ L\}$
+\begin_inset Formula $\overrightarrow{L}$
 \end_inset
 
 , the matrix on the left-hand side is ill-conditioned.
@@ -1124,12 +1138,12 @@ where
  the displacements, resulting in
 \begin_inset Formula \begin{equation}
 \left[\begin{array}{cc}
-[A] & a[{C]}^{T}\\{}
-[C] & 0\end{array}\right]\left[\begin{array}{c}
-\{ u\}\\
-\frac{1}{a}\{ L\}\end{array}\right]=\left[\begin{array}{c}
-\{ b\}\\
-\{ D\}\end{array}\right]\,.\end{equation}
+A & a\underline{C}^{T}\\
+\underline{C} & 0\end{array}\right]\left[\begin{array}{c}
+\overrightarrow{u}\\
+\frac{1}{a}\overrightarrow{L}\end{array}\right]=\left[\begin{array}{c}
+\overrightarrow{b}\\
+\overrightarrow{D}\end{array}\right]\,.\end{equation}
 
 \end_inset
 
@@ -1187,47 +1201,28 @@ where
  is the peak slip rate.
 \end_layout
 
-\begin_layout Standard
-See Appendix 
-\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
-
+\begin_layout Description
+slip Spatial database of final slip distribution (
+\begin_inset Formula $D_{final})$
 \end_inset
 
- for a complete list of the spatial database settings.
- The parameters for the kinematic earthquake source are:
+.
 \end_layout
 
 \begin_layout Description
-id This is an integer identifier for the fault surfae.
- It is used to specify the 
-\family typewriter
-material-id 
-\family default
-of the cohesive cells in the mesh.
- Material identifiers must be unique so this value cannot be the same as
- any of the material models or any other fault.
+slip_time Spatial database of slip initiation times (
+\begin_inset Formula $t_{r}$
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Description
-name Name or label for the fault.
- This associates sets of vertices with the fault surface in addition to
- being used in error and diagnostic reports.
-\end_layout
+slip_rate Spatial database for peak slip slip (
+\begin_inset Formula $V_{max}$
+\end_inset
 
-\begin_layout Description
-up_dir [ADD STUFF HERE]
-\end_layout
-
-\begin_layout Description
-normal_dir [ADD STUFF HERE]
-\end_layout
-
-\begin_layout Description
-quadrature [ADD STUFF HERE]
-\end_layout
-
-\begin_layout Description
-mat_db [ADD STUFF HERE]
+).
 \end_layout
 
 \begin_layout Standard
@@ -1239,23 +1234,273 @@ An example of setting these parameters in a
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.problem.ic.fault]
+[pylithapp.problem.interfaces.fault.eq_src.slip_function]
 \end_layout
 
 \begin_layout LyX-Code
-eq_src = [ADD STUFF HERE]
+slip.iohandler.filename = finalslip.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
- 
+slip_rate.iohandler.filename = sliprate.spatialdb
 \end_layout
 
 \begin_layout LyX-Code
-[pylithapp.problem.ic.fault.eq_src.slip_function]
+slip_time.iohandler.filename = sliptime.spatialdb
 \end_layout
 
-\begin_layout LyX-Code
-[ADD STUFF HERE]
+\begin_layout Subsubsection
+Slip Time Function Spatial Database Files
+\end_layout
+
+\begin_layout Standard
+The spatial database files for the slip time function specify the spatial
+ variation in the parameters for the slip time function.
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features>
+<column alignment="left" valignment="top" leftline="true" width="1in">
+<column alignment="center" valignment="top" leftline="true" width="1.5in">
+<column alignment="center" valignment="top" leftline="true" rightline="true" width="2.47in">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Database
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\align center
+
+\series bold
+Value 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+left-lateral-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Amount of left-lateral final slip.
+ Use negative values for right-lateral slip.
+ Applies to faults in 2D and 3D only.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+reverse-slip
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Amount of reverse slip.
+ Use negative values for normal slip.
+ Applies to faults in 3D only.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+fault-opening
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Amount of fault opening.
+ Negative values imply penetration.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip_rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip_rate
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Peak slip rate (
+\begin_inset Formula $V_{max})$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+slip_time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Slip initiation time (
+\begin_inset Formula $t_{t})$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Caption
+Values in spatial database used as parameters in the elastic material constituti
+ve models.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
