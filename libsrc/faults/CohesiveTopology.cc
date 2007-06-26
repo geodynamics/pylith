@@ -135,14 +135,15 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   const ALE::Obj<Mesh::label_sequence>& fFaces = (*fault)->heightStratum(1);
   int faultDepth      = (*fault)->depth()-1; // Depth of fault cells
   int numFaultCorners = 0; // The number of vertices in a fault cell
+  int faultFaceSize   = 0; // The number of vertices in a face between fault cells
   PointArray flippedFaces; // Incorrectly oriented fault cells
 
   if (!(*fault)->commRank()) {
     numFaultCorners = faultSieve->nCone(*fFaces->begin(), faultDepth)->size();
     if (debug) std::cout << "  Fault corners " << numFaultCorners << std::endl;
     assert(numFaultCorners == faceSize);
+    faultFaceSize = _numFaceVertices(*fFaces->begin(), (*fault), faultDepth);
   }
-  int faultFaceSize = _numFaceVertices(*fFaces->begin(), (*fault), faultDepth);
   if (debug) std::cout << "  Fault face size " << faultFaceSize << std::endl;
   for(Mesh::label_sequence::iterator e_iter = fFaces->begin(); e_iter != fFaces->end(); ++e_iter) {
     if (debug) std::cout << "  Checking fault face " << *e_iter << std::endl;
