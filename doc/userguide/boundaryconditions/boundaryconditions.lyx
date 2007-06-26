@@ -1046,19 +1046,9 @@ mat_db.iohandler.filename = elastic_materials.spatialdb
 
 \begin_layout Standard
 We have specified that we want to use the SingleFault container.
- The group of vertices has the label 
-\begin_inset Quotes eld
-\end_inset
-
-fault A.'' We replicate the default values for the fault 
-\begin_inset Quotes eld
-\end_inset
-
-up
-\begin_inset Quotes erd
-\end_inset
-
- direction, and the desired general direction for the fault normal.
+ The group of vertices has the label ``fault A.'' We replicate the default
+ values for the fault ``up'' direction, and the desired general direction
+ for the fault normal.
  These settings apply to a 2D fault surface embedded within a 3D mesh, so
  we use 2D quadrature in a 3D spatial coordinate system with 2D Lagrange
  reference cells.
@@ -1076,8 +1066,8 @@ Kinematic earthquake sources specify the slip as a function of time on the
  fault surface.
  Slip may evolve simultaneously over the fault surface instantaneously in
  a single time step (as is usually done in quasi-static simulations) or
- propagate over the fault surface over hundreds to thousands of time steps
- (as is usually done in a dynamic simulation).
+ propagate over the fault surface over hundreds and up to thousands of time
+ steps (as is usually done in a dynamic simulation).
 \end_layout
 
 \begin_layout Subsubsection
