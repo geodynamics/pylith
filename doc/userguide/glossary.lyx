@@ -45,49 +45,53 @@ Glossary
 \end_layout
 
 \begin_layout Description
-sieve ADD DEFINITION
+sieve The sieve construction is a representation of the topology of the finite element mesh based upon a covering relation. For example, segments are covered by their endpoints, faces by their bounding edges, etc. Geometry is absent from the sieve, and is repesented instead by a coordinate section. Sieves can also be understood as directed acyclic graphs, where we call the constituents points and arrows.
 \end_layout
 
 \begin_layout Description
-mesh ADD DEFINITION
+mesh A finite element mesh, used to partition space and provide support for the basis functions. It consists of a sieve and bundle of sections. including the coordinate section.
 \end_layout
 
 \begin_layout Description
-cell ADD DEFINITION
+cell The highest dimensional elements of a mesh, or mesh entities of codimension zero.
 \end_layout
 
 \begin_layout Description
-vertex ADD DEFINITION
+vertex The zero dimensional mesh elements.
 \end_layout
 
 \begin_layout Description
-field ADD DEFINITION
+face Mesh elements that separate cells, or mesh entities of codimension one.
 \end_layout
 
 \begin_layout Description
-section ADD DEFINITION
+field A field is a parallel section which can be completed, or made consistent, across process boundaries. These are used to represent continuum fields.
+\end_layout
+
+\begin_layout Description
+section These objects associate data to points in a sieve, which is equivalent to associating data to entities in a mesh. Like sieves, sections can also be understood as DAGs, with the points replaced by arrays of data and the arrows reversed. Sections may also be vectors, but are not limited to this. We use them to represent not only solution fields, but material property markers and boundary conditions. Sections must have restrict and update methods, which are allowable between any two points path-connected in the DAG.
 \end_layout
 
 \begin_layout Description
 fiber\InsetSpace \space{}
-dimension ADD DEFINITION
+dimension The topological dimension of the mesh, meaning the cell dimension. It can also mean the dimension of the space in which the mesh is embedded, but this is properly the embedding dimension.
 \end_layout
 
 \begin_layout Description
 cohesive\InsetSpace \space{}
-cell ADD DEFINITION
+cell A zero volume cell inserted between any two cells which shared a fault face. They are prisms with a fault face as the base.
 \end_layout
 
 \begin_layout Description
-cone ADD DEFINITION
+cone The set of mesh entities which cover any entity in a sieve. For example, the cone of a triangle is its three edges.
 \end_layout
 
 \begin_layout Description
-restrict ADD DEFINITION
+restrict The action of retrieving the values associated with a given mesh entity from a section. This is analogous to the restriction of a function to a subdomain. In finite element calculation, we restrict our global interpolant to an element in order to calculate the basis function coefficients.
 \end_layout
 
 \begin_layout Description
-support ADD DEFINITION
+support The set of mesh entities which are covered by any entity in a sieve. For example, the support of a triangle is the two tetrahedra it separates.
 \end_layout
 
 \begin_layout Standard
