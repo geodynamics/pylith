@@ -18,6 +18,8 @@
 
 #include "journal/info.h" // USES journal::info_t
 
+#include <petsc.h> // USES MPI_Comm
+
 #include <netcdfcpp.h> // USES netcdf
 
 #include <assert.h> // USES assert()
@@ -42,48 +44,59 @@ pylith::meshio::MeshIOCubit::~MeshIOCubit(void)
 void
 pylith::meshio::MeshIOCubit::_read(void)
 { // _read
-  try {
-    NcFile ncfile(_filename.c_str());
-    if (!ncfile.is_valid()) {
+  MPI_Comm comm = PETSC_COMM_WORLD;
+  int rank;
+  int meshDim = 0;
+  int spaceDim = 0;
+  int numVertices = 0;
+  int numCells = 0;
+  int numCorners = 0;
+  double_array coordinates;
+  int_array cells;
+  int_array materialIds;
+
+  MPI_Comm_rank(comm, &rank);
+  if (!rank) {
+    try {
+      NcFile ncfile(_filename.c_str());
+      if (!ncfile.is_valid()) {
+        std::ostringstream msg;
+        msg << "Could not open Cubit Exodus file '" << _filename
+            << "' for reading.\n";
+        throw std::runtime_error(msg.str());
+      } // if
+
+
+      NcDim* num_dim = ncfile.get_dim("num_dim");
+      if (0 == num_dim)
+        throw std::runtime_error("Could not get dimension 'num_dim'.");
+      meshDim = num_dim->size();
+
+      _readVertices(ncfile, &coordinates, &numVertices, &spaceDim);
+      _readCells(ncfile, &cells, &materialIds, &numCells, &numCorners);
+      _orientCells(&cells, numCells, numCorners, meshDim);
+      _buildMesh(coordinates, numVertices, spaceDim,
+                 cells, numCells, numCorners, meshDim);
+      _setMaterials(materialIds);
+
+      _readGroups(ncfile);
+    } catch (std::exception& err) {
       std::ostringstream msg;
-      msg << "Could not open Cubit Exodus file '" << _filename
-	  << "' for reading.\n";
+      msg << "Error while reading Cubit Exodus file '" << _filename << "'.\n"
+          << err.what();
       throw std::runtime_error(msg.str());
-    } // if
-
-    int meshDim = 0;
-    int spaceDim = 0;
-    int numVertices = 0;
-    int numCells = 0;
-    int numCorners = 0;
-    double_array coordinates;
-    int_array cells;
-    int_array materialIds;
-
-    NcDim* num_dim = ncfile.get_dim("num_dim");
-    if (0 == num_dim)
-      throw std::runtime_error("Could not get dimension 'num_dim'.");
-    meshDim = num_dim->size();
-
-    _readVertices(ncfile, &coordinates, &numVertices, &spaceDim);
-    _readCells(ncfile, &cells, &materialIds, &numCells, &numCorners);
-    _orientCells(&cells, numCells, numCorners, meshDim);
+    } catch (...) {
+      std::ostringstream msg;
+      msg << "Unknown error while reading Cubit Exodus file '" << _filename
+          << "'.";
+      throw std::runtime_error(msg.str());
+    } // try/catch
+  } else {
     _buildMesh(coordinates, numVertices, spaceDim,
-	       cells, numCells, numCorners, meshDim);
+               cells, numCells, numCorners, meshDim);
     _setMaterials(materialIds);
-
-    _readGroups(ncfile);
-  } catch (std::exception& err) {
-    std::ostringstream msg;
-    msg << "Error while reading Cubit Exodus file '" << _filename << "'.\n"
-	<< err.what();
-    throw std::runtime_error(msg.str());
-  } catch (...) {
-    std::ostringstream msg;
-    msg << "Unknown error while reading Cubit Exodus file '" << _filename
-	<< "'.";
-    throw std::runtime_error(msg.str());
-  } // try/catch
+  }
+  _distributeGroups();
 } // read
 
 // ----------------------------------------------------------------------
