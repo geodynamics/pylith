@@ -509,7 +509,7 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
   ALE::Obj<ALE::Mesh> mesh;
   meshio::MeshIOAscii iohandler;
   iohandler.filename(data.filename);
-  iohandler.debug(true);
+  iohandler.debug(false);
   iohandler.interpolate(false);
   iohandler.read(&mesh);
 

@@ -31,7 +31,7 @@
  *
  * Cells are 0-1, 8, vertices are 2-7.
  *
- *              3 -7- 6
+ *              6 -7- 3
  *             /|     |\
  *            / |     | \
  *           /  |     |  \
@@ -41,7 +41,7 @@
  *           \  |     |  /
  *            \ |     | /
  *             \|     |/
- *              4 -9- 8
+ *              8 -9- 4
  */
 
 #include "CohesiveKinDataTri3.hh"
@@ -109,8 +109,8 @@ const double pylith::faults::CohesiveKinDataTri3::_fieldT[] = {
 const int pylith::faults::CohesiveKinDataTri3::_numConstraintVert = 2;
 
 const double pylith::faults::CohesiveKinDataTri3::_orientation[] = {
-  0.0, +1.0,  +1.0, 0.0,
-  0.0, +1.0,  +1.0, 0.0
+  0.0, -1.0,  -1.0, 0.0,
+  0.0, -1.0,  -1.0, 0.0
 };
 
 const int pylith::faults::CohesiveKinDataTri3::_constraintVertices[] = {
@@ -123,12 +123,12 @@ const int pylith::faults::CohesiveKinDataTri3::_constraintCells[] = {
 
 const double pylith::faults::CohesiveKinDataTri3::_valsResidual[] = {
   0.0,  0.0,
-  9.6,  8.6, // 3
-  9.8,  8.8, // 4
+ -9.6, -8.6, // 3
+ -9.8, -8.8, // 4
   0.0,  0.0,
- -9.6, -8.6, // 6
+ +9.6, +8.6, // 6
   1.05057813143, 0.0456773100622, // 7
- -9.8, -8.8, // 8
+ +9.8, +8.8, // 8
   0.989535448086, 0.0824612873405, // 9
 };
 
@@ -154,7 +154,7 @@ const double pylith::faults::CohesiveKinDataTri3::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 7
+  0.0,+1.0, // 7
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 3y
@@ -162,7 +162,7 @@ const double pylith::faults::CohesiveKinDataTri3::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, //  7
+ +1.0, 0.0, //  7
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 4x
@@ -172,7 +172,7 @@ const double pylith::faults::CohesiveKinDataTri3::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, //  9
+  0.0,+1.0, //  9
   0.0, 0.0, // 4y
   0.0, 0.0,
   0.0, 0.0,
@@ -180,7 +180,7 @@ const double pylith::faults::CohesiveKinDataTri3::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, //  9
+ +1.0, 0.0, //  9
   0.0, 0.0, // 5x
   0.0, 0.0,
   0.0, 0.0,
@@ -202,7 +202,7 @@ const double pylith::faults::CohesiveKinDataTri3::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, //  7
+  0.0,-1.0, //  7
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 6y
@@ -210,22 +210,22 @@ const double pylith::faults::CohesiveKinDataTri3::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, //  7
+ -1.0, 0.0, //  7
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 7x
-  0.0,-1.0, //  3
+  0.0,+1.0, //  3
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, //  6
+  0.0,-1.0, //  6
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 7y
- -1.0, 0.0, //  3
+ +1.0, 0.0, //  3
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, //  6
+ -1.0, 0.0, //  6
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -236,7 +236,7 @@ const double pylith::faults::CohesiveKinDataTri3::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, //  9
+  0.0,-1.0, //  9
   0.0, 0.0, // 8y
   0.0, 0.0,
   0.0, 0.0,
@@ -244,22 +244,22 @@ const double pylith::faults::CohesiveKinDataTri3::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, //  9
+ -1.0, 0.0, //  9
   0.0, 0.0, // 9x
   0.0, 0.0,
-  0.0,-1.0, //  4
+  0.0,+1.0, //  4
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, //  8
+  0.0,-1.0, //  8
   0.0, 0.0,
   0.0, 0.0, // 9y
   0.0, 0.0,
- -1.0, 0.0, //  4
+ +1.0, 0.0, //  4
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, //  8
+ -1.0, 0.0, //  8
   0.0, 0.0,
 };
 
