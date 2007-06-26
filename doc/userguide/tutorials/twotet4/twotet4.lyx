@@ -139,7 +139,7 @@ pylithapp.cfg
 \family typewriter
 .cfg
 \family default
- files, as described later, and placed on the command line.
+ files, as described later, or placed on the command line.
  The settings contained in 
 \family typewriter
 pylithapp.cfg
