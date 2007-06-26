@@ -138,7 +138,8 @@ pylithapp.cfg
 \family typewriter
 .cfg
 \family default
- files, as described later, or placed on the command line.
+ files, as described later, and then those files are placed on the command
+ line.
  The settings contained in pylithapp.cfg for this problem consist of:
 \end_layout
 
