@@ -72,8 +72,11 @@ class MeshImporter(MeshGenerator):
     Hook for creating mesh.
     """
     mesh = self.importer.read(self.debug, self.interpolate)
+    self._info.log("Adjusting topology.")
     self._adjustTopology(mesh, faults)
+    self._info.log("Distributing mesh.")
     mesh = self.distributor.distribute(mesh)
+    mesh.view()
     return mesh
 
 

@@ -41,9 +41,8 @@ void
 MeshIOHDF5::read(ALE::Obj<ALE::PetscMesh>* pMesh)
 { // read
   assert(0 != pMesh);
-
-  
-
+  MPI_Comm comm = PETSC_COMM_WORLD;
+  int rank;
   int meshDim = 0;
   int numDims = 0;
   int numVertices = 0;
@@ -52,44 +51,39 @@ MeshIOHDF5::read(ALE::Obj<ALE::PetscMesh>* pMesh)
   double* coordinates = 0;
   int* elements = 0;
 
-  hid_t filein = H5Fopen(_filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-  if (filein < 0) {
-    std::ostringstream msg;
-    msg << "Could not open HDF5 mesh file '" << _filename
-	<< "' for reading.\n";
-    throw std::runtime_error(msg.str());
-  } // if
+  MPI_Comm_rank(comm, &rank);
+  if (!rank) {
+    hid_t filein = H5Fopen(_filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+    if (filein < 0) {
+      std::ostringstream msg;
+      msg << "Could not open HDF5 mesh file '" << _filename
+          << "' for reading.\n";
+      throw std::runtime_error(msg.str());
+    } // if
 
-  _readMeshInfo(filein, pMesh);
-  _readVertices(filein, &coordinates, &numVertices, &numDims);
-  _readElements(filein, &elements, &numElements, &numCorners);
+    _readMeshInfo(filein, pMesh);
+    _readVertices(filein, &coordinates, &numVertices, &numDims);
+    _readElements(filein, &elements, &numElements, &numCorners);
   
-  *pMesh = ALE::PetscMesh(PETSC_COMM_WORLD, meshDim);
-  (*pMesh)->debug = true;
-  bool interpolate = false;
+    *pMesh = ALE::PetscMesh(PETSC_COMM_WORLD, meshDim);
+    (*pMesh)->debug = true;
+    bool interpolate = false;
 
-#if 1
-  // allow mesh to have different dimension than coordinates
-  ALE::Obj<ALE::PetscMesh::sieve_type> topology = (*pMesh)->getTopology();
-  topology->setStratification(false);
-  (*pMesh)->buildTopology(numElements, elements, numVertices, 
-			  interpolate, numCorners);
-  topology->stratify();
-  topology->setStratification(true);
-  (*pMesh)->createVertexBundle(numElements, elements, 0, numCorners);
-  (*pMesh)->createSerialCoordinates(numDims, numElements, coordinates);
-#else
-  // require mesh to have same dimension as coordinates
-  (*pMesh)->populate(numElements, elements, numVertices, coordinates, 
-		     interpolate, numCorners);
-#endif
-  delete[] coordinates; coordinates = 0;
-  delete[] elements; elements = 0;
+    _buildMesh(coordinates, numVertices, spaceDim,
+               cells, numCells, numCorners, meshDim);
+    delete[] coordinates; coordinates = 0;
+    delete[] elements; elements = 0;
 
-  // loop over charts
-  // _readChart();
+    // loop over charts
+    // _readChart();
 
-  H5Fclose(filein);
+    H5Fclose(filein);
+  } else {
+    _buildMesh(coordinates, numVertices, spaceDim,
+               cells, numCells, numCorners, meshDim);
+  }
+  //_setMaterials(materialIds);
+  //_distributeGroups();
 } // read
 
 // ----------------------------------------------------------------------
