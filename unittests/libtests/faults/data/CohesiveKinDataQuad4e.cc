@@ -133,9 +133,9 @@ const double pylith::faults::CohesiveKinDataQuad4e::_fieldT[] = {
 const int pylith::faults::CohesiveKinDataQuad4e::_numConstraintVert = 3;
 
 const double pylith::faults::CohesiveKinDataQuad4e::_orientation[] = {
-  0.0, +1.0,  +1.0, 0.0,
-  0.0, +1.0,  +1.0, 0.0,
-  0.0, +1.0,  +1.0, 0.0,
+  0.0, -1.0,  -1.0, 0.0,
+  0.0, -1.0,  -1.0, 0.0,
+  0.0, -1.0,  -1.0, 0.0,
 };
 
 const int pylith::faults::CohesiveKinDataQuad4e::_constraintVertices[] = {
@@ -149,18 +149,18 @@ const int pylith::faults::CohesiveKinDataQuad4e::_constraintCells[] = {
 const double pylith::faults::CohesiveKinDataQuad4e::_valsResidual[] = {
   0.0,  0.0,
   0.0,  0.0,
-  6.1,  4.1, // 6
-  6.3,  4.3, // 7
+ -6.1, -4.1, // 6
+ -6.3, -4.3, // 7
   0.0,  0.0,
   0.0,  0.0,
   0.0,  0.0,
-  6.5,  4.5, // 11
+ -6.5, -4.5, // 11
   0.0,  0.0,
- -6.1, -4.1, // 13
+ +6.1, +4.1, // 13
   0.989535448086, 0.0824612873405, // 14
- -6.3, -4.3, // 15
+ +6.3, +4.3, // 15
   1.05057813143, 0.0456773100622, // 16
- -6.5, -4.5, // 17
+ +6.5, +4.5, // 17
   0.90435792846,  0.10852295130, // 18
 };
 
@@ -235,7 +235,7 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 14
+  0.0,+1.0, // 14
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -250,7 +250,7 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 14
+ +1.0, 0.0, // 14
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -267,7 +267,7 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 16
+  0.0,+1.0, // 16
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 7y
@@ -282,7 +282,7 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 16
+ +1.0, 0.0, // 16
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 8x
@@ -389,7 +389,7 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 18
+  0.0,+1.0, // 18
   0.0, 0.0, // 11y
   0.0, 0.0,
   0.0, 0.0,
@@ -404,7 +404,7 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 18
+ +1.0, 0.0, // 18
   0.0, 0.0, // 12x
   0.0, 0.0,
   0.0, 0.0,
@@ -445,7 +445,7 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 14
+  0.0,-1.0, // 14
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -460,21 +460,21 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 14
+ -1.0, 0.0, // 14
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 14x
   0.0, 0.0,
-  0.0,-1.0, // 6
+  0.0,+1.0, // 6
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 13
+  0.0,-1.0, // 13
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -482,14 +482,14 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0, // 14y
   0.0, 0.0,
- -1.0, 0.0, // 6
+ +1.0, 0.0, // 6
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 13
+ -1.0, 0.0, // 13
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -507,7 +507,7 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 16
+  0.0,-1.0, // 16
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 15y
@@ -522,13 +522,13 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 16
+ -1.0, 0.0, // 16
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 16x
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 7
+  0.0,+1.0, // 7
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -536,14 +536,14 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 15
+  0.0,-1.0, // 15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0, // 16y
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 7
+ +1.0, 0.0, // 7
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -551,7 +551,7 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 15
+ -1.0, 0.0, // 15
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
@@ -569,7 +569,7 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 18
+  0.0,-1.0, // 18
   0.0, 0.0, // 17y
   0.0, 0.0,
   0.0, 0.0,
@@ -584,7 +584,7 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 18
+ -1.0, 0.0, // 18
   0.0, 0.0, // 18x
   0.0, 0.0,
   0.0, 0.0,
@@ -592,13 +592,13 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,-1.0, // 11
+  0.0,+1.0, // 11
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0,+1.0, // 17
+  0.0,-1.0, // 17
   0.0, 0.0,
   0.0, 0.0, // 18y
   0.0, 0.0,
@@ -607,13 +607,13 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- -1.0, 0.0, // 11
+ +1.0, 0.0, // 11
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
- +1.0, 0.0, // 17
+ -1.0, 0.0, // 17
   0.0, 0.0,
 };
 
