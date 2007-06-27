@@ -136,6 +136,9 @@ pylith::meshio::SolutionIOVTK::writeField(
     // Now we are enforcing a 3D solution
     //   Perhaps we need to push this argument higher
     err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), _viewer, 3);
+    buffer.str("");
+    buffer << name << "_verify_t" << t;
+    err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), _viewer, -4);
   } catch (const std::exception& err) {
     std::ostringstream msg;
     msg << "Error while writing field '" << name << "' at time " 

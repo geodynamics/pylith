@@ -96,6 +96,20 @@ private :
 
   template<class InputPoints>
   static
+  bool _compatibleOrientation(const ALE::Obj<Mesh>& mesh,
+                              const Mesh::point_type& p,
+                              const Mesh::point_type& q,
+                              const int numFaultCorners,
+                              const int faultFaceSize,
+                              const int faultDepth,
+                              const Obj<InputPoints>& points,
+                              int indices[],
+                              PointArray *origVertices,
+                              PointArray *faceVertices,
+                              PointArray *neighborVertices);
+
+  template<class InputPoints>
+  static
   void _computeCensoredDepth(const ALE::Obj<Mesh>& mesh,
                              const ALE::Obj<Mesh::label_type>& depth,
                              const ALE::Obj<Mesh::sieve_type>& sieve,
