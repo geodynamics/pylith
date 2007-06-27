@@ -155,6 +155,8 @@ class Implicit(Formulation):
       integrator.timeStep(dt)
       integrator.integrateResidual(residual, t+dt, self.fields)
 
+    self._info.log("Completing residual.")
+    bindings.completeSection(self.mesh.cppHandle, residual)
     import pylith.utils.petsc as petsc
     self._info.log("Solving equations.")
     self.solver.solve(dispIncr, self.jacobian, residual)
