@@ -14,7 +14,7 @@ setup(
     
     install_requires = [
     'spatialdata',
-    'pythia[mpi] >= 0.8.1.0, < 0.8.2a',
+    'pythia[mpi] >= 0.8.1.4, < 0.8.2a',
     ],
 
     author = 'Brad Aagaard, Charles A. Williams, and Matt Knepley',
