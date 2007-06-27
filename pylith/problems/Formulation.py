@@ -82,6 +82,7 @@ class Formulation(Component):
 
     from pylith.topology.FieldsManager import FieldsManager
     self.fields = FieldsManager(mesh)
+    self.mesh   = mesh
     self.integrators = []
     self.constraints = []
 

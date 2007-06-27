@@ -232,7 +232,6 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // Assemble cell contribution into field
     mesh->updateAdd(residual, *c_iter, _cellVector);
   } // for
-  ALE::Distribution<Mesh>::completeSection(mesh, residual);
 } // integrateResidual
 
 

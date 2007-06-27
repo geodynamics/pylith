@@ -133,6 +133,8 @@ class Explicit(Formulation):
       integrator.timeStep(dt)
       integrator.integrateResidual(residual, t, self.fields)
 
+    self._info.log("Completing residual.")
+    bindings.completeSection(self.mesh.cppHandle, residual)
     self._info.log("Solving equations.")
     self.solver.solve(self.fields.getReal("dispTpdt"), self.jacobian, residual)
     return

@@ -899,6 +899,41 @@ def zeroRealSection(section):
 
 
 # ----------------------------------------------------------------------
+def completeSection(mesh, section):
+  """
+  Complete the section across the mesh overlap.
+  """
+  # create shim for method 'completeSection'
+  #embed{ void Section_complete(void* sectionVptr, void* meshVptr)
+  try {
+    assert(0 != sectionVptr);
+    assert(0 != meshVptr);
+    ALE::Obj<ALE::Mesh>* mesh =
+      (ALE::Obj<ALE::Mesh>*) meshVptr;
+    ALE::Obj<pylith::real_section_type>* section =
+      (ALE::Obj<pylith::real_section_type>*) sectionVptr;
+    ALE::Distribution<ALE::Mesh>::completeSection(*mesh, *section);
+  } catch (const std::exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.what()));
+  } catch (const ALE::Exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.msg().c_str()));
+  } catch (...) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    "Caught unknown C++ exception.");
+  } // try/catch
+  #}embed
+  if mesh.name != "pylith_topology_Mesh":
+    print mesh.name
+    raise TypeError, \
+          "Argument must be extension module type 'Mesh'."
+  Section_complete(PyCObject_AsVoidPtr(section),
+                   ptrFromHandle(mesh))
+  return
+
+
+# ----------------------------------------------------------------------
 def addRealSections(dst, srcA, srcB):
   """
   Add two sections, storing result in third section.
