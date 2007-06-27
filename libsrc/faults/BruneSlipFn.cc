@@ -234,7 +234,7 @@ pylith::faults::BruneSlipFn::slip(const double t,
       vFinalSlipMag += vFinalSlip[iSlip]*vFinalSlip[iSlip];
     vFinalSlipMag = sqrt(vFinalSlipMag);
     const double vSlip = _slip(t-vSlipTime[0], vFinalSlipMag, vPeakRate[0]);
-    const double scale = vSlip / vFinalSlipMag;
+    const double scale = vFinalSlipMag > 0.0 ? vSlip / vFinalSlipMag : 0.0;
     for (int iSlip=0; iSlip < numSlipValues; ++iSlip)
       slipValues[iSlip] = scale * vFinalSlip[iSlip];
 
@@ -289,7 +289,7 @@ pylith::faults::BruneSlipFn::slipIncr(const double t0,
     vFinalSlipMag = sqrt(vFinalSlipMag);
     const double vSlip0 = _slip(t0-vSlipTime[0], vFinalSlipMag, vPeakRate[0]);
     const double vSlip1 = _slip(t1-vSlipTime[0], vFinalSlipMag, vPeakRate[0]);
-    const double scale = (vSlip1 - vSlip0) / vFinalSlipMag;
+    const double scale = vFinalSlipMag > 0.0 ? (vSlip1 - vSlip0) / vFinalSlipMag : 0.0;
     for (int iSlip=0; iSlip < numSlipValues; ++iSlip)
       slipValues[iSlip] = scale * vFinalSlip[iSlip];
 

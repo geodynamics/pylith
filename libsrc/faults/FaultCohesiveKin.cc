@@ -475,6 +475,22 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 	    constraintOrient[kDim*spaceDim+jDim] * pseudoStiffness;
     } // for
 
+#if 0
+    std::cout << "Updating fault residual for cell " << *c_iter << std::endl;
+    for(int i = 0; i < numConstraintVert; ++i) {
+      std::cout << "  stif["<<i<<"]: " << cellStiffness[i] << std::endl;
+    }
+    for(int i = 0; i < numConstraintVert*spaceDim; ++i) {
+      std::cout << "  slip["<<i<<"]: " << cellSlip[i] << std::endl;
+    }
+    for(int i = 0; i < numCorners*spaceDim; ++i) {
+      std::cout << "  soln["<<i<<"]: " << cellSoln[i] << std::endl;
+    }
+    for(int i = 0; i < numCorners*spaceDim; ++i) {
+      std::cout << "  v["<<i<<"]: " << cellResidual[i] << std::endl;
+    }
+#endif
+
     // Assemble cell contribution into field
     mesh->updateAdd(residual, *c_iter, &cellResidual[0]);
   } // for
