@@ -40,5 +40,5 @@ SimpleDB {
 // data along edges (pylith.bc.BCSixSides).
 // The entries are:
 // X-coord, Y-coord, Z-coord, dof-0, dof-1, dof-2.
--1.0  0.0  0.0   0.0 - 0.01  0.0
- 1.0  0.0  0.0   0.0   0.01  0.0
+-1.0  0.0  0.0   0.0 -0.01  0.0
+ 1.0  0.0  0.0   0.0  0.01  0.0
