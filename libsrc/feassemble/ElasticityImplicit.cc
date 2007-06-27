@@ -223,9 +223,16 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
       _material->calcStress(totalStrain);
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stress);
 
+#if 0
+    std::cout << "Updating residual for cell " << *c_iter << std::endl;
+    for(int i = 0; i < _quadrature->spaceDim() * _quadrature->numBasis(); ++i) {
+      std::cout << "  v["<<i<<"]: " << _cellVector[i] << std::endl;
+    }
+#endif
     // Assemble cell contribution into field
     mesh->updateAdd(residual, *c_iter, _cellVector);
   } // for
+  ALE::Distribution<Mesh>::completeSection(mesh, residual);
 } // integrateResidual
 
 
