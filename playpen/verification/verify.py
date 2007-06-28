@@ -5,34 +5,43 @@ class Verifier:
   def __init__(self):
     self.pylith    = '/PETSc3/cig/pylith3d/bin/pylith'
     self.petscOpts = ['--petsc.ksp_type=preonly', '--petsc.pc_type=lu', '--petsc.mat_type=aijmumps']
+    self.exp       = re.compile(r'SCALARS \w+_verify_t. double 4')
     return
 
+  def readVTK(self, filename):
+    f = file(filename)
+    found = False
+    data = []
+    for line in f.readlines():
+      if self.exp.match(line):
+        found = True
+      if found and not line.startswith('LOOKUP') and not line.startswith('SCALARS'):
+        data.append(line)
+    f.close()
+    data.sort()
+    return data
+
+
   def compare(self, file1, file2):
-    exp = re.compile(r'SCALARS \w+_verify_t. double 4')
-    f1 = file(file1)
-    found = False
-    data1 = []
-    for line in f1.readlines():
-      if exp.match(line):
-        found = True
-      if found:
-        data1.append(line)
-    f1.close()
-    f2 = file(file2)
-    found = False
-    data2 = []
-    for line in f2.readlines():
-      if exp.match(line):
-        found = True
-      if found:
-        data2.append(line)
-    f2.close()
-    data1.sort()
-    data2.sort()
-    if data1 == data2:
-      print file1,'matches',file2
-    else:
-      sys.exit('ERROR: Files do not match')
+    def convertLine(line):
+      parts = line.split(' ')
+      return (int(parts[0]), float(parts[1]), float(parts[2]), float(parts[3]))
+    data1 = self.readVTK(file1)
+    data2 = self.readVTK(file2)
+    if not data1 == data2:
+      # Do full check
+      for line1, line2 in zip(data1, data2):
+        v1,x1,y1,z1 = convertLine(line1)
+        v2,x2,y2,z2 = convertLine(line2)
+        if not v1 == v2:
+          sys.exit('ERROR: Nonmatching vertex sets')
+        if abs(x1 - x2) > 1.0e-10:
+          sys.exit('ERROR: Nonmatching x displacement, vertex %d, %g != %g' % (v1, x1, x2))
+        if abs(y1 - y2) > 1.0e-10:
+          sys.exit('ERROR: Nonmatching y displacement, vertex %d, %g != %g' % (v1, y1, y2))
+        if abs(z1 - z2) > 1.0e-10:
+          sys.exit('ERROR: Nonmatching z displacement, vertex %d, %g != %g' % (v1, z1, z2))
+    print file1,'matches',file2
     return
 
   def run(self, cfgFilename):
