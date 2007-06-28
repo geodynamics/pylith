@@ -306,7 +306,9 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   const ALE::Obj<Mesh::label_sequence>& faces = (*fault)->depthStratum(1);
   const ALE::Obj<Mesh::label_type>& material = mesh->getLabel("material-id");
   int firstCohesiveCell = newPoint;
-  PointArray newVertices;
+  PointSet replaceCells;
+  PointSet noReplaceCells;
+  PointSet replaceVertices;
 
   for(Mesh::label_sequence::iterator f_iter = faces->begin();
       f_iter != faces->end(); ++f_iter, ++newPoint) {
@@ -314,6 +316,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     const ALE::Obj<sieve_type::traits::supportSequence>& cells =
       faultSieve->support(*f_iter);
     Mesh::point_type cell = *cells->begin();
+    Mesh::point_type otherCell;
 
     if (debug) std::cout << "  Checking orientation against cell " << cell << std::endl;
     _getOrientedFace(mesh, cell, &vertexRenumber, numCorners, indices, &origVertices, &faceVertices);
@@ -337,8 +340,10 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     }
     if (found) {
       if (debug) std::cout << "  Choosing other cell" << std::endl;
+      otherCell = cell;
       cell = *(++cells->begin());
     } else {
+      otherCell = *(++cells->begin());
       if (debug) std::cout << "  Verifing reverse orientation" << std::endl;
       found = true;
       int v = 0;
@@ -353,32 +358,14 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
       }
       assert(found);
     }
-    if (debug) std::cout << "  Replacing cell " << cell << std::endl;
-    const ALE::Obj<sieve_type::traits::coneSequence>& cCone = sieve->cone(cell);
-
-    newVertices.clear();
-    for(sieve_type::traits::coneSequence::iterator v_iter = cCone->begin();
-        v_iter != cCone->end(); ++v_iter) {
-      if (vertexRenumber.find(*v_iter) != vertexRenumber.end()) {
-        if (debug)
-          std::cout << "    vertex " << vertexRenumber[*v_iter] << std::endl;
-        newVertices.insert(newVertices.end(), vertexRenumber[*v_iter]);
-      } else {
-        if (debug) std::cout << "    vertex " << *v_iter << std::endl;
-        newVertices.insert(newVertices.end(), *v_iter);
-      } // if/else
-    } // for
-    sieve->clearCone(cell);
-    int color = 0;
-    for(PointArray::const_iterator v_iter = newVertices.begin();
-        v_iter != newVertices.end(); ++v_iter) {
-      sieve->addArrow(*v_iter, cell, color++);
-    } // for
+    noReplaceCells.insert(otherCell);
+    replaceCells.insert(cell);
+    replaceVertices.insert(faceCone->begin(), faceCone->end());
     // Adding cohesive cell (not interpolated)
     const ALE::Obj<sieve_type::traits::coneSequence>& fCone  = faultSieve->cone(*f_iter);
     const sieve_type::traits::coneSequence::iterator  fBegin = fCone->begin();
     const sieve_type::traits::coneSequence::iterator  fEnd   = fCone->end();
-    color = 0;
+    int color = 0;
 
 	if (debug)
 	  std::cout << "  Creating cohesive cell " << newPoint << std::endl;
@@ -404,6 +391,37 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     }
     mesh->setValue(material, newPoint, materialId);
   } // for
+  // Replace all cells with a vertex on the fault that share a face with this one, or with one that does
+  for(PointSet::const_iterator v_iter = replaceVertices.begin(); v_iter != replaceVertices.end(); ++v_iter) {
+    bool modified = true;
+
+    while(modified) {
+      modified = false;
+      const ALE::Obj<sieve_type::traits::supportSequence>& neighbors = sieve->support(*v_iter);
+      const sieve_type::traits::supportSequence::iterator  end       = neighbors->end();
+
+      for(sieve_type::traits::supportSequence::iterator n_iter = neighbors->begin(); n_iter != end; ++n_iter) {
+        if (replaceCells.find(*n_iter)   != replaceCells.end())   continue;
+        if (noReplaceCells.find(*n_iter) != noReplaceCells.end()) continue;
+        if (*n_iter >= firstCohesiveCell) continue;
+        if (debug) std::cout << "  Checking fault neighbor " << *n_iter << std::endl;
+        // If neighbors shares a faces with anyone in replaceCells, then add
+        for(PointSet::const_iterator c_iter = replaceCells.begin(); c_iter != replaceCells.end(); ++c_iter) {
+          const ALE::Obj<sieve_type::coneSet>& preFace = sieve->nMeet(*c_iter, *n_iter, mesh->depth());
+
+          if (preFace->size() == faceSize) {
+            if (debug) std::cout << "    Scheduling " << *n_iter << " for replacement" << std::endl;
+            replaceCells.insert(*n_iter);
+            modified = true;
+            break;
+          }
+        }
+      }
+    }
+  }
+  for(PointSet::const_iterator c_iter = replaceCells.begin(); c_iter != replaceCells.end(); ++c_iter) {
+    _replaceCell(sieve, *c_iter, &vertexRenumber, debug);
+  }
   if (!(*fault)->commRank()) delete [] indices;
   mesh->stratify();
   const ALE::Obj<Mesh::label_type>& label          = mesh->createLabel(std::string("censored depth"));
@@ -437,6 +455,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
 			     coordinates->restrictPoint(*v_iter));
     }
   }
+  if (debug) coordinates->view("Coordinates with shadow vertices");
 } // createCohesiveCells
 
 // ----------------------------------------------------------------------
@@ -775,6 +794,38 @@ pylith::faults::CohesiveTopology::_compatibleOrientation(const ALE::Obj<Mesh>& m
     compatible = !(nOrient == eOrient);
   }
   return compatible;
+}
+
+void
+pylith::faults::CohesiveTopology::_replaceCell(const Obj<sieve_type>& sieve,
+                                               const Mesh::point_type cell,
+                                               std::map<int,int> *vertexRenumber,
+                                               const int debug)
+{
+  bool       replace = false;
+  PointArray newVertices;
+
+  const ALE::Obj<sieve_type::traits::coneSequence>& cCone = sieve->cone(cell);
+
+  for(sieve_type::traits::coneSequence::iterator v_iter = cCone->begin();
+      v_iter != cCone->end(); ++v_iter) {
+    if (vertexRenumber->find(*v_iter) != vertexRenumber->end()) {
+      if (debug) std::cout << "    vertex " << (*vertexRenumber)[*v_iter] << std::endl;
+      newVertices.insert(newVertices.end(), (*vertexRenumber)[*v_iter]);
+      replace = true;
+    } else {
+      if (debug) std::cout << "    vertex " << *v_iter << std::endl;
+      newVertices.insert(newVertices.end(), *v_iter);
+    } // if/else
+  } // for
+  if (replace) {
+    if (debug) std::cout << "  Replacing cell " << cell << std::endl;
+    sieve->clearCone(cell);
+    int color = 0;
+    for(PointArray::const_iterator v_iter = newVertices.begin(); v_iter != newVertices.end(); ++v_iter) {
+      sieve->addArrow(*v_iter, cell, color++);
+    } // for
+  }
 }
 
 template<class InputPoints>
