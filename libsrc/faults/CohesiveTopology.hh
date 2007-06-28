@@ -108,6 +108,12 @@ private :
                               PointArray *faceVertices,
                               PointArray *neighborVertices);
 
+  static
+  void _replaceCell(const Obj<sieve_type>& sieve,
+                    const Mesh::point_type cell,
+                    std::map<int,int> *vertexRenumber,
+                    const int debug = 0);
+
   template<class InputPoints>
   static
   void _computeCensoredDepth(const ALE::Obj<Mesh>& mesh,
