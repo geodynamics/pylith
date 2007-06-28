@@ -153,7 +153,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   Obj<PointSet> tmpLevel;
   int levelNum = 0;
 
-  nextLevel->insert(*fFaces->begin());
+  if (fFaces->size()) nextLevel->insert(*fFaces->begin());
   while(nextLevel->size()) {
     if (debug) std::cout << "Level " << levelNum << std::endl;
     tmpLevel = level; level = nextLevel; nextLevel = tmpLevel;
