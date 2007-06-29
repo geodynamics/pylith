@@ -26,11 +26,13 @@ nodist_topologymodule_la_SOURCES = \
 topologymodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB) \
-	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+	$(PETSC_LIB)
 
 if ENABLE_CUBIT
   topologymodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+if NO_UNDEFINED
+  topologymodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
 INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)

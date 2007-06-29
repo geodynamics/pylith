@@ -73,6 +73,7 @@ if test "$allow_undefined_flag" = unsupported; then
     # See issue119.
     AM_LDFLAGS="-no-undefined $AM_LDFLAGS"
 fi
+AM_CONDITIONAL([NO_UNDEFINED], [test "$allow_undefined_flag" = unsupported])
 AC_SUBST(AM_LDFLAGS)
 
 AC_PROG_INSTALL

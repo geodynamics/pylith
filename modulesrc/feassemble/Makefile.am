@@ -26,11 +26,13 @@ nodist_feassemblemodule_la_SOURCES = \
 feassemblemodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB) \
-	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+	$(PETSC_LIB)
 
 if ENABLE_CUBIT
   feassemblemodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+if NO_UNDEFINED
+  feassemblemodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)

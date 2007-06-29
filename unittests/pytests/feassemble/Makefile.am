@@ -38,8 +38,11 @@ nodist_testfeassemblemodule_la_SOURCES = \
 	testfeassemble.c testfeassemble_embed.cpp testfeassemble_embed.h
 
 testfeassemblemodule_la_LIBADD = \
-	$(PETSC_LIB) \
+	$(PETSC_LIB)
+if NO_UNDEFINED
+testfeassemblemodule_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+endif
 
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 

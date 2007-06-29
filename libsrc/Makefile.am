@@ -83,8 +83,11 @@ libpylith_la_SOURCES = \
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
 	-lspatialdata \
-	$(PETSC_LIB) \
+	$(PETSC_LIB)
+if NO_UNDEFINED
+libpylith_la_LIBADD += \
 	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+endif
 
 INCLUDES = -I$(top_builddir)/include
 INCLUDES += $(PETSC_INCLUDE)
