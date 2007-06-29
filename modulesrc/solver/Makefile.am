@@ -26,11 +26,13 @@ nodist_solvermodule_la_SOURCES = \
 solvermodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB) \
-	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+	$(PETSC_LIB)
 
 if ENABLE_CUBIT
   solvermodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+if NO_UNDEFINED
+  solvermodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)

@@ -25,11 +25,13 @@ nodist_petscmodule_la_SOURCES = \
 
 petscmodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
-	$(PETSC_LIB) \
-	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+	$(PETSC_LIB)
 
 if ENABLE_CUBIT
   petscmodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+if NO_UNDEFINED
+  petscmodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)

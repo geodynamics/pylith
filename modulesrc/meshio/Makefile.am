@@ -26,11 +26,13 @@ nodist_meshiomodule_la_SOURCES = \
 meshiomodule_la_LIBADD = \
 	$(top_builddir)/libsrc/libpylith.la \
 	-lspatialdata \
-	$(PETSC_LIB) \
-	$(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+	$(PETSC_LIB)
 
 if ENABLE_CUBIT
   meshiomodule_la_LIBADD += -lnetcdf_c++ -lnetcdf
+endif
+if NO_UNDEFINED
+  meshiomodule_la_LIBADD += $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
 endif
 
 INCLUDES += -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
