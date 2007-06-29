@@ -3,8 +3,9 @@ import os, re, sys
 
 class Verifier:
   def __init__(self):
-    self.pylith    = '/PETSc3/cig/pylith3d/bin/pylith'
-    self.petscOpts = ['--petsc.ksp_type=preonly', '--petsc.pc_type=lu', '--petsc.mat_type=aijmumps']
+    self.pylith    = '/Users/brad/tools/cig/gcc-4.0/bin/pylith'
+#    self.petscOpts = ['--petsc.ksp_type=preonly', '--petsc.pc_type=lu', '--petsc.mat_type=aijmumps']
+    self.petscOpts = ['--petsc.pc_type=asm']
     self.exp       = re.compile(r'SCALARS \w+_verify_t. double 4')
     return
 
@@ -24,10 +25,13 @@ class Verifier:
 
   def compare(self, file1, file2):
     def convertLine(line):
-      parts = line.split(' ')
+      parts = line.split()
+      print parts
       return (int(parts[0]), float(parts[1]), float(parts[2]), float(parts[3]))
     data1 = self.readVTK(file1)
     data2 = self.readVTK(file2)
+    print data1
+    print data2
     if not data1 == data2:
       # Do full check
       for line1, line2 in zip(data1, data2):
