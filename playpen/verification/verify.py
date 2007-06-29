@@ -26,12 +26,9 @@ class Verifier:
   def compare(self, file1, file2):
     def convertLine(line):
       parts = line.split()
-      print parts
       return (int(parts[0]), float(parts[1]), float(parts[2]), float(parts[3]))
     data1 = self.readVTK(file1)
     data2 = self.readVTK(file2)
-    print data1
-    print data2
     if not data1 == data2:
       # Do full check
       for line1, line2 in zip(data1, data2):
