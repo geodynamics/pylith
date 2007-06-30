@@ -3,7 +3,7 @@
 # $Id: configure.ac,v 1.1 2005/08/24 22:45:51 leif Exp $
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith3D], [0.8.2], [cig-short@geodynamics.org])
+AC_INIT([PyLith3D], [0.8.3], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_SRCDIR([pylith3d/pylith3dapp.py.in])
 AC_CONFIG_HEADER([config.h])

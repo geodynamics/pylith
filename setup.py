@@ -6,8 +6,8 @@ from merlin import setup, find_packages
 
 setup(
     
-    name = 'PyLith', 
-    version = '0.8.2',
+    name = 'pylith3d', 
+    version = '0.8.3',
 
     zip_safe = False,
     package_dir = { "":"pylith3d" },
