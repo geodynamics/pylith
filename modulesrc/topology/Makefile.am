@@ -44,9 +44,6 @@ topology.pyxe: $(srcdir)/topology.pyxe.src
 topology_embed.cpp: topology_embed.h
 topology_embed.h: topology.pyx
 
-# NYI
-PYTHON_EGG_PYXFLAGS = $(PYTHON_EGG_CPPFLAGS)/mpi
-
 .pyx.c:
 	pyrexc $(PYTHON_EGG_PYXFLAGS) $<
 
