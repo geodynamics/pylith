@@ -17,7 +17,7 @@ language tools:
 If you are using a modern UN*X system, there is a good chance that all
 of the above tools are already installed.
 
-In addition, PyLith v0.8.2 requires the following software packages:
+In addition, PyLith v0.8.3 requires the following software packages:
 
 * An MPI library.  PETSc must be configured to use MPI.  A popular
   choice is MPICH:
@@ -28,24 +28,9 @@ In addition, PyLith v0.8.2 requires the following software packages:
   fact, PETSc's `configure.py' can automatically download and install
   MPICH for you (`--download-mpich=1').
 
-* The development version of PETSc.  You can download the nightly
-  tarball snapshot:
-
-    ftp://info.mcs.anl.gov/pub/petsc/petsc-dev.tar.gz
-
-  Or, check-out the source using Mercurial:
-
-    hg clone http://petsc.cs.iit.edu/petsc/petsc-dev
-    cd petsc-dev/python
-    hg clone http://petsc.cs.iit.edu/petsc/BuildSystem BuildSystem
-
-  Mercurial may be obtained here:
-
-    <http://www.selenic.com/mercurial/>
-
-  PETSc must be configured with the Sieve package (--with-sieve=1).
-  This, in turn, requires that it be built with a C++ compiler
-  (--with-clanguage=C++) and Boost (--with-boost=1
+* PETSc v2.3.3.  PETSc must be configured with the Sieve package
+  (--with-sieve=1).  This, in turn, requires that it be built with a
+  C++ compiler (--with-clanguage=C++) and Boost (--with-boost=1
   --download-boost=1).  You will also need Chaco (--with-chaco=1
   --download-chaco=1).
 
@@ -62,18 +47,16 @@ In addition, PyLith v0.8.2 requires the following software packages:
     <http://www.geodynamics.org/cig/software/packages/pythia>
 
 Note that releases of PETSc are generally not backwards-compatible
-with prior versions.  Therefore, you must install the development
-version PETSc from May 2007 (or perhaps the equivalent release
-version, when it becomes available); future versions of PETSc would
-not be expected to work with PyLith v0.8.2.
+with prior versions.  Therefore, you must install PETSc v2.3.3; future
+versions of PETSc would not be expected to work with PyLith v0.8.3.
 
 Installing PyLith
 =================
 
 To install PyLith, perform the following:
 
-   gunzip -c pylith3d-0.8.2.tar.gz | tar xf -
-   cd pylith3d-0.8.2
+   gunzip -c pylith3d-0.8.3.tar.gz | tar xf -
+   cd pylith3d-0.8.3
    ./configure
    make
    make install # optional
@@ -103,7 +86,7 @@ standard Python interpreter -- give PyLith's `configure' the
 `--disable-embedding' option.  However, this is not guaranteed to work
 properly unless you installed MPI as a shared library.
 
-PyLith v0.8.2 was tested on Linux (x86) and Mac OS X (PowerPC).
+PyLith v0.8.3 was tested on Linux (x86) and Mac OS X (PowerPC).
 
 Generic GNU Installation Instructions
 *************************************

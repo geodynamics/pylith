@@ -1,7 +1,13 @@
-PyLith NEWS -- history of user-visible changes.  2007-05-04
+PyLith NEWS -- history of user-visible changes.  2007-06-29
 
 Please report bugs at <http://geodynamics.org/roundup>.
 Send questions to cig-short@geodynamics.org.
+
+
+Version 0.8.3
+
+* Updated for PETSc v2.3.3.  PyLith v0.8.3 requires this specific
+  version of PETSc.  See the file INSTALL for details.
 
 
 Version 0.8.2

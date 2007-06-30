@@ -1,3 +1,38 @@
+2007-06-26 19:51  sue
+
+	* [r7523] rename 0.8.2 manual
+
+2007-06-20 23:46  willic3
+
+	* [r7330] Changed default for autoRotateSlipperyNodes to false,
+	  since this adds additional computations that aren't needed.
+
+2007-06-13 20:04  willic3
+
+	* [r7213] Made BC symmetric to match test for PyLith 1.0.
+
+2007-06-13 16:40  willic3
+
+	* [r7201] Started creating tests for PyLith 0.8 that can be
+	  compared directly against those for 1.0.
+
+2007-06-13 13:48  willic3
+
+	* [r7193] Added extra digit to PETSc version number to get
+	  configure working.
+
+2007-05-10 17:32  knepley
+
+	* [r6839] Fixed name change
+
+2007-05-10 00:38  leif
+
+	* [r6831] Fix for issue108: "change to VecScatterBegin/End".
+
+2007-05-04 21:17  leif
+
+	* [r6787] Updated info files.
+
 2007-05-04 20:46  leif
 
 	* [r6786] Updated Makefile.
