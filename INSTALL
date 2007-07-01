@@ -1,6 +1,21 @@
 Installation Instructions
 *************************
 
+1. MPI
+2. PETSc
+3. Pyrex
+4. Pyrexembed (CIG)
+5. Pythia (CIG)
+6. Nemesis (CIG)
+7. Proj
+8. Cppunit (optional; needed to run tests)
+9. Netcdf (optional; needed to import meshes from CUBIT)
+10. Numpy
+11. FIAT
+12. Spatialdata (CIG)
+13. PyLith
+
+
 System Requirements
 ===================
 
@@ -82,7 +97,7 @@ To install PyLith, perform the following:
 If you will be running `make install' as a non-root user, specify a
 prefix when running `configure'; e.g.,
 
-   ./configure --prefix=$HOME/pylith3d
+   ./configure --prefix=$HOME/pylith
 
 After installing, you may optionally run `make check' to run the
 examples.  However, `check' takes a long time; instead, you may
