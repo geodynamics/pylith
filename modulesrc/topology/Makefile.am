@@ -37,6 +37,8 @@ endif
 
 INCLUDES += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) $(PETSC_INCLUDE)
 
+PYTHON_EGG_PYXFLAGS = $(PYTHON_EGG_CPPFLAGS)/mpi
+
 topology.pyx topology_embed.cpp  topology_embed.h: topology.pyxe
 	pyrexembed topology.pyxe
 topology.pyxe: $(srcdir)/topology.pyxe.src
