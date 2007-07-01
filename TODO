@@ -2,18 +2,24 @@
 CURRENT ISSUES
 ======================================================================
 
-  0. Orientation of cohesive cells is not consistent over fault
-     surface. Unit tests now expose problem. [Matt is working on fixing this]
+  0. Add unit test to for zero fault slip and slipIncr (should be zero).
 
-  1. Need check to make sure quadrature scheme is compatible with
+  1. Add unit test for tri3 and tet4 for cells with only edges or
+  single vertex on fault.
+
+  2. Need check to make sure quadrature scheme is compatible with
   cells in mesh.
 
-  2. Need better error trapping when using LineParser. State of
+  3. Need better error trapping when using LineParser. State of
   ifstream is insufficient. Need state of istringstream buffer, but it
   is often !good() at eof(). Test of !good() and !eof()?
 
-  3. Need to add in documentation that fault id corresponds to the
-  material-id for cohesive cells.
+  4. Need to add explanation of output and output parameters to
+  manual.
+
+  5. Add dependency diagram to manual.
+
+  6. Better default PETSc settings. (pc_type=asm?)
 
 ======================================================================
 KNOWN DEFICIENCIES
@@ -58,13 +64,11 @@ List of missing features (EqSim/PyLith 0.8) and new features.
 MAIN PRIORITIES (Brad)
 ======================================================================
 
-Create 6x6x4 meshes for examples.
+0. Create 6x6x4 meshes for examples.
   CUBIT
     Add GUI instructions in journal files.
-  LaGriT
-    Figure out why fault orientations are not consistent for LaGriT mesh.
 
-Create meshes for benchmarks
+1. Create meshes for benchmarks
 
   strike-slip
     tet (LaGriT)
@@ -73,15 +77,19 @@ Create meshes for benchmarks
     tet (LaGriT)
     hex (CUBIT)
 
-  FaultCohesiveKin
-    unit test for multiple cohesive cells for hex8 mesh
-      normal okay with rollover of fault dip?
+2. Reimplement SolutionIO.
 
-1. Additional unit tests
+   Follow implementation of MeshIO. SolutionIO implements extracting
+   data from Sieve and calls virtual functions to write data.
 
-  b. ElasticityExplicit and ElasticityImplicit
-    i. multiple materials
-    ii. partially constrained DOF
+   a. Reimplement SolutionIOVTK
+   b. Implement SolutionIOHDF5
+
+3. Additional unit tests
+
+   a. ElasticityExplicit and ElasticityImplicit
+      i. multiple materials
+      ii. partially constrained DOF
 
 ======================================================================
 SECONDARY PRIORITIES
@@ -107,15 +115,7 @@ check test routines that create mesh to make sure they clear factory
 
 2. Implement absorbing boundary conditions
 
-3. Reimplement SolutionIO.
-
-   Follow implementation of MeshIO. SolutionIO implements extracting
-   data from Sieve and calls virtual functions to write data.
-
-   a. Reimplement SolutionIOVTK
-   b. Implement SolutionIOHDF5
-
-4. Implement MeshIOHDF5 & HDF5 (helper class)
+3. Implement MeshIOHDF5 & HDF5 (helper class)
    a. C++ objects
    b. unit tests at C++ level
    c. Python object (MeshIOHDF5)
@@ -123,32 +123,57 @@ check test routines that create mesh to make sure they clear factory
    e. unit tests at Python level
 
 ======================================================================
-UNRESOLVED ISSUES
+PLANNED RELEASES
 ======================================================================
+
+----------------------------------------------------------------------
+PyLith 1.1
+----------------------------------------------------------------------
+HDF5 output
+  volume (solution field)
+  ground surface (or other surfaces) (solution field)
+  points (solution field)
+  cells (state variables)
+Absorbing boundary conditions
+Traction boundary conditions
+Power-law viscoeleatic model
+Velocity boundary conditions
+Gravity (spatial db)
+
+----------------------------------------------------------------------
+PyLith 1.2
+----------------------------------------------------------------------
+Fault constitutive model
+
+----------------------------------------------------------------------
+PyLith 1.3
+----------------------------------------------------------------------
+Green's functions
+
+----------------------------------------------------------------------
+PyLith 1.4
+----------------------------------------------------------------------
+Coupling
+Adaptive time stepping
+
+----------------------------------------------------------------------
+PyLith 1.5
+----------------------------------------------------------------------
+Nonlinear solvers
+Large deformation
+
+----------------------------------------------------------------------
+PyLith 1.6
+----------------------------------------------------------------------
+Adaptive mesh refinement
 
 ======================================================================
 THINGS WE NEED SIEVE TO DO (Matt)
 ======================================================================
 
-3. Distribute mesh/bc in scalable manner. 
+1. Boundary mesh
 
-  Inputs:
-    * PETSc Mesh (with bc) (global on each processor)
-    * number of processors
-  Outputs:
-    * PETSc Mesh on each processor (restricted to processor)
-
-  [DONE]
-
-4. Global refinement of mesh.
-
-  Inputs:
-    * PETSc Mesh (original)
-    * refinement factor (limited to factor of 2?)
-  Outputs:
-    * PETSc Mesh (refined)
-
-5. Construct mesh with higher order cells from mesh with lower order cells.
+2. Construct mesh with higher order cells from mesh with lower order cells.
 
   Many mesh generators do not know how to construct higher order
   elements, so we will need a general utility for doing this.
@@ -160,13 +185,13 @@ THINGS WE NEED SIEVE TO DO (Matt)
   Output:
     * PETSc Mesh
 
-  Note: I think this would give us incredible flexibility in selecting
-  the appropriate discretization for a problem. For example, I think
-  it would allow us to use spectral elements.
+3. Global refinement of mesh.
 
-6. Trial run with quadratic elements
-
-7. Trial run with fully interpolated mesh
+  Inputs:
+    * PETSc Mesh (original)
+    * refinement factor (limited to factor of 2- 2 or 4)
+  Outputs:
+    * PETSc Mesh (refined)
 
 ======================================================================
 QUESTIONS FOR LEIF
