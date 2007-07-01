@@ -1,4 +1,4 @@
-We are pleased to announce the version 0.8.0 release of PyLith.
+We are pleased to announce the version 1.0.1 release of PyLith.
 
 See the file INSTALL for building and installation instructions.
 
@@ -9,3 +9,93 @@ Please send all questions by electronic mail to:
     cig-short@geodynamics.org
 
 PyLith is free software.  See the file COPYING for copying conditions.
+
+This release allows the solution of both quasi-static and dynamic  
+problems in one, two, or three dimensions, and represents a complete  
+rewrite of the original PyLith. The code runs in either serial or  
+parallel mode, and the design allows for relatively easy scripting  
+using the Python programming language. Material properties and  
+parameters for boundary and fault conditions are specified using a  
+spatial database, which permits easy prescription of complex spatial  
+variations of properties and parameters. Simulation parameters are  
+generally specified through the use of simple ASCII files or the  
+command line.
+
+You can download the source code and binaries from
+
+    http://geodynamics.org/cig/software/packages/short/pylith
+
+Installation instructions are in the bundled README and INSTALL  
+files, as well as in the User Manual on the web page.
+
+PyLith is under active development and we expect a number of  
+additions and improvements in the near future. Likely enhancements  
+will include a more complete set of boundary conditions (absorbing  
+boundaries for use in dynamic modeling and traction boundary  
+conditions for use in quasi-static modeling), additional constitutive  
+models for both volume elements and cohesive (fault) elements,  
+automatic generation of higher-order elements from linear elements,  
+and the generation of Green's functions to be used in inversions.  
+Many of these features should be available in Fall 2007.
+
+======================================================================
+RELEASE NOTES
+======================================================================
+
+----------------------------------------------------------------------
+Version 1.0.1
+
+  * Code now includes both dynamic and quasi-static solutions.
+
+  * Completely rewritten in Python and C++, with bindings provided by
+    Pyrex/Pyrexembed.
+
+  * Easier specification of simulations:
+
+      - Parameters are all set using .cfg files (or .pml/command-line).
+
+      - Mesh may be directly imported from CUBIT, LaGriT, or using
+        PyLith mesh ASCII format.
+
+      - Material properties, fault dislocations, and BC are all given
+        using spatial databases, which are independent of mesh
+        discretization.
+
+  * Faults are now implemented using cohesive elements:
+
+      - Easy specification of kinematic fault slip using a spatial
+        database.
+
+      - Cohesive elements generate offsets in the mesh corresponding
+        to fault slip, which increase the accuracy of displacement
+        fields near faults and facilitate visualization of fault slip.
+
+      - Usage of cohesive elements will facilitiate the upcoming
+        addition of fault constitutive relations, where fault slip
+        occurs in response to prescribed physics.
+
+  * Improved implicit time-stepping eliminates need to perform more
+    than one iteration for linear rheologies.
+
+  * Code is now completely modular and object-oriented, which allows
+    much easier addition of new features.  Modules may be added
+    without having to recompile the code.
+
+  * Features present in 0.8 that are not present in 1.0 that will be
+    added in the near future.
+
+      - Traction boundary conditions
+
+      - Generalized Maxwell and Power-law Maxwell viscoelastic models
+
+  * Bug fixes
+
+      - Cohesive cells lacked consistent orientation (inconsistent
+        normals) in cases where cells were not ordered one side of the
+        fault and then the other.
+
+      - Final slip of zero resulted in fault slip and slip increments
+        of Nan.
+
+      - Parallel importing of meshes from LaGrit and CUBIT lacked
+        guards against all processors reading the files.
