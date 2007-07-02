@@ -136,14 +136,19 @@ HDF5 output
   cells (state variables)
 Absorbing boundary conditions
 Traction boundary conditions
-Power-law viscoeleatic model
+Generalized Maxwell viscoelastic model
 Velocity boundary conditions
 Gravity (spatial db)
 
 ----------------------------------------------------------------------
 PyLith 1.2
 ----------------------------------------------------------------------
-Fault constitutive model
+Fault friction interface conditions
+Fault constitutive models
+  Linear slip-weakening
+  Rate- and state-friction
+  Uniform friction
+  Slip- and rate-weakening friction model
 
 ----------------------------------------------------------------------
 PyLith 1.3
@@ -161,6 +166,7 @@ PyLith 1.5
 ----------------------------------------------------------------------
 Nonlinear solvers
 Large deformation
+Power-law viscoelastic material
 
 ----------------------------------------------------------------------
 PyLith 1.6
