@@ -170,6 +170,7 @@ PyLith 1.5
 ----------------------------------------------------------------------
 Nonlinear solvers
 Large deformation
+Improved support for spherical geometry in user-interface
 Power-law viscoelastic material
 
 ----------------------------------------------------------------------
