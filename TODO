@@ -126,6 +126,10 @@ check test routines that create mesh to make sure they clear factory
 PLANNED RELEASES
 ======================================================================
 
+Other (unknown release):
+  higher order cells from linear cells
+  initial stress field (from spatial db)
+
 ----------------------------------------------------------------------
 PyLith 1.1
 ----------------------------------------------------------------------
