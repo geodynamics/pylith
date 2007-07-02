@@ -206,7 +206,6 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   } // for
 
   // Assemble orientation information
-  _orientation->view("Orientation before completion");
   ALE::Distribution<Mesh>::completeSection(mesh, _orientation);
 
   // Loop over vertices, make orientation information unit magnitude
