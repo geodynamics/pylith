@@ -99,3 +99,24 @@ Version 1.0.1
 
       - Parallel importing of meshes from LaGrit and CUBIT lacked
         guards against all processors reading the files.
+
+======================================================================
+KNOWN ISSUES
+======================================================================
+
+1. "merlin.DistributionNotFound: Cheetah" error
+
+  The binary package is for 32-bit linux systems. One of the Python
+  packages PyLith uses doesn't know how to determine the system
+  architecture at runtime. The workaround is:
+
+  (1) Go to the lib/python2.5/site-packages directory.
+  (2) Unzip merlin-1.3-py2.5.egg (if it is a file and not a directory).
+  (3) Go to the merlin directory.
+  (4) Edit __init__.py. Replace line 308
+        plat = get_platform()
+      with
+        plat = "linux-i686"
+  (5) If merlin-1.3-py2.5.egg is a file, rezip merlin. Go the
+      site-packages directory and enter
+      "zip -r merlin-1.3-py2.5.egg merlin".
