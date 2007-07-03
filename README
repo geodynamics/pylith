@@ -44,6 +44,23 @@ RELEASE NOTES
 
 ----------------------------------------------------------------------
 Version 1.0.1
+----------------------------------------------------------------------
+
+  * Bug fixes
+
+      - Cohesive cells lacked consistent orientation (inconsistent
+        normals) in cases where cells were not ordered one side of the
+        fault and then the other.
+
+      - Final slip of zero resulted in fault slip and slip increments
+        of Nan.
+
+      - Parallel importing of meshes from LaGrit and CUBIT lacked
+        guards against all processors reading the files.
+
+----------------------------------------------------------------------
+Version 1.0.0
+----------------------------------------------------------------------
 
   * Code now includes both dynamic and quasi-static solutions.
 
@@ -87,18 +104,6 @@ Version 1.0.1
       - Traction boundary conditions
 
       - Generalized Maxwell and Power-law Maxwell viscoelastic models
-
-  * Bug fixes
-
-      - Cohesive cells lacked consistent orientation (inconsistent
-        normals) in cases where cells were not ordered one side of the
-        fault and then the other.
-
-      - Final slip of zero resulted in fault slip and slip increments
-        of Nan.
-
-      - Parallel importing of meshes from LaGrit and CUBIT lacked
-        guards against all processors reading the files.
 
 ======================================================================
 KNOWN ISSUES
