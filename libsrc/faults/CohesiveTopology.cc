@@ -13,6 +13,7 @@
 #include <portinfo>
 
 #include "CohesiveTopology.hh" // implementation of object methods
+#include <Selection.hh> // Algorithms for submeshes
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
@@ -29,6 +30,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   assert(0 != fault);
 
   typedef ALE::SieveAlg<Mesh> sieveAlg;
+  typedef ALE::Selection<Mesh> selection;
   typedef std::set<Mesh::point_type> PointSet;
 
   const int_section_type::chart_type& chart = groupField->getChart();
@@ -48,7 +50,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
 
   if (!(*fault)->commRank()) {
     numCorners = sieve->nCone(*mesh->heightStratum(0)->begin(), mesh->depth())->size();
-    faceSize   = _numFaceVertices(*mesh->heightStratum(0)->begin(), mesh);
+    faceSize   = selection::numFaceVertices(*mesh->heightStratum(0)->begin(), mesh);
     indices    = new int[faceSize];
   }
 
@@ -112,7 +114,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
           faultSieve->addArrow(*preFace->begin(), *c_iter);
         } else if (preFace->size() == 0) {
           if (debug) std::cout << "  Orienting face " << f << std::endl;
-          _getOrientedFace(mesh, *c_iter, face, numCorners, indices, &origVertices, &faceVertices);
+          selection::getOrientedFace(mesh, *c_iter, face, numCorners, indices, &origVertices, &faceVertices);
           if (debug) std::cout << "  Adding face " << f << std::endl;
           int color = 0;
           for(PointArray::const_iterator f_iter = faceVertices.begin();
@@ -142,7 +144,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     numFaultCorners = faultSieve->nCone(*fFaces->begin(), faultDepth)->size();
     if (debug) std::cout << "  Fault corners " << numFaultCorners << std::endl;
     assert(numFaultCorners == faceSize);
-    faultFaceSize = _numFaceVertices(*fFaces->begin(), (*fault), faultDepth);
+    faultFaceSize = selection::numFaceVertices(*fFaces->begin(), (*fault), faultDepth);
   }
   if (debug) std::cout << "  Fault face size " << faultFaceSize << std::endl;
   // Do BFS on the fault mesh
@@ -236,8 +238,8 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
         }
         if ((int) meet->size() == faultFaceSize) {
           if (debug) std::cout << "    Found neighboring fault face " << *n_iter << std::endl;
-          bool eOrient = _getOrientedFace(*fault, *e_iter, meet, numFaultCorners, indices, &origVertices, &faceVertices);
-          bool nOrient = _getOrientedFace(*fault, *n_iter, meet, numFaultCorners, indices, &origVertices, &neighborVertices);
+          bool eOrient = selection::getOrientedFace(*fault, *e_iter, meet, numFaultCorners, indices, &origVertices, &faceVertices);
+          bool nOrient = selection::getOrientedFace(*fault, *n_iter, meet, numFaultCorners, indices, &origVertices, &neighborVertices);
 
           if (faultFaceSize > 1) {
             if (debug) {
@@ -319,7 +321,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     Mesh::point_type otherCell;
 
     if (debug) std::cout << "  Checking orientation against cell " << cell << std::endl;
-    _getOrientedFace(mesh, cell, &vertexRenumber, numCorners, indices, &origVertices, &faceVertices);
+    selection::getOrientedFace(mesh, cell, &vertexRenumber, numCorners, indices, &origVertices, &faceVertices);
 
     const ALE::Obj<sieve_type::traits::coneSequence>& faceCone = faultSieve->cone(*f_iter);
     bool found = true;
@@ -458,308 +460,6 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   if (debug) coordinates->view("Coordinates with shadow vertices");
 } // createCohesiveCells
 
-// ----------------------------------------------------------------------
-unsigned int
-pylith::faults::CohesiveTopology::_numFaceVertices(const Mesh::point_type& cell,
-                                                   const ALE::Obj<Mesh>& mesh,
-                                                   const int depth)
-{ // _numFaceVertices
-
-  /** :QUESTION:
-   *
-   * If mesh is interpolated is there a simple way to get the number
-   * of vertices on the face (3-D), edge (2-D), end (1-D) of a cell?
-   */
-  const int cellDim = mesh->getDimension();
-
-  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
-  int meshDepth = (depth < 0) ? mesh->depth() : depth;
-  unsigned int numCorners = sieve->nCone(cell, meshDepth)->size();
-
-  unsigned int numFaceVertices = 0;
-  switch (cellDim)
-    { // switch
-    case 0 :
-      numFaceVertices = 0;
-      break;
-    case 1 :
-      numFaceVertices = 1;
-      break;
-    case 2:
-      switch (numCorners)
-	{ // switch
-	case 3 : // tri3
-	  numFaceVertices = 2; // Edge has 2 vertices
-	  break;
-	case 4 : // quad4
-	  numFaceVertices = 2; // Edge has 2 vertices
-	  break;
-	default :
-	  std::cerr << "numCorners: " << numCorners << std::endl;
-	  assert(0);
-	} // switch
-      break;
-    case 3:
-      switch (numCorners)
-	{ // switch
-	case 4 : // tet4
-	  numFaceVertices = 3; // Face has 3 vertices
-	  break;
-	case 8 : // hex8
-	  numFaceVertices = 4; // Face has 4 vertices
-	  break;
-	default :
-	  std::cerr << "numCorners: " << numCorners << std::endl;
-	  assert(0);
-	} // switch
-      break;
-    default:
-      assert(0);
-    } // swtich
-  return numFaceVertices;
-} // _numFaceVertices
-
-// ----------------------------------------------------------------------
-// We need this method because we do not use interpolates sieves
-//   - Without interpolation, we cannot say what vertex collections are
-//     faces, and how they are oriented
-//   - Now we read off the list of face vertices IN THE ORDER IN WHICH
-//     THEY APPEAR IN THE CELL
-//   - This leads to simple algorithms for simplices and quads to check
-//     orientation since these sets are always valid faces
-//   - This is not true with hexes, so we just sort and check explicit cases
-//   - This means for hexes that we have to alter the vertex container as well
-bool
-pylith::faults::CohesiveTopology::_faceOrientation(const Mesh::point_type& cell,
-                                                   const ALE::Obj<Mesh>& mesh,
-                                                   const int numCorners,
-                                                   const int indices[],
-                                                   const int oppositeVertex,
-                                                   PointArray *origVertices,
-                                                   PointArray *faceVertices)
-{ // _faceOrientation
-  const int cellDim   = mesh->getDimension();
-  bool      posOrient = false;
-  int       debug     = mesh->debug();
-
-  // Simplices
-  if (cellDim == numCorners-1) {
-    posOrient = !(oppositeVertex%2);
-  } else if (cellDim == 2) {
-    // Quads
-    if ((indices[1] > indices[0]) && (indices[1] - indices[0] == 1)) {
-      posOrient = true;
-    } else if ((indices[0] == 3) && (indices[1] == 0)) {
-      posOrient = true;
-    } else {
-      posOrient = false;
-    }
-  } else if (cellDim == 3) {
-    // Hexes
-    //   A hex is two oriented quads with the normal of the first
-    //   pointing up at the second.
-    //
-    //     7---6
-    //    /|  /|
-    //   4---5 |
-    //   | 3-|-2
-    //   |/  |/
-    //   0---1
-    int sortedIndices[4];
-
-    for(int i = 0; i < 4; ++i) sortedIndices[i] = indices[i];
-    std::sort(sortedIndices, sortedIndices+4);
-    // Case 1: Bottom quad
-    if ((sortedIndices[0] == 0) && (sortedIndices[1] == 1) && (sortedIndices[2] == 2) && (sortedIndices[3] == 3)) {
-      if (debug) std::cout << "Bottom quad" << std::endl;
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 3) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 2) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 1) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 0) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-    }
-    // Case 2: Top quad
-    if ((sortedIndices[0] == 4) && (sortedIndices[1] == 5) && (sortedIndices[2] == 6) && (sortedIndices[3] == 7)) {
-      if (debug) std::cout << "Top quad" << std::endl;
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 5) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 6) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 7) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 4) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-    }
-    // Case 3: Front quad
-    if ((sortedIndices[0] == 0) && (sortedIndices[1] == 1) && (sortedIndices[2] == 4) && (sortedIndices[3] == 5)) {
-      if (debug) std::cout << "Front quad" << std::endl;
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 1) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 5) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 4) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 0) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-    }
-    // Case 4: Back quad
-    if ((sortedIndices[0] == 2) && (sortedIndices[1] == 3) && (sortedIndices[2] == 6) && (sortedIndices[3] == 7)) {
-      if (debug) std::cout << "Back quad" << std::endl;
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 7) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 6) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 2) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 3) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-    }
-    // Case 5: Right quad
-    if ((sortedIndices[0] == 1) && (sortedIndices[1] == 2) && (sortedIndices[2] == 5) && (sortedIndices[3] == 6)) {
-      if (debug) std::cout << "Right quad" << std::endl;
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 2) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 6) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 5) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 1) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-    }
-    // Case 6: Left quad
-    if ((sortedIndices[0] == 0) && (sortedIndices[1] == 3) && (sortedIndices[2] == 4) && (sortedIndices[3] == 7)) {
-      if (debug) std::cout << "Left quad" << std::endl;
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 4) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 7) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 3) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-      for(int i = 0; i < 4; ++i) {
-        if (indices[i] == 0) {
-          faceVertices->push_back((*origVertices)[i]); break;
-        }
-      }
-    }
-    return true;
-  }
-  if (!posOrient) {
-    if (debug) std::cout << "  Reversing initial face orientation" << std::endl;
-    faceVertices->insert(faceVertices->end(), (*origVertices).rbegin(), (*origVertices).rend());
-  } else {
-    if (debug) std::cout << "  Keeping initial face orientation" << std::endl;
-    faceVertices->insert(faceVertices->end(), (*origVertices).begin(), (*origVertices).end());
-  }
-  return posOrient;
-} // _faceOrientation
-
-// ----------------------------------------------------------------------
-// Given a cell and a face, as a set of vertices,
-//   return the oriented face, as a set of vertices, in faceVertices
-// The orientation is such that the face normal points out of the cell
-template<typename FaceType>
-bool
-pylith::faults::CohesiveTopology::_getOrientedFace(const ALE::Obj<Mesh>& mesh,
-                                                   const Mesh::point_type& cell,
-                                                   FaceType face,
-                                                   const int numCorners,
-                                                   int indices[],
-                                                   PointArray *origVertices,
-                                                   PointArray *faceVertices)
-{
-  const ALE::Obj<sieve_type::traits::coneSequence>& cone = mesh->getSieve()->cone(cell);
-  const int debug = mesh->debug();
-  int       v     = 0;
-  int       oppositeVertex;
-
-  origVertices->clear();
-  faceVertices->clear();
-  for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
-      v_iter != cone->end(); ++v_iter, ++v) {
-    if (face->find(*v_iter) != face->end()) {
-      if (debug) std::cout << "    vertex " << *v_iter << std::endl;
-      indices[origVertices->size()] = v;
-      origVertices->insert(origVertices->end(), *v_iter);
-    } else {
-      if (debug) std::cout << "    vertex " << *v_iter << std::endl;
-      oppositeVertex = v;
-    }
-  }
-  return _faceOrientation(cell, mesh, numCorners, indices, oppositeVertex, origVertices, faceVertices);
-}
-
 template<class InputPoints>
 bool
 pylith::faults::CohesiveTopology::_compatibleOrientation(const ALE::Obj<Mesh>& mesh,
@@ -774,11 +474,12 @@ pylith::faults::CohesiveTopology::_compatibleOrientation(const ALE::Obj<Mesh>& m
                                                          PointArray *faceVertices,
                                                          PointArray *neighborVertices)
 {
+  typedef ALE::Selection<Mesh> selection;
   const int debug = mesh->debug();
   bool compatible;
 
-  bool eOrient = _getOrientedFace(mesh, p, points, numFaultCorners, indices, origVertices, faceVertices);
-  bool nOrient = _getOrientedFace(mesh, q, points, numFaultCorners, indices, origVertices, neighborVertices);
+  bool eOrient = selection::getOrientedFace(mesh, p, points, numFaultCorners, indices, origVertices, faceVertices);
+  bool nOrient = selection::getOrientedFace(mesh, q, points, numFaultCorners, indices, origVertices, neighborVertices);
 
   if (faultFaceSize > 1) {
     if (debug) {
