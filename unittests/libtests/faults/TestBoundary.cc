@@ -21,7 +21,9 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "data/BoundaryDataTri3.hh" // USES BoundaryDataTri3
+#include "data/BoundaryDataQuad4.hh" // USES BoundaryDataQuad4
 #include "data/BoundaryDataTet4.hh" // USES BoundaryDataTet4
+#include "data/BoundaryDataHex8.hh" // USES BoundaryDataHex8
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestBoundary );
@@ -36,6 +38,15 @@ pylith::faults::TestBoundary::testCreateBoundaryTri3(void)
 } // testCreateBoundaryTri3
 
 // ----------------------------------------------------------------------
+// Test createBoundary() with 2-D quadrilateral elements.
+void
+pylith::faults::TestBoundary::testCreateBoundaryQuad4(void)
+{ // testCreateBoundaryQuad4
+  BoundaryDataQuad4 data;
+  _testCreateBoundary(data);
+} // testCreateBoundaryQuad4
+
+// ----------------------------------------------------------------------
 // Test createBoundary() with 3-D tetrahedral elements.
 void
 pylith::faults::TestBoundary::testCreateBoundaryTet4(void)
@@ -43,6 +54,15 @@ pylith::faults::TestBoundary::testCreateBoundaryTet4(void)
   BoundaryDataTet4 data;
   _testCreateBoundary(data);
 } // testCreateBoundaryTet4
+
+// ----------------------------------------------------------------------
+// Test createBoundary() with 3-D hexahedral elements.
+void
+pylith::faults::TestBoundary::testCreateBoundaryHex8(void)
+{ // testCreateBoundaryHex8
+  BoundaryDataHex8 data;
+  _testCreateBoundary(data);
+} // testCreateBoundaryHex8
 
 // ----------------------------------------------------------------------
 // Test createBoundary().

@@ -41,7 +41,9 @@ class pylith::faults::TestBoundary : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( TestBoundary );
 
   CPPUNIT_TEST( testCreateBoundaryTri3 );
+  CPPUNIT_TEST( testCreateBoundaryQuad4 );
   CPPUNIT_TEST( testCreateBoundaryTet4 );
+  CPPUNIT_TEST( testCreateBoundaryHex8 );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -50,8 +52,12 @@ public :
 
   /// Test createBoundary() with 2-D triangular element.
   void testCreateBoundaryTri3(void);
+  /// Test createBoundary() with 2-D quadrilateral element.
+  void testCreateBoundaryQuad4(void);
   /// Test createBoundary() with 3-D tetrahedral element.
   void testCreateBoundaryTet4(void);
+  /// Test createBoundary() with 3-D hexahedral element.
+  void testCreateBoundaryHex8(void);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 public :

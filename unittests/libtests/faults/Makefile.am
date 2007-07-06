@@ -103,7 +103,9 @@ testfaults_SOURCES += \
 	data/CohesiveKinDataHex8.cc \
 	data/BoundaryData.cc \
 	data/BoundaryDataTri3.cc \
-	data/BoundaryDataTet4.cc
+	data/BoundaryDataQuad4.cc \
+	data/BoundaryDataTet4.cc \
+	data/BoundaryDataHex8.cc
 
 noinst_HEADERS += \
 	data/CohesiveData.hh \
@@ -152,7 +154,9 @@ noinst_HEADERS += \
 	data/CohesiveKinDataHex8.hh \
 	data/BoundaryData.hh \
 	data/BoundaryDataTri3.hh \
-	data/BoundaryDataTet4.hh
+	data/BoundaryDataQuad4.hh \
+	data/BoundaryDataTet4.hh \
+	data/BoundaryDataHex8.hh
 
 AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
 
