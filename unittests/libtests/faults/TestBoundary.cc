@@ -21,18 +21,28 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "data/BoundaryDataTri3.hh" // USES BoundaryDataTri3
+#include "data/BoundaryDataTet4.hh" // USES BoundaryDataTet4
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestBoundary );
 
 // ----------------------------------------------------------------------
-// Test createBoundary() with 2-D triangular element.
+// Test createBoundary() with 2-D triangular elements.
 void
 pylith::faults::TestBoundary::testCreateBoundaryTri3(void)
 { // testCreateBoundaryTri3
   BoundaryDataTri3 data;
   _testCreateBoundary(data);
 } // testCreateBoundaryTri3
+
+// ----------------------------------------------------------------------
+// Test createBoundary() with 3-D tetrahedral elements.
+void
+pylith::faults::TestBoundary::testCreateBoundaryTet4(void)
+{ // testCreateBoundaryTet4
+  BoundaryDataTet4 data;
+  _testCreateBoundary(data);
+} // testCreateBoundaryTet4
 
 // ----------------------------------------------------------------------
 // Test createBoundary().
