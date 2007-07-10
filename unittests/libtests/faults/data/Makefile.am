@@ -66,7 +66,11 @@ noinst_DATA = \
 	hex8h.mesh \
 	hex8_finalslip.spatialdb \
 	hex8_sliptime.spatialdb \
-	hex8_peakrate.spatialdb
+	hex8_peakrate.spatialdb \
+	tri3traction.mesh \
+	quad4traction.mesh \
+	tet4traction.mesh \
+	hex8traction.mesh
 
 noinst_TMP =
 
