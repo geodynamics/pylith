@@ -14,8 +14,6 @@
 
 #include "TestBoundary.hh" // Implementation of class methods
 
-#include <Selection.hh> // USES submesh algorithms
-
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 #include "pylith/utils/array.hh" // USES int_array, double_array
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
@@ -24,6 +22,8 @@
 #include "data/BoundaryDataQuad4.hh" // USES BoundaryDataQuad4
 #include "data/BoundaryDataTet4.hh" // USES BoundaryDataTet4
 #include "data/BoundaryDataHex8.hh" // USES BoundaryDataHex8
+
+#include <Selection.hh> // USES submesh algorithms
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::faults::TestBoundary );
