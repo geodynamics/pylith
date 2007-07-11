@@ -73,7 +73,7 @@ pylith::feassemble::Quadrature1D::computeGeometry(
     // Compute determinant of Jacobian at quadrature point
     // |J| = j00
     const double det = _jacobian[iQuadPt];
-    _checkJacobianDet(det);
+    _checkJacobianDet(det, cell);
     _jacobianDet[iQuadPt] = _jacobian[iQuadPt];
     
     // Compute inverse of Jacobian at quadrature point
