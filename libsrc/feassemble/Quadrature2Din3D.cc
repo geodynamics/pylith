@@ -113,7 +113,7 @@ pylith::feassemble::Quadrature2Din3D::computeGeometry(
       _jacobian[i11]*_jacobian[i11] +
       _jacobian[i21]*_jacobian[i21];
     const double det = sqrt(jj00*jj11 - jj01*jj10);
-    _checkJacobianDet(det);
+    _checkJacobianDet(det, cell);
     _jacobianDet[iQuadPt] = det;
     
     // Compute inverse of Jacobian at quadrature point

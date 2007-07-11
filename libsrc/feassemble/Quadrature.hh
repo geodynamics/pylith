@@ -231,8 +231,13 @@ protected :
    */
   Quadrature(const Quadrature& q);
 
-  /// Check determinant of Jacobian against minimum allowable value
-  void _checkJacobianDet(const double det) const;
+  /* Check determinant of Jacobian against minimum allowable value.
+   *
+   * @param det Value of determinant of Jacobian
+   * @param cell Finite-element cell
+   */
+  void _checkJacobianDet(const double det,
+			 const Mesh::point_type& cell) const;
 
   /// Set entries in geometry arrays to zero.
   void _resetGeometry(void);

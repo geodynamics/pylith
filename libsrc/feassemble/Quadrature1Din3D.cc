@@ -88,7 +88,7 @@ pylith::feassemble::Quadrature1Din3D::computeGeometry(
       det += _jacobian[iQuadPt*_spaceDim+iDim] * 
 	_jacobian[iQuadPt*_spaceDim+iDim];
     det = sqrt(det);
-    _checkJacobianDet(det);
+    _checkJacobianDet(det, cell);
     _jacobianDet[iQuadPt] = det;
 
     // Compute inverse of Jacobian at quadrature point
