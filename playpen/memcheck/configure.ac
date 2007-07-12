@@ -27,6 +27,15 @@ AC_ARG_ENABLE([cubit],
 	[enable_cubit=no])
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
 
+# PETSc w/TetGen
+AC_ARG_ENABLE([tetgen],
+    [AC_HELP_STRING([--enable-tetgen],
+        [enable generating simple meshes w/TetGen via PETSc @<:@default=no@:>@])],
+	[enable_tetgen=yes
+	CXXFLAGS="-DENABLE_TETGEN $CXXFLAGS"; export CXXFLAGS],
+	[enable_tetgen=no])
+AM_CONDITIONAL([ENABLE_TETGEN], [test "$enable_tetgen" = yes])
+
 # ----------------------------------------------------------------------
 # C/C++/libtool/install
 AC_PROG_CXX
@@ -43,6 +52,11 @@ AC_SUBST(AM_LDFLAGS)
 
 AC_PROG_INSTALL
 
+# PYTHON
+#CIT_PATH_NEMESIS
+AM_PATH_PYTHON([2.3])
+CIT_PYTHON_SYSCONFIG
+
 # MPI
 AC_LANG(C++)
 #CIT_PROG_MPICXX
@@ -58,20 +72,21 @@ CIT_CHECK_LIB_PETSC_SIEVE
 # Check for Python modules and packages.
 CIT_PYTHON_EGG_SETUP
 
-# CUBIT (netcdf)
-if test "$enable_cubit" = "yes" ; then
-  AC_LANG(C++)
-  AC_CHECK_HEADER([netcdfcpp.h], [], [
-    AC_MSG_ERROR([netcdf C++ header not found; try CPPFLAGS="-I<netcdf include dir>"])
-  ])
-  AC_MSG_CHECKING([for NcFile in -lnetcdfc++])
+# TETGEN
+if test "$enable_tetgen" = "yes" ; then
   AC_REQUIRE_CPP
+  AC_LANG(C++)
+  CPPFLAGS="$PETSC_INCLUDE $PETSC_CXX_INCLUDE $CPPFLAGS"
+  AC_CHECK_HEADER([tetgen.h], [], [
+    AC_MSG_ERROR([tetgen header not found; check PETSc installation.])
+  ])
+  AC_MSG_CHECKING([for tetgenbehavior in -ltetgen])
   AC_COMPILE_IFELSE(
-    [AC_LANG_PROGRAM([[#include <netcdfcpp.h>]],
-	             [[NcFile ncfile("filename");]])],
+    [AC_LANG_PROGRAM([[#include <tetgen.h>]],
+	             [[tetgenbehavior  behavior;]])],
     [AC_MSG_RESULT(yes)],
     [AC_MSG_RESULT(no)
-     AC_MSG_ERROR([netcdfc++ library not found; try LDFLAGS="-L<netcdf lib dir>"])
+     AC_MSG_ERROR([tetgen library not found; check PETSc installation.])
   ])
 fi
 
