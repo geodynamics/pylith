@@ -23,19 +23,21 @@ std::string
 pylith::meshio::BinaryIO::readString(std::ifstream& fin,
 				     const int numChars)
 { // readString
-  char* buffer = (numChars > 0) ? new char[numChars+1] : 0;
-  fin.read(buffer, sizeof(char)*numChars);
-  if (numChars > 0)
+  std::string bstring = "";
+  if (numChars > 0) {
+    char* buffer = new char[numChars+1];
+    fin.read(buffer, sizeof(char)*numChars);
     buffer[numChars] = '\0';
 
-  // get string from buffer
-  std::string bufstring(buffer);
-  delete[] buffer; buffer = 0;
+    // get string from buffer
+    std::string bufstring = buffer;
+    delete[] buffer; buffer = 0;
 
-  // remove whitespace
-  const int iLast = bufstring.find_first_of(" ");
-
-  return bufstring.substr(0, iLast);
+    // remove whitespace
+    const int iLast = bufstring.find_first_of(" ");
+    bstring = bufstring.substr(0, iLast);
+  } // if
+  return std::string(bstring);
 } // readString
 
 // ----------------------------------------------------------------------
