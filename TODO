@@ -2,13 +2,10 @@
 CURRENT ISSUES
 ======================================================================
 
-  0. Add unit test to for zero fault slip and slipIncr (should be zero).
-
-  1. Add unit test for tri3 and tet4 for cells with only edges or
-  single vertex on fault.
-
-  2. Need check to make sure quadrature scheme is compatible with
+  1. Need check to make sure quadrature scheme is compatible with
   cells in mesh.
+
+  2. Add check to make sure every material in mesh has a material model.
 
   3. Need better error trapping when using LineParser. State of
   ifstream is insufficient. Need state of istringstream buffer, but it
@@ -70,9 +67,6 @@ MAIN PRIORITIES (Brad)
 
 1. Create meshes for benchmarks
 
-  strike-slip
-    tet (LaGriT)
-    hex (CUBIT)
   reverse
     tet (LaGriT)
     hex (CUBIT)
@@ -102,9 +96,6 @@ Additional unit tests
   a. FaultCohesive
     i. Add checking of faultMesh [not currently used]
 
-Add check to make sure every material supplied by user exists in the
-mesh.
-  
 check test routines that create mesh to make sure they clear factory
 (*mesh)->getFactory()->clear(); necessary?
 
