@@ -23,7 +23,9 @@ noinst_DATA = \
 	tri3c.mesh \
 	tri3d.mesh \
 	tri3e.mesh \
+	tri3f.mesh \
 	tri3_finalslip.spatialdb \
+	tri3_finalslipB.spatialdb \
 	tri3_sliptime.spatialdb \
 	tri3_peakrate.spatialdb \
 	tri3d_finalslip.spatialdb \
@@ -35,6 +37,7 @@ noinst_DATA = \
 	quad4d.mesh \
 	quad4e.mesh \
 	quad4f.mesh \
+	quad4g.mesh \
 	quad4_finalslip.spatialdb \
 	quad4_sliptime.spatialdb \
 	quad4_peakrate.spatialdb \
@@ -50,6 +53,7 @@ noinst_DATA = \
 	tet4g.mesh \
 	tet4h.mesh \
 	tet4i.mesh \
+	tet4j.mesh \
 	tet4_finalslip.spatialdb \
 	tet4_sliptime.spatialdb \
 	tet4_peakrate.spatialdb \
@@ -64,6 +68,7 @@ noinst_DATA = \
 	hex8f.mesh \
 	hex8g.mesh \
 	hex8h.mesh \
+	hex8i.mesh \
 	hex8_finalslip.spatialdb \
 	hex8_sliptime.spatialdb \
 	hex8_peakrate.spatialdb \
