@@ -65,6 +65,7 @@ testfaults_SOURCES += \
 	data/CohesiveDataTri3c.cc \
 	data/CohesiveDataTri3d.cc \
 	data/CohesiveDataTri3e.cc \
+	data/CohesiveDataTri3f.cc \
 	data/CohesiveDataTri3Lagrange.cc \
 	data/CohesiveDataQuad4.cc \
 	data/CohesiveDataQuad4b.cc \
@@ -72,6 +73,7 @@ testfaults_SOURCES += \
 	data/CohesiveDataQuad4d.cc \
 	data/CohesiveDataQuad4e.cc \
 	data/CohesiveDataQuad4f.cc \
+	data/CohesiveDataQuad4g.cc \
 	data/CohesiveDataQuad4Lagrange.cc \
 	data/CohesiveDataTet4.cc \
 	data/CohesiveDataTet4b.cc \
@@ -81,6 +83,7 @@ testfaults_SOURCES += \
 	data/CohesiveDataTet4g.cc \
 	data/CohesiveDataTet4h.cc \
 	data/CohesiveDataTet4i.cc \
+	data/CohesiveDataTet4j.cc \
 	data/CohesiveDataTet4Lagrange.cc \
 	data/CohesiveDataHex8.cc \
 	data/CohesiveDataHex8b.cc \
@@ -90,6 +93,7 @@ testfaults_SOURCES += \
 	data/CohesiveDataHex8f.cc \
 	data/CohesiveDataHex8g.cc \
 	data/CohesiveDataHex8h.cc \
+	data/CohesiveDataHex8i.cc \
 	data/CohesiveDataHex8Lagrange.cc \
 	data/CohesiveKinData.cc \
 	data/CohesiveKinDataLine2.cc \
@@ -116,6 +120,7 @@ noinst_HEADERS += \
 	data/CohesiveDataTri3c.hh \
 	data/CohesiveDataTri3d.hh \
 	data/CohesiveDataTri3e.hh \
+	data/CohesiveDataTri3f.hh \
 	data/CohesiveDataTri3Lagrange.hh \
 	data/CohesiveDataQuad4.hh \
 	data/CohesiveDataQuad4b.hh \
@@ -123,6 +128,7 @@ noinst_HEADERS += \
 	data/CohesiveDataQuad4d.hh \
 	data/CohesiveDataQuad4e.hh \
 	data/CohesiveDataQuad4f.hh \
+	data/CohesiveDataQuad4g.hh \
 	data/CohesiveDataQuad4Lagrange.hh \
 	data/CohesiveDataTet4.hh \
 	data/CohesiveDataTet4b.hh \
@@ -132,6 +138,7 @@ noinst_HEADERS += \
 	data/CohesiveDataTet4g.hh \
 	data/CohesiveDataTet4h.hh \
 	data/CohesiveDataTet4i.hh \
+	data/CohesiveDataTet4j.hh \
 	data/CohesiveDataTet4Lagrange.hh \
 	data/CohesiveDataHex8.hh \
 	data/CohesiveDataHex8b.hh \
@@ -141,6 +148,7 @@ noinst_HEADERS += \
 	data/CohesiveDataHex8f.hh \
 	data/CohesiveDataHex8g.hh \
 	data/CohesiveDataHex8h.hh \
+	data/CohesiveDataHex8i.hh \
 	data/CohesiveDataHex8Lagrange.hh \
 	data/CohesiveKinData.hh \
 	data/CohesiveKinDataLine2.hh \

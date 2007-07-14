@@ -214,12 +214,12 @@ pylith::faults::TestBruneSlipFn::testSlip(void)
   const char* meshFilename = "data/tri3.mesh";
   const char* faultLabel = "fault";
   const int faultId = 2;
-  const char* finalSlipFilename = "data/tri3_finalslip.spatialdb";
+  const char* finalSlipFilename = "data/tri3_finalslipB.spatialdb";
   const char* slipTimeFilename = "data/tri3_sliptime.spatialdb";
   const char* peakRateFilename = "data/tri3_peakrate.spatialdb";
   const int constraintPts[] = { 3, 4 };
   const double finalSlipE[] = { 2.3, 0.1, 
-				2.4, 0.2};
+				0.0, 0.0};
   const double slipTimeE[] = { 1.2, 1.3 };
   const double peakRateE[] = { 1.4, 1.5 };
   const int numConstraintPts = 2;
@@ -310,12 +310,12 @@ pylith::faults::TestBruneSlipFn::testSlipIncr(void)
   const char* meshFilename = "data/tri3.mesh";
   const char* faultLabel = "fault";
   const int faultId = 2;
-  const char* finalSlipFilename = "data/tri3_finalslip.spatialdb";
+  const char* finalSlipFilename = "data/tri3_finalslipB.spatialdb";
   const char* slipTimeFilename = "data/tri3_sliptime.spatialdb";
   const char* peakRateFilename = "data/tri3_peakrate.spatialdb";
   const int constraintPts[] = { 3, 4 };
   const double finalSlipE[] = { 2.3, 0.1, 
-				2.4, 0.2};
+				0.0, 0.0};
   const double slipTimeE[] = { 1.2, 1.3 };
   const double peakRateE[] = { 1.4, 1.5 };
   const int numConstraintPts = 2;
