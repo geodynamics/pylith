@@ -218,10 +218,10 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
           << cells->size() << ").";
       throw std::runtime_error(msg.str());
     } // if
-  
+    const Mesh::label_sequence::iterator end = cells->end();
     int i = 0;
     for(Mesh::label_sequence::iterator e_iter = cells->begin();
-        e_iter != cells->end();
+        e_iter != end;
         ++e_iter)
       (*_mesh)->setValue(labelMaterials, *e_iter, materialIds[i++]);
   }
