@@ -18,6 +18,8 @@ CURRENT ISSUES
 
   6. Better default PETSc settings. (pc_type=asm?)
 
+  7. Experiment with different preconditioners and tabulate results
+
 ======================================================================
 KNOWN DEFICIENCIES
 ======================================================================
