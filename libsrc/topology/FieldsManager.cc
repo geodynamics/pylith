@@ -144,31 +144,16 @@ pylith::topology::FieldsManager::copyLayout(const char* name)
     throw std::runtime_error(msg.str());
   } // if
   
-  assert(!src->second.isNull());
-  const real_section_type::chart_type& srcChart = src->second->getChart();
-  const real_section_type::chart_type::iterator srcBegin = srcChart.begin();
-  const real_section_type::chart_type::iterator srcEnd = srcChart.end();
-  
+  assert(!src->second.isNull());  
   const map_real_type::iterator begin = _real.begin();
   const map_real_type::iterator end = _real.end();
   for (map_real_type::iterator iter=begin; iter != end; ++iter)
     if (iter != src) {
       // Make sure fields are same size
       assert(!iter->second.isNull());
-      for (real_section_type::chart_type::iterator p_iter=srcBegin;
-	   p_iter != srcEnd;
-	   ++p_iter) {
-	iter->second->setFiberDimension(*p_iter, 
-					src->second->getFiberDimension(*p_iter));
-	iter->second->setConstraintDimension(*p_iter, 
-					     src->second->getConstraintDimension(*p_iter));
-      } // for
-      _mesh->allocate(iter->second);
-      for (real_section_type::chart_type::iterator p_iter=srcBegin;
-	   p_iter != srcEnd;
-	   ++p_iter)
-	iter->second->setConstraintDof(*p_iter, 
-				       src->second->getConstraintDof(*p_iter));
+      iter->second->setAtlas(src->second->getAtlas());
+      iter->second->allocateStorage();
+      iter->second->setBC(src->second->getBC());
     } // if
 } // copyLayout
 
@@ -181,29 +166,14 @@ pylith::topology::FieldsManager::copyLayout(
   assert(!_mesh.isNull());
   assert(!field.isNull());
   
-  const real_section_type::chart_type& srcChart = field->getChart();
-  const real_section_type::chart_type::iterator srcBegin = srcChart.begin();
-  const real_section_type::chart_type::iterator srcEnd = srcChart.end();
-  
   const map_real_type::iterator begin = _real.begin();
   const map_real_type::iterator end = _real.end();
   for (map_real_type::iterator iter=begin; iter != end; ++iter) {
     // Make sure fields are same size
     assert(!iter->second.isNull());
-    for (real_section_type::chart_type::iterator p_iter=srcBegin;
-	 p_iter != srcEnd;
-	 ++p_iter) {
-      iter->second->setFiberDimension(*p_iter, 
-				      field->getFiberDimension(*p_iter));
-      iter->second->setConstraintDimension(*p_iter, 
-					   field->getConstraintDimension(*p_iter));
-    } // for
-    _mesh->allocate(iter->second);
-    for (real_section_type::chart_type::iterator p_iter=srcBegin;
-	 p_iter != srcEnd;
-	 ++p_iter)
-      iter->second->setConstraintDof(*p_iter, 
-				     field->getConstraintDof(*p_iter));
+    iter->second->setAtlas(field->getAtlas());
+    iter->second->allocateStorage();
+    iter->second->setBC(field->getBC());
   } // for
 } // copyLayout
 
