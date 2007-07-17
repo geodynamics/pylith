@@ -205,7 +205,6 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
 
   const ALE::Obj<Mesh::label_type>& labelMaterials = 
     (*_mesh)->createLabel("material-id");
-
   if (!(*_mesh)->commRank()) {
     const ALE::Obj<Mesh::label_sequence>& cells = (*_mesh)->heightStratum(0);
     assert(!cells.isNull());
@@ -218,13 +217,13 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds)
           << cells->size() << ").";
       throw std::runtime_error(msg.str());
     } // if
-    const Mesh::label_sequence::iterator end = cells->end();
     int i = 0;
+    const Mesh::label_sequence::iterator end = cells->end();
     for(Mesh::label_sequence::iterator e_iter = cells->begin();
         e_iter != end;
         ++e_iter)
       (*_mesh)->setValue(labelMaterials, *e_iter, materialIds[i++]);
-  }
+  } // if
 } // _setMaterials
 
 // ----------------------------------------------------------------------
@@ -317,8 +316,8 @@ pylith::meshio::MeshIO::_distributeGroups()
       assert(!groupField.isNull());
       (*_mesh)->allocate(groupField);
       delete [] name;
-    }
-  }
+    } // for
+  } // if/else
 } // _distributeGroups
 
 // ----------------------------------------------------------------------
