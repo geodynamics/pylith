@@ -75,21 +75,31 @@ pylith::faults::BruneSlipFn::initialize(const ALE::Obj<Mesh>& mesh,
   const ALE::Obj<real_section_type>& finalSlip = 
     _parameters->getReal("final slip");
   assert(!finalSlip.isNull());
+  const vert_iterator vBegin = vertices.begin();
+  const vert_iterator vEnd = vertices.end();
+  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter)
+    finalSlip->setFiberDimension(*v_iter, spaceDim);
+  mesh->allocate(finalSlip);
 
   // Parameter: slip initiation time
   _parameters->addReal("slip time");
   const ALE::Obj<real_section_type>& slipTime = 
     _parameters->getReal("slip time");
   assert(!slipTime.isNull());
+  // reuse atlas from finalSlip (but use local fiber dimension)
+  for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter)
+    slipTime->setFiberDimension(*v_iter, 1);
+  mesh->allocate(slipTime);  
+  slipTime->getAtlas()->setAtlas(finalSlip->getAtlas()->getAtlas());
 
   // Parameter: peak slip rate
   _parameters->addReal("peak rate");
   const ALE::Obj<real_section_type>& peakRate = 
     _parameters->getReal("peak rate");
   assert(!peakRate.isNull());
+  peakRate->setAtlas(slipTime->getAtlas()); // reuse atlas from slipTime
+  peakRate->allocateStorage();
 
-  const vert_iterator vBegin = vertices.begin();
-  const vert_iterator vEnd = vertices.end();
   for (vert_iterator v_iter=vBegin; v_iter != vEnd; ++v_iter) {
     finalSlip->setFiberDimension(*v_iter, spaceDim);
     slipTime->setFiberDimension(*v_iter, 1);
