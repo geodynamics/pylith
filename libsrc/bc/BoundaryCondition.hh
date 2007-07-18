@@ -22,6 +22,7 @@
 
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh, real_section_type
 #include "pylith/utils/petscfwd.h" // USES PETScMat
+#include "pylith/utils/array.hh" // USES double_array
 
 #include <string> // HASA std::string
 
@@ -98,6 +99,84 @@ public :
   void initialize(const ALE::Obj<ALE::Mesh>& mesh,
 		  const spatialdata::geocoords::CoordSys* cs) = 0;
 
+  // PROTECTED TYPEDEFS /////////////////////////////////////////////////
+protected :
+
+  /// Function type for orientation methods.
+  typedef void (*orient_fn_type)(double_array*,
+		                 const double_array&,
+		                 const double,
+		                 const double_array&);
+
+  // PROTECTED METHODS //////////////////////////////////////////////////
+protected :
+
+  /** Compute weighted orientation of cell face for
+   * 1-D elements. Orientation is either at vertices or quadrature
+   * points, depending on whether the arguments have been evaluated at
+   * the vertices or quadrature points.
+   *
+   * The orientation is returned as an array of direction cosines.
+   *
+   * size = spaceDim*spaceDim
+   * index = iDir*spaceDim + iComponent
+   *
+   * @param orientation Array of direction cosines.
+   * @param jacobian Jacobian matrix at point.
+   * @param jacobianDet Determinant of Jacobian matrix at point.
+   * @param upDir Direction perpendicular to horizontal tangent that
+   *   is not collinear with face normal (usually "up" direction).
+   */
+  static
+  void _orient1D(double_array* orientation,
+		 const double_array& jacobian,
+		 const double jacobianDet,
+		 const double_array& upDir);
+		
+  /** Compute weighted orientation of cell face for
+   * 2-D elements. Orientation is either at vertices or quadrature
+   * points, depending on whether the arguments have been evaluated at
+   * the vertices or quadrature points.
+   *
+   * The orientation is returned as an array of direction cosines.
+   *
+   * size = spaceDim*spaceDim
+   * index = iDir*spaceDim + iComponent
+   *
+   * @param orientation Array of direction cosines.
+   * @param jacobian Jacobian matrix at point.
+   * @param jacobianDet Determinant of Jacobian matrix at point.
+   * @param upDir Direction perpendicular to horizontal tangent that is 
+   *   not collinear with face normal (usually "up" direction).
+   */
+  static 
+  void _orient2D(double_array* orientation,
+		 const double_array& jacobian,
+		 const double jacobianDet,
+		 const double_array& upDir);
+		
+  /** Compute weighted orientation of cell face for
+   * 3-D elements. Orientation is either at vertices or quadrature
+   * points, depending on whether the arguments have been evaluated at
+   * the vertices or quadrature points.
+   *
+   * The orientation is returned as an array of direction cosines.
+   *
+   * size = spaceDim*spaceDim
+   * index = iDir*spaceDim + iComponent
+   *
+   * @param orientation Array of direction cosines.
+   * @param jacobian Jacobian matrix at point.
+   * @param jacobianDet Determinant of Jacobian matrix at point.
+   * @param upDir Direction perpendicular to horizontal tangent that is 
+   *   not collinear with face normal (usually "up" direction).
+   */
+  static
+  void _orient3D(double_array* orientation,
+		 const double_array& jacobian,
+		 const double jacobianDet,
+		 const double_array& upDir);
+		
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 
