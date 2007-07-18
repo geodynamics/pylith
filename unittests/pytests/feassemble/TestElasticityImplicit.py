@@ -36,45 +36,53 @@ class TestElasticityImplicit(unittest.TestCase):
     return
     
 
-  def test_initQuadrature(self):
+  def test_preinitialize(self):
     """
-    Test initQuadrature().
+    Test preiniitlaize().
     """
-    from pylith.feassemble.quadrature.Quadrature2D import Quadrature2D
-    q = Quadrature2D()
-    minJacobian = 4.0e-02;
-    q.minJacobian = minJacobian
-    from pylith.feassemble.FIATSimplex import FIATSimplex
-    q.cell = FIATSimplex()
-    q.cell.shape = "triangle"
-    q.cell.order = 1
-    q.cell.degree = 1
-
-    integrator = ElasticityImplicit()
-    integrator.initQuadrature(q)
-    self.assertEqual(minJacobian, integrator.quadrature.minJacobian)
-    return
-    
-
-  def test_setMesh(self):
-    """
-    Test setMesh().
-    """
+    # Setup mesh
     cs = CSCart()
     cs.spaceDim = 2
-    
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     importer = MeshIOAscii()
     importer.filename = "data/tri3.mesh"
     importer.coordsys = cs
     mesh = importer.read(debug=False, interpolate=False)
 
-    integrator = ElasticityImplicit()
-    integrator.setMesh(mesh)
-    self.assertEqual(mesh, integrator.mesh)
-    return
+    # Setup material
+    from pylith.feassemble.FIATSimplex import FIATSimplex
+    cell = FIATSimplex()
+    cell.shape = "triangle"
+    cell.degree = 1
+    cell.order = 1
+    from pylith.feassemble.quadrature.Quadrature2D import Quadrature2D
+    quadrature = Quadrature2D()
+    quadrature.cell = cell
+    minJacobian = 4.0e-02;
+    quadrature.minJacobian = minJacobian
+    
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+    from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
+    iohandler = SimpleIOAscii()
+    iohandler.filename = "data/elasticplanestrain.spatialdb"
+    db = SimpleDB()
+    db.label = "elastic plane strain"
+    db.iohandler = iohandler
 
-  
+    from pylith.materials.ElasticPlaneStrain import ElasticPlaneStrain
+    material = ElasticPlaneStrain()
+    material.id = 0
+    material.label = "elastic plane strain"
+    material.db = db
+    material.quadrature = quadrature
+
+    integrator = ElasticityImplicit()
+    integrator.preinitialize(mesh, material)
+    self.assertEqual(mesh, integrator.mesh)
+    self.assertEqual(minJacobian, integrator.quadrature.minJacobian)
+    return
+    
+
   def test_timeStep(self):
     """
     Test timeStep().
@@ -235,9 +243,8 @@ class TestElasticityImplicit(unittest.TestCase):
 
     # Setup integrator
     integrator = ElasticityImplicit()
-    integrator.setMesh(mesh)
-    integrator.initQuadrature(material.quadrature)
-    integrator.initMaterial(mesh, material)
+    integrator.preinitialize(mesh, material)
+    integrator.initialize()
     integrator.timeStep(dt)
 
     # Setup fields

@@ -41,7 +41,7 @@ class TestMaterial(unittest.TestCase):
     cell.degree = 1
     quadrature.cell = cell
     quadrature.minJacobian = 1.0e-4
-    quadrature.initialize()
+    quadrature.preinitialize()
     material.quadrature = quadrature
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
@@ -65,6 +65,7 @@ class TestMaterial(unittest.TestCase):
     importer.coordsys = cs
     mesh = importer.read(debug=False, interpolate=False)
     
+    material.preinitialize()
     material.initialize(mesh)
 
     # We should really add something here to check to make sure things

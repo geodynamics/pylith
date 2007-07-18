@@ -81,20 +81,18 @@ class Implicit(Formulation):
     return ElasticityImplicit()
 
 
-  def initialize(self, mesh, materials, boundaryConditions,
-                 interfaceConditions, dimension, dt):
+  def initialize(self, dimension, dt):
     """
     Initialize problem for implicit time integration.
     """
-    Formulation.initialize(self, mesh, materials, boundaryConditions,
-                           interfaceConditions, dimension, dt)
+    Formulation.initialize(self, dimension, dt)
 
     self._info.log("Creating other fields and matrices.")
     self.fields.addReal("dispIncr")
     self.fields.addReal("residual")
     self.fields.copyLayout("dispTBctpdt")
-    self.jacobian = mesh.createMatrix(self.fields.getSolution())
-    self.solver.initialize(mesh, self.fields.getSolution())
+    self.jacobian = self.mesh.createMatrix(self.fields.getSolution())
+    self.solver.initialize(self.mesh, self.fields.getSolution())
 
     # Initial time step solves for total displacement field, not increment
     for constraint in self.constraints:

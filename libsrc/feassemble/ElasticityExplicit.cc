@@ -485,5 +485,60 @@ pylith::feassemble::ElasticityExplicit::updateState(
   } // for
 } // updateState
 
+// ----------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::feassemble::ElasticityExplicit::verifyConfiguration(
+						 const ALE::Obj<Mesh>& mesh)
+{ // verifyConfiguration
+  assert(0 != _quadrature);
+  assert(0 != _material);
+
+  const int dimension = mesh->getDimension();
+
+  // check compatibility of mesh and material
+  if (_material->dimension() != dimension) {
+    std::ostringstream msg;
+    msg << "Material '" << _material->label()
+	<< "' is incompatible with mesh.\n"
+	<< "Dimension of mesh: " << dimension
+	<< ", dimension of material: " << _material->dimension()
+	<< ".";
+    throw std::runtime_error(msg.str());
+  } // if
+
+  // check compatibility of mesh and quadrature scheme
+  if (_quadrature->cellDim() != dimension) {
+    std::ostringstream msg;
+    msg << "Quadrature is incompatible with cells for material '"
+	<< _material->label() << "'.\n"
+	<< "Dimension of mesh: " << dimension
+	<< ", dimension of quadrature: " << _quadrature->cellDim()
+	<< ".";
+    throw std::runtime_error(msg.str());
+  } // if
+  const int numCorners = _quadrature->numBasis();
+  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+    mesh->getLabelStratum("material-id", _material->id());
+  assert(!cells.isNull());
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
+  assert(!sieve.isNull());
+  for (Mesh::label_sequence::iterator c_iter=cells->begin();
+       c_iter != cellsEnd;
+       ++c_iter) {
+    const int cellNumCorners = sieve->nCone(*c_iter, mesh->depth())->size();
+    if (numCorners != cellNumCorners) {
+      std::ostringstream msg;
+      msg << "Quadrature is incompatible with cell in material '"
+	  << _material->label() << "'.\n"
+	  << "Cell " << *c_iter << " has " << cellNumCorners
+	  << " vertices but quadrature reference cell has "
+	  << numCorners << " vertices.";
+      throw std::runtime_error(msg.str());
+    } // if
+  } // for
+} // verifyConfiguration
+
 
 // End of file 

@@ -82,7 +82,7 @@ class Fault(Component):
                      "and materials)."
 
     label = pyre.inventory.str("label", default="")
-    label.meta['tip'] = "Name of material."
+    label.meta['tip'] = "Name of fault."
 
     upDir = pyre.inventory.list("up_dir", default=[0, 0, 1],
                                 validator=validateDir)
@@ -116,6 +116,7 @@ class Fault(Component):
     """
     Component.__init__(self, name, facility="fault")
     self.cppHandle = None
+    self.mesh = None
     return
 
 
@@ -132,27 +133,46 @@ class Fault(Component):
     return
 
 
-  def initialize(self, mesh):
+  def preinitialize(self, mesh):
     """
-    Initialize fault.
+    Setup fault.
     """
     self._createCppHandle()
-    
-    self.quadrature.initialize()
-    self.matDB.initialize()
+    self.cppHandle.id = self.id
+    self.cppHandle.label = self.label
 
-    faultDim = mesh.dimension() - 1
+    self.mesh = mesh
+    
+    self.quadrature.preinitialize()    
+    self.cppHandle.quadrature = self.quadrature.cppHandle
+    return
+  
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    faultDim = self.mesh.dimension() - 1
     if faultDim != self.quadrature.cell.cellDim:
       raise ValueError, \
             "Quadrature is incompatible with fault surface.\n" \
             "Dimensions for quadrature: %d, dimensions of fault: %d" % \
             (self.quadrature.cell.cellDim, faultDim)
 
+    # :TODO: Make sure mesh has group of vertices with label.
+    return
+  
+
+  def initialize(self):
+    """
+    Initialize fault.
+    """
+    self.quadrature.initialize()
+    self.matDB.initialize()
+
     assert(None != self.cppHandle)
-    self.cppHandle.id = self.id
-    self.cppHandle.label = self.label
-    self.cppHandle.quadrature = self.quadrature.cppHandle
-    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
+    self.cppHandle.initialize(self.mesh.cppHandle,
+                              self.mesh.coordsys.cppHandle,
                               self.upDir, self.normalDir,
                               self.matDB.cppHandle)
     return

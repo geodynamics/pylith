@@ -71,4 +71,45 @@ pylith::faults::FaultCohesiveDyn::integrateJacobian(
 } // integrateJacobian
   
 
+// ----------------------------------------------------------------------
+// Verify configuration is acceptable.
+void
+pylith::faults::FaultCohesiveDyn::verifyConfiguration(
+					      const ALE::Obj<Mesh>& mesh)
+{ // verifyConfiguration
+  assert(0 != _quadrature);
+
+  // check compatibility of mesh and quadrature scheme
+  const int dimension = mesh->getDimension()-1;
+  if (_quadrature->cellDim() != dimension) {
+    std::ostringstream msg;
+    msg << "Dimension of reference cell in quadrature scheme (" 
+	<< _quadrature->cellDim() 
+	<< ") does not match dimension of cells in mesh (" 
+	<< dimension << ") for fault '" << label()
+	<< "'.";
+    throw std::runtime_error(msg.str());
+  } // if
+  const int numCorners = _quadrature->numBasis();
+  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+    mesh->getLabelStratum("material-id", id());
+  assert(!cells.isNull());
+  const Mesh::label_sequence::iterator cellsBegin = cells->begin();
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
+  assert(!sieve.isNull());
+  for (Mesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    const int cellNumCorners = sieve->nCone(*c_iter, mesh->depth())->size();
+    if (3*numCorners != cellNumCorners) {
+      std::ostringstream msg;
+      msg << "Number of vertices in reference cell (" << numCorners 
+	  << ") is not compatible with number of vertices (" << cellNumCorners
+	  << ") in cohesive cell " << *c_iter << " for fault '"
+	  << label() << "'.";
+      throw std::runtime_error(msg.str());
+    } // if
+  } // for
+} // verifyConfiguration
 // End of file 

@@ -282,7 +282,8 @@ class TestFaultCohesiveKin(unittest.TestCase):
     fault.matDB = dbMat
     fault.timeStep(dt)
     fault.adjustTopology(mesh)
-    fault.initialize(mesh)
+    fault.preinitialize(mesh)
+    fault.initialize()
 
     # Setup fields
     from pylith.topology.FieldsManager import FieldsManager

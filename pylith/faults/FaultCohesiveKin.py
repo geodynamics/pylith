@@ -63,18 +63,35 @@ class FaultCohesiveKin(FaultCohesive):
     return
 
 
-  def initialize(self, mesh):
+  def preinitialize(self, mesh):
+    """
+    Do pre-initialization setup.
+    """
+    self._info.log("Pre-initializing fault '%s'." % self.label)
+    FaultCohesive.preinitialize(self, mesh)
+    assert(None != self.cppHandle)
+    self.eqsrc.preinitialize()
+    self.cppHandle.eqsrc = self.eqsrc.cppHandle
+    return
+  
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    FaultCohesive.verifyConfiguration(self)
+    assert(None != self.cppHandle)
+    self.cppHandle.verifyConfiguration(self.mesh.cppHandle)
+    return
+
+
+  def initialize(self):
     """
     Initialize cohesive elements.
     """
     self._info.log("Initializing fault '%s'." % self.label)
-    self._createCppHandle
-    
-    self.mesh = mesh
-    assert(None != self.cppHandle)
     self.eqsrc.initialize()
-    self.cppHandle.eqsrc = self.eqsrc.cppHandle
-    FaultCohesive.initialize(self, mesh)
+    FaultCohesive.initialize(self)
     return
 
 

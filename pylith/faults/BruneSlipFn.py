@@ -75,14 +75,19 @@ class BruneSlipFn(SlipTimeFn):
     return
 
 
+  def preinitialize(self):
+    """
+    Do pre-initialization setup.
+    """
+    self._createCppHandle()      
+    SlipTimeFn.preinitialize(self)
+    return
+
+
   def initialize(self):
     """
     Initialize.
     """
-    self._createCppHandle()
-      
-    SlipTimeFn.initialize(self)
-
     self.slip.initialize()
     self.slipTime.initialize()
     self.slipRate.initialize()

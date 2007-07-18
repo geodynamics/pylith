@@ -58,15 +58,13 @@ class Explicit(Formulation):
     return ElasticityExplicit()
 
 
-  def initialize(self, mesh, materials, boundaryConditions,
-                 interfaceConditions, dimension, dt):
+  def initialize(self, dimension, dt):
     """
     Initialize problem for explicit time integration.
     """
     from pyre.units.time import second
     t = 0.0*second
-    Formulation.initialize(self, mesh, materials, boundaryConditions,
-                           interfaceConditions, dimension, dt)
+    Formulation.initialize(self, dimension, dt)
 
     self._info.log("Creating other fields and matrices.")
     self.fields.addReal("dispTpdt")

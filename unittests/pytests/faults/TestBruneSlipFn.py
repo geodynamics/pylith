@@ -63,6 +63,7 @@ class TestBruneSlipFn(unittest.TestCase):
     slipFn.slip = dbFinalSlip
     slipFn.slipTime = dbSlipTime
     slipFn.slipRate = dbPeakRate
+    slipFn.preinitialize()
     slipFn.initialize()
     return
 

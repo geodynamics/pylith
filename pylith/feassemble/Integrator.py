@@ -29,6 +29,7 @@ def implementsIntegrator(obj):
      not "integrateResidual" in attrs or \
      not "integrateJacobian" in attrs or \
      not "updateState" in attrs or \
+     not "verifyConfiguration" in attrs or \
      not "finalize" in attrs:
     result = False
   return result
@@ -54,25 +55,15 @@ class Integrator(object):
     return
 
 
-  def setMesh(self, mesh):
+  def verifyConfiguration(self):
     """
-    Set mesh.
-    """
-    self.mesh = mesh
-    return
-  
-
-  def initQuadrature(self, quadrature):
-    """
-    Initialize quadrature.
+    Verify compatibility of configuration.
     """
     assert(None != self.cppHandle)
-    quadrature.initialize()
-    self.quadrature = quadrature
-    self.cppHandle.quadrature = self.quadrature.cppHandle
+    self.cppHandle.verifyConfiguration(self.mesh.cppHandle)
     return
-  
-  
+
+
   def timeStep(self, dt):
     """
     Set time step for advancing from time t to time t+dt.

@@ -67,9 +67,9 @@ class Quadrature(Component):
     return
 
 
-  def initialize(self):
+  def preinitialize(self):
     """
-    Initialize C++ quadrature object.
+    Setup quadrature object.
     """
     self._createCppHandle()
     
@@ -92,6 +92,13 @@ class Quadrature(Component):
                               cell.cellDim, cell.numCorners, cell.numQuadPts,
                               self.spaceDim)
     self.cppHandle.refGeometry = cell.geometry.cppHandle
+    return
+
+
+  def initialize(self):
+    """
+    Initialize quadrature object.
+    """
     return
 
 

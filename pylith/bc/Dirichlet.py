@@ -81,14 +81,20 @@ class Dirichlet(BoundaryCondition, Constraint):
     return
 
 
-  def initialize(self, mesh):
+  def preinitialize(self, mesh):
+    """
+    Do pre-initialization setup.
+    """
+    BoundaryCondition.preinitialize(self, mesh)
+    self.cppHandle.fixedDOF = self.fixedDOF    
+    return
+
+
+  def initialize(self):
     """
     Initialize Dirichlet boundary condition.
     """
-    self._createCppHandle()
-
-    self.cppHandle.fixedDOF = self.fixedDOF    
-    BoundaryCondition.initialize(self, mesh)
+    BoundaryCondition.initialize(self)
     return
   
 

@@ -2,8 +2,12 @@
 CURRENT ISSUES
 ======================================================================
 
-  1. Need check to make sure quadrature scheme is compatible with
-  cells in mesh.
+  0. add shape to Quadrature
+
+  1. Memory analyzing.
+
+     Matt is working on buildTopology(), stratify(), restrict(), and
+     setValue().
 
   2. Add check to make sure every material in mesh has a material model.
 
@@ -16,7 +20,7 @@ CURRENT ISSUES
 
   5. Add dependency diagram to manual.
 
-  6. Better default PETSc settings. (pc_type=asm?)
+  6. Switch to better default PETSc settings in examples. (pc_type=asm?)
 
   7. Experiment with different preconditioners and tabulate results
 
