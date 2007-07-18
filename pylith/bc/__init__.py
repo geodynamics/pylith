@@ -14,7 +14,8 @@
 ##
 ## @brief Python PyLith boundary condition module initialization
 
-__all__ = ['BCFourSides',
+__all__ = ['AbsorbingDampers',
+           'BCFourSides',
            'BCSingle',
            'BCSixSides',
            'BCTwoSides',
