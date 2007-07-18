@@ -150,6 +150,12 @@ public :
 		   const ALE::Obj<real_section_type>& field,
 		   const ALE::Obj<Mesh>& mesh);
 
+  /** Verify configuration is acceptable.
+   *
+   * @param mesh Finite-element mesh
+   */
+  void verifyConfiguration(const ALE::Obj<Mesh>& mesh);
+
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 

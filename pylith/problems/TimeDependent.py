@@ -84,21 +84,46 @@ class TimeDependent(Problem):
     return
 
 
-  def initialize(self, mesh):
+  def preinitialize(self, mesh):
+    """
+    Setup integrators for each element family (material/quadrature,
+    bc/quadrature, etc.).
+    """
+    self._info.log("Pre-initializing problem.")
+    self.mesh = mesh
+    self.formulation.preinitialize(mesh, self.materials, self.bc,
+                                   self.interfaces)
+    return
+
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    self._info.log("Verifying compatibility of problem configuration.")
+    if self.dimension != self.mesh.dimension():
+      raise ValueError, \
+            "Spatial dimension of problem is '%d' but mesh contains cells " \
+            "for spatial dimension '%d'." % \
+            (self.dimension, mesh.dimension)
+    for material in self.materials.bin:
+      if material.quadrature.spaceDim != self.dimension:
+        raise ValueError, \
+              "Spatial dimension of problem is '%d' but quadrature " \
+              "for material '%s' is for spatial dimension '%d'." % \
+              (self.dimension, material.label, material.quadrature.spaceDim)
+    Problem.verifyConfiguration(self)
+    self.formulation.verifyConfiguration()
+    return
+  
+
+  def initialize(self):
     """
     Setup integrators for each element family (material/quadrature,
     bc/quadrature, etc.).
     """
     self._info.log("Initializing problem.")
-
-    if self.dimension != mesh.dimension():
-        raise ValueError, \
-              "Spatial dimension of problem is '%d' but mesh contains cells " \
-              "for spatial dimension '%d'." % \
-              (self.dimension, mesh.dimension)
-    self.mesh = mesh
-    self.formulation.initialize(mesh, self.materials, self.bc,
-                                self.interfaces, self.dimension, self.dt)
+    self.formulation.initialize(self.dimension, self.dt)
     return
 
 

@@ -95,6 +95,12 @@ public :
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
   
+  /** Verify configuration is acceptable.
+   *
+   * @param mesh Finite-element mesh
+   */
+  void verifyConfiguration(const ALE::Obj<Mesh>& mesh);
+
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 

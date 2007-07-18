@@ -191,7 +191,8 @@ class TestDirichlet(unittest.TestCase):
     importer.coordsys = cs
     mesh = importer.read(debug=False, interpolate=False)
     
-    bc.initialize(mesh)
+    bc.preinitialize(mesh)
+    bc.initialize()
     return (mesh, bc)
 
 

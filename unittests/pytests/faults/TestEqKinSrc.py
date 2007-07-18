@@ -67,6 +67,7 @@ class TestEqKinSrc(unittest.TestCase):
 
     eqsrc = EqKinSrc()
     eqsrc.slipfn = slipfn
+    eqsrc.preinitialize()
     eqsrc.initialize()
     return
 

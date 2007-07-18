@@ -48,7 +48,23 @@ class Constraint(object):
     """
     Constructor.
     """
+    self.cppHandle = None
     self.mesh = None
+    return
+
+
+  def preinitialize(self, mesh):
+    """
+    Setup constraint.
+    """
+    self.mesh = mesh
+    return
+
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
     return
 
 

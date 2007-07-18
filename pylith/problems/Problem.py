@@ -73,9 +73,31 @@ class Problem(Component):
     return
 
 
-  def initialize(self, mesh):
+  def preinitialize(self, mesh):
     """
     Setup integrators for each element family (material/quadrature,
+    bc/quadrature, etc.).
+    """
+    raise NotImplementedError, "preinitialize() not implemented."
+    return
+
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    for material in self.materials.bin:
+      material.verifyConfiguration()
+    for bc in self.bc.bin:
+      bc.verifyConfiguration()
+    for interface in self.interfaces.bin:
+      interface.verifyConfiguration()
+    return
+  
+
+  def initialize(self):
+    """
+    Initialize integrators for each element family (material/quadrature,
     bc/quadrature, etc.).
     """
     raise NotImplementedError, "initialize() not implemented."

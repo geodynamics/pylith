@@ -38,14 +38,31 @@ class IntegratorElasticity(Integrator):
     return
 
 
-  def initMaterial(self, mesh, material):
+  def preinitialize(self, mesh, material):
+    """
+    Setup integrator.
+    """
+    assert(None != self.cppHandle)
+
+    self.mesh = mesh
+    
+    material.preinitialize()
+
+    self.quadrature = material.quadrature
+    self.cppHandle.quadrature = self.quadrature.cppHandle
+
+    self.material = material
+    self.cppHandle.material = self.material.cppHandle
+    return
+  
+
+  def initialize(self):
     """
     Initialize material properties.
     """
-    self._info.log("Initializing integrator material '%s'." % material.label)
-    material.initialize(mesh)
-    self.material = material
-    self.cppHandle.material = self.material.cppHandle
+    self._info.log("Initializing integrator for material '%s'." % \
+                   self.material.label)
+    self.material.initialize(self.mesh)
     return
   
   

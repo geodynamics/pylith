@@ -86,27 +86,41 @@ class Material(Component):
     return
 
 
+  def preinitialize(self):
+    """
+    Do pre-initialization setup.
+    """
+    self._createCppHandle()
+    self.cppHandle.id = self.id
+    self.cppHandle.label = self.label
+    self.quadrature.preinitialize()
+    return
+
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    if self.quadrature.spaceDim != self.dimension:
+        raise ValueError, \
+              "Quadrature scheme and material are incompatible.\n" \
+              "Dimension for quadrature: %d\n" \
+              "Dimension for material '%s': %d" % \
+              (self.quadrature.spaceDim, self.label, self.dimension)
+    
+    # :TODO: Make sure mesh contains material (need to account for the
+    # fact that any given processor may only have a subset of the
+    # materials)
+    return
+  
+
   def initialize(self, mesh):
     """
     Initialize material property manager.
     """
     self._info.log("Initializing material '%s'." % self.label)
-    self._createCppHandle()
-
-    if self.dimension != self.quadrature.cell.cellDim:
-      raise ValueError, \
-            "Quadrature is incompatible with material.\n" \
-            "Dimensions for quadrature: %d, dimensions for material: %d" % \
-            (self.quadrature.cell.cellDim, self.dimension)
-    if self.dimension != mesh.dimension():
-      raise ValueError, \
-            "Material is incompatible with mesh.\n" \
-            "Dimensions for mesh: %d, dimensions for material: %d" % \
-            (mesh.dimension(), self.dimension)
-
+    assert(None != self.cppHandle)
     self.db.initialize()
-    self.cppHandle.id = self.id
-    self.cppHandle.label = self.label
     self.cppHandle.db = self.db.cppHandle
     self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle,
                               self.quadrature.cppHandle)

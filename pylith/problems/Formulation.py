@@ -56,6 +56,7 @@ class Formulation(Component):
     from pylith.meshio.SingleOutput import SingleOutput
     output = pyre.inventory.facility("output", family="object_bin",
                                      factory=SingleOutput)
+
   
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -72,42 +73,33 @@ class Formulation(Component):
     return
 
 
-  def initialize(self, mesh, materials, boundaryConditions,
-                 interfaceConditions, dimension, dt):
+  def preinitialize(self, mesh, materials, boundaryConditions,
+                    interfaceConditions):
     """
-    Create integrators for each element family.
+    Create integrator for each element family.
     """
     from pylith.feassemble.Integrator import implementsIntegrator
     from pylith.feassemble.Constraint import implementsConstraint
 
-    from pylith.topology.FieldsManager import FieldsManager
-    self.fields = FieldsManager(mesh)
-    self.mesh   = mesh
+    self.mesh = mesh
     self.integrators = []
     self.constraints = []
 
-    self._info.log("Initializing materials.")
+    self._info.log("Pre-initializing materials.")
     for material in materials.bin:
-      if material.quadrature.spaceDim != dimension:
-        raise ValueError, \
-              "Spatial dimension of problem is '%d' but quadrature " \
-              "for material '%s' is for spatial dimension '%d'." % \
-              (dimension, material.label, material.quadrature.spaceDim)
       integrator = self.elasticityIntegrator()
       if not implementsIntegrator(integrator):
         raise TypeError, \
               "Could not use '%s' as an integrator for material '%s'. " \
               "Functionality missing." % (integrator.name, material.label)
-      integrator.setMesh(mesh)
-      integrator.initQuadrature(material.quadrature)
-      integrator.initMaterial(mesh, material)
+      integrator.preinitialize(mesh, material)
       self.integrators.append(integrator)
       self._info.log("Added elasticity integrator for material '%s'." % \
                      material.label)
 
-    self._info.log("Initializing boundary conditions.")
+    self._info.log("Pre-initializing boundary conditions.")
     for bc in boundaryConditions.bin:
-      bc.initialize(mesh)
+      bc.preinitialize(mesh)
       foundType = False
       if implementsIntegrator(bc):
         foundType = True
@@ -124,9 +116,9 @@ class Formulation(Component):
               "Could not determine whether boundary condition '%s' is an " \
               "integrator or a constraint." % bc.name
 
-    self._info.log("Initializing interior interfaces.")
+    self._info.log("Pre-initializing interior interfaces.")
     for ic in interfaceConditions.bin:
-      ic.initialize(mesh)
+      ic.preinitialize(mesh)
       foundType = False
       if implementsIntegrator(ic):
         foundType = True
@@ -142,10 +134,40 @@ class Formulation(Component):
         raise TypeError, \
               "Could not determine whether interface condition '%s' is an " \
               "integrator or a constraint." % ic.name
+    return
+
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    for integrator in self.integrators:
+      integrator.verifyConfiguration()
+    for constraint in self.constraints:
+      constraint.verifyConfiguration()
+    for output in self.output.bin:
+      output.verifyConfiguration()
+    return
+  
+
+  def initialize(self, dimension, dt):
+    """
+    Create integrators for each element family.
+    """
+    from pylith.topology.FieldsManager import FieldsManager
+    self.fields = FieldsManager(self.mesh)
+
+    self._info.log("Initializing integrators.")
+    for integrator in self.integrators:
+      integrator.initialize()
+
+    self._info.log("Initializing constraints.")
+    for constraint in self.constraints:
+      constraint.initialize()
 
     self._info.log("Setting up solution output.")
     for output in self.output.bin:
-      output.open(mesh)
+      output.open(self.mesh)
       output.writeTopology()
 
     self._info.log("Creating solution field.")

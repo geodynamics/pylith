@@ -38,6 +38,20 @@ class SlipTimeFn(Component):
     return
 
 
+  def preinitialize(self):
+    """
+    Do pre-initialization setup.
+    """
+    return
+
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    return
+
+
   def initialize(self):
     """
     Initialize.

@@ -66,13 +66,29 @@ class EqKinSrc(Component):
     return
 
 
+  def preinitialize(self):
+    """
+    Do pre-initialization setup.
+    """
+    self._createCppHandle()
+    self.slipfn.preinitialize()
+    self.cppHandle.slipfn = self.slipfn.cppHandle
+    return
+  
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    self.slipfn.verifyConfiguration()
+    return
+
+
   def initialize(self):
     """
     Initialize.
     """
-    self._createCppHandle()
     self.slipfn.initialize()
-    self.cppHandle.slipfn = self.slipfn.cppHandle
     return
 
 

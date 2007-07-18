@@ -81,8 +81,12 @@ class PyLithApp(Application):
       interfaces = self.problem.interfaces.bin
     mesh = self.mesher.create(interfaces)
 
-    # Initialize problem and then run
-    self.problem.initialize(mesh)
+    # Setup problem, verify configuration, and then initialize
+    self.problem.preinitialize(mesh)
+    self.problem.verifyConfiguration()
+    self.problem.initialize()
+
+    # Run problem and cleanup
     self.problem.run(self)
     self.problem.finalize()
     

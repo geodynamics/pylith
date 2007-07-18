@@ -77,18 +77,33 @@ class BoundaryCondition(Component):
     return
 
 
-  def initialize(self, mesh):
+  def preinitialize(self, mesh):
     """
-    Initialize boundary condition.
+    Setup boundary condition.
     """
     self._createCppHandle()
-    
-    self.db.initialize()
     self.cppHandle.id = self.id
     self.cppHandle.label = self.label
-    self.cppHandle.db = self.db.cppHandle    
     self.mesh = mesh
-    self.cppHandle.initialize(mesh.cppHandle, mesh.coordsys.cppHandle)
+    return
+
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    # :TODO:  Make sure mesh contains group with label.
+    return
+
+
+  def initialize(self):
+    """
+    Initialize boundary condition.
+    """    
+    self.db.initialize()
+    self.cppHandle.db = self.db.cppHandle    
+    self.cppHandle.initialize(self.mesh.cppHandle,
+                              self.mesh.coordsys.cppHandle)
     return
 
 

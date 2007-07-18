@@ -80,6 +80,13 @@ class SolutionIO(Component):
     return
 
 
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    return
+
+
   def open(self, mesh):
     """
     Open files for solution.

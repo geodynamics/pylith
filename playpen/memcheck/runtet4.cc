@@ -49,9 +49,9 @@ main(int argc,
     iohandler.filenamePset(filenamePset);
     ALE::Obj<pylith::Mesh> mesh;
     iohandler.read(&mesh);
-
     spatialdata::geocoords::CSCart cs;
     cs.initialize();
+
 
     pylith::feassemble::Quadrature3D quadrature;
     const int cellDim = 3;
