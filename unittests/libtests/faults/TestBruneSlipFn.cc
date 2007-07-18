@@ -287,10 +287,10 @@ pylith::faults::TestBruneSlipFn::testSlip(void)
     for (int iDim=0; iDim < spaceDim; ++iDim)
       slipMag += pow(finalSlipE[iPoint*spaceDim+iDim], 2);
     slipMag = sqrt(slipMag);
-    const double tau = slipMag / (exp(1.0) * peakRateE[iPoint]);
+    const double tau = 
+      (slipMag > 0.0) ? slipMag / (exp(1.0) * peakRateE[iPoint]) : 1.0;
     const double t0 = slipTimeE[iPoint];
     const double slipNorm = 1.0 - exp(-(t-t0)/tau) * (1.0 + (t-t0)/tau);
-
     const int fiberDim = slip->getFiberDimension(*v_iter);
     CPPUNIT_ASSERT_EQUAL(spaceDim, fiberDim);
     const real_section_type::value_type* vals = 
@@ -385,7 +385,8 @@ pylith::faults::TestBruneSlipFn::testSlipIncr(void)
     for (int iDim=0; iDim < spaceDim; ++iDim)
       slipMag += pow(finalSlipE[iPoint*spaceDim+iDim], 2);
     slipMag = sqrt(slipMag);
-    const double tau = slipMag / (exp(1.0) * peakRateE[iPoint]);
+    const double tau = 
+      (slipMag > 0.0) ? slipMag / (exp(1.0) * peakRateE[iPoint]) : 1.0;
     const double tRef = slipTimeE[iPoint];
     const double slipNorm0 = 
       (t0 > tRef) ? 1.0 - exp(-(t0-tRef)/tau) * (1.0 + (t0-tRef)/tau) : 0.0;
