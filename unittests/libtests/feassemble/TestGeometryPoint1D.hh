@@ -44,6 +44,7 @@ class pylith::feassemble::TestGeometryPoint1D : public TestCellGeometry
   CPPUNIT_TEST( testCellDim );
   CPPUNIT_TEST( testSpaceDim );
   CPPUNIT_TEST( testNumCorners );
+  CPPUNIT_TEST( testOrientFn );
   CPPUNIT_TEST( testJacobian );
 
   CPPUNIT_TEST_SUITE_END();

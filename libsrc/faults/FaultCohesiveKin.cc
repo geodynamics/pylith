@@ -141,21 +141,6 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int cohesiveDim = mesh->getDimension()-1;
   assert(cohesiveDim == _quadrature->cellDim());
   assert(spaceDim == _quadrature->spaceDim());
-  orient_fn_type orientFn;
-  switch (cohesiveDim)
-    { // switch
-    case 0 :
-      orientFn = _orient1D;
-      break;
-    case 1 :
-      orientFn = _orient2D;
-      break;
-    case 2 :
-      orientFn = _orient3D;
-      break;
-    default :
-      assert(0);
-    } // switch
 
   // Loop over cohesive cells, computing orientation at constraint vertices
   const int numBasis = _quadrature->numBasis();
@@ -198,7 +183,8 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       cellGeometry.jacobian(&jacobian, &jacobianDet, faceVertices, vertex);
 
       // Compute orientation
-      orientFn(&vertexOrientation, jacobian, jacobianDet, upDir);
+      cellGeometry.orientation(&vertexOrientation, jacobian, jacobianDet, 
+			       upDir);
       
       // Update orientation
       _orientation->updateAddPoint(*v_iter, &vertexOrientation[0]);

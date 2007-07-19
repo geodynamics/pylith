@@ -54,15 +54,6 @@ public :
    */
   void adjustTopology(const ALE::Obj<ALE::Mesh>& mesh);
 
-  // PROTECTED TYPEDEFS /////////////////////////////////////////////////
-protected :
-
-  /// Function type for orientation methods.
-  typedef void (*orient_fn_type)(double_array*, 
-				 const double_array&,
-				 const double,
-				 const double_array&);
-
   // PROTECTED METHODS //////////////////////////////////////////////////
 protected :
 
@@ -74,75 +65,6 @@ protected :
   virtual
   bool _useLagrangeConstraints(void) const = 0;
 
-  /** Compute weighted orientation of fault for cohesive cell between
-   * 1-D elements. Orientation is either at vertices or quadrature
-   * points, depending on whether the arguments have been evaluated at
-   * the vertices or quadrature points.
-   *
-   * The orientation is returned as an array of direction cosines.
-   *
-   * size = spaceDim*spaceDim
-   * index = iDir*spaceDim + iComponent
-   *
-   * @param orientation Array of direction cosines.
-   * @param jacobian Jacobian matrix at point.
-   * @param jacobianDet Determinant of Jacobian matrix at point.
-   * @param upDir Direction perpendicular to along-strike direction that is 
-   *   not collinear with fault normal (usually "up" direction but could 
-   *   be up-dip direction).
-   */
-  static
-  void _orient1D(double_array* orientation,
-		 const double_array& jacobian,
-		 const double jacobianDet,
-		 const double_array& upDir);
-		
-  /** Compute weighted orientation of fault for cohesive cell between
-   * 2-D elements. Orientation is either at vertices or quadrature
-   * points, depending on whether the arguments have been evaluated at
-   * the vertices or quadrature points.
-   *
-   * The orientation is returned as an array of direction cosines.
-   *
-   * size = spaceDim*spaceDim
-   * index = iDir*spaceDim + iComponent
-   *
-   * @param orientation Array of direction cosines.
-   * @param jacobian Jacobian matrix at point.
-   * @param jacobianDet Determinant of Jacobian matrix at point.
-   * @param upDir Direction perpendicular to along-strike direction that is 
-   *   not collinear with fault normal (usually "up" direction but could 
-   *   be up-dip direction).
-   */
-  static 
-  void _orient2D(double_array* orientation,
-		 const double_array& jacobian,
-		 const double jacobianDet,
-		 const double_array& upDir);
-		
-  /** Compute weighted orientation of fault for cohesive cell between
-   * 3-D elements. Orientation is either at vertices or quadrature
-   * points, depending on whether the arguments have been evaluated at
-   * the vertices or quadrature points.
-   *
-   * The orientation is returned as an array of direction cosines.
-   *
-   * size = spaceDim*spaceDim
-   * index = iDir*spaceDim + iComponent
-   *
-   * @param orientation Array of direction cosines.
-   * @param jacobian Jacobian matrix at point.
-   * @param jacobianDet Determinant of Jacobian matrix at point.
-   * @param upDir Direction perpendicular to along-strike direction that is 
-   *   not collinear with fault normal (usually "up" direction but could 
-   *   be up-dip direction).
-   */
-  static
-  void _orient3D(double_array* orientation,
-		 const double_array& jacobian,
-		 const double jacobianDet,
-		 const double_array& upDir);
-		
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :
 

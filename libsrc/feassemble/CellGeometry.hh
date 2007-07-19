@@ -24,11 +24,14 @@
 namespace pylith {
   namespace feassemble {
     class CellGeometry;
+
+    class TestCellGeometry; // unit testing
   } // feassemble
 } // pylith
 
 class pylith::feassemble::CellGeometry
 { // CellGeometry
+  friend class TestCellGeometry; // unit testing
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
@@ -109,7 +112,7 @@ public :
   void orientation(double_array* orientation,
 		   const double_array& jacobian,
 		   const double jacobianDet,
-		   const double_array& upDir);
+		   const double_array& upDir) const;
 
 // PROTECTED ////////////////////////////////////////////////////////////
 protected :
