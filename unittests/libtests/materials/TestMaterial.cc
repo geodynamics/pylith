@@ -150,12 +150,11 @@ pylith::materials::TestMaterial::testInitialize(void)
   const int numCorners = 3;
   const int numQuadPts = 2;
   const int spaceDim = 1;
-  const double verticesRef[] = { -1.0, 1.0, 0.0 };
   const double basis[] = { 0.455, 0.667, -0.122, -0.122, 0.667, 0.455 };
   const double basisDeriv[] = { -1.077, 1.155, -0.077, 0.077, -1.155, 1.077 };
   const double quadPtsRef[] = { -0.577350269, 0.577350269 };
   const double quadWts[] = { 1.0, 1.0  };
-  quadrature.initialize(verticesRef, basis, basisDeriv, quadPtsRef, quadWts,
+  quadrature.initialize(basis, basisDeriv, quadPtsRef, quadWts,
 			cellDim, numCorners, numQuadPts, spaceDim);
 
   spatialdata::spatialdb::SimpleDB db;

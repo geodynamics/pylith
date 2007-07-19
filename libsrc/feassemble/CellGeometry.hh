@@ -19,7 +19,7 @@
 #if !defined(pylith_feassemble_cellgeometry_hh)
 #define pylith_feassemble_cellgeometry_hh
 
-#include "pylith/utils/arrayfwd.hh" // USES double_array
+#include "pylith/utils/array.hh" // HASA double_array
 
 namespace pylith {
   namespace feassemble {
@@ -33,18 +33,28 @@ class pylith::feassemble::CellGeometry
 { // CellGeometry
   friend class TestCellGeometry; // unit testing
 
+// PUBLIC ENUMS /////////////////////////////////////////////////////////
+public :
+  
+  enum ShapeEnum { 
+    POINT=0, // 0-D point cell
+    LINE=2, // 1-D line cell (2 points)
+    TRIANGLE=4, // 2-D triangular cell (3 edges)
+    QUADRILATERAL=5, // 2-D quadrilateral cell (4 edges)
+    TETRAHEDRON=16, // 3-D tetrahedral cell (4 faces)
+    HEXAHEDRON=17 // 3-D hexahedral cell (6 faces)
+  };
+
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public :
   
   /** Default constructor.
    *
-   * @param cellDim Dimension of cell.
+   * @param shape String identifying shape of cell
    * @param spaceDim Dimension of coordinate space.
-   * @param numCorners Number of corners in cell.
    */
-  CellGeometry(const int cellDim,
-	       const int spaceDim,
-	       const int numCorners);
+  CellGeometry(const ShapeEnum shape,
+	       const int spaceDim);
 
   /// Default destructor.
   virtual
@@ -74,6 +84,12 @@ public :
    * @returns Number of vertices in cell.
    */
   int numCorners(void) const;
+
+  /** Get coordinates of vertices in reference cell (dual basis).
+   *
+   * @returns Array of coordinates of vertices in reference cell
+   */
+  const double_array& vertices(void) const;
 
   /** Get cell geometry for lower dimension cell.
    *
@@ -123,6 +139,16 @@ protected :
    */
   CellGeometry(const CellGeometry& g);
 
+  /** Set coordinates of vertices in reference cell.
+   *
+   * @param vertices Array of coordinates of vertices [#vertices*cellDim]
+   * @param numVertices Number of vertices.
+   * @param dim Dimension of cell
+   */
+  void _setVertices(const double* vertices,
+		    const int numVertices,
+		    const int dim);
+
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
@@ -141,10 +167,11 @@ private :
 // PRIVATE METHODS //////////////////////////////////////////////////////
 private :
 
-  /** Compute weighted orientation of fault for cohesive cell between
-   * 1-D elements. Orientation is either at vertices or quadrature
-   * points, depending on whether the arguments have been evaluated at
-   * the vertices or quadrature points.
+  /** Compute orientation of 0-D cell. Orientation is either at
+   * vertices or quadrature points, depending on whether the arguments
+   * have been evaluated at the vertices or quadrature points.
+   *
+   * The orientation of a 0-D cell is always [1.0].
    *
    * The orientation is returned as an array of direction cosines.
    *
@@ -159,15 +186,14 @@ private :
    *   be up-dip direction).
    */
   static
-  void _orient1D(double_array* orientation,
+  void _orient0D(double_array* orientation,
 		 const double_array& jacobian,
 		 const double jacobianDet,
 		 const double_array& upDir);
 		
-  /** Compute weighted orientation of fault for cohesive cell between
-   * 2-D elements. Orientation is either at vertices or quadrature
-   * points, depending on whether the arguments have been evaluated at
-   * the vertices or quadrature points.
+  /** Compute orientation of 1-D cell. Orientation is either at
+   * vertices or quadrature points, depending on whether the arguments
+   * have been evaluated at the vertices or quadrature points.
    *
    * The orientation is returned as an array of direction cosines.
    *
@@ -182,15 +208,14 @@ private :
    *   be up-dip direction).
    */
   static 
-  void _orient2D(double_array* orientation,
+  void _orient1D(double_array* orientation,
 		 const double_array& jacobian,
 		 const double jacobianDet,
 		 const double_array& upDir);
 		
-  /** Compute weighted orientation of fault for cohesive cell between
-   * 3-D elements. Orientation is either at vertices or quadrature
-   * points, depending on whether the arguments have been evaluated at
-   * the vertices or quadrature points.
+  /** Compute orientation of 2-D cell. Orientation is either at
+   * vertices or quadrature points, depending on whether the arguments
+   * have been evaluated at the vertices or quadrature points.
    *
    * The orientation is returned as an array of direction cosines.
    *
@@ -205,7 +230,7 @@ private :
    *   be up-dip direction).
    */
   static
-  void _orient3D(double_array* orientation,
+  void _orient2D(double_array* orientation,
 		 const double_array& jacobian,
 		 const double jacobianDet,
 		 const double_array& upDir);
@@ -213,10 +238,21 @@ private :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  orient_fn_type _orientFn; ///< Function for computing orientation of cell  
-  int _cellDim; ///< Dimension of cell.
+  /** Array of coordinates of vertices in reference cell (dual basis).
+   *
+   * Reference coordinates: (p,q,r)
+   *
+   * v0p, v0q, v0r
+   * v1p, v1q, v1r
+   *
+   * size = numBasis * cellDim
+   * index = iBasis*cellDim + iDim
+   */
+  double_array _vertices;
+
+  orient_fn_type _orientFn; ///< Function for computing orientation of cell
   int _spaceDim; ///< Dimension of coordinate space.
-  int _numCorners; ///< Number of corners in cell.
+  ShapeEnum _shape; ///< Shape of cell
 
 }; // CellGeometry
 

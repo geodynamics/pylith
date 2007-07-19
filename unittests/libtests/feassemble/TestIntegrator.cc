@@ -140,14 +140,13 @@ pylith::feassemble::TestIntegrator::_initQuadrature(Quadrature1D* quadrature)
   const int numBasis = 2;
   const int numQuadPts = 1;
   const int spaceDim = 1;
-  const double vertices[] = { -1.0, 1.0 };
   const double basis[] = { 0.5, 0.5 };
   const double basisDeriv[] = { -0.5, 0.5 };
   const double quadPtsRef[] = { 0.0 };
   const double quadWts[] = { 2.0 };
   const double minJacobian = 1.0;
 
-  quadrature->initialize(vertices, basis, basisDeriv, quadPtsRef, quadWts,
+  quadrature->initialize(basis, basisDeriv, quadPtsRef, quadWts,
 			 cellDim, numBasis, numQuadPts, spaceDim);
 } // _initQuadrature
 

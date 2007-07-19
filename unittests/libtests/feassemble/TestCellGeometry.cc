@@ -41,29 +41,29 @@ pylith::feassemble::TestCellGeometry::tearDown(void)
 } // tearDown
 
 // ----------------------------------------------------------------------
-// Test _orient1D().
+// Test _orient0D().
 void
-pylith::feassemble::TestCellGeometry::testOrient1D(void)
-{ // testOrient1D
+pylith::feassemble::TestCellGeometry::testOrient0D(void)
+{ // testOrient0D
   double_array jacobian;
   double jacobianDet;
   double_array upDir;
   double_array orientation(1);
   
-  CellGeometry::_orient1D(&orientation, jacobian, jacobianDet, upDir);
+  CellGeometry::_orient0D(&orientation, jacobian, jacobianDet, upDir);
 
   const int size = orientation.size();
   CPPUNIT_ASSERT_EQUAL(1, size);
   const double tolerance = 1.0e-6;
   for (int i=0; i < size; ++i)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, orientation[i], tolerance);
-} // testOrient1D
+} // testOrient0D
 
 // ----------------------------------------------------------------------
-// Test _orient2D().
+// Test _orient1D().
 void
-pylith::feassemble::TestCellGeometry::testOrient2D(void)
-{ // testOrient2D
+pylith::feassemble::TestCellGeometry::testOrient1D(void)
+{ // testOrient1D
   const int numLocs = 2;
   const int spaceDim = 2;
   const int orientSize = 4;
@@ -84,7 +84,7 @@ pylith::feassemble::TestCellGeometry::testOrient2D(void)
     double_array upDir;
     double_array orientation(orientSize);
 
-    CellGeometry::_orient2D(&orientation, jacobian, jacobianDet, upDir);
+    CellGeometry::_orient1D(&orientation, jacobian, jacobianDet, upDir);
 
     const int size = orientation.size();
     CPPUNIT_ASSERT_EQUAL(orientSize, size);
@@ -93,13 +93,13 @@ pylith::feassemble::TestCellGeometry::testOrient2D(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[iLoc*orientSize+i],
 				   orientation[i], tolerance);
   } // for
-} // testOrient2D
+} // testOrient1D
 
 // ----------------------------------------------------------------------
-// Test _orient3D().
+// Test _orient2D().
 void
-pylith::feassemble::TestCellGeometry::testOrient3D(void)
-{ // testOrient3D
+pylith::feassemble::TestCellGeometry::testOrient2D(void)
+{ // testOrient2D
   const int numLocs = 2;
   const int spaceDim = 3;
   const int orientSize = 9;
@@ -134,7 +134,7 @@ pylith::feassemble::TestCellGeometry::testOrient3D(void)
     double jacobianDet = jacobianDetVals[iLoc];
     double_array orientation(orientSize);
 
-    CellGeometry::_orient3D(&orientation, jacobian, jacobianDet, upDir);
+    CellGeometry::_orient2D(&orientation, jacobian, jacobianDet, upDir);
 
     const int size = orientation.size();
     CPPUNIT_ASSERT_EQUAL(orientSize, size);
@@ -143,7 +143,7 @@ pylith::feassemble::TestCellGeometry::testOrient3D(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(orientationE[iLoc*orientSize+i],
 				   orientation[i], tolerance);
   } // for
-} // testOrient3D
+} // testOrient2D
 
 // ----------------------------------------------------------------------
 // Test clone()
@@ -197,13 +197,13 @@ pylith::feassemble::TestCellGeometry::testOrientFn(void)
   switch (_data->cellDim)
     { // switch
     case 0 :
-      CPPUNIT_ASSERT(CellGeometry::_orient1D == _object->_orientFn);
+      CPPUNIT_ASSERT(CellGeometry::_orient0D == _object->_orientFn);
       break;
     case 1 :
-      CPPUNIT_ASSERT(CellGeometry::_orient2D == _object->_orientFn);
+      CPPUNIT_ASSERT(CellGeometry::_orient1D == _object->_orientFn);
       break;
     case 2 :
-      CPPUNIT_ASSERT(CellGeometry::_orient3D == _object->_orientFn);
+      CPPUNIT_ASSERT(CellGeometry::_orient2D == _object->_orientFn);
       break;
     case 3 :
       CPPUNIT_ASSERT(0 == _object->_orientFn);

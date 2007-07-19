@@ -40,9 +40,9 @@ class pylith::feassemble::TestCellGeometry : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestCellGeometry );
 
+  CPPUNIT_TEST( testOrient0D );
   CPPUNIT_TEST( testOrient1D );
   CPPUNIT_TEST( testOrient2D );
-  CPPUNIT_TEST( testOrient3D );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -55,14 +55,14 @@ public :
   /// Tear down data.
   void tearDown(void);
 
+  /// Test _orient0D().
+  void testOrient0D(void);
+
   /// Test _orient1D().
   void testOrient1D(void);
 
   /// Test _orient2D().
   void testOrient2D(void);
-
-  /// Test _orient3D().
-  void testOrient3D(void);
 
   /// Test clone().
   void testClone(void);

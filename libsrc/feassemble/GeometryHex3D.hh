@@ -77,6 +77,12 @@ public :
 		const double_array& vertices,
 		const double_array& location) const;
 
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
+
+  GeometryHex3D(const GeometryHex3D&); ///< Not implemented
+  const GeometryHex3D& operator=(const GeometryHex3D&); ///< Not implemented
+
 }; // GeometryHex3D
 
 #endif // pylith_feassemble_geometryhex3d_hh

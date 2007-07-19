@@ -23,8 +23,19 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::GeometryHex3D::GeometryHex3D(void) :
-  CellGeometry(3, 3, 8)
+  CellGeometry(HEXAHEDRON, 3)
 { // constructor
+  const double vertices[] = {
+    -1.0,  -1.0,  -1.0,
+    +1.0,  -1.0,  -1.0,
+    +1.0,  +1.0,  -1.0,
+    -1.0,  +1.0,  -1.0,
+    -1.0,  -1.0,  +1.0,
+    +1.0,  -1.0,  +1.0,
+    +1.0,  +1.0,  +1.0,
+    -1.0,  +1.0,  +1.0,
+  };
+  _setVertices(vertices, 8, 3);
 } // constructor
 
 // ----------------------------------------------------------------------

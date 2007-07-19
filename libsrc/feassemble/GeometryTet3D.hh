@@ -73,14 +73,11 @@ public :
 		const double_array& vertices,
 		const double_array& location) const;
 
-// PROTECTED ////////////////////////////////////////////////////////////
-protected :
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
 
-  /** Copy constructor.
-   *
-   * @param g Geometry to copy.
-   */
-  GeometryTet3D(const GeometryTet3D& g);
+  GeometryTet3D(const GeometryTet3D&); ///< Not implemented
+  const GeometryTet3D& operator=(const GeometryTet3D&); ///< Not implemented
 
 }; // GeometryTet3D
 

@@ -78,14 +78,11 @@ public :
 		const double_array& vertices,
 		const double_array& location) const;
 
-// PROTECTED ////////////////////////////////////////////////////////////
-protected :
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
 
-  /** Copy constructor.
-   *
-   * @param g Geometry to copy.
-   */
-  GeometryQuad2D(const GeometryQuad2D& g);
+  GeometryQuad2D(const GeometryQuad2D&); ///< Not implemented
+  const GeometryQuad2D& operator=(const GeometryQuad2D&); ///< Not implemented
 
 }; // GeometryQuad2D
 

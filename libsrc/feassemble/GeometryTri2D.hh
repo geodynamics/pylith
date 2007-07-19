@@ -72,14 +72,11 @@ public :
 		const double_array& vertices,
 		const double_array& location) const;
 
-// PROTECTED ////////////////////////////////////////////////////////////
-protected :
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
 
-  /** Copy constructor.
-   *
-   * @param g Geometry to copy.
-   */
-  GeometryTri2D(const GeometryTri2D& g);
+  GeometryTri2D(const GeometryTri2D&); ///< Not implemented
+  const GeometryTri2D& operator=(const GeometryTri2D&); ///< Not implemented
 
 }; // GeometryTri2D
 

@@ -16,13 +16,6 @@
 
 #include <assert.h> // USES assert()
 
-// Get dimension of cell.
-inline
-int
-pylith::feassemble::CellGeometry::cellDim(void) const {
-  return _cellDim;
-} // cellDim
-
 // Get dimension of coordinate space.
 inline
 int
@@ -30,12 +23,12 @@ pylith::feassemble::CellGeometry::spaceDim(void) const {
   return _spaceDim;
 } // spaceDim
 
-// Get number of corners in cell.
+// Get coordinates of vertices in reference cell (dual basis).
 inline
-int
-pylith::feassemble::CellGeometry::numCorners(void) const {
-  return _numCorners;
-} // numCorners
+const pylith::double_array&
+pylith::feassemble::CellGeometry::vertices(void) const {
+  return _vertices;
+}
 
 // Compute orientation of cell at location.
 inline
