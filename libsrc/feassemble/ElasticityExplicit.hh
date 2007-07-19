@@ -29,7 +29,7 @@
  * where A(t) is a sparse matrix or vector, u(t+dt) is the field we
  * want to compute at time t+dt, b is a vector that depends on the
  * field at time t and t-dt, and u0 is zero at unknown DOF and set to
- * the constrained values at known DOF.
+ * the known values at the constrained DOF.
  *
  * Contributions from elasticity include the intertial and stiffness
  * terms, so this object computes the following portions of A and r:
