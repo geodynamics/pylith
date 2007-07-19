@@ -80,10 +80,6 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyTet4Lagrange );
   CPPUNIT_TEST( testAdjustTopologyHex8Lagrange );
 
-  CPPUNIT_TEST( testOrient1D );
-  CPPUNIT_TEST( testOrient2D );
-  CPPUNIT_TEST( testOrient3D );
-
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -204,18 +200,6 @@ public :
   /// Test adjustTopology() with 3-D hexahedral element for Lagrange
   /// multipliers.
   void testAdjustTopologyHex8Lagrange(void);
-
-  /// Test _orientationSize().
-  void testOrientationSize(void);
-
-  /// Test _orient1D().
-  void testOrient1D(void);
-
-  /// Test _orient2D().
-  void testOrient2D(void);
-
-  /// Test _orient3D().
-  void testOrient3D(void);
 
   // PROTECTED METHODS //////////////////////////////////////////////////
 public :

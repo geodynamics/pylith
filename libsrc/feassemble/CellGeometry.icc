@@ -43,7 +43,7 @@ void
 pylith::feassemble::CellGeometry::orientation(double_array* orientation,
 					      const double_array& jacobian,
 					      const double jacobianDet,
-					      const double_array& upDir) {
+					      const double_array& upDir) const {
   if (0 != _orientFn)
     _orientFn(orientation, jacobian, jacobianDet, upDir);
 } // orientation
