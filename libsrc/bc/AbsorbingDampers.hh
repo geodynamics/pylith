@@ -10,14 +10,45 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/bc/Neumann.hh
+/** @file libsrc/bc/AbsorbingDampers.hh
  *
- * @brief C++ implementation of Neumann (prescribed tractions
- * on a surface) boundary conditions.
+ * @brief C++ implementation of an absorbing boundary with simple
+ * dampers.
+ *
+ * Computes contributions to terms A and r in 
+ *
+ * A(t) u(t+dt) = b(u(t), u(t-dt)),
+ *
+ * r = b - a u0(t+dt)
+ *
+ * where A(t) is a sparse matrix or vector, u(t+dt) is the field we
+ * want to compute at time t+dt, b is a vector that depends on the
+ * field at time t and t-dt, and u0 is zero at unknown DOF and set to
+ * the known values at the constrained DOF.
+ *
+ * Contributions from elasticity include the intertial and stiffness
+ * terms, so this object computes the following portions of A and r:
+ *
+ * A = 1/(dt*dt) [M]
+ *
+ * r = (1/(dt*dt) [M])(- {u(t+dt)} + 2/(dt*dt){u(t)} - {u(t-dt)}) - [K]{u(t)}
+ *
+ * Translational inertia.
+ *   - Residual action over cell
+ *     \f[
+ *       \int_{V^e} \rho N^p \sum_q N^q u_i^q \, dV
+ *     \f]
+ *   - Jacobian action over cell
+ *     \f[
+ *       \int_{V^e} (\rho N^q N^q)_i \, dV
+ *     \f]
+ *
+ * See governing equations section of user manual for more
+ * information.
  */
 
-#if !defined(pylith_bc_neumann_hh)
-#define pylith_bc_neumann_hh
+#if !defined(pylith_bc_absorbingdampers_hh)
+#define pylith_bc_absorbingdampers_hh
 
 #include "BoundaryCondition.hh" // ISA BoundaryCondition
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
@@ -27,26 +58,26 @@
 /// Namespace for pylith package
 namespace pylith {
   namespace bc {
-    class Neumann;
-    class TestNeumann; // unit testing
+    class AbsorbingDampers;
+    class TestAbsorbingDampers; // unit testing
   } // bc
 } // pylith
 
 
-/// C++ implementation of Neumann boundary conditions.
-class pylith::bc::Neumann : public BoundaryCondition, 
-			    public feassemble::Integrator
-{ // class Neumann
-  friend class TestNeumann; // unit testing
+/// C++ implementation of AbsorbingDampers boundary conditions.
+class pylith::bc::AbsorbingDampers : public BoundaryCondition, 
+				     public feassemble::Integrator
+{ // class AbsorbingDampers
+  friend class TestAbsorbingDampers; // unit testing
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
   /// Default constructor.
-  Neumann(void);
+  AbsorbingDampers(void);
 
   /// Destructor.
-  ~Neumann(void);
+  ~AbsorbingDampers(void);
 
   /** Initialize boundary condition.
    *
@@ -90,22 +121,17 @@ public :
 private :
 
   /// Not implemented
-  Neumann(const Neumann&);
+  AbsorbingDampers(const AbsorbingDampers& m);
 
   /// Not implemented
-  const Neumann& operator=(const Neumann&);
+  const AbsorbingDampers& operator=(const AbsorbingDampers& m);
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
 
-  /// Traction vector in global coordinates at integration points.
-  ALE::Obj<real_section_type> _tractionGlobal;
+}; // class AbsorbingDampers
 
-}; // class Neumann
-
-#include "Neumann.icc" // inline methods
-
-#endif // pylith_bc_neumann_hh
+#endif // pylith_bc_absorbingdampers_hh
 
 
 // End of file 
