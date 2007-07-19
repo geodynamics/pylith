@@ -1,4 +1,4 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -606,6 +606,238 @@ Neumann Boundary Conditions
 \begin_layout Standard
 Neumann (traction) boundary conditions are not implemented in this release.
  We hope to include these in the next release.
+\end_layout
+
+\begin_layout Section
+Absorbing Boundary Conditions
+\end_layout
+
+\begin_layout Standard
+This boundary condition attempts to prevent seismic waves reflecting off
+ of a boundary by placing simple dashpots on the boundary.
+ Normally incident dilatational and shear waves are perfectly absorbed.
+ Waves incident at other angles are only partially absorbed.
+ This boundary condition is simpler than a perfectly matched layer boundary
+ condition but does not perform quite as well, especially for surface waves.
+ If the waves arriving at the absorbing boundary are relatively small in
+ amplitude compared the the amplitudes of primary interest, this boundary
+ condition gives reasonable results.
+\end_layout
+
+\begin_layout Subsection
+Finite Element Implementation of Absorbing Boundary
+\end_layout
+
+\begin_layout Standard
+Consider a plane wave propagating at a velocity 
+\begin_inset Formula $c$
+\end_inset
+
+.
+ We can write the displacemet field as
+\begin_inset Formula \begin{equation}
+\vec{u}(\vec{x},t)=\vec{u^{t}}(t-\frac{\vec{x}}{c}),\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\vec{x}$
+\end_inset
+
+ is position, 
+\begin_inset Formula $t$
+\end_inset
+
+ is time, and 
+\begin_inset Formula $\vec{u^{t}}$
+\end_inset
+
+ is the shape of the propagating wave.
+ For an absorbing boundary we want the traction on the boundary to be equal
+ to the traction associated with wave propagating out of the domain.
+ Starting with the expression for the traction on a boundary, 
+\begin_inset Formula $T_{i}=\sigma_{ij}n_{j},$
+\end_inset
+
+ and using the local coordinate system for the boundary 
+\begin_inset Formula $s_{h}s_{v}n,$
+\end_inset
+
+ where 
+\begin_inset Formula $\vec{n}$
+\end_inset
+
+ is the direction normal to the boundary, 
+\begin_inset Formula $s_{h}$
+\end_inset
+
+ is the horizontal direction tangent to the boundary, and 
+\begin_inset Formula $s_{v}$
+\end_inset
+
+is the vertical direction tangent to the boundary, the tractions on the
+ boundary are
+\begin_inset Formula \begin{gather}
+T_{s_{h}}=\sigma_{s_{h}n}\\
+T_{s_{v}}=\sigma_{s_{v}n}\\
+T_{n}=\sigma_{nn}.\end{gather}
+
+\end_inset
+
+In the case of a horizontal boundary, we can define an auxilliary direction
+ in order to assign unique tangential directions.
+ For a linear elastic material, 
+\begin_inset Formula $\sigma_{ij}=\lambda\epsilon_{kk}\delta_{ij}+2\mu\epsilon_{ij},$
+\end_inset
+
+ and we can write the tractions as 
+\begin_inset Formula \begin{gather}
+T_{s_{h}}=2\mu\epsilon_{s_{h}n}\\
+T_{s_{v}}=2\epsilon_{s_{v}n}\\
+T_{n}=(\lambda+2\mu)\epsilon_{nn}+\lambda(\epsilon_{s_{h}s_{h}}+\epsilon_{s_{v}s_{v}}).\end{gather}
+
+\end_inset
+
+For infinitesimal strains, 
+\begin_inset Formula $\epsilon_{ij}=\frac{1}{2}(u_{i,j}+u_{j,i})$
+\end_inset
+
+ and we have
+\begin_inset Formula \begin{gather*}
+\epsilon_{s_{h}n}=\frac{1}{2}(u_{s_{h},n}+u_{n,s_{h}})\\
+\epsilon_{s_{v}n}=\frac{1}{2}(u_{s_{v},n}+u_{n,s_{v}})\\
+\epsilon_{nn}=u_{n,n}.\end{gather*}
+
+\end_inset
+
+For our propagating plane wave, we recognize that
+\begin_inset Formula \[
+\frac{\partial\vec{u^{t}}(t-\frac{\vec{x}}{c})}{\partial x_{i}}=-\frac{1}{c}\frac{\partial\vec{u^{t}}(t-\frac{\vec{x}}{c})}{\partial t},\]
+
+\end_inset
+
+so that our expressions for the tractions becomes
+\begin_inset Formula \begin{gather}
+T_{s_{h}}=-\frac{\mu}{c}\left\left\left(\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right)\\
+T_{s_{v}}=-\frac{\mu}{c}\left\left \left(\frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right)\right\\\
+T_{n}=-\frac{\lambda+2\mu}{c}\frac{\partial u_{n}(t-\frac{\vec{x}}{c})}{\partial t}-\frac{\lambda}{c}\left(\frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right).\end{gather}
+
+\end_inset
+
+For the normal traction consider a dilatational wave propagating normal
+ to the boundary at speed 
+\begin_inset Formula $v_{p}$
+\end_inset
+
+; in this case 
+\begin_inset Formula $u_{s_{h}}=u_{s_{v}}=0$
+\end_inset
+
+ and 
+\begin_inset Formula $c=v_{p}$
+\end_inset
+
+.
+ For the shear tractions consider a shear wave propagating normal to the
+ boundary at speed 
+\begin_inset Formula $v_{s}$
+\end_inset
+
+; we can decompose this into one case where 
+\begin_inset Formula $u_{n}=u_{s_{v}}=0$
+\end_inset
+
+ and another case where 
+\begin_inset Formula $u_{n}=u_{s_{h}}=0$
+\end_inset
+
+, where 
+\begin_inset Formula $c=v_{s}$
+\end_inset
+
+ in both cases.
+ This leads to the following expressions for the tractions:
+\begin_inset Formula \begin{gather}
+T_{s_{h}}=-\rho v_{s}\left\left\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\\
+T_{s_{v}}=-\rho v_{s}\left\left \frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right\\\
+T_{n}=-\rho v_{p}\frac{\partial u_{n}(t-\frac{\vec{x}}{c})}{\partial t}.\end{gather}
+
+\end_inset
+
+We can write the strong form of the boundary condition as
+\begin_inset Formula \[
+\int_{S_{T}}T_{i}\phi_{i}\, dS=\int_{S_{T}}-\rho c_{i}\frac{\partial u_{i}}{\partial t}\phi_{i}\, dS,\]
+
+\end_inset
+
+where 
+\begin_inset Formula $c_{i}$
+\end_inset
+
+ equals 
+\begin_inset Formula $v_{p}$
+\end_inset
+
+ for the normal traction and 
+\begin_inset Formula $v_{s}$
+\end_inset
+
+ for the shear tractions.
+ Discretizing into finite elements changes the integral over the boundary
+ into a sum of integrals over the cell boundaries
+\begin_inset Formula \begin{equation}
+\sum_{cells}(\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=\sum_{cells}(\int_{S_{t}^{e}}-\rho c_{i}\frac{\partial u_{i}}{\partial t}\phi_{i}\, dS).\end{equation}
+
+\end_inset
+
+Within an element we represent the fields as a linear combination of a set
+ of basis functions and the values of the fields at vertices of the element,
+\begin_inset Formula \begin{equation}
+a_{i}=N^{m}a_{i}^{m},\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $N^{m}$
+\end_inset
+
+ is the 
+\begin_inset Formula $m$
+\end_inset
+
+th basis function for an element and 
+\begin_inset Formula $a_{i}^{m}$
+\end_inset
+
+ is the field at vertex 
+\begin_inset Formula $m$
+\end_inset
+
+.
+ Rewriting the trial functions and displacement field in terms of the basis
+ functions gives
+\begin_inset Formula \begin{gather}
+\phi_{i}=N^{m},\text{ and}\\
+u_{i}=N^{m}u_{i}^{m}.\end{gather}
+
+\end_inset
+
+We force the weak form to hold for each component in the vector space.
+ Substituting into the integral equation, for basis function 
+\begin_inset Formula $N^{p}$
+\end_inset
+
+ and component 
+\begin_inset Formula $i$
+\end_inset
+
+, we have
+\begin_inset Formula \begin{equation}
+\sum_{cells}(\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=\sum_{cells}(\int_{S_{t}^{e}}-\rho c_{i}\sum_{p}N^{p}\dot{u}_{i}^{o}N^{q}\, dS).\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
