@@ -169,7 +169,6 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     quadrature->computeGeometry(mesh, coordinates, *cellIter);
 
     const double_array& quadPts = quadrature->quadPts();
-    const int spaceDim = quadrature->spaceDim();
 
     // Loop over quadrature points in cell and query database
     for (int iQuadPt=0, index=0; 
