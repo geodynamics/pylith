@@ -65,14 +65,11 @@ public :
 		const double_array& vertices,
 		const double_array& location) const;
 
-// PROTECTED ////////////////////////////////////////////////////////////
-protected :
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
 
-  /** Copy constructor.
-   *
-   * @param g Geometry to copy.
-   */
-  GeometryPoint2D(const GeometryPoint2D& g);
+  GeometryPoint2D(const GeometryPoint2D&); ///< Not implemented
+  const GeometryPoint2D& operator=(const GeometryPoint2D&); ///< Not implemented
 
 }; // GeometryPoint2D
 

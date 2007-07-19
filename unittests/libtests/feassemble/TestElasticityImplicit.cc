@@ -294,8 +294,7 @@ pylith::feassemble::TestElasticityImplicit::_initialize(
   (*mesh)->getFactory()->clear(); // clear numberings
 
   // Setup quadrature
-  _quadrature->initialize(_data->verticesRef,
-			  _data->basis, _data->basisDerivRef, _data->quadPts,
+  _quadrature->initialize(_data->basis, _data->basisDerivRef, _data->quadPts,
 			  _data->quadWts, _data->cellDim, _data->numBasis,
 			  _data->numQuadPts, _data->spaceDim);
 

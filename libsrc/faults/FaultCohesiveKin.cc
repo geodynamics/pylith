@@ -145,7 +145,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   // Loop over cohesive cells, computing orientation at constraint vertices
   const int numBasis = _quadrature->numBasis();
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const double_array& verticesRef = _quadrature->vertices();
+  const double_array& verticesRef = cellGeometry.vertices();
   const int jacobianSize = (cohesiveDim > 0) ? spaceDim * cohesiveDim : 1;
   double_array jacobian(jacobianSize);
   double jacobianDet = 0;

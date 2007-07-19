@@ -61,16 +61,8 @@ public :
   virtual
   Quadrature* clone(void) const = 0;
 
-  /** Set vertices (dual basis), basis functions and their
-   *  derivatives, and coordinates and weights of the quadrature
-   *  points.
-   *
-   * @param vertices Array of coordinates of vertices (dual basis).
-   *   v0x, v0y, v0z
-   *   v1x, v1y, v1z
-   *   ...
-   *   size = numBasis * cellDim
-   *   index = iBasis*cellDim + iDim
+  /** Set basis functions and their derivatives, and coordinates and
+   *  weights of the quadrature points.
    *
    * @param basis Array of basis functions evaluated at quadrature pts
    *   N0Qp0, N1Qp0, ...
@@ -100,12 +92,11 @@ public :
    *   index = iQuadPt
    *
    * @param cellDim Number of dimensions in reference cell
-   * @param numBasis Number of basis functions (and vertices) for a cell
+   * @param numBasis Number of basis functions for a cell
    * @param numQuadPts Number of quadrature points
    * @param spaceDim Number of dimensions in coordinates of cell vertices
    */
-  void initialize(const double* vertices,
-		  const double* basis,
+  void initialize(const double* basis,
 		  const double* basisDerivRef,
 		  const double* quadPtsRef,
 		  const double* quadWts,
@@ -138,11 +129,11 @@ public :
    */
   double minJacobian(void);
 
-  /** Get coordinates of vertices in reference cell (dual basis).
+  /** Get coordinates of quadrature points in reference cell.
    *
-   * @returns Array of coordinates of vertices in reference cell
+   * @returns Array of coordinates of quadrature points in reference cell.
    */
-  const double_array& vertices(void) const;
+  const double_array& quadPtsRef(void) const;
 
   /** Get coordinates of quadrature points in cell (NOT reference cell).
    *
@@ -252,18 +243,6 @@ protected :
 
   double _minJacobian; ///< Minium allowable Jacobian determinant
   
-  /** Array of coordinates of vertices in reference cell (dual basis).
-   *
-   * Reference coordinates: (p,q,r)
-   *
-   * v0p, v0q, v0r
-   * v1p, v1q, v1r
-   *
-   * size = numBasis * cellDim
-   * index = iBasis*cellDim + iDim
-   */
-  double_array _vertices;
-
   /** Array of coordinates of quadrature points in reference cell.
    *
    * Reference coordinates: (p,q,r)

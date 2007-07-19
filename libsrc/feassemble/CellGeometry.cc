@@ -14,37 +14,35 @@
 
 #include "CellGeometry.hh" // implementation of class methods
 
-#include "pylith/utils/array.hh" // USES double_array
-
 #include <iostream> // USES std::cerr
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::feassemble::CellGeometry::CellGeometry(const int cellDim,
-					       const int spaceDim,
-					       const int numCorners) :
+pylith::feassemble::CellGeometry::CellGeometry(const ShapeEnum shape,
+					       const int spaceDim) :
   _orientFn(0),
-  _cellDim(cellDim),
   _spaceDim(spaceDim),
-  _numCorners(numCorners)
+  _shape(shape)
 { // constructor
-  switch (cellDim)
+  switch (shape)
     { // switch
-    case 0 :
+    case POINT :
+      _orientFn = _orient0D;
+      break;
+    case LINE :
       _orientFn = _orient1D;
       break;
-    case 1 :
+    case TRIANGLE :
+    case QUADRILATERAL :
       _orientFn = _orient2D;
       break;
-    case 2 :
-      _orientFn = _orient3D;
-      break;
-    case 3 :
+    case TETRAHEDRON :
+    case HEXAHEDRON :
       break;
     default:
       std::cerr 
-	<< "Could not find orientation function for cell with dimension "
-	<< cellDim << ".";
+	<< "Could not find orientation function for cell with shape "
+	<< shape << ".";
       assert(0);
     } // switch
 } // constructor
@@ -59,33 +57,116 @@ pylith::feassemble::CellGeometry::~CellGeometry(void)
 // Copy constructor.
 pylith::feassemble::CellGeometry::CellGeometry(const CellGeometry& g) :
   _orientFn(g._orientFn),
-  _cellDim(g._cellDim),
   _spaceDim(g._spaceDim),
-  _numCorners(g._numCorners)
+  _shape(g._shape)
 { // copy constructor
 } // copy constructor
 
 // ----------------------------------------------------------------------
-// Compute weighted orientation of boundary for 1-D cell.
+// Get dimension of cell.
+int
+pylith::feassemble::CellGeometry::cellDim(void) const
+{ // cellDim
+  int dim = 0;
+  switch (_shape)
+    { // switch
+    case POINT :
+      dim = 0;
+      break;
+    case LINE :
+      dim = 1;
+      break;
+    case TRIANGLE :
+    case QUADRILATERAL :
+      dim = 2;
+      break;
+    case TETRAHEDRON :
+    case HEXAHEDRON :
+      dim = 3;
+      break;
+    default:
+      std::cerr 
+	<< "Could not find dimension of cell with shape " << _shape << ".";
+      assert(0);
+    } // switch
+  return dim;
+} // cellDim
+
+// ----------------------------------------------------------------------
+// Get number of corners in cell.
+int
+pylith::feassemble::CellGeometry::numCorners(void) const
+{ // numCorners
+  int corners = 0;
+  switch (_shape)
+    { // switch
+    case POINT :
+      corners = 1;
+      break;
+    case LINE :
+      corners = 2;
+      break;
+    case TRIANGLE :
+      corners = 3;
+      break;
+    case QUADRILATERAL :
+      corners = 4;
+      break;
+    case TETRAHEDRON :
+      corners = 4;
+      break;
+    case HEXAHEDRON :
+      corners = 8;
+      break;
+    default:
+      std::cerr 
+	<< "Could not find number of corners for cell with shape "
+	<< _shape << ".";
+      assert(0);
+    } // switch
+  return corners;
+} // numCorners
+
+// ----------------------------------------------------------------------
+// Set coordinates of vertices in reference cell.
+void
+pylith::feassemble::CellGeometry::_setVertices(const double* vertices,
+					       const int numVertices,
+					       const int dim)
+{ // _setVertices
+  if (POINT != _shape) {
+    assert(numCorners() == numVertices);
+    assert(cellDim() == dim);
+  } else {
+    assert(1 == numVertices);
+    assert(1 == dim);
+  } // if/else
+  const int nbytes = numVertices*dim*sizeof(double);
+  _vertices.resize(numVertices*dim);
+  memcpy(&_vertices[0], vertices, nbytes);
+} // _setVertices
+
+// ----------------------------------------------------------------------
+// Compute orientation of 0-D cell.
+void
+pylith::feassemble::CellGeometry::_orient0D(double_array* orientation,
+					    const double_array& jacobian,
+					    const double jacobianDet,
+					    const double_array& upDir)
+{ // _orient0D
+  assert(0 != orientation);
+  assert(1 == orientation->size());
+  (*orientation) = 1.0;
+} // _orient0D
+		
+// ----------------------------------------------------------------------
+// Compute orientation of 1-D cell.
 void
 pylith::feassemble::CellGeometry::_orient1D(double_array* orientation,
 					    const double_array& jacobian,
 					    const double jacobianDet,
 					    const double_array& upDir)
 { // _orient1D
-  assert(0 != orientation);
-  assert(1 == orientation->size());
-  (*orientation) = 1.0;
-} // _orient1D
-		
-// ----------------------------------------------------------------------
-// Compute weighted orientation of boundary for 2-D cell.
-void
-pylith::feassemble::CellGeometry::_orient2D(double_array* orientation,
-					    const double_array& jacobian,
-					    const double jacobianDet,
-					    const double_array& upDir)
-{ // _orient2D
   const int orientSize = 4;
   assert(0 != orientation);
   assert(orientSize == orientation->size());
@@ -101,16 +182,16 @@ pylith::feassemble::CellGeometry::_orient2D(double_array* orientation,
   (*orientation)[1] =  j2;
   (*orientation)[2] =  j2;
   (*orientation)[3] = -j1;
-} // _orient2D
+} // _orient1D
 		
 // ----------------------------------------------------------------------
-// Compute weighted orientation of boundary for 3-D cell.
+// Compute orientation of 2-D cell.
 void
-pylith::feassemble::CellGeometry::_orient3D(double_array* orientation,
+pylith::feassemble::CellGeometry::_orient2D(double_array* orientation,
 					    const double_array& jacobian,
 					    const double jacobianDet,
 					    const double_array& upDir)
-{ // _orient3D
+{ // _orient2D
   const int orientSize = 9;
   assert(0 != orientation);
   assert(orientSize == orientation->size());
@@ -167,7 +248,7 @@ pylith::feassemble::CellGeometry::_orient3D(double_array* orientation,
   (*orientation)[6] =  r0*wt;
   (*orientation)[7] =  r1*wt;
   (*orientation)[8] =  r2*wt;
-} // _orient3D
+} // _orient2D
 
 
 // End of file

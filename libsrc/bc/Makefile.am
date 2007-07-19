@@ -14,6 +14,7 @@ subpackage = bc
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	AbsorbingDampers.hh \
 	BoundaryCondition.hh \
 	BoundaryCondition.icc \
 	Dirichlet.hh \

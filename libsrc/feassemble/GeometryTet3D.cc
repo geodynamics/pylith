@@ -23,8 +23,15 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::GeometryTet3D::GeometryTet3D(void) :
-  CellGeometry(3, 3, 4)
+  CellGeometry(TETRAHEDRON, 3)
 { // constructor
+  const double vertices[] = {
+    -1.0,  -1.0,  -1.0,
+    +1.0,  -1.0,  -1.0,
+    -1.0,  +1.0,  -1.0,
+    -1.0,  -1.0,  +1.0,
+  };
+  _setVertices(vertices, 4, 3);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -34,18 +41,11 @@ pylith::feassemble::GeometryTet3D::~GeometryTet3D(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::feassemble::GeometryTet3D::GeometryTet3D(const GeometryTet3D& g) :
-  CellGeometry(3, 3, 4)
-{ // constructor
-} // constructor
-
-// ----------------------------------------------------------------------
 // Create a copy of geometry.
 pylith::feassemble::CellGeometry*
 pylith::feassemble::GeometryTet3D::clone(void) const
 { // clone
-  return new GeometryTet3D(*this);
+  return new GeometryTet3D();
 } // clone
 
 // ----------------------------------------------------------------------

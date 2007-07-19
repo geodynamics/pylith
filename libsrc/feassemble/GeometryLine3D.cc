@@ -23,8 +23,13 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::GeometryLine3D::GeometryLine3D(void) :
-  CellGeometry(1, 3, 2)
+  CellGeometry(LINE, 3)
 { // constructor
+  const double vertices[] = {
+    -1.0,
+    +1.0,
+  };
+  _setVertices(vertices, 2, 1);
 } // constructor
 
 // ----------------------------------------------------------------------

@@ -374,8 +374,7 @@ pylith::faults::TestFaultCohesiveKin::_initialize(ALE::Obj<ALE::Mesh>* mesh,
     cs.setSpaceDim((*mesh)->getDimension());
     cs.initialize();
 
-    _quadrature->initialize(_data->verticesRef, 
-			    _data->basis, _data->basisDeriv, _data->quadPts,
+    _quadrature->initialize(_data->basis, _data->basisDeriv, _data->quadPts,
 			    _data->quadWts, _data->cellDim, _data->numBasis,
 			    _data->numQuadPts, _data->spaceDim);
 

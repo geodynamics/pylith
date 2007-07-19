@@ -23,8 +23,14 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::GeometryTri2D::GeometryTri2D(void) :
-  CellGeometry(2, 2, 3)
+  CellGeometry(TRIANGLE, 2)
 { // constructor
+  const double vertices[] = {
+    -1.0,  -1.0,
+    +1.0,  -1.0,
+    -1.0,  +1.0,
+  };
+  _setVertices(vertices, 3, 2);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -34,18 +40,11 @@ pylith::feassemble::GeometryTri2D::~GeometryTri2D(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::feassemble::GeometryTri2D::GeometryTri2D(const GeometryTri2D& g) :
-  CellGeometry(2, 2, 3)
-{ // constructor
-} // constructor
-
-// ----------------------------------------------------------------------
 // Create a copy of geometry.
 pylith::feassemble::CellGeometry*
 pylith::feassemble::GeometryTri2D::clone(void) const
 { // clone
-  return new GeometryTri2D(*this);
+  return new GeometryTri2D();
 } // clone
 
 // ----------------------------------------------------------------------

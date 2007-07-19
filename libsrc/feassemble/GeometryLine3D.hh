@@ -65,6 +65,12 @@ public :
 		const double_array& vertices,
 		const double_array& location) const;
 
+  // NOT IMPLEMENTED ////////////////////////////////////////////////////
+private :
+
+  GeometryLine3D(const GeometryLine3D&); ///< Not implemented
+  const GeometryLine3D& operator=(const GeometryLine3D&); ///< Not implemented
+
 }; // GeometryLine3D
 
 #endif // pylith_feassemble_geometryline3d_hh

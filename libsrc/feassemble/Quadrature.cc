@@ -44,7 +44,6 @@ pylith::feassemble::Quadrature::~Quadrature(void)
 // Copy constructor
 pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
   _minJacobian(q._minJacobian),
-  _vertices(q._vertices),
   _quadPtsRef(q._quadPtsRef),
   _quadPts(q._quadPts),
   _quadWts(q._quadWts),
@@ -68,8 +67,7 @@ pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
 // Set basis functions and their derivatives and coordinates and
 //   weights of the quadrature points.
 void
-pylith::feassemble::Quadrature::initialize(const double* vertices,
-					   const double* basis,
+pylith::feassemble::Quadrature::initialize(const double* basis,
 					   const double* basisDerivRef,
 					   const double* quadPtsRef,
 					   const double* quadWts,
@@ -78,8 +76,7 @@ pylith::feassemble::Quadrature::initialize(const double* vertices,
 					   const int numQuadPts,
 					   const int spaceDim)
 { // initialize
-  if (0 == vertices ||
-      0 == basis ||
+  if (0 == basis ||
       0 == basisDerivRef ||
       0 == quadPtsRef ||
       0 == quadWts ||
@@ -92,25 +89,19 @@ pylith::feassemble::Quadrature::initialize(const double* vertices,
 	<< "their derivatives, and coordinates and weights of quadrature\n"
 	<< "points must all be specified.\n"
 	<< "Values:\n"
-	<< "  vertices pointer: " << vertices << "\n"
 	<< "  basis pointer: " << basis << "\n"
 	<< "  basis derivatites pointer: " << basisDerivRef << "\n"
 	<< "  quadrature points pointer: " << quadPtsRef << "\n"
 	<< "  quadrature weights pointer: " << quadWts << "\n"
 	<< "  space dimension: " << spaceDim << "\n"
-	<< "  # vertices per cell: " << numBasis << "\n"
+	<< "  # basis functions: " << numBasis << "\n"
 	<< "  # quadrature points: " << numQuadPts << "\n"
 	<< "  dimension of coordinate space: " << spaceDim << "\n";
     throw std::runtime_error(msg.str());
   } // if
 
   if (cellDim > 0) {
-    int size = numBasis * cellDim; assert(size > 0);
-    _vertices.resize(size);
-    for (int i=0; i < size; ++i)
-      _vertices[i] = vertices[i];
-
-    size = numBasis * numQuadPts; assert(size > 0);
+    int size = numBasis * numQuadPts; assert(size > 0);
     _basis.resize(size);
     for (int i=0; i < size; ++i)
       _basis[i] = basis[i];
@@ -161,17 +152,12 @@ pylith::feassemble::Quadrature::initialize(const double* vertices,
 	  << "Values:\n"
 	  << "  cell dimension: " << cellDim << "\n"
 	  << "  spatial dimension: " << spaceDim << "\n"
-	  << "  # vertices per cell: " << numBasis << "\n"
+	  << "  # basis functions: " << numBasis << "\n"
 	  << "  # quadrature points: " << numQuadPts << "\n";
       throw std::runtime_error(msg.str());
     } // if
 
     int size = 1;
-    _vertices.resize(size);
-    for (int i=0; i < size; ++i)
-      _vertices[i] = vertices[i];
-
-    size = 1;
     _basis.resize(size);
     for (int i=0; i < size; ++i)
       _basis[i] = basis[i];

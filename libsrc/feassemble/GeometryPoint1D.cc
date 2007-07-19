@@ -21,8 +21,10 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::GeometryPoint1D::GeometryPoint1D(void) :
-  CellGeometry(0, 1, 1)
+  CellGeometry(POINT, 1)
 { // constructor
+  const double vertices[] = { 0.0 };
+  _setVertices(vertices, 1, 1);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -32,18 +34,11 @@ pylith::feassemble::GeometryPoint1D::~GeometryPoint1D(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::feassemble::GeometryPoint1D::GeometryPoint1D(const GeometryPoint1D& g) :
-  CellGeometry(0, 1, 1)
-{ // constructor
-} // constructor
-
-// ----------------------------------------------------------------------
 // Create a copy of geometry.
 pylith::feassemble::CellGeometry*
 pylith::feassemble::GeometryPoint1D::clone(void) const
 { // clone
-  return new GeometryPoint1D(*this);
+  return new GeometryPoint1D();
 } // clone
 
 // ----------------------------------------------------------------------

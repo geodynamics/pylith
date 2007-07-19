@@ -2,8 +2,6 @@
 CURRENT ISSUES
 ======================================================================
 
-  0. add shape to Quadrature
-
   1. Memory analyzing.
 
      Matt is working on buildTopology(), stratify(), restrict(), and

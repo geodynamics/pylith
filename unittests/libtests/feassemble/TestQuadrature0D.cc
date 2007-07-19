@@ -36,7 +36,6 @@ pylith::feassemble::TestQuadrature0D::testPoint(void)
   const int numBasis = 1;
   const int numQuadPts = 1;
   const int spaceDim = 1;
-  const double verticesRef[] = { 0.0 };
   const double basis[] = { 1.0 };
   const double basisDeriv[] = { 1.0 };
   const double quadPtsRef[] = { 0.0 };
@@ -56,8 +55,8 @@ pylith::feassemble::TestQuadrature0D::testPoint(void)
   Quadrature0D quadrature;
 
   quadrature.minJacobian(minJacobian);
-  quadrature.initialize(verticesRef, basis, basisDeriv, quadPtsRef, quadWts,
-		    cellDim, numBasis, numQuadPts, spaceDim);
+  quadrature.initialize(basis, basisDeriv, quadPtsRef, quadWts,
+			cellDim, numBasis, numQuadPts, spaceDim);
 
   // Create mesh with test cell
   ALE::Obj<Mesh> mesh = new Mesh(PETSC_COMM_WORLD, cellDim);

@@ -22,6 +22,7 @@ SUBDIRS = \
 lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
+	bc/AbsorbingDampers.cc \
 	bc/BoundaryCondition.cc \
 	bc/Dirichlet.cc \
 	faults/BruneSlipFn.cc \

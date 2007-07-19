@@ -23,8 +23,15 @@
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::GeometryQuad2D::GeometryQuad2D(void) :
-  CellGeometry(2, 2, 4)
+  CellGeometry(QUADRILATERAL, 2)
 { // constructor
+  const double vertices[] = {
+    -1.0,  -1.0,
+    +1.0,  -1.0,
+    +1.0,  +1.0,
+    -1.0,  +1.0,
+  };
+  _setVertices(vertices, 4, 2);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -34,18 +41,11 @@ pylith::feassemble::GeometryQuad2D::~GeometryQuad2D(void)
 } // destructor
 
 // ----------------------------------------------------------------------
-// Copy constructor.
-pylith::feassemble::GeometryQuad2D::GeometryQuad2D(const GeometryQuad2D& g) :
-  CellGeometry(2, 2, 4)
-{ // constructor
-} // constructor
-
-// ----------------------------------------------------------------------
 // Create a copy of geometry.
 pylith::feassemble::CellGeometry*
 pylith::feassemble::GeometryQuad2D::clone(void) const
 { // clone
-  return new GeometryQuad2D(*this);
+  return new GeometryQuad2D();
 } // clone
 
 // ----------------------------------------------------------------------
