@@ -14,6 +14,8 @@
 #error "CellGeometry.icc must be included only from CellGeometry.hh"
 #else
 
+#include <assert.h> // USES assert()
+
 // Get dimension of cell.
 inline
 int
@@ -34,6 +36,17 @@ int
 pylith::feassemble::CellGeometry::numCorners(void) const {
   return _numCorners;
 } // numCorners
+
+// Compute orientation of cell at location.
+inline
+void
+pylith::feassemble::CellGeometry::orientation(double_array* orientation,
+					      const double_array& jacobian,
+					      const double jacobianDet,
+					      const double_array& upDir) {
+  if (0 != _orientFn)
+    _orientFn(orientation, jacobian, jacobianDet, upDir);
+} // orientation
 
 
 #endif

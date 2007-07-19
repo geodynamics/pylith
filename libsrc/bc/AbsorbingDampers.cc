@@ -12,7 +12,7 @@
 
 #include <portinfo>
 
-#include "Neumann.hh" // implementation of object methods
+#include "AbsorbingDampers.hh" // implementation of object methods
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -23,13 +23,13 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::bc::Neumann::Neumann(void)
+pylith::bc::AbsorbingDampers::AbsorbingDampers(void)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor.
-pylith::bc::Neumann::~Neumann(void)
+pylith::bc::AbsorbingDampers::~AbsorbingDampers(void)
 { // destructor
 } // destructor
 
@@ -37,7 +37,7 @@ pylith::bc::Neumann::~Neumann(void)
 // Initialize boundary condition. Determine orienation and compute traction
 // vector at integration points.
 void
-pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
+pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 				const spatialdata::geocoords::CoordSys* cs,
 				const double_array& upDir);
 { // initialize
@@ -47,32 +47,31 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   assert(0 != cs);
 
   if (3 != upDir.size())
-    throw std::runtime_error("Up direction for surface orientation must be "
+    throw std::runtime_error("Up direction for boundary orientation must be "
 			     "a vector with 3 components.");
 
-  // Extract submesh associated with surface
+  // Extract submesh associated with boundary
   const ALE::Obj<ALE::Mesh> boundaryMesh =
     ALE::Selection<ALE::Mesh>::submesh(mesh, mesh->getIntSection(_label));
   if (boundaryMesh.isNull()) {
     std::ostringstream msg;
-    msg << "Could not construct boundary mesh for Neumann traction "
-	<< "boundary condition '" << _label << "'.";
+    msg << "Could not construct boundary mesh for absorbing boundary "
+	<< "condition '" << _label << "'.";
     throw std::runtime_error(msg.str());
   } // if
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
   const ALE::Obj<sieve_type>& sieve = boundaryMesh->getSieve();
   const ALE::Obj<Mesh::label_sequence>& cells = boundaryMesh->heightStratum(1);
-  const int numCells = cells->size();
 
-  // Create section for traction vector in global coordinates
+  // Get damping constants at each quadrature point
   const int spaceDim = cs->spaceDim();
   const int numQuadPts = _quadrature->numQuadPts();
   const int fiberDim = spaceDim * numQuadPts;
-  _tractionGlobal = new real_section_type(mesh->comm(), mesh->debug());
-  assert(!_tractionGlobal.isNull());
-  _tractionGlobal->setFiberDimension(cells, fiberDim);
-  _tractionGlobal->allocate();
+  _dampingConsts = new real_section_type(mesh->comm(), mesh->debug());
+  assert(!_dampingConsts.isNull());
+  _dampingConsts->setFiberDimension(cells, fiberDim);
+  _dampingConsts->allocate();
 
   const int numBasis = _quadrature->numBasis();
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
@@ -88,17 +87,13 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const ALE::Obj<real_section_type>& coordinates =
     mesh->getRealSection("coordinates");
 
-  // setup database with traction information
-  // NEED TO SET NAMES BASED ON DIMENSION OF BOUNDARY
-  // 1-D problem = {'normal-traction'}
-  // 2-D problem = {'shear-traction', 'normal-traction'}
-  // 3-D problem = {'horiz-shear-traction', 'vert-shear-traction', 'normal-traction'}
+  // open database with material property information
   _db->open();
-  _db->queryVals((const char**) valueNames, numFixedDOF);
+  const char* valuesNames = 
+    (cellDim > 0) ? { "vp", "vs", "density" } : { "vp", "density" };
+  const int numValues = (cellDim > 0) ? 3 : 2;
+  _db->queryVals((const char**) valueNames, numValues);
 
-  // Loop over cells in boundary mesh, compute orientations, and then
-  // compute corresponding traction vector in global coordinates
-  // (store values in _tractionGlobal).
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
@@ -106,17 +101,6 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       ++c_iter) {
     _quadrature->computeGeometry(mesh, coordinates, *c_iter);
     for(int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
-      // Get traction vector in local coordinate system at quadrature point
-
-      // Get orientation of boundary at quadrature point
-      // Call restrict with cell to get face vertices
-      // Compute Jacobian at quadrature point
-      // Compute orientation using Jacobian
-
-      // Rotate traction vector from local coordinate system to global
-      // coordinate system
-
-      // Store traction vector in global coordinate system
     } // for
   } // for
 
@@ -126,7 +110,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 // ----------------------------------------------------------------------
 // Integrate contributions to residual term (r) for operator.
 void
-pylith::bc::Neumann::integrateResidual(
+pylith::bc::AbsorbingDampers::integrateResidual(
 				  const ALE::Obj<real_section_type>& residual,
 				  const ALE::Obj<Mesh>& mesh)
 { // integrateResidual
@@ -136,10 +120,11 @@ pylith::bc::Neumann::integrateResidual(
 // ----------------------------------------------------------------------
 // Integrate contributions to Jacobian matrix (A) associated with
 void
-pylith::bc::Neumann::integrateJacobian(PetscMat* mat,
-				       const double t,
-				       topology::FieldsManager* const fields,
-				       const ALE::Obj<Mesh>& mesh)
+pylith::bc::AbsorbingDampers::integrateJacobian(
+					 PetscMat* mat,
+					 const double t,
+					 topology::FieldsManager* const fields,
+					 const ALE::Obj<Mesh>& mesh)
 { // integrateJacobian
   throw std::logic_error("Not implemented.");
 } // integrateJacobian
@@ -147,7 +132,7 @@ pylith::bc::Neumann::integrateJacobian(PetscMat* mat,
 // ----------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::bc::Neumann::verifyConfiguration(const ALE::Obj<Mesh>& mesh)
+pylith::bc::AbsorbingDampers::verifyConfiguration(const ALE::Obj<Mesh>& mesh)
 { // verifyConfiguration
   throw std::logic_error("Not implemented.");
 } // verifyConfiguration
