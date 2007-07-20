@@ -56,19 +56,49 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 			     "a vector with 3 components.");
 
   // Extract submesh associated with surface
-  const ALE::Obj<ALE::Mesh> boundaryMesh =
+  _boundaryMesh =
     ALE::Selection<ALE::Mesh>::submesh(mesh, mesh->getIntSection(_label));
-  if (boundaryMesh.isNull()) {
+  if (_boundaryMesh.isNull()) {
     std::ostringstream msg;
     msg << "Could not construct boundary mesh for Neumann traction "
 	<< "boundary condition '" << _label << "'.";
     throw std::runtime_error(msg.str());
   } // if
 
+  // check compatibility of quadrature and boundary mesh
+  if (_quadrature->cellDim() != _boundaryMesh->getDimension()) {
+    std::ostringstream msg;
+    msg << "Quadrature is incompatible with cells for Neumann traction "
+	<< "boundary condition '" << _label << "'.\n"
+	<< "Dimension of boundary mesh: " << _boundaryMesh->getDimension()
+	<< ", dimension of quadrature: " << _quadrature->cellDim()
+	<< ".";
+    throw std::runtime_error(msg.str());
+  } // if
+  const int numCorners = _quadrature->numBasis();
+
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  const ALE::Obj<sieve_type>& sieve = boundaryMesh->getSieve();
-  const ALE::Obj<Mesh::label_sequence>& cells = boundaryMesh->heightStratum(1);
-  const int numCells = cells->size();
+  const ALE::Obj<Mesh::label_sequence>& cells = _boundaryMesh->heightStratum(1);
+  const Mesh::label_sequence::iterator cellsBegin = cells->begin();
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Make sure surface cells are compatible with quadrature.
+  const ALE::Obj<sieve_type>& sieve = _boundaryMesh->getSieve();
+  assert(!sieve.isNull());
+  for (Mesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    const int cellNumCorners = sieve->nCone(*c_iter, mesh->depth())->size();
+    if (numCorners != cellNumCorners) {
+      std::ostringstream msg;
+      msg << "Quadrature is incompatible with cell for Neumann traction "
+	  << "boundary condition '" << _label << "'.\n"
+	  << "Cell " << *c_iter << " has " << cellNumCorners
+	  << " vertices but quadrature reference cell has "
+	  << numCorners << " vertices.";
+      throw std::runtime_error(msg.str());
+    } // if
+  } // for
 
   // Create section for traction vector in global coordinates
   const int cellDim = _quadrature->cellDim();
@@ -90,7 +120,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   double_array orientation(orientationSize);
   double_array cellVertices(numBasis*spaceDim);
 
-  // Set up orientation information
+  // Get mesh coordinates.
   const ALE::Obj<real_section_type>& coordinates =
     mesh->getRealSection("coordinates");
 
@@ -135,10 +165,10 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   // Loop over cells in boundary mesh, compute orientations, and then
   // compute corresponding traction vector in global coordinates
   // (store values in _tractionGlobal).
-  for(Mesh::label_sequence::iterator c_iter = cells->begin();
-      c_iter != cells->end();
+  for(Mesh::label_sequence::iterator c_iter = cellsBegin;
+      c_iter != cellsEnd;
       ++c_iter) {
-    _quadrature->computeGeometry(mesh, coordinates, *c_iter);
+    _quadrature->computeGeometry(_boundaryMesh, coordinates, *c_iter);
     mesh->restrict(coordinates, *c_iter, &cellVertices[0], cellVertices.size());
     const double_array& quadPts = _quadrature->quadPts();
 
@@ -185,9 +215,77 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 void
 pylith::bc::Neumann::integrateResidual(
 				  const ALE::Obj<real_section_type>& residual,
+				  const double t,
+				  topology::FieldsManager* const fields,
 				  const ALE::Obj<Mesh>& mesh)
 { // integrateResidual
-  throw std::logic_error("Not implemented.");
+  assert(0 != _quadrature);
+  assert(!_boundaryMesh.isNull());
+  assert(!residual.isNull());
+  assert(0 != fields);
+  assert(!mesh.isNull());
+
+  PetscErrorCode err = 0;
+
+  // Get cell information
+  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+    _boundaryMesh->heightStratum(1);
+  assert(!cells.isNull());
+  const Mesh::label_sequence::iterator cellsBegin = cells->begin();
+  const Mesh::label_sequence::iterator cellsEnd = cells->end();
+
+  // Get sections
+  const ALE::Obj<real_section_type>& coordinates = 
+    mesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+
+  // Get cell geometry information that doesn't depend on cell
+  const int numQuadPts = _quadrature->numQuadPts();
+  const double_array& quadWts = _quadrature->quadWts();
+  assert(quadWts.size() == numQuadPts);
+  const int numBasis = _quadrature->numBasis();
+  const int spaceDim = _quadrature->spaceDim();
+  const int cellDim = _quadrature->cellDim();
+
+  // Allocate vectors for cell values.
+  _initCellVector();
+  const int cellVecSize = numBasis*spaceDim;
+  double_array tractionCell(numQuadPts*spaceDim);
+
+  // Loop over faces and integrate contribution from each face
+  for (Mesh::label_sequence::iterator c_iter=cellsBegin;
+       c_iter != cellsEnd;
+       ++c_iter) {
+    // Compute geometry information for current cell
+    _quadrature->computeGeometry(_boundaryMesh, coordinates, *c_iter);
+
+    // Reset element vector to zero
+    _resetCellVector();
+
+    // Restrict tractions to cell
+    _boundaryMesh->restrict(_tractionGlobal, *c_iter, 
+			    &tractionCell[0], tractionCell.size());
+
+    // Get cell geometry information that depends on cell
+    const double_array& basis = _quadrature->basis();
+    const double_array& jacobianDet = _quadrature->jacobianDet();
+
+    // Compute action for traction bc terms
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      const double wt = quadWts[iQuad] * jacobianDet[iQuad];
+      for (int iBasis=0; iBasis < numBasis; ++iBasis) {
+        const double valI = wt*basis[iQuad*numBasis+iBasis];
+        for (int jBasis=0; jBasis < numBasis; ++jBasis) {
+          const double valIJ = valI * basis[iQuad*numBasis+jBasis];
+          for (int iDim=0; iDim < spaceDim; ++iDim)
+            _cellVector[iBasis*spaceDim+iDim] += 
+	      tractionCell[iQuad*spaceDim+iDim] *
+	      valIJ * (- dispTpdtCell[jBasis*spaceDim+iDim] 
+		       + dispTmdtCell[jBasis*spaceDim+iDim]);
+        } // for
+      } // for
+    } // for
+    err = PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+5*spaceDim))));
 } // integrateResidual
 
 // ----------------------------------------------------------------------

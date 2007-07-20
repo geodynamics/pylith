@@ -63,9 +63,13 @@ public :
   /** Integrate contributions to residual term (r) for operator.
    *
    * @param residual Field containing values for residual
+   * @param t Current time
+   * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
+			 const double t,
+			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -98,6 +102,9 @@ private :
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  /// Mesh over which tractions are applied
+  ALE::Obj<Mesh> _boundaryMesh;
 
   /// Traction vector in global coordinates at integration points.
   ALE::Obj<real_section_type> _tractionGlobal;
