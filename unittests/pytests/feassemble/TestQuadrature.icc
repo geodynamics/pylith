@@ -46,7 +46,7 @@ pylith::feassemble::TestQuadrature::spaceDim(const Quadrature& q) {
 inline
 const double*
 pylith::feassemble::TestQuadrature::vertices(const Quadrature& q) {
-  return &q._vertices[0];
+  return &q._geometry->vertices()[0];
 }
 
 // Get basis functions evaluated at quadrature points.
