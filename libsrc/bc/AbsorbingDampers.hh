@@ -29,21 +29,21 @@
  * Contributions from elasticity include the intertial and stiffness
  * terms, so this object computes the following portions of A and r:
  *
- * A = 1/(dt*dt) [M]
+ * A = 1/(2*dt) [C]
  *
- * r = (1/(dt*dt) [M])(- {u(t+dt)} + 2/(dt*dt){u(t)} - {u(t-dt)}) - [K]{u(t)}
+ * r = (1/(2*dt) [C])(- {u(t+dt)} + {u(t-dt)})
  *
- * Translational inertia.
+ * Damping matrix.
  *   - Residual action over cell
  *     \f[
- *       \int_{V^e} \rho N^p \sum_q N^q u_i^q \, dV
+ *       \int_{S^e} \rho c_i N^p \sum_q N^q u_i^q \, dS
  *     \f]
  *   - Jacobian action over cell
  *     \f[
- *       \int_{V^e} (\rho N^q N^q)_i \, dV
+ *       \int_{S^e} (\rho c_i N^q N^q)_i \, dS
  *     \f]
  *
- * See governing equations section of user manual for more
+ * See boundary conditions section of user manual for more
  * information.
  */
 
@@ -94,9 +94,13 @@ public :
   /** Integrate contributions to residual term (r) for operator.
    *
    * @param residual Field containing values for residual
+   * @param t Current time
+   * @param fields Solution fields
    * @param mesh Finite-element mesh
    */
   void integrateResidual(const ALE::Obj<real_section_type>& residual,
+			 const double t,
+			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 
   /** Integrate contributions to Jacobian matrix (A) associated with
@@ -129,6 +133,9 @@ private :
 
   // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private :
+
+  /// Mesh of absorbing boundary
+  ALE::Obj<Mesh> _boundaryMesh;
 
   /// Damping constants in global coordinates at integration points.
   ALE::Obj<real_section_type> _dampingConsts;
