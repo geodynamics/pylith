@@ -35,32 +35,6 @@ KNOWN DEFICIENCIES
     relative to orientation and if orientation coincides with
     preexisting constraint, then constrain Lagrange multiplier DOF.
 
-----------------------------------------------------------------------
-List of missing features (EqSim/PyLith 0.8) and new features.
-
-    Missing features
-      EqSim
-        Absorbing boundaries
-        Dynamic fault interface conditions
-        Fault constitutive models
-        Output of surface/fault information
-      PyLith 0.8
-        Traction boundary conditions
-        Viscoelastic material models (several)
-        Output of stress/strain information
-
-    New features
-      EqSim
-        Multiple cell types
-        1-D and 2-D simulations
-        Importing of meshes from CUBIT
-	Exporting to VTK files
-        Availability as open-source with documentation
-      PyLith 0.8
-        Dislocation-based fault implementation
-        Importing of meshes from CUBIT and LaGriT
-        User-friendly specification of boundary conditions and parameters
-
 ======================================================================
 MAIN PRIORITIES (Brad)
 ======================================================================
