@@ -22,6 +22,7 @@
 #define pylith_feassemble_pytestquadrature_hh
 
 #include "pylith/feassemble/Quadrature.hh"
+#include "pylith/feassemble/CellGeometry.hh"
 
 /// Namespace for spatialdata package
 namespace pylith {
