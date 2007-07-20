@@ -279,13 +279,12 @@ pylith::bc::Neumann::integrateResidual(
           const double valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] += 
-	      tractionCell[iQuad*spaceDim+iDim] *
-	      valIJ * (- dispTpdtCell[jBasis*spaceDim+iDim] 
-		       + dispTmdtCell[jBasis*spaceDim+iDim]);
+	      tractionCell[iQuad*spaceDim+iDim] * valIJ;
         } // for
       } // for
     } // for
-    err = PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+5*spaceDim))));
+    err = PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
+  } // for
 } // integrateResidual
 
 // ----------------------------------------------------------------------
