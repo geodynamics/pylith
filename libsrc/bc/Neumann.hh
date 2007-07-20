@@ -23,6 +23,7 @@
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
 #include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
+#include "pylith/utils/sievetypes.hh" // USES real_section_type
 
 /// Namespace for pylith package
 namespace pylith {
@@ -103,7 +104,7 @@ private :
 
 }; // class Neumann
 
-#include "Neumann.icc" // inline methods
+// #include "Neumann.icc" // inline methods
 
 #endif // pylith_bc_neumann_hh
 

@@ -18,7 +18,8 @@ subpkginclude_HEADERS = \
 	BoundaryCondition.hh \
 	BoundaryCondition.icc \
 	Dirichlet.hh \
-	Dirichlet.icc
+	Dirichlet.icc \
+	Neumann.hh
 
 noinst_HEADERS =
 
