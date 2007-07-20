@@ -25,6 +25,7 @@ libpylith_la_SOURCES = \
 	bc/AbsorbingDampers.cc \
 	bc/BoundaryCondition.cc \
 	bc/Dirichlet.cc \
+	bc/Neumann.cc \
 	faults/BruneSlipFn.cc \
 	faults/CohesiveTopology.cc \
 	faults/EqKinSrc.cc \

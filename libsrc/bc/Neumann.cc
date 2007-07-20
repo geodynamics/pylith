@@ -14,8 +14,13 @@
 
 #include "Neumann.hh" // implementation of object methods
 
+#include "pylith/feassemble/Quadrature.hh" // USES Quadrature
+#include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
+
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+
+#include <Selection.hh> // USES submesh algorithms
 
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -39,7 +44,7 @@ pylith::bc::Neumann::~Neumann(void)
 void
 pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 				const spatialdata::geocoords::CoordSys* cs,
-				const double_array& upDir);
+				const double_array& upDir)
 { // initialize
   assert(0 != _quadrature);
   assert(0 != _db);
@@ -66,30 +71,30 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int numCells = cells->size();
 
   // Create section for traction vector in global coordinates
-  const int spaceDim = cs->spaceDim();
   const int cellDim = _quadrature->cellDim();
+  const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
+  const int spaceDim = cs->spaceDim();
   const int fiberDim = spaceDim * numQuadPts;
   _tractionGlobal = new real_section_type(mesh->comm(), mesh->debug());
   assert(!_tractionGlobal.isNull());
   _tractionGlobal->setFiberDimension(cells, fiberDim);
-  _tractionGlobal->allocate();
+  mesh->allocate(_tractionGlobal);
 
-  const int numBasis = _quadrature->numBasis();
+  // Containers for orientation information
+  const int orientationSize = spaceDim * spaceDim;
   const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const double_array& verticesRef = _quadrature->vertices();
   const int jacobianSize = (cellDim > 0) ? spaceDim * cellDim : 1;
   double_array jacobian(jacobianSize);
   double jacobianDet = 0;
+  double_array orientation(orientationSize);
   double_array cellVertices(numBasis*spaceDim);
 
   // Set up orientation information
-  const int orientationSize = spaceDim * spaceDim;
-  double_array orientation(orientationSize);
   const ALE::Obj<real_section_type>& coordinates =
     mesh->getRealSection("coordinates");
 
-  // setup database with traction information
+  // open database with traction information
   // NEED TO SET NAMES BASED ON DIMENSION OF BOUNDARY
   // 1-D problem = {'normal-traction'}
   // 2-D problem = {'shear-traction', 'normal-traction'}
@@ -118,58 +123,57 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       assert(0);
     } // switch
 
+  // Containers for database query results and quadrature coordinates in
+  // reference geometry.
+  double_array tractionDataLocal(spaceDim);
+  const double_array& quadPtsRef = _quadrature->quadPtsRef();
+  double_array quadPtRef(spaceDim);
+
+  // Container for cell tractions rotated to global coordinates.
+  double_array cellTractionsGlobal(fiberDim);
+
   // Loop over cells in boundary mesh, compute orientations, and then
   // compute corresponding traction vector in global coordinates
   // (store values in _tractionGlobal).
-  const Mesh::label_sequence::iterator cellsBegin = cells->begin();
-  const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  double_array tractionDataLocal(spaceDim);
-  const feassemble::CellGeometry& cellGeometry = _quadrature->refGeometry();
-  const double_array& quadPtsRef = _quadrature->quadPtsRef();
-  double_array rotatedTraction[spaceDim*numQuadPts];
-
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
     _quadrature->computeGeometry(mesh, coordinates, *c_iter);
     mesh->restrict(coordinates, *c_iter, &cellVertices[0], cellVertices.size());
     const double_array& quadPts = _quadrature->quadPts();
-    for(int iQuad = 0, iQ=iQuad*spaceDim; iQuad < numQuadPts; ++iQuad) {
+
+    for(int iQuad = 0, index=0; iQuad < numQuadPts; ++iQuad, index+=spaceDim) {
       // Get traction vector in local coordinate system at quadrature point
-      int err = _db->query(&tractionDataLocal[0], spaceDim, quadPts[iQ + iQuad],
-			   spaceDim, cs);
+      const int err = _db->query(&tractionDataLocal[0], spaceDim,
+				 &quadPts[index], spaceDim, cs);
+      if (err) {
+	std::ostringstream msg;
+	msg << "Could not find traction values at \n"
+	    << "(";
+	for (int i=0; i < spaceDim; ++i)
+	  msg << " " << quadPts[index+spaceDim];
+	msg << ") for traction boundary condition " << _label << "\n"
+	    << "using spatial database " << _db->label() << ".";
+	throw std::runtime_error(msg.str());
+      } // if
 
-      // Compute Jacobian and determinant at quadrature point
-      double_array quadPt(&quadPtsRef[iQuad*cellDim], cellDim);
-      cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, quadPt);
-      
-      // Get orientation of boundary at quadrature point
+      // Compute Jacobian and determinant at quadrature point, then get
+      // orientation.
+      memcpy(&quadPtRef[0], &quadPtsRef[index], spaceDim*sizeof(double));
+      cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, quadPtRef);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, upDir);
-
-      // Normalize orientation
-      double sum;
-      double_array quadPtOrient(orientationSize);
-      for(int iDim = 0; iDim < spaceDim; ++iDim) {
-	sum = 0.0;
-	for(int jDim = 0, index=iDim*spaceDim; jDim < spaceDim; ++jDim)
-	  sum += pow(orientation[index+jDim], 2);
-	sum =sqrt(sum);
-	assert(sum > 0.0);
-	for (int jDim=0, index=iDim*spaceDim; jDim < spaceDim; ++jDim)
-	  quadPtOrient[index+jDim] = orientation[index+jDim] / sum;
-      } // for
 
       // Rotate traction vector from local coordinate system to global
       // coordinate system
+      cellTractionsGlobal = 0.0;
       for(int iDim = 0; iDim < spaceDim; ++iDim) {
-	sum = 0.0;
-	for(int jDim = 0, index=iDim*spaceDim; jDim < spaceDim; ++jDim)
-	  sum += orientation[index+jDim] * tractionDataLocal[jDim];
-	rotatedTraction[iDim+iQ] = sum;
+	for(int jDim = 0; jDim < spaceDim; ++jDim)
+	  cellTractionsGlobal[iDim] +=
+	    orientation[iDim*spaceDim+jDim] * tractionDataLocal[jDim];
       } // for
 
       // Update tractionGlobal
-      _tractionGlobal->updateAddPoint(*c_iter, &rotatedTraction[0]);
+      mesh->update(_tractionGlobal, *c_iter, &cellTractionsGlobal[0]);
     } // for
   } // for
 
