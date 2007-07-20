@@ -703,24 +703,22 @@ For infinitesimal strains,
 \end_inset
 
  and we have
-\begin_inset Formula \begin{gather*}
+\begin_inset Formula \begin{gather}
 \epsilon_{s_{h}n}=\frac{1}{2}(u_{s_{h},n}+u_{n,s_{h}})\\
 \epsilon_{s_{v}n}=\frac{1}{2}(u_{s_{v},n}+u_{n,s_{v}})\\
-\epsilon_{nn}=u_{n,n}.\end{gather*}
+\epsilon_{nn}=u_{n,n}.\end{gather}
 
 \end_inset
 
 For our propagating plane wave, we recognize that
-\begin_inset Formula \[
-\frac{\partial\vec{u^{t}}(t-\frac{\vec{x}}{c})}{\partial x_{i}}=-\frac{1}{c}\frac{\partial\vec{u^{t}}(t-\frac{\vec{x}}{c})}{\partial t},\]
+\begin_inset Formula \begin{equation}
+\frac{\partial\vec{u^{t}}(t-\frac{\vec{x}}{c})}{\partial x_{i}}=-\frac{1}{c}\frac{\partial\vec{u^{t}}(t-\frac{\vec{x}}{c})}{\partial t},\end{equation}
 
 \end_inset
 
 so that our expressions for the tractions becomes
 \begin_inset Formula \begin{gather}
-T_{s_{h}}=-\frac{\mu}{c}\left\left\left(\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right)\\
-T_{s_{v}}=-\frac{\mu}{c}\left\left \left(\frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right)\right\\\
-T_{n}=-\frac{\lambda+2\mu}{c}\frac{\partial u_{n}(t-\frac{\vec{x}}{c})}{\partial t}-\frac{\lambda}{c}\left(\frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right).\end{gather}
+T_{s_{h}}=-\frac{\mu}{c} \left(\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right).\end{gather}
 
 \end_inset
 
@@ -758,9 +756,7 @@ For the normal traction consider a dilatational wave propagating normal
  in both cases.
  This leads to the following expressions for the tractions:
 \begin_inset Formula \begin{gather}
-T_{s_{h}}=-\rho v_{s}\left\left\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\\
-T_{s_{v}}=-\rho v_{s}\left\left \frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right\\\
-T_{n}=-\rho v_{p}\frac{\partial u_{n}(t-\frac{\vec{x}}{c})}{\partial t}.\end{gather}
+T_{s_{h}}=-\rho v_{s} \frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\end{gather}
 
 \end_inset
 
