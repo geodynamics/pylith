@@ -1,4 +1,4 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
+#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 245
 \begin_document
 \begin_header
@@ -620,7 +620,7 @@ This boundary condition attempts to prevent seismic waves reflecting off
  This boundary condition is simpler than a perfectly matched layer boundary
  condition but does not perform quite as well, especially for surface waves.
  If the waves arriving at the absorbing boundary are relatively small in
- amplitude compared the the amplitudes of primary interest, this boundary
+ amplitude compared to the amplitudes of primary interest, this boundary
  condition gives reasonable results.
 \end_layout
 
@@ -718,7 +718,7 @@ For our propagating plane wave, we recognize that
 
 so that our expressions for the tractions becomes
 \begin_inset Formula \begin{gather}
-T_{s_{h}}=-\frac{\mu}{c} \left(\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right).\end{gather}
+T_{s_{h}}=-\frac{\mu}{c}\left(\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right).\end{gather}
 
 \end_inset
 
@@ -756,7 +756,7 @@ For the normal traction consider a dilatational wave propagating normal
  in both cases.
  This leads to the following expressions for the tractions:
 \begin_inset Formula \begin{gather}
-T_{s_{h}}=-\rho v_{s} \frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\end{gather}
+T_{s_{h}}=-\rho v_{s}\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\end{gather}
 
 \end_inset
 
