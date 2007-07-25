@@ -198,13 +198,13 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       cellTractionsGlobal = 0.0;
       for(int iDim = 0; iDim < spaceDim; ++iDim) {
 	for(int jDim = 0; jDim < spaceDim; ++jDim)
-	  cellTractionsGlobal[iDim] +=
+	  cellTractionsGlobal[iDim+index] +=
 	    orientation[iDim*spaceDim+jDim] * tractionDataLocal[jDim];
       } // for
+    } // for
 
       // Update tractionGlobal
       mesh->update(_tractionGlobal, *c_iter, &cellTractionsGlobal[0]);
-    } // for
   } // for
 
   _db->close();
@@ -284,6 +284,11 @@ pylith::bc::Neumann::integrateResidual(
       } // for
     } // for
     err = PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
+    if (err)
+      throw std::runtime_error("Logging PETSc flops failed.");
+
+    // Assemble cell contribution into field
+    mesh->updateAdd(residual, *c_iter, _cellVector);
   } // for
 } // integrateResidual
 
