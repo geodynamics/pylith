@@ -82,22 +82,28 @@ pylith::bc::TestNeumann::testInitialize(void)
   } // for
 
   // Check traction values
-  const ALE::Obj<ALE::Mesh::label_sequence>& vertices =
-    _boundaryMesh->heightStratum(0);
-  const int numVertices = vertices->size();
-  CPPUNIT_ASSERT_EQUAL(_data.numVertices, numVertices);
-  int i = 0;
-  const int spaceDim = _data.spaceDim;
-  for(Mesh::label_sequance::iterator v_iter =
-	vertices->begin();
-      v_iter != vertices->end();
-      ++v_iter) {
-    const Mesh::real_section_type::value_type *tractionVals =
-      _tractionGlobal->restrictPoint(*v_iter);
-    const double tolerance = 1.0e-06;
-    for(int iDim=0; iDim < spaceDim; ++iDim)
-      CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->tractionVals[i], tractionVals[iDim],
-				   tolerance);
+  numQuadPts = _data->numQuadPts;
+  spaceDim = _data->spaceDim;
+  fiberDim = numQuadPts * spaceDim;
+  double_array tractionCell(fiberDim);
+  int index = 0;
+  const double tolerance = 1.0e-06;
+
+  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+      c_iter != cells->end();
+      ++c_iter) {
+
+    _boundaryMesh->restrict(_tractionGlobal, *c_iter,
+			    &tractionCell[0], tractionCell.size());
+
+    for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+      for (int iDim =0; iDim < spaceDim; ++iDim) {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->tractionCell[index],
+				     tractionCell[iQuad*spaceDim+iDim],
+				     tolerance);
+	++index;
+      } // for
+    } // for
   } // for
 
 } // testInitialize
@@ -107,44 +113,45 @@ pylith::bc::TestNeumann::testInitialize(void)
 void
 pylith::bc::TestNeumann::testIntegrateResidual(void)
 { // testIntegrateResidual
-  ALE::Obj<Mesh> mesh;
-  Neumann bc;
-
-  _initialize(&mesh, &bc);
-  const ALE::Obj<real_section_type>& residual = fields->getReal("residual");
-  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
-  fields->addReal("dispTBctpdt");
-  fields->copyLayout("residual");
-  const double t = 0.0;
-
   CPPUNIT_ASSERT(0 != _data);
 
-  const int numCells = mesh->heightStratum(0)->size();
-  const int offset = numCells;
-  int iConstraint = 0;
-  for (Mesh::label_sequence::iterator v_iter = vertices->begin();
-       v_iter != vertices->end();
-       ++v_iter) {
-    if (*v_iter != _data->constrainedPoints[iConstraint] + offset) {
-      CPPUNIT_ASSERT_EQUAL(_data->numDOF, field->getFiberDimension(*v_iter));
-      CPPUNIT_ASSERT_EQUAL(0, field->getConstraintDimension(*v_iter));
-    } else {
-      CPPUNIT_ASSERT_EQUAL(_data->numDOF, field->getFiberDimension(*v_iter));
-      CPPUNIT_ASSERT_EQUAL(_data->numFixedDOF, 
-			   field->getConstraintDimension(*v_iter));
-      ++iConstraint;
-    } // if/else
-  } // for
+  ALE::Obj<Mesh> mesh;
+  Neumann bc;
+  Neumann integrator;
+  topology::FieldsManager fields(mesh);
+  _initialize(&mesh, &bc, &fields);
+
+  const ALE::Obj<real_section_type>& residual = fields->getReal("residual");
+  CPPUNIT_ASSERT(!residual.isNull());
+  const double t = 0.0;
+  integrator.integrateResidual(residual, t, &fields, mesh);
+
+  const double* valsE = _data->valsResidual;
+  const int sizeE = _data->spaceDim * _data->numVertices;
+
+  const double* vals = residual->restrict();
+  const int size = residual->sizeWithBC();
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < size; ++i)
+    if (fabs(valsE[i]) > 1.0)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
+    else
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
+
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------
 void
 pylith::bc::TestNeumann::_initialize(ALE::Obj<Mesh>* mesh,
-				       Neumann* const bc) const
+				     Neumann* const bc,
+				     topology::FieldsManager* fields) const
 { // _initialize
   CPPUNIT_ASSERT(0 != _data);
   CPPUNIT_ASSERT(0 != mesh);
   CPPUNIT_ASSERT(0 != bc);
+  CPPUNIT_ASSERT(0 != fields);
   CPPUNIT_ASSERT(0 != _quadrature);
 
   // Set up mesh
@@ -158,6 +165,18 @@ pylith::bc::TestNeumann::_initialize(ALE::Obj<Mesh>* mesh,
   spatialdata::geocoords::CSCart cs;
   cs.setSpaceDim((*mesh)->getDimension());
   cs.initialize();
+
+  // Set up fields
+  fields->addReal("residual");
+  fields->addReal("solution");
+  const ALE::Obj<real_section_type>& residual = fields->getReal("residual");
+ CPPUNIT_ASSERT(!residual.isNull());
+ residual->setFiberDimension((*mesh)->depthStratum(0), _data->spaceDim);
+  (*mesh)->allocate(residual);
+  residual->zero();
+  fields->copyLayout("residual");
+  const ALE::Obj<real_section_type>& solution = fields.getReal("solution");
+  CPPUNIT_ASSERT(!solution.isNull());
 
   // Set up quadrature
   _quadrature->initialize(_data->basis, _data->basisDeriv, _data->quadPts,
