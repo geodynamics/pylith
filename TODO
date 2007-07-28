@@ -153,6 +153,8 @@ THINGS WE NEED SIEVE TO DO (Matt)
 
 1. Boundary mesh
 
+  This works and there is a unit test.
+
 2. Construct mesh with higher order cells from mesh with lower order cells.
 
   Many mesh generators do not know how to construct higher order
@@ -165,6 +167,12 @@ THINGS WE NEED SIEVE TO DO (Matt)
   Output:
     * PETSc Mesh
 
+  This already works. Our code is written in terms of numBasisFuncs, not
+  vertices. Therefore, if we just use the P2 element from FIAT, our only
+  problem is to correctly allocate the section (I think). To do this, we
+  add the appropriate setFiberDimension() call. FIAT has this information,
+  we just are not using it right now.
+
 3. Global refinement of mesh.
 
   Inputs:
@@ -172,6 +180,14 @@ THINGS WE NEED SIEVE TO DO (Matt)
     * refinement factor (limited to factor of 2- 2 or 4)
   Outputs:
     * PETSc Mesh (refined)
+
+  This already works. You just call
+
+  double maxVolume   = 0.01;
+  bool   interpolate = false;
+  ALE::Obj<ALE::Mesh> newMesh = ALE::Generator::refineMesh(oldMesh, maxVolume, interpolate);
+
+  There is another version that takes an array of maxVolumes, one fo each cell in oldMesh.
 
 ======================================================================
 QUESTIONS FOR LEIF

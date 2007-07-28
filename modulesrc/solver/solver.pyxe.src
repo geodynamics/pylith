@@ -291,4 +291,85 @@ cdef class SolverLinear(Solver):
     return
 
 
+# ----------------------------------------------------------------------
+cdef class SolverNonlinear(Solver):
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    Solver.__init__(self)
+    return
+
+
+  def solve(self, fieldOut, jacobian, fieldIn):
+    """
+    Solve nonlinear system.
+    """
+    # create shim for method 'solve'
+    #embed{ int SolverNonlinear_solve(void* objVptr, void* fieldOutVptr, void* jacobianVptr, void* fieldInVptr, void* scatterVptr, void* vecInVptr, void* vecOutVptr)
+    typedef ALE::Mesh::real_section_type real_section_type;
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldOutVptr);
+      assert(0 != jacobianVptr);
+      assert(0 != fieldInVptr);
+      assert(0 != scatterVptr);
+      assert(0 != vecInVptr);
+      assert(0 != vecOutVptr);
+
+      KSP* ksp = (KSP*) objVptr;
+      ALE::Obj<real_section_type>* fieldOut =
+        (ALE::Obj<real_section_type>*) fieldOutVptr;
+      Mat* jacobian = (Mat*) jacobianVptr;
+      ALE::Obj<real_section_type>* fieldIn =
+        (ALE::Obj<real_section_type>*) fieldInVptr;
+      VecScatter scatter = (VecScatter) scatterVptr;
+      Vec vecIn = (Vec) vecInVptr;
+      Vec vecOut = (Vec) vecOutVptr;
+
+      PetscErrorCode err = 0;
+      Vec localVec;
+
+      err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldIn)->sizeWithBC(),
+                                  (*fieldIn)->restrict(), &localVec);CHKERRQ(err);
+      err = VecScatterBegin(scatter, localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD
+                            );CHKERRQ(err);
+      err = VecScatterEnd(scatter, localVec, vecIn, INSERT_VALUES, SCATTER_FORWARD
+                          ); CHKERRQ(err);
+      err = VecDestroy(localVec); CHKERRQ(err);
+      err = KSPSetOperators(*ksp, *jacobian, *jacobian,
+                            DIFFERENT_NONZERO_PATTERN); CHKERRQ(err);
+      err = KSPSolve(*ksp, vecIn, vecOut); CHKERRQ(err);
+      err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldOut)->sizeWithBC(),
+                                (*fieldOut)->restrict(), &localVec);CHKERRQ(err);
+      err = VecScatterBegin(scatter, vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE
+                            ); CHKERRQ(err);
+      err = VecScatterEnd(scatter, vecOut, localVec, INSERT_VALUES, SCATTER_REVERSE
+                          ); CHKERRQ(err);
+      err = VecDestroy(localVec); CHKERRQ(err);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    cdef void* fieldOutVptr
+    cdef void* jacobianVptr
+    cdef void* fieldInVptr
+    fieldOutVptr = PyCObject_AsVoidPtr(fieldOut)
+    jacobianVptr = PyCObject_AsVoidPtr(jacobian)
+    fieldInVptr = PyCObject_AsVoidPtr(fieldIn)
+    SolverNonlinear_solve(self.thisptr, fieldOutVptr, jacobianVptr,
+                          fieldInVptr, self.vecScatterVptr,
+                          self.vecInVptr, self.vecOutVptr)
+    return
+
+
 # End of file 
