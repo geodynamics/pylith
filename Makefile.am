@@ -30,6 +30,10 @@ if ENABLE_DOCUMENTATION
   SUBDIRS += doc
 endif
 
+EXTRA_DIST = \
+	setup.py \
+	archimedes/__init__.py
+
 install-data-hook:
 	top_builddir=`$(am__cd) $(top_builddir) && pwd` && \
 		cd $(top_srcdir) && \
