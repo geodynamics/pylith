@@ -65,7 +65,8 @@ public :
    * @param cs Coordinate system for mesh
    */
   void initialize(const ALE::Obj<ALE::Mesh>& mesh,
-		  const spatialdata::geocoords::CoordSys* cs);
+		  const spatialdata::geocoords::CoordSys* cs,
+		  const double_array& upDir);
 
   /** Set number of degrees of freedom that are constrained at points in field.
    *

@@ -24,6 +24,23 @@
 
 from pyre.components.Component import Component
 
+# Validator for direction
+def validateDir(value):
+  """
+  Validate direction.
+  """
+  msg = "Direction must be a 3 component vector (list)."
+  if not isinstance(value, list):
+    raise ValueError(msg)
+  if 3 != len(value):
+    raise ValueError(msg)
+  try:
+    nums = map(float, value)
+  except:
+    raise ValueError(msg)
+  return value
+
+
 # BoundaryCondition class
 class BoundaryCondition(Component):
   """
@@ -59,6 +76,12 @@ class BoundaryCondition(Component):
 
     label = pyre.inventory.str("label", default="")
     label.meta['tip'] = "Name identifier for object face."
+
+    upDir = pyre.inventory.list("up_dir", default=[0, 0, 1],
+		                validator=validateDir)
+    upDir.meta['tip'] = "Direction perpendicular to horizontal " \
+		        "tangent direction that is not collinear " \
+			"with normal direction."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
     db = pyre.inventory.facility("db", factory=SimpleDB,
@@ -103,7 +126,8 @@ class BoundaryCondition(Component):
     self.db.initialize()
     self.cppHandle.db = self.db.cppHandle    
     self.cppHandle.initialize(self.mesh.cppHandle,
-                              self.mesh.coordsys.cppHandle)
+                              self.mesh.coordsys.cppHandle,
+			      self.upDir)
     return
 
 
@@ -116,6 +140,7 @@ class BoundaryCondition(Component):
     Component._configure(self)
     self.id = self.inventory.id
     self.label = self.inventory.label
+    self.upDir = self.inventory.upDir
     self.db = self.inventory.db
     return
 

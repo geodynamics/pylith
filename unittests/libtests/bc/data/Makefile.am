@@ -21,7 +21,9 @@ noinst_DATA = \
 	tet4.mesh \
 	tet4.spatialdb \
 	hex8.mesh \
-	hex8.spatialdb
+	hex8.spatialdb \
+	hex8b.mesh \
+	hex8b.spatialdb
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/unittests/libtests/bc/data

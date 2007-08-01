@@ -71,6 +71,7 @@ public :
 protected :
 
   NeumannData* _data; ///< Data for testing
+  feassemble::Quadrature* _quadrature; ///< Data used in testing.
 
   // PRIVATE METHODS ////////////////////////////////////////////////////
 private :
@@ -82,6 +83,9 @@ private :
    */
   void _initialize(ALE::Obj<ALE::Mesh>* mesh,
 		   Neumann* const bc) const;
+		   // Maybe need to deal with fields in integrateResidual.
+		   // Neumann* const bc,
+		   // topology::FieldsManager* fields) const;
 
 }; // class TestNeumann
 

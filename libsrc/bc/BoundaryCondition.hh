@@ -97,7 +97,8 @@ public :
    */
   virtual
   void initialize(const ALE::Obj<ALE::Mesh>& mesh,
-		  const spatialdata::geocoords::CoordSys* cs) = 0;
+		  const spatialdata::geocoords::CoordSys* cs,
+		  const double_array& upDir) = 0;
 
   // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private :

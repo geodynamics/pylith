@@ -37,7 +37,8 @@ pylith::bc::Dirichlet::~Dirichlet(void)
 // Initialize boundary condition.
 void
 pylith::bc::Dirichlet::initialize(const ALE::Obj<ALE::Mesh>& mesh,
-				  const spatialdata::geocoords::CoordSys* cs)
+				  const spatialdata::geocoords::CoordSys* cs,
+				  const double_array& upDir)
 { // initialize
   assert(0 != _db);
   assert(!mesh.isNull());
