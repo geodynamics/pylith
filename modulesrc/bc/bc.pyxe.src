@@ -66,12 +66,12 @@ cdef class BoundaryCondition:
     return
 
 
-  def initialize(self, mesh, cs):
+  def initialize(self, mesh, cs, upDir):
     """
     Initialize boundary condition.
     """
     # create shim for method 'initialize'
-    #embed{ void BoundaryCondition_initialize(void* objVptr, void* meshVptr, void* csVptr)
+    #embed{ void BoundaryCondition_initialize(void* objVptr, void* meshVptr, void* csVptr, double* upDirPtr)
     try {
       assert(0 != objVptr);
       assert(0 != meshVptr);
@@ -79,7 +79,11 @@ cdef class BoundaryCondition:
       ALE::Obj<ALE::Mesh>* mesh = (ALE::Obj<ALE::Mesh>*) meshVptr;
       spatialdata::geocoords::CoordSys* cs =
         (spatialdata::geocoords::CoordSys*) csVptr;
-      ((pylith::bc::BoundaryCondition*) objVptr)->initialize(*mesh, cs);
+      pylith::double_array upDir(3);
+      upDir[0] = upDirPtr[0];
+      upDir[1] = upDirPtr[1];
+      upDir[2] = upDirPtr[2];
+      ((pylith::bc::BoundaryCondition*) objVptr)->initialize(*mesh, cs, upDir);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -100,7 +104,14 @@ cdef class BoundaryCondition:
       raise TypeError, \
             "Argument must be extension module type " \
             "'spatialdata::geocoords::CoordSys'."
-    BoundaryCondition_initialize(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs))
+    if 3 != len(upDir):
+      raise TypeError, \
+            "Argument 'upDir' must be a 3 vector (list)."
+    cdef double upDirCpp[3]
+    upDirCpp[0] = upDir[0]
+    upDirCpp[1] = upDir[1]
+    upDirCpp[2] = upDir[2]
+    BoundaryCondition_initialize(self.thisptr, ptrFromHandle(mesh), ptrFromHandle(cs), upDirCpp)
     return
 
 

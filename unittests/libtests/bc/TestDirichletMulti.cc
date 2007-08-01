@@ -184,12 +184,14 @@ pylith::bc::TestDirichletMulti::_initialize(ALE::Obj<Mesh>* mesh,
   db.ioHandler(&dbIO);
 
   int_array fixedDOFA(_data->fixedDOFA, _data->numFixedDOFA);
+  const double upDirVals[] = { 0.0, 0.0, 1.0 };
+  double_array upDir(upDirVals, 3);
 
   bcA->id(_data->idA);
   bcA->label(_data->labelA);
   bcA->db(&db);
   bcA->fixedDOF(fixedDOFA);
-  bcA->initialize(*mesh, &cs);
+  bcA->initialize(*mesh, &cs, upDir);
 
   // Setup boundary condition B
   dbIO.filename(_data->dbFilenameB);
@@ -201,7 +203,7 @@ pylith::bc::TestDirichletMulti::_initialize(ALE::Obj<Mesh>* mesh,
   bcB->label(_data->labelB);
   bcB->db(&db);
   bcB->fixedDOF(fixedDOFB);
-  bcB->initialize(*mesh, &cs);
+  bcB->initialize(*mesh, &cs, upDir);
 } // _initialize
 
 

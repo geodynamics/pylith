@@ -10,27 +10,36 @@
 // ======================================================================
 //
 
-#include "DirichletData.hh"
+#include "NeumannData.hh"
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::bc::DirichletData::DirichletData(void) :
-  numDOF(0),
-  numFixedDOF(0),
-  numConstrainedPts(0),
+pylith::bc::NeumannData::NeumannData(void) :
+  meshFilename(0),
+  spaceDim(0),
+  cellDim(0),
+  numBasis(0),
+  numQuadPts(0),
+  quadPts(0),
+  quadWts(0),
+  basis(0),
+  basisDeriv(0),
+  verticesRef(0),
   id(0),
   label(0),
-  fixedDOF(0),
-  constrainedPoints(0),
-  values(0),
-  meshFilename(0),
-  dbFilename(0)
+  dbFilename(0),
+  numBoundaryCells(0),
+  numVertices(0),
+  numCorners(0),
+  cells(0),
+  tractionCell(0),
+  valsResidual(0)
 { // constructor
 } // constructor
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::bc::DirichletData::~DirichletData(void)
+pylith::bc::NeumannData::~NeumannData(void)
 { // destructor
 } // destructor
 

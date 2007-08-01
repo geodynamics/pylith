@@ -279,12 +279,14 @@ pylith::bc::TestDirichlet::_initialize(ALE::Obj<Mesh>* mesh,
   db.ioHandler(&dbIO);
 
   int_array fixedDOF(_data->fixedDOF, _data->numFixedDOF);
+  const double upDirVals[] = { 0.0, 0.0, 1.0 };
+  double_array upDir(upDirVals, 3);
 
   bc->id(_data->id);
   bc->label(_data->label);
   bc->db(&db);
   bc->fixedDOF(fixedDOF);
-  bc->initialize(*mesh, &cs);
+  bc->initialize(*mesh, &cs, upDir);
 } // _initialize
 
 
