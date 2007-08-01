@@ -46,7 +46,6 @@ class pylith::bc::TestNeumann : public CppUnit::TestFixture
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestNeumann );
   CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST_SUITE_END();
 
   // PUBLIC METHODS /////////////////////////////////////////////////////
@@ -83,9 +82,6 @@ private :
    */
   void _initialize(ALE::Obj<ALE::Mesh>* mesh,
 		   Neumann* const bc) const;
-		   // Maybe need to deal with fields in integrateResidual.
-		   // Neumann* const bc,
-		   // topology::FieldsManager* fields) const;
 
 }; // class TestNeumann
 
