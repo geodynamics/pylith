@@ -10,49 +10,59 @@
 // ======================================================================
 //
 
-#if !defined(pylith_bc_dirichletdatahex8_hh)
-#define pylith_bc_dirichletdatahex8_hh
+#if !defined(pylith_bc_neumanndatahex8_hh)
+#define pylith_bc_neumanndatahex8_hh
 
-#include "DirichletData.hh"
+#include "NeumannData.hh"
 
 namespace pylith {
   namespace bc {
-     class DirichletDataHex8;
+     class NeumannDataHex8;
   } // pylith
 } // bc
 
-class pylith::bc::DirichletDataHex8 : public DirichletData
+class pylith::bc::NeumannDataHex8 : public NeumannData
 {
 
 // PUBLIC METHODS ///////////////////////////////////////////////////////
 public: 
 
   /// Constructor
-  DirichletDataHex8(void);
+  NeumannDataHex8(void);
 
   /// Destructor
-  ~DirichletDataHex8(void);
+  ~NeumannDataHex8(void);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
-  static const int _numDOF; ///< Number of degrees of freedom at each point.
+  // Quadrature information
+  static const char* _meshFilename; ///< Filename of input mesh.
+  static const int _spaceDim; ///< Dimension of mesh.
+  static const int _cellDim; ///< Dimension of surface cells.
+  static const int _numBasis; ///< Number of basis functions for surface cells.
+  static const int _numQuadPts; ///< Number of quadrature points per boundary cell.
+  static const double _quadPts[]; ///< Coordinates of quadrature points in ref cell.
+  static const double _quadWts[]; ///< Weights of quadrature points.
+  static const double _basis[]; ///< Cell basis functions at quad points.
+  static const double _basisDeriv[]; ///< Derivatives of cell basis functions at quad points.
+  static const double _verticesRef[]; ///< Coordinates of vertices in ref cell (dual basis).
 
-  static const int _numFixedDOF; ///< Number of fixedDOF at constrained points.
-  static const int _numConstrainedPts; ///< Number of points constrained.
-
+  // BC information
   static const int _id; ///< Boundary condition identifier
   static const char* _label; /// Label for boundary condition group
-
-  static const int _fixedDOF[]; ///< Degrees of freedom constrained at points
-
-  static const int _constrainedPoints[]; ///< Array of indices of constrained pts.
-  static const double _values[]; ///< Values at constrained points.
-
-  static const char* _meshFilename; ///< Filename of input mesh.
   static const char* _dbFilename; ///< Filename of simple spatial database.
+
+  // Calculated values.
+  static const int _numBoundaryCells; ///< Expected number of cells on Neumann boundary.
+  static const int _numVertices; ///< Expected number of vertices in the mesh.
+  static const int _numCorners[]; ///< Expected number of vertices for each boundary cell.
+  static const int _cells[]; ///< Expected array of vertices defining each boundary cell.
+  static const double _tractionCell[]; ///< Expected traction values at quadrature points.
+  static const double _valsResidual[]; ///< Expected residual at each vertex.
+
 };
 
-#endif // pylith_bc_dirichletdatahex8_hh
+#endif // pylith_bc_neumanndatahex8_hh
 
 // End of file
