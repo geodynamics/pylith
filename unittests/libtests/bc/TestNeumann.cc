@@ -200,6 +200,7 @@ pylith::bc::TestNeumann::_initialize(ALE::Obj<Mesh>* mesh,
 
   bc->id(_data->id);
   bc->label(_data->label);
+  bc->quadrature(_quadrature);
   bc->db(&db);
   bc->initialize(*mesh, &cs, upDir);
 } // _initialize
