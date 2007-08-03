@@ -22,8 +22,8 @@
 #include "BoundaryCondition.hh" // ISA BoundaryCondition
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
-#include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
-#include "pylith/utils/sievetypes.hh" // USES real_section_type
+// #include "pylith/utils/array.hh" // USES std::vector, double_array, int_array
+// #include "pylith/utils/sievetypes.hh" // USES real_section_type
 
 /// Namespace for pylith package
 namespace pylith {

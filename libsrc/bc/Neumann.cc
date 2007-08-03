@@ -16,9 +16,12 @@
 
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
+#include "pylith/topology/FieldsManager.hh" // USES FieldsManager
+#include "pylith/utils/array.hh" // USES double_array
+#include <petscmat.h> // USES PETSc Mat
 
-#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
+#include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include <Selection.hh> // USES submesh algorithms
 
@@ -157,7 +160,8 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   // reference geometry.
   double_array tractionDataLocal(spaceDim);
   const double_array& quadPtsRef = _quadrature->quadPtsRef();
-  double_array quadPtRef(spaceDim);
+  // double_array quadPtRef(spaceDim);
+  const double_array& quadPts = _quadrature->quadPts();
 
   // Container for cell tractions rotated to global coordinates.
   double_array cellTractionsGlobal(fiberDim);
@@ -170,18 +174,17 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       ++c_iter) {
     _quadrature->computeGeometry(_boundaryMesh, coordinates, *c_iter);
     mesh->restrict(coordinates, *c_iter, &cellVertices[0], cellVertices.size());
-    const double_array& quadPts = _quadrature->quadPts();
 
-    for(int iQuad = 0, index=0; iQuad < numQuadPts; ++iQuad, index+=spaceDim) {
+    for(int iQuad = 0, iRef=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Get traction vector in local coordinate system at quadrature point
       const int err = _db->query(&tractionDataLocal[0], spaceDim,
-				 &quadPts[index], spaceDim, cs);
+				 &quadPts[iSpace], spaceDim, cs);
       if (err) {
 	std::ostringstream msg;
 	msg << "Could not find traction values at \n"
 	    << "(";
 	for (int i=0; i < spaceDim; ++i)
-	  msg << " " << quadPts[index+spaceDim];
+	  msg << " " << quadPts[i+iSpace];
 	msg << ") for traction boundary condition " << _label << "\n"
 	    << "using spatial database " << _db->label() << ".";
 	throw std::runtime_error(msg.str());
@@ -189,7 +192,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
       // Compute Jacobian and determinant at quadrature point, then get
       // orientation.
-      memcpy(&quadPtRef[0], &quadPtsRef[index], spaceDim*sizeof(double));
+      double_array quadPtRef(&quadPtsRef[iRef], cellDim);
       cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, quadPtRef);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, upDir);
 
@@ -198,7 +201,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       cellTractionsGlobal = 0.0;
       for(int iDim = 0; iDim < spaceDim; ++iDim) {
 	for(int jDim = 0; jDim < spaceDim; ++jDim)
-	  cellTractionsGlobal[iDim+index] +=
+	  cellTractionsGlobal[iDim+iSpace] +=
 	    orientation[iDim*spaceDim+jDim] * tractionDataLocal[jDim];
       } // for
     } // for
