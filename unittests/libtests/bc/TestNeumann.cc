@@ -21,6 +21,7 @@
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
+#include <Selection.hh> // USES submesh algorithms
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
@@ -72,25 +73,33 @@ pylith::bc::TestNeumann::testInitialize(void)
   const ALE::Obj<Mesh::label_sequence>& cells = bc._boundaryMesh->heightStratum(1);
   const int numBoundaryCells = cells->size();
   CPPUNIT_ASSERT_EQUAL(_data->numBoundaryCells, numBoundaryCells);
+  const ALE::Obj<real_section_type>& coordinates =
+    mesh->getRealSection("coordinates");
+  coordinates->view("Mesh coordinates from TestNeumann::testInitialize");
+
+  const int spaceDim = _data->spaceDim;
+  const int numBasis = bc._quadrature->numBasis();
+  double_array cellVertices(numBasis*spaceDim);
   int iCell = 0;
-  int i = 0;
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
     const int numCorners = sieve->nCone(*c_iter, mesh->depth())->size();
     CPPUNIT_ASSERT_EQUAL(_data->numCorners[iCell++], numCorners);
-    const ALE::Obj<sieve_type::traits::coneSequence>& cone =
-      sieve->cone(*c_iter);
-    for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
-        v_iter != cone->end();
-        ++v_iter)
-      CPPUNIT_ASSERT_EQUAL(_data->cells[i++], *v_iter);
+    const real_section_type::value_type* cellVert = mesh->restrict(coordinates, *c_iter);
+    std::cout << "c_iter " << *c_iter << " vertex coords:" << std::endl;
+    for(int iVert = 0; iVert < numCorners; ++iVert) {
+      for(int iDim = 0; iDim < spaceDim; ++iDim) {
+	cellVertices[iDim+spaceDim*iVert] = cellVert[iDim+spaceDim*iVert];
+        std::cout << "  " << cellVertices[iDim+spaceDim*iVert];
+      } // for
+    std::cout << std::endl;
+    } // for
   } // for
 
   // Check traction values
-  int numQuadPts = _data->numQuadPts;
-  int spaceDim = _data->spaceDim;
-  int fiberDim = numQuadPts * spaceDim;
+  const int numQuadPts = _data->numQuadPts;
+  const int fiberDim = numQuadPts * spaceDim;
   double_array tractionCell(fiberDim);
   int index = 0;
   const double tolerance = 1.0e-06;

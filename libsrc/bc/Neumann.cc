@@ -19,6 +19,7 @@
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
 #include "pylith/utils/array.hh" // USES double_array
 #include <petscmat.h> // USES PETSc Mat
+#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -81,12 +82,14 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int numCorners = _quadrature->numBasis();
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
+  const ALE::Obj<sieve_type>& sieve = _boundaryMesh->getSieve();
   const ALE::Obj<Mesh::label_sequence>& cells = _boundaryMesh->heightStratum(1);
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
+  std::cout << "cellsBegin:  " << *cellsBegin << std::endl;
+  std::cout << "cellsEnd:  " << *cellsEnd << std::endl;
 
   // Make sure surface cells are compatible with quadrature.
-  const ALE::Obj<sieve_type>& sieve = _boundaryMesh->getSieve();
   assert(!sieve.isNull());
   for (Mesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
@@ -126,6 +129,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   // Get mesh coordinates.
   const ALE::Obj<real_section_type>& coordinates =
     mesh->getRealSection("coordinates");
+  coordinates->view("Mesh coordinates from Neumann::initialize");
 
   // open database with traction information
   // NEED TO SET NAMES BASED ON DIMENSION OF BOUNDARY
@@ -161,7 +165,6 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   double_array tractionDataLocal(spaceDim);
   const double_array& quadPtsRef = _quadrature->quadPtsRef();
   // double_array quadPtRef(spaceDim);
-  const double_array& quadPts = _quadrature->quadPts();
 
   // Container for cell tractions rotated to global coordinates.
   double_array cellTractionsGlobal(fiberDim);
@@ -172,8 +175,20 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   for(Mesh::label_sequence::iterator c_iter = cellsBegin;
       c_iter != cellsEnd;
       ++c_iter) {
+    std::cout << "c_iter:  " << *c_iter << std::endl;
     _quadrature->computeGeometry(_boundaryMesh, coordinates, *c_iter);
-    mesh->restrict(coordinates, *c_iter, &cellVertices[0], cellVertices.size());
+    const double_array& quadPts = _quadrature->quadPts();
+    const real_section_type::value_type* cellVert = mesh->restrict(coordinates, *c_iter);
+    // For some reason this method doesn' work.  I need to find out why.
+    // mesh->restrict(coordinates, *c_iter, &cellVertices[0], cellVertices.size());
+    std::cout << "cellVertices:  " << std::endl;
+    for(int iTest = 0; iTest < numBasis; ++iTest) {
+      for(int iDim = 0; iDim < spaceDim; ++iDim) {
+	cellVertices[iDim+spaceDim*iTest] = cellVert[iDim+spaceDim*iTest];
+	std::cout << "  " << cellVertices[iDim+spaceDim*iTest];
+      } // for
+      std::cout << std::endl;
+    } // for
 
     for(int iQuad = 0, iRef=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Get traction vector in local coordinate system at quadrature point
@@ -195,6 +210,16 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       double_array quadPtRef(&quadPtsRef[iRef], cellDim);
       cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, quadPtRef);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, upDir);
+
+      // Normalize orientation.
+      for(int iDim=0; iDim < spaceDim; ++iDim) {
+	double mag = 0.0;
+	for(int jDim=0; jDim < spaceDim; ++jDim)
+	  mag += orientation[iDim*spaceDim+jDim]*orientation[iDim*spaceDim+jDim];
+	mag = sqrt(mag);
+	for(int jDim=0; jDim < spaceDim; ++jDim)
+	  orientation[iDim*spaceDim+jDim] /= mag;
+      } // for
 
       // Rotate traction vector from local coordinate system to global
       // coordinate system
