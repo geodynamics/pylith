@@ -94,7 +94,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   for (Mesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = sieve->nCone(*c_iter, mesh->depth())->size();
+    const int cellNumCorners = sieve->nCone(*c_iter, _boundaryMesh->depth()-1)->size();
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell for Neumann traction "
@@ -129,7 +129,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   // Get mesh coordinates.
   const ALE::Obj<real_section_type>& coordinates =
     mesh->getRealSection("coordinates");
-  coordinates->view("Mesh coordinates from Neumann::initialize");
+  // coordinates->view("Mesh coordinates from Neumann::initialize");
 
   // open database with traction information
   // NEED TO SET NAMES BASED ON DIMENSION OF BOUNDARY
@@ -175,20 +175,19 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   for(Mesh::label_sequence::iterator c_iter = cellsBegin;
       c_iter != cellsEnd;
       ++c_iter) {
-    std::cout << "c_iter:  " << *c_iter << std::endl;
+    // std::cout << "c_iter:  " << *c_iter << std::endl;
     _quadrature->computeGeometry(_boundaryMesh, coordinates, *c_iter);
     const double_array& quadPts = _quadrature->quadPts();
-    const real_section_type::value_type* cellVert = mesh->restrict(coordinates, *c_iter);
-    // For some reason this method doesn' work.  I need to find out why.
-    // mesh->restrict(coordinates, *c_iter, &cellVertices[0], cellVertices.size());
+    _boundaryMesh->restrict(coordinates, *c_iter, &cellVertices[0], cellVertices.size());
+    /* Debugging stuff
     std::cout << "cellVertices:  " << std::endl;
     for(int iTest = 0; iTest < numBasis; ++iTest) {
       for(int iDim = 0; iDim < spaceDim; ++iDim) {
-	cellVertices[iDim+spaceDim*iTest] = cellVert[iDim+spaceDim*iTest];
 	std::cout << "  " << cellVertices[iDim+spaceDim*iTest];
       } // for
       std::cout << std::endl;
     } // for
+    */
 
     for(int iQuad = 0, iRef=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Get traction vector in local coordinate system at quadrature point
@@ -232,7 +231,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     } // for
 
       // Update tractionGlobal
-      mesh->update(_tractionGlobal, *c_iter, &cellTractionsGlobal[0]);
+      _boundaryMesh->update(_tractionGlobal, *c_iter, &cellTractionsGlobal[0]);
   } // for
 
   _db->close();

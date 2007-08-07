@@ -84,14 +84,15 @@ pylith::bc::TestNeumann::testInitialize(void)
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
-    const int numCorners = sieve->nCone(*c_iter, mesh->depth())->size();
+    const int numCorners = sieve->nCone(*c_iter, bc._boundaryMesh->depth()-1)->size();
     CPPUNIT_ASSERT_EQUAL(_data->numCorners[iCell++], numCorners);
-    const real_section_type::value_type* cellVert = mesh->restrict(coordinates, *c_iter);
+    bc._boundaryMesh->restrict(coordinates, *c_iter, &cellVertices[0], cellVertices.size());
     std::cout << "c_iter " << *c_iter << " vertex coords:" << std::endl;
     for(int iVert = 0; iVert < numCorners; ++iVert) {
       for(int iDim = 0; iDim < spaceDim; ++iDim) {
-	cellVertices[iDim+spaceDim*iVert] = cellVert[iDim+spaceDim*iVert];
         std::cout << "  " << cellVertices[iDim+spaceDim*iVert];
+	// Need to get vertex info and put it in data, then put in a
+	// CPPUNIT_ASSERT_DOUBLES_EQUAL
       } // for
     std::cout << std::endl;
     } // for
