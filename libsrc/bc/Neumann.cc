@@ -188,6 +188,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       std::cout << std::endl;
     } // for
     */
+    cellTractionsGlobal = 0.0;
 
     for(int iQuad = 0, iRef=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Get traction vector in local coordinate system at quadrature point
@@ -222,7 +223,6 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
       // Rotate traction vector from local coordinate system to global
       // coordinate system
-      cellTractionsGlobal = 0.0;
       for(int iDim = 0; iDim < spaceDim; ++iDim) {
 	for(int jDim = 0; jDim < spaceDim; ++jDim)
 	  cellTractionsGlobal[iDim+iSpace] +=
@@ -233,6 +233,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       // Update tractionGlobal
       _boundaryMesh->update(_tractionGlobal, *c_iter, &cellTractionsGlobal[0]);
   } // for
+  _tractionGlobal->view("Global tractions from Neumann::initialize");
 
   _db->close();
 } // initialize

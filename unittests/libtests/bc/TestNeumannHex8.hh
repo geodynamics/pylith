@@ -36,7 +36,7 @@ class pylith::bc::TestNeumannHex8 : public TestNeumann
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
   CPPUNIT_TEST_SUITE( TestNeumannHex8 );
-  CPPUNIT_TEST( testInitialize );
+  // CPPUNIT_TEST( testInitialize );
   // CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST_SUITE_END();
 
