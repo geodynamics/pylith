@@ -15,7 +15,8 @@
 ## @brief Python application to generate a spatial database based on
 ## specified Euler poles at a given set of points.
 
-import os, re, sys
+import os, re, sys, math
+import numpy
 
 from pyre.applications.Script import Script as Application
 
@@ -41,15 +42,13 @@ class Euler(Application):
     ## @li \b points_datum Datum used for point coordinates.
     ## @li \b points_zone UTM zone used for point coordinates.
     ## *** Leave these out for now and replace with inventory of projector.
-    ## @li \b points_offset_east East offset of point coords from UTM coords.
-    ## @li \b points_offset_north North offset of point coords from UTM coords.
     ## @li \b euler_lat Latitude of Euler pole.
     ## @li \b euler_lon Longitude of Euler pole.
     ## @li \b euler_rot Rotation value for Euler pole (CCW positive).
     ##
     ## \b Facilities
     ## @li \b src_coordsys Coordinate system to convert from.
-    ## @li \b dest_coord_sys Coordinate system to convert to.
+    ## @li \b dest_coordsys Coordinate system to convert to.
     ## @li \b projector Projector for coordinate systems.
     ## @li None
 
@@ -57,14 +56,16 @@ class Euler(Application):
     from pyre.units.angle import deg
     from pyre.units.length import m
 
-    from spatialdata.geocoords.CSCart import CSCart
+    from spatialdata.geocoords.CSGeoLocalCart import CSGeoLocalCart
     srcCoordSys = pyre.inventory.facility("src_coordsys",
-                                          family="src_coordsys", factory=CSCart)
+                                          family="src_coordsys",
+                                          factory=CSGeoLocalCart)
     srcCoordSys.meta['tip'] = "Source coordinate system."
 
     from spatialdata.geocoords.CSGeo import CSGeo
     destCoordSys = pyre.inventory.facility("dest_coordsys",
-                                          family="dest_coordsys", factory=CSGeo)
+                                           family="dest_coordsys",
+                                           factory=CSGeo)
     destCoordSys.meta['tip'] = "Destination coordinate system."
 
     from spatialdata.geocoords.Projector import Projector
@@ -90,21 +91,8 @@ class Euler(Application):
                                          default="points.spatialdb")
     pointsSpatialDB.meta['tip'] = "Filename of output spatial database."
 
-    # pointsDatum = pyre.inventory.str("points_datum", default="WGS84")
-    # pointsDatum.meta['tip'] = "Datum used for point coordinates."
-
-    # pointsZone = pyre.inventory.int("points_zone", default=11)
-    # pointsZone.meta['tip'] = "UTM zone used for point coordinates."
-
-    pointsOffsetEast = pyre.inventory.dimensional("points_offset_east",
-                                                  default=0.0*m)
-    pointsOffsetEast.meta['tip'] = \
-                                 "East offset of point coords from UTM coords."
-
-    pointsOffsetNorth = pyre.inventory.dimensional("points_offset_north",
-                                                   default=0.0*m)
-    pointsOffsetNorth.meta['tip'] = \
-                                  "North offset of point coords from UTM coords."
+    upDir = pyre.inventory.list("up_dir", default=[0, 0, 1])
+    upDir.meta['tip'] = "Up-dip or up direction."
 
     eulerLat = pyre.inventory.dimensional("euler_lat", default=0.0*deg)
     eulerLat.meta['tip'] = "Latitude of Euler pole."
@@ -123,6 +111,10 @@ class Euler(Application):
     self.numPoints = 0
     self.pointsUTM = []
     self.normals = []
+    self.eulerPole = numpy.array([0.0, 0.0, 0.0])
+    # Note that we use a mean radius since we are doing rotations on a
+    # spherical Earth.
+    self.earthRad = 63727954.77598
     return
 
 
@@ -150,13 +142,23 @@ class Euler(Application):
     self.bcType = self.inventory.bcType
     self.pointsFile = self.inventory.pointsFile
     self.pointsSpatialDB = self.inventory.pointsSpatialDB
-    # self.pointsDatum = self.inventory.pointsDatum
-    # self.pointsZone = self.inventory.pointsZone
-    self.pointsOffsetEast = self.inventory.pointsOffsetEast
-    self.pointsOffsetNorth = self.inventory.pointsOffsetNorth
+    self.upDir = self.inventory.upDir
     self.eulerLat = self.inventory.eulerLat
     self.eulerLon = self.inventory.eulerLon
     self.eulerRot = self.inventory.eulerRot
+
+    lat = self.eulerLat.value
+    lon = self.eulerLon.value
+    rot = self.eulerRot.value
+    clat = math.cos(lat)
+    slat = math.sin(lat)
+    clon = math.cos(lon)
+    slon = math.sin(lon)
+    # Note that the Euler pole already includes the earth radius term.
+    self.eulerPole[0] = self.earthRad * rot * clat * clon
+    self.eulerPole[1] = self.earthRad * rot * clat * slon
+    self.eulerPole[2] = self.earthRad * rot * slat
+    
     return
 
 
@@ -187,35 +189,90 @@ class Euler(Application):
     """
     Computes dislocations/displacements from Euler pole and writes to spatial DB.
     """
-    import numpy
-    #  Need to fix from here.
-    #  Create a numpy array from the pointsUTM list, but I need to save
-    #  the original list.
-    #  Use convert to convert to geographic, then loop over the points.
-    #  First, compute displacement (velocity) vectors in global coordinates,
-    #  then convert to (E, N, U) coordinates, and then, for dislocations,
-    #  convert to fault-local coordinates and write results to spatial
-    #  database.
-    
-    pointSize = 6
-    coordUTM = [0.0, 0.0]
-    normal = [0.0, 0.0, 0.0]
-    for point in range(self.numPoints):
-      cstart = point * pointSize
-      nstart = cstart + 3
-      coordUTM[0] = self.data[cstart] + self.pointsOffsetEast
-      coordUTM[1] = self.data[cstart+1] + self.pointsOffsetNorth
-      normal = self.data[nstart:nstart + 2]
 
+    # Get lat/lon values corresponding to UTM points.
+    self.srcCoordSys.initialize()
+    self.destCoordSys.initialize()
+
+    from spatialdata.geocoords.Converter import convert
+    pointsLL = numpy.array(self.pointsUTM).reshape(self.numPoints,
+                                                   self.spatialDim-1)
+    convert(pointsLL, self.destCoordSys, self.srcCoordSys)
+
+    normalsArr = numpy.array(self.normals).reshape(self.numPoints,
+                                                   self.spatialDim)
     
+    iCount = 0
+    for point in range(self.numPoints):
+      velocity = self._euler2Velocity(pointsLL[point])
+      if self.bcType == 'dislocation':
+        self._localTrans(velocity, pointsLL[point], normalsArr[point])
+      for comp in range(self.spatialDim):
+        f.write(' %15e' % self.pointsUTM[iCount + comp])
+      for comp in range(self.spatialDim):
+        f.write(' %15e' % self.normals[iCount + comp])
+      f.write('\n')
+      iCount += 3
+    return
+
+
+  def _localTrans(self, velocity, pointsLL, normalsArr)
+  """
+  Performs an in-place transformation on velocity vector to local coords.
+  """
+  # This function will need to partially duplicate the functionaliry of the
+  # CellGeometry _orient2D function.
+    
+
+  def _euler2Velocity(self, pointsLL):
+    """
+    Computes velocities in local Cartesian system from rotation about an
+    Euler pole.
+    """
+    from pyre.units.angle import deg
+    lonDeg = pointsLL[0]*deg
+    latDeg = pointsLL[1]*deg
+    lonPoint = lonDeg.value
+    latPoint = latDeg.value
+    clat = math.cos(latPoint)
+    slat = math.sin(latPoint)
+    clon = math.cos(lonPoint)
+    slon = math.sin(lonPoint)
+    pX = clat * clon
+    pY = clat * slon
+    pZ = slat
+    pointPole = numpy.array([pX, pY, pZ])
+    velGlobal = numpy.cross(self.eulerPole, pointPole)
+    rotMatrix = self._makeRot(latPoint, lonPoint)
+    velNED = numpy.dot(rotMatrix, velGlobal)
+    return velNED
+    
+      
+  def _makeRot(latPoint, lonPoint)
+  """
+  Compute rotation matrix for a given geographic coordinates.
+  """
+  slat = math.sin(latPoint)
+  clat = math.cos(latPoint)
+  slon = math.sin(lonPoint)
+  clon = math.cos(lonPoint)
+  vec1 = [ -slat * clon, -slat * slon,  clat]
+  vec2 = [        -slon,         clon,   0.0]
+  vec3 = [ -clat * clon, -clat * slon, -slat]
+  rotMatrix = numpy.array([vec1, vec2, vec3])
+  return rotMatrix
+
+
   def _readPoints(self):
+    """
+    Reads point coordinates and normals from a file.
+    """
     f = file(self.pointsFile)
     for line in f.readlines():
       if not line.startswith('#'):
         data = line.split()
         # self.data.append([float(number) for number in line.split()])
-        self.pointsUTM.append(float(data[0]+self.pointsOffsetEast)
-        self.pointsUTM.append(float(data[1]+self.pointsOffsetNorth)
+        self.pointsUTM.append(float(data[0:1])
         self.normals.append(float(data[3:5])
         self.numPoints += 1
     f.close() 
