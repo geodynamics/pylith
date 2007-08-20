@@ -78,7 +78,7 @@ class Euler(Application):
     spatialDim = pyre.inventory.int("spatial_dim", default=3)
     spatialDim.meta['tip'] = "Spatial dimension of coordinates."
 
-    dataDim = pyre.inventory.int("data_dim", default=2)
+    dataDim = pyre.inventory.int("data_dim", default=3)
     dataDim.meta['tip'] = "Dimension of data."
 
     bcType = pyre.inventory.str("bc_type", default="dislocation")
@@ -210,7 +210,7 @@ class Euler(Application):
       for comp in range(self.spatialDim):
         f.write(' %15e' % self.pointsUTM[iCount + comp])
       for comp in range(self.spatialDim):
-        f.write(' %15e' % self.normals[iCount + comp])
+        f.write(' %15e' % self.velocity[point, comp])
       f.write('\n')
       iCount += 3
     return
