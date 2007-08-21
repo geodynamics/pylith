@@ -15,7 +15,7 @@
 ## @brief Python application to generate a spatial database based on
 ## specified Euler poles at a given set of points.
 
-import os, re, sys, math
+import math
 import numpy
 
 from pyre.applications.Script import Script as Application
@@ -38,10 +38,9 @@ class Euler(Application):
     ## @li \b spatial_dim Spatial dimension of coordinates.
     ## @li \b data_dim Dimension of data.
     ## @li \b points_file Filename of file containing point coordinates.
-    ## *** Leave these out for now and replace with inventory of projector.
-    ## @li \b points_datum Datum used for point coordinates.
-    ## @li \b points_zone UTM zone used for point coordinates.
-    ## *** Leave these out for now and replace with inventory of projector.
+    ## @li \b east_dir Vector defining east direction.
+    ## @li \b north_dir Vector defining north direction.
+    ## @li \b up_dir Vector defining up direction.
     ## @li \b euler_lat Latitude of Euler pole.
     ## @li \b euler_lon Longitude of Euler pole.
     ## @li \b euler_rot Rotation value for Euler pole (CCW positive).
@@ -91,8 +90,14 @@ class Euler(Application):
                                          default="points.spatialdb")
     pointsSpatialDB.meta['tip'] = "Filename of output spatial database."
 
+    eastDir = pyre.inventory.list("east_dir", default=[1, 0, 0])
+    eastDir.meta['tip'] = "East direction."
+
+    northDir = pyre.inventory.list("north_dir", default=[0, 1, 0])
+    northDir.meta['tip'] = "North direction."
+
     upDir = pyre.inventory.list("up_dir", default=[0, 0, 1])
-    upDir.meta['tip'] = "Up-dip or up direction."
+    upDir.meta['tip'] = "Up direction."
 
     eulerLat = pyre.inventory.dimensional("euler_lat", default=0.0*deg)
     eulerLat.meta['tip'] = "Latitude of Euler pole."
@@ -142,6 +147,8 @@ class Euler(Application):
     self.bcType = self.inventory.bcType
     self.pointsFile = self.inventory.pointsFile
     self.pointsSpatialDB = self.inventory.pointsSpatialDB
+    self.eastDir = self.inventory.eastDir
+    self.northDir = self.inventory.northDir
     self.upDir = self.inventory.upDir
     self.eulerLat = self.inventory.eulerLat
     self.eulerLon = self.inventory.eulerLon
@@ -158,6 +165,11 @@ class Euler(Application):
     self.eulerPole[0] = self.earthRad * rot * clat * clon
     self.eulerPole[1] = self.earthRad * rot * clat * slon
     self.eulerPole[2] = self.earthRad * rot * slat
+
+    self.eastVec = numpy.array(self.eastDir)
+    self.northVec = numpy.array(self.northDir)
+    self.upVec = numpy.array(self.upDir)
+    self.mesh2ENU = numpy.vstack((self.eastVec, self.northVec, self.upVec))
     
     return
 
@@ -206,22 +218,34 @@ class Euler(Application):
     for point in range(self.numPoints):
       velocity = self._euler2Velocity(pointsLL[point])
       if self.bcType == 'dislocation':
-        self._localTrans(velocity, pointsLL[point], normalsArr[point])
+        self._localTrans(velocity, normalsArr[point])
       for comp in range(self.spatialDim):
         f.write(' %15e' % self.pointsUTM[iCount + comp])
       for comp in range(self.spatialDim):
-        f.write(' %15e' % self.velocity[point, comp])
+        f.write(' %15e' % velocity[point, comp])
       f.write('\n')
       iCount += 3
     return
 
 
-  def _localTrans(self, velocity, pointsLL, normalsArr)
-  """
-  Performs an in-place transformation on velocity vector to local coords.
-  """
-  # This function will need to partially duplicate the functionaliry of the
-  # CellGeometry _orient2D function.
+  def _localTrans(self, velocity, normalsArr):
+    """
+    Performs an in-place transformation on velocity vector to local coords.
+    """
+    # This function will need to partially duplicate the functionaliry of the
+    # CellGeometry _orient2D function.
+    mag = math.sqrt(numpy.dot(normalsArr, normalsArr))
+    normalsArr /= mag
+
+    # Along-strike direction -> cross product of up and normal
+    alongStrike = numpy.cross(self.upVec, normalsArr)
+
+    # Up-dip direction -> cross product of normal and along-strike
+    upDip = numpy.cross(normalsArr, alongStrike)
+
+    rot = numpy.vstack((alongStrike, upDip, normalsArr))
+    velocity = numpy.dot(rot, velocity)
+    return
     
 
   def _euler2Velocity(self, pointsLL):
@@ -245,22 +269,25 @@ class Euler(Application):
     velGlobal = numpy.cross(self.eulerPole, pointPole)
     rotMatrix = self._makeRot(latPoint, lonPoint)
     velNED = numpy.dot(rotMatrix, velGlobal)
-    return velNED
+    # NOTE:  I should rearrange the rotation matrix so this transformation
+    # isn't necessary.
+    velENU = numpy.array([velNED(1), velNED(0), -velNED(2)])
+    return velENU
     
       
-  def _makeRot(latPoint, lonPoint)
-  """
-  Compute rotation matrix for a given geographic coordinates.
-  """
-  slat = math.sin(latPoint)
-  clat = math.cos(latPoint)
-  slon = math.sin(lonPoint)
-  clon = math.cos(lonPoint)
-  vec1 = [ -slat * clon, -slat * slon,  clat]
-  vec2 = [        -slon,         clon,   0.0]
-  vec3 = [ -clat * clon, -clat * slon, -slat]
-  rotMatrix = numpy.array([vec1, vec2, vec3])
-  return rotMatrix
+  def _makeRot(self, latPoint, lonPoint):
+    """
+    Compute rotation matrix for a given geographic coordinates.
+    """
+    slat = math.sin(latPoint)
+    clat = math.cos(latPoint)
+    slon = math.sin(lonPoint)
+    clon = math.cos(lonPoint)
+    vec1 = [ -slat * clon, -slat * slon,  clat]
+    vec2 = [        -slon,         clon,   0.0]
+    vec3 = [ -clat * clon, -clat * slon, -slat]
+    rotMatrix = numpy.array([vec1, vec2, vec3])
+    return rotMatrix
 
 
   def _readPoints(self):
@@ -272,8 +299,8 @@ class Euler(Application):
       if not line.startswith('#'):
         data = line.split()
         # self.data.append([float(number) for number in line.split()])
-        self.pointsUTM.append(float(data[0:1])
-        self.normals.append(float(data[3:5])
+        self.pointsUTM.append(float(data[0:1]))
+        self.normals.append(float(data[3:5]))
         self.numPoints += 1
     f.close() 
     return
