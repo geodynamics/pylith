@@ -196,6 +196,8 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     level->clear();
     levelNum++;
   }
+  if (debug) std::cout << "Number of faces seen: " << facesSeen.size() << std::endl <<
+    "Number of fault faces: " << fFaces->size() << std::endl;
   assert(facesSeen.size() == fFaces->size());
   for(PointSet::const_iterator f_iter = flippedFaces.begin(); f_iter != flippedFaces.end(); ++f_iter) {
     if (debug) std::cout << "  Reversing fault face " << *f_iter << std::endl;
