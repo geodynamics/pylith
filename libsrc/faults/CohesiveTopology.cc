@@ -196,8 +196,28 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
     level->clear();
     levelNum++;
   }
-  if (debug) std::cout << "Number of faces seen: " << facesSeen.size() << std::endl <<
-    "Number of fault faces: " << fFaces->size() << std::endl;
+  if (facesSeen.size() != fFaces->size()) {
+    std::cout << "Number of faces seen: " << facesSeen.size() << std::endl <<
+      "Number of fault faces: " << fFaces->size() << std::endl;
+    std::cout << "Faces seen: " << std::endl;
+
+    for(PointSet::iterator e_iter = facesSeen.begin(); e_iter != facesSeen.end(); ++e_iter)
+      std::cout << *e_iter << std::endl;
+
+    std::cout << "Fault faces    vertices   elements:" << std::endl;
+    for(Mesh::label_sequence::iterator e_iter = fFaces->begin(); e_iter != fFaces->end(); ++e_iter) {
+      std::cout << "  " << *e_iter;
+      const Obj<sieve_type::traits::coneSequence>& vertices = faultSieve->cone(*e_iter);
+      sieve_type::traits::coneSequence::iterator   vEnd     = vertices->end();
+
+      for(sieve_type::traits::coneSequence::iterator v_iter = vertices->begin(); v_iter != vEnd; ++v_iter)
+	std::cout << "  " << *v_iter;
+      const ALE::Obj<sieve_type::traits::supportSequence>& cells = faultSieve->support(*e_iter);
+      Mesh::point_type cell = *cells->begin();
+      Mesh::point_type otherCell = *(++cells->begin());
+      std::cout << "  " << cell << "  " << otherCell << std::endl;
+    } // for
+  } // if
   assert(facesSeen.size() == fFaces->size());
   for(PointSet::const_iterator f_iter = flippedFaces.begin(); f_iter != flippedFaces.end(); ++f_iter) {
     if (debug) std::cout << "  Reversing fault face " << *f_iter << std::endl;
