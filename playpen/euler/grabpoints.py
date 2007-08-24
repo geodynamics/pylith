@@ -70,8 +70,8 @@ class GrabPoints(Application):
 
 
   def main(self):
-    # import pdb
-    # pdb.set_trace()
+    import pdb
+    pdb.set_trace()
     self._readPset()
     self._grabPoints()
     return
@@ -97,13 +97,13 @@ class GrabPoints(Application):
     """
     f = file(self.psetFile)
     lines = f.readlines()
-    fileLength = len(lines)
-    self.numPoints = lines[1].split()[2]
-    readPoints = 0
-    for line in range(2, fileLength):
-      self.indices.append([int(number) for number in line.split()])
-      readPoints += 1
-    self.assertEqual(readPoints, self.numPoints)
+    line2 = lines[1]
+    self.numPoints = int(line2.split()[2])
+    numLines = len(lines)
+    for lineCount in range(2, numLines):
+      line = lines[lineCount]
+      for number in line.split():
+        self.indices.append(int(number))
     self.indices.sort()
     f.close() 
     return
@@ -121,46 +121,47 @@ class GrabPoints(Application):
     numCells = int(firstline[1])
     numVertAttrs = int(firstline[2])
     vertInd = 0
-    ucdInd = 0
+    ucdInd = 1
     # Get vertex coordinates
     for lineCount in range(1, numVerts+1):
       vertex = self.indices[vertInd]
       if vertex == ucdInd:
-        data = line[lineCount].split()
-        pointCoords.append(float(data[1]), float(data[2]), float(data[3]))
+        data = lines[lineCount].split()
+	for dim in range(1,4):
+          self.pointCoords.append(float(data[dim]))
         vertInd += 1
       ucdInd += 1
 
     # Skip elements and then start reading normals/values and write out
     # the selected values.
-    o = open(self.pointOutput, 'w')
+    o = open(self.pointOutputFile, 'w')
     lineBegin = 2 + numVerts + numCells + numVertAttrs
     lineEnd = lineBegin + numVerts
     vertInd = 0
-    ucdInd = 0
+    ucdInd = 1
     coordCount = 0
     normals = [0.0, 0.0, 0.0]
-    v0 = self.valuesList[0]
-    v1 = self.valuesList[1]
-    v2 = self.valuesList[2]
+    v0 = int(self.valuesList[0])
+    v1 = int(self.valuesList[1])
+    v2 = int(self.valuesList[2])
     for lineCount in range(lineBegin, lineEnd):
       vertex = self.indices[vertInd]
 
       if vertex == ucdInd:
-        data = line[lineCount].split()
+        data = lines[lineCount].split()
         normals = [float(data[v0]), float(data[v1]), float(data[v2])]
 
         for dim in range(3):
-          f.write(' %15e' % self.pointCoords[coordCount + dim])
+          o.write(' %15e' % self.pointCoords[coordCount + dim])
 
         for dim in range(3):
-          f.write(' %15e' % normals[dim])
+          o.write(' %15e' % normals[dim])
 
-        f.write('\n')
+        o.write('\n')
         vertInd += 1
+        coordCount += 3
 
       ucdInd += 1
-      coordCount += 3
 
     f.close() 
     o.close() 
