@@ -43,6 +43,8 @@ class Euler(Application):
     ## @li \b euler_lat Latitude of Euler pole.
     ## @li \b euler_lon Longitude of Euler pole.
     ## @li \b euler_rot Rotation value for Euler pole (CCW positive).
+    ## @li \b dip_slip Allow dip-slip to accomodate non-strike-slip movement.
+    ## @li \b dip_cutoff Cutoff dip below which dip-slip movement is allowed.
     ##
     ## \b Facilities
     ## @li \b src_coordsys Coordinate system to convert from.
@@ -90,7 +92,7 @@ class Euler(Application):
     eulerRot.meta['tip'] = "Rotation of Euler pole (CCW positive)."
 
     dipSlip = pyre.inventory.bool("dip_slip", default=True)
-    dipSlip.meta['tip'] = "Allow dip-slip movement."
+    dipSlip.meta['tip'] = "Allow dip-slip to accomodate non-strike-slip movement."
 
     dipCutoff = pyre.inventory.dimensional("dip_cutoff", default=75.0*deg)
     dipCutoff.meta['tip'] = "Cutoff dip below which dip-slip movement is allowed."
@@ -242,19 +244,26 @@ class Euler(Application):
     # setup.
     dip = numpy.dot(upDip, upVec)
     if self.dipSlip and math.abs(dip) <= self.dipCutoffProj:
+      # Project slip onto strike-slip direction
       strikeSlipProj = numpy.dot(velocity, alongStrike)
-      vtotal = strikeSlipProj * alongStrike
-      vnormal = velocity - vtotal
-      magHoriz = math.sqrt(vnormal[0]*vnormal[0]+vnormal[1]*vnormal[1])
+      vstrikeSlip = strikeSlipProj * alongStrike
+
+      # Horizontal normal movement is the difference between total velocity and
+      # strike-slip velocity.
+      vnormal = velocity - vstrikeSlip
+      magHorizNormal = math.sqrt(vnormal[0]*vnormal[0]+vnormal[1]*vnormal[1])
+
+      # Project horizontal normal movement onto dip-slip direction, then scale so
+      # that horizontal components are equal to block-normal motion.
       dipSlipProj = numpy.dot(vnormal, upDip)
-      vnormal = dipSlipProj * upDip
-      magHoriz2 = math.sqrt(vnormal[0]*vnormal[0]+vnormal[1]*vnormal[1])
-      if magHoriz > 0.0:
-        multFac = magHoriz/magHoriz2
+      vdipSlip = dipSlipProj * upDip
+      magDipSlipHoriz = math.sqrt(vdipSlip[0]*vdipSlip[0]+vdipSlip[1]*vdipSlip[1])
+      if magDipSlipHoriz > 0.0:
+        multFac = magHorizNormal/magDipSlipHoriz
       else:
         multFac = 0.0
-      vdipslip = vtotal + vnormal * multFac
-      vlocal = numpy.dot(rot, vdipslip)
+      vtotal = vstrikeSlip + multFac * vdipSlip
+      vlocal = numpy.dot(rot, vtotal)
     else:
       vlocal = numpy.dot(rot, velocity)
     return vlocal
