@@ -141,8 +141,8 @@ class Euler(Application):
     self.eulerLon = self.inventory.eulerLon
     self.eulerRot = self.inventory.eulerRot
     self.spaceDim = self.srcCoordSys.spaceDim
-    self.dipSlip = self.srcCoordSys.dipSlip
-    self.dipCutoff = self.srcCoordSys.dipCutoff
+    self.dipSlip = self.inventory.dipSlip
+    self.dipCutoff = self.inventory.dipCutoff
 
     lat = self.eulerLat.value
     lon = self.eulerLon.value
@@ -159,7 +159,7 @@ class Euler(Application):
     self.upVec = numpy.array([float(self.upDir[0]), float(self.upDir[1]),
                               float(self.upDir[2])], dtype=float)
 
-    self.dipCutoffProj = math.abs(math.sin(self.dipCutoff.value))
+    self.dipCutoffProj = abs(math.sin(self.dipCutoff.value))
     
     return
 
@@ -242,8 +242,8 @@ class Euler(Application):
 
     # Need to go through this section later to fix it for a generalized coordinate
     # setup.
-    dip = numpy.dot(upDip, upVec)
-    if self.dipSlip and math.abs(dip) <= self.dipCutoffProj:
+    dip = numpy.dot(upDip, self.upVec)
+    if self.dipSlip and abs(dip) <= self.dipCutoffProj:
       # Project slip onto strike-slip direction
       strikeSlipProj = numpy.dot(velocity, alongStrike)
       vstrikeSlip = strikeSlipProj * alongStrike
