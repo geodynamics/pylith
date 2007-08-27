@@ -187,8 +187,8 @@ class Fault(Component):
     Component._configure(self)
     self.id = self.inventory.id
     self.label = self.inventory.label
-    self.upDir = self.inventory.upDir
-    self.normalDir = self.inventory.normalDir
+    self.upDir = map(float, self.inventory.upDir)
+    self.normalDir = map(float, self.inventory.normalDir)
     self.quadrature = self.inventory.quadrature
     self.matDB = self.inventory.matDB
     return
