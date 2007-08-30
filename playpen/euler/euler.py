@@ -97,6 +97,28 @@ class Euler(Application):
     dipCutoff = pyre.inventory.dimensional("dip_cutoff", default=75.0*deg)
     dipCutoff.meta['tip'] = "Cutoff dip below which dip-slip movement is allowed."
 
+    xMin = pyre.inventory.dimensional("x_min", default=-1.0e6*m)
+    xMin.meta['tip'] = "Minimum x-value for which to apply rotation."
+
+    xMax = pyre.inventory.dimensional("x_max", default=1.0e6*m)
+    xMax.meta['tip'] = "Maximum x-value for which to apply rotation."
+
+    yMin = pyre.inventory.dimensional("y_min", default=-1.0e6*m)
+    yMin.meta['tip'] = "Minimum y-value for which to apply rotation."
+
+    yMax = pyre.inventory.dimensional("y_max", default=1.0e6*m)
+    yMax.meta['tip'] = "Maximum y-value for which to apply rotation."
+
+    zMin = pyre.inventory.dimensional("z_min", default=-1.0e6*m)
+    zMin.meta['tip'] = "Minimum z-value for which to apply rotation."
+
+    zMax = pyre.inventory.dimensional("z_max", default=1.0e6*m)
+    zMax.meta['tip'] = "Maximum z-value for which to apply rotation."
+
+    defaultValues = pyre.inventory.list("default_values",
+                                        default=[ 0.0, 0.0, 0.0])
+    defaultValues.meta['tip'] = "Values used for out-of-range points."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -143,6 +165,13 @@ class Euler(Application):
     self.spaceDim = self.srcCoordSys.spaceDim
     self.dipSlip = self.inventory.dipSlip
     self.dipCutoff = self.inventory.dipCutoff
+    self.xMinVal = self.inventory.xMin.value
+    self.xMaxVal = self.inventory.xMax.value
+    self.yMinVal = self.inventory.yMin.value
+    self.yMaxVal = self.inventory.yMax.value
+    self.zMinVal = self.inventory.zMin.value
+    self.zMaxVal = self.inventory.zMax.value
+    self.defaultValues = self.inventory.defaultValues
 
     lat = self.eulerLat.value
     lon = self.eulerLon.value
@@ -205,11 +234,18 @@ class Euler(Application):
                                                                 self.spaceDim)
     
     iCount = 0
+    velocity = [0.0, 0.0, 0.0]
     for point in range(self.numPoints):
-      velocity = self._euler2Velocity(pointsLL[point])
-      if self.bcType == 'dislocation':
-        vlocal = self._localTrans(velocity, normalsArr[point])
-        velocity = vlocal
+      inRange = self._testRange(self.pointsUTM[iCount:iCount+3])
+      if inRange:
+        velocity = self._euler2Velocity(pointsLL[point])
+        if self.bcType == 'dislocation':
+          vlocal = self._localTrans(velocity, normalsArr[point])
+          velocity = vlocal
+      else:
+        velocity[0] = self.defaultValues[0]
+        velocity[1] = self.defaultValues[1]
+        velocity[2] = self.defaultValues[2]
       for dim in range(self.spaceDim):
         f.write(' %15e' % self.pointsUTM[iCount + dim])
       for dim in range(self.dataDim):
@@ -218,6 +254,16 @@ class Euler(Application):
       iCount += 3
     return
 
+
+  def _testRange(self, point):
+    """
+    Checks to see if point is in range.
+    """
+    inRange = point[0] >= self.xMinVal and point[0] <= self.xMaxVal and \
+              point[1] >= self.yMinVal and point[1] <= self.yMaxVal and \
+              point[2] >= self.zMinVal and point[2] <= self.zMaxVal
+    return inRange
+  
 
   def _localTrans(self, velocity, normalsArr):
     """
