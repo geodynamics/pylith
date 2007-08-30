@@ -45,14 +45,21 @@ class Euler(Application):
     ## @li \b euler_rot Rotation value for Euler pole (CCW positive).
     ## @li \b dip_slip Allow dip-slip to accomodate non-strike-slip movement.
     ## @li \b dip_cutoff Cutoff dip below which dip-slip movement is allowed.
+    ## @li \b x_min Minimum x-value for which to apply rotation.
+    ## @li \b x_max Maximum x-value for which to apply rotation.
+    ## @li \b y_min Minimum y-value for which to apply rotation.
+    ## @li \b y_max Maximum y-value for which to apply rotation.
+    ## @li \b z_min Minimum z-value for which to apply rotation.
+    ## @li \b z_max Maximum z-value for which to apply rotation.
+    ## @li \b default_values Values to use for out-of-range coordinates.
     ##
     ## \b Facilities
     ## @li \b src_coordsys Coordinate system to convert from.
     ## @li \b dest_coordsys Coordinate system to convert to.
 
     import pyre.inventory
-    from pyre.units.angle import deg
-    from pyre.units.length import m
+    import pyre.units.angle
+    import pyre.units.length
 
     from spatialdata.geocoords.CSGeoProj import CSGeoProj
     srcCoordSys = pyre.inventory.facility("src_coordsys",
@@ -320,7 +327,7 @@ class Euler(Application):
     Computes velocities in local Cartesian system from rotation about an
     Euler pole.
     """
-    from pyre.units.angle import deg
+    import pyre.units.angle
     lonDeg = pointsLL[0]*deg
     latDeg = pointsLL[1]*deg
     lonPoint = lonDeg.value
