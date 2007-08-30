@@ -105,22 +105,22 @@ class Euler(Application):
     dipCutoff = pyre.inventory.dimensional("dip_cutoff", default=75.0*deg)
     dipCutoff.meta['tip'] = "Cutoff dip below which dip-slip movement is allowed."
 
-    xMin = pyre.inventory.dimensional("x_min", default=-1.0e6*m)
+    xMin = pyre.inventory.dimensional("x_min", default=-1.0e8*m)
     xMin.meta['tip'] = "Minimum x-value for which to apply rotation."
 
-    xMax = pyre.inventory.dimensional("x_max", default=1.0e6*m)
+    xMax = pyre.inventory.dimensional("x_max", default=1.0e8*m)
     xMax.meta['tip'] = "Maximum x-value for which to apply rotation."
 
-    yMin = pyre.inventory.dimensional("y_min", default=-1.0e6*m)
+    yMin = pyre.inventory.dimensional("y_min", default=-1.0e8*m)
     yMin.meta['tip'] = "Minimum y-value for which to apply rotation."
 
-    yMax = pyre.inventory.dimensional("y_max", default=1.0e6*m)
+    yMax = pyre.inventory.dimensional("y_max", default=1.0e8*m)
     yMax.meta['tip'] = "Maximum y-value for which to apply rotation."
 
-    zMin = pyre.inventory.dimensional("z_min", default=-1.0e6*m)
+    zMin = pyre.inventory.dimensional("z_min", default=-1.0e8*m)
     zMin.meta['tip'] = "Minimum z-value for which to apply rotation."
 
-    zMax = pyre.inventory.dimensional("z_max", default=1.0e6*m)
+    zMax = pyre.inventory.dimensional("z_max", default=1.0e8*m)
     zMax.meta['tip'] = "Maximum z-value for which to apply rotation."
 
     defaultValues = pyre.inventory.list("default_values",
