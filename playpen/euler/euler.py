@@ -58,8 +58,9 @@ class Euler(Application):
     ## @li \b dest_coordsys Coordinate system to convert to.
 
     import pyre.inventory
-    import pyre.units.angle
-    import pyre.units.length
+    from pyre.units.angle import deg
+    from pyre.units.length import m
+    from pyre.units.length import km
 
     from spatialdata.geocoords.CSGeoProj import CSGeoProj
     srcCoordSys = pyre.inventory.facility("src_coordsys",
@@ -327,7 +328,7 @@ class Euler(Application):
     Computes velocities in local Cartesian system from rotation about an
     Euler pole.
     """
-    import pyre.units.angle
+    from pyre.units.angle import deg
     lonDeg = pointsLL[0]*deg
     latDeg = pointsLL[1]*deg
     lonPoint = lonDeg.value
