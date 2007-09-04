@@ -58,6 +58,9 @@ class GrabPoints(Application):
     valuesList = pyre.inventory.list("values_list", default=[1, 2, 3])
     valuesList.meta['tip'] = "Position of desired values in UCD attributes."
 
+    outputIndex = pyre.inventory.bool("output_index", default=False)
+    outputIndex.meta['tip'] = "Whether to output vertex indices."
+
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -70,8 +73,8 @@ class GrabPoints(Application):
 
 
   def main(self):
-    import pdb
-    pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
     self._readPset()
     self._grabPoints()
     return
@@ -88,6 +91,7 @@ class GrabPoints(Application):
     self.ucdFile = self.inventory.ucdFile
     self.pointOutputFile = self.inventory.pointOutputFile
     self.valuesList = self.inventory.valuesList
+    self.outputIndex = self.inventory.outputIndex
     return
 
 
@@ -111,7 +115,7 @@ class GrabPoints(Application):
 
   def _grabPoints(self):
     """
-    Reads vertex indices from a pset file.
+    Reads vertex coordinates and vertex attributes from a UCD file.
     """
     f = file(self.ucdFile)
     lines = f.readlines()
@@ -130,6 +134,7 @@ class GrabPoints(Application):
 	for dim in range(1,4):
           self.pointCoords.append(float(data[dim]))
         vertInd += 1
+	vertInd = min([vertInd, len(self.indices) - 1])
       ucdInd += 1
 
     # Skip elements and then start reading normals/values and write out
@@ -151,16 +156,20 @@ class GrabPoints(Application):
         data = lines[lineCount].split()
         normals = [float(data[v0]), float(data[v1]), float(data[v2])]
 
-        for dim in range(3):
-          o.write(' %15e' % self.pointCoords[coordCount + dim])
+	if self.outputIndex:
+	  o.write(' %i' % vertex)
 
         for dim in range(3):
-          o.write(' %15e' % normals[dim])
+          o.write(' %.12e' % self.pointCoords[coordCount + dim])
+
+        for dim in range(3):
+          o.write(' %.12e' % normals[dim])
 
         o.write('\n')
         vertInd += 1
         coordCount += 3
 
+      if vertInd == len(self.indices): break
       ucdInd += 1
 
     f.close() 
