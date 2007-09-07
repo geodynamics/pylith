@@ -74,7 +74,7 @@ class Euler(Application):
                                            factory=CSGeo)
     destCoordSys.meta['tip'] = "Destination coordinate system."
 
-    dataDim = pyre.inventory.int("data_dim", default=3)
+    dataDim = pyre.inventory.int("data_dim", default=2)
     dataDim.meta['tip'] = "Dimension of data."
 
     bcType = pyre.inventory.str("bc_type", default="dislocation")
