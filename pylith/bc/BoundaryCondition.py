@@ -97,6 +97,7 @@ class BoundaryCondition(Component):
     """
     Component.__init__(self, name, facility="boundary_condition")
     self.cppHandle = None
+    self.upDir = [0, 0, 1]
     return
 
 
