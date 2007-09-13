@@ -74,6 +74,7 @@ testfaults_SOURCES += \
 	data/CohesiveDataQuad4e.cc \
 	data/CohesiveDataQuad4f.cc \
 	data/CohesiveDataQuad4g.cc \
+	data/CohesiveDataQuad4h.cc \
 	data/CohesiveDataQuad4Lagrange.cc \
 	data/CohesiveDataTet4.cc \
 	data/CohesiveDataTet4b.cc \
@@ -129,6 +130,7 @@ noinst_HEADERS += \
 	data/CohesiveDataQuad4e.hh \
 	data/CohesiveDataQuad4f.hh \
 	data/CohesiveDataQuad4g.hh \
+	data/CohesiveDataQuad4h.hh \
 	data/CohesiveDataQuad4Lagrange.hh \
 	data/CohesiveDataTet4.hh \
 	data/CohesiveDataTet4b.hh \

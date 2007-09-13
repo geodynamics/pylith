@@ -55,6 +55,7 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture
   CPPUNIT_TEST( testAdjustTopologyQuad4e );
   CPPUNIT_TEST( testAdjustTopologyQuad4f );
   CPPUNIT_TEST( testAdjustTopologyQuad4g );
+  CPPUNIT_TEST( testAdjustTopologyQuad4h );
   CPPUNIT_TEST( testAdjustTopologyTet4 );
   CPPUNIT_TEST( testAdjustTopologyTet4b );
   CPPUNIT_TEST( testAdjustTopologyTet4c );
@@ -126,6 +127,9 @@ public :
 
   /// Test adjustTopology() with 2-D quadrilateral element (vertex on fault).
   void testAdjustTopologyQuad4g(void);
+
+  /// Test adjustTopology() with 2-D quadrilateral element (2 faults).
+  void testAdjustTopologyQuad4h(void);
 
   /// Test adjustTopology() with 3-D tetrahedral element.
   void testAdjustTopologyTet4(void);
@@ -210,6 +214,16 @@ public :
    * @param data Cohesive element data.
    */
   void _testAdjustTopology(Fault* fault,
+			   const CohesiveData& data);
+
+  /** Test adjustTopology().
+   *
+   * @param faultA First fault for cohesive elements.
+   * @param faultB Second fault for cohesive elements.
+   * @param data Cohesive element data.
+   */
+  void _testAdjustTopology(Fault* faultA,
+			   Fault* faultB,
 			   const CohesiveData& data);
 
 }; // class TestFaultCohesive

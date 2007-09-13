@@ -38,6 +38,7 @@ noinst_DATA = \
 	quad4e.mesh \
 	quad4f.mesh \
 	quad4g.mesh \
+	quad4h.mesh \
 	quad4_finalslip.spatialdb \
 	quad4_sliptime.spatialdb \
 	quad4_peakrate.spatialdb \

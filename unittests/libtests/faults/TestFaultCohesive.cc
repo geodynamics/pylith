@@ -36,6 +36,7 @@
 #include "data/CohesiveDataQuad4e.hh" // USES CohesiveDataQuad4e
 #include "data/CohesiveDataQuad4f.hh" // USES CohesiveDataQuad4f
 #include "data/CohesiveDataQuad4g.hh" // USES CohesiveDataQuad4g
+#include "data/CohesiveDataQuad4h.hh" // USES CohesiveDataQuad4h
 #include "data/CohesiveDataTet4.hh" // USES CohesiveDataTet4
 #include "data/CohesiveDataTet4b.hh" // USES CohesiveDataTet4b
 #include "data/CohesiveDataTet4c.hh" // USES CohesiveDataTet4c
@@ -188,7 +189,7 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4e(void)
 // Test adjustTopology() with 2-D quadrilateral element.
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4f(void)
-{ // testAdjustTopologyQuad4fs
+{ // testAdjustTopologyQuad4f
   CohesiveDataQuad4f data;
   FaultCohesiveDyn fault;
   _testAdjustTopology(&fault, data);
@@ -198,11 +199,22 @@ pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4f(void)
 // Test adjustTopology() with 2-D quadrilateral element.
 void
 pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4g(void)
-{ // testAdjustTopologyQuad4gs
+{ // testAdjustTopologyQuad4g
   CohesiveDataQuad4g data;
   FaultCohesiveDyn fault;
   _testAdjustTopology(&fault, data);
 } // testAdjustTopologyQuad4g
+
+// ----------------------------------------------------------------------
+// Test adjustTopology() with 2-D quadrilateral element.
+void
+pylith::faults::TestFaultCohesive::testAdjustTopologyQuad4h(void)
+{ // testAdjustTopologyQuad4h
+  CohesiveDataQuad4h data;
+  FaultCohesiveDyn faultA;
+  FaultCohesiveDyn faultB;
+  _testAdjustTopology(&faultA, &faultB, data);
+} // testAdjustTopologyQuad4h
 
 // ----------------------------------------------------------------------
 // Test adjustTopology() with 3-D tetrahedral element.
@@ -552,5 +564,126 @@ pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* fault,
       CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[i]);
   } // for
 } // _testAdjustTopology
+
+// ----------------------------------------------------------------------
+// Test adjustTopology().
+void
+pylith::faults::TestFaultCohesive::_testAdjustTopology(Fault* faultA,
+						       Fault* faultB,
+						      const CohesiveData& data)
+{ // _testAdjustTopology
+  ALE::Obj<ALE::Mesh> mesh;
+  meshio::MeshIOAscii iohandler;
+  iohandler.filename(data.filename);
+  iohandler.debug(true);
+  iohandler.interpolate(false);
+  iohandler.read(&mesh);
+
+  CPPUNIT_ASSERT(0 != faultA);
+  faultA->id(1);
+  faultA->label("faultA");
+  faultA->adjustTopology(mesh);
+
+  CPPUNIT_ASSERT(0 != faultB);
+  faultB->id(1);
+  faultB->label("faultB");
+  faultB->adjustTopology(mesh);
+
+  CPPUNIT_ASSERT_EQUAL(data.cellDim, mesh->getDimension());
+
+  // Check vertices
+  const ALE::Obj<Mesh::label_sequence>& vertices = mesh->depthStratum(0);
+  const ALE::Obj<Mesh::real_section_type>& coordsField =
+    mesh->getRealSection("coordinates");
+  const int numVertices = vertices->size();
+  CPPUNIT_ASSERT_EQUAL(data.numVertices, numVertices);
+  CPPUNIT_ASSERT_EQUAL(data.spaceDim, 
+		       coordsField->getFiberDimension(*vertices->begin()));
+  int i = 0;
+  const int spaceDim = data.spaceDim;
+  for(Mesh::label_sequence::iterator v_iter = 
+	vertices->begin();
+      v_iter != vertices->end();
+      ++v_iter) {
+    const Mesh::real_section_type::value_type *vertexCoords = 
+      coordsField->restrictPoint(*v_iter);
+    const double tolerance = 1.0e-06;
+    for (int iDim=0; iDim < spaceDim; ++iDim)
+      if (data.vertices[i] < 1.0)
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(data.vertices[i++], vertexCoords[iDim],
+				   tolerance);
+      else
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vertexCoords[iDim]/data.vertices[i++],
+				   tolerance);
+  } // for
+
+  // check cells
+  const ALE::Obj<sieve_type>& sieve = mesh->getSieve();
+  const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+
+  const int numCells = cells->size();
+  CPPUNIT_ASSERT_EQUAL(data.numCells, numCells);
+
+  int iCell = 0;
+  i = 0;
+  //mesh->view(data.filename);
+  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+      c_iter != cells->end();
+      ++c_iter) {
+    const int numCorners = sieve->nCone(*c_iter, mesh->depth())->size();
+    CPPUNIT_ASSERT_EQUAL(data.numCorners[iCell++], numCorners);
+    const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
+      sieve->cone(*c_iter);
+    for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
+	v_iter != cone->end();
+	++v_iter)
+      CPPUNIT_ASSERT_EQUAL(data.cells[i++], *v_iter);
+  } // for
+
+  // check materials
+  const ALE::Obj<Mesh::label_type>& labelMaterials = 
+    mesh->getLabel("material-id");
+  const int idDefault = -999;
+  const int size = numCells;
+  int_array materialIds(size);
+  i = 0;
+  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+      c_iter != cells->end();
+      ++c_iter)
+    materialIds[i++] = mesh->getValue(labelMaterials, *c_iter, idDefault);
+  
+  for (int iCell=0; iCell < numCells; ++iCell)
+    CPPUNIT_ASSERT_EQUAL(data.materialIds[iCell], materialIds[iCell]);
+
+  // Check groups
+  const ALE::Obj<std::set<std::string> >& groupNames = 
+    mesh->getIntSections();
+  int iGroup = 0;
+  int index = 0;
+  for (std::set<std::string>::const_iterator name=groupNames->begin();
+       name != groupNames->end();
+       ++name, ++iGroup) {
+    const ALE::Obj<int_section_type>& groupField = mesh->getIntSection(*name);
+    CPPUNIT_ASSERT(!groupField.isNull());
+    const int_section_type::chart_type& chart = groupField->getChart();
+    const Mesh::point_type firstPoint = *chart.begin();
+    std::string groupType = 
+      (mesh->height(firstPoint) == 0) ? "cell" : "vertex";
+    const int numPoints = chart.size();
+    int_array points(numPoints);
+    int i = 0;
+    for(int_section_type::chart_type::iterator c_iter = chart.begin();
+	c_iter != chart.end();
+	++c_iter)
+      points[i++] = *c_iter;
+
+    CPPUNIT_ASSERT_EQUAL(std::string(data.groupNames[iGroup]), *name);
+    CPPUNIT_ASSERT_EQUAL(std::string(data.groupTypes[iGroup]), groupType);
+    CPPUNIT_ASSERT_EQUAL(data.groupSizes[iGroup], numPoints);
+    for (int i=0; i < numPoints; ++i)
+      CPPUNIT_ASSERT_EQUAL(data.groups[index++], points[i]);
+  } // for
+} // _testAdjustTopology
+
 
 // End of file 
