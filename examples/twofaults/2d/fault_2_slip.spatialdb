@@ -1,0 +1,48 @@
+#SPATIAL.ascii 1
+
+// This database is used to specify the fault slip for the
+// dislocation (kinematic fault) example.
+SimpleDB {
+
+  // There are two values specified in the database, corresponding to the
+  // slip values for the left-lateral and fault-opening components.
+  num-values = 2
+  value-names =  left-lateral-slip fault-opening
+
+  // The fault slip values have units of meters.
+  value-units =  m  m
+
+  // The values are specified at each vertex on the fault.
+  num-locs = 8
+
+  // The dimension of the spatial distribution is 1, since the data
+  // locations form a line.
+  data-dim = 1
+
+  // The spatial dimension of the database is 2.
+  space-dim = 2
+
+  // We are specifying the data in a Cartesian coordinate system.
+  cs-data = cartesian {
+
+    // Our units are already in meters, so we can just multiply by one.
+    to-meters = 1.0
+
+    // We are using a 2D Cartesian coordinate system.
+    space-dim = 2
+  }
+}
+
+// This is where the data is specified.
+// As described in dislocation.cfg, this database will be used to specify
+// uniform data for a fault (pylith.faults.SingleFault).
+// The entries are:
+// X-Coord, Y-Coord, left-lateral slip, fault-opening slip
+12.0 10.5   0.08  0.0
+12.0  9.0   0.07  0.0
+12.0  7.5   0.06  0.0
+12.0  6.0   0.05  0.0
+12.0  4.5   0.04  0.0
+12.0  3.0   0.03  0.0
+12.0  1.5   0.02  0.0
+12.0  0.0   0.01  0.0
