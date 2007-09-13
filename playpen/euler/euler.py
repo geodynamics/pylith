@@ -40,6 +40,7 @@ class Euler(Application):
     ## @li \b points_file Filename of file containing point coordinates.
     ## @li \b points_spatialdb Filename of output spatial database.
     ## @li \b up_dir Vector defining up direction.
+    ## @li \b normal_dir General preferred normal direction.
     ## @li \b euler_lat Latitude of Euler pole.
     ## @li \b euler_lon Longitude of Euler pole.
     ## @li \b euler_rot Rotation value for Euler pole (CCW positive).
@@ -90,6 +91,9 @@ class Euler(Application):
     upDir = pyre.inventory.list("up_dir", default=[0.0, 0.0, 1.0])
     upDir.meta['tip'] = "Up direction."
 
+    normalDir = pyre.inventory.list("normal_dir", default=[1.0, 0.0, 0.0])
+    normalDir.meta['tip'] = "General preferred normal direction."
+
     eulerLat = pyre.inventory.dimensional("euler_lat", default=0.0*deg)
     eulerLat.meta['tip'] = "Latitude of Euler pole."
 
@@ -100,10 +104,10 @@ class Euler(Application):
     eulerRot.meta['tip'] = "Rotation of Euler pole (CCW positive)."
 
     dipSlip = pyre.inventory.bool("dip_slip", default=True)
-    dipSlip.meta['tip'] = "Allow dip-slip to accomodate non-strike-slip movement."
+    dipSlip.meta['tip'] = "Allow dip-slip to take up non-strike-slip movement."
 
     dipCutoff = pyre.inventory.dimensional("dip_cutoff", default=75.0*deg)
-    dipCutoff.meta['tip'] = "Cutoff dip below which dip-slip movement is allowed."
+    dipCutoff.meta['tip'] = "Cutoff dip below which dip-slip is allowed."
 
     xMin = pyre.inventory.dimensional("x_min", default=-1.0e8*m)
     xMin.meta['tip'] = "Minimum x-value for which to apply rotation."
@@ -167,6 +171,7 @@ class Euler(Application):
     self.pointsFile = self.inventory.pointsFile
     self.pointsSpatialDB = self.inventory.pointsSpatialDB
     self.upDir = self.inventory.upDir
+    self.normalDir = self.inventory.normalDir
     self.eulerLat = self.inventory.eulerLat
     self.eulerLon = self.inventory.eulerLon
     self.eulerRot = self.inventory.eulerRot
@@ -195,6 +200,10 @@ class Euler(Application):
 
     self.upVec = numpy.array([float(self.upDir[0]), float(self.upDir[1]),
                               float(self.upDir[2])], dtype=float)
+
+    self.normalVec = numpy.array([float(self.normalDir[0]),
+                                  float(self.normalDir[1]),
+                                  float(self.normalDir[2])], dtype=float)
 
     self.dipCutoffProj = abs(math.sin(self.dipCutoff.value))
     
@@ -226,7 +235,8 @@ class Euler(Application):
 
   def _genSpatialDB(self, f):
     """
-    Computes dislocations/displacements from Euler pole and writes to spatial DB.
+    Computes dislocations/displacements from Euler pole and writes to
+    spatial DB.
     """
 
     # Get lat/lon values corresponding to UTM points.
@@ -282,6 +292,10 @@ class Euler(Application):
     mag = math.sqrt(numpy.dot(normalsArr, normalsArr))
     normalsArr /= mag
 
+    normalTest = numpy.dot(normalsArr, self.normalVec)
+    if normalTest < 0.0:
+      normalsArr *= -1.0
+
     # Along-strike direction -> cross product of up and normal
     alongStrike = numpy.cross(self.upVec, normalsArr)
     mag = math.sqrt(numpy.dot(alongStrike, alongStrike))
@@ -294,8 +308,8 @@ class Euler(Application):
 
     rot = numpy.vstack((alongStrike, upDip, normalsArr))
 
-    # Need to go through this section later to fix it for a generalized coordinate
-    # setup.
+    # Need to go through this section later to fix it for a generalized
+    # coordinate setup.
     dip = numpy.dot(upDip, self.upVec)
     if self.dipSlip and abs(dip) <= self.dipCutoffProj:
       # Project slip onto strike-slip direction
@@ -307,11 +321,12 @@ class Euler(Application):
       vnormal = velocity - vstrikeSlip
       magHorizNormal = math.sqrt(vnormal[0]*vnormal[0]+vnormal[1]*vnormal[1])
 
-      # Project horizontal normal movement onto dip-slip direction, then scale so
-      # that horizontal components are equal to block-normal motion.
+      # Project horizontal normal movement onto dip-slip direction, then scale
+      # so that horizontal components are equal to block-normal motion.
       dipSlipProj = numpy.dot(vnormal, upDip)
       vdipSlip = dipSlipProj * upDip
-      magDipSlipHoriz = math.sqrt(vdipSlip[0]*vdipSlip[0]+vdipSlip[1]*vdipSlip[1])
+      magDipSlipHoriz = math.sqrt(vdipSlip[0]*vdipSlip[0]+
+                                  vdipSlip[1]*vdipSlip[1])
       if magDipSlipHoriz > 0.0:
         multFac = magHorizNormal/magDipSlipHoriz
       else:
