@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+#
+# ----------------------------------------------------------------------
+#
+#                           Brad T. Aagaard
+#                        U.S. Geological Survey
+#
+# <LicenseText>
+#
+# ----------------------------------------------------------------------
+#
+
+from pylith.utils.ObjectBin import ObjectBin
+
+class MyFaults(ObjectBin):
+  """
+  User-defined boundary conditions container.
+
+  Factory: object_bin
+  """
+
+  # INVENTORY //////////////////////////////////////////////////////////
+
+  class Inventory(ObjectBin.Inventory):
+    """
+    Python object for managing MyBC facilities and properties.
+    """
+
+    import pyre.inventory
+    
+    from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
+
+    one = pyre.inventory.facility("one", family="fault",
+                                   factory=FaultCohesiveKin)
+    one.meta['tip'] = "Fault A."
+    
+    two = pyre.inventory.facility("two", family="fault",
+                                   factory=FaultCohesiveKin)
+    two.meta['tip'] = "Fault B."
+    
+
+  # PUBLIC METHODS /////////////////////////////////////////////////////
+
+  def __init__(self, name="myfaults"):
+    """
+    Constructor.
+    """
+    ObjectBin.__init__(self, name)
+    return
+
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _configure(self):
+    """
+    Set attributes from inventory.
+    """
+    ObjectBin._configure(self)
+
+    self.bin = [self.inventory.one,
+                self.inventory.two]
+    return
+
+  
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def object_bin():
+  """
+  Factory associated with MyFaults.
+  """
+  return MyFaults()
+
+
+# End of file 
