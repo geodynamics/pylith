@@ -329,7 +329,7 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   // Split the mesh along the fault sieve and create cohesive elements
   const ALE::Obj<Mesh::label_sequence>& faces = (*fault)->depthStratum(1);
   const ALE::Obj<Mesh::label_type>& material = mesh->getLabel("material-id");
-  int firstCohesiveCell = newPoint;
+  const int firstCohesiveCell = newPoint;
   PointSet replaceCells;
   PointSet noReplaceCells;
   PointSet replaceVertices;
@@ -448,9 +448,14 @@ pylith::faults::CohesiveTopology::create(ALE::Obj<Mesh>* fault,
   }
   if (!(*fault)->commRank()) delete [] indices;
   mesh->stratify();
-  const ALE::Obj<Mesh::label_type>& label          = mesh->createLabel(std::string("censored depth"));
-  const ALE::Obj<PointSet>          modifiedPoints = new PointSet();
-  _computeCensoredDepth(mesh, label, mesh->getSieve(), mesh->getSieve()->roots(), firstCohesiveCell, modifiedPoints);
+  const std::string labelName("censored depth");
+
+  if (!mesh->hasLabel(labelName)) {
+    const ALE::Obj<Mesh::label_type>& label          = mesh->createLabel(labelName);
+    const ALE::Obj<PointSet>          modifiedPoints = new PointSet();
+
+    _computeCensoredDepth(mesh, label, mesh->getSieve(), mesh->getSieve()->roots(), firstCohesiveCell, modifiedPoints);
+  }
   if (debug) mesh->view("Mesh with Cohesive Elements");
 
   // Fix coordinates
