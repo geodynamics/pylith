@@ -11,7 +11,7 @@
 //
 
 #if !defined(meshiohdf5_hh)
-#error "MeshIOHDF5.icc must be included only from MeshIOHDF5.icc"
+#error "MeshIOHDF5.icc must be included only from MeshIOHDF5.hh"
 #else
 
 // Set filename for HDF5 file.

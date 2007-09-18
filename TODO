@@ -189,6 +189,16 @@ THINGS WE NEED SIEVE TO DO (Matt)
 
   There is another version that takes an array of maxVolumes, one fo each cell in oldMesh.
 
+4. Run the benchmarks
+
+5. Check in nonlinear solver
+
+6. Look at more than one fault tests
+
+7. Throw out cohesive midnodes from censored depth, fix it for multiple faults
+
+8. Coarsening for PyLith meshes
+
 ======================================================================
 QUESTIONS FOR LEIF
 ======================================================================
