@@ -1,5 +1,5 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass book
@@ -12,13 +12,21 @@
 \end_preamble
 \language english
 \inputencoding latin1
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \paperfontsize default
 \spacing single
 \papersize default
 \use_geometry true
 \use_amsmath 1
+\use_esint 0
 \cite_engine natbib_authoryear
 \use_bibtopic false
 \paperorientation portrait
@@ -36,6 +44,7 @@
 \paperpagestyle plain
 \tracking_changes false
 \output_changes false
+\author "" 
 \end_header
 
 \begin_body
@@ -91,7 +100,7 @@ PyLith User Manual
 \end_layout
 
 \begin_layout Author
-© California Institute of Technology
+Â© California Institute of Technology
 \newline
 Version 1.0
 \end_layout
@@ -127,7 +136,7 @@ frontmatter
 \end_inset
 
 
-\begin_inset LatexCommand \tableofcontents{}
+\begin_inset LatexCommand tableofcontents
 
 \end_inset
 
@@ -269,8 +278,11 @@ preview false
 \end_layout
 
 \begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+key "Williams:etal:2005"
 
-\bibitem {Williams:etal:2005}
+\end_inset
+
 Williams, C.A., B.
  Aagaard, M.G.
  Knepley (2005), Development of software for studying earthquakes across
@@ -285,8 +297,11 @@ Eos Trans.
 \end_layout
 
 \begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+key "Williams:2006"
 
-\bibitem {Williams:2006}
+\end_inset
+
 Williams, C.A.
  (2006), Development of a package for modeling stress in the lithosphere,
  
@@ -304,8 +319,11 @@ Eos Trans.
 \end_layout
 
 \begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+key "Aagaard:etal:2001a"
 
-\bibitem {Aagaard:etal:2001a}
+\end_inset
+
 Aagaard, B.T., J.F.
  Hall, and T.H.
  Heaton (2001), Characterization of near-source ground motions with earthquake
@@ -317,8 +335,11 @@ Earthquake Spectra
 \end_layout
 
 \begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+key "Aagaard:etal:2001b"
 
-\bibitem {Aagaard:etal:2001b}
+\end_inset
+
 Aagaard, B.T., T.H.
  Heaton, and J.F.
  Hall (2001), Dynamic earthquake ruptures in the presence of lithostatic
@@ -331,8 +352,11 @@ Bulletin of the Seismological Society of America
 \end_layout
 
 \begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+key "Brune:1970"
 
-\bibitem {Brune:1970}
+\end_inset
+
 Brune, J.N.
  (1970), Tectonic stress and spectra of seismic shear waves from earthquakes,
  
@@ -343,8 +367,11 @@ Journal of Geophysical Research
 \end_layout
 
 \begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+key "Kojic:Bathe:1987"
 
-\bibitem {Kojic:Bathe:1987}
+\end_inset
+
 Kojic, M.
  and K.-J.
  Bathe (1987), The `Effective Stress-Function' Algorithm for Thermo-Elasto-Plast
@@ -364,8 +391,12 @@ Int.
 \end_layout
 
 \begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+label "7"
+key "Zienkiewicz:Taylor:2000"
 
-\bibitem [7]{Zienkiewicz:Taylor:2000}
+\end_inset
+
 Zienkiewicz, O.C.
  and R.L.
  Taylor (2000), 
@@ -376,8 +407,12 @@ The Finite Element Method, Fifth Edition, Volume 2: Solid Mechanics
 \end_layout
 
 \begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+label "8"
+key "Taylor:2003"
 
-\bibitem [8]{Taylor:2003}
+\end_inset
+
 Taylor, R.L.
  (2003), `FEAP--A Finite Element Analysis Program', 
 \shape italic
