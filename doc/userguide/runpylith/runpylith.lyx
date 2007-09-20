@@ -1,5 +1,5 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass book
@@ -8,13 +8,21 @@
 \end_preamble
 \language english
 \inputencoding latin1
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \paperfontsize default
 \spacing single
 \papersize default
 \use_geometry true
 \use_amsmath 1
+\use_esint 0
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
@@ -32,6 +40,7 @@
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
+\author "" 
 \end_header
 
 \begin_body
@@ -67,12 +76,14 @@ Mesh information.
  faults, and output (for subsets of the mesh).
  This information can be provided using the PyLith mesh ASCII format (See
  Chapter 
-\begin_inset LatexCommand \ref{cha:Tutorials}
+\begin_inset LatexCommand ref
+reference "cha:Tutorials"
 
 \end_inset
 
  for examples and Section 
-\begin_inset LatexCommand \ref{sec:MeshIOAscii}
+\begin_inset LatexCommand ref
+reference "sec:MeshIOAscii"
 
 \end_inset
 
@@ -94,12 +105,14 @@ Databases specifying the material properties and boundary conditions to
  Arbitrarily complex spatial variations in boundary and fault conditions
  and material properties may be given in the spatial database (See Chapter
  
-\begin_inset LatexCommand \ref{cha:Tutorials}
+\begin_inset LatexCommand ref
+reference "cha:Tutorials"
 
 \end_inset
 
  for examples and Appendix 
-\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
+\begin_inset LatexCommand ref
+reference "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
 
@@ -111,7 +124,8 @@ Setting Parameters for PyLith
 \end_layout
 
 \begin_layout Standard
-\begin_inset LatexCommand \label{sec:setting:parameters}
+\begin_inset LatexCommand label
+name "sec:setting:parameters"
 
 \end_inset
 
@@ -421,11 +435,22 @@ PyLith relies on PETSc for the linear algebra computations.
 .
  The ones of primary interest in the case of PyLith are shown in Table\InsetSpace ~
 
-\begin_inset LatexCommand \ref{tab:Useful-command-line-arguments}
+\begin_inset LatexCommand ref
+reference "tab:petsc:options:defaults"
 
 \end_inset
 
 .
+ In many quasi-static simulations, runtime can be reduced by replacing the
+ Jacobi preconditioner with Additive Schwarz with Gram-Schmidt orthogonalization
+ (see Table\InsetSpace ~
+
+\begin_inset LatexCommand ref
+reference "tab:petsc:options:quasistatic"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Standard
@@ -651,12 +676,228 @@ Set preconditioner type to block Jacobi.
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{tab:Useful-command-line-arguments}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:petsc:options:defaults"
 
 \end_inset
 
 Useful command-line arguments for setting PETSc options.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="3">
+<features>
+<column alignment="left" valignment="top" leftline="true" width="0.9in">
+<column alignment="center" valignment="middle" leftline="true" width="0.8in">
+<column alignment="left" valignment="top" leftline="true" rightline="true" width="4in">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Property
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Value
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+pc_type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\shape italic
+asm
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Additive Schwarz method
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+ksp_max_it
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+100
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Maximum number of iterations.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+ksp_gmres_restart
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+50
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Number of iterations after which Gram-Schmidt orthogonalization is restarted
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+ksp_rtol
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\shape italic
+1.0e-08
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Convergence tolerance for relative decrease in residual norm.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:petsc:options:quasistatic"
+
+\end_inset
+
+PETSc options that often result in improved performance in quasi-static
+ problems.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -674,7 +915,8 @@ Geometrical and topological information for the finite element mesh may
  a GMV file and an accompanying Pset file from LaGriT, or by specifying
  the information in PyLith mesh ASCII format.
  See Chapter 
-\begin_inset LatexCommand \ref{cha:Tutorials}
+\begin_inset LatexCommand ref
+reference "cha:Tutorials"
 
 \end_inset
 
@@ -683,28 +925,33 @@ Geometrical and topological information for the finite element mesh may
 
 \begin_layout Standard
 PyLith supports linear cells in 1D (Figure 
-\begin_inset LatexCommand \ref{fig:1D-linear-elements}
+\begin_inset LatexCommand ref
+reference "fig:1D-linear-elements"
 
 \end_inset
 
 ), 2D (Figure 
-\begin_inset LatexCommand \ref{fig:2D-linear-elements}
+\begin_inset LatexCommand ref
+reference "fig:2D-linear-elements"
 
 \end_inset
 
 ), and 3D (Figure 
-\begin_inset LatexCommand \ref{fig:3D-linear-elements}
+\begin_inset LatexCommand ref
+reference "fig:3D-linear-elements"
 
 \end_inset
 
 ).
  The vertex ordering must follow the convention shown in Figures 
-\begin_inset LatexCommand \ref{fig:1D-linear-elements}
+\begin_inset LatexCommand ref
+reference "fig:1D-linear-elements"
 
 \end_inset
 
 -
-\begin_inset LatexCommand \ref{fig:3D-linear-elements}
+\begin_inset LatexCommand ref
+reference "fig:3D-linear-elements"
 
 \end_inset
 
@@ -731,12 +978,14 @@ The mesh information defines the nodal coordinates as well as specifying
  For a mesh with a single material type, there will only be a single label
  for every cell in the mesh.
  See Chapters 
-\begin_inset LatexCommand \ref{cha:material:models}
+\begin_inset LatexCommand ref
+reference "cha:material:models"
 
 \end_inset
 
  and 
-\begin_inset LatexCommand \ref{cha:boundary:interface:conditions}
+\begin_inset LatexCommand ref
+reference "cha:boundary:interface:conditions"
 
 \end_inset
 
@@ -763,12 +1012,21 @@ status collapsed
  
 \end_layout
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Linear bar cell available for 1D problems.
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
-\begin_inset LatexCommand \label{fig:1D-linear-elements}
+\begin_inset LatexCommand label
+name "fig:1D-linear-elements"
 
 \end_inset
 
@@ -825,13 +1083,22 @@ status open
 
 \end_layout
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Linear cells available for 2D problems are the triangle (left) and the quadrilat
 eral (right).
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
-\begin_inset LatexCommand \label{fig:2D-linear-elements}
+\begin_inset LatexCommand label
+name "fig:2D-linear-elements"
 
 \end_inset
 
@@ -888,10 +1155,19 @@ status open
 
 \end_layout
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Linear cells available for 3D problems are the tetrahedron (left) and the
  hexahedron (right).
-\begin_inset LatexCommand \label{fig:3D-linear-elements}
+\begin_inset LatexCommand label
+name "fig:3D-linear-elements"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -920,7 +1196,8 @@ on has been provided, the final step is to specify the boundary conditions
 \family default
  file is used to associate boundary condition types and spatial databases
  with each vertex group (see Chapter 
-\begin_inset LatexCommand \ref{cha:boundary:interface:conditions}
+\begin_inset LatexCommand ref
+reference "cha:boundary:interface:conditions"
 
 \end_inset
 
@@ -931,7 +1208,8 @@ on has been provided, the final step is to specify the boundary conditions
 \family default
  file is used to associate material types and spatial databases with cells
  identified by the material identifier (see Figure 
-\begin_inset LatexCommand \ref{fig:Material-models}
+\begin_inset LatexCommand ref
+reference "fig:Material-models"
 
 \end_inset
 
@@ -974,7 +1252,8 @@ volume
  This might be the case, for example, if the material properties are provided
  by a database of seismic velocities and densities.
  See Section 
-\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
+\begin_inset LatexCommand ref
+reference "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
 
@@ -1002,7 +1281,8 @@ area
  This sort of condition might be used, for example, to specify the variation
  of slip on a fault plane.
  The examples discussed in Chapter 
-\begin_inset LatexCommand \ref{cha:Tutorials}
+\begin_inset LatexCommand ref
+reference "cha:Tutorials"
 
 \end_inset
 
