@@ -228,6 +228,7 @@ cdef class SolverLinear(Solver):
     # create shim for method 'solve'
     #embed{ int SolverLinear_solve(void* objVptr, void* fieldOutVptr, void* jacobianVptr, void* fieldInVptr, void* scatterVptr, void* vecInVptr, void* vecOutVptr)
     typedef ALE::Mesh::real_section_type real_section_type;
+    PetscErrorCode err = 0;
     try {
       assert(0 != objVptr);
       assert(0 != fieldOutVptr);
@@ -247,7 +248,6 @@ cdef class SolverLinear(Solver):
       Vec vecIn = (Vec) vecInVptr;
       Vec vecOut = (Vec) vecOutVptr;
 
-      PetscErrorCode err = 0;
       Vec localVec;
 
       err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldIn)->sizeWithBC(),
@@ -276,7 +276,8 @@ cdef class SolverLinear(Solver):
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
-    } // try/catch      
+    } // try/catch
+    return err;
     #}embed
 
     cdef void* fieldOutVptr
@@ -309,6 +310,7 @@ cdef class SolverNonlinear(Solver):
     # create shim for method 'solve'
     #embed{ int SolverNonlinear_solve(void* objVptr, void* fieldOutVptr, void* jacobianVptr, void* fieldInVptr, void* scatterVptr, void* vecInVptr, void* vecOutVptr)
     typedef ALE::Mesh::real_section_type real_section_type;
+    PetscErrorCode err = 0;
     try {
       assert(0 != objVptr);
       assert(0 != fieldOutVptr);
@@ -328,7 +330,6 @@ cdef class SolverNonlinear(Solver):
       Vec vecIn = (Vec) vecInVptr;
       Vec vecOut = (Vec) vecOutVptr;
 
-      PetscErrorCode err = 0;
       Vec localVec;
 
       err = VecCreateSeqWithArray(PETSC_COMM_SELF, (*fieldIn)->sizeWithBC(),
@@ -357,7 +358,8 @@ cdef class SolverNonlinear(Solver):
     } catch (...) {
       PyErr_SetString(PyExc_RuntimeError,
                       "Caught unknown C++ exception.");
-    } // try/catch      
+    } // try/catch
+    return err;
     #}embed
 
     cdef void* fieldOutVptr
