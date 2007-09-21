@@ -79,13 +79,20 @@ pylith::materials::Material::needNewJacobian(void) const {
   return _needNewJacobian;
 } // needNewJacobian
 
-/// Reset flag indicating whether Jacobian matrix must be reformed for
-/// current state.
+// Reset flag indicating whether Jacobian matrix must be reformed for
+// current state.
 inline
 void
 pylith::materials::Material::resetNeedNewJacobian(void) {
   _needNewJacobian = false;
 } // resetNeedNewJacobian
+
+// Get number of values for each parameter for physical properties.
+inline
+const pylith::int_array&
+pylith::materials::Material::_getNumParamValues(void) const {
+  return _numParamValues;
+} // _getNumParamValues
 
 
 // End of file 

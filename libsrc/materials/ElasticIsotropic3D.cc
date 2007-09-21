@@ -57,7 +57,9 @@ namespace pylith {
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::materials::ElasticIsotropic3D::ElasticIsotropic3D(void)
+pylith::materials::ElasticIsotropic3D::ElasticIsotropic3D(void) :
+  ElasticMaterial(_ElasticIsotropic3D::numParamValues, 
+		  _ElasticIsotropic3D::numParameters)
 { // constructor
   _dimension = 3;
 } // constructor
@@ -91,19 +93,6 @@ pylith::materials::ElasticIsotropic3D::_parameterNames(void) const
 { // _parameterNames
   return _ElasticIsotropic3D::namesParameters;
 } // _parameterNames
-
-// ----------------------------------------------------------------------
-// Get number of values for each parameter for physical properties.
-void
-pylith::materials::ElasticIsotropic3D::_numParamValues(int_array* numValues) const
-{ // _numParamValues
-  assert(0 != numValues);
-
-  const int numParams = _ElasticIsotropic3D::numParameters;
-  numValues->resize(numParams);
-  for (int i=0; i < numParams; ++i)
-    (*numValues)[i] = _ElasticIsotropic3D::numParamValues[i];
-} // _numParamValues
 
 // ----------------------------------------------------------------------
 // Compute parameters from values in spatial database.

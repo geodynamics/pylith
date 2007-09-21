@@ -52,7 +52,9 @@ namespace pylith {
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::materials::ElasticStrain1D::ElasticStrain1D(void)
+pylith::materials::ElasticStrain1D::ElasticStrain1D(void) :
+  ElasticMaterial(_ElasticStrain1D::numParamValues,
+		  _ElasticStrain1D::numParameters)
 { // constructor
   _dimension = 1;
 } // constructor
@@ -86,19 +88,6 @@ pylith::materials::ElasticStrain1D::_parameterNames(void) const
 { // _parameterNames
   return _ElasticStrain1D::namesParameters;
 } // _parameterNames
-
-// ----------------------------------------------------------------------
-// Get number of values for each parameter for physical properties.
-void
-pylith::materials::ElasticStrain1D::_numParamValues(int_array* numValues) const
-{ // _numParamValues
-  assert(0 != numValues);
-  
-  const int numParams = _ElasticStrain1D::numParameters;
-  numValues->resize(numParams);
-  for (int i=0; i < numParams; ++i)
-    (*numValues)[i] = _ElasticStrain1D::numParamValues[i];
-} // _numParamValues
 
 // ----------------------------------------------------------------------
 // Compute parameters from values in spatial database.

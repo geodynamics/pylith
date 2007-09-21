@@ -61,6 +61,8 @@ namespace pylith {
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::MaxwellIsotropic3D::MaxwellIsotropic3D(void) :
+  ElasticMaterial(_MaxwellIsotropic3D::numParamValues, 
+		  _MaxwellIsotropic3D::numParameters),
   _calcElasticConstsFn(&pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic),
   _calcStressFn(&pylith::materials::MaxwellIsotropic3D::_calcStressElastic),
   _updateStateFn(&pylith::materials::MaxwellIsotropic3D::_updateStateElastic)
@@ -97,19 +99,6 @@ pylith::materials::MaxwellIsotropic3D::_parameterNames(void) const
 { // _parameterNames
   return _MaxwellIsotropic3D::namesParameters;
 } // _parameterNames
-
-// ----------------------------------------------------------------------
-// Get number of values for each parameter
-void
-pylith::materials::MaxwellIsotropic3D::_numParamValues(int_array* numValues) const
-{ // _numParamValues
-  assert(0 != numValues);
-
-  const int numParams = _MaxwellIsotropic3D::numParameters;
-  numValues->resize(numParams);
-  for (int i=0; i< numParams; ++i)
-    (*numValues)[i] = _MaxwellIsotropic3D::numParamValues[i];
-} // _numParamValues
 
 // ----------------------------------------------------------------------
 // Compute parameters from values in spatial database.
