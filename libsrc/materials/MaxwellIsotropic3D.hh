@@ -91,12 +91,6 @@ protected :
    */
   const char** _parameterNames(void) const;
 
-  /** Get number of parameters for physical properties.
-   *
-   * @returns Number of parameters
-   */
-  void _numParamValues(int_array* numValues) const;
-
   /** Compute parameters from values in spatial database.
    *
    * Order of values in arrays matches order used in dbValues() and

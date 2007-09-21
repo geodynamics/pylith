@@ -28,14 +28,16 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::materials::Material::Material(void) :
+pylith::materials::Material::Material(const int* numParamValues,
+				      const int size) :
   _dt(0.0),
   _parameters(0),
   _dimension(0),
   _needNewJacobian(false),
   _db(0),
   _id(0),
-  _label("")
+  _label(""),
+  _numParamValues(numParamValues, size)
 { // constructor
 } // constructor
 
@@ -87,9 +89,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int spaceDim = quadrature->spaceDim();
   const int tensorSize = (3 == spaceDim) ? 6 : ((2 == spaceDim) ? 4 : 1);
 
-  int_array numParamValues;
-  _numParamValues(&numParamValues);
-  const int numParams = numParamValues.size();
+  const int numParams = _numParamValues.size();
   const char** paramNames = _parameterNames();
 
   std::vector<ALE::Obj<real_section_type> > paramSections(numParams);
@@ -105,8 +105,8 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
     // Fiber dimension is number of quadrature points times number of
     // values per parameter
-    const int fiberDim = numQuadPts * numParamValues[iParam];
-    if (1 == numParamValues[iParam])
+    const int fiberDim = numQuadPts * _numParamValues[iParam];
+    if (1 == _numParamValues[iParam])
       if (-1 != indexScalarLayout) {
 	paramSections[iParam]->setAtlas(paramSections[indexScalarLayout]->getAtlas());
 	paramSections[iParam]->allocateStorage();
@@ -115,7 +115,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	paramSections[iParam]->setFiberDimension(cells, fiberDim);
 	mesh->allocate(paramSections[iParam]);
       } // if/else
-    else if (spaceDim == numParamValues[iParam]) {
+    else if (spaceDim == _numParamValues[iParam]) {
       if (-1 != indexVectorLayout) {
 	paramSections[iParam]->setAtlas(paramSections[indexVectorLayout]->getAtlas());
 	paramSections[iParam]->allocateStorage();
@@ -125,7 +125,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	mesh->allocate(paramSections[iParam]);
       } // if/else
     } // if/else
-    else if (tensorSize == numParamValues[iParam]) {
+    else if (tensorSize == _numParamValues[iParam]) {
       if (-1 != indexTensorLayout) {
 	paramSections[iParam]->setAtlas(paramSections[indexTensorLayout]->getAtlas());
 	paramSections[iParam]->allocateStorage();
@@ -157,9 +157,9 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   std::vector<double_array> cellData(numParams);
 
   for (int iParam = 0; iParam < numParams; ++iParam) {
-    const int fiberDim = numQuadPts * numParamValues[iParam];
+    const int fiberDim = numQuadPts * _numParamValues[iParam];
     cellData[iParam].resize(fiberDim);
-    paramData[iParam].resize(numParamValues[iParam]);
+    paramData[iParam].resize(_numParamValues[iParam]);
   } // for
 
   for (ALE::Mesh::label_sequence::iterator cellIter=cells->begin();
@@ -189,7 +189,7 @@ pylith::materials::Material::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       _dbToParameters(&paramData, queryData);
 
       for (int iParam=0; iParam < numParams; ++iParam) {
-	const int numValues = numParamValues[iParam];
+	const int numValues = _numParamValues[iParam];
 	for (int iValue=0; iValue < numValues; ++iValue)
 	  cellData[iParam][iQuadPt*numValues+iValue] = 
 	    paramData[iParam][iValue];

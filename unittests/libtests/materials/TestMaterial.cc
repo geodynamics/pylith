@@ -285,8 +285,7 @@ pylith::materials::TestMaterial::_testParameters(Material* material,
 
   const int numParameters = data.numParameters;
 
-  int_array numParamValues;
-  material->_numParamValues(&numParamValues);
+  const int_array& numParamValues = material->_getNumParamValues();
 
   CPPUNIT_ASSERT_EQUAL(numParameters, int(numParamValues.size()));
   char** const namesE = data.parameterNames;

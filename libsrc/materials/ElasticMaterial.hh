@@ -41,8 +41,13 @@ class pylith::materials::ElasticMaterial : public Material
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
-  /// Default constructor.
-  ElasticMaterial(void);
+  /** Default constructor.
+   *
+   * @param numParamValues Array of number of values for each parameter.
+   * @param size Size of array
+   */
+  ElasticMaterial(const int* numParamValues,
+		  const int size);
 
   /// Destructor.
   virtual

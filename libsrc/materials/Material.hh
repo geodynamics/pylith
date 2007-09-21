@@ -65,8 +65,13 @@ class pylith::materials::Material
   // PUBLIC METHODS /////////////////////////////////////////////////////
 public :
 
-  /// Default constructor.
-  Material(void);
+  /** Default constructor.
+   *
+   * @param numParamValues Array of number of values for each parameter.
+   * @param size Size of array
+   */
+  Material(const int* numParamValues,
+	   const int size);
 
   /// Destructor.
   virtual
@@ -171,10 +176,9 @@ protected :
 
   /** Get number of values for each parameter for physical properties.
    *
-   * @param numValues Array of number of values for each parameter.
+   * @returns Array of number of values for each parameter.
    */
-  virtual
-  void _numParamValues(int_array* numValues) const = 0;
+  const int_array& _getNumParamValues(void) const;
 
   /** Compute parameters from values in spatial database.
    *
@@ -215,6 +219,13 @@ private :
 
   int _id; ///< Material identifier
   std::string _label; ///< Label of material
+
+  /** Number of values associated with each parameter.
+   *
+   * size = numParams
+   * index = iParam
+   */
+  int_array _numParamValues;
 
 }; // class Material
 

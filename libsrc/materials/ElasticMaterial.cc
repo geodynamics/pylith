@@ -23,7 +23,9 @@
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::materials::ElasticMaterial::ElasticMaterial(void) :
+pylith::materials::ElasticMaterial::ElasticMaterial(const int* numParamValues,
+						    const int size) :
+  Material(numParamValues, size),
   _numQuadPts(0)
 { // constructor
 } // constructor
@@ -101,8 +103,7 @@ pylith::materials::ElasticMaterial::getStateVarsCell(const Mesh::point_type& cel
       _density[iQuad].resize(1);
       _stress[iQuad].resize(_tensorSize());
       _elasticConsts[iQuad].resize(_numElasticConsts());
-      int_array numParamValues;
-      _numParamValues(&numParamValues);
+      const int_array& numParamValues = _getNumParamValues();
       const int numParams = numParamValues.size();
       _paramsCell[iQuad].resize(numParams);
       for (int iParam=0; iParam < numParams; ++iParam)
@@ -127,8 +128,7 @@ pylith::materials::ElasticMaterial::updateState(
   for (int iQuad=0; iQuad < numQuadPts; ++iQuad)
     _updateState(&_paramsCell[iQuad], totalStrain[iQuad]);
 
-  int_array numParamValues;
-  _numParamValues(&numParamValues);
+  const int_array& numParamValues = _getNumParamValues();
   const int numParams = numParamValues.size();
   const char** paramNames = _parameterNames();
   
@@ -159,8 +159,7 @@ pylith::materials::ElasticMaterial::_getParameters(const Mesh::point_type& cell)
   const int numQuadPts = _numQuadPts;
   assert(_paramsCell.size() == numQuadPts);
   
-  int_array numParamValues;
-  _numParamValues(&numParamValues);
+  const int_array& numParamValues = _getNumParamValues();
   const int numParams = numParamValues.size();
   const char** paramNames = _parameterNames();
   
