@@ -9,6 +9,9 @@ CURRENT ISSUES
 
   2. Add check to make sure every material in mesh has a material model.
 
+    Add check for overlapping of material ids for bulk and cohesive
+    cells.
+
   3. Need better error trapping when using LineParser. State of
   ifstream is insufficient. Need state of istringstream buffer, but it
   is often !good() at eof(). Test of !good() and !eof()?
