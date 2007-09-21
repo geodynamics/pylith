@@ -91,7 +91,6 @@ pylith::meshio::MeshIO::_buildMesh(const double_array& coordinates,
   MPI_Bcast(&dim, 1, MPI_INT, 0, comm);
   // :BUG: This causes a memory leak.
   *_mesh = new Mesh(PETSC_COMM_WORLD, dim);
-  _mesh->addRef();
 
   assert(!_mesh->isNull());
   (*_mesh)->setDebug(_debug);
