@@ -90,6 +90,7 @@ pylith::feassemble::ElasticityImplicit::useSolnIncr(const bool flag)
   _material->useElasticBehavior(!_useSolnIncr);
 } // useSolnIncr
 
+#define FASTER
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
@@ -109,6 +110,29 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   assert(0 != fields);
   assert(!mesh.isNull());
 
+  static PetscEvent setupEvent = 0, cellGeomEvent = 0, stateVarsEvent = 0, restrictEvent = 0, computeEvent = 0, updateEvent = 0;
+
+  if (!setupEvent) {
+    PetscLogEventRegister(&setupEvent, "IRSetup", 0);
+  }
+  if (!cellGeomEvent) {
+    PetscLogEventRegister(&cellGeomEvent, "IRCellGeom", 0);
+  }
+  if (!stateVarsEvent) {
+    PetscLogEventRegister(&stateVarsEvent, "IRStateVars", 0);
+  }
+  if (!restrictEvent) {
+    PetscLogEventRegister(&restrictEvent, "IRRestrict", 0);
+  }
+  if (!computeEvent) {
+    PetscLogEventRegister(&computeEvent, "IRCompute", 0);
+  }
+  if (!updateEvent) {
+    PetscLogEventRegister(&updateEvent, "IRUpdate", 0);
+  }
+  const Obj<sieve_type>& sieve = mesh->getSieve();
+
+  PetscLogEventBegin(setupEvent,0,0,0,0);
   // Set variables dependent on dimension of cell
   const int cellDim = _quadrature->cellDim();
   int tensorSize = 0;
@@ -153,6 +177,9 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
+  // Precompute the geometric and function space information
+  _quadrature->precomputeGeometry(mesh, coordinates, cells);
+
   // Allocate vector for cell values.
   _initCellVector();
   const int cellVecSize = numBasis*spaceDim;
@@ -165,22 +192,48 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     totalStrain[iQuad].resize(tensorSize);
     totalStrain[iQuad] = 0.0;
   } // for
+  PetscLogEventEnd(setupEvent,0,0,0,0);
 
   // Loop over cells
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
+    PetscLogEventBegin(cellGeomEvent,0,0,0,0);
+#ifdef FASTER
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter);
+#else
     _quadrature->computeGeometry(mesh, coordinates, *c_iter);
+#endif
+    PetscLogEventEnd(cellGeomEvent,0,0,0,0);
 
     // Get state variables for cell.
+    PetscLogEventBegin(stateVarsEvent,0,0,0,0);
     _material->getStateVarsCell(*c_iter, numQuadPts);
+    PetscLogEventEnd(stateVarsEvent,0,0,0,0);
 
     // Reset element vector to zero
     _resetCellVector();
 
     // Restrict input fields to cell
+    PetscLogEventBegin(restrictEvent,0,0,0,0);
+#ifdef FASTER
+    const Obj<Mesh::sieve_type::coneSequence>& cone = sieve->cone(*c_iter);
+    Mesh::sieve_type::coneSequence::iterator   end  = cone->end();
+    int                                        j    = -1;
+
+    for(Mesh::sieve_type::coneSequence::iterator p_iter = cone->begin(); p_iter != end; ++p_iter) {
+      const real_section_type::value_type *array = dispTBctpdt->restrictPoint(*p_iter);
+      const int&                           dim   = dispTBctpdt->getFiberDimension(*p_iter);
+
+      for(int i = 0; i < dim; ++i) {
+        dispTBctpdtCell[++j] = array[i];
+      }
+    }
+#else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
+#endif
+    PetscLogEventEnd(restrictEvent,0,0,0,0);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -218,10 +271,12 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 #endif
 
     // Compute B(transpose) * sigma, first computing strains
+    PetscLogEventBegin(computeEvent,0,0,0,0);
     calcTotalStrainFn(&totalStrain, basisDeriv, dispTBctpdtCell, numBasis);
     const std::vector<double_array>& stress = 
       _material->calcStress(totalStrain);
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stress);
+    PetscLogEventEnd(computeEvent,0,0,0,0);
 
 #if 0
     std::cout << "Updating residual for cell " << *c_iter << std::endl;
@@ -230,7 +285,17 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     }
 #endif
     // Assemble cell contribution into field
+    PetscLogEventBegin(updateEvent,0,0,0,0);
+#ifdef FASTER
+    j = 0;
+    for(Mesh::sieve_type::coneSequence::iterator p_iter = cone->begin(); p_iter != end; ++p_iter) {
+      residual->updateAddPoint(*p_iter, &_cellVector[j]);
+      j += residual->getFiberDimension(*p_iter);
+    }
+#else
     mesh->updateAdd(residual, *c_iter, _cellVector);
+#endif
+    PetscLogEventEnd(updateEvent,0,0,0,0);
   } // for
 } // integrateResidual
 

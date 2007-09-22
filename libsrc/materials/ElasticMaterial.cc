@@ -164,7 +164,7 @@ pylith::materials::ElasticMaterial::_getParameters(const Mesh::point_type& cell)
   const char** paramNames = _parameterNames();
   
   for (int iParam=0; iParam < numParams; ++iParam) {
-    const ALE::Obj<real_section_type> parameter = 
+    const ALE::Obj<real_section_type>& parameter = 
       _parameters->getReal(paramNames[iParam]);
     assert(!parameter.isNull());
 

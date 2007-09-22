@@ -213,6 +213,28 @@ public :
 		       const ALE::Obj<real_section_type>& coordinates,
 		       const Mesh::point_type& cell) = 0;
 
+  /** Reset the precomputation structures. */
+  void resetPrecomputation(void);
+
+  /** Precompute geometric quantities for each cell.
+   *
+   * @param mesh Finite-element mesh
+   * @param coordinates Section containing vertex coordinates
+   */
+  void precomputeGeometry(const ALE::Obj<Mesh>& mesh,
+                          const ALE::Obj<real_section_type>& coordinates,
+                          const ALE::Obj<Mesh::label_sequence>& cells);
+
+  /** Retrieve precomputed geometric quantities for a cell.
+   *
+   * @param mesh Finite-element mesh
+   * @param coordinates Section containing vertex coordinates
+   * @param cell Finite-element cell
+   */
+  void retrieveGeometry(const ALE::Obj<Mesh>& mesh,
+                        const ALE::Obj<real_section_type>& coordinates,
+                        const Mesh::point_type& cell);
+
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
 
@@ -344,6 +366,13 @@ protected :
 
   CellGeometry* _geometry; ///< Geometry of reference cell
 
+  bool _precomputed;
+  /* Precomputation sections */
+  Obj<real_section_type> _quadPtsPre;
+  Obj<real_section_type> _jacobianPre;
+  Obj<real_section_type> _jacobianDetPre;
+  Obj<real_section_type> _jacobianInvPre;
+  Obj<real_section_type> _basisDerivPre;
 }; // Quadrature
 
 #include "Quadrature.icc" // inline methods

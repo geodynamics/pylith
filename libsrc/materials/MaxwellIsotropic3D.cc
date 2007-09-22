@@ -462,14 +462,14 @@ pylith::materials::MaxwellIsotropic3D::_updateStateElastic(
     (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp] =
       totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
   } // for
-  std::cout << std::endl;
-  std::cout << " updateStateElastic: "<< std::endl;
-  std::cout << " StrainT  VisStrain  Stress: " << std::endl;
-  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-    std::cout << "  " << (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp]
-	    << "   " << (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp]
-	    << "   " << stress[iComp]
-	    << std::endl;
+//   std::cout << std::endl;
+//   std::cout << " updateStateElastic: "<< std::endl;
+//   std::cout << " StrainT  VisStrain  Stress: " << std::endl;
+//   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
+//     std::cout << "  " << (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp]
+// 	    << "   " << (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp]
+// 	    << "   " << stress[iComp]
+// 	    << std::endl;
   _needNewJacobian = true;
 } // _updateStateElastic
 
@@ -546,14 +546,14 @@ pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
 
   _needNewJacobian = false;
 
-  std::cout << std::endl;
-  std::cout << " updateStateViscoelastic: "<< std::endl;
-  std::cout << " StrainT  VisStrain  Stress: " << std::endl;
-  for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
-    std::cout << "  " << (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp]
-	    << "   " << (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp]
-	    << "   " << stress[iComp]
-	    << std::endl;
+//   std::cout << std::endl;
+//   std::cout << " updateStateViscoelastic: "<< std::endl;
+//   std::cout << " StrainT  VisStrain  Stress: " << std::endl;
+//   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
+//     std::cout << "  " << (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp]
+// 	    << "   " << (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp]
+// 	    << "   " << stress[iComp]
+// 	    << std::endl;
 } // _updateStateViscoelastic
 
 
