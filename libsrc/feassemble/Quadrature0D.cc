@@ -20,7 +20,7 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::Quadrature0D::Quadrature0D(void)
+pylith::feassemble::Quadrature0D::Quadrature0D(void) : Quadrature()
 { // constructor
 } // constructor
 

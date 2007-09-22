@@ -18,7 +18,7 @@
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::feassemble::Quadrature1Din3D::Quadrature1Din3D(void)
+pylith::feassemble::Quadrature1Din3D::Quadrature1Din3D(void) : Quadrature()
 { // constructor
 } // constructor
 

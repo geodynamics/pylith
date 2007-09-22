@@ -192,15 +192,21 @@ THINGS WE NEED SIEVE TO DO (Matt)
 
   There is another version that takes an array of maxVolumes, one fo each cell in oldMesh.
 
-4. Run the benchmarks
+4. Check in nonlinear solver
 
-5. Check in nonlinear solver
+5. Throw out cohesive midnodes from censored depth (not easy since they are mixed in with new vertices, maybe change numbering)
 
-6. Look at more than one fault tests
+6. Coarsening for PyLith meshes
 
-7. Throw out cohesive midnodes from censored depth, fix it for multiple faults
+7. Time fixes
 
-8. Coarsening for PyLith meshes
+  a. Remove extra time in uninterpolated restrict(). May need special method for P1.
+
+  Done b. Precompute element geometry
+
+  c. getStateVars() is way to expensive. It looks like _getParameters() allocates an int_array. Try just using _numParamValues.
+
+  d. Same as a) for update
 
 ======================================================================
 QUESTIONS FOR LEIF

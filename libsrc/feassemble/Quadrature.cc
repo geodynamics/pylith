@@ -29,8 +29,14 @@ pylith::feassemble::Quadrature::Quadrature(void) :
   _numBasis(0),
   _numQuadPts(0),
   _spaceDim(0),
-  _geometry(0)
+  _geometry(0),
+  _precomputed(false)
 { // constructor
+  _quadPtsPre     = new real_section_type(PETSC_COMM_WORLD);
+  _jacobianPre    = new real_section_type(PETSC_COMM_WORLD);
+  _jacobianDetPre = new real_section_type(PETSC_COMM_WORLD);
+  _jacobianInvPre = new real_section_type(PETSC_COMM_WORLD);
+  _basisDerivPre  = new real_section_type(PETSC_COMM_WORLD);
 } // constructor
 
 // ----------------------------------------------------------------------
@@ -57,10 +63,16 @@ pylith::feassemble::Quadrature::Quadrature(const Quadrature& q) :
   _numBasis(q._numBasis),
   _numQuadPts(q._numQuadPts),
   _spaceDim(q._spaceDim),
-  _geometry(0)
+  _geometry(0),
+  _precomputed(q._precomputed)
 { // copy constructor
   if (0 != q._geometry)
     _geometry = q._geometry->clone();
+  _quadPtsPre = q._quadPtsPre;
+  _jacobianPre = q._jacobianPre;
+  _jacobianDetPre = q._jacobianDetPre;
+  _jacobianInvPre = q._jacobianInvPre;
+  _basisDerivPre = q._basisDerivPre;
 } // copy constructor
 
 // ----------------------------------------------------------------------
@@ -245,5 +257,67 @@ pylith::feassemble::Quadrature::_checkJacobianDet(const double det,
   } // if
 } // _checkJacobianDet
 
+void
+pylith::feassemble::Quadrature::resetPrecomputation()
+{
+  _precomputed = false;
+  _quadPtsPre->clear();
+  _jacobianPre->clear();
+  _jacobianDetPre->clear();
+  _jacobianInvPre->clear();
+  _basisDerivPre->clear();
+}
+
+void
+pylith::feassemble::Quadrature::precomputeGeometry(const ALE::Obj<Mesh>& mesh,
+                                                   const ALE::Obj<real_section_type>& coordinates,
+                                                   const ALE::Obj<Mesh::label_sequence>& cells)
+{
+  if (_precomputed) return;
+  const Mesh::label_sequence::iterator end = cells->end();
+
+  _quadPtsPre->setFiberDimension(cells, _numQuadPts * _spaceDim);
+  _quadPtsPre->allocatePoint();
+  _jacobianPre->setFiberDimension(cells, _numQuadPts * _cellDim * _spaceDim);
+  _jacobianPre->allocatePoint();
+  _jacobianDetPre->setFiberDimension(cells, _numQuadPts);
+  _jacobianDetPre->allocatePoint();
+  _jacobianInvPre->setFiberDimension(cells, _numQuadPts * _cellDim * _spaceDim);
+  _jacobianInvPre->allocatePoint();
+  _basisDerivPre->setFiberDimension(cells, _numQuadPts * _numBasis * _spaceDim);
+  _basisDerivPre->allocatePoint();
+  for(Mesh::label_sequence::iterator c_iter = cells->begin(); c_iter != end; ++c_iter) {
+    this->computeGeometry(mesh, coordinates, *c_iter);
+    // Set coordinates of quadrature points in cell
+    _quadPtsPre->updatePoint(*c_iter, &_quadPts[0]);
+    // Set Jacobian at quadrature points in cell
+    _jacobianPre->updatePoint(*c_iter, &_jacobian[0]);
+    // Set determinant of Jacobian at quadrature points in cell
+    _jacobianDetPre->updatePoint(*c_iter, &_jacobianDet[0]);
+    // Set inverse of Jacobian at quadrature points in cell
+    _jacobianInvPre->updatePoint(*c_iter, &_jacobianInv[0]);
+    // Set derivatives of basis functions with respect to global
+    _basisDerivPre->updatePoint(*c_iter, &_basisDeriv[0]);
+  }
+  _precomputed = true;
+}
+
+void
+pylith::feassemble::Quadrature::retrieveGeometry(const ALE::Obj<Mesh>& mesh,
+                                                 const ALE::Obj<real_section_type>& coordinates,
+                                                 const Mesh::point_type& cell)
+{
+  // Do they have a fast copy?
+  const real_section_type::value_type *values = _quadPtsPre->restrictPoint(cell);
+  for(int i = 0; i < _numQuadPts * _spaceDim; ++i) _quadPts[i] = values[i];
+  values = _jacobianPre->restrictPoint(cell);
+  for(int i = 0; i < _numQuadPts * _cellDim * _spaceDim; ++i) _jacobian[i] = values[i];
+  values = _jacobianDetPre->restrictPoint(cell);
+  for(int i = 0; i < _numQuadPts; ++i) _jacobianDet[i] = values[i];
+  values = _jacobianInvPre->restrictPoint(cell);
+  for(int i = 0; i < _numQuadPts * _cellDim * _spaceDim; ++i) _jacobianInv[i] = values[i];
+  values = _basisDerivPre->restrictPoint(cell);
+  for(int i = 0; i < _numQuadPts * _numBasis * _spaceDim; ++i) _basisDeriv[i] = values[i];
+}
 
 // End of file 
