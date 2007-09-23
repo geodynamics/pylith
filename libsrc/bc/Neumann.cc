@@ -311,9 +311,7 @@ pylith::bc::Neumann::integrateResidual(
         } // for
       } // for
     } // for
-    err = PetscLogFlops(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
-    if (err)
-      throw std::runtime_error("Logging PETSc flops failed.");
+    PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
 
     // Assemble cell contribution into field
     mesh->updateAdd(residual, *c_iter, _cellVector);

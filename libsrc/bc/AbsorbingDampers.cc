@@ -276,9 +276,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
         } // for
       } // for
     } // for
-    err = PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
-    if (err)
-      throw std::runtime_error("Logging PETSc flops failed.");
+    PetscLogFlopsNoCheck(numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
 
     // Assemble cell contribution into field
     mesh->updateAdd(residual, *c_iter, _cellVector);
@@ -365,10 +363,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
         } // for
       } // for
     } // for
-    PetscErrorCode err = 
-      PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
-    if (err)
-      throw std::runtime_error("Logging PETSc flops failed.");
+    PetscLogFlopsNoCheck(numQuadPts*(3+numBasis*(1+numBasis*(1+2*spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 
