@@ -211,9 +211,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
         } // for
       } // for
     } // for
-    err = PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
-    if (err)
-      throw std::runtime_error("Logging PETSc flops failed.");
+    PetscLogFlopsNoCheck(numQuadPts*(3+numBasis*(1+numBasis*(6*spaceDim))));
 
     // Compute action for elastic terms
     if (1 == cellDim) {
@@ -232,9 +230,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	  _cellVector[iBasis*spaceDim  ] -= N1*s11;
 	} // for
       } // for
-      err = PetscLogFlops(numQuadPts*(1+numBasis*5));
-      if (err)
-	throw std::runtime_error("Logging PETSc flops failed.");
+      PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*5));
 
     } else if (2 == cellDim) {
       // Compute stresses
@@ -258,9 +254,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	  _cellVector[iBasis*spaceDim+1] -= N1*s12 + N2*s22;
 	} // for
       } // for
-      err = PetscLogFlops(numQuadPts*(1+numBasis*(8+2+9)));
-      if (err)
-	throw std::runtime_error("Logging PETSc flops failed.");
+      PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(8+2+9)));
       
     } else if (3 == cellDim) {
       // Compute stresses
@@ -291,9 +285,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
 	  _cellVector[iBlock+2] -= N1*s13 + N2*s23 + N3*s33;
 	} // for
       } // for
-      err = PetscLogFlops(numQuadPts*(1+numBasis*(3+12)));
-      if (err)
-	throw std::runtime_error("Logging PETSc flops failed.");
+      PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(3+12)));
     } else {
       std::cerr << "Unknown case for cellDim '" << cellDim << "'."
 		<< std::endl;
@@ -381,18 +373,15 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
         } // for
       } // for
     } // for
-    PetscErrorCode err = 
-      PetscLogFlops(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
-    if (err)
-      throw std::runtime_error("Logging PETSc flops failed.");
+    PetscLogFlopsNoCheck(numQuadPts*(3+numBasis*(1+numBasis*(1+spaceDim))));
     
     // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 
       mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
     assert(!globalOrder.isNull());
 
-    err = updateOperator(*jacobian, mesh, dispT, globalOrder,
-			 *c_iter, _cellMatrix, ADD_VALUES);
+    PetscErrorCode err = updateOperator(*jacobian, mesh, dispT, globalOrder,
+					*c_iter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for

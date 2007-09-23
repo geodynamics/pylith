@@ -479,10 +479,8 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     // Assemble cell contribution into field
     mesh->updateAdd(residual, *c_iter, &cellResidual[0]);
   } // for
-  PetscErrorCode err = PetscLogFlops(numConstraintVert*spaceDim*spaceDim*6 +
-				     numConstraintVert*spaceDim*2);
-  if (err)
-    throw std::runtime_error("Logging PETSc flops failed.");
+  PetscLogFlopsNoCheck(numConstraintVert*spaceDim*spaceDim*6 +
+		       numConstraintVert*spaceDim*2);
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -587,9 +585,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	    constraintOrient[kDim*spaceDim+jDim];
 	} // for
     } // for
-    err = PetscLogFlops(numConstraintVert*spaceDim*spaceDim*4);
-    if (err)
-      throw std::runtime_error("Logging PETSc flops failed.");
+    PetscLogFlopsNoCheck(numConstraintVert*spaceDim*spaceDim*4);
 
     // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 
