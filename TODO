@@ -2,10 +2,7 @@
 CURRENT ISSUES
 ======================================================================
 
-  1. Memory analyzing.
-
-     Matt is working on buildTopology(), stratify(), restrict(), and
-     setValue().
+  1. Memory and runtime analyzing.
 
   2. Add check to make sure every material in mesh has a material model.
 
