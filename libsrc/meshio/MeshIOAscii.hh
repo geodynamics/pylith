@@ -130,6 +130,7 @@ private :
 private :
 
   std::string _filename; ///< Name of file
+  bool _useIndexZero; ///< Flag indicating if indicates start at 0 (T) or 1 (F)
 
 }; // MeshIOAscii
 

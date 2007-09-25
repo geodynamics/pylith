@@ -48,6 +48,7 @@ class pylith::meshio::TestMeshIOAscii : public TestMeshIO
   CPPUNIT_TEST( testWriteRead2D );
   CPPUNIT_TEST( testWriteRead2Din3D );
   CPPUNIT_TEST( testWriteRead3D );
+  CPPUNIT_TEST( testRead3DIndexOne );
   CPPUNIT_TEST( testReadComments );
 
   CPPUNIT_TEST_SUITE_END();
@@ -84,6 +85,9 @@ public :
 
   /// Test write() and read() for 3D mesh in 3D space.
   void testWriteRead3D(void);
+
+  /// Test read() for 3D mesh with one based indexing.
+  void testRead3DIndexOne(void);
 
   /// Test and read() for 2D mesh in 2D space with comments.
   void testReadComments(void);
