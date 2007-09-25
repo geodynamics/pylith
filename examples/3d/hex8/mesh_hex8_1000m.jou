@@ -15,7 +15,7 @@ playback 'geometry.jou'
 # ----------------------------------------------------------------------
 # Set discretization size
 # ----------------------------------------------------------------------
-volume all size 2000
+volume all size 1000
 
 # ----------------------------------------------------------------------
 # Generate the mesh
@@ -37,38 +37,62 @@ block 4 name "viscoelastic x_neg"
 # ----------------------------------------------------------------------
 # Create nodeset for fault
 # ----------------------------------------------------------------------
-nodeset 10 surface fault_surface fault_surface@A
-nodeset 10 name "fault surface"
+group "fault" add node in fault_surface
+group "fault" add node in fault_surface@A
+nodeset 10 group fault
+nodeset 10 name "fault"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x face
 # ----------------------------------------------------------------------
-nodeset 11 surface 20 28
+group "face_xpos" add node in surface 20
+group "face_xpos" add node in surface 28
+nodeset 11 group face_xpos
 nodeset 11 name "face xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x face
 # ----------------------------------------------------------------------
-nodeset 12 surface 30 38
+group "face_xneg" add node in surface 30
+group "face_xneg" add node in surface 38
+nodeset 12 group face_xneg
 nodeset 12 name "face xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y face
 # ----------------------------------------------------------------------
-nodeset 13 surface 21 27 33 35
+group "face_ypos" add node in surface 21
+group "face_ypos" add node in surface 27
+group "face_ypos" add node in surface 33
+group "face_ypos" add node in surface 35
+nodeset 13 group face_ypos
 nodeset 13 name "face ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y face
 # ----------------------------------------------------------------------
-nodeset 14 surface 23 25 31 37
+group "face_yneg" add node in surface 23
+group "face_yneg" add node in surface 25
+group "face_yneg" add node in surface 31
+group "face_yneg" add node in surface 37
+nodeset 14 group face_yneg
 nodeset 14 name "face yneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -z face
 # ----------------------------------------------------------------------
-nodeset 15 surface 12 16
-nodeset 15 name "face -z"
+group "face_zneg" add node in surface 12
+group "face_zneg" add node in surface 16
+nodeset 15 group face_zneg
+nodeset 15 name "face zneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z face w/o fault
+# ----------------------------------------------------------------------
+group "face_zneg_nofault" add node in face_zneg
+group "face_zneg_nofault" remove node in fault
+nodeset 16 group face_zneg_nofault
+nodeset 16 name "face zneg nofault"
 
 # ----------------------------------------------------------------------
 # Export exodus file
