@@ -20,7 +20,7 @@ c
       integer nsd,maxnodes,maxelmts,maxnen,maxgauss,maxattr,maxeattr
       integer maxoattr
       parameter(nsd=3,maxnodes=1000000,maxelmts=1000000,maxnen=8,
-     & maxgauss=8,maxattr=6,maxeattr=24,maxoattr=30)
+     & maxgauss=8,maxattr=12,maxeattr=24,maxoattr=30)
 c
 c...  input/output and logical flag parameters
 c
