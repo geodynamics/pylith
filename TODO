@@ -205,6 +205,12 @@ THINGS WE NEED SIEVE TO DO (Matt)
 
   d. Same as a) for update
 
+  e. Put in flop counting for IR
+
+8. Memory fixes
+
+  a. Share memory in precomputation sections
+
 ======================================================================
 QUESTIONS FOR LEIF
 ======================================================================
