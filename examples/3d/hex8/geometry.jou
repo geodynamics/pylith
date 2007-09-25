@@ -43,5 +43,5 @@ volume 6 name "visco_xneg"
 # ----------------------------------------------------------------------
 # Imprint all volumes, merging surfaces
 # ----------------------------------------------------------------------
-imprint volume all with volume all
-merge volume all
+imprint all with volume all
+merge all
