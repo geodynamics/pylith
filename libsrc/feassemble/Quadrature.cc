@@ -278,12 +278,16 @@ pylith::feassemble::Quadrature::precomputeGeometry(const ALE::Obj<Mesh>& mesh,
 
   _quadPtsPre->setFiberDimension(cells, _numQuadPts * _spaceDim);
   _quadPtsPre->allocatePoint();
+  _jacobianPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
   _jacobianPre->setFiberDimension(cells, _numQuadPts * _cellDim * _spaceDim);
   _jacobianPre->allocatePoint();
+  _jacobianDetPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
   _jacobianDetPre->setFiberDimension(cells, _numQuadPts);
   _jacobianDetPre->allocatePoint();
+  _jacobianInvPre->setAtlas(_jacobianPre->getAtlas());
   _jacobianInvPre->setFiberDimension(cells, _numQuadPts * _cellDim * _spaceDim);
   _jacobianInvPre->allocatePoint();
+  _basisDerivPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
   _basisDerivPre->setFiberDimension(cells, _numQuadPts * _numBasis * _spaceDim);
   _basisDerivPre->allocatePoint();
   for(Mesh::label_sequence::iterator c_iter = cells->begin(); c_iter != end; ++c_iter) {
