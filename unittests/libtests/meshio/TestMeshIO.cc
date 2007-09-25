@@ -145,7 +145,7 @@ pylith::meshio::TestMeshIO::_checkVals(const ALE::Obj<Mesh>& mesh,
 				      mesh->depth())->size();
   CPPUNIT_ASSERT_EQUAL(data.numCorners, numCorners);
 
-  const int offset = (data.useIndexZero) ? numCells : numCells-1;
+  const int offset = numCells;
   i = 0;
   for(Mesh::label_sequence::iterator e_iter = cells->begin();
       e_iter != cells->end();

@@ -40,6 +40,7 @@ testmeshio_SOURCES += \
 	data/MeshData2D.cc \
 	data/MeshData2Din3D.cc \
 	data/MeshData3D.cc \
+	data/MeshData3DIndexOne.cc \
 	data/MeshDataCubitTri.cc \
 	data/MeshDataCubitQuad.cc \
 	data/MeshDataCubitTet.cc \
@@ -54,6 +55,7 @@ noinst_HEADERS += \
 	data/MeshData2D.hh \
 	data/MeshData2Din3D.hh \
 	data/MeshData3D.hh \
+	data/MeshData3DIndexOne.hh \
 	data/MeshDataCubitTri.hh \
 	data/MeshDataCubitQuad.hh \
 	data/MeshDataCubitTet.hh \

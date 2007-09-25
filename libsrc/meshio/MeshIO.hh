@@ -90,18 +90,6 @@ protected :
   virtual
   void _read(void) = 0;
 
-  /** Get flag indicating whether indices start at 0 (True) or 1 (False).
-   *
-   * @returns True if indices start at 0, false if 1.
-   */
-  bool useIndexZero(void) const;
-
-  /** Set flag indicating whether indices start at 0 (True) or 1 (False).
-   *
-   * @param flag True if indices start at 0, false if 1.
-   */
-  void useIndexZero(const bool flag);
-
   /** Get spatial dimension of mesh.
    *
    * @returns Spatial dimension of mesh
@@ -109,6 +97,9 @@ protected :
   int getMeshDim(void) const;
 
   /** Build mesh topology and set vertex coordinates.
+   *
+   * All mesh information must use zero based indices. In other words,
+   * the lowest index MUST be 0 not 1.
    *
    * @param coordinates Array of coordinates of vertices
    * @param numVertices Number of vertices
@@ -140,6 +131,10 @@ protected :
 
   /** Get information about cells in mesh.
    *
+   * The indices of the vertices will be returned using zero based
+   * indices. In other words, the first vertex will be referred to
+   * using an index of 0.
+   *
    * Method caller is responsible for memory management.
    *
    * @param cells Pointer to array of indicates of vertices in each cell
@@ -166,6 +161,9 @@ protected :
 
   /** Build a point group
    *
+   * The indices in the points array must use zero based indices. In
+   * other words, the lowest index MUST be 0 not 1.
+   *
    * @param name The group name
    * @param type The point type, e.g. VERTEX, CELL
    * @param points An array of the points in the group.
@@ -182,6 +180,10 @@ protected :
 
   /** Return a point group
    *
+   * The indices of the vertices will be returned using zero based
+   * indices. In other words, the first vertex will be referred to
+   * using an index of 0.
+   *
    * @param points An array of the points in the group
    * @param type The point type, e.g. VERTEX, CELL
    * @param name The group name
@@ -197,7 +199,6 @@ protected :
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private :
 
-  bool _useIndexZero; ///< Flag indicating if indicates start at 0 (T) or 1 (F)
   bool _debug; ///< True to turn of mesh debugging output
   bool _interpolate; ///< True if building intermediate topology elements
 

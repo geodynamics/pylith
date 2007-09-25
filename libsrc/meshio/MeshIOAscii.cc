@@ -34,7 +34,8 @@ const char* pylith::meshio::MeshIOAscii::groupTypeNames[] =
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIOAscii::MeshIOAscii(void) :
-  _filename("")
+  _filename(""),
+  _useIndexZero(true)
 { // constructor
 } // constructor
 
@@ -104,9 +105,9 @@ pylith::meshio::MeshIOAscii::_read(void)
 	  std::string flag = "";
 	  buffer >> flag;
 	  if (0 == strcasecmp(flag.c_str(), "true"))
-	    useIndexZero(true);
+	    _useIndexZero = true;
 	  else
-	    useIndexZero(false);
+	    _useIndexZero = false;
 	} else if (0 == strcasecmp(token.c_str(), "vertices")) {
 	  _readVertices(parser, &coordinates, &numVertices, &spaceDim);
 	  readVertices = true;
@@ -182,7 +183,7 @@ pylith::meshio::MeshIOAscii::_write(void) const
   fileout
     << "mesh = {\n"
     << "  dimension = " << getMeshDim() << "\n"
-    << "  use-index-zero = " << (useIndexZero() ? "true" : "false") << "\n";
+    << "  use-index-zero = " << (_useIndexZero ? "true" : "false") << "\n";
 
   _writeVertices(fileout);
   _writeCells(fileout);
@@ -327,7 +328,7 @@ pylith::meshio::MeshIOAscii::_readCells(spatialdata::utils::LineParser& parser,
 	for (int iCorner=0; iCorner < *numCorners; ++iCorner)
 	  buffer >> (*cells)[i++];
       } // for
-      if (!useIndexZero()) {
+      if (!_useIndexZero) {
 	// if files begins with index 1, then decrement to index 0
 	// for compatibility with Sieve
 	for (int i=0; i < size; ++i)
@@ -484,6 +485,9 @@ pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
     msg << "I/O error while parsing group '" << *name << "'.";
     throw std::runtime_error(msg.str());
   } // if
+
+  if (!_useIndexZero)
+    *points -= 1;
 } // _readGroup
 
 // ----------------------------------------------------------------------
@@ -496,6 +500,8 @@ pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
   GroupPtType type;
   _getGroup(&points, &type, name);
 
+  const int offset = _useIndexZero ? 0 : 1;
+
   const int numPoints = points.size();
   fileout
     << "  group = {\n"
@@ -504,7 +510,7 @@ pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
     << "    count = " << numPoints << "\n"
     << "    indices = {\n";
   for(int i=0; i < numPoints; ++i)
-    fileout << "      " << points[i] << "\n";
+    fileout << "      " << points[i]+offset << "\n";
 
   fileout
     << "    }\n"

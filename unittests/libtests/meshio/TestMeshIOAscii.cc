@@ -24,6 +24,7 @@
 #include "data/MeshData2D.hh"
 #include "data/MeshData2Din3D.hh"
 #include "data/MeshData3D.hh"
+#include "data/MeshData3DIndexOne.hh"
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::meshio::TestMeshIOAscii );
@@ -125,6 +126,16 @@ pylith::meshio::TestMeshIOAscii::testWriteRead3D(void)
   const char* filename = "mesh3D.txt";
   _testWriteRead(data, filename);
 } // testWriteRead3D
+
+// ----------------------------------------------------------------------
+// Test read() for 3D mesh with 1 based indexing.
+void
+pylith::meshio::TestMeshIOAscii::testRead3DIndexOne(void)
+{ // testRead3IndexDOne
+  MeshData3DIndexOne data;
+  const char* filename = "data/mesh3DIndexOne.txt";
+  _testRead(data, filename);
+} // testRead3DIndexOne
 
 // ----------------------------------------------------------------------
 // Test write() and read() for 2D mesh in 2D space with comments.

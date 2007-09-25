@@ -25,7 +25,6 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
-  _useIndexZero(true),
   _debug(false),
   _interpolate(false),
   _mesh(0)
@@ -180,7 +179,6 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
   const int size = (*numCells) * (*numCorners);
   cells->resize(size);
     
-  const int offset = (useIndexZero()) ? 0 : 1;
   int i = 0;
   for(Mesh::label_sequence::iterator e_iter = meshCells->begin();
       e_iter != meshCells->end();
@@ -190,7 +188,7 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
     for(sieve_type::traits::coneSequence::iterator c_iter = cone->begin();
 	c_iter != cone->end();
 	++c_iter)
-      (*cells)[i++] = vNumbering->getIndex(*c_iter) + offset;
+      (*cells)[i++] = vNumbering->getIndex(*c_iter);
   } // for
 } // _getCells
 
@@ -254,7 +252,7 @@ pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const
 } // _getMaterials
 
 // ----------------------------------------------------------------------
-// Build a point group as an int sectio
+// Build a point group as an int section.
 void
 pylith::meshio::MeshIO::_setGroup(const std::string& name,
 				  const GroupPtType type,
@@ -273,7 +271,7 @@ pylith::meshio::MeshIO::_setGroup(const std::string& name,
   else if (VERTEX == type) {
     const int numCells = (*_mesh)->heightStratum(0)->size();
     for(int i=0; i < numPoints; ++i)
-      groupField->setFiberDimension(points[i]+numCells, 1);
+      groupField->setFiberDimension(numCells+points[i], 1);
   } // if/else
   (*_mesh)->allocate(groupField);
 } // _setGroup
@@ -346,7 +344,7 @@ void
 pylith::meshio::MeshIO::_getGroup(int_array* points,
 				  GroupPtType* type,
 				  const char *name) const
-{ // _getMaterials
+{ // _getGroup
   assert(0 != points);
   assert(0 != type);
   assert(0 != _mesh);
@@ -376,7 +374,7 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
     assert(!numbering.isNull());
     (*points)[i++] = numbering->getIndex(*c_iter);
   } // for
-} // _getMaterials
+} // _getGroup
 
 
 // End of file 
