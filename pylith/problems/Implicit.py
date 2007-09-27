@@ -143,7 +143,10 @@ class Implicit(Formulation):
     """
     Advance to next time step.
     """
+    from pylith.utils.profiling import resourceUsageString
+
     self._info.log("Integrating residual term in operator.")
+    self._debug.log(resourceUsageString())
     residual = self.fields.getReal("residual")
     dispIncr = self.fields.getReal("dispIncr")
     import pylith.topology.topology as bindings
@@ -155,9 +158,12 @@ class Implicit(Formulation):
 
     self._info.log("Completing residual.")
     bindings.completeSection(self.mesh.cppHandle, residual)
+    self._debug.log(resourceUsageString())
+
     import pylith.utils.petsc as petsc
     self._info.log("Solving equations.")
     self.solver.solve(dispIncr, self.jacobian, residual)
+    self._debug.log(resourceUsageString())
     return
 
 
@@ -201,6 +207,9 @@ class Implicit(Formulation):
     Set members based using inventory.
     """
     Formulation._configure(self)
+
+    import journal
+    self._debug = journal.debug(self.name)
     return
 
 
