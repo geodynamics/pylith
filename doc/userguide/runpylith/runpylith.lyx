@@ -41,6 +41,7 @@
 \tracking_changes false
 \output_changes false
 \author "" 
+\author "" 
 \end_header
 
 \begin_body
@@ -57,7 +58,7 @@ There are essentially three major pieces needed to run a problem with PyLith:
 A set of parameters describing the problem.
  These parameters describe the type of problem to be run, solver information,
  time-stepping information, etc.
- This information can be provided from the command-line or using a 
+ This information can be provided from the command-line or by using a 
 \family typewriter
 .cfg
 \family default
@@ -999,7 +1000,7 @@ reference "cha:boundary:interface:conditions"
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \noindent
