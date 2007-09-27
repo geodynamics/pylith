@@ -16,6 +16,8 @@
 
 #include "pylith/utils/array.hh" // USES double_array
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -137,6 +139,8 @@ pylith::materials::MaxwellIsotropic3D::_dbToParameters(std::vector<double_array>
   (*paramVals)[_MaxwellIsotropic3D::pidMu][0] = mu;
   (*paramVals)[_MaxwellIsotropic3D::pidLambda][0] = lambda;
   (*paramVals)[_MaxwellIsotropic3D::pidMaxwellTime][0] = maxwelltime;
+
+  PetscLogFlopsNoCheck(7);
 } // _dbToParameters
 
 // ----------------------------------------------------------------------
@@ -194,8 +198,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
   const double lambda = parameters[_MaxwellIsotropic3D::pidLambda][0];
   const double maxwelltime = parameters[_MaxwellIsotropic3D::pidMaxwellTime][0];
 
-  const double lambda2mu = lambda + 2.0 * mu;
-  const double bulkmodulus = lambda + 2.0 * mu/3.0;
+  const double mu2 = 2.0 * mu;
 
   const double e11 = totalStrain[0];
   const double e22 = totalStrain[1];
@@ -205,15 +208,14 @@ pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
   const double e13 = totalStrain[5];
   
   const double traceStrainTpdt = e11 + e22 + e33;
-  const double meanStrainTpdt = traceStrainTpdt/3.0;
   const double s123 = lambda * traceStrainTpdt;
 
-  (*stress)[0] = s123 + 2.0*mu*e11;
-  (*stress)[1] = s123 + 2.0*mu*e22;
-  (*stress)[2] = s123 + 2.0*mu*e33;
-  (*stress)[3] = 2.0 * mu * e12;
-  (*stress)[4] = 2.0 * mu * e23;
-  (*stress)[5] = 2.0 * mu * e13;
+  (*stress)[0] = s123 + mu2*e11;
+  (*stress)[1] = s123 + mu2*e22;
+  (*stress)[2] = s123 + mu2*e33;
+  (*stress)[3] = mu2 * e12;
+  (*stress)[4] = mu2 * e23;
+  (*stress)[5] = mu2 * e13;
   // std::cout << " _calcStressElastic: " << std::endl;
   // std::cout << " totalStrain: " << std::endl;
   // for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
@@ -222,6 +224,8 @@ pylith::materials::MaxwellIsotropic3D::_calcStressElastic(
   // for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp)
     // std::cout << "  " << (*stress)[iComp];
   // std::cout << std::endl;
+
+  PetscLogFlopsNoCheck(13);
 } // _calcStressElastic
 
 // ----------------------------------------------------------------------
@@ -248,8 +252,8 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
   const double lambda = parameters[_MaxwellIsotropic3D::pidLambda][0];
   const double maxwelltime = parameters[_MaxwellIsotropic3D::pidMaxwellTime][0];
 
-  const double lambda2mu = lambda + 2.0 * mu;
-  const double bulkmodulus = lambda + 2.0 * mu/3.0;
+  const double mu2 = 2.0 * mu;
+  const double bulkmodulus = lambda + mu2/3.0;
 
   const double e11 = totalStrain[0];
   const double e22 = totalStrain[1];
@@ -275,6 +279,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
 			      parameters[_MaxwellIsotropic3D::pidStrainT][1] +
 			      parameters[_MaxwellIsotropic3D::pidStrainT][2])/3.0;
   
+  PetscLogFlopsNoCheck(11);
   // The code below should probably be in a separate function since it
   // is used more than once.  I should also probably cover the possibility
   // that Maxwell time is zero (although this should never happen).
@@ -292,8 +297,11 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
       fraction *= _dt/maxwelltime;
       dq += fSign*fraction/factorial;
     } // for
-  } else
+    PetscLogFlopsNoCheck(1+7*numTerms);
+  } else {
     dq = maxwelltime*(1.0-exp(-_dt/maxwelltime))/_dt;
+    PetscLogFlopsNoCheck(7);
+  } // else
 
   const double expFac = exp(-_dt/maxwelltime);
   const double elasFac = 2.0*mu;
@@ -301,6 +309,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
   double devStrainT = 0.0;
   double devStressTpdt = 0.0;
   double visStrain = 0.0;
+  PetscLogFlopsNoCheck(4);
   // std::cout << " _calcStressViscoelastic: " << std::endl;
   // std::cout << " stress  totalStrain  visStrain: " << std::endl;
   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
@@ -316,6 +325,7 @@ pylith::materials::MaxwellIsotropic3D::_calcStressViscoelastic(
     // Temporary to get stresses and strains.
     // std::cout << "  " << (*stress)[iComp] << "  " << totalStrain[iComp] << "  " << visStrain << std:: endl;
   } // for
+  PetscLogFlopsNoCheck(11 * _MaxwellIsotropic3D::tensorSize);
 } // _calcStress
 
 // ----------------------------------------------------------------------
@@ -336,8 +346,9 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic(
   const double lambda = parameters[_MaxwellIsotropic3D::pidLambda][0];
   const double maxwelltime = parameters[_MaxwellIsotropic3D::pidMaxwellTime][0];
 
-  const double lambda2mu = lambda + 2.0 * mu;
-  const double bulkmodulus = lambda + 2.0 * mu/3.0;
+  const double mu2 = 2.0 * mu;
+  const double lambda2mu = lambda + mu2;
+  const double bulkmodulus = lambda + mu2/3.0;
 
   (*elasticConsts)[ 0] = lambda2mu; // C1111
   (*elasticConsts)[ 1] = lambda; // C1122
@@ -354,12 +365,14 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsElastic(
   (*elasticConsts)[12] = 0; // C3312
   (*elasticConsts)[13] = 0; // C3323
   (*elasticConsts)[14] = 0; // C3313
-  (*elasticConsts)[15] = 2.0 * mu; // C1212
+  (*elasticConsts)[15] = mu2; // C1212
   (*elasticConsts)[16] = 0; // C1223
   (*elasticConsts)[17] = 0; // C1213
-  (*elasticConsts)[18] = 2.0 * mu; // C2323
+  (*elasticConsts)[18] = mu2; // C2323
   (*elasticConsts)[19] = 0; // C2313
-  (*elasticConsts)[20] = 2.0 * mu; // C1313
+  (*elasticConsts)[20] = mu2; // C1313
+
+  PetscLogFlopsNoCheck(4);
 } // _calcElasticConstsElastic
 
 // ----------------------------------------------------------------------
@@ -381,12 +394,14 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   const double lambda = parameters[_MaxwellIsotropic3D::pidLambda][0];
   const double maxwelltime = parameters[_MaxwellIsotropic3D::pidMaxwellTime][0];
 
-  const double lambda2mu = lambda + 2.0 * mu;
-  const double bulkmodulus = lambda + 2.0 * mu/3.0;
+  const double mu2 = 2.0 * mu;
+  const double bulkmodulus = lambda + mu2/3.0;
 
   const double timeFrac = 1.0e-5;
   const int numTerms = 5;
   double dq = 0.0;
+
+  PetscLogFlopsNoCheck(3);
   if(maxwelltime < timeFrac*_dt) {
     double fSign = 1.0;
     double factorial = 1.0;
@@ -398,8 +413,11 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
       fraction *= _dt/maxwelltime;
       dq += fSign*fraction/factorial;
     } // for
-  } else
+    PetscLogFlopsNoCheck(1+7*numTerms);
+  } else {
     dq = maxwelltime*(1.0-exp(-_dt/maxwelltime))/_dt;
+    PetscLogFlopsNoCheck(7);
+  } // else
 
   const double visFac = mu*dq/3.0;
   (*elasticConsts)[ 0] = bulkmodulus + 4.0*visFac; // C1111
@@ -423,6 +441,8 @@ pylith::materials::MaxwellIsotropic3D::_calcElasticConstsViscoelastic(
   (*elasticConsts)[18] = (*elasticConsts)[15]; // C2323
   (*elasticConsts)[19] = 0; // C2313
   (*elasticConsts)[20] = (*elasticConsts)[15]; // C1313
+
+  PetscLogFlopsNoCheck(7);
 } // _calcElasticConstsViscoelastic
 
 // ----------------------------------------------------------------------
@@ -454,14 +474,15 @@ pylith::materials::MaxwellIsotropic3D::_updateStateElastic(
   const double diag[] = { 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
   // Temporary to get stresses.
-  double_array stress(6);
-  _calcStressElastic(&stress, (*parameters), totalStrain);
+  // double_array stress(6);
+  // _calcStressElastic(&stress, (*parameters), totalStrain);
 
   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
     (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp] = totalStrain[iComp];
     (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp] =
       totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
   } // for
+  PetscLogFlopsNoCheck(5 * _MaxwellIsotropic3D::tensorSize);
 //   std::cout << std::endl;
 //   std::cout << " updateStateElastic: "<< std::endl;
 //   std::cout << " StrainT  VisStrain  Stress: " << std::endl;
@@ -472,6 +493,8 @@ pylith::materials::MaxwellIsotropic3D::_updateStateElastic(
 // 	    << std::endl;
   _needNewJacobian = true;
 } // _updateStateElastic
+
+// **************  Finish adding PETSc logging from here *******************
 
 // ----------------------------------------------------------------------
 // Update state variables.

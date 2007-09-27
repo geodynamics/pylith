@@ -16,6 +16,8 @@
 
 #include "pylith/utils/array.hh" // USES double_array
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -126,6 +128,8 @@ pylith::materials::ElasticIsotropic3D::_dbToParameters(std::vector<double_array>
   (*paramVals)[_ElasticIsotropic3D::pidDensity][0] = density;
   (*paramVals)[_ElasticIsotropic3D::pidMu][0] = mu;
   (*paramVals)[_ElasticIsotropic3D::pidLambda][0] = lambda;
+
+  PetscLogFlopsNoCheck(6);
 } // _dbToParameters
 
 // ----------------------------------------------------------------------
@@ -179,8 +183,8 @@ pylith::materials::ElasticIsotropic3D::_calcStress(
   const double mu = parameters[_ElasticIsotropic3D::pidMu][0];
   const double lambda = parameters[_ElasticIsotropic3D::pidLambda][0];
 
-  const double lambda2mu = lambda + 2.0 * mu;
-  
+  const double mu2 = 2.0*mu;
+
   const double e11 = totalStrain[0];
   const double e22 = totalStrain[1];
   const double e33 = totalStrain[2];
@@ -190,12 +194,13 @@ pylith::materials::ElasticIsotropic3D::_calcStress(
   
   const double s123 = lambda * (e11 + e22 + e33);
 
-  (*stress)[0] = s123 + 2.0*mu*e11;
-  (*stress)[1] = s123 + 2.0*mu*e22;
-  (*stress)[2] = s123 + 2.0*mu*e33;
-  (*stress)[3] = 2.0 * mu * e12;
-  (*stress)[4] = 2.0 * mu * e23;
-  (*stress)[5] = 2.0 * mu * e13;
+  (*stress)[0] = s123 + mu2*e11;
+  (*stress)[1] = s123 + mu2*e22;
+  (*stress)[2] = s123 + mu2*e33;
+  (*stress)[3] = mu2 * e12;
+  (*stress)[4] = mu2 * e23;
+  (*stress)[5] = mu2 * e13;
+  PetscLogFlopsNoCheck(13);
 } // _calcStress
 
 // ----------------------------------------------------------------------
@@ -218,7 +223,8 @@ pylith::materials::ElasticIsotropic3D::_calcElasticConsts(
   const double mu = parameters[_ElasticIsotropic3D::pidMu][0];
   const double lambda = parameters[_ElasticIsotropic3D::pidLambda][0];
 
-  const double lambda2mu = lambda + 2.0 * mu;
+  const double mu2 = 2.0 * mu;
+  const double lambda2mu = lambda + mu2;
    
   (*elasticConsts)[ 0] = lambda2mu; // C1111
   (*elasticConsts)[ 1] = lambda; // C1122
@@ -235,12 +241,13 @@ pylith::materials::ElasticIsotropic3D::_calcElasticConsts(
   (*elasticConsts)[12] = 0; // C3312
   (*elasticConsts)[13] = 0; // C3323
   (*elasticConsts)[14] = 0; // C3313
-  (*elasticConsts)[15] = 2.0 * mu; // C1212
+  (*elasticConsts)[15] = mu2; // C1212
   (*elasticConsts)[16] = 0; // C1223
   (*elasticConsts)[17] = 0; // C1213
-  (*elasticConsts)[18] = 2.0 * mu; // C2323
+  (*elasticConsts)[18] = mu2; // C2323
   (*elasticConsts)[19] = 0; // C2313
-  (*elasticConsts)[20] = 2.0 * mu; // C1313
+  (*elasticConsts)[20] = mu2; // C1313
+  PetscLogFlopsNoCheck(2);
 } // _calcElasticConsts
 
 

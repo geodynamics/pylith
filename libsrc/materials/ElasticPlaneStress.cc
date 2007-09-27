@@ -16,6 +16,8 @@
 
 #include "pylith/utils/array.hh" // USES double_array
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -126,6 +128,8 @@ pylith::materials::ElasticPlaneStress::_dbToParameters(
   (*paramVals)[_ElasticPlaneStress::pidDensity][0] = density;
   (*paramVals)[_ElasticPlaneStress::pidMu][0] = mu;
   (*paramVals)[_ElasticPlaneStress::pidLambda][0] = lambda;
+
+  PetscLogFlopsNoCheck(6);
 } // _dbToParameters
 
 // ----------------------------------------------------------------------
@@ -178,16 +182,19 @@ pylith::materials::ElasticPlaneStress::_calcStress(
   const double mu = parameters[_ElasticPlaneStress::pidMu][0];
   const double lambda = parameters[_ElasticPlaneStress::pidLambda][0];
 
-  const double lambda2mu = lambda + 2.0 * mu;
+  const double mu2 = 2.0 * mu;
+  const double lambda2mu = lambda + mu2;
   const double lambdamu = lambda + mu;
   
   const double e11 = totalStrain[0];
   const double e22 = totalStrain[1];
   const double e12 = totalStrain[2];
 
-  (*stress)[0] = (4.0*mu*lambdamu * e11 + 2.0*mu*lambda * e22)/lambda2mu;
-  (*stress)[1] = (2.0*mu*lambda * e11 + 4.0*mu*lambdamu * e22)/lambda2mu;
-  (*stress)[2] = 2.0 * mu * e12;
+  (*stress)[0] = (2.0*mu2*lambdamu * e11 + mu2*lambda * e22)/lambda2mu;
+  (*stress)[1] = (mu2*lambda * e11 + 2.0*mu2*lambdamu * e22)/lambda2mu;
+  (*stress)[2] = mu2 * e12;
+
+  PetscLogFlopsNoCheck(18);
 } // _calcStress
 
 // ----------------------------------------------------------------------
@@ -210,15 +217,18 @@ pylith::materials::ElasticPlaneStress::_calcElasticConsts(
   const double mu = parameters[_ElasticPlaneStress::pidMu][0];
   const double lambda = parameters[_ElasticPlaneStress::pidLambda][0];
   
-  const double lambda2mu = lambda + 2.0 * mu;
-  const double c11 = 4.0 * mu * (lambda + mu) / lambda2mu;
+  const double mu2 = 2.0 * mu;
+  const double lambda2mu = lambda + mu2;
+  const double c11 = 2.0 * mu2 * (lambda + mu) / lambda2mu;
 
   (*elasticConsts)[0] = c11; // C1111
-  (*elasticConsts)[1] = 2.0 * mu * lambda / lambda2mu; // C1122
+  (*elasticConsts)[1] = mu2 * lambda / lambda2mu; // C1122
   (*elasticConsts)[2] = 0; // C1112
   (*elasticConsts)[3] = c11; // C2222
   (*elasticConsts)[4] = 0; // C2212
-  (*elasticConsts)[5] = 2.0 * mu; // C1212
+  (*elasticConsts)[5] = mu2; // C1212
+
+  PetscLogFlopsNoCheck(8);
 } // calcElasticConsts
 
 
