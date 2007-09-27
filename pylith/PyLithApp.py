@@ -73,23 +73,32 @@ class PyLithApp(Application):
     """
     Run the application.
     """
+    from pylith.utils.profiling import resourceUsageString
+    
     self.petsc.initialize()
+    self._debug.log(resourceUsageString())
 
     # Create mesh (adjust to account for interfaces (faults) if necessary)
     interfaces = None
     if "interfaces" in dir(self.problem):
       interfaces = self.problem.interfaces.bin
     mesh = self.mesher.create(interfaces)
+    self._debug.log(resourceUsageString())
 
     # Setup problem, verify configuration, and then initialize
     self.problem.preinitialize(mesh)
+    self._debug.log(resourceUsageString())
+
     self.problem.verifyConfiguration()
+
     self.problem.initialize()
+    self._debug.log(resourceUsageString())
 
     # Run problem and cleanup
     self.problem.run(self)
+    self._debug.log(resourceUsageString())
+
     self.problem.finalize()
-    
     self.petsc.finalize()
     return
   
@@ -104,6 +113,9 @@ class PyLithApp(Application):
     self.mesher = self.inventory.mesher
     self.problem = self.inventory.problem
     self.petsc = self.inventory.petsc
+
+    import journal
+    self._debug = journal.debug(self.name)
     return
 
 

@@ -102,6 +102,7 @@ nobase_pkgpyexec_PYTHON = \
 	utils/ObjectBin.py \
 	utils/PetscManager.py \
 	utils/importing.py \
+	utils/profiling.py \
 	utils/testarray.py
 
 

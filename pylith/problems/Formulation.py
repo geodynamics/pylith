@@ -18,6 +18,8 @@
 
 from pyre.components.Component import Component
 
+from pylith.utils.profiling import resourceUsageString
+
 # Formulation class
 class Formulation(Component):
   """
@@ -156,19 +158,23 @@ class Formulation(Component):
     """
     from pylith.topology.FieldsManager import FieldsManager
     self.fields = FieldsManager(self.mesh)
+    self._debug.log(resourceUsageString())
 
     self._info.log("Initializing integrators.")
     for integrator in self.integrators:
       integrator.initialize()
+    self._debug.log(resourceUsageString())
 
     self._info.log("Initializing constraints.")
     for constraint in self.constraints:
       constraint.initialize()
+    self._debug.log(resourceUsageString())
 
     self._info.log("Setting up solution output.")
     for output in self.output.bin:
       output.open(self.mesh)
       output.writeTopology()
+    self._debug.log(resourceUsageString())
 
     self._info.log("Creating solution field.")
     solnName = self.solnField['name']
@@ -180,6 +186,7 @@ class Formulation(Component):
     self.fields.allocate(solnName)
     for constraint in self.constraints:
       constraint.setConstraints(self.fields.getSolution())
+    self._debug.log(resourceUsageString())
     return
 
 
@@ -216,6 +223,9 @@ class Formulation(Component):
     Component._configure(self)
     self.solver = self.inventory.solver
     self.output = self.inventory.output
+
+    import journal
+    self._debug = journal.debug(self.name)
     return
 
 
@@ -224,12 +234,14 @@ class Formulation(Component):
     Reform Jacobian matrix for operator.
     """
     self._info.log("Reforming Jacobian of operator.")
+    self._debug.log(resourceUsageString())
     import pylith.utils.petsc as petsc
     petsc.mat_setzero(self.jacobian)
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateJacobian(self.jacobian, t+dt, self.fields)
     petsc.mat_assemble(self.jacobian)
+    self._debug.log(resourceUsageString())
     return
 
 
