@@ -16,6 +16,8 @@
 
 #include "pylith/utils/array.hh" // USES double_array
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include <assert.h> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
@@ -127,6 +129,8 @@ pylith::materials::ElasticPlaneStrain::_dbToParameters(
   (*paramVals)[_ElasticPlaneStrain::pidDensity][0] = density;
   (*paramVals)[_ElasticPlaneStrain::pidMu][0] = mu;
   (*paramVals)[_ElasticPlaneStrain::pidLambda][0] = lambda;
+
+  PetscLogFlopsNoCheck(6);
 } // computeParameters
 
 // ----------------------------------------------------------------------
@@ -180,7 +184,7 @@ pylith::materials::ElasticPlaneStrain::_calcStress(
   const double mu = parameters[_ElasticPlaneStrain::pidMu][0];
   const double lambda = parameters[_ElasticPlaneStrain::pidLambda][0];
   
-  const double lambda2mu = lambda + 2.0 * mu;
+  const double mu2 = 2.0 * mu;
   
   const double e11 = totalStrain[0];
   const double e22 = totalStrain[1];
@@ -188,9 +192,11 @@ pylith::materials::ElasticPlaneStrain::_calcStress(
 
   const double s12 = lambda * (e11 + e22);
 
-  (*stress)[0] = s12 + 2.0*mu*e11;
-  (*stress)[1] = s12 + 2.0*mu*e22;
-  (*stress)[2] = 2.0 * mu * e12;
+  (*stress)[0] = s12 + mu2*e11;
+  (*stress)[1] = s12 + mu2*e22;
+  (*stress)[2] = mu2 * e12;
+
+  PetscLogFlopsNoCheck(8);
 } // _calcStress
 
 // ----------------------------------------------------------------------
@@ -213,14 +219,17 @@ pylith::materials::ElasticPlaneStrain::_calcElasticConsts(
   const double mu = parameters[_ElasticPlaneStrain::pidMu][0];
   const double lambda = parameters[_ElasticPlaneStrain::pidLambda][0];
 
-  const double lambda2mu = lambda + 2.0*mu;
+  const double mu2 = 2.0 * mu;
+  const double lambda2mu = lambda + mu2;
   
   (*elasticConsts)[0] = lambda2mu; // C1111
   (*elasticConsts)[1] = lambda; // C1122
   (*elasticConsts)[2] = 0; // C1112
   (*elasticConsts)[3] = lambda2mu; // C2222
   (*elasticConsts)[4] = 0; // C2212
-  (*elasticConsts)[5] = 2.0*mu; // C1212
+  (*elasticConsts)[5] = mu2; // C1212
+
+  PetscLogFlopsNoCheck(2);
 } // calcElasticConsts
 
 

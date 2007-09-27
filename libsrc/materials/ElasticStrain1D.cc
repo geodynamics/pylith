@@ -16,6 +16,8 @@
 
 #include "pylith/utils/array.hh" // USES double_array
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -109,6 +111,8 @@ pylith::materials::ElasticStrain1D::_dbToParameters(std::vector<double_array>* c
 
   (*paramVals)[_ElasticStrain1D::pidDensity][0] = density;
   (*paramVals)[_ElasticStrain1D::pidLambda2mu][0] = lambda2mu;
+
+  PetscLogFlopsNoCheck(2);
 } // _dbToParameters
 
 // ----------------------------------------------------------------------
@@ -161,6 +165,8 @@ pylith::materials::ElasticStrain1D::_calcStress(
 
   const double e11 = totalStrain[0];
   (*stress)[0] = lambda2mu * e11;
+
+  PetscLogFlopsNoCheck(1);
 } // _calcStress
 
 // ----------------------------------------------------------------------
