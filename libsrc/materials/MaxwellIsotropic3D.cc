@@ -571,7 +571,7 @@ pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
     (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp] = visStrain;
     (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp] = totalStrain[iComp];
   } // for
-  PetscLogFlopsNoCheck(8 * MaxwellIsotropic3D::tensorSize);
+  PetscLogFlopsNoCheck(8 * _MaxwellIsotropic3D::tensorSize);
 
   _needNewJacobian = false;
 
