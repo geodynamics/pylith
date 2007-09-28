@@ -98,6 +98,7 @@ class Formulation(Component):
       integrator.preinitialize(mesh, material)
       self.integrators.append(integrator)
       self._debug.log(resourceUsageString())
+
       self._info.log("Added elasticity integrator for material '%s'." % \
                      material.label)
 
@@ -164,7 +165,6 @@ class Formulation(Component):
     """
     from pylith.topology.FieldsManager import FieldsManager
     self.fields = FieldsManager(self.mesh)
-    self._debug.log(resourceUsageString())
 
     self._info.log("Initializing integrators.")
     self._debug.log(resourceUsageString())

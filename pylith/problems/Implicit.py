@@ -18,6 +18,7 @@
 ## Factory: pde_formulation
 
 from Formulation import Formulation
+from pylith.utils.profiling import resourceUsageString
 
 # Implicit class
 class Implicit(Formulation):
@@ -158,7 +159,6 @@ class Implicit(Formulation):
     """
     Advance to next time step.
     """
-    from pylith.utils.profiling import resourceUsageString
 
     self._info.log("Integrating residual term in operator.")
     self._debug.log(resourceUsageString())
