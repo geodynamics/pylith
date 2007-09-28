@@ -87,12 +87,22 @@ class Implicit(Formulation):
     """
     Formulation.initialize(self, dimension, dt)
 
-    self._info.log("Creating other fields and matrices.")
+    self._info.log("Creating other fields.")
+    self._debug.log(resourceUsageString())
     self.fields.addReal("dispIncr")
     self.fields.addReal("residual")
     self.fields.copyLayout("dispTBctpdt")
+    self._debug.log(resourceUsageString())
+
+    self._info.log("Creating Jacobian matrix.")
+    self._debug.log(resourceUsageString())
     self.jacobian = self.mesh.createMatrix(self.fields.getSolution())
+    self._debug.log(resourceUsageString())
+
+    self._info.log("Initializing solver.")
+    self._debug.log(resourceUsageString())
     self.solver.initialize(self.mesh, self.fields.getSolution())
+    self._debug.log(resourceUsageString())
 
     # Initial time step solves for total displacement field, not increment
     for constraint in self.constraints:
@@ -126,16 +136,21 @@ class Implicit(Formulation):
     # Set dispTBctpdt to the BC t time t+dt. Unconstrained DOF are
     # unaffected and will be equal to their values at time t.
     self._info.log("Setting constraints.")
+    self._debug.log(resourceUsageString())
     dispTBctpdt = self.fields.getReal("dispTBctpdt")
     for constraint in self.constraints:
       constraint.setField(t+dt, dispTBctpdt)
+    self._debug.log(resourceUsageString())
 
     needNewJacobian = False
     for integrator in self.integrators:
       if integrator.needNewJacobian():
         needNewJacobian = True
     if needNewJacobian:
+      self._info.log("Reforming Jacobian.")
+      self._debug.log(resourceUsageString())
       self._reformJacobian(t, dt)
+      self._debug.log(resourceUsageString())
     return
 
 
@@ -155,13 +170,16 @@ class Implicit(Formulation):
     for integrator in self.integrators:
       integrator.timeStep(dt)
       integrator.integrateResidual(residual, t+dt, self.fields)
+    self._debug.log(resourceUsageString())
 
     self._info.log("Completing residual.")
+    self._debug.log(resourceUsageString())
     bindings.completeSection(self.mesh.cppHandle, residual)
     self._debug.log(resourceUsageString())
 
     import pylith.utils.petsc as petsc
     self._info.log("Solving equations.")
+    self._debug.log(resourceUsageString())
     self.solver.solve(dispIncr, self.jacobian, residual)
     self._debug.log(resourceUsageString())
     return
@@ -182,19 +200,23 @@ class Implicit(Formulation):
     bindings.addRealSections(disp, disp, dispIncr)
 
     self._info.log("Updating integrators states.")
+    self._debug.log(resourceUsageString())
     for integrator in self.integrators:
       integrator.updateState(t+dt, disp)
+    self._debug.log(resourceUsageString())
 
     # If finishing first time step, then switch from solving for total
     # displacements to solving for incremental displacements
     if 0 == self._istep and (t + dt) < totalTime:
       self._info.log("Switching from total field solution to incremental " \
                      "field solution.")
+      self._debug.log(resourceUsageString())
       for constraint in self.constraints:
         constraint.useSolnIncr(True)
       for integrator in self.integrators:
         integrator.useSolnIncr(True)
       self._reformJacobian(t, dt)
+      self._debug.log(resourceUsageString())
 
     Formulation.poststep(self, t, dt, totalTime)
     return

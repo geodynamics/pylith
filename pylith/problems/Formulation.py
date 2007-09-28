@@ -88,6 +88,7 @@ class Formulation(Component):
     self.constraints = []
 
     self._info.log("Pre-initializing materials.")
+    self._debug.log(resourceUsageString())
     for material in materials.bin:
       integrator = self.elasticityIntegrator()
       if not implementsIntegrator(integrator):
@@ -96,10 +97,12 @@ class Formulation(Component):
               "Functionality missing." % (integrator.name, material.label)
       integrator.preinitialize(mesh, material)
       self.integrators.append(integrator)
+      self._debug.log(resourceUsageString())
       self._info.log("Added elasticity integrator for material '%s'." % \
                      material.label)
 
     self._info.log("Pre-initializing boundary conditions.")
+    self._debug.log(resourceUsageString())
     for bc in boundaryConditions.bin:
       bc.preinitialize(mesh)
       foundType = False
@@ -117,8 +120,10 @@ class Formulation(Component):
         raise TypeError, \
               "Could not determine whether boundary condition '%s' is an " \
               "integrator or a constraint." % bc.name
+    self._debug.log(resourceUsageString())
 
     self._info.log("Pre-initializing interior interfaces.")
+    self._debug.log(resourceUsageString())
     for ic in interfaceConditions.bin:
       ic.preinitialize(mesh)
       foundType = False
@@ -136,6 +141,7 @@ class Formulation(Component):
         raise TypeError, \
               "Could not determine whether interface condition '%s' is an " \
               "integrator or a constraint." % ic.name
+    self._debug.log(resourceUsageString())
     return
 
 
@@ -161,22 +167,26 @@ class Formulation(Component):
     self._debug.log(resourceUsageString())
 
     self._info.log("Initializing integrators.")
+    self._debug.log(resourceUsageString())
     for integrator in self.integrators:
       integrator.initialize()
     self._debug.log(resourceUsageString())
 
     self._info.log("Initializing constraints.")
+    self._debug.log(resourceUsageString())
     for constraint in self.constraints:
       constraint.initialize()
     self._debug.log(resourceUsageString())
 
     self._info.log("Setting up solution output.")
+    self._debug.log(resourceUsageString())
     for output in self.output.bin:
       output.open(self.mesh)
       output.writeTopology()
     self._debug.log(resourceUsageString())
 
     self._info.log("Creating solution field.")
+    self._debug.log(resourceUsageString())
     solnName = self.solnField['name']
     self.fields.addReal(solnName)
     self.fields.solutionField(solnName)
@@ -194,9 +204,12 @@ class Formulation(Component):
     """
     Hook for doing stuff after advancing time step.
     """
+    self._info.log("Writing solution field.")
+    self._debug.log(resourceUsageString())
     field = self.fields.getSolution()
     for output in self.output.bin:
       output.writeField(t+dt, self._istep, field, self.solnField['label'])
+    self._debug.log(resourceUsageString())
     self._istep += 1
     return
 
@@ -205,12 +218,15 @@ class Formulation(Component):
     """
     Cleanup after time stepping.
     """
+    self._info.log("Formulation finalize.")
+    self._debug.log(resourceUsageString())
     for integrator in self.integrators:
       integrator.finalize()
     for constraint in self.constraints:
       constraint.finalize()
     for output in self.output.bin:
       output.close()
+    self._debug.log(resourceUsageString())
     return
   
 
