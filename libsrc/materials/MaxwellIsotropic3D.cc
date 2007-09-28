@@ -532,6 +532,7 @@ pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
      (*parameters)[_MaxwellIsotropic3D::pidStrainT][1] +
      (*parameters)[_MaxwellIsotropic3D::pidStrainT][2])/3.0;
   
+  PetscLogFlopsNoCheck(6);
   // The code below should probably be in a separate function since it
   // is used more than once.  I should also probably cover the possibility
   // that Maxwell time is zero (although this should never happen).
@@ -549,13 +550,17 @@ pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
       fraction *= _dt/maxwelltime;
       dq += fSign*fraction/factorial;
     } // for
-  } else
+    PetscLogFlopsNoCheck(1 + 7 * numTerms);
+  } else {
     dq = maxwelltime*(1.0-exp(-_dt/maxwelltime))/_dt;
+    PetscLogFlopsNoCheck(7);
+  } // else
 
   const double expFac = exp(-_dt/maxwelltime);
   double devStrainTpdt = 0.0;
   double devStrainT = 0.0;
   double visStrain = 0.0;
+  PetscLogFlopsNoCheck(3);
   for (int iComp=0; iComp < _MaxwellIsotropic3D::tensorSize; ++iComp) {
     devStrainTpdt = totalStrain[iComp] - diag[iComp]*meanStrainTpdt;
     devStrainT = (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp] -
@@ -566,6 +571,7 @@ pylith::materials::MaxwellIsotropic3D::_updateStateViscoelastic(
     (*parameters)[_MaxwellIsotropic3D::pidVisStrain][iComp] = visStrain;
     (*parameters)[_MaxwellIsotropic3D::pidStrainT][iComp] = totalStrain[iComp];
   } // for
+  PetscLogFlopsNoCheck(8 * MaxwellIsotropic3D::tensorSize);
 
   _needNewJacobian = false;
 
