@@ -252,7 +252,7 @@ pylith::faults::BruneSlipFn::slip(const double t,
     // Update field
     _slipField->updatePoint(*v_iter, &slipValues[0]);
   } // for
-  PetscLogFlopsNoCheck(vSize * (4 + numSlipValues));
+  PetscLogFlopsNoCheck(vSize * (10 + 3*finalSlip->getFiberDimension(*vBegin)));
 
   return _slipField;
 } // slip
@@ -309,7 +309,7 @@ pylith::faults::BruneSlipFn::slipIncr(const double t0,
     // Update field
     _slipField->updatePoint(*v_iter, &slipValues[0]);
   } // for
-  PetscLogFlopsNoCheck(vSize * (2 * numSlipValues));
+  PetscLogFlopsNoCheck(vSize * (19 + 3*finalSlip->getFiberDimension(*vBegin)));
 
   return _slipField;
 } // slipIncr
