@@ -96,12 +96,10 @@ class Implicit(Formulation):
     self._debug.log(resourceUsageString())
 
     self._info.log("Creating Jacobian matrix.")
-    self._debug.log(resourceUsageString())
     self.jacobian = self.mesh.createMatrix(self.fields.getSolution())
     self._debug.log(resourceUsageString())
 
     self._info.log("Initializing solver.")
-    self._debug.log(resourceUsageString())
     self.solver.initialize(self.mesh, self.fields.getSolution())
     self._debug.log(resourceUsageString())
 
@@ -148,10 +146,7 @@ class Implicit(Formulation):
       if integrator.needNewJacobian():
         needNewJacobian = True
     if needNewJacobian:
-      self._info.log("Reforming Jacobian.")
-      self._debug.log(resourceUsageString())
       self._reformJacobian(t, dt)
-      self._debug.log(resourceUsageString())
     return
 
 
@@ -173,13 +168,11 @@ class Implicit(Formulation):
     self._debug.log(resourceUsageString())
 
     self._info.log("Completing residual.")
-    self._debug.log(resourceUsageString())
     bindings.completeSection(self.mesh.cppHandle, residual)
     self._debug.log(resourceUsageString())
 
     import pylith.utils.petsc as petsc
     self._info.log("Solving equations.")
-    self._debug.log(resourceUsageString())
     self.solver.solve(dispIncr, self.jacobian, residual)
     self._debug.log(resourceUsageString())
     return
@@ -210,7 +203,6 @@ class Implicit(Formulation):
     if 0 == self._istep and (t + dt) < totalTime:
       self._info.log("Switching from total field solution to incremental " \
                      "field solution.")
-      self._debug.log(resourceUsageString())
       for constraint in self.constraints:
         constraint.useSolnIncr(True)
       for integrator in self.integrators:
