@@ -124,7 +124,6 @@ class Formulation(Component):
     self._debug.log(resourceUsageString())
 
     self._info.log("Pre-initializing interior interfaces.")
-    self._debug.log(resourceUsageString())
     for ic in interfaceConditions.bin:
       ic.preinitialize(mesh)
       foundType = False
@@ -173,20 +172,17 @@ class Formulation(Component):
     self._debug.log(resourceUsageString())
 
     self._info.log("Initializing constraints.")
-    self._debug.log(resourceUsageString())
     for constraint in self.constraints:
       constraint.initialize()
     self._debug.log(resourceUsageString())
 
     self._info.log("Setting up solution output.")
-    self._debug.log(resourceUsageString())
     for output in self.output.bin:
       output.open(self.mesh)
       output.writeTopology()
     self._debug.log(resourceUsageString())
 
     self._info.log("Creating solution field.")
-    self._debug.log(resourceUsageString())
     solnName = self.solnField['name']
     self.fields.addReal(solnName)
     self.fields.solutionField(solnName)
