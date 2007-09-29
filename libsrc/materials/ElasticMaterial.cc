@@ -99,16 +99,23 @@ pylith::materials::ElasticMaterial::getStateVarsCell(const Mesh::point_type& cel
     _density.resize(numQuadPts);
     _stress.resize(numQuadPts);
     _elasticConsts.resize(numQuadPts);
+
+    const int_array& numParamValues = _getNumParamValues();
+    const int numParams = numParamValues.size();
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       _density[iQuad].resize(1);
       _stress[iQuad].resize(_tensorSize());
       _elasticConsts[iQuad].resize(_numElasticConsts());
-      const int_array& numParamValues = _getNumParamValues();
-      const int numParams = numParamValues.size();
       _paramsCell[iQuad].resize(numParams);
       for (int iParam=0; iParam < numParams; ++iParam)
 	_paramsCell[iQuad][iParam].resize(numParamValues[iParam]);
     } // for
+
+    int maxNumValues = 0;
+    for (int iParam=0; iParam < numParams; ++iParam)
+      if (numParamValues[iParam] > maxNumValues)
+	maxNumValues = numParamValues[iParam];
+    _parameterCell.resize(numQuadPts*maxNumValues);
   } // if
 
   _getParameters(cell);
@@ -133,19 +140,19 @@ pylith::materials::ElasticMaterial::updateState(
   const char** paramNames = _parameterNames();
   
   for (int iParam=0; iParam < numParams; ++iParam) {
-    const ALE::Obj<real_section_type> parameter = 
+    const ALE::Obj<real_section_type>& parameter = 
       _parameters->getReal(paramNames[iParam]);
     assert(!parameter.isNull());
 
     const int numValues = numParamValues[iParam];
-    double_array parameterCell(numQuadPts*numValues);
+    assert(_parameterCell.size() >= numQuadPts*numValues);
     
     assert(parameter->getFiberDimension(cell) == numQuadPts*numValues);
     for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt)
       for (int iValue=0; iValue < numValues; ++iValue)
-	parameterCell[iQuadPt*numValues+iValue] = 
+	_parameterCell[iQuadPt*numValues+iValue] = 
 	  _paramsCell[iQuadPt][iParam][iValue];
-    parameter->updatePoint(cell, &parameterCell[0]);
+    parameter->updatePoint(cell, &_parameterCell[0]);
   } // for
 } // updateState
 
@@ -169,7 +176,6 @@ pylith::materials::ElasticMaterial::_getParameters(const Mesh::point_type& cell)
     assert(!parameter.isNull());
 
     const int numValues = numParamValues[iParam];
-    
     assert(parameter->getFiberDimension(cell) == numQuadPts*numValues);
     const real_section_type::value_type* parameterCell =
       parameter->restrictPoint(cell);
