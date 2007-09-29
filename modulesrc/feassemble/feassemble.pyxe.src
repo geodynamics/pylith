@@ -930,20 +930,22 @@ cdef class Integrator:
   cdef int assemblerCookie
   cdef int integrateResidualEvent
   cdef int integrateJacobianEvent
+  cdef int updateStateEvent
 
   def __init__(self):
     """
     Constructor.
     """
-    #embed{ void Integrator_setupLogging(int *cookie, int *residualEvent, int *jacobianEvent)
+    #embed{ void Integrator_setupLogging(int *cookie, int *residualEvent, int *jacobianEvent, int* updateStateEvent)
       PetscLogClassRegister(cookie, "FE Assembler");
       PetscLogEventRegister(residualEvent, "IntegrateResidual", *cookie);
       PetscLogEventRegister(jacobianEvent, "IntegrateJacobian", *cookie);
+      PetscLogEventRegister(updateStateEvent, "IntegrateUpdateState", *cookie);
     #}embed
     self.handle = None
     self.thisptr = NULL
     self.name = "pylith_feassemble_integrator"
-    Integrator_setupLogging(&self.assemblerCookie, &self.integrateResidualEvent, &self.integrateJacobianEvent)
+    Integrator_setupLogging(&self.assemblerCookie, &self.integrateResidualEvent, &self.integrateJacobianEvent, &self.updateStateEvent)
     return
 
 
@@ -1039,7 +1041,7 @@ cdef class Integrator:
     Update state variables as needed.
     """
     # create shim for method 'updateState'
-    #embed{ void Integrator_updateState(void* objVptr, double t, void* fieldVptr, void* meshVptr)
+    #embed{ void Integrator_updateState(void* objVptr, double t, void* fieldVptr, void* meshVptr, int event)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -1048,7 +1050,9 @@ cdef class Integrator:
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh =
         (ALE::Obj<ALE::Mesh>*) meshVptr;
+      PetscLogEventBegin(event,0,0,0,0);
       ((pylith::feassemble::Integrator*) objVptr)->updateState(t, *field, *mesh);
+      PetscLogEventEnd(event,0,0,0,0);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -1066,7 +1070,8 @@ cdef class Integrator:
     Integrator_updateState(self.thisptr,
                            t,
                            PyCObject_AsVoidPtr(field),
-                           ptrFromHandle(mesh))
+                           ptrFromHandle(mesh),
+                           self.updateStateEvent)
     return
 
 
