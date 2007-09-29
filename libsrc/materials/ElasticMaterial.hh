@@ -225,6 +225,13 @@ private :
    */
   std::vector<std::vector<double_array> > _paramsCell;
 
+  /** Single parameter at quadrature points for current cell.
+   *
+   * size = [numQuadPts*numValues]
+   * index = [iQuadPt*numValues+iValue]
+   */
+  double_array _parameterCell;
+
   /** Density value at quadrature points for current cell.
    *
    * size = [numQuadPts][1]
