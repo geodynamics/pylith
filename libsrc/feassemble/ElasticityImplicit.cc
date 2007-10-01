@@ -28,6 +28,8 @@
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
+#define FASTER
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityImplicit::ElasticityImplicit(void) :
@@ -90,7 +92,6 @@ pylith::feassemble::ElasticityImplicit::useSolnIncr(const bool flag)
   _material->useElasticBehavior(!_useSolnIncr);
 } // useSolnIncr
 
-#define FASTER
 // ----------------------------------------------------------------------
 // Integrate constributions to residual term (r) for operator.
 void
@@ -110,26 +111,23 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   assert(0 != fields);
   assert(!mesh.isNull());
 
-  static PetscEvent setupEvent = 0, cellGeomEvent = 0, stateVarsEvent = 0, restrictEvent = 0, computeEvent = 0, updateEvent = 0;
+  static PetscEvent setupEvent = 0, cellGeomEvent = 0, stateVarsEvent = 0, restrictEvent = 0, computeEvent = 0, updateEvent = 0, stressEvent;
 
-  if (!setupEvent) {
+  if (!setupEvent)
     PetscLogEventRegister(&setupEvent, "IRSetup", 0);
-  }
-  if (!cellGeomEvent) {
+  if (!cellGeomEvent)
     PetscLogEventRegister(&cellGeomEvent, "IRCellGeom", 0);
-  }
-  if (!stateVarsEvent) {
+  if (!stateVarsEvent)
     PetscLogEventRegister(&stateVarsEvent, "IRStateVars", 0);
-  }
-  if (!restrictEvent) {
+  if (!restrictEvent)
     PetscLogEventRegister(&restrictEvent, "IRRestrict", 0);
-  }
-  if (!computeEvent) {
+  if (!computeEvent)
     PetscLogEventRegister(&computeEvent, "IRCompute", 0);
-  }
-  if (!updateEvent) {
+  if (!updateEvent)
     PetscLogEventRegister(&updateEvent, "IRUpdate", 0);
-  }
+  if (!stressEvent)
+    PetscLogEventRegister(&stressEvent, "IRMaterialStress", 0);
+
   const Obj<sieve_type>& sieve = mesh->getSieve();
 
   PetscLogEventBegin(setupEvent,0,0,0,0);
@@ -177,8 +175,10 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
+#ifdef FASTER
   // Precompute the geometric and function space information
   _quadrature->precomputeGeometry(mesh, coordinates, cells);
+#endif
 
   // Allocate vector for cell values.
   _initCellVector();
@@ -268,10 +268,13 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 #endif
 
     // Compute B(transpose) * sigma, first computing strains
-    PetscLogEventBegin(computeEvent,0,0,0,0);
+    PetscLogEventBegin(stressEvent,0,0,0,0);
     calcTotalStrainFn(&totalStrain, basisDeriv, dispTBctpdtCell, numBasis);
     const std::vector<double_array>& stress = 
       _material->calcStress(totalStrain);
+    PetscLogEventEnd(stressEvent,0,0,0,0);
+
+    PetscLogEventBegin(computeEvent,0,0,0,0);
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stress);
     PetscLogEventEnd(computeEvent,0,0,0,0);
 
@@ -368,6 +371,11 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 			   "contribution to Jacobian matrix for cells with " \
 			   "different dimensions than the spatial dimension.");
 
+#ifdef FASTER
+  // Precompute the geometric and function space information
+  _quadrature->precomputeGeometry(mesh, coordinates, cells);
+#endif
+
   // Allocate matrix and vectors for cell values.
   _initCellMatrix();
   const int cellVecSize = numBasis*spaceDim;
@@ -385,7 +393,11 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
+#ifdef FASTER
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter);
+#else
     _quadrature->computeGeometry(mesh, coordinates, *c_iter);
+#endif
 
     // Get state variables for cell.
     _material->getStateVarsCell(*c_iter, numQuadPts);
@@ -471,6 +483,11 @@ pylith::feassemble::ElasticityImplicit::updateState(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
+#ifdef FASTER
+  // Precompute the geometric and function space information
+  _quadrature->precomputeGeometry(mesh, coordinates, cells);
+#endif
+
   const int cellVecSize = numBasis*spaceDim;
   double_array dispCell(cellVecSize);
 
@@ -485,7 +502,11 @@ pylith::feassemble::ElasticityImplicit::updateState(
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
+#ifdef FASTER
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter);
+#else
     _quadrature->computeGeometry(mesh, coordinates, *c_iter);
+#endif
 
     // Restrict input fields to cell
     mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
