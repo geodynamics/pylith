@@ -16,6 +16,8 @@
 
 #include "pylith/utils/array.hh" // USES double_array
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -92,6 +94,7 @@ pylith::feassemble::Quadrature1D::computeGeometry(
 	  _basisDerivRef[iQuadPt*_numBasis+iBasis] *
 	  _jacobianInv[iQuadPt];
   } // for
+  PetscLogFlopsNoCheck(_numQuadPts * (1 + _numBasis * 4));
 } // computeGeometry
 
 

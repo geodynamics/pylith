@@ -14,6 +14,8 @@
 
 #include "Quadrature1Din2D.hh" // implementation of class methods
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -104,6 +106,9 @@ pylith::feassemble::Quadrature1Din2D::computeGeometry(
 	    _basisDerivRef[iQuadPt*_numBasis*_cellDim+iBasis*_cellDim+jDim] *
 	    _jacobianInv[iQuadPt*_cellDim*_spaceDim+jDim*_spaceDim+iDim];
   } // for
+  PetscLogFlopsNoCheck(_numQuadPts * (1+_numBasis*_spaceDim*4+
+				      _spaceDim*3 +
+				      _numBasis*_spaceDim*_cellDim*2));
 } // computeGeometry
 
 

@@ -16,6 +16,8 @@
 
 #include "GeometryQuad3D.hh" // USES GeometryQuad3D
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include "pylith/utils/array.hh" // USES double_array
 
 #include <assert.h> // USES assert()
@@ -149,6 +151,7 @@ pylith::feassemble::GeometryHex3D::jacobian(double_array* jacobian,
 		    (*jacobian)[5]*(*jacobian)[6]) +
     (*jacobian)[2]*((*jacobian)[3]*(*jacobian)[7] -
 		    (*jacobian)[4]*(*jacobian)[6]);
+  PetscLogFlopsNoCheck(150);
 } // jacobian
 
 

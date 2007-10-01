@@ -16,6 +16,8 @@
 
 #include "GeometryPoint2D.hh" // USES GeometryPoint
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include "pylith/utils/array.hh" // USES double_array
 
 #include <assert.h> // USES assert()
@@ -78,6 +80,7 @@ pylith::feassemble::GeometryLine2D::jacobian(double_array* jacobian,
   (*jacobian)[1] = y1 - y0;
   *det = sqrt(pow((*jacobian)[0], 2) +
 	      pow((*jacobian)[1], 2));
+  PetscLogFlopsNoCheck(6);
 } // jacobian
 
 
