@@ -6,16 +6,17 @@ Release 1.0.2
 
   1. Cleanup ElasticityImplicit::integrateResidual()
 
-  2. Apply techniques from ElasticityImplicit::integrateResidual to
-  ElasticityImplicit::integrateJacobian().
+    Replace update() and restrict with more efficient methods?
 
-  3. Apply techniques from ElasticityImplicit::integrateResidual to
-  ElasticityImplicit::updateState().
+    Apply faster update() and restrict() to integrateJacobian and
+    integrateResidual()?
 
-  4. Add check to make sure every material in mesh has a material model.
+  3. Add check to make sure every material in mesh has a material model.
 
     Add check for overlapping of material ids for bulk and cohesive
     cells.
+
+  4. Move PETSc logging out of feassemble module.
 
 Release 1.1
 
