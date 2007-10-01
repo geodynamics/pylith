@@ -2,25 +2,51 @@
 CURRENT ISSUES
 ======================================================================
 
-  1. Memory and runtime analyzing.
+Release 1.0.2
 
-  2. Add check to make sure every material in mesh has a material model.
+  1. Cleanup ElasticityImplicit::integrateResidual()
+
+  2. Apply techniques from ElasticityImplicit::integrateResidual to
+  ElasticityImplicit::integrateJacobian().
+
+  3. Apply techniques from ElasticityImplicit::integrateResidual to
+  ElasticityImplicit::updateState().
+
+  4. Add check to make sure every material in mesh has a material model.
 
     Add check for overlapping of material ids for bulk and cohesive
     cells.
 
-  3. Need better error trapping when using LineParser. State of
+Release 1.1
+
+  1. Finish AbsorbingDampers BC.
+
+  2. Finish Neumann BC.
+
+  3. Finish velocity Dirichlet BC.
+
+  4. Generalized Maxwell viscoelastic model
+
+  5. Reimplement SolutionIO.
+
+     Follow implementation of MeshIO. SolutionIO implements extracting
+     data from Sieve and calls virtual functions to write data.
+
+     a. Reimplement SolutionIOVTK
+     b. Implement SolutionIOHDF5
+
+General
+
+  1. Need better error trapping when using LineParser. State of
   ifstream is insufficient. Need state of istringstream buffer, but it
   is often !good() at eof(). Test of !good() and !eof()?
 
-  4. Need to add explanation of output and output parameters to
+  2. Need to add explanation of output and output parameters to
   manual.
 
-  5. Add dependency diagram to manual.
+  3. Add dependency diagram to manual.
 
-  6. Switch to better default PETSc settings in examples. (pc_type=asm?)
-
-  7. Experiment with different preconditioners and tabulate results
+  4. Experiment with different preconditioners and tabulate results
 
 ======================================================================
 KNOWN DEFICIENCIES
@@ -49,15 +75,7 @@ MAIN PRIORITIES (Brad)
     tet (LaGriT)
     hex (CUBIT)
 
-2. Reimplement SolutionIO.
-
-   Follow implementation of MeshIO. SolutionIO implements extracting
-   data from Sieve and calls virtual functions to write data.
-
-   a. Reimplement SolutionIOVTK
-   b. Implement SolutionIOHDF5
-
-3. Additional unit tests
+2. Additional unit tests
 
    a. ElasticityExplicit and ElasticityImplicit
       i. multiple materials
@@ -74,22 +92,10 @@ Additional unit tests
   a. FaultCohesive
     i. Add checking of faultMesh [not currently used]
 
-check test routines that create mesh to make sure they clear factory
-(*mesh)->getFactory()->clear(); necessary?
-
 1. Allow use of all elasticity constants (9 for 2-D, 36 for 3-D).
    a. Materials C++ code
    b. Integrator C++ code
    b. Material C++ unit tests
-
-2. Implement absorbing boundary conditions
-
-3. Implement MeshIOHDF5 & HDF5 (helper class)
-   a. C++ objects
-   b. unit tests at C++ level
-   c. Python object (MeshIOHDF5)
-   d. bindings
-   e. unit tests at Python level
 
 ======================================================================
 PLANNED RELEASES
