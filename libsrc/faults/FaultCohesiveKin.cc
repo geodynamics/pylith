@@ -124,6 +124,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     _constraintVert.begin();
   const std::set<Mesh::point_type>::const_iterator vertConstraintEnd = 
     _constraintVert.end();
+  const int vertConstraintSize = _constraintVert.size();
   for (std::set<Mesh::point_type>::const_iterator v_iter=vertConstraintBegin;
        v_iter != vertConstraintEnd;
        ++v_iter)
@@ -216,6 +217,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
     _orientation->updatePoint(*v_iter, &vertexDir[0]);
   } // for
+  PetscLogFlopsNoCheck(vertConstraintSize * orientationSize * 4);
 
   if (2 == cohesiveDim) {
     // Check orientation of first vertex, if dot product of fault
@@ -253,6 +255,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	// Update direction
 	_orientation->updatePoint(*v_iter, &vertexDir[0]);
       } // for
+    PetscLogFlopsNoCheck(5 + vertConstraintSize * 3);
   } // if
 
   _eqsrc->initialize(mesh, *_faultMesh, _constraintVert, cs);
@@ -339,6 +342,7 @@ pylith::faults::FaultCohesiveKin::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     //const double mu = 1.0;
     _pseudoStiffness->updatePoint(*v_iter, &mu);
   } // for
+  PetscLogFlopsNoCheck(vertConstraintSize * 2);
 } // initialize
 
 // ----------------------------------------------------------------------
@@ -381,6 +385,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     cellsCohesive->begin();
   const Mesh::label_sequence::iterator cellsCohesiveEnd =
     cellsCohesive->end();
+  const int cellsCohesiveSize = cellsCohesive->size();
 
   // Get section information
   const ALE::Obj<real_section_type>& solution = fields->getSolution();
@@ -479,8 +484,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     // Assemble cell contribution into field
     mesh->updateAdd(residual, *c_iter, &cellResidual[0]);
   } // for
-  PetscLogFlopsNoCheck(numConstraintVert*spaceDim*spaceDim*6 +
-		       numConstraintVert*spaceDim*2);
+  PetscLogFlopsNoCheck(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*7);
 } // integrateResidual
 
 // ----------------------------------------------------------------------
@@ -510,6 +514,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     cellsCohesive->begin();
   const Mesh::label_sequence::iterator cellsCohesiveEnd =
     cellsCohesive->end();
+  const int cellsCohesiveSize = cellsCohesive->size();
 
   // Get section information
   const ALE::Obj<real_section_type>& solution = fields->getSolution();
@@ -585,7 +590,6 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
 	    constraintOrient[kDim*spaceDim+jDim];
 	} // for
     } // for
-    PetscLogFlopsNoCheck(numConstraintVert*spaceDim*spaceDim*4);
 
     // Assemble cell contribution into PETSc Matrix
     const ALE::Obj<Mesh::order_type>& globalOrder = 
@@ -598,6 +602,7 @@ pylith::faults::FaultCohesiveKin::integrateJacobian(
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
   } // for
+  PetscLogFlopsNoCheck(cellsCohesiveSize*numConstraintVert*spaceDim*spaceDim*4);
   _needNewJacobian = false;
 } // integrateJacobian
   
