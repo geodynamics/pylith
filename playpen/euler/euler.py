@@ -266,7 +266,7 @@ class Euler(Application):
         velocity[2] = self.defaultValues[2]
       for dim in range(self.spaceDim):
         f.write(' %.12e' % self.pointsUTM[iCount + dim])
-      for dim in range(self.dataDim):
+      for dim in range(self.spaceDim):
         f.write(' %.12e' % velocity[dim])
       f.write('\n')
       iCount += 3
@@ -391,7 +391,7 @@ class Euler(Application):
         # self.data.append([float(number) for number in line.split()])
         for dim in range(self.spaceDim):
           self.pointsUTM.append(float(data[dim]))
-        for dim in range(self.dataDim):
+        for dim in range(self.spaceDim):
           self.normals.append(float(data[dim+self.spaceDim]))
         self.numPoints += 1
     f.close() 
