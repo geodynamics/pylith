@@ -21,6 +21,7 @@ check_PROGRAMS = testbc
 
 # Primary source files
 testbc_SOURCES = \
+	TestAbsorbingDampers.cc \
 	TestBoundaryCondition.cc \
 	TestDirichlet.cc \
 	TestDirichletLine2.cc \
@@ -36,6 +37,7 @@ testbc_SOURCES = \
 	test_bc.cc
 
 noinst_HEADERS = \
+	TestAbsorbingDampers.hh \
 	TestBoundaryCondition.hh \
 	TestDirichlet.hh \
 	TestDirichletLine2.hh \
@@ -51,6 +53,8 @@ noinst_HEADERS = \
 
 # Source files associated with testing data
 testbc_SOURCES += \
+	data/AbsorbingDampersData.cc \
+	data/AbsorbingDampersData1D.cc \
 	data/DirichletData.cc \
 	data/DirichletDataLine2.cc \
 	data/DirichletDataLine2b.cc \
@@ -64,6 +68,8 @@ testbc_SOURCES += \
 	data/NeumannDataHex8.cc
 
 noinst_HEADERS += \
+	data/AbsorbingDampersData.hh \
+	data/AbsorbingDampersData1D.hh \
 	data/DirichletData.hh \
 	data/DirichletDataLine2.hh \
 	data/DirichletDataLine2b.hh \
