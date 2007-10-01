@@ -16,6 +16,8 @@
 
 #include <math.h> // USES fabs()
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES internal_error
 
@@ -126,6 +128,7 @@ pylith::feassemble::Quadrature2Din3D::computeGeometry(
     const double d02 = 
       _jacobian[i00]*_jacobian[i21] - 
       _jacobian[i20]*_jacobian[i01];
+    PetscLogFlopsNoCheck(28 + _numBasis*_spaceDim*(2 + _cellDim*2));
     if (fabs(d01) > _minJacobian) {
       // Jinv00 = 1/d01 * J11
       // Jinv01 = 1/d01 * -J01
@@ -135,17 +138,20 @@ pylith::feassemble::Quadrature2Din3D::computeGeometry(
       _jacobianInv[iJ+1] = -_jacobian[i01] / d01; // Jinv01
       _jacobianInv[iJ+3] = -_jacobian[i10] / d01; // Jinv10
       _jacobianInv[iJ+4] =  _jacobian[i00] / d01; // Jinv11
+      PetscLogFlopsNoCheck(6);
       if (fabs(d12) > _minJacobian) {
 	// Jinv02 = 1/d12 -J11
 	// Jinv12 = 1/d12 J10
 	_jacobianInv[iJ+2] = -_jacobian[i11] / d12; // Jinv02
 	_jacobianInv[iJ+5] =  _jacobian[i10] / d12; // Jinv12
+	PetscLogFlopsNoCheck(3);
 	
       } else if (fabs(d02) > _minJacobian) {
 	// Jinv02 = 1/d02 -J01
 	// Jinv12 = 1/d02 J00
 	_jacobianInv[iJ+2] = -_jacobian[i01] / d02; // Jinv02
 	_jacobianInv[iJ+5] =  _jacobian[i00] / d02; // Jinv12
+	PetscLogFlopsNoCheck(3);
       } else {
 	_jacobianInv[iJ+2] = 0.0; // Jinv02
 	_jacobianInv[iJ+5] = 0.0; // Jinv12
@@ -159,11 +165,13 @@ pylith::feassemble::Quadrature2Din3D::computeGeometry(
       _jacobianInv[iJ+2] = -_jacobian[i01] / d02; // Jinv02
       _jacobianInv[iJ+3] = -_jacobian[i20] / d02; // Jinv10
       _jacobianInv[iJ+5] =  _jacobian[i00] / d02; // Jinv12
+      PetscLogFlopsNoCheck(6);
       if (fabs(d12) > _minJacobian) {
 	// Jinv01 = 1/d12 J21
 	// Jinv11 = 1/d12 -J20
 	_jacobianInv[iJ+1] = -_jacobian[i21] / d12; // Jinv01
 	_jacobianInv[iJ+4] =  _jacobian[i20] / d12; // Jinv11
+	PetscLogFlopsNoCheck(3);
       } else {
 	_jacobianInv[iJ+1] = 0.0; // Jinv01
 	_jacobianInv[iJ+4] = 0.0; // Jinv11
@@ -179,6 +187,7 @@ pylith::feassemble::Quadrature2Din3D::computeGeometry(
       _jacobianInv[iJ+2] = -_jacobian[i11] / d12; // Jinv02
       _jacobianInv[iJ+4] = -_jacobian[i20] / d12; // Jinv11
       _jacobianInv[iJ+5] =  _jacobian[i10] / d12; // Jinv12
+      PetscLogFlopsNoCheck(6);
     } else
       throw std::runtime_error("Could not invert Jacobian.");
 
@@ -192,6 +201,7 @@ pylith::feassemble::Quadrature2Din3D::computeGeometry(
 	    _basisDerivRef[iQuadPt*_numBasis*_cellDim + iBasis*_cellDim+jDim] *
 	    _jacobianInv[iQuadPt*_cellDim*_spaceDim+jDim*_spaceDim+iDim];
   } // for
+  PetscLogFlopsNoCheck(_numQuadPts*_numBasis*_spaceDim*_cellDim*2);
 } // computeGeometry
 
 

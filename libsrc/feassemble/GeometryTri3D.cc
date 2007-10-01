@@ -16,6 +16,8 @@
 
 #include "GeometryLine3D.hh" // USES GeometryLine3D
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include "pylith/utils/array.hh" // USES double_array
 
 #include <assert.h> // USES assert()
@@ -103,6 +105,7 @@ pylith::feassemble::GeometryTri3D::jacobian(double_array* jacobian,
     (*jacobian)[3]*(*jacobian)[3] +
     (*jacobian)[5]*(*jacobian)[5];
   *det = sqrt(jj00*jj11 - jj01*jj10);
+  PetscLogFlopsNoCheck(25);
 } // jacobian
 
 

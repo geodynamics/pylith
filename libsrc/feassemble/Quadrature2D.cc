@@ -14,6 +14,8 @@
 
 #include "Quadrature2D.hh" // implementation of class methods
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -102,7 +104,6 @@ pylith::feassemble::Quadrature2D::computeGeometry(
     _jacobianInv[i01] = -_jacobian[i01] / det;
     _jacobianInv[i10] = -_jacobian[i10] / det;
     _jacobianInv[i11] =  _jacobian[i00] / det;
-    PetscLogFlopsNoCheck(_numBasis*2 + _numBasis*_cellDim*_spaceDim*2 + 21);
 
     // Compute derivatives of basis functions with respect to global
     // coordinates
@@ -114,6 +115,9 @@ pylith::feassemble::Quadrature2D::computeGeometry(
 	    _basisDerivRef[iQuadPt*_numBasis*_cellDim+iBasis*_cellDim+jDim] *
 	    _jacobianInv[iQuadPt*_cellDim*_spaceDim+jDim*_spaceDim+iDim];
   } // for
+  PetscLogFlopsNoCheck(_numQuadPts*(9 +
+				    _numBasis*_spaceDim*(2 +
+							 _cellDim*4)));
 } // computeGeometry
 
 

@@ -14,6 +14,8 @@
 
 #include "Quadrature3D.hh" // implementation of class methods
 
+#include "petsc.h" // USES PetscLogFlopsNoCheck
+
 #include <assert.h> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -143,6 +145,8 @@ pylith::feassemble::Quadrature3D::computeGeometry(
 	    _basisDerivRef[iQuadPt*_numBasis*_cellDim+iBasis*_cellDim+jDim] *
 	    _jacobianInv[iQuadPt*_cellDim*_spaceDim+jDim*_spaceDim+iDim];
   } // for
+  PetscLogFlopsNoCheck(_numQuadPts*(47 + _numBasis*_spaceDim*(2 + _cellDim*4)));
+				    
 } // computeGeometry
 
 
