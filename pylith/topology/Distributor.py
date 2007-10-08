@@ -37,10 +37,11 @@ class Distributor(Component):
     ## Python object for managing Distributor facilities and properties.
     ##
     ## \b Properties
-    ## @li \b partitioner Name of mesh partitioner {"parmetis", "chaco"}
+    ## @li \b partitioner Name of mesh partitioner {"parmetis", "chaco"}.
+    ## @li \b debug Write partition information to file.
     ##
     ## \b Facilities
-    ## @li None
+    ## @li \b writer Writer for partition information
 
     import pyre.inventory
 
@@ -49,6 +50,13 @@ class Distributor(Component):
                                                                       "parmetis"]))
     partitioner.meta['tip'] = "Name of mesh partitioner."
 
+    debug = pyre.inventory.bool("debug", default=False)
+    debug.meta['tip'] = "Write partition information to file."
+
+    from pylith.meshio.SolutionIOVTK import SolutionIOVTK
+    writer = pyre.inventory.facility("writer", factory=SolutionIOVTK,
+                                     family="solution_io")
+    writer.meta['tip'] = "Writer for partition information."
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -72,6 +80,11 @@ class Distributor(Component):
     newMesh.cppHandle = self.cppHandle.distribute(mesh.cppHandle,
                                                   self.partitioner)
     newMesh.coordsys = mesh.coordsys
+
+    if self.debug:
+      self.writer.open(newMesh)
+      self.cppHandle.write(newMesh.cppHandle, self.writer.cppHandle)
+      self.writer.close()
     return newMesh
 
 
@@ -83,6 +96,8 @@ class Distributor(Component):
     """
     Component._configure(self)
     self.partitioner = self.inventory.partitioner
+    self.debug = self.inventory.debug
+    self.writer = self.inventory.writer
     return
 
 
