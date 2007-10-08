@@ -1,0 +1,1 @@
+tdistribute.py --mesh_generator.importer.filename=tri3a.mesh --mesh_generator.debug=1 --mesh_generator.distributor.debug=1 --mesh_generator.distributor.partitioner=parmetis --nodes=2

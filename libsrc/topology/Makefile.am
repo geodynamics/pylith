@@ -14,7 +14,8 @@ subpackage = topology
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	FieldsManager.hh
+	FieldsManager.hh \
+	Distributor.hh
 
 noinst_HEADERS =
 

@@ -80,7 +80,8 @@ libpylith_la_SOURCES = \
 	meshio/PsetFileBinary.cc \
 	meshio/SolutionIO.cc \
 	meshio/SolutionIOVTK.cc \
-	topology/FieldsManager.cc
+	topology/FieldsManager.cc \
+	topology/Distributor.cc
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
