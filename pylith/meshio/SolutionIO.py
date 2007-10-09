@@ -135,9 +135,9 @@ class SolutionIO(Component):
     return
 
 
-  def writeField(self, t, istep, field, name):
+  def writeVertexField(self, t, istep, field, name):
     """
-    Write solution field at time t to file.
+    Write field over vertices at time t to file.
     """
     write = False
     if self.istep == None or not "value" in dir(self.t):
@@ -151,7 +151,30 @@ class SolutionIO(Component):
       self._info.log("Writing solution field '%s'." % name)
       assert(self.cppHandle != None)
       assert(self.mesh.cppHandle != None)
-      self.cppHandle.writeField(t.value, field, name, self.mesh.cppHandle)
+      self.cppHandle.writeVertexField(t.value, field, name,
+                                      self.mesh.cppHandle)
+      self.istep = istep
+      self.t = t
+    return
+
+
+  def writeCellField(self, t, istep, field, name):
+    """
+    Write field over cells at time t to file.
+    """
+    write = False
+    if self.istep == None or not "value" in dir(self.t):
+      write = True
+    elif self.outputFreq == "skip":
+      if istep > self.istep + self.skip:
+        write = True
+    elif t >= self.t + self.dt:
+      write = True
+    if write:
+      self._info.log("Writing solution field '%s'." % name)
+      assert(self.cppHandle != None)
+      assert(self.mesh.cppHandle != None)
+      self.cppHandle.writeCellField(t.value, field, name, self.mesh.cppHandle)
       self.istep = istep
       self.t = t
     return

@@ -99,14 +99,14 @@ pylith::meshio::SolutionIOVTK::writeTopology(const ALE::Obj<ALE::Mesh>& mesh,
 } // writeTopology
 
 // ----------------------------------------------------------------------
-// Write field to file.
+// Write field over vertices to file.
 void
-pylith::meshio::SolutionIOVTK::writeField(
+pylith::meshio::SolutionIOVTK::writeVertexField(
 				     const double t,
 				     const ALE::Obj<real_section_type>& field,
 				     const char* name,
 				     const ALE::Obj<ALE::Mesh>& mesh)
-{ // writeField
+{ // writeVertexField
 
   try {
     PetscErrorCode err;
@@ -150,7 +150,64 @@ pylith::meshio::SolutionIOVTK::writeField(
 	<< t << " to VTK file '" << _filename << "'.\n";
     throw std::runtime_error(msg.str());
   } // try/catch
-} // writeField
+} // writeVertexField
+
+// ----------------------------------------------------------------------
+// Write field over cells to file.
+void
+pylith::meshio::SolutionIOVTK::writeCellField(
+				     const double t,
+				     const ALE::Obj<real_section_type>& field,
+				     const char* name,
+				     const ALE::Obj<ALE::Mesh>& mesh)
+{ // writeVertexField
+
+  try {
+    PetscErrorCode err;
+
+    std::ostringstream buffer;
+    const int indexExt = _filename.find(".vtk");
+    buffer << std::string(_filename, 0, indexExt) << "_t" << t << ".vtk";
+
+    err = PetscViewerCreate(mesh->comm(), &_viewer);
+    err = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
+    err = PetscViewerSetFormat(_viewer, PETSC_VIEWER_ASCII_VTK);
+    err = PetscViewerFileSetName(_viewer, buffer.str().c_str());
+    if (err) {
+      std::ostringstream msg;
+      msg << "Could not open VTK file '" << buffer.str()
+	  << "' for solution output.\n";
+      throw std::runtime_error(msg.str());
+    } // if
+
+    err = VTKViewer::writeHeader(_viewer);
+    err = VTKViewer::writeVertices(mesh, _viewer);
+    err = VTKViewer::writeElements(mesh, _viewer);
+
+    buffer.str("");
+    buffer << name << "_t" << t;
+
+   err = PetscViewerPushFormat(_viewer, PETSC_VIEWER_ASCII_VTK_CELL);
+
+   // Get fiber dimension of first cell
+   const ALE::Obj<Mesh::label_sequence>& cells = mesh->heightStratum(0);
+   const int fiberDim = field->getFiberDimension(*cells->begin());
+   err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), _viewer, fiberDim);
+    buffer.str("");
+    buffer << name << "_verify_t" << t;
+    err = SectionView_Sieve_Ascii(mesh, field, buffer.str().c_str(), _viewer, -4);
+  } catch (const std::exception& err) {
+    std::ostringstream msg;
+    msg << "Error while writing field '" << name << "' at time " 
+	<< t << " to VTK file '" << _filename << "'.\n" << err.what();
+    throw std::runtime_error(msg.str());
+  } catch (...) { 
+    std::ostringstream msg;
+    msg << "Error while writing field '" << name << "' at time " 
+	<< t << " to VTK file '" << _filename << "'.\n";
+    throw std::runtime_error(msg.str());
+  } // try/catch
+} // writeCellField
 
 
 // End of file 
