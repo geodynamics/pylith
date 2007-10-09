@@ -30,6 +30,15 @@ Release 1.1
 
   5. Reimplement SolutionIO.
 
+     Need to be able to append fields.
+
+     Want open(), writeTopology(), appendVertexField(),
+     appendCellField(), close() paradigm.
+
+     It should be possible to use PETSc viewers, but we will want to
+     setup the viewers in implementation classes and then call the
+     view in the parent class?
+
      Follow implementation of MeshIO. SolutionIO implements extracting
      data from Sieve and calls virtual functions to write data.
 

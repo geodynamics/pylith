@@ -64,17 +64,29 @@ public :
   void writeTopology(const ALE::Obj<ALE::Mesh>& mesh,
 		     const spatialdata::geocoords::CoordSys* csMesh);
 
-  /** Write solution field to file.
+  /** Write field over vertices to file.
    *
    * @param t Time associated with field.
-   * @param field PETSc field.
+   * @param field PETSc field over vertices.
    * @param name Name of field.
    * @param mesh PETSc mesh object.
    */
-  void writeField(const double t,
-		  const ALE::Obj<real_section_type>& field,
-		  const char* name,
-		  const ALE::Obj<ALE::Mesh>& mesh);
+  void writeVertexField(const double t,
+			const ALE::Obj<real_section_type>& field,
+			const char* name,
+			const ALE::Obj<ALE::Mesh>& mesh);
+
+  /** Write field over cells to file.
+   *
+   * @param t Time associated with field.
+   * @param field PETSc field over cells.
+   * @param name Name of field.
+   * @param mesh PETSc mesh object.
+   */
+  void writeCellField(const double t,
+		      const ALE::Obj<real_section_type>& field,
+		      const char* name,
+		      const ALE::Obj<ALE::Mesh>& mesh);
 
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 public :
