@@ -204,7 +204,7 @@ class Formulation(Component):
     self._debug.log(resourceUsageString())
     field = self.fields.getSolution()
     for output in self.output.bin:
-      output.writeField(t+dt, self._istep, field, self.solnField['label'])
+      output.writeVertexField(t+dt, self._istep, field, self.solnField['label'])
     self._debug.log(resourceUsageString())
     self._istep += 1
     return
