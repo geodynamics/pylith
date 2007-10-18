@@ -175,10 +175,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
-#ifdef FASTER
   // Precompute the geometric and function space information
   _quadrature->precomputeGeometry(mesh, coordinates, cells);
-#endif
 
   // Allocate vector for cell values.
   _initCellVector();
@@ -200,11 +198,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
        ++c_iter) {
     // Compute geometry information for current cell
     PetscLogEventBegin(cellGeomEvent,0,0,0,0);
-#ifdef FASTER
     _quadrature->retrieveGeometry(mesh, coordinates, *c_iter);
-#else
-    _quadrature->computeGeometry(mesh, coordinates, *c_iter);
-#endif
     PetscLogEventEnd(cellGeomEvent,0,0,0,0);
 
     // Get state variables for cell.
@@ -217,22 +211,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Restrict input fields to cell
     PetscLogEventBegin(restrictEvent,0,0,0,0);
-#ifdef FASTER
-    const Obj<Mesh::sieve_type::coneSequence>& cone = sieve->cone(*c_iter);
-    Mesh::sieve_type::coneSequence::iterator   end  = cone->end();
-    int                                        j    = -1;
-
-    for(Mesh::sieve_type::coneSequence::iterator p_iter = cone->begin(); p_iter != end; ++p_iter) {
-      const real_section_type::value_type *array = dispTBctpdt->restrictPoint(*p_iter);
-      const int&                           dim   = dispTBctpdt->getFiberDimension(*p_iter);
-
-      for(int i = 0; i < dim; ++i) {
-        dispTBctpdtCell[++j] = array[i];
-      }
-    }
-#else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
-#endif
     PetscLogEventEnd(restrictEvent,0,0,0,0);
 
     // Get cell geometry information that depends on cell
@@ -286,15 +265,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 #endif
     // Assemble cell contribution into field
     PetscLogEventBegin(updateEvent,0,0,0,0);
-#ifdef FASTER
-    j = 0;
-    for(Mesh::sieve_type::coneSequence::iterator p_iter = cone->begin(); p_iter != end; ++p_iter) {
-      residual->updateAddPoint(*p_iter, &_cellVector[j]);
-      j += residual->getFiberDimension(*p_iter);
-    }
-#else
     mesh->updateAdd(residual, *c_iter, _cellVector);
-#endif
     PetscLogEventEnd(updateEvent,0,0,0,0);
   } // for
 } // integrateResidual
@@ -371,10 +342,8 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 			   "contribution to Jacobian matrix for cells with " \
 			   "different dimensions than the spatial dimension.");
 
-#ifdef FASTER
   // Precompute the geometric and function space information
   _quadrature->precomputeGeometry(mesh, coordinates, cells);
-#endif
 
   // Allocate matrix and vectors for cell values.
   _initCellMatrix();
@@ -393,11 +362,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
-#ifdef FASTER
     _quadrature->retrieveGeometry(mesh, coordinates, *c_iter);
-#else
-    _quadrature->computeGeometry(mesh, coordinates, *c_iter);
-#endif
 
     // Get state variables for cell.
     _material->getStateVarsCell(*c_iter, numQuadPts);
@@ -483,10 +448,8 @@ pylith::feassemble::ElasticityImplicit::updateState(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
-#ifdef FASTER
   // Precompute the geometric and function space information
   _quadrature->precomputeGeometry(mesh, coordinates, cells);
-#endif
 
   const int cellVecSize = numBasis*spaceDim;
   double_array dispCell(cellVecSize);
@@ -502,11 +465,7 @@ pylith::feassemble::ElasticityImplicit::updateState(
        c_iter != cellsEnd;
        ++c_iter) {
     // Compute geometry information for current cell
-#ifdef FASTER
     _quadrature->retrieveGeometry(mesh, coordinates, *c_iter);
-#else
-    _quadrature->computeGeometry(mesh, coordinates, *c_iter);
-#endif
 
     // Restrict input fields to cell
     mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);

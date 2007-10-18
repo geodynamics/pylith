@@ -118,6 +118,7 @@ Other (unknown release):
 ----------------------------------------------------------------------
 PyLith 1.1
 ----------------------------------------------------------------------
+Nonlinear solvers
 HDF5 output
   volume (solution field)
   ground surface (or other surfaces) (solution field)
@@ -153,7 +154,6 @@ Adaptive time stepping
 ----------------------------------------------------------------------
 PyLith 1.5
 ----------------------------------------------------------------------
-Nonlinear solvers
 Large deformation
 Improved support for spherical geometry in user-interface
 Power-law viscoelastic material
@@ -213,19 +213,23 @@ THINGS WE NEED SIEVE TO DO (Matt)
 
 7. Time fixes
 
-  a. Remove extra time in uninterpolated restrict(). May need special method for P1.
+  Not used a. Remove extra time in uninterpolated restrict(). May need special method for P1.
 
   Done b. Precompute element geometry
 
-  c. getStateVars() is way to expensive. It looks like _getParameters() allocates an int_array. Try just using _numParamValues.
+  Done c. getStateVars() is way to expensive. It looks like _getParameters() allocates an int_array. Try just using _numParamValues.
 
-  d. Same as a) for update
+  Not used d. Same as a) for update
 
-  e. Put in flop counting for IR
+  Done e. Put in flop counting for IR
 
 8. Memory fixes
 
-  a. Share memory in precomputation sections
+  Done a. Share memory in precomputation sections
+
+9. Fixup FASTER improvements
+
+10. Move events to Python (make wrappers for events)
 
 ======================================================================
 QUESTIONS FOR LEIF
