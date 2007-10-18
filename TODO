@@ -11,12 +11,12 @@ Release 1.0.2
     Apply faster update() and restrict() to integrateJacobian and
     integrateResidual()?
 
-  3. Add check to make sure every material in mesh has a material model.
+  2. Add check to make sure every material in mesh has a material model.
 
     Add check for overlapping of material ids for bulk and cohesive
     cells.
 
-  4. Move PETSc logging out of feassemble module.
+  3. Move PETSc logging out of feassemble module.
 
 Release 1.1
 
@@ -47,16 +47,12 @@ Release 1.1
 
 General
 
-  1. Need better error trapping when using LineParser. State of
-  ifstream is insufficient. Need state of istringstream buffer, but it
-  is often !good() at eof(). Test of !good() and !eof()?
-
-  2. Need to add explanation of output and output parameters to
+  1. Need to add explanation of output and output parameters to
   manual.
 
-  3. Add dependency diagram to manual.
+  2. Add dependency diagram to manual.
 
-  4. Experiment with different preconditioners and tabulate results
+  3. Experiment with different preconditioners and tabulate results
 
 ======================================================================
 KNOWN DEFICIENCIES
@@ -70,6 +66,10 @@ KNOWN DEFICIENCIES
     Might be able to fix this problem by examining constraints
     relative to orientation and if orientation coincides with
     preexisting constraint, then constrain Lagrange multiplier DOF.
+
+  Need better error trapping when using LineParser. State of
+  ifstream is insufficient. Need state of istringstream buffer, but it
+  is often !good() at eof(). Test of !good() and !eof()?
 
 ======================================================================
 MAIN PRIORITIES (Brad)
