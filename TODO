@@ -4,19 +4,12 @@ CURRENT ISSUES
 
 Release 1.0.2
 
-  1. Cleanup ElasticityImplicit::integrateResidual()
-
-    Replace update() and restrict with more efficient methods?
-
-    Apply faster update() and restrict() to integrateJacobian and
-    integrateResidual()?
+  1. Fix partitioning with cohesive cells.
 
   2. Add check to make sure every material in mesh has a material model.
 
     Add check for overlapping of material ids for bulk and cohesive
     cells.
-
-  3. Move PETSc logging out of feassemble module.
 
 Release 1.1
 
@@ -28,27 +21,82 @@ Release 1.1
 
   4. Generalized Maxwell viscoelastic model
 
-  5. Reimplement SolutionIO.
+  5. Move PETSc logging out of feassemble module.
 
-     Need to be able to append fields.
-
-     Want open(), writeTopology(), appendVertexField(),
-     appendCellField(), close() paradigm.
-
-     It should be possible to use PETSc viewers, but we will want to
-     setup the viewers in implementation classes and then call the
-     view in the parent class?
-
-     Follow implementation of MeshIO. SolutionIO implements extracting
-     data from Sieve and calls virtual functions to write data.
-
+  6. Reimplement SolutionIO.
      a. Reimplement SolutionIOVTK
      b. Implement SolutionIOHDF5
+
+     General Ideas
+
+       Need to be able to append fields.
+
+       It should be possible to use PETSc viewers, but we will want to
+       setup the viewers in implementation classes and then call the
+       view in the parent class?
+
+       Want open(), writeTopology(), appendVertexField(),
+       appendCellField(), close() paradigm.
+
+     Use Cases
+
+       Want to write topology + vertex and/or cell fields
+
+       VTK files
+
+         One per time step, multiple vertex and/or cell fields
+
+       HDF5 files
+
+         One per topology (volume, surface, etc)
+
+         Would prefer to include multiple materials
+
+         Datasets contain entire time histories (makes it possible to
+         slice along time or space)
+
+       Volume information
+
+         Solution field (time histories)
+
+         Distribution information (proc of each cell)
+
+         State variable information for each cell (different info for
+         each material)
+
+           Material parameters (diagnostic)
+
+           State variable values (time histories)
+
+       Lower dimension information (surface/line mesh specified by set
+       of vertices)
+
+         Solution field (time histories)
+
+       Kinematic fault rupture
+
+         Slip and change in tractions (time histories)
+
+         Orientation, final slip, slip time (disgnostic)
+
+       Spontaneous (dynamic) fault rupture
+
+         Slip and change in tractions (time histories)
+
+         Fault constitutive values (time histories)
+
+         Orientation , Fault constitutive parameters (diagnostic)
+
+       Point locations (arbitrary location such as instrument site)
+
+         Interpolate solution to desired location
+
+         Solution field (time history)
 
 General
 
   1. Need to add explanation of output and output parameters to
-  manual.
+  manual (especially fault information).
 
   2. Add dependency diagram to manual.
 
