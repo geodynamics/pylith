@@ -10,27 +10,27 @@
 // ======================================================================
 //
 
-#if !defined(pylith_bc_absorbingdampersdataline2_hh)
-#define pylith_bc_absorbingdampersdataline2_hh
+#if !defined(pylith_bc_absorbingdampersdatatri3_hh)
+#define pylith_bc_absorbingdampersdatatri3_hh
 
 #include "AbsorbingDampersData.hh"
 
 namespace pylith {
   namespace bc {
-     class AbsorbingDampersDataLine2;
+     class AbsorbingDampersDataTri3;
   } // pylith
 } // bc
 
-class pylith::bc::AbsorbingDampersDataLine2 : public AbsorbingDampersData
+class pylith::bc::AbsorbingDampersDataTri3 : public AbsorbingDampersData
 {
 
 public: 
 
   /// Constructor
-  AbsorbingDampersDataLine2(void);
+  AbsorbingDampersDataTri3(void);
 
   /// Destructor
-  ~AbsorbingDampersDataLine2(void);
+  ~AbsorbingDampersDataTri3(void);
 
 private:
 
@@ -65,6 +65,6 @@ private:
 
 };
 
-#endif // pylith_bc_absorbingdampersdataline2_hh
+#endif // pylith_bc_absorbingdampersdatatri3_hh
 
 // End of file
