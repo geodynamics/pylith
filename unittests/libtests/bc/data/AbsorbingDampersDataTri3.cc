@@ -21,13 +21,15 @@ const double pylith::bc::AbsorbingDampersDataTri3::_quadPts[] = {
   0.0,
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_quadWts[] = {
-  1.0,
+  2.0,
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_basis[] = {
-  1.0,
+  0.5,
+  0.5,
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_basisDerivRef[] = {
-  1.0,
+  -0.5,
+   0.5,
 };
 
 const char* pylith::bc::AbsorbingDampersDataTri3::_spatialDBFilename = "data/elasticplanestrain.spatialdb";
