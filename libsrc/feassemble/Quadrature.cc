@@ -257,71 +257,104 @@ pylith::feassemble::Quadrature::_checkJacobianDet(const double det,
   } // if
 } // _checkJacobianDet
 
+// ----------------------------------------------------------------------
 void
 pylith::feassemble::Quadrature::resetPrecomputation()
-{
+{ // resetPrecomputation
   _precomputed = false;
   _quadPtsPre->clear();
   _jacobianPre->clear();
   _jacobianDetPre->clear();
   _jacobianInvPre->clear();
   _basisDerivPre->clear();
-}
+} // resetPrecomputation
 
+// ----------------------------------------------------------------------
 void
-pylith::feassemble::Quadrature::precomputeGeometry(const ALE::Obj<Mesh>& mesh,
-                                                   const ALE::Obj<real_section_type>& coordinates,
-                                                   const ALE::Obj<Mesh::label_sequence>& cells)
-{
+pylith::feassemble::Quadrature::precomputeGeometry(
+			      const ALE::Obj<Mesh>& mesh,
+			      const ALE::Obj<real_section_type>& coordinates,
+			      const ALE::Obj<Mesh::label_sequence>& cells)
+{ // precomputeGeometry
   if (_precomputed) return;
   const Mesh::label_sequence::iterator end = cells->end();
 
-  _quadPtsPre->setFiberDimension(cells, _numQuadPts * _spaceDim);
+  _quadPtsPre->setFiberDimension(cells, _numQuadPts*_spaceDim);
   _quadPtsPre->allocatePoint();
   _jacobianPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
-  _jacobianPre->setFiberDimension(cells, _numQuadPts * _cellDim * _spaceDim);
+  _jacobianPre->setFiberDimension(cells, _numQuadPts*_cellDim*_spaceDim);
   _jacobianPre->allocatePoint();
   _jacobianDetPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
   _jacobianDetPre->setFiberDimension(cells, _numQuadPts);
   _jacobianDetPre->allocatePoint();
   _jacobianInvPre->setAtlas(_jacobianPre->getAtlas());
-  _jacobianInvPre->setFiberDimension(cells, _numQuadPts * _cellDim * _spaceDim);
+  _jacobianInvPre->setFiberDimension(cells, _numQuadPts*_cellDim*_spaceDim);
   _jacobianInvPre->allocatePoint();
   _basisDerivPre->getAtlas()->setAtlas(_quadPtsPre->getAtlas()->getAtlas());
-  _basisDerivPre->setFiberDimension(cells, _numQuadPts * _numBasis * _spaceDim);
+  _basisDerivPre->setFiberDimension(cells, _numQuadPts*_numBasis*_spaceDim);
   _basisDerivPre->allocatePoint();
-  for(Mesh::label_sequence::iterator c_iter = cells->begin(); c_iter != end; ++c_iter) {
+
+  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+      c_iter != end;
+      ++c_iter) {
     this->computeGeometry(mesh, coordinates, *c_iter);
+
     // Set coordinates of quadrature points in cell
     _quadPtsPre->updatePoint(*c_iter, &_quadPts[0]);
+
     // Set Jacobian at quadrature points in cell
     _jacobianPre->updatePoint(*c_iter, &_jacobian[0]);
+
     // Set determinant of Jacobian at quadrature points in cell
     _jacobianDetPre->updatePoint(*c_iter, &_jacobianDet[0]);
+
     // Set inverse of Jacobian at quadrature points in cell
     _jacobianInvPre->updatePoint(*c_iter, &_jacobianInv[0]);
+
     // Set derivatives of basis functions with respect to global
     _basisDerivPre->updatePoint(*c_iter, &_basisDeriv[0]);
-  }
+  } // for
   _precomputed = true;
-}
+} // precomputeGeometry
 
+// ----------------------------------------------------------------------
 void
-pylith::feassemble::Quadrature::retrieveGeometry(const ALE::Obj<Mesh>& mesh,
-                                                 const ALE::Obj<real_section_type>& coordinates,
-                                                 const Mesh::point_type& cell)
-{
+pylith::feassemble::Quadrature::retrieveGeometry(
+			      const ALE::Obj<Mesh>& mesh,
+                              const ALE::Obj<real_section_type>& coordinates,
+			      const Mesh::point_type& cell)
+{ // retrieveGeometry
   // Do they have a fast copy?
-  const real_section_type::value_type *values = _quadPtsPre->restrictPoint(cell);
-  for(int i = 0; i < _numQuadPts * _spaceDim; ++i) _quadPts[i] = values[i];
+  const real_section_type::value_type* values =
+    _quadPtsPre->restrictPoint(cell);
+  int size = _numQuadPts * _spaceDim;
+  assert(size == _quadPtsPre->getFiberDimension(cell));
+  for(int i=0; i < size; ++i)
+    _quadPts[i] = values[i];
+  
   values = _jacobianPre->restrictPoint(cell);
-  for(int i = 0; i < _numQuadPts * _cellDim * _spaceDim; ++i) _jacobian[i] = values[i];
+  size = _numQuadPts * _cellDim * _spaceDim;
+  assert(size == _jacobianPre->getFiberDimension(cell));
+  for(int i=0; i < size; ++i)
+    _jacobian[i] = values[i];
+
   values = _jacobianDetPre->restrictPoint(cell);
-  for(int i = 0; i < _numQuadPts; ++i) _jacobianDet[i] = values[i];
+  size = _numQuadPts;
+  assert(size == _jacobianDetPre->getFiberDimension(cell));
+  for(int i=0; i < size; ++i)
+    _jacobianDet[i] = values[i];
+
   values = _jacobianInvPre->restrictPoint(cell);
-  for(int i = 0; i < _numQuadPts * _cellDim * _spaceDim; ++i) _jacobianInv[i] = values[i];
+  size = _numQuadPts * _cellDim * _spaceDim;
+  assert(size == _jacobianInvPre->getFiberDimension(cell));
+  for(int i=0; i < size; ++i)
+    _jacobianInv[i] = values[i];
+
   values = _basisDerivPre->restrictPoint(cell);
-  for(int i = 0; i < _numQuadPts * _numBasis * _spaceDim; ++i) _basisDeriv[i] = values[i];
-}
+  size = _numQuadPts * _numBasis * _spaceDim;
+  assert(size == _basisDerivPre->getFiberDimension(cell));
+  for(int i=0; i < size; ++i)
+    _basisDeriv[i] = values[i];
+} // retrieveGeometry
 
 // End of file 
