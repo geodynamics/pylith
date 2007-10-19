@@ -12,25 +12,25 @@
 
 #include <portinfo>
 
-#include "TestAbsorbingDampersLine2.hh" // Implementation of class methods
+#include "TestAbsorbingDampersTri3.hh" // Implementation of class methods
 
-#include "data/AbsorbingDampersDataLine2.hh" // USES AbsorbingDampersDataLine2
+#include "data/AbsorbingDampersDataTri3.hh" // USES AbsorbingDampersDataTri3
 
-#include "pylith/feassemble/Quadrature0D.hh" // USES Quadrature1D
-#include "pylith/feassemble/GeometryPoint1D.hh" // USES GeometryPoint0D
+#include "pylith/feassemble/Quadrature1Din2D.hh" // USES Quadrature1Din2D
+#include "pylith/feassemble/GeometryLine2D.hh" // USES GeometryLine2D
 
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestAbsorbingDampersLine2 );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestAbsorbingDampersTri3 );
 
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::bc::TestAbsorbingDampersLine2::setUp(void)
+pylith::bc::TestAbsorbingDampersTri3::setUp(void)
 { // setUp
-  _data = new AbsorbingDampersDataLine2();
-  _quadrature = new feassemble::Quadrature0D();
+  _data = new AbsorbingDampersDataTri3();
+  _quadrature = new feassemble::Quadrature1Din2D();
   CPPUNIT_ASSERT(0 != _quadrature);
-  feassemble::GeometryPoint1D geometry;
+  feassemble::GeometryLine2D geometry;
   _quadrature->refGeometry(&geometry);
 } // setUp
 

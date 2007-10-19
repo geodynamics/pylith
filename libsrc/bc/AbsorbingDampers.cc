@@ -66,7 +66,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     throw std::runtime_error(msg.str());
   } // if
 
-  //_boundaryMesh->view("ABSORBING BOUNDARY MESH");
+  _boundaryMesh->view("ABSORBING BOUNDARY MESH");
 
   // check compatibility of quadrature and boundary mesh
   if (_quadrature->cellDim() != _boundaryMesh->getDimension()) {
@@ -148,6 +148,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
   const ALE::Obj<real_section_type>& coordinates =
     _boundaryMesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
 
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();

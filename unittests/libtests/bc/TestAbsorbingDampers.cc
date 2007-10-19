@@ -233,6 +233,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     // Setup mesh
     meshio::MeshIOAscii iohandler;
     iohandler.filename(_data->meshFilename);
+    iohandler.debug(true);
     iohandler.read(mesh);
     CPPUNIT_ASSERT(!mesh->isNull());
     (*mesh)->getFactory()->clear();
