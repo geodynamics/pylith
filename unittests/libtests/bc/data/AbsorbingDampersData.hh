@@ -36,20 +36,9 @@ public:
 
   char* meshFilename; ///< Name of file with input mesh
 
-  /// @name Boundary mesh information
-  //@{
-  int spaceDim; ///< Number of dimensions in vertex coordinates
-  int cellDim; ///< Number of dimensions associated with cell
-  int numVertices; ///< Number of vertices
-  int numCells; ///< Number of cells
-  double* vertices; ///< Coordinates of vertices
-  int* cells; ///< Indices of vertices in cells
-  double* verticesRef; ///< Coordinates of vertices in ref cell (dual basis)
-  //@}
-
   /// @name Quadrature information
   //@{
-  int numBasis; ///< Number of vertices in cell
+  int numBasis; ///< Number of basis functions for cell
   int numQuadPts; ///< Number of quadrature points
   double* quadPts; ///< Coordinates of quad pts in ref cell
   double* quadWts; ///< Weights of quadrature points
@@ -72,8 +61,19 @@ public:
   double* fieldTmdt; ///< Input field at time t-dt.
   //@}
 
+  /// @name Boundary mesh information
+  //@{
+  int spaceDim; ///< Number of dimensions in vertex coordinates
+  int cellDim; ///< Number of dimensions associated with cell
+  int numVertices; ///< Number of vertices
+  int numCells; ///< Number of cells
+  int numCorners; ///< Number of vertices in cell
+  int* cells; ///< Indices of vertices in cells
+  //@}
+
   /// @name Calculated values.
   //@{
+  double* dampingConsts; ///< Expected values from initialization.
   double* valsResidual; ///< Expected values from residual calculation.
   double* valsJacobian; ///< Expected values from Jacobian calculation.
   //@}

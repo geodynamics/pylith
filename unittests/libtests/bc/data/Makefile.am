@@ -13,6 +13,7 @@
 noinst_DATA = \
 	line2.mesh \
 	line2.spatialdb \
+	elasticstrain1d.spatialdb \
 	tri3.mesh \
 	tri3.spatialdb \
 	tri3_b.spatialdb \
