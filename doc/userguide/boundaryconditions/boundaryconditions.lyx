@@ -876,7 +876,7 @@ We force the weak form to hold for each component in the vector space.
 
 , we have
 \begin_inset Formula \begin{equation}
-\sum_{cells}(\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=\sum_{cells}(\int_{S_{t}^{e}}-\rho c_{i}\sum_{p}N^{p}\dot{u}_{i}^{o}N^{q}\, dS).\end{equation}
+\sum_{cells}(\int_{S_{t}^{e}}T_{i}\phi_{i}\, dS)=\sum_{cells}(\int_{S_{t}^{e}}-\rho c_{i}\sum_{p}N^{p}\dot{u}_{i}N^{q}\, dS).\end{equation}
 
 \end_inset
 

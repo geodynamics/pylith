@@ -34,21 +34,21 @@ const char* pylith::bc::AbsorbingDampersDataLine2::_spatialDBFilename = "data/el
 const int pylith::bc::AbsorbingDampersDataLine2::_id = 2;
 const char* pylith::bc::AbsorbingDampersDataLine2::_label = "bc0";
 
-const double pylith::bc::AbsorbingDampersDataLine2::_dt =   1.00000000e-02;
+const double pylith::bc::AbsorbingDampersDataLine2::_dt =   0.25;
 const double pylith::bc::AbsorbingDampersDataLine2::_fieldTpdt[] = {
-  1.20000000e+00,
-  1.20000000e+00,
-  1.70000000e+00,
+  1.0,
+  1.1,
+  1.2,
 };
 const double pylith::bc::AbsorbingDampersDataLine2::_fieldT[] = {
-  1.10000000e+00,
-  1.10000000e+00,
-  1.50000000e+00,
+  1.1,
+  1.3,
+  1.5,
 };
 const double pylith::bc::AbsorbingDampersDataLine2::_fieldTmdt[] = {
-  1.00000000e+00,
-  1.00000000e+00,
-  1.30000000e+00,
+  1.2,
+  1.5,
+  1.8,
 };
 
 const int pylith::bc::AbsorbingDampersDataLine2::_spaceDim = 1;
@@ -63,18 +63,18 @@ const int pylith::bc::AbsorbingDampersDataLine2::_cells[] = {
 
 
 const double pylith::bc::AbsorbingDampersDataLine2::_dampingConsts[] = {
-  2500.0*6000.0,
-  2500.0*6000.0,
+  12.5e+6,
+  17.5e+6,
 };
 const double pylith::bc::AbsorbingDampersDataLine2::_valsResidual[] = {
+  12.5e+6*0.2/0.5,
   0.0,
-  0.0,
-  0.0,
+  17.5e+6*0.6/0.5,
 };
 const double pylith::bc::AbsorbingDampersDataLine2::_valsJacobian[] = {
+  12.5e+6/0.5, 0.0, 0.0,
   0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
-  0.0, 0.0, 0.0,
+  0.0, 0.0, 17.5e+6/0.5,
 };
 
 pylith::bc::AbsorbingDampersDataLine2::AbsorbingDampersDataLine2(void)
