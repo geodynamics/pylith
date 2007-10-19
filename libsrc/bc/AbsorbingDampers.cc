@@ -109,7 +109,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int numBasis = _quadrature->numBasis();
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cs->spaceDim();
-  const int fiberDim = spaceDim * numQuadPts;
+  const int fiberDim = numQuadPts * spaceDim;
   _dampingConsts = new real_section_type(_boundaryMesh->comm(), 
 					 _boundaryMesh->debug());
   assert(!_dampingConsts.isNull());
@@ -212,7 +212,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 
   // Get cell information
   const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
-    _boundaryMesh->heightStratum(1);
+    _boundaryMesh->heightStratum(0);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
 
@@ -256,8 +256,9 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     // Restrict input fields to cell
     _boundaryMesh->restrict(dispTpdt, *c_iter, &dispTpdtCell[0], cellVecSize);
     _boundaryMesh->restrict(dispTmdt, *c_iter, &dispTmdtCell[0], cellVecSize);
-    _boundaryMesh->restrict(_dampingConsts, *c_iter, 
-			    &dampingConstsCell[0], dampingConstsCell.size());
+    assert(numQuadPts*spaceDim == _dampingConsts->getFiberDimension(*c_iter));
+    const real_section_type::value_type* dampingConstsCell = 
+      _dampingConsts->restrictPoint(*c_iter);
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -305,7 +306,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 
   // Get cell information
   const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
-    _boundaryMesh->heightStratum(1);
+    _boundaryMesh->heightStratum(0);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
 
