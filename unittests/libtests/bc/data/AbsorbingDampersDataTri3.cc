@@ -70,10 +70,10 @@ const double pylith::bc::AbsorbingDampersDataTri3::_dampingConsts[] = {
   12.5e+6, 7.5e+6,
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_valsResidual[] = {
-  0.0, 0.0, // FIX THESE
   0.0, 0.0,
+  2.4e+07, 6.0e+06,
   0.0, 0.0,
-  0.0, 0.0,
+  2.4e+07, 6.0e+06
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_valsJacobian[] = {
   0.0, 0.0, // 0   // FIX THESE
