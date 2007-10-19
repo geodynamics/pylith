@@ -38,6 +38,7 @@
 \tracking_changes false
 \output_changes false
 \author "" 
+\author "" 
 \end_header
 
 \begin_body
@@ -789,6 +790,15 @@ For the normal traction consider a dilatational wave propagating normal
 \end_inset
 
  in both cases.
+ We also recognize that 
+\begin_inset Formula $\mu=\rho v_{s}^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\lambda+2\mu=\rho v_{p}^{2}$
+\end_inset
+
+.
  This leads to the following expressions for the tractions:
 \begin_inset Formula \begin{gather}
 T_{s_{h}}=-\rho v_{s}\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\\
