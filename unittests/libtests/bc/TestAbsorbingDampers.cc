@@ -133,8 +133,6 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   const double t = 1.0;
   bc.integrateResidual(residual, t, &fields, mesh);
 
-  residual->view("RESIDUAL");
-
   const double* valsE = _data->valsResidual;
   const int totalNumVertices = mesh->depthStratum(0)->size();
   const int sizeE = _data->spaceDim * totalNumVertices;
@@ -252,6 +250,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     spatialdata::spatialdb::SimpleIOAscii dbIO;
     dbIO.filename(_data->spatialDBFilename);
     db.ioHandler(&dbIO);
+    db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
     const double upDirVals[] = { 0.0, 0.0, 1.0 };
     double_array upDir(upDirVals, 3);
@@ -280,7 +279,8 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     residual->zero();
     fields->copyLayout("residual");
     
-    const int fieldSize = _data->spaceDim * _data->numVertices;
+    const int totalNumVertices = (*mesh)->depthStratum(0)->size();
+    const int fieldSize = _data->spaceDim * totalNumVertices;
     const ALE::Obj<real_section_type>& dispTpdt = fields->getReal("dispTpdt");
     const ALE::Obj<real_section_type>& dispT = fields->getReal("dispT");
     const ALE::Obj<real_section_type>& dispTmdt = fields->getReal("dispTmdt");
@@ -288,7 +288,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     CPPUNIT_ASSERT(!dispT.isNull());
     CPPUNIT_ASSERT(!dispTmdt.isNull());
     const int offset = _data->numCells;
-    for (int iVertex=0; iVertex < _data->numVertices; ++iVertex) {
+    for (int iVertex=0; iVertex < totalNumVertices; ++iVertex) {
       dispTpdt->updatePoint(iVertex+offset, 
 			    &_data->fieldTpdt[iVertex*_data->spaceDim]);
       dispT->updatePoint(iVertex+offset, 

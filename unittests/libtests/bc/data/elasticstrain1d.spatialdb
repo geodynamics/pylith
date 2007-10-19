@@ -3,12 +3,13 @@ SimpleDB {
   num-values = 3
   value-names =  density vs vp
   value-units =  kg/m^3  m/s  m/s
-  num-locs = 1
-  data-dim = 0
+  num-locs = 2
+  data-dim = 1
   space-dim = 1
   cs-data = cartesian {
     to-meters = 1.0
     space-dim = 1
   }
 }
-0.0  2500.0  3464.1016151377544 6000.0
+-1.0  2500.0  3000.0  5000.0
++1.0  2500.0  4000.0  7000.0

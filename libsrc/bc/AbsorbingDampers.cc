@@ -242,7 +242,6 @@ pylith::bc::AbsorbingDampers::integrateResidual(
   const int cellVecSize = numBasis*spaceDim;
   double_array dispTpdtCell(cellVecSize);
   double_array dispTmdtCell(cellVecSize);
-  double_array dampingConstsCell(numQuadPts*spaceDim);
 
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
@@ -283,7 +282,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     PetscLogFlopsNoCheck(numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
 
     // Assemble cell contribution into field
-    mesh->updateAdd(residual, *c_iter, _cellVector);
+    _boundaryMesh->updateAdd(residual, *c_iter, _cellVector);
   } // for
 } // integrateResidual
 
@@ -332,7 +331,6 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
   // Allocate vectors for cell values.
   _initCellVector();
   const int cellVecSize = numBasis*spaceDim;
-  double_array dampingConstsCell(numQuadPts*spaceDim);
 
   // Allocate vector for cell values (if necessary)
   _initCellMatrix();
@@ -349,6 +347,11 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
     const double_array& jacobianDet = _quadrature->jacobianDet();
+
+    // Restrict input fields to cell
+    assert(numQuadPts*spaceDim == _dampingConsts->getFiberDimension(*c_iter));
+    const real_section_type::value_type* dampingConstsCell = 
+      _dampingConsts->restrictPoint(*c_iter);
 
     // Compute Jacobian for absorbing bc terms
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
@@ -373,8 +376,7 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
     const ALE::Obj<Mesh::order_type>& globalOrder = 
       mesh->getFactory()->getGlobalOrder(mesh, "default", dispT);
     assert(!globalOrder.isNull());
-
-    err = updateOperator(*jacobian, mesh, dispT, globalOrder,
+    err = updateOperator(*jacobian, _boundaryMesh, dispT, globalOrder,
 			 *c_iter, _cellMatrix, ADD_VALUES);
     if (err)
       throw std::runtime_error("Update to PETSc Mat failed.");
