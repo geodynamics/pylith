@@ -113,7 +113,7 @@ private :
 protected :
 
   int _id; ///< BoundaryCondition identifier
-  std::string _label; ///< Label of fault
+  std::string _label; ///< Label of boundary condition
   spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database w/parameters
 
 }; // class BoundaryCondition

@@ -27,7 +27,7 @@
 #include "spatialdata/spatialdb/SimpleDB.hh" // USES SimpleDB
 #include "spatialdata/spatialdb/SimpleIOAscii.hh" // USES SimpleIOAscii
 
-#include <stdexcept> // TEMPORARY
+#include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::bc::TestAbsorbingDampers );
@@ -69,10 +69,51 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   _initialize(&mesh, &bc, &fields);
 
   CPPUNIT_ASSERT(0 != _data);
+  
+  const ALE::Obj<Mesh>& boundaryMesh = bc._boundaryMesh;
 
-  const int numCells = mesh->heightStratum(0)->size();
+  // Check boundary mesh
+  CPPUNIT_ASSERT(!boundaryMesh.isNull());
 
-  // ADD STUFF HERE
+  const int cellDim = boundaryMesh->getDimension();
+  const ALE::Obj<sieve_type>& sieve = boundaryMesh->getSieve();
+  const ALE::Obj<Mesh::label_sequence>& cells = boundaryMesh->heightStratum(0);
+  const int numVertices = boundaryMesh->depthStratum(0)->size();
+  const int numCells = cells->size();
+
+  CPPUNIT_ASSERT_EQUAL(_data->cellDim, cellDim);
+  CPPUNIT_ASSERT_EQUAL(_data->numVertices, numVertices);
+  CPPUNIT_ASSERT_EQUAL(_data->numCells, numCells);
+
+  const int numCorners = sieve->nCone(*cells->begin(), 
+				      boundaryMesh->depth())->size();
+  CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
+  int iCell = 0;
+  for(Mesh::label_sequence::iterator c_iter = cells->begin();
+      c_iter != cells->end();
+      ++c_iter) {
+    const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
+      sieve->cone(*c_iter);
+    for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
+	v_iter != cone->end();
+	++v_iter)
+      CPPUNIT_ASSERT_EQUAL(_data->cells[iCell++], *v_iter);
+  } // for
+
+  // Check damping constants
+  const int sizeE = _data->numCells * _data->numQuadPts * _data->spaceDim;
+  const double* valsE = _data->dampingConsts;
+
+  const int size = bc._dampingConsts->sizeWithBC();
+  const double* vals = bc._dampingConsts->restrict();
+
+  CPPUNIT_ASSERT_EQUAL(sizeE, size);
+  const double tolerance = 1.0e-06;
+  for (int i=0; i < size; ++i)
+    if (fabs(valsE[i]) > 1.0)
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
+    else
+      CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
 } // testInitialize
 
 // ----------------------------------------------------------------------
@@ -92,8 +133,11 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   const double t = 1.0;
   bc.integrateResidual(residual, t, &fields, mesh);
 
+  residual->view("RESIDUAL");
+
   const double* valsE = _data->valsResidual;
-  const int sizeE = _data->spaceDim * _data->numVertices;
+  const int totalNumVertices = mesh->depthStratum(0)->size();
+  const int sizeE = _data->spaceDim * totalNumVertices;
 
   const double* vals = residual->restrict();
   const int size = residual->sizeWithBC();
@@ -138,8 +182,9 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   CPPUNIT_ASSERT(0 == err);
 
   const double* valsE = _data->valsJacobian;
-  const int nrowsE = _data->numVertices * _data->spaceDim;
-  const int ncolsE = _data->numVertices * _data->spaceDim;
+  const int totalNumVertices = mesh->depthStratum(0)->size();
+  const int nrowsE = totalNumVertices * _data->spaceDim;
+  const int ncolsE = totalNumVertices * _data->spaceDim;
 
   int nrows = 0;
   int ncols = 0;

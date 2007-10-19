@@ -22,6 +22,7 @@ check_PROGRAMS = testbc
 # Primary source files
 testbc_SOURCES = \
 	TestAbsorbingDampers.cc \
+	TestAbsorbingDampersLine2.cc \
 	TestBoundaryCondition.cc \
 	TestDirichlet.cc \
 	TestDirichletLine2.cc \
@@ -38,6 +39,7 @@ testbc_SOURCES = \
 
 noinst_HEADERS = \
 	TestAbsorbingDampers.hh \
+	TestAbsorbingDampersLine2.hh \
 	TestBoundaryCondition.hh \
 	TestDirichlet.hh \
 	TestDirichletLine2.hh \
@@ -54,7 +56,7 @@ noinst_HEADERS = \
 # Source files associated with testing data
 testbc_SOURCES += \
 	data/AbsorbingDampersData.cc \
-	data/AbsorbingDampersData1D.cc \
+	data/AbsorbingDampersDataLine2.cc \
 	data/DirichletData.cc \
 	data/DirichletDataLine2.cc \
 	data/DirichletDataLine2b.cc \
@@ -69,7 +71,7 @@ testbc_SOURCES += \
 
 noinst_HEADERS += \
 	data/AbsorbingDampersData.hh \
-	data/AbsorbingDampersData1D.hh \
+	data/AbsorbingDampersDataLine2.hh \
 	data/DirichletData.hh \
 	data/DirichletDataLine2.hh \
 	data/DirichletDataLine2b.hh \

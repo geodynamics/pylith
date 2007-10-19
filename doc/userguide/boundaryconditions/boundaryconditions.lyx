@@ -1,17 +1,25 @@
-#LyX 1.4.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass book
 \language english
 \inputencoding auto
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \paperfontsize default
 \spacing single
 \papersize default
 \use_geometry true
 \use_amsmath 1
+\use_esint 0
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
@@ -29,12 +37,14 @@
 \paperpagestyle default
 \tracking_changes false
 \output_changes false
+\author "" 
 \end_header
 
 \begin_body
 
 \begin_layout Chapter
-\begin_inset LatexCommand \label{cha:boundary:interface:conditions}
+\begin_inset LatexCommand label
+name "cha:boundary:interface:conditions"
 
 \end_inset
 
@@ -87,7 +97,8 @@ The procedure for creating sets of vertices differs depending on the mesh
  generator.
  For meshes specified using the PyLith mesh ASCII format, the sets of vertices
  are specified using groups (see Appendix 
-\begin_inset LatexCommand \ref{sec:MeshIOAscii}
+\begin_inset LatexCommand ref
+reference "sec:MeshIOAscii"
 
 \end_inset
 
@@ -115,7 +126,8 @@ The boundary condition container associates a type of boundary condition
  container is not yet available.
  However, we supply containers for one, two, four, and six boundary conditions.
  Table 
-\begin_inset LatexCommand \ref{tab:bc:containers}
+\begin_inset LatexCommand ref
+reference "tab:bc:containers"
 
 \end_inset
 
@@ -333,12 +345,21 @@ x_neg, x_pos, y_neg, y_pos, z_neg, z_pos
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{tab:bc:containers}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:bc:containers"
 
 \end_inset
 
 Predefined boundary condition containers.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -442,7 +463,8 @@ BCTwoSides
 face A,'' the spatial database query should use the nearest point algorithm,
  and motion in the z-direction is constrained.
  See Appendix 
-\begin_inset LatexCommand \ref{sec:Spatialdata:SimpleIOAscii}
+\begin_inset LatexCommand ref
+reference "sec:Spatialdata:SimpleIOAscii"
 
 \end_inset
 
@@ -497,8 +519,11 @@ status open
 \begin_layout Standard
 
 \series bold
-Value in 
+Value in
+\series default
+ 
 \family typewriter
+\series bold
 fixed_dof
 \end_layout
 
@@ -589,9 +614,17 @@ dof-3
 
 \end_layout
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Values in spatial database used as parameters in the elastic material constituti
 ve models.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -617,8 +650,9 @@ This boundary condition attempts to prevent seismic waves reflecting off
  of a boundary by placing simple dashpots on the boundary.
  Normally incident dilatational and shear waves are perfectly absorbed.
  Waves incident at other angles are only partially absorbed.
- This boundary condition is simpler than a perfectly matched layer boundary
- condition but does not perform quite as well, especially for surface waves.
+ This boundary condition is simpler than a perfectly matched layer (PML)
+ boundary condition but does not perform quite as well, especially for surface
+ waves.
  If the waves arriving at the absorbing boundary are relatively small in
  amplitude compared to the amplitudes of primary interest, this boundary
  condition gives reasonable results.
@@ -668,11 +702,11 @@ where
 \end_inset
 
  is the direction normal to the boundary, 
-\begin_inset Formula $s_{h}$
+\begin_inset Formula $\overrightarrow{s}_{h}$
 \end_inset
 
  is the horizontal direction tangent to the boundary, and 
-\begin_inset Formula $s_{v}$
+\begin_inset Formula $\overrightarrow{s}_{v}$
 \end_inset
 
 is the vertical direction tangent to the boundary, the tractions on the
@@ -686,7 +720,7 @@ T_{n}=\sigma_{nn}.\end{gather}
 
 In the case of a horizontal boundary, we can define an auxilliary direction
  in order to assign unique tangential directions.
- For a linear elastic material, 
+ For a linear elastic isotropic material, 
 \begin_inset Formula $\sigma_{ij}=\lambda\epsilon_{kk}\delta_{ij}+2\mu\epsilon_{ij},$
 \end_inset
 
@@ -716,9 +750,10 @@ For our propagating plane wave, we recognize that
 
 \end_inset
 
-so that our expressions for the tractions becomes
+so that our expressions for the tractions become
 \begin_inset Formula \begin{gather}
-T_{s_{h}}=-\frac{\mu}{c}\left(\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right).\end{gather}
+T_{s_{h}}=-\frac{\mu}{c}\left(\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right),\\
+T_{s_{v}}=-\frac{\mu}{c}\left(\frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}+\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\right).\end{gather}
 
 \end_inset
 
@@ -749,14 +784,16 @@ For the normal traction consider a dilatational wave propagating normal
 \begin_inset Formula $u_{n}=u_{s_{h}}=0$
 \end_inset
 
-, where 
+, with 
 \begin_inset Formula $c=v_{s}$
 \end_inset
 
  in both cases.
  This leads to the following expressions for the tractions:
 \begin_inset Formula \begin{gather}
-T_{s_{h}}=-\rho v_{s}\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\end{gather}
+T_{s_{h}}=-\rho v_{s}\frac{\partial u_{s_{h}}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\\
+T_{s_{v}}=-\rho v_{s}\frac{\partial u_{v}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\\
+T_{n}=-\rho v_{p}\frac{\partial u_{n}^{t}(t-\frac{\vec{x}}{c})}{\partial t}\end{gather}
 
 \end_inset
 
@@ -850,7 +887,7 @@ Fault interfaces are used to create dislocations (jumps in displacement
  reverse-slip, and fault opening.
  The current release of PyLith supports kinematic (prescribed) slip.
  Support for fault constitutive models for frictional interface conditions
- will be supported in a future release (Fall 2007).
+ will be supported in a future release (Winter 2007).
 \end_layout
 
 \begin_layout Subsection
@@ -860,7 +897,8 @@ Conventions
 \begin_layout Standard
 Slip corresponds to relative motion across a fault surface.
  Figure 
-\begin_inset LatexCommand \ref{fig:fault:orientation}
+\begin_inset LatexCommand ref
+reference "fig:fault:orientation"
 
 \end_inset
 
@@ -871,7 +909,8 @@ Slip corresponds to relative motion across a fault surface.
  angles over potentially complex, nonplanar fault surfaces.
  Instead, the user specifies fault parameters in terms of lateral motion,
  reverse motion, and fault opening as shown in Figure 
-\begin_inset LatexCommand \ref{fig:fault:slip:motions}
+\begin_inset LatexCommand ref
+reference "fig:fault:slip:motions"
 
 \end_inset
 
@@ -897,7 +936,10 @@ status open
 
 \end_layout
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Orientation of a fault surface in 3D, where 
 \begin_inset Formula $\phi$
 \end_inset
@@ -912,11 +954,17 @@ Orientation of a fault surface in 3D, where
 
  the rake angle.
  
-\begin_inset LatexCommand \label{fig:fault:orientation}
+\begin_inset LatexCommand label
+name "fig:fault:orientation"
 
 \end_inset
 
  
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -943,15 +991,24 @@ status open
 
 \end_layout
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Sign conventions associated with fault slip.
  Positive values are associated with left-lateral, reverse, and fault opening
  motions.
-\begin_inset LatexCommand \label{fig:fault:slip:motions}
+\begin_inset LatexCommand label
+name "fig:fault:slip:motions"
 
 \end_inset
 
  
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1087,12 +1144,21 @@ ault
 
 \end_layout
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{tab:fault:containers}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "tab:fault:containers"
 
 \end_inset
 
 Predefined fault surface containers.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1113,7 +1179,8 @@ t mesh, additional degrees of freedom must be added along with adjustment
  on the two sides of the fault.
  PyLith automatically adds cohesive cells for each fault surface.
  Figure 
-\begin_inset LatexCommand \ref{fig:fault:cohesive:quad4}
+\begin_inset LatexCommand ref
+reference "fig:fault:cohesive:quad4"
 
 \end_inset
 
@@ -1140,16 +1207,25 @@ status open
 
 \end_layout
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Example of cohesive cell inserted into a mesh of two quadrilateral cells.
  The zero thickness cohesive cell (shown with dashed lines) controls slip
  on the fault via the relative motion between vertices 3 and 7 and 2 and
  6.
-\begin_inset LatexCommand \label{fig:fault:cohesive:quad4}
+\begin_inset LatexCommand label
+name "fig:fault:cohesive:quad4"
 
 \end_inset
 
  
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1169,9 +1245,9 @@ The principal parameters for fault interface conditions are:
 id This is an integer identifier for the fault surface.
  It is used to specify the 
 \family typewriter
-material-id 
+material-id
 \family default
-of the cohesive cells in the mesh.
+ of the cohesive cells in the mesh.
  Material identifiers must be unique so this value cannot be the same as
  any of the material models or any other fault.
 \end_layout
@@ -1394,7 +1470,8 @@ The current release of PyLith supports specification of the evolution of
  each point where the parameters for the slip time function may vary over
  the fault surface.
  We use an integral of Brune's far-field time function 
-\begin_inset LatexCommand \cite{Brune:1970}
+\begin_inset LatexCommand cite
+key "Brune:1970"
 
 \end_inset
 
@@ -1723,9 +1800,17 @@ Slip initiation time (
 
 \end_layout
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Values in spatial database used as parameters in the elastic material constituti
 ve models.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
