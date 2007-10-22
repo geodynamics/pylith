@@ -42,6 +42,11 @@ Release 1.1
 
        Want to write topology + vertex and/or cell fields
 
+       For visualization, we want cell fields that are averaged over
+       the cell's quadrature points. There may be some cases
+       (benchmarking), in which we want the cell fields at each
+       quadrature point.
+
        VTK files
 
          One per time step, multiple vertex and/or cell fields
