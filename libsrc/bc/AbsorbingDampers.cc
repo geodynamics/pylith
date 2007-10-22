@@ -66,7 +66,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     throw std::runtime_error(msg.str());
   } // if
 
-  _boundaryMesh->view("ABSORBING BOUNDARY MESH");
+  //_boundaryMesh->view("ABSORBING BOUNDARY MESH");
 
   // check compatibility of quadrature and boundary mesh
   if (_quadrature->cellDim() != _boundaryMesh->getDimension()) {
@@ -81,17 +81,19 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int numCorners = _quadrature->numBasis();
 
   const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
-    _boundaryMesh->heightStratum(0);
+    _boundaryMesh->heightStratum(1);
+    
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
   const ALE::Obj<sieve_type>& sieve = _boundaryMesh->getSieve();
+  const int boundaryDepth = _boundaryMesh->depth()-1; // depth of bndry cells
   assert(!sieve.isNull());
   for (Mesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = sieve->nCone(*c_iter, 
-					    _boundaryMesh->depth())->size();
+    const int cellNumCorners = (_boundaryMesh->getDimension() > 0) ?
+      sieve->nCone(*c_iter, boundaryDepth)->size() : 1;
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell for absorbing boundary "
@@ -147,7 +149,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   double_array dampingConstsGlobal(fiberDim);
 
   const ALE::Obj<real_section_type>& coordinates =
-    _boundaryMesh->getRealSection("coordinates");
+    mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
 
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
@@ -182,11 +184,15 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, quadPtRef);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, 
 			       upDir);
+      orientation /= jacobianDet;
       dampingConstsGlobal = 0.0;
-      for (int iDim=0; iDim < spaceDim; ++iDim)
+      for (int iDim=0; iDim < spaceDim; ++iDim) {
 	for (int jDim=0; jDim < spaceDim; ++jDim)
 	  dampingConstsGlobal[iDim] += 
 	    dampingConstsLocal[jDim]*orientation[iDim*spaceDim+jDim];
+	// Ensure damping constants are positive
+	dampingConstsGlobal[iDim] = fabs(dampingConstsGlobal[iDim]);
+      } // for
     } // for
     _dampingConsts->updatePoint(*c_iter, &dampingConstsGlobal[0]);
   } // for
@@ -213,13 +219,13 @@ pylith::bc::AbsorbingDampers::integrateResidual(
 
   // Get cell information
   const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
-    _boundaryMesh->heightStratum(0);
+    _boundaryMesh->heightStratum(1);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
   const ALE::Obj<real_section_type>& coordinates = 
-    _boundaryMesh->getRealSection("coordinates");
+    mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
   const ALE::Obj<real_section_type>& dispTpdt = fields->getHistoryItem(0);
   const ALE::Obj<real_section_type>& dispTmdt = fields->getHistoryItem(2);
@@ -306,13 +312,13 @@ pylith::bc::AbsorbingDampers::integrateJacobian(
 
   // Get cell information
   const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
-    _boundaryMesh->heightStratum(0);
+    _boundaryMesh->heightStratum(1);
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
 
   // Get sections
   const ALE::Obj<real_section_type>& coordinates = 
-    _boundaryMesh->getRealSection("coordinates");
+    mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
   const ALE::Obj<real_section_type>& dispT = fields->getHistoryItem(1);
   assert(!dispT.isNull());
