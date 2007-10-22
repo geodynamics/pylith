@@ -77,7 +77,7 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
 
   const int cellDim = boundaryMesh->getDimension();
   const ALE::Obj<sieve_type>& sieve = boundaryMesh->getSieve();
-  const ALE::Obj<Mesh::label_sequence>& cells = boundaryMesh->heightStratum(0);
+  const ALE::Obj<Mesh::label_sequence>& cells = boundaryMesh->heightStratum(1);
   const int numVertices = boundaryMesh->depthStratum(0)->size();
   const int numCells = cells->size();
 
@@ -85,13 +85,15 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(_data->numVertices, numVertices);
   CPPUNIT_ASSERT_EQUAL(_data->numCells, numCells);
 
-  const int numCorners = sieve->nCone(*cells->begin(), 
-				      boundaryMesh->depth())->size();
-  CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
+  const int boundaryDepth = boundaryMesh->depth()-1; // depth of bndry cells  
   int iCell = 0;
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
       c_iter != cells->end();
       ++c_iter) {
+    const int numCorners = (boundaryMesh->getDimension() > 0) ?
+      sieve->nCone(*c_iter, boundaryDepth)->size() : 1;
+    CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
+
     const ALE::Obj<sieve_type::traits::coneSequence>& cone = 
       sieve->cone(*c_iter);
     for(sieve_type::traits::coneSequence::iterator v_iter = cone->begin();
@@ -233,7 +235,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     // Setup mesh
     meshio::MeshIOAscii iohandler;
     iohandler.filename(_data->meshFilename);
-    iohandler.debug(true);
+    //iohandler.debug(true);
     iohandler.read(mesh);
     CPPUNIT_ASSERT(!mesh->isNull());
     (*mesh)->getFactory()->clear();

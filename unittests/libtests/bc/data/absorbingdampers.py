@@ -27,28 +27,42 @@ def calcTri3():
   density = 2500.0
   vp = 5000.0
   vs = 3000.0
-  velocity = 1.2
+  velocityX = 0.3
+  velocityY = 0.2
   edgeLen = 0.5**0.5
   dt = 0.25
   normal = [0.5**0.5, -0.5**0.5]
+  N0 = 0.5
+  N1 = 0.5
 
-  dampingConsts = [density*vp, density*vs]
-  residualNormal = dampingConsts[0]*velocity*edgeLen/(2.0*dt)
-  residualTangential = dampingConsts[1]*velocity*edgeLen/(2.0*dt)
-  residual = [residualNormal*normal[0] - residualTangential*normal[1],
-              residualNormal*normal[1] + residualTangential*normal[0],
-              residualNormal*normal[0] - residualTangential*normal[1],
-              residualNormal*normal[1] + residualTangential*normal[0]]
+  constNormal = density*vp
+  constTangential = density*vs
+  dampingConsts = [abs(constNormal*normal[0] - constTangential*normal[1]),
+                   abs(constNormal*normal[1] + constTangential*normal[0])]
+  residualX = -dampingConsts[0]*velocityX*edgeLen/(2.0*dt)
+  residualY = -dampingConsts[1]*velocityY*edgeLen/(2.0*dt)
+  residual = [residualX, residualY,
+              residualX, residualY]
 
-  jacobian = []
+  j00 = 2*edgeLen*N0**2 / (2.0*dt)
+  j01 = 2*edgeLen*N0*N1 / (2.0*dt)
+  j10 = j01
+  j11 = 2*edgeLen*N1**2 / (2.0*dt)
+  jacobian = [dampingConsts[0]*j00, dampingConsts[1]*j00,
+              dampingConsts[0]*j01, dampingConsts[1]*j01,
+              dampingConsts[0]*j10, dampingConsts[1]*j10,
+              dampingConsts[0]*j11, dampingConsts[1]*j11]
 
   print "Absorbing boundary for tri3 mesh"
   print "damping constants:"
   for v in dampingConsts:
       print "  %16.8e" % v
-  print "residual:"
+  print "values for residual:"
   for v in residual:
       print "  %16.8e" % v
+  print "values for jacobian:"
+  for j in jacobian:
+      print "  %16.8e" % j
 
   
 # ----------------------------------------------------------------------

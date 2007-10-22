@@ -37,23 +37,23 @@ const int pylith::bc::AbsorbingDampersDataTri3::_id = 2;
 const char* pylith::bc::AbsorbingDampersDataTri3::_label = "bc";
 
 const double pylith::bc::AbsorbingDampersDataTri3::_dt =   0.25;
-const double pylith::bc::AbsorbingDampersDataTri3::_fieldTpdt[] = {
-  1.0,
-  1.1,
-  1.2,
-  1.3,
+const double pylith::bc::AbsorbingDampersDataTri3::_fieldTmdt[] = {
+  1.0,  2.4,
+  1.1,  1.8,
+  1.2,  2.4,
+  1.3,  2.2,
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_fieldT[] = {
-  1.1,
-  1.3,
-  1.5,
-  1.7,
+  1.1,  2.0,
+  1.3,  2.1,
+  1.5,  2.2,
+  1.7,  2.3,
 };
-const double pylith::bc::AbsorbingDampersDataTri3::_fieldTmdt[] = {
-  1.2,
-  1.5,
-  1.8,
-  2.1,
+const double pylith::bc::AbsorbingDampersDataTri3::_fieldTpdt[] = {
+  1.2,  1.6,
+  1.5,  2.4,
+  1.8,  2.0,
+  2.1,  2.4,
 };
 
 const int pylith::bc::AbsorbingDampersDataTri3::_spaceDim = 2;
@@ -67,31 +67,47 @@ const int pylith::bc::AbsorbingDampersDataTri3::_cells[] = {
 
 
 const double pylith::bc::AbsorbingDampersDataTri3::_dampingConsts[] = {
-  12.5e+6, 7.5e+6,
+  1.41421356e+07,  3.53553391e+06
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_valsResidual[] = {
   0.0, 0.0,
-  2.4e+07, 6.0e+06,
+  -6.0e+06,  1.0e+06,
   0.0, 0.0,
-  2.4e+07, 6.0e+06
+  -6.0e+06,  1.0e+06,
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_valsJacobian[] = {
-  0.0, 0.0, // 0   // FIX THESE
+  0.0, 0.0, // 0x
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0, // 1
+  0.0, 0.0, // 0y
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0, // 2
+  0.0, 0.0, // 1x
+  1.0e+07, 0.0,
+  0.0, 0.0,
+  1.0e+07, 0.0,
+  0.0, 0.0, // 1y
+  0.0, 2.5e+06,
+  0.0, 0.0,
+  0.0, 2.5e+06,
+  0.0, 0.0, // 2x
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
-  0.0, 0.0, // 3
+  0.0, 0.0, // 2y
   0.0, 0.0,
   0.0, 0.0,
   0.0, 0.0,
+  0.0, 0.0, // 3x
+  1.0e+07, 0.0,
+  0.0, 0.0,
+  1.0e+07, 0.0,
+  0.0, 0.0, // 3y
+  0.0, 2.5e+06,
+  0.0, 0.0,
+  0.0, 2.5e+06,
 };
 
 pylith::bc::AbsorbingDampersDataTri3::AbsorbingDampersDataTri3(void)
