@@ -114,12 +114,13 @@ public :
 
   /** Compute orientation of cell at location.
    *
-   * The orientation is returned as an array of direction cosines.
+   * The orientation is returned as an array of direction cosines
+   * weighted by the determinant of the Jacobian.
    *
    * size = spaceDim*spaceDim
    * index = iDir*spaceDim + iComponent
    *
-   * @param orientation Array of direction cosines.
+   * @param orientation Array of direction cosines (weighted by Jacobian).
    * @param jacobian Jacobian matrix at point.
    * @param jacobianDet Determinant of Jacobian matrix at point.
    * @param upDir Direction perpendicular to horizontal direction that is 
