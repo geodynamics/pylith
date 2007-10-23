@@ -66,6 +66,7 @@ class Distributor(Component):
     """
     Component.__init__(self, name, facility="partitioner")
     self.cppHandle = None
+    self.debug = False
     return
 
 
