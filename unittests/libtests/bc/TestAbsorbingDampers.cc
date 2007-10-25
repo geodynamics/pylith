@@ -143,6 +143,8 @@ pylith::bc::TestAbsorbingDampers::testIntegrateResidual(void)
   const int size = residual->sizeWithBC();
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
+  //residual->view("RESIDUAL");
+
   const double tolerance = 1.0e-06;
   for (int i=0; i < size; ++i)
     if (fabs(valsE[i]) > 1.0)
@@ -205,6 +207,14 @@ pylith::bc::TestAbsorbingDampers::testIntegrateJacobian(void)
   for (int iCol=0; iCol < ncols; ++iCol)
     cols[iCol] = iCol;
   MatGetValues(jDense, nrows, &rows[0], ncols, &cols[0], &vals[0]);
+
+#if 0
+  std::cout << "JACOBIAN\n";
+  for (int iRow=0, i=0; iRow < nrows; ++iRow)
+    for (int iCol=0; iCol < ncols; ++iCol, ++i)
+      std::cout << "  iRow: " << iRow << ", iCol: " << iCol << ", value: " << vals[i] << std::endl;
+#endif
+
   const double tolerance = 1.0e-06;
   for (int iRow=0; iRow < nrows; ++iRow)
     for (int iCol=0; iCol < ncols; ++iCol) {
@@ -283,6 +293,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     fields->copyLayout("residual");
     
     const int totalNumVertices = (*mesh)->depthStratum(0)->size();
+    const int numMeshCells = (*mesh)->heightStratum(0)->size();
     const int fieldSize = _data->spaceDim * totalNumVertices;
     const ALE::Obj<real_section_type>& dispTpdt = fields->getReal("dispTpdt");
     const ALE::Obj<real_section_type>& dispT = fields->getReal("dispT");
@@ -290,7 +301,7 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     CPPUNIT_ASSERT(!dispTpdt.isNull());
     CPPUNIT_ASSERT(!dispT.isNull());
     CPPUNIT_ASSERT(!dispTmdt.isNull());
-    const int offset = _data->numCells;
+    const int offset = numMeshCells;
     for (int iVertex=0; iVertex < totalNumVertices; ++iVertex) {
       dispTpdt->updatePoint(iVertex+offset, 
 			    &_data->fieldTpdt[iVertex*_data->spaceDim]);
