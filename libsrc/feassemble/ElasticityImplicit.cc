@@ -175,6 +175,16 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const int numBasis = _quadrature->numBasis();
   const int spaceDim = _quadrature->spaceDim();
 
+#ifdef FASTER
+  static std::map<int, int> tags;
+  int                       c = 0;
+
+  if (tags.find(_material->id()) == tags.end()) {
+    tags[_material->id()] = mesh->calculateCustomAtlas(dispTBctpdt, cells);
+    residual->copyCustomAtlas(dispTBctpdt, tags[_material->id()]);
+  }
+  const int tag = tags[_material->id()];
+#endif
   // Precompute the geometric and function space information
   _quadrature->precomputeGeometry(mesh, coordinates, cells);
 
@@ -211,7 +221,11 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 
     // Restrict input fields to cell
     PetscLogEventBegin(restrictEvent,0,0,0,0);
+#ifdef FASTER
+    mesh->restrict(dispTBctpdt, tag, c, &dispTBctpdtCell[0], cellVecSize);
+#else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
+#endif
     PetscLogEventEnd(restrictEvent,0,0,0,0);
 
     // Get cell geometry information that depends on cell
@@ -265,7 +279,11 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
 #endif
     // Assemble cell contribution into field
     PetscLogEventBegin(updateEvent,0,0,0,0);
+#ifdef FASTER
+    mesh->updateAdd(residual, tag, c++, _cellVector);
+#else
     mesh->updateAdd(residual, *c_iter, _cellVector);
+#endif
     PetscLogEventEnd(updateEvent,0,0,0,0);
   } // for
 } // integrateResidual
