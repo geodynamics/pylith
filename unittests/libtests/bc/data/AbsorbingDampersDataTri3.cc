@@ -32,7 +32,8 @@ const double pylith::bc::AbsorbingDampersDataTri3::_basisDerivRef[] = {
    0.5,
 };
 
-const char* pylith::bc::AbsorbingDampersDataTri3::_spatialDBFilename = "data/elasticplanestrain.spatialdb";
+const char* pylith::bc::AbsorbingDampersDataTri3::_spatialDBFilename = 
+  "data/elasticplanestrain.spatialdb";
 const int pylith::bc::AbsorbingDampersDataTri3::_id = 2;
 const char* pylith::bc::AbsorbingDampersDataTri3::_label = "bc";
 
@@ -71,9 +72,9 @@ const double pylith::bc::AbsorbingDampersDataTri3::_dampingConsts[] = {
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_valsResidual[] = {
   0.0, 0.0,
-  -6.0e+06,  1.0e+06,
+  -1.2e+07,  -2.0e+06,
   0.0, 0.0,
-  -6.0e+06,  1.0e+06,
+  -1.2e+07,  -2.0e+06,
 };
 const double pylith::bc::AbsorbingDampersDataTri3::_valsJacobian[] = {
   0.0, 0.0, // 0x

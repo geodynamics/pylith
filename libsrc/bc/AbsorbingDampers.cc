@@ -173,9 +173,12 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 	    << "using spatial database " << _db->label() << ".";
 	throw std::runtime_error(msg.str());
       } // if
-      dampingConstsLocal[index  ] = queryData[0]*queryData[1];
-      for (int iDim=1; iDim < spaceDim; ++iDim)
-	dampingConstsLocal[index+iDim] = queryData[0]*queryData[2];
+      const double constTangential = queryData[0]*queryData[2];
+      const double constNormal = queryData[0]*queryData[1];
+      const int numTangential = spaceDim-1;
+      for (int iDim=0; iDim < numTangential; ++iDim)
+	dampingConstsLocal[iDim] = constTangential;
+      dampingConstsLocal[spaceDim-1] = constNormal;
 
       // Compute normal/tangential orientation
       _boundaryMesh->restrict(coordinates, *c_iter, 
@@ -185,6 +188,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, 
 			       upDir);
       orientation /= jacobianDet;
+
       dampingConstsGlobal = 0.0;
       for (int iDim=0; iDim < spaceDim; ++iDim) {
 	for (int jDim=0; jDim < spaceDim; ++jDim)
@@ -274,6 +278,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       const double wt = 
 	quadWts[iQuad] * jacobianDet[iQuad] / (2.0 * dt);
+
       for (int iBasis=0; iBasis < numBasis; ++iBasis) {
         const double valI = wt*basis[iQuad*numBasis+iBasis];
         for (int jBasis=0; jBasis < numBasis; ++jBasis) {
@@ -281,10 +286,11 @@ pylith::bc::AbsorbingDampers::integrateResidual(
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] += 
 	      dampingConstsCell[iQuad*spaceDim+iDim] *
-	      valIJ * (- dispTpdtCell[jBasis*spaceDim+iDim] 
+	      valIJ * (-dispTpdtCell[jBasis*spaceDim+iDim] 
 		       + dispTmdtCell[jBasis*spaceDim+iDim]);
         } // for
       } // for
+
     } // for
     PetscLogFlopsNoCheck(numQuadPts*(3+numBasis*(1+numBasis*(5*spaceDim))));
 
