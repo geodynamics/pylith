@@ -1,4 +1,4 @@
-#LyX 1.5.2 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.1 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -669,7 +669,7 @@ Consider a plane wave propagating at a velocity
 \end_inset
 
 .
- We can write the displacemet field as
+ We can write the displacement field as
 \begin_inset Formula \begin{equation}
 \vec{u}(\vec{x},t)=\vec{u^{t}}(t-\frac{\vec{x}}{c}),\end{equation}
 
@@ -710,7 +710,7 @@ where
 \begin_inset Formula $\overrightarrow{s}_{v}$
 \end_inset
 
-is the vertical direction tangent to the boundary, the tractions on the
+ is the vertical direction tangent to the boundary, the tractions on the
  boundary are
 \begin_inset Formula \begin{gather}
 T_{s_{h}}=\sigma_{s_{h}n}\\
@@ -758,7 +758,7 @@ T_{s_{v}}=-\frac{\mu}{c}\left(\frac{\partial u_{s_{v}}^{t}(t-\frac{\vec{x}}{c})}
 
 \end_inset
 
-For the normal traction consider a dilatational wave propagating normal
+For the normal traction, consider a dilatational wave propagating normal
  to the boundary at speed 
 \begin_inset Formula $v_{p}$
 \end_inset
@@ -772,7 +772,7 @@ For the normal traction consider a dilatational wave propagating normal
 \end_inset
 
 .
- For the shear tractions consider a shear wave propagating normal to the
+ For the shear tractions, consider a shear wave propagating normal to the
  boundary at speed 
 \begin_inset Formula $v_{s}$
 \end_inset
@@ -912,7 +912,7 @@ reference "fig:fault:orientation"
 
 \end_inset
 
- shows the orientation of the slip vector in 3-D with respect to the fault
+ shows the orientation of the slip vector in 3D with respect to the fault
  surface and coordinate axes.
  PyLith automatically determines the orientation of the fault surface.
  This alleviates the user from having to compute the strike, dip, and rake
@@ -1270,7 +1270,7 @@ name Name or label for the fault.
 
 \begin_layout Description
 up_dir Up-dir or up direction (only used in 3D simulations).
- This only requirement for this direction is that it not be collinear with
+ The only requirement for this direction is that it not be collinear with
  the fault normal direction.
  The default value of [0, 0, 1] can be used as long as the fault normal
  does not coincide with this direction.
