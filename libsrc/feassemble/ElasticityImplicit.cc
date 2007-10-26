@@ -176,14 +176,16 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const int spaceDim = _quadrature->spaceDim();
 
 #ifdef FASTER
-  static std::map<int, int> tags;
-  int                       c = 0;
+  int c = 0;
 
-  if (tags.find(_material->id()) == tags.end()) {
-    tags[_material->id()] = mesh->calculateCustomAtlas(dispTBctpdt, cells);
-    residual->copyCustomAtlas(dispTBctpdt, tags[_material->id()]);
+  if (_dTags.find(_material->id()) == _dTags.end()) {
+    _dTags[_material->id()] = mesh->calculateCustomAtlas(dispTBctpdt, cells);
   }
-  const int tag = tags[_material->id()];
+  if (_rTags.find(_material->id()) == _rTags.end()) {
+    _rTags[_material->id()] = residual->copyCustomAtlas(dispTBctpdt, _dTags[_material->id()]);
+  }
+  const int dTag = _dTags[_material->id()];
+  const int rTag = _rTags[_material->id()];
 #endif
   // Precompute the geometric and function space information
   _quadrature->precomputeGeometry(mesh, coordinates, cells);
@@ -208,7 +210,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
        ++c_iter) {
     // Compute geometry information for current cell
     PetscLogEventBegin(cellGeomEvent,0,0,0,0);
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter);
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c);
     PetscLogEventEnd(cellGeomEvent,0,0,0,0);
 
     // Get state variables for cell.
@@ -222,7 +224,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // Restrict input fields to cell
     PetscLogEventBegin(restrictEvent,0,0,0,0);
 #ifdef FASTER
-    mesh->restrict(dispTBctpdt, tag, c, &dispTBctpdtCell[0], cellVecSize);
+    mesh->restrict(dispTBctpdt, dTag, c, &dispTBctpdtCell[0], cellVecSize);
 #else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
 #endif
@@ -280,7 +282,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // Assemble cell contribution into field
     PetscLogEventBegin(updateEvent,0,0,0,0);
 #ifdef FASTER
-    mesh->updateAdd(residual, tag, c++, _cellVector);
+    mesh->updateAdd(residual, rTag, c++, _cellVector);
 #else
     mesh->updateAdd(residual, *c_iter, _cellVector);
 #endif
@@ -375,12 +377,20 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     totalStrain[iQuad] = 0.0;
   } // for
 
+#ifdef FASTER
+  if (_dTags.find(_material->id()) == _dTags.end()) {
+    _dTags[_material->id()] = mesh->calculateCustomAtlas(dispTBctpdt, cells);
+  }
+  const int dTag = _dTags[_material->id()];
+#endif
+
   // Loop over cells
+  int c = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
-       ++c_iter) {
+       ++c_iter, ++c) {
     // Compute geometry information for current cell
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter);
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c);
 
     // Get state variables for cell.
     _material->getStateVarsCell(*c_iter, numQuadPts);
@@ -389,7 +399,11 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
     _resetCellMatrix();
 
     // Restrict input fields to cell
+#ifdef FASTER
+    mesh->restrict(dispTBctpdt, dTag, c, &dispTBctpdtCell[0], cellVecSize);
+#else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
+#endif
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -479,14 +493,23 @@ pylith::feassemble::ElasticityImplicit::updateState(
     totalStrain[iQuad] = 0.0;
   } // for
 
+#ifdef FASTER
+  const int dTag = _dTags[_material->id()];
+#endif
+
+  int c = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
-       ++c_iter) {
+       ++c_iter, ++c) {
     // Compute geometry information for current cell
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter);
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c);
 
     // Restrict input fields to cell
+#ifdef FASTER
+    mesh->restrict(disp, dTag, c, &dispCell[0], cellVecSize);
+#else
     mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
+#endif
 
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();

@@ -212,6 +212,10 @@ private :
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
+  /// Optimization
+  std::map<int, int> _dTags; // dispTBctpdt tags
+  std::map<int, int> _rTags; // residual tags
+
 }; // ElasticityImplicit
 
 #endif // pylith_feassemble_elasticityimplicit_hh

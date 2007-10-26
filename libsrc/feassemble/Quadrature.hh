@@ -233,7 +233,8 @@ public :
    */
   void retrieveGeometry(const ALE::Obj<Mesh>& mesh,
                         const ALE::Obj<real_section_type>& coordinates,
-                        const Mesh::point_type& cell);
+                        const Mesh::point_type& cell,
+                        const int c);
 
 // PROTECTED METHODS ////////////////////////////////////////////////////
 protected :
@@ -368,6 +369,7 @@ protected :
 
   bool _precomputed;
   /* Precomputation sections */
+  int _qTag, _jTag, _jDTag, _jITag, _bTag;
   Obj<real_section_type> _quadPtsPre;
   Obj<real_section_type> _jacobianPre;
   Obj<real_section_type> _jacobianDetPre;
