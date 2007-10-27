@@ -330,78 +330,31 @@ pylith::feassemble::Quadrature::retrieveGeometry(
 			      const Mesh::point_type& cell,
                   const int c)
 { // retrieveGeometry
-#define FASTER
-#ifdef FASTER
   const real_section_type::value_type* values =
     mesh->restrict(_quadPtsPre, _qTag, c);
-#else
-  const real_section_type::value_type* values =
-    _quadPtsPre->restrictPoint(cell);
-#endif
   int size = _numQuadPts * _spaceDim;
   assert(size == _quadPtsPre->getFiberDimension(cell));
-#ifdef FASTER
   memcpy(&_quadPts[0], &values[0], size*sizeof(double));
-#else
-  for(int i=0; i < size; ++i)
-    _quadPts[i] = values[i];
-#endif
 
-#ifdef FASTER
   values = mesh->restrict(_jacobianPre, _jTag, c);
-#else
-  values = _jacobianPre->restrictPoint(cell);
-#endif
   size = _numQuadPts * _cellDim * _spaceDim;
   assert(size == _jacobianPre->getFiberDimension(cell));
-#ifdef FASTER
   memcpy(&_jacobian[0], &values[0], size*sizeof(double));
-#else
-  for(int i=0; i < size; ++i)
-    _jacobian[i] = values[i];
-#endif
 
-#ifdef FASTER
   values = mesh->restrict(_jacobianDetPre, _jDTag, c);
-#else
-  values = _jacobianDetPre->restrictPoint(cell);
-#endif
   size = _numQuadPts;
   assert(size == _jacobianDetPre->getFiberDimension(cell));
-#ifdef FASTER
   memcpy(&_jacobianDet[0], &values[0], size*sizeof(double));
-#else
-  for(int i=0; i < size; ++i)
-    _jacobianDet[i] = values[i];
-#endif
 
-#ifdef FASTER
   values = mesh->restrict(_jacobianInvPre, _jITag, c);
-#else
-  values = _jacobianInvPre->restrictPoint(cell);
-#endif
   size = _numQuadPts * _cellDim * _spaceDim;
   assert(size == _jacobianInvPre->getFiberDimension(cell));
-#ifdef FASTER
   memcpy(&_jacobianInv[0], &values[0], size*sizeof(double));
-#else
-  for(int i=0; i < size; ++i)
-    _jacobianInv[i] = values[i];
-#endif
 
-#ifdef FASTER
   values = mesh->restrict(_basisDerivPre, _bTag, c);
-#else
-  values = _basisDerivPre->restrictPoint(cell);
-#endif
   size = _numQuadPts * _numBasis * _spaceDim;
   assert(size == _basisDerivPre->getFiberDimension(cell));
-#ifdef FASTER
   memcpy(&_basisDeriv[0], &values[0], size*sizeof(double));
-#else
-  for(int i=0; i < size; ++i)
-    _basisDeriv[i] = values[i];
-#endif
 } // retrieveGeometry
 
 // End of file 
