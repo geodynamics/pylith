@@ -96,7 +96,7 @@ def solver():
   """
   Factory associated with Solver.
   """
-  return SolverNonliner()
+  return SolverNonlinear()
 
 
 # End of file 
