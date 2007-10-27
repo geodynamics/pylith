@@ -21,6 +21,8 @@
 
 #include <assert.h> // USES assert()
 
+#define FASTER
+
 // ----------------------------------------------------------------------
 // Default constructor.
 pylith::materials::ElasticMaterial::ElasticMaterial(const int* numParamValues,
@@ -149,9 +151,15 @@ pylith::materials::ElasticMaterial::updateState(
     
     assert(parameter->getFiberDimension(cell) == numQuadPts*numValues);
     for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt)
+#ifdef FASTER
+      memcpy(&_parameterCell[iQuadPt*numValues],
+	     &_paramsCell[iQuadPt][iParam][0], 
+	     numValues*sizeof(double));
+#else
       for (int iValue=0; iValue < numValues; ++iValue)
 	_parameterCell[iQuadPt*numValues+iValue] = 
 	  _paramsCell[iQuadPt][iParam][iValue];
+#endif
     parameter->updatePoint(cell, &_parameterCell[0]);
   } // for
 } // updateState
@@ -180,9 +188,15 @@ pylith::materials::ElasticMaterial::_getParameters(const Mesh::point_type& cell)
     const real_section_type::value_type* parameterCell =
       parameter->restrictPoint(cell);
     for (int iQuadPt=0; iQuadPt < numQuadPts; ++iQuadPt)
+#ifdef FASTER
+      memcpy(&_paramsCell[iQuadPt][iParam][0], 
+	     &parameterCell[iQuadPt*numValues],
+	     numValues*sizeof(double));
+#else
       for (int iValue=0; iValue < numValues; ++iValue)
 	_paramsCell[iQuadPt][iParam][iValue] = 
 	  parameterCell[iQuadPt*numValues+iValue];
+#endif
   } // for
 } // _getParameters
 
