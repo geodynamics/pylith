@@ -90,6 +90,7 @@ nobase_pkgpyexec_PYTHON = \
 	solver/__init__.py \
 	solver/Solver.py \
 	solver/SolverLinear.py \
+	solver/SolverNonlinear.py \
 	topology/__init__.py \
 	topology/Distributor.py \
 	topology/FieldsManager.py \
