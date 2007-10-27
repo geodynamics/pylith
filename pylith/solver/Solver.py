@@ -65,4 +65,13 @@ class Solver(Component):
     return
 
 
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def solver():
+  """
+  Factory associated with Solver.
+  """
+  return Solver()
+
+
 # End of file 

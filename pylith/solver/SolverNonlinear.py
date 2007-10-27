@@ -90,4 +90,13 @@ class SolverNonlinear(Solver):
     return
   
 
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def solver():
+  """
+  Factory associated with Solver.
+  """
+  return SolverNonliner()
+
+
 # End of file 
