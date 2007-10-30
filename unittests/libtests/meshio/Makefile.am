@@ -66,6 +66,9 @@ AM_CPPFLAGS = \
 	$(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE) \
 	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
+testmeshio_LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+
 testmeshio_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/libpylith.la \
