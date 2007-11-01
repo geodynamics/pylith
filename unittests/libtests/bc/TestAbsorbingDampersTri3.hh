@@ -35,7 +35,7 @@ class pylith::bc::TestAbsorbingDampersTri3 : public TestAbsorbingDampers
 { // class TestAbsorbingDampers
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestAbsorbingDampersTri3 );
+  CPPUNIT_TEST_SUB_SUITE( TestAbsorbingDampersTri3, TestAbsorbingDampers );
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testIntegrateResidual );
   CPPUNIT_TEST( testIntegrateJacobian );
