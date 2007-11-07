@@ -85,6 +85,8 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
   CPPUNIT_ASSERT_EQUAL(_data->numVertices, numVertices);
   CPPUNIT_ASSERT_EQUAL(_data->numCells, numCells);
 
+  //boundaryMesh->view("BOUNDARY MESH");
+
   const int boundaryDepth = boundaryMesh->depth()-1; // depth of bndry cells  
   int iCell = 0;
   for(Mesh::label_sequence::iterator c_iter = cells->begin();
@@ -108,6 +110,8 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void)
 
   const int size = bc._dampingConsts->sizeWithBC();
   const double* vals = bc._dampingConsts->restrict();
+
+  //bc._dampingConsts->view("DAMPING CONSTS");
 
   CPPUNIT_ASSERT_EQUAL(sizeE, size);
   const double tolerance = 1.0e-06;
@@ -274,6 +278,8 @@ pylith::bc::TestAbsorbingDampers::_initialize(
     bc->label(_data->label);
     bc->db(&db);
     bc->initialize(*mesh, &cs, upDir);
+
+    //bc->_boundaryMesh->view("BOUNDARY MESH");
 
     // Setup fields
     CPPUNIT_ASSERT(0 != fields);

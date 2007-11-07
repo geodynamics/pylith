@@ -25,6 +25,8 @@ testbc_SOURCES = \
 	TestAbsorbingDampersLine2.cc \
 	TestAbsorbingDampersTri3.cc \
 	TestAbsorbingDampersQuad4.cc \
+	TestAbsorbingDampersTet4.cc \
+	TestAbsorbingDampersHex8.cc \
 	TestBoundaryCondition.cc \
 	TestDirichlet.cc \
 	TestDirichletLine2.cc \
@@ -44,6 +46,8 @@ noinst_HEADERS = \
 	TestAbsorbingDampersLine2.hh \
 	TestAbsorbingDampersTri3.hh \
 	TestAbsorbingDampersQuad4.hh \
+	TestAbsorbingDampersTet4.hh \
+	TestAbsorbingDampersHex8.hh \
 	TestBoundaryCondition.hh \
 	TestDirichlet.hh \
 	TestDirichletLine2.hh \
@@ -63,6 +67,8 @@ testbc_SOURCES += \
 	data/AbsorbingDampersDataLine2.cc \
 	data/AbsorbingDampersDataTri3.cc \
 	data/AbsorbingDampersDataQuad4.cc \
+	data/AbsorbingDampersDataTet4.cc \
+	data/AbsorbingDampersDataHex8.cc \
 	data/DirichletData.cc \
 	data/DirichletDataLine2.cc \
 	data/DirichletDataLine2b.cc \
@@ -80,6 +86,8 @@ noinst_HEADERS += \
 	data/AbsorbingDampersDataLine2.hh \
 	data/AbsorbingDampersDataTri3.hh \
 	data/AbsorbingDampersDataQuad4.hh \
+	data/AbsorbingDampersDataTet4.hh \
+	data/AbsorbingDampersDataHex8.hh \
 	data/DirichletData.hh \
 	data/DirichletDataLine2.hh \
 	data/DirichletDataLine2b.hh \

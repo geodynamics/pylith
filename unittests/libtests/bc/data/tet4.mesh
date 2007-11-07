@@ -29,4 +29,12 @@ mesh = {
       2
     }
   }
+  group = {
+    name = bc2
+    type = vertices
+    count = 3
+    indices = {
+      0  2  3
+    }
+  }
 }

@@ -35,7 +35,7 @@ class pylith::bc::TestDirichletTri3 : public TestDirichlet
 { // class TestDirichlet
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDirichletTri3 );
+  CPPUNIT_TEST_SUB_SUITE( TestDirichletTri3, TestDirichlet );
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testSetConstraintSizes );
   CPPUNIT_TEST( testSetConstraints );

@@ -4,9 +4,11 @@ CURRENT ISSUES
 
 Release 1.0.2
 
-  1. Fix partitioning with cohesive cells.
+  1. Fix memory use on proc 0 when partitioning.
 
-  2. Add check to make sure every material in mesh has a material model.
+  2. Fix problems with buildbot on darwin.
+
+  3. Add check to make sure every material in mesh has a material model.
 
     Add check for overlapping of material ids for bulk and cohesive
     cells.
@@ -14,6 +16,9 @@ Release 1.0.2
 Release 1.1
 
   1. Finish AbsorbingDampers BC.
+    Python
+    module
+    Python unit tests
 
   2. Finish Neumann BC.
 

@@ -142,7 +142,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
   // Container for data returned in query of database
   double_array queryData(numValues);
-  double_array quadPtRef(spaceDim);
+  double_array quadPtRef(cellDim);
 
   // Container for damping constants for current cell
   double_array dampingConstsLocal(fiberDim);
@@ -159,6 +159,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     const double_array& quadPts = _quadrature->quadPts();
     const double_array& quadPtsRef = _quadrature->quadPtsRef();
 
+    dampingConstsGlobal = 0.0;
     for(int iQuad = 0, index=0; iQuad < numQuadPts; ++iQuad, index+=spaceDim) {
       // Compute damping constants in normal/tangential coordinates
       const int err = _db->query(&queryData[0], numValues, 
@@ -183,19 +184,19 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       // Compute normal/tangential orientation
       _boundaryMesh->restrict(coordinates, *c_iter, 
 		     &cellVertices[0], cellVertices.size());
-      memcpy(&quadPtRef[0], &quadPtsRef[index], spaceDim*sizeof(double));
+      memcpy(&quadPtRef[0], &quadPtsRef[index], cellDim*sizeof(double));
       cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, quadPtRef);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, 
 			       upDir);
       orientation /= jacobianDet;
 
-      dampingConstsGlobal = 0.0;
       for (int iDim=0; iDim < spaceDim; ++iDim) {
 	for (int jDim=0; jDim < spaceDim; ++jDim)
-	  dampingConstsGlobal[iDim] += 
-	    dampingConstsLocal[jDim]*orientation[iDim*spaceDim+jDim];
+	  dampingConstsGlobal[iQuad*spaceDim+iDim] += 
+	    dampingConstsLocal[jDim]*orientation[jDim*spaceDim+iDim];
 	// Ensure damping constants are positive
-	dampingConstsGlobal[iDim] = fabs(dampingConstsGlobal[iDim]);
+	dampingConstsGlobal[iQuad*spaceDim+iDim] = 
+	  fabs(dampingConstsGlobal[iQuad*spaceDim+iDim]);
       } // for
     } // for
     _dampingConsts->updatePoint(*c_iter, &dampingConstsGlobal[0]);
