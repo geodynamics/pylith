@@ -32,7 +32,7 @@ pylith::bc::NeumannData::NeumannData(void) :
   numVertices(0),
   numCorners(0),
   cells(0),
-  tractionCell(0),
+  tractionsCell(0),
   valsResidual(0)
 { // constructor
 } // constructor

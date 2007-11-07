@@ -101,7 +101,7 @@ pylith::bc::TestNeumann::testInitialize(void)
   // Check traction values
   const int numQuadPts = _data->numQuadPts;
   const int fiberDim = numQuadPts * spaceDim;
-  double_array tractionCell(fiberDim);
+  double_array tractionsCell(fiberDim);
   int index = 0;
   const double tolerance = 1.0e-06;
 
@@ -109,13 +109,13 @@ pylith::bc::TestNeumann::testInitialize(void)
       c_iter != cells->end();
       ++c_iter) {
 
-    bc._boundaryMesh->restrict(bc._tractionGlobal, *c_iter,
-			    &tractionCell[0], tractionCell.size());
+    bc._boundaryMesh->restrict(bc._tractionsGlobal, *c_iter,
+			    &tractionsCell[0], tractionsCell.size());
 
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       for (int iDim =0; iDim < spaceDim; ++iDim) {
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->tractionCell[index],
-				     tractionCell[iQuad*spaceDim+iDim],
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->tractionsCell[index],
+				     tractionsCell[iQuad*spaceDim+iDim],
 				     tolerance);
 	++index;
       } // for

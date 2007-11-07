@@ -17,12 +17,9 @@
 #include "pylith/feassemble/Quadrature.hh" // USES Quadrature
 #include "pylith/feassemble/CellGeometry.hh" // USES CellGeometry
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
-#include "pylith/utils/array.hh" // USES double_array
-#include <petscmat.h> // USES PETSc Mat
-#include "pylith/utils/sievetypes.hh" // USES PETSc Mesh
 
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <Selection.hh> // USES submesh algorithms
 
@@ -69,6 +66,8 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     throw std::runtime_error(msg.str());
   } // if
 
+  //_boundaryMesh->view("TRACTION BOUNDARY MESH");
+
   // check compatibility of quadrature and boundary mesh
   if (_quadrature->cellDim() != _boundaryMesh->getDimension()) {
     std::ostringstream msg;
@@ -82,19 +81,23 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int numCorners = _quadrature->numBasis();
 
   // Get 'surface' cells (1 dimension lower than top-level cells)
-  const ALE::Obj<sieve_type>& sieve = _boundaryMesh->getSieve();
   const ALE::Obj<Mesh::label_sequence>& cells = _boundaryMesh->heightStratum(1);
+  assert(!cells.isNull());
+
   const Mesh::label_sequence::iterator cellsBegin = cells->begin();
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
-  std::cout << "cellsBegin:  " << *cellsBegin << std::endl;
-  std::cout << "cellsEnd:  " << *cellsEnd << std::endl;
+  // std::cout << "cellsBegin:  " << *cellsBegin << std::endl;
+  // std::cout << "cellsEnd:  " << *cellsEnd << std::endl;
+  const ALE::Obj<sieve_type>& sieve = _boundaryMesh->getSieve();
+  const int boundaryDepth = _boundaryMesh->depth()-1;  //depth of boundary cells
+  assert(!sieve.isNull());
 
   // Make sure surface cells are compatible with quadrature.
-  assert(!sieve.isNull());
   for (Mesh::label_sequence::iterator c_iter=cellsBegin;
        c_iter != cellsEnd;
        ++c_iter) {
-    const int cellNumCorners = sieve->nCone(*c_iter, _boundaryMesh->depth()-1)->size();
+    const int cellNumCorners = (_boundaryMesh->getDimension() >0) ?
+      sieve->nCone(*c_iter, boundaryDepth)->size() : 1;
     if (numCorners != cellNumCorners) {
       std::ostringstream msg;
       msg << "Quadrature is incompatible with cell for Neumann traction "
@@ -112,10 +115,11 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   const int numQuadPts = _quadrature->numQuadPts();
   const int spaceDim = cs->spaceDim();
   const int fiberDim = spaceDim * numQuadPts;
-  _tractionGlobal = new real_section_type(mesh->comm(), mesh->debug());
-  assert(!_tractionGlobal.isNull());
-  _tractionGlobal->setFiberDimension(cells, fiberDim);
-  mesh->allocate(_tractionGlobal);
+  _tractionsGlobal = new real_section_type(_boundaryMesh->comm(),
+					   _boundaryMesh->debug());
+  assert(!_tractionsGlobal.isNull());
+  _tractionsGlobal->setFiberDimension(cells, fiberDim);
+  _boundaryMesh->allocate(_tractionsGlobal);
 
   // Containers for orientation information
   const int orientationSize = spaceDim * spaceDim;
@@ -125,11 +129,6 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   double jacobianDet = 0;
   double_array orientation(orientationSize);
   double_array cellVertices(numBasis*spaceDim);
-
-  // Get mesh coordinates.
-  const ALE::Obj<real_section_type>& coordinates =
-    mesh->getRealSection("coordinates");
-  // coordinates->view("Mesh coordinates from Neumann::initialize");
 
   // open database with traction information
   // NEED TO SET NAMES BASED ON DIMENSION OF BOUNDARY
@@ -163,11 +162,17 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   // Containers for database query results and quadrature coordinates in
   // reference geometry.
   double_array tractionDataLocal(spaceDim);
+  double_array quadPtRef(spaceDim);
   const double_array& quadPtsRef = _quadrature->quadPtsRef();
-  // double_array quadPtRef(spaceDim);
 
   // Container for cell tractions rotated to global coordinates.
   double_array cellTractionsGlobal(fiberDim);
+
+  // Get mesh coordinates.
+  const ALE::Obj<real_section_type>& coordinates =
+    mesh->getRealSection("coordinates");
+  assert(!coordinates.isNull());
+  // coordinates->view("Mesh coordinates from Neumann::initialize");
 
   // Loop over cells in boundary mesh, compute orientations, and then
   // compute corresponding traction vector in global coordinates
@@ -207,19 +212,10 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
 
       // Compute Jacobian and determinant at quadrature point, then get
       // orientation.
-      double_array quadPtRef(&quadPtsRef[iRef], cellDim);
+      memcpy(&quadPtRef[0], &quadPtsRef[iRef], cellDim*sizeof(double));
       cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, quadPtRef);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, upDir);
-
-      // Normalize orientation.
-      for(int iDim=0; iDim < spaceDim; ++iDim) {
-	double mag = 0.0;
-	for(int jDim=0; jDim < spaceDim; ++jDim)
-	  mag += orientation[iDim*spaceDim+jDim]*orientation[iDim*spaceDim+jDim];
-	mag = sqrt(mag);
-	for(int jDim=0; jDim < spaceDim; ++jDim)
-	  orientation[iDim*spaceDim+jDim] /= mag;
-      } // for
+      orientation /= jacobianDet;
 
       // Rotate traction vector from local coordinate system to global
       // coordinate system
@@ -230,10 +226,10 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       } // for
     } // for
 
-      // Update tractionGlobal
-      _boundaryMesh->update(_tractionGlobal, *c_iter, &cellTractionsGlobal[0]);
+      // Update tractionsGlobal
+    _tractionsGlobal->updatePoint(*c_iter, &cellTractionsGlobal[0]);
   } // for
-  _tractionGlobal->view("Global tractions from Neumann::initialize");
+  // _tractionsGlobal->view("Global tractions from Neumann::initialize");
 
   _db->close();
 } // initialize
@@ -278,7 +274,7 @@ pylith::bc::Neumann::integrateResidual(
   // Allocate vectors for cell values.
   _initCellVector();
   const int cellVecSize = numBasis*spaceDim;
-  double_array tractionCell(numQuadPts*spaceDim);
+  double_array tractionsCell(numQuadPts*spaceDim);
 
   // Loop over faces and integrate contribution from each face
   for (Mesh::label_sequence::iterator c_iter=cellsBegin;
@@ -291,8 +287,8 @@ pylith::bc::Neumann::integrateResidual(
     _resetCellVector();
 
     // Restrict tractions to cell
-    _boundaryMesh->restrict(_tractionGlobal, *c_iter, 
-			    &tractionCell[0], tractionCell.size());
+    _boundaryMesh->restrict(_tractionsGlobal, *c_iter, 
+			    &tractionsCell[0], tractionsCell.size());
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -307,14 +303,14 @@ pylith::bc::Neumann::integrateResidual(
           const double valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] += 
-	      tractionCell[iQuad*spaceDim+iDim] * valIJ;
+	      tractionsCell[iQuad*spaceDim+iDim] * valIJ;
         } // for
       } // for
     } // for
     PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(1+numBasis*(1+2*spaceDim))));
 
     // Assemble cell contribution into field
-    mesh->updateAdd(residual, *c_iter, _cellVector);
+    _boundaryMesh->updateAdd(residual, *c_iter, _cellVector);
   } // for
 } // integrateResidual
 

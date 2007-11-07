@@ -82,14 +82,14 @@ const int pylith::bc::NeumannDataHex8::_numVertices = 12;
 const int pylith::bc::NeumannDataHex8::_numCorners[] = { 4, 4 };
 const int pylith::bc::NeumannDataHex8::_cells[] = { 0,  4,  6,  2,
 						    4,  8, 10,  6 };
-const double pylith::bc::NeumannDataHex8::_tractionCell[] = { 1.0, 0.0, 0.0,
-							      1.0, 0.0, 0.0,
-							      1.0, 0.0, 0.0,
-							      1.0, 0.0, 0.0,
-							      1.0, 0.0, 0.0,
-							      1.0, 0.0, 0.0,
-							      1.0, 0.0, 0.0,
-							      1.0, 0.0, 0.0};
+const double pylith::bc::NeumannDataHex8::_tractionsCell[] = { 1.0, 0.0, 0.0,
+							       1.0, 0.0, 0.0,
+							       1.0, 0.0, 0.0,
+							       1.0, 0.0, 0.0,
+							       1.0, 0.0, 0.0,
+							       1.0, 0.0, 0.0,
+							       1.0, 0.0, 0.0,
+							       1.0, 0.0, 0.0};
 const double pylith::bc::NeumannDataHex8::_valsResidual[] = { 2.0, 0.0, 0.0,
 							      0.0, 0.0, 0.0,
 							      2.0, 0.0, 0.0,
@@ -123,7 +123,7 @@ pylith::bc::NeumannDataHex8::NeumannDataHex8(void)
   numVertices = _numVertices;
   numCorners = const_cast<int*>(_numCorners);
   cells = const_cast<int*>(_cells);
-  tractionCell = const_cast<double*>(_tractionCell);
+  tractionsCell = const_cast<double*>(_tractionsCell);
   valsResidual = const_cast<double*>(_valsResidual);
 
 } // constructor
