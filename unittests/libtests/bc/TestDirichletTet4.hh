@@ -35,7 +35,7 @@ class pylith::bc::TestDirichletTet4 : public TestDirichlet
 { // class TestDirichlet
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestDirichletTet4 );
+  CPPUNIT_TEST_SUB_SUITE( TestDirichletTet4, TestDirichlet );
   CPPUNIT_TEST( testInitialize );
   CPPUNIT_TEST( testSetConstraintSizes );
   CPPUNIT_TEST( testSetConstraints );
