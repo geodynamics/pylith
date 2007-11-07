@@ -62,7 +62,7 @@ public:
   int numVertices; ///< Expected number of vertices in the mesh.
   int* numCorners; ///< Expected number of vertices for each boundary cell.
   int* cells; ///< Expected array of vertices defining each boundary cell.
-  double* tractionCell; ///< Expected traction values at quadrature points.
+  double* tractionsCell; ///< Expected traction values at quadrature points.
   double* valsResidual; ///< Expected residual at each vertex.
   //@}
 

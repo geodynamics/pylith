@@ -58,7 +58,7 @@ private:
   static const int _numVertices; ///< Expected number of vertices in the mesh.
   static const int _numCorners[]; ///< Expected number of vertices for each boundary cell.
   static const int _cells[]; ///< Expected array of vertices defining each boundary cell.
-  static const double _tractionCell[]; ///< Expected traction values at quadrature points.
+  static const double _tractionsCell[]; ///< Expected traction values at quadrature points.
   static const double _valsResidual[]; ///< Expected residual at each vertex.
 
 };
