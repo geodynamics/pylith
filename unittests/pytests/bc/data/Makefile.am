@@ -12,7 +12,8 @@
 
 noinst_DATA = \
 	tri3.spatialdb \
-	tri3.mesh
+	tri3.mesh \
+	elasticplanestrain.spatialdb
 
 noinst_TMP =
 

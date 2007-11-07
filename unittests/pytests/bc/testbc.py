@@ -59,6 +59,9 @@ class TestApp(Script):
     from TestDirichlet import TestDirichlet
     suite.addTest(unittest.makeSuite(TestDirichlet))
 
+    from TestAbsorbingDampers import TestAbsorbingDampers
+    suite.addTest(unittest.makeSuite(TestAbsorbingDampers))
+
     from TestBCSingle import TestBCSingle
     suite.addTest(unittest.makeSuite(TestBCSingle))
 
