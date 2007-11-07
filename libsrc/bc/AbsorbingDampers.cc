@@ -160,21 +160,22 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     const double_array& quadPtsRef = _quadrature->quadPtsRef();
 
     dampingConstsGlobal = 0.0;
-    for(int iQuad = 0, index=0; iQuad < numQuadPts; ++iQuad, index+=spaceDim) {
+    for(int iQuad = 0; iQuad < numQuadPts; ++iQuad) {
       // Compute damping constants in normal/tangential coordinates
       const int err = _db->query(&queryData[0], numValues, 
-				 &quadPts[index], spaceDim, cs);
+				 &quadPts[iQuad*spaceDim], spaceDim, cs);
       if (err) {
 	std::ostringstream msg;
 	msg << "Could not find parameters for physical properties at \n"
 	    << "(";
 	for (int i=0; i < spaceDim; ++i)
-	  msg << "  " << quadPts[index+spaceDim];
+	  msg << "  " << quadPts[iQuad*spaceDim+i];
 	msg << ") for absorbing boundary condition " << _label << "\n"
 	    << "using spatial database " << _db->label() << ".";
 	throw std::runtime_error(msg.str());
       } // if
-      const double constTangential = queryData[0]*queryData[2];
+      const double constTangential = 
+	(3 == numValues) ? queryData[0]*queryData[2] : 0.0;
       const double constNormal = queryData[0]*queryData[1];
       const int numTangential = spaceDim-1;
       for (int iDim=0; iDim < numTangential; ++iDim)
@@ -184,7 +185,7 @@ pylith::bc::AbsorbingDampers::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       // Compute normal/tangential orientation
       _boundaryMesh->restrict(coordinates, *c_iter, 
 		     &cellVertices[0], cellVertices.size());
-      memcpy(&quadPtRef[0], &quadPtsRef[index], cellDim*sizeof(double));
+      memcpy(&quadPtRef[0], &quadPtsRef[iQuad*cellDim], cellDim*sizeof(double));
       cellGeometry.jacobian(&jacobian, &jacobianDet, cellVertices, quadPtRef);
       cellGeometry.orientation(&orientation, jacobian, jacobianDet, 
 			       upDir);
