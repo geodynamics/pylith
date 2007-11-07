@@ -15,20 +15,19 @@ Release 1.0.2
 
 Release 1.1
 
-  1. Finish AbsorbingDampers BC.
-    Python
-    module
-    Python unit tests
+  1. Finish Neumann BC.
 
-  2. Finish Neumann BC.
+  2. Finish velocity Dirichlet BC.
 
-  3. Finish velocity Dirichlet BC.
+  3. Generalized Maxwell viscoelastic model
 
-  4. Generalized Maxwell viscoelastic model
+  4. Move PETSc logging out of modules.
 
-  5. Move PETSc logging out of feassemble module.
+    Logging class
+    LogIntegrator class
+    LogConstraint class
 
-  6. Reimplement SolutionIO.
+  5. Reimplement SolutionIO.
      a. Reimplement SolutionIOVTK
      b. Implement SolutionIOHDF5
 
@@ -111,6 +110,16 @@ General
   2. Add dependency diagram to manual.
 
   3. Experiment with different preconditioners and tabulate results
+
+Release 1.2
+
+  1. Dynamic fault interface conditions
+
+  2. Fault constitutive models
+
+  3. Nonlinear solver  
+
+  4. Replace use of Pyrexembed with SWIG
 
 ======================================================================
 KNOWN DEFICIENCIES
@@ -225,10 +234,6 @@ Adaptive mesh refinement
 THINGS WE NEED SIEVE TO DO (Matt)
 ======================================================================
 
-1. Boundary mesh
-
-  This works and there is a unit test.
-
 2. Construct mesh with higher order cells from mesh with lower order cells.
 
   Many mesh generators do not know how to construct higher order
@@ -261,9 +266,7 @@ THINGS WE NEED SIEVE TO DO (Matt)
   bool   interpolate = false;
   ALE::Obj<ALE::Mesh> newMesh = ALE::Generator::refineMesh(oldMesh, maxVolume, interpolate);
 
-  There is another version that takes an array of maxVolumes, one fo each cell in oldMesh.
-
-4. Check in nonlinear solver
+  There is another version that takes an array of maxVolumes, one for each cell in oldMesh.
 
 5. Throw out cohesive midnodes from censored depth (not easy since they are mixed in with new vertices, maybe change numbering)
 
@@ -273,19 +276,13 @@ THINGS WE NEED SIEVE TO DO (Matt)
 
   Not used a. Remove extra time in uninterpolated restrict(). May need special method for P1.
 
-  Done b. Precompute element geometry
-
   Done c. getStateVars() is way to expensive. It looks like _getParameters() allocates an int_array. Try just using _numParamValues.
 
   Not used d. Same as a) for update
 
-  Done e. Put in flop counting for IR
-
 8. Memory fixes
 
   Done a. Share memory in precomputation sections
-
-9. Fixup FASTER improvements
 
 10. Move events to Python (make wrappers for events)
 

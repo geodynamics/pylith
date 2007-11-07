@@ -90,8 +90,7 @@ class TestElasticityExplicit(unittest.TestCase):
     from pyre.units.time import second
     dt = 2.4*second
     integrator = ElasticityExplicit()
-    integrator.timeStep = dt
-    self.assertEqual(dt, integrator.timeStep)
+    integrator.timeStep(dt)
     return
 
   

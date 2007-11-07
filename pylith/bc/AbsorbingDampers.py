@@ -43,9 +43,13 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     ## @li None
     ##
     ## \b Facilities
-    ## @li None
+    ## @li \b quadrature Quadrature object for numerical integration
 
     import pyre.inventory
+
+    from pylith.feassemble.quadrature.Quadrature import Quadrature
+    quadrature = pyre.inventory.facility("quadrature", factory=Quadrature)
+    quadrature.meta['tip'] = "Quadrature object for numerical integration."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -64,6 +68,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     Do pre-initialization setup.
     """
     BoundaryCondition.preinitialize(self, mesh)
+    self.quadrature.preinitialize()
     return
 
 
@@ -71,7 +76,22 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     """
     Initialize AbsorbingDampers boundary condition.
     """
+    self.cppHandle.quadrature = self.quadrature.cppHandle
     BoundaryCondition.initialize(self)
+    return
+  
+
+  def verifyConfiguration(self):
+    """
+    Verify compatibility of configuration.
+    """
+    BoundaryCondition.verifyConfiguration(self)
+    if self.quadrature.spaceDim != self.mesh.dimension-1:
+        raise ValueError, \
+              "Quadrature scheme and mesh are incompatible.\n" \
+              "Dimension for quadrature: %d\n" \
+              "Dimension of mesh boundary '%s': %d" % \
+              (self.quadrature.spaceDim, self.label, self.mesh.dimension-1)    
     return
   
 
@@ -82,7 +102,6 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
-    self.fixedDOF = self.inventory.fixedDOF
     return
 
 

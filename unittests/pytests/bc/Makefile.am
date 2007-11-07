@@ -20,6 +20,7 @@ TESTS = testbc.py
 check_SCRIPTS = testbc.py
 
 noinst_PYTHON = \
+	TestAbsorbingDampers.py \
 	TestDirichlet.py \
 	TestBCSingle.py \
 	TestBCTwoSides.py \

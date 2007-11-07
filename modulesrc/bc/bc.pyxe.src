@@ -13,6 +13,8 @@
 #header{
 #include "pylith/bc/BoundaryCondition.hh"
 #include "pylith/feassemble/Constraint.hh"
+#include "pylith/feassemble/Integrator.hh"
+#include "pylith/bc/AbsorbingDampers.hh"
 #include "pylith/bc/Dirichlet.hh"
 
 #include "pylith/utils/array.hh"
@@ -413,6 +415,348 @@ cdef class Dirichlet(BoundaryCondition):
       } // try/catch
       #}embed
       Dirichlet_useSolnIncr_set(self.thisptr, flag)
+
+
+# ----------------------------------------------------------------------
+cdef class AbsorbingDampers(BoundaryCondition):
+
+  cdef int assemblerCookie
+  cdef int integrateResidualEvent
+  cdef int integrateJacobianEvent
+  cdef int updateStateEvent
+
+  def __init__(self):
+    """
+    Constructor.
+    """
+    # create shim for constructor
+    #embed{ void* AbsorbingDampers_constructor()
+    void* result = 0;
+    try {
+      result = (void*)(new pylith::bc::AbsorbingDampers);
+      assert(0 != result);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    return result;
+    #}embed
+    #embed{ void AbsorbingDampers_setupLogging(int *cookie, int *residualEvent, int *jacobianEvent, int* updateStateEvent)
+      PetscLogClassRegister(cookie, "FE Assembler");
+      PetscLogEventRegister(residualEvent, "IntegrateResidual", *cookie);
+      PetscLogEventRegister(jacobianEvent, "IntegrateJacobian", *cookie);
+      PetscLogEventRegister(updateStateEvent, "IntegrateUpdateState", *cookie);
+    #}embed
+    BoundaryCondition.__init__(self)
+    self.thisptr = AbsorbingDampers_constructor()
+    self.handle = self._createHandle()
+    AbsorbingDampers_setupLogging(&self.assemblerCookie, &self.integrateResidualEvent, &self.integrateJacobianEvent, &self.updateStateEvent)
+    return
+
+
+    BoundaryCondition.__init__(self)
+    self.thisptr = Dirichlet_constructor()
+    self.handle = self._createHandle()
+
+  def integrateResidual(self, residual, t, fields, mesh):
+    """
+    Integrate contributions to residual term (r) for operator.
+    """
+    # create shim for method 'integrateResidual'
+    #embed{ void AbsorbingDampers_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr, int event)
+    try {
+      assert(0 != objVptr);
+      assert(0 != residualVptr);
+      assert(0 != fieldsVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ALE::Obj<pylith::real_section_type>* residual =
+        (ALE::Obj<pylith::real_section_type>*) residualVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      PetscLogEventBegin(event,0,0,0,0);
+      ((pylith::bc::AbsorbingDampers*) objVptr)->integrateResidual(*residual,
+                                                            t, fields, *mesh);
+      PetscLogEventEnd(event,0,0,0,0);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument must be extension module type 'Mesh'."
+    AbsorbingDampers_integrateResidual(self.thisptr, 
+                                 PyCObject_AsVoidPtr(residual),
+                                 t,
+                                 ptrFromHandle(fields),
+                                 ptrFromHandle(mesh),
+                                 self.integrateResidualEvent)
+    return
+
+
+  def integrateJacobian(self, mat, t, fields, mesh):
+    """
+    Compute contributions to Jacobian matrix (A) associated with operator.
+    """
+    # create shim for method 'integrateJacobian'
+    #embed{ void AbsorbingDampers_integrateJacobian(void* objVptr, void* matVptr, double t, void* fieldsVptr, void* meshVptr, int event)
+    try {
+      assert(0 != objVptr);
+      assert(0 != matVptr);
+      assert(0 != fieldsVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      PetscMat* mat = (PetscMat*) matVptr;
+      pylith::topology::FieldsManager* fields =
+        (pylith::topology::FieldsManager*) fieldsVptr;
+      PetscLogEventBegin(event,0,0,0,0);
+      ((pylith::bc::AbsorbingDampers*) objVptr)->integrateJacobian(
+                                                        mat, t, fields, *mesh);
+      PetscLogEventEnd(event,0,0,0,0);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    AbsorbingDampers_integrateJacobian(self.thisptr,
+                                 PyCObject_AsVoidPtr(mat),
+                                 t,
+                                 ptrFromHandle(fields),
+                                 ptrFromHandle(mesh),
+                                 self.integrateJacobianEvent)
+    return
+
+
+  def updateState(self, t, field, mesh):
+    """
+    Update state variables as needed.
+    """
+    # create shim for method 'updateState'
+    #embed{ void AbsorbingDampers_updateState(void* objVptr, double t, void* fieldVptr, void* meshVptr, int event)
+    try {
+      assert(0 != objVptr);
+      assert(0 != fieldVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<pylith::real_section_type>* field =
+        (ALE::Obj<pylith::real_section_type>*) fieldVptr;
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      PetscLogEventBegin(event,0,0,0,0);
+      ((pylith::bc::AbsorbingDampers*) objVptr)->updateState(t, *field, *mesh);
+      PetscLogEventEnd(event,0,0,0,0);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    AbsorbingDampers_updateState(self.thisptr,
+                           t,
+                           PyCObject_AsVoidPtr(field),
+                           ptrFromHandle(mesh),
+                           self.updateStateEvent)
+    return
+
+
+  def verifyConfiguration(self, mesh):
+    """
+    Verify compatibility of configuration settings.
+    """
+    # create shim for method 'verifyConfiguration'
+    #embed{ void AbsorbingDampers_verifyConfiguration(void* objVptr, void* meshVptr)
+    try {
+      assert(0 != objVptr);
+      assert(0 != meshVptr);
+      ALE::Obj<ALE::Mesh>* mesh =
+        (ALE::Obj<ALE::Mesh>*) meshVptr;
+      ((pylith::bc::AbsorbingDampers*) objVptr)->verifyConfiguration(*mesh);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch
+    #}embed
+    if mesh.name != "pylith_topology_Mesh":
+      raise TypeError, \
+            "Argument 'mesh' must be extension module type 'Mesh'."
+    AbsorbingDampers_verifyConfiguration(self.thisptr,
+                                   ptrFromHandle(mesh))
+    return
+
+
+  def _createHandle(self):
+    """
+    Wrap pointer to C++ object in PyCObject.
+    """
+    return PyCObject_FromVoidPtr(self.thisptr, BoundaryCondition_destructor)
+
+
+  property quadrature:
+    def __set__(self, q):
+      """
+      Set quadrature.
+      """
+      # create shim for method 'quadrature'
+      #embed{ void AbsorbingDampers_quadrature_set(void* objVptr, void* qVptr)
+      try {
+        assert(0 != objVptr);
+        pylith::feassemble::Quadrature* quadrature =
+          (pylith::feassemble::Quadrature*) qVptr;
+        ((pylith::bc::AbsorbingDampers*) objVptr)->quadrature(quadrature);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      if not q.name == "pylith_feassemble_Quadrature":
+        raise TypeError, \
+              "Argument must be extension module type 'Quadrature'."
+      AbsorbingDampers_quadrature_set(self.thisptr, ptrFromHandle(q))
+
+
+  property timeStep:
+    def __set__(self, dt):
+      """
+      Set timeStep.
+      """
+      # create shim for method 'timeStep'
+      #embed{ void AbsorbingDampers_timeStep_set(void* objVptr, double dt)
+      try {
+        assert(0 != objVptr);
+        ((pylith::bc::AbsorbingDampers*) objVptr)->timeStep(dt);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      AbsorbingDampers_timeStep_set(self.thisptr, dt)
+
+
+  property stableTimeStep:
+    def __get__(self):
+      """
+      Get stable time step.
+      """
+      # create shim for method 'stableTimeStep'
+      #embed{ double AbsorbingDampers_stableTimeStep_get(void* objVptr)
+      double result = 0.0;
+      try {
+        assert(0 != objVptr);
+        result =
+          ((pylith::bc::AbsorbingDampers*) objVptr)->stableTimeStep();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return AbsorbingDampers_stableTimeStep_get(self.thisptr)
+
+
+  property needNewJacobian:
+    def __get__(self):
+      """
+      Set timeStep.
+      """
+      # create shim for method 'needNewJacobian'
+      #embed{ int AbsorbingDampers_needNewJacobian_get(void* objVptr)
+      int result = 0;
+      try {
+        assert(0 != objVptr);
+        result =
+          ((pylith::bc::AbsorbingDampers*) objVptr)->needNewJacobian();
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      return result;
+      #}embed
+      return AbsorbingDampers_needNewJacobian_get(self.thisptr)
+
+
+  property useSolnIncr:
+    def __set__(self, flag):
+      """
+      Set solution increment flag.
+      """
+      # create shim for method 'useSolnIncr'
+      #embed{ void AbsorbingDampers_useSolnIncr_set(void* objVptr, int flag)
+      try {
+        assert(0 != objVptr);
+        ((pylith::bc::AbsorbingDampers*) objVptr)->useSolnIncr(flag);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      AbsorbingDampers_useSolnIncr_set(self.thisptr, flag)
 
 
 # End of file 

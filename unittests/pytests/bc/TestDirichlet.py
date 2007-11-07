@@ -60,22 +60,6 @@ class TestDirichlet(unittest.TestCase):
     return
 
 
-  def test_finalize(self):
-    """
-    Test finalize().
-
-    WARNING: This is not a rigorous test of finalize() because we
-    don't verify the results.
-    """
-    from pylith.bc.Dirichlet import Dirichlet
-    bc = Dirichlet()
-    bc.finalize()
-
-    # We should really add something here to check to make sure things
-    # actually initialized correctly    
-    return
-
-
   def test_setConstraintSizes(self):
     """
     Test setConstraintSizes().
@@ -151,7 +135,6 @@ class TestDirichlet(unittest.TestCase):
     neither set the input fields or verify the results.
     """
     (mesh, bc) = self._initialize()
-
     bc.finalize()
 
     # We should really add something here to check to make sure things
@@ -167,17 +150,16 @@ class TestDirichlet(unittest.TestCase):
     """
     from pylith.bc.Dirichlet import Dirichlet
     bc = Dirichlet()
+    bc._configure()
     bc.id = 0
     bc.label = "bc"
     bc.fixedDOF = [1]
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
-    from spatialdata.spatialdb.SimpleIOAscii import SimpleIOAscii
-    iohandler = SimpleIOAscii()
-    iohandler.filename = "data/tri3.spatialdb"
     db = SimpleDB()
+    db._configure()
     db.label = "TestDirichlet tri3"
-    db.iohandler = iohandler
+    db.iohandler.filename = "data/tri3.spatialdb"
     db.initialize()
     bc.db = db
 
