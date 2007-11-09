@@ -24,7 +24,7 @@ def run_pylith():
   """
   if not "done" in dir(run_pylith):
     from pylith.PyLithApp import PyLithApp
-    app = PyLithApp("dislocationextension")
+    app = PyLithApp("dislocation_static")
     app.run()
     run_pylith.done = True
   return
