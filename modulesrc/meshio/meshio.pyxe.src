@@ -841,5 +841,26 @@ cdef class SolutionIOVTK(SolutionIO):
       #}embed
       return SolutionIOVTK_filename_get(self.thisptr)
 
+  property timeFormat:
+    def __set__(self, format):
+      """Set timeFormat."""
+      # create shim for method 'timeFormat'
+      #embed{ void SolutionIOVTK_timeFormat_set(void* objVptr, char* format)
+      try {
+        assert(0 != objVptr);
+        ((pylith::meshio::SolutionIOVTK*) objVptr)->timeFormat(format);
+      } catch (const std::exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.what()));
+      } catch (const ALE::Exception& err) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        const_cast<char*>(err.msg().c_str()));
+      } catch (...) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Caught unknown C++ exception.");
+      } // try/catch
+      #}embed
+      SolutionIOVTK_timeFormat_set(self.thisptr, format)
+
 
 # End of file 

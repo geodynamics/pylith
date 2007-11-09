@@ -38,7 +38,8 @@ class SolutionIOVTK(SolutionIO):
     ## Python object for managing SolutionIOVTK facilities and properties.
     ##
     ## \b Properties
-    ## @li \b filename Name of mesh file
+    ## @li \b filename Name of mesh file.
+    ## @li \b timeFormat C style format string for time stamp in filename.
     ##
     ## \b Facilities
     ## @li None
@@ -47,6 +48,9 @@ class SolutionIOVTK(SolutionIO):
 
     filename = pyre.inventory.str("filename", default="output.vtk")
     filename.meta['tip'] = "Name of VTK file."
+
+    timeFormat = pyre.inventory.str("time_format", default="%f")
+    timeFormat.meta = "C style format string for time stamp in filename."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -67,6 +71,7 @@ class SolutionIOVTK(SolutionIO):
     """
     SolutionIO._configure(self)
     self.filename = self.inventory.filename
+    self.timeFormat = self.inventory.timeFormat
     return
 
 
@@ -76,6 +81,7 @@ class SolutionIOVTK(SolutionIO):
     """
     SolutionIO._sync(self)
     self.cppHandle.filename = self.filename
+    self.cppHandle.timeFormat = self.timeFormat
     return
   
 

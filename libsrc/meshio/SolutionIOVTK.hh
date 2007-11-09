@@ -47,6 +47,18 @@ public :
    */
   const char* filename(void) const;
 
+  /** Set time format for time stamp in name of VTK file.
+   *
+   * @param format C style time format for filename.
+   */
+  void timeFormat(const char* format);
+
+  /** Get time format for time stamp in name of VTK file.
+   *
+   * @returns C Style time format for filename.
+   */
+  const char* timeFormat(void) const;
+
   /** Open output files.
    *
    * @param mesh PETSc mesh object
@@ -92,6 +104,7 @@ public :
 public :
 
   std::string _filename; ///< Name of VTK file.
+  std::string _timeFormat; ///< C style time format for time stamp.
 
   PetscViewer _viewer; ///< Output file
 
