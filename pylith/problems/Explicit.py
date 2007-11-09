@@ -72,9 +72,9 @@ class Explicit(Formulation):
     self.fields.addReal("residual")
     self.fields.createHistory(["dispTpdt", "dispT", "dispTmdt"])    
     self.fields.copyLayout("dispT")
-    self.jacobian = mesh.createMatrix(self.fields.getSolution())
+    self.jacobian = self.mesh.createMatrix(self.fields.getSolution())
 
-    self.solver.initialize(mesh, self.fields.getSolution())
+    self.solver.initialize(self.mesh, self.fields.getSolution())
 
     # Solve for total displacement field
     for constraint in self.constraints:
