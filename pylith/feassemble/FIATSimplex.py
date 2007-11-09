@@ -150,7 +150,7 @@ class FIATSimplex(ReferenceCell):
     self.degree = self.inventory.degree
     self.order = self.inventory.order
     if self.order == -1:
-      self.order = 2*self.degree+1    
+      self.order = self.degree
     return
 
 
