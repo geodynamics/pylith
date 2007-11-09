@@ -26,6 +26,8 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::SolutionIOVTK::SolutionIOVTK(void) :
+  _filename("output.vtk"),
+  _timeFormat("%f"),
   _viewer(0)
 { // constructor
 } // constructor
@@ -113,7 +115,10 @@ pylith::meshio::SolutionIOVTK::writeVertexField(
 
     std::ostringstream buffer;
     const int indexExt = _filename.find(".vtk");
-    buffer << std::string(_filename, 0, indexExt) << "_t" << t << ".vtk";
+    char timestamp[256];
+    sprintf(timestamp, _timeFormat.c_str(), t);
+    buffer
+      << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
 
     err = PetscViewerCreate(mesh->comm(), &_viewer);
     err = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
@@ -131,7 +136,7 @@ pylith::meshio::SolutionIOVTK::writeVertexField(
     err = VTKViewer::writeElements(mesh, _viewer);
 
     buffer.str("");
-    buffer << name << "_t" << t;
+    buffer << name << "_t" << timestamp;
 
     // Now we are enforcing a 3D solution
     //   Perhaps we need to push this argument higher
@@ -167,7 +172,10 @@ pylith::meshio::SolutionIOVTK::writeCellField(
 
     std::ostringstream buffer;
     const int indexExt = _filename.find(".vtk");
-    buffer << std::string(_filename, 0, indexExt) << "_t" << t << ".vtk";
+    char timestamp[256];
+    sprintf(timestamp, _timeFormat.c_str(), t);
+    buffer
+      << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
 
     err = PetscViewerCreate(mesh->comm(), &_viewer);
     err = PetscViewerSetType(_viewer, PETSC_VIEWER_ASCII);
@@ -185,7 +193,7 @@ pylith::meshio::SolutionIOVTK::writeCellField(
     err = VTKViewer::writeElements(mesh, _viewer);
 
     buffer.str("");
-    buffer << name << "_t" << t;
+    buffer << name << "_t" << timestamp;
 
    err = PetscViewerPushFormat(_viewer, PETSC_VIEWER_ASCII_VTK_CELL);
 

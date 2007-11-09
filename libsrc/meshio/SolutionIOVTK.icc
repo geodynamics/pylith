@@ -28,6 +28,20 @@ pylith::meshio::SolutionIOVTK::filename(void) const {
   return _filename.c_str();
 }
 
+// Set time format for time stamp in name of VTK file.
+inline
+void
+pylith::meshio::SolutionIOVTK::timeFormat(const char* format) {
+  _timeFormat = format;
+}
+
+// Get time format for time stamp in name of VTK file.
+inline
+const char*
+pylith::meshio::SolutionIOVTK::timeFormat(void) const {
+  return _timeFormat.c_str();
+}
+
 #endif
 
 // End of file
