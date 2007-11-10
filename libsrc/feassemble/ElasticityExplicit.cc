@@ -190,12 +190,38 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     totalStrain[iQuad] = 0.0;
   } // for
 
-  int c = 0;
+#ifdef FASTER
+  if (_dispTpdtTags.find(_material->id()) == _dispTpdtTags.end()) {
+    _dispTpdtTags[_material->id()] = 
+      mesh->calculateCustomAtlas(dispTpdt, cells);
+  } // if
+  const int dispTpdtTag = _dispTpdtTags[_material->id()];
+
+  if (_dispTTags.find(_material->id()) == _dispTTags.end()) {
+    _dispTTags[_material->id()] = 
+      mesh->copyCustomAtlas(dispTpdt, _dispTpdtTags[_material->id()]);
+  } // if
+  const int dispTTag = _dispTTags[_material->id()];
+
+  if (_dispTmdtTags.find(_material->id()) == _dispTmdtTags.end()) {
+    _dispTmdtTags[_material->id()] = 
+      mesh->copyCustomAtlas(dispTpdt, _dispTpdtTags[_material->id()]);
+  } // if
+  const int dispTTag = _dispTTags[_material->id()];
+
+  if (_residualTags.find(_material->id()) == _residualTags.end()) {
+    _residualTags[_material->id()] = 
+      mesh->copyCustomAtlas(dispTpdt, _dispTpdtTags[_material->id()]);
+  } // if
+  const int residualTag = _residualTags[_material->id()];
+#endif
+
+  int c_index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
-       ++c_iter) {
+       ++c_iter, ++c_index) {
     // Compute geometry information for current cell
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c);
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
 
     // Get state variables for cell.
     _material->getStateVarsCell(*c_iter, numQuadPts);
@@ -203,12 +229,18 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     // Reset element vector to zero
     _resetCellVector();
 
-    // Restrict input fields to cell
-    // :TODO: Replace with optimized restricts().
-    // NEED to add optimization tags to ElasticityExplicit object.
+#ifdef FASTER
+    mesh->restrict(dispTpdt, dispTpdtTag, c_index, &dispTpdtCell[0], 
+		   cellVecSize);
+    mesh->restrict(dispTpdt, dispTTag, c_index, &dispTCell[0], 
+		   cellVecSize);
+    mesh->restrict(dispTpdt, dispTmdtTag, c_index, &dispTmdtCell[0], 
+		   cellVecSize);
+#else
     mesh->restrict(dispTpdt, *c_iter, &dispTpdtCell[0], cellVecSize);
     mesh->restrict(dispT, *c_iter, &dispTCell[0], cellVecSize);
     mesh->restrict(dispTmdt, *c_iter, &dispTmdtCell[0], cellVecSize);
+#endif
 
     // Get cell geometry information that depends on cell
     const double_array& basis = _quadrature->basis();
@@ -227,8 +259,7 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
           const double valIJ = valI * basis[iQuad*numBasis+jBasis];
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] += 
-	      valIJ * (- dispTpdtCell[jBasis*spaceDim+iDim] 
-		       + 2.0 * dispTCell[jBasis*spaceDim+iDim]
+	      valIJ * (+ 2.0 * dispTCell[jBasis*spaceDim+iDim]
 		       - dispTmdtCell[jBasis*spaceDim+iDim]);
         } // for
       } // for
@@ -242,7 +273,11 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     CALL_MEMBER_FN(*this, elasticityResidualFn)(stress);
 
     // Assemble cell contribution into field
+#ifdef FASTER
+    mesh->updateAdd(residual, residualTag, c_index, _cellVector);
+#else
     mesh->updateAdd(residual, *c_iter, _cellVector);
+#endif
   } // for
 } // integrateResidual
 
@@ -291,13 +326,13 @@ pylith::feassemble::ElasticityExplicit::integrateJacobian(
 
   // Allocate vector for cell values (if necessary)
   _initCellMatrix();
-  int c = 0;
 
+  int c_index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
-       ++c_iter) {
+       ++c_iter, ++c_index) {
     // Compute geometry information for current cell
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c);
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
 
     // Get state variables for cell.
     _material->getStateVarsCell(*c_iter, numQuadPts);
@@ -403,15 +438,23 @@ pylith::feassemble::ElasticityExplicit::updateState(
     totalStrain[iQuad] = 0.0;
   } // for
 
-  int c = 0;
+#ifdef FASTER
+  const int dispTTag = _dispTTags[_material->id()];
+#endif
+
+  int c_index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
-       ++c_iter) {
+       ++c_iter, ++c_index) {
     // Compute geometry information for current cell
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c);
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
 
     // Restrict input fields to cell
+#ifdef FASTER
+    mesh->restrict(disp, dispTTag, c_index, &dispCell[0], cellVecSize);
+#else
     mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
+#endif
 
     // Get cell geometry information that depends on cell
     const double_array& basisDeriv = _quadrature->basisDeriv();
