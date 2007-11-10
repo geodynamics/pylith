@@ -43,6 +43,7 @@ class TestMeshGenSimple(unittest.TestCase):
 
     from pylith.meshio.SolutionIOVTK import SolutionIOVTK
     io = SolutionIOVTK()
+    io._configure()
     io.filename = 'mesh.vtk'
     from spatialdata.geocoords.CSCart import CSCart
     io.coordsys = CSCart()
