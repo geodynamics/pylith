@@ -130,12 +130,12 @@ const double pylith::feassemble::ElasticityExplicitData2DQuadratic::_fieldTmdt[]
 };
 
 const double pylith::feassemble::ElasticityExplicitData2DQuadratic::_valsResidual[] = {
-  2.04455943e+09,  9.48741748e+09,
- -1.86265045e+10,  3.65998688e+09,
- -2.49512114e+09, -3.26311648e+10,
-  1.39608918e+10,  6.18995066e+10,
- -1.90442781e+10, -8.28253071e+10,
-  2.41727473e+10,  4.04175780e+10,
+  2.04288333e+09,  9.48429385e+09,
+ -1.86251338e+10,  3.66245172e+09,
+ -2.49481575e+09, -3.26305061e+10,
+  1.39575797e+10,  6.18963488e+10,
+ -1.90456087e+10, -8.28246824e+10,
+  2.41683699e+10,  4.04126141e+10,
 };
 
 const double pylith::feassemble::ElasticityExplicitData2DQuadratic::_valsJacobian[] = {

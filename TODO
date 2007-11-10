@@ -4,7 +4,7 @@ CURRENT ISSUES
 
 Release 1.0.2
 
-  1. Fix memory use on proc 0 when partitioning.
+  1. Fix memory imbalance associated with distribution.
 
   2. Fix problems with buildbot on darwin.
 
@@ -14,6 +14,11 @@ Release 1.0.2
     cells.
 
 Release 1.1
+
+  0. Test dynamic time stepping.
+     Switch to more efficient restrict(). Need tags in ElasticityExplicit.
+     Can we refactor some of the elasticity integration stuff that is 
+     common to both implicit and explicit time stepping?
 
   1. Finish Neumann BC.
 

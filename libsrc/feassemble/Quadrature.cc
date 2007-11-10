@@ -326,9 +326,9 @@ pylith::feassemble::Quadrature::precomputeGeometry(
 void
 pylith::feassemble::Quadrature::retrieveGeometry(
 			      const ALE::Obj<Mesh>& mesh,
-                  const ALE::Obj<real_section_type>& coordinates,
+			      const ALE::Obj<real_section_type>& coordinates,
 			      const Mesh::point_type& cell,
-                  const int c)
+			      const int c)
 { // retrieveGeometry
   const real_section_type::value_type* values =
     mesh->restrict(_quadPtsPre, _qTag, c);

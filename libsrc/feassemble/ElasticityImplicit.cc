@@ -176,7 +176,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const int spaceDim = _quadrature->spaceDim();
 
 #ifdef FASTER
-  int c = 0;
+  int c_index = 0;
 
   if (_dTags.find(_material->id()) == _dTags.end()) {
     _dTags[_material->id()] = mesh->calculateCustomAtlas(dispTBctpdt, cells);
@@ -207,10 +207,10 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   // Loop over cells
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
-       ++c_iter) {
+       ++c_iter, ++c_index) {
     // Compute geometry information for current cell
     PetscLogEventBegin(cellGeomEvent,0,0,0,0);
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c);
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
     PetscLogEventEnd(cellGeomEvent,0,0,0,0);
 
     // Get state variables for cell.
@@ -224,7 +224,8 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // Restrict input fields to cell
     PetscLogEventBegin(restrictEvent,0,0,0,0);
 #ifdef FASTER
-    mesh->restrict(dispTBctpdt, dTag, c, &dispTBctpdtCell[0], cellVecSize);
+    mesh->restrict(dispTBctpdt, dTag, c_index, &dispTBctpdtCell[0], 
+		   cellVecSize);
 #else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
 #endif
@@ -282,7 +283,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // Assemble cell contribution into field
     PetscLogEventBegin(updateEvent,0,0,0,0);
 #ifdef FASTER
-    mesh->updateAdd(residual, rTag, c++, _cellVector);
+    mesh->updateAdd(residual, rTag, c_index, _cellVector);
 #else
     mesh->updateAdd(residual, *c_iter, _cellVector);
 #endif
@@ -385,12 +386,12 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 #endif
 
   // Loop over cells
-  int c = 0;
+  int c_index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
-       ++c_iter, ++c) {
+       ++c_iter, ++c_index) {
     // Compute geometry information for current cell
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c);
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
 
     // Get state variables for cell.
     _material->getStateVarsCell(*c_iter, numQuadPts);
@@ -400,7 +401,8 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
     // Restrict input fields to cell
 #ifdef FASTER
-    mesh->restrict(dispTBctpdt, dTag, c, &dispTBctpdtCell[0], cellVecSize);
+    mesh->restrict(dispTBctpdt, dTag, c_index, &dispTBctpdtCell[0], 
+		   cellVecSize);
 #else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
 #endif
@@ -497,16 +499,16 @@ pylith::feassemble::ElasticityImplicit::updateState(
   const int dTag = _dTags[_material->id()];
 #endif
 
-  int c = 0;
+  int c_index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
-       ++c_iter, ++c) {
+       ++c_iter, ++c_index) {
     // Compute geometry information for current cell
-    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c);
+    _quadrature->retrieveGeometry(mesh, coordinates, *c_iter, c_index);
 
     // Restrict input fields to cell
 #ifdef FASTER
-    mesh->restrict(disp, dTag, c, &dispCell[0], cellVecSize);
+    mesh->restrict(disp, dTag, c_index, &dispCell[0], cellVecSize);
 #else
     mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
 #endif
