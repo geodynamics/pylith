@@ -22,7 +22,7 @@ noinst_DATA = \
 	bar.mesh \
 	axialextension.cfg \
 	axialextension_disp.spatialdb \
-	dislocation.cfg \
+	dislocation_static.cfg \
 	dislocation_disp.spatialdb \
 	dislocation_slip.spatialdb \
 	dislocation_sliprate.spatialdb \
@@ -41,12 +41,13 @@ TESTS_ENVIRONMENT = $(PYTHON)
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/tests/1d/line2
-export-data: $(noinst_DATA)
-	for f in $(noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+export-data: $(noinst_PYTHON) $(noinst_DATA)
+	for f in $(noinst_PYTHON) $(noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 
 BUILT_SOURCES = export-data
 
 CLEANFILES = \
+	$(export_datadir)/$(noinst_PYTHON) \
 	$(export_datadir)/$(noinst_DATA) \
 	$(export_datadir)/$(noinst_TMP)
 
