@@ -15,16 +15,24 @@
 ## @brief Test suite for testing pylith with 1-D axial extension.
 
 import unittest
-import numpy
-import tables
+#import numpy
+#import tables
+
+
+from pylith.PyLithApp import PyLithApp
+class AxialExtension(PyLithApp):
+
+  def __init__(self):
+    PyLithApp.__init__(self, "axialextension")
+    return
+
 
 def run_pylith():
   """
   Run pylith.
   """
   if not "done" in dir(run_pylith):
-    from pylith.PyLithApp import PyLithApp
-    app = PyLithApp("axialextension")
+    app = AxialExtension()
     app.run()
     run_pylith.done = True
   return
