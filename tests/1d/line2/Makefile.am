@@ -16,24 +16,30 @@ check_SCRIPTS = testpylith.py
 
 noinst_PYTHON = \
 	TestAxial.py \
-	TestDislocation.py
+	TestDislocationStatic.py \
+	TestDislocationDyn.py
 
 noinst_DATA = \
 	bar.mesh \
 	axialextension.cfg \
 	axialextension_disp.spatialdb \
 	dislocation_static.cfg \
+	dislocation_dyn.cfg \
 	dislocation_disp.spatialdb \
 	dislocation_slip.spatialdb \
 	dislocation_sliprate.spatialdb \
 	dislocation_sliptime.spatialdb \
+	dislocation_dyn_sliprate.spatialdb \
+	dislocation_dyn_sliptime.spatialdb \
 	matprops.spatialdb
 
 noinst_TMP = \
 	axialextension_t0.vtk \
 	axialextension_t1.vtk \
-	dislocation_t0.vtk \
-	dislocation_t1.vtk
+	dislocation_static_t0.vtk \
+	dislocation_static_t1.vtk \
+	dislocation_dyn_t0.vtk \
+	dislocation_dyn_t1.vtk
 
 
 TESTS_ENVIRONMENT = $(PYTHON)
