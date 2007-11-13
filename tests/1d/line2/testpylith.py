@@ -23,8 +23,11 @@ def suite():
   from TestAxial import TestAxial
   suite.addTest(unittest.makeSuite(TestAxial))
 
-  from TestDislocation import TestDislocation
-  suite.addTest(unittest.makeSuite(TestDislocation))
+  from TestDislocationStatic import TestDislocationStatic
+  suite.addTest(unittest.makeSuite(TestDislocationStatic))
+
+  from TestDislocationDyn import TestDislocationDyn
+  suite.addTest(unittest.makeSuite(TestDislocationDyn))
 
   return suite
 
