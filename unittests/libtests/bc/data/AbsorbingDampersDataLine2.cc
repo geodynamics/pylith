@@ -67,9 +67,9 @@ const double pylith::bc::AbsorbingDampersDataLine2::_dampingConsts[] = {
   17.5e+6,
 };
 const double pylith::bc::AbsorbingDampersDataLine2::_valsResidual[] = {
-  -12.5e+6*0.2/0.5,
+  12.5e+6*1.0/0.5,
   0.0,
-  -17.5e+6*0.6/0.5,
+  17.5e+6*1.2/0.5,
 };
 const double pylith::bc::AbsorbingDampersDataLine2::_valsJacobian[] = {
   12.5e+6/0.5, 0.0, 0.0,

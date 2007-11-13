@@ -86,12 +86,13 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     Verify compatibility of configuration.
     """
     BoundaryCondition.verifyConfiguration(self)
-    if self.quadrature.spaceDim != self.mesh.dimension-1:
+    if self.quadrature.cellDim != self.mesh.dimension()-1:
         raise ValueError, \
               "Quadrature scheme and mesh are incompatible.\n" \
               "Dimension for quadrature: %d\n" \
               "Dimension of mesh boundary '%s': %d" % \
-              (self.quadrature.spaceDim, self.label, self.mesh.dimension-1)    
+              (self.quadrature.cellDim,
+               self.label, self.mesh.dimension()-1)    
     return
   
 
@@ -102,6 +103,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     Setup members using inventory.
     """
     BoundaryCondition._configure(self)
+    self.quadrature = self.inventory.quadrature
     return
 
 

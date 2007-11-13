@@ -31,16 +31,16 @@ def calcTri3():
   edgeLen = 2.0**0.5
   N0 = 0.5
   N1 = 0.5
-  velocityX = 0.5*(N0+N1)*(N0*(1.5-1.1)+N1*(2.1-1.3)) / (2.0*dt)
-  velocityY = 0.5*(N0+N1)*(N0*(2.4-1.8)+N1*(2.4-2.2)) / (2.0*dt)
+  dispX = 0.5*(N0+N1)*(N0*(1.1)+N1*(1.3)) / (2.0*dt)
+  dispY = 0.5*(N0+N1)*(N0*(1.8)+N1*(2.2)) / (2.0*dt)
   normal = [0.5**0.5, -0.5**0.5]
 
   constNormal = density*vp
   constTangential = density*vs
   dampingConsts = [abs(constNormal*normal[0] - constTangential*normal[1]),
                    abs(constNormal*normal[1] + constTangential*normal[0])]
-  residualX = -dampingConsts[0]*velocityX*edgeLen
-  residualY = -dampingConsts[1]*velocityY*edgeLen
+  residualX = dampingConsts[0]*dispX*edgeLen
+  residualY = dampingConsts[1]*dispY*edgeLen
   residual = [residualX, residualY,
               residualX, residualY]
 
@@ -78,12 +78,12 @@ def calcQuad4():
   dt = 0.25
   N0 = 0.5
   N1 = 0.5
-  velocity1X = 0.5*(N0+N1)*(N0*(1.5-1.1) + N1*(1.2-1.0)) / (2.0*dt)
-  velocity1Y = 0.5*(N0+N1)*(N0*(2.4-1.8) + N1*(1.6-2.4)) / (2.0*dt)
+  disp1X = 0.5*(N0+N1)*(N0*(1.1) + N1*(1.0)) / (2.0*dt)
+  disp1Y = 0.5*(N0+N1)*(N0*(1.8) + N1*(2.4)) / (2.0*dt)
   normal1 = [-1.0, 0.0]
 
-  velocity2X = (N0*(2.4-1.4) + N1*(2.7-1.5)) / (2.0*dt)
-  velocity2Y = (N0*(2.4-2.4) + N1*(3.4-1.6)) / (2.0*dt)
+  disp2X = 0.5*(N0+N1)*(N0*(1.4) + N1*(1.5)) / (2.0*dt)
+  disp2Y = 0.5*(N0+N1)*(N0*(2.4) + N1*(1.6)) / (2.0*dt)
   normal2 = [1.0, 0.0]
 
   edgeLen = 2.0
@@ -94,10 +94,10 @@ def calcQuad4():
                    abs(constNormal*normal1[1] + constTangential*normal1[0]),
                    abs(constNormal*normal2[0] - constTangential*normal2[1]),
                    abs(constNormal*normal2[1] + constTangential*normal2[0])]
-  residual1X = -dampingConsts[0]*velocity1X*edgeLen
-  residual1Y = -dampingConsts[1]*velocity1Y*edgeLen
-  residual2X = -dampingConsts[2]*velocity2X*edgeLen
-  residual2Y = -dampingConsts[3]*velocity2Y*edgeLen
+  residual1X = dampingConsts[0]*disp1X*edgeLen
+  residual1Y = dampingConsts[1]*disp1Y*edgeLen
+  residual2X = dampingConsts[2]*disp2X*edgeLen
+  residual2Y = dampingConsts[3]*disp2Y*edgeLen
   residual = [residual1X, residual1Y,
               residual1X, residual1Y,
               residual2X, residual2Y,
@@ -119,9 +119,9 @@ def calcQuad4():
   print "damping constants:"
   for v in dampingConsts:
       print "  %16.8e" % v
-  print "velocity:"
-  print "  velocity1: ",velocity1X,"  ",velocity1Y
-  print "  velocity2: ",velocity2X,"  ",velocity2Y
+  print "disp:"
+  print "  disp1: ",disp1X,"  ",disp1Y
+  print "  disp2: ",disp2X,"  ",disp2Y
   print "values for residual:"
   for v in residual:
       print "  %16.8e" % v
@@ -145,12 +145,9 @@ def calcTet4():
   N0 = 1.0/3.0
   N1 = 1.0/3.0
   N2 = 1.0/3.0
-  velocityX = (N0+N1+N2)/3.0 * \
-              (N0*(2.1-1.3)+N1*(1.8-1.2)+N2*(1.2-1.0)) / (2.0*dt)
-  velocityY = (N0+N1+N2)/3.0 * \
-              (N0*(2.4-2.2)+N1*(2.0-2.4)+N2*(1.6-2.4)) / (2.0*dt)
-  velocityZ = (N0+N1+N2)/3.0 * \
-              (N0*(5.2-3.6)+N1*(4.6-3.4)+N2*(3.4-3.0)) / (2.0*dt)
+  dispX = (N0+N1+N2)/3.0 * (N0*(1.3)+N1*(1.2)+N2*(1.0)) / (2.0*dt)
+  dispY = (N0+N1+N2)/3.0 * (N0*(2.2)+N1*(2.4)+N2*(2.4)) / (2.0*dt)
+  dispZ = (N0+N1+N2)/3.0 * (N0*(3.6)+N1*(3.4)+N2*(3.0)) / (2.0*dt)
   normal = [-1.0, 0.0, 0.0]
   tangent1 = [0.0, -1.0, 0.0]
   tangent2 = [0.0, 0.0, 1.0]
@@ -166,9 +163,9 @@ def calcTet4():
                    abs(constNormal*normal[2] +
                        constTangential*tangent1[2] +
                        constTangential*tangent2[2])]
-  residualX = -dampingConsts[0]*velocityX*area
-  residualY = -dampingConsts[1]*velocityY*area
-  residualZ = -dampingConsts[2]*velocityZ*area
+  residualX = dampingConsts[0]*dispX*area
+  residualY = dampingConsts[1]*dispY*area
+  residualZ = dampingConsts[2]*dispZ*area
   residual = [residualX, residualY, residualZ,
               residualX, residualY, residualZ,
               residualX, residualY, residualZ]
@@ -224,18 +221,6 @@ def calcHex8():
            [0.16666667,  0.0446582,   0.16666667,  0.62200847]]
   cells = [[2, 8, 6, 0],
            [4, 10, 8, 2]]
-  dispTpdt = [[1.2,  1.1,  3.4],
-              [1.5,  1.0,  4.0],
-              [1.8,  0.9,  4.6],
-              [2.1,  0.8,  5.2],
-              [2.4,  0.7,  5.8],
-              [2.7,  0.6,  6.4],
-              [3.0,  0.5,  7.0],
-              [3.3,  0.4,  7.6],
-              [3.6,  0.3,  8.2],
-              [3.9,  0.2,  8.8],
-              [4.2,  0.1,  9.4],
-              [4.5,  0.0, 10.0]]
   dispTmdt = [[1.0,  2.4,  3.0],
               [1.1,  2.2,  3.2],
               [1.2,  2.0,  3.4],
@@ -272,25 +257,25 @@ def calcHex8():
       N1 = b[1]
       N2 = b[2]
       N3 = b[3]
-      v0x = (dispTpdt[cell[0]][0]-dispTmdt[cell[0]][0])/(2.0*dt)
-      v0y = (dispTpdt[cell[0]][1]-dispTmdt[cell[0]][1])/(2.0*dt)
-      v0z = (dispTpdt[cell[0]][2]-dispTmdt[cell[0]][2])/(2.0*dt)
-      v1x = (dispTpdt[cell[1]][0]-dispTmdt[cell[1]][0])/(2.0*dt)
-      v1y = (dispTpdt[cell[1]][1]-dispTmdt[cell[1]][1])/(2.0*dt)
-      v1z = (dispTpdt[cell[1]][2]-dispTmdt[cell[1]][2])/(2.0*dt)
-      v2x = (dispTpdt[cell[2]][0]-dispTmdt[cell[2]][0])/(2.0*dt)
-      v2y = (dispTpdt[cell[2]][1]-dispTmdt[cell[2]][1])/(2.0*dt)
-      v2z = (dispTpdt[cell[2]][2]-dispTmdt[cell[2]][2])/(2.0*dt)
-      v3x = (dispTpdt[cell[3]][0]-dispTmdt[cell[3]][0])/(2.0*dt)
-      v3y = (dispTpdt[cell[3]][1]-dispTmdt[cell[3]][1])/(2.0*dt)
-      v3z = (dispTpdt[cell[3]][2]-dispTmdt[cell[3]][2])/(2.0*dt)
-      velocityX = N0*v0x + N1*v1x + N2*v2x + N3*v3x
-      velocityY = N0*v0y + N1*v1y + N2*v2y + N3*v3y
-      velocityZ = N0*v0z + N1*v1z + N2*v2z + N3*v3z
+      d0x = dispTmdt[cell[0]][0]/(2.0*dt)
+      d0y = dispTmdt[cell[0]][1]/(2.0*dt)
+      d0z = dispTmdt[cell[0]][2]/(2.0*dt)
+      d1x = dispTmdt[cell[1]][0]/(2.0*dt)
+      d1y = dispTmdt[cell[1]][1]/(2.0*dt)
+      d1z = dispTmdt[cell[1]][2]/(2.0*dt)
+      d2x = dispTmdt[cell[2]][0]/(2.0*dt)
+      d2y = dispTmdt[cell[2]][1]/(2.0*dt)
+      d2z = dispTmdt[cell[2]][2]/(2.0*dt)
+      d3x = dispTmdt[cell[3]][0]/(2.0*dt)
+      d3y = dispTmdt[cell[3]][1]/(2.0*dt)
+      d3z = dispTmdt[cell[3]][2]/(2.0*dt)
+      dispX = N0*d0x + N1*d1x + N2*d2x + N3*d3x
+      dispY = N0*d0y + N1*d1y + N2*d2y + N3*d3y
+      dispZ = N0*d0z + N1*d1z + N2*d2z + N3*d3z
 
-      residualX = -dampingConsts[0] * velocityX * area * jacobianDet
-      residualY = -dampingConsts[1] * velocityY * area * jacobianDet
-      residualZ = -dampingConsts[2] * velocityZ * area * jacobianDet
+      residualX = dampingConsts[0] * dispX * area * jacobianDet
+      residualY = dampingConsts[1] * dispY * area * jacobianDet
+      residualZ = dampingConsts[2] * dispZ * area * jacobianDet
       residual[cell[0],:] += N0*numpy.array([residualX,residualY,residualZ])
       residual[cell[1],:] += N1*numpy.array([residualX,residualY,residualZ])
       residual[cell[2],:] += N2*numpy.array([residualX,residualY,residualZ])
@@ -359,7 +344,7 @@ def calcHex8():
 #calcTri3()
 #calcQuad4()
 #calcTet4()
-#calcHex8()
+calcHex8()
 
   
 # End of file 
