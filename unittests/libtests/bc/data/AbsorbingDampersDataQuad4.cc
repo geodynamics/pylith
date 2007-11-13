@@ -78,12 +78,12 @@ const double pylith::bc::AbsorbingDampersDataQuad4::_dampingConsts[] = {
   1.25e+07, 7.5e+06,
 };
 const double pylith::bc::AbsorbingDampersDataQuad4::_valsResidual[] = {
-  -7.5e+06, 1.5e+06,
-  -7.5e+06, 1.5e+06,
+  2.625e+07, 3.15e+07,
+  2.625e+07, 3.15e+07,
   0.0, 0.0, 
   0.0, 0.0,
-  -2.75e+07, -1.35e+07,
-  -2.75e+07, -1.35e+07,
+  3.625e+07, 3.0e+07,
+  3.625e+07, 3.0e+07,
 };
 const double pylith::bc::AbsorbingDampersDataQuad4::_valsJacobian[] = {
   1.25e+07, 0.0, // 0x

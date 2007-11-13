@@ -288,8 +288,7 @@ pylith::bc::AbsorbingDampers::integrateResidual(
           for (int iDim=0; iDim < spaceDim; ++iDim)
             _cellVector[iBasis*spaceDim+iDim] += 
 	      dampingConstsCell[iQuad*spaceDim+iDim] *
-	      valIJ * (-dispTpdtCell[jBasis*spaceDim+iDim] 
-		       + dispTmdtCell[jBasis*spaceDim+iDim]);
+	      valIJ * (dispTmdtCell[jBasis*spaceDim+iDim]);
         } // for
       } // for
 
