@@ -100,19 +100,19 @@ class TestQuadrature(unittest.TestCase):
     import pylith.feassemble.testfeassemble as testmodule
 
     vertices = testmodule.vertices(quadrature.cppHandle)
-    test_double(self, verticesE, vertices)
+    test_double(self, verticesE, numpy.array(vertices))
 
     basis = testmodule.basis(quadrature.cppHandle)
-    test_double(self, basisE, basis)
+    test_double(self, basisE, numpy.array(basis))
 
     basisDeriv = testmodule.basisDeriv(quadrature.cppHandle)
-    test_double(self, basisDerivE, basisDeriv)
+    test_double(self, basisDerivE, numpy.array(basisDeriv))
 
     quadWts = testmodule.quadWts(quadrature.cppHandle)
-    test_double(self, quadWtsE, quadWts)
+    test_double(self, quadWtsE, numpy.array(quadWts))
     
     quadPts = testmodule.quadPtsRef(quadrature.cppHandle)
-    test_double(self, quadPtsE, quadPts)
+    test_double(self, quadPtsE, numpy.array(quadPts))
 
     from pylith.feassemble.geometry.GeometryLine1D import GeometryLine1D
     self.failUnless(isinstance(quadrature.cell.geometry, GeometryLine1D))
