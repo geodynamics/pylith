@@ -217,38 +217,77 @@ pylith::faults::TestFaultCohesiveKin::testIntegrateResidual(void)
     solution->updatePoint(*v_iter, &_data->fieldT[iVertex*spaceDim]);
   } // for
   
-  // Call integrateResidual()
   const double t = 2.134;
-  fault.integrateResidual(residual, t, &fields, mesh);
+  const double dt = 0.01;
+  fault.timeStep(dt);
+  { // Integrate residual with solution (as opposed to solution increment).
+    fault.useSolnIncr(false);
+    fault.integrateResidual(residual, t, &fields, mesh);
 
-  //residual->view("RESIDUAL");
+    //residual->view("RESIDUAL");
 
-  // Check values
-  const double* valsE = _data->valsResidual;
-  iVertex = 0;
-  const int fiberDimE = spaceDim;
-  const double tolerance = 1.0e-06;
-  for (Mesh::label_sequence::iterator v_iter=vBegin;
-       v_iter != vEnd;
-       ++v_iter, ++iVertex) {
-    const int fiberDim = residual->getFiberDimension(*v_iter);
-    CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
-    const real_section_type::value_type* vals = 
-      residual->restrictPoint(*v_iter);
-    
-    const bool isConstraint = 
-      (fault._constraintVert.end() != fault._constraintVert.find(*v_iter));
-    const double pseudoStiffness = 
-      (!isConstraint) ? _data->pseudoStiffness : 1.0;
-    for (int i=0; i < fiberDimE; ++i) {
-      const int index = iVertex*spaceDim+i;
-      const double valE = valsE[index] * pseudoStiffness;
-      if (valE > tolerance)
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
-      else
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+    // Check values
+    const double* valsE = _data->valsResidual;
+    iVertex = 0;
+    const int fiberDimE = spaceDim;
+    const double tolerance = 1.0e-06;
+    for (Mesh::label_sequence::iterator v_iter=vBegin;
+	 v_iter != vEnd;
+	 ++v_iter, ++iVertex) {
+      const int fiberDim = residual->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const real_section_type::value_type* vals = 
+	residual->restrictPoint(*v_iter);
+      
+      const bool isConstraint = 
+	(fault._constraintVert.end() != fault._constraintVert.find(*v_iter));
+      const double pseudoStiffness = 
+	(!isConstraint) ? _data->pseudoStiffness : 1.0;
+      for (int i=0; i < fiberDimE; ++i) {
+	const int index = iVertex*spaceDim+i;
+	const double valE = valsE[index] * pseudoStiffness;
+	if (valE > tolerance)
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+	else
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
     } // for
-  } // for
+  } // Integrate residual with solution (as opposed to solution increment).
+
+  residual->zero();
+  { // Integrate residual with solution increment.
+    fault.useSolnIncr(true);
+    fault.integrateResidual(residual, t, &fields, mesh);
+
+    //residual->view("RESIDUAL");
+
+    // Check values
+    const double* valsE = _data->valsResidualIncr;
+    iVertex = 0;
+    const int fiberDimE = spaceDim;
+    const double tolerance = 1.0e-06;
+    for (Mesh::label_sequence::iterator v_iter=vBegin;
+	 v_iter != vEnd;
+	 ++v_iter, ++iVertex) {
+      const int fiberDim = residual->getFiberDimension(*v_iter);
+      CPPUNIT_ASSERT_EQUAL(fiberDimE, fiberDim);
+      const real_section_type::value_type* vals = 
+	residual->restrictPoint(*v_iter);
+      
+      const bool isConstraint = 
+	(fault._constraintVert.end() != fault._constraintVert.find(*v_iter));
+      const double pseudoStiffness = 
+	(!isConstraint) ? _data->pseudoStiffness : 1.0;
+      for (int i=0; i < fiberDimE; ++i) {
+	const int index = iVertex*spaceDim+i;
+	const double valE = valsE[index] * pseudoStiffness;
+	if (valE > tolerance)
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valE, tolerance);
+	else
+	  CPPUNIT_ASSERT_DOUBLES_EQUAL(valE, vals[i], tolerance);
+      } // for
+    } // for
+  } // Integrate residual with solution increment.
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------

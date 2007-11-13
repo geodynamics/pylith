@@ -424,7 +424,7 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
     // Get slip at cells vertices (only valid at constraint vertices)
     mesh->restrict(slip, *c_iter, &cellSlip[0], cellSlip.size());
 
-    // Get slip at cells vertices (valid at all cohesive vertices)
+    // Get solution at cells vertices (valid at all cohesive vertices)
     mesh->restrict(solution, *c_iter, &cellSoln[0], cellSoln.size());
     
     for (int iConstraint=0; iConstraint < numConstraintVert; ++iConstraint) {
@@ -446,23 +446,25 @@ pylith::faults::FaultCohesiveKin::integrateResidual(
 	cellResidual[indexK*spaceDim+iDim] = 
 	  cellSlip[iConstraint*spaceDim+iDim];
       
-      // Get orientation at constraint vertex
-      const real_section_type::value_type* constraintOrient = 
-	&cellOrientation[iConstraint*orientationSize];
-
-      // Entries associated with constraint forces applied at node i
-      for (int iDim=0; iDim < spaceDim; ++iDim)
-	for (int kDim=0; kDim < spaceDim; ++kDim)
-	  cellResidual[indexI*spaceDim+iDim] -=
-	    cellSoln[indexK*spaceDim+kDim] * 
-	    -constraintOrient[kDim*spaceDim+iDim] * pseudoStiffness;
-
-      // Entries associated with constraint forces applied at node j
-      for (int jDim=0; jDim < spaceDim; ++jDim)
-	for (int kDim=0; kDim < spaceDim; ++kDim)
-	  cellResidual[indexJ*spaceDim+jDim] -=
-	    cellSoln[indexK*spaceDim+kDim] * 
-	    constraintOrient[kDim*spaceDim+jDim] * pseudoStiffness;
+      if (_useSolnIncr) {
+	// Get orientation at constraint vertex
+	const real_section_type::value_type* constraintOrient = 
+	  &cellOrientation[iConstraint*orientationSize];
+	
+	// Entries associated with constraint forces applied at node i
+	for (int iDim=0; iDim < spaceDim; ++iDim)
+	  for (int kDim=0; kDim < spaceDim; ++kDim)
+	    cellResidual[indexI*spaceDim+iDim] -=
+	      cellSoln[indexK*spaceDim+kDim] * 
+	      -constraintOrient[kDim*spaceDim+iDim] * pseudoStiffness;
+	
+	// Entries associated with constraint forces applied at node j
+	for (int jDim=0; jDim < spaceDim; ++jDim)
+	  for (int kDim=0; kDim < spaceDim; ++kDim)
+	    cellResidual[indexJ*spaceDim+jDim] -=
+	      cellSoln[indexK*spaceDim+kDim] * 
+	      constraintOrient[kDim*spaceDim+jDim] * pseudoStiffness;
+      } // if
     } // for
 
 #if 0

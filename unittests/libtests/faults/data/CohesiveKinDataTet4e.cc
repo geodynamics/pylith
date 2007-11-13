@@ -116,19 +116,36 @@ const int pylith::faults::CohesiveKinDataTet4e::_constraintCells[] = {
 
 const double pylith::faults::CohesiveKinDataTet4e::_valsResidual[] = {
   0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,
+  0.0,  0.0,  0.0,
+  1.07974939836, -0.32861938211, 0.04694562602, // 11
+  0.0,  0.0,  0.0,
+  1.00381374723, -0.33460458241, 0.08365114560, // 13
+  0.0,  0.0,  0.0,
+  0.90493237602, -0.32577565537, 0.10859188512, // 15
+  0.0,  0.0,  0.0,
+  0.78469841324, -0.30180708202, 0.12072283281, // 17
+};
+
+const double pylith::faults::CohesiveKinDataTet4e::_valsResidualIncr[] = {
+  0.0,  0.0,  0.0,
   7.8,  3.8,  5.8, // 5
   7.0,  3.0,  5.0, // 6
   8.2,  4.2,  6.2, // 7
   8.4,  4.4,  6.4, // 8
   0.0,  0.0,  0.0,
  -7.8, -3.8, -5.8, // 10
-  1.07974939836, -0.32861938211, 0.04694562602, // 11
+  0.01271057284, -0.00386843521, 0.00055263360, // 11
  -7.0, -3.0, -5.0, // 12
-  1.00381374723, -0.33460458241, 0.08365114560, // 13
+  0.01411467401, -0.00470489134, 0.00117622283, // 13
  -8.2, -4.2, -6.2, // 14
-  0.90493237602, -0.32577565537, 0.10859188512, // 15
+  0.01544188788, -0.00555907964, 0.00185302655, // 15
  -8.4, -4.4, -6.4, // 16
-  0.78469841324, -0.30180708202, 0.12072283281, // 17
+  0.01656103940, -0.00636963054, 0.00254785222, // 17
 };
 
 const double pylith::faults::CohesiveKinDataTet4e::_valsJacobian[] = {
@@ -747,6 +764,7 @@ pylith::faults::CohesiveKinDataTet4e::CohesiveKinDataTet4e(void)
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
+  valsResidualIncr = const_cast<double*>(_valsResidualIncr);
   valsJacobian = const_cast<double*>(_valsJacobian);
   pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  

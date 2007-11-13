@@ -70,6 +70,10 @@ public:
   int* constraintVertices; ///< Expected points for constraint vertices
   int* constraintCells; ///< Expected cells for constraint vertices
   double* valsResidual; ///< Expected values from residual calculation.
+
+  /// Expected values from residual calculation using solution increment.
+  double* valsResidualIncr;
+
   double* valsJacobian; ///< Expected values from Jacobian calculation.
   double pseudoStiffness; ///< Fake stiffness for conditioning
   int numConstraintVert; ///< Number of constraint vertices

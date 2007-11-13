@@ -149,6 +149,29 @@ const double pylith::faults::CohesiveKinDataHex8::_valsResidual[] = {
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
+  1.07974939836, -0.32861938211, 0.04694562602, // 15 (constraint)
+  0.0, 0.0, 0.0,
+  1.00381374723, -0.33460458241, 0.08365114560, // 17 (constraint)
+  0.0, 0.0, 0.0,
+  0.90493237602, -0.32577565537, 0.10859188512, // 19 (constraint)
+  0.0, 0.0, 0.0,
+  0.78469841324, -0.30180708202, 0.12072283281, // 21 (constraint)
+};
+
+const double pylith::faults::CohesiveKinDataHex8::_valsResidualIncr[] = {
+  0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0,
  -9.4,-5.4,-7.4, // 6
  -9.6,-5.6,-7.6, // 7
  -9.8,-5.8,-7.8, // 8
@@ -158,13 +181,13 @@ const double pylith::faults::CohesiveKinDataHex8::_valsResidual[] = {
   0.0, 0.0, 0.0,
   0.0, 0.0, 0.0,
  +9.4,+5.4,+7.4, // 14
-  1.07974939836, -0.32861938211, 0.04694562602, // 15 (constraint)
+  0.01271057284, -0.00386843521, 0.00055263360, // 15 (constraint)
  +9.6,+5.6,+7.6, // 16
-  1.00381374723, -0.33460458241, 0.08365114560, // 17 (constraint)
+  0.01411467401, -0.00470489134, 0.00117622283, // 17 (constraint)
  +9.8,+5.8,+7.8, // 18
-  0.90493237602, -0.32577565537, 0.10859188512, // 19 (constraint)
+  0.01544188788, -0.00555907964, 0.00185302655, // 19 (constraint)
  +9.0,+5.0,+7.0, // 20
-  0.78469841324, -0.30180708202, 0.12072283281, // 21 (constraint)
+  0.01656103940, -0.00636963054, 0.00254785222, // 21 (constraint)
 };
 
 const double pylith::faults::CohesiveKinDataHex8::_valsJacobian[] = {
@@ -1395,6 +1418,7 @@ pylith::faults::CohesiveKinDataHex8::CohesiveKinDataHex8(void)
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
+  valsResidualIncr = const_cast<double*>(_valsResidualIncr);
   valsJacobian = const_cast<double*>(_valsJacobian);
   pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  

@@ -135,6 +135,14 @@ class Explicit(Formulation):
     bindings.completeSection(self.mesh.cppHandle, residual)
     self._info.log("Solving equations.")
     self.solver.solve(self.fields.getReal("dispTpdt"), self.jacobian, residual)
+
+    # BEGIN TEMPORARY
+    #bindings.sectionView(residual, "RHS");
+    #bindings.sectionView(self.fields.getReal("dispTpdt"), "SOLUTION");
+    #import pylith.utils.petsc as petscbindings
+    #print "JACOBIAN"
+    #petscbindings.mat_view(self.jacobian)
+    # END TEMPORARY
     return
 
 
