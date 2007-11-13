@@ -151,6 +151,10 @@ class Explicit(Formulation):
     Hook for doing stuff after advancing time step.
     """
     self.fields.shiftHistory()
+    if not self.solver.guessZero:
+      import pylith.topology.topology as bindings
+      bindings.copyRealSection(self.fields.getReal("dispTpdt"),
+                               self.fields.getReal("dispT"))
 
     self._info.log("Updating integrators states.")
     for integrator in self.integrators:
