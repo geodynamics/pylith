@@ -63,6 +63,7 @@ private:
   static const int _constraintVertices[]; ///< Expected points for constraint vertices
   static const int _constraintCells[]; ///< Expected cells for constraint vertices
   static const double _valsResidual[]; ///< Expected values from residual calculation.
+  static const double _valsResidualIncr[]; ///< Expected values from residual calculation using solution increment.
   static const double _valsJacobian[]; ///< Expected values from Jacobian calculation.
   static const double _pseudoStiffness; ///< Fake stiffness for conditioning
   static const int _numConstraintVert; ///< Number of constraint vertices

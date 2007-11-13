@@ -24,8 +24,8 @@
  * one side of the fault, the corresponding entries on the other side
  * of the fault, and then the corresponding constraint vertices.
  *
- * [ K  aC^T ] [ U  ] = [ Fe ]
- * [ C   0   ] [ Fi ] = [ D  ]
+ * [ K  aC^T ] [ U    ] = [ Fe ]
+ * [ C   0   ] [ Fi/a ] = [ D  ]
  *
  * where K is the stiffness matrix, C is the matrix of Lagrange
  * constraints, U is the displacement field, Fe is the vector of

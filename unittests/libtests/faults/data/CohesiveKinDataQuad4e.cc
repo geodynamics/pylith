@@ -149,6 +149,24 @@ const int pylith::faults::CohesiveKinDataQuad4e::_constraintCells[] = {
 const double pylith::faults::CohesiveKinDataQuad4e::_valsResidual[] = {
   0.0,  0.0,
   0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.0,  0.0,
+  0.989535448086, 0.0824612873405, // 14
+  0.0,  0.0,
+  1.05057813143, 0.0456773100622, // 16
+  0.0,  0.0,
+  0.90435792846,  0.10852295130, // 18
+};
+
+const double pylith::faults::CohesiveKinDataQuad4e::_valsResidualIncr[] = {
+  0.0,  0.0,
+  0.0,  0.0,
  -6.1, -4.1, // 6
  -6.3, -4.3, // 7
   0.0,  0.0,
@@ -157,11 +175,11 @@ const double pylith::faults::CohesiveKinDataQuad4e::_valsResidual[] = {
  -6.5, -4.5, // 11
   0.0,  0.0,
  +6.1, +4.1, // 13
-  0.989535448086, 0.0824612873405, // 14
+  0.01401378019, 0.00116781502, // 14
  +6.3, +4.3, // 15
-  1.05057813143, 0.0456773100622, // 16
+  0.01257113624, 0.00054657114, // 16
  +6.5, +4.5, // 17
-  0.90435792846,  0.10852295130, // 18
+  0.01543608228, 0.00185232987, // 18
 };
 
 const double pylith::faults::CohesiveKinDataQuad4e::_valsJacobian[] = {
@@ -642,6 +660,7 @@ pylith::faults::CohesiveKinDataQuad4e::CohesiveKinDataQuad4e(void)
   constraintVertices = const_cast<int*>(_constraintVertices);
   constraintCells = const_cast<int*>(_constraintCells);
   valsResidual = const_cast<double*>(_valsResidual);
+  valsResidualIncr = const_cast<double*>(_valsResidualIncr);
   valsJacobian = const_cast<double*>(_valsJacobian);
   pseudoStiffness = _pseudoStiffness;
   numConstraintVert = _numConstraintVert;  
