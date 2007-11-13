@@ -51,7 +51,7 @@ namespace spatialdata {
   } // geocoords
 } // spatialdata
 
-/// Namespace for spatialdata package
+/// Namespace for Sieve package.
 namespace ALE {
   class Mesh;
   template<class T> class Obj;
