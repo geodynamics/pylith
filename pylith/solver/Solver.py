@@ -37,12 +37,16 @@ class Solver(Component):
     ## Python object for managing Solver facilities and properties.
     ##
     ## \b Properties
-    ## @li None
+    ## @li \b initial_guess_zero Use zero for initial guess.
     ##
     ## \b Facilities
     ## @li None
 
     import pyre.inventory
+
+    guessZero = pyre.inventory.bool("initial_guess_zero", default=True)
+    guessZero.meta['tip'] = "Use zero for initial guess."
+    
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
@@ -55,6 +59,15 @@ class Solver(Component):
     return
 
 
+  def initialize(self, mesh, field):
+    """
+    Initialize solver.
+    """
+    assert(None != self.cppHandle)
+    self.cppHandle.setInitialGuessNonzero(not self.guessZero)
+    return
+
+
   # PRIVATE METHODS /////////////////////////////////////////////////////
 
   def _configure(self):
@@ -62,6 +75,7 @@ class Solver(Component):
     Set members based using inventory.
     """
     Component._configure(self)
+    self.guessZero = self.inventory.guessZero
     return
 
 

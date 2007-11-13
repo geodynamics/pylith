@@ -203,6 +203,35 @@ cdef class Solver:
     return
 
 
+  def setInitialGuessNonzero(self, value):
+    """
+    Set initial guess nonzero flag.
+    (true if nonzero initial guess, false if initial guess should be zero).
+    """
+    # create shim for method 'setInitialGuessNonzero'
+    #embed{ void Solver_setInitialGuessNonzero(void* objVptr, int value)
+    try {
+      assert(0 != objVptr);
+      KSP* ksp = (KSP*) objVptr;
+      PetscTruth flag = (value) ? PETSC_TRUE : PETSC_FALSE;
+      KSPSetInitialGuessNonzero(*ksp, flag);
+    } catch (const std::exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.what()));
+    } catch (const ALE::Exception& err) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      const_cast<char*>(err.msg().c_str()));
+    } catch (...) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Caught unknown C++ exception.");
+    } // try/catch      
+    #}embed
+
+    Solver_setInitialGuessNonzero(self.thisptr, value)
+    return
+    
+
+
   def _createHandle(self):
     """
     Wrap pointer to C++ object in PyCObject.

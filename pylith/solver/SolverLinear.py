@@ -56,6 +56,7 @@ class SolverLinear(Solver):
     Initialize solver.
     """
     self._createCppHandle()
+    Solver.initialize(self, mesh, field)
     self.cppHandle.initialize(mesh.cppHandle, field)
     return
 

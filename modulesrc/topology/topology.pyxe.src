@@ -964,6 +964,38 @@ def completeSection(mesh, section):
 
 
 # ----------------------------------------------------------------------
+def copyRealSection(dst, src):
+  """
+  Copy values from one section into another, ignoring constraints.
+  """
+  # create shim for Field::copy()
+  #embed{ void Section_copyRealSection(void* objVptr, void* srcVptr)
+  try {
+    ALE::Obj<pylith::real_section_type>* dst =
+      (ALE::Obj<pylith::real_section_type>*) objVptr;
+    assert(!dst->isNull());
+    ALE::Obj<pylith::real_section_type>* src =
+      (ALE::Obj<pylith::real_section_type>*) srcVptr;
+    assert(!src->isNull());
+    (*dst)->zero();
+    (*dst)->axpy(1.0, *src);
+  } catch (const std::exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.what()));
+  } catch (const ALE::Exception& err) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    const_cast<char*>(err.msg().c_str()));
+  } catch (...) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    "Caught unknown C++ exception.");
+  } // try/catch
+  #}embed
+  Section_copyRealSection(PyCObject_AsVoidPtr(dst),
+                          PyCObject_AsVoidPtr(src))
+  return
+
+
+# ----------------------------------------------------------------------
 def addRealSections(dst, srcA, srcB):
   """
   Add two sections, storing result in third section.
