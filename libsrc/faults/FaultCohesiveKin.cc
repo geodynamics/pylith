@@ -627,7 +627,7 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(
 	<< "'.";
     throw std::runtime_error(msg.str());
   } // if
-  const int numCorners = _quadrature->numBasis();
+  const int numCorners = _quadrature->refGeometry().numCorners();
   const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
     mesh->getLabelStratum("material-id", id());
   assert(!cells.isNull());

@@ -16,6 +16,7 @@
 
 #include "Quadrature.hh" // USES Quadrature
 #include "Elasticity.hh" // USES Elasticity
+#include "CellGeometry.hh" // USES CellGeometry
 
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
@@ -499,7 +500,7 @@ pylith::feassemble::ElasticityExplicit::verifyConfiguration(
 	<< ".";
     throw std::runtime_error(msg.str());
   } // if
-  const int numCorners = _quadrature->numBasis();
+  const int numCorners = _quadrature->refGeometry().numCorners();
   const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
     mesh->getLabelStratum("material-id", _material->id());
   assert(!cells.isNull());
