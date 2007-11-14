@@ -5,10 +5,10 @@ SimpleDB {
   value-units =  s
   num-locs = 1
   data-dim = 0
-  space-dim = 2
+  space-dim = 3
   cs-data = cartesian {
     to-meters = 1.0
-    space-dim = 2
+    space-dim = 3
   }
 }
-0.0  0.0   0.075
+0.0 0.0 0.0   1.2
