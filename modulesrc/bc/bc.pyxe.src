@@ -449,9 +449,9 @@ cdef class AbsorbingDampers(BoundaryCondition):
     #}embed
     #embed{ void AbsorbingDampers_setupLogging(int *cookie, int *residualEvent, int *jacobianEvent, int* updateStateEvent)
       PetscLogClassRegister(cookie, "FE Assembler");
-      PetscLogEventRegister(residualEvent, "IntegrateResidual", *cookie);
-      PetscLogEventRegister(jacobianEvent, "IntegrateJacobian", *cookie);
-      PetscLogEventRegister(updateStateEvent, "IntegrateUpdateState", *cookie);
+      PetscLogEventRegister(residualEvent, "IntegrateResidual AB", *cookie);
+      PetscLogEventRegister(jacobianEvent, "IntegrateJacobian AB", *cookie);
+      PetscLogEventRegister(updateStateEvent, "IntegrateUpdateState AB", *cookie);
     #}embed
     BoundaryCondition.__init__(self)
     self.thisptr = AbsorbingDampers_constructor()
