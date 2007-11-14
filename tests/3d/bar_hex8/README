@@ -1,0 +1,9 @@
+3-D dynamic shear dislocation in bar with hex8 cells.
+
+See geometry.jou for geometry.
+
+Absorbing boundary conditions at +x and -x faces.
+
+Kinematic fault condition at x = 0.0.
+
+All non-fault vertices are pinned except in direction of fault motion.
