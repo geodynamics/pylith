@@ -37,6 +37,10 @@ namespace pylith {
   namespace feassemble {
     class Quadrature; // HOLDSA Quadrature
   } // feassemble
+
+  namespace topology {
+    class FieldsManager; // USES FieldsManager
+  } // topology
 } // pylith
 
 /// C++ unit testing for Neumann.
@@ -79,9 +83,11 @@ private :
    *
    * @param mesh PETSc mesh to initialize
    * @param bc Neumann boundary condition to initialize.
+   * @param fields Solution fields.
    */
   void _initialize(ALE::Obj<ALE::Mesh>* mesh,
-		   Neumann* const bc) const;
+		   Neumann* const bc,
+		   topology::FieldsManager* fields) const;
 
 }; // class TestNeumann
 

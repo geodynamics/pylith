@@ -38,30 +38,33 @@ public:
 
   /// @name Quadrature information
   //@{
-  int spaceDim; ///< Spatial dimension for the problem.
-  int cellDim; ///< Dimension of surface cells.
   int numBasis; ///< Number of basis functions for surface cells.
   int numQuadPts; ///< Number of quadrature points per boundary cell.
   double* quadPts; ///< Coordinates of quadrature points in ref cell.
   double* quadWts; ///< Weights of quadrature points.
   double* basis; ///< Cell basis functions at quad points.
-  double* basisDeriv; ///< Derivatives of cell basis functions at quad points.
-  double* verticesRef; ///< Coordinates of vertices in ref cell (dual basis).
+  double* basisDerivRef; ///< Derivatives of basis functions at quad points.
   //@}
 
-  /// @name BC information
+  /// @name Parameter information
   //@{
+  char* spatialDBFilename; ///< Filename of simple spatial database.
   int id; ///< Boundary condition identifier
   char* label; ///< Label for boundary condition group
-  char* dbFilename; ///< Filename of simple spatial database.
+  //@}
+
+  /// @name Boundary mesh information
+  //@{
+  int spaceDim; ///< Number of dimensions of vertex coordinates
+  int cellDim; ///< Dimension of surface cells.
+  int numBoundaryVertices; ///< Number of boundary vertices in the mesh.
+  int numBoundaryCells; ///< Number of cells on Neumann boundary.
+  int numCorners; ///< Number of vertices for each boundary cell.
+  double* cellVertices; ///< Vertex coordinates for boundary cells.
   //@}
 
   /// @name Calculated values.
   //@{
-  int numBoundaryCells; ///< Expected number of cells on Neumann boundary.
-  int numVertices; ///< Expected number of vertices in the mesh.
-  int* numCorners; ///< Expected number of vertices for each boundary cell.
-  int* cells; ///< Expected array of vertices defining each boundary cell.
   double* tractionsCell; ///< Expected traction values at quadrature points.
   double* valsResidual; ///< Expected residual at each vertex.
   //@}

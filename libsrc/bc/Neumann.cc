@@ -162,7 +162,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
   // Containers for database query results and quadrature coordinates in
   // reference geometry.
   double_array tractionDataLocal(spaceDim);
-  double_array quadPtRef(spaceDim);
+  double_array quadPtRef(cellDim);
   const double_array& quadPtsRef = _quadrature->quadPtsRef();
 
   // Container for cell tractions rotated to global coordinates.
@@ -183,7 +183,8 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
     // std::cout << "c_iter:  " << *c_iter << std::endl;
     _quadrature->computeGeometry(_boundaryMesh, coordinates, *c_iter);
     const double_array& quadPts = _quadrature->quadPts();
-    _boundaryMesh->restrict(coordinates, *c_iter, &cellVertices[0], cellVertices.size());
+    _boundaryMesh->restrict(coordinates, *c_iter,
+			    &cellVertices[0], cellVertices.size());
     /* Debugging stuff
     std::cout << "cellVertices:  " << std::endl;
     for(int iTest = 0; iTest < numBasis; ++iTest) {
@@ -193,9 +194,10 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       std::cout << std::endl;
     } // for
     */
-    cellTractionsGlobal = 0.0;
 
-    for(int iQuad = 0, iRef=0, iSpace=0; iQuad < numQuadPts; ++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
+    cellTractionsGlobal = 0.0;
+    for(int iQuad = 0, iRef=0, iSpace=0; iQuad < numQuadPts;
+	++iQuad, iRef+=cellDim, iSpace+=spaceDim) {
       // Get traction vector in local coordinate system at quadrature point
       const int err = _db->query(&tractionDataLocal[0], spaceDim,
 				 &quadPts[iSpace], spaceDim, cs);
@@ -222,7 +224,7 @@ pylith::bc::Neumann::initialize(const ALE::Obj<ALE::Mesh>& mesh,
       for(int iDim = 0; iDim < spaceDim; ++iDim) {
 	for(int jDim = 0; jDim < spaceDim; ++jDim)
 	  cellTractionsGlobal[iDim+iSpace] +=
-	    orientation[iDim*spaceDim+jDim] * tractionDataLocal[jDim];
+	    orientation[jDim*spaceDim+iDim] * tractionDataLocal[jDim];
       } // for
     } // for
 
