@@ -36,30 +36,32 @@ public:
 // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
+  static const char* _meshFilename;
+
   // Quadrature information
-  static const char* _meshFilename; ///< Filename of input mesh.
-  static const int _spaceDim; ///< Dimension of mesh.
-  static const int _cellDim; ///< Dimension of surface cells.
-  static const int _numBasis; ///< Number of basis functions for surface cells.
-  static const int _numQuadPts; ///< Number of quadrature points per boundary cell.
-  static const double _quadPts[]; ///< Coordinates of quadrature points in ref cell.
-  static const double _quadWts[]; ///< Weights of quadrature points.
-  static const double _basis[]; ///< Cell basis functions at quad points.
-  static const double _basisDeriv[]; ///< Derivatives of cell basis functions at quad points.
-  static const double _verticesRef[]; ///< Coordinates of vertices in ref cell (dual basis).
+  static const int _numBasis;
+  static const int _numQuadPts;
+  static const double _quadPts[];
+  static const double _quadWts[];
+  static const double _basis[];
+  static const double _basisDerivRef[];
 
   // BC information
-  static const int _id; ///< Boundary condition identifier
-  static const char* _label; /// Label for boundary condition group
-  static const char* _dbFilename; ///< Filename of simple spatial database.
+  static const char* _spatialDBFilename;
+  static const int _id;
+  static const char* _label;
+
+  // Mesh information
+  static const int _spaceDim;
+  static const int _cellDim;
+  static const int _numBoundaryVertices;
+  static const int _numBoundaryCells;
+  static const int _numCorners;
+  static const double _cellVertices[];
 
   // Calculated values.
-  static const int _numBoundaryCells; ///< Expected number of cells on Neumann boundary.
-  static const int _numVertices; ///< Expected number of vertices in the mesh.
-  static const int _numCorners[]; ///< Expected number of vertices for each boundary cell.
-  static const int _cells[]; ///< Expected array of vertices defining each boundary cell.
-  static const double _tractionsCell[]; ///< Expected traction values at quadrature points.
-  static const double _valsResidual[]; ///< Expected residual at each vertex.
+  static const double _tractionsCell[];
+  static const double _valsResidual[];
 
 };
 
