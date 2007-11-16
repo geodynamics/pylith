@@ -131,8 +131,16 @@ pylith::feassemble::TestElasticityExplicit::testUseSolnIncr(void)
   materials::ElasticIsotropic3D material;
   integrator.material(&material);
   CPPUNIT_ASSERT_EQUAL(false, integrator._useSolnIncr);
-  integrator.useSolnIncr(true);
-  CPPUNIT_ASSERT_EQUAL(true, integrator._useSolnIncr);  
+  try {
+    integrator.useSolnIncr(true);
+
+    // Should have thrown exception, so don't make it here.
+    CPPUNIT_ASSERT(false);
+  } catch (const std::logic_error& err) {
+    // Expect logic error so don't do anything.
+  } catch (...) {
+    CPPUNIT_ASSERT(false);
+  } // try/catch
 } // testUseSolnIncr
 
 // ----------------------------------------------------------------------

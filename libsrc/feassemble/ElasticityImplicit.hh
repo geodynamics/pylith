@@ -47,17 +47,13 @@
 #if !defined(pylith_feassemble_elasticityimplicit_hh)
 #define pylith_feassemble_elasticityimplicit_hh
 
-#include "Integrator.hh" // ISA Integrator
+#include "IntegratorElasticity.hh" // ISA IntegratorElasticity
 #include "pylith/utils/array.hh" // USES std::vector, double_array
 
 namespace pylith {
   namespace feassemble {
     class ElasticityImplicit;
     class TestElasticityImplicit;
-  } // feassemble
-
-  namespace materials {
-    class ElasticMaterial;
   } // feassemble
 } // pylith
 
@@ -70,7 +66,7 @@ namespace spatialdata {
   } // geocoords
 } // spatialdata
 
-class pylith::feassemble::ElasticityImplicit : public Integrator
+class pylith::feassemble::ElasticityImplicit : public IntegratorElasticity
 { // ElasticityImplicit
   friend class TestElasticityImplicit; // unit testing
 
@@ -83,23 +79,11 @@ public :
   /// Destructor
   ~ElasticityImplicit(void);
 
-  /** Set material.
-   *
-   * @param m Elastic material.
-   */
-  void material(materials::ElasticMaterial* m);
-
   /** Set time step for advancing from time t to time t+dt.
    *
    * @param dt Time step
    */
   void timeStep(const double dt);
-
-  /** Determine whether we need to recompute the Jacobian.
-   *
-   * @returns True if Jacobian needs to be recomputed, false otherwise.
-   */
-  bool needNewJacobian(void);
 
   /** Set flag for setting constraints for total field solution or
    *  incremental field solution.
@@ -140,61 +124,6 @@ public :
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
   
-  /** Update state variables as needed.
-   *
-   * @param t Current time
-   * @param field Current solution field.
-   * @param mesh Finite-element mesh
-   */
-  void updateState(const double t,
-		   const ALE::Obj<real_section_type>& field,
-		   const ALE::Obj<Mesh>& mesh);
-  
-  /** Verify configuration is acceptable.
-   *
-   * @param mesh Finite-element mesh
-   */
-  void verifyConfiguration(const ALE::Obj<Mesh>& mesh);
-
-// PRIVATE METHODS //////////////////////////////////////////////////////
-private :
-
-  /** Integrate elasticity term in residual for 1-D cells.
-   *
-   * @param stress Stress tensor for cell at quadrature points.
-   */
-  void _elasticityResidual1D(const std::vector<double_array>& stress);
-
-  /** Integrate elasticity term in residual for 2-D cells.
-   *
-   * @param stress Stress tensor for cell at quadrature points.
-   */
-  void _elasticityResidual2D(const std::vector<double_array>& stress);
-
-  /** Integrate elasticity term in residual for 3-D cells.
-   *
-   * @param stress Stress tensor for cell at quadrature points.
-   */
-  void _elasticityResidual3D(const std::vector<double_array>& stress);
-
-  /** Integrate elasticity term in Jacobian for 1-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   */
-  void _elasticityJacobian1D(const std::vector<double_array>& elasticConsts);
-
-  /** Integrate elasticity term in Jacobian for 2-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   */
-  void _elasticityJacobian2D(const std::vector<double_array>& elasticConsts);
-
-  /** Integrate elasticity term in Jacobian for 3-D cells.
-   *
-   * @param elasticConsts Matrix of elasticity constants at quadrature points.
-   */
-  void _elasticityJacobian3D(const std::vector<double_array>& elasticConsts);
-
 // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
@@ -208,9 +137,6 @@ private :
 private :
 
   double _dtm1; ///< Time step for t-dt1 -> t
-
-  /// Elastic material associated with integrator
-  materials::ElasticMaterial* _material;
 
   // Optimization
   std::map<int, int> _dTags; ///< Tags indexing dispTBctpdt field

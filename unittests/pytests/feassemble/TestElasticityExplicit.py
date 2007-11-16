@@ -120,7 +120,11 @@ class TestElasticityExplicit(unittest.TestCase):
     Test useSolnIncr().
     """
     (mesh, integrator, fields) = self._initialize()
-    integrator.useSolnIncr(True)
+    try:
+      integrator.useSolnIncr(True)
+      self.failIf(True)
+    except:
+      self.failIf(False)
     return
 
 

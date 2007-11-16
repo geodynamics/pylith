@@ -52,6 +52,7 @@ libpylith_la_SOURCES = \
 	feassemble/GeometryQuad3D.cc \
 	feassemble/GeometryHex3D.cc \
 	feassemble/Integrator.cc \
+	feassemble/IntegratorElasticity.cc \
 	feassemble/Quadrature.cc \
 	feassemble/Quadrature0D.cc \
 	feassemble/Quadrature1D.cc \
