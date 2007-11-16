@@ -13,15 +13,18 @@
 noinst_DATA = \
 	line2.mesh \
 	line2.spatialdb \
+	line2-tractions.spatialdb \
 	elasticstrain1d.spatialdb \
 	tri3.mesh \
 	tri3.spatialdb \
 	tri3_b.spatialdb \
+	tri3-tractions.spatialdb \
 	elasticplanestrain.spatialdb \
 	quad4.mesh \
 	quad4.spatialdb \
 	tet4.mesh \
 	tet4.spatialdb \
+	tet4-tractions.spatialdb \
 	elasticisotropic3d.spatialdb \
 	hex8.mesh \
 	hex8.spatialdb \
