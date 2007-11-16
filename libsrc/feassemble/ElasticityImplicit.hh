@@ -212,9 +212,9 @@ private :
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
 
-  /// Optimization
-  std::map<int, int> _dTags; // dispTBctpdt tags
-  std::map<int, int> _rTags; // residual tags
+  // Optimization
+  std::map<int, int> _dTags; ///< Tags indexing dispTBctpdt field
+  std::map<int, int> _rTags; ///< tags indexing residual field
 
 }; // ElasticityImplicit
 

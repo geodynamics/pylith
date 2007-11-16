@@ -29,6 +29,8 @@
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
+#define FASTER
+
 // ----------------------------------------------------------------------
 // Constructor
 pylith::feassemble::ElasticityExplicit::ElasticityExplicit(void) :
@@ -145,8 +147,6 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   const ALE::Obj<real_section_type>& coordinates = 
     mesh->getRealSection("coordinates");
   assert(!coordinates.isNull());
-  const ALE::Obj<real_section_type>& dispTpdt = fields->getHistoryItem(0);
-  assert(!dispTpdt.isNull());
   const ALE::Obj<real_section_type>& dispT = fields->getHistoryItem(1);
   assert(!dispT.isNull());
   const ALE::Obj<real_section_type>& dispTmdt = fields->getHistoryItem(2);
@@ -180,7 +180,6 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   // Allocate vectors for cell values.
   _initCellVector();
   const int cellVecSize = numBasis*spaceDim;
-  double_array dispTpdtCell(cellVecSize);
   double_array dispTCell(cellVecSize);
   double_array dispTmdtCell(cellVecSize);
 
@@ -192,27 +191,21 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   } // for
 
 #ifdef FASTER
-  if (_dispTpdtTags.find(_material->id()) == _dispTpdtTags.end()) {
-    _dispTpdtTags[_material->id()] = 
-      mesh->calculateCustomAtlas(dispTpdt, cells);
-  } // if
-  const int dispTpdtTag = _dispTpdtTags[_material->id()];
-
   if (_dispTTags.find(_material->id()) == _dispTTags.end()) {
     _dispTTags[_material->id()] = 
-      mesh->copyCustomAtlas(dispTpdt, _dispTpdtTags[_material->id()]);
+      mesh->calculateCustomAtlas(dispT, cells);
   } // if
   const int dispTTag = _dispTTags[_material->id()];
 
   if (_dispTmdtTags.find(_material->id()) == _dispTmdtTags.end()) {
     _dispTmdtTags[_material->id()] = 
-      mesh->copyCustomAtlas(dispTpdt, _dispTpdtTags[_material->id()]);
+      dispTmdt->copyCustomAtlas(dispT, _dispTTags[_material->id()]);
   } // if
-  const int dispTTag = _dispTTags[_material->id()];
+  const int dispTmdtTag = _dispTmdtTags[_material->id()];
 
   if (_residualTags.find(_material->id()) == _residualTags.end()) {
     _residualTags[_material->id()] = 
-      mesh->copyCustomAtlas(dispTpdt, _dispTpdtTags[_material->id()]);
+      residual->copyCustomAtlas(dispT, _dispTTags[_material->id()]);
   } // if
   const int residualTag = _residualTags[_material->id()];
 #endif
@@ -231,14 +224,11 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
     _resetCellVector();
 
 #ifdef FASTER
-    mesh->restrict(dispTpdt, dispTpdtTag, c_index, &dispTpdtCell[0], 
+    mesh->restrict(dispT, dispTTag, c_index, &dispTCell[0], 
 		   cellVecSize);
-    mesh->restrict(dispTpdt, dispTTag, c_index, &dispTCell[0], 
-		   cellVecSize);
-    mesh->restrict(dispTpdt, dispTmdtTag, c_index, &dispTmdtCell[0], 
+    mesh->restrict(dispTmdt, dispTmdtTag, c_index, &dispTmdtCell[0], 
 		   cellVecSize);
 #else
-    mesh->restrict(dispTpdt, *c_iter, &dispTpdtCell[0], cellVecSize);
     mesh->restrict(dispT, *c_iter, &dispTCell[0], cellVecSize);
     mesh->restrict(dispTmdt, *c_iter, &dispTmdtCell[0], cellVecSize);
 #endif
