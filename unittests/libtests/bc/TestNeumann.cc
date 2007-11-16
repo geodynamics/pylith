@@ -141,13 +141,16 @@ pylith::bc::TestNeumann::testInitialize(void)
     bc._boundaryMesh->restrict(bc._tractionsGlobal, *c_iter,
 			    &tractionsCell[0], tractionsCell.size());
 
+    // std::cout << "Tractions at quadrature points: " << std::endl;
     for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
       for (int iDim =0; iDim < spaceDim; ++iDim) {
+        // std::cout << "  " << tractionsCell[iQuad*spaceDim+iDim];
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(_data->tractionsCell[index],
 				     tractionsCell[iQuad*spaceDim+iDim],
 				     tolerance);
 	++index;
       } // for
+      // std::cout << std::endl;
     } // for
   } // for
 
@@ -191,7 +194,7 @@ pylith::bc::TestNeumann::testIntegrateResidual(void)
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, vals[i]/valsE[i], tolerance);
     else
       CPPUNIT_ASSERT_DOUBLES_EQUAL(valsE[i], vals[i], tolerance);
-
+  
 } // testIntegrateResidual
 
 // ----------------------------------------------------------------------

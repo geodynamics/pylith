@@ -38,6 +38,9 @@ testbc_SOURCES = \
 	TestDirichletMulti.cc \
 	TestDirichletMultiTri3.cc \
 	TestNeumann.cc \
+	TestNeumannLine2.cc \
+	TestNeumannTri3.cc \
+	TestNeumannTet4.cc \
 	TestNeumannHex8.cc \
 	test_bc.cc
 
@@ -59,6 +62,9 @@ noinst_HEADERS = \
 	TestDirichletMulti.hh \
 	TestDirichletMultiTri3.hh \
 	TestNeumann.hh \
+	TestNeumannLine2.hh \
+	TestNeumannTri3.hh \
+	TestNeumannTet4.hh \
 	TestNeumannHex8.hh
 
 # Source files associated with testing data
@@ -79,6 +85,9 @@ testbc_SOURCES += \
 	data/DirichletDataMulti.cc \
 	data/DirichletDataMultiTri3.cc \
 	data/NeumannData.cc \
+	data/NeumannDataLine2.cc \
+	data/NeumannDataTri3.cc \
+	data/NeumannDataTet4.cc \
 	data/NeumannDataHex8.cc
 
 noinst_HEADERS += \
@@ -98,6 +107,9 @@ noinst_HEADERS += \
 	data/DirichletDataMulti.hh \
 	data/DirichletDataMultiTri3.hh \
 	data/NeumannData.hh \
+	data/NeumannDataLine2.hh \
+	data/NeumannDataTri3.hh \
+	data/NeumannDataTet4.hh \
 	data/NeumannDataHex8.hh
 
 AM_CPPFLAGS = $(PETSC_SIEVE_FLAGS) $(PETSC_INCLUDE)
