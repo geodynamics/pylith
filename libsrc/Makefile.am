@@ -36,7 +36,6 @@ libpylith_la_SOURCES = \
 	faults/SlipTimeFn.cc \
 	feassemble/CellGeometry.cc \
 	feassemble/Constraint.cc \
-	feassemble/Elasticity.cc \
 	feassemble/ElasticityExplicit.cc \
 	feassemble/ElasticityImplicit.cc \
 	feassemble/GeometryPoint1D.cc \

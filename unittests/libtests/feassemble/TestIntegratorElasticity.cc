@@ -12,20 +12,20 @@
 
 #include <portinfo>
 
-#include "TestElasticity.hh" // Implementation of class methods
+#include "TestIntegratorElasticity.hh" // Implementation of class methods
 
-#include "pylith/feassemble/Elasticity.hh" // USES Elasticity
+#include "pylith/feassemble/IntegratorElasticity.hh" // USES IntegratorElasticity
 
 #include <math.h> // USES fabs()
 
 #include <stdexcept>
 // ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestElasticity );
+CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegratorElasticity );
 
 // ----------------------------------------------------------------------
 // Test calcTotalStrain1D().
 void
-pylith::feassemble::TestElasticity::testCalcTotalStrain1D(void)
+pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain1D(void)
 { // testCalcTotalStrain1D
   // N0 = 0.5 * (1 - x)
   // N1 = 0.5 * (1 + x)
@@ -51,7 +51,8 @@ pylith::feassemble::TestElasticity::testCalcTotalStrain1D(void)
   double_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
   double_array disp(dispVals, numBasis*dim);
 
-  Elasticity::calcTotalStrain1D(&strain, basisDeriv, disp, numBasis);
+  IntegratorElasticity::_calcTotalStrain1D(&strain, 
+					   basisDeriv, disp, numBasis);
 
   const double tolerance = 1.0e-06;
   CPPUNIT_ASSERT_EQUAL(numQuadPts, int(strain.size()));
@@ -66,7 +67,7 @@ pylith::feassemble::TestElasticity::testCalcTotalStrain1D(void)
 // ----------------------------------------------------------------------
 // Test calcTotalStrain2D().
 void
-pylith::feassemble::TestElasticity::testCalcTotalStrain2D(void)
+pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain2D(void)
 { // testCalcTotalStrain2D
   // N0 = x
   // N1 = y
@@ -103,7 +104,8 @@ pylith::feassemble::TestElasticity::testCalcTotalStrain2D(void)
   double_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
   double_array disp(dispVals, numBasis*dim);
 
-  Elasticity::calcTotalStrain2D(&strain, basisDeriv, disp, numBasis);
+  IntegratorElasticity::_calcTotalStrain2D(&strain, 
+					   basisDeriv, disp, numBasis);
 
   const double tolerance = 1.0e-06;
   CPPUNIT_ASSERT_EQUAL(numQuadPts, int(strain.size()));
@@ -118,7 +120,7 @@ pylith::feassemble::TestElasticity::testCalcTotalStrain2D(void)
 // ----------------------------------------------------------------------
 // Test calcTotalStrain3D().
 void
-pylith::feassemble::TestElasticity::testCalcTotalStrain3D(void)
+pylith::feassemble::TestIntegratorElasticity::testCalcTotalStrain3D(void)
 { // testCalcTotalStrain3D
   // N0 = x
   // N1 = y
@@ -165,7 +167,8 @@ pylith::feassemble::TestElasticity::testCalcTotalStrain3D(void)
   double_array basisDeriv(basisDerivVals, numQuadPts*numBasis*dim);
   double_array disp(dispVals, numBasis*dim);
 
-  Elasticity::calcTotalStrain3D(&strain, basisDeriv, disp, numBasis);
+  IntegratorElasticity::_calcTotalStrain3D(&strain, 
+					   basisDeriv, disp, numBasis);
 
   const double tolerance = 1.0e-06;
   CPPUNIT_ASSERT_EQUAL(numQuadPts, int(strain.size()));

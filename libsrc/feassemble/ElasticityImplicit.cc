@@ -15,7 +15,6 @@
 #include "ElasticityImplicit.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
-#include "Elasticity.hh" // USES Elasticity
 #include "CellGeometry.hh" // USES CellGeometry
 
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
@@ -112,23 +111,26 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   // Set variables dependent on dimension of cell
   const int cellDim = _quadrature->cellDim();
   int tensorSize = 0;
-  Elasticity::totalStrain_fn_type calcTotalStrainFn;
+  totalStrain_fn_type calcTotalStrainFn;
   elasticityResidual_fn_type elasticityResidualFn;
   if (1 == cellDim) {
     tensorSize = 1;
     elasticityResidualFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityResidual1D;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain1D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
   } else if (2 == cellDim) {
     tensorSize = 3;
     elasticityResidualFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityResidual2D;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain2D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
     tensorSize = 6;
     elasticityResidualFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityResidual3D;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain3D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
   } else
     assert(0);
 
@@ -154,16 +156,17 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   const int spaceDim = _quadrature->spaceDim();
 
 #ifdef FASTER
-  int c_index = 0;
-
-  if (_dTags.find(_material->id()) == _dTags.end()) {
-    _dTags[_material->id()] = mesh->calculateCustomAtlas(dispTBctpdt, cells);
-  }
-  if (_rTags.find(_material->id()) == _rTags.end()) {
-    _rTags[_material->id()] = residual->copyCustomAtlas(dispTBctpdt, _dTags[_material->id()]);
-  }
-  const int dTag = _dTags[_material->id()];
-  const int rTag = _rTags[_material->id()];
+  if (_dispTags.find(_material->id()) == _dispTags.end()) {
+    _dispTags[_material->id()] = 
+      mesh->calculateCustomAtlas(dispTBctpdt, cells);
+  } // if
+  const int dispTBctpdtTag = _dispTags[_material->id()];
+  
+  if (_residualTags.find(_material->id()) == _residualTags.end()) {
+    _residualTags[_material->id()] = 
+      residual->copyCustomAtlas(dispTBctpdt, _dispTags[_material->id()]);
+  } // if
+  const int residualTag = _residualTags[_material->id()];
 #endif
   // Precompute the geometric and function space information
   _quadrature->precomputeGeometry(mesh, coordinates, cells);
@@ -183,6 +186,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
   PetscLogEventEnd(setupEvent,0,0,0,0);
 
   // Loop over cells
+  int c_index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
        ++c_iter, ++c_index) {
@@ -202,7 +206,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // Restrict input fields to cell
     PetscLogEventBegin(restrictEvent,0,0,0,0);
 #ifdef FASTER
-    mesh->restrict(dispTBctpdt, dTag, c_index, &dispTBctpdtCell[0], 
+    mesh->restrict(dispTBctpdt, dispTBctpdtTag, c_index, &dispTBctpdtCell[0], 
 		   cellVecSize);
 #else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);
@@ -261,7 +265,7 @@ pylith::feassemble::ElasticityImplicit::integrateResidual(
     // Assemble cell contribution into field
     PetscLogEventBegin(updateEvent,0,0,0,0);
 #ifdef FASTER
-    mesh->updateAdd(residual, rTag, c_index, _cellVector);
+    mesh->updateAdd(residual, residualTag, c_index, _cellVector);
 #else
     mesh->updateAdd(residual, *c_iter, _cellVector);
 #endif
@@ -292,23 +296,26 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   // Set variables dependent on dimension of cell
   const int cellDim = _quadrature->cellDim();
   int tensorSize = 0;
-  Elasticity::totalStrain_fn_type calcTotalStrainFn;
+  totalStrain_fn_type calcTotalStrainFn;
   elasticityJacobian_fn_type elasticityJacobianFn;
   if (1 == cellDim) {
     tensorSize = 1;
     elasticityJacobianFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityJacobian1D;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain1D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
   } else if (2 == cellDim) {
     tensorSize = 3;
     elasticityJacobianFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityJacobian2D;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain2D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
     tensorSize = 6;
     elasticityJacobianFn = 
       &pylith::feassemble::ElasticityImplicit::_elasticityJacobian3D;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain3D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
   } else
     assert(0);
 
@@ -357,10 +364,11 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
   } // for
 
 #ifdef FASTER
-  if (_dTags.find(_material->id()) == _dTags.end()) {
-    _dTags[_material->id()] = mesh->calculateCustomAtlas(dispTBctpdt, cells);
-  }
-  const int dTag = _dTags[_material->id()];
+  if (_dispTags.find(_material->id()) == _dispTags.end()) {
+    _dispTags[_material->id()] = 
+      mesh->calculateCustomAtlas(dispTBctpdt, cells);
+  } // if
+  const int dispTBctpdtTag = _dispTags[_material->id()];
 #endif
 
   // Loop over cells
@@ -379,7 +387,7 @@ pylith::feassemble::ElasticityImplicit::integrateJacobian(
 
     // Restrict input fields to cell
 #ifdef FASTER
-    mesh->restrict(dispTBctpdt, dTag, c_index, &dispTBctpdtCell[0], 
+    mesh->restrict(dispTBctpdt, dispTBctpdtTag, c_index, &dispTBctpdtCell[0], 
 		   cellVecSize);
 #else
     mesh->restrict(dispTBctpdt, *c_iter, &dispTBctpdtCell[0], cellVecSize);

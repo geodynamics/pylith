@@ -139,8 +139,7 @@ private :
   double _dtm1; ///< Time step for t-dt1 -> t
 
   // Optimization
-  std::map<int, int> _dTags; ///< Tags indexing dispTBctpdt field
-  std::map<int, int> _rTags; ///< tags indexing residual field
+  std::map<int, int> _dispTBctpdtTags; ///< Tags indexing dispTBctpdt field.
 
 }; // ElasticityImplicit
 
