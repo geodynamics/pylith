@@ -22,7 +22,6 @@ check_PROGRAMS = testfeassemble
 # Primary source files
 testfeassemble_SOURCES = \
 	TestCellGeometry.cc \
-	TestElasticity.cc \
 	TestElasticityExplicit.cc \
 	TestElasticityExplicit1DLinear.cc \
 	TestElasticityExplicit1DQuadratic.cc \
@@ -50,6 +49,7 @@ testfeassemble_SOURCES = \
 	TestGeometryTet3D.cc \
 	TestGeometryHex3D.cc \
 	TestIntegrator.cc \
+	TestIntegratorElasticity.cc \
 	TestQuadrature.cc \
 	TestQuadrature0D.cc \
 	TestQuadrature1D.cc \
@@ -61,7 +61,6 @@ testfeassemble_SOURCES = \
 
 noinst_HEADERS = \
 	TestCellGeometry.hh \
-	TestElasticity.hh \
 	TestElasticityExplicit.hh \
 	TestElasticityExplicit1DLinear.hh \
 	TestElasticityExplicit1DQuadratic.hh \
@@ -89,6 +88,7 @@ noinst_HEADERS = \
 	TestGeometryTet3D.hh \
 	TestGeometryHex3D.hh \
 	TestIntegrator.hh \
+	TestIntegratorElasticity.hh \
 	TestQuadrature.hh \
 	TestQuadrature0D.hh \
 	TestQuadrature1D.hh \

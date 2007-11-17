@@ -15,12 +15,11 @@
 #include "ElasticityExplicit.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
-#include "Elasticity.hh" // USES Elasticity
 #include "CellGeometry.hh" // USES CellGeometry
 
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
 #include "pylith/topology/FieldsManager.hh" // USES FieldsManager
-#include "pylith/utils/array.hh" // USES double_array
+#include "pylith/utils/array.hh" //   USES double_array
 #include "pylith/utils/macrodefs.h" // USES CALL_MEMBER_FN
 
 #include "petscmat.h" // USES PetscMat
@@ -94,23 +93,26 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   // Set variables dependent on dimension of cell
   const int cellDim = _quadrature->cellDim();
   int tensorSize = 0;
-  Elasticity::totalStrain_fn_type calcTotalStrainFn;
+  totalStrain_fn_type calcTotalStrainFn;
   elasticityResidual_fn_type elasticityResidualFn;
   if (1 == cellDim) {
     tensorSize = 1;
     elasticityResidualFn = 
       &pylith::feassemble::ElasticityExplicit::_elasticityResidual1D;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain1D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
   } else if (2 == cellDim) {
     tensorSize = 3;
     elasticityResidualFn = 
       &pylith::feassemble::ElasticityExplicit::_elasticityResidual2D;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain2D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
     tensorSize = 6;
     elasticityResidualFn = 
       &pylith::feassemble::ElasticityExplicit::_elasticityResidual3D;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain3D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
   } else
     assert(0);
 
@@ -168,21 +170,21 @@ pylith::feassemble::ElasticityExplicit::integrateResidual(
   } // for
 
 #ifdef FASTER
-  if (_dispTTags.find(_material->id()) == _dispTTags.end()) {
-    _dispTTags[_material->id()] = 
+  if (_dispTags.find(_material->id()) == _dispTags.end()) {
+    _dispTags[_material->id()] = 
       mesh->calculateCustomAtlas(dispT, cells);
   } // if
-  const int dispTTag = _dispTTags[_material->id()];
+  const int dispTTag = _dispTags[_material->id()];
 
   if (_dispTmdtTags.find(_material->id()) == _dispTmdtTags.end()) {
     _dispTmdtTags[_material->id()] = 
-      dispTmdt->copyCustomAtlas(dispT, _dispTTags[_material->id()]);
+      dispTmdt->copyCustomAtlas(dispT, _dispTags[_material->id()]);
   } // if
   const int dispTmdtTag = _dispTmdtTags[_material->id()];
 
   if (_residualTags.find(_material->id()) == _residualTags.end()) {
     _residualTags[_material->id()] = 
-      residual->copyCustomAtlas(dispT, _dispTTags[_material->id()]);
+      residual->copyCustomAtlas(dispT, _dispTags[_material->id()]);
   } // if
   const int residualTag = _residualTags[_material->id()];
 #endif

@@ -11,31 +11,31 @@
 //
 
 /**
- * @file unittests/libtests/feassemble/TestElasticity.hh
+ * @file unittests/libtests/feassemble/TestIntegratorElasticity.hh
  *
- * @brief C++ TestElasticity object
+ * @brief C++ TestIntegratorElasticity object
  *
- * C++ unit testing for Elasticity.
+ * C++ unit testing for IntegratorElasticity.
  */
 
-#if !defined(pylith_feassemble_testelasticity_hh)
-#define pylith_feassemble_testelasticity_hh
+#if !defined(pylith_feassemble_testintegratorelasticity_hh)
+#define pylith_feassemble_testintegratorelasticity_hh
 
 #include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
   namespace feassemble {
-    class TestElasticity;
+    class TestIntegratorElasticity;
   } // feassemble
 } // pylith
 
 /// C++ unit testing for Elasticity
-class pylith::feassemble::TestElasticity : public CppUnit::TestFixture
-{ // class TestElasticity
+class pylith::feassemble::TestIntegratorElasticity : public CppUnit::TestFixture
+{ // class TestIntegratorElasticity
 
   // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestElasticity );
+  CPPUNIT_TEST_SUITE( TestIntegratorElasticity );
 
   CPPUNIT_TEST( testCalcTotalStrain1D );
   CPPUNIT_TEST( testCalcTotalStrain2D );
@@ -55,9 +55,9 @@ public :
   /// Test calcTotalStrain3D().
   void testCalcTotalStrain3D(void);
 
-}; // class TestElasticity
+}; // class TestIntegratorElasticity
 
-#endif // pylith_feassemble_testelasticity_hh
+#endif // pylith_feassemble_testintegratorelasticity_hh
 
 
 // End of file 

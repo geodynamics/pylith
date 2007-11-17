@@ -125,7 +125,7 @@ public :
 			 topology::FieldsManager* const fields,
 			 const ALE::Obj<Mesh>& mesh);
 
-// PRIVATE METHODS //////////////////////////////////////////////////////
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
   /// Not implemented.
@@ -140,9 +140,7 @@ private :
   double _dtm1; ///< Time step for t-dt1 -> t
 
   // Optimization
-  std::map<int, int> _dispTTags; ///< Tags indexing dispT field
   std::map<int, int> _dispTmdtTags; ///< Tags indexing dispTmdt field
-  std::map<int, int> _residualTags; ///< tags indexing residual field
 
 }; // ElasticityExplicit
 

@@ -38,6 +38,15 @@ class pylith::feassemble::IntegratorElasticity : public Integrator
 { // IntegratorElasticity
   friend class TestIntegratorElasticity; // unit testing
 
+// PUBLIC TYPEDEFS //////////////////////////////////////////////////////
+public :
+
+  typedef void (*totalStrain_fn_type)(std::vector<double_array>*,
+				      const double_array&,
+				      const double_array&,
+				      const int);
+  
+
 // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public :
 
@@ -114,7 +123,50 @@ protected :
    */
   void _elasticityJacobian3D(const std::vector<double_array>& elasticConsts);
 
-// PRIVATE METHODS //////////////////////////////////////////////////////
+  /** Compute total strain in at quadrature points of a cell.
+   *
+   * @param strain Strain tensor at quadrature points.
+   * @param basisDeriv Derivatives of basis functions at quadrature points.
+   * @param disp Displacement at vertices of cell.
+   * @param dimension Dimension of cell.
+   * @param numBasis Number of basis functions for cell.
+   */
+
+  static
+  void _calcTotalStrain1D(std::vector<double_array>* strain,
+			  const double_array& basisDeriv,
+			  const double_array& disp,
+			  const int numBasis);
+
+  /** Compute total strain in at quadrature points of a cell.
+   *
+   * @param strain Strain tensor at quadrature points.
+   * @param basisDeriv Derivatives of basis functions at quadrature points.
+   * @param disp Displacement at vertices of cell.
+   * @param numBasis Number of basis functions for cell.
+   */
+
+  static
+  void _calcTotalStrain2D(std::vector<double_array>* strain,
+			  const double_array& basisDeriv,
+			  const double_array& disp,
+			  const int numBasis);
+
+  /** Compute total strain in at quadrature points of a cell.
+   *
+   * @param strain Strain tensor at quadrature points.
+   * @param basisDeriv Derivatives of basis functions at quadrature points.
+   * @param disp Displacement at vertices of cell.
+   * @param numBasis Number of basis functions for cell.
+   */
+
+  static
+  void _calcTotalStrain3D(std::vector<double_array>* strain,
+			  const double_array& basisDeriv,
+			  const double_array& disp,
+			  const int numBasis);
+
+// NOT IMPLEMENTED //////////////////////////////////////////////////////
 private :
 
   /// Not implemented.
@@ -128,6 +180,10 @@ protected :
 
   /// Elastic material associated with integrator
   materials::ElasticMaterial* _material;
+
+  // Optimization
+  std::map<int, int> _dispTags; ///< Tags indexing displacement field.
+  std::map<int, int> _residualTags; ///< Tags indexing residual field.
 
 }; // IntegratorElasticity
 

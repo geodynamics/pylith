@@ -15,7 +15,6 @@
 #include "IntegratorElasticity.hh" // implementation of class methods
 
 #include "Quadrature.hh" // USES Quadrature
-#include "Elasticity.hh" // USES Elasticity
 #include "CellGeometry.hh" // USES CellGeometry
 
 #include "pylith/materials/ElasticMaterial.hh" // USES ElasticMaterial
@@ -24,7 +23,7 @@
 #include <assert.h> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-//#define FASTER
+#define FASTER
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -80,21 +79,24 @@ pylith::feassemble::IntegratorElasticity::updateState(
   // Set variables dependent on dimension of cell
   const int cellDim = _quadrature->cellDim();
   int tensorSize = 0;
-  Elasticity::totalStrain_fn_type calcTotalStrainFn;
+  totalStrain_fn_type calcTotalStrainFn;
   if (1 == cellDim) {
     tensorSize = 1;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain1D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D;
   } else if (2 == cellDim) {
     tensorSize = 3;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain2D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D;
   } else if (3 == cellDim) {
     tensorSize = 6;
-    calcTotalStrainFn = &pylith::feassemble::Elasticity::calcTotalStrain3D;
+    calcTotalStrainFn = 
+      &pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D;
   } else
     assert(0);
 
   // Get cell information
-  const ALE::Obj<ALE::Mesh::label_sequence>& cells = 
+  const ALE::Obj<Mesh::label_sequence>& cells = 
     mesh->getLabelStratum("material-id", _material->id());
   assert(!cells.isNull());
   const Mesh::label_sequence::iterator cellsEnd = cells->end();
@@ -120,9 +122,11 @@ pylith::feassemble::IntegratorElasticity::updateState(
   } // for
 
 #ifdef FASTER
-  const int dispTTag = _dispTTags[_material->id()];
+  assert(_dispTags.find(_material->id()) != _dispTags.end());
+  const int dispTag = _dispTags[_material->id()];
 #endif
-
+  
+  // Loop over cells
   int c_index = 0;
   for (Mesh::label_sequence::iterator c_iter=cells->begin();
        c_iter != cellsEnd;
@@ -132,7 +136,7 @@ pylith::feassemble::IntegratorElasticity::updateState(
 
     // Restrict input fields to cell
 #ifdef FASTER
-    mesh->restrict(disp, dispTTag, c_index, &dispCell[0], cellVecSize);
+    mesh->restrict(disp, dispTag, c_index, &dispCell[0], cellVecSize);
 #else
     mesh->restrict(disp, *c_iter, &dispCell[0], cellVecSize);
 #endif
@@ -516,6 +520,96 @@ pylith::feassemble::IntegratorElasticity::_elasticityJacobian3D(
   } // for
   PetscLogFlopsNoCheck(numQuadPts*(1+numBasis*(3+numBasis*(6*26+9))));
 } // _elasticityJacobian3D
+
+// ----------------------------------------------------------------------
+void
+pylith::feassemble::IntegratorElasticity::_calcTotalStrain1D(
+					    std::vector<double_array>* strain,
+					    const double_array& basisDeriv,
+					    const double_array& disp,
+					    const int numBasis)
+{ // calcTotalStrain1D
+  assert(0 != strain);
+  
+  const int dim = 1;
+  const int numQuadPts = strain->size();
+
+  assert(basisDeriv.size() == numQuadPts*numBasis*dim);
+  assert(disp.size() == numBasis*dim);
+
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    assert(1 == (*strain)[iQuad].size());
+    (*strain)[iQuad] *= 0.0;
+    for (int iBasis=0; iBasis < numBasis; ++iBasis)
+      (*strain)[iQuad][0] += 
+	basisDeriv[iQuad*numBasis+iBasis] * disp[iBasis];
+  } // for
+} // calcTotalStrain1D
+
+// ----------------------------------------------------------------------
+void
+pylith::feassemble::IntegratorElasticity::_calcTotalStrain2D(
+					    std::vector<double_array>* strain,
+					    const double_array& basisDeriv,
+					    const double_array& disp,
+					    const int numBasis)
+{ // calcTotalStrain2D
+  assert(0 != strain);
+  
+  const int dim = 2;
+  const int numQuadPts = strain->size();
+
+  assert(basisDeriv.size() == numQuadPts*numBasis*dim);
+  assert(disp.size() == numBasis*dim);
+
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    assert(3 == (*strain)[iQuad].size());
+    (*strain)[iQuad] *= 0.0;
+    for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
+      (*strain)[iQuad][0] += basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim  ];
+      (*strain)[iQuad][1] += basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
+      (*strain)[iQuad][2] += 
+	0.5 * (basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim  ] +
+	       basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+1]);
+    } // for
+  } // for
+} // calcTotalStrain2D
+
+// ----------------------------------------------------------------------
+void
+pylith::feassemble::IntegratorElasticity::_calcTotalStrain3D(
+					    std::vector<double_array>* strain,
+					    const double_array& basisDeriv,
+					    const double_array& disp,
+					    const int numBasis)
+{ // calcTotalStrain3D
+  assert(0 != strain);
+
+  const int dim = 3;
+  const int numQuadPts = strain->size();
+
+  assert(basisDeriv.size() == numQuadPts*numBasis*dim);
+  assert(disp.size() == numBasis*dim);
+
+  for (int iQuad=0; iQuad < numQuadPts; ++iQuad) {
+    assert(6 == (*strain)[iQuad].size());
+    (*strain)[iQuad] *= 0.0;
+    for (int iBasis=0, iQ=iQuad*numBasis*dim; iBasis < numBasis; ++iBasis) {
+      (*strain)[iQuad][0] += basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim  ];
+      (*strain)[iQuad][1] += basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+1];
+      (*strain)[iQuad][2] += basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim+2];
+      (*strain)[iQuad][3] += 
+	0.5 * (basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim  ] +
+	       basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+1]);
+      (*strain)[iQuad][4] += 
+	0.5 * (basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim+1] +
+	       basisDeriv[iQ+iBasis*dim+1] * disp[iBasis*dim+2]);
+      (*strain)[iQuad][5] += 
+	0.5 * (basisDeriv[iQ+iBasis*dim+2] * disp[iBasis*dim  ] +
+	       basisDeriv[iQ+iBasis*dim  ] * disp[iBasis*dim+2]);
+    } // for
+  } // for
+} // calcTotalStrain3D
 
 
 // End of file 
