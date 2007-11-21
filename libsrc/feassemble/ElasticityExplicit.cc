@@ -64,9 +64,10 @@ pylith::feassemble::ElasticityExplicit::timeStep(const double dt)
 void
 pylith::feassemble::ElasticityExplicit::useSolnIncr(const bool flag)
 { // useSolnIncr
-  throw std::logic_error("Incremental solution not supported for "
-			 "explicit time integration of elasticity "
-			 "equation.");
+  if (flag)
+    throw std::logic_error("Incremental solution not supported for "
+			   "explicit time integration of elasticity "
+			   "equation.");
 } // useSolnIncr
 
 // ----------------------------------------------------------------------
