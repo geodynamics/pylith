@@ -42,8 +42,6 @@
 
 #include "pylith/utils/petscfwd.h"
 
-#include <petsclog.h>
-
 #include <assert.h>
 #include <stdexcept>
 #include <Python.h>
@@ -927,25 +925,14 @@ cdef class Integrator:
   cdef void* thisptr # Pointer to C++ object
   cdef readonly object handle # PyCObject holding pointer to C++ object
   cdef readonly object name # Identifier for object base type
-  cdef int assemblerCookie
-  cdef int integrateResidualEvent
-  cdef int integrateJacobianEvent
-  cdef int updateStateEvent
 
   def __init__(self):
     """
     Constructor.
     """
-    #embed{ void Integrator_setupLogging(int *cookie, int *residualEvent, int *jacobianEvent, int* updateStateEvent)
-      PetscLogClassRegister(cookie, "FE Assembler");
-      PetscLogEventRegister(residualEvent, "IntegrateResidual", *cookie);
-      PetscLogEventRegister(jacobianEvent, "IntegrateJacobian", *cookie);
-      PetscLogEventRegister(updateStateEvent, "IntegrateUpdateState", *cookie);
-    #}embed
     self.handle = None
     self.thisptr = NULL
     self.name = "pylith_feassemble_integrator"
-    Integrator_setupLogging(&self.assemblerCookie, &self.integrateResidualEvent, &self.integrateJacobianEvent, &self.updateStateEvent)
     return
 
 
@@ -954,7 +941,7 @@ cdef class Integrator:
     Integrate contributions to residual term (r) for operator.
     """
     # create shim for method 'integrateResidual'
-    #embed{ void Integrator_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr, int event)
+    #embed{ void Integrator_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != residualVptr);
@@ -966,10 +953,8 @@ cdef class Integrator:
         (ALE::Obj<pylith::real_section_type>*) residualVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
-      PetscLogEventBegin(event,0,0,0,0);
       ((pylith::feassemble::Integrator*) objVptr)->integrateResidual(*residual,
                                                             t, fields, *mesh);
-      PetscLogEventEnd(event,0,0,0,0);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -988,8 +973,7 @@ cdef class Integrator:
                                  PyCObject_AsVoidPtr(residual),
                                  t,
                                  ptrFromHandle(fields),
-                                 ptrFromHandle(mesh),
-                                 self.integrateResidualEvent)
+                                 ptrFromHandle(mesh))
     return
 
 
@@ -998,7 +982,7 @@ cdef class Integrator:
     Compute contributions to Jacobian matrix (A) associated with operator.
     """
     # create shim for method 'integrateJacobian'
-    #embed{ void Integrator_integrateJacobian(void* objVptr, void* matVptr, double t, void* fieldsVptr, void* meshVptr, int event)
+    #embed{ void Integrator_integrateJacobian(void* objVptr, void* matVptr, double t, void* fieldsVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != matVptr);
@@ -1009,10 +993,8 @@ cdef class Integrator:
       PetscMat* mat = (PetscMat*) matVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
-      PetscLogEventBegin(event,0,0,0,0);
       ((pylith::feassemble::Integrator*) objVptr)->integrateJacobian(
                                                         mat, t, fields, *mesh);
-      PetscLogEventEnd(event,0,0,0,0);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -1031,8 +1013,7 @@ cdef class Integrator:
                                  PyCObject_AsVoidPtr(mat),
                                  t,
                                  ptrFromHandle(fields),
-                                 ptrFromHandle(mesh),
-                                 self.integrateJacobianEvent)
+                                 ptrFromHandle(mesh))
     return
 
 
@@ -1041,7 +1022,7 @@ cdef class Integrator:
     Update state variables as needed.
     """
     # create shim for method 'updateState'
-    #embed{ void Integrator_updateState(void* objVptr, double t, void* fieldVptr, void* meshVptr, int event)
+    #embed{ void Integrator_updateState(void* objVptr, double t, void* fieldVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -1050,9 +1031,7 @@ cdef class Integrator:
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh =
         (ALE::Obj<ALE::Mesh>*) meshVptr;
-      PetscLogEventBegin(event,0,0,0,0);
       ((pylith::feassemble::Integrator*) objVptr)->updateState(t, *field, *mesh);
-      PetscLogEventEnd(event,0,0,0,0);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -1070,8 +1049,7 @@ cdef class Integrator:
     Integrator_updateState(self.thisptr,
                            t,
                            PyCObject_AsVoidPtr(field),
-                           ptrFromHandle(mesh),
-                           self.updateStateEvent)
+                           ptrFromHandle(mesh))
     return
 
 

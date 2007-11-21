@@ -33,6 +33,7 @@ class ElasticityExplicit(IntegratorElasticity):
     Constructor.
     """
     IntegratorElasticity.__init__(self, name)
+    self._loggingPrefix = "ElEx "
 
     import pylith.feassemble.feassemble as bindings
     self.cppHandle = bindings.ElasticityExplicit()

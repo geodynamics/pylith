@@ -420,11 +420,6 @@ cdef class Dirichlet(BoundaryCondition):
 # ----------------------------------------------------------------------
 cdef class AbsorbingDampers(BoundaryCondition):
 
-  cdef int assemblerCookie
-  cdef int integrateResidualEvent
-  cdef int integrateJacobianEvent
-  cdef int updateStateEvent
-
   def __init__(self):
     """
     Constructor.
@@ -447,16 +442,9 @@ cdef class AbsorbingDampers(BoundaryCondition):
     } // try/catch
     return result;
     #}embed
-    #embed{ void AbsorbingDampers_setupLogging(int *cookie, int *residualEvent, int *jacobianEvent, int* updateStateEvent)
-      PetscLogClassRegister(cookie, "FE Assembler");
-      PetscLogEventRegister(residualEvent, "IntegrateResidual AB", *cookie);
-      PetscLogEventRegister(jacobianEvent, "IntegrateJacobian AB", *cookie);
-      PetscLogEventRegister(updateStateEvent, "IntegrateUpdateState AB", *cookie);
-    #}embed
     BoundaryCondition.__init__(self)
     self.thisptr = AbsorbingDampers_constructor()
     self.handle = self._createHandle()
-    AbsorbingDampers_setupLogging(&self.assemblerCookie, &self.integrateResidualEvent, &self.integrateJacobianEvent, &self.updateStateEvent)
     return
 
 
@@ -469,7 +457,7 @@ cdef class AbsorbingDampers(BoundaryCondition):
     Integrate contributions to residual term (r) for operator.
     """
     # create shim for method 'integrateResidual'
-    #embed{ void AbsorbingDampers_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr, int event)
+    #embed{ void AbsorbingDampers_integrateResidual(void* objVptr, void* residualVptr, double t, void* fieldsVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != residualVptr);
@@ -481,10 +469,8 @@ cdef class AbsorbingDampers(BoundaryCondition):
         (ALE::Obj<pylith::real_section_type>*) residualVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
-      PetscLogEventBegin(event,0,0,0,0);
       ((pylith::bc::AbsorbingDampers*) objVptr)->integrateResidual(*residual,
                                                             t, fields, *mesh);
-      PetscLogEventEnd(event,0,0,0,0);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -503,8 +489,7 @@ cdef class AbsorbingDampers(BoundaryCondition):
                                  PyCObject_AsVoidPtr(residual),
                                  t,
                                  ptrFromHandle(fields),
-                                 ptrFromHandle(mesh),
-                                 self.integrateResidualEvent)
+                                 ptrFromHandle(mesh))
     return
 
 
@@ -513,7 +498,7 @@ cdef class AbsorbingDampers(BoundaryCondition):
     Compute contributions to Jacobian matrix (A) associated with operator.
     """
     # create shim for method 'integrateJacobian'
-    #embed{ void AbsorbingDampers_integrateJacobian(void* objVptr, void* matVptr, double t, void* fieldsVptr, void* meshVptr, int event)
+    #embed{ void AbsorbingDampers_integrateJacobian(void* objVptr, void* matVptr, double t, void* fieldsVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != matVptr);
@@ -524,10 +509,8 @@ cdef class AbsorbingDampers(BoundaryCondition):
       PetscMat* mat = (PetscMat*) matVptr;
       pylith::topology::FieldsManager* fields =
         (pylith::topology::FieldsManager*) fieldsVptr;
-      PetscLogEventBegin(event,0,0,0,0);
       ((pylith::bc::AbsorbingDampers*) objVptr)->integrateJacobian(
                                                         mat, t, fields, *mesh);
-      PetscLogEventEnd(event,0,0,0,0);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -546,8 +529,7 @@ cdef class AbsorbingDampers(BoundaryCondition):
                                  PyCObject_AsVoidPtr(mat),
                                  t,
                                  ptrFromHandle(fields),
-                                 ptrFromHandle(mesh),
-                                 self.integrateJacobianEvent)
+                                 ptrFromHandle(mesh))
     return
 
 
@@ -556,7 +538,7 @@ cdef class AbsorbingDampers(BoundaryCondition):
     Update state variables as needed.
     """
     # create shim for method 'updateState'
-    #embed{ void AbsorbingDampers_updateState(void* objVptr, double t, void* fieldVptr, void* meshVptr, int event)
+    #embed{ void AbsorbingDampers_updateState(void* objVptr, double t, void* fieldVptr, void* meshVptr)
     try {
       assert(0 != objVptr);
       assert(0 != fieldVptr);
@@ -565,9 +547,7 @@ cdef class AbsorbingDampers(BoundaryCondition):
         (ALE::Obj<pylith::real_section_type>*) fieldVptr;
       ALE::Obj<ALE::Mesh>* mesh =
         (ALE::Obj<ALE::Mesh>*) meshVptr;
-      PetscLogEventBegin(event,0,0,0,0);
       ((pylith::bc::AbsorbingDampers*) objVptr)->updateState(t, *field, *mesh);
-      PetscLogEventEnd(event,0,0,0,0);
     } catch (const std::exception& err) {
       PyErr_SetString(PyExc_RuntimeError,
                       const_cast<char*>(err.what()));
@@ -585,8 +565,7 @@ cdef class AbsorbingDampers(BoundaryCondition):
     AbsorbingDampers_updateState(self.thisptr,
                            t,
                            PyCObject_AsVoidPtr(field),
-                           ptrFromHandle(mesh),
-                           self.updateStateEvent)
+                           ptrFromHandle(mesh))
     return
 
 

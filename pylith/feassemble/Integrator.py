@@ -52,6 +52,16 @@ class Integrator(object):
     """
     self.quadrature = None
     self.mesh = None
+    from pylith.utils.EventLogger import EventLogger
+
+    return
+
+
+  def preinitialize(self, mesh):
+    """
+    Do pre-initialization setup.
+    """
+    self._setupLogging()
     return
 
 
@@ -59,8 +69,12 @@ class Integrator(object):
     """
     Verify compatibility of configuration.
     """
+    logEvent = "%sverify" % self._loggingPrefix
+
     assert(None != self.cppHandle)
+    self._logger.eventBegin(logEvent)
     self.cppHandle.verifyConfiguration(self.mesh.cppHandle)
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -77,9 +91,14 @@ class Integrator(object):
     """
     Get stable time step for advancing from time t to time t+dt.
     """
+    logEvent = "%stimeStep" % self._loggingPrefix
+    
     assert(None != self.cppHandle)
     from pyre.units.time import second
-    return self.cppHandle.stableTimeStep*second
+    self._logger.eventBegin(logEvent)
+    dt = self.cppHandle.stableTimeStep*second
+    self._logger.eventEnd(logEvent)
+    return dt
 
 
   def useSolnIncr(self, flag):
@@ -95,9 +114,13 @@ class Integrator(object):
     """
     Integrate contributions to residual term at time t.
     """
+    logEvent = "%sresidual" % self._loggingPrefix
+    
     assert(None != self.cppHandle)
+    self._logger.eventBegin(logEvent)
     self.cppHandle.integrateResidual(residual, t.value, fields.cppHandle,
                                      self.mesh.cppHandle)
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -106,17 +129,26 @@ class Integrator(object):
     Returns true if we need to recompute Jacobian matrix for operator,
     false otherwise.
     """
+    logEvent = "%snewJacobian" % self._loggingPrefix
+    
     assert(None != self.cppHandle)
-    return self.cppHandle.needNewJacobian
+    self._logger.eventBegin(logEvent)
+    flag = self.cppHandle.needNewJacobian
+    self._logger.eventEnd(logEvent)
+    return flag
 
 
   def integrateJacobian(self, jacobian, t, fields):
     """
     Integrate contributions to Jacobian term at time t.
     """
+    logEvent = "%sjacobian" % self._loggingPrefix
+    
     assert(None != self.cppHandle)
+    self._logger.eventBegin(logEvent)
     self.cppHandle.integrateJacobian(jacobian, t.value, fields.cppHandle,
                                      self.mesh.cppHandle)
+    self._logger.eventEnd(logEvent)
     return
 
 
@@ -124,8 +156,12 @@ class Integrator(object):
     """
     Update state variables as needed.
     """
+    logEvent = "%sstate" % self._loggingPrefix
+    
     assert(None != self.cppHandle)
+    self._logger.eventBegin(logEvent)
     self.cppHandle.updateState(t.value, field, self.mesh.cppHandle)
+    self._logger.eventEnd(logEvent)
     return
     
 
@@ -133,6 +169,34 @@ class Integrator(object):
     """
     Cleanup after time stepping.
     """
+    return
+
+
+  # PRIVATE METHODS ////////////////////////////////////////////////////
+
+  def _setupLogging(self):
+    """
+    Setup event logging.
+    """
+    if None == self._loggingPrefix:
+      self._loggingPrefix = ""
+
+    from pylith.utils.EventLogger import EventLogger
+    logger = EventLogger()
+    logger.setClassName("FE Integrator")
+    logger.initialize()
+
+    events = ["verify",
+              "timestep",
+              "residual",
+              "newJacobian",
+              "jacobian",
+              "state",
+              "finalize"]
+    for event in events:
+      logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+
+    self._logger = logger
     return
   
 
