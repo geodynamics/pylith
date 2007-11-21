@@ -60,6 +60,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     """
     BoundaryCondition.__init__(self, name)
     Integrator.__init__(self)
+    self._loggingPrefix = "AbBC "
     return
 
 
@@ -68,6 +69,7 @@ class AbsorbingDampers(BoundaryCondition, Integrator):
     Do pre-initialization setup.
     """
     BoundaryCondition.preinitialize(self, mesh)
+    Integrator.preinitialize(self, mesh)
     self.quadrature.preinitialize()
     return
 
