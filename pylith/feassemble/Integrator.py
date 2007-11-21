@@ -91,7 +91,7 @@ class Integrator(object):
     """
     Get stable time step for advancing from time t to time t+dt.
     """
-    logEvent = "%stimeStep" % self._loggingPrefix
+    logEvent = "%stimestep" % self._loggingPrefix
     
     assert(None != self.cppHandle)
     from pyre.units.time import second

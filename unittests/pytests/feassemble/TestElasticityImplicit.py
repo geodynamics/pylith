@@ -88,8 +88,8 @@ class TestElasticityImplicit(unittest.TestCase):
     Test timeStep().
     """
     from pyre.units.time import second
-    dt = 2.4*second
-    integrator = ElasticityImplicit()
+    dt = 2.3*second
+    (mesh, integrator, fields) = self._initialize()
     integrator.timeStep(dt)
     return
 
@@ -100,7 +100,7 @@ class TestElasticityImplicit(unittest.TestCase):
     """
     from pyre.units.time import second
     dt = 2.3*second
-    integrator = ElasticityImplicit()
+    (mesh, integrator, fields) = self._initialize()
     integrator.timeStep(dt)
     self.assertEqual(dt, integrator.stableTimeStep())
     return
@@ -204,7 +204,7 @@ class TestElasticityImplicit(unittest.TestCase):
     Initialize integrator.
     """
     from pyre.units.time import second
-    dt = 1.0*second
+    dt = 2.3*second
     
     # Setup mesh
     cs = CSCart()
