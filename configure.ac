@@ -214,8 +214,8 @@ AC_CONFIG_FILES([Makefile
 		libsrc/faults/Makefile
                 libsrc/materials/Makefile
                 libsrc/meshio/Makefile
-		libsrc/utils/Makefile
 		libsrc/topology/Makefile
+		libsrc/utils/Makefile
                 modulesrc/Makefile
                 modulesrc/bc/Makefile
                 modulesrc/faults/Makefile
@@ -240,6 +240,7 @@ AC_CONFIG_FILES([Makefile
 		unittests/libtests/meshio/data/Makefile
 		unittests/libtests/topology/Makefile
 		unittests/libtests/topology/data/Makefile
+		unittests/libtests/utils/Makefile
 		unittests/pytests/Makefile
 		unittests/pytests/bc/Makefile
 		unittests/pytests/bc/data/Makefile

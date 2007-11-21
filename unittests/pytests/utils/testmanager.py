@@ -10,9 +10,9 @@
 # ======================================================================
 #
 
-## @file unittests/utils/testdriver.py
+## @file unittests/utils/testmanager.py
 
-## @brief Python application for testing meshio code.
+## @brief Python application for testing PetscManager.
 
 from pyre.applications.Script import Script
 

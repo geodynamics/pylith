@@ -19,7 +19,6 @@
 
 #include <petscmat.h>
 
-#include <stdexcept> // TEMPORARY
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION( pylith::feassemble::TestIntegrator );
 

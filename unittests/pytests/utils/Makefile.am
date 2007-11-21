@@ -13,11 +13,12 @@
 subpackage = utils
 include $(top_srcdir)/subpackage.am
 
-TESTS = testdriver.py
+TESTS = testmanager.py testutils.py
 
-check_SCRIPTS = testdriver.py
+check_SCRIPTS = testmanager.py testutils.py
 
 noinst_PYTHON = \
+	TestEventLogger.py \
 	TestPetscManager.py
 
 TESTS_ENVIRONMENT = $(PYTHON)
